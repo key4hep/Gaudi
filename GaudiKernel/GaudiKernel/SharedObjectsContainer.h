@@ -10,8 +10,8 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ClassID.h"
+#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ObjectContainerBase.h"
 // ============================================================================
 /** @class SharedObjectsContainer GaudiKernel/SharedObjectsContainer.h
@@ -31,37 +31,36 @@ class SharedObjectsContainer : public ObjectContainerBase
 public:
   // ==========================================================================
   /// the actual container type
-  typedef std::vector<const TYPE*>   ConstVector ;
+  typedef std::vector<const TYPE*> ConstVector;
   /// various types (to make STL happy)
-  typedef typename ConstVector::value_type                         value_type ;
-  typedef typename ConstVector::size_type                           size_type ;
-  typedef typename ConstVector::reference                           reference ;
-  typedef typename ConstVector::const_reference               const_reference ;
-  typedef typename ConstVector::iterator                             iterator ;
-  typedef typename ConstVector::const_iterator                 const_iterator ;
-  typedef typename ConstVector::reverse_iterator             reverse_iterator ;
-  typedef typename ConstVector::const_reverse_iterator const_reverse_iterator ;
+  typedef typename ConstVector::value_type value_type;
+  typedef typename ConstVector::size_type size_type;
+  typedef typename ConstVector::reference reference;
+  typedef typename ConstVector::const_reference const_reference;
+  typedef typename ConstVector::iterator iterator;
+  typedef typename ConstVector::const_iterator const_iterator;
+  typedef typename ConstVector::reverse_iterator reverse_iterator;
+  typedef typename ConstVector::const_reverse_iterator const_reverse_iterator;
   // ==========================================================================
 public:
   // ==========================================================================
   // the default constructor (creates the empty vector)
-  SharedObjectsContainer () = default;
+  SharedObjectsContainer() = default;
   // move constructor and move assignement
-  SharedObjectsContainer(SharedObjectsContainer&&) = default;
-  SharedObjectsContainer& operator=(SharedObjectsContainer&&) = default;
+  SharedObjectsContainer( SharedObjectsContainer&& ) = default;
+  SharedObjectsContainer& operator=( SharedObjectsContainer&& ) = default;
   // the constructor from the data
-  SharedObjectsContainer ( const ConstVector& data )
-    : m_data(data) {}
-  SharedObjectsContainer ( ConstVector&& data )
-    : m_data(std::move(data)) {}
+  SharedObjectsContainer( const ConstVector& data ) : m_data( data ) {}
+  SharedObjectsContainer( ConstVector&& data ) : m_data( std::move( data ) ) {}
 
   /** the templated constructor from the pair of iterators
    *  @param first 'begin'-iterator of the input sequence
    *  @param last  'last'-iterator of the input sequence
    */
   template <class DATA>
-  SharedObjectsContainer(DATA first, DATA last)
-    : m_data(first, last) {}
+  SharedObjectsContainer( DATA first, DATA last ) : m_data( first, last )
+  {
+  }
   /** the templated constructor from the pair of iterators and the predicate.
    *
    *  Only the elements which satisfy the criteria goes into the container
@@ -86,26 +85,24 @@ public:
    *  @param cut   pre predicate
    */
   template <class DATA, class PREDICATE>
-  SharedObjectsContainer(DATA first, DATA last, const PREDICATE& cut)
+  SharedObjectsContainer( DATA first, DATA last, const PREDICATE& cut )
   {
-    insert ( first , last , cut ) ;
+    insert( first, last, cut );
   }
   // ==========================================================================
 public:
   // ==========================================================================
   /// Retrieve the unique class ID (virtual)
-  const CLID& clID() const override
-  { return SharedObjectsContainer<TYPE>::classID(); }
+  const CLID& clID() const override { return SharedObjectsContainer<TYPE>::classID(); }
   /// Retrieve the unuqie class ID (static)
   static const CLID& classID()
   {
-    static const CLID s_clid =
-      ( ( static_cast<CLID>  ( -1 ) << 16 )  // 16 used and 16 empty bits
-        & !CLID_ObjectVector                 // not an ObjectVector
-        & !CLID_ObjectList                   // not an ObjectList
-        & !static_cast<CLID> ( 0x00030000 )  // not a  KeyedContainer/map
-        & !static_cast<CLID> ( 0x00040000 ) )// not a  KeyedContainer/hashmap
-      + TYPE::classID() ;                // the specific CLID from the contents
+    static const CLID s_clid = ( ( static_cast<CLID>( -1 ) << 16 )    // 16 used and 16 empty bits
+                                 & !CLID_ObjectVector                 // not an ObjectVector
+                                 & !CLID_ObjectList                   // not an ObjectList
+                                 & !static_cast<CLID>( 0x00030000 )   // not a  KeyedContainer/map
+                                 & !static_cast<CLID>( 0x00040000 ) ) // not a  KeyedContainer/hashmap
+                               + TYPE::classID();                     // the specific CLID from the contents
     //
     return s_clid;
   }
@@ -113,32 +110,33 @@ public:
 public:
   // ==========================================================================
   /// get the access to the underlying container (const)
-  inline const ConstVector& data    () const { return m_data ; }
+  inline const ConstVector& data() const { return m_data; }
   /// cast to the underlying container
-  operator const ConstVector& () const { return data () ; }
+  operator const ConstVector&() const { return data(); }
   // ==========================================================================
 public:
   // ==========================================================================
   /// get the actual size of the container
-  size_type size  () const { return m_data.size  () ; }
+  size_type size() const { return m_data.size(); }
   /// empty container?
-  bool      empty () const { return m_data.empty () ; }
+  bool empty() const { return m_data.empty(); }
   /** insert one object into the container
    *  @param object object to be added
    */
-  void push_back ( const TYPE* object ) { m_data.push_back ( object ) ; }
+  void push_back( const TYPE* object ) { m_data.push_back( object ); }
   /** insert one object into the container
    *  @param object object to be added
    */
-  void insert    ( const TYPE* object ) { m_data.push_back ( object ) ; }
+  void insert( const TYPE* object ) { m_data.push_back( object ); }
   /** add the sequence of objects into the container
    *  @param first 'begin'-iterator for the sequnce
    *  @param last  'end'-iterator for the sequence
    */
   template <class DATA>
-  void insert
-  ( DATA first ,
-    DATA last  ) { m_data.insert ( end() , first ,last ) ; }
+  void insert( DATA first, DATA last )
+  {
+    m_data.insert( end(), first, last );
+  }
   /** add the sequence of 'good'objects into the container
    *
    *  Only the objects which satisfy the predicate go to the container,
@@ -166,13 +164,10 @@ public:
    *  @param cut    the predicate to be applied
    */
   template <class DATA, class PREDICATE>
-  void insert
-  ( DATA             first ,
-    DATA             last  ,
-    const PREDICATE& cut   )
+  void insert( DATA first, DATA last, const PREDICATE& cut )
   {
-    m_data.reserve ( m_data.size() + std::distance ( first , last ) ) ;
-    std::copy_if( first, last, std::back_inserter(m_data), std::cref(cut) );
+    m_data.reserve( m_data.size() + std::distance( first, last ) );
+    std::copy_if( first, last, std::back_inserter( m_data ), std::cref( cut ) );
   }
   /** get from the container all objects which satisfy the certain criteria
    *
@@ -199,13 +194,12 @@ public:
    *  @return the current position of the output itrator (almost useless)
    */
   template <class OUTPUT, class PREDICATE>
-  OUTPUT get ( const PREDICATE& cut    ,
-               OUTPUT           output ) const
+  OUTPUT get( const PREDICATE& cut, OUTPUT output ) const
   {
-    return std::copy_if( begin(), end(), output, std::cref(cut) );
+    return std::copy_if( begin(), end(), output, std::cref( cut ) );
   }
   /// erase the object by iterator
-  void erase ( iterator i ) { m_data.erase ( i ) ; }
+  void erase( iterator i ) { m_data.erase( i ); }
   /** erase the objects which satisfy the criteria
    *
    *  E.g. remove all particles with small transverse momentum
@@ -224,8 +218,10 @@ public:
    *  @param cut predicate
    */
   template <class PREDICATE>
-  void erase ( const PREDICATE& cut )
-  { m_data.erase( std::remove_if (  begin() , end() , cut ) , end() ) ; }
+  void erase( const PREDICATE& cut )
+  {
+    m_data.erase( std::remove_if( begin(), end(), cut ), end() );
+  }
   /** erase the first occurance of the certain element
    *
    *  To remove <b>all</b> occurances one can use:
@@ -244,65 +240,63 @@ public:
    *  @param object the element to be removed
    *  @return true if the element is removed
    */
-  bool erase ( const TYPE* object )
+  bool erase( const TYPE* object )
   {
-    auto i = std::find ( begin() , end() , object ) ;
-    if ( end() == i ) { return false ; }
-    m_data.erase ( i ) ;
-    return true ;
+    auto i = std::find( begin(), end(), object );
+    if ( end() == i ) {
+      return false;
+    }
+    m_data.erase( i );
+    return true;
   }
   // ==========================================================================
 public:
   // ==========================================================================
   /// index access
-  reference       operator[] ( size_type index )       { return m_data   [index] ; }
+  reference operator[]( size_type index ) { return m_data[index]; }
   /// index access (const-version)
-  const_reference operator[] ( size_type index ) const { return m_data   [index] ; }
+  const_reference operator[]( size_type index ) const { return m_data[index]; }
   /// 'functional'-access
-  reference       operator() ( size_type index )       { return m_data   [index] ; }
+  reference operator()( size_type index ) { return m_data[index]; }
   /// 'functional'-access  (const version)
-  const_reference operator() ( size_type index ) const { return m_data   [index] ; }
+  const_reference operator()( size_type index ) const { return m_data[index]; }
   /// checked access
-  reference       at         ( size_type index )       { return m_data.at(index) ; }
+  reference at( size_type index ) { return m_data.at( index ); }
   /// checked access (const-version)
-  const_reference at         ( size_type index ) const { return m_data.at(index) ; }
+  const_reference at( size_type index ) const { return m_data.at( index ); }
   // ==========================================================================
 public:
   // ==========================================================================
-  iterator               begin  ()       { return m_data .  begin () ; }
-  iterator               end    ()       { return m_data .  end   () ; }
-  const_iterator         begin  () const { return m_data .  begin () ; }
-  const_iterator         end    () const { return m_data .  end   () ; }
-  reverse_iterator       rbegin ()       { return m_data . rbegin () ; }
-  reverse_iterator       rend   ()       { return m_data . rend   () ; }
-  const_reverse_iterator rbegin () const { return m_data . rbegin () ; }
-  const_reverse_iterator rend   () const { return m_data . rend   () ; }
+  iterator begin() { return m_data.begin(); }
+  iterator end() { return m_data.end(); }
+  const_iterator begin() const { return m_data.begin(); }
+  const_iterator end() const { return m_data.end(); }
+  reverse_iterator rbegin() { return m_data.rbegin(); }
+  reverse_iterator rend() { return m_data.rend(); }
+  const_reverse_iterator rbegin() const { return m_data.rbegin(); }
+  const_reverse_iterator rend() const { return m_data.rend(); }
   // ==========================================================================
 public:
   // ==========================================================================
   /// the first element (only for non-empty vectors)
-  reference       front ()       { return m_data . front () ; }
+  reference front() { return m_data.front(); }
   /// the first element (only for non-empty vectors) (const-version)
-  const_reference front () const { return m_data . front () ; }
+  const_reference front() const { return m_data.front(); }
   /// the last  element (only for non-empty vectors)
-  reference       back  ()       { return m_data . back  () ; }
+  reference back() { return m_data.back(); }
   /// the last  element (only for non-empty vectors) (const-version)
-  const_reference back  () const { return m_data . back  () ; }
+  const_reference back() const { return m_data.back(); }
   // ==========================================================================
 public:
   // ==========================================================================
   /// equal content with other container ?
-  bool operator== ( const SharedObjectsContainer& right ) const
-  { return &right == this || right.m_data == m_data ; }
+  bool operator==( const SharedObjectsContainer& right ) const { return &right == this || right.m_data == m_data; }
   /// equal content with corresponding vector ?
-  bool operator== ( const ConstVector&            right ) const
-  { return m_data == right ; }
+  bool operator==( const ConstVector& right ) const { return m_data == right; }
   /// comparisons with other container
-  bool operator < ( const SharedObjectsContainer& right ) const
-  { return m_data <  right.m_data ; }
+  bool operator<( const SharedObjectsContainer& right ) const { return m_data < right.m_data; }
   /// comparisons with corresponding vector
-  bool operator < ( const ConstVector&            right ) const
-  { return m_data <  right        ; }
+  bool operator<( const ConstVector& right ) const { return m_data < right; }
   // ==========================================================================
   // ObjectContainerBase methods:
   // ==========================================================================
@@ -312,51 +306,59 @@ public:
    */
   long index( const ContainedObject* object ) const override
   {
-    auto _i = std::find ( begin() , end() , object ) ;
-    return end() != _i ? ( _i - begin() ) : -1 ;                  // RETURN
+    auto _i = std::find( begin(), end(), object );
+    return end() != _i ? ( _i - begin() ) : -1; // RETURN
   }
   /** Pointer to an object of a given distance
    *  @param index th eindex to be checked
    *  @return the object
    */
-  ContainedObject* containedObject ( long index ) const override
+  ContainedObject* containedObject( long index ) const override
   {
-    if ( 0 > index || !(index < (long) size () ) ) { return nullptr; }    // RETURN
-    const ContainedObject* co = m_data[index] ;
-    return const_cast<ContainedObject*>( co ) ;
+    if ( 0 > index || !( index < (long)size() ) ) {
+      return nullptr;
+    } // RETURN
+    const ContainedObject* co = m_data[index];
+    return const_cast<ContainedObject*>( co );
   }
   /// Number of objects in the container
-  size_type numberOfObjects() const override { return m_data.size() ; }
+  size_type numberOfObjects() const override { return m_data.size(); }
   /** Virtual functions (forwards to the concrete container definitions)
    *  Add an object to the container. On success the object's index is
    *  returned.
    */
-  long add ( ContainedObject* object) override
+  long add( ContainedObject* object ) override
   {
-    if ( !object ) { return -1 ; }                           // RETURN
-    TYPE* _obj = dynamic_cast<TYPE*> ( object ) ;
-    if ( !_obj   ) { return -1 ; }                           // RETURN
-    const size_type pos = size() ;
-    push_back ( _obj ) ;
-    return pos ;
+    if ( !object ) {
+      return -1;
+    } // RETURN
+    TYPE* _obj = dynamic_cast<TYPE*>( object );
+    if ( !_obj ) {
+      return -1;
+    } // RETURN
+    const size_type pos = size();
+    push_back( _obj );
+    return pos;
   }
   /** Release object from the container (the pointer will be removed
    *  from the container, but the object itself will remain alive).
    *  If the object was found it's index is returned.
    */
-  long remove ( ContainedObject* value ) override
+  long remove( ContainedObject* value ) override
   {
-    auto _i = std::find ( begin() , end() , value ) ;
-    if ( end() == _i ) { return -1 ; }                          // RETURN
-    const size_type pos = _i - begin() ;
-    m_data.erase ( _i ) ;
-    return pos ;                                                // RETURN
+    auto _i = std::find( begin(), end(), value );
+    if ( end() == _i ) {
+      return -1;
+    } // RETURN
+    const size_type pos = _i - begin();
+    m_data.erase( _i );
+    return pos; // RETURN
   }
   // ==========================================================================
 private:
   // ==========================================================================
   // the actual data
-  ConstVector m_data ; // the actual data
+  ConstVector m_data; // the actual data
   // ==========================================================================
 };
 // ============================================================================

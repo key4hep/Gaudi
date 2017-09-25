@@ -6,8 +6,8 @@
 // from GaudiKernel
 #include "GaudiKernel/AlgTool.h"
 // from GaudiGSL
-#include "GaudiGSL/IGslErrorHandler.h"
 #include "GaudiGSL/GslError.h"
+#include "GaudiGSL/IGslErrorHandler.h"
 // forward declaration
 
 /** @class GslErrorPrint GslErrorPrint.h
@@ -19,8 +19,7 @@
  *  @date   30/04/2002
  */
 
-struct GslErrorPrint: extends<AlgTool,
-                              IGslErrorHandler> {
+struct GslErrorPrint : extends<AlgTool, IGslErrorHandler> {
 
   /** Standard constructor
    */
@@ -33,7 +32,6 @@ struct GslErrorPrint: extends<AlgTool,
    *  @return status code
    */
   StatusCode handle( const GslError& error ) const override;
-
 };
 
 // ============================================================================

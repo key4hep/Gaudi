@@ -1,33 +1,34 @@
-## explicit list for wildcard imports
+# explicit list for wildcard imports
 __all__ = [
-           "GaudiHandle",
-           "PublicToolHandle", "PrivateToolHandle",
-           "ServiceHandle",
-           "GaudiHandleArray",
-           "ServiceHandleArray",
-           "PublicToolHandleArray", "PrivateToolHandleArray",
-           ]
+    "GaudiHandle",
+    "PublicToolHandle", "PrivateToolHandle",
+    "ServiceHandle",
+    "GaudiHandleArray",
+    "ServiceHandleArray",
+    "PublicToolHandleArray", "PrivateToolHandleArray",
+]
 __version__ = "$Revision: 1.6 $"
 __doc__ = """The python module holding python bindings to XyzHandles"""
 
 from os import linesep
 
-class GaudiHandle(object):
-    componentType = "Unspecified" # must be overridden by derived class
-    isPublic = True               #  can be overridden by derived class
 
-    def __init__(self,typeAndName):
+class GaudiHandle(object):
+    componentType = "Unspecified"  # must be overridden by derived class
+    isPublic = True  # can be overridden by derived class
+
+    def __init__(self, typeAndName):
         object.__init__(self)
-        if hasattr(typeAndName,"toStringProperty"):
+        if hasattr(typeAndName, "toStringProperty"):
             # this is a GaudiHandle or equivalent
             typeAndName = typeAndName.toStringProperty()
         if type(typeAndName) != str:
-            raise TypeError("Argument to %s must be a string. Got a %s instead" % \
-                            ( self.__class__.__name__, type(typeAndName).__name__) )
+            raise TypeError("Argument to %s must be a string. Got a %s instead" %
+                            (self.__class__.__name__, type(typeAndName).__name__))
         self.typeAndName = typeAndName
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__,self.toStringProperty())
+        return "%s(%r)" % (self.__class__.__name__, self.toStringProperty())
 
     def __str__(self):
         # FIXME: (Patch #1668) this creates problem with 2.5
@@ -57,7 +58,7 @@ class GaudiHandle(object):
         slash = self.typeAndName.find('/')
         if slash != -1:
             # explicit name. Return part after the /
-            return self.typeAndName[slash+1:]
+            return self.typeAndName[slash + 1:]
         else:
             # only type is given. return type as default name
             return self.typeAndName
@@ -68,13 +69,14 @@ class GaudiHandle(object):
     def getFullName(self):
         return self.toStringProperty()
 
+
 class PublicToolHandle(GaudiHandle):
     __slots__ = ()
     componentType = "AlgTool"
     isPublic = True
 
     def __init__(self, toolTypeAndName=''):
-        GaudiHandle.__init__( self, toolTypeAndName )
+        GaudiHandle.__init__(self, toolTypeAndName)
 
 
 class PrivateToolHandle(GaudiHandle):
@@ -83,7 +85,7 @@ class PrivateToolHandle(GaudiHandle):
     isPublic = False
 
     def __init__(self, toolTypeAndName=''):
-        GaudiHandle.__init__( self, toolTypeAndName )
+        GaudiHandle.__init__(self, toolTypeAndName)
 
 
 class ServiceHandle(GaudiHandle):
@@ -92,26 +94,30 @@ class ServiceHandle(GaudiHandle):
     isPublic = True
 
     def __init__(self, serviceName=''):
-        GaudiHandle.__init__( self, serviceName )
+        GaudiHandle.__init__(self, serviceName)
 
 #
 # The HandleArrays
 #
+
+
 class GaudiHandleArray(list):
     """A list of GaudiHandles. Only handles of one type are allowed, as specified by self.__class__.handleType
     """
-    __slots__ = ( 'typesAndNames' )
-    handleType = None # must be set by derived class to the handle type
+    __slots__ = ('typesAndNames')
+    handleType = None  # must be set by derived class to the handle type
 
-    def __init__(self,typesAndNames=None):
-        if typesAndNames is None: typesAndNames = []
+    def __init__(self, typesAndNames=None):
+        if typesAndNames is None:
+            typesAndNames = []
         list.__init__(self)
         # check the type
         if type(typesAndNames) != list:
-            raise TypeError("Argument to %s must be a list. Got a %s instead" % \
-                            ( self.__class__.__name__, type(typesAndNames).__name__) )
+            raise TypeError("Argument to %s must be a list. Got a %s instead" %
+                            (self.__class__.__name__, type(typesAndNames).__name__))
         # add entries to list
-        for tn in typesAndNames: self.append( tn )
+        for tn in typesAndNames:
+            self.append(tn)
 
     def __repr__(self):
         """Return class name with list of type/name strings as argument"""
@@ -119,7 +125,8 @@ class GaudiHandleArray(list):
         for h in self:
             rep += repr(h.toStringProperty()) + ','
         # remove last comma
-        if rep[-1] == ',': rep = rep[:-1]
+        if rep[-1] == ',':
+            rep = rep[:-1]
         return rep + '])'
 
     def __str__(self):
@@ -127,61 +134,62 @@ class GaudiHandleArray(list):
         shortName = self.__class__.__name__
         return "%s:%s" % (shortName, linesep + linesep.join([str(s) for s in self]))
 
-    def __getitem__(self,index):
+    def __getitem__(self, index):
         if type(index) == str:
             # seach by instance name
             for h in self:
                 if h.getName() == index:
                     return h
-            raise IndexError( "%s does not have a %s with instance name %s" % \
-                              (self.__class__.__name__, self.handleType.componentType, index) )
+            raise IndexError("%s does not have a %s with instance name %s" %
+                             (self.__class__.__name__, self.handleType.componentType, index))
         else:
-            return list.__getitem__(self,index)
+            return list.__getitem__(self, index)
 
-    def __delitem__( self, key ):
-        super( GaudiHandleArray, self ).__delitem__( self.index(self[key]) )
+    def __delitem__(self, key):
+        super(GaudiHandleArray, self).__delitem__(self.index(self[key]))
 
-    def __iadd__(self,array):
+    def __iadd__(self, array):
         arrayType = type(array)
         if arrayType == list or arrayType == type(self):
             for v in array:
-                self.append( v )
+                self.append(v)
         else:
-            raise TypeError( "Can not add a %s to a %s" % (arrayType.__name__, self.__class__.__name__) )
+            raise TypeError("Can not add a %s to a %s" %
+                            (arrayType.__name__, self.__class__.__name__))
 
         return self
 
-    def append( self, value ):
+    def append(self, value):
         """Only allow appending compatible types. It accepts a string, a handle or a configurable."""
         if type(value) == str:
             # convert string to handle
             value = self.__class__.handleType(value)
         elif type(value) == self.__class__.handleType:
-            pass # leave handle as-is
-        elif isinstance( value, GaudiHandle ):
+            pass  # leave handle as-is
+        elif isinstance(value, GaudiHandle):
             # do not allow different type of handles
-            raise TypeError( "Can not add a %s to a %s" % (value.__class__.__name__, self.__class__.__name__) )
+            raise TypeError("Can not add a %s to a %s" %
+                            (value.__class__.__name__, self.__class__.__name__))
         elif value.getGaudiType() != self.__class__.handleType.componentType:
             # assume it is a configurable: allow only correct types
-            raise TypeError( "Can not append %s (%s) to a %s" % \
-                             (value.__class__.__name__, value.getGaudiType(), self.__class__.__name__) )
-        elif hasattr(value,'isPublic'):
+            raise TypeError("Can not append %s (%s) to a %s" %
+                            (value.__class__.__name__, value.getGaudiType(), self.__class__.__name__))
+        elif hasattr(value, 'isPublic'):
             # check public vs private if applicable for this configurable
             pop = value.isPublic() and 'Public' or 'Private'
             if value.isPublic() != self.__class__.handleType.isPublic:
-                raise TypeError( "Can not append %s (%s %s) to a %s" % \
-                                 (value.__class__.__name__, pop, value.getGaudiType(), self.__class__.__name__) )
+                raise TypeError("Can not append %s (%s %s) to a %s" %
+                                (value.__class__.__name__, pop, value.getGaudiType(), self.__class__.__name__))
 
         # check that an instance name appears only once in the list
         try:
-            oldValue = self.__getitem__( value.getName() )
+            oldValue = self.__getitem__(value.getName())
         except IndexError:
             # not yet there, so add it
-            list.append( self, value )
+            list.append(self, value)
         else:
             print "%s    WARNING %r with instance name %r already in list. Not adding %r" % \
                   (self.__class__.__name__, oldValue, oldValue.getName(), value)
-
 
     def isPublic(self):
         return self.__class__.handleType.isPublic
@@ -193,17 +201,18 @@ class GaudiHandleArray(list):
         rep = '['
         # add entries
         for v in self:
-            rep += repr( v.toStringProperty() ) + ','
+            rep += repr(v.toStringProperty()) + ','
         # remove last comma
-        if rep[-1] == ',': rep = rep[:-1]
+        if rep[-1] == ',':
+            rep = rep[:-1]
         return rep + ']'
 
     # pickle support
-    def __getstate__ (self):
-        return { 'typesAndNames' : self.typesAndNames }
+    def __getstate__(self):
+        return {'typesAndNames': self.typesAndNames}
 
-    def __setstate__ ( self, dict ):
-        self.typesAndNames = dict[ 'typesAndNames' ]
+    def __setstate__(self, dict):
+        self.typesAndNames = dict['typesAndNames']
 
 
 class ServiceHandleArray(GaudiHandleArray):
@@ -211,14 +220,15 @@ class ServiceHandleArray(GaudiHandleArray):
     handleType = ServiceHandle
 
     def __init__(self, serviceTypesAndNames=None):
-        GaudiHandleArray.__init__( self, serviceTypesAndNames )
+        GaudiHandleArray.__init__(self, serviceTypesAndNames)
+
 
 class PublicToolHandleArray(GaudiHandleArray):
     __slots__ = ()
     handleType = PublicToolHandle
 
     def __init__(self, toolTypesAndNames=None):
-        GaudiHandleArray.__init__( self, toolTypesAndNames )
+        GaudiHandleArray.__init__(self, toolTypesAndNames)
 
 
 class PrivateToolHandleArray(GaudiHandleArray):
@@ -226,4 +236,4 @@ class PrivateToolHandleArray(GaudiHandleArray):
     handleType = PrivateToolHandle
 
     def __init__(self, toolTypesAndNames=None):
-        GaudiHandleArray.__init__( self, toolTypesAndNames )
+        GaudiHandleArray.__init__(self, toolTypesAndNames)

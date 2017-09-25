@@ -7,6 +7,7 @@
 #include "PrecedenceSvc.h"
 
 // Framework include files
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
@@ -16,7 +17,6 @@
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/Algorithm.h"
 
 // C++ include files
 #include <functional>
@@ -132,40 +132,38 @@ public:
 private:
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
-  Gaudi::Property<int> m_threadPoolSize{this, "ThreadPoolSize", -1,
-    "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc",
-    "The whiteboard name"};
-  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc",
-    "IOBoundAlgSchedulerSvc"};
+  Gaudi::Property<int> m_threadPoolSize{
+      this, "ThreadPoolSize", -1,
+      "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
-    "Maximum number of simultaneous I/O-bound algorithms"};
-  Gaudi::Property<bool> m_simulateExecution{this, "SimulateExecution", false,
-    "Flag to perform single-pass simulation of execution flow before the actual execution"};
+                                                          "Maximum number of simultaneous I/O-bound algorithms"};
+  Gaudi::Property<bool> m_simulateExecution{
+      this, "SimulateExecution", false,
+      "Flag to perform single-pass simulation of execution flow before the actual execution"};
   Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
-    "The following modes are currently available: PCE, COD, DRE,  E"};
+                                                  "The following modes are currently available: PCE, COD, DRE,  E"};
   Gaudi::Property<bool> m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
-    "Dump intra-event concurrency dynamics to csv file"};
+                                                 "Dump intra-event concurrency dynamics to csv file"};
   Gaudi::Property<bool> m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
-    "Turn on preemptive way of scheduling of I/O-bound algorithms"};
+                                                 "Turn on preemptive way of scheduling of I/O-bound algorithms"};
 
-  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false,
-      "Runtime check of Algorithm Data Dependencies"};
+  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};
 
   Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
-      "Attribute unmet input dependencies to this DataLoader Algorithm"};
- 
-  Gaudi::Property<bool> m_enableCondSvc{this, "EnableConditions", false,
-      "Enable ConditionsSvc"};
+                                               "Attribute unmet input dependencies to this DataLoader Algorithm"};
+
+  Gaudi::Property<bool> m_enableCondSvc{this, "EnableConditions", false, "Enable ConditionsSvc"};
 
   Gaudi::Property<bool> m_showDataDeps{this, "ShowDataDependencies", true,
-      "Show the INPUT and OUTPUT data dependencies of Algorithms"};
+                                       "Show the INPUT and OUTPUT data dependencies of Algorithms"};
 
   Gaudi::Property<bool> m_showDataFlow{this, "ShowDataFlow", false,
-      "Show the configuration of DataFlow between Algorithms"};
-  
+                                       "Show the configuration of DataFlow between Algorithms"};
+
   Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
-      "Show the configuration of all Algorithms and Sequences"};
+                                          "Show the configuration of all Algorithms and Sequences"};
 
   // Utils and shortcuts ----------------------------------------------------
 
@@ -262,16 +260,19 @@ private:
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
   // helper task to enqueue the scheduler's actions (closures)
-  struct enqueueSchedulerActionTask: public tbb::task {
+  struct enqueueSchedulerActionTask : public tbb::task {
 
     std::function<StatusCode()> m_closure;
     SmartIF<AvalancheSchedulerSvc> m_scheduler;
 
-    enqueueSchedulerActionTask(AvalancheSchedulerSvc* scheduler, std::function<StatusCode()> _closure) :
-      m_closure(_closure), m_scheduler(scheduler) {}
+    enqueueSchedulerActionTask( AvalancheSchedulerSvc* scheduler, std::function<StatusCode()> _closure )
+        : m_closure( _closure ), m_scheduler( scheduler )
+    {
+    }
 
-    tbb::task* execute() override {
-      m_scheduler->m_actionsQueue.push(m_closure);
+    tbb::task* execute() override
+    {
+      m_scheduler->m_actionsQueue.push( m_closure );
       return nullptr;
     }
   };
@@ -280,8 +281,8 @@ private:
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  size_t m_maxEventsInFlight {0};
-  size_t m_maxAlgosInFlight {1};
+  size_t m_maxEventsInFlight{0};
+  size_t m_maxAlgosInFlight{1};
   bool m_first = true;
 
   class SchedulerState
@@ -323,7 +324,6 @@ public:
 
 private:
   void dumpState( std::ostringstream& );
-
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

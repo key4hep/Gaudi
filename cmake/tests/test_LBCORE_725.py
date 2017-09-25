@@ -13,10 +13,12 @@ xenv_cmd = os.path.join(os.path.dirname(__file__), os.pardir, 'xenv')
 build_log = None
 build_returncode = None
 
+
 def clean():
     import shutil
     shutil.rmtree(build_dir, ignore_errors=True)
     shutil.rmtree(release_dir, ignore_errors=True)
+
 
 def build():
     global build_log, build_returncode
@@ -25,6 +27,7 @@ def build():
     build_log, _err = build_proc.communicate()
 
     build_returncode = build_proc.returncode
+
 
 def setup():
     build()
@@ -45,6 +48,7 @@ def test_A_env():
 
     assert out['A_PROJECT_ROOT'] == os.path.join(release_dir, 'A')
 
+
 def _test_B_env():
     # Note: this test cannot work because the relocation is handled either at
     #       build time (test_C_env) or at runtime (with other tools)
@@ -62,7 +66,9 @@ def _test_B_env():
 
     assert out['A_PROJECT_ROOT'] == os.path.join(release_dir, 'A')
     assert out['B_PROJECT_ROOT'] == os.path.join(release_dir, 'B')
-    assert out['PKGAROOT'] == os.path.join(release_dir, 'DBASE', 'PkgA', 'v1r0')
+    assert out['PKGAROOT'] == os.path.join(
+        release_dir, 'DBASE', 'PkgA', 'v1r0')
+
 
 def test_C_env():
     assert build_returncode == 0
@@ -79,7 +85,8 @@ def test_C_env():
 
     assert out['A_PROJECT_ROOT'] == os.path.join(release_dir, 'A')
     assert out['B_PROJECT_ROOT'] == os.path.join(release_dir, 'B')
-    assert out['PKGAROOT'] == os.path.join(release_dir, 'DBASE', 'PkgA', 'v1r0')
+    assert out['PKGAROOT'] == os.path.join(
+        release_dir, 'DBASE', 'PkgA', 'v1r0')
 
 
 def teardown():

@@ -8,15 +8,18 @@ from os.path import join
 
 from common import data_root, MockLoggingHandler
 
+
 class fixLibPath(object):
     '''
     Temporarily override the LD_LIBRARY_PATH.
     '''
+
     def __init__(self, entries):
         env = os.environ
         self.old_lib_path = env.get('LD_LIBRARY_PATH')
         new_path = entries + env.get('LD_LIBRARY_PATH', '').split(os.pathsep)
         env['LD_LIBRARY_PATH'] = os.pathsep.join(new_path)
+
     def __enter__(self):
         return self
 
@@ -27,9 +30,11 @@ class fixLibPath(object):
         else:
             os.environ['LD_LIBRARY_PATH'] = self.old_lib_path
 
+
 def setup():
     for n in filter(lambda n: n.startswith('GaudiKernel'), sys.modules):
         del sys.modules[n]
+
 
 def test_bad():
     '''
@@ -44,6 +49,7 @@ def test_bad():
         assert filter(re_comp(r'Could not load.*bad.confdb').match, warnings)
         assert filter(re_comp(r'Reason: invalid line format').match, warnings)
 
+
 def test_regular():
     '''
     test loading of .confdb files
@@ -57,6 +63,7 @@ def test_regular():
                   for t in ['Alg', 'Svc']
                   for n in ['1a', '1b', '2']]:
             assert c in cfgDb, 'missing entry for ' + c
+
 
 def test_merged():
     '''

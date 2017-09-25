@@ -1,15 +1,16 @@
 #ifndef HISTOGRAMSVC_BASE_H
 #define HISTOGRAMSVC_BASE_H
 
-#include <iostream>
 #include "GaudiKernel/Kernel.h"
+#include <iostream>
 
 class TObject;
 
 /*
  *    Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   /**@class HistogramBase HistogramBase.h HistogramSvc/HistogramBase.h
     *
@@ -19,22 +20,22 @@ namespace Gaudi {
     *   @author  M.Frank
     *   @version 1.0
     */
-  class GAUDI_API HistogramBase {
+  class GAUDI_API HistogramBase
+  {
   public:
     /// ROOT object implementation
     virtual TObject* representation() const = 0;
     /// Adopt ROOT histogram representation
-    virtual void adoptRepresentation(TObject*rep) = 0;
+    virtual void adoptRepresentation( TObject* rep ) = 0;
     /// Print histogram to output stream
-    virtual std::ostream& print(std::ostream& s) const = 0;
+    virtual std::ostream& print( std::ostream& s ) const = 0;
     /// Write (binary) histogram to output stream
-    virtual std::ostream& write(std::ostream& s) const = 0;
+    virtual std::ostream& write( std::ostream& s ) const = 0;
     /// Write (binary) histogram to file
-    virtual int           write(const char* file_name) const = 0;
-    virtual ~HistogramBase() = default;
+    virtual int write( const char* file_name ) const = 0;
+    virtual ~HistogramBase()                         = default;
   }; // class
 
 } // namespace Gaudi
 
 #endif // HISTOGRAMSVC_BASE_H
-

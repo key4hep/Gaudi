@@ -27,7 +27,7 @@ public:
 
 protected:
   /// Standard destructor
-   ~MyTool() override;
+  ~MyTool() override;
 
 private:
   /// Properties

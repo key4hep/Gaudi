@@ -2,17 +2,17 @@
 #define GAUDIEXAMPLES_EVENT_H 1
 
 // Include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/Time.h"
-#include "GaudiKernel/StreamBuffer.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/SmartRefVector.h"
+#include "GaudiKernel/StreamBuffer.h"
+#include "GaudiKernel/Time.h"
 #include <iostream>
 
-
-
-namespace Gaudi {
-  namespace Examples {
+namespace Gaudi
+{
+  namespace Examples
+  {
 
     class Collision;
 
@@ -28,7 +28,8 @@ namespace Gaudi {
     @author Pavel Binko
     */
 
-    class GAUDI_API Event : public DataObject {
+    class GAUDI_API Event : public DataObject
+    {
 
     public:
       /// Constructors
@@ -37,33 +38,32 @@ namespace Gaudi {
       ~Event() override = default;
 
       /// Retrieve reference to class definition structure
-      const CLID& clID() const override  { return classID(); }
+      const CLID& clID() const override { return classID(); }
       static const CLID& classID() { return CLID_Event; }
 
       /// Retrieve event number
-      int event () const { return m_event; }
+      int event() const { return m_event; }
       /// Update event number
-      void setEvent (int value) { m_event = value; }
+      void setEvent( int value ) { m_event = value; }
 
       /// Retrieve run number
-      int run () const { return m_run; }
+      int run() const { return m_run; }
       /// Update run number
-      void setRun (int value) { m_run = value; }
+      void setRun( int value ) { m_run = value; }
 
       /// Retrieve reference to event time stamp
-      const Gaudi::Time& time () const { return m_time; }
+      const Gaudi::Time& time() const { return m_time; }
       /// Update reference to event time stamp
-      void setTime (const Gaudi::Time& value) { m_time = value; }
+      void setTime( const Gaudi::Time& value ) { m_time = value; }
 
       /// Access to collisions
       const SmartRefVector<Collision>& collisions() const;
 
       /// Add collision
-      void addCollision(Collision* vtx);
+      void addCollision( Collision* vtx );
 
       /// Remove collision
-      void removeCollision(Collision* vtx);
-
+      void removeCollision( Collision* vtx );
 
       /// Serialize the object for writing
       virtual StreamBuffer& serialize( StreamBuffer& s ) const;
@@ -75,84 +75,69 @@ namespace Gaudi {
 
     private:
       /// Event number
-      int                 m_event;
+      int m_event;
       /// Run number
-      int                 m_run;
+      int m_run;
       /// Time stamp
-      Gaudi::Time         m_time;
+      Gaudi::Time m_time;
 
       /// Vector of collisions this object belongs to
       SmartRefVector<Collision> m_collisions;
     };
-
   }
 }
 
 #include "Collision.h"
 
-
-namespace Gaudi {
-  namespace Examples {
+namespace Gaudi
+{
+  namespace Examples
+  {
 
     //
     // Inline code must be outside the class definition
     //
 
     /// Serialize the object for writing
-    inline StreamBuffer& Event::serialize( StreamBuffer& s ) const {
-      return s << m_event << m_run << m_time << m_collisions(this);
+    inline StreamBuffer& Event::serialize( StreamBuffer& s ) const
+    {
+      return s << m_event << m_run << m_time << m_collisions( this );
     }
-
 
     /// Serialize the object for reading
-    inline StreamBuffer& Event::serialize( StreamBuffer& s ) {
-      return s >> m_event >> m_run >> m_time >> m_collisions(this);
+    inline StreamBuffer& Event::serialize( StreamBuffer& s )
+    {
+      return s >> m_event >> m_run >> m_time >> m_collisions( this );
     }
 
-
     /// Fill the output stream (ASCII)
-    inline std::ostream& Event::fillStream( std::ostream& s ) const {
-      return s
-        << "class Event :"
-        << "\n    Event number = "
-        << std::setw(12)
-        << m_event
-        << "\n    Run number   = "
-        << std::setw(12)
-        << m_run
-        << "\n    Time         = " << m_time;
+    inline std::ostream& Event::fillStream( std::ostream& s ) const
+    {
+      return s << "class Event :"
+               << "\n    Event number = " << std::setw( 12 ) << m_event << "\n    Run number   = " << std::setw( 12 )
+               << m_run << "\n    Time         = " << m_time;
     }
 
     /// Access to decay vertices
-    inline const SmartRefVector<Collision>& Event::collisions() const
-    {
-      return m_collisions;
-    }
+    inline const SmartRefVector<Collision>& Event::collisions() const { return m_collisions; }
 
     /// Add decay vertex
-    inline void Event::addCollision(Collision* c)
-    {
-      m_collisions.push_back(SmartRef<Collision>(c));
-    }
+    inline void Event::addCollision( Collision* c ) { m_collisions.push_back( SmartRef<Collision>( c ) ); }
 
     /// Remove decay vertex
-    inline void Event::removeCollision(Collision* c)
+    inline void Event::removeCollision( Collision* c )
     {
       SmartRefVector<Collision>::iterator i;
-      for(i=m_collisions.begin(); i != m_collisions.end(); ++i) {
-	if ( i->target() == c ) {
-	  m_collisions.erase(i);
-	  return;
-	}
+      for ( i = m_collisions.begin(); i != m_collisions.end(); ++i ) {
+        if ( i->target() == c ) {
+          m_collisions.erase( i );
+          return;
+        }
       }
     }
 
     /// Output operator (ASCII)
-    inline std::ostream& operator<< ( std::ostream& s, const Event& obj ) {
-      return obj.fillStream(s);
-    }
-
-
+    inline std::ostream& operator<<( std::ostream& s, const Event& obj ) { return obj.fillStream( s ); }
   }
 }
-#endif    // GAUDIEXAMPLES_EVENT_H
+#endif // GAUDIEXAMPLES_EVENT_H

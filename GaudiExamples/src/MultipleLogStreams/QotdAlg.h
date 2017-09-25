@@ -12,26 +12,26 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
 
-namespace GaudiEx {
-
-class QotdAlg : public Algorithm
+namespace GaudiEx
 {
 
-public:
-  // Constructor of this form must be provided
-  QotdAlg(const std::string& name, ISvcLocator* pSvcLocator);
+  class QotdAlg : public Algorithm
+  {
 
-  // Three mandatory member functions of any algorithm
-  StatusCode initialize() override;
-  StatusCode execute() override;
-  StatusCode finalize() override;
+  public:
+    // Constructor of this form must be provided
+    QotdAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
-private:
+    // Three mandatory member functions of any algorithm
+    StatusCode initialize() override;
+    StatusCode execute() override;
+    StatusCode finalize() override;
 
-  /// a dumb event counter
-  unsigned int m_evtCnt;
-};
+  private:
+    /// a dumb event counter
+    unsigned int m_evtCnt;
+  };
 
 } //> end namespace GaudiEx
 
-# endif    // MULTIPLELOGSTREAMS_QOTDALG_H
+#endif // MULTIPLELOGSTREAMS_QOTDALG_H

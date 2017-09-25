@@ -10,6 +10,7 @@ import Variable
 import EnvConfig
 import logging
 
+
 class Environment(object):
     '''object to hold settings of environment'''
 
@@ -40,14 +41,16 @@ class Environment(object):
             self.searchPath.extend(entries)
 
         self.actions = {}
-        self.actions['include'] = lambda n, c, h: self.loadXML(self._locate(n, c, h))
+        self.actions['include'] = lambda n, c, h: self.loadXML(
+            self._locate(n, c, h))
         self.actions['append'] = lambda n, v, _: self.append(n, v)
         self.actions['prepend'] = lambda n, v, _: self.prepend(n, v)
         self.actions['set'] = lambda n, v, _: self.set(n, v)
         self.actions['unset'] = lambda n, v, _: self.unset(n, v)
         self.actions['default'] = lambda n, v, _: self.default(n, v)
         self.actions['remove'] = lambda n, v, _: self.remove(n, v)
-        self.actions['remove-regexp'] = lambda n, v, _: self.remove_regexp(n, v)
+        self.actions['remove-regexp'] = lambda n, v, _: self.remove_regexp(
+            n, v)
         self.actions['declare'] = self.declare
         self.actions['search_path'] = addToSearchPath
 
@@ -69,7 +72,6 @@ class Environment(object):
         dot.expandVars = False
         dot.set('')
         self.variables['.'] = dot
-
 
     def _locate(self, filename, caller=None, hints=None):
         '''
@@ -96,6 +98,7 @@ class Environment(object):
             hints = [join(calldir, hint) for hint in hints]
 
         sp = EnvConfig.path + self.searchPath + hints
+
         def candidates():
             for d in sp:
                 f = normpath(join(d, filename))
@@ -138,7 +141,7 @@ class Environment(object):
         Guess the type of the variable from its name: if the name contains
         'PATH' or 'DIRS', then the variable is a list, otherwise it is a scalar.
         '''
-        varname = varname.upper() # make the comparison case insensitive
+        varname = varname.upper()  # make the comparison case insensitive
         if 'PATH' in varname or 'DIRS' in varname:
             return 'list'
         else:
@@ -160,10 +163,10 @@ class Environment(object):
                 raise Variable.EnvError(name, 'redeclaration')
             else:
                 if vartype.lower() == "list":
-                    if not isinstance(self.variables[name],Variable.List):
+                    if not isinstance(self.variables[name], Variable.List):
                         raise Variable.EnvError(name, 'redeclaration')
                 else:
-                    if not isinstance(self.variables[name],Variable.Scalar):
+                    if not isinstance(self.variables[name], Variable.Scalar):
                         raise Variable.EnvError(name, 'redeclaration')
 
         if vartype.lower() == "list":
@@ -172,7 +175,7 @@ class Environment(object):
             a = Variable.Scalar(name, local)
 
         if self.loadFromSystem and not local and name in os.environ:
-            a.expandVars = False # disable var expansion when importing from the environment
+            a.expandVars = False  # disable var expansion when importing from the environment
             a.set(os.environ[name], os.pathsep, environment=self.variables)
             a.expandVars = True
 
@@ -221,7 +224,8 @@ class Environment(object):
                 else:
                     v = Variable.Scalar(name, False)
                 if self.loadFromSystem and name in os.environ:
-                    v.set(os.environ[name], os.pathsep, environment=self.variables)
+                    v.set(os.environ[name], os.pathsep,
+                          environment=self.variables)
                 else:
                     v.set(value, self.separator, environment=self.variables)
                 self.variables[name] = v
@@ -230,7 +234,7 @@ class Environment(object):
                 if not v.val:
                     v.set(value, self.separator, environment=self.variables)
 
-    def unset(self, name, value=None):# pylint: disable=W0613
+    def unset(self, name, value=None):  # pylint: disable=W0613
         '''Unsets a single variable to an empty value - overrides any previous value!'''
         if self.asWriter:
             self._writeVarToXML(name, 'unset', '')
@@ -250,7 +254,6 @@ class Environment(object):
     def remove_regexp(self, name, value):
         self.remove(name, value, True)
 
-
     def searchFile(self, filename, varName):
         '''Searches for appearance of variable in a file.'''
         XMLFile = xmlModule.XMLFile()
@@ -263,7 +266,7 @@ class Environment(object):
         fileName = self._locate(fileName)
         if fileName in self.loadedFiles:
             self.log.info('ignore %s: already loaded', fileName)
-            return # ignore recursion
+            return  # ignore recursion
         self.log.debug('loading %s', fileName)
         self.loadedFiles.add(fileName)
         dot = self.variables['.']
@@ -278,7 +281,7 @@ class Environment(object):
                                 'Probably wrong action argument: "{2}".')
                                .format(i, args[0], action))
             else:
-                self.actions[action](*args) # pylint: disable=W0142
+                self.actions[action](*args)  # pylint: disable=W0142
         # restore the old value of ${.}
         dot.set(self._fileDirStack.pop())
         # ensure that a change of ${.} in the file is reverted when exiting it
@@ -288,11 +291,9 @@ class Environment(object):
         '''Renew writer for new input.'''
         self.writer.resetWriter()
 
-
-    def finishXMLinput(self, outputFile = ''):
+    def finishXMLinput(self, outputFile=''):
         '''Finishes input of XML file and closes the file.'''
         self.writer.writeToFile(outputFile)
-
 
     def writeToFile(self, fileName, shell='sh'):
         '''Creates an output file with a specified name to be used for setting variables by sourcing this file'''
@@ -301,21 +302,24 @@ class Environment(object):
             f.write('#!/bin/bash\n')
             for variable in self.variables:
                 if not self[variable].local:
-                    f.write('export ' +variable+'='+self[variable].value(True, os.pathsep)+'\n')
+                    f.write('export ' + variable + '=' +
+                            self[variable].value(True, os.pathsep) + '\n')
         elif shell == 'csh':
             f.write('#!/bin/csh\n')
             for variable in self.variables:
                 if not self[variable].local:
-                    f.write('setenv ' +variable+' '+self[variable].value(True, os.pathsep)+'\n')
+                    f.write('setenv ' + variable + ' ' +
+                            self[variable].value(True, os.pathsep) + '\n')
         else:
             f.write('')
-            f.write('REM This is an enviroment settings file generated on '+strftime("%a, %d %b %Y %H:%M:%S\n", gmtime()))
+            f.write('REM This is an enviroment settings file generated on ' +
+                    strftime("%a, %d %b %Y %H:%M:%S\n", gmtime()))
             for variable in self.variables:
                 if not self[variable].local:
-                    f.write('set '+variable+'='+self[variable].value(True, os.pathsep)+'\n')
+                    f.write('set ' + variable + '=' +
+                            self[variable].value(True, os.pathsep) + '\n')
 
         f.close()
-
 
     def writeToXMLFile(self, fileName):
         '''Writes the current state of environment to a XML file.
@@ -325,10 +329,10 @@ class Environment(object):
         writer = xmlModule.XMLFile()
         for varName in self.variables:
             if varName == '.':
-                continue # this is an internal transient variable
-            writer.writeVar(varName, 'set', self.variables[varName].value(True, self.separator))
+                continue  # this is an internal transient variable
+            writer.writeVar(
+                varName, 'set', self.variables[varName].value(True, self.separator))
         writer.writeToFile(fileName)
-
 
     def presetFromSystem(self):
         '''Loads all variables from the current system settings.'''
@@ -348,9 +352,8 @@ class Environment(object):
         stri = ""
         for it in value:
             stri += it + self.separator
-        stri = stri[0:len(stri)-1]
+        stri = stri[0:len(stri) - 1]
         return stri
-
 
     def _writeVarToXML(self, name, action, value, vartype='list', local='false'):
         '''Writes single variable to XML file.'''
@@ -358,13 +361,13 @@ class Environment(object):
             value = self._concatenate(value)
         self.writer.writeVar(name, action, value, vartype, local)
 
-
     def __getitem__(self, key):
         return self.variables[key]
 
     def __setitem__(self, key, value):
         if key in self.variables.keys():
-            self.log.warning('Addition canceled because of duplicate entry. Var: "%s" value: "%s".', key, value)
+            self.log.warning(
+                'Addition canceled because of duplicate entry. Var: "%s" value: "%s".', key, value)
         else:
             self.append(key, value)
 

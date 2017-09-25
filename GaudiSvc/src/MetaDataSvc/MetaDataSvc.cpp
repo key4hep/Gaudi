@@ -42,7 +42,6 @@
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
 
 #include "MetaDataSvc.h"

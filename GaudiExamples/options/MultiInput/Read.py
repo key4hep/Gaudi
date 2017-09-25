@@ -9,8 +9,9 @@ from Configurables import Gaudi__Examples__MultiInput__ReadAlg as ReadAlg
 # I/O
 GaudiPersistency()
 esel = EventSelector()
-esel.Input = ["DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
-FileCatalog(Catalogs = [ "xmlcatalog_file:MultiInput.xml" ])
+esel.Input = [
+    "DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
+FileCatalog(Catalogs=["xmlcatalog_file:MultiInput.xml"])
 # Algorithms
 evtAlgs = GaudiSequencer("EventAlgs",
                          Members=[ReadAlg(AddressesFile='addresses.txt',
@@ -19,7 +20,7 @@ evtAlgs = GaudiSequencer("EventAlgs",
 # Application setup
 app = ApplicationMgr()
 # - Algorithms
-app.TopAlg = [ evtAlgs ]
+app.TopAlg = [evtAlgs]
 # - Events
-app.EvtMax   = 100
+app.EvtMax = 100
 app.HistogramPersistency = "NONE"

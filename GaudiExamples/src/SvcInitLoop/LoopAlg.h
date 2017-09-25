@@ -3,10 +3,11 @@
 
 // Include files
 #include "GaudiKernel/Algorithm.h"
-class LoopAlg: public Algorithm {
+class LoopAlg : public Algorithm
+{
 public:
   // Constructor of this form must be provided
-  LoopAlg(const std::string& name, ISvcLocator* pSvcLocator);
+  LoopAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
   // Three mandatory member functions of any algorithm
   StatusCode initialize() override;
@@ -14,4 +15,4 @@ public:
   StatusCode finalize() override;
 };
 
-# endif    // THIST_HISTOALGORITHM_H
+#endif // THIST_HISTOALGORITHM_H

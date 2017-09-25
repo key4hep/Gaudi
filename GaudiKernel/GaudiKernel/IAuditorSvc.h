@@ -12,15 +12,14 @@
 
     @author Pere Mato
 */
-class GAUDI_API IAuditorSvc: virtual public extend_interfaces<IService,
-                                                              IAuditor> {
+class GAUDI_API IAuditorSvc : virtual public extend_interfaces<IService, IAuditor>
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAuditorSvc,3,0);
+  DeclareInterfaceID( IAuditorSvc, 3, 0 );
 
   /// management functionality: retrieve an Auditor
   virtual IAuditor* getAuditor( const std::string& name ) = 0;
-
 };
 
 #endif // INTERFACES_IAUDITORSVC_H

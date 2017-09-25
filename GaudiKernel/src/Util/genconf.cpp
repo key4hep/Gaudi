@@ -42,7 +42,6 @@
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IAuditor.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -675,7 +674,7 @@ int configGenerator::genComponent( const std::string& libName, const std::string
     m_pyBuf << "    '" << pname << "' : " << pvalue << ", # " << ptype << "\n";
 
     if ( ( *it )->documentation() != "none" ) {
-      propDoc[pname] = ( *it )->documentation() + " [" + (*it)->ownerTypeName() + "]";
+      propDoc[pname] = ( *it )->documentation() + " [" + ( *it )->ownerTypeName() + "]";
     }
   }
   m_pyBuf << "  }\n";

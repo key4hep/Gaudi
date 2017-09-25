@@ -21,16 +21,14 @@ class GaudiCommonTests : public GaudiAlgorithm
 {
 
 public:
-
   /// Standard constructor
   GaudiCommonTests( const std::string& name, ISvcLocator* pSvcLocator );
 
   ~GaudiCommonTests() override; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
-
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 };
 
 #endif // HISTOGRAMS_GAUDIHISTOALGORITHM_H

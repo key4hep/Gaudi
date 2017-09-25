@@ -3,6 +3,7 @@ from GaudiKernel.Configurable import Configurable
 
 from test_Configurables import MyAlg
 
+
 def test_unique_getFullName():
     Configurable.allConfigurables.clear()
 

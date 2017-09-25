@@ -1,5 +1,6 @@
 import os
 
+
 def ROOT6WorkAroundEnabled(id=None):
     '''
     Helper function to easily exclude ROOT6 work-arounds for testing.
@@ -31,10 +32,10 @@ def ROOT6WorkAroundEnabled(id=None):
         return True
     if enabled in ('none', 'no', 'off', 'false', '0'):
         return False
-    if id is None: # unnamed work-arounds can only be disabled globally
+    if id is None:  # unnamed work-arounds can only be disabled globally
         return True
     enabled = set(map(str.strip, enabled.split(',')))
-    disabled = set([ e[1:] for e in enabled if e.startswith('-') ])
+    disabled = set([e[1:] for e in enabled if e.startswith('-')])
     id = id.lower()
     # the w-a is enabled if in the enabled list or not explicitly disabled
     return id in enabled or id not in disabled

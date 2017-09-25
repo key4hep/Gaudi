@@ -2,18 +2,19 @@
 #define ROOTHISTCNV_RHISTOGRAMCNV_H 1
 
 // Include files
-#include "RConverter.h"
-#include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/HistogramBase.h"
+#include "GaudiKernel/IOpaqueAddress.h"
+#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/ObjectFactory.h"
+#include "GaudiKernel/SmartIF.h"
+#include "RConverter.h"
 #include "RootObjAddress.h"
 #include "TArray.h"
 #include <memory>
 
-namespace RootHistCnv {
+namespace RootHistCnv
+{
 
   /** @class RHistogramCnv RHistogramCnv.h RHistogramCnv.h
     *
@@ -27,66 +28,70 @@ namespace RootHistCnv {
     *
     * @author Markus Frank
     */
-  template<typename T,typename S,typename Q> class RHistogramCnv : public RConverter {
-    template <typename CLASS> struct TTH : public CLASS {
-      void CopyH(TObject& o) { CLASS::Copy(o); }
+  template <typename T, typename S, typename Q>
+  class RHistogramCnv : public RConverter
+  {
+    template <typename CLASS>
+    struct TTH : public CLASS {
+      void CopyH( TObject& o ) { CLASS::Copy( o ); }
     };
+
   public:
     /// Create the transient representation of an object.
-    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override {
-      refpObj = DataObjFactory::create(objType());
-      RootObjAddress *r = dynamic_cast<RootObjAddress*>(pAddr);
-      Q* h = dynamic_cast<Q*>(refpObj);
-      if ( r && h )   {
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override
+    {
+      refpObj           = DataObjFactory::create( objType() );
+      RootObjAddress* r = dynamic_cast<RootObjAddress*>( pAddr );
+      Q* h              = dynamic_cast<Q*>( refpObj );
+      if ( r && h ) {
         // Need to flip representation .... clumsy for the time being, because
         // THXY constructor has no "generic" copy constructor
-        std::unique_ptr<T> p(new T());
-        S *s = dynamic_cast<S*>(r->tObj());
-        if ( s && p.get() )  {
+        std::unique_ptr<T> p( new T() );
+        S* s = dynamic_cast<S*>( r->tObj() );
+        if ( s && p.get() ) {
           TTH<S>* casted = (TTH<S>*)s;
-          TArray* a = dynamic_cast<TArray*>(s);
-          casted->CopyH(*p);
-          if ( 0 != a )  {
-            p->Set(a->GetSize());
+          TArray* a      = dynamic_cast<TArray*>( s );
+          casted->CopyH( *p );
+          if ( 0 != a ) {
+            p->Set( a->GetSize() );
             p->Reset();
-            p->Add(s);
-            h->adoptRepresentation(p.release());
+            p->Add( s );
+            h->adoptRepresentation( p.release() );
             return StatusCode::SUCCESS;
           }
         }
       }
-      return error("Cannot create histogram - invalid address.");
+      return error( "Cannot create histogram - invalid address." );
     }
     /// Update the transient object from the other representation.
-    StatusCode updateObj(IOpaqueAddress* /* pAddr */, DataObject* /* pObj */) override  {
-      return StatusCode::SUCCESS;
-    }
+    StatusCode updateObj( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ ) override { return StatusCode::SUCCESS; }
     /// Create the persistent representation of the histogram object.
-    TObject* createPersistent(DataObject* pObj) override   {
-      Q* h = dynamic_cast<Q*>(pObj);
+    TObject* createPersistent( DataObject* pObj ) override
+    {
+      Q* h = dynamic_cast<Q*>( pObj );
       if ( 0 != h ) {
-        T *r = dynamic_cast<T*>(h->representation());
-        if ( r )   {
-          T* c = new T();
-          TArray* a = dynamic_cast<TArray*>(r);
-          ((TTH<S>*)r)->CopyH(*c);
-          if ( 0 != a )  {
-            c->Set(a->GetSize());
+        T* r = dynamic_cast<T*>( h->representation() );
+        if ( r ) {
+          T* c      = new T();
+          TArray* a = dynamic_cast<TArray*>( r );
+          ( (TTH<S>*)r )->CopyH( *c );
+          if ( 0 != a ) {
+            c->Set( a->GetSize() );
             c->Reset();
-            c->Add(r);
-            c->SetName(pObj->registry()->name().c_str()+1);
+            c->Add( r );
+            c->SetName( pObj->registry()->name().c_str() + 1 );
             return c;
           }
         }
       }
-      error("Histogram object is invalid!");
+      error( "Histogram object is invalid!" );
       return 0;
     }
     /// Inquire class type
     static const CLID& classID();
     /// Standard constructor
-    RHistogramCnv(ISvcLocator* svc) : RConverter(classID(), svc) {}
+    RHistogramCnv( ISvcLocator* svc ) : RConverter( classID(), svc ) {}
     ~RHistogramCnv() override = default;
   };
-}       // namespace RootHistCnv
-#endif  // ROOTHISTCNV_RHISTOGRAMCNV_H
+} // namespace RootHistCnv
+#endif // ROOTHISTCNV_RHISTOGRAMCNV_H

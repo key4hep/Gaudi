@@ -14,11 +14,11 @@ GaudiExamplesCommonConf()
 #--------------------------------------------------------------
 # Testing Sequencers
 #--------------------------------------------------------------
-p1  = Prescaler('Prescaler1', PercentPass = 50., OutputLevel = WARNING )
-p2  = Prescaler('Prescaler2', PercentPass = 10., OutputLevel = WARNING )
-h   = HelloWorld( OutputLevel = DEBUG  )
-c1  = EventCounter('Counter1')
-c2  = EventCounter('Counter2')
+p1 = Prescaler('Prescaler1', PercentPass=50., OutputLevel=WARNING)
+p2 = Prescaler('Prescaler2', PercentPass=10., OutputLevel=WARNING)
+h = HelloWorld(OutputLevel=DEBUG)
+c1 = EventCounter('Counter1')
+c2 = EventCounter('Counter2')
 
 s1 = seq(p1 & h & c1)
 s2 = seq(p2 & h & c2)
@@ -32,10 +32,10 @@ top = s1 >> s2
 #-----------------------------------------------------------------
 sand = HelloWorld('AND') & EventCounter('ANDCounter')
 sor = HelloWorld('OR') | EventCounter('ORCounter')
-#sand = GaudiSequencer( 'ANDSequence',
+# sand = GaudiSequencer( 'ANDSequence',
 #                       Members = [ HelloWorld('AND'), EventCounter('ANDCounter') ],
 #                       MeasureTime = 1 )
-#sor =  GaudiSequencer( 'ORSequence',
+# sor =  GaudiSequencer( 'ORSequence',
 #                       Members = [ HelloWorld('OR'), EventCounter('ORCounter') ],
 #                       MeasureTime = 1,
 #                       ModeOR = 1 )
@@ -47,10 +47,10 @@ print '#', all
 print '# ---'
 EventLoopMgr(PrintControlFlowExpression=True)
 #-----------------------------------------------------------------
-ApplicationMgr( TopAlg = [all],
-                EvtMax = 10,     # events to be processed (default is 10)
-                EvtSel = 'NONE', # do not use any event input
-                ExtSvc = ['ToolSvc', 'AuditorSvc' ],
-                AuditAlgorithms = True )
+ApplicationMgr(TopAlg=[all],
+               EvtMax=10,     # events to be processed (default is 10)
+               EvtSel='NONE',  # do not use any event input
+               ExtSvc=['ToolSvc', 'AuditorSvc'],
+               AuditAlgorithms=True)
 
-AuditorSvc().Auditors += [ TimingAuditor("TIMER") ]
+AuditorSvc().Auditors += [TimingAuditor("TIMER")]

@@ -23,8 +23,8 @@
 #include "GaudiKernel/Property.h"
 
 // Local
-#include <GaudiCommonSvc/HistogramSvc.h>
 #include "GaudiPI.h"
+#include <GaudiCommonSvc/HistogramSvc.h>
 
 namespace
 {
@@ -63,7 +63,7 @@ namespace
   {
     for ( auto it = m.begin(); m.end() != it; ++it ) {
       if ( 0 == it->first.find( lead ) ) {
-        string addr       = string( it->first, lead.size() );
+        string addr            = string( it->first, lead.size() );
         Gaudi::Histo1DDef hdef = it->second;
         m.erase( it );                       // remove
         m[addr] = hdef;                      // insert
@@ -304,10 +304,7 @@ StatusCode HistogramSvc::initialize()
 }
 
 //------------------------------------------------------------------------------
-StatusCode HistogramSvc::reinitialize()
-{
-  return StatusCode::SUCCESS;
-}
+StatusCode HistogramSvc::reinitialize() { return StatusCode::SUCCESS; }
 
 //------------------------------------------------------------------------------
 IHistogram1D* HistogramSvc::sliceX( const string& name, const IHistogram2D& h, int idxY1, int idxY2 )
@@ -357,14 +354,14 @@ bool HistogramSvc::destroy( IBaseHistogram* hist )
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const string& rel,
-                                        const string& title, int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const string& rel, const string& title, int nx, double lowx,
+                                        double upx )
 {
   if ( m_defs1D.empty() ) {
     return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) );
   }
-  string hn = histoAddr( pPar, rel );
-  auto ifound    = m_defs1D.find( hn );
+  string hn   = histoAddr( pPar, rel );
+  auto ifound = m_defs1D.find( hn );
   if ( m_defs1D.end() == ifound ) {
     return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) );
   }
@@ -380,8 +377,7 @@ AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const string& rel,
 // ============================================================================
 // constructor
 // ============================================================================
-HistogramSvc::HistogramSvc( const string& nam, ISvcLocator* svc )
-  : base_class( nam, svc )
+HistogramSvc::HistogramSvc( const string& nam, ISvcLocator* svc ) : base_class( nam, svc )
 {
   // Properties can be declared here
   m_rootName = "/stat";
@@ -416,708 +412,590 @@ StatusCode HistogramSvc::finalize()
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const string& par, const string& rel,
-                                        const string& title,
-                                        int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::book( const string& par, const string& rel, const string& title, int nx, double lowx,
+                                        double upx )
 {
   return book( createPath( par ), rel, title, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const string& par, int hID,
-                                        const string& title,
-                                        int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::book( const string& par, int hID, const string& title, int nx, double lowx,
+                                        double upx )
 {
   return book( par, std::to_string( hID ), title, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, int hID,
-                                        const string& title,
-                                        int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, int hID, const string& title, int nx, double lowx,
+                                        double upx )
 {
   return book( pPar, std::to_string( hID ), title, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const std::pair<string, string>& loc,
-                                        const string& title,
-                                        int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::book( const std::pair<string, string>& loc, const string& title, int nx, double lowx,
+                                        double upx )
 {
   return book( loc.first, loc.second, title, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const string& full, const string& title,
-                                        int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::book( const string& full, const string& title, int nx, double lowx, double upx )
 {
   return book( i_splitPath( full ), title, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, const string& rel,
-                                          const string& title,
-                                          int nx, double lowx, double upx, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, const string& rel, const string& title, int nx,
+                                          double lowx, double upx, const string& opt )
 {
   return bookProf( createPath( par ), rel, title, nx, lowx, upx, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, int hID, const string& title,
-                                          int nx, double lowx, double upx, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, int hID, const string& title, int nx, double lowx,
+                                          double upx, const string& opt )
 {
   return bookProf( par, std::to_string( hID ), title, nx, lowx, upx, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID, const string& title,
-                                          int nx, double lowx, double upx, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID, const string& title, int nx, double lowx,
+                                          double upx, const string& opt )
 {
   return bookProf( pPar, std::to_string( hID ), title, nx, lowx, upx, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<string, string>& loc,
-                                          const string& title,
-                                          int nx, double lowx, double upx, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<string, string>& loc, const string& title, int nx,
+                                          double lowx, double upx, const string& opt )
 {
   return bookProf( loc.first, loc.second, title, nx, lowx, upx, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const string& full, const string& title,
-                                          int nx, double lowx, double upx, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( const string& full, const string& title, int nx, double lowx, double upx,
+                                          const string& opt )
 {
   return bookProf( i_splitPath( full ), title, nx, lowx, upx, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const string& rel,
-                                          const string& title,
-                                          int nx, double lowx, double upx, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const string& rel, const string& title, int nx, double lowx,
+                                          double upx, const string& opt )
 {
   return i_book( pPar, rel, title, Gaudi::createProf1D( title, nx, lowx, upx, 0, 0, opt ) );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, const string& rel,
-                                          const string& title,
-                                          int nx, double lowx, double upx,
-                                          double upper, double lower, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, const string& rel, const string& title, int nx,
+                                          double lowx, double upx, double upper, double lower, const string& opt )
 {
   return bookProf( createPath( par ), rel, title, nx, lowx, upx, upper, lower, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, int hID, const string& title,
-                                          int nx, double lowx, double upx,
-                                          double upper, double lower, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( const string& par, int hID, const string& title, int nx, double lowx,
+                                          double upx, double upper, double lower, const string& opt )
 {
   return bookProf( par, std::to_string( hID ), title, nx, lowx, upx, upper, lower, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID, const string& title,
-                                          int nx, double lowx, double upx,
-                                          double upper, double lower, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID, const string& title, int nx, double lowx,
+                                          double upx, double upper, double lower, const string& opt )
 {
   return bookProf( pPar, std::to_string( hID ), title, nx, lowx, upx, upper, lower, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<string, string>& loc,
-                                          const string& title,
-                                          int nx, double lowx, double upx,
-                                          double upper, double lower, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<string, string>& loc, const string& title, int nx,
+                                          double lowx, double upx, double upper, double lower, const string& opt )
 {
   return bookProf( loc.first, loc.second, title, nx, lowx, upx, upper, lower, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const string& full, const string& title,
-                                          int nx, double lowx, double upx,
+AIDA::IProfile1D* HistogramSvc::bookProf( const string& full, const string& title, int nx, double lowx, double upx,
                                           double upper, double lower, const string& opt )
 {
   return bookProf( i_splitPath( full ), title, nx, lowx, upx, upper, lower, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const string& rel,
-                                          const string& title,
-                                          int nx, double lowx, double upx,
-                                          double upper, double lower, const string& opt )
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const string& rel, const string& title, int nx, double lowx,
+                                          double upx, double upper, double lower, const string& opt )
 {
   return i_book( pPar, rel, title, Gaudi::createProf1D( title, nx, lowx, upx, upper, lower, opt ) );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const std::string& par, int hID,
-                                        const std::string& title, Edges e )
+AIDA::IHistogram1D* HistogramSvc::book( const std::string& par, int hID, const std::string& title, Edges e )
 {
   return book( par, std::to_string( hID ), title, e );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, int hID,
-                                        const std::string& title, Edges e )
+AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, int hID, const std::string& title, Edges e )
 {
   return book( pPar, std::to_string( hID ), title, e );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const std::string& par, const std::string& rel,
-                                        const std::string& title, Edges e )
+AIDA::IHistogram1D* HistogramSvc::book( const std::string& par, const std::string& rel, const std::string& title,
+                                        Edges e )
 {
   return book( createPath( par ), rel, title, e );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const std::pair<std::string, std::string>& loc,
-                                        const std::string& title, Edges e )
+AIDA::IHistogram1D* HistogramSvc::book( const std::pair<std::string, std::string>& loc, const std::string& title,
+                                        Edges e )
 {
   return book( loc.first, loc.second, title, e );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( const std::string& full,
-                                        const std::string& title, Edges e )
+AIDA::IHistogram1D* HistogramSvc::book( const std::string& full, const std::string& title, Edges e )
 {
   return book( i_splitPath( full ), title, e );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const std::string& rel,
-                                        const std::string& title, Edges e )
+AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, Edges e )
 {
   return i_book( pPar, rel, title, Gaudi::createH1D( title, e ) );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& full,
-                                          const std::string& title, Edges e )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& full, const std::string& title, Edges e )
 {
   return bookProf( i_splitPath( full ), title, e );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, const std::string& rel,
-                                          const std::string& title, Edges e )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, const std::string& rel, const std::string& title,
+                                          Edges e )
 {
   return bookProf( createPath( par ), rel, title, e );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, int hID,
-                                          const std::string& title, Edges e )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, int hID, const std::string& title, Edges e )
 {
   return bookProf( par, std::to_string( hID ), title, e );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID,
-                                          const std::string& title, Edges e )
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::string& title, Edges e )
 {
   return bookProf( pPar, std::to_string( hID ), title, e );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc,
-                                          const std::string& title, Edges e )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc, const std::string& title,
+                                          Edges e )
 {
   return bookProf( loc.first, loc.second, title, e );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel,
-                                          const std::string& title, Edges e )
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, Edges e )
 {
   return i_book( pPar, rel, title, Gaudi::createProf1D( title, e, 0, 0 ) );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& full,
-                                          const std::string& title, Edges e,
-                                          double upper, double lower )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& full, const std::string& title, Edges e, double upper,
+                                          double lower )
 {
   return bookProf( i_splitPath( full ), title, e, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, const std::string& rel,
-                                          const std::string& title, Edges e,
-                                          double upper, double lower )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, const std::string& rel, const std::string& title,
+                                          Edges e, double upper, double lower )
 {
   return bookProf( createPath( par ), rel, title, e, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, int hID,
-                                          const std::string& title, Edges e,
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::string& par, int hID, const std::string& title, Edges e,
                                           double upper, double lower )
 {
   return bookProf( par, std::to_string( hID ), title, e, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID,
-                                          const std::string& title, Edges e,
-                                          double upper, double lower )
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::string& title, Edges e, double upper,
+                                          double lower )
 {
   return bookProf( pPar, std::to_string( hID ), title, e, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc,
-                                          const std::string& title, Edges e,
-                                          double upper, double lower )
+AIDA::IProfile1D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc, const std::string& title,
+                                          Edges e, double upper, double lower )
 {
   return bookProf( loc.first, loc.second, title, e, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel,
-                                          const std::string& title, Edges e,
+AIDA::IProfile1D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, Edges e,
                                           double upper, double lower )
 {
   return i_book( pPar, rel, title, Gaudi::createProf1D( title, e, upper, lower ) );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::string& full, const std::string& title,
-                                        int nx, double lowx, double upx, int ny,
-                                        double lowy, double upy )
+AIDA::IHistogram2D* HistogramSvc::book( const std::string& full, const std::string& title, int nx, double lowx,
+                                        double upx, int ny, double lowy, double upy )
 {
   return book( i_splitPath( full ), title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, const std::string& rel,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy )
+AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, const std::string& rel, const std::string& title,
+                                        int nx, double lowx, double upx, int ny, double lowy, double upy )
 {
   return book( createPath( par ), rel, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, int hID,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy )
+AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, int hID, const std::string& title, int nx, double lowx,
+                                        double upx, int ny, double lowy, double upy )
 {
   return book( par, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::pair<std::string, std::string>& loc,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy )
+AIDA::IHistogram2D* HistogramSvc::book( const std::pair<std::string, std::string>& loc, const std::string& title,
+                                        int nx, double lowx, double upx, int ny, double lowy, double upy )
 {
   return book( loc.first, loc.second, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, int hID,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy )
+AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, int hID, const std::string& title, int nx, double lowx,
+                                        double upx, int ny, double lowy, double upy )
 {
   return book( pPar, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, const std::string& rel,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy )
+AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
+                                        double lowx, double upx, int ny, double lowy, double upy )
 {
   return i_book( pPar, rel, title, Gaudi::createH2D( title, nx, lowx, upx, ny, lowy, upy ) );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy,
-                                          double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full, const std::string& title, int nx, double lowx,
+                                          double upx, int ny, double lowy, double upy, double upper, double lower )
 {
   return bookProf( i_splitPath( full ), title, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy,
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel, const std::string& title,
+                                          int nx, double lowx, double upx, int ny, double lowy, double upy,
                                           double upper, double lower )
 {
   return bookProf( createPath( par ), rel, title, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy,
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc, const std::string& title,
+                                          int nx, double lowx, double upx, int ny, double lowy, double upy,
                                           double upper, double lower )
 {
   return bookProf( loc.first, loc.second, title, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy,
-                                          double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID, const std::string& title, int nx,
+                                          double lowx, double upx, int ny, double lowy, double upy, double upper,
+                                          double lower )
 {
   return bookProf( par, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy,
-                                          double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::string& title, int nx, double lowx,
+                                          double upx, int ny, double lowy, double upy, double upper, double lower )
 {
   return bookProf( pPar, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy,
-                                          double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
+                                          double lowx, double upx, int ny, double lowy, double upy, double upper,
+                                          double lower )
 {
   return i_book( pPar, rel, title, Gaudi::createProf2D( title, nx, lowx, upx, ny, lowy, upy, upper, lower ) );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full, const std::string& title, int nx, double lowx,
+                                          double upx, int ny, double lowy, double upy )
 {
   return bookProf( i_splitPath( full ), title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel, const std::string& title,
+                                          int nx, double lowx, double upx, int ny, double lowy, double upy )
 {
   return bookProf( createPath( par ), rel, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc, const std::string& title,
+                                          int nx, double lowx, double upx, int ny, double lowy, double upy )
 {
   return bookProf( loc.first, loc.second, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID, const std::string& title, int nx,
+                                          double lowx, double upx, int ny, double lowy, double upy )
 {
   return bookProf( par, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::string& title, int nx, double lowx,
+                                          double upx, int ny, double lowy, double upy )
 {
   return bookProf( pPar, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel,
-                                          const std::string& title,
-                                          int nx, double lowx, double upx,
-                                          int ny, double lowy, double upy )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
+                                          double lowx, double upx, int ny, double lowy, double upy )
 {
   return i_book( pPar, rel, title, Gaudi::createProf2D( title, nx, lowx, upx, ny, lowy, upy, 0, 0 ) );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::string& full,
-                                        const std::string& title,
-                                        Edges x, Edges y )
+AIDA::IHistogram2D* HistogramSvc::book( const std::string& full, const std::string& title, Edges x, Edges y )
 {
-   return book( i_splitPath( full ), title, x, y );
+  return book( i_splitPath( full ), title, x, y );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, const std::string& rel,
-                                        const std::string& title,
+AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, const std::string& rel, const std::string& title,
                                         Edges x, Edges y )
 {
-   return book( createPath( par ), rel, title, x, y );
+  return book( createPath( par ), rel, title, x, y );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, int hID,
-                                        const std::string& title,
-                                        Edges x, Edges y )
+AIDA::IHistogram2D* HistogramSvc::book( const std::string& par, int hID, const std::string& title, Edges x, Edges y )
 {
-   return book( par, std::to_string( hID ), title, x, y );
+  return book( par, std::to_string( hID ), title, x, y );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( const std::pair<std::string, std::string>& loc,
-                                        const std::string& title,
+AIDA::IHistogram2D* HistogramSvc::book( const std::pair<std::string, std::string>& loc, const std::string& title,
                                         Edges x, Edges y )
 {
-   return book( loc.first, loc.second, title, x, y );
+  return book( loc.first, loc.second, title, x, y );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, int hID,
-                                        const std::string& title,
-                                        Edges x, Edges y )
+AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, int hID, const std::string& title, Edges x, Edges y )
 {
-   return book( pPar, std::to_string( hID ), title, x, y );
+  return book( pPar, std::to_string( hID ), title, x, y );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, const std::string& rel,
-                                        const std::string& title,
-                                        Edges x, Edges y )
+AIDA::IHistogram2D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
+                                        Edges y )
 {
-   return i_book( pPar, rel, title, Gaudi::createH2D( title, x, y ) );
+  return i_book( pPar, rel, title, Gaudi::createH2D( title, x, y ) );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full,
-                                          const std::string& title,
-                                          Edges x, Edges y )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full, const std::string& title, Edges x, Edges y )
 {
   return bookProf( i_splitPath( full ), title, x, y );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel,
-                                          const std::string& title,
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel, const std::string& title,
                                           Edges x, Edges y )
 {
   return bookProf( createPath( par ), rel, title, x, y );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID,
-                                          const std::string& title,
-                                          Edges x, Edges y )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID, const std::string& title, Edges x, Edges y )
 {
   return bookProf( par, std::to_string( hID ), title, x, y );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID,
-                                          const std::string& title,
-                                          Edges x, Edges y )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::string& title, Edges x, Edges y )
 {
   return bookProf( pPar, std::to_string( hID ), title, x, y );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc,
-                                          const std::string& title,
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc, const std::string& title,
                                           Edges x, Edges y )
 {
   return bookProf( loc.first, loc.second, title, x, y );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel,
-                                          const std::string& title,
-                                          Edges x, Edges y )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
+                                          Edges y )
 {
   return i_book( pPar, rel, title, Gaudi::createProf2D( title, x, y, 0, 0 ) );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full,
-                                          const std::string& title,
-                                          Edges x, Edges y, double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& full, const std::string& title, Edges x, Edges y,
+                                          double upper, double lower )
 {
   return bookProf( i_splitPath( full ), title, x, y, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel,
-                                          const std::string& title,
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, const std::string& rel, const std::string& title,
                                           Edges x, Edges y, double upper, double lower )
 {
   return bookProf( createPath( par ), rel, title, x, y, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID,
-                                          const std::string& title,
-                                          Edges x, Edges y, double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::string& par, int hID, const std::string& title, Edges x, Edges y,
+                                          double upper, double lower )
 {
   return bookProf( par, std::to_string( hID ), title, x, y, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID,
-                                          const std::string& title,
-                                          Edges x, Edges y, double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, int hID, const std::string& title, Edges x, Edges y,
+                                          double upper, double lower )
 {
   return bookProf( pPar, std::to_string( hID ), title, x, y, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc,
-                                          const std::string& title,
+AIDA::IProfile2D* HistogramSvc::bookProf( const std::pair<std::string, std::string>& loc, const std::string& title,
                                           Edges x, Edges y, double upper, double lower )
 {
   return bookProf( loc.first, loc.second, title, x, y, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel,
-                                          const std::string& title,
-                                          Edges x, Edges y, double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::bookProf( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
+                                          Edges y, double upper, double lower )
 {
   return i_book( pPar, rel, title, Gaudi::createProf2D( title, x, y, upper, lower ) );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::string& full,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy,
-                                        int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::book( const std::string& full, const std::string& title, int nx, double lowx,
+                                        double upx, int ny, double lowy, double upy, int nz, double lowz, double upz )
 {
   return book( i_splitPath( full ), title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, const std::string& rel,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy,
-                                        int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, const std::string& rel, const std::string& title,
+                                        int nx, double lowx, double upx, int ny, double lowy, double upy, int nz,
+                                        double lowz, double upz )
 {
   return book( createPath( par ), rel, title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, int hID,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy,
-                                        int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, int hID, const std::string& title, int nx, double lowx,
+                                        double upx, int ny, double lowy, double upy, int nz, double lowz, double upz )
 {
   return book( par, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, int hID,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy,
-                                        int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, int hID, const std::string& title, int nx, double lowx,
+                                        double upx, int ny, double lowy, double upy, int nz, double lowz, double upz )
 {
   return book( pPar, std::to_string( hID ), title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::pair<std::string, std::string>& loc,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy,
-                                        int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::book( const std::pair<std::string, std::string>& loc, const std::string& title,
+                                        int nx, double lowx, double upx, int ny, double lowy, double upy, int nz,
+                                        double lowz, double upz )
 {
   return book( loc.first, loc.second, title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, const std::string& rel,
-                                        const std::string& title,
-                                        int nx, double lowx, double upx,
-                                        int ny, double lowy, double upy,
-                                        int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, int nx,
+                                        double lowx, double upx, int ny, double lowy, double upy, int nz, double lowz,
+                                        double upz )
 {
   return i_book( pPar, rel, title, Gaudi::createH3D( title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz ) );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::string& full,
-                                        const std::string& title,
-                                        Edges x, Edges y, Edges z )
+AIDA::IHistogram3D* HistogramSvc::book( const std::string& full, const std::string& title, Edges x, Edges y, Edges z )
 {
   return book( i_splitPath( full ), title, x, y, z );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, const std::string& rel,
-                                        const std::string& title,
+AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, const std::string& rel, const std::string& title,
                                         Edges x, Edges y, Edges z )
 {
   return book( createPath( par ), rel, title, x, y, z );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, int hID,
-                                        const std::string& title,
-                                        Edges x, Edges y, Edges z )
+AIDA::IHistogram3D* HistogramSvc::book( const std::string& par, int hID, const std::string& title, Edges x, Edges y,
+                                        Edges z )
 {
   return book( par, std::to_string( hID ), title, x, y, z );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, int hID,
-                                        const std::string& title,
-                                        Edges x, Edges y, Edges z )
+AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, int hID, const std::string& title, Edges x, Edges y, Edges z )
 {
   return book( pPar, std::to_string( hID ), title, x, y, z );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( const std::pair<std::string, std::string>& loc,
-                                        const std::string& title,
+AIDA::IHistogram3D* HistogramSvc::book( const std::pair<std::string, std::string>& loc, const std::string& title,
                                         Edges x, Edges y, Edges z )
 {
   return book( loc.first, loc.second, title, x, y, z );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, const std::string& rel,
-                                        const std::string& title,
-                                        Edges x, Edges y, Edges z )
+AIDA::IHistogram3D* HistogramSvc::book( DataObject* pPar, const std::string& rel, const std::string& title, Edges x,
+                                        Edges y, Edges z )
 {
   return i_book( pPar, rel, title, Gaudi::createH3D( title, x, y, z ) );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::registerObject( const std::string& parent,
-                                         const std::string& rel, Base* obj )
+StatusCode HistogramSvc::registerObject( const std::string& parent, const std::string& rel, Base* obj )
 {
   return registerObject( createPath( parent ), rel, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::registerObject( const std::string& parent,
-                                         int item, Base* obj )
+StatusCode HistogramSvc::registerObject( const std::string& parent, int item, Base* obj )
 {
   return registerObject( parent, std::to_string( item ), obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::registerObject( Base* pPar, const std::string& rel,
-                                         Base* obj )
+StatusCode HistogramSvc::registerObject( Base* pPar, const std::string& rel, Base* obj )
 {
   return registerObject( detail::cast( pPar ), rel, obj );
 }
@@ -1135,10 +1013,7 @@ StatusCode HistogramSvc::registerObject( Base* pPar, int item, Base* obj )
 }
 
 // ============================================================================
-StatusCode HistogramSvc::unregisterObject( Base* obj )
-{
-  return DataSvc::unregisterObject( detail::cast( obj ) );
-}
+StatusCode HistogramSvc::unregisterObject( Base* obj ) { return DataSvc::unregisterObject( detail::cast( obj ) ); }
 
 // ============================================================================
 StatusCode HistogramSvc::unregisterObject( Base* obj, const std::string& objectPath )
@@ -1153,71 +1028,61 @@ StatusCode HistogramSvc::unregisterObject( Base* obj, int item )
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( pReg, path, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path,
-                                         AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).retrieve( pReg, path, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( pReg, path, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( pReg, path, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( IRegistry* pReg, const std::string& path, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( pReg, path, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& full,
-                                         AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& full, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).retrieve( full, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& full,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& full, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( full, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& full,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& full, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( full, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& full,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& full, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( full, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& full,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& full, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( full, obj );
 }
@@ -1231,203 +1096,174 @@ StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::s
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( parent, rel, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( parent, rel, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( parent, rel, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, const std::string& rel, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( parent, rel, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item,
-                                         AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).retrieve( parent, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( parent, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( parent, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( parent, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( const std::string& parent, int item, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( parent, item, obj );
 }
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item,
-                                         AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, const std::string& item, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, int item,
-                                         AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, int item, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, int item,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, int item, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, int item,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, int item, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, int item,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, int item, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( DataObject* par, int item,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( DataObject* par, int item, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( par, item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, int item,
-                                         AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, int item,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, int item,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, int item,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, int item,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item,
-                                         AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item,
-                                         AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item,
-                                         AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item,
-                                         AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item,
-                                         AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).retrieve( detail::cast( par ), item, obj );
 }
@@ -1637,228 +1473,196 @@ StatusCode HistogramSvc::findObject( Base* par, int item, AIDA::IHistogram3D*& o
 }
 
 // ============================================================================
-StatusCode HistogramSvc::findObject( Base* par, const std::string& item,
-                                     AIDA::IProfile1D*& obj )
+StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IProfile1D*& obj )
 {
   return Helper( this ).find( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::findObject( Base* par, const std::string& item,
-                                     AIDA::IProfile2D*& obj )
+StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IProfile2D*& obj )
 {
   return Helper( this ).find( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::findObject( Base* par, const std::string& item,
-                                     AIDA::IHistogram1D*& obj )
+StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IHistogram1D*& obj )
 {
   return Helper( this ).find( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::findObject( Base* par, const std::string& item,
-                                     AIDA::IHistogram2D*& obj )
+StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IHistogram2D*& obj )
 {
   return Helper( this ).find( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::findObject( Base* par, const std::string& item,
-                                     AIDA::IHistogram3D*& obj )
+StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IHistogram3D*& obj )
 {
   return Helper( this ).find( detail::cast( par ), item, obj );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::projectionX( const std::string& name,
-                                               const AIDA::IHistogram2D& h )
+AIDA::IHistogram1D* HistogramSvc::projectionX( const std::string& name, const AIDA::IHistogram2D& h )
 {
   return sliceX( name, h, IAxis::UNDERFLOW_BIN, IAxis::OVERFLOW_BIN );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::projectionY( const std::string& name,
-                                         const AIDA::IHistogram2D& h )
+AIDA::IHistogram1D* HistogramSvc::projectionY( const std::string& name, const AIDA::IHistogram2D& h )
 {
   return sliceY( name, h, IAxis::UNDERFLOW_BIN, IAxis::OVERFLOW_BIN );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::sliceX( const std::string& name,
-                                         const AIDA::IHistogram2D& h, int indexY )
+AIDA::IHistogram1D* HistogramSvc::sliceX( const std::string& name, const AIDA::IHistogram2D& h, int indexY )
 {
   return sliceX( name, h, indexY, indexY );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::sliceY( const std::string& name,
-                                         const AIDA::IHistogram2D& h, int indexX )
+AIDA::IHistogram1D* HistogramSvc::sliceY( const std::string& name, const AIDA::IHistogram2D& h, int indexX )
 {
   return sliceY( name, h, indexX, indexX );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::add( const std::string& nameAndTitle,
-                                       const AIDA::IHistogram1D& a,
+AIDA::IHistogram1D* HistogramSvc::add( const std::string& nameAndTitle, const AIDA::IHistogram1D& a,
                                        const AIDA::IHistogram1D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH1::Add, 1. );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::subtract( const std::string& nameAndTitle,
-                                            const AIDA::IHistogram1D& a,
+AIDA::IHistogram1D* HistogramSvc::subtract( const std::string& nameAndTitle, const AIDA::IHistogram1D& a,
                                             const AIDA::IHistogram1D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH1::Add, -1. );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::multiply( const std::string& nameAndTitle,
-                                            const AIDA::IHistogram1D& a,
+AIDA::IHistogram1D* HistogramSvc::multiply( const std::string& nameAndTitle, const AIDA::IHistogram1D& a,
                                             const AIDA::IHistogram1D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH1::Multiply );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::divide( const std::string& nameAndTitle,
-                                          const AIDA::IHistogram1D& a,
+AIDA::IHistogram1D* HistogramSvc::divide( const std::string& nameAndTitle, const AIDA::IHistogram1D& a,
                                           const AIDA::IHistogram1D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH1::Divide );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::add( const std::string& nameAndTitle,
-                                       const AIDA::IHistogram2D& a,
+AIDA::IHistogram2D* HistogramSvc::add( const std::string& nameAndTitle, const AIDA::IHistogram2D& a,
                                        const AIDA::IHistogram2D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH2D::Add, 1. );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::subtract( const std::string& nameAndTitle,
-                                            const AIDA::IHistogram2D& a,
+AIDA::IHistogram2D* HistogramSvc::subtract( const std::string& nameAndTitle, const AIDA::IHistogram2D& a,
                                             const AIDA::IHistogram2D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH2D::Add, -1. );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::multiply( const std::string& nameAndTitle,
-                                            const AIDA::IHistogram2D& a,
+AIDA::IHistogram2D* HistogramSvc::multiply( const std::string& nameAndTitle, const AIDA::IHistogram2D& a,
                                             const AIDA::IHistogram2D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH2D::Multiply );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::divide( const std::string& nameAndTitle,
-                                          const AIDA::IHistogram2D& a,
+AIDA::IHistogram2D* HistogramSvc::divide( const std::string& nameAndTitle, const AIDA::IHistogram2D& a,
                                           const AIDA::IHistogram2D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH2D::Divide );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::add( const std::string& nameAndTitle,
-                                       const AIDA::IHistogram3D& a,
+AIDA::IHistogram3D* HistogramSvc::add( const std::string& nameAndTitle, const AIDA::IHistogram3D& a,
                                        const AIDA::IHistogram3D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH3D::Add, 1. );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::subtract( const std::string& nameAndTitle,
-                                            const AIDA::IHistogram3D& a,
+AIDA::IHistogram3D* HistogramSvc::subtract( const std::string& nameAndTitle, const AIDA::IHistogram3D& a,
                                             const AIDA::IHistogram3D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH3D::Add, -1. );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::multiply( const std::string& nameAndTitle,
-                                            const AIDA::IHistogram3D& a,
+AIDA::IHistogram3D* HistogramSvc::multiply( const std::string& nameAndTitle, const AIDA::IHistogram3D& a,
                                             const AIDA::IHistogram3D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH3D::Multiply );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::divide( const std::string& nameAndTitle,
-                                          const AIDA::IHistogram3D& a,
+AIDA::IHistogram3D* HistogramSvc::divide( const std::string& nameAndTitle, const AIDA::IHistogram3D& a,
                                           const AIDA::IHistogram3D& b )
 {
   return Helper::act( createCopy( nameAndTitle, a ), b, &TH3D::Divide );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::projectionXY( const std::string& nameAndTitle,
-                                                const AIDA::IHistogram3D& h )
+AIDA::IHistogram2D* HistogramSvc::projectionXY( const std::string& nameAndTitle, const AIDA::IHistogram3D& h )
 {
   return i_project( nameAndTitle, h, "xy" );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::projectionXZ( const std::string& nameAndTitle,
-                                                const AIDA::IHistogram3D& h )
+AIDA::IHistogram2D* HistogramSvc::projectionXZ( const std::string& nameAndTitle, const AIDA::IHistogram3D& h )
 {
   return i_project( nameAndTitle, h, "xz" );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::projectionYZ( const std::string& nameAndTitle,
-                                                const AIDA::IHistogram3D& h )
+AIDA::IHistogram2D* HistogramSvc::projectionYZ( const std::string& nameAndTitle, const AIDA::IHistogram3D& h )
 {
   return i_project( nameAndTitle, h, "yz" );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name,
-                                                     const std::string& tit,
-                                                     int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name, const std::string& tit, int nx,
+                                                     double lowx, double upx )
 {
   return book( name, tit, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name,
-                                                     const std::string& tit,
-                                                     int nx, double lowx, double upx,
-                                                     const std::string& /*opt*/ )
+AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name, const std::string& tit, int nx,
+                                                     double lowx, double upx, const std::string& /*opt*/ )
 {
   return book( name, tit, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name,
-                                                     const std::string& title,
-                                                     const Edges& x,
+AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name, const std::string& title, const Edges& x,
                                                      const std::string& /*opt*/ )
 {
   return book( name, title, x );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& nameAndTitle,
-                                                     int nx, double lowx, double upx )
+AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& nameAndTitle, int nx, double lowx, double upx )
 {
   return book( nameAndTitle, nameAndTitle, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createCopy( const std::string& full,
-                                              const AIDA::IHistogram1D& h )
+AIDA::IHistogram1D* HistogramSvc::createCopy( const std::string& full, const AIDA::IHistogram1D& h )
 {
   return createCopy( i_splitPath( full ), h );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createCopy( const std::string& par,
-                                              const std::string& rel,
+AIDA::IHistogram1D* HistogramSvc::createCopy( const std::string& par, const std::string& rel,
                                               const AIDA::IHistogram1D& h )
 {
   return createCopy( createPath( par ), rel, h );
@@ -1872,48 +1676,42 @@ AIDA::IHistogram1D* HistogramSvc::createCopy( const std::pair<std::string, std::
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel,
-                                              const AIDA::IHistogram1D& h )
+AIDA::IHistogram1D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram1D& h )
 {
   return i_book( pPar, rel, h.title(), Gaudi::createH1D( h ) );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& tit,
-                                                     int nx, double lowx, double upx,
-                                                     int ny, double lowy, double upy )
+AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& tit, int nx,
+                                                     double lowx, double upx, int ny, double lowy, double upy )
 {
   return book( name, tit, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& tit,
-                                                     int nx, double lowx, double upx,
-                                                     int ny, double lowy, double upy,
+AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& tit, int nx,
+                                                     double lowx, double upx, int ny, double lowy, double upy,
                                                      const std::string& /*opt*/ )
 {
   return book( name, tit, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& title,
-                                                     const Edges& x, const Edges& y,
-                                                     const std::string& /*opt*/ )
+AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& title, const Edges& x,
+                                                     const Edges& y, const std::string& /*opt*/ )
 {
   return book( name, title, x, y );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& nameAndTitle,
-                                                     int nx, double lowx, double upx,
+AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& nameAndTitle, int nx, double lowx, double upx,
                                                      int ny, double lowy, double upy )
 {
   return book( nameAndTitle, nameAndTitle, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createCopy( const std::string& full,
-                                              const AIDA::IHistogram2D& h )
+AIDA::IHistogram2D* HistogramSvc::createCopy( const std::string& full, const AIDA::IHistogram2D& h )
 {
   return createCopy( i_splitPath( full ), h );
 }
@@ -1933,51 +1731,43 @@ AIDA::IHistogram2D* HistogramSvc::createCopy( const std::pair<std::string, std::
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel,
-                                              const AIDA::IHistogram2D& h )
+AIDA::IHistogram2D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram2D& h )
 {
   return i_book( pPar, rel, h.title(), Gaudi::createH2D( h ) );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& tit,
-                                                     int nx, double lowx, double upx,
-                                                     int ny, double lowy, double upy,
-                                                     int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& tit, int nx,
+                                                     double lowx, double upx, int ny, double lowy, double upy, int nz,
+                                                     double lowz, double upz )
 {
   return book( name, tit, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& tit,
-                                                     int nx, double lowx, double upx,
-                                                     int ny, double lowy, double upy,
-                                                     int nz, double lowz, double upz,
-                                                     const std::string& /*opt*/ )
+AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& tit, int nx,
+                                                     double lowx, double upx, int ny, double lowy, double upy, int nz,
+                                                     double lowz, double upz, const std::string& /*opt*/ )
 {
   return book( name, tit, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& title,
-                                                     const Edges& x, const Edges& y, const Edges& z,
-                                                     const std::string& /*opt*/ )
+AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& title, const Edges& x,
+                                                     const Edges& y, const Edges& z, const std::string& /*opt*/ )
 {
   return book( name, title, x, y, z );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& nameAndTitle,
-                                                     int nx, double lowx, double upx,
-                                                     int ny, double lowy, double upy,
-                                                     int nz, double lowz, double upz )
+AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& nameAndTitle, int nx, double lowx, double upx,
+                                                     int ny, double lowy, double upy, int nz, double lowz, double upz )
 {
   return book( nameAndTitle, nameAndTitle, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createCopy( const std::string& full,
-                                              const AIDA::IHistogram3D& h )
+AIDA::IHistogram3D* HistogramSvc::createCopy( const std::string& full, const AIDA::IHistogram3D& h )
 {
   return createCopy( i_splitPath( full ), h );
 }
@@ -1997,191 +1787,156 @@ AIDA::IHistogram3D* HistogramSvc::createCopy( const std::pair<std::string, std::
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel,
-                                              const AIDA::IHistogram3D& h )
+AIDA::IHistogram3D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram3D& h )
 {
   return i_book( pPar, rel, h.title(), Gaudi::createH3D( h ) );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& tit,
-                                                 int nx, double lowx, double upx,
-                                                 const std::string& opt )
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx,
+                                                 double upx, const std::string& opt )
 {
   return bookProf( name, tit, nx, lowx, upx, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& tit,
-                                                 int nx, double lowx, double upx,
-                                                 double upper, double lower,
-                                                 const std::string& opt )
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx,
+                                                 double upx, double upper, double lower, const std::string& opt )
 {
   return bookProf( name, tit, nx, lowx, upx, upper, lower, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name,
-                                                 const std::string& title, const Edges& x,
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& title, const Edges& x,
                                                  const std::string& /* opt */ )
 {
   return bookProf( name, title, x );
 }
 
-
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name,
-                                                 const std::string& title, const Edges& x,
-                                                 double upper, double lower,
-                                                 const std::string& /* opt */ )
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& title, const Edges& x,
+                                                 double upper, double lower, const std::string& /* opt */ )
 {
   return bookProf( name, title, x, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& nametit,
-                                                 int nx, double lowx, double upx )
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& nametit, int nx, double lowx, double upx )
 {
   return bookProf( nametit, nametit, nx, lowx, upx, "s" );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& nametit,
-                                                 int nx, double lowx, double upx,
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& nametit, int nx, double lowx, double upx,
                                                  double upper, double lower )
 {
   return bookProf( nametit, nametit, nx, lowx, upx, upper, lower, "s" );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createCopy( const std::string& full,
-                                            const AIDA::IProfile1D& h )
+AIDA::IProfile1D* HistogramSvc::createCopy( const std::string& full, const AIDA::IProfile1D& h )
 {
   return createCopy( i_splitPath( full ), h );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createCopy( const std::string& par, const std::string& rel,
-                                            const AIDA::IProfile1D& h )
+AIDA::IProfile1D* HistogramSvc::createCopy( const std::string& par, const std::string& rel, const AIDA::IProfile1D& h )
 {
   return createCopy( createPath( par ), rel, h );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createCopy( const std::pair<std::string, std::string>& loc,
-                                            const AIDA::IProfile1D& h )
+AIDA::IProfile1D* HistogramSvc::createCopy( const std::pair<std::string, std::string>& loc, const AIDA::IProfile1D& h )
 {
-   return createCopy( loc.first, loc.second, h );
+  return createCopy( loc.first, loc.second, h );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel,
-                                            const AIDA::IProfile1D& h )
+AIDA::IProfile1D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IProfile1D& h )
 {
   return i_book( pPar, rel, h.title(), Gaudi::createProf1D( h ) );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit,
-                                                 int nx, double lowx, double upx,
-                                                 int ny, double lowy, double upy )
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+                                                 double upx, int ny, double lowy, double upy )
 {
   return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit,
-                                                 int nx, double lowx, double upx,
-                                                 int ny, double lowy, double upy,
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+                                                 double upx, int ny, double lowy, double upy,
                                                  const std::string& /*opt*/ )
 {
   return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name,
-                                                 const std::string& title,
-                                                 const Edges& x, const Edges& y,
-                                                 const std::string& /*opt*/ )
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& title, const Edges& x,
+                                                 const Edges& y, const std::string& /*opt*/ )
 {
   return bookProf( name, title, x, y );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& nameAndTitle,
-                                                 int nx, double lowx, double upx,
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& nameAndTitle, int nx, double lowx, double upx,
                                                  int ny, double lowy, double upy )
 {
   return bookProf( nameAndTitle, nameAndTitle, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name,
-                                                 const std::string& tit,
-                                                 int nx, double lowx, double upx,
-                                                 int ny, double lowy, double upy,
-                                                 double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+                                                 double upx, int ny, double lowy, double upy, double upper,
+                                                 double lower )
 {
   return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit,
-                                                 int nx, double lowx, double upx,
-                                                 int ny, double lowy, double upy,
-                                                 double upper, double lower,
-                                                 const std::string& /*opt*/ )
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+                                                 double upx, int ny, double lowy, double upy, double upper,
+                                                 double lower, const std::string& /*opt*/ )
 {
   return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name,
-                                                 const std::string& title,
-                                                 const Edges& x, const Edges& y,
-                                                 double upper, double lower,
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& title, const Edges& x,
+                                                 const Edges& y, double upper, double lower,
                                                  const std::string& /*opt*/ )
 {
   return bookProf( name, title, x, y, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& nameAndTitle,
-                                                 int nx, double lowx, double upx,
-                                                 int ny, double lowy, double upy,
-                                                 double upper, double lower )
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& nameAndTitle, int nx, double lowx, double upx,
+                                                 int ny, double lowy, double upy, double upper, double lower )
 {
-  return bookProf( nameAndTitle, nameAndTitle, nx, lowx, upx,
-                   ny, lowy, upy, upper, lower );
+  return bookProf( nameAndTitle, nameAndTitle, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createCopy( const std::string& full,
-                                            const AIDA::IProfile2D& h )
+AIDA::IProfile2D* HistogramSvc::createCopy( const std::string& full, const AIDA::IProfile2D& h )
 {
   return createCopy( i_splitPath( full ), h );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createCopy( const std::string& par,
-                                            const std::string& rel,
-                                            const AIDA::IProfile2D& h )
+AIDA::IProfile2D* HistogramSvc::createCopy( const std::string& par, const std::string& rel, const AIDA::IProfile2D& h )
 {
   return createCopy( createPath( par ), rel, h );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createCopy( const std::pair<std::string,
-                                            std::string>& loc,
-                                            const AIDA::IProfile2D& h )
+AIDA::IProfile2D* HistogramSvc::createCopy( const std::pair<std::string, std::string>& loc, const AIDA::IProfile2D& h )
 {
   return createCopy( loc.first, loc.second, h );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createCopy( DataObject* pPar,
-                                            const std::string& rel,
-                                            const AIDA::IProfile2D& h )
+AIDA::IProfile2D* HistogramSvc::createCopy( DataObject* pPar, const std::string& rel, const AIDA::IProfile2D& h )
 {
   return i_book( pPar, rel, h.title(), Gaudi::createProf2D( h ) );
 }

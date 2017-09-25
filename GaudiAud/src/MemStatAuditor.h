@@ -1,5 +1,5 @@
-#ifndef     GAUDIAUDITOR_MemStatAuditor_H
-#define     GAUDIAUDITOR_MemStatAuditor_H 1
+#ifndef GAUDIAUDITOR_MemStatAuditor_H
+#define GAUDIAUDITOR_MemStatAuditor_H 1
 
 /** @class MemStatAuditor MemStatAuditor.h GaudiAud/MemStatAudit.h
 
@@ -12,17 +12,19 @@
 */
 #include "MemoryAuditor.h"
 
-class MemStatAuditor:public  MemoryAuditor {
+class MemStatAuditor : public MemoryAuditor
+{
 public:
-  MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator);
+  MemStatAuditor( const std::string& name, ISvcLocator* pSvcLocator );
   ~MemStatAuditor() override = default;
 
   StatusCode initialize() override;
+
 private:
   /// Re-implement i_before to avoid monitoring the memory usage before a function.
-  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
+  void i_before( CustomEventTypeRef evt, const std::string& caller ) override;
 
-  void i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller) override;
+  void i_printinfo( const std::string& msg, CustomEventTypeRef evt, const std::string& caller ) override;
 
   SmartIF<IChronoStatSvc>& statSvc() { return m_stat; }
   SmartIF<IChronoStatSvc> m_stat;
@@ -31,5 +33,4 @@ private:
   double m_vSize = -1;
 };
 
-#endif  //  GAUDIAUDITOR_MemStatAuditor_H
-
+#endif //  GAUDIAUDITOR_MemStatAuditor_H

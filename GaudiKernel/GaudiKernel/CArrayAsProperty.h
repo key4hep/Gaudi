@@ -8,7 +8,7 @@
 namespace Gaudi
 {
   template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
-  class Property<TYPE [N], VERIFIER, HANDLERS> : public Details::PropertyBase
+  class Property<TYPE[N], VERIFIER, HANDLERS> : public Details::PropertyBase
   {
   public:
     // ==========================================================================
@@ -177,9 +177,10 @@ namespace Gaudi
     }
   };
   template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
-  class Property<TYPE (&) [N], VERIFIER, HANDLERS> : public Property<TYPE [N], VERIFIER, HANDLERS> {
+  class Property<TYPE ( & )[N], VERIFIER, HANDLERS> : public Property<TYPE[N], VERIFIER, HANDLERS>
+  {
   public:
-    using Property<TYPE [N], VERIFIER, HANDLERS>::Property;
+    using Property<TYPE[N], VERIFIER, HANDLERS>::Property;
   };
 }
 #endif

@@ -17,24 +17,21 @@ class GAUDI_API GslError
 {
 public:
   /// error message ('reason')
-  std::string reason ;
+  std::string reason;
   /// file name
-  std::string file   ;
+  std::string file;
   /// line number
-  int         line   ;
+  int line;
   /// error code (GSL)
-  int         code   ;
+  int code;
   /// constructor
-  GslError( std::string  r = "" ,
-            std::string  f = "" ,
-            const int    l = 0  ,
-            const int    c = 0  )
-    : reason ( std::move(r) ) , file   ( std::move(f) ) , line   ( l ) , code   ( c ) {};
+  GslError( std::string r = "", std::string f = "", const int l = 0, const int c = 0 )
+      : reason( std::move( r ) ), file( std::move( f ) ), line( l ), code( c ){};
   /// comparison (ordering) criteria
   friend bool operator<( const GslError& left, const GslError& right )
   {
-    return std::tie( left.code, left.reason, left.file, left.line )
-         < std::tie( right.code, right.reason, right.file, right.line );
+    return std::tie( left.code, left.reason, left.file, left.line ) <
+           std::tie( right.code, right.reason, right.file, right.line );
   };
 };
 

@@ -15,29 +15,25 @@
 // DllMain entry point
 #include "GaudiKernel/DllMain.icpp"
 
-#if !defined(__APPLE__)
-  void GaudiDll::initialize(void*) {}
-  void GaudiDll::finalize(void*) {}
+#if !defined( __APPLE__ )
+void GaudiDll::initialize( void* ) {}
+void GaudiDll::finalize( void* ) {}
 #endif
 
-#if defined(GAUDI_V20_COMPAT) && !defined(G21_HIDE_SYMBOLS)
+#if defined( GAUDI_V20_COMPAT ) && !defined( G21_HIDE_SYMBOLS )
 #ifdef _WIN32
-  #define FACTORYTABLE_API __declspec(dllexport)
+#define FACTORYTABLE_API __declspec( dllexport )
 #else
-  #define FACTORYTABLE_API
+#define FACTORYTABLE_API
 #endif
 
-#define LOAD_FACTORY_ENTRIES(x) \
-extern "C" FACTORYTABLE_API void* x##_getFactoryEntries() {  \
-  return nullptr; \
-}
+#define LOAD_FACTORY_ENTRIES( x )                                                                                      \
+  extern "C" FACTORYTABLE_API void* x##_getFactoryEntries() { return nullptr; }
 
 #else
 
-#define LOAD_FACTORY_ENTRIES(x) \
-extern "C" GAUDI_EXPORT void* x##_getFactoryEntries() {  \
-return nullptr; \
-}
+#define LOAD_FACTORY_ENTRIES( x )                                                                                      \
+  extern "C" GAUDI_EXPORT void* x##_getFactoryEntries() { return nullptr; }
 
 #endif // GAUDI_V20_COMPAT
 

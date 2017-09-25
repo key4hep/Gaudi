@@ -19,29 +19,26 @@ class IInterface;
     @author Pere Mato
 */
 
-namespace  Gaudi {
+namespace Gaudi
+{
 
-  GAUDI_API IAppMgrUI* createApplicationMgrEx(const std::string& dllname ,
-                                              const std::string& factname );
-  GAUDI_API IAppMgrUI* createApplicationMgr(const std::string& dllname ,
-				            const std::string& factname );
-  GAUDI_API IAppMgrUI* createApplicationMgr(const std::string& dllname );
+  GAUDI_API IAppMgrUI* createApplicationMgrEx( const std::string& dllname, const std::string& factname );
+  GAUDI_API IAppMgrUI* createApplicationMgr( const std::string& dllname, const std::string& factname );
+  GAUDI_API IAppMgrUI* createApplicationMgr( const std::string& dllname );
   GAUDI_API IAppMgrUI* createApplicationMgr();
-  GAUDI_API IInterface* createInstance(const std::string& name,
-			               const std::string& factname,
-			               const std::string& ddlname);
+  GAUDI_API IInterface* createInstance( const std::string& name, const std::string& factname,
+                                        const std::string& ddlname );
   GAUDI_API ISvcLocator* svcLocator();
   /** Set new instance of service locator.
       @param    newInstance  Current instance of service locator.
       @return   Previous instance of service locator object.
   */
-  GAUDI_API ISvcLocator* setInstance(ISvcLocator* newInstance);
+  GAUDI_API ISvcLocator* setInstance( ISvcLocator* newInstance );
   /** Set new instance of service locator.
       @param    newInstance  Current instance of service locator.
       @return   Previous instance of service locator object.
   */
-  GAUDI_API IAppMgrUI* setInstance(IAppMgrUI* newInstance);
-
+  GAUDI_API IAppMgrUI* setInstance( IAppMgrUI* newInstance );
 }
 
 #endif // GAUDIKERNEL_BOOTSTRAP_H

@@ -21,7 +21,6 @@ if __name__ == '__main__':
     if not os.path.exists(filename):
         parser.error('invalid filename {0}'.format(filename))
 
-
     try:
         pprint(getMetaData(filename))
     except RuntimeError, x:

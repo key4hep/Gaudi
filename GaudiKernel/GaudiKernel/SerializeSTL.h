@@ -12,97 +12,106 @@
 #ifndef GAUDIKERNEL_SERIALIZESTL_H_
 #define GAUDIKERNEL_SERIALIZESTL_H_
 
-#include <ostream>
-#include <vector>
+#include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/Map.h"
 #include <array>
 #include <list>
 #include <map>
+#include <ostream>
 #include <utility>
-#include "GaudiKernel/Map.h"
-#include "GaudiKernel/HashMap.h"
+#include <vector>
 
 #include "GaudiKernel/SerializeSTLFwd.h"
 
-namespace GaudiUtils {
-  namespace details {
+namespace GaudiUtils
+{
+  namespace details
+  {
 
-  struct IdentityOutputter {
-    template <typename T>
-    std::ostream& operator()(std::ostream& os, T&& t) const { return os << std::forward<T>(t); }
-  };
+    struct IdentityOutputter {
+      template <typename T>
+      std::ostream& operator()( std::ostream& os, T&& t ) const
+      {
+        return os << std::forward<T>( t );
+      }
+    };
 
-  template <typename Stream, typename Iterator, typename Separator, typename OutputElement = IdentityOutputter>
-  Stream& ostream_joiner(Stream& os, Iterator first, Iterator last, Separator sep, OutputElement output = OutputElement{}) {
-    if (first!=last) { output(os,*first); ++first; }
-    for (;first!=last;++first) { output(os << sep,*first); }
-    return os;
-  }
+    template <typename Stream, typename Iterator, typename Separator, typename OutputElement = IdentityOutputter>
+    Stream& ostream_joiner( Stream& os, Iterator first, Iterator last, Separator sep,
+                            OutputElement output = OutputElement{} )
+    {
+      if ( first != last ) {
+        output( os, *first );
+        ++first;
+      }
+      for ( ; first != last; ++first ) {
+        output( os << sep, *first );
+      }
+      return os;
+    }
 
-  template <typename Stream, typename Container, typename Separator, typename OutputElement = IdentityOutputter>
-  Stream& ostream_joiner(Stream& os, const Container& c, Separator sep, OutputElement output = OutputElement{}) {
-    return ostream_joiner( os, std::begin(c), std::end(c), sep, output );
-  }
-
+    template <typename Stream, typename Container, typename Separator, typename OutputElement = IdentityOutputter>
+    Stream& ostream_joiner( Stream& os, const Container& c, Separator sep, OutputElement output = OutputElement{} )
+    {
+      return ostream_joiner( os, std::begin( c ), std::end( c ), sep, output );
+    }
   }
 
   /// Serialize an std::vector in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
-  inline std::ostream& operator<< ( std::ostream& s, const std::vector<T,ALLOC>& v )
+  inline std::ostream& operator<<( std::ostream& s, const std::vector<T, ALLOC>& v )
   {
     return details::ostream_joiner( s << '[', v, ", " ) << ']';
   }
 
   /// Serialize an std::array in a python like format. E.g. "[1, 2, 3]".
   template <class T, std::size_t N>
-  inline std::ostream& operator<< ( std::ostream& s, const std::array<T,N>& v )
+  inline std::ostream& operator<<( std::ostream& s, const std::array<T, N>& v )
   {
     return details::ostream_joiner( s << '[', v, ", " ) << ']';
   }
 
   /// Serialize an std::list in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
-  inline std::ostream& operator<< ( std::ostream& s, const std::list<T,ALLOC>& l )
+  inline std::ostream& operator<<( std::ostream& s, const std::list<T, ALLOC>& l )
   {
     return details::ostream_joiner( s << '[', l, ", " ) << ']';
   }
 
   /// Serialize an std::list in a python like format. E.g. "(1, 2)".
   template <class T1, class T2>
-  inline std::ostream& operator<< ( std::ostream& s, const std::pair<T1,T2>& p )
+  inline std::ostream& operator<<( std::ostream& s, const std::pair<T1, T2>& p )
   {
     return s << '(' << p.first << ", " << p.second << ')';
   }
 
   /// Serialize an std::map in a python like format. E.g. "{a: 1, b: 2}".
   template <class T1, class T2, class COMP, class ALLOC>
-  inline std::ostream& operator << ( std::ostream& s,
-                                     const std::map<T1,T2,COMP,ALLOC>& m )
+  inline std::ostream& operator<<( std::ostream& s, const std::map<T1, T2, COMP, ALLOC>& m )
   {
-    return details::ostream_joiner( s << "{", m,  ", ",
-                                   [](std::ostream& os, const std::pair<const T1,T2>& p)
-                                   -> std::ostream&
-                                   { return os << p.first << ": " << p.second; } )
+    return details::ostream_joiner( s << "{", m, ", ",
+                                    []( std::ostream& os, const std::pair<const T1, T2>& p ) -> std::ostream& {
+                                      return os << p.first << ": " << p.second;
+                                    } )
            << "}";
   }
 
   /// Serialize a GaudiUtils::Map in a python like format. E.g. "{a: 1, b: 2}".
   template <class K, class T, class M>
-  inline std::ostream& operator << ( std::ostream& s,
-                                     const GaudiUtils::Map<K,T,M>& m )
+  inline std::ostream& operator<<( std::ostream& s, const GaudiUtils::Map<K, T, M>& m )
   {
     // Serialize the internal map.
-    return s << static_cast<const M&>(m);
+    return s << static_cast<const M&>( m );
   }
 
   /// Serialize a GaudiUtils::HashMap in a python like format. E.g. "{a: 1, b: 2}".
   /// This implementation is not efficient, but very simple. Anyway a print-out
   /// of a hash map is not something that we do every second.
   template <class K, class T, class H, class M>
-  inline std::ostream& operator << ( std::ostream& s,
-                                     const GaudiUtils::HashMap<K,T,H,M>& m )
+  inline std::ostream& operator<<( std::ostream& s, const GaudiUtils::HashMap<K, T, H, M>& m )
   {
     // Copy the hash map into a map to have it ordered by key.
-    return s << GaudiUtils::Map<K,T>(m.begin(),m.end());
+    return s << GaudiUtils::Map<K, T>( m.begin(), m.end() );
   }
 
 } // namespace GaudiUtils

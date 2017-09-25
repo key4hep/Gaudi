@@ -11,25 +11,23 @@
  *  @date   2004-05-19
  */
 
-class GAUDI_API ISequencerTimerTool: public virtual IAlgTool
+class GAUDI_API ISequencerTimerTool : public virtual IAlgTool
 {
 
 public:
-
   using IAlgTool::start;
   using IAlgTool::stop;
   using IAlgTool::name;
 
 public:
-
   /// InterfaceID
-  DeclareInterfaceID(ISequencerTimerTool,3,0);
+  DeclareInterfaceID( ISequencerTimerTool, 3, 0 );
 
   /** add a timer entry with the specified name **/
-  virtual int addTimer( const std::string& name ) = 0 ;
+  virtual int addTimer( const std::string& name ) = 0;
 
   /** Increase the indentation of the name **/
-  virtual void increaseIndent() = 0 ;
+  virtual void increaseIndent() = 0;
 
   /** Decrease the indentation of the name **/
   virtual void decreaseIndent() = 0;
@@ -57,7 +55,6 @@ public:
 
   /** Destructor */
   ~ISequencerTimerTool() override = default;
-
 };
 
 #endif // ISEQUENCERTIMERTOOL_H

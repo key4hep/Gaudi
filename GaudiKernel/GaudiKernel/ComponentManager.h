@@ -1,8 +1,8 @@
 #ifndef COMPONENTMANAGER_H_
 #define COMPONENTMANAGER_H_
 
-#include "GaudiKernel/IComponentManager.h"
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/IComponentManager.h"
 
 /** @class ComponentManager ComponentManager.h
  *
@@ -10,12 +10,12 @@
  *
  * @author Marco Clemencic
  */
-class GAUDI_API ComponentManager: public CommonMessaging<implements<IComponentManager> > {
+class GAUDI_API ComponentManager : public CommonMessaging<implements<IComponentManager>>
+{
 public:
-
   /// Constructor.
   /// @param application    the manager of managers
-  ComponentManager(IInterface *application, const InterfaceID &baseIID);
+  ComponentManager( IInterface* application, const InterfaceID& baseIID );
 
   /// Basic interface id of the managed components.
   const InterfaceID& componentBaseInterface() const override;
@@ -23,47 +23,46 @@ public:
   /// Specialized queryInterface implementation.
   /// If an interface is not fount in the implemented ones, we fall back on the
   /// owner.
-  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
+  StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
 
-  SmartIF<ISvcLocator>& serviceLocator() const override {
-    if (!m_svcLocator) m_svcLocator = m_application;
+  SmartIF<ISvcLocator>& serviceLocator() const override
+  {
+    if ( !m_svcLocator ) m_svcLocator = m_application;
     return m_svcLocator;
   }
 
   /// Configuration (from OFFLINE to CONFIGURED).
-  StatusCode configure() override {return StatusCode::SUCCESS;}
+  StatusCode configure() override { return StatusCode::SUCCESS; }
 
   /// Initialization (from CONFIGURED to INITIALIZED).
-  StatusCode initialize() override {return StatusCode::SUCCESS;}
+  StatusCode initialize() override { return StatusCode::SUCCESS; }
 
   /// Start (from INITIALIZED to RUNNING).
-  StatusCode start() override {return StatusCode::SUCCESS;}
+  StatusCode start() override { return StatusCode::SUCCESS; }
 
   /// Stop (from RUNNING to INITIALIZED).
-  StatusCode stop() override {return StatusCode::SUCCESS;}
+  StatusCode stop() override { return StatusCode::SUCCESS; }
 
   /// Finalize (from INITIALIZED to CONFIGURED).
-  StatusCode finalize() override {return StatusCode::SUCCESS;}
+  StatusCode finalize() override { return StatusCode::SUCCESS; }
 
   /// Initialization (from CONFIGURED to OFFLINE).
-  StatusCode terminate() override {return StatusCode::SUCCESS;}
-
+  StatusCode terminate() override { return StatusCode::SUCCESS; }
 
   /// Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
-  StatusCode reinitialize() override {return StatusCode::SUCCESS;}
+  StatusCode reinitialize() override { return StatusCode::SUCCESS; }
 
   /// Initialization (from RUNNING to RUNNING, via INITIALIZED).
-  StatusCode restart() override {return StatusCode::SUCCESS;}
+  StatusCode restart() override { return StatusCode::SUCCESS; }
 
   /// Get the current state.
-  Gaudi::StateMachine::State FSMState() const override {return m_stateful->FSMState();}
+  Gaudi::StateMachine::State FSMState() const override { return m_stateful->FSMState(); }
 
   /// When we are in the middle of a transition, get the state where the
   /// transition is leading us. Otherwise it returns the same state as state().
-  Gaudi::StateMachine::State targetFSMState() const override {return m_stateful->targetFSMState();}
+  Gaudi::StateMachine::State targetFSMState() const override { return m_stateful->targetFSMState(); }
 
 protected:
-
   /// Pointer to the owner of the manager
   SmartIF<IInterface> m_application;
 
@@ -75,8 +74,6 @@ protected:
 
   /// Service locator (needed to access the MessageSvc)
   mutable SmartIF<ISvcLocator> m_svcLocator;
-
 };
-
 
 #endif /* COMPONENTMANAGER_H_ */

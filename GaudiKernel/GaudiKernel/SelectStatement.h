@@ -41,57 +41,40 @@
     Author:  M.Frank
     Version: 1.0
 */
-class GAUDI_API SelectStatement: public implements<ISelectStatement> {
+class GAUDI_API SelectStatement : public implements<ISelectStatement>
+{
 public:
   /// Standard Constructor initializing select string
-  explicit SelectStatement(const std::string& s, long typ)
-  : m_select(s), m_isActive(false), m_type(typ)
-  {
-  }
+  explicit SelectStatement( const std::string& s, long typ ) : m_select( s ), m_isActive( false ), m_type( typ ) {}
   /// Standard Constructor initializing select string
-  explicit SelectStatement(const std::string& s)
-  : m_select(s),m_isActive(false), m_type(STRING)
-  {
-  }
+  explicit SelectStatement( const std::string& s ) : m_select( s ), m_isActive( false ), m_type( STRING ) {}
   /// Standard Constructor initializing function call
-  explicit SelectStatement()
-  : m_isActive(false), m_type(FUNCTION)
-  {
-  }
+  explicit SelectStatement() : m_isActive( false ), m_type( FUNCTION ) {}
   /// Standard Destructor
-  virtual ~SelectStatement()  {
-  }
+  virtual ~SelectStatement() {}
   /// Access the type of the object
-  long type() const override {
-    return m_type;
-  }
+  long type() const override { return m_type; }
   /// Access the selection string
-  const std::string& criteria() const override {
-    return m_select;
-  }
+  const std::string& criteria() const override { return m_select; }
   /// Set the type
-  void setCriteria(const std::string& crit) override {
+  void setCriteria( const std::string& crit ) override
+  {
     m_select = crit;
-    (m_select.length() > 0) ? m_type |= STRING : m_type &= ~STRING;
+    ( m_select.length() > 0 ) ? m_type |= STRING : m_type &= ~STRING;
   }
   /// Change activity flag
-  void setActive(bool flag = true) override {
-    m_isActive = flag;
-  }
+  void setActive( bool flag = true ) override { m_isActive = flag; }
   /// Check if selection is active
-  bool isActive() const override {
-    return m_isActive;
-  }
+  bool isActive() const override { return m_isActive; }
   /// Stupid default implementation
-  virtual bool operator()(void* /* val */ ) override {
-    return true;
-  }
+  virtual bool operator()( void* /* val */ ) override { return true; }
+
 protected:
   /// Select string
-  std::string   m_select;
+  std::string m_select;
   /// Activation flag
   bool m_isActive;
   /// Type identifier
   long m_type;
 };
-#endif  // KERNEL_SELECTSTATEMENT_H
+#endif // KERNEL_SELECTSTATEMENT_H

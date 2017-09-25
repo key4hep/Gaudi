@@ -1,9 +1,9 @@
 // Include files
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
-#include <iostream>
+#include "GaudiKernel/Service.h"
 #include <climits>
+#include <iostream>
 
 // local
 #include "JemallocProfileSvc.h"
@@ -11,9 +11,8 @@
 // including jemmalloc.h is difficult as the malloc signature is not exactly identical
 // to the system one (issue with throw).
 // We therefore declare mallctl here.
-extern "C"
-{
-  int mallctl(const char *name, void *oldp, size_t *oldlenp, void *newp, size_t newlen);
+extern "C" {
+int mallctl( const char* name, void* oldp, size_t* oldlenp, void* newp, size_t newlen );
 }
 
 //-----------------------------------------------------------------------------
@@ -25,57 +24,53 @@ extern "C"
 //=============================================================================
 // Initializer
 //=============================================================================
-StatusCode JemallocProfileSvc::initialize() {
+StatusCode JemallocProfileSvc::initialize()
+{
   StatusCode sc = base_class::initialize();
-  if (sc.isFailure()) return sc;
+  if ( sc.isFailure() ) return sc;
 
   // register to the incident service
   static const std::string serviceName = "IncidentSvc";
-  m_incidentSvc = serviceLocator()->service(serviceName);
-  if ( ! m_incidentSvc ) {
+  m_incidentSvc                        = serviceLocator()->service( serviceName );
+  if ( !m_incidentSvc ) {
     error() << "Cannot retrieve " << serviceName << endmsg;
     return StatusCode::FAILURE;
   }
 
   debug() << "Register to the IncidentSvc" << endmsg;
-  m_incidentSvc->addListener(this, IncidentType::BeginEvent);
-  m_incidentSvc->addListener(this, IncidentType::EndEvent);
-  for (std::string incident: m_startFromIncidents)
-  {
-    m_incidentSvc->addListener(this, incident);
+  m_incidentSvc->addListener( this, IncidentType::BeginEvent );
+  m_incidentSvc->addListener( this, IncidentType::EndEvent );
+  for ( std::string incident : m_startFromIncidents ) {
+    m_incidentSvc->addListener( this, incident );
   }
-  for (std::string incident: m_stopAtIncidents)
-  {
-    m_incidentSvc->addListener(this, incident);
+  for ( std::string incident : m_stopAtIncidents ) {
+    m_incidentSvc->addListener( this, incident );
   }
 
   // Resetting the event counter
   m_eventNumber = 0;
-  m_profiling = false;
+  m_profiling   = false;
 
   // Cache whether we have start/stop incidents
-  m_hasStartIncident = (m_startFromIncidents.size() > 0);
-  m_hasStopIncident = (m_stopAtIncidents.size() > 0);
+  m_hasStartIncident = ( m_startFromIncidents.size() > 0 );
+  m_hasStopIncident  = ( m_stopAtIncidents.size() > 0 );
 
   // Checking the consistency of the start/stop events
-  if (m_nStartFromEvent == 0 && !m_hasStartIncident
-      && (m_hasStopIncident || m_nStopAtEvent > 0))
-    {
-      info() << "Stop profiling trigger was specified but no start. Defaulting to first events" << endmsg;
-      m_nStartFromEvent = 1;
-    }
-
-
+  if ( m_nStartFromEvent == 0 && !m_hasStartIncident && ( m_hasStopIncident || m_nStopAtEvent > 0 ) ) {
+    info() << "Stop profiling trigger was specified but no start. Defaulting to first events" << endmsg;
+    m_nStartFromEvent = 1;
+  }
 
   return StatusCode::SUCCESS;
 }
 
 // Finalization of the service.
-StatusCode JemallocProfileSvc::finalize() {
+StatusCode JemallocProfileSvc::finalize()
+{
 
   // unregistering from the IncidentSvc
-  m_incidentSvc->removeListener(this, IncidentType::BeginEvent);
-  m_incidentSvc->removeListener(this, IncidentType::EndEvent);
+  m_incidentSvc->removeListener( this, IncidentType::BeginEvent );
+  m_incidentSvc->removeListener( this, IncidentType::EndEvent );
   m_incidentSvc.reset();
   return base_class::finalize();
 }
@@ -86,47 +81,35 @@ StatusCode JemallocProfileSvc::finalize() {
 //=============================================================================
 
 // Handler for incidents
-void JemallocProfileSvc::handle(const Incident& incident)
+void JemallocProfileSvc::handle( const Incident& incident )
 {
-  if (IncidentType::BeginEvent == incident.type())
-  {
+  if ( IncidentType::BeginEvent == incident.type() ) {
     handleBegin();
-  } else if (IncidentType::EndEvent == incident.type())
-  {
+  } else if ( IncidentType::EndEvent == incident.type() ) {
     handleEnd();
   }
 
   // If already processing we can ignore the incidents for start
-  if (!m_profiling && m_hasStartIncident)
-  {
-    for(std::string startincident: m_startFromIncidents)
-    {
-      if (startincident == incident.type())
-      {
-        info() << "Starting Jemalloc profile at incident "
-               <<  incident.type() << endmsg;
+  if ( !m_profiling && m_hasStartIncident ) {
+    for ( std::string startincident : m_startFromIncidents ) {
+      if ( startincident == incident.type() ) {
+        info() << "Starting Jemalloc profile at incident " << incident.type() << endmsg;
         startProfiling();
         break;
       }
     } // Loop on incidents
-  } // If checking incidents to start
+  }   // If checking incidents to start
 
   // If already processing we can ignore the incidents for start
-  if (m_profiling && m_hasStopIncident)
-  {
-    for(std::string stopincident: m_stopAtIncidents)
-    {
-      if (stopincident == incident.type())
-      {
-        info() << "Stopping Jemalloc profile at incident "
-               <<  incident.type() << endmsg;
+  if ( m_profiling && m_hasStopIncident ) {
+    for ( std::string stopincident : m_stopAtIncidents ) {
+      if ( stopincident == incident.type() ) {
+        info() << "Stopping Jemalloc profile at incident " << incident.type() << endmsg;
         stopProfiling();
         break;
       }
     } // Loop on incidents
-  } // If checking incidents to stop
-
-
+  }   // If checking incidents to stop
 }
 
 // Handler for incidents
@@ -135,8 +118,7 @@ inline void JemallocProfileSvc::handleBegin()
 {
   m_eventNumber += 1;
 
-  if (m_eventNumber == m_nStartFromEvent)
-  {
+  if ( m_eventNumber == m_nStartFromEvent ) {
     startProfiling();
   }
 }
@@ -145,15 +127,12 @@ inline void JemallocProfileSvc::handleBegin()
 // Called on at End events
 inline void JemallocProfileSvc::handleEnd()
 {
-  if (m_profiling
-      && m_eventNumber != m_nStartFromEvent
-      && ((m_eventNumber - m_nStartFromEvent) % m_dumpPeriod == 0))
-  {
+  if ( m_profiling && m_eventNumber != m_nStartFromEvent &&
+       ( ( m_eventNumber - m_nStartFromEvent ) % m_dumpPeriod == 0 ) ) {
     dumpProfile();
   }
 
-  if (m_eventNumber ==  m_nStopAtEvent)
-  {
+  if ( m_eventNumber == m_nStopAtEvent ) {
     stopProfiling();
   }
 }
@@ -169,9 +148,8 @@ inline void JemallocProfileSvc::handleEnd()
 inline void JemallocProfileSvc::startProfiling()
 {
   m_profiling = true;
-  info() << "Starting Jemalloc profile at event "
-         <<  m_eventNumber << endmsg;
-  mallctl("prof.dump", NULL, NULL, NULL, 0);
+  info() << "Starting Jemalloc profile at event " << m_eventNumber << endmsg;
+  mallctl( "prof.dump", NULL, NULL, NULL, 0 );
 }
 
 /**
@@ -179,8 +157,8 @@ inline void JemallocProfileSvc::startProfiling()
  */
 inline void JemallocProfileSvc::stopProfiling()
 {
-    m_profiling = false;
-    dumpProfile();
+  m_profiling = false;
+  dumpProfile();
 }
 
 /**
@@ -188,12 +166,10 @@ inline void JemallocProfileSvc::stopProfiling()
  */
 inline void JemallocProfileSvc::dumpProfile()
 {
-    info() << "Dumping Jemalloc profile at event "
-           <<  m_eventNumber << endmsg;
-    mallctl("prof.dump", NULL, NULL, NULL, 0);
-
+  info() << "Dumping Jemalloc profile at event " << m_eventNumber << endmsg;
+  mallctl( "prof.dump", NULL, NULL, NULL, 0 );
 }
 
 //=============================================================================
 // Declaration of the factory
-DECLARE_COMPONENT(JemallocProfileSvc)
+DECLARE_COMPONENT( JemallocProfileSvc )

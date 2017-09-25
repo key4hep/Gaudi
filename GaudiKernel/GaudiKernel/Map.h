@@ -78,21 +78,21 @@ namespace GaudiUtils
    * @author Marco Clemencic
    * @date 2005-10-06
    */
-  template <typename K, typename T, typename M = std::map<K,T> >
+  template <typename K, typename T, typename M = std::map<K, T>>
   class Map : public Gaudi::Utils::MapBase
   {
   public:
     // ========================================================================
     // ---- types
-    typedef M                      map_type;
-    typedef K                      key_type;
-    typedef T                      mapped_type;
+    typedef M map_type;
+    typedef K key_type;
+    typedef T mapped_type;
 
     // -- from unary_function
-    typedef K                      argument_type;
-    typedef T                      result_type;
-    typedef std::pair<const K,T>   value_type;
-    typedef const value_type&      const_reference;
+    typedef K argument_type;
+    typedef T result_type;
+    typedef std::pair<const K, T> value_type;
+    typedef const value_type& const_reference;
 
     typedef typename map_type::size_type size_type;
 
@@ -110,16 +110,18 @@ namespace GaudiUtils
     // ---- Constructors
 
     /// Standard constructor
-    Map() = default ;
+    Map() = default;
 
     /// Constructor from a standard map
-    Map(const map_type& other): m_map(other) {}
+    Map( const map_type& other ) : m_map( other ) {}
 
     // /// Copy Constructor
     // Map(const Map& other): m_map(other.m_map) {}
     /// Construct from a subset.
     template <typename In>
-    Map(In&& first, In&& last): m_map(std::forward<In>(first),std::forward<In>(last)) {}
+    Map( In&& first, In&& last ) : m_map( std::forward<In>( first ), std::forward<In>( last ) )
+    {
+    }
 
     /// Virtual destructor. You can inherit from this map type.
     virtual ~Map() = default;
@@ -129,10 +131,10 @@ namespace GaudiUtils
     //    -- iterators
 
     inline iterator begin() { return m_map.begin(); }
-    inline iterator end()   { return m_map.end(); }
+    inline iterator end() { return m_map.end(); }
 
     inline const_iterator begin() const { return m_map.begin(); }
-    inline const_iterator end()   const { return m_map.end(); }
+    inline const_iterator end() const { return m_map.end(); }
 
     // inline reverse_iterator rbegin() { return m_map.rbegin(); }
     // inline reverse_iterator rend()   { return m_map.rend(); }
@@ -142,39 +144,54 @@ namespace GaudiUtils
 
     //    -- subscription
 
-    inline mapped_type &operator[] (const key_type &key) { return m_map[key]; }
+    inline mapped_type& operator[]( const key_type& key ) { return m_map[key]; }
 
     //    -- map operations
 
-    inline iterator find(const key_type &key) { return m_map.find(key); }
-    inline const_iterator find(const key_type &key) const { return m_map.find(key); }
+    inline iterator find( const key_type& key ) { return m_map.find( key ); }
+    inline const_iterator find( const key_type& key ) const { return m_map.find( key ); }
 
-    inline size_type count(const key_type &key) const { return m_map.count(key); }
+    inline size_type count( const key_type& key ) const { return m_map.count( key ); }
 
-    inline iterator lower_bound(const key_type &key) { return m_map.lower_bound(key); }
-    inline const_iterator lower_bound(const key_type &key) const { return m_map.lower_bound(key); }
-    inline iterator upper_bound(const key_type &key) { return m_map.upper_bound(key); }
-    inline const_iterator upper_bound(const key_type &key) const { return m_map.upper_bound(key); }
+    inline iterator lower_bound( const key_type& key ) { return m_map.lower_bound( key ); }
+    inline const_iterator lower_bound( const key_type& key ) const { return m_map.lower_bound( key ); }
+    inline iterator upper_bound( const key_type& key ) { return m_map.upper_bound( key ); }
+    inline const_iterator upper_bound( const key_type& key ) const { return m_map.upper_bound( key ); }
 
-    inline std::pair<iterator,iterator> equal_range(const key_type &key)
-    { return m_map.equal_range(key); }
-    inline std::pair<const_iterator,const_iterator> equal_range(const key_type &key) const
-    { return m_map.equal_range(key); }
+    inline std::pair<iterator, iterator> equal_range( const key_type& key ) { return m_map.equal_range( key ); }
+    inline std::pair<const_iterator, const_iterator> equal_range( const key_type& key ) const
+    {
+      return m_map.equal_range( key );
+    }
 
     //    -- list operations
-    template< class... Args >
-    std::pair<iterator,bool> emplace( Args&&... args ) { return m_map.emplace(std::forward<Args>(args)...); }
+    template <class... Args>
+    std::pair<iterator, bool> emplace( Args&&... args )
+    {
+      return m_map.emplace( std::forward<Args>( args )... );
+    }
     template <typename ValueType>
-    inline std::pair<iterator,bool> insert(ValueType&& val) { return m_map.insert(std::forward<ValueType>(val)); }
-    inline std::pair<iterator,bool> insert(value_type&& val) { return m_map.insert(std::forward<value_type>(val)); }
+    inline std::pair<iterator, bool> insert( ValueType&& val )
+    {
+      return m_map.insert( std::forward<ValueType>( val ) );
+    }
+    inline std::pair<iterator, bool> insert( value_type&& val )
+    {
+      return m_map.insert( std::forward<value_type>( val ) );
+    }
     template <typename In>
-    inline void insert(In&& first, In&& last) { m_map.insert(std::forward<In>(first),std::forward<In>(last)); }
+    inline void insert( In&& first, In&& last )
+    {
+      m_map.insert( std::forward<In>( first ), std::forward<In>( last ) );
+    }
     template <typename ValueType>
-    inline iterator insert( iterator /* pos */ , ValueType && val)
-    { return m_map.insert( /* pos, */ std::forward<ValueType>(val) ).first ; }
-    inline iterator erase(const_iterator pos) { return m_map.erase(pos); }
-    inline size_type erase(const key_type &key) { return m_map.erase(key); }
-    inline iterator erase(const_iterator first, const_iterator last) { return m_map.erase(first,last); }
+    inline iterator insert( iterator /* pos */, ValueType&& val )
+    {
+      return m_map.insert( /* pos, */ std::forward<ValueType>( val ) ).first;
+    }
+    inline iterator erase( const_iterator pos ) { return m_map.erase( pos ); }
+    inline size_type erase( const key_type& key ) { return m_map.erase( key ); }
+    inline iterator erase( const_iterator first, const_iterator last ) { return m_map.erase( first, last ); }
     inline void clear() { m_map.clear(); }
 
     //    -- container operations
@@ -182,7 +199,7 @@ namespace GaudiUtils
     inline size_type size() const { return m_map.size(); }
     inline size_type max_size() const { return m_map.max_size(); }
     inline bool empty() const { return size() == 0; }
-    inline void swap(map_type& other) { m_map.swap(other); }
+    inline void swap( map_type& other ) { m_map.swap( other ); }
 
     // ---- extra functionalities
 
@@ -208,12 +225,12 @@ namespace GaudiUtils
      *   @return the mapped value(const reference!) for the existing key,
      *           and the default value overwise
      */
-    inline const result_type &operator() ( const argument_type &key ) const
+    inline const result_type& operator()( const argument_type& key ) const
     {
       // static const result_type s_null_value;
-      auto  it = m_map.find(key);
+      auto it = m_map.find( key );
       /// return the default value if not present
-      return  it != m_map.end() ? it->second : s_null_value;
+      return it != m_map.end() ? it->second : s_null_value;
     }
     // ========================================================================
     /** Access elements of a const Map.
@@ -238,48 +255,42 @@ namespace GaudiUtils
      *   @return the mapped value(const reference!) for the existing key,
      *           and the default value overwise
      */
-    inline const mapped_type &operator[] ( const key_type &key ) const
-    { return (*this)(key); }
+    inline const mapped_type& operator[]( const key_type& key ) const { return ( *this )( key ); }
     // ========================================================================
     /** checked access to the map
      *  @exception std::out_of_range for missing keys
      *  @param  key (INPUT) the key
      *  @return the value for the existing key
      */
-    inline const result_type & at ( const argument_type &key ) const
-    {
-      return m_map.at(key);
-    }
+    inline const result_type& at( const argument_type& key ) const { return m_map.at( key ); }
     // ========================================================================
     /// Merge two maps.
-    inline Map& merge ( const map_type& other )
+    inline Map& merge( const map_type& other )
     {
-      m_map.insert( std::begin(other), std::end(other) );
+      m_map.insert( std::begin( other ), std::end( other ) );
       return *this;
     }
     /// Merge two maps.
-    inline Map& merge ( const Map& other )
+    inline Map& merge( const Map& other )
     {
-      m_map.insert( std::begin(other), std::end(other) );
+      m_map.insert( std::begin( other ), std::end( other ) );
       return *this;
     }
     /// Merge two maps.
-    template <class K1,class K2, class K3>
-    inline Map& merge ( const Map<K1,K2,K3>& other )
+    template <class K1, class K2, class K3>
+    inline Map& merge( const Map<K1, K2, K3>& other )
     {
-      m_map.insert( std::begin(other), std::end(other) );
+      m_map.insert( std::begin( other ), std::end( other ) );
       return *this;
     }
     // update the key
-    void update
-    ( const key_type&    key    ,
-      const mapped_type& mapped ) { (*this)[ key ] = mapped ; }
+    void update( const key_type& key, const mapped_type& mapped ) { ( *this )[key] = mapped; }
     // ========================================================================
   public:
     // ========================================================================
     /// Allows to use the Map wherever an std::map is explicitly requested.
-    inline operator       map_type &()       { return m_map ; }
-    inline operator const map_type &() const { return m_map ; }
+    inline operator map_type&() { return m_map; }
+    inline operator const map_type&() const { return m_map; }
     // ========================================================================
   public:
     // ========================================================================
@@ -288,28 +299,30 @@ namespace GaudiUtils
      *  @return the key at given index
      *  @exception std::out_of_range for invalid index
      */
-    const key_type&    key_at   ( const size_type index ) const
+    const key_type& key_at( const size_type index ) const
     {
-      if ( index >= size() )
-      { this->throw_out_of_range_exception () ; }
-      return std::next ( this->begin() , index )->first ;
+      if ( index >= size() ) {
+        this->throw_out_of_range_exception();
+      }
+      return std::next( this->begin(), index )->first;
     }
     /** useful method for python decoration:
      *  @param index (INPUT) the index
      *  @return the value at given index
      *  @exception std::out_of_range for invalid index
      */
-    const mapped_type& value_at ( const size_type index ) const
+    const mapped_type& value_at( const size_type index ) const
     {
-      if ( index >= size() )
-      { this->throw_out_of_range_exception () ; }
-      return std::next( this->begin() , index )->second ;
+      if ( index >= size() ) {
+        this->throw_out_of_range_exception();
+      }
+      return std::next( this->begin(), index )->second;
     }
     // ========================================================================
   };
   // ==========================================================================
   template <typename K, typename T, typename M>
-  const typename Map<K,T,M>::result_type Map<K,T,M>::s_null_value = typename Map<K,T,M>::result_type();
+  const typename Map<K, T, M>::result_type Map<K, T, M>::s_null_value = typename Map<K, T, M>::result_type();
   // ==========================================================================
 } //                                                end of GaudiUtils namespace
 // ============================================================================

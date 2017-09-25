@@ -16,8 +16,8 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  */
 
-MyClass1::MyClass1(){}
-MyClass1::~MyClass1(){}
+MyClass1::MyClass1() {}
+MyClass1::~MyClass1() {}
 
 // ============================================================================
 // The END

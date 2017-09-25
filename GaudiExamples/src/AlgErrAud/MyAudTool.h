@@ -11,27 +11,25 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyAudTool : public extends<AlgTool,
-                                 IMyAudTool> {
+class MyAudTool : public extends<AlgTool, IMyAudTool>
+{
 public:
-
   /// Standard Constructor
-  MyAudTool(const std::string& type,
-            const std::string& name,
-            const IInterface* parent);
+  MyAudTool( const std::string& type, const std::string& name, const IInterface* parent );
 
   /// IMyAudTool interface
-  const std::string&  message() const override;
-  void  doErr() override;
-  void  doFatal() override;
+  const std::string& message() const override;
+  void doErr() override;
+  void doFatal() override;
   /// Overriding initialize and finalize
   StatusCode initialize() override;
   StatusCode finalize() override;
 
 protected:
   /// Standard destructor
-   ~MyAudTool() override;
+  ~MyAudTool() override;
+
 private:
   /// Properties
- };
+};
 #endif // GAUDIEXANMPLES_MYAUDTOOL_H

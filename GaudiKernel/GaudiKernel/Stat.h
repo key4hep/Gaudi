@@ -1,5 +1,5 @@
-#ifndef      __GAUDI_CHRONOSTATSVC_STAT_H__
-#define      __GAUDI_CHRONOSTATSVC_STAT_H__
+#ifndef __GAUDI_CHRONOSTATSVC_STAT_H__
+#define __GAUDI_CHRONOSTATSVC_STAT_H__
 // ============================================================================
 // Iinclude files
 // ============================================================================
@@ -10,9 +10,9 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/ICounterSvc.h"
-#include "GaudiKernel/StatEntity.h"
-#include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/IStatSvc.h"
+#include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/StatEntity.h"
 // ============================================================================
 /** @class Stat  Stat.h GaudiKernel/Stat.h
  *
@@ -62,14 +62,10 @@ public:
    *   @param name  (optional) name of the object, for printout
    *   @param group (optional) group of the object, for printout
    */
-  Stat ( StatEntity*        entity = 0   ,
-         const std::string& name   = ""  ,
-         const std::string& group  = ""  )
-    : m_entity  ( entity )
-    , m_tag     ( name   )
-    , m_group   ( group  )
-    , m_counter ( 0      )
-  {}
+  Stat( StatEntity* entity = 0, const std::string& name = "", const std::string& group = "" )
+      : m_entity( entity ), m_tag( name ), m_group( group ), m_counter( 0 )
+  {
+  }
   /**  constructor from StatEntity, name and group :
    *
    *   @code
@@ -84,14 +80,10 @@ public:
    *   @param name  (optional) name of the object, for printout
    *   @param group (optional) group of the object, for printout
    */
-  Stat ( StatEntity&        entity       ,
-         const std::string& name   = ""  ,
-         const std::string& group  = ""  )
-    : m_entity  ( &entity )
-    , m_tag     ( name    )
-    , m_group   ( group   )
-    , m_counter ( 0       )
-  {}
+  Stat( StatEntity& entity, const std::string& name = "", const std::string& group = "" )
+      : m_entity( &entity ), m_tag( name ), m_group( group ), m_counter( 0 )
+  {
+  }
   /**  constructor from IStatSvc, tag and value
    *
    *   @code
@@ -110,8 +102,7 @@ public:
    *   @param svc pointer to Chrono&Stat Service
    *   @paran tag unique tag for the entry
    */
-  Stat ( IStatSvc*          svc  ,
-         const std::string& tag  ) ;
+  Stat( IStatSvc* svc, const std::string& tag );
   /**  constructor from IStatSvc, tag and value
    *
    *   @code
@@ -129,9 +120,7 @@ public:
    *   @paran tag unique tag for the entry
    *   @param flag    "flag"(additive quantity) to be used
    */
-  Stat ( IStatSvc*          svc  ,
-         const std::string& tag  ,
-         const double       flag ) ;
+  Stat( IStatSvc* svc, const std::string& tag, const double flag );
   /** constructor from ICounterSvc, group and name
    *
    *  @code
@@ -149,24 +138,22 @@ public:
    *  @param group group name
    *  @param name  counter name
    */
-  Stat ( ICounterSvc*       svc   ,
-         const std::string& group ,
-         const std::string& name  ) ;
+  Stat( ICounterSvc* svc, const std::string& group, const std::string& name );
   /// copy constructor
-  Stat           ( const Stat& ) = default;
+  Stat( const Stat& ) = default;
   /// Assignement operator
   Stat& operator=( const Stat& ) = default;
   /// destructor
   ~Stat() = default;
   // ==========================================================================
   /// get the entity
-  const StatEntity*  entity    () const { return  m_entity     ; }
+  const StatEntity* entity() const { return m_entity; }
   /// dereference operaqtor
-  const StatEntity*  operator->() const { return    entity()   ; }
+  const StatEntity* operator->() const { return entity(); }
   /// cast to StatEntity
-  operator const StatEntity&   () const { return   *entity()   ; }
+  operator const StatEntity&() const { return *entity(); }
   /// check validity
-  bool                operator!() const { return 0 == m_entity ; }
+  bool operator!() const { return 0 == m_entity; }
   // ==========================================================================
   /** General increment for the counter
    *
@@ -184,10 +171,12 @@ public:
    *  @param f value to be added to the counter
    *  @return selfreference
    */
-  Stat& operator+= ( const double f )
+  Stat& operator+=( const double f )
   {
-    if ( m_entity ) { (*m_entity) += f ; }
-    return *this ;
+    if ( m_entity ) {
+      ( *m_entity ) += f;
+    }
+    return *this;
   }
   /** Pre-increment operator for the counter
    *
@@ -202,10 +191,12 @@ public:
    *  @see StatEntity
    *  @return selfreference
    */
-  Stat& operator++ ()
+  Stat& operator++()
   {
-    if ( m_entity ) { ++(*m_entity) ; }
-    return *this ;
+    if ( m_entity ) {
+      ++( *m_entity );
+    }
+    return *this;
   }
   /** Post-increment operator for the counter
    *
@@ -219,98 +210,109 @@ public:
    *  @see StatEntity
    *  @return self-reference
    */
-  Stat& operator++ (int)
+  Stat& operator++( int )
   {
-    if ( m_entity ) { (*m_entity)++ ; }
-    return *this ;
+    if ( m_entity ) {
+      ( *m_entity )++;
+    }
+    return *this;
   }
   /** General decrement operator for the counter
    *  @see StatEntity
    *  @return self-reference
    *  @param f counter decrement
    */
-  Stat& operator-= ( const double   f )
+  Stat& operator-=( const double f )
   {
-    if ( m_entity ) { (*m_entity) -= f ; }
-    return *this ;
+    if ( m_entity ) {
+      ( *m_entity ) -= f;
+    }
+    return *this;
   }
   /// Pre-decrement operator for the flag
-  Stat& operator-- ()
+  Stat& operator--()
   {
-    if ( m_entity ) { --(*m_entity)   ; }
-    return *this ;
+    if ( m_entity ) {
+      --( *m_entity );
+    }
+    return *this;
   }
   /// Post-decrement operator for the flag
-  Stat& operator-- (int)
+  Stat& operator--( int )
   {
-    if ( m_entity ) {   (*m_entity)-- ; }
-    return *this ;
+    if ( m_entity ) {
+      ( *m_entity )--;
+    }
+    return *this;
   }
   /// increment with StatEntity object
   Stat& operator+=( const StatEntity& right )
   {
-    if ( m_entity ) { (*m_entity) += right ; }
-    return *this ;
+    if ( m_entity ) {
+      ( *m_entity ) += right;
+    }
+    return *this;
   }
   /// increment with  other stat objects
   Stat& operator+=( const Stat& right )
   {
-    if ( 0 != right.entity() ) { (*this) += *right.entity() ; }
-    return *this ;
+    if ( 0 != right.entity() ) {
+      ( *this ) += *right.entity();
+    }
+    return *this;
   }
   // ==========================================================================
   /// representation as string
-  std::string toString() const ;
+  std::string toString() const;
   /** printout to std::ostream
    *  @param s the reference to the output stream
    *  @return the reference to the output stream
    */
-  std::ostream& print( std::ostream& o = std::cout ) const ;
+  std::ostream& print( std::ostream& o = std::cout ) const;
   /** printout  to std::ostream
    *  @param s the reference to the output stream
    *  @return the reference to the output stream
    */
-  std::ostream& fillStream ( std::ostream& o ) const { return print ( o ) ; }
+  std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   // ==========================================================================
   /// alternative access to underlying counter (for ICounterSvc::CounterObj)
-  StatEntity*        counter   () const { return  m_entity   ; }
+  StatEntity* counter() const { return m_entity; }
   /// counter name
-  const std::string& name      () const { return  m_tag      ; }
+  const std::string& name() const { return m_tag; }
   /// counter group (for ICounterSvc)
-  const std::string& group     () const { return  m_group    ; }
+  const std::string& group() const { return m_group; }
   // ==========================================================================
 private:
   // underlying counter
-  StatEntity*  m_entity = nullptr ;   ///< underlying counter
+  StatEntity* m_entity = nullptr; ///< underlying counter
   // unique stat tag(name)
-  std::string  m_tag     ;   ///< unique stat tag(name)
+  std::string m_tag; ///< unique stat tag(name)
   // group (for ICounterSvc)
-  std::string  m_group   ;
+  std::string m_group;
   // Stat  service
-  SmartIF<IStatSvc>    m_stat    ;   ///< Stat  service
+  SmartIF<IStatSvc> m_stat; ///< Stat  service
   // Counter Svc
-  SmartIF<ICounterSvc> m_counter ;   ///< Counter Service
+  SmartIF<ICounterSvc> m_counter; ///< Counter Service
 };
 // ============================================================================
 /// external operator for addition of Stat and a number
-GAUDI_API Stat operator+( const Stat&  stat  , const double value  ) ;
+GAUDI_API Stat operator+( const Stat& stat, const double value );
 // ============================================================================
 /// external operator for subtraction of Stat and a number
-GAUDI_API Stat operator-( const Stat&  stat  , const double value  ) ;
+GAUDI_API Stat operator-( const Stat& stat, const double value );
 // ============================================================================
 /// external operator for addition of Stat and a number
-GAUDI_API Stat operator+( const double value , const Stat&  stat   ) ;
+GAUDI_API Stat operator+( const double value, const Stat& stat );
 // ============================================================================
 /// external operator for addition of Stat and Stat
-GAUDI_API Stat operator+( const Stat&  stat  , const Stat&  value ) ;
+GAUDI_API Stat operator+( const Stat& stat, const Stat& value );
 // ============================================================================
 /// external printout operator to std::ostream
-GAUDI_API std::ostream& operator<<( std::ostream& stream , const Stat& stat ) ;
+GAUDI_API std::ostream& operator<<( std::ostream& stream, const Stat& stat );
 // ============================================================================
 
 // ============================================================================
 // The END
 // ============================================================================
-#endif    // __GAUDI_CHRONOSTATSVC_STAT_H__
+#endif // __GAUDI_CHRONOSTATSVC_STAT_H__
 // ============================================================================
-

@@ -25,13 +25,16 @@
 // forward declarations
 namespace AIDA
 {
-  class IHistogram1D ;
-  class IHistogram2D ;
-  class IHistogram3D ;
-  class IProfile1D   ;
-  class IProfile2D   ;
+  class IHistogram1D;
+  class IHistogram2D;
+  class IHistogram3D;
+  class IProfile1D;
+  class IProfile2D;
 }
-namespace Tuples { class TupleObj; }
+namespace Tuples
+{
+  class TupleObj;
+}
 // ============================================================================
 /** @namespace GaudiAlg
  *
@@ -48,96 +51,84 @@ namespace GaudiAlg
   // ============================ 1D ==========================================
   // ==========================================================================
   /// the actual type for  (title)->(1D histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    std::string          ,                // Key
-    AIDA::IHistogram1D*                   // Value
-    > Histo1DMapTitle    ;
+  typedef GaudiUtils::HashMap<std::string,        // Key
+                              AIDA::IHistogram1D* // Value
+                              >
+      Histo1DMapTitle;
   /// the actual type for (ID)->(1D histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    HistoID              ,                 // Key
-    AIDA::IHistogram1D*                    // Value
-    > Histo1DMapID       ;
+  typedef GaudiUtils::HashMap<HistoID,            // Key
+                              AIDA::IHistogram1D* // Value
+                              >
+      Histo1DMapID;
   // ==========================================================================
   // ============================ 2D ==========================================
   // ==========================================================================
   /// the actual type for  (title)->(2D histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    std::string                         , // Key
-    AIDA::IHistogram2D*                   // Value
-    > Histo2DMapTitle ;
+  typedef GaudiUtils::HashMap<std::string,        // Key
+                              AIDA::IHistogram2D* // Value
+                              >
+      Histo2DMapTitle;
   /// the actual type for (ID)->(2D histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    HistoID                              , // Key
-    AIDA::IHistogram2D*                   // Value
-    > Histo2DMapID ;
+  typedef GaudiUtils::HashMap<HistoID,            // Key
+                              AIDA::IHistogram2D* // Value
+                              >
+      Histo2DMapID;
   // ==========================================================================
   // ============================ 2D ==========================================
   // ==========================================================================
   /// the actual type for  (title)->(3D histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    std::string                         , // Key
-    AIDA::IHistogram3D*                   // Value
-    > Histo3DMapTitle ;
+  typedef GaudiUtils::HashMap<std::string,        // Key
+                              AIDA::IHistogram3D* // Value
+                              >
+      Histo3DMapTitle;
   /// the actual type for (ID)->(3D histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    HistoID                              , // Key
-    AIDA::IHistogram3D*                   // Value
-    > Histo3DMapID ;
+  typedef GaudiUtils::HashMap<HistoID,            // Key
+                              AIDA::IHistogram3D* // Value
+                              >
+      Histo3DMapID;
   // ==========================================================================
   // ============================ 1D Prof =====================================
   // ==========================================================================
   /// the actual type for  (title)->(1D Profile Histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    std::string                         , // Key
-    AIDA::IProfile1D*                     // Value
-    > Profile1DMapTitle ;
+  typedef GaudiUtils::HashMap<std::string,      // Key
+                              AIDA::IProfile1D* // Value
+                              >
+      Profile1DMapTitle;
   /// the actual type for (ID)->(1D Profile histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    HistoID                             , // Key
-    AIDA::IProfile1D*                     // Value
-    > Profile1DMapID ;
+  typedef GaudiUtils::HashMap<HistoID,          // Key
+                              AIDA::IProfile1D* // Value
+                              >
+      Profile1DMapID;
   // ==========================================================================
   // ============================ 2D Prof =====================================
   // ==========================================================================
   /// the actual type for  (title)->(2D Profile Histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    std::string                         , // Key
-    AIDA::IProfile2D*                     // Value
-    > Profile2DMapTitle ;
+  typedef GaudiUtils::HashMap<std::string,      // Key
+                              AIDA::IProfile2D* // Value
+                              >
+      Profile2DMapTitle;
   /// the actual type for (ID)->(2D Profile histogram) map
-  typedef GaudiUtils::HashMap
-  <
-    HistoID                             , // Key
-    AIDA::IProfile2D*                     // Value
-    > Profile2DMapID ;
+  typedef GaudiUtils::HashMap<HistoID,          // Key
+                              AIDA::IProfile2D* // Value
+                              >
+      Profile2DMapID;
   // ==========================================================================
   // ============================ NTuples =====================================
-  // ==========================================================================  
+  // ==========================================================================
   /// the actual type for  (title)->(tuple) map
-  typedef GaudiUtils::HashMap
-  <
-    std::string                         , // Key
-    Tuples::TupleObj*                     // Value
-    > TupleMapTitle ;
+  typedef GaudiUtils::HashMap<std::string,      // Key
+                              Tuples::TupleObj* // Value
+                              >
+      TupleMapTitle;
   /// the actual type for  (ID)->(tuple) map
-  typedef GaudiUtils::HashMap
-  <
-    TupleID                              , // Key
-    Tuples::TupleObj*                     // Value
-    > TupleMapID  ;
+  typedef GaudiUtils::HashMap<TupleID,          // Key
+                              Tuples::TupleObj* // Value
+                              >
+      TupleMapID;
   // ==========================================================================
 }
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // GAUDIALG_MAPS_H
 // ============================================================================

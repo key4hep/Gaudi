@@ -6,6 +6,7 @@ from os.path import join, dirname
 base_dir = dirname(__file__)
 scripts_dir = join(base_dir, 'cmake_scripts')
 
+
 def test_loops():
     script_name = join(scripts_dir, 'test_loops.cmake')
     out, err, returncode = cmake_script(script_name, cwd=base_dir)
@@ -15,6 +16,7 @@ def test_loops():
     print err
     assert returncode != 0
     assert 'Infinite recursion detected at project Loop' in err
+
 
 def test_missing_base():
     script_name = join(scripts_dir, 'test_missing_base.cmake')

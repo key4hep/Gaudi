@@ -103,15 +103,15 @@ namespace
   };
   // ==========================================================================
 } //                                                 end of anonymous namespace
-  // ===========================================================================
-  /*  the generic function to get object from TES
-   *  @see IDataProviderSvc
-   *  @see IDataProviderSvc::findObject
-   *  @see IDataProviderSvc::retriveObject
-   *  @param dpsvc (INPUT) pointer to Data Provider Service
-   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-   *  @date 2009-10-09
-   */
+// ===========================================================================
+/*  the generic function to get object from TES
+ *  @see IDataProviderSvc
+ *  @see IDataProviderSvc::findObject
+ *  @see IDataProviderSvc::retriveObject
+ *  @param dpsvc (INPUT) pointer to Data Provider Service
+ *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+ *  @date 2009-10-09
+ */
 // ===========================================================================
 DataObject* GaudiPython::Helper::getobject( IDataProviderSvc* dpsvc, const std::string& path, const bool retrieve,
                                             const bool disable )

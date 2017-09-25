@@ -2,7 +2,7 @@
 #define GAUDIKERNEL_LISTITEM_H
 
 // Include files
-#if !defined(GAUDI_V22_API) || defined(G22_NO_DEPRECATED)
+#if !defined( GAUDI_V22_API ) || defined( G22_NO_DEPRECATED )
 #include "GaudiKernel/TypeNameString.h"
 typedef Gaudi::Utils::TypeNameString ListItem;
 #else

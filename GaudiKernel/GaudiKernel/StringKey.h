@@ -5,10 +5,10 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
+#include <algorithm>
+#include <functional>
 #include <iosfwd>
 #include <string>
-#include <functional>
-#include <algorithm>
 #include <vector>
 // ============================================================================
 // GaudiKernel
@@ -37,43 +37,42 @@ namespace Gaudi
   public:
     // ========================================================================
     /// constructor from plain C-string, perform hashing
-    StringKey ( const char* key = "" ) ; // constructor, perform hashing
+    StringKey( const char* key = "" ); // constructor, perform hashing
     /// constructor from std::string, perform hashing
-    StringKey ( std::string key ) ; // constructor, perform hashing
+    StringKey( std::string key ); // constructor, perform hashing
     // ========================================================================
   public:
     // ========================================================================
     /// the actual string
-    const std::string&      str() const { return m_str ;  }
+    const std::string& str() const { return m_str; }
     /// implicit cast to std::string
-    operator const std::string&() const { return str() ;  }
+    operator const std::string&() const { return str(); }
     /// empty key?
-    bool empty    () const { return m_str.empty() ; }
+    bool empty() const { return m_str.empty(); }
     /// empty key?
-    bool operator!() const { return       empty() ; }
+    bool operator!() const { return empty(); }
     // ========================================================================
   public:
     // ========================================================================
     /** equality                                                            Key
      *  for efficiency reason compare the hash-values first
      */
-    bool operator == ( const StringKey&   o ) const
-    { return m_hash == o.m_hash && m_str == o.m_str ; }
+    bool operator==( const StringKey& o ) const { return m_hash == o.m_hash && m_str == o.m_str; }
     /** equality, without hashing                                        string
      *  rely on the native string equality
      */
-    bool operator == ( const std::string& o ) const { return m_str == o ; }
+    bool operator==( const std::string& o ) const { return m_str == o; }
     // ========================================================================
   public: // non-equality
     // ========================================================================
     /// non equality                                                      Key
-    bool operator!=( const StringKey&   o ) const { return !(*this==o) ; }
+    bool operator!=( const StringKey& o ) const { return !( *this == o ); }
     /// non-equality                                                   string
-    bool operator!=( const std::string& o ) const { return !(*this==o) ; }
+    bool operator!=( const std::string& o ) const { return !( *this == o ); }
     // ========================================================================
     // ordering
     // ========================================================================
-    public:
+  public:
     /** less                                                                key
      *  It can be used as a key for std::map, e.g.
      *  <code>std::map<StringKey,double></code>
@@ -94,18 +93,17 @@ namespace Gaudi
      *
      *  @endcode
      */
-    bool operator < ( const StringKey& o ) const
-    { return m_hash == o.m_hash ? m_str < o.m_str : m_hash < o.m_hash   ; }
+    bool operator<( const StringKey& o ) const { return m_hash == o.m_hash ? m_str < o.m_str : m_hash < o.m_hash; }
     /// greater                                                             key
-    bool operator > ( const StringKey& o ) const { return    o < *this  ; }
+    bool operator>( const StringKey& o ) const { return o < *this; }
     /// less or equal                                                       key
-    bool operator <=( const StringKey& o ) const { return !(*this > o ) ; }
+    bool operator<=( const StringKey& o ) const { return !( *this > o ); }
     /// greater or equal                                                    key
-    bool operator >=( const StringKey& o ) const { return !(*this < o ) ; }
+    bool operator>=( const StringKey& o ) const { return !( *this < o ); }
     // ========================================================================
     // few helper methods for indirect usage, mainly for Python
     // ========================================================================
-    public:
+  public:
     /** the actual access to the hash
      *  @attention NEVER use the actual hash value for anything stored in
      *             files, as it is not guaranteed that the hashing scheme
@@ -115,32 +113,32 @@ namespace Gaudi
      *    - Python
      *  @reutrn the actual hash value
      */
-    std::size_t __hash__  () const { return m_hash ; }
+    std::size_t __hash__() const { return m_hash; }
     // ========================================================================
     /// the representation of the object
-    std::string __str__   () const ; // the representation of the object
+    std::string __str__() const; // the representation of the object
     /// the representation of the object
-    std::string __repr__  () const ; // the representation of the object
+    std::string __repr__() const; // the representation of the object
     /// equality operator for python
-    bool        __eq__    ( const StringKey&   right ) const ;
+    bool __eq__( const StringKey& right ) const;
     /// equality operators for python
-    bool        __eq__    ( const std::string& right ) const ;
+    bool __eq__( const std::string& right ) const;
     /// non-equality operator for python
-    bool        __neq__   ( const StringKey&   right ) const ;
+    bool __neq__( const StringKey& right ) const;
     /// non-equality operator for python
-    bool        __neq__   ( const std::string& right ) const ;
+    bool __neq__( const std::string& right ) const;
     // ========================================================================
   public:
     // ========================================================================
     /// string representation (for properties)
-    std::string toString  () const ;  // string representation (for properties)
+    std::string toString() const; // string representation (for properties)
     // ========================================================================
   private:
     // ========================================================================
     /// the actual string:
-    std::string m_str  ;                                   // the actual string
+    std::string m_str; // the actual string
     /// the hash:
-    std::size_t m_hash ;                                   //          the hash
+    std::size_t m_hash; //          the hash
     // ========================================================================
   };
   // ==========================================================================
@@ -149,13 +147,9 @@ namespace Gaudi
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator==
-    ( const Gaudi::StringKey&   key1     ,
-      const char               (&key2)[N] )
+  inline bool operator==( const Gaudi::StringKey& key1, const char ( &key2 )[N] )
   {
-    return
-      key1.str().size() == N &&
-      std::equal ( key2 , key2 + N , key1.str().begin() ) ;
+    return key1.str().size() == N && std::equal( key2, key2 + N, key1.str().begin() );
   }
   // ==========================================================================
   /** non-equality operator with C-arrays
@@ -163,47 +157,42 @@ namespace Gaudi
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator!=
-  ( const Gaudi::StringKey&   key1     ,
-    const char              (&key2)[N] )
-  { return ! ( key1 == key2 ) ; }
+  inline bool operator!=( const Gaudi::StringKey& key1, const char ( &key2 )[N] )
+  {
+    return !( key1 == key2 );
+  }
   // ==========================================================================
   /** "right" form of equality operator
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-07
    */
-  inline bool operator==
-    ( const std::string&        key1 ,
-      const Gaudi::StringKey&   key2 )
-  { return key2 == key1 ; }
+  inline bool operator==( const std::string& key1, const Gaudi::StringKey& key2 ) { return key2 == key1; }
   // ==========================================================================
   /** "right" form of equality operator
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator==
-    ( const char              (&key1 )[N] ,
-      const Gaudi::StringKey&   key2      )
-  { return key2 == key1 ; }
+  inline bool operator==( const char ( &key1 )[N], const Gaudi::StringKey& key2 )
+  {
+    return key2 == key1;
+  }
   // ==========================================================================
   /** "right" form of non-equality operator
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-07
    */
-  inline bool operator!=
-  ( const std::string&          key1 ,
-    const Gaudi::StringKey&     key2 )
-  { return key2 != key1 ; }
+  inline bool operator!=( const std::string& key1, const Gaudi::StringKey& key2 ) { return key2 != key1; }
   // ==========================================================================
   /** "right" form of non-equality operator
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator!=
-  ( const char              (&key1)[N] ,
-    const Gaudi::StringKey&   key2     ) { return key2 != key1 ; }
+  inline bool operator!=( const char ( &key1 )[N], const Gaudi::StringKey& key2 )
+  {
+    return key2 != key1;
+  }
   // ==========================================================================
   /** hash-function: heeded for boost::hash
    *  @attention NEVER use the actual hash value for anything stored in
@@ -215,23 +204,14 @@ namespace Gaudi
    *  @author Vanya BELYAEV Iavn.Belyaev@nikhef.nl
    *  @date 2009-10-07
    */
-  inline std::size_t hash_value ( const Gaudi::StringKey& key )
-  { return key.__hash__ () ; }
+  inline std::size_t hash_value( const Gaudi::StringKey& key ) { return key.__hash__(); }
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // interoperability with std::string and const char*
-inline std::string operator+(const std::string& lhs, const Gaudi::StringKey& rhs) {
-    return lhs + rhs.str();
-}
-inline std::string operator+(const char* lhs, const Gaudi::StringKey& rhs) {
-    return lhs + rhs.str();
-}
-inline std::string operator+(const Gaudi::StringKey& lhs, const std::string& rhs) {
-    return lhs.str() + rhs;
-}
-inline std::string operator+(const Gaudi::StringKey& lhs, const char* rhs) {
-    return lhs.str() + rhs;
-}
+inline std::string operator+( const std::string& lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
+inline std::string operator+( const char* lhs, const Gaudi::StringKey& rhs ) { return lhs + rhs.str(); }
+inline std::string operator+( const Gaudi::StringKey& lhs, const std::string& rhs ) { return lhs.str() + rhs; }
+inline std::string operator+( const Gaudi::StringKey& lhs, const char* rhs ) { return lhs.str() + rhs; }
 // ============================================================================
 // Streaming  value -> string
 // ============================================================================
@@ -251,9 +231,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV Iavn.Belyaev@nikhef.nl
      *  @date 2009-10-07
      */
-    GAUDI_API std::ostream& toStream
-    ( const Gaudi::StringKey& key ,
-      std::ostream&             s   ) ;
+    GAUDI_API std::ostream& toStream( const Gaudi::StringKey& key, std::ostream& s );
     // ========================================================================
   } //                                            end of namespace Gaudi::Utils
   // ==========================================================================
@@ -262,9 +240,7 @@ namespace Gaudi
    *  @author Vanya BELYAEV Iavn.Belyaev@nikhef.nl
    *  @date 2009-10-07
    */
-  inline std::ostream& operator<<
-    ( std::ostream&           o   ,
-      const Gaudi::StringKey& key ) { return  o << key.str() ; }
+  inline std::ostream& operator<<( std::ostream& o, const Gaudi::StringKey& key ) { return o << key.str(); }
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
@@ -285,9 +261,7 @@ namespace Gaudi
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse
-    ( Gaudi::StringKey&  result ,
-      const std::string& input  ) ;
+    GAUDI_API StatusCode parse( Gaudi::StringKey& result, const std::string& input );
     // ========================================================================
     /** parse the vector of keys from the string
      *  @see Gaudi::Parsers
@@ -298,23 +272,20 @@ namespace Gaudi
      *  @param input the input string
      *  @return status code
      */
-    GAUDI_API StatusCode parse
-    ( std::vector<Gaudi::StringKey>&  result ,
-      const std::string&              input  ) ;
+    GAUDI_API StatusCode parse( std::vector<Gaudi::StringKey>& result, const std::string& input );
     // ========================================================================
   } //                                          end of namespace Gaudi::Parsers
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-namespace std {
+namespace std
+{
   /// specialization of hash function used in C++11 collections like
   /// std::unordered_map
   /// \see https://its.cern.ch/jira/browse/GAUDI-973
   template <>
   struct hash<Gaudi::StringKey> {
-    inline std::size_t operator()(Gaudi::StringKey const& s) const {
-      return hash_value(s);
-    }
+    inline std::size_t operator()( Gaudi::StringKey const& s ) const { return hash_value( s ); }
   };
 }
 // ============================================================================

@@ -12,18 +12,18 @@ class DataObject;
  *
  *  @author Marco Clemencic
  */
-class GAUDI_API IDataStoreLeaves: virtual public IAlgTool {
+class GAUDI_API IDataStoreLeaves : virtual public IAlgTool
+{
 
 public:
   /// InterfaceID
-  DeclareInterfaceID(IDataStoreLeaves,1,0);
+  DeclareInterfaceID( IDataStoreLeaves, 1, 0 );
 
   /// Returned type
   typedef std::vector<DataObject*> LeavesList;
 
   /// Return the list of leaves.
-  virtual const LeavesList & leaves() const = 0;
-
+  virtual const LeavesList& leaves() const = 0;
 };
 
 #endif

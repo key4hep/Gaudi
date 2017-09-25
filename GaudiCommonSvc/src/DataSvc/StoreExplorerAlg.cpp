@@ -6,7 +6,6 @@
 //
 //	====================================================================
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"
@@ -63,11 +62,10 @@ public:
   std::string access( T* p )
   {
     if ( !p ) return "Access FAILED.";
-    std::string result =
-        std::accumulate( std::begin( *p ), std::end( *p ), std::string{},
-                         [&]( std::string s, typename T::const_reference i ) {
-                           return s + std::to_string( p->index( i ) ) + ":" + std::to_string( i->clID() ) + ",";
-                         } );
+    std::string result = std::accumulate(
+        std::begin( *p ), std::end( *p ), std::string{}, [&]( std::string s, typename T::const_reference i ) {
+          return s + std::to_string( p->index( i ) ) + ":" + std::to_string( i->clID() ) + ",";
+        } );
     return result.substr( 0, result.length() - 2 );
   }
 

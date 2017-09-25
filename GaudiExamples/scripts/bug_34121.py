@@ -2,14 +2,14 @@
 # ====================================================================
 from Gaudi.Configuration import *
 from Configurables import bug_34121__Tool as Tool, \
-                          bug_34121__MyAlgorithm as MyAlgorithm
+    bug_34121__MyAlgorithm as MyAlgorithm
 
-tool = Tool(Double = -1)
+tool = Tool(Double=-1)
 
 alg = MyAlgorithm("Alg")
-alg.addTool(tool,name="Tool")
+alg.addTool(tool, name="Tool")
 
-ApplicationMgr(EvtSel = "NONE", TopAlg = [alg])
+ApplicationMgr(EvtSel="NONE", TopAlg=[alg])
 
 # ====================================================================
 

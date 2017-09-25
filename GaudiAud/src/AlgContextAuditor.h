@@ -10,7 +10,7 @@
 // ============================================================================
 // Forward declarations
 // ============================================================================
-class IAlgContextSvc  ;
+class IAlgContextSvc;
 // ============================================================================
 /** @class AlgContextAuditor
  *  Description:  Register/Unregister the AlgContext of each
@@ -18,40 +18,38 @@ class IAlgContextSvc  ;
  *  @author M. Shapiro, LBNL
  *  @author modified by Vanya BELYAEV ibelyaev@physics.syr.edu
  */
-class AlgContextAuditor
-  : public Auditor
+class AlgContextAuditor : public Auditor
 {
 public:
   // IAuditor implementation
-  void beforeInitialize ( INamedInterface*  a ) override;
-  void afterInitialize  ( INamedInterface*  a ) override;
+  void beforeInitialize( INamedInterface* a ) override;
+  void afterInitialize( INamedInterface* a ) override;
   //
-  void beforeExecute    ( INamedInterface*  a ) override;
-  void afterExecute     ( INamedInterface*  a ,
-                                  const StatusCode& s ) override;
+  void beforeExecute( INamedInterface* a ) override;
+  void afterExecute( INamedInterface* a, const StatusCode& s ) override;
   //
-  void beforeFinalize   ( INamedInterface*  a ) override;
-  void afterFinalize    ( INamedInterface*  a ) override;
+  void beforeFinalize( INamedInterface* a ) override;
+  void afterFinalize( INamedInterface* a ) override;
 
 public:
   /// standard constructor/destructor @see Auditor
-  AlgContextAuditor
-  ( const std::string& name ,
-    ISvcLocator*       pSvc ) ;
-  ~AlgContextAuditor    () override = default;
+  AlgContextAuditor( const std::string& name, ISvcLocator* pSvc );
+  ~AlgContextAuditor() override = default;
   /// standard initialization, @see IAuditor
-  StatusCode initialize () override;
+  StatusCode initialize() override;
   /// standard finalization, @see IAuditor
-  StatusCode finalize   () override;
+  StatusCode finalize() override;
+
 private:
   /// delete the default/copy constructor and assignment
-  AlgContextAuditor () = delete;
-  AlgContextAuditor ( const AlgContextAuditor& ) = delete;
+  AlgContextAuditor()                           = delete;
+  AlgContextAuditor( const AlgContextAuditor& ) = delete;
   AlgContextAuditor& operator=( const AlgContextAuditor& ) = delete;
+
 private:
   /// the pointer to Algorithm Context Service
   SmartIF<IAlgContextSvc> m_svc;
-} ;
+};
 
 // ============================================================================
 // The END

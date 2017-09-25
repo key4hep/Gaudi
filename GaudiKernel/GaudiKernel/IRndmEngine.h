@@ -16,10 +16,11 @@
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API IRndmEngine: virtual public IInterface {
+class GAUDI_API IRndmEngine : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IRndmEngine,2,0);
+  DeclareInterfaceID( IRndmEngine, 2, 0 );
   /// Single shot returning single random number
   virtual double rndm() const = 0;
   /** Multiple shots returning vector with flat random numbers.
@@ -28,11 +29,11 @@ public:
       @param  start    ... starting at position start
       @return StatusCode indicating failure or success.
   */
-  virtual StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0) const = 0;
+  virtual StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0 ) const = 0;
   /// Allow to set new seeds
-  virtual StatusCode setSeeds(const std::vector<long>& seeds) = 0;
+  virtual StatusCode setSeeds( const std::vector<long>& seeds ) = 0;
   /// Allow to retrieve seeds
-  virtual StatusCode seeds(std::vector<long>& seeds)   const  = 0;
+  virtual StatusCode seeds( std::vector<long>& seeds ) const = 0;
 };
 
 #endif // GAUDI_INTERFACES_IRNDMENGINE_H

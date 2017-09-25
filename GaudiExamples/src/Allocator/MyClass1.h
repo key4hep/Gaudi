@@ -19,20 +19,21 @@
 class MyClass1
 {
 public:
-  MyClass1() ;
+  MyClass1();
   virtual ~MyClass1();
+
 private:
-  //Empty class
-  //Gaudi::XYZPoint   m_point  ;
-  //Gaudi::XYZTPoint  m_point4 ;
-  //Gaudi::Matrix4x3  m_3x4    ;
-  //Gaudi::Matrix7x7    m_7x7   ;
-  //double m_double ;
-  //int m_int[10];
-  //int m_int[3];
-  //int m_int2[2];
-  //int m_int100[100];
-  int m_int0 ;
+  // Empty class
+  // Gaudi::XYZPoint   m_point  ;
+  // Gaudi::XYZTPoint  m_point4 ;
+  // Gaudi::Matrix4x3  m_3x4    ;
+  // Gaudi::Matrix7x7    m_7x7   ;
+  // double m_double ;
+  // int m_int[10];
+  // int m_int[3];
+  // int m_int2[2];
+  // int m_int100[100];
+  int m_int0;
 };
 
 // ============================================================================

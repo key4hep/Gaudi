@@ -4,13 +4,13 @@
 #include "Python.h"
 
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/IAlgManager.h"
+#include "GaudiKernel/IAlgTool.h"
+#include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/IAlgorithm.h"
 
 // FIXME: (MCl) workaround for ROOT-5847
 #include "GaudiKernel/PropertyFwd.h"
@@ -24,7 +24,6 @@ namespace AIDA
   class IProfile1D;
   class IProfile2D;
 }
-
 
 #if PY_VERSION_HEX < 0x02050000
 // Note (MCl):

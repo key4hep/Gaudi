@@ -7,27 +7,37 @@ description of the repository structure.
 """
 __author__ = "Marco Clemencic <Marco.Clemencic@cern.ch>"
 
-import os, re, sys, tempfile, shutil
+import os
+import re
+import sys
+import tempfile
+import shutil
 from subprocess import Popen, PIPE
 from ConfigParser import ConfigParser
+
 
 def svn(*args, **kwargs):
     print "> svn", " ".join(args)
     return apply(Popen, (["svn"] + list(args),), kwargs)
 
+
 def svn_ls(url):
-    return svn("ls", url, stdout = PIPE).communicate()[0].splitlines()
+    return svn("ls", url, stdout=PIPE).communicate()[0].splitlines()
+
 
 def basename(url):
     return url.rsplit("/", 1)[-1]
 
+
 def dirname(url):
     return url.rsplit("/", 1)[1]
 
+
 def svn_exists(url):
-    d,b = url.rsplit("/", 1)
+    d, b = url.rsplit("/", 1)
     l = [x.rstrip("/") for x in svn_ls(d)]
     return b in l
+
 
 def checkout_structure(url, proj, branch):
     def checkout_level(base):
@@ -36,24 +46,25 @@ def checkout_structure(url, proj, branch):
         return dirs
 
     root = basename(url)
-    svn("co","-N", url, root).wait()
+    svn("co", "-N", url, root).wait()
     old_dir = os.getcwd()
     os.chdir(root)
     svn("up", "-N", proj).wait()
     br = [proj] + branch.split("/")
-    for base in [ "/".join(br[:n+1]) for n in range(len(br))]:
+    for base in ["/".join(br[:n + 1]) for n in range(len(br))]:
         checkout_level(base)
     checkout_level(proj + "/tags")
     os.chdir(old_dir)
     return root
 
+
 def main():
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("--pre", action = "store_true",
-                      help = "Create -pre tags instead of final tags.")
+    parser.add_option("--pre", action="store_true",
+                      help="Create -pre tags instead of final tags.")
     parser.add_option("-b", "--branch",
-                      help = "Use the given (global) branch as source for the tags instead of the trunk")
+                      help="Use the given (global) branch as source for the tags instead of the trunk")
     opts, args = parser.parse_args()
     if opts.branch:
         opts.branch = "/".join(["branches", "GAUDI", opts.branch])
@@ -64,7 +75,7 @@ def main():
     proj = "Gaudi"
     container = "GaudiRelease"
     project_info = ConfigParser()
-    project_info.optionxform = str # make options case sensitive
+    project_info.optionxform = str  # make options case sensitive
     project_info.read('project.info')
     packages = dict(project_info.items('Packages'))
     tempdir = tempfile.mkdtemp()
@@ -89,7 +100,8 @@ def main():
             # I have to make the tag if it doesn't exist and (if we use -pre tags)
             # neither the -pre tag exists.
             no_tag = not svn_exists(pktagdir)
-            make_tag = no_tag or (opts.pre and no_tag and not svn_exists(pktagdir + "-pre"))
+            make_tag = no_tag or (
+                opts.pre and no_tag and not svn_exists(pktagdir + "-pre"))
             if make_tag:
                 if opts.pre:
                     pktagdir += "-pre"
@@ -97,19 +109,23 @@ def main():
                 # Atlas type of tag
                 tagElements = tag_re.match(tag)
                 if tagElements:
-                    tagElements = "-".join([ "%02d" % int(el or "0") for el in tagElements.groups() ])
+                    tagElements = "-".join(["%02d" % int(el or "0")
+                                            for el in tagElements.groups()])
                     pktagdir = "%s/tags/%s/%s-%s" % (proj, p, p, tagElements)
-                    svn("cp", "/".join([proj, opts.branch, p]), pktagdir).wait()
+                    svn("cp", "/".join([proj, opts.branch, p]),
+                        pktagdir).wait()
             else:
                 if not no_tag:
-                    svn("up", "--depth=empty", pktagdir).wait() # needed for the copy in the global tag
+                    # needed for the copy in the global tag
+                    svn("up", "--depth=empty", pktagdir).wait()
 
         svn("ci").wait()
 
     finally:
-        shutil.rmtree(tempdir, ignore_errors = True)
+        shutil.rmtree(tempdir, ignore_errors=True)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

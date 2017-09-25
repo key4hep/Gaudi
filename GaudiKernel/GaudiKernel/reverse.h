@@ -27,29 +27,46 @@
 #include <utility>
 
 template <typename Iterable>
-struct reverse_wrapper { Iterable iterable; };
+struct reverse_wrapper {
+  Iterable iterable;
+};
 
 template <typename T>
-reverse_wrapper<T> reverse(T&& iterable) { return { std::forward<T>(iterable) }; }
+reverse_wrapper<T> reverse( T&& iterable )
+{
+  return {std::forward<T>( iterable )};
+}
 
-
-#if defined __GNUC__ &&  __GNUC__ < 5
+#if defined __GNUC__ && __GNUC__ < 5
 
 // std::rbegin and std::rend require gcc 5.0 or later (or clang 3.5 or later)
 template <typename T>
-auto begin(reverse_wrapper<T>& w) -> decltype(w.iterable.rbegin()) { return w.iterable.rbegin(); }
+auto begin( reverse_wrapper<T>& w ) -> decltype( w.iterable.rbegin() )
+{
+  return w.iterable.rbegin();
+}
 template <typename T>
-auto end(reverse_wrapper<T>& w) -> decltype(w.iterable.rend())  { return w.iterable.rend(); }
+auto end( reverse_wrapper<T>& w ) -> decltype( w.iterable.rend() )
+{
+  return w.iterable.rend();
+}
 
 #else
 
 #include <iterator>
 template <typename T>
-auto begin(reverse_wrapper<T>& w) { using std::rbegin; return rbegin(w.iterable); }
+auto begin( reverse_wrapper<T>& w )
+{
+  using std::rbegin;
+  return rbegin( w.iterable );
+}
 template <typename T>
-auto end(reverse_wrapper<T>& w)   { using std::rend; return rend(w.iterable); }
+auto end( reverse_wrapper<T>& w )
+{
+  using std::rend;
+  return rend( w.iterable );
+}
 
 #endif
-
 
 #endif

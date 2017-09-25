@@ -36,15 +36,14 @@
 extern "C" {
 #endif
 
-static inline unsigned long
-pfmlib_popcnt(unsigned long v)
+static inline unsigned long pfmlib_popcnt( unsigned long v )
 {
-	unsigned long sum = 0;
+  unsigned long sum = 0;
 
-	for(; v ; v >>=1) {
-		if (v & 0x1) sum++;
-	}
-	return sum;
+  for ( ; v; v >>= 1 ) {
+    if ( v & 0x1 ) sum++;
+  }
+  return sum;
 }
 
 #ifdef __cplusplus /* extern C */

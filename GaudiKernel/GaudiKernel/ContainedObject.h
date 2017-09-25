@@ -3,13 +3,15 @@
 
 // Include files
 #include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/StreamBuffer.h"
 #include "GaudiKernel/ObjectContainerBase.h"
+#include "GaudiKernel/StreamBuffer.h"
 #include <iostream>
 
 // Forward declarations
-template <class TYPE> class ObjectVector;
-template <class TYPE> class ObjectList;
+template <class TYPE>
+class ObjectVector;
+template <class TYPE>
+class ObjectList;
 
 // Typedefs
 typedef ObjectVector<ContainedObject> ContainedObjectVector;
@@ -26,7 +28,8 @@ static const CLID CLID_ContainedObject = 190;
     the navigability from the contained object back to its container.
     @author Pavel Binko
 */
-class GAUDI_API ContainedObject {
+class GAUDI_API ContainedObject
+{
 
   /// Allow the container classes access to protected members
   friend class ObjectVector<ContainedObject>;
@@ -36,39 +39,34 @@ protected:
   /// Constructors
   ContainedObject() = default;
   /// Copy constructor -- do NOT copy the parent reference...
-  ContainedObject(const ContainedObject&) : ContainedObject() { }
+  ContainedObject( const ContainedObject& ) : ContainedObject() {}
   /// Destructor
   virtual ~ContainedObject();
 
 public:
   /// Retrieve pointer to class identifier
   virtual const CLID& clID() const { return classID(); }
-  static const CLID& classID()     { return CLID_ContainedObject; }
+  static const CLID& classID() { return CLID_ContainedObject; }
 
   /// Access to parent object
-  const ObjectContainerBase* parent () const  { return m_parent;        }
+  const ObjectContainerBase* parent() const { return m_parent; }
   /// Update parent member
-  void setParent (ObjectContainerBase* value) { m_parent = value;       }
+  void setParent( ObjectContainerBase* value ) { m_parent = value; }
 
   /// Distance in the parent container
-  virtual long index() const
-  {
-    return m_parent ? m_parent->index(this) : -1;
-  }
+  virtual long index() const { return m_parent ? m_parent->index( this ) : -1; }
   /// Serialize the object for writing
-  virtual StreamBuffer& serialize( StreamBuffer& s ) const  { return s; }
+  virtual StreamBuffer& serialize( StreamBuffer& s ) const { return s; }
   /// Serialize the object for reading
-  virtual StreamBuffer& serialize( StreamBuffer& s )        { return s; }
+  virtual StreamBuffer& serialize( StreamBuffer& s ) { return s; }
   /// Fill the output stream (ASCII)
   virtual std::ostream& fillStream( std::ostream& s ) const { return s; }
   /// Output operator (ASCII)
-  friend std::ostream& operator<< ( std::ostream& s, const ContainedObject& obj ) {
-    return obj.fillStream(s);
-  }
+  friend std::ostream& operator<<( std::ostream& s, const ContainedObject& obj ) { return obj.fillStream( s ); }
 
 private:
   /// Pointer to the parent
-  ObjectContainerBase*   m_parent = nullptr;
+  ObjectContainerBase* m_parent = nullptr;
 };
 
-#endif  // GAUDIKERNEL_CONTAINEDOBJECT_H
+#endif // GAUDIKERNEL_CONTAINEDOBJECT_H

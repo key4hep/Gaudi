@@ -13,25 +13,26 @@
  *  @author Marco Clemencic
  *  @date   2005-12-14
  */
-class GAUDI_API UpdateManagerException: public GaudiException {
+class GAUDI_API UpdateManagerException : public GaudiException
+{
 public:
   /// Standard constructor
   UpdateManagerException( const std::string& Message = "unspecified exception",
-                          const std::string& Tag = "*UpdateManagerSvc*",
-                          const StatusCode & Code = StatusCode::FAILURE ):
-    GaudiException(Message,Tag,Code) {}
+                          const std::string& Tag = "*UpdateManagerSvc*", const StatusCode& Code = StatusCode::FAILURE )
+      : GaudiException( Message, Tag, Code )
+  {
+  }
 
-  UpdateManagerException( const std::string& Message,
-                          const std::string& Tag,
-                          const StatusCode & Code,
-                          const GaudiException& Ex ):
-    GaudiException(Message,Tag,Code,Ex) {}
+  UpdateManagerException( const std::string& Message, const std::string& Tag, const StatusCode& Code,
+                          const GaudiException& Ex )
+      : GaudiException( Message, Tag, Code, Ex )
+  {
+  }
 
   /// Destructor.
-  virtual ~UpdateManagerException() throw () {}
+  virtual ~UpdateManagerException() throw() {}
 
   /// Clone the exception.
-  virtual UpdateManagerException* clone() const override { return new UpdateManagerException(*this); }
-
+  virtual UpdateManagerException* clone() const override { return new UpdateManagerException( *this ); }
 };
 #endif // GAUDIKERNEL_UPDATEMANAGEREXCEPTION_H

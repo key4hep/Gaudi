@@ -13,16 +13,18 @@
 #ifdef _WIN32
 
 extern "C" {
-  inline struct tm * localtime_r(const time_t *sec, struct tm *result) {
-    localtime_s(result, sec);
-    return result;
-  }
-  inline struct tm * gmtime_r(const time_t *sec, struct tm *result) {
-    gmtime_s(result, sec);
-    return result;
-  }
+inline struct tm* localtime_r( const time_t* sec, struct tm* result )
+{
+  localtime_s( result, sec );
+  return result;
+}
+inline struct tm* gmtime_r( const time_t* sec, struct tm* result )
+{
+  gmtime_s( result, sec );
+  return result;
+}
 }
 
 #endif
 
-#endif    // GAUDIKERNEL_TIME_R_H
+#endif // GAUDIKERNEL_TIME_R_H

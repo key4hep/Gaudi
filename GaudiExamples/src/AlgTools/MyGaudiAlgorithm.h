@@ -62,8 +62,8 @@ private:
   DataObjectReadHandle<DataObject> m_hits{this, "hits", "/Event/Rec/Hits", "the hits"};
   DataObjectReadHandle<DataObject> m_raw{this, "raw", "/Rec/RAW", "the raw stuff"};
 
-  DataObjectWriteHandle<DataObject> m_selectedTracks{this, "trackSelection", "/Event/MyAnalysis/Tracks", "the selected tracks"};
-
+  DataObjectWriteHandle<DataObject> m_selectedTracks{this, "trackSelection", "/Event/MyAnalysis/Tracks",
+                                                     "the selected tracks"};
 };
 
 #endif // GAUDIEXAMPLE_MYALGORITHM_H

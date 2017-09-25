@@ -1,90 +1,103 @@
-#include <GaudiKernel/AnyDataHandle.h>
-#include <GaudiAlg/Producer.h>
 #include <GaudiAlg/Consumer.h>
+#include <GaudiAlg/Producer.h>
 #include <GaudiAlg/Transformer.h>
+#include <GaudiKernel/AnyDataHandle.h>
 #include <GaudiKernel/MsgStream.h>
 
-namespace Gaudi { namespace Examples {
+namespace Gaudi
+{
+  namespace Examples
+  {
 
-using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Algorithm>;
+    using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Algorithm>;
 
-struct IntDataProducer : Gaudi::Functional::Producer<int(),BaseClass_t> {
+    struct IntDataProducer : Gaudi::Functional::Producer<int(), BaseClass_t> {
 
-    IntDataProducer(const std::string& name, ISvcLocator* svcLoc)
-             : Producer( name, svcLoc,
-               KeyValue("OutputLocation", "/Event/MyInt")) {}
+      IntDataProducer( const std::string& name, ISvcLocator* svcLoc )
+          : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyInt" ) )
+      {
+      }
 
-    int operator()() const override {
+      int operator()() const override
+      {
         info() << "executing IntDataProducer, storing 7 into " << outputLocation() << endmsg;
         return 7;
-    }
-};
+      }
+    };
 
-DECLARE_COMPONENT(IntDataProducer)
+    DECLARE_COMPONENT( IntDataProducer )
 
-struct IntDataConsumer : Gaudi::Functional::Consumer<void(const int&),BaseClass_t> {
+    struct IntDataConsumer : Gaudi::Functional::Consumer<void( const int& ), BaseClass_t> {
 
-    IntDataConsumer(const std::string& name, ISvcLocator* svcLoc)
-             : Consumer( name, svcLoc,
-               KeyValue("InputLocation", "/Event/MyInt")) {}
+      IntDataConsumer( const std::string& name, ISvcLocator* svcLoc )
+          : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ) )
+      {
+      }
 
-    void operator()(const int& input) const override {
-        info() << "executing IntDataConsumer, consuming " << input
-               << " from " << inputLocation() << endmsg;
-    }
-};
+      void operator()( const int& input ) const override
+      {
+        info() << "executing IntDataConsumer, consuming " << input << " from " << inputLocation() << endmsg;
+      }
+    };
 
-DECLARE_COMPONENT(IntDataConsumer)
+    DECLARE_COMPONENT( IntDataConsumer )
 
-struct IntToFloatData : Gaudi::Functional::Transformer<float(const int&), BaseClass_t> {
+    struct IntToFloatData : Gaudi::Functional::Transformer<float( const int& ), BaseClass_t> {
 
-    IntToFloatData(const std::string& name, ISvcLocator* svcLoc)
-            : Transformer(name, svcLoc,
-              KeyValue("InputLocation", "/Event/MyInt"),
-              KeyValue("OutputLocation", "/Event/MyFloat")) {}
+      IntToFloatData( const std::string& name, ISvcLocator* svcLoc )
+          : Transformer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ),
+                         KeyValue( "OutputLocation", "/Event/MyFloat" ) )
+      {
+      }
 
-    float operator() (const int& input) const override {
-      info() << "Converting: " << input << " from " << inputLocation()
-             << " and storing it into " << outputLocation() << endmsg;
-        return float(input);
-    }
-};
+      float operator()( const int& input ) const override
+      {
+        info() << "Converting: " << input << " from " << inputLocation() << " and storing it into " << outputLocation()
+               << endmsg;
+        return float( input );
+      }
+    };
 
-DECLARE_COMPONENT(IntToFloatData)
+    DECLARE_COMPONENT( IntToFloatData )
 
-class IntIntToFloatFloatData : public Gaudi::Functional::MultiTransformer
-    <std::tuple<float, float>(const int&, const int&), BaseClass_t> {
-public:
-    IntIntToFloatFloatData(const std::string& name, ISvcLocator* svcLoc)
-            : MultiTransformer(name, svcLoc,
-                               {KeyValue("InputLocation1", {"/Event/MyInt"}),
-                                KeyValue("InputLocation2", {"/Event/MyOtherInt"})},
-                               {KeyValue("OutputLocation1", {"/Event/MyMultiFloat1"}),
-                                KeyValue("OutputLocation2", {"/Event/MyMultiFloat2"})}) {}
+    class IntIntToFloatFloatData
+        : public Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), BaseClass_t>
+    {
+    public:
+      IntIntToFloatFloatData( const std::string& name, ISvcLocator* svcLoc )
+          : MultiTransformer( name, svcLoc, {KeyValue( "InputLocation1", {"/Event/MyInt"} ),
+                                             KeyValue( "InputLocation2", {"/Event/MyOtherInt"} )},
+                              {KeyValue( "OutputLocation1", {"/Event/MyMultiFloat1"} ),
+                               KeyValue( "OutputLocation2", {"/Event/MyMultiFloat2"} )} )
+      {
+      }
 
-    std::tuple<float, float> operator() (const int& input1, const int& input2) const override {
-        info() << "Number of inputs : " << inputLocationSize()
-               << ", number of outputs : " << outputLocationSize() << endmsg;
-        info() << "Converting " << input1 << " from " << inputLocation<0>()
-               << " and " << input2 << " from " << inputLocation<1>() << endmsg;
-        info() << "Storing results into " << outputLocation<0>()
-               << " and " << outputLocation<1>() << endmsg;
-        return std::make_tuple(float(input1), float(input2));
-    }
-};
+      std::tuple<float, float> operator()( const int& input1, const int& input2 ) const override
+      {
+        info() << "Number of inputs : " << inputLocationSize() << ", number of outputs : " << outputLocationSize()
+               << endmsg;
+        info() << "Converting " << input1 << " from " << inputLocation<0>() << " and " << input2 << " from "
+               << inputLocation<1>() << endmsg;
+        info() << "Storing results into " << outputLocation<0>() << " and " << outputLocation<1>() << endmsg;
+        return std::make_tuple( float( input1 ), float( input2 ) );
+      }
+    };
 
-DECLARE_COMPONENT(IntIntToFloatFloatData)
+    DECLARE_COMPONENT( IntIntToFloatFloatData )
 
-struct FloatDataConsumer : Gaudi::Functional::Consumer<void(const float&), BaseClass_t> {
+    struct FloatDataConsumer : Gaudi::Functional::Consumer<void( const float& ), BaseClass_t> {
 
-    FloatDataConsumer(const std::string& name, ISvcLocator* svcLoc)
-             : Consumer( name, svcLoc,
-               KeyValue("InputLocation", "/Event/MyFloat")) {}
+      FloatDataConsumer( const std::string& name, ISvcLocator* svcLoc )
+          : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyFloat" ) )
+      {
+      }
 
-    void operator()(const float& input) const override {
+      void operator()( const float& input ) const override
+      {
         info() << "executing FloatDataConsumer: " << input << endmsg;
-    }
-};
+      }
+    };
 
-DECLARE_COMPONENT(FloatDataConsumer)
-}}
+    DECLARE_COMPONENT( FloatDataConsumer )
+  }
+}

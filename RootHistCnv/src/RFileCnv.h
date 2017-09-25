@@ -7,7 +7,8 @@
 
 class TFile;
 
-namespace RootHistCnv {
+namespace RootHistCnv
+{
 
   /** @class RootHistCnv::RFileCnv RFileCnv.h
 
@@ -23,12 +24,10 @@ namespace RootHistCnv {
   {
 
   public:
-
     /// Initialise
     StatusCode initialize() override;
 
   public:
-
     /// Create the transient representation of an object.
     StatusCode createObj( IOpaqueAddress* pAddress, DataObject*& refpObject ) override;
     /// Convert the transient object to the requested representation.
@@ -37,11 +36,8 @@ namespace RootHistCnv {
     StatusCode updateRep( IOpaqueAddress* pAddress, DataObject* pObject ) override;
 
   public:
-
     /// Inquire class type
-    static const CLID& classID()    {
-      return CLID_NTupleFile;
-    }
+    static const CLID& classID() { return CLID_NTupleFile; }
 
     /// Standard constructor
     RFileCnv( ISvcLocator* svc );
@@ -50,10 +46,8 @@ namespace RootHistCnv {
     ~RFileCnv() override = default;
 
   protected:
-
-    TFile *rfile;            ///< Pointer to ROOT file
+    TFile* rfile;            ///< Pointer to ROOT file
     std::string m_compLevel; ///< Compression setting, property RFileCnv.GlobalCompression
-
   };
-}    // namespace RootHistCnv
-#endif    // RootHistCnv_RFileCNV_H
+} // namespace RootHistCnv
+#endif // RootHistCnv_RFileCNV_H

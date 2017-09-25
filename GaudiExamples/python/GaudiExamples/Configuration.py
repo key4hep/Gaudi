@@ -29,6 +29,7 @@ class Gaudi_Test_MySuperAlg(SuperAlgorithm):
     '''
     Example implementation of a SuperAlgorithm specialization.
     '''
+
     def _initGraph(self):
         '''
         Prepare the graph represented by the SuperAlgorithm.

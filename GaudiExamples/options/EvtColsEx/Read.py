@@ -5,7 +5,7 @@ from Gaudi.Configuration import *
 from Configurables import GaudiPersistency, TagCollectionSvc
 
 GaudiPersistency()
-FileCatalog(Catalogs = [ "xmlcatalog_file:EvtColsEx.xml" ])
+FileCatalog(Catalogs=["xmlcatalog_file:EvtColsEx.xml"])
 
 evtColl = TagCollectionSvc("EvtTupleSvc")
 

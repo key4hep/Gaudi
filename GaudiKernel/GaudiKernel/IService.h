@@ -15,12 +15,13 @@
 class ISvcManager;
 class ServiceManager;
 
-class GAUDI_API IService: virtual public extend_interfaces<INamedInterface,
-                                                           IStateful> {
+class GAUDI_API IService : virtual public extend_interfaces<INamedInterface, IStateful>
+{
   friend class ServiceManager;
+
 public:
   /// InterfaceID
-  DeclareInterfaceID(IService,4,0);
+  DeclareInterfaceID( IService, 4, 0 );
 
   /// Initialize Service
   virtual StatusCode sysInitialize() = 0;
@@ -36,7 +37,7 @@ public:
   virtual StatusCode sysRestart() = 0;
 
 protected:
-  virtual void setServiceManager(ISvcManager*) = 0;
+  virtual void setServiceManager( ISvcManager* ) = 0;
 };
 
-#endif  // GAUDIKERNEL_ISERVICE_H
+#endif // GAUDIKERNEL_ISERVICE_H

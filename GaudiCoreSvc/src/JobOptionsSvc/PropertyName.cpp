@@ -3,11 +3,7 @@
 // ============================================================================
 #include "PropertyName.h"
 // ============================================================================
-std::string Gaudi::Parsers::PropertyName::FullName() const {
-    return (HasClient()?client_+".":"")+property_;
-}
+std::string Gaudi::Parsers::PropertyName::FullName() const { return ( HasClient() ? client_ + "." : "" ) + property_; }
 // ============================================================================
-std::string Gaudi::Parsers::PropertyName::ToString() const {
-    return FullName();
-}
+std::string Gaudi::Parsers::PropertyName::ToString() const { return FullName(); }
 // ============================================================================

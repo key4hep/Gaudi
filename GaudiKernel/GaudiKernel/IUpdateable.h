@@ -1,8 +1,8 @@
 #ifndef GAUDIKERNEL_IUPDATEABLE_H
 #define GAUDIKERNEL_IUPDATEABLE_H
 
-#include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/StatusCode.h"
 
 /** @class IUpdateable IUpdateable.h GaudiKernel/IUpdateable.h
   *
@@ -12,9 +12,9 @@
   *   @author  M.Frank
   *   @version 1.0
   */
-class GAUDI_API IUpdateable {
+class GAUDI_API IUpdateable
+{
 public:
-
   /// Default destructor
   virtual ~IUpdateable() = default;
 
@@ -23,7 +23,7 @@ public:
     *
     * @return  Status code indicating success or failure.
     */
-  virtual StatusCode update(int flag) = 0;
+  virtual StatusCode update( int flag ) = 0;
 };
 
 /** @class IUpdateableInterface IUpdateable.h GaudiKernel/IUpdateable.h
@@ -33,10 +33,11 @@ public:
   *   @author  M.Frank
   *   @version 1.0
   */
-class GAUDI_API IUpdateableIF : virtual public IInterface, virtual public IUpdateable {
+class GAUDI_API IUpdateableIF : virtual public IInterface, virtual public IUpdateable
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IUpdateableIF,1,0);
+  DeclareInterfaceID( IUpdateableIF, 1, 0 );
 
   /// Default destructor
   ~IUpdateableIF() override = default;

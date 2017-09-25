@@ -7,15 +7,15 @@
 //  the above will execute the provided callable when f goes out of scope,
 //  i.e. the 'current' scope ends.
 
-template<typename F>
+template <typename F>
 struct final_action {
-    F act;
-    final_action(final_action&&) = default;
-    ~final_action() { act(); }
+  F act;
+  final_action( final_action&& ) = default;
+  ~final_action() { act(); }
 };
 
-template<typename F>
-final_action<F> finally(F&& act)
+template <typename F>
+final_action<F> finally( F&& act )
 {
-    return { std::forward<F>(act) };
+  return {std::forward<F>( act )};
 }

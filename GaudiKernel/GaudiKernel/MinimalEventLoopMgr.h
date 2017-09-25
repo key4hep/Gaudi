@@ -7,10 +7,10 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IEventProcessor.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
 
 // STL include files
 #include <list>
@@ -120,7 +120,6 @@ private:
   SmartIF<IHiveWhiteBoard> m_WB;
 
   // number of events processed
-  size_t m_nevt {0};
-
+  size_t m_nevt{0};
 };
 #endif // GAUDIKERNEL_MINIMALEVENTLOOPMGR_H

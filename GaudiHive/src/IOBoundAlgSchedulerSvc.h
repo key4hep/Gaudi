@@ -5,10 +5,10 @@
 #include <thread>
 
 // Framework include files
-#include "GaudiKernel/IRunable.h"
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgTask.h"
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
 
 // External libs
 #include "tbb/concurrent_queue.h"
@@ -22,7 +22,8 @@
  *  @author  Illya Shapoval
  *  @version 1.0
  */
-class IOBoundAlgSchedulerSvc: public extends1<Service, IAccelerator> {
+class IOBoundAlgSchedulerSvc : public extends1<Service, IAccelerator>
+{
 public:
   /// Constructor
   IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svc );
@@ -37,10 +38,9 @@ public:
   StatusCode finalize() override;
 
   /// Add an algorithm to local queue to run on accelerator
-  StatusCode push(IAlgTask& task) override;
+  StatusCode push( IAlgTask& task ) override;
 
 private:
-
   // Utils and shortcuts ----------------------------------------------------
 
   /// Activate scheduler
@@ -59,10 +59,9 @@ private:
 
   typedef std::function<StatusCode()> action;
   /// This is done since the copy of the lambda storage is too expensive
-  //typedef std::shared_ptr<action> actionPtr;
+  // typedef std::shared_ptr<action> actionPtr;
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
-
 };
 
 #endif // GAUDIHIVE_IOBOUNDALGSCHEDULERSVC_H

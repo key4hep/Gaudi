@@ -12,16 +12,16 @@
 #ifndef GAUDIKERNEL_PLANE3DTYPES_H
 #define GAUDIKERNEL_PLANE3DTYPES_H 1
 
-#ifdef __INTEL_COMPILER         // Disable ICC remark from Math headers
-  #pragma warning(push)
-  #pragma warning(disable:1572) // Floating-point equality and inequality comparisons are unreliable
+#ifdef __INTEL_COMPILER // Disable ICC remark from Math headers
+#pragma warning( push )
+#pragma warning( disable : 1572 ) // Floating-point equality and inequality comparisons are unreliable
 #endif
 
 // Include files
 #include "Math/Plane3D.h"
 
 #ifdef __INTEL_COMPILER
-  #pragma warning(pop)
+#pragma warning( pop )
 #endif
 
 /** @namespace Gaudi

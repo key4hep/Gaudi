@@ -13,7 +13,8 @@
 /*
  * Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   /** @class RootConverter RootConverter.h Root/RootConverter.h
    *
@@ -29,14 +30,13 @@ namespace Gaudi {
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootConverter : public Converter   {
+  class GAUDI_API RootConverter : public Converter
+  {
   protected:
-
     /// Conversion service needed for proper operation to forward requests
     RootCnvSvc* m_dbMgr;
 
   public:
-
     /** Initializing Constructor
      * @param      typ      [IN]     Concrete storage type of the converter
      * @param      clid     [IN]     Class identifier of the object
@@ -44,56 +44,66 @@ namespace Gaudi {
      *
      * @return Reference to RootConverter object
      */
-    RootConverter(long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr)
-      : Converter(typ, clid, svc), m_dbMgr(mgr) {}
+    RootConverter( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr )
+        : Converter( typ, clid, svc ), m_dbMgr( mgr )
+    {
+    }
 
-      /// Standard Destructor
-      ~RootConverter() override = default;
+    /// Standard Destructor
+    ~RootConverter() override = default;
 
-      /// Retrieve the class type of the data store the converter uses.
-      long repSvcType() const override {    return i_repSvcType();  }
+    /// Retrieve the class type of the data store the converter uses.
+    long repSvcType() const override { return i_repSvcType(); }
 
-      /** Converter overrides: Create transient object from persistent data
-       *
-       * @param    pAddr       [IN]   Pointer to object address.
-       * @param    refpObj     [OUT]  Location to pointer to store data object
-       *
-       * @return Status code indicating success or failure.
-       */
-      StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override
-      {	return m_dbMgr->i__createObj(pAddr, refpObj);      }
+    /** Converter overrides: Create transient object from persistent data
+     *
+     * @param    pAddr       [IN]   Pointer to object address.
+     * @param    refpObj     [OUT]  Location to pointer to store data object
+     *
+     * @return Status code indicating success or failure.
+     */
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override
+    {
+      return m_dbMgr->i__createObj( pAddr, refpObj );
+    }
 
-      /** Resolve the references of the created transient object.
-       *
-       * @param    pAddr    [IN]   Pointer to object address.
-       * @param    pObj     [IN]   Pointer to data object
-       *
-       * @return Status code indicating success or failure.
-       */
-      StatusCode fillObjRefs(IOpaqueAddress* pAddr, DataObject* pObj) override
-      {	return m_dbMgr->i__fillObjRefs(pAddr, pObj);       }
+    /** Resolve the references of the created transient object.
+     *
+     * @param    pAddr    [IN]   Pointer to object address.
+     * @param    pObj     [IN]   Pointer to data object
+     *
+     * @return Status code indicating success or failure.
+     */
+    StatusCode fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override
+    {
+      return m_dbMgr->i__fillObjRefs( pAddr, pObj );
+    }
 
-      /** Converter overrides: Convert the transient object to the
-       * requested representation.
-       *
-       * @param    pObj     [IN]   Pointer to data object
-       * @param    refpAddr [OUT]  Location to store pointer to object address.
-       *
-       * @return Status code indicating success or failure.
-       */
-      StatusCode createRep(DataObject* pObj, IOpaqueAddress*& refpAddr) override
-      {	return m_dbMgr->i__createRep(pObj, refpAddr);      }
+    /** Converter overrides: Convert the transient object to the
+     * requested representation.
+     *
+     * @param    pObj     [IN]   Pointer to data object
+     * @param    refpAddr [OUT]  Location to store pointer to object address.
+     *
+     * @return Status code indicating success or failure.
+     */
+    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override
+    {
+      return m_dbMgr->i__createRep( pObj, refpAddr );
+    }
 
-      /** Resolve the references of the created transient object.
-       *
-       * @param    pAddr    [IN]   Pointer to object address.
-       * @param    pObj     [IN]   Pointer to data object
-       *
-       * @return Status code indicating success or failure.
-       */
-      StatusCode fillRepRefs(IOpaqueAddress* pAddr, DataObject* pObj) override
-      {	return m_dbMgr->i__fillRepRefs(pAddr, pObj);       }
+    /** Resolve the references of the created transient object.
+     *
+     * @param    pAddr    [IN]   Pointer to object address.
+     * @param    pObj     [IN]   Pointer to data object
+     *
+     * @return Status code indicating success or failure.
+     */
+    StatusCode fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override
+    {
+      return m_dbMgr->i__fillRepRefs( pAddr, pObj );
+    }
   };
 }
 
-#endif    // GAUDIROOTCNV_ROOTCONVERTER_H
+#endif // GAUDIROOTCNV_ROOTCONVERTER_H

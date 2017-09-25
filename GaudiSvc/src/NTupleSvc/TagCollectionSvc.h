@@ -23,27 +23,26 @@
     @Author  M.Frank
     @Version 1.0
 */
-class TagCollectionSvc : public NTupleSvc   {
+class TagCollectionSvc : public NTupleSvc
+{
 public:
   /// unhides some NTupleSvc methods
   using NTupleSvc::connect;
 
   /// Standard Constructor
-  TagCollectionSvc(const std::string& name, ISvcLocator* svc);
+  TagCollectionSvc( const std::string& name, ISvcLocator* svc );
   /// Standard Destructor
   ~TagCollectionSvc() override = default;
   /// Add file to list I/O list
 protected:
-  StatusCode connect(const std::string& ident, std::string& logname) override;
+  StatusCode connect( const std::string& ident, std::string& logname ) override;
   /** Create conversion service.
       @param nam     Name of the service to be created
       @param svc     Service type if sepecified in the options
       @param props
   */
-  virtual StatusCode createService( const std::string& nam,
-                                    const std::string& typ,
-                                    const std::vector<Prop>& props,
-                                    IConversionSvc*& pSvc);
+  virtual StatusCode createService( const std::string& nam, const std::string& typ, const std::vector<Prop>& props,
+                                    IConversionSvc*& pSvc );
 };
 
 #endif // GAUDI_TAGCOLLECTIONSVC_H

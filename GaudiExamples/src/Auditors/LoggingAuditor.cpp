@@ -9,63 +9,70 @@
  *  @author Marco Clemencic
  *  @date 2008-04-03
  */
-namespace GaudiExamples {
+namespace GaudiExamples
+{
 
-class LoggingAuditor: public Auditor {
-public:
+  class LoggingAuditor : public Auditor
+  {
+  public:
+    void before( StandardEventType evt, INamedInterface* caller ) override
+    {
+      auto& log = info();
+      log << "Auditing before of " << evt;
+      if ( caller ) log << " for " << caller->name();
+      log << endmsg;
+    }
 
-  void before(StandardEventType evt, INamedInterface* caller) override {
-    auto& log = info();
-    log << "Auditing before of " << evt;
-    if (caller) log << " for " << caller->name();
-    log << endmsg;
-  }
+    void after( StandardEventType evt, INamedInterface* caller, const StatusCode& ) override
+    {
+      auto& log = info();
+      log << "Auditing after of " << evt;
+      if ( caller ) log << " for " << caller->name();
+      log << endmsg;
+    }
 
-  void after(StandardEventType evt, INamedInterface* caller, const StatusCode &) override {
-    auto& log = info();
-    log << "Auditing after of " << evt;
-    if (caller) log << " for " << caller->name();
-    log << endmsg;
-  }
+    void before( CustomEventTypeRef evt, INamedInterface* caller ) override
+    {
+      auto& log = info();
+      log << "Auditing before of " << evt;
+      if ( caller ) log << " for " << caller->name();
+      log << endmsg;
+    }
 
-  void before(CustomEventTypeRef evt, INamedInterface* caller) override {
-    auto& log = info();
-    log << "Auditing before of " << evt;
-    if (caller) log << " for " << caller->name();
-    log << endmsg;
-  }
+    void after( CustomEventTypeRef evt, INamedInterface* caller, const StatusCode& ) override
+    {
+      auto& log = info();
+      log << "Auditing after of " << evt;
+      if ( caller ) log << " for " << caller->name();
+      log << endmsg;
+    }
 
-  void after(CustomEventTypeRef evt, INamedInterface* caller, const StatusCode &) override {
-    auto& log = info();
-    log << "Auditing after of " << evt;
-    if (caller) log << " for " << caller->name();
-    log << endmsg;
-  }
+    void before( StandardEventType evt, const std::string& caller ) override
+    {
+      info() << "Auditing before of " << evt << " for " << caller << endmsg;
+    }
 
-  void before(StandardEventType evt, const std::string& caller) override {
-    info() << "Auditing before of " << evt << " for " << caller << endmsg;
-  }
+    void after( StandardEventType evt, const std::string& caller, const StatusCode& ) override
+    {
+      info() << "Auditing after of " << evt << " for " << caller << endmsg;
+    }
 
-  void after(StandardEventType evt, const std::string& caller, const StatusCode &) override {
-    info() << "Auditing after of " << evt << " for " << caller << endmsg;
-  }
+    void before( CustomEventTypeRef evt, const std::string& caller ) override
+    {
+      info() << "Auditing before of " << evt << " for " << caller << endmsg;
+    }
 
-  void before(CustomEventTypeRef evt, const std::string& caller) override {
-    info() << "Auditing before of " << evt << " for " << caller << endmsg;
-  }
+    void after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& ) override
+    {
+      info() << "Auditing after of " << evt << " for " << caller << endmsg;
+    }
 
-  void after(CustomEventTypeRef evt, const std::string& caller, const StatusCode &) override {
-    info() << "Auditing after of " << evt << " for " << caller << endmsg;
-  }
+    /// constructor
+    LoggingAuditor( const std::string& name, ISvcLocator* pSvc ) : Auditor( name, pSvc ) {}
 
-  /// constructor
-  LoggingAuditor(const std::string& name, ISvcLocator* pSvc):
-    Auditor ( name , pSvc ) {}
+    /// virtual destructor
+    ~LoggingAuditor() override = default;
+  };
 
-  /// virtual destructor
-  ~LoggingAuditor() override = default;
-
-};
-
-DECLARE_COMPONENT(LoggingAuditor)
+  DECLARE_COMPONENT( LoggingAuditor )
 }

@@ -1,7 +1,7 @@
 #include "PartPropExa.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IPartPropSvc.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/MsgStream.h"
 
 #include "HepPDT/ParticleDataTable.hh"
 
@@ -9,31 +9,28 @@
 
 // Static Factory declaration
 
-DECLARE_COMPONENT(PartPropExa)
+DECLARE_COMPONENT( PartPropExa )
 
-PartPropExa::PartPropExa( const std::string& name, ISvcLocator* pSvcLocator ) :
-  Algorithm(name, pSvcLocator)
-{
-
-}
+PartPropExa::PartPropExa( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode PartPropExa::initialize() {
+StatusCode PartPropExa::initialize()
+{
 
-  if (service("PartPropSvc",m_pps).isFailure()) {
+  if ( service( "PartPropSvc", m_pps ).isFailure() ) {
     error() << "Could not get PartPropSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "My Unknwon PID Test");
+  m_pps->setUnknownParticleHandler( new HepPDT::TestUnknownID, "My Unknwon PID Test" );
 
   info() << "this should cause a warning: " << endmsg;
-  m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "Second Unknwon PID Test");
+  m_pps->setUnknownParticleHandler( new HepPDT::TestUnknownID, "Second Unknwon PID Test" );
 
-  HepPDT::ParticleDataTable *pdt = m_pps->PDT();
+  HepPDT::ParticleDataTable* pdt = m_pps->PDT();
 
-  m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "Third Unknwon PID Test");
+  m_pps->setUnknownParticleHandler( new HepPDT::TestUnknownID, "Third Unknwon PID Test" );
 
   std::ostringstream ost;
   pdt->writeParticleData( ost );
@@ -41,53 +38,42 @@ StatusCode PartPropExa::initialize() {
   info() << ost.str() << endmsg;
 
   return StatusCode::SUCCESS;
-
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode PartPropExa::execute() {
-
-  return StatusCode::SUCCESS;
-
-}
+StatusCode PartPropExa::execute() { return StatusCode::SUCCESS; }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-StatusCode PartPropExa::finalize() {
-
-  return StatusCode::SUCCESS;
-
-}
+StatusCode PartPropExa::finalize() { return StatusCode::SUCCESS; }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-namespace HepPDT {
+namespace HepPDT
+{
 
-CommonParticleData*
-TestUnknownID::processUnknownID
-              ( ParticleID key, const ParticleDataTable & pdt ) {
+  CommonParticleData* TestUnknownID::processUnknownID( ParticleID key, const ParticleDataTable& pdt )
+  {
 
-  std::cout << "TestUnknownID: " << key.PDTname() << std::endl;
+    std::cout << "TestUnknownID: " << key.PDTname() << std::endl;
 
-  CommonParticleData * cpd = 0;
-  if( key.isNucleus() ) {
+    CommonParticleData* cpd = 0;
+    if ( key.isNucleus() ) {
 
-    // have to create a TempParticleData with all properties first
-    TempParticleData tpd(key);
-    // calculate approximate mass
-    // WARNING: any calls to particle() from here MUST reference
-    //          a ParticleData which is already in the table
-    // This convention is enforced.
-    const ParticleData * proton = pdt.particle(2212);
-    if( proton ) {
-      double protonMass = proton->mass();
-      tpd.tempMass = Measurement(key.A()*protonMass, 0.);
-      // now create CommonParticleData
-      cpd = new CommonParticleData(tpd);
+      // have to create a TempParticleData with all properties first
+      TempParticleData tpd( key );
+      // calculate approximate mass
+      // WARNING: any calls to particle() from here MUST reference
+      //          a ParticleData which is already in the table
+      // This convention is enforced.
+      const ParticleData* proton = pdt.particle( 2212 );
+      if ( proton ) {
+        double protonMass = proton->mass();
+        tpd.tempMass      = Measurement( key.A() * protonMass, 0. );
+        // now create CommonParticleData
+        cpd = new CommonParticleData( tpd );
+      }
     }
+    return cpd;
   }
-  return cpd;
 }
-
-}
-

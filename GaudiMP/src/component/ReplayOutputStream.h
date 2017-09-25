@@ -42,6 +42,7 @@ private:
   public:
     OutStreamAdder( ReplayOutputStream* ptr ) : m_ptr( ptr ) {}
     inline void operator()( const Gaudi::Utils::TypeNameString& outStream ) { m_ptr->i_addOutputStream( outStream ); }
+
   private:
     ReplayOutputStream* m_ptr;
   };
@@ -56,7 +57,7 @@ private:
       SmartIF<IAlgorithm>& alg = m_ptr->m_outputStreams[name];
       if ( alg ) {
         if ( !alg->isExecuted() ) {
-          alg->sysExecute(Gaudi::Hive::currentContext());
+          alg->sysExecute( Gaudi::Hive::currentContext() );
         } else {
           m_ptr->warning() << name << " already executed for the current event" << endmsg;
         }

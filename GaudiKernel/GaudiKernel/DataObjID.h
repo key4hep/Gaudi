@@ -4,10 +4,10 @@
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/StatusCode.h"
 
-#include <string>
-#include <unordered_set>
 #include <iostream>
 #include <mutex>
+#include <string>
+#include <unordered_set>
 
 //---------------------------------------------------------------------------
 
@@ -31,19 +31,19 @@
 
 //---------------------------------------------------------------------------
 
-
 struct DataObjID_Hasher;
 class IClassIDSvc;
 
-class DataObjID {
+class DataObjID
+{
 public:
   friend DataObjID_Hasher;
 
-  DataObjID() {};
-  DataObjID(const std::string& key);
-  DataObjID(const CLID& clid, const std::string& key);
-  DataObjID(const std::string& className, const std::string& key);
-  DataObjID(const DataObjID&) = default;
+  DataObjID(){};
+  DataObjID( const std::string& key );
+  DataObjID( const CLID& clid, const std::string& key );
+  DataObjID( const std::string& className, const std::string& key );
+  DataObjID( const DataObjID& ) = default;
 
   // only return the last part of the key
   const std::string& key() const { return m_key; }
@@ -53,82 +53,72 @@ public:
 
   CLID clid() const { return m_clid; }
 
-  void updateKey(const std::string& key);
+  void updateKey( const std::string& key );
 
-  friend std::ostream& operator<< (std::ostream& str, const DataObjID& d);
+  friend std::ostream& operator<<( std::ostream& str, const DataObjID& d );
 
-  friend bool operator< (const DataObjID& lhs, const DataObjID& rhs ) {
-    return lhs.m_hash < rhs.m_hash;
-  }
+  friend bool operator<( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash < rhs.m_hash; }
 
-  friend bool operator==(const DataObjID& lhs,  const DataObjID& rhs ) {
-    return lhs.m_hash == rhs.m_hash;
-  }
+  friend bool operator==( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash == rhs.m_hash; }
 
-  friend bool operator!=(const DataObjID& lhs,  const DataObjID& rhs ) {
-    return !( lhs == rhs );
-  }
+  friend bool operator!=( const DataObjID& lhs, const DataObjID& rhs ) { return !( lhs == rhs ); }
 
 private:
-
   void hashGen();
-  void parse(const std::string& key);
+  void parse( const std::string& key );
   void setClid();
   void setClassName();
 
-  CLID m_clid {0};
-  std::size_t m_hash {0};
+  CLID m_clid{0};
+  std::size_t m_hash{0};
 
-  std::string m_className {""};
-  std::string m_key {"INVALID"};
+  std::string m_className{""};
+  std::string m_key{"INVALID"};
 
   static void getClidSvc();
   static IClassIDSvc* p_clidSvc;
   static std::once_flag m_ip;
-
 };
 
-inline DataObjID::DataObjID(const std::string& key):
-  m_key(key) {
-  hashGen();
+inline DataObjID::DataObjID( const std::string& key ) : m_key( key ) { hashGen(); }
 
-}
-
-inline DataObjID::DataObjID(const CLID& clid, const std::string& key):
-  m_clid(clid), m_key(key) {
+inline DataObjID::DataObjID( const CLID& clid, const std::string& key ) : m_clid( clid ), m_key( key )
+{
   setClassName();
   hashGen();
 }
 
-inline DataObjID::DataObjID(const std::string& className, const std::string& key):
-  m_className(className), m_key(key) {
+inline DataObjID::DataObjID( const std::string& className, const std::string& key )
+    : m_className( className ), m_key( key )
+{
   setClid();
   hashGen();
 }
 
-inline void DataObjID::updateKey(const std::string& key) {
+inline void DataObjID::updateKey( const std::string& key )
+{
   m_key = key;
   hashGen();
 }
 
 struct DataObjID_Hasher {
-  std::size_t operator()(const DataObjID& k) const {
-    return k.m_hash;
-  }
+  std::size_t operator()( const DataObjID& k ) const { return k.m_hash; }
 };
 
 typedef std::unordered_set<DataObjID, DataObjID_Hasher> DataObjIDColl;
 
-namespace Gaudi {
-  namespace Parsers {
-    StatusCode parse(DataObjID&, const std::string&);
-    StatusCode parse(DataObjIDColl&, const std::string&);
+namespace Gaudi
+{
+  namespace Parsers
+  {
+    StatusCode parse( DataObjID&, const std::string& );
+    StatusCode parse( DataObjIDColl&, const std::string& );
   }
-  namespace Utils {
-    GAUDI_API std::ostream& toStream(const DataObjID& v, std::ostream& o);
-    GAUDI_API std::ostream& toStream(const DataObjIDColl& v, std::ostream& o);
+  namespace Utils
+  {
+    GAUDI_API std::ostream& toStream( const DataObjID& v, std::ostream& o );
+    GAUDI_API std::ostream& toStream( const DataObjIDColl& v, std::ostream& o );
   }
 }
-
 
 #endif

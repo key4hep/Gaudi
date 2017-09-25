@@ -23,23 +23,25 @@
 ///       black hole: whatever you dump in to it, you get something uniformly
 ///       distributed back ;-)
 ///
-namespace Gaudi {
-namespace Utils {
-namespace QuasiRandom {
+namespace Gaudi
+{
+  namespace Utils
+  {
+    namespace QuasiRandom
+    {
 
-/// Create a hash with a large avalanche effect from a 32 bit integer
-uint32_t mix(uint32_t state);
+      /// Create a hash with a large avalanche effect from a 32 bit integer
+      uint32_t mix( uint32_t state );
 
-/// mix some 'extra' entropy into 'state' and return result
-uint32_t mix32(uint32_t state, uint32_t extra);
+      /// mix some 'extra' entropy into 'state' and return result
+      uint32_t mix32( uint32_t state, uint32_t extra );
 
-/// mix some 'extra' entropy into 'state' and return result
-uint32_t mix64(uint32_t state, uint64_t extra);
+      /// mix some 'extra' entropy into 'state' and return result
+      uint32_t mix64( uint32_t state, uint64_t extra );
 
-/// mix some 'extra' entropy into 'state' and return result
-uint32_t mixString(uint32_t state, const std::string& extra);
-
-}
-}
+      /// mix some 'extra' entropy into 'state' and return result
+      uint32_t mixString( uint32_t state, const std::string& extra );
+    }
+  }
 }
 #endif // GAUDIUTILS_QUASIRANDOM_H

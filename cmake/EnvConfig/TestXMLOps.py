@@ -11,8 +11,8 @@ from EnvConfig import Control
 from EnvConfig import xmlModule
 from tempfile import mkstemp
 
-class Test(unittest.TestCase):
 
+class Test(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
 
     def testFileLoad(self):
         '''Test loading of previously written file.'''
-        self.control = Control.Environment(useAsWriter = True)
+        self.control = Control.Environment(useAsWriter=True)
         self.control.unset('varToUnset')
 
         self.control.declare('myVar', 'list', True)
@@ -112,11 +112,13 @@ class Test(unittest.TestCase):
             loader = xmlModule.XMLFile()
             self.assertRaises(SystemExit, loader.variable, filename)
 
-            self.assertTrue(('Failed to parse %s:' % filename) in stream.getvalue(), 'missing error message')
+            self.assertTrue(('Failed to parse %s:' % filename)
+                            in stream.getvalue(), 'missing error message')
 
         finally:
             logging.getLogger().removeHandler(hdlr)
             os.remove(filename)
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

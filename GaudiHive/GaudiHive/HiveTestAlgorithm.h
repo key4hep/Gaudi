@@ -47,6 +47,6 @@ private:
   Gaudi::Property<std::vector<std::string>> m_inputs{this, "Input", {}, "List of required inputs"};
   Gaudi::Property<std::vector<std::string>> m_outputs{this, "Output", {}, "List of provided outputs"};
 
-  std::vector<DataObjectHandle<DataObject> *> m_inputHandles;
-  std::vector<DataObjectHandle<DataObject> *> m_outputHandles;
+  std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
+  std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
 };

@@ -3,12 +3,10 @@
 
 #include "GaudiKernel/MsgStream.h"
 
-DECLARE_COMPONENT(LoopAlg)
+DECLARE_COMPONENT( LoopAlg )
 
 //------------------------------------------------------------------------------
-LoopAlg::LoopAlg(const std::string& name,
-				 ISvcLocator* pSvcLocator) :
-  Algorithm(name, pSvcLocator)
+LoopAlg::LoopAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
 //------------------------------------------------------------------------------
 {
 }
@@ -17,9 +15,9 @@ LoopAlg::LoopAlg(const std::string& name,
 StatusCode LoopAlg::initialize()
 //------------------------------------------------------------------------------
 {
-  IService *pService = nullptr;
-  const bool CREATENOW(true);
-  return service("ServiceB", pService, CREATENOW);
+  IService* pService = nullptr;
+  const bool CREATENOW( true );
+  return service( "ServiceB", pService, CREATENOW );
 }
 
 //------------------------------------------------------------------------------

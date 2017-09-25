@@ -55,6 +55,7 @@ public:
     inline Arg& argument() { return m_argum; }
     inline const GenFunc* equation() const { return m_eq; }
     inline const Gradient& gradient() const { return m_grad; }
+
   private:
     // default constructor is disabled
     FuncMinimumMisc() = delete;

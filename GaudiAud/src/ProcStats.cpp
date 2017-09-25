@@ -4,18 +4,18 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   meant
-#pragma warning(disable:2259)
+#pragma warning( disable : 2259 )
 #endif
 
 #include "ProcStats.h"
 
-#if defined(__linux__) or defined(__APPLE__)
+#if defined( __linux__ ) or defined( __APPLE__ )
 #include <iostream>
 #include <sstream>
 #include <sys/signal.h>
 #include <sys/syscall.h>
 #ifdef __linux__
-#  include <sys/procfs.h>
+#include <sys/procfs.h>
 #endif // __linux__
 #include <cstdio>
 
@@ -229,106 +229,76 @@ struct linux_proc {
 };
 #endif // __linux__ or __APPLE__
 
-ProcStats::cleanup::~cleanup() {
-  if(ProcStats::inst!=0)  {
+ProcStats::cleanup::~cleanup()
+{
+  if ( ProcStats::inst != 0 ) {
     delete ProcStats::inst;
-    ProcStats::inst=0;
+    ProcStats::inst = 0;
   }
 }
 
-ProcStats* ProcStats::instance() {
+ProcStats* ProcStats::instance()
+{
   static cleanup c;
-  if(!inst) inst = new ProcStats;
+  if ( !inst ) inst = new ProcStats;
   return inst;
 }
 
 ProcStats* ProcStats::inst = 0;
 
-ProcStats::ProcStats():valid(false)
+ProcStats::ProcStats() : valid( false )
 {
-#if defined(__linux__) or defined(__APPLE__)
-  pg_size = sysconf(_SC_PAGESIZE); // getpagesize();
+#if defined( __linux__ ) or defined( __APPLE__ )
+  pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
 
-  fname = "/proc/" + std::to_string(getpid()) + "/stat";
+  fname = "/proc/" + std::to_string( getpid() ) + "/stat";
 
   fd.open( fname.c_str(), O_RDONLY );
-  if(!fd)
-  {
+  if ( !fd ) {
     cerr << "Failed to open " << fname << endl;
     return;
   }
 #endif // __linux__ or __APPLE__
-  valid=true;
+  valid = true;
 }
 
-
-bool ProcStats::fetch(procInfo& f)
+bool ProcStats::fetch( procInfo& f )
 {
-  if( valid == false ) return false;
+  if ( valid == false ) return false;
 
-#if defined(__linux__) or defined(__APPLE__)
+#if defined( __linux__ ) or defined( __APPLE__ )
   double pr_size, pr_rssize;
   linux_proc pinfo;
   int cnt;
 
-  fd.lseek(0,SEEK_SET);
+  fd.lseek( 0, SEEK_SET );
 
-  if((cnt=fd.read(buf,sizeof(buf)))<0)
-  {
+  if ( ( cnt = fd.read( buf, sizeof( buf ) ) ) < 0 ) {
     cout << "LINUX Read of Proc file failed:" << endl;
     return false;
   }
 
-  if(cnt>0)
-  {
+  if ( cnt > 0 ) {
     buf[std::min( static_cast<std::size_t>( cnt ), sizeof( buf ) - 1 )] = '\0';
 
-    sscanf(buf,
-        //1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9   30  1   2   3   4   5
-        "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu",
-        &pinfo.pid,
-        pinfo.comm,
-        &pinfo.state,
-        &pinfo.ppid,
-        &pinfo.pgrp,
-        &pinfo.session,
-        &pinfo.tty,
-        &pinfo.tpgid,
-        &pinfo.flags,
-        &pinfo.minflt,
-        &pinfo.cminflt,
-        &pinfo.majflt,
-        &pinfo.cmajflt,
-        &pinfo.utime,
-        &pinfo.stime,
-        &pinfo.cutime,
-        &pinfo.cstime,
-        &pinfo.priority,
-        &pinfo.nice,
-        &pinfo.num_threads,
-        &pinfo.itrealvalue,
-        &pinfo.starttime,
-        &pinfo.vsize,
-        &pinfo.rss,
-        &pinfo.rlim,
-        &pinfo.startcode,
-        &pinfo.endcode,
-        &pinfo.startstack,
-        &pinfo.kstkesp,
-        &pinfo.kstkeip,
-        &pinfo.signal,
-        &pinfo.blocked,
-        &pinfo.sigignore,
-        &pinfo.sigcatch,
-        &pinfo.wchan
-        );
+    sscanf( buf,
+            // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
+            // 30  1   2   3   4   5
+            "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
+            "%lu %lu %lu %lu %lu %lu %lu",
+            &pinfo.pid, pinfo.comm, &pinfo.state, &pinfo.ppid, &pinfo.pgrp, &pinfo.session, &pinfo.tty, &pinfo.tpgid,
+            &pinfo.flags, &pinfo.minflt, &pinfo.cminflt, &pinfo.majflt, &pinfo.cmajflt, &pinfo.utime, &pinfo.stime,
+            &pinfo.cutime, &pinfo.cstime, &pinfo.priority, &pinfo.nice, &pinfo.num_threads, &pinfo.itrealvalue,
+            &pinfo.starttime, &pinfo.vsize, &pinfo.rss, &pinfo.rlim, &pinfo.startcode, &pinfo.endcode,
+            &pinfo.startstack, &pinfo.kstkesp, &pinfo.kstkeip, &pinfo.signal, &pinfo.blocked, &pinfo.sigignore,
+            &pinfo.sigcatch, &pinfo.wchan );
 
-      // resident set size in pages
-    pr_size = (double)pinfo.vsize;
+    // resident set size in pages
+    pr_size   = (double)pinfo.vsize;
     pr_rssize = (double)pinfo.rss;
 
-    f.vsize = pr_size   / (1024*1024);
-    f.rss   = pr_rssize * pg_size / (1024*1024);
+    f.vsize = pr_size / ( 1024 * 1024 );
+    f.rss   = pr_rssize * pg_size / ( 1024 * 1024 );
   }
 
 #else
@@ -336,10 +306,10 @@ bool ProcStats::fetch(procInfo& f)
   f.rss   = 0;
 #endif // __linux__ or __APPLE__
 
-  bool rc = (curr==f)?false:true;
+  bool rc = ( curr == f ) ? false : true;
 
-  curr.rss=f.rss;
-  curr.vsize=f.vsize;
+  curr.rss   = f.rss;
+  curr.vsize = f.vsize;
 
   return rc;
 }

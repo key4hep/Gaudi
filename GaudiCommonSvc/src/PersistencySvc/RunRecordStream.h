@@ -10,14 +10,15 @@
   * @author  M.Frank
   * @version 1.0
   */
-class RunRecordStream : public OutputStream     {
+class RunRecordStream : public OutputStream
+{
 public:
   /// Standard algorithm Constructor
-  RunRecordStream(const std::string& nam, ISvcLocator* svc) : OutputStream(nam,svc) {}
+  RunRecordStream( const std::string& nam, ISvcLocator* svc ) : OutputStream( nam, svc ) {}
   /// Standard Destructor
   ~RunRecordStream() override = default;
   /// Runrecords do not get written for each event: Event processing hence dummy....
-  StatusCode execute() override {  return StatusCode::SUCCESS; }
+  StatusCode execute() override { return StatusCode::SUCCESS; }
   /// Algorithm overload: finalization
   StatusCode finalize() override;
 };

@@ -42,7 +42,7 @@ public:
   /** Constructor
       @param name    The algorithm object's name
       @param svcloc  A pointer to a service location service */
-  Auditor( const std::string& name, ISvcLocator *svcloc );
+  Auditor( const std::string& name, ISvcLocator* svcloc );
 
   Auditor( const Auditor& a ) = delete;
   Auditor& operator=( const Auditor& rhs ) = delete;

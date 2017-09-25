@@ -763,17 +763,17 @@ private:
 private:
   // ==========================================================================
   /// pointer to the N-Tuple service
-  mutable SmartIF<INTupleSvc>     m_ntupleSvc;
+  mutable SmartIF<INTupleSvc> m_ntupleSvc;
   /// pointer to the event tag collection service
-  mutable SmartIF<INTupleSvc>     m_evtColSvc;
+  mutable SmartIF<INTupleSvc> m_evtColSvc;
   /// pointer to Detector Data Service
   mutable SmartIF<IDataProviderSvc> m_detSvc;
   /// pointer to Chrono & Stat Service
   mutable SmartIF<IChronoStatSvc> m_chronoSvc;
   /// pointer to Incident Service
-  mutable SmartIF<IIncidentSvc>   m_incSvc;
+  mutable SmartIF<IIncidentSvc> m_incSvc;
   /// pointer for histogram service
-  mutable SmartIF<IHistogramSvc>  m_histoSvc;
+  mutable SmartIF<IHistogramSvc> m_histoSvc;
   // Pointer to the Algorithm Context Service
   mutable SmartIF<IAlgContextSvc> m_contextSvc; ///< Algorithm Context Service
 

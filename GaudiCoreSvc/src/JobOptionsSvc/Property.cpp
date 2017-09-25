@@ -13,46 +13,26 @@
 #include <boost/format.hpp>
 // ============================================================================
 // Namespace aliases:
-namespace gp = Gaudi::Parsers;
+namespace gp  = Gaudi::Parsers;
 namespace gpu = Gaudi::Parsers::Utils;
 // ============================================================================
-const gp::Position& gp::Property::DefinedPosition() const {
-    return property_name_.position();
-}
+const gp::Position& gp::Property::DefinedPosition() const { return property_name_.position(); }
 // ============================================================================
-const gp::Position& gp::Property::ValuePosition() const {
-    return property_value_.position();
-}
+const gp::Position& gp::Property::ValuePosition() const { return property_value_.position(); }
 // ============================================================================
-const std::string& gp::Property::ClientName() const {
-    return property_name_.client();
-}
+const std::string& gp::Property::ClientName() const { return property_name_.client(); }
 // ============================================================================
-const std::string& gp::Property::NameInClient() const {
-    return property_name_.property();
-}
+const std::string& gp::Property::NameInClient() const { return property_name_.property(); }
 // ============================================================================
-std::string gp::Property::FullName() const {
-    return property_name_.ToString();
-}
+std::string gp::Property::FullName() const { return property_name_.ToString(); }
 // ============================================================================
-std::string gp::Property::ValueAsString() const {
-    return gpu::replaceEnvironments(property_value_.ToString());
-}
+std::string gp::Property::ValueAsString() const { return gpu::replaceEnvironments( property_value_.ToString() ); }
 // ============================================================================
-std::string gp::Property::ToString() const {
-    return FullName()+" = "+ValueAsString();
-}
+std::string gp::Property::ToString() const { return FullName() + " = " + ValueAsString(); }
 // ============================================================================
-bool gp::Property::IsSimple() const {
-    return property_value_.IsSimple();
-}
+bool gp::Property::IsSimple() const { return property_value_.IsSimple(); }
 // ============================================================================
-bool gp::Property::IsVector() const {
-    return property_value_.IsVector();
-}
+bool gp::Property::IsVector() const { return property_value_.IsVector(); }
 // ============================================================================
-bool gp::Property::IsMap() const {
-    return property_value_.IsMap();
-}
+bool gp::Property::IsMap() const { return property_value_.IsMap(); }
 // ============================================================================

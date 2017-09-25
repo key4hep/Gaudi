@@ -10,7 +10,8 @@ class IAlgTool;
 class AlgResourcePool;
 class EventContext;
 
-namespace Gaudi {
+namespace Gaudi
+{
   class StringKey;
 }
 
@@ -24,14 +25,13 @@ namespace Gaudi {
     @author D.Quarrie
     @author Marco Clemencic
 */
-class GAUDI_API IAlgorithm : virtual public extend_interfaces<INamedInterface,
-                                                              IStateful> {
+class GAUDI_API IAlgorithm : virtual public extend_interfaces<INamedInterface, IStateful>
+{
 public:
-
   friend AlgResourcePool;
 
   /// InterfaceID
-  DeclareInterfaceID(IAlgorithm,6,0);
+  DeclareInterfaceID( IAlgorithm, 6, 0 );
 
   /** The version of the algorithm
    */
@@ -39,8 +39,8 @@ public:
 
   /** The type of the algorithm
    */
-  virtual const std::string& type() const = 0;
-  virtual void  setType(const std::string& ) = 0;
+  virtual const std::string& type() const    = 0;
+  virtual void setType( const std::string& ) = 0;
 
   /** StringKey rep of name
    */
@@ -103,11 +103,11 @@ public:
   */
   virtual StatusCode sysRestart() = 0;
 
-  /// sysExecute changed to accept the EventContext as argument
+/// sysExecute changed to accept the EventContext as argument
 #define GAUDI_SYSEXECUTE_WITHCONTEXT 1
 
   /// System execution. This method invokes the execute() method of a concrete algorithm
-  virtual StatusCode sysExecute(const EventContext&) = 0;
+  virtual StatusCode sysExecute( const EventContext& ) = 0;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
@@ -124,18 +124,19 @@ public:
       It will in turn invoke the beginRun() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysBeginRun( ) = 0;
+  virtual StatusCode sysBeginRun() = 0;
 
   /** endRun method invoked by the framework. This method is responsible
       for any endRun actions required by the framework itself.
       It will in turn invoke the endRun() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysEndRun( ) = 0;
+  virtual StatusCode sysEndRun() = 0;
 
   /// Reset the Algorithm executed state for the current event
-  [[deprecated("resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each Algorithm")]]
-  virtual void resetExecuted( ) = 0;
+  [[deprecated( "resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each "
+                "Algorithm" )]] virtual void
+  resetExecuted() = 0;
 
   /** Algorithm begin run. This method is called at the beginning of the event loop.
   */
@@ -144,32 +145,30 @@ public:
   */
   virtual StatusCode endRun() = 0;
 
-
   // ---- Function useful for dealing with sub-algorithms
   /// Set the executed flag to the specified state
   virtual void setExecuted( bool state ) const = 0;
 
   /// Is this algorithm enabled or disabled?
-  virtual bool isEnabled( ) const = 0;
+  virtual bool isEnabled() const = 0;
 
   /// Are we a Sequence?
   virtual bool isSequence() const = 0;
 
   /// Did this algorithm pass or fail its filter criterion for the last event?
-  virtual bool filterPassed( ) const = 0;
+  virtual bool filterPassed() const = 0;
 
   /// Set the filter passed flag to the specified state
   virtual void setFilterPassed( bool state ) const = 0;
 
   /// Produce string represention of the control flow expression.
-  virtual std::ostream& toControlFlowExpression(std::ostream& os) const = 0;
+  virtual std::ostream& toControlFlowExpression( std::ostream& os ) const = 0;
 
   /// For concurrency: get the EventContext
   virtual const EventContext& getContext() const = 0;
 
   /// Set instantiation index of Alg
-  virtual void setIndex(const unsigned int& idx) = 0;
-
+  virtual void setIndex( const unsigned int& idx ) = 0;
 };
 
 #endif // GAUDIKERNEL_IALGORITHM_H

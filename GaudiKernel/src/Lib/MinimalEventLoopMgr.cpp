@@ -103,7 +103,7 @@ StatusCode MinimalEventLoopMgr::initialize()
   m_WB = service( "EventDataSvc" );
 
   // setup the default EventContext with slot 0
-  Gaudi::Hive::setCurrentContextId(Gaudi::Hive::ContextIdType(0));
+  Gaudi::Hive::setCurrentContextId( Gaudi::Hive::ContextIdType( 0 ) );
 
   //--------------------------------------------------------------------------------------------
   // Create output streams. Do not initialize them yet.
@@ -139,26 +139,26 @@ StatusCode MinimalEventLoopMgr::initialize()
   }
   for ( auto& ita : m_outStreamList ) {
     sc = ita->sysInitialize();
-    if( !sc.isSuccess() ) {
+    if ( !sc.isSuccess() ) {
       error() << "Unable to initialize Output Stream: " << ita->name() << endmsg;
       return sc;
     }
   }
 
   // get hold of the Algorithm Execution State mgr
-  m_aess = serviceLocator()->service("AlgExecStateSvc");
-  if( !m_aess )  {
+  m_aess = serviceLocator()->service( "AlgExecStateSvc" );
+  if ( !m_aess ) {
     fatal() << "Error retrieving AlgExecStateSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
-  if (m_printCFExp && !m_topAlgList.empty()) {
+  if ( m_printCFExp && !m_topAlgList.empty() ) {
     info() << "Control Flow Expression:" << endmsg;
     std::stringstream expr;
     auto& first = m_topAlgList.front();
-    for(auto& ialg: m_topAlgList) {
-      if (ialg != first) expr << " >> ";
-      ialg->toControlFlowExpression(expr);
+    for ( auto& ialg : m_topAlgList ) {
+      if ( ialg != first ) expr << " >> ";
+      ialg->toControlFlowExpression( expr );
     }
     info() << expr.str() << endmsg;
   }
@@ -253,7 +253,7 @@ StatusCode MinimalEventLoopMgr::restart()
 
   // Restart all the TopAlgs.
   for ( auto& ita : m_topAlgList ) {
-    m_aess->resetErrorCount(ita);
+    m_aess->resetErrorCount( ita );
     sc = ita->sysRestart();
     if ( !sc.isSuccess() ) {
       error() << "Unable to restart Algorithm: " << ita->name() << endmsg;
@@ -261,7 +261,7 @@ StatusCode MinimalEventLoopMgr::restart()
     }
   }
   for ( auto& ita : m_outStreamList ) {
-    m_aess->resetErrorCount(ita);
+    m_aess->resetErrorCount( ita );
     sc = ita->sysRestart();
     if ( !sc.isSuccess() ) {
       error() << "Unable to restart Output Stream: " << ita->name() << endmsg;
@@ -399,21 +399,20 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   // reset state of ALL "known" algorithms
   // (before we were reseting only the topalgs)
   const EventContext& context = Gaudi::Hive::currentContext();
-  m_aess->reset(context);
+  m_aess->reset( context );
 
   // Set event number in the context
-  Gaudi::Hive::setCurrentContextEvt(m_nevt);
+  Gaudi::Hive::setCurrentContextEvt( m_nevt );
 
   // select the appropriate store
-  if (m_WB.isValid())
-    m_WB->selectStore(context.slot()).ignore();
+  if ( m_WB.isValid() ) m_WB->selectStore( context.slot() ).ignore();
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const auto appmgr = serviceLocator()->as<IProperty>();
   // Call the execute() method of all top algorithms
   for ( auto& ita : m_topAlgList ) {
     StatusCode sc( StatusCode::FAILURE );
-    AlgExecState& algState = m_aess->algExecState(ita, context);
+    AlgExecState& algState = m_aess->algExecState( ita, context );
     try {
       if ( UNLIKELY( m_abortEvent ) ) {
         DEBMSG << "AbortEvent incident fired by " << m_abortEventSource << endmsg;
@@ -422,8 +421,8 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
         break;
       }
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-      algState.setState(AlgExecState::State::Executing);
-      sc = ita->sysExecute(context);
+      algState.setState( AlgExecState::State::Executing );
+      sc = ita->sysExecute( context );
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
       fatal() << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ita->name() << endmsg;
@@ -435,8 +434,8 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
       fatal() << ".executeEvent(): UNKNOWN Exception thrown by " << ita->name() << endmsg;
     }
 
-    algState.setState(AlgExecState::State::Done);
-    algState.setExecStatus(sc);
+    algState.setState( AlgExecState::State::Done );
+    algState.setExecStatus( sc );
 
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of algorithm " << ita->name() << " failed" << endmsg;
@@ -444,7 +443,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
     }
   }
 
-  m_aess->updateEventStatus(eventfailed, context);
+  m_aess->updateEventStatus( eventfailed, context );
 
   // ensure that the abortEvent flag is cleared before the next event
   if ( UNLIKELY( m_abortEvent ) ) {
@@ -454,11 +453,11 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
 
   // Call the execute() method of all output streams
   for ( auto& ito : m_outStreamList ) {
-    AlgExecState& state = m_aess->algExecState(ito, context);
-    state.setState(AlgExecState::State::Executing);
-    state.setFilterPassed(true);
-    StatusCode sc = ito->sysExecute(context);
-    state.setState(AlgExecState::State::Done, sc);
+    AlgExecState& state = m_aess->algExecState( ito, context );
+    state.setState( AlgExecState::State::Executing );
+    state.setFilterPassed( true );
+    StatusCode sc = ito->sysExecute( context );
+    state.setState( AlgExecState::State::Done, sc );
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of output stream " << ito->name() << " failed" << endmsg;
       eventfailed = true;
@@ -471,7 +470,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   if ( UNLIKELY( eventfailed ) ) {
     error() << "Error processing event loop." << endmsg;
     std::ostringstream ost;
-    m_aess->dump(ost, context);
+    m_aess->dump( ost, context );
     debug() << "Dumping AlgExecStateSvc status:\n" << ost.str() << endmsg;
     return StatusCode( StatusCode::FAILURE, true );
   }

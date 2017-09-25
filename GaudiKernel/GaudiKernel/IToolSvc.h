@@ -3,9 +3,9 @@
 
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/System.h"
-#include <string>
-#include <list>
 #include <functional>
+#include <list>
+#include <string>
 
 // Forward declaration
 class IAlgTool;
@@ -16,13 +16,14 @@ class IAlgTool;
  *
  * @author G.Corti
  */
-class GAUDI_API IToolSvc: virtual public IInterface {
+class GAUDI_API IToolSvc : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IToolSvc,2,1);
+  DeclareInterfaceID( IToolSvc, 2, 1 );
 
   // Typedefs
-  typedef std::list<IAlgTool*>     ListTools;
+  typedef std::list<IAlgTool*> ListTools;
 
   /** Retrieve tool with tool dependent part of the name automatically
    *  assigned. By default a tool will be created if it does not exist,
@@ -35,11 +36,8 @@ public:
    *  @param parent constant reference to the parent (def=none)
    *  @param createIf creation flag (def=create if not existing)
    */
-  virtual StatusCode retrieve ( const std::string& type            ,
-                                const InterfaceID& iid             ,
-                                IAlgTool*&         tool            ,
-                                const IInterface*  parent   = 0    ,
-                                bool               createIf = true ) = 0;
+  virtual StatusCode retrieve( const std::string& type, const InterfaceID& iid, IAlgTool*& tool,
+                               const IInterface* parent = 0, bool createIf = true ) = 0;
 
   /** Retrieve tool with tool dependent part of the name specified
    *  by the requester. By default a tool will be created if it does
@@ -53,12 +51,8 @@ public:
    *  @param parent constant reference to parent (def=none)
    * @param createIf creation flag (def=create if not existing)
    */
-  virtual StatusCode retrieve ( const std::string& type            ,
-                                const std::string& name            ,
-                                const InterfaceID& iid             ,
-                                IAlgTool*&         tool            ,
-                                const IInterface*  parent   = 0    ,
-                                bool               createIf = true ) = 0 ;
+  virtual StatusCode retrieve( const std::string& type, const std::string& name, const InterfaceID& iid,
+                               IAlgTool*& tool, const IInterface* parent = 0, bool createIf = true ) = 0;
 
   /** Get the names of all instances of tools of a given type.
    *  @param toolType type of tool
@@ -77,7 +71,6 @@ public:
    *  @param tool to be released
    */
   virtual StatusCode releaseTool( IAlgTool* tool ) = 0;
-
 
   /** Retrieve specified tool sub-type with tool dependent part of the name
    *  automatically assigned. Internally it uses the corresponding
@@ -143,16 +136,9 @@ public:
    *
    */
   template <class T>
-  StatusCode retrieveTool ( const std::string& type            ,
-                            T*&                tool            ,
-                            const IInterface*  parent   = nullptr,
-                            bool               createIf = true )
+  StatusCode retrieveTool( const std::string& type, T*& tool, const IInterface* parent = nullptr, bool createIf = true )
   {
-    return retrieve( type,
-                     T::interfaceID(),
-                     (IAlgTool*&)tool,
-                     parent,
-                     createIf );
+    return retrieve( type, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }
 
   /** Retrieve specified tool sub-type with tool dependent part of the name
@@ -199,18 +185,10 @@ public:
    *
    */
   template <class T>
-  StatusCode retrieveTool ( const std::string& type            ,
-                            const std::string& name            ,
-                            T*&                tool            ,
-                            const IInterface*  parent   = nullptr ,
-                            bool               createIf = true )
+  StatusCode retrieveTool( const std::string& type, const std::string& name, T*& tool,
+                           const IInterface* parent = nullptr, bool createIf = true )
   {
-    return retrieve ( type,
-                      name,
-                      T::interfaceID(),
-                      (IAlgTool*&)tool,
-                      parent,
-                      createIf );
+    return retrieve( type, name, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }
 
   /**  allow call-backs when a tool is a created
@@ -242,20 +220,23 @@ public:
    *   un-register it before it is deleted (e.g. during the finalization).
    *
    */
-  class Observer {
+  class Observer
+  {
   public:
-    virtual ~Observer() { if (m_unregister) m_unregister(); }
-    void setUnregister(std::function<void()> unregister) { m_unregister=std::move(unregister); }
+    virtual ~Observer()
+    {
+      if ( m_unregister ) m_unregister();
+    }
+    void setUnregister( std::function<void()> unregister ) { m_unregister = std::move( unregister ); }
 
-    virtual void onCreate(const IAlgTool*) {}
-    virtual void onRetrieve(const IAlgTool*) {}
+    virtual void onCreate( const IAlgTool* ) {}
+    virtual void onRetrieve( const IAlgTool* ) {}
+
   private:
     std::function<void()> m_unregister;
   };
 
-  virtual void registerObserver(Observer *obs) = 0;
-
+  virtual void registerObserver( Observer* obs ) = 0;
 };
-
 
 #endif // GAUDIKERNEL_ITOOLSVC_H

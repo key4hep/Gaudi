@@ -16,13 +16,13 @@
  *  @author Marco Clemencic
  *  @date   2006-09-21
  */
-class GAUDI_API IEventTimeDecoder: virtual public IAlgTool {
+class GAUDI_API IEventTimeDecoder : virtual public IAlgTool
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IEventTimeDecoder,2,0);
+  DeclareInterfaceID( IEventTimeDecoder, 2, 0 );
 
   /// Return the time of current event.
   virtual Gaudi::Time getTime() const = 0;
-
 };
 #endif // GAUDIKERNEL_IEVENTTIMEDECODER_H

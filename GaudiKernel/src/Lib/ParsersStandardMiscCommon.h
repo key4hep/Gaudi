@@ -8,10 +8,10 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
+#include <map>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
-#include <map>
 // ============================================================================
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/StringKey.h"

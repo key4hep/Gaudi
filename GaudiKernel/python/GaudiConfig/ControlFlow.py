@@ -9,6 +9,7 @@ class ControlFlowNode(object):
     '''
     Basic entry in the control flow graph.
     '''
+
     def __and__(self, rhs):
         if rhs is CFTrue:
             return self
@@ -64,23 +65,30 @@ class ControlFlowLeaf(ControlFlowNode):
 class ControlFlowBool(ControlFlowLeaf):
     def __init__(self, value):
         self.value = value
+
     def __and__(self, rhs):
         return rhs if self.value else self
+
     def __or__(self, rhs):
         return self if self.value else rhs
+
     def __invert__(self):
         return CFFalse if self.value else CFTrue
+
     def __repr__(self):
         return 'CFTrue' if self.value else 'CFFalse'
+
 
 CFTrue = ControlFlowBool(True)
 CFFalse = ControlFlowBool(False)
 del ControlFlowBool
 
+
 class OrderedNode(ControlFlowNode):
     '''
     Represent order of execution of nodes.
     '''
+
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
@@ -97,6 +105,7 @@ class AndNode(ControlFlowNode):
     '''
     And operation between control flow nodes.
     '''
+
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
@@ -113,6 +122,7 @@ class OrNode(ControlFlowNode):
     '''
     Or operation between control flow nodes.
     '''
+
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
@@ -129,6 +139,7 @@ class InvertNode(ControlFlowNode):
     '''
     Invert logic (negation) of a control flow node.
     '''
+
     def __init__(self, item):
         self.item = item
 
@@ -143,6 +154,7 @@ class ignore(ControlFlowNode):
     '''
     Treat a control flow node as always successful, equivalent to (a | ~ a).
     '''
+
     def __init__(self, item):
         self.item = item
 
@@ -193,9 +205,9 @@ class _TestVisitor(object):
 
     def enter(self, visitee):
         self.depths += 1
-        print "%sEntering %s" % (self.depths*" ", type(visitee))
+        print "%sEntering %s" % (self.depths * " ", type(visitee))
         if isinstance(visitee, ControlFlowLeaf):
-            print "%s Algorithm name: %s" % (" "*self.depths, visitee)
+            print "%s Algorithm name: %s" % (" " * self.depths, visitee)
 
     def leave(self, visitee):
         print "%sLeaving %s" % (self.depths * " ", type(visitee))
@@ -243,10 +255,12 @@ class DotVisitor(object):
             elif isinstance(visitee, seq):
                 entry = '%s [label="SEQ", shape=circle]' % dot_id
             else:
-                entry = '%s [label="%s", shape=circle]' % (dot_id, type(visitee))
+                entry = '%s [label="%s", shape=circle]' % (
+                    dot_id, type(visitee))
             self.nodes.append(entry)
             if len(self.stack) != 0:
-                mother = self.collapse_identical_ancestors(type(self.stack[-1][0]))
+                mother = self.collapse_identical_ancestors(
+                    type(self.stack[-1][0]))
                 if not mother:
                     mother = self.stack[-1][1]
                 edge = "%s->%s" % (dot_id, mother)

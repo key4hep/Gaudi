@@ -12,13 +12,13 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/StatEntity.h"
 // ============================================================================
 // Forward declarations
 // ============================================================================
-class MsgStream   ;
-class StatEntity  ;
+class MsgStream;
+class StatEntity;
 class Stat;
 // ============================================================================
 /** @class ICounterSvc ICounterSvc.h GaudiKernel/ICounterSvc.h
@@ -72,13 +72,13 @@ class Stat;
  *  @author modified by Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @version 3.0
  */
-class GAUDI_API ICounterSvc: virtual public IInterface
+class GAUDI_API ICounterSvc : virtual public IInterface
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(ICounterSvc,4,0);
+  DeclareInterfaceID( ICounterSvc, 4, 0 );
   /// the actual type of counter @see StatEntity
-  typedef StatEntity Counter ;
+  typedef StatEntity Counter;
   /** Ease the manipulation of counters in a way, that they
    *  behave like objects:
    *  Avoid:    Counter* cnt = ...;
@@ -94,9 +94,9 @@ public:
    *  @author  Markus Frank
    *  @version 1.0
    */
-  typedef Stat       CountObject ;
+  typedef Stat CountObject;
   /// the actual type of vectors of initialized counters
-  typedef std::vector<CountObject> Counters ;
+  typedef std::vector<CountObject> Counters;
   /** @class Printout ICounterSvc.h GaudiKernel/ICounterSvc.h
    *
    * Print counters for each element in the range [first, last)
@@ -109,18 +109,18 @@ public:
   {
   public:
     /// Standard initializing constructor
-    Printout  ( ICounterSvc* svc ) ;
+    Printout( ICounterSvc* svc );
     /// Callback for printout with Counter pointers
-    StatusCode operator()( MsgStream& log , const Counter* cnt )  const ;
+    StatusCode operator()( MsgStream& log, const Counter* cnt ) const;
 
     // no default,copy constructor, assignment
-    Printout () = delete; ///< no default constructor
-    Printout ( const Printout& ) = delete; //< no copy constructor
+    Printout()                  = delete;            ///< no default constructor
+    Printout( const Printout& ) = delete;            //< no copy constructor
     Printout& operator=( const Printout& ) = delete; ///< no assigment is allowed
   private:
     /// Reference to counter service
     SmartIF<ICounterSvc> m_svc;
-  } ;
+  };
   /** Access an existing counter object.
    *
    * @param  group         [IN] Hint for smart printing
@@ -129,9 +129,7 @@ public:
    *
    * @return Pointer to existing counter object (NULL if non existing).
    */
-  virtual Counter* get
-  ( const std::string& group ,
-    const std::string& name  ) const = 0;
+  virtual Counter* get( const std::string& group, const std::string& name ) const = 0;
   /** get all counters form the given group:
    *  @code
    *
@@ -150,7 +148,7 @@ public:
    *  @param gorup the gorup name
    *  @return vector of the properly initialized counters
    */
-  virtual Counters get ( const std::string& group ) const = 0 ;
+  virtual Counters get( const std::string& group ) const = 0;
   /** Create a new counter object. If the counter object exists already
    * the existing object is returned. In this event the return code is
    * COUNTER_EXISTS. The ownership of the actual counter stays with the
@@ -163,11 +161,8 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode create
-  ( const std::string& group         ,
-    const std::string& name          ,
-    longlong           initial_value ,
-    Counter*&          refpCounter   ) = 0;
+  virtual StatusCode create( const std::string& group, const std::string& name, longlong initial_value,
+                             Counter*& refpCounter ) = 0;
   /** If the counter object exists already,
    * a std::runtime_error exception is thrown. The ownership of the
    * actual counter stays with the service.
@@ -177,10 +172,7 @@ public:
    * @param  refpCounter   [OUT]    Reference to store pointer to counter.
    * @return Fully initialized CountObject.
    */
-  virtual CountObject create
-  ( const std::string& group    ,
-    const std::string& name     ,
-    longlong  initial_value = 0 ) = 0;
+  virtual CountObject create( const std::string& group, const std::string& name, longlong initial_value = 0 ) = 0;
   /** Remove a counter object. If the counter object does not exists,
    * the return code is COUNTER_NOT_PRESENT. The counter may not
    * be used anymore after this call.
@@ -190,16 +182,13 @@ public:
    * @param  refpCounter   [OUT]    Reference to store pointer to counter.
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode remove
-  ( const std::string& group ,
-    const std::string& name  ) = 0;
+  virtual StatusCode remove( const std::string& group, const std::string& name ) = 0;
   /** Remove all counters of a given group. If no such counter exists
    * the return code is COUNTER_NOT_PRESENT
    * @param  group          [IN]     Hint for smart printing
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode remove
-  ( const std::string& group ) = 0;
+  virtual StatusCode remove( const std::string& group ) = 0;
   /** Print counter value
    * @param  group         [IN]     Hint for smart printing
    * @param  name          [IN]     Counter name
@@ -207,54 +196,43 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
-  ( const std::string& group   ,
-    const std::string& name    ,
-    Printout&          printer ) const = 0;
+  virtual StatusCode print( const std::string& group, const std::string& name, Printout& printer ) const = 0;
   /** If no such counter exists the return code is COUNTER_NOT_PRESENT
    * Note: This call is not direct access.
    * @param  group         [IN]     Hint for smart printing
    * @param printer        [IN]     Print actor
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
-  ( const std::string& group   ,
-    Printout&          printer ) const = 0;
+  virtual StatusCode print( const std::string& group, Printout& printer ) const = 0;
   /** Print counter value
    * @param pCounter       [IN]     Pointer to Counter object
    * @param printer        [IN]     Print actor
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
-  ( const Counter* pCounter ,
-    Printout&      printer  ) const = 0;
+  virtual StatusCode print( const Counter* pCounter, Printout& printer ) const = 0;
   /** Print counter value
    * @param refCounter     [IN]     Reference to CountObject object
    * @param printer        [IN]     Print actor
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
-  ( const CountObject& pCounter ,
-    Printout&          printer  ) const = 0;
+  virtual StatusCode print( const CountObject& pCounter, Printout& printer ) const = 0;
   /** @param printer        [IN]     Print actor
    *  @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
-  ( Printout& printer ) const = 0;
+  virtual StatusCode print( Printout& printer ) const = 0;
   /// Default Printout for counters
-  virtual StatusCode defaultPrintout
-  ( MsgStream&     log      ,
-    const Counter* pCounter ) const = 0;
+  virtual StatusCode defaultPrintout( MsgStream& log, const Counter* pCounter ) const = 0;
   // Return codes:
-  enum {  COUNTER_NOT_PRESENT = 2,  // Error
-          COUNTER_EXISTS      = 4,  // Error ?
-          COUNTER_REMOVED     = 3   // Type of success. Low bit set
-  } ;
+  enum {
+    COUNTER_NOT_PRESENT = 2, // Error
+    COUNTER_EXISTS      = 4, // Error ?
+    COUNTER_REMOVED     = 3  // Type of success. Low bit set
+  };
 };
 // ============================================================================
 /// output operator for the counter object
 // ============================================================================
-std::ostream& operator<<( std::ostream& , const ICounterSvc::CountObject& ) ;
+std::ostream& operator<<( std::ostream&, const ICounterSvc::CountObject& );
 // ============================================================================
 /// The END
 // ============================================================================

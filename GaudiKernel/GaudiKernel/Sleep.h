@@ -3,16 +3,16 @@
 
 #include "GaudiKernel/Kernel.h"
 
-namespace Gaudi {
+namespace Gaudi
+{
 
   /// Simple sleep function.
   /// @author Marco Clemencic
-  GAUDI_API void Sleep(int sec);
+  GAUDI_API void Sleep( int sec );
 
   /// Small variation on the sleep function for nanoseconds sleep.
   /// @author Marco Clemencic
-  GAUDI_API void NanoSleep(long long nsec);
-
+  GAUDI_API void NanoSleep( long long nsec );
 }
 
 #endif /*GAUDIKERNEL_SLEEP_H_*/

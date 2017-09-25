@@ -154,8 +154,8 @@ namespace Gaudi
       struct StringConverter {
         inline std::string toString( const TYPE& v )
         {
-            using Gaudi::Utils::toString;
-            return toString( v );
+          using Gaudi::Utils::toString;
+          return toString( v );
         }
         inline TYPE fromString( const std::string& s )
         {
@@ -353,8 +353,7 @@ namespace Gaudi
     template <class OWNER, class T = ValueType,
               typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type,
               typename = typename std::enable_if<std::is_default_constructible<T>::value>::type>
-    inline Property( OWNER* owner, std::string name )
-        : Property( std::move( name ), ValueType{}, "" )
+    inline Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
     {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
@@ -621,9 +620,9 @@ namespace Gaudi
       return value().makeHandles();
     }
     template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>().makeHandles( std::declval<ARG>() ) ) makeHandles(const ARG& arg) const
+    inline decltype( std::declval<T>().makeHandles( std::declval<ARG>() ) ) makeHandles( const ARG& arg ) const
     {
-      return value().makeHandles(arg);
+      return value().makeHandles( arg );
     }
     /// @}
     // ==========================================================================

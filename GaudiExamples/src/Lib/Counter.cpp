@@ -1,6 +1,5 @@
 #include "GaudiExamples/Counter.h"
 
-using namespace Gaudi::Examples ;
+using namespace Gaudi::Examples;
 
-Counter::Counter() : DataObject(), m_counter(0) {
-}
+Counter::Counter() : DataObject(), m_counter( 0 ) {}

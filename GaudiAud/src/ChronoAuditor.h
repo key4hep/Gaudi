@@ -11,9 +11,10 @@
     @author David Quarrie
     @author Marco Clemencic
 */
-class ChronoAuditor : virtual public CommonAuditor {
+class ChronoAuditor : virtual public CommonAuditor
+{
 public:
-  ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator);
+  ChronoAuditor( const std::string& name, ISvcLocator* pSvcLocator );
 
   ~ChronoAuditor() override = default;
 
@@ -21,15 +22,13 @@ public:
 
 private:
   /// Default (catch-all) "before" Auditor hook
-  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
+  void i_before( CustomEventTypeRef evt, const std::string& caller ) override;
 
   /// Default (catch-all) "after" Auditor hook
-  void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc) override;
+  void i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc ) override;
 
   /// Compute the id string to be used for the chrono entity.
-  inline std::string i_id(CustomEventTypeRef evt, const std::string& caller) {
-    return caller + ":" + evt;
-  }
+  inline std::string i_id( CustomEventTypeRef evt, const std::string& caller ) { return caller + ":" + evt; }
 
   SmartIF<IChronoStatSvc>& chronoSvc() { return m_chronoSvc; }
   SmartIF<IChronoStatSvc> m_chronoSvc;

@@ -5,7 +5,9 @@
 // ============================================================================
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP { }
+namespace CLHEP
+{
+}
 using namespace CLHEP;
 // ============================================================================
 // local
@@ -19,34 +21,30 @@ namespace Genfun
   {
 
     // ========================================================================
-    GSL_Helper::GSL_Helper
-    ( const Genfun::AbsFunction& function ,
-      Genfun::Argument&          argument ,
-      const size_t               index    )
-      : m_function ( function ) ,
-        m_argument ( argument ) ,
-        m_index    ( index    )
-    {}
+    GSL_Helper::GSL_Helper( const Genfun::AbsFunction& function, Genfun::Argument& argument, const size_t index )
+        : m_function( function ), m_argument( argument ), m_index( index )
+    {
+    }
     // ========================================================================
 
     // ========================================================================
-    double GSL_Adaptor( double x , void* params )
+    double GSL_Adaptor( double x, void* params )
     {
       // get parameters
-      GSL_Helper* aux = (GSL_Helper*) params ;
+      GSL_Helper* aux = (GSL_Helper*)params;
       // decode parameters
-      const Genfun::AbsFunction& function = aux -> m_function  ;
-      const size_t               index    = aux -> m_index     ;
-      Genfun::Argument&          argument = aux -> m_argument  ;
+      const Genfun::AbsFunction& function = aux->m_function;
+      const size_t index                  = aux->m_index;
+      Genfun::Argument& argument          = aux->m_argument;
       // save the current value of argument
-      const double x_prev = argument[index] ;
+      const double x_prev = argument[index];
       // modify the argument
-      argument[index]= x       ;
+      argument[index] = x;
       // evaluate the function
-      const double fun = function( argument ) ;
+      const double fun = function( argument );
       // restore the argument
-      argument[index] = x_prev  ;
-      return fun ;
+      argument[index] = x_prev;
+      return fun;
     }
     // ========================================================================
 

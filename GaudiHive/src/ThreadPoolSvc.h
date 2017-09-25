@@ -1,17 +1,17 @@
 #ifndef GAUDIHIVE_THREADPOOLSVC_H
 #define GAUDIHIVE_THREADPOOLSVC_H
 
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/IThreadInitTool.h"
+#include "GaudiKernel/IThreadPoolSvc.h"
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/ToolHandle.h"
 
+#include "boost/thread.hpp"
 #include "tbb/spin_mutex.h"
 #include "tbb/task_scheduler_init.h"
-#include "boost/thread.hpp"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 /** @class ThreadPoolSvc
   * @brief A service which initializes a TBB thread pool.
@@ -23,8 +23,8 @@
   * threads at the same time.
   *
   */
-class ThreadPoolSvc: public extends<Service,
-                                    IThreadPoolSvc> {
+class ThreadPoolSvc : public extends<Service, IThreadPoolSvc>
+{
 public:
   /// Constructor
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );
@@ -36,21 +36,18 @@ public:
   virtual StatusCode finalize() override final;
 
   /// Initialize the thread pool and launch the ThreadInitTasks.
-  virtual StatusCode initPool(const int& poolSize) override final;
+  virtual StatusCode initPool( const int& poolSize ) override final;
 
   /// Terminate the thread pool and launch thread termination tasks.
   virtual StatusCode terminatePool() override final;
 
-  virtual int poolSize() const override final {
-    return m_threadPoolSize;
-  }
+  virtual int poolSize() const override final { return m_threadPoolSize; }
 
   virtual bool isInit() const { return m_init; }
 
 private:
-
   /// Launch tasks to execute the ThreadInitTools
-  StatusCode launchTasks(bool finalize=false);
+  StatusCode launchTasks( bool finalize = false );
 
   /// Handle array of thread init tools
   ToolHandleArray<IThreadInitTool> m_threadInitTools;
@@ -69,7 +66,6 @@ private:
 
   /// Barrier used to synchronization thread init tasks
   std::unique_ptr<boost::barrier> m_barrier;
-
 };
 
 #endif

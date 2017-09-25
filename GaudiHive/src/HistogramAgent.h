@@ -3,9 +3,9 @@
 #define GAUDIKERNEL_HISTOGRAMAGENT_H
 
 #include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IDataSelector.h"
 #include "GaudiKernel/IDataStoreAgent.h"
+#include "GaudiKernel/IRegistry.h"
 
 /** @class HistogramAgent HistogramAgent.h GaudiKernel/HistogramAgent.h
 
@@ -15,26 +15,25 @@
 
     @author Markus Frank
 */
-class HistogramAgent : virtual public IDataStoreAgent  {
+class HistogramAgent : virtual public IDataStoreAgent
+{
 protected:
   IDataSelector m_objects;
+
 public:
   /// Default creator
-  HistogramAgent() {
-  }
+  HistogramAgent() {}
   /// Destructor
-  virtual ~HistogramAgent()  {
-  }
+  virtual ~HistogramAgent() {}
   /// Return the set of selected DataObjects
-  IDataSelector* selectedObjects()    {
-    return &m_objects;
-  }
-  /// Analyses a given directory entry 
-  bool analyse(IRegistry* pRegistry, int )  override  {
+  IDataSelector* selectedObjects() { return &m_objects; }
+  /// Analyses a given directory entry
+  bool analyse( IRegistry* pRegistry, int ) override
+  {
     DataObject* obj = pRegistry->object();
-    if ( 0 != obj )  {
-      if ( obj->clID() != CLID_StatisticsFile )    {
-        m_objects.push_back(obj);
+    if ( 0 != obj ) {
+      if ( obj->clID() != CLID_StatisticsFile ) {
+        m_objects.push_back( obj );
         return true;
       }
     }

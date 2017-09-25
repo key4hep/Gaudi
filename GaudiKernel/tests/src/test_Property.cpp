@@ -189,7 +189,6 @@ BOOST_AUTO_TEST_CASE( move_constructor )
   BOOST_CHECK( dest.value() == "value" );
   BOOST_CHECK( dest.documentation() == "doc" );
   BOOST_CHECK( dest.ownerTypeName() == "unknown owner type" );
-
 }
 BOOST_AUTO_TEST_CASE( copy_assignment )
 {
@@ -199,7 +198,6 @@ BOOST_AUTO_TEST_CASE( copy_assignment )
   BOOST_CHECK( dest.value() == "value" );
   BOOST_CHECK( dest.documentation() == "doc" );
   BOOST_CHECK( dest.ownerTypeName() == "unknown owner type" );
-
 }
 BOOST_AUTO_TEST_CASE( move_assignment )
 {
@@ -209,7 +207,6 @@ BOOST_AUTO_TEST_CASE( move_assignment )
   BOOST_CHECK( dest.value() == "value" );
   BOOST_CHECK( dest.documentation() == "doc" );
   BOOST_CHECK( dest.ownerTypeName() == "unknown owner type" );
-
 }
 
 BOOST_AUTO_TEST_CASE( backward_compatibility )

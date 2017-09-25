@@ -35,7 +35,7 @@
 #include <perfmon/pfmlib_os_i386.h>
 #endif
 
-#if defined(__mips__)
+#if defined( __mips__ )
 #include <perfmon/pfmlib_os_mips64.h>
 #endif
 

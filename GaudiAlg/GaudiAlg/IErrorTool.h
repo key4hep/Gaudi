@@ -10,10 +10,10 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/IAlgTool.h"
-#include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/StatusCode.h"
 // ============================================================================
-class GaudiException ;
+class GaudiException;
 
 /** @class IErrorTool IErrorTool.h GaudiTools/IErrorTool.h
  *
@@ -21,14 +21,13 @@ class GaudiException ;
  *  @author Ivan BELYAEV
  *  @date   2004-06-28
  */
-class GAUDI_API IErrorTool: virtual public IAlgTool
+class GAUDI_API IErrorTool : virtual public IAlgTool
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IErrorTool,2,0);
+  DeclareInterfaceID( IErrorTool, 2, 0 );
 
 public:
-
   /** Print the error  message, return status code
    *  and perform the statistics of error messages
    *
@@ -50,10 +49,8 @@ public:
    *  @param mx     maximal number of printouts
    *  @return       status code
    */
-  virtual StatusCode Error
-  ( const std::string& msg ,
-    const StatusCode   st  = StatusCode::FAILURE ,
-    const size_t       mx  = 10                  ) const = 0 ;
+  virtual StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
+                            const size_t mx = 10 ) const = 0;
 
   /** Print the warning  message, return status code
    *  and perform the statistics of warning  messages
@@ -65,10 +62,8 @@ public:
    *  @param mx     maximal number of printouts
    *  @return       status code
    */
-  virtual StatusCode Warning
-  ( const std::string& msg ,
-    const StatusCode   st  = StatusCode::FAILURE ,
-    const size_t       mx  = 10                  ) const = 0 ;
+  virtual StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
+                              const size_t mx = 10 ) const = 0;
 
   /** Print the message and return status code
    *  @see MsgStream
@@ -79,10 +74,8 @@ public:
    *  @param lev    print level
    *  @return       status code
    */
-  virtual StatusCode Print
-  ( const std::string& msg ,
-    const StatusCode   st  = StatusCode::SUCCESS ,
-    const MSG::Level   lev = MSG::INFO           ) const = 0 ;
+  virtual StatusCode Print( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
+                            const MSG::Level lev = MSG::INFO ) const = 0;
 
   /** Assertion - throw exception, if condition is not fulfilled
    *  @see CaloException
@@ -93,10 +86,8 @@ public:
    *  @param sc           status code to be returned (artificial)
    *  @return             status code
    */
-  virtual void Assert
-  ( const bool         ok                            ,
-    const std::string& message = ""                  ,
-    const StatusCode   sc      = StatusCode::FAILURE ) const = 0 ;
+  virtual void Assert( const bool ok, const std::string& message = "",
+                       const StatusCode sc = StatusCode::FAILURE ) const = 0;
 
   /** Create and (re)-throw the exception
    *  @see GaudiException
@@ -106,10 +97,8 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual void Exception
-  ( const std::string    & msg                        ,
-    const GaudiException & exc                        ,
-    const StatusCode       sc  = StatusCode::FAILURE  ) const = 0 ;
+  virtual void Exception( const std::string& msg, const GaudiException& exc,
+                          const StatusCode sc = StatusCode::FAILURE ) const = 0;
 
   /** Create and (re)-throw the exception
    *  @see GaudiException
@@ -119,10 +108,8 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual void Exception
-  ( const std::string    & msg                        ,
-    const std::exception & exc                        ,
-    const StatusCode       sc  = StatusCode::FAILURE  ) const = 0 ;
+  virtual void Exception( const std::string& msg, const std::exception& exc,
+                          const StatusCode sc = StatusCode::FAILURE ) const = 0;
 
   /** Create and throw the exception
    *  @see GaudiException
@@ -131,15 +118,11 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual void Exception
-  ( const std::string& msg = "no message"        ,
-    const StatusCode   sc  = StatusCode::FAILURE ) const = 0 ;
+  virtual void Exception( const std::string& msg = "no message", const StatusCode sc = StatusCode::FAILURE ) const = 0;
 
 protected:
-
   // protected destructor
-  virtual ~IErrorTool()  = default;
-
+  virtual ~IErrorTool() = default;
 };
 
 // ============================================================================

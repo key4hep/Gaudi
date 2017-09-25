@@ -9,26 +9,26 @@ from Configurables import ForwardSchedulerSvc
 
 # Output setup
 # - DST
-dst           = OutputStream("RootDst")
+dst = OutputStream("RootDst")
 
-dst.ItemList  = ["/Event#999"]
-dst.Output    = "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+dst.ItemList = ["/Event#999"]
+dst.Output = "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 
 # - MiniDST
-mini          = OutputStream("RootMini")
+mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output   = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'";
+mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'";
 mini.OutputLevel = VERBOSE
 
 
 # - File Summary Record
-fsr                   = RecordStream("FileRecords")
-fsr.ItemList          = [ "/FileRecords#999" ]
-fsr.Output            = dst.Output
-fsr.EvtDataSvc        = FileRecordDataSvc()
-fsr.EvtConversionSvc  = FileRecordPersistencySvc()
+fsr = RecordStream("FileRecords")
+fsr.ItemList = ["/FileRecords#999"]
+fsr.Output = dst.Output
+fsr.EvtDataSvc = FileRecordDataSvc()
+fsr.EvtConversionSvc = FileRecordPersistencySvc()
 
-FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
+FileCatalog(Catalogs=["xmlcatalog_file:HandleWB_ROOTIO.xml"])
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
@@ -37,12 +37,12 @@ RootCnvSvc(OutputLevel=INFO)
 
 GaudiPersistency()
 
-product_name="MyCollision"
+product_name = "MyCollision"
 
 writer = WriteHandleAlg("Writer",
                         OutputLevel=DEBUG,
                         UseHandle=True)
-writer.Output.Path = "/Event/"+product_name
+writer.Output.Path = "/Event/" + product_name
 
 reader = ReadHandleAlg("Reader",
                        OutputLevel=DEBUG)
@@ -52,13 +52,13 @@ reader.Input.Path = product_name
 evtslots = 15
 algoparallel = 10
 
-whiteboard   = HiveWhiteBoard("EventDataSvc",
-                              EventSlots = evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc",
+                            EventSlots=evtslots)
 
 slimeventloopmgr = HiveSlimEventLoopMgr()
 
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
-                                ThreadPoolSize = algoparallel,
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=algoparallel,
+                                ThreadPoolSize=algoparallel,
                                 OutputLevel=WARNING)
 
 # Application setup
@@ -71,10 +71,10 @@ app = ApplicationMgr()
 
 #app.OutStream += [ mini ]
 # - Algorithms
-app.TopAlg = [ writer, reader,mini]
+app.TopAlg = [writer, reader, mini]
 # - Events
-app.EvtMax   = 50
-app.EvtSel   = "NONE" # do not use any event input
+app.EvtMax = 50
+app.EvtSel = "NONE"  # do not use any event input
 app.HistogramPersistency = "NONE"
 app.ExtSvc = [whiteboard]
 app.EventLoop = slimeventloopmgr

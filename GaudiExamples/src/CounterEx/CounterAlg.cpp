@@ -41,85 +41,80 @@ public:
   /** the only one essential method
    *  @return status code
    */
-  StatusCode execute ()  override;
+  StatusCode execute() override;
 
   /** standard contructor
    *  @param name algorithm istance name
    *  @param pSvc pointer to Service Locator
    */
-  CounterAlg
-  ( const std::string& name ,
-    ISvcLocator*       pSvc )
-    : GaudiAlgorithm ( name , pSvc )
-  { setProperty( "StatPrint" , "true" ).ignore() ; }
+  CounterAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc )
+  {
+    setProperty( "StatPrint", "true" ).ignore();
+  }
   /// virtual protected dectrustor
   ~CounterAlg() override {}
+
 private:
   // default constructor is disabled
-  CounterAlg() ;
+  CounterAlg();
   // copy constructor is disabled
-  CounterAlg           ( const CounterAlg& ) ;
+  CounterAlg( const CounterAlg& );
   // assignement operator is disabled
-  CounterAlg& operator=( const CounterAlg& ) ;
-} ;
+  CounterAlg& operator=( const CounterAlg& );
+};
 // ============================================================================
 
 // ============================================================================
-DECLARE_COMPONENT(CounterAlg)
+DECLARE_COMPONENT( CounterAlg )
 // ============================================================================
-
 
 // ============================================================================
 /** the only one essential method
  *  @return status code
  */
 // ============================================================================
-StatusCode CounterAlg::execute ()
+StatusCode CounterAlg::execute()
 {
 
   // count overall number of executions:
-  ++counter("executed") ;
+  ++counter( "executed" );
 
-  Rndm::Numbers gauss   ( randSvc() , Rndm::Gauss   (   0.0 ,  1.0 ) ) ;
-  Rndm::Numbers poisson ( randSvc() , Rndm::Poisson (   5.0        ) ) ;
+  Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
+  Rndm::Numbers poisson( randSvc(), Rndm::Poisson( 5.0 ) );
 
   // 'accumulate' gauss
-  const double value  = gauss() ;
+  const double value = gauss();
 
-  counter("gauss") += value ;
-  counter("g2")    += value * value ;
+  counter( "gauss" ) += value;
+  counter( "g2" ) += value * value;
 
-  ( 0 < value ) ? ++counter("Gpos") : ++counter("Gneg") ;
+  ( 0 < value ) ? ++counter( "Gpos" ) : ++counter( "Gneg" );
 
+  StatEntity& stat1 = counter( "NG" );
+  StatEntity& stat2 = counter( "G" );
 
-  StatEntity& stat1 = counter("NG") ;
-  StatEntity& stat2 = counter("G") ;
-
-  const int num = (int) poisson() ;
-  for ( int i = 0 ; i < num ; ++i )
-  {
-    stat1++ ;
-    stat2+= gauss() ;
+  const int num = (int)poisson();
+  for ( int i = 0; i < num; ++i ) {
+    stat1++;
+    stat2 += gauss();
   }
 
   // assignement
-  counter("assign") = value ;
+  counter( "assign" ) = value;
 
   // counter of efficiency
-  counter("eff")   += ( 0 < value ) ;
+  counter( "eff" ) += ( 0 < value );
 
   // print the statistics every 1000 events
-  const StatEntity& executed = counter("executed") ;
-  const int print  = (int) executed.flag() ;
-  if ( 0 == print%1000 )
-  {
-    info () <<  " Event number "     << print << endmsg ;
-    printStat() ;
-    info () << " Efficiency (binomial counter: \"eff\"): ("
-            << counter("eff").eff()    * 100.0  << " +- "
-            << counter("eff").effErr() * 100.0  << ")%"<< endmsg ;
+  const StatEntity& executed = counter( "executed" );
+  const int print            = (int)executed.flag();
+  if ( 0 == print % 1000 ) {
+    info() << " Event number " << print << endmsg;
+    printStat();
+    info() << " Efficiency (binomial counter: \"eff\"): (" << counter( "eff" ).eff() * 100.0 << " +- "
+           << counter( "eff" ).effErr() * 100.0 << ")%" << endmsg;
   }
 
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================

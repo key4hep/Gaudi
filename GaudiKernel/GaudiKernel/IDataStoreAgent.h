@@ -13,7 +13,8 @@ class IRegistry;
 
     @author Markus Frank
 */
-class GAUDI_API IDataStoreAgent {
+class GAUDI_API IDataStoreAgent
+{
 public:
   /// destructor
   virtual ~IDataStoreAgent() = default;
@@ -21,6 +22,6 @@ public:
   /** Analyse the data object.
   @return Boolean indicating wether the tree below should be analysed
   */
-  virtual bool analyse(IRegistry* pObject, int level) = 0;
+  virtual bool analyse( IRegistry* pObject, int level ) = 0;
 };
 #endif // GAUDIKERNEL_IDATASTOREAGENT_H

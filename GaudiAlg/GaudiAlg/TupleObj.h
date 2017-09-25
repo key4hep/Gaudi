@@ -6,40 +6,40 @@
 // ============================================================================
 // STD&STL
 // ============================================================================
-#include <cstddef>
-#include <set>
-#include <string>
-#include <limits>
 #include <array>
+#include <cstddef>
 #include <functional>
+#include <limits>
 #include <numeric>
+#include <set>
 #include <sstream>
+#include <string>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/NTuple.h"
-#include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/SerializeSTL.h"
+#include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/invoke.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "GaudiAlg/Tuples.h"
 #include "GaudiAlg/Maps.h"
+#include "GaudiAlg/Tuples.h"
 // ============================================================================
 // ROOT
 // ============================================================================
 #include "Math/Point3D.h"
+#include "Math/SMatrix.h"
+#include "Math/SVector.h"
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
-#include "Math/SVector.h"
-#include "Math/SMatrix.h"
 // ============================================================================
 // forward declaration
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-class IOpaqueAddress   ;
+class IOpaqueAddress;
 // ============================================================================
 /** @file TupleObj.h
  *
@@ -59,29 +59,32 @@ class IOpaqueAddress   ;
  */
 namespace Tuples
 {
-    namespace detail {
-      template <typename T> struct to_ {
-          template <typename Arg>
-          T operator()(Arg&& i) const
-          { return T(std::forward<Arg>(i)); }
-      };
-      constexpr struct to_<float> to_float {};
+  namespace detail
+  {
+    template <typename T>
+    struct to_ {
+      template <typename Arg>
+      T operator()( Arg&& i ) const
+      {
+        return T( std::forward<Arg>( i ) );
+      }
+    };
+    constexpr struct to_<float> to_float {
+    };
 
-      template <typename Iterator>
-      using const_ref_t = typename std::add_const<typename std::iterator_traits<Iterator>::reference>::type;
-
-    }
+    template <typename Iterator>
+    using const_ref_t = typename std::add_const<typename std::iterator_traits<Iterator>::reference>::type;
+  }
   // ==========================================================================
   /** @enum Type
    *  the list of available types for ntuples
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2004-01-23
    */
-  enum Type
-    {
-      NTUPLE  , // Analysis nTuple
-      EVTCOL    // Event Collection
-    };
+  enum Type {
+    NTUPLE, // Analysis nTuple
+    EVTCOL  // Event Collection
+  };
   // ==========================================================================
   /** @enum ErrorCodes
    *
@@ -90,15 +93,14 @@ namespace Tuples
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2004-01-23
    */
-  enum ErrorCodes
-    {
-      InvalidTuple      = 100 ,
-      InvalidColumn           ,
-      InvalidOperation        ,
-      InvalidObject           ,
-      InvalidItem             ,
-      TruncateValue     = 200
-    };
+  enum ErrorCodes {
+    InvalidTuple = 100,
+    InvalidColumn,
+    InvalidOperation,
+    InvalidObject,
+    InvalidItem,
+    TruncateValue = 200
+  };
   // ==========================================================================
   /** @class TupleObj TupleObj.h GaudiAlg/TupleObj.h
    *
@@ -199,52 +201,52 @@ namespace Tuples
   public:
     // ========================================================================
     /// basic type for int items
-    typedef NTuple::Item<bool>                  Bool      ;
+    typedef NTuple::Item<bool> Bool;
     // ========================================================================
     /// basic type for int items
-    typedef NTuple::Item<char>                  Char      ;
+    typedef NTuple::Item<char> Char;
     // ========================================================================
     /// basic type for unsigned int items
-    typedef NTuple::Item<unsigned char>         UChar     ;
+    typedef NTuple::Item<unsigned char> UChar;
     // ========================================================================
     /// basic type for int items
-    typedef NTuple::Item<short>                 Short     ;
+    typedef NTuple::Item<short> Short;
     // ========================================================================
     /// basic type for unsigned int items
-    typedef NTuple::Item<unsigned short>        UShort    ;
+    typedef NTuple::Item<unsigned short> UShort;
     // ========================================================================
     /// basic type for int items
-    typedef NTuple::Item<int>                   Int       ;
+    typedef NTuple::Item<int> Int;
     // ========================================================================
     /// basic type for unsigned int items
-    typedef NTuple::Item<unsigned int>          UInt      ;
+    typedef NTuple::Item<unsigned int> UInt;
     // ========================================================================
     /// basic type for unsigned long long items
-    typedef NTuple::Item<long long>             LongLong  ;
+    typedef NTuple::Item<long long> LongLong;
     // ========================================================================
     /// basic type for unsigned long long items
-    typedef NTuple::Item<unsigned long long>    ULongLong ;
+    typedef NTuple::Item<unsigned long long> ULongLong;
     // ========================================================================
     /// basic type for float items
-    typedef NTuple::Item<float>                 Float     ;
+    typedef NTuple::Item<float> Float;
     // ========================================================================
     /// basic type for double items
-    typedef NTuple::Item<double>                Double    ;
+    typedef NTuple::Item<double> Double;
     // ========================================================================
     /// basic type for address items
-    typedef NTuple::Item<IOpaqueAddress*>       Address   ;
+    typedef NTuple::Item<IOpaqueAddress*> Address;
     // ========================================================================
     /// basic type for array of floats
-    typedef NTuple::Array<float>                FArray    ;
+    typedef NTuple::Array<float> FArray;
     // ========================================================================
     /// basic type for matrix of floats
-    typedef NTuple::Matrix<float>               FMatrix   ;
+    typedef NTuple::Matrix<float> FMatrix;
     // ========================================================================
     // the actual type for variable size matrix indices
-    typedef unsigned short                      MIndex    ;
+    typedef unsigned short MIndex;
     // ========================================================================
     // the map of all items
-    typedef std::map<std::string,std::string>   ItemMap   ;
+    typedef std::map<std::string, std::string> ItemMap;
     // ========================================================================
   protected:
     // ========================================================================
@@ -255,10 +257,8 @@ namespace Tuples
      *  @param clid  CLID_ColumnWiseTuple or CLID_RowWiseTuple
      *  @param type the type of the tuple
      */
-    TupleObj ( std::string           name                          ,
-               NTuple::Tuple*        tuple                         ,
-               const CLID&           clid = CLID_ColumnWiseTuple   ,
-               const Tuples::Type    type = Tuples::NTUPLE         ) ;
+    TupleObj( std::string name, NTuple::Tuple* tuple, const CLID& clid = CLID_ColumnWiseTuple,
+              const Tuples::Type type = Tuples::NTUPLE );
     // ========================================================================
   protected:
     // ========================================================================
@@ -282,7 +282,7 @@ namespace Tuples
      *  @param  value the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name   , float  value  );
+    StatusCode column( const std::string& name, float value );
     // ========================================================================
   public:
     // ========================================================================
@@ -302,7 +302,7 @@ namespace Tuples
      *  @param  value    the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name   , double  value  );
+    StatusCode column( const std::string& name, double value );
     // ========================================================================
   public:
     // ========================================================================
@@ -321,7 +321,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string&   name  , short value );
+    StatusCode column( const std::string& name, short value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -340,10 +340,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string&  name  ,
-                        short         value ,
-                        short         minv  ,
-                        short         maxv  );
+    StatusCode column( const std::string& name, short value, short minv, short maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -362,7 +359,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , unsigned short     value );
+    StatusCode column( const std::string& name, unsigned short value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -381,10 +378,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned short     value ,
-                        unsigned short     minv  ,
-                        unsigned short     maxv  );
+    StatusCode column( const std::string& name, unsigned short value, unsigned short minv, unsigned short maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -403,7 +397,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , char               value );
+    StatusCode column( const std::string& name, char value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -422,10 +416,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        char               value ,
-                        char               minv  ,
-                        char               maxv  );
+    StatusCode column( const std::string& name, char value, char minv, char maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -444,7 +435,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , unsigned char      value );
+    StatusCode column( const std::string& name, unsigned char value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -463,10 +454,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned char      value ,
-                        unsigned char      minv  ,
-                        unsigned char      maxv  );
+    StatusCode column( const std::string& name, unsigned char value, unsigned char minv, unsigned char maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -485,7 +473,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , int                value );
+    StatusCode column( const std::string& name, int value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -504,10 +492,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        int                value ,
-                        int                minv  ,
-                        int                maxv  );
+    StatusCode column( const std::string& name, int value, int minv, int maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -526,7 +511,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , unsigned int       value );
+    StatusCode column( const std::string& name, unsigned int value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -545,10 +530,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned int       value ,
-                        unsigned int       minv  ,
-                        unsigned int       maxv  );
+    StatusCode column( const std::string& name, unsigned int value, unsigned int minv, unsigned int maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -568,7 +550,7 @@ namespace Tuples
      *  @param value   the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , long               value );
+    StatusCode column( const std::string& name, long value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -587,10 +569,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        long               value ,
-                        long               minv  ,
-                        long               maxv  );
+    StatusCode column( const std::string& name, long value, long minv, long maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -610,7 +589,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , unsigned long      value );
+    StatusCode column( const std::string& name, unsigned long value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -629,10 +608,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned long      value ,
-                        unsigned long      minv  ,
-                        unsigned long      maxv  );
+    StatusCode column( const std::string& name, unsigned long value, unsigned long minv, unsigned long maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -651,7 +627,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , long long          value );
+    StatusCode column( const std::string& name, long long value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -670,10 +646,7 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        long long          value ,
-                        long long          minv  ,
-                        long long          maxv  );
+    StatusCode column( const std::string& name, long long value, long long minv, long long maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -692,7 +665,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  , unsigned long long value );
+    StatusCode column( const std::string& name, unsigned long long value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -711,10 +684,8 @@ namespace Tuples
      *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned long long value ,
-                        unsigned long long minv  ,
-                        unsigned long long maxv  );
+    StatusCode column( const std::string& name, unsigned long long value, unsigned long long minv,
+                       unsigned long long maxv );
     // ========================================================================
   public:
     // ========================================================================
@@ -733,11 +704,9 @@ namespace Tuples
      *  @param value  the value of tve variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name, signed char value )
+    StatusCode column( const std::string& name, signed char value )
     {
-      return column ( name  , value ,
-                      std::numeric_limits<signed char>::min() ,
-                      std::numeric_limits<signed char>::max() ) ;
+      return column( name, value, std::numeric_limits<signed char>::min(), std::numeric_limits<signed char>::max() );
     }
     // ========================================================================
   public:
@@ -756,8 +725,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        bool               value );
+    StatusCode column( const std::string& name, bool value );
     // ========================================================================
   public:
     // ========================================================================
@@ -779,8 +747,7 @@ namespace Tuples
      *  @param address IOpaqueAddress
      *  @return status code
      */
-    StatusCode column ( const std::string& name    ,
-                        IOpaqueAddress*    address ) ;
+    StatusCode column( const std::string& name, IOpaqueAddress* address );
     // ========================================================================
     /** Put IOpaqueAddress in NTuple.
      *  If the column does not exist,
@@ -798,7 +765,7 @@ namespace Tuples
      *  @param address IOpaqueAddress
      *  @return status code
      */
-    StatusCode column ( IOpaqueAddress* address ) ;
+    StatusCode column( IOpaqueAddress* address );
     // ========================================================================
   public:
     // ========================================================================
@@ -820,28 +787,28 @@ namespace Tuples
      *
      *  @author Gerhard Raven
      */
-private:
+  private:
     template <typename Tuple, typename Value, std::size_t... I>
-    StatusCode columns_helper( const Value& value, const Tuple& tup, std::index_sequence<I...>) {
-        auto scs = std::initializer_list<StatusCode>{
-            this->column(std::get<I>(tup).first, Gaudi::invoke(std::get<I>(tup).second,value))...
-        };
-        auto is_ok = [](const StatusCode& sc) -> bool { return sc; };
-        auto i = std::find_if_not(begin(scs), end(scs), is_ok );
-        if (i!=end(scs)) {
-            // avoid unchecked StatusCodes...
-            std::for_each(std::next(i),end(scs),is_ok);
-            return *i;
-        }
-        return StatusCode::SUCCESS;
+    StatusCode columns_helper( const Value& value, const Tuple& tup, std::index_sequence<I...> )
+    {
+      auto scs = std::initializer_list<StatusCode>{
+          this->column( std::get<I>( tup ).first, Gaudi::invoke( std::get<I>( tup ).second, value ) )...};
+      auto is_ok = []( const StatusCode& sc ) -> bool { return sc; };
+      auto i     = std::find_if_not( begin( scs ), end( scs ), is_ok );
+      if ( i != end( scs ) ) {
+        // avoid unchecked StatusCodes...
+        std::for_each( std::next( i ), end( scs ), is_ok );
+        return *i;
+      }
+      return StatusCode::SUCCESS;
     }
 
-public:
+  public:
     template <typename Value, typename... Args>
-    StatusCode columns(Value&& value, Args&&... args ) {
-        return columns_helper(std::forward<Value>(value),
-                              std::forward_as_tuple(std::forward<Args>(args)...),
-                              std::index_sequence_for<Args...>{});
+    StatusCode columns( Value&& value, Args&&... args )
+    {
+      return columns_helper( std::forward<Value>( value ), std::forward_as_tuple( std::forward<Args>( args )... ),
+                             std::index_sequence_for<Args...>{} );
     }
     // ========================================================================
   public:
@@ -869,7 +836,7 @@ public:
      *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
      *  @date 2002-10-30
      */
-    StatusCode fill( const char* format ... ) ;
+    StatusCode fill( const char* format... );
     // =======================================================================
   public:
     // =======================================================================
@@ -921,16 +888,12 @@ public:
      *  @param length name of "length" item
      *  @param maxv   maximal length of array
      */
-    template <typename ITERATOR1,typename ITERATOR2>
-    StatusCode farray ( const std::string& name          ,
-                        ITERATOR1&&        first         ,
-                        ITERATOR2&&        last          ,
-                        const std::string& length        ,
-                        size_t             maxv          )
+    template <typename ITERATOR1, typename ITERATOR2>
+    StatusCode farray( const std::string& name, ITERATOR1&& first, ITERATOR2&& last, const std::string& length,
+                       size_t maxv )
     {
-      return farray( name, detail::to_float,
-                     std::forward<ITERATOR1>(first), std::forward<ITERATOR2>(last),
-                     length, maxv );
+      return farray( name, detail::to_float, std::forward<ITERATOR1>( first ), std::forward<ITERATOR2>( last ), length,
+                     maxv );
     }
     // =======================================================================
     /** Add an indexed array (of type float) to N-tuple.
@@ -976,11 +939,10 @@ public:
      *  @param maxv   maximal length of array
      */
     template <class DATA>
-    StatusCode farray ( const std::string& name          ,
-                        const DATA&        data          ,
-                        const std::string& length        ,
-                        const size_t       maxv          )
-    { return farray ( name , std::begin(data) , std::end(data) , length , maxv  ) ; }
+    StatusCode farray( const std::string& name, const DATA& data, const std::string& length, const size_t maxv )
+    {
+      return farray( name, std::begin( data ), std::end( data ), length, maxv );
+    }
     // =======================================================================
     /** Put an indexed array into LoKi-style N-Tuple
      *
@@ -1045,38 +1007,41 @@ public:
      *  @return status code
      */
     template <class FUNCTION, class ITERATOR>
-    StatusCode farray ( const std::string& name          ,
-                        const FUNCTION&    function      ,
-                        ITERATOR           first         ,
-                        ITERATOR           last          ,
-                        const std::string& length        ,
-                        size_t             maxv          )
+    StatusCode farray( const std::string& name, const FUNCTION& function, ITERATOR first, ITERATOR last,
+                       const std::string& length, size_t maxv )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // adjust the length
-      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) ) {
-        Warning("farray('"
-                + name  + "'): array is overflow, skip extra entries") ;
-        last = std::next(first,maxv);
+      if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
+        Warning( "farray('" + name + "'): array is overflow, skip extra entries" );
+        last = std::next( first, maxv );
       }
 
       // get the length item
-      Int* len  = ints( length , 0 , maxv ) ;
-      if( !len  ) { return InvalidColumn ; }
+      Int* len = ints( length, 0, maxv );
+      if ( !len ) {
+        return InvalidColumn;
+      }
 
       // adjust the length
-      *len = std::distance(first,last);
+      *len = std::distance( first, last );
 
       // get the array itself
-      FArray*  var  = fArray ( name , len ) ;
-      if( !var ) { return InvalidColumn ; }
+      FArray* var = fArray( name, len );
+      if ( !var ) {
+        return InvalidColumn;
+      }
 
       // fill the array
-      std::transform( first, last, std::begin(*var), std::cref(function) );
+      std::transform( first, last, std::begin( *var ), std::cref( function ) );
 
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
     /** Put arbitrary number of functions from one data array  into LoKi-style N-Tuple
@@ -1105,55 +1070,57 @@ public:
      *  @param maxv     maximal length of the array
      *  @return status code
      */
-    template <typename Iterator, template <typename,typename...> class Container = std::initializer_list,
-              typename Fun  = std::function<float(detail::const_ref_t<Iterator>)>,
-              typename Item = std::pair<std::string,Fun>,
-              typename = std::enable_if_t<!std::is_same<std::string,Container<Item>>::value >>
-    StatusCode farray ( const Container<Item>&    items ,
-                        Iterator                  first ,
-                        Iterator                  last  ,
-                        const std::string&        length,
-                        size_t                    maxv  )
+    template <typename Iterator, template <typename, typename...> class Container = std::initializer_list,
+              typename Fun  = std::function<float( detail::const_ref_t<Iterator> )>,
+              typename Item = std::pair<std::string, Fun>,
+              typename      = std::enable_if_t<!std::is_same<std::string, Container<Item>>::value>>
+    StatusCode farray( const Container<Item>& items, Iterator first, Iterator last, const std::string& length,
+                       size_t maxv )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // adjust the lenfth
-      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) ) {
+      if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
         using GaudiUtils::details::ostream_joiner;
         std::ostringstream os;
         ostream_joiner( os, items, ",",
-                        [](std::ostream& os, const auto& i) -> std::ostream&
-                        { return os << i.first; } );
-        Warning( "farray('" + os.str()
-               + "'): array overflow, skipping extra entries").ignore() ;
-        last = std::next(first, maxv) ;
+                        []( std::ostream& os, const auto& i ) -> std::ostream& { return os << i.first; } );
+        Warning( "farray('" + os.str() + "'): array overflow, skipping extra entries" ).ignore();
+        last = std::next( first, maxv );
       }
 
       // get the length item
-      Int* len  = ints ( length , 0 , maxv ) ;
-      if ( !len  ) { return InvalidColumn ; }
+      Int* len = ints( length, 0, maxv );
+      if ( !len ) {
+        return InvalidColumn;
+      }
 
       // adjust the length
-      *len = std::distance(first,last);
+      *len = std::distance( first, last );
 
       // get the arrays themselves
-      std::vector<FArray*> vars; vars.reserve(items.size());
-      std::transform( items.begin(), items.end(), std::back_inserter(vars),
-                      [&](const auto& item) { return this->fArray(item.first,len); } );
-      if ( std::any_of( vars.begin(), vars.end(), [](const FArray* f) { return !f; } ) ) {
-        return InvalidColumn ;
+      std::vector<FArray*> vars;
+      vars.reserve( items.size() );
+      std::transform( items.begin(), items.end(), std::back_inserter( vars ),
+                      [&]( const auto& item ) { return this->fArray( item.first, len ); } );
+      if ( std::any_of( vars.begin(), vars.end(), []( const FArray* f ) { return !f; } ) ) {
+        return InvalidColumn;
       }
 
       // fill the array
-      for(size_t index = 0; first != last; ++first,++index ) {
+      for ( size_t index = 0; first != last; ++first, ++index ) {
         auto item = items.begin();
-        for( auto& var : vars ) {
-          (*var)[index] = (item++)->second(*first);
+        for ( auto& var : vars ) {
+          ( *var )[index] = ( item++ )->second( *first );
         }
       }
 
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
     /** Put two functions from one data array  into LoKi-style N-Tuple
@@ -1188,19 +1155,11 @@ public:
      *  @return status code
      */
     template <class FUNC1, class FUNC2, class Iterator>
-    StatusCode farray ( const std::string&   name1         ,
-                        const FUNC1&         func1         ,
-                        const std::string&   name2         ,
-                        const FUNC2&         func2         ,
-                        Iterator&&           first         ,
-                        Iterator&&           last          ,
-                        const std::string&   length        ,
-                        size_t               maxv          )
+    StatusCode farray( const std::string& name1, const FUNC1& func1, const std::string& name2, const FUNC2& func2,
+                       Iterator&& first, Iterator&& last, const std::string& length, size_t maxv )
     {
-        return farray( { { name1, std::cref(func1) },
-                         { name2, std::cref(func2) } },
-                       std::forward<Iterator>(first), std::forward<Iterator>(last),
-                       length, maxv );
+      return farray( {{name1, std::cref( func1 )}, {name2, std::cref( func2 )}}, std::forward<Iterator>( first ),
+                     std::forward<Iterator>( last ), length, maxv );
     }
     // =======================================================================
     /** Put three functions from one data array  into LoKi-style N-Tuple
@@ -1240,22 +1199,12 @@ public:
      *  @return status code
      */
     template <class FUNC1, class FUNC2, class FUNC3, class Iterator>
-    StatusCode farray ( const std::string& name1         ,
-                        const FUNC1&       func1         ,
-                        const std::string& name2         ,
-                        const FUNC2&       func2         ,
-                        const std::string& name3         ,
-                        const FUNC3&       func3         ,
-                        Iterator&&         first         ,
-                        Iterator&&         last          ,
-                        const std::string& length        ,
-                        size_t             maxv          )
+    StatusCode farray( const std::string& name1, const FUNC1& func1, const std::string& name2, const FUNC2& func2,
+                       const std::string& name3, const FUNC3& func3, Iterator&& first, Iterator&& last,
+                       const std::string& length, size_t maxv )
     {
-        return farray( {{name1,std::cref(func1)},
-                        {name2,std::cref(func2)},
-                        {name3,std::cref(func3)}},
-                        std::forward<Iterator>(first), std::forward<Iterator>(last),
-                        length, maxv );
+      return farray( {{name1, std::cref( func1 )}, {name2, std::cref( func2 )}, {name3, std::cref( func3 )}},
+                     std::forward<Iterator>( first ), std::forward<Iterator>( last ), length, maxv );
     }
     // =======================================================================
     /** Put four functions from one data array  into LoKi-style N-Tuple
@@ -1298,25 +1247,15 @@ public:
      *  @return status code
      */
     template <class FUNC1, class FUNC2, class FUNC3, class FUNC4, class Iterator>
-    StatusCode farray ( const std::string& name1         ,
-                        const FUNC1&       func1         ,
-                        const std::string& name2         ,
-                        const FUNC2&       func2         ,
-                        const std::string& name3         ,
-                        const FUNC3&       func3         ,
-                        const std::string& name4         ,
-                        const FUNC4&       func4         ,
-                        Iterator&&         first         ,
-                        Iterator&&         last          ,
-                        const std::string& length        ,
-                        size_t             maxv          )
+    StatusCode farray( const std::string& name1, const FUNC1& func1, const std::string& name2, const FUNC2& func2,
+                       const std::string& name3, const FUNC3& func3, const std::string& name4, const FUNC4& func4,
+                       Iterator&& first, Iterator&& last, const std::string& length, size_t maxv )
     {
-        return farray( {{name1,std::cref(func1)},
-                        {name2,std::cref(func2)},
-                        {name3,std::cref(func3)},
-                        {name4,std::cref(func4)}},
-                        std::forward<Iterator>(first), std::forward<Iterator>(last),
-                        length, maxv );
+      return farray( {{name1, std::cref( func1 )},
+                      {name2, std::cref( func2 )},
+                      {name3, std::cref( func3 )},
+                      {name4, std::cref( func4 )}},
+                     std::forward<Iterator>( first ), std::forward<Iterator>( last ), length, maxv );
     }
     // =======================================================================
   public:
@@ -1372,42 +1311,45 @@ public:
      *  @date 2005-05-01
      */
     template <class MATRIX>
-    StatusCode fmatrix ( const std::string& name    ,
-                         const MATRIX&      data    ,
-                         size_t             rows    ,
-                         const MIndex&      cols    ,
-                         const std::string& length  ,
-                         size_t             maxv    )
+    StatusCode fmatrix( const std::string& name, const MATRIX& data, size_t rows, const MIndex& cols,
+                        const std::string& length, size_t maxv )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // adjust the length
-      if ( rows >= maxv )
-      {
-        Warning ( "fmatrix('"+name+"'): matrix is overflow, skip extra items").ignore() ;
-        rows = ( 0 < maxv ) ? ( maxv - 1 ) : 0 ;
+      if ( rows >= maxv ) {
+        Warning( "fmatrix('" + name + "'): matrix is overflow, skip extra items" ).ignore();
+        rows = ( 0 < maxv ) ? ( maxv - 1 ) : 0;
       }
 
       // get the length item
-      Int* len  = ints( length , 0 , maxv ) ;
-      if ( !len  ) { return InvalidColumn; }
-
-      // adjust the length item
-      *len = rows ;
-
-      // get the array itself
-      FMatrix* var  = fMatrix ( name , len  , cols ) ;
-      if ( !var ) { return InvalidColumn ; }
-
-      /// fill the matrix
-      for ( size_t iCol = 0 ; iCol < cols ; ++iCol )
-      {
-        for ( MIndex iRow = 0 ; iRow < rows ; ++iRow )
-        { (*var)[ iRow ] [ iCol ] = data[ iRow ][ iCol ] ; }
+      Int* len = ints( length, 0, maxv );
+      if ( !len ) {
+        return InvalidColumn;
       }
 
-      return StatusCode::SUCCESS ;
+      // adjust the length item
+      *len = rows;
+
+      // get the array itself
+      FMatrix* var = fMatrix( name, len, cols );
+      if ( !var ) {
+        return InvalidColumn;
+      }
+
+      /// fill the matrix
+      for ( size_t iCol = 0; iCol < cols; ++iCol ) {
+        for ( MIndex iRow = 0; iRow < rows; ++iRow ) {
+          ( *var )[iRow][iCol] = data[iRow][iCol];
+        }
+      }
+
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
     /** Fill N-Tuple with data from variable-size matrix
@@ -1447,46 +1389,49 @@ public:
      *  @date 2005-05-01
      */
     template <class DATA>
-    StatusCode fmatrix ( const std::string& name   ,
-                         DATA               first  ,
-                         DATA               last   ,
-                         const MIndex&      cols   ,
-                         const std::string& length ,
-                         size_t             maxv   )
+    StatusCode fmatrix( const std::string& name, DATA first, DATA last, const MIndex& cols, const std::string& length,
+                        size_t maxv )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // adjust the length
-      if ( first + maxv < last )
-      {
-        Warning("fmatrix('"+name+"'): matrix is overflow, skip extra items").ignore() ;
-        last = first + maxv ;
+      if ( first + maxv < last ) {
+        Warning( "fmatrix('" + name + "'): matrix is overflow, skip extra items" ).ignore();
+        last = first + maxv;
       }
 
       // get the length item
-      Int* len  = ints( length , 0 , maxv ) ;
-      if ( !len  ) { return InvalidColumn; }
-
-      // adjust the length item
-      *len = last - first ;
-
-      // get the array itself
-      FMatrix* var  = fMatrix ( name , len , cols ) ;
-      if ( !var ) { return InvalidColumn ; }
-
-      /// fill the matrix
-      size_t iRow = 0 ;
-      for ( ; first != last ; ++first )
-      {
-        //
-        for ( MIndex iCol = 0 ; iCol < cols ; ++iCol )
-        { (*var)[ iRow ] [ iCol ] = (float)((*first)[ iCol ]) ; }
-        //
-        ++iRow ;
+      Int* len = ints( length, 0, maxv );
+      if ( !len ) {
+        return InvalidColumn;
       }
 
-      return StatusCode::SUCCESS ;
+      // adjust the length item
+      *len = last - first;
+
+      // get the array itself
+      FMatrix* var = fMatrix( name, len, cols );
+      if ( !var ) {
+        return InvalidColumn;
+      }
+
+      /// fill the matrix
+      size_t iRow = 0;
+      for ( ; first != last; ++first ) {
+        //
+        for ( MIndex iCol = 0; iCol < cols; ++iCol ) {
+          ( *var )[iRow][iCol] = (float)( ( *first )[iCol] );
+        }
+        //
+        ++iRow;
+      }
+
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
     /** fill N-Tuple with matrix of "direct-product" of
@@ -1567,49 +1512,51 @@ public:
      *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
      *  @date 2005-05-01
      */
-    template <class FUN,class DATA>
-    StatusCode fmatrix ( const std::string& name   ,
-                         FUN                funF   ,
-                         FUN                funL   ,
-                         DATA               first  ,
-                         DATA               last   ,
-                         const std::string& length ,
-                         size_t             maxv   )
+    template <class FUN, class DATA>
+    StatusCode fmatrix( const std::string& name, FUN funF, FUN funL, DATA first, DATA last, const std::string& length,
+                        size_t maxv )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // adjust the length
-      if ( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) )
-      {
-        Warning("fmatrix('"+name+"'): matrix is overflow, skip extra items").ignore() ;
-        last = std::next(first, maxv) ;
+      if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
+        Warning( "fmatrix('" + name + "'): matrix is overflow, skip extra items" ).ignore();
+        last = std::next( first, maxv );
       }
 
       // get the length item
-      Int* len  = ints( length , 0 , maxv ) ;
-      if ( !len  ) { return InvalidColumn; }
+      Int* len = ints( length, 0, maxv );
+      if ( !len ) {
+        return InvalidColumn;
+      }
 
       // adjust the length item
-      *len = std::distance(first,last);
+      *len = std::distance( first, last );
 
       // get the array itself
-      auto cols = std::distance(funF,funL);
-      FMatrix* var  = fMatrix ( name , len , cols ) ;
-      if ( !var ) { return InvalidColumn ; }
+      auto cols    = std::distance( funF, funL );
+      FMatrix* var = fMatrix( name, len, cols );
+      if ( !var ) {
+        return InvalidColumn;
+      }
 
       /// fill the matrix
-      size_t iRow = 0 ;
-      for ( ; first != last ; ++first )
-      {
+      size_t iRow = 0;
+      for ( ; first != last; ++first ) {
         //
-        for ( FUN fun = funF ; fun < funL ; ++fun )
-        { (*var)[ iRow ] [ fun - funF ] = (*fun) ( *first ) ; }
+        for ( FUN fun = funF; fun < funL; ++fun ) {
+          ( *var )[iRow][fun - funF] = ( *fun )( *first );
+        }
         //
         ++iRow;
       }
 
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
   public:
@@ -1637,25 +1584,29 @@ public:
      *  @date 2005-05-01
      */
     template <class DATA>
-    StatusCode array ( const std::string& name          ,
-                       DATA               first         ,
-                       DATA               last          )
+    StatusCode array( const std::string& name, DATA first, DATA last )
 
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // get the length (fixed!)
-      auto length = std::distance(first,last);
+      auto length = std::distance( first, last );
 
       // get the array itself
-      FArray* var  = fArray ( name , length ) ;
-      if ( !var ) { return InvalidColumn ; }
+      FArray* var = fArray( name, length );
+      if ( !var ) {
+        return InvalidColumn;
+      }
 
       /// fill the array
-      std::copy( first, last, std::begin(*var) );
+      std::copy( first, last, std::begin( *var ) );
 
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
     /** fill N-Tuple with fixed-size array
@@ -1697,15 +1648,13 @@ public:
      *  @date 2005-05-01
      */
     template <class ARRAY>
-    StatusCode array ( const std::string& name   ,
-                       const ARRAY&       data   ,
-                       const MIndex&      length )
+    StatusCode array( const std::string& name, const ARRAY& data, const MIndex& length )
     {
       using std::begin; // allow data to be eg. CLHEP::HepVector (which does not define HepVector::begin()!,
                         // in which case ADL prefers CLHEP::begin (yah! at least they (now) use a namespace)
                         // so one just to insure  double* CLHEP::begin(CLHEP::HepVector& v) { return &v[0]; }
                         // is visible when this function gets instantiated for CLHEP::HepVector...
-      auto first = begin(data);
+      auto first = begin( data );
       return array( name, first, std::next( first, length ) );
     }
     // =======================================================================
@@ -1740,11 +1689,11 @@ public:
      *  @date 2005-05-01
      */
     template <class ARRAY>
-    StatusCode array ( const std::string& name  ,
-                       const ARRAY&       data  )
+    StatusCode array( const std::string& name, const ARRAY& data )
     {
-        using std::begin; using std::end;
-        return array ( name , begin(data) , end(data) ) ;
+      using std::begin;
+      using std::end;
+      return array( name, begin( data ), end( data ) );
     }
     // =======================================================================
   public:
@@ -1798,25 +1747,28 @@ public:
      *  @date 2005-05-01
      */
     template <class MATRIX>
-    StatusCode matrix ( const std::string& name  ,
-                        const MATRIX&      data  ,
-                        const MIndex&      rows  ,
-                        const MIndex&      cols  )
+    StatusCode matrix( const std::string& name, const MATRIX& data, const MIndex& rows, const MIndex& cols )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // get the matrix itself
-      FMatrix* var  = fMatrix ( name , rows , cols ) ;
-      if ( !var ) { return InvalidColumn ; }
+      FMatrix* var = fMatrix( name, rows, cols );
+      if ( !var ) {
+        return InvalidColumn;
+      }
 
       /// fill the matrix
-      for ( size_t iCol = 0 ; iCol < cols ; ++iCol )
-      {
-        for ( size_t iRow = 0 ; iRow < rows ; ++iRow )
-        { (*var)[iRow][iCol] = data[iRow][iCol]; }
+      for ( size_t iCol = 0; iCol < cols; ++iCol ) {
+        for ( size_t iRow = 0; iRow < rows; ++iRow ) {
+          ( *var )[iRow][iCol] = data[iRow][iCol];
+        }
       };
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
   public:
@@ -1838,12 +1790,12 @@ public:
      *  @date 2006-11-26
      */
     template <class TYPE>
-    StatusCode column ( const std::string& name , const ROOT::Math::LorentzVector<TYPE>& v )
+    StatusCode column( const std::string& name, const ROOT::Math::LorentzVector<TYPE>& v )
     {
       return columns( v, std::make_pair( name + "E", &ROOT::Math::LorentzVector<TYPE>::E ),
-                         std::make_pair( name + "X", &ROOT::Math::LorentzVector<TYPE>::Px),
-                         std::make_pair( name + "Y", &ROOT::Math::LorentzVector<TYPE>::Py),
-                         std::make_pair( name + "Z", &ROOT::Math::LorentzVector<TYPE>::Pz) );
+                      std::make_pair( name + "X", &ROOT::Math::LorentzVector<TYPE>::Px ),
+                      std::make_pair( name + "Y", &ROOT::Math::LorentzVector<TYPE>::Py ),
+                      std::make_pair( name + "Z", &ROOT::Math::LorentzVector<TYPE>::Pz ) );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1862,13 +1814,12 @@ public:
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-11-26
      */
-    template <class TYPE,class TAG>
-    StatusCode column ( const std::string& name ,
-                        const ROOT::Math::DisplacementVector3D<TYPE,TAG>& v )
+    template <class TYPE, class TAG>
+    StatusCode column( const std::string& name, const ROOT::Math::DisplacementVector3D<TYPE, TAG>& v )
     {
-      return this->columns( v, std::make_pair( name + "X", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::X ),
-                               std::make_pair( name + "Y", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Y ),
-                               std::make_pair( name + "Z", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Z ) );
+      return this->columns( v, std::make_pair( name + "X", &ROOT::Math::DisplacementVector3D<TYPE, TAG>::X ),
+                            std::make_pair( name + "Y", &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Y ),
+                            std::make_pair( name + "Z", &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Z ) );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1887,15 +1838,12 @@ public:
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-11-26
      */
-    template <class TYPE,class TAG>
-    StatusCode column
-    ( const std::string& name ,
-      const ROOT::Math::PositionVector3D<TYPE,TAG>& v )
+    template <class TYPE, class TAG>
+    StatusCode column( const std::string& name, const ROOT::Math::PositionVector3D<TYPE, TAG>& v )
     {
-      return this->columns( v,
-                        std::make_pair( name + "X", &ROOT::Math::PositionVector3D<TYPE,TAG>::X ),
-                        std::make_pair( name + "Y", &ROOT::Math::PositionVector3D<TYPE,TAG>::Y ),
-                        std::make_pair( name + "Z", &ROOT::Math::PositionVector3D<TYPE,TAG>::Z ) );
+      return this->columns( v, std::make_pair( name + "X", &ROOT::Math::PositionVector3D<TYPE, TAG>::X ),
+                            std::make_pair( name + "Y", &ROOT::Math::PositionVector3D<TYPE, TAG>::Y ),
+                            std::make_pair( name + "Z", &ROOT::Math::PositionVector3D<TYPE, TAG>::Z ) );
     }
     // =======================================================================
     /** shortcut to put Smatrix into N-tuple:
@@ -1906,26 +1854,30 @@ public:
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-11-26
      */
-    template <class TYPE,unsigned int D1,unsigned int D2,class REP>
-    StatusCode matrix
-    ( const std::string&                         name ,
-      const ROOT::Math::SMatrix<TYPE,D1,D2,REP>& mtrx )
+    template <class TYPE, unsigned int D1, unsigned int D2, class REP>
+    StatusCode matrix( const std::string& name, const ROOT::Math::SMatrix<TYPE, D1, D2, REP>& mtrx )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
+      if ( invalid() ) {
+        return InvalidTuple;
+      }
+      if ( rowWise() ) {
+        return InvalidOperation;
+      }
 
       // get the matrix itself
-      FMatrix* var  = fMatrix ( name , (MIndex)D1 , (MIndex)D2 ) ;
-      if ( !var   ) { return InvalidColumn ; }
+      FMatrix* var = fMatrix( name, (MIndex)D1, (MIndex)D2 );
+      if ( !var ) {
+        return InvalidColumn;
+      }
 
       /// fill the matrix
-      for ( size_t iCol = 0 ; iCol < D2 ; ++iCol )
-      {
-        for ( size_t iRow = 0 ; iRow < D1 ; ++iRow )
-        { (*var)[iRow][iCol] = mtrx(iRow,iCol) ; }
+      for ( size_t iCol = 0; iCol < D2; ++iCol ) {
+        for ( size_t iRow = 0; iRow < D1; ++iRow ) {
+          ( *var )[iRow][iCol] = mtrx( iRow, iCol );
+        }
       };
 
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // =======================================================================
     /** shortcut to put "ExtraInfo" fields of major
@@ -1946,20 +1898,13 @@ public:
      *  @date 2006-11-26
      */
     template <class KEY, class VALUE>
-    StatusCode fmatrix
-    ( const std::string&                      name       ,
-      const GaudiUtils::VectorMap<KEY,VALUE>& info       ,
-      const std::string&                      length     ,
-      const size_t                            maxv = 100 )
+    StatusCode fmatrix( const std::string& name, const GaudiUtils::VectorMap<KEY, VALUE>& info,
+                        const std::string& length, const size_t maxv = 100 )
     {
-      using Info = std::pair<KEY,VALUE>;
-      static const std::array< std::function<float(const Info&)>, 2>
-         fns = { { [](const Info& i) { return i.first;  } ,
-                   [](const Info& i) { return i.second; } } };
-      return fmatrix( name,
-                      std::begin(fns), std::end(fns),
-                      std::begin(info), std::end(info),
-                      length,maxv );
+      using Info = std::pair<KEY, VALUE>;
+      static const std::array<std::function<float( const Info& )>, 2> fns = {
+          {[]( const Info& i ) { return i.first; }, []( const Info& i ) { return i.second; }}};
+      return fmatrix( name, std::begin( fns ), std::end( fns ), std::begin( info ), std::end( info ), length, maxv );
     }
     // =======================================================================
   public:
@@ -1972,65 +1917,64 @@ public:
      *  @date 2007-04-08
      */
     template <class TYPE>
-    StatusCode put
-    ( const std::string& name , const TYPE*  obj ) ;
+    StatusCode put( const std::string& name, const TYPE* obj );
     // =======================================================================
   public:
     // =======================================================================
     /** write a record to NTuple
      *  @return status code
      */
-    StatusCode write () ;
+    StatusCode write();
     // =======================================================================
     /// get the name
-    const std::string&  name() const { return m_name ; }
+    const std::string& name() const { return m_name; }
     // =======================================================================
     /** provide the access to underlying Gaudi N-tuple
      *  @return pointer to Gaudi N-tuple object
      */
-    const NTuple::Tuple* tuple() const  { return m_tuple ; }
+    const NTuple::Tuple* tuple() const { return m_tuple; }
     // =======================================================================
     /** provide the access to underlying Gaudi N-tuple
      *  @return pointer to Gaudi N-tuple object
      */
-    NTuple::Tuple* tuple() { return m_tuple ; }
+    NTuple::Tuple* tuple() { return m_tuple; }
     // =======================================================================
     /** return the reference counter
      *  @return current reference counter
      */
-    unsigned long refCount() const { return   m_refCount ; }
+    unsigned long refCount() const { return m_refCount; }
     // =======================================================================
     /** add the reference to TupleObj
      *  @return current reference counter
      */
-    unsigned long addRef  ()       { return ++m_refCount ; }
+    unsigned long addRef() { return ++m_refCount; }
     // =======================================================================
     /** release the reference to TupleObj
      *  if reference counter becomes zero,
      *  object will be automatically deleted
      */
-    void          release () ;
+    void release();
     // =======================================================================
     /// accessor to the N-Tuple CLID
-    const CLID&        clid() const { return m_clid ; }
+    const CLID& clid() const { return m_clid; }
     // =======================================================================
     /// accessor to the N-Tuple type
-    Tuples::Type       type() const { return m_type ; }
+    Tuples::Type type() const { return m_type; }
     // =======================================================================
     /// column wise NTuple ?
-    bool columnWise() const { return CLID_ColumnWiseTuple == clid() ; }
+    bool columnWise() const { return CLID_ColumnWiseTuple == clid(); }
     // =======================================================================
     /// row wise NTuple ?
-    bool rowWise   () const { return CLID_RowWiseTuple    == clid() ; }
+    bool rowWise() const { return CLID_RowWiseTuple == clid(); }
     // =======================================================================
     /// Event collection ?
-    bool evtColType() const { return Tuples::EVTCOL       == type()  ; }
+    bool evtColType() const { return Tuples::EVTCOL == type(); }
     // =======================================================================
     /// valid pointer to tuple ?
-    bool valid     () const { return 0 != tuple() ; }
+    bool valid() const { return 0 != tuple(); }
     // =======================================================================
     /// invalid pointer to tuple ?
-    bool invalid   () const { return ! valid()    ; }
+    bool invalid() const { return !valid(); }
     // =======================================================================
   public:
     // =======================================================================
@@ -2039,179 +1983,166 @@ public:
      *  @param type the type of the item
      *  @return true if the name is indeed added
      */
-    bool addItem ( std::string name ,
-                   std::string type )
-    { return m_items.emplace ( std::move(name) , std::move(type) ).second ; }
+    bool addItem( std::string name, std::string type )
+    {
+      return m_items.emplace( std::move( name ), std::move( type ) ).second;
+    }
     // =======================================================================
     /** check the uniqueness of the name
      *  @param name the name of the item
      *  @return true if the name is indeed unique
      */
-    bool goodItem  ( const std::string& name ) const
-    { return m_items.end() == m_items.find ( name ) ; }
+    bool goodItem( const std::string& name ) const { return m_items.end() == m_items.find( name ); }
     // =======================================================================
     /// get the full list of booked items
-    const ItemMap& items() const { return m_items ; }
+    const ItemMap& items() const { return m_items; }
     // =======================================================================
   public:
     // =======================================================================
-    virtual StatusCode Error
-    ( const std::string& msg ,
-      const StatusCode   sc  = StatusCode::FAILURE ) const = 0 ;
+    virtual StatusCode Error( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const = 0;
     // =======================================================================
-    virtual StatusCode Warning
-    ( const std::string& msg ,
-      const StatusCode   sc  = StatusCode::FAILURE ) const = 0 ;
+    virtual StatusCode Warning( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const = 0;
     // =======================================================================
   private:
     // =======================================================================
     /// get the column
-    Int*     ints       ( const std::string& name ,
-                          int                minv ,
-                          int                maxv ) ;
+    Int* ints( const std::string& name, int minv, int maxv );
     // =======================================================================
     /// get the column
-    FArray*  fArray     ( const std::string& name ,
-                          Int*               item ) ;
+    FArray* fArray( const std::string& name, Int* item );
     // =======================================================================
     /// get the column
-    FArray*  fArray     ( const std::string& name ,
-                          const MIndex&      rows ) ;
+    FArray* fArray( const std::string& name, const MIndex& rows );
     // =======================================================================
     /// get the column
-    Address* addresses  ( const std::string& name ) ;
+    Address* addresses( const std::string& name );
     // =======================================================================
     /// get the column
-    FMatrix* fMatrix    ( const std::string& name ,
-                          Int*               item ,
-                          const MIndex&      cols ) ;
+    FMatrix* fMatrix( const std::string& name, Int* item, const MIndex& cols );
     // =======================================================================
     /// get the column
-    FMatrix* fMatrix    ( const std::string& name ,
-                          const MIndex&      rows ,
-                          const MIndex&      cols ) ;
+    FMatrix* fMatrix( const std::string& name, const MIndex& rows, const MIndex& cols );
     // =======================================================================
   private:
     // =======================================================================
     /// delete the default/copy constructor and assignment
-    TupleObj () = delete;
-    TupleObj            ( const TupleObj& ) = delete;
-    TupleObj& operator= ( const TupleObj& ) = delete;
+    TupleObj()                  = delete;
+    TupleObj( const TupleObj& ) = delete;
+    TupleObj& operator=( const TupleObj& ) = delete;
     // =======================================================================
   private:
     // =======================================================================
     /// the actual storage type for short columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Bool>>   Bools;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<Bool>> Bools;
     // =======================================================================
     /// the actual storage type for short columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Char>>   Chars;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<Char>> Chars;
     // =======================================================================
     /// the actual storage type for unsigned short columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<UChar>>  UChars;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<UChar>> UChars;
     // =======================================================================
     /// the actual storage type for short columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Short>>  Shorts;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<Short>> Shorts;
     // =======================================================================
     /// the actual storage type for unsigned short columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<UShort>> UShorts;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<UShort>> UShorts;
     // =======================================================================
     /// the actual storage type for integer columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Int>>    Ints;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<Int>> Ints;
     // =======================================================================
     /// the actual storage type for unsigned integer columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<UInt>>   UInts;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<UInt>> UInts;
     // =======================================================================
     /// the actual storage type for longlong columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<LongLong>> LongLongs;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<LongLong>> LongLongs;
     // =======================================================================
     /// the actual storage type for ulonglong columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<ULongLong>> ULongLongs;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<ULongLong>> ULongLongs;
     // =======================================================================
     /// the actual storage type for float columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Float>>   Floats;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<Float>> Floats;
     // =======================================================================
     /// the actual storage type for float columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Double>>  Doubles;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<Double>> Doubles;
     // =======================================================================
     /// the actual storage type for address columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Address>> Addresses;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<Address>> Addresses;
     // =======================================================================
     /// the actual storage type for array columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<FArray>>  FArrays;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<FArray>> FArrays;
     // =======================================================================
     /// the actual storage type for matrix columns
-    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<FMatrix>> FMatrices;
+    typedef GaudiUtils::HashMap<std::string, std::unique_ptr<FMatrix>> FMatrices;
     // =======================================================================
   private:
-
     // =======================================================================
     /// name
-    std::string            m_name       ;
+    std::string m_name;
     // =======================================================================
     /// tuple itself
-    NTuple::Tuple*         m_tuple      ;
+    NTuple::Tuple* m_tuple;
     // =======================================================================
     /// tuple CLID
-    CLID                   m_clid       ;
+    CLID m_clid;
     // =======================================================================
     /// tuple 'type'
-    Tuples::Type           m_type       ;
+    Tuples::Type m_type;
     // =======================================================================
     /// reference counter
-    size_t                 m_refCount   = 0;
+    size_t m_refCount = 0;
     // =======================================================================
     /// the actual storage of all 'bool' columns
-    mutable Bools          m_bools      ;
+    mutable Bools m_bools;
     // =======================================================================
     /// the actual storage of all 'Int' columns
-    mutable Chars          m_chars      ;
+    mutable Chars m_chars;
     // =======================================================================
     /// the actual storage of all 'unsigned int' columns
-    mutable UChars         m_uchars     ;
+    mutable UChars m_uchars;
     // =======================================================================
     /// the actual storage of all 'Int' columns
-    mutable Shorts         m_shorts     ;
+    mutable Shorts m_shorts;
     // =======================================================================
     /// the actual storage of all 'unsigned int' columns
-    mutable UShorts        m_ushorts    ;
+    mutable UShorts m_ushorts;
     // =======================================================================
     /// the actual storage of all 'Int' columns
-    mutable Ints           m_ints       ;
+    mutable Ints m_ints;
     // =======================================================================
     /// the actual storage of all 'unsigned int' columns
-    mutable UInts          m_uints      ;
+    mutable UInts m_uints;
     // =======================================================================
     /// the actual storage of all 'longlong' columns
-    mutable LongLongs      m_longlongs  ;
+    mutable LongLongs m_longlongs;
     // =======================================================================
     /// the actual storage of all 'ulonglong' columns
-    mutable ULongLongs     m_ulonglongs ;
+    mutable ULongLongs m_ulonglongs;
     // =======================================================================
     /// the actual storage of all 'Float'   columns
-    mutable Floats         m_floats     ;
+    mutable Floats m_floats;
     // =======================================================================
     /// the actual storage of all 'Double'   columns
-    mutable Doubles        m_doubles    ;
+    mutable Doubles m_doubles;
     // =======================================================================
     /// the actual storage of all 'Address' columns
-    mutable Addresses      m_addresses  ;
+    mutable Addresses m_addresses;
     // =======================================================================
     /// the actual storage of all 'FArray'  columns
-    mutable FArrays        m_farrays    ;
+    mutable FArrays m_farrays;
     // =======================================================================
     /// the actual storage of all 'FArray'  columns (fixed)
-    mutable FArrays        m_arraysf    ;
+    mutable FArrays m_arraysf;
     // =======================================================================
     /// the actual storage of all 'FArray'  columns
-    mutable FMatrices      m_fmatrices  ;
+    mutable FMatrices m_fmatrices;
     // =======================================================================
     /// the actual storage of all 'FMatrix' columns (fixed)
-    mutable FMatrices      m_matricesf  ;
+    mutable FMatrices m_matricesf;
     // =======================================================================
     /// all booked types:
-    ItemMap                m_items      ;
+    ItemMap m_items;
     // =======================================================================
-  } ;
+  };
   // ==========================================================================
 } // end of namespace Tuples
 // ============================================================================

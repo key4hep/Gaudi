@@ -12,14 +12,14 @@
  *
  * @author Charles Leggett
  */
-class GAUDI_API INamedInterface: virtual public IInterface {
+class GAUDI_API INamedInterface : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(INamedInterface,1,0);
+  DeclareInterfaceID( INamedInterface, 1, 0 );
 
   /// Retrieve the name of the instance.
   virtual const std::string& name() const = 0;
-
 };
 
 #endif

@@ -24,7 +24,8 @@
 
     M.Frank
 */
-namespace System  {
+namespace System
+{
   enum ModuleType { UNKNOWN, SHAREDLIB, EXECUTABLE };
   /// Definition of an image handle
   typedef void* ImageHandle;
@@ -43,10 +44,10 @@ namespace System  {
   /// Handle to the executable file running
   GAUDI_API ImageHandle exeHandle();
   /// Name of the executable file running
-  GAUDI_API const std::string&  exeName();
+  GAUDI_API const std::string& exeName();
   /// Vector of names of linked modules
   GAUDI_API const std::vector<std::string> linkedModules();
   /// Attach module handle
-  GAUDI_API void  setModuleHandle(ImageHandle handle);
+  GAUDI_API void setModuleHandle( ImageHandle handle );
 }
 #endif // GAUDIKERNEL_MODULEINFO_H

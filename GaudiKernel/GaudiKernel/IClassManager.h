@@ -15,13 +15,13 @@ class ISvcLocator;
 
     @author Pere Mato
 */
-class GAUDI_API IClassManager: virtual public IInterface  {
+class GAUDI_API IClassManager : virtual public IInterface
+{
 public:
-  DeclareInterfaceID(IClassManager,2,0);
+  DeclareInterfaceID( IClassManager, 2, 0 );
 
   /// Declare a sharable library to be used for creating instances of a given algorithm type.
-  virtual StatusCode loadModule( const std::string& module,
-                                 bool fireIncident=true ) = 0;  // Sharable library name
+  virtual StatusCode loadModule( const std::string& module, bool fireIncident = true ) = 0; // Sharable library name
 };
 
-#endif  // GAUDIKERNEL_ICLASSMANAGER_H
+#endif // GAUDIKERNEL_ICLASSMANAGER_H

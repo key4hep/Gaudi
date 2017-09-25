@@ -6,15 +6,14 @@
 #include "GaudiKernel/StatusCode.h"
 
 // STL includes
-#include <string>
 #include <ostream>
+#include <string>
 
 // Forward declarations
 class IOpaqueAddress;
 class StreamBuffer;
 class LinkManager;
 class IRegistry;
-
 
 // Definition of the CLID for this class
 static const CLID CLID_DataObject = 1;
@@ -27,14 +26,15 @@ static const CLID CLID_DataObject = 1;
 
     @author M.Frank
 */
-class GAUDI_API DataObject {
+class GAUDI_API DataObject
+{
 private:
   /// Reference count
-  unsigned long       m_refCount = 0;
+  unsigned long m_refCount = 0;
   /// Version number
-  unsigned char       m_version = 0;
+  unsigned char m_version = 0;
   /// Pointer to the Registry Object
-  IRegistry*          m_pRegistry = nullptr;
+  IRegistry* m_pRegistry = nullptr;
   /// Store of symbolic links
   std::unique_ptr<LinkManager> m_pLinkMgr;
 
@@ -42,13 +42,13 @@ public:
   /// Standard Constructor
   DataObject();
   /// Copy Constructor
-  DataObject(const DataObject& rhs);
+  DataObject( const DataObject& rhs );
   /// Assignment Operator
-  DataObject& operator=(const DataObject& rhs);
+  DataObject& operator=( const DataObject& rhs );
   /// Move Constructor
-  DataObject(DataObject&& rhs);
+  DataObject( DataObject&& rhs );
   /// Move Assignment Operator
-  DataObject& operator=(DataObject&& rhs);
+  DataObject& operator=( DataObject&& rhs );
   /// Standard Destructor
   virtual ~DataObject();
   /// Add reference to object
@@ -67,48 +67,34 @@ public:
 
   /**@name inline code of class DataObject    */
   /// Set pointer to Registry
-  void setRegistry(IRegistry* pRegistry)    {
-    m_pRegistry = pRegistry;
-  }
+  void setRegistry( IRegistry* pRegistry ) { m_pRegistry = pRegistry; }
   /// Get pointer to Registry
-  IRegistry* registry() const   {
-    return m_pRegistry;
-  }
+  IRegistry* registry() const { return m_pRegistry; }
   /// Retrieve Link manager
-  LinkManager* linkMgr()    const   {
-    return m_pLinkMgr.get();
-  }
+  LinkManager* linkMgr() const { return m_pLinkMgr.get(); }
   /// Retrieve version number of this object representation
-  unsigned char version()    const  {
-    return m_version;
-  }
+  unsigned char version() const { return m_version; }
   /// Set version number of this object representation
-  void setVersion(unsigned char vsn)    {
-    m_version = vsn;
-  }
+  void setVersion( unsigned char vsn ) { m_version = vsn; }
   /// Return the refcount
-  unsigned long refCount() const {
-    return m_refCount;
-  }
+  unsigned long refCount() const { return m_refCount; }
   /// Fill the output stream (ASCII)
-  virtual std::ostream& fillStream( std::ostream& s ) const {
+  virtual std::ostream& fillStream( std::ostream& s ) const
+  {
     s << "DataObject at " << std::hex << this;
     return s;
   }
   /// Output operator (ASCII)
-  friend std::ostream& operator<< ( std::ostream& s, const DataObject& obj ) {
-    return obj.fillStream(s);
-  }
+  friend std::ostream& operator<<( std::ostream& s, const DataObject& obj ) { return obj.fillStream( s ); }
 };
 
 // Additional functions to support the Serialization of objects in the transient store
 
 namespace Gaudi
 {
-  GAUDI_API void pushCurrentDataObject(DataObject** pobjAddr);
+  GAUDI_API void pushCurrentDataObject( DataObject** pobjAddr );
   GAUDI_API void popCurrentDataObject();
   GAUDI_API DataObject* getCurrentDataObject();
 }
-
 
 #endif // GAUDIKERNEL_DATAOBJECT_H

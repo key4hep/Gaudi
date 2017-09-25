@@ -39,21 +39,23 @@
 
 #include "GaudiKernel/SystemOfUnits.h"
 
-namespace Gaudi {
-  namespace Units {
+namespace Gaudi
+{
+  namespace Units
+  {
 
-    constexpr double     pi  = 3.14159265358979323846;
-    constexpr double  twopi  = 2*pi;
-    constexpr double halfpi  = pi/2;
-    constexpr double     pi2 = pi*pi;
+    constexpr double pi     = 3.14159265358979323846;
+    constexpr double twopi  = 2 * pi;
+    constexpr double halfpi = pi / 2;
+    constexpr double pi2    = pi * pi;
 
-    constexpr double Avogadro = 6.0221367e+23/mole;
+    constexpr double Avogadro = 6.0221367e+23 / mole;
 
     //
     // c   = 299.792458 mm/ns
     // c^2 = 898.7404 (mm/ns)^2
     //
-    constexpr double c_light   = 2.99792458e+8 * m/s;
+    constexpr double c_light   = 2.99792458e+8 * m / s;
     constexpr double c_squared = c_light * c_light;
 
     //
@@ -61,63 +63,53 @@ namespace Gaudi {
     // hbar  = 6.58212e-13 MeV*ns
     // hbarc = 197.32705e-12 MeV*mm
     //
-    constexpr double h_Planck      = 6.6260755e-34 * joule*s;
-    constexpr double hbar_Planck   = h_Planck/twopi;
+    constexpr double h_Planck      = 6.6260755e-34 * joule * s;
+    constexpr double hbar_Planck   = h_Planck / twopi;
     constexpr double hbarc         = hbar_Planck * c_light;
     constexpr double hbarc_squared = hbarc * hbarc;
 
-    constexpr double electron_charge = - eplus; // see SystemOfUnits.h
-    constexpr double e_squared = eplus * eplus;
+    constexpr double electron_charge = -eplus; // see SystemOfUnits.h
+    constexpr double e_squared       = eplus * eplus;
 
     //
     // amu_c2 - atomic equivalent mass unit
     // amu    - atomic mass unit
     //
     constexpr double electron_mass_c2 = 0.51099906 * MeV;
-    constexpr double   proton_mass_c2 = 938.27231 * MeV;
-    constexpr double  neutron_mass_c2 = 939.56563 * MeV;
-    constexpr double           amu_c2 = 931.49432 * MeV;
-    constexpr double              amu = amu_c2/c_squared;
+    constexpr double proton_mass_c2   = 938.27231 * MeV;
+    constexpr double neutron_mass_c2  = 939.56563 * MeV;
+    constexpr double amu_c2           = 931.49432 * MeV;
+    constexpr double amu              = amu_c2 / c_squared;
 
     //
     // permeability of free space mu0    = 2.01334e-16 Mev*(ns*eplus)^2/mm
     // permittivity of free space epsil0 = 5.52636e+10 eplus^2/(MeV*mm)
     //
-    constexpr double mu0      = 4*pi*1.e-7 * henry/m;
-    constexpr double epsilon0 = 1./(c_squared*mu0);
+    constexpr double mu0      = 4 * pi * 1.e-7 * henry / m;
+    constexpr double epsilon0 = 1. / ( c_squared * mu0 );
 
     //
     // electromagnetic coupling = 1.43996e-12 MeV*mm/(eplus^2)
     //
-    constexpr double elm_coupling           = e_squared/(4*pi*epsilon0);
-    constexpr double fine_structure_const   = elm_coupling/hbarc;
-    constexpr double classic_electr_radius  = elm_coupling/electron_mass_c2;
-    constexpr double electron_Compton_length = hbarc/electron_mass_c2;
-    constexpr double Bohr_radius = electron_Compton_length/fine_structure_const;
+    constexpr double elm_coupling            = e_squared / ( 4 * pi * epsilon0 );
+    constexpr double fine_structure_const    = elm_coupling / hbarc;
+    constexpr double classic_electr_radius   = elm_coupling / electron_mass_c2;
+    constexpr double electron_Compton_length = hbarc / electron_mass_c2;
+    constexpr double Bohr_radius             = electron_Compton_length / fine_structure_const;
 
-    constexpr double alpha_rcl2 = fine_structure_const
-      *classic_electr_radius
-      *classic_electr_radius;
+    constexpr double alpha_rcl2 = fine_structure_const * classic_electr_radius * classic_electr_radius;
 
-    constexpr double twopi_mc2_rcl2 = twopi*electron_mass_c2
-      *classic_electr_radius
-      *classic_electr_radius;
+    constexpr double twopi_mc2_rcl2 = twopi * electron_mass_c2 * classic_electr_radius * classic_electr_radius;
 
-    constexpr double k_Boltzmann = 8.617385e-11 * MeV/kelvin;
+    constexpr double k_Boltzmann = 8.617385e-11 * MeV / kelvin;
 
-    constexpr double STP_Temperature = 273.15*kelvin;
-    constexpr double STP_Pressure    = 1.*atmosphere;
-    constexpr double kGasThreshold   = 10.*mg/cm3;
+    constexpr double STP_Temperature = 273.15 * kelvin;
+    constexpr double STP_Pressure    = 1. * atmosphere;
+    constexpr double kGasThreshold   = 10. * mg / cm3;
 
-    constexpr double universe_mean_density = 1.e-25*g/cm3;
+    constexpr double universe_mean_density = 1.e-25 * g / cm3;
 
-  }  // namespace Units
+  } // namespace Units
 } // namespace Gaudi
 
-
 #endif /* GAUDI_PHYSICAL_CONSTANTS_H */
-
-
-
-
-

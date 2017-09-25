@@ -2,6 +2,7 @@
 Define common configuration for the StatusCodeSvc tests.
 '''
 
+
 def setup():
     from Gaudi.Configuration import VERBOSE
     from Configurables import (ApplicationMgr, GaudiExamplesCommonConf,

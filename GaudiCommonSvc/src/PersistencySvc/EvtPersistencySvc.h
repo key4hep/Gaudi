@@ -34,13 +34,13 @@
    @author Markus Frank
    @version 1.0
 */
-class EvtPersistencySvc  : virtual public PersistencySvc	{
+class EvtPersistencySvc : virtual public PersistencySvc
+{
 public:
-
   /**@name: Object implementation  */
   //@{
   /// Standard Constructor
-  EvtPersistencySvc(const std::string& name, ISvcLocator* svc);
+  EvtPersistencySvc( const std::string& name, ISvcLocator* svc );
 
   /// Standard Destructor
   ~EvtPersistencySvc() override = default;

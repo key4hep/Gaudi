@@ -6,42 +6,47 @@
 // Event Model related classes
 #include "GaudiExamples/MyTrack.h"
 
-namespace Gaudi { namespace Examples {
+namespace Gaudi
+{
+  namespace Examples
+  {
 
+    class CountSelectedTracks : public Functional::FilterPredicate<bool( const MyTrackVector& )>
+    {
+    public:
+      CountSelectedTracks( const std::string& name, ISvcLocator* pSvc )
+          : FilterPredicate( name, pSvc, {KeyValue{"InputData", Functional::concat_alternatives(
+                                                                    "BogusLocation", "MoreBogus", "MyOutTracks" )}} )
+      {
+      }
 
-  class CountSelectedTracks: public Functional::FilterPredicate<bool(const MyTrackVector&)> {
-  public:
-    CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
-      FilterPredicate(name, pSvc, 
-                      { KeyValue{"InputData",Functional::concat_alternatives("BogusLocation",
-                                                                             "MoreBogus",
-                                                                             "MyOutTracks")}
-                      }) {
-    }
+      StatusCode initialize() override
+      {
+        StatusCode sc = FilterPredicate::initialize();
+        if ( !sc ) return sc;
+        m_tracksCount = 0;
+        m_eventsCount = 0;
+        return sc;
+      }
 
-    StatusCode initialize() override {
-      StatusCode sc = FilterPredicate::initialize();
-      if (!sc) return sc;
-      m_tracksCount = 0;
-      m_eventsCount = 0;
-      return sc;
-    }
+      bool operator()( const MyTrackVector& in_tracks ) const override
+      {
+        ++m_eventsCount;
+        m_tracksCount += in_tracks.size();
+        return true;
+      }
 
-    bool operator()(const MyTrackVector& in_tracks) const override {
-      ++m_eventsCount;
-      m_tracksCount += in_tracks.size();
-      return true;
-    }
+      StatusCode finalize() override
+      {
+        info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
+        return FilterPredicate::finalize();
+      }
 
-    StatusCode finalize() override {
-      info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
-      return FilterPredicate::finalize();
-    }
-  private:
-    mutable std::atomic<long> m_tracksCount{0};
-    mutable std::atomic<long> m_eventsCount{0};
-  };
+    private:
+      mutable std::atomic<long> m_tracksCount{0};
+      mutable std::atomic<long> m_eventsCount{0};
+    };
 
-  DECLARE_COMPONENT(CountSelectedTracks)
- 
-}}
+    DECLARE_COMPONENT( CountSelectedTracks )
+  }
+}

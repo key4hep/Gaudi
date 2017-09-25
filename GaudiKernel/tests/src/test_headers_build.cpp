@@ -3,15 +3,13 @@
  */
 
 // VectorMap.cpp
-#include <stdexcept>
+#include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/VectorMap.h"
-#include "GaudiKernel/HashMap.h"
+#include <stdexcept>
 
 // HistoProperty.cpp
 #include "GaudiKernel/HistoProperty.h"
 
 /// Empty executable body, just to please the compiler/linker.
-int main() {
-  return 0;
-}
+int main() { return 0; }

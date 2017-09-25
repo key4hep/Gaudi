@@ -21,20 +21,21 @@ algoAvgTime = 0.02
 
 InertMessageSvc(OutputLevel=INFO)
 
-whiteboard   = HiveWhiteBoard("EventDataSvc",
-                              EventSlots = evtslots,
-                              OutputLevel = INFO,
-                              ForceLeaves = True)
+whiteboard = HiveWhiteBoard("EventDataSvc",
+                            EventSlots=evtslots,
+                            OutputLevel=INFO,
+                            ForceLeaves=True)
 
-slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName = "AvalancheSchedulerSvc", OutputLevel=INFO)
+slimeventloopmgr = HiveSlimEventLoopMgr(
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize = algosInFlight,
-                                  OutputLevel = DEBUG,
-                                  Optimizer = "DRE",
-                                  PreemptiveIOBoundTasks = False,
-                                  DumpIntraEventDynamics = False)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
+                                  OutputLevel=DEBUG,
+                                  Optimizer="DRE",
+                                  PreemptiveIOBoundTasks=False,
+                                  DumpIntraEventDynamics=False)
 
-AlgResourcePool(OutputLevel = DEBUG)
+AlgResourcePool(OutputLevel=DEBUG)
 
 timeValue = precedence.UniformTimeValue(algoAvgTime)
 ifIObound = precedence.UniformBooleanValue(False)
@@ -42,14 +43,14 @@ ifIObound = precedence.UniformBooleanValue(False)
 
 
 sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
-                                        cfgPath = "lhcb/reco/cf_dependencies.graphml",
-                                        dfgPath = "lhcb/reco/data_dependencies.graphml",
-                                        topSequencer = 'GaudiSequencer/BrunelSequencer').get()
+                                        cfgPath="lhcb/reco/cf_dependencies.graphml",
+                                        dfgPath="lhcb/reco/data_dependencies.graphml",
+                                        topSequencer='GaudiSequencer/BrunelSequencer').get()
 
-ApplicationMgr( EvtMax = evtMax,
-                EvtSel = 'NONE',
-                ExtSvc = [whiteboard],
-                EventLoop = slimeventloopmgr,
-                TopAlg = [sequencer],
-                MessageSvcType = "InertMessageSvc",
-                OutputLevel = INFO)
+ApplicationMgr(EvtMax=evtMax,
+               EvtSel='NONE',
+               ExtSvc=[whiteboard],
+               EventLoop=slimeventloopmgr,
+               TopAlg=[sequencer],
+               MessageSvcType="InertMessageSvc",
+               OutputLevel=INFO)

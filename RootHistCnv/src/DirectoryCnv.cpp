@@ -7,25 +7,24 @@
 // Author :                   Charles Leggett
 //
 //------------------------------------------------------------------------------
-DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv, DirectoryCnv)
+DECLARE_NAMESPACE_CONVERTER_FACTORY( RootHistCnv, DirectoryCnv )
 //------------------------------------------------------------------------------
-StatusCode RootHistCnv::DirectoryCnv::createObj(IOpaqueAddress* /* pAddress */,
-                                                DataObject*& refpObject)
+StatusCode RootHistCnv::DirectoryCnv::createObj( IOpaqueAddress* /* pAddress */, DataObject*& refpObject )
 {
   refpObject = new DataObject();
   return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
-StatusCode
-RootHistCnv::DirectoryCnv::createRep(DataObject* pObj, IOpaqueAddress*& refpAddr) {
-  if ( changeDirectory(pObj) ) {
-    const char* d_nam = pObj->name().c_str()+1;
-    if (! gDirectory->GetKey(d_nam) ) {
-      gDirectory->mkdir(d_nam);
+StatusCode RootHistCnv::DirectoryCnv::createRep( DataObject* pObj, IOpaqueAddress*& refpAddr )
+{
+  if ( changeDirectory( pObj ) ) {
+    const char* d_nam = pObj->name().c_str() + 1;
+    if ( !gDirectory->GetKey( d_nam ) ) {
+      gDirectory->mkdir( d_nam );
     }
-    gDirectory->cd(d_nam);
-    return createAddress(pObj, gDirectory, nullptr, refpAddr);
+    gDirectory->cd( d_nam );
+    return createAddress( pObj, gDirectory, nullptr, refpAddr );
   }
   refpAddr = nullptr;
   return StatusCode::FAILURE;

@@ -2,11 +2,11 @@
 #define GAUDI_DLLCLASSMANAGER_H 1
 
 // Include files
-#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IClassManager.h"
-#include <string>
+#include "GaudiKernel/Kernel.h"
 #include <list>
 #include <map>
+#include <string>
 
 // Forward declarations
 class ISvcLocator;
@@ -23,7 +23,8 @@ class IObjManager;
 //
 // Author:      Pere Mato
 //
-class DLLClassManager : public implements<IClassManager> {
+class DLLClassManager : public implements<IClassManager>
+{
 public:
   // default creator
   DLLClassManager( IInterface* iface );
@@ -31,16 +32,14 @@ public:
   ~DLLClassManager() override = default;
 
   // implementation of IClassManager::loadModule
-  StatusCode loadModule( const std::string& module, bool fireIncident=true ) override;
+  StatusCode loadModule( const std::string& module, bool fireIncident = true ) override;
 
   /// implementation of IInterface::queryInterface
-  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
+  StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
 
 private:
-  SmartIF<ISvcLocator>  m_svclocator;  // Service locator reference
-  SmartIF<IMessageSvc>  m_msgsvc;      // Message Service reference
-  SmartIF<IInterface>   m_pOuter;      // Interface hub reference (ApplicationMgr)
+  SmartIF<ISvcLocator> m_svclocator; // Service locator reference
+  SmartIF<IMessageSvc> m_msgsvc;     // Message Service reference
+  SmartIF<IInterface> m_pOuter;      // Interface hub reference (ApplicationMgr)
 };
-#endif  // GAUDI_DLLCLASSMANAGER_H
-
-
+#endif // GAUDI_DLLCLASSMANAGER_H

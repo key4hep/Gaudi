@@ -7,7 +7,7 @@
 // Disable warning
 //   warning C4996: 'sprintf': This function or variable may be unsafe.
 // coming from TString.h
-#pragma warning(disable:4996)
+#pragma warning( disable : 4996 )
 #endif
 
 // local
@@ -28,30 +28,26 @@ namespace
   //--------------------------------------------------------------------
 
   template <typename R, typename A>
-  bool setAxisLabels_( A* aida,
-                       const std::string& xAxis,
-                       const std::string& yAxis )
+  bool setAxisLabels_( A* aida, const std::string& xAxis, const std::string& yAxis )
   {
-    if (!aida) return false;
-    R * root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
-    if (!root) return false;
-    root->SetXTitle(xAxis.c_str());
-    root->SetYTitle(yAxis.c_str());
+    if ( !aida ) return false;
+    R* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
+    if ( !root ) return false;
+    root->SetXTitle( xAxis.c_str() );
+    root->SetYTitle( yAxis.c_str() );
     return true;
   }
 
   //--------------------------------------------------------------------
 
-  bool setBinLabels_( TAxis* axis,
-                      const Gaudi::Utils::Histos::BinLabels & labels )
+  bool setBinLabels_( TAxis* axis, const Gaudi::Utils::Histos::BinLabels& labels )
   {
-    if (!axis) return false;
+    if ( !axis ) return false;
     const unsigned nbins = axis->GetNbins();
-    for ( const auto& i : labels )
-    {
-      if ( 1+i.first <= 0 || 1+i.first > nbins ) return false;
+    for ( const auto& i : labels ) {
+      if ( 1 + i.first <= 0 || 1 + i.first > nbins ) return false;
       // Argh... ROOT bins start counting at '1' instead of '0'
-      axis -> SetBinLabel( 1 + i.first, i.second.c_str() );
+      axis->SetBinLabel( 1 + i.first, i.second.c_str() );
     }
     return true;
   }
@@ -59,27 +55,24 @@ namespace
   //--------------------------------------------------------------------
 
   template <typename R, typename A>
-  bool setBinLabels_( A* aida,
-                      const Gaudi::Utils::Histos::BinLabels& labels )
+  bool setBinLabels_( A* aida, const Gaudi::Utils::Histos::BinLabels& labels )
   {
-    if (!aida) return false;
-    R * root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
-    if (!root) return false;
+    if ( !aida ) return false;
+    R* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
+    if ( !root ) return false;
     return setBinLabels_( root->GetXaxis(), labels );
   }
 
   template <typename Histogram>
-  bool setBinLabels_( Histogram* hist,
-                      const Gaudi::Utils::Histos::Labels& labels )
+  bool setBinLabels_( Histogram* hist, const Gaudi::Utils::Histos::Labels& labels )
   {
     Gaudi::Utils::Histos::BinLabels l;
-    l.reserve(labels.size());
-    for ( unsigned i = 0; i<labels.size(); ++i ) l.emplace_back( i,labels[i] );
-    return Gaudi::Utils::Histos::setBinLabels(hist,l);
+    l.reserve( labels.size() );
+    for ( unsigned i = 0; i < labels.size(); ++i ) l.emplace_back( i, labels[i] );
+    return Gaudi::Utils::Histos::setBinLabels( hist, l );
   }
 
   //--------------------------------------------------------------------
-
 }
 
 namespace Gaudi
@@ -89,130 +82,93 @@ namespace Gaudi
     namespace Histos
     {
 
-  // --------------------------------------------------------------------------
+      // --------------------------------------------------------------------------
 
-      bool setBinLabels( AIDA::IHistogram1D* hist,
-                         const BinLabels& labels )
+      bool setBinLabels( AIDA::IHistogram1D* hist, const BinLabels& labels )
       {
-        return setBinLabels_<TH1D>(hist,labels);
+        return setBinLabels_<TH1D>( hist, labels );
       }
 
-      bool setBinLabels( AIDA::IProfile1D* hist,
-                         const BinLabels& labels )
+      bool setBinLabels( AIDA::IProfile1D* hist, const BinLabels& labels )
       {
-        return setBinLabels_<TProfile>(hist,labels);
+        return setBinLabels_<TProfile>( hist, labels );
       }
 
-      bool setBinLabels( AIDA::IHistogram1D* hist,
-                         const Labels& labels )
-      {
-        return setBinLabels_(hist,labels);
-      }
+      bool setBinLabels( AIDA::IHistogram1D* hist, const Labels& labels ) { return setBinLabels_( hist, labels ); }
 
-      bool setBinLabels( AIDA::IProfile1D* hist,
-                         const Labels& labels )
-      {
-        return setBinLabels_(hist,labels);
-      }
+      bool setBinLabels( AIDA::IProfile1D* hist, const Labels& labels ) { return setBinLabels_( hist, labels ); }
 
-      bool setBinLabels( AIDA::IHistogram2D* hist,
-                         const Labels& xlabels,
-                         const Labels& ylabels )
+      bool setBinLabels( AIDA::IHistogram2D* hist, const Labels& xlabels, const Labels& ylabels )
       {
-        if (!hist) return false;
-        TH2D * h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
-        if (!h2d)  return false;
+        if ( !hist ) return false;
+        TH2D* h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
+        if ( !h2d ) return false;
         BinLabels lx;
-        lx.reserve(xlabels.size());
-        for ( unsigned int i = 0; i < xlabels.size(); ++i )
-        {
-          lx.emplace_back( i , xlabels[i] );
+        lx.reserve( xlabels.size() );
+        for ( unsigned int i = 0; i < xlabels.size(); ++i ) {
+          lx.emplace_back( i, xlabels[i] );
         }
         BinLabels ly;
-        ly.reserve(ylabels.size());
-        for ( unsigned int i = 0; i < ylabels.size(); ++i )
-        {
-          ly.emplace_back( i , ylabels[i] );
+        ly.reserve( ylabels.size() );
+        for ( unsigned int i = 0; i < ylabels.size(); ++i ) {
+          ly.emplace_back( i, ylabels[i] );
         }
-        return ( setBinLabels_( h2d->GetXaxis(), lx ) &&
-                 setBinLabels_( h2d->GetYaxis(), ly ) );
+        return ( setBinLabels_( h2d->GetXaxis(), lx ) && setBinLabels_( h2d->GetYaxis(), ly ) );
       }
 
-      bool setBinLabels( AIDA::IHistogram2D* hist,
-                         const BinLabels& xlabels,
-                         const BinLabels& ylabels)
+      bool setBinLabels( AIDA::IHistogram2D* hist, const BinLabels& xlabels, const BinLabels& ylabels )
       {
-        TH2D * h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
-        return ( h2d &&
-                 setBinLabels_( h2d->GetXaxis(), xlabels ) &&
-                 setBinLabels_( h2d->GetYaxis(), ylabels ) );
+        TH2D* h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
+        return ( h2d && setBinLabels_( h2d->GetXaxis(), xlabels ) && setBinLabels_( h2d->GetYaxis(), ylabels ) );
       }
 
-      bool setBinLabels( AIDA::IProfile2D* hist,
-                         const Labels& xlabels,
-                         const Labels& ylabels )
+      bool setBinLabels( AIDA::IProfile2D* hist, const Labels& xlabels, const Labels& ylabels )
       {
-        if (!hist) return false;
-        TProfile2D * h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
-        if (!h2d)  return false;
+        if ( !hist ) return false;
+        TProfile2D* h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
+        if ( !h2d ) return false;
         BinLabels lx;
-        lx.reserve(xlabels.size());
-        for ( unsigned int i = 0; i < xlabels.size(); ++i )
-        {
-          lx.emplace_back( i , xlabels[i] );
+        lx.reserve( xlabels.size() );
+        for ( unsigned int i = 0; i < xlabels.size(); ++i ) {
+          lx.emplace_back( i, xlabels[i] );
         }
         BinLabels ly;
-        ly.reserve(ylabels.size());
-        for ( unsigned int i = 0; i < ylabels.size(); ++i )
-        {
-          ly.emplace_back( i , ylabels[i] );
+        ly.reserve( ylabels.size() );
+        for ( unsigned int i = 0; i < ylabels.size(); ++i ) {
+          ly.emplace_back( i, ylabels[i] );
         }
-        return ( setBinLabels_( h2d->GetXaxis(), lx ) &&
-                 setBinLabels_( h2d->GetYaxis(), ly ) );
+        return ( setBinLabels_( h2d->GetXaxis(), lx ) && setBinLabels_( h2d->GetYaxis(), ly ) );
       }
 
-      bool setBinLabels( AIDA::IProfile2D* hist,
-                         const BinLabels& xlabels,
-                         const BinLabels& ylabels )
+      bool setBinLabels( AIDA::IProfile2D* hist, const BinLabels& xlabels, const BinLabels& ylabels )
       {
-        TProfile2D * h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
-        return ( h2d &&
-                 setBinLabels_( h2d->GetXaxis(), xlabels ) &&
-                 setBinLabels_( h2d->GetYaxis(), ylabels ) );
+        TProfile2D* h2d = Gaudi::Utils::Aida2ROOT::aida2root( hist );
+        return ( h2d && setBinLabels_( h2d->GetXaxis(), xlabels ) && setBinLabels_( h2d->GetYaxis(), ylabels ) );
       }
 
       // --------------------------------------------------------------------------
 
-      bool setAxisLabels( AIDA::IHistogram1D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis  )
+      bool setAxisLabels( AIDA::IHistogram1D* hist, const std::string& xAxis, const std::string& yAxis )
       {
         return setAxisLabels_<TH1D>( hist, xAxis, yAxis );
       }
 
-      bool setAxisLabels( AIDA::IProfile1D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis  )
+      bool setAxisLabels( AIDA::IProfile1D* hist, const std::string& xAxis, const std::string& yAxis )
       {
         return setAxisLabels_<TProfile>( hist, xAxis, yAxis );
       }
 
-      bool setAxisLabels( AIDA::IHistogram2D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis  )
+      bool setAxisLabels( AIDA::IHistogram2D* hist, const std::string& xAxis, const std::string& yAxis )
       {
         return setAxisLabels_<TH2D>( hist, xAxis, yAxis );
       }
 
-      bool setAxisLabels( AIDA::IProfile2D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis  )
+      bool setAxisLabels( AIDA::IProfile2D* hist, const std::string& xAxis, const std::string& yAxis )
       {
         return setAxisLabels_<TProfile2D>( hist, xAxis, yAxis );
       }
 
       // --------------------------------------------------------------------------
-
     }
   }
 }

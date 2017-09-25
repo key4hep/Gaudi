@@ -2,7 +2,7 @@
 # File:   GaudiTest.py
 # Author: Marco Clemencic CERN/PH-LBC
 ########################################################################
-__author__  = 'Marco Clemencic CERN/PH-LBC'
+__author__ = 'Marco Clemencic CERN/PH-LBC'
 ########################################################################
 # Imports
 ########################################################################
@@ -36,15 +36,17 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 # redefinition of timedelta.total_seconds() because it is not present in the 2.6 version
-def total_seconds_replacement(timedelta) :
-    return timedelta.days*86400 + timedelta.seconds + timedelta.microseconds/1000000
+
+
+def total_seconds_replacement(timedelta):
+    return timedelta.days * 86400 + timedelta.seconds + timedelta.microseconds / 1000000
 
 
 import qm
 from qm.test.classes.command import ExecTestBase
 from qm.test.result_stream import ResultStream
 
-### Needed by the re-implementation of TimeoutExecutable
+# Needed by the re-implementation of TimeoutExecutable
 import qm.executable
 import signal
 # The classes in this module are implemented differently depending on
@@ -52,7 +54,7 @@ import signal
 if sys.platform == "win32":
     import msvcrt
     import pywintypes
-    from   threading import *
+    from threading import *
     import win32api
     import win32con
     import win32event
@@ -68,45 +70,48 @@ else:
 ########################################################################
 # Utility Classes
 ########################################################################
+
+
 class TemporaryEnvironment:
     """
     Class to changes the environment temporarily.
     """
-    def __init__(self, orig = os.environ, keep_same = False):
+
+    def __init__(self, orig=os.environ, keep_same=False):
         """
         Create a temporary environment on top of the one specified
         (it can be another TemporaryEnvironment instance).
         """
-        #print "New environment"
+        # print "New environment"
         self.old_values = {}
         self.env = orig
         self._keep_same = keep_same
 
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         """
         Set an environment variable recording the previous value.
         """
-        if key not in self.old_values :
-            if key in self.env :
+        if key not in self.old_values:
+            if key in self.env:
                 if not self._keep_same or self.env[key] != value:
                     self.old_values[key] = self.env[key]
             else:
                 self.old_values[key] = None
         self.env[key] = value
 
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         """
         Get an environment variable.
         Needed to provide the same interface as os.environ.
         """
         return self.env[key]
 
-    def __delitem__(self,key):
+    def __delitem__(self, key):
         """
         Unset an environment variable.
         Needed to provide the same interface as os.environ.
         """
-        if key not in self.env :
+        if key not in self.env:
             raise KeyError(key)
         self.old_values[key] = self.env[key]
         del self.env[key]
@@ -125,7 +130,7 @@ class TemporaryEnvironment:
         """
         return self.env.items()
 
-    def __contains__(self,key):
+    def __contains__(self, key):
         """
         Operator 'in'.
         Needed to provide the same interface as os.environ.
@@ -136,7 +141,7 @@ class TemporaryEnvironment:
         """
         Revert all the changes done to the original environment.
         """
-        for key,value in self.old_values.items():
+        for key, value in self.old_values.items():
             if value is None:
                 del self.env[key]
             else:
@@ -147,35 +152,37 @@ class TemporaryEnvironment:
         """
         Revert the changes on destruction.
         """
-        #print "Restoring the environment"
+        # print "Restoring the environment"
         self.restore()
 
-    def gen_script(self,shell_type):
+    def gen_script(self, shell_type):
         """
         Generate a shell script to reproduce the changes in the environment.
         """
-        shells = [ 'csh', 'sh', 'bat' ]
+        shells = ['csh', 'sh', 'bat']
         if shell_type not in shells:
-            raise RuntimeError("Shell type '%s' unknown. Available: %s"%(shell_type,shells))
+            raise RuntimeError(
+                "Shell type '%s' unknown. Available: %s" % (shell_type, shells))
         out = ""
-        for key,value in self.old_values.items():
+        for key, value in self.old_values.items():
             if key not in self.env:
                 # unset variable
                 if shell_type == 'csh':
-                    out += 'unsetenv %s\n'%key
+                    out += 'unsetenv %s\n' % key
                 elif shell_type == 'sh':
-                    out += 'unset %s\n'%key
+                    out += 'unset %s\n' % key
                 elif shell_type == 'bat':
-                    out += 'set %s=\n'%key
+                    out += 'set %s=\n' % key
             else:
                 # set variable
                 if shell_type == 'csh':
-                    out += 'setenv %s "%s"\n'%(key,self.env[key])
+                    out += 'setenv %s "%s"\n' % (key, self.env[key])
                 elif shell_type == 'sh':
-                    out += 'export %s="%s"\n'%(key,self.env[key])
+                    out += 'export %s="%s"\n' % (key, self.env[key])
                 elif shell_type == 'bat':
-                    out += 'set %s=%s\n'%(key,self.env[key])
+                    out += 'set %s=%s\n' % (key, self.env[key])
         return out
+
 
 class TempDir:
     """Small class for temporary directories.
@@ -184,7 +191,8 @@ class TempDir:
     When the instance goes out of scope, it removes all the content of
     the temporary directory (automatic clean-up).
     """
-    def __init__(self, keep = False, chdir = False):
+
+    def __init__(self, keep=False, chdir=False):
         self.name = tempfile.mkdtemp()
         self._keep = keep
         self._origdir = None
@@ -201,8 +209,9 @@ class TempDir:
         if self.name and not self._keep:
             shutil.rmtree(self.name)
 
-    def __getattr__(self,attr):
-        return getattr(self.name,attr)
+    def __getattr__(self, attr):
+        return getattr(self.name, attr)
+
 
 class TempFile:
     """Small class for temporary files.
@@ -211,13 +220,14 @@ class TempFile:
     When the instance goes out of scope, it removes all the content of
     the temporary directory (automatic clean-up).
     """
-    def __init__(self, suffix='', prefix='tmp', dir=None, text=False, keep = False):
+
+    def __init__(self, suffix='', prefix='tmp', dir=None, text=False, keep=False):
         self.file = None
         self.name = None
         self._keep = keep
 
-        self._fd, self.name = tempfile.mkstemp(suffix,prefix,dir,text)
-        self.file = os.fdopen(self._fd,"r+")
+        self._fd, self.name = tempfile.mkstemp(suffix, prefix, dir, text)
+        self.file = os.fdopen(self._fd, "r+")
 
     def __str__(self):
         return self.name
@@ -228,24 +238,26 @@ class TempFile:
         if self.name and not self._keep:
             os.remove(self.name)
 
-    def __getattr__(self,attr):
-        return getattr(self.file,attr)
+    def __getattr__(self, attr):
+        return getattr(self.file, attr)
+
 
 class CMT:
     """Small wrapper to call CMT.
     """
-    def __init__(self,path=None):
+
+    def __init__(self, path=None):
         if path is None:
             path = os.getcwd()
         self.path = path
 
-    def _run_cmt(self,command,args):
+    def _run_cmt(self, command, args):
         # prepare command line
         if type(args) is str:
             args = [args]
-        cmd = "cmt %s"%command
+        cmd = "cmt %s" % command
         for arg in args:
-            cmd += ' "%s"'%arg
+            cmd += ' "%s"' % arg
 
         # go to the execution directory
         olddir = os.getcwd()
@@ -256,10 +268,10 @@ class CMT:
         os.chdir(olddir)
         return result
 
-    def __getattr__(self,attr):
+    def __getattr__(self, attr):
         return lambda args=[]: self._run_cmt(attr, args)
 
-    def runtime_env(self,env = None):
+    def runtime_env(self, env=None):
         """Returns a dictionary containing the runtime environment produced by CMT.
         If a dictionary is passed a modified instance of it is returned.
         """
@@ -268,22 +280,23 @@ class CMT:
         for l in self.setup("-csh").splitlines():
             l = l.strip()
             if l.startswith("setenv"):
-                dummy,name,value = l.split(None,3)
+                dummy, name, value = l.split(None, 3)
                 env[name] = value.strip('"')
             elif l.startswith("unsetenv"):
-                dummy,name = l.split(None,2)
+                dummy, name = l.split(None, 2)
                 if name in env:
                     del env[name]
         return env
-    def show_macro(self,k):
-        r = self.show(["macro",k])
+
+    def show_macro(self, k):
+        r = self.show(["macro", k])
         if r.find("CMT> Error: symbol not found") >= 0:
             return None
         else:
-            return self.show(["macro_value",k]).strip()
+            return self.show(["macro_value", k]).strip()
 
 
-## Locates an executable in the executables path ($PATH) and returns the full
+# Locates an executable in the executables path ($PATH) and returns the full
 #  path to it.
 #  If the executable cannot be found, None is returned
 def which(executable):
@@ -306,11 +319,13 @@ def which(executable):
         return which(executable[:-4])
     return None
 
+
 def rationalizepath(p):
     np = os.path.normpath(os.path.expandvars(p))
     if os.path.exists(np):
         p = os.path.realpath(np)
     return p
+
 
 # XML Escaping character
 import re
@@ -326,16 +341,22 @@ import re
 #       (unicode end-of-plane non-characters)
 #       >= 110000
 #       that would be beyond unicode!!!
-_illegal_xml_chars_RE = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+_illegal_xml_chars_RE = re.compile(
+    u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
 
-def hexreplace( match ):
+
+def hexreplace(match):
     "Return the hex string "
-    return "".join(map(hexConvert,match.group()))
+    return "".join(map(hexConvert, match.group()))
+
 
 def hexConvert(char):
     return hex(ord(char))
+
+
 def convert_xml_illegal_chars(val):
     return _illegal_xml_chars_RE.sub(hexreplace, val)
+
 
 def escape_xml_illegal_chars(val, replacement='?'):
     """Filter out characters that are illegal in XML.
@@ -348,12 +369,15 @@ def escape_xml_illegal_chars(val, replacement='?'):
 ########################################################################
 # Output Validation Classes
 ########################################################################
+
+
 class BasicOutputValidator:
     """Basic implementation of an option validator for Gaudi tests.
     This implementation is based on the standard (LCG) validation functions
     used in QMTest.
     """
-    def __init__(self,ref,cause,result_key):
+
+    def __init__(self, ref, cause, result_key):
         self.reference = ref
         self.cause = cause
         self.result_key = result_key
@@ -394,19 +418,24 @@ class BasicOutputValidator:
         # convention in use.
         if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
             # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
-            to_ignore = re.compile(r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*')
-            keep_line = lambda l: not to_ignore.match(l)
+            to_ignore = re.compile(
+                r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*')
+
+            def keep_line(l): return not to_ignore.match(l)
             return filter(keep_line, s1.splitlines()) == filter(keep_line, s2.splitlines())
         else:
             return s1.splitlines() == s2.splitlines()
 
+
 class FilePreprocessor:
     """ Base class for a callable that takes a file and returns a modified
     version of it."""
+
     def __processLine__(self, line):
         return line
+
     def __call__(self, input):
-        if hasattr(input,"__iter__"):
+        if hasattr(input, "__iter__"):
             lines = input
             mergeback = False
         else:
@@ -415,35 +444,45 @@ class FilePreprocessor:
         output = []
         for l in lines:
             l = self.__processLine__(l)
-            if l: output.append(l)
-        if mergeback: output = '\n'.join(output)
+            if l:
+                output.append(l)
+        if mergeback:
+            output = '\n'.join(output)
         return output
+
     def __add__(self, rhs):
-        return FilePreprocessorSequence([self,rhs])
+        return FilePreprocessorSequence([self, rhs])
+
 
 class FilePreprocessorSequence(FilePreprocessor):
-    def __init__(self, members = []):
+    def __init__(self, members=[]):
         self.members = members
+
     def __add__(self, rhs):
         return FilePreprocessorSequence(self.members + [rhs])
+
     def __call__(self, input):
         output = input
         for pp in self.members:
             output = pp(output)
         return output
 
+
 class LineSkipper(FilePreprocessor):
-    def __init__(self, strings = [], regexps = []):
+    def __init__(self, strings=[], regexps=[]):
         import re
         self.strings = strings
-        self.regexps = map(re.compile,regexps)
+        self.regexps = map(re.compile, regexps)
 
     def __processLine__(self, line):
         for s in self.strings:
-            if line.find(s) >= 0: return None
+            if line.find(s) >= 0:
+                return None
         for r in self.regexps:
-            if r.search(line): return None
+            if r.search(line):
+                return None
         return line
+
 
 class BlockSkipper(FilePreprocessor):
     def __init__(self, start, end):
@@ -461,26 +500,30 @@ class BlockSkipper(FilePreprocessor):
             return None
         return line
 
+
 class RegexpReplacer(FilePreprocessor):
-    def __init__(self, orig, repl = "", when = None):
+    def __init__(self, orig, repl="", when=None):
         if when:
             when = re.compile(when)
-        self._operations = [ (when, re.compile(orig), repl) ]
-    def __add__(self,rhs):
+        self._operations = [(when, re.compile(orig), repl)]
+
+    def __add__(self, rhs):
         if isinstance(rhs, RegexpReplacer):
-            res = RegexpReplacer("","",None)
+            res = RegexpReplacer("", "", None)
             res._operations = self._operations + rhs._operations
         else:
             res = FilePreprocessor.__add__(self, rhs)
         return res
+
     def __processLine__(self, line):
-        for w,o,r in self._operations:
+        for w, o, r in self._operations:
             if w is None or w.search(line):
                 line = o.sub(r, line)
         return line
 
+
 # Common preprocessors
-maskPointers  = RegexpReplacer("0x[0-9a-fA-F]{4,16}","0x########")
+maskPointers = RegexpReplacer("0x[0-9a-fA-F]{4,16}", "0x########")
 normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *(CES?T)?",
                                "00:00:00 1970-01-01")
 normalizeEOL = FilePreprocessor()
@@ -490,113 +533,127 @@ skipEmptyLines = FilePreprocessor()
 # FIXME: that's ugly
 skipEmptyLines.__processLine__ = lambda line: (line.strip() and line) or None
 
-## Special preprocessor sorting the list of strings (whitespace separated)
+# Special preprocessor sorting the list of strings (whitespace separated)
 #  that follow a signature on a single line
+
+
 class LineSorter(FilePreprocessor):
     def __init__(self, signature):
         self.signature = signature
         self.siglen = len(signature)
+
     def __processLine__(self, line):
         pos = line.find(self.signature)
-        if pos >=0:
-            line = line[:(pos+self.siglen)]
-            lst = line[(pos+self.siglen):].split()
+        if pos >= 0:
+            line = line[:(pos + self.siglen)]
+            lst = line[(pos + self.siglen):].split()
             lst.sort()
             line += " ".join(lst)
         return line
 
+
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
-for w,o,r in [
-              #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
-              ("TIMER.TIMER",r"\s+[+-]?[0-9]+[0-9.]*", " 0"), # Normalize time output
-              ("release all pending",r"^.*/([^/]*:.*)",r"\1"),
-              ("0x########",r"\[.*/([^/]*.*)\]",r"[\1]"),
-              ("^#.*file",r"file '.*[/\\]([^/\\]*)$",r"file '\1"),
-              ("^JobOptionsSvc.*options successfully read in from",r"read in from .*[/\\]([^/\\]*)$",r"file \1"), # normalize path to options
-              # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
-              (None,r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}(?!-0{12})-[0-9A-Fa-f]{12}","00000000-0000-0000-0000-000000000000"),
-              # Absorb a change in ServiceLocatorHelper
-              ("ServiceLocatorHelper::", "ServiceLocatorHelper::(create|locate)Service", "ServiceLocatorHelper::service"),
-              # Remove the leading 0 in Windows' exponential format
-              (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
-              # Output line changed in Gaudi v24
-              (None, r'Service reference count check:', r'Looping over all active services...'),
-              # Change of property name in Algorithm (GAUDI-1030)
-              (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
-              ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
-    normalizeExamples += RegexpReplacer(o,r,w)
+for w, o, r in [
+    #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
+    ("TIMER.TIMER", r"\s+[+-]?[0-9]+[0-9.]*", " 0"),  # Normalize time output
+    ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
+    ("0x########", r"\[.*/([^/]*.*)\]", r"[\1]"),
+    ("^#.*file", r"file '.*[/\\]([^/\\]*)$", r"file '\1"),
+    ("^JobOptionsSvc.*options successfully read in from",
+     r"read in from .*[/\\]([^/\\]*)$", r"file \1"),  # normalize path to options
+    # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
+    (None, r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}(?!-0{12})-[0-9A-Fa-f]{12}",
+     "00000000-0000-0000-0000-000000000000"),
+    # Absorb a change in ServiceLocatorHelper
+    ("ServiceLocatorHelper::", "ServiceLocatorHelper::(create|locate)Service",
+     "ServiceLocatorHelper::service"),
+    # Remove the leading 0 in Windows' exponential format
+    (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
+    # Output line changed in Gaudi v24
+    (None, r'Service reference count check:',
+     r'Looping over all active services...'),
+    # Change of property name in Algorithm (GAUDI-1030)
+    (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
+]:  # [ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
+    normalizeExamples += RegexpReplacer(o, r, w)
 
 lineSkipper = LineSkipper(["//GP:",
-                                 "JobOptionsSvc        INFO # ",
-                                 "JobOptionsSvc     WARNING # ",
-                                 "Time User",
-                                 "Welcome to",
-                                 "This machine has a speed",
-                                 "TIME:",
-                                 "running on",
-                                 "ToolSvc.Sequenc...   INFO",
-                                 "DataListenerSvc      INFO XML written to file:",
-                                 "[INFO]","[WARNING]",
-                                 "DEBUG No writable file catalog found which contains FID:",
-                                 "0 local", # hack for ErrorLogExample
-                                 "DEBUG Service base class initialized successfully", # changed between v20 and v21
-                                 "DEBUG Incident  timing:", # introduced with patch #3487
-                                 "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
-                                 # The signal handler complains about SIGXCPU not defined on some platforms
-                                 'SIGXCPU',
-                                 # FIXME: special lines printed in GaudiHive
-                                 'EventLoopMgr      SUCCESS Event Number = ',
-                                 'EventLoopMgr      SUCCESS ---> Loop Finished',
-                                 ],regexps = [
-                                 r"^JobOptionsSvc        INFO *$",
-                                 r"^#", # Ignore python comments
-                                 r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
-                                 r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[", # hack for ErrorLogExample
-                                 r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\[", # hack for ErrorLogExample
-                                 r"File '.*.xml' does not exist",
-                                 r"INFO Refer to dataset .* by its file ID:",
-                                 r"INFO Referring to dataset .* by its file ID:",
-                                 r"INFO Disconnect from dataset",
-                                 r"INFO Disconnected from dataset",
-                                 r"INFO Disconnected data IO:",
-                                 r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
-                                 # I want to ignore the header of the unchecked StatusCode report
-                                 r"^StatusCodeSvc.*listing all unchecked return codes:",
-                                 r"^StatusCodeSvc\s*INFO\s*$",
-                                 r"Num\s*\|\s*Function\s*\|\s*Source Library",
-                                 r"^[-+]*\s*$",
-                                 # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
-                                 r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
-                                 # Hide unchecked StatusCodes from dictionaries
-                                 r"^ +[0-9]+ \|.*ROOT",
-                                 r"^ +[0-9]+ \|.*\|.*Dict",
-                                 # Hide success StatusCodeSvc message
-                                 r"StatusCodeSvc.*all StatusCode instances where checked",
-                                 # Hide EventLoopMgr total timing report
-                                 r"EventLoopMgr.*---> Loop Finished",
-                                 # Remove ROOT TTree summary table, which changes from one version to the other
-                                 r"^\*.*\*$",
-                                 # Remove Histos Summaries
-                                 r"SUCCESS\s*Booked \d+ Histogram\(s\)",
-                                 r"^ \|",
-                                 r"^ ID=",
-                                 ] )
+                           "JobOptionsSvc        INFO # ",
+                           "JobOptionsSvc     WARNING # ",
+                           "Time User",
+                           "Welcome to",
+                           "This machine has a speed",
+                           "TIME:",
+                           "running on",
+                           "ToolSvc.Sequenc...   INFO",
+                           "DataListenerSvc      INFO XML written to file:",
+                           "[INFO]", "[WARNING]",
+                           "DEBUG No writable file catalog found which contains FID:",
+                           "0 local",  # hack for ErrorLogExample
+                           "DEBUG Service base class initialized successfully",  # changed between v20 and v21
+                           "DEBUG Incident  timing:",  # introduced with patch #3487
+                           # changed the level of the message from INFO to DEBUG
+                           "INFO  'CnvServices':[",
+                           # The signal handler complains about SIGXCPU not defined on some platforms
+                           'SIGXCPU',
+                           # FIXME: special lines printed in GaudiHive
+                           'EventLoopMgr      SUCCESS Event Number = ',
+                           'EventLoopMgr      SUCCESS ---> Loop Finished',
+                           ], regexps=[
+    r"^JobOptionsSvc        INFO *$",
+    r"^#",  # Ignore python comments
+    # skip the message reporting the version of the root file
+    r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:",
+    # hack for ErrorLogExample
+    r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[",
+    # hack for ErrorLogExample
+    r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\[",
+    r"File '.*.xml' does not exist",
+    r"INFO Refer to dataset .* by its file ID:",
+    r"INFO Referring to dataset .* by its file ID:",
+    r"INFO Disconnect from dataset",
+    r"INFO Disconnected from dataset",
+    r"INFO Disconnected data IO:",
+    r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
+    # I want to ignore the header of the unchecked StatusCode report
+    r"^StatusCodeSvc.*listing all unchecked return codes:",
+    r"^StatusCodeSvc\s*INFO\s*$",
+    r"Num\s*\|\s*Function\s*\|\s*Source Library",
+    r"^[-+]*\s*$",
+    # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
+    r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
+    # Hide unchecked StatusCodes from dictionaries
+    r"^ +[0-9]+ \|.*ROOT",
+    r"^ +[0-9]+ \|.*\|.*Dict",
+    # Hide success StatusCodeSvc message
+    r"StatusCodeSvc.*all StatusCode instances where checked",
+    # Hide EventLoopMgr total timing report
+    r"EventLoopMgr.*---> Loop Finished",
+    # Remove ROOT TTree summary table, which changes from one version to the other
+    r"^\*.*\*$",
+    # Remove Histos Summaries
+    r"SUCCESS\s*Booked \d+ Histogram\(s\)",
+    r"^ \|",
+    r"^ ID=",
+])
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
     # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
-    lineSkipper += LineSkipper(regexps = [
+    lineSkipper += LineSkipper(regexps=[
         r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*',
-        ])
+    ])
 
 normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
                      normalizeEOL + LineSorter("Services to release : "))
 
+
 class ReferenceFileValidator:
-    def __init__(self, reffile, cause, result_key, preproc = normalizeExamples):
+    def __init__(self, reffile, cause, result_key, preproc=normalizeExamples):
         self.reffile = os.path.expandvars(reffile)
         self.cause = cause
         self.result_key = result_key
         self.preproc = preproc
+
     def __call__(self, stdout, result):
         causes = []
         if os.path.isfile(self.reffile):
@@ -610,8 +667,9 @@ class ReferenceFileValidator:
         if self.preproc:
             new = self.preproc(new)
         #open(self.reffile + ".test","w").writelines(new)
-        diffs = difflib.ndiff(orig,new,charjunk=difflib.IS_CHARACTER_JUNK)
-        filterdiffs = map(lambda x: x.strip(),filter(lambda x: x[0] != " ",diffs))
+        diffs = difflib.ndiff(orig, new, charjunk=difflib.IS_CHARACTER_JUNK)
+        filterdiffs = map(lambda x: x.strip(), filter(
+            lambda x: x[0] != " ", diffs))
         #filterdiffs = [x.strip() for x in diffs]
         if filterdiffs:
             result[self.result_key] = result.Quote("\n".join(filterdiffs))
@@ -626,8 +684,10 @@ Legend:
 ########################################################################
 # Useful validation functions
 ########################################################################
+
+
 def findReferenceBlock(reference, stdout, result, causes, signature_offset=0, signature=None,
-                       id = None):
+                       id=None):
     """
     Given a block of text, tries to find it in the output.
     The block had to be identified by a signature line. By default, the first
@@ -641,11 +701,11 @@ def findReferenceBlock(reference, stdout, result, causes, signature_offset=0, si
     function in the same validation code.
     """
     # split reference file, sanitize EOLs and remove empty lines
-    reflines = filter(None,map(lambda s: s.rstrip(), reference.splitlines()))
+    reflines = filter(None, map(lambda s: s.rstrip(), reference.splitlines()))
     if not reflines:
         raise RuntimeError("Empty (or null) reference")
     # the same on standard output
-    outlines = filter(None,map(lambda s: s.rstrip(), stdout.splitlines()))
+    outlines = filter(None, map(lambda s: s.rstrip(), stdout.splitlines()))
 
     res_field = "GaudiTest.RefBlock"
     if id:
@@ -653,12 +713,13 @@ def findReferenceBlock(reference, stdout, result, causes, signature_offset=0, si
 
     if signature is None:
         if signature_offset < 0:
-            signature_offset = len(reference)+signature_offset
+            signature_offset = len(reference) + signature_offset
         signature = reflines[signature_offset]
     # find the reference block in the output file
     try:
         pos = outlines.index(signature)
-        outlines = outlines[pos-signature_offset:pos+len(reflines)-signature_offset]
+        outlines = outlines[pos - signature_offset:pos +
+                            len(reflines) - signature_offset]
         if reflines != outlines:
             msg = "standard output"
             # I do not want 2 messages in causes if teh function is called twice
@@ -673,7 +734,8 @@ def findReferenceBlock(reference, stdout, result, causes, signature_offset=0, si
 
     return causes
 
-def countErrorLines(expected = {'ERROR':0, 'FATAL':0}, **kwargs):
+
+def countErrorLines(expected={'ERROR': 0, 'FATAL': 0}, **kwargs):
     """
     Count the number of messages with required severity (by default ERROR and FATAL)
     and check if their numbers match the expected ones (0 by default).
@@ -691,20 +753,22 @@ def countErrorLines(expected = {'ERROR':0, 'FATAL':0}, **kwargs):
 
     outlines = stdout.splitlines()
     from math import log10
-    fmt = "%%%dd - %%s" % (int(log10(len(outlines))+1))
+    fmt = "%%%dd - %%s" % (int(log10(len(outlines)) + 1))
 
     linecount = 0
     for l in outlines:
         linecount += 1
         words = l.split()
         if len(words) >= 2 and words[1] in errors:
-            errors[words[1]].append(fmt%(linecount,l.rstrip()))
+            errors[words[1]].append(fmt % (linecount, l.rstrip()))
 
     for e in errors:
         if len(errors[e]) != expected[e]:
-            causes.append('%s(%d)'%(e,len(errors[e])))
-            result["GaudiTest.lines.%s"%e] = result.Quote('\n'.join(errors[e]))
-            result["GaudiTest.lines.%s.expected#"%e] = result.Quote(str(expected[e]))
+            causes.append('%s(%d)' % (e, len(errors[e])))
+            result["GaudiTest.lines.%s" %
+                   e] = result.Quote('\n'.join(errors[e]))
+            result["GaudiTest.lines.%s.expected#" %
+                   e] = result.Quote(str(expected[e]))
 
     return causes
 
@@ -716,10 +780,11 @@ def _parseTTreeSummary(lines, pos):
     position of the first line after the summary.
     """
     result = {}
-    i = pos + 1 # first line is a sequence of '*'
+    i = pos + 1  # first line is a sequence of '*'
     count = len(lines)
 
-    splitcols = lambda l: [ f.strip() for f in l.strip("*\n").split(':',2) ]
+    def splitcols(l): return [f.strip() for f in l.strip("*\n").split(':', 2)]
+
     def parseblock(ll):
         r = {}
         cols = splitcols(ll[0])
@@ -744,7 +809,7 @@ def _parseTTreeSummary(lines, pos):
         return r
 
     if i < (count - 3) and lines[i].startswith("*Tree"):
-        result = parseblock(lines[i:i+3])
+        result = parseblock(lines[i:i + 3])
         result["Branches"] = {}
         i += 4
         while i < (count - 3) and lines[i].startswith("*Br"):
@@ -752,11 +817,12 @@ def _parseTTreeSummary(lines, pos):
                 # skip branch header
                 i += 3
                 continue
-            branch = parseblock(lines[i:i+3])
+            branch = parseblock(lines[i:i + 3])
             result["Branches"][branch["Name"]] = branch
             i += 4
 
     return (result, i)
+
 
 def findTTreeSummaries(stdout):
     """
@@ -768,7 +834,7 @@ def findTTreeSummaries(stdout):
     trees = {}
 
     i = 0
-    while i < nlines: #loop over the output
+    while i < nlines:  # loop over the output
         # look for
         while i < nlines and not stars.match(outlines[i]):
             i += 1
@@ -779,7 +845,8 @@ def findTTreeSummaries(stdout):
 
     return trees
 
-def cmpTreesDicts(reference, to_check, ignore = None):
+
+def cmpTreesDicts(reference, to_check, ignore=None):
     """
     Check that all the keys in reference are in to_check too, with the same value.
     If the value is a dict, the function is called recursively. to_check can
@@ -790,38 +857,42 @@ def cmpTreesDicts(reference, to_check, ignore = None):
     # filter the keys in the reference dictionary
     if ignore:
         ignore_re = re.compile(ignore)
-        keys = [ key for key in reference if not ignore_re.match(key) ]
+        keys = [key for key in reference if not ignore_re.match(key)]
     else:
         keys = reference.keys()
     # loop over the keys (not ignored) in the reference dictionary
     for k in keys:
-        if k in to_check: # the key must be in the dictionary to_check
+        if k in to_check:  # the key must be in the dictionary to_check
             if (type(reference[k]) is dict) and (type(to_check[k]) is dict):
                 # if both reference and to_check values are dictionaries, recurse
-                failed = fail_keys = cmpTreesDicts(reference[k], to_check[k], ignore)
+                failed = fail_keys = cmpTreesDicts(
+                    reference[k], to_check[k], ignore)
             else:
                 # compare the two values
                 failed = to_check[k] != reference[k]
-        else: # handle missing keys in the dictionary to check (i.e. failure)
+        else:  # handle missing keys in the dictionary to check (i.e. failure)
             to_check[k] = None
             failed = True
         if failed:
             fail_keys.insert(0, k)
-            break # exit from the loop at the first failure
-    return fail_keys # return the list of keys bringing to the different values
+            break  # exit from the loop at the first failure
+    return fail_keys  # return the list of keys bringing to the different values
+
 
 def getCmpFailingValues(reference, to_check, fail_path):
     c = to_check
     r = reference
     for k in fail_path:
-        c = c.get(k,None)
-        r = r.get(k,None)
+        c = c.get(k, None)
+        r = r.get(k, None)
         if c is None or r is None:
-            break # one of the dictionaries is not deep enough
+            break  # one of the dictionaries is not deep enough
     return (fail_path, r, c)
+
 
 # signature of the print-out of the histograms
 h_count_re = re.compile(r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+(.*)")
+
 
 def parseHistosSummary(lines, pos):
     """
@@ -829,7 +900,8 @@ def parseHistosSummary(lines, pos):
     Returns the position of the first line after the summary block.
     """
     global h_count_re
-    h_table_head = re.compile(r'SUCCESS\s+List of booked (1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
+    h_table_head = re.compile(
+        r'SUCCESS\s+List of booked (1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
     h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]+)\"\s+(.*)")
 
     nlines = len(lines)
@@ -839,7 +911,7 @@ def parseHistosSummary(lines, pos):
     name = m.group(1).strip()
     total = int(m.group(2))
     header = {}
-    for k, v in [ x.split("=") for x in  m.group(3).split() ]:
+    for k, v in [x.split("=") for x in m.group(3).split()]:
         header[k] = int(v)
     pos += 1
     header["Total"] = total
@@ -848,7 +920,7 @@ def parseHistosSummary(lines, pos):
     while pos < nlines:
         m = h_table_head.search(lines[pos])
         if m:
-            t, d = m.groups(1) # type and directory
+            t, d = m.groups(1)  # type and directory
             t = t.replace(" profile", "Prof")
             pos += 1
             if pos < nlines:
@@ -858,11 +930,11 @@ def parseHistosSummary(lines, pos):
             cont = {}
             if l.startswith(" | ID"):
                 # table format
-                titles = [ x.strip() for x in l.split("|")][1:]
+                titles = [x.strip() for x in l.split("|")][1:]
                 pos += 1
                 while pos < nlines and lines[pos].startswith(" |"):
                     l = lines[pos]
-                    values = [ x.strip() for x in l.split("|")][1:]
+                    values = [x.strip() for x in l.split("|")][1:]
                     hcont = {}
                     for i in range(len(titles)):
                         hcont[titles[i]] = values[i]
@@ -870,11 +942,13 @@ def parseHistosSummary(lines, pos):
                     pos += 1
             elif l.startswith(" ID="):
                 while pos < nlines and lines[pos].startswith(" ID="):
-                    values = [ x.strip() for x in  h_short_summ.search(lines[pos]).groups() ]
+                    values = [x.strip()
+                              for x in h_short_summ.search(lines[pos]).groups()]
                     cont[values[0]] = values
                     pos += 1
-            else: # not interpreted
-                raise RuntimeError("Cannot understand line %d: '%s'" % (pos, l))
+            else:  # not interpreted
+                raise RuntimeError(
+                    "Cannot understand line %d: '%s'" % (pos, l))
             if not d in summ:
                 summ[d] = {}
             summ[d][t] = cont
@@ -885,6 +959,7 @@ def parseHistosSummary(lines, pos):
         # If the full table is not present, we use only the header
         summ[name] = {"header": header}
     return summ, pos
+
 
 def findHistosSummaries(stdout):
     """
@@ -908,8 +983,9 @@ def findHistosSummaries(stdout):
         summaries.update(summ)
     return summaries
 
+
 class GaudiFilterExecutable(qm.executable.Filter):
-    def __init__(self, input, timeout = -1):
+    def __init__(self, input, timeout=-1):
         """Create a new 'Filter'.
 
         'input' -- The string containing the input to provide to the
@@ -926,7 +1002,7 @@ class GaudiFilterExecutable(qm.executable.Filter):
         # between the processes
         tmpf = tempfile.mkstemp()
         os.close(tmpf[0])
-        self.stack_trace_file = tmpf[1] # remember only the name
+        self.stack_trace_file = tmpf[1]  # remember only the name
 
     def __UseSeparateProcessGroupForChild(self):
         """Copied from TimeoutExecutable to allow the re-implementation of
@@ -942,6 +1018,7 @@ class GaudiFilterExecutable(qm.executable.Filter):
         return self.__timeout >= 0 or self.__timeout == -2
     ##
     # Needs to replace the ones from RedirectedExecutable and TimeoutExecutable
+
     def _HandleChild(self):
         """Code copied from both FilterExecutable and TimeoutExecutable.
         """
@@ -1016,33 +1093,34 @@ class GaudiFilterExecutable(qm.executable.Filter):
                 try:
                     if self.__timeout >= 0:
                         # Give the child time to run.
-                        time.sleep (self.__timeout)
+                        time.sleep(self.__timeout)
                         #######################################################
-                        ### This is the interesting part: dump the stack trace to a file
-                        if sys.platform == "linux2": # we should be have /proc and gdb
+                        # This is the interesting part: dump the stack trace to a file
+                        if sys.platform == "linux2":  # we should be have /proc and gdb
                             cmd = ["gdb",
-                                   os.path.join("/proc", str(child_pid), "exe"),
+                                   os.path.join(
+                                       "/proc", str(child_pid), "exe"),
                                    str(child_pid),
                                    "-batch", "-n", "-x",
                                    "'%s'" % os.path.join(os.path.dirname(__file__), "stack-trace.gdb")]
                             # FIXME: I wanted to use subprocess.Popen, but it doesn't want to work
                             #        in this context.
                             o = os.popen(" ".join(cmd)).read()
-                            open(self.stack_trace_file,"w").write(o)
+                            open(self.stack_trace_file, "w").write(o)
                         #######################################################
 
                         # Kill all processes in the child process group.
                         os.kill(0, signal.SIGKILL)
                     else:
                         # This call to select will never terminate.
-                        select.select ([], [], [])
+                        select.select([], [], [])
                 finally:
                     # Exit.  This code is in a finally clause so that
                     # we are guaranteed to get here no matter what.
                     os._exit(0)
         elif self.__timeout >= 0 and sys.platform == "win32":
             # Create a monitoring thread.
-            self.__monitor_thread = Thread(target = self.__Monitor)
+            self.__monitor_thread = Thread(target=self.__Monitor)
             self.__monitor_thread.start()
 
     if sys.platform == "win32":
@@ -1068,6 +1146,8 @@ class GaudiFilterExecutable(qm.executable.Filter):
 ########################################################################
 # Test Classes
 ########################################################################
+
+
 class GaudiExeTest(ExecTestBase):
     """Standard Gaudi test.
     """
@@ -1083,7 +1163,7 @@ class GaudiExeTest(ExecTestBase):
             variable will be used to search for the program.
             If not specified, $GAUDIEXE or Gaudi.exe are used.
             """
-            ),
+        ),
         qm.fields.SetField(qm.fields.TextField(
             name="args",
             title="Argument List",
@@ -1096,7 +1176,7 @@ class GaudiExeTest(ExecTestBase):
 
             An implicit 0th argument (the path to the program) is added
             automatically."""
-            )),
+        )),
         qm.fields.TextField(
             name="options",
             title="Options",
@@ -1112,7 +1192,7 @@ class GaudiExeTest(ExecTestBase):
             verbatim="true",
             multiline="true",
             default_value=""
-            ),
+        ),
         qm.fields.TextField(
             name="workdir",
             title="Working Directory",
@@ -1121,7 +1201,7 @@ class GaudiExeTest(ExecTestBase):
             If this field is left blank, the program will be run from the qmtest
             directory, otherwise from the directory specified.""",
             default_value=""
-            ),
+        ),
         qm.fields.TextField(
             name="reference",
             title="Reference Output",
@@ -1132,7 +1212,7 @@ class GaudiExeTest(ExecTestBase):
 
             If the reference file is specified, any output on standard error is
             ignored."""
-            ),
+        ),
         qm.fields.TextField(
             name="error_reference",
             title="Reference for standard error",
@@ -1143,20 +1223,20 @@ class GaudiExeTest(ExecTestBase):
 
             If the reference file is specified, any output on standard error is
             ignored."""
-            ),
+        ),
         qm.fields.SetField(qm.fields.TextField(
-            name = "unsupported_platforms",
-            title = "Unsupported Platforms",
-            description = """Platform on which the test must not be run.
+            name="unsupported_platforms",
+            title="Unsupported Platforms",
+            description="""Platform on which the test must not be run.
 
             List of regular expressions identifying the platforms on which the
             test is not run and the result is set to UNTESTED."""
-            )),
+        )),
 
         qm.fields.TextField(
-            name = "validator",
-            title = "Validator",
-            description = """Function to validate the output of the test.
+            name="validator",
+            title="Validator",
+            description="""Function to validate the output of the test.
 
             If defined, the function is used to validate the products of the
             test.
@@ -1172,32 +1252,32 @@ class GaudiExeTest(ExecTestBase):
             verbatim="true",
             multiline="true",
             default_value=""
-            ),
+        ),
 
         qm.fields.BooleanField(
-            name = "use_temp_dir",
-            title = "Use temporary directory",
-            description = """Use temporary directory.
+            name="use_temp_dir",
+            title="Use temporary directory",
+            description="""Use temporary directory.
 
             If set to true, use a temporary directory as working directory.
             """,
             default_value="false"
-            ),
+        ),
 
         qm.fields.IntegerField(
-            name = "signal",
-            title = "Expected signal",
-            description = """Expect termination by signal.""",
+            name="signal",
+            title="Expected signal",
+            description="""Expect termination by signal.""",
             default_value=None
-            ),
-        ]
+        ),
+    ]
 
     def PlatformIsNotSupported(self, context, result):
         platform = self.GetPlatform()
-        unsupported = [ re.compile(x)
-                        for x in [ str(y).strip()
-                                   for y in self.unsupported_platforms ]
-                        if x
+        unsupported = [re.compile(x)
+                       for x in [str(y).strip()
+                                 for y in self.unsupported_platforms]
+                       if x
                        ]
         for p_re in unsupported:
             if p_re.search(platform):
@@ -1234,17 +1314,18 @@ class GaudiExeTest(ExecTestBase):
             return ""
 
         # function to split an extension in constituents parts
-        platformSplit = lambda p: set(p.split('-' in p and '-' or '_'))
+        def platformSplit(p): return set(p.split('-' in p and '-' or '_'))
 
         reference = os.path.normpath(os.path.expandvars(reffile))
         # old-style platform-specific reference name
         spec_ref = reference[:-3] + self.GetPlatform()[0:3] + reference[-3:]
         if os.path.isfile(spec_ref):
             reference = spec_ref
-        else: # look for new-style platform specific reference files:
+        else:  # look for new-style platform specific reference files:
             # get all the files whose name start with the reference filename
             dirname, basename = os.path.split(reference)
-            if not dirname: dirname = '.'
+            if not dirname:
+                dirname = '.'
             head = basename + "."
             head_len = len(head)
             platform = platformSplit(self.GetPlatform())
@@ -1255,8 +1336,8 @@ class GaudiExeTest(ExecTestBase):
                 if f.startswith(head):
                     req_plat = platformSplit(f[head_len:])
                     if platform.issuperset(req_plat):
-                        candidates.append( (len(req_plat), f) )
-            if candidates: # take the one with highest matching
+                        candidates.append((len(req_plat), f))
+            if candidates:  # take the one with highest matching
                 # FIXME: it is not possible to say if x86_64-slc5-gcc43-dbg
                 #        has to use ref.x86_64-gcc43 or ref.slc5-dbg
                 candidates.sort()
@@ -1264,8 +1345,8 @@ class GaudiExeTest(ExecTestBase):
         return reference
 
     def CheckTTreesSummaries(self, stdout, result, causes,
-                             trees_dict = None,
-                             ignore = r"Basket|.*size|Compression"):
+                             trees_dict=None,
+                             ignore=r"Basket|.*size|Compression"):
         """
         Compare the TTree summaries in stdout with the ones in trees_dict or in
         the reference file. By default ignore the size, compression and basket
@@ -1283,7 +1364,8 @@ class GaudiExeTest(ExecTestBase):
         from pprint import PrettyPrinter
         pp = PrettyPrinter()
         if trees_dict:
-            result["GaudiTest.TTrees.expected"] = result.Quote(pp.pformat(trees_dict))
+            result["GaudiTest.TTrees.expected"] = result.Quote(
+                pp.pformat(trees_dict))
             if ignore:
                 result["GaudiTest.TTrees.ignore"] = result.Quote(ignore)
 
@@ -1291,15 +1373,16 @@ class GaudiExeTest(ExecTestBase):
         failed = cmpTreesDicts(trees_dict, trees, ignore)
         if failed:
             causes.append("trees summaries")
-            msg = "%s: %s != %s" % getCmpFailingValues(trees_dict, trees, failed)
+            msg = "%s: %s != %s" % getCmpFailingValues(
+                trees_dict, trees, failed)
             result["GaudiTest.TTrees.failure_on"] = result.Quote(msg)
             result["GaudiTest.TTrees.found"] = result.Quote(pp.pformat(trees))
 
         return causes
 
     def CheckHistosSummaries(self, stdout, result, causes,
-                             dict = None,
-                             ignore = None):
+                             dict=None,
+                             ignore=None):
         """
         Compare the TTree summaries in stdout with the ones in trees_dict or in
         the reference file. By default ignore the size, compression and basket
@@ -1317,7 +1400,8 @@ class GaudiExeTest(ExecTestBase):
         from pprint import PrettyPrinter
         pp = PrettyPrinter()
         if dict:
-            result["GaudiTest.Histos.expected"] = result.Quote(pp.pformat(dict))
+            result["GaudiTest.Histos.expected"] = result.Quote(
+                pp.pformat(dict))
             if ignore:
                 result["GaudiTest.Histos.ignore"] = result.Quote(ignore)
 
@@ -1331,7 +1415,7 @@ class GaudiExeTest(ExecTestBase):
 
         return causes
 
-    def ValidateWithReference(self, stdout, stderr, result, causes, preproc = None):
+    def ValidateWithReference(self, stdout, stderr, result, causes, preproc=None):
         """
         Default validation action: compare standard output and error to the
         reference files.
@@ -1347,19 +1431,19 @@ class GaudiExeTest(ExecTestBase):
             causes += ReferenceFileValidator(reference,
                                              "standard output",
                                              "GaudiTest.output_diff",
-                                             preproc = preproc)(stdout, result)
+                                             preproc=preproc)(stdout, result)
 
         # Compare TTree summaries
         causes = self.CheckTTreesSummaries(stdout, result, causes)
         causes = self.CheckHistosSummaries(stdout, result, causes)
 
-        if causes: # Write a new reference file for stdout
+        if causes:  # Write a new reference file for stdout
             try:
-                newref = open(reference + ".new","w")
+                newref = open(reference + ".new", "w")
                 # sanitize newlines
                 for l in stdout.splitlines():
                     newref.write(l.rstrip() + '\n')
-                del newref # flush and close
+                del newref  # flush and close
             except IOError:
                 # Ignore IO errors when trying to update reference files
                 # because we may be in a read-only filesystem
@@ -1373,14 +1457,14 @@ class GaudiExeTest(ExecTestBase):
             newcauses = ReferenceFileValidator(reference,
                                                "standard error",
                                                "GaudiTest.error_diff",
-                                               preproc = preproc)(stderr, result)
+                                               preproc=preproc)(stderr, result)
             causes += newcauses
-            if newcauses: # Write a new reference file for stdedd
-                newref = open(reference + ".new","w")
+            if newcauses:  # Write a new reference file for stdedd
+                newref = open(reference + ".new", "w")
                 # sanitize newlines
                 for l in stderr.splitlines():
                     newref.write(l.rstrip() + '\n')
-                del newref # flush and close
+                del newref  # flush and close
         else:
             causes += BasicOutputValidator(self.stderr,
                                            "standard error",
@@ -1397,7 +1481,8 @@ class GaudiExeTest(ExecTestBase):
                 Small wrapper class to dynamically bind some default arguments
                 to a callable.
                 """
-                def __init__(self, callable, extra_args = {}):
+
+                def __init__(self, callable, extra_args={}):
                     self.callable = callable
                     self.extra_args = extra_args
                     # get the list of names of positional arguments
@@ -1407,11 +1492,12 @@ class GaudiExeTest(ExecTestBase):
                     # since it is added automatically
                     if self.args_order[0] == "self":
                         del self.args_order[0]
+
                 def __call__(self, *args, **kwargs):
                     # Check which positional arguments are used
                     positional = self.args_order[:len(args)]
 
-                    kwargs = dict(kwargs) # copy the arguments dictionary
+                    kwargs = dict(kwargs)  # copy the arguments dictionary
                     for a in self.extra_args:
                         # use "extra_args" for the arguments not specified as
                         # positional or keyword
@@ -1419,32 +1505,32 @@ class GaudiExeTest(ExecTestBase):
                             kwargs[a] = self.extra_args[a]
                     return apply(self.callable, args, kwargs)
             # local names to be exposed in the script
-            exported_symbols = {"self":self,
-                                "stdout":stdout,
-                                "stderr":stderr,
-                                "result":result,
-                                "causes":causes,
+            exported_symbols = {"self": self,
+                                "stdout": stdout,
+                                "stderr": stderr,
+                                "result": result,
+                                "causes": causes,
                                 "findReferenceBlock":
-                                    CallWrapper(findReferenceBlock, {"stdout":stdout,
-                                                                     "result":result,
-                                                                     "causes":causes}),
+                                    CallWrapper(findReferenceBlock, {"stdout": stdout,
+                                                                     "result": result,
+                                                                     "causes": causes}),
                                 "validateWithReference":
-                                    CallWrapper(self.ValidateWithReference, {"stdout":stdout,
-                                                                             "stderr":stderr,
-                                                                             "result":result,
-                                                                             "causes":causes}),
+                                    CallWrapper(self.ValidateWithReference, {"stdout": stdout,
+                                                                             "stderr": stderr,
+                                                                             "result": result,
+                                                                             "causes": causes}),
                                 "countErrorLines":
-                                    CallWrapper(countErrorLines, {"stdout":stdout,
-                                                                  "result":result,
-                                                                  "causes":causes}),
+                                    CallWrapper(countErrorLines, {"stdout": stdout,
+                                                                  "result": result,
+                                                                  "causes": causes}),
                                 "checkTTreesSummaries":
-                                    CallWrapper(self.CheckTTreesSummaries, {"stdout":stdout,
-                                                                            "result":result,
-                                                                            "causes":causes}),
+                                    CallWrapper(self.CheckTTreesSummaries, {"stdout": stdout,
+                                                                            "result": result,
+                                                                            "causes": causes}),
                                 "checkHistosSummaries":
-                                    CallWrapper(self.CheckHistosSummaries, {"stdout":stdout,
-                                                                            "result":result,
-                                                                            "causes":causes}),
+                                    CallWrapper(self.CheckHistosSummaries, {"stdout": stdout,
+                                                                            "result": result,
+                                                                            "causes": causes}),
 
                                 }
             exec self.validator in globals(), exported_symbols
@@ -1462,7 +1548,8 @@ class GaudiExeTest(ExecTestBase):
         vars = os.environ.keys()
         vars.sort()
         result['GaudiTest.environment'] = \
-            result.Quote('\n'.join(["%s=%s"%(v,os.environ[v]) for v in vars]))
+            result.Quote(
+                '\n'.join(["%s=%s" % (v, os.environ[v]) for v in vars]))
 
     def Run(self, context, result):
         """Run the test.
@@ -1489,7 +1576,7 @@ class GaudiExeTest(ExecTestBase):
         self.program = prog
 
         dummy, prog_ext = os.path.splitext(prog)
-        if prog_ext not in [ ".exe", ".py", ".bat" ] and self.isWinPlatform():
+        if prog_ext not in [".exe", ".py", ".bat"] and self.isWinPlatform():
             prog += ".exe"
             prog_ext = ".exe"
 
@@ -1499,7 +1586,6 @@ class GaudiExeTest(ExecTestBase):
         args = map(rationalizepath, self.args)
         self.reference = rationalizepath(self.reference)
         self.error_reference = rationalizepath(self.error_reference)
-
 
         # check if the user provided inline options
         tmpfile = None
@@ -1515,7 +1601,7 @@ class GaudiExeTest(ExecTestBase):
 
         # if the program is a python file, execute it through python
         if prog_ext == ".py":
-            args.insert(0,prog)
+            args.insert(0, prog)
             if self.isWinPlatform():
                 prog = which("python.exe") or "python.exe"
             else:
@@ -1535,19 +1621,20 @@ class GaudiExeTest(ExecTestBase):
                 os.chdir(context["qmtest.tmpdir"])
 
         if "QMTEST_IGNORE_TIMEOUT" not in os.environ:
-            self.timeout = max(self.timeout,600)
+            self.timeout = max(self.timeout, 600)
         else:
             self.timeout = -1
 
         try:
             # Generate eclipse.org debug launcher for the test
-            self._CreateEclipseLaunch(prog, args, destdir = os.path.join(origdir, '.eclipse'))
+            self._CreateEclipseLaunch(
+                prog, args, destdir=os.path.join(origdir, '.eclipse'))
             # Run the test
             self.RunProgram(prog,
-                            [ prog ] + args,
+                            [prog] + args,
                             context, result)
             # Record the content of the enfironment for failing tests
-            if result.GetOutcome() not in [ result.PASS ]:
+            if result.GetOutcome() not in [result.PASS]:
                 self.DumpEnvironment(result)
         finally:
             # revert to the original directory
@@ -1592,7 +1679,7 @@ class GaudiExeTest(ExecTestBase):
             timeout = -2
         e = GaudiFilterExecutable(self.stdin, timeout)
         # Run it.
-        exit_status = e.Run(arguments, environment, path = program)
+        exit_status = e.Run(arguments, environment, path=program)
         # Get the stack trace from the temporary file (if present)
         if e.stack_trace_file and os.path.exists(e.stack_trace_file):
             stack_trace = open(e.stack_trace_file).read()
@@ -1604,7 +1691,7 @@ class GaudiExeTest(ExecTestBase):
 
         # If the process terminated normally, check the outputs.
         if (sys.platform == "win32" or os.WIFEXITED(exit_status)
-            or self.signal == os.WTERMSIG(exit_status)):
+                or self.signal == os.WTERMSIG(exit_status)):
             # There are no causes of failure yet.
             causes = []
             # The target program terminated normally.  Extract the
@@ -1669,11 +1756,12 @@ class GaudiExeTest(ExecTestBase):
         # of gaudi jobs when they use colors
         esc = '\x1b'
         repr_esc = '\\x1b'
-        result["ExecTest.stdout"] = result["ExecTest.stdout"].replace(esc,repr_esc)
+        result["ExecTest.stdout"] = result["ExecTest.stdout"].replace(
+            esc, repr_esc)
         # TODO: (MCl) improve the hack for colors in standard output
         #             may be converting them to HTML tags
 
-    def _CreateEclipseLaunch(self, prog, args, destdir = None):
+    def _CreateEclipseLaunch(self, prog, args, destdir=None):
         if 'NO_ECLIPSE_LAUNCHERS' in os.environ:
             # do not generate eclipse launchers if the user asks so
             return
@@ -1682,7 +1770,8 @@ class GaudiExeTest(ExecTestBase):
         projbasedir = os.path.normpath(destdir)
         while not os.path.exists(os.path.join(projbasedir, ".project")):
             oldprojdir = projbasedir
-            projbasedir = os.path.normpath(os.path.join(projbasedir, os.pardir))
+            projbasedir = os.path.normpath(
+                os.path.join(projbasedir, os.pardir))
             # FIXME: the root level is invariant when trying to go up one level,
             #        but it must be cheched on windows
             if oldprojdir == projbasedir:
@@ -1711,7 +1800,7 @@ class GaudiExeTest(ExecTestBase):
             args.append(optsfile)
 
         # prepare the data to insert in the XML file
-        from xml.sax.saxutils import quoteattr # useful to quote XML special chars
+        from xml.sax.saxutils import quoteattr  # useful to quote XML special chars
         data = {}
         # Note: the "quoteattr(k)" is not needed because special chars cannot be part of a variable name,
         # but it doesn't harm.
@@ -1721,13 +1810,15 @@ class GaudiExeTest(ExecTestBase):
 
         data["exec"] = which(prog) or prog
         if os.path.basename(data["exec"]).lower().startswith("python"):
-            data["stopAtMain"] = "false" # do not stop at main when debugging Python scripts
+            # do not stop at main when debugging Python scripts
+            data["stopAtMain"] = "false"
         else:
             data["stopAtMain"] = "true"
 
         data["args"] = "&#10;".join(map(rationalizepath, args))
         if self.isWinPlatform():
-            data["args"] = "&#10;".join(["/debugexe"] + map(rationalizepath, [data["exec"]] + args))
+            data["args"] = "&#10;".join(
+                ["/debugexe"] + map(rationalizepath, [data["exec"]] + args))
             data["exec"] = which("vcexpress.exe")
 
         if not self.use_temp_dir:
@@ -1807,6 +1898,7 @@ except ImportError:
     # Use simplejson for LCG
     import simplejson as json
 
+
 class HTMLResultStream(ResultStream):
     """An 'HTMLResultStream' writes its output to a set of HTML files.
 
@@ -1818,16 +1910,16 @@ class HTMLResultStream(ResultStream):
     """
     arguments = [
         qm.fields.TextField(
-            name = "dir",
-            title = "Destination Directory",
-            description = """The name of the directory.
+            name="dir",
+            title="Destination Directory",
+            description="""The name of the directory.
 
             All results will be written to the directory indicated.""",
-            verbatim = "true",
-            default_value = ""),
+            verbatim="true",
+            default_value=""),
     ]
 
-    def __init__(self, arguments = None, **args):
+    def __init__(self, arguments=None, **args):
         """Prepare the destination directory.
 
         Creates the destination directory and store in it some preliminary
@@ -1862,11 +1954,11 @@ class HTMLResultStream(ResultStream):
             oldSummary = json.load(open(self._summaryFile))
         else:
             oldSummary = []
-        ids = set([ i["id"] for i in self._summary ])
-        newSummary = [ i for i in oldSummary if i["id"] not in ids ]
+        ids = set([i["id"] for i in self._summary])
+        newSummary = [i for i in oldSummary if i["id"] not in ids]
         newSummary.extend(self._summary)
         json.dump(newSummary, open(self._summaryFile, "w"),
-                  sort_keys = True)
+                  sort_keys=True)
 
     def WriteAnnotation(self, key, value):
         """Writes the annotation to the annotation file.
@@ -1903,7 +1995,7 @@ class HTMLResultStream(ResultStream):
                 annotations[key] = value
         # Write the new annotations file
         json.dump(annotations, open(self._annotationsFile, "w"),
-                  sort_keys = True)
+                  sort_keys=True)
 
     def WriteResult(self, result):
         """Prepare the test result directory in the destination directory storing
@@ -1933,7 +2025,7 @@ class HTMLResultStream(ResultStream):
         if not os.path.isdir(testOutDir):
             os.makedirs(testOutDir)
         json.dump(summary, open(os.path.join(testOutDir, "summary.json"), "w"),
-                  sort_keys = True)
+                  sort_keys=True)
         for f in summary["fields"]:
             open(os.path.join(testOutDir, f), "w").write(result[f])
 
@@ -1942,8 +2034,6 @@ class HTMLResultStream(ResultStream):
     def Summarize(self):
         # Not implemented.
         pass
-
-
 
 
 class XMLResultStream(ResultStream):
@@ -1957,23 +2047,23 @@ class XMLResultStream(ResultStream):
     """
     arguments = [
         qm.fields.TextField(
-            name = "dir",
-            title = "Destination Directory",
-            description = """The name of the directory.
+            name="dir",
+            title="Destination Directory",
+            description="""The name of the directory.
 
             All results will be written to the directory indicated.""",
-            verbatim = "true",
-            default_value = ""),
+            verbatim="true",
+            default_value=""),
         qm.fields.TextField(
-            name = "prefix",
-            title = "Output File Prefix",
-            description = """The output file name will be the specified prefix
+            name="prefix",
+            title="Output File Prefix",
+            description="""The output file name will be the specified prefix
             followed by 'Test.xml' (CTest convention).""",
-            verbatim = "true",
-            default_value = ""),
+            verbatim="true",
+            default_value=""),
     ]
 
-    def __init__(self, arguments = None, **args):
+    def __init__(self, arguments=None, **args):
         """Prepare the destination directory.
 
         Creates the destination directory and store in it some preliminary
@@ -1995,7 +2085,7 @@ class XMLResultStream(ResultStream):
             newdataset = ET.Element("newdataset")
             self._tree = ET.ElementTree(newdataset)
             self._tree.write(self._xmlFile)
-        else :
+        else:
             # Read the xml file
             self._tree = ET.parse(self._xmlFile)
             newdataset = self._tree.getroot()
@@ -2005,63 +2095,59 @@ class XMLResultStream(ResultStream):
         #site = newdataset.find('Site[@BuildStamp="'+result["qmtest.start_time"]+'"][@OSPlatform="'+os.getenv("CMTOPT")+'"]')
         # I don't know why this syntax doesn't work. Maybe it is because of the python version. Indeed,
         # This works well in the python terminal. So I have to make a for:
-        for site in newdataset.getiterator() :
-            if  site.get("OSPlatform") == os.uname()[4]: # and  site.get("BuildStamp") == result["qmtest.start_time"] and:
+        for site in newdataset.getiterator():
+            # and  site.get("BuildStamp") == result["qmtest.start_time"] and:
+            if site.get("OSPlatform") == os.uname()[4]:
                 # Here we can add some variable to define the difference beetween 2 site
                 self._site = site
                 break
-            else :
+            else:
                 site = None
 
-
-        if  site is None :
+        if site is None:
             import socket
             import multiprocessing
             attrib = {
-                      "BuildName" : os.getenv("CMTCONFIG"),
-                      "Name" : os.uname()[1] ,
-                      "Generator" : "QMTest "+qm.version ,
-                      "OSName" : os.uname()[0] ,
-                      "Hostname" : socket.gethostname() ,
-                      "OSRelease" : os.uname()[2] ,
-                      "OSVersion" :os.uname()[3] ,
-                      "OSPlatform" :os.uname()[4] ,
-                      "Is64Bits" : "unknown" ,
-                      "VendorString" : "unknown" ,
-                      "VendorID" :"unknown" ,
-                      "FamilyID" :"unknown" ,
-                      "ModelID" :"unknown" ,
-                      "ProcessorCacheSize" :"unknown" ,
-                      "NumberOfLogicalCPU" : str(multiprocessing.cpu_count()) ,
-                      "NumberOfPhysicalCPU" : "0" ,
-                      "TotalVirtualMemory" : "0" ,
-                      "TotalPhysicalMemory" : "0" ,
-                      "LogicalProcessorsPerPhysical" : "0" ,
-                      "ProcessorClockFrequency" : "0" ,
-                      }
+                "BuildName": os.getenv("CMTCONFIG"),
+                "Name": os.uname()[1],
+                "Generator": "QMTest " + qm.version,
+                "OSName": os.uname()[0],
+                "Hostname": socket.gethostname(),
+                "OSRelease": os.uname()[2],
+                "OSVersion": os.uname()[3],
+                "OSPlatform": os.uname()[4],
+                "Is64Bits": "unknown",
+                "VendorString": "unknown",
+                "VendorID": "unknown",
+                "FamilyID": "unknown",
+                "ModelID": "unknown",
+                "ProcessorCacheSize": "unknown",
+                "NumberOfLogicalCPU": str(multiprocessing.cpu_count()),
+                "NumberOfPhysicalCPU": "0",
+                "TotalVirtualMemory": "0",
+                "TotalPhysicalMemory": "0",
+                "LogicalProcessorsPerPhysical": "0",
+                "ProcessorClockFrequency": "0",
+            }
             self._site = ET.SubElement(newdataset, "Site", attrib)
-            self._Testing = ET.SubElement(self._site,"Testing")
+            self._Testing = ET.SubElement(self._site, "Testing")
 
             # Start time elements
             self._StartDateTime = ET.SubElement(self._Testing, "StartDateTime")
 
             self._StartTestTime = ET.SubElement(self._Testing, "StartTestTime")
 
-
             self._TestList = ET.SubElement(self._Testing, "TestList")
 
-            ## End time elements
+            # End time elements
             self._EndDateTime = ET.SubElement(self._Testing, "EndDateTime")
-
 
             self._EndTestTime = ET.SubElement(self._Testing, "EndTestTime")
 
+            self._ElapsedMinutes = ET.SubElement(
+                self._Testing, "ElapsedMinutes")
 
-
-            self._ElapsedMinutes = ET.SubElement(self._Testing, "ElapsedMinutes")
-
-
-        else :  # We get the elements
+        else:  # We get the elements
             self._Testing = self._site.find("Testing")
             self._StartDateTime = self._Testing.find("StartDateTime")
             self._StartTestTime = self._Testing.find("StartTestTime")
@@ -2078,12 +2164,12 @@ class XMLResultStream(ResultStream):
         self.WriteAnnotation("hostname", socket.gethostname())
         """
 
-
     def WriteAnnotation(self, key, value):
         if key == "qmtest.run.start_time":
-            if self._site.get("qmtest.run.start_time") is not None :
+            if self._site.get("qmtest.run.start_time") is not None:
                 return None
-        self._site.set(str(key),str(value))
+        self._site.set(str(key), str(value))
+
     def WriteResult(self, result):
         """Prepare the test result directory in the destination directory storing
         into it the result fields.
@@ -2097,44 +2183,44 @@ class XMLResultStream(ResultStream):
         summary["fields"] = result.keys()
         summary["fields"].sort()
 
-
         # Since we miss proper JSON support, I hack a bit
         for f in ["id", "outcome", "cause"]:
             summary[f] = str(summary[f])
         summary["fields"] = map(str, summary["fields"])
-
 
         # format
         # package_Test.xml
 
         if "qmtest.start_time" in summary["fields"]:
             haveStartDate = True
-        else :
+        else:
             haveStartDate = False
         if "qmtest.end_time" in summary["fields"]:
             haveEndDate = True
-        else :
+        else:
             haveEndDate = False
 
         # writing the start date time
         if haveStartDate:
-            self._startTime = calendar.timegm(time.strptime(result["qmtest.start_time"], "%Y-%m-%dT%H:%M:%SZ"))
+            self._startTime = calendar.timegm(time.strptime(
+                result["qmtest.start_time"], "%Y-%m-%dT%H:%M:%SZ"))
             if self._StartTestTime.text is None:
-                self._StartDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._startTime))
+                self._StartDateTime.text = time.strftime(
+                    "%b %d %H:%M %Z", time.localtime(self._startTime))
                 self._StartTestTime.text = str(self._startTime)
-                self._site.set("BuildStamp" , result["qmtest.start_time"] )
+                self._site.set("BuildStamp", result["qmtest.start_time"])
 
-        #Save the end date time in memory
+        # Save the end date time in memory
         if haveEndDate:
-            self._endTime = calendar.timegm(time.strptime(result["qmtest.end_time"], "%Y-%m-%dT%H:%M:%SZ"))
+            self._endTime = calendar.timegm(time.strptime(
+                result["qmtest.end_time"], "%Y-%m-%dT%H:%M:%SZ"))
 
-
-        #add the current test to the test list
+        # add the current test to the test list
         tl = ET.Element("Test")
         tl.text = summary["id"]
-        self._TestList.insert(0,tl)
+        self._TestList.insert(0, tl)
 
-        #Fill the current test
+        # Fill the current test
         Test = ET.Element("Test")
         if summary["outcome"] == "PASS":
             Test.set("Status", "passed")
@@ -2149,98 +2235,102 @@ class XMLResultStream(ResultStream):
         Results = ET.SubElement(Test, "Results")
 
         # add the test after the other test
-        self._Testing.insert(3,Test)
+        self._Testing.insert(3, Test)
 
         if haveStartDate and haveEndDate:
             # Compute the test duration
             delta = self._endTime - self._startTime
             testduration = str(delta)
-            Testduration= ET.SubElement(Results,"NamedMeasurement")
-            Testduration.set("name","Execution Time")
-            Testduration.set("type","numeric/float" )
+            Testduration = ET.SubElement(Results, "NamedMeasurement")
+            Testduration.set("name", "Execution Time")
+            Testduration.set("type", "numeric/float")
             value = ET.SubElement(Testduration, "Value")
             value.text = testduration
 
-        #remove the fields that we store in a different way
+        # remove the fields that we store in a different way
         for n in ("qmtest.end_time", "qmtest.start_time", "qmtest.cause", "ExecTest.stdout"):
             if n in summary["fields"]:
                 summary["fields"].remove(n)
 
         # Here we can add some NamedMeasurment which we know the type
         #
-        if "ExecTest.exit_code" in summary["fields"] :
+        if "ExecTest.exit_code" in summary["fields"]:
             summary["fields"].remove("ExecTest.exit_code")
-            ExitCode= ET.SubElement(Results,"NamedMeasurement")
-            ExitCode.set("name","exit_code")
-            ExitCode.set("type","numeric/integer" )
+            ExitCode = ET.SubElement(Results, "NamedMeasurement")
+            ExitCode.set("name", "exit_code")
+            ExitCode.set("type", "numeric/integer")
             value = ET.SubElement(ExitCode, "Value")
-            value.text = convert_xml_illegal_chars(result["ExecTest.exit_code"])
+            value.text = convert_xml_illegal_chars(
+                result["ExecTest.exit_code"])
 
-        TestStartTime= ET.SubElement(Results,"NamedMeasurement")
-        TestStartTime.set("name","Start_Time")
-        TestStartTime.set("type","String" )
+        TestStartTime = ET.SubElement(Results, "NamedMeasurement")
+        TestStartTime.set("name", "Start_Time")
+        TestStartTime.set("type", "String")
         value = ET.SubElement(TestStartTime, "Value")
-        if haveStartDate :
-            value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._startTime)))
-        else :
+        if haveStartDate:
+            value.text = escape_xml_illegal_chars(time.strftime(
+                "%b %d %H:%M %Z %Y", time.localtime(self._startTime)))
+        else:
             value.text = ""
 
-        TestEndTime= ET.SubElement(Results,"NamedMeasurement")
-        TestEndTime.set("name","End_Time")
-        TestEndTime.set("type","String" )
+        TestEndTime = ET.SubElement(Results, "NamedMeasurement")
+        TestEndTime.set("name", "End_Time")
+        TestEndTime.set("type", "String")
         value = ET.SubElement(TestEndTime, "Value")
-        if haveStartDate :
-            value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._endTime)))
-        else :
+        if haveStartDate:
+            value.text = escape_xml_illegal_chars(time.strftime(
+                "%b %d %H:%M %Z %Y", time.localtime(self._endTime)))
+        else:
             value.text = ""
 
         if summary["cause"]:
-            FailureCause= ET.SubElement(Results,"NamedMeasurement")
+            FailureCause = ET.SubElement(Results, "NamedMeasurement")
             FailureCause.set("name", "Cause")
-            FailureCause.set("type", "String" )
+            FailureCause.set("type", "String")
             value = ET.SubElement(FailureCause, "Value")
             value.text = escape_xml_illegal_chars(summary["cause"])
 
-        #Fill the result
+        # Fill the result
         fields = {}
-        for field in summary["fields"] :
+        for field in summary["fields"]:
             fields[field] = ET.SubElement(Results, "NamedMeasurement")
-            fields[field].set("type","String")
-            fields[field].set("name",field)
+            fields[field].set("type", "String")
+            fields[field].set("name", field)
             value = ET.SubElement(fields[field], "Value")
             # to escape the <pre></pre>
-            if "<pre>" in  result[field][0:6] :
+            if "<pre>" in result[field][0:6]:
                 value.text = convert_xml_illegal_chars(result[field][5:-6])
-            else :
+            else:
                 value.text = convert_xml_illegal_chars(result[field])
 
-
-        if result.has_key("ExecTest.stdout" ) : #"ExecTest.stdout" in result :
+        if result.has_key("ExecTest.stdout"):  # "ExecTest.stdout" in result :
             Measurement = ET.SubElement(Results, "Measurement")
             value = ET.SubElement(Measurement, "Value")
-            if "<pre>" in  result["ExecTest.stdout"][0:6] :
-                value.text = convert_xml_illegal_chars(result["ExecTest.stdout"][5:-6])
-            else :
-                value.text = convert_xml_illegal_chars(result["ExecTest.stdout"])
-
+            if "<pre>" in result["ExecTest.stdout"][0:6]:
+                value.text = convert_xml_illegal_chars(
+                    result["ExecTest.stdout"][5:-6])
+            else:
+                value.text = convert_xml_illegal_chars(
+                    result["ExecTest.stdout"])
 
         # write the file
-        self._tree.write(self._xmlFile, "utf-8") #,True) in python 2.7 to add the xml header
-
+        # ,True) in python 2.7 to add the xml header
+        self._tree.write(self._xmlFile, "utf-8")
 
     def Summarize(self):
 
         # Set the final end date time
         self._EndTestTime.text = str(self._endTime)
-        self._EndDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._endTime))
+        self._EndDateTime.text = time.strftime(
+            "%b %d %H:%M %Z", time.localtime(self._endTime))
 
         # Compute the total duration
         if self._endTime and self._startTime:
             delta = self._endTime - self._startTime
         else:
             delta = 0
-        self._ElapsedMinutes.text = str(delta/60)
+        self._ElapsedMinutes.text = str(delta / 60)
 
         # Write into the file
-        self._tree.write(self._xmlFile, "utf-8") #,True) in python 2.7 to add the xml header
-
+        # ,True) in python 2.7 to add the xml header
+        self._tree.write(self._xmlFile, "utf-8")

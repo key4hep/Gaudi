@@ -16,7 +16,7 @@ namespace
     return std::unique_ptr<T>( new T( std::forward<Args>( args )... ) );
   }
 
-  bool isDefault(const std::string& s) { return s.empty(); }
+  bool isDefault( const std::string& s ) { return s.empty(); }
 
   // utility class to populate some properties in the job options service
   // for a given instance name in case those options are not explicitly
@@ -162,11 +162,11 @@ StatusCode GaudiSequencer::execute()
 
   for ( auto& entry : m_entries ) {
     Algorithm* myAlg = entry.algorithm();
-    if ( ! myAlg->isEnabled() ) continue;
-    if ( ! myAlg->isExecuted() ) {
+    if ( !myAlg->isEnabled() ) continue;
+    if ( !myAlg->isExecuted() ) {
 
       if ( m_measureTime ) m_timerTool->start( entry.timer() );
-      result = myAlg->sysExecute(getContext());
+      result = myAlg->sysExecute( getContext() );
       if ( m_measureTime ) m_timerTool->stop( entry.timer() );
       myAlg->setExecuted( true );
       if ( !result.isSuccess() ) break; //== Abort and return bad status
@@ -369,26 +369,27 @@ void GaudiSequencer::membershipHandler( Gaudi::Details::PropertyBase& /* p */ )
   m_timerTool->decreaseIndent();
 }
 
-std::ostream& GaudiSequencer::toControlFlowExpression(std::ostream& os) const {
-  if (m_invert) os << "~";
+std::ostream& GaudiSequencer::toControlFlowExpression( std::ostream& os ) const
+{
+  if ( m_invert ) os << "~";
   // the default filterpass value for an empty sequencer depends on ModeOR
-  if (m_entries.empty()) return os << ((!m_modeOR) ? "CFTrue" : "CFFalse");
+  if ( m_entries.empty() ) return os << ( ( !m_modeOR ) ? "CFTrue" : "CFFalse" );
 
   // if we have only one element, we do not need a name
-  if (m_entries.size() > 1) os << "seq(";
+  if ( m_entries.size() > 1 ) os << "seq(";
 
-  const auto op = m_modeOR ? " | " : " & ";
-  const auto first = begin(m_entries);
-  const auto last = end(m_entries);
-  auto iterator = first;
-  while (iterator != last) {
-    if (iterator != first) os << op;
-    if (iterator->reverse()) os << "~";
-    iterator->algorithm()->toControlFlowExpression(os);
+  const auto op    = m_modeOR ? " | " : " & ";
+  const auto first = begin( m_entries );
+  const auto last  = end( m_entries );
+  auto iterator    = first;
+  while ( iterator != last ) {
+    if ( iterator != first ) os << op;
+    if ( iterator->reverse() ) os << "~";
+    iterator->algorithm()->toControlFlowExpression( os );
     ++iterator;
   }
 
-  if (m_entries.size() > 1) os << ")";
+  if ( m_entries.size() > 1 ) os << ")";
   return os;
 }
 //=============================================================================

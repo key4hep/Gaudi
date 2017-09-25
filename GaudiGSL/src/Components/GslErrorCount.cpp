@@ -1,7 +1,7 @@
 // Include files
 // from Gaudi
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IChronoStatSvc.h"
+#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Stat.h"
 // local
 #include "GslErrorCount.h"
@@ -15,7 +15,7 @@
  *  @date   30/04/2002
  */
 // ============================================================================
-DECLARE_COMPONENT(GslErrorCount)
+DECLARE_COMPONENT( GslErrorCount )
 // ============================================================================
 
 // ============================================================================
@@ -25,25 +25,23 @@ DECLARE_COMPONENT(GslErrorCount)
  *  @return status code
  */
 // ============================================================================
-StatusCode GslErrorCount::finalize   ()
+StatusCode GslErrorCount::finalize()
 {
   // printout the Error table
-  const std::string stars( 78 , '*' );
-  info()  << stars << endmsg ;
-  AlgTool::error() <<  m_counters.size() << " GSL errors handled" << endmsg ;
-  for( const auto& error : m_counters ) {
-      AlgTool::error()
-          << " #times "   << error.second
-          << " GSL code " << error.first.code
-          << " Message '" << error.first.reason << "'"
-          << " File '"    << error.first.file   << "'"
-          << " Line "     << error.first.line   << endmsg ;
+  const std::string stars( 78, '*' );
+  info() << stars << endmsg;
+  AlgTool::error() << m_counters.size() << " GSL errors handled" << endmsg;
+  for ( const auto& error : m_counters ) {
+    AlgTool::error() << " #times " << error.second << " GSL code " << error.first.code << " Message '"
+                     << error.first.reason << "'"
+                     << " File '" << error.first.file << "'"
+                     << " Line " << error.first.line << endmsg;
   }
-  info() << stars << endmsg ;
+  info() << stars << endmsg;
   // clear the counters
   m_counters.clear();
   // finalize the base class
-  return AlgTool::finalize ();
+  return AlgTool::finalize();
 }
 // ============================================================================
 
@@ -55,14 +53,12 @@ StatusCode GslErrorCount::finalize   ()
  *  @return status code
  */
 // ============================================================================
-StatusCode GslErrorCount::handle
-( const GslError& error  ) const
+StatusCode GslErrorCount::handle( const GslError& error ) const
 {
-  ++m_counters[ error ];
-  return StatusCode::SUCCESS ;
+  ++m_counters[error];
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
-
 
 // ============================================================================
 // The END

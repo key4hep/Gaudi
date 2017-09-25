@@ -8,16 +8,16 @@
 class IIncidentListener;
 class Incident;
 
-class GAUDI_API IStagerSvc: virtual public IInterface {
+class GAUDI_API IStagerSvc : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IStagerSvc,2,0);
+  DeclareInterfaceID( IStagerSvc, 2, 0 );
 
   /// Retrieve interface ID
-  virtual StatusCode getStreams()=0;
-  virtual StatusCode readAhead()=0;
-  virtual StatusCode initStage()=0;
-
+  virtual StatusCode getStreams() = 0;
+  virtual StatusCode readAhead()  = 0;
+  virtual StatusCode initStage()  = 0;
 };
 
 #endif // GAUDIKERNEL_STAGERSVC_H

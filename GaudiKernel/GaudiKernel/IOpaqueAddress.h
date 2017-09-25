@@ -5,8 +5,8 @@
 #include <string>
 
 // Experiment specific include files
-#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ClassID.h"
+#include "GaudiKernel/Kernel.h"
 
 // forward declarations
 class IRegistry;
@@ -20,27 +20,27 @@ class IRegistry;
     @author M.Frank
     @version 1.0
 */
-class GAUDI_API IOpaqueAddress {
+class GAUDI_API IOpaqueAddress
+{
 public:
-
   /// destructor
-  virtual ~IOpaqueAddress()  = default;
+  virtual ~IOpaqueAddress() = default;
 
   /// Add reference to object
-  virtual unsigned long        addRef     () = 0;
+  virtual unsigned long addRef() = 0;
   /// release reference to object
-  virtual unsigned long        release    () = 0;
+  virtual unsigned long release() = 0;
   /// Retrieve class information from link
-  virtual const CLID&          clID       () const = 0;
+  virtual const CLID& clID() const = 0;
   /// Retrieve service type
-  virtual long                 svcType    () const = 0;
+  virtual long svcType() const = 0;
   /// Update branch name
-  virtual IRegistry*           registry   () const = 0;
+  virtual IRegistry* registry() const = 0;
   /// Update directory pointer
-  virtual void                 setRegistry(IRegistry* r) = 0;
+  virtual void setRegistry( IRegistry* r ) = 0;
   /// Retrieve String parameters
-  virtual const std::string*   par        () const = 0;
+  virtual const std::string* par() const = 0;
   /// Access to generic link parameters
-  virtual const unsigned long* ipar       () const = 0;
+  virtual const unsigned long* ipar() const = 0;
 };
 #endif // GAUDIKERNEL_IOPAQUEADDRESS_H

@@ -4,7 +4,6 @@
 // Include files
 // ============================================================================
 
-
 /** @file
  *
  *
@@ -27,17 +26,16 @@ namespace Genfun
     {
     public:
       /// constructor
-      GSL_Helper ( const Genfun::AbsFunction& function ,
-                   Genfun::Argument&          argument ,
-                   const size_t               index    ) ;
-      GSL_Helper& operator=(GSL_Helper&) = delete;
+      GSL_Helper( const Genfun::AbsFunction& function, Genfun::Argument& argument, const size_t index );
+      GSL_Helper& operator=( GSL_Helper& ) = delete;
+
     public:
-      const Genfun::AbsFunction& m_function ;
-      Genfun::Argument&          m_argument ;
-      size_t                     m_index    ;
+      const Genfun::AbsFunction& m_function;
+      Genfun::Argument& m_argument;
+      size_t m_index;
     };
 
-    double GSL_Adaptor( double x , void* params ) ;
+    double GSL_Adaptor( double x, void* params );
 
   } // end of namespace GaudiMathImplementation
 } // end of namespace Genfun

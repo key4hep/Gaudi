@@ -14,20 +14,19 @@ DECLARE_ALGORITHM_FACTORY( IntelProfile )
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode IntelProfile::execute() {
+StatusCode IntelProfile::execute()
+{
 
   // Increase event number
   m_eventNumber += 1;
 
-  if (m_eventNumber == m_nStartFromEvent) {
-    warning() << "Starting Intel profile at event "
-              <<  m_eventNumber << endmsg;
+  if ( m_eventNumber == m_nStartFromEvent ) {
+    warning() << "Starting Intel profile at event " << m_eventNumber << endmsg;
     __itt_resume();
   }
 
-  if (m_eventNumber ==  m_nStopAtEvent) {
-    warning() << "Stopping Intel profile at event "
-              <<  m_eventNumber << endmsg;
+  if ( m_eventNumber == m_nStopAtEvent ) {
+    warning() << "Stopping Intel profile at event " << m_eventNumber << endmsg;
     __itt_pause();
   }
 

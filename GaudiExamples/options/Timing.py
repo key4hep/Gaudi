@@ -13,8 +13,8 @@ GaudiExamplesCommonConf()
 # ============================================================================
 app = ApplicationMgr()
 #app.ExtSvc += [ "RndmGenSvc" ]
-app.TopAlg = [ "GaudiExamples::TimingAlg/Timing" ]
-app.EvtSel = "NONE" # do not use any event input
+app.TopAlg = ["GaudiExamples::TimingAlg/Timing"]
+app.EvtSel = "NONE"  # do not use any event input
 app.EvtMax = 400
 # ============================================================================
 # The END

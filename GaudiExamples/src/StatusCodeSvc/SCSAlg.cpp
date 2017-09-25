@@ -1,24 +1,18 @@
 #include "SCSAlg.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/MsgStream.h"
 
 ///////////////////////////////////////////////////////////////////////////
-SCSAlg::SCSAlg( const std::string& name, ISvcLocator* pSvcLocator ) :
-  Algorithm(name, pSvcLocator)
+SCSAlg::SCSAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+StatusCode SCSAlg::initialize() { return Algorithm::initialize(); }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+StatusCode SCSAlg::execute()
 {
-
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-StatusCode SCSAlg::initialize() {
-  return Algorithm::initialize();
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-StatusCode SCSAlg::execute() {
-
 
   fncChecked();
   fncUnchecked();
@@ -26,38 +20,25 @@ StatusCode SCSAlg::execute() {
   fncIgnored();
 
   return StatusCode::SUCCESS;
-
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode SCSAlg::finalize() {
-  return Algorithm::finalize();
-}
+StatusCode SCSAlg::finalize() { return Algorithm::finalize(); }
 
-StatusCode SCSAlg::test() {
-  return StatusCode::SUCCESS;
-}
+StatusCode SCSAlg::test() { return StatusCode::SUCCESS; }
 
-void __attribute__ ((noinline)) SCSAlg::fncChecked() {
+void __attribute__( ( noinline ) ) SCSAlg::fncChecked() { test().isSuccess(); }
 
-  test().isSuccess();
+void __attribute__( ( noinline ) ) SCSAlg::fncUnchecked() { test(); }
 
-}
-
-void __attribute__ ((noinline)) SCSAlg::fncUnchecked() {
-
-  test();
-
-}
-
-void SCSAlg::fncIgnored() {
+void SCSAlg::fncIgnored()
+{
   // Ignore all unchecked StatusCode instances in the current scope.
   StatusCode::ScopedDisableChecking _sc_ignore;
 
   test();
-
 }
 
 // Static Factory declaration
-DECLARE_COMPONENT(SCSAlg)
+DECLARE_COMPONENT( SCSAlg )

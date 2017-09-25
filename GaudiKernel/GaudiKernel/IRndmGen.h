@@ -9,21 +9,20 @@
 #include "GaudiKernel/IInterface.h"
 
 // Declaration of the interface ID ( interface id, major version, minor version)
-static const InterfaceID IID_IRndmBit(150, 1, 0);
-static const InterfaceID IID_IRndmFlat(151, 1, 0);
-static const InterfaceID IID_IRndmChi2(152, 1, 0);
-static const InterfaceID IID_IRndmGamma(153, 1, 0);
-static const InterfaceID IID_IRndmGauss(154, 1, 0);
-static const InterfaceID IID_IRndmLandau(155, 1, 0);
-static const InterfaceID IID_IRndmPoisson(156, 1, 0);
-static const InterfaceID IID_IRndmStudentT(157, 1, 0);
-static const InterfaceID IID_IRndmBinomial(158, 1, 0);
-static const InterfaceID IID_IRndmExponential(159, 1, 0);
-static const InterfaceID IID_IRndmBreitWigner(160, 1, 0);
-static const InterfaceID IID_IRndmBreitWignerCutOff(161, 1, 0);
-static const InterfaceID IID_IRndmDefinedPdf(162, 1, 0);
-static const InterfaceID IID_IRndmGaussianTail(163, 1, 0);
-
+static const InterfaceID IID_IRndmBit( 150, 1, 0 );
+static const InterfaceID IID_IRndmFlat( 151, 1, 0 );
+static const InterfaceID IID_IRndmChi2( 152, 1, 0 );
+static const InterfaceID IID_IRndmGamma( 153, 1, 0 );
+static const InterfaceID IID_IRndmGauss( 154, 1, 0 );
+static const InterfaceID IID_IRndmLandau( 155, 1, 0 );
+static const InterfaceID IID_IRndmPoisson( 156, 1, 0 );
+static const InterfaceID IID_IRndmStudentT( 157, 1, 0 );
+static const InterfaceID IID_IRndmBinomial( 158, 1, 0 );
+static const InterfaceID IID_IRndmExponential( 159, 1, 0 );
+static const InterfaceID IID_IRndmBreitWigner( 160, 1, 0 );
+static const InterfaceID IID_IRndmBreitWignerCutOff( 161, 1, 0 );
+static const InterfaceID IID_IRndmDefinedPdf( 162, 1, 0 );
+static const InterfaceID IID_IRndmGaussianTail( 163, 1, 0 );
 
 /** @class IRndmGen IRndmGen.h GaudiKernel/IRndmGen.h
 
@@ -32,18 +31,21 @@ static const InterfaceID IID_IRndmGaussianTail(163, 1, 0);
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API IRndmGen: virtual public IInterface {
+class GAUDI_API IRndmGen : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IRndmGen,2,0);
+  DeclareInterfaceID( IRndmGen, 2, 0 );
 
-  class Param {
+  class Param
+  {
   protected:
     /// Type of the generator
-    const InterfaceID  m_type;
+    const InterfaceID m_type;
+
   public:
     /// Standard constructor
-    Param( const InterfaceID& type = IID_IRndmFlat ) : m_type(type) {}
+    Param( const InterfaceID& type = IID_IRndmFlat ) : m_type( type ) {}
     /// Standard Destructor
     virtual ~Param() = default;
     /// Parameter's type
@@ -53,7 +55,7 @@ public:
   };
 
   /// Initialize the generator
-  virtual StatusCode initialize(const IRndmGen::Param& par) = 0;
+  virtual StatusCode initialize( const IRndmGen::Param& par ) = 0;
   /// Finalize the generator
   virtual StatusCode finalize() = 0;
   /// Random number generator type
@@ -70,11 +72,10 @@ public:
       @param  start    ... starting at position start
       @param Statuscode indicating success or failure
   */
-  virtual StatusCode shootArray( std::vector<double>& array, long howmany, long start = 0) const = 0;
+  virtual StatusCode shootArray( std::vector<double>& array, long howmany, long start = 0 ) const = 0;
 
   /// Virtual destructor
   virtual ~IRndmGen() = default;
-
 };
 
 #endif // GAUDIKERNEL_IRNDMGEN_H

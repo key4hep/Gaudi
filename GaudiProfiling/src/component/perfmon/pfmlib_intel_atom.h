@@ -1,5 +1,5 @@
 /*
- * Intel Atom : architectural perfmon v3 + PEBS 
+ * Intel Atom : architectural perfmon v3 + PEBS
  *
  * Copyright (c) 2008 Google, Inc
  * Contributed by Stephane Eranian <eranian@gmail.com>
@@ -42,42 +42,42 @@
 extern "C" {
 #endif
 
-#define PMU_INTEL_ATOM_NUM_COUNTERS	5 /* 2 generic + 3 fixed */
+#define PMU_INTEL_ATOM_NUM_COUNTERS 5 /* 2 generic + 3 fixed */
 
 typedef union {
-	unsigned long long val;			/* complete register value */
-	struct {
-		unsigned long sel_event_select:8;	/* event mask */
-		unsigned long sel_unit_mask:8;		/* unit mask */
-		unsigned long sel_usr:1;		/* user level */
-		unsigned long sel_os:1;			/* system level */
-		unsigned long sel_edge:1;		/* edge detec */
-		unsigned long sel_pc:1;			/* pin control */
-		unsigned long sel_int:1;		/* enable APIC intr */
-		unsigned long sel_any:1;		/* any thread */
-		unsigned long sel_en:1;			/* enable */
-		unsigned long sel_inv:1;		/* invert counter mask */
-		unsigned long sel_cnt_mask:8;		/* counter mask */
-		unsigned long sel_res2:32;
-	} perfevtsel;
+  unsigned long long val; /* complete register value */
+  struct {
+    unsigned long sel_event_select : 8; /* event mask */
+    unsigned long sel_unit_mask : 8;    /* unit mask */
+    unsigned long sel_usr : 1;          /* user level */
+    unsigned long sel_os : 1;           /* system level */
+    unsigned long sel_edge : 1;         /* edge detec */
+    unsigned long sel_pc : 1;           /* pin control */
+    unsigned long sel_int : 1;          /* enable APIC intr */
+    unsigned long sel_any : 1;          /* any thread */
+    unsigned long sel_en : 1;           /* enable */
+    unsigned long sel_inv : 1;          /* invert counter mask */
+    unsigned long sel_cnt_mask : 8;     /* counter mask */
+    unsigned long sel_res2 : 32;
+  } perfevtsel;
 } pfm_intel_atom_sel_reg_t;
 
 typedef struct {
-	unsigned long		cnt_mask;	/* threshold (cnt_mask)  */
-	unsigned int		flags;		/* counter specific flags */
+  unsigned long cnt_mask; /* threshold (cnt_mask)  */
+  unsigned int flags;     /* counter specific flags */
 } pfmlib_intel_atom_counter_t;
 
-#define PFM_INTEL_ATOM_SEL_INV		0x1	/* inverse */
-#define PFM_INTEL_ATOM_SEL_EDGE		0x2	/* edge detect */
-#define PFM_INTEL_ATOM_SEL_ANYTHR	0x4	/* measure on any of 2 threads */
+#define PFM_INTEL_ATOM_SEL_INV 0x1    /* inverse */
+#define PFM_INTEL_ATOM_SEL_EDGE 0x2   /* edge detect */
+#define PFM_INTEL_ATOM_SEL_ANYTHR 0x4 /* measure on any of 2 threads */
 
 /*
  * model-specific parameters for the library
  */
 typedef struct {
-	pfmlib_intel_atom_counter_t	pfp_intel_atom_counters[PMU_INTEL_ATOM_NUM_COUNTERS];
-	unsigned int			pfp_intel_atom_pebs_used; /* set to 1 to use PEBS */
-	uint64_t			reserved[4];	    /* for future use */
+  pfmlib_intel_atom_counter_t pfp_intel_atom_counters[PMU_INTEL_ATOM_NUM_COUNTERS];
+  unsigned int pfp_intel_atom_pebs_used; /* set to 1 to use PEBS */
+  uint64_t reserved[4];                  /* for future use */
 } pfmlib_intel_atom_input_param_t;
 
 #ifdef __cplusplus /* extern C */
@@ -87,6 +87,6 @@ typedef struct {
 /*
  * Atom-specific interface
  */
-extern int pfm_intel_atom_has_pebs(pfmlib_event_t *e);
+extern int pfm_intel_atom_has_pebs( pfmlib_event_t* e );
 
 #endif /* __PFMLIB_INTEL_ATOM_H__ */

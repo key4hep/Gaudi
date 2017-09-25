@@ -15,12 +15,14 @@ class IntelProfile : public GaudiAlgorithm
 {
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
-  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode execute() override; ///< Algorithm execution
 
 private:
   Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling."};
-  Gaudi::Property<int> m_nStopAtEvent{this, "StopAtEventN", 0, "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  Gaudi::Property<int> m_nStopAtEvent{
+      this, "StopAtEventN", 0,
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
 
-  int m_eventNumber = 0;     // Current event number
+  int m_eventNumber = 0; // Current event number
 };
 #endif // INTEL_INTELPROFILE_H

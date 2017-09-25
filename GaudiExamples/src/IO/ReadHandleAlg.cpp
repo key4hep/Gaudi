@@ -8,18 +8,19 @@
 
 using namespace Gaudi::Examples;
 
-DECLARE_COMPONENT(ReadHandleAlg)
+DECLARE_COMPONENT( ReadHandleAlg )
 
 //--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
-StatusCode ReadHandleAlg::execute() {
+StatusCode ReadHandleAlg::execute()
+{
 
   Collision* c = m_inputHandle.get();
 
   const int evtNum = Gaudi::Hive::currentContext().evt();
 
-  info() << "Event " << evtNum << " Collision number " <<  c->collision() << endmsg;
+  info() << "Event " << evtNum << " Collision number " << c->collision() << endmsg;
 
   return StatusCode::SUCCESS;
 }

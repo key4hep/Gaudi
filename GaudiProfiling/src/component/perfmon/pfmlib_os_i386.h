@@ -44,16 +44,15 @@
 static inline int
 pfm_self_start(int fd)
 {
-	return pfm_start(fd, NULL);
+        return pfm_start(fd, NULL);
 }
 
 static inline int
 pfm_self_stop(int fd)
 {
-	return pfm_stop(fd);
+        return pfm_stop(fd);
 }
 */
 #endif /* __PFMLIB_OS_COMPILE */
-
 
 #endif /* __PFMLIB_OS_I386_P6_H__ */

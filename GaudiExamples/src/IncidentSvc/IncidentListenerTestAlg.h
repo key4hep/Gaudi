@@ -8,23 +8,22 @@
 class IIncidentSvc;
 class IncidentListenerTest;
 
-class IncidentListenerTestAlg: public GaudiAlgorithm
+class IncidentListenerTestAlg : public GaudiAlgorithm
 {
 public:
-	IncidentListenerTestAlg(const std::string& name ,
-                          ISvcLocator*       pSvcLocator );
-	~IncidentListenerTestAlg() override = default;
+  IncidentListenerTestAlg( const std::string& name, ISvcLocator* pSvcLocator );
+  ~IncidentListenerTestAlg() override = default;
 
-	StatusCode initialize() override;
-	StatusCode execute() override;
-	StatusCode finalize() override;
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 
-	static std::string &incident();
+  static std::string& incident();
 
 private:
   static std::string s_incidentType;
   SmartIF<IIncidentSvc> m_incSvc;
-  std::array<std::unique_ptr<IncidentListenerTest>,6> m_listener;
+  std::array<std::unique_ptr<IncidentListenerTest>, 6> m_listener;
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENTLISTENERTESTALG_H_*/

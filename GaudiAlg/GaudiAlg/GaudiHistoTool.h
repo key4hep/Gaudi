@@ -14,8 +14,8 @@
 // ============================================================================
 // GaudiAlg
 // ============================================================================
-#include "GaudiAlg/GaudiTool.h"
 #include "GaudiAlg/GaudiHistos.h"
+#include "GaudiAlg/GaudiTool.h"
 // ============================================================================
 
 // ============================================================================
@@ -36,18 +36,16 @@
  */
 // ============================================================================
 
-struct GAUDI_API GaudiHistoTool: GaudiHistos<GaudiTool>
-{
+struct GAUDI_API GaudiHistoTool : GaudiHistos<GaudiTool> {
 
   using GaudiHistos<GaudiTool>::GaudiHistos;
   using GaudiHistos<GaudiTool>::initialize;
   using GaudiHistos<GaudiTool>::finalize;
 
   // delete default/copy constructor and assignment
-  GaudiHistoTool() = delete;
-  GaudiHistoTool           ( const GaudiHistoTool& ) = delete;
+  GaudiHistoTool()                        = delete;
+  GaudiHistoTool( const GaudiHistoTool& ) = delete;
   GaudiHistoTool& operator=( const GaudiHistoTool& ) = delete;
-
 };
 
 // ============================================================================

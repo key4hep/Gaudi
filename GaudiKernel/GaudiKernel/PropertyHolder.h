@@ -105,11 +105,9 @@ public:
 
   /// Helper to wrap a regular data member and use it as a regular property.
   /// \deprecated Prefer the signatures using a a fully initialized PropertyBase instance.
-  template <class TYPE,
-           typename = typename std::enable_if< !std::is_base_of<GaudiHandleBase,TYPE>::value
-                                            && !std::is_base_of<GaudiHandleArrayBase,TYPE>::value
-                                            && !std::is_base_of<DataObjectHandleBase,TYPE>::value
-                                             >::type>
+  template <class TYPE, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
+                                                           !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
+                                                           !std::is_base_of<DataObjectHandleBase, TYPE>::value>::type>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" )
   {
     assertUniqueName( name );
@@ -121,13 +119,13 @@ public:
   }
 
   /// \deprecated Kept for backward compatibility, use the non-const version instead, will be removed in v29r0.
-  template <class TYPE,
-            typename = typename std::enable_if< !std::is_base_of<GaudiHandleBase,TYPE>::value
-                                             && !std::is_base_of<GaudiHandleArrayBase,TYPE>::value
-                                             && !std::is_base_of<DataObjectHandleBase,TYPE>::value
-                                              >::type>
-  [[deprecated("Kept for backward compatibility, use the non-const version instead, will be removed in v29r0" )]]
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
+  template <class TYPE, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
+                                                           !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
+                                                           !std::is_base_of<DataObjectHandleBase, TYPE>::value>::type>
+  [[deprecated(
+      "Kept for backward compatibility, use the non-const version instead, will be removed in v29r0" )]] Gaudi::
+      Details::PropertyBase*
+      declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
   {
     return const_cast<PropertyHolder*>( this )->declareProperty<TYPE>( name, value, doc );
   }

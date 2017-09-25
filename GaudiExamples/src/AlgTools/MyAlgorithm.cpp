@@ -8,49 +8,49 @@
 
 // Static Factory declaration
 
-DECLARE_COMPONENT(MyAlgorithm)
+DECLARE_COMPONENT( MyAlgorithm )
 
 //------------------------------------------------------------------------------
-StatusCode MyAlgorithm::initialize() {
-//------------------------------------------------------------------------------
+StatusCode MyAlgorithm::initialize()
+{
+  //------------------------------------------------------------------------------
 
   StatusCode sc;
   info() << "initializing...." << endmsg;
 
-  if ( !m_privateToolsOnly ){
-    sc = toolSvc()->retrieveTool("MyTool", m_publicTool );
-    if( sc.isFailure() ) {
-      error()<< "Error retrieving the public tool" << endmsg;
+  if ( !m_privateToolsOnly ) {
+    sc = toolSvc()->retrieveTool( "MyTool", m_publicTool );
+    if ( sc.isFailure() ) {
+      error() << "Error retrieving the public tool" << endmsg;
       return sc;
     }
-    sc = toolSvc()->retrieveTool("MyGaudiTool", m_publicGTool );
-    if( sc.isFailure() ) {
-      error()<< "Error retrieving the Gaudi public tool" << endmsg;
+    sc = toolSvc()->retrieveTool( "MyGaudiTool", m_publicGTool );
+    if ( sc.isFailure() ) {
+      error() << "Error retrieving the Gaudi public tool" << endmsg;
       return sc;
     }
   }
 
-  sc = toolSvc()->retrieveTool("MyTool", m_privateTool, this );
-  if( sc.isFailure() ) {
-    error()<< "Error retrieving the private tool" << endmsg;
+  sc = toolSvc()->retrieveTool( "MyTool", m_privateTool, this );
+  if ( sc.isFailure() ) {
+    error() << "Error retrieving the private tool" << endmsg;
     return sc;
   }
 
-  sc = toolSvc()->retrieveTool("MyGaudiTool", m_privateGTool, this );
-  if( sc.isFailure() ) {
-    error()<< "Error retrieving the Gaudi private tool" << endmsg;
+  sc = toolSvc()->retrieveTool( "MyGaudiTool", m_privateGTool, this );
+  if ( sc.isFailure() ) {
+    error() << "Error retrieving the Gaudi private tool" << endmsg;
     return sc;
   }
 
-  sc = toolSvc()->retrieveTool(m_privateToolType, "ToolWithName",
-                               m_privateToolWithName, this );
-  if( sc.isFailure() ) {
-    error()<< "Error retrieving the private tool with name" << endmsg;
+  sc = toolSvc()->retrieveTool( m_privateToolType, "ToolWithName", m_privateToolWithName, this );
+  if ( sc.isFailure() ) {
+    error() << "Error retrieving the private tool with name" << endmsg;
     return sc;
   }
 
-  sc = toolSvc()->retrieveTool("MyGaudiTool", m_privateOtherInterface, this );
-  if( sc.isFailure() ) {
+  sc = toolSvc()->retrieveTool( "MyGaudiTool", m_privateOtherInterface, this );
+  if ( sc.isFailure() ) {
     error() << "Error retrieving the Gaudi private tool with second interface" << endmsg;
     return sc;
   }
@@ -60,13 +60,13 @@ StatusCode MyAlgorithm::initialize() {
   return StatusCode::SUCCESS;
 }
 
-
 //------------------------------------------------------------------------------
-StatusCode MyAlgorithm::execute() {
-//------------------------------------------------------------------------------
+StatusCode MyAlgorithm::execute()
+{
+  //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
 
-  if ( !m_privateToolsOnly ){
+  if ( !m_privateToolsOnly ) {
     m_publicTool->doIt();
     m_publicGTool->doIt();
   }
@@ -78,13 +78,13 @@ StatusCode MyAlgorithm::execute() {
   return StatusCode::SUCCESS;
 }
 
-
 //------------------------------------------------------------------------------
-StatusCode MyAlgorithm::finalize() {
-//------------------------------------------------------------------------------
+StatusCode MyAlgorithm::finalize()
+{
+  //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
 
-  if ( !m_privateToolsOnly ){
+  if ( !m_privateToolsOnly ) {
     toolSvc()->releaseTool( m_publicTool ).ignore();
     toolSvc()->releaseTool( m_publicGTool ).ignore();
   }

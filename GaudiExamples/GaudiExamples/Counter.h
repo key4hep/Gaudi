@@ -5,8 +5,10 @@
 #include "GaudiKernel/DataObject.h"
 #include <iostream>
 
-namespace Gaudi {
-  namespace Examples {
+namespace Gaudi
+{
+  namespace Examples
+  {
 
     class Collision;
 
@@ -14,12 +16,13 @@ namespace Gaudi {
     static const CLID& CLID_Counter = 109;
 
     /** @class Counter
-	Simple counter object
+        Simple counter object
 
-	@author Markus Frank
+        @author Markus Frank
     */
 
-    class GAUDI_API Counter : public DataObject {
+    class GAUDI_API Counter : public DataObject
+    {
 
     public:
       /// Constructors
@@ -28,7 +31,7 @@ namespace Gaudi {
       ~Counter() override = default;
 
       /// Retrieve reference to class definition structure
-      const CLID& clID() const override  { return classID(); }
+      const CLID& clID() const override { return classID(); }
       static const CLID& classID() { return CLID_Counter; }
 
       /// Retrieve counter value
@@ -38,12 +41,12 @@ namespace Gaudi {
       /// Decrement counter
       int decrement() { return --m_counter; }
       /// Set value
-      void set(int val) {  m_counter = val; }
+      void set( int val ) { m_counter = val; }
+
     private:
       /// Counter number
-      int                 m_counter;
+      int m_counter;
     };
-
   }
 }
-#endif    // GAUDIEXAMPLES_COUNTER_H
+#endif // GAUDIEXAMPLES_COUNTER_H

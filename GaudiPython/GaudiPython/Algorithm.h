@@ -20,7 +20,7 @@
 namespace GaudiPython
 {
   /// call the python method
-  GAUDI_API StatusCode call_python_method ( PyObject* self , const char* method ) ;
+  GAUDI_API StatusCode call_python_method( PyObject* self, const char* method );
 }
 
 namespace GaudiPython
@@ -36,18 +36,18 @@ namespace GaudiPython
      *  @param self python objects
      *  @param name name of algorithm instance
      */
-    PyAlgorithm
-    ( PyObject*          self ,
-      const std::string& name ) ;
+    PyAlgorithm( PyObject* self, const std::string& name );
+
   public:
-    StatusCode  initialize () override ;
-    StatusCode  start      () override ;
-    StatusCode  beginRun   () override ;
-    StatusCode  endRun     () override ;
-    StatusCode  execute    () override ;
-    StatusCode  stop       () override ;
-    StatusCode  finalize   () override ;
+    StatusCode initialize() override;
+    StatusCode start() override;
+    StatusCode beginRun() override;
+    StatusCode endRun() override;
+    StatusCode execute() override;
+    StatusCode stop() override;
+    StatusCode finalize() override;
     IAlgorithm* myself() { return this; }
+
   private:
     PyObject* m_self;
   };
@@ -59,7 +59,7 @@ namespace GaudiPython
    *  @date 2005-08-03
    */
   template <class ALGORITHM>
-  class GAUDI_API PyAlg : public          ALGORITHM
+  class GAUDI_API PyAlg : public ALGORITHM
   {
     // ========================================================================
   public:
@@ -68,67 +68,56 @@ namespace GaudiPython
      *  @param self python object
      *  @param name name of algorithm instance
      */
-    PyAlg
-    ( PyObject*          self ,
-      const std::string& name )
-      : ALGORITHM ( name , Gaudi::svcLocator() )
-      , m_self ( self )
+    PyAlg( PyObject* self, const std::string& name ) : ALGORITHM( name, Gaudi::svcLocator() ), m_self( self )
     {
       // the printout of actual type for embedded algorithm has no sense
-      this->setProperty ( "TypePrint" , "false" ) ;
-      this->setProperty ( "StatPrint" , "true"  ) ;
+      this->setProperty( "TypePrint", "false" );
+      this->setProperty( "StatPrint", "true" );
       // The owner of the Algorithm is Python (as creator) therefore
       // it should not be deleted by Gaudi (added an extra addRef()).
-      this->addRef() ;
-      this->addRef() ;
+      this->addRef();
+      this->addRef();
     }
     // ========================================================================
   protected:
     // ========================================================================
     /// virtual destructor
-    ~PyAlg() override = default;                           // virtual destructor
+    ~PyAlg() override = default; // virtual destructor
     /// get the object
-    PyObject* _obj() const { return m_self ; }            //     get the object
+    PyObject* _obj() const { return m_self; } //     get the object
     // ========================================================================
   public:
     // ========================================================================
-    StatusCode initialize  () override
-    { return GaudiPython::call_python_method ( m_self , "initialize" ) ; }
-    StatusCode start  () override
-    { return GaudiPython::call_python_method ( m_self , "start"      ) ; }
-    StatusCode beginRun  () override
-    { return GaudiPython::call_python_method ( m_self , "beginRun"   ) ; }
-    StatusCode endRun  () override
-    { return GaudiPython::call_python_method ( m_self , "endRun"     ) ; }
-    StatusCode execute     () override
-    { return GaudiPython::call_python_method ( m_self , "execute"    ) ; }
-    StatusCode stop  () override
-    { return GaudiPython::call_python_method ( m_self , "stop"       ) ; }
-    StatusCode finalize    () override
-    { return GaudiPython::call_python_method ( m_self , "finalize"   ) ; }
+    StatusCode initialize() override { return GaudiPython::call_python_method( m_self, "initialize" ); }
+    StatusCode start() override { return GaudiPython::call_python_method( m_self, "start" ); }
+    StatusCode beginRun() override { return GaudiPython::call_python_method( m_self, "beginRun" ); }
+    StatusCode endRun() override { return GaudiPython::call_python_method( m_self, "endRun" ); }
+    StatusCode execute() override { return GaudiPython::call_python_method( m_self, "execute" ); }
+    StatusCode stop() override { return GaudiPython::call_python_method( m_self, "stop" ); }
+    StatusCode finalize() override { return GaudiPython::call_python_method( m_self, "finalize" ); }
     // ========================================================================
-    virtual IAlgorithm* ialgorithm () { return this ; }
-    virtual IProperty*  iproperty  () { return this ; }
+    virtual IAlgorithm* ialgorithm() { return this; }
+    virtual IProperty* iproperty() { return this; }
     // ========================================================================
     // preserve the existing methods
-    virtual StatusCode initialize_ () { return ALGORITHM::initialize () ; }
-    virtual StatusCode finalize_   () { return ALGORITHM::finalize   () ; }
+    virtual StatusCode initialize_() { return ALGORITHM::initialize(); }
+    virtual StatusCode finalize_() { return ALGORITHM::finalize(); }
     // ========================================================================
   private:
     // ========================================================================
     /// the default constructor is disabled
     PyAlg() = delete;
     /// the copy constructor is disabled
-    PyAlg ( const PyAlg& ) = delete; 
+    PyAlg( const PyAlg& ) = delete;
     /// the assignment operator is disabled
-    PyAlg& operator=( const PyAlg& )  = delete;
+    PyAlg& operator=( const PyAlg& ) = delete;
     // ========================================================================
   private:
     // ========================================================================
     /// "shadow" python class
-    PyObject* m_self;                                  // "shadow" python class
+    PyObject* m_self; // "shadow" python class
     // ========================================================================
-  } ;
+  };
   // ==========================================================================
 } //                                               end of namespace GaudiPython
 // ============================================================================

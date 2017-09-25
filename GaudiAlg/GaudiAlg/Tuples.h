@@ -15,8 +15,8 @@
  */
 namespace Tuples
 {
-  class Tuple    ;
-  class TupleObj ;
+  class Tuple;
+  class TupleObj;
 } // end of namespace Tuples
 
 #endif // GAUDIALG_TUPLES_H

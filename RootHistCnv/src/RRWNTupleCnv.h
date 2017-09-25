@@ -7,32 +7,35 @@
 // Forward declarations
 class TTree;
 
-namespace RootHistCnv {
-/** @class RootHistCnv::RRWNTupleCnv RRWNTupleCnv.h
+namespace RootHistCnv
+{
+  /** @class RootHistCnv::RRWNTupleCnv RRWNTupleCnv.h
 
-    Row wise NTuple converter class definition
-    @author Charles Leggett
-*/
+      Row wise NTuple converter class definition
+      @author Charles Leggett
+  */
 
-  class RRWNTupleCnv : public RNTupleCnv   {
+  class RRWNTupleCnv : public RNTupleCnv
+  {
   public:
     /// Inquire class type
-    static const CLID& classID()    { return CLID_RowWiseTuple; }
+    static const CLID& classID() { return CLID_RowWiseTuple; }
     /// Standard constructor
-    RRWNTupleCnv( ISvcLocator* svc )  : RNTupleCnv(svc, classID()) { }
+    RRWNTupleCnv( ISvcLocator* svc ) : RNTupleCnv( svc, classID() ) {}
     /// Standard destructor
     ~RRWNTupleCnv() override = default;
+
   protected:
     /// Create the transient representation of an object.
-    StatusCode load(TTree* tree, INTuple*& refpObject) override;
+    StatusCode load( TTree* tree, INTuple*& refpObject ) override;
 
     /// Book the N tuple
-    StatusCode book(const std::string& desc, INTuple* pObject, TTree*& tree) override;
+    StatusCode book( const std::string& desc, INTuple* pObject, TTree*& tree ) override;
     /// Write N tuple data
-    StatusCode writeData(TTree* rtree, INTuple* pObject) override;
+    StatusCode writeData( TTree* rtree, INTuple* pObject ) override;
     /// Read N tuple data
-    StatusCode readData(TTree* rtree, INTuple* pObject, long ievt) override;
+    StatusCode readData( TTree* rtree, INTuple* pObject, long ievt ) override;
   };
-}    // namespace RootHistCnv
+} // namespace RootHistCnv
 
-#endif    // RootHistCnv_RRWNTUPLECNV_H
+#endif // RootHistCnv_RRWNTUPLECNV_H

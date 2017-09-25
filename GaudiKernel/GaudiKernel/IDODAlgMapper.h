@@ -14,15 +14,15 @@
  * @author Marco Clemencic
  * @date 13/01/2012
  */
-class IDODAlgMapper: virtual public IAlgTool {
+class IDODAlgMapper : virtual public IAlgTool
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IDODAlgMapper, 1, 0);
+  DeclareInterfaceID( IDODAlgMapper, 1, 0 );
 
   /// For the given path, returns a TypeNameString object identifying the algorithm
   /// to be run to produce the entry at the path.
-  virtual Gaudi::Utils::TypeNameString algorithmForPath(const std::string &path) = 0;
-
+  virtual Gaudi::Utils::TypeNameString algorithmForPath( const std::string& path ) = 0;
 };
 
 #endif // GAUDIKERNEL_IDODALGMAPPER_H

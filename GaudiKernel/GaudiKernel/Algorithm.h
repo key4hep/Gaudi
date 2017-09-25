@@ -12,9 +12,9 @@
 #include "GaudiKernel/ITimelineSvc.h"
 #include "GaudiKernel/PropertyHolder.h"
 
+#include <mutex>
 #include <string>
 #include <vector>
-#include <mutex>
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/CommonMessaging.h"
@@ -76,7 +76,8 @@ class ToolHandleInfo;
  *  @date   1998
  */
 class GAUDI_API Algorithm
-    : public DataHandleHolderBase<PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
+    : public DataHandleHolderBase<
+          PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
 #ifndef __REFLEX__
@@ -123,7 +124,7 @@ public:
    *  For sub-algorithms either the sysExecute() method or execute() method
    *  must be EXPLICITLY invoked by  the parent algorithm.
    */
-  StatusCode sysExecute(const EventContext& ctx) override;
+  StatusCode sysExecute( const EventContext& ctx ) override;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
@@ -435,7 +436,6 @@ public:
   const EventContext& getContext() const override { return m_event_context; }
 
 public:
-
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
   void commitHandles() override;
@@ -504,17 +504,16 @@ protected:
 
 public:
   /// Produce string represention of the control flow expression.
-  std::ostream& toControlFlowExpression(std::ostream& os) const override;
+  std::ostream& toControlFlowExpression( std::ostream& os ) const override;
 
 private:
-
   unsigned int maxErrors() const { return m_errorMax; }
 
 private:
-  Gaudi::StringKey m_name;            ///< Algorithm's name for identification
-  std::string m_type;                 ///< Algorithm's type
-  std::string m_version;              ///< Algorithm's version
-  unsigned int m_index;               ///< Algorithm's index
+  Gaudi::StringKey m_name; ///< Algorithm's name for identification
+  std::string m_type;      ///< Algorithm's type
+  std::string m_version;   ///< Algorithm's version
+  unsigned int m_index;    ///< Algorithm's index
   EventContext m_event_context;
   std::vector<Algorithm*> m_subAlgms; ///< Sub algorithms
 
@@ -543,8 +542,8 @@ private:
   mutable SmartIF<IMonitorSvc> m_pMonitorSvc;   ///< Online Monitoring Service
   mutable SmartIF<IAlgContextSvc> m_contextSvc; ///< Algorithm Context Service
 
-  mutable SmartIF<ITimelineSvc> m_timelineSvc;  ///< Timeline Service
-  mutable SmartIF<IAlgExecStateSvc> m_aess;     ///< Alg execution state mgr
+  mutable SmartIF<ITimelineSvc> m_timelineSvc; ///< Timeline Service
+  mutable SmartIF<IAlgExecStateSvc> m_aess;    ///< Alg execution state mgr
 
   SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
 
@@ -586,10 +585,10 @@ private:
                                     "if the algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)"};
 
   // The default should be changed to "false" for v29
-  Gaudi::Property<bool> m_filterCircDeps{this,"FilterCircularDependencies", true,
-      "filter out circular data dependencies"};
+  Gaudi::Property<bool> m_filterCircDeps{this, "FilterCircularDependencies", true,
+                                         "filter out circular data dependencies"};
 
-  std::mutex   m_lock;             ///< for re-entrant Algs
+  std::mutex m_lock; ///< for re-entrant Algs
 
   bool m_filterPassed = true;  ///< Filter passed flag
   bool m_isExecuted   = false; ///< Algorithm is executed flag

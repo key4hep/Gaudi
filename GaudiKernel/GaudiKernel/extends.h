@@ -7,7 +7,8 @@
 /// Version for one interface.
 /// @author Marco Clemencic
 template <typename BASE, typename... Interfaces>
-class GAUDI_API extends: public BASE, virtual public extend_interfaces<Interfaces...> {
+class GAUDI_API extends : public BASE, virtual public extend_interfaces<Interfaces...>
+{
 
 public:
   /// Typedef to this class.
@@ -18,32 +19,33 @@ public:
   using BASE::BASE;
 
   /// Implementation of IInterface::i_cast.
-  void *i_cast(const InterfaceID &tid) const override {
+  void* i_cast( const InterfaceID& tid ) const override
+  {
     using iids = typename extend_interfaces_base::ext_iids;
-    void *ptr = Gaudi::iid_cast(tid, iids{}, this);
-    return ptr ? ptr : BASE::i_cast(tid);
+    void* ptr  = Gaudi::iid_cast( tid, iids{}, this );
+    return ptr ? ptr : BASE::i_cast( tid );
   }
 
   /// Implementation of IInterface::queryInterface.
-  StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
-    if (!pp) return StatusCode::FAILURE;
+  StatusCode queryInterface( const InterfaceID& ti, void** pp ) override
+  {
+    if ( !pp ) return StatusCode::FAILURE;
     using iids = typename extend_interfaces_base::ext_iids;
-    *pp = Gaudi::iid_cast(ti,iids{},this);
+    *pp        = Gaudi::iid_cast( ti, iids{}, this );
     // if cast failed, try the base class
-    if (!*pp) return BASE::queryInterface(ti,pp);
+    if ( !*pp ) return BASE::queryInterface( ti, pp );
     this->addRef();
     return StatusCode::SUCCESS;
   }
 
   /// Implementation of IInterface::getInterfaceNames.
-  std::vector<std::string> getInterfaceNames() const override {
+  std::vector<std::string> getInterfaceNames() const override
+  {
     using iids = typename extend_interfaces_base::ext_iids;
-    auto vb = BASE::getInterfaceNames();
-    auto vi = Gaudi::getInterfaceNames( iids{} );
+    auto vb    = BASE::getInterfaceNames();
+    auto vi    = Gaudi::getInterfaceNames( iids{} );
     // start with base, and move the rest...
-    vb.insert( vb.end(),
-               std::make_move_iterator(vi.begin()),
-               std::make_move_iterator(vi.end()) );
+    vb.insert( vb.end(), std::make_move_iterator( vi.begin() ), std::make_move_iterator( vi.end() ) );
     return vb;
   }
 
@@ -51,15 +53,13 @@ public:
   ~extends() override = default;
 };
 
-template <typename BASE, typename I1> using extends1 = extends<BASE, I1>;
-template <typename BASE, typename I1,
-                         typename I2> using extends2 = extends<BASE, I1, I2>;
-template <typename BASE, typename I1,
-                         typename I2,
-                         typename I3> using extends3 = extends<BASE, I1, I2, I3>;
-template <typename BASE, typename I1,
-                         typename I2,
-                         typename I3,
-                         typename I4> using extends4 = extends<BASE, I1, I2, I3, I4>;
+template <typename BASE, typename I1>
+using extends1 = extends<BASE, I1>;
+template <typename BASE, typename I1, typename I2>
+using extends2 = extends<BASE, I1, I2>;
+template <typename BASE, typename I1, typename I2, typename I3>
+using extends3 = extends<BASE, I1, I2, I3>;
+template <typename BASE, typename I1, typename I2, typename I3, typename I4>
+using extends4 = extends<BASE, I1, I2, I3, I4>;
 
 #endif /* GAUDIKERNEL_EXTENDS_H */

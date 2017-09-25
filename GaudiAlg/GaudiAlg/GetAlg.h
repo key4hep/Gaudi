@@ -11,7 +11,7 @@
 // ============================================================================
 // forward declarations
 // ============================================================================
-class IAlgContextSvc ;
+class IAlgContextSvc;
 // ============================================================================
 namespace Gaudi
 {
@@ -27,9 +27,9 @@ namespace Gaudi
     {
     public:
       /// the only one essential method:
-      virtual bool operator() ( const IAlgorithm* ) const = 0 ;
+      virtual bool operator()( const IAlgorithm* ) const = 0;
       // virtual destructor
-      virtual ~AlgSelector () = default;
+      virtual ~AlgSelector() = default;
     };
     // ========================================================================
     /** @class AlgTypeSelector
@@ -43,12 +43,14 @@ namespace Gaudi
     {
     public:
       /// the only one essential method:
-      bool operator() ( const IAlgorithm* a ) const override
-      {   using TYPE_ = typename std::decay<TYPE>::type;
-          using CTYPE = typename std::add_const<TYPE_>::type;
-          using cptr  = typename std::add_pointer<CTYPE>::type;
-          return dynamic_cast<cptr>( a ); }
-    } ;
+      bool operator()( const IAlgorithm* a ) const override
+      {
+        using TYPE_ = typename std::decay<TYPE>::type;
+        using CTYPE = typename std::add_const<TYPE_>::type;
+        using cptr  = typename std::add_pointer<CTYPE>::type;
+        return dynamic_cast<cptr>( a );
+      }
+    };
     // ========================================================================
     /** @class AlgNameSelector
      *  The trivial selector of algorithm by type
@@ -59,16 +61,16 @@ namespace Gaudi
     class GAUDI_API AlgNameSelector : public AlgSelector
     {
     public:
-      AlgNameSelector() = delete ;
+      AlgNameSelector() = delete;
       /// constructor form the name
-      AlgNameSelector ( std::string name  ) : m_name ( std::move(name) ) {}
+      AlgNameSelector( std::string name ) : m_name( std::move( name ) ) {}
       /// the only one essential method:
-      bool operator() ( const IAlgorithm* a ) const override
-      { return a && a->name() == m_name; }
+      bool operator()( const IAlgorithm* a ) const override { return a && a->name() == m_name; }
+
     private:
       // algorithm name
-      std::string m_name ; ///< algorithm name
-    } ;
+      std::string m_name; ///< algorithm name
+    };
     // ========================================================================
   } // end of namespace Gaudi::Utils
 } // end of namespace Gaudi
@@ -100,9 +102,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API IAlgorithm* getAlgorithm
-    ( const IAlgContextSvc* svc ,
-      const AlgSelector&    sel ) ;
+    GAUDI_API IAlgorithm* getAlgorithm( const IAlgContextSvc* svc, const AlgSelector& sel );
     // ========================================================================
     /** simple function to get the algorithm from Context Service
      *
@@ -126,9 +126,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API IAlgorithm* getAlgorithm
-    ( const std::vector<IAlgorithm*>& lst ,
-      const AlgSelector&              sel ) ;
+    GAUDI_API IAlgorithm* getAlgorithm( const std::vector<IAlgorithm*>& lst, const AlgSelector& sel );
     // ========================================================================
   } // end of namespace Gaudi::Utils
 } // end of namespace Gaudi

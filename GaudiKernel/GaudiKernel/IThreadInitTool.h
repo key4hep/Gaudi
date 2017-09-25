@@ -25,9 +25,8 @@ class IThreadInitTool : virtual public IAlgTool
 {
 
 public:
-
   /// Declare the interface to the framework.
-  DeclareInterfaceID(IThreadInitTool, 1, 0);
+  DeclareInterfaceID( IThreadInitTool, 1, 0 );
 
   /// Perform worker thread initialization. Called concurrently on each thread.
   virtual void initThread() = 0;
@@ -41,7 +40,6 @@ public:
    *  during initialization and atomically decremented during finalization.
    */
   virtual unsigned int nInit() const = 0;
-
 };
 
 #endif

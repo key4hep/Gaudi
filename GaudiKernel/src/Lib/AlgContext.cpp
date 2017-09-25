@@ -20,13 +20,11 @@
  *  @param alg pointer to the current algorithm
  */
 // ============================================================================
-Gaudi::Utils::AlgContext::AlgContext
-( IAlgContextSvc* svc ,
-  IAlgorithm*     alg )
-  : m_svc ( svc )
-  , m_alg ( alg )
+Gaudi::Utils::AlgContext::AlgContext( IAlgContextSvc* svc, IAlgorithm* alg ) : m_svc( svc ), m_alg( alg )
 {
-  if ( m_svc && m_alg ) { m_svc->setCurrentAlg ( m_alg.get() ).ignore() ; }
+  if ( m_svc && m_alg ) {
+    m_svc->setCurrentAlg( m_alg.get() ).ignore();
+  }
 }
 // ============================================================================
 /*  constructor from service and algorithm
@@ -37,13 +35,11 @@ Gaudi::Utils::AlgContext::AlgContext
  *  @param svc pointer to algorithm context service
  */
 // ============================================================================
-Gaudi::Utils::AlgContext::AlgContext
-( IAlgorithm*     alg ,
-  IAlgContextSvc* svc )
-  : m_svc ( svc )
-  , m_alg ( alg )
+Gaudi::Utils::AlgContext::AlgContext( IAlgorithm* alg, IAlgContextSvc* svc ) : m_svc( svc ), m_alg( alg )
 {
-  if ( m_svc && m_alg ) { m_svc->setCurrentAlg ( m_alg.get() ).ignore() ; }
+  if ( m_svc && m_alg ) {
+    m_svc->setCurrentAlg( m_alg.get() ).ignore();
+  }
 }
 // ============================================================================
 /*  destructor
@@ -54,13 +50,12 @@ Gaudi::Utils::AlgContext::AlgContext
 // ============================================================================
 Gaudi::Utils::AlgContext::~AlgContext()
 {
-  if ( m_svc &&  m_alg )
-  { m_svc->unSetCurrentAlg ( m_alg.get() ).ignore() ; }
+  if ( m_svc && m_alg ) {
+    m_svc->unSetCurrentAlg( m_alg.get() ).ignore();
+  }
 }
 // ============================================================================
-
 
 // ============================================================================
 // The END
 // ============================================================================
-

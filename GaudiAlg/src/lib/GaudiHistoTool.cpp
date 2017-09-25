@@ -28,7 +28,7 @@
 // Forward declaration of the actual constructors, to tell the compiler that
 // they do exist and will be found at link time (warning C4661 in VC7.1)
 // ============================================================================
-template class GaudiHistos<GaudiTool> ;
+template class GaudiHistos<GaudiTool>;
 // ============================================================================
 
 // ============================================================================

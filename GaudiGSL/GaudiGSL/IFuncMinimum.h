@@ -2,19 +2,20 @@
 #define GAUDIGSL_IFUNCMINIMUM_H 1
 // Include files
 // from STL
-#include <vector>
 #include <string>
+#include <vector>
 // from Gaudi
 #include "GaudiKernel/IAlgTool.h"
 
 // forward declarations
-namespace Genfun           /// CLHEP
+namespace Genfun /// CLHEP
 {
-  class   AbsFunction  ;
-  class   Argument     ;
+  class AbsFunction;
+  class Argument;
 }
-namespace CLHEP {
-  class     HepSymMatrix ;   /// CLHEP
+namespace CLHEP
+{
+  class HepSymMatrix; /// CLHEP
 }
 
 /** @class IFuncMinimum IFuncMinimum.h GaudiGSL/IFuncMinimum.h
@@ -24,14 +25,14 @@ namespace CLHEP {
  *  @date   2002-09-14
  */
 
-struct GAUDI_API IFuncMinimum: extend_interfaces<IAlgTool> {
+struct GAUDI_API IFuncMinimum : extend_interfaces<IAlgTool> {
   /// InterfaceID
-  DeclareInterfaceID(IFuncMinimum,3,0);
+  DeclareInterfaceID( IFuncMinimum, 3, 0 );
 
   /// Function which we minimize (@see CLHEP/GenericFunctions/AbsFunction.hh)
-  typedef Genfun::AbsFunction GenFunc   ;
+  typedef Genfun::AbsFunction GenFunc;
   /// Argument of function "GenFunc" (@see CLHEP/GenericFunctions/Argument.hh)
-  typedef Genfun::Argument Arg          ;
+  typedef Genfun::Argument Arg;
   /// Covariance matrix (matrix of error) (@see CLHEP/Matrix/SymMatrix.h)
   typedef CLHEP::HepSymMatrix Covariance;
 
@@ -42,8 +43,7 @@ struct GAUDI_API IFuncMinimum: extend_interfaces<IAlgTool> {
    *  @param pars  - argument @see CLHEP/GenericFunctions/Argument.hh
    *  @return StatusCode
    */
-  virtual StatusCode minimum( const GenFunc& fun   ,
-                              Arg&           pars  ) const = 0 ;
+  virtual StatusCode minimum( const GenFunc& fun, Arg& pars ) const = 0;
 
   /** Find minimum and gradient of the function "GenFunc"
    *  @param fun   - function @see CLHEP/GenericFunctions/AbsFunction.hh
@@ -52,9 +52,6 @@ struct GAUDI_API IFuncMinimum: extend_interfaces<IAlgTool> {
    *  @see CLHEP/Matrix/SymMatrix.h
    *  @return StatusCode
    */
-  virtual StatusCode minimum( const GenFunc& fun   ,
-                              Arg&           pars  ,
-                              Covariance&    covar ) const = 0 ;
-
+  virtual StatusCode minimum( const GenFunc& fun, Arg& pars, Covariance& covar ) const = 0;
 };
 #endif // GAUDIGSL_IFUNCMINIMUM_H

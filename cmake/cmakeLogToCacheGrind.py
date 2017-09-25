@@ -7,8 +7,10 @@ cmake.
 '''
 import sys
 
+
 def usage():
     print "Invalid arguments\nProper syntax is :\n  %s <log file> <callgrind file>" % sys.argv[0]
+
 
 if len(sys.argv) != 3:
     usage()
@@ -18,7 +20,7 @@ if len(sys.argv) != 3:
 # actuall a dictionnary of dictionnaries, with top level key
 # storing caller name, second level key storing callee name
 # and values storing a tuple (nb calls, total time spent in calls)
-calls = { 'main':{} }
+calls = {'main': {}}
 
 # dictionnary of total time spent in functions
 timeSpentInfunc = {}
@@ -61,7 +63,8 @@ for line in open(sys.argv[1]).readlines():
         if func not in calls[caller]:
             calls[caller][func] = (0, 0)
         nbCalls, timeSpent = calls[caller][func]
-        calls[caller][func] = (nbCalls+1, timeSpent + deltatime)
+        calls[caller][func] = (nbCalls + 1, timeSpent + deltatime)
+
 
 def writeCalls(func, callees):
     '''writes the callgrind entry for a given function given its
@@ -84,6 +87,7 @@ def writeCalls(func, callees):
         output.write('calls=%d 0\n' % nb)
         output.write('0 %d\n' % time)
     output.write('\n')
+
 
 # create output callgrind file
 output = open(sys.argv[2], 'w')

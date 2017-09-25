@@ -4,8 +4,8 @@
 
 // from Gaudi
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Property.h"
 
 /// Forward references
 struct IEqSolver;
@@ -19,24 +19,22 @@ struct IEqSolver;
  */
 //-----------------------------------------------------------------------------
 
-class EqSolverGenAlg : public Algorithm {
+class EqSolverGenAlg : public Algorithm
+{
 
 public:
   /// Standard constructor
   EqSolverGenAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
-  ~EqSolverGenAlg( ) override; ///< Destructor
+  ~EqSolverGenAlg() override; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
 protected:
-
 private:
-
-  IEqSolver*   m_privateTool;
-  IEqSolver*   m_publicTool;
-
+  IEqSolver* m_privateTool;
+  IEqSolver* m_publicTool;
 };
 #endif // ALGTOOLS_EQSOLVERGENALG_H

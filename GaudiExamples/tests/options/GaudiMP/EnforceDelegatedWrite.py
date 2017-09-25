@@ -35,4 +35,4 @@ app.OutStream = [outDelegate]
 
 #from Gaudi.Configuration import VERBOSE
 #from Configurables import MessageSvc
-#MessageSvc(OutputLevel=VERBOSE)
+# MessageSvc(OutputLevel=VERBOSE)

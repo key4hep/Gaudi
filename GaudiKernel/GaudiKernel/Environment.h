@@ -15,8 +15,8 @@
 
 // Framework include files
 #include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/SystemBase.h"
 #include "GaudiKernel/StatusCode.h"
+#include "GaudiKernel/SystemBase.h"
 
 // C++ include files
 #include <string>
@@ -28,9 +28,10 @@
     @author:  M.Frank
     @version: 1.0
 */
-namespace System  {
+namespace System
+{
   GAUDI_API std::string homeDirectory();
   GAUDI_API std::string tempDirectory();
-  GAUDI_API StatusCode resolveEnv(const std::string& var, std::string& res, int recusions=124);
+  GAUDI_API StatusCode resolveEnv( const std::string& var, std::string& res, int recusions = 124 );
 }
-#endif    // GAUDIKERNEL_ENVIRONMENT_H
+#endif // GAUDIKERNEL_ENVIRONMENT_H

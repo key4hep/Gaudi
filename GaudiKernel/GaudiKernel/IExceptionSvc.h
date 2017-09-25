@@ -6,8 +6,8 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/IInterface.h"
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -21,26 +21,22 @@ class INamedInterface;
  *  @date 2007-03-08
  */
 // ============================================================================
-class GAUDI_API IExceptionSvc: virtual public IInterface {
+class GAUDI_API IExceptionSvc : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IExceptionSvc,3,0);
+  DeclareInterfaceID( IExceptionSvc, 3, 0 );
   /// Handle caught GaudiExceptions
-  virtual StatusCode handle
-  ( const INamedInterface& o ,
-    const GaudiException&  e ) const = 0 ; ///< Handle caught exceptions
+  virtual StatusCode handle( const INamedInterface& o,
+                             const GaudiException& e ) const = 0; ///< Handle caught exceptions
   /// Handle caught std::exceptions
-  virtual StatusCode handle
-  ( const INamedInterface& o ,
-    const std::exception & e ) const = 0 ; ///< Handle caught exceptions
+  virtual StatusCode handle( const INamedInterface& o,
+                             const std::exception& e ) const = 0; ///< Handle caught exceptions
   /// Handle caught (unknown)exceptions
-  virtual StatusCode handle
-  ( const INamedInterface& o ) const = 0 ; ///< Handle caught exceptions
+  virtual StatusCode handle( const INamedInterface& o ) const = 0; ///< Handle caught exceptions
   /// Handle errors
-  virtual StatusCode handleErr
-  ( const INamedInterface& o ,
-    const StatusCode&      s ) const = 0 ; ///< Handle errors
-} ;
+  virtual StatusCode handleErr( const INamedInterface& o, const StatusCode& s ) const = 0; ///< Handle errors
+};
 // ============================================================================
 
 // ============================================================================

@@ -1,7 +1,7 @@
 #include "MultiFileCatalog.h"
-#include "createGuidAsString.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/strcasecmp.h"
+#include "createGuidAsString.h"
 #include <Gaudi/PluginService.h>
 #include <algorithm>
 #include <functional>

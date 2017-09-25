@@ -16,7 +16,7 @@
 // ============================================================================
 // Declaration of the Tool Factory
 // ============================================================================
-DECLARE_COMPONENT(TupleTool)
+DECLARE_COMPONENT( TupleTool )
 // ============================================================================
 
 // ============================================================================
@@ -30,11 +30,8 @@ DECLARE_COMPONENT(TupleTool)
  *  @param parent pointer to parent component
  */
 // ============================================================================
-TupleTool::TupleTool( const std::string& type,
-                      const std::string& name,
-                      const IInterface* parent )
-  : GaudiTupleTool ( type, name , parent )
+TupleTool::TupleTool( const std::string& type, const std::string& name, const IInterface* parent )
+    : GaudiTupleTool( type, name, parent )
 {
-  declareInterface<ITupleTool>(this);
+  declareInterface<ITupleTool>( this );
 }
-

@@ -39,10 +39,10 @@
 extern "C" {
 #endif
 
-#define PMU_I386_P6_NUM_COUNTERS	2	/* total numbers of EvtSel/EvtCtr */
-#define PMU_I386_P6_NUM_PERFSEL		2	/* total number of EvtSel defined */
-#define PMU_I386_P6_NUM_PERFCTR		2	/* total number of EvtCtr defined */
-#define PMU_I386_P6_COUNTER_WIDTH	32	/* hardware counter bit width   */
+#define PMU_I386_P6_NUM_COUNTERS 2   /* total numbers of EvtSel/EvtCtr */
+#define PMU_I386_P6_NUM_PERFSEL 2    /* total number of EvtSel defined */
+#define PMU_I386_P6_NUM_PERFCTR 2    /* total number of EvtCtr defined */
+#define PMU_I386_P6_COUNTER_WIDTH 32 /* hardware counter bit width   */
 
 /*
  * This structure provides a detailed way to setup a PMC register.
@@ -50,56 +50,56 @@ extern "C" {
  * perfmon_req_t and passed to the kernel via perfmonctl().
  */
 typedef union {
-	unsigned long	val;			/* complete register value */
-	struct {
-		unsigned long sel_event_mask:8;	/* event mask */
-		unsigned long sel_unit_mask:8;		/* unit mask */
-		unsigned long sel_usr:1;		/* user level */
-		unsigned long sel_os:1;			/* system level */
-		unsigned long sel_edge:1;		/* edge detec */
-		unsigned long sel_pc:1;			/* pin control */
-		unsigned long sel_int:1;		/* enable APIC intr */
-		unsigned long sel_res1:1;		/* reserved */
-		unsigned long sel_en:1;			/* enable */
-		unsigned long sel_inv:1;		/* invert counter mask */
-		unsigned long sel_cnt_mask:8;		/* counter mask */
-	} perfsel;
+  unsigned long val; /* complete register value */
+  struct {
+    unsigned long sel_event_mask : 8; /* event mask */
+    unsigned long sel_unit_mask : 8;  /* unit mask */
+    unsigned long sel_usr : 1;        /* user level */
+    unsigned long sel_os : 1;         /* system level */
+    unsigned long sel_edge : 1;       /* edge detec */
+    unsigned long sel_pc : 1;         /* pin control */
+    unsigned long sel_int : 1;        /* enable APIC intr */
+    unsigned long sel_res1 : 1;       /* reserved */
+    unsigned long sel_en : 1;         /* enable */
+    unsigned long sel_inv : 1;        /* invert counter mask */
+    unsigned long sel_cnt_mask : 8;   /* counter mask */
+  } perfsel;
 } pfm_i386_p6_sel_reg_t;
 
 typedef union {
-	uint64_t val;	/* counter value */
-	/* counting perfctr register */
-	struct {
-		unsigned long ctr_count:32;	/* 32-bit hardware counter  */
-		unsigned long ctr_res1:32;	/* reserved */
-	} perfctr;
+  uint64_t val; /* counter value */
+  /* counting perfctr register */
+  struct {
+    unsigned long ctr_count : 32; /* 32-bit hardware counter  */
+    unsigned long ctr_res1 : 32;  /* reserved */
+  } perfctr;
 } pfm_i386_p6_ctr_reg_t;
 
 typedef enum {
-	PFM_I386_P6_CNT_MASK_0,
-	PFM_I386_P6_CNT_MASK_1,
-	PFM_I386_P6_CNT_MASK_2,
-	PFM_I386_P6_CNT_MASK_3
+  PFM_I386_P6_CNT_MASK_0,
+  PFM_I386_P6_CNT_MASK_1,
+  PFM_I386_P6_CNT_MASK_2,
+  PFM_I386_P6_CNT_MASK_3
 } pfm_i386_p6_cnt_mask_t;
 
 typedef struct {
-	pfm_i386_p6_cnt_mask_t	cnt_mask;	/* threshold (cnt_mask)  */
-	unsigned int		flags;		/* counter specific flag */
+  pfm_i386_p6_cnt_mask_t cnt_mask; /* threshold (cnt_mask)  */
+  unsigned int flags;              /* counter specific flag */
 } pfmlib_i386_p6_counter_t;
 
-#define PFM_I386_P6_SEL_INV	0x1	/* inverse */
-#define PFM_I386_P6_SEL_EDGE	0x2	/* edge detect */
+#define PFM_I386_P6_SEL_INV 0x1  /* inverse */
+#define PFM_I386_P6_SEL_EDGE 0x2 /* edge detect */
 
 /*
  * P6-specific parameters for the library
  */
 typedef struct {
-	pfmlib_i386_p6_counter_t	pfp_i386_p6_counters[PMU_I386_P6_NUM_COUNTERS];	/* extended counter features */
-	uint64_t			reserved[4];		/* for future use */
+  pfmlib_i386_p6_counter_t pfp_i386_p6_counters[PMU_I386_P6_NUM_COUNTERS]; /* extended counter features */
+  uint64_t reserved[4];                                                    /* for future use */
 } pfmlib_i386_p6_input_param_t;
 
 typedef struct {
-	uint64_t	reserved[8];		/* for future use */
+  uint64_t reserved[8]; /* for future use */
 } pfmlib_i386_p6_output_param_t;
 
 #ifdef __cplusplus /* extern C */

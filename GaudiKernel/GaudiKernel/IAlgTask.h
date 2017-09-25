@@ -12,13 +12,12 @@
  */
 
 // Does it have to inherit from IInterface ?
-class IAlgTask {
+class IAlgTask
+{
 public:
-
   virtual ~IAlgTask() = default;
 
   virtual StatusCode execute() = 0;
-
 };
 
 #endif /* GAUDIKERNEL_GAUDIKERNEL_IALGTASK_H_ */

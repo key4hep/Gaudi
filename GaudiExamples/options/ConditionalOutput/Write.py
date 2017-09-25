@@ -19,12 +19,12 @@ evenEvts = EvenFilter('EvenEvents')
 # Output setup
 # - DST
 stream = OutputStream()
-stream.Output    = "DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
+stream.Output = "DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 #stream.ItemList = ['A', 'B', 'C']
 stream.AlgDependentItemList[oddEvts.name()] = ['/Event/A#1', '/Event/B#1']
 stream.AlgDependentItemList[evenEvts.name()] = ['/Event/A#1', '/Event/C#1']
 
-FileCatalog(Catalogs = [ "xmlcatalog_file:ConditionalOutput.xml" ])
+FileCatalog(Catalogs=["xmlcatalog_file:ConditionalOutput.xml"])
 
 # Output Levels
 MessageSvc(OutputLevel=VERBOSE)
@@ -36,10 +36,10 @@ GaudiPersistency()
 # Application setup
 app = ApplicationMgr()
 # - I/O
-app.OutStream += [ stream ]
+app.OutStream += [stream]
 # - Algorithms
-app.TopAlg = [ creator, oddEvts, evenEvts ]
+app.TopAlg = [creator, oddEvts, evenEvts]
 # - Events
-app.EvtMax   = 10
-app.EvtSel   = "NONE" # do not use any event input
+app.EvtMax = 10
+app.EvtSel = "NONE"  # do not use any event input
 app.HistogramPersistency = "NONE"

@@ -18,73 +18,70 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/System.h"
 
-#if !defined(__APPLE__)
-class GaudiDll {
-  GaudiDll()  {}
+#if !defined( __APPLE__ )
+class GaudiDll
+{
+  GaudiDll() {}
+
 public:
-  static void initialize(void* hinstDLL);
-  static void finalize(void* hinstDLL);
+  static void initialize( void* hinstDLL );
+  static void finalize( void* hinstDLL );
 };
 #endif
 
-#if defined(_WIN32) && defined(_DLL)
-namespace win {
+#if defined( _WIN32 ) && defined( _DLL )
+namespace win
+{
 // Avoid conflicts between Windows' headers and MSG.
 #ifndef NOMSG
-#  define NOMSG
-#  ifndef NOGDI
-#    define NOGDI
-#  endif
+#define NOMSG
+#ifndef NOGDI
+#define NOGDI
+#endif
 #endif
 #include <windows.h>
 }
 
-win::BOOL APIENTRY DllMain(
-        win::HINSTANCE hinstDLL,  // handle to DLL module
-        win::DWORD fdwReason,     // reason for calling function
-        win::LPVOID lpvReserved   // reserved
-)
+win::BOOL APIENTRY DllMain( win::HINSTANCE hinstDLL, // handle to DLL module
+                            win::DWORD fdwReason,    // reason for calling function
+                            win::LPVOID lpvReserved  // reserved
+                            )
 {
-    System::setModuleHandle(hinstDLL);
-    switch( fdwReason ) {
-    case DLL_PROCESS_ATTACH:    {
-      GaudiDll::initialize(hinstDLL);
-    }
+  System::setModuleHandle( hinstDLL );
+  switch ( fdwReason ) {
+  case DLL_PROCESS_ATTACH: {
+    GaudiDll::initialize( hinstDLL );
+  } break;
+  case DLL_THREAD_ATTACH:
     break;
-    case DLL_THREAD_ATTACH:
+  case DLL_THREAD_DETACH:
     break;
-    case DLL_THREAD_DETACH:
-    break;
-    case DLL_PROCESS_DETACH:    {
-      GaudiDll::finalize(hinstDLL);
-      // Since the System class is shared now, we may no longer close the
-      // Process handle!  M.F.
-      //win::CloseHandle(System::processHandle());
-    }
-    break;
-    }
-    return TRUE;
-
+  case DLL_PROCESS_DETACH: {
+    GaudiDll::finalize( hinstDLL );
+    // Since the System class is shared now, we may no longer close the
+    // Process handle!  M.F.
+    // win::CloseHandle(System::processHandle());
+  } break;
+  }
+  return TRUE;
 }
 #elif __linux
-static void _init() __attribute__((constructor));
-static void _fini() __attribute__((destructor));
+static void _init() __attribute__( ( constructor ) );
+static void _fini() __attribute__( ( destructor ) );
 
-static void _init()   {
-      GaudiDll::initialize(0);
-}
-static void _fini()   {
-      GaudiDll::finalize(0);
-}
-#elif defined(__APPLE__)
-static void _init() __attribute__((constructor));
-static void _fini() __attribute__((destructor));
+static void _init() { GaudiDll::initialize( 0 ); }
+static void _fini() { GaudiDll::finalize( 0 ); }
+#elif defined( __APPLE__ )
+static void _init() __attribute__( ( constructor ) );
+static void _fini() __attribute__( ( destructor ) );
 
-static void _init()   {
-      //FIXME GaudiDll::initialize(0);
+static void _init()
+{
+  // FIXME GaudiDll::initialize(0);
 }
-static void _fini()   {
-      //FIXME GaudiDll::finalize(0);
+static void _fini()
+{
+  // FIXME GaudiDll::finalize(0);
 }
 
 #endif // WIN32

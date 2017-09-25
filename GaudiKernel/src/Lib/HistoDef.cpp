@@ -7,8 +7,8 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/HistoDef.h"
+#include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/ToStream.h"
 // ============================================================================
 /** @file
@@ -24,16 +24,10 @@
  *  @param title the histogram title
  */
 // ============================================================================
-Gaudi::Histo1DDef::Histo1DDef
-( const double       low   ,
-  const double       high  ,
-  const int          bins  ,
-  std::string title )
-  : m_title ( std::move(title) )
-  , m_low   ( low   )
-  , m_high  ( high  )
-  , m_bins  ( bins  )
-{}
+Gaudi::Histo1DDef::Histo1DDef( const double low, const double high, const int bins, std::string title )
+    : m_title( std::move( title ) ), m_low( low ), m_high( high ), m_bins( bins )
+{
+}
 // ============================================================================
 /*  full constructor from edges, #bins and the title
  *  @param title the histogram title
@@ -42,75 +36,64 @@ Gaudi::Histo1DDef::Histo1DDef
  *  @param bins number of bins
  */
 // ============================================================================
-Gaudi::Histo1DDef::Histo1DDef
-( std::string title ,
-  const double       low   ,
-  const double       high  ,
-  const int          bins  )
-  : m_title ( std::move(title) )
-  , m_low   ( low   )
-  , m_high  ( high  )
-  , m_bins  ( bins  )
-{}
+Gaudi::Histo1DDef::Histo1DDef( std::string title, const double low, const double high, const int bins )
+    : m_title( std::move( title ) ), m_low( low ), m_high( high ), m_bins( bins )
+{
+}
 // ============================================================================
 // printout of the histogram definition
 // ============================================================================
 std::ostream& Gaudi::Histo1DDef::fillStream( std::ostream& o ) const
 {
-  return o << "(" << Gaudi::Utils::toString ( title () )
-           << "," << lowEdge  ()
-           << "," << highEdge ()
-           << "," << bins     ()  << ")" ;
+  return o << "(" << Gaudi::Utils::toString( title() ) << "," << lowEdge() << "," << highEdge() << "," << bins() << ")";
 }
 // ============================================================================
 // ordering operator (to please BoundedVerifier)
 // ============================================================================
-bool Gaudi::Histo1DDef::operator< ( const Gaudi::Histo1DDef& right ) const
+bool Gaudi::Histo1DDef::operator<( const Gaudi::Histo1DDef& right ) const
 {
-  return
-    this      ==  &right             ? false :
-    title    () <  right.title    () ? true  :
-    title    () >  right.title    () ? false :
-    lowEdge  () <  right.lowEdge  () ? true  :
-    lowEdge  () >  right.lowEdge  () ? false :
-    highEdge () <  right.highEdge () ? true  :
-    highEdge () >  right.highEdge () ? false : bins () < right.bins () ;
+  return this == &right ? false
+                        : title() < right.title()
+                              ? true
+                              : title() > right.title()
+                                    ? false
+                                    : lowEdge() < right.lowEdge()
+                                          ? true
+                                          : lowEdge() > right.lowEdge()
+                                                ? false
+                                                : highEdge() < right.highEdge()
+                                                      ? true
+                                                      : highEdge() > right.highEdge() ? false : bins() < right.bins();
 }
 // ============================================================================
 // equality operator
 // ============================================================================
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-#pragma warning(push)
-#pragma warning(disable:1572)
+#pragma warning( push )
+#pragma warning( disable : 1572 )
 #endif
 bool Gaudi::Histo1DDef::operator==( const Gaudi::Histo1DDef& right ) const
 {
-  return ( this == &right ) ||
-    ( title    () == right.title    () &&
-      lowEdge  () == right.lowEdge  () &&
-      highEdge () == right.highEdge () &&
-      bins     () == right.bins     () );
+  return ( this == &right ) || ( title() == right.title() && lowEdge() == right.lowEdge() &&
+                                 highEdge() == right.highEdge() && bins() == right.bins() );
 }
 #ifdef __ICC
 // re-enable icc remark #1572
-#pragma warning(pop)
+#pragma warning( pop )
 #endif
 // ============================================================================
 // non-equality
 // ============================================================================
-bool Gaudi::Histo1DDef::operator!=( const Gaudi::Histo1DDef& right ) const
-{ return  !( *this == right ) ; }
+bool Gaudi::Histo1DDef::operator!=( const Gaudi::Histo1DDef& right ) const { return !( *this == right ); }
 // ============================================================================
 // the streamer operator for class Gaudi::Histo1DDef
 // ============================================================================
 namespace Gaudi
 {
-  std::ostream& operator<<( std::ostream& o , const Gaudi::Histo1DDef& histo )
-  { return histo.fillStream ( o ) ; }
+  std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo ) { return histo.fillStream( o ); }
 }
 // ============================================================================
-
 
 // ============================================================================
 /*  helper function to book 1D-histogram
@@ -119,15 +102,9 @@ namespace Gaudi
  *  @param hist histogram desctriprion
  */
 // ============================================================================
-AIDA::IHistogram1D*
-Gaudi::Histos::book
-( IHistogramSvc*           svc  ,
-  const std::string&       path ,
-  const Gaudi::Histo1DDef& hist )
+AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& path, const Gaudi::Histo1DDef& hist )
 {
-  return svc ? svc -> book( path , hist.title() , hist.bins() ,
-                                   hist.lowEdge() , hist.highEdge() )
-             : nullptr;
+  return svc ? svc->book( path, hist.title(), hist.bins(), hist.lowEdge(), hist.highEdge() ) : nullptr;
 }
 // ============================================================================
 /*  helper function to book 1D-histogram
@@ -137,16 +114,10 @@ Gaudi::Histos::book
  *  @param hist histogram desctriprion
  */
 // ============================================================================
-AIDA::IHistogram1D*
-Gaudi::Histos::book
-( IHistogramSvc*           svc  ,
-  const std::string&       dir  ,
-  const std::string&       id   ,
-  const Gaudi::Histo1DDef& hist )
+AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& dir, const std::string& id,
+                                         const Gaudi::Histo1DDef& hist )
 {
-  return svc ? svc -> book ( dir , id  , hist.title() , hist.bins() ,
-                             hist.lowEdge() , hist.highEdge() )
-             : nullptr;
+  return svc ? svc->book( dir, id, hist.title(), hist.bins(), hist.lowEdge(), hist.highEdge() ) : nullptr;
 }
 // ============================================================================
 /*  helper function to book 1D-histogram
@@ -156,19 +127,12 @@ Gaudi::Histos::book
  *  @param hist histogram desctriprion
  */
 // ============================================================================
-AIDA::IHistogram1D*
-Gaudi::Histos::book
-( IHistogramSvc*           svc  ,
-  const std::string&       dir  ,
-  const int                id   ,
-  const Gaudi::Histo1DDef& hist )
+AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& dir, const int id,
+                                         const Gaudi::Histo1DDef& hist )
 {
-  return svc ? svc -> book ( dir , id  , hist.title() , hist.bins() ,
-                             hist.lowEdge() , hist.highEdge() )
-             : nullptr;
+  return svc ? svc->book( dir, id, hist.title(), hist.bins(), hist.lowEdge(), hist.highEdge() ) : nullptr;
 }
 // ============================================================================
-
 
 // ============================================================================
 // The END

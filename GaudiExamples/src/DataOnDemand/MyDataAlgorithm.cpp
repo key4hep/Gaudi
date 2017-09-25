@@ -1,21 +1,22 @@
 // Include files
-#include "GaudiKernel/DataObject.h"
 #include "MyDataAlgorithm.h"
+#include "GaudiKernel/DataObject.h"
 
 // Static Factory declaration
 
-DECLARE_COMPONENT(MyDataAlgorithm)
+DECLARE_COMPONENT( MyDataAlgorithm )
 
 // Constructor
 //------------------------------------------------------------------------------
-MyDataAlgorithm::MyDataAlgorithm(const std::string& name, ISvcLocator* ploc)
-           : GaudiAlgorithm(name, ploc) {
-//------------------------------------------------------------------------------
+MyDataAlgorithm::MyDataAlgorithm( const std::string& name, ISvcLocator* ploc ) : GaudiAlgorithm( name, ploc )
+{
+  //------------------------------------------------------------------------------
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyDataAlgorithm::initialize() {
-//------------------------------------------------------------------------------
+StatusCode MyDataAlgorithm::initialize()
+{
+  //------------------------------------------------------------------------------
 
   info() << "initializing...." << endmsg;
   info() << "....initialization done" << endmsg;
@@ -23,21 +24,21 @@ StatusCode MyDataAlgorithm::initialize() {
   return StatusCode::SUCCESS;
 }
 
-
 //------------------------------------------------------------------------------
-StatusCode MyDataAlgorithm::execute() {
-//------------------------------------------------------------------------------
+StatusCode MyDataAlgorithm::execute()
+{
+  //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
-  get<DataObject>("Rec/Muon/Digits");
-  get<DataObject>("Rec/Muon/Foos");
+  get<DataObject>( "Rec/Muon/Digits" );
+  get<DataObject>( "Rec/Muon/Foos" );
   info() << "....execution done" << endmsg;
   return StatusCode::SUCCESS;
 }
 
-
 //------------------------------------------------------------------------------
-StatusCode MyDataAlgorithm::finalize() {
-//------------------------------------------------------------------------------
+StatusCode MyDataAlgorithm::finalize()
+{
+  //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;
 }

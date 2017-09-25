@@ -4,14 +4,17 @@
 #include <memory>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/thread/thread_time.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/thread_time.hpp>
 
 // for GAUDI_API
 #include "GaudiKernel/Kernel.h"
 
 // forward declaration
-namespace boost { class thread; }
+namespace boost
+{
+  class thread;
+}
 
 /** @class WatchdogThread
  *  Simple class for asynchronous check of time-out.
@@ -22,13 +25,14 @@ namespace boost { class thread; }
  *  @author Marco Clemencic
  *  @date   2010-02-23
  */
-class GAUDI_API WatchdogThread {
+class GAUDI_API WatchdogThread
+{
 public:
   /// Constructor.
   //  @param timeout the time span that can occur between two pings.
   //  @param autostart if set to true, the second thread is started automatically
   //                   on construction, otherwise the user have to call start().
-  WatchdogThread(boost::posix_time::time_duration timeout, bool autostart = false);
+  WatchdogThread( boost::posix_time::time_duration timeout, bool autostart = false );
 
   /// Destructor.
   //  Stop the thread of not done earlier.
@@ -41,25 +45,23 @@ public:
   void stop();
 
   /// Function to call to notify the watchdog thread that we are still alive.
-  inline void ping() {
-    boost::mutex::scoped_lock lock(m_lastPingMutex);
+  inline void ping()
+  {
+    boost::mutex::scoped_lock lock( m_lastPingMutex );
     m_lastPing = boost::get_system_time();
     onPing();
   }
 
   /// Change the duration of the time-out.
-  inline void setTimeout(boost::posix_time::time_duration timeout) {
-    m_timeout = timeout;
-  }
+  inline void setTimeout( boost::posix_time::time_duration timeout ) { m_timeout = timeout; }
 
   /// Get the current time-out value.
-  inline boost::posix_time::time_duration getTimeout() const {
-    return m_timeout;
-  }
+  inline boost::posix_time::time_duration getTimeout() const { return m_timeout; }
 
   /// Get the time of latest ping.
-  inline boost::system_time getLastPing() const {
-    boost::mutex::scoped_lock lock(m_lastPingMutex);
+  inline boost::system_time getLastPing() const
+  {
+    boost::mutex::scoped_lock lock( m_lastPingMutex );
     return m_lastPing;
   }
 

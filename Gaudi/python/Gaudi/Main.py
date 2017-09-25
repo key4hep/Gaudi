@@ -1,54 +1,74 @@
-import sys, os
+import sys
+import os
 from time import time
 from Gaudi import Configuration
 import logging
 
 log = logging.getLogger(__name__)
 
+
 class BootstrapHelper(object):
     class StatusCode(object):
         def __init__(self, value):
             self.value = value
+
         def __bool__(self):
             return self.value
         __nonzero__ = __bool__
+
         def isSuccess(self):
             return self.value
+
         def isFailure(self):
             return not self.value
+
         def ignore(self):
             pass
+
     class Property(object):
         def __init__(self, value):
             self.value = value
+
         def __str__(self):
             return str(self.value)
         toString = __str__
+
     class AppMgr(object):
         def __init__(self, ptr, lib):
             self.ptr = ptr
             self.lib = lib
             self._as_parameter_ = ptr
+
         def configure(self):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_configure(self.ptr))
+
         def initialize(self):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_initialize(self.ptr))
+
         def start(self):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_start(self.ptr))
+
         def run(self, nevt):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_app_run(self.ptr, nevt))
+
         def stop(self):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_stop(self.ptr))
+
         def finalize(self):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_finalize(self.ptr))
+
         def terminate(self):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_terminate(self.ptr))
+
         def getService(self, name):
             return self.lib.py_bootstrap_getService(self.ptr, name)
+
         def setProperty(self, name, value):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_setProperty(self.ptr, name, value))
+
         def getProperty(self, name):
             return BootstrapHelper.Property(self.lib.py_bootstrap_getProperty(self.ptr, name))
+
         def printAlgsSequences(self):
             return self.lib.py_helper_printAlgsSequences(self.ptr)
 
@@ -56,6 +76,7 @@ class BootstrapHelper(object):
         from ctypes import PyDLL, util, c_void_p, c_bool, c_char_p, c_int
         # Helper class to avoid void* to int conversion
         # (see http://stackoverflow.com/questions/17840144)
+
         class IInterface_p(c_void_p):
             def __repr__(self):
                 return "IInterface_p(0x%x)" % (0 if self.value is None
@@ -70,9 +91,11 @@ class BootstrapHelper(object):
 
         functions = [('createApplicationMgr', IInterface_p, []),
                      ('getService', IInterface_p, [IInterface_p, c_char_p]),
-                     ('setProperty', c_bool, [IInterface_p, c_char_p, c_char_p]),
+                     ('setProperty', c_bool, [
+                      IInterface_p, c_char_p, c_char_p]),
                      ('getProperty', c_char_p, [IInterface_p, c_char_p]),
-                     ('addPropertyToCatalogue', c_bool, [IInterface_p, c_char_p, c_char_p, c_char_p]),
+                     ('addPropertyToCatalogue', c_bool, [
+                      IInterface_p, c_char_p, c_char_p, c_char_p]),
                      ('ROOT_VERSION_CODE', c_int, []),
                      ]
 
@@ -113,6 +136,7 @@ class BootstrapHelper(object):
 
 _bootstrap = None
 
+
 def toOpt(value):
     '''
     Helper to convert values to old .opts format.
@@ -135,11 +159,12 @@ def toOpt(value):
     else:
         return repr(value)
 
-class gaudimain(object) :
+
+class gaudimain(object):
     # main loop implementation, None stands for the default
     mainLoop = None
 
-    def __init__(self) :
+    def __init__(self):
         from Configurables import ApplicationMgr
         appMgr = ApplicationMgr()
         if "GAUDIAPPNAME" in os.environ:
@@ -149,7 +174,7 @@ class gaudimain(object) :
         self.log = logging.getLogger(__name__)
         self.printsequence = False
 
-    def setupParallelLogging( self ) :
+    def setupParallelLogging(self):
         # ---------------------------------------------------
         # set up Logging
         # ----------------
@@ -159,12 +184,13 @@ class gaudimain(object) :
         from time import ctime
         datetime = ctime()
         datetime = datetime.replace(' ', '_')
-        outfile = open( 'gaudirun-%s.log'%(datetime), 'w' )
+        outfile = open('gaudirun-%s.log' % (datetime), 'w')
         # two handlers, one for a log file, one for terminal
         streamhandler = logging.StreamHandler(stream=outfile)
-        console       = logging.StreamHandler()
+        console = logging.StreamHandler()
         # create formatter : the params in parentheses are variable names available via logging
-        formatter = logging.Formatter( "%(asctime)s - %(name)s - %(levelname)s - %(message)s" )
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         # add formatter to Handler
         streamhandler.setFormatter(formatter)
         console.setFormatter(formatter)
@@ -172,7 +198,7 @@ class gaudimain(object) :
         # enableLogging( level=0 )
         # self.log = getLogger()
         self.log = multiprocessing.log_to_stderr()
-        self.log.setLevel( logging.INFO )
+        self.log.setLevel(logging.INFO)
         self.log.name = 'Gaudi/Main.py Logger'
         self.log.handlers = []
         # add handlers to logger : one for output to a file, one for console output
@@ -183,12 +209,12 @@ class gaudimain(object) :
         self.log.setLevel = logging.INFO
         # ---------------------------------------------------
 
-    def generatePyOutput(self, all = False):
+    def generatePyOutput(self, all=False):
         from pprint import pformat
         conf_dict = Configuration.configurationDict(all)
         return pformat(conf_dict)
 
-    def generateOptsOutput(self, all = False):
+    def generateOptsOutput(self, all=False):
         from pprint import pformat
         conf_dict = Configuration.configurationDict(all)
         out = []
@@ -198,10 +224,10 @@ class gaudimain(object) :
             props = conf_dict[n].keys()
             props.sort()
             for p in props:
-                out.append('%s.%s = %s;' % (n,p, toOpt(conf_dict[n][p])))
+                out.append('%s.%s = %s;' % (n, p, toOpt(conf_dict[n][p])))
         return "\n".join(out)
 
-    def _writepickle(self, filename) :
+    def _writepickle(self, filename):
         #--- Lets take the first file input file as the name of the pickle file
         import pickle
         output = open(filename, 'wb')
@@ -213,7 +239,7 @@ class gaudimain(object) :
         pickle.dump(to_dump, output, -1)
         output.close()
 
-    def printconfig(self, old_format = False, all = False) :
+    def printconfig(self, old_format=False, all=False):
         msg = 'Dumping all configurables and properties'
         if not all:
             msg += ' (different from default)'
@@ -224,22 +250,23 @@ class gaudimain(object) :
         else:
             print self.generatePyOutput(all)
 
-    def writeconfig(self, filename, all = False):
-        write = { ".pkl" : lambda filename, all: self._writepickle(filename),
-                  ".py"  : lambda filename, all: open(filename,"w").write(self.generatePyOutput(all) + "\n"),
-                  ".opts": lambda filename, all: open(filename,"w").write(self.generateOptsOutput(all) + "\n"),
-                }
+    def writeconfig(self, filename, all=False):
+        write = {".pkl": lambda filename, all: self._writepickle(filename),
+                 ".py": lambda filename, all: open(filename, "w").write(self.generatePyOutput(all) + "\n"),
+                 ".opts": lambda filename, all: open(filename, "w").write(self.generateOptsOutput(all) + "\n"),
+                 }
         from os.path import splitext
         ext = splitext(filename)[1]
         if ext in write:
             write[ext](filename, all)
         else:
-            log.error("Unknown file type '%s'. Must be any of %r.", ext, write.keys())
+            log.error("Unknown file type '%s'. Must be any of %r.",
+                      ext, write.keys())
             sys.exit(1)
 
-    ## Instantiate and run the application.
+    # Instantiate and run the application.
     #  Depending on the number of CPUs (ncpus) specified, it start
-    def run(self, attach_debugger, ncpus = None):
+    def run(self, attach_debugger, ncpus=None):
         if not ncpus:
             # Standard sequential mode
             result = self.runSerial(attach_debugger)
@@ -248,19 +275,19 @@ class gaudimain(object) :
             result = self.runParallel(ncpus)
         return result
 
-    def hookDebugger(self,debugger='gdb'):
+    def hookDebugger(self, debugger='gdb'):
         import os
         self.log.info('attaching debugger to PID ' + str(os.getpid()))
-        pid =  os.spawnvp(os.P_NOWAIT,
-                          debugger, [debugger, '-q', 'python', str(os.getpid())])
+        pid = os.spawnvp(os.P_NOWAIT,
+                         debugger, [debugger, '-q', 'python', str(os.getpid())])
 
         # give debugger some time to attach to the python process
         import time
-        time.sleep( 5 )
+        time.sleep(5)
 
         # verify the process' existence (will raise OSError if failed)
-        os.waitpid( pid, os.WNOHANG )
-        os.kill( pid, 0 )
+        os.waitpid(pid, os.WNOHANG)
+        os.kill(pid, 0)
         return
 
     def basicInit(self):
@@ -271,7 +298,7 @@ class gaudimain(object) :
             from GaudiKernel.Proxy.Configurable import expandvars
         except ImportError:
             # pass-through implementation if expandvars is not defined (AthenaCommon)
-            expandvars = lambda data : data
+            def expandvars(data): return data
 
         from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
@@ -322,19 +349,21 @@ class gaudimain(object) :
             sys.exit(10)
         for n in getNeededConfigurables():
             c = Configurable.allConfigurables[n]
-            if n in ['ApplicationMgr','MessageSvc']:
-                continue # These are already done
-            for p, v in  c.getValuedProperties().items() :
+            if n in ['ApplicationMgr', 'MessageSvc']:
+                continue  # These are already done
+            for p, v in c.getValuedProperties().items():
                 v = expandvars(v)
                 # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
-                if hasattr(Configurable,"PropertyReference") and type(v) == Configurable.PropertyReference:
+                if hasattr(Configurable, "PropertyReference") and type(v) == Configurable.PropertyReference:
                     # this is done in "getFullName", but the exception is ignored,
                     # so we do it again to get it
                     v = v.__resolve__()
-                if   type(v) == str : v = '"%s"' % v # need double quotes
-                elif type(v) == long: v = '%d'   % v # prevent pending 'L'
+                if type(v) == str:
+                    v = '"%s"' % v  # need double quotes
+                elif type(v) == long:
+                    v = '%d' % v  # prevent pending 'L'
                 _bootstrap.addPropertyToCatalogue(jos, n, p, str(v))
-        if hasattr(Configurable,"_configurationLocked"):
+        if hasattr(Configurable, "_configurationLocked"):
             Configurable._configurationLocked = True
         self.log.debug('basicInit: done')
 
@@ -349,17 +378,17 @@ class gaudimain(object) :
         self.ip = self.g._ip
         self.log.debug('gaudiPythonInit: done')
 
-    def runSerial(self,attach_debugger) :
+    def runSerial(self, attach_debugger):
         #--- Instantiate the ApplicationMgr------------------------------
         if (self.mainLoop or
-            os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
+                os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
             self.gaudiPythonInit()
         else:
             self.basicInit()
 
-        self.log.debug('-'*80)
+        self.log.debug('-' * 80)
         self.log.debug('%s: running in serial mode', __name__)
-        self.log.debug('-'*80)
+        self.log.debug('-' * 80)
         sysStart = time()
 
         if self.mainLoop:
@@ -390,10 +419,12 @@ class gaudimain(object) :
                                'SUCCESS' if sc.isSuccess() else 'FAILURE')
                 return sc
 
-        if (attach_debugger == True) : self.hookDebugger()
+        if (attach_debugger == True):
+            self.hookDebugger()
 
         try:
-            statuscode = runner(self.g, int(self.ip.getProperty('EvtMax').toString()))
+            statuscode = runner(self.g, int(
+                self.ip.getProperty('EvtMax').toString()))
         except SystemError:
             # It may not be 100% correct, but usually it means a segfault in C++
             self.ip.setProperty('ReturnCode', str(128 + 11))
@@ -411,45 +442,49 @@ class gaudimain(object) :
         if not success and self.ip.getProperty('ReturnCode').toString() == '0':
             # ensure that the return code is correctly set
             self.ip.setProperty('ReturnCode', '1')
-        sysTime = time()-sysStart
-        self.log.debug('-'*80)
-        self.log.debug('%s: serial system finished, time taken: %5.4fs', __name__, sysTime)
-        self.log.debug('-'*80)
+        sysTime = time() - sysStart
+        self.log.debug('-' * 80)
+        self.log.debug(
+            '%s: serial system finished, time taken: %5.4fs', __name__, sysTime)
+        self.log.debug('-' * 80)
         return int(self.ip.getProperty('ReturnCode').toString())
 
-    def runParallel(self, ncpus) :
+    def runParallel(self, ncpus):
         if self.mainLoop:
-            self.log.fatal("Cannot use custom main loop in multi-process mode, check your options")
+            self.log.fatal(
+                "Cannot use custom main loop in multi-process mode, check your options")
             return 1
-        self.setupParallelLogging( )
+        self.setupParallelLogging()
         from Gaudi.Configuration import Configurable
         import GaudiMP.GMPBase as gpp
         c = Configurable.allConfigurables
-        self.log.info('-'*80)
+        self.log.info('-' * 80)
         self.log.info('%s: Parallel Mode : %i ', __name__, ncpus)
         for name, value in [('platrofm', ' '.join(os.uname())),
                             ('config', os.environ.get('BINARY_TAG') or
-                                       os.environ.get('CMTCONFIG')),
+                             os.environ.get('CMTCONFIG')),
                             ('app. name', os.environ.get('GAUDIAPPNAME')),
                             ('app. version', os.environ.get('GAUDIAPPVERSION')),
                             ]:
-            self.log.info('%s: %30s : %s ', __name__, name, value or 'Undefined')
-        try :
+            self.log.info('%s: %30s : %s ', __name__,
+                          name, value or 'Undefined')
+        try:
             events = str(c['ApplicationMgr'].EvtMax)
-        except :
+        except:
             events = "Undetermined"
         self.log.info('%s: Events Specified : %s ', __name__, events)
-        self.log.info('-'*80)
+        self.log.info('-' * 80)
         # Parall = gpp.Coordinator(ncpus, shared, c, self.log)
-        Parall = gpp.Coord( ncpus, c, self.log )
+        Parall = gpp.Coord(ncpus, c, self.log)
         sysStart = time()
         sc = Parall.Go()
-        self.log.info('MAIN.PY : received %s from Coordinator'%(sc))
-        if sc.isFailure() :
+        self.log.info('MAIN.PY : received %s from Coordinator' % (sc))
+        if sc.isFailure():
             return 1
-        sysTime = time()-sysStart
+        sysTime = time() - sysStart
         self.log.name = 'Gaudi/Main.py Logger'
-        self.log.info('-'*80)
-        self.log.info('%s: parallel system finished, time taken: %5.4fs', __name__, sysTime)
-        self.log.info('-'*80)
+        self.log.info('-' * 80)
+        self.log.info(
+            '%s: parallel system finished, time taken: %5.4fs', __name__, sysTime)
+        self.log.info('-' * 80)
         return 0

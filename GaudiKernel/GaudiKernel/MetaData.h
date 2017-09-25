@@ -8,8 +8,8 @@
 
 #ifndef METADATA_H_
 #define METADATA_H_
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "DataObject.h"
+#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
 #include <map>
@@ -18,14 +18,16 @@
 // Definition of the CLID for this class
 static const CLID CLID_MetaData = 13507;
 
-class MetaData { //: public DataObject {
+class MetaData
+{ //: public DataObject {
 private:
-    std::map <std::string, std::string> m_metadata;
+  std::map<std::string, std::string> m_metadata;
+
 public:
-	MetaData();
-	MetaData(std::map <std::string, std::string> n_m);
-	virtual ~MetaData();
-	std::map <std::string, std::string> getMetaDataMap();
+  MetaData();
+  MetaData( std::map<std::string, std::string> n_m );
+  virtual ~MetaData();
+  std::map<std::string, std::string> getMetaDataMap();
 };
 
 #endif /* METADATA_H_ */

@@ -12,11 +12,11 @@
 using namespace GaudiUtils;
 
 // from SPI version of the testdriver
-#include <cppunit/extensions/TestFactoryRegistry.h>
-#include <cppunit/TextTestRunner.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/TextOutputter.h>
+#include <cppunit/TextTestRunner.h>
 #include <cppunit/XmlOutputter.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
 
 // to produce one line per test
 #include <cppunit/TestResult.h>
@@ -36,13 +36,15 @@ using namespace GaudiUtils;
 #include <tbb/task_group.h>
 
 // #include <thread>
-#include <chrono>
 #include "GaudiKernel/Sleep.h"
+#include <chrono>
 
 #include <algorithm>
 
-namespace GaudiKernelTest {
-  class SerialTaskQueueTest: public CppUnit::TestFixture {
+namespace GaudiKernelTest
+{
+  class SerialTaskQueueTest : public CppUnit::TestFixture
+  {
 
     CPPUNIT_TEST_SUITE( SerialTaskQueueTest );
 
@@ -54,37 +56,38 @@ namespace GaudiKernelTest {
   public:
     std::vector<int> resultData;
 
-    class PushBackTask: public Gaudi::SerialTaskQueue::WorkItem {
+    class PushBackTask : public Gaudi::SerialTaskQueue::WorkItem
+    {
     public:
-      PushBackTask(std::vector<int>& results, int value):
-        m_results(results), m_value(value) {}
-      void run() override {
+      PushBackTask( std::vector<int>& results, int value ) : m_results( results ), m_value( value ) {}
+      void run() override
+      {
         using namespace std::chrono;
 
         milliseconds duration( 200 );
-        //std::this_thread::sleep_for( duration );
+        // std::this_thread::sleep_for( duration );
 
-        const nanoseconds ns = duration_cast<nanoseconds>(duration);
-        Gaudi::NanoSleep(ns.count());
+        const nanoseconds ns = duration_cast<nanoseconds>( duration );
+        Gaudi::NanoSleep( ns.count() );
 
         std::cout << "PushBackTask: " << m_value << std::endl;
-        m_results.push_back(m_value);
+        m_results.push_back( m_value );
       }
+
     private:
       std::vector<int>& m_results;
       int m_value;
     };
 
-    class Enqueuer {
+    class Enqueuer
+    {
     public:
-      Enqueuer(Gaudi::SerialTaskQueue& q, std::vector<int>& r, int _n):
-        queue(q), results(r), n(_n) {}
-      void operator() () const {
-        queue.add(new PushBackTask(results, n));
-      }
+      Enqueuer( Gaudi::SerialTaskQueue& q, std::vector<int>& r, int _n ) : queue( q ), results( r ), n( _n ) {}
+      void operator()() const { queue.add( new PushBackTask( results, n ) ); }
+
     private:
-      Gaudi::SerialTaskQueue &queue;
-      std::vector<int> &results;
+      Gaudi::SerialTaskQueue& queue;
+      std::vector<int>& results;
       int n;
     };
 
@@ -95,15 +98,16 @@ namespace GaudiKernelTest {
 
     void tearDown() override {}
 
-    void test_basic_serial() {
+    void test_basic_serial()
+    {
       std::cout << std::endl;
 
       {
 
         Gaudi::SerialTaskQueue queue;
         std::cout << "enqueue tasks" << std::endl;
-        for(int i = 0; i != 10; ++i) {
-          queue.add(new PushBackTask(resultData, i));
+        for ( int i = 0; i != 10; ++i ) {
+          queue.add( new PushBackTask( resultData, i ) );
         }
         std::cout << "enqueueing completed" << std::endl;
 
@@ -111,34 +115,34 @@ namespace GaudiKernelTest {
       std::cout << "tasks completed" << std::endl;
 
       const std::vector<int> expected = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-      CPPUNIT_ASSERT_EQUAL(expected, resultData);
+      CPPUNIT_ASSERT_EQUAL( expected, resultData );
     }
 
-    void test_basic_parallel() {
+    void test_basic_parallel()
+    {
       std::cout << std::endl;
       {
 
         Gaudi::SerialTaskQueue queue;
         std::cout << "enqueue tasks" << std::endl;
         tbb::task_group g;
-        for(int i = 0; i != 10; ++i) {
-          g.run(Enqueuer(queue, resultData, i));
+        for ( int i = 0; i != 10; ++i ) {
+          g.run( Enqueuer( queue, resultData, i ) );
         }
         g.wait();
         std::cout << "enqueueing completed" << std::endl;
         // Insertion should not have finished yet
-        CPPUNIT_ASSERT(resultData.size() < 10);
+        CPPUNIT_ASSERT( resultData.size() < 10 );
 
       } // Gaudi::SerialTaskQueue ensures the synchronization.
       std::cout << "tasks completed" << std::endl;
 
-      CPPUNIT_ASSERT(resultData.size() == 10);
+      CPPUNIT_ASSERT( resultData.size() == 10 );
 
-      std::sort(resultData.begin(), resultData.end());
+      std::sort( resultData.begin(), resultData.end() );
       const std::vector<int> expected = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-      CPPUNIT_ASSERT_EQUAL(expected, resultData);
+      CPPUNIT_ASSERT_EQUAL( expected, resultData );
     }
-
   };
 
   CPPUNIT_TEST_SUITE_REGISTRATION( SerialTaskQueueTest );
@@ -158,39 +162,34 @@ namespace GaudiKernelTest {
   {
 
   public:
-
     /// Default constructor.
-    ProgressListener(): m_lastTestFailed(false) {}
+    ProgressListener() : m_lastTestFailed( false ) {}
 
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test *test ) override
+    void startTest( CppUnit::Test* test ) override
     {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure &failure ) override
+    void addFailure( const CppUnit::TestFailure& failure ) override
     {
-      std::cout << " : " << (failure.isError() ? "error" : "assertion");
-      m_lastTestFailed  = true;
+      std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
+      m_lastTestFailed = true;
     }
 
-    void endTest( CppUnit::Test * /*test*/ ) override
+    void endTest( CppUnit::Test* /*test*/ ) override
     {
-      if ( !m_lastTestFailed )
-        std::cout  <<  " : OK";
+      if ( !m_lastTestFailed ) std::cout << " : OK";
       std::cout << std::endl;
     }
 
   private:
-
     bool m_lastTestFailed;
-
   };
-
 }
 
 // Copied from the COOL implementation
@@ -199,15 +198,14 @@ int main( int argc, char* argv[] )
 {
   // Retrieve test path from command line first argument.
   // Default to "" which resolve to the top level suite.
-  std::string testPath =
-    (argc > 1) ? std::string(argv[1]) : std::string("");
+  std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );
 
   // Add a listener that collects test result
-  //CppUnit::TestResultCollector result;
-  //controller.addListener( &result );
+  // CppUnit::TestResultCollector result;
+  // controller.addListener( &result );
 
   /// Get the top level suite from the registry
-  CppUnit::Test *suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
+  CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
 
   /// Adds the test to the list of test to run
   // CppUnit::TestRunner runner;
@@ -216,58 +214,49 @@ int main( int argc, char* argv[] )
 
   // Change the default outputter to a compiler error format outputter
   // uncomment the following line if you need a compiler outputter.
-  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
-                                                       std::cout ) );
+  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(), std::cout ) );
 
   // Change the default outputter to a xml error format outputter
   // uncomment the following line if you need a xml outputter.
-  //runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
+  // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
   //                                                    std::cout ) );
 
   runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
 
-  //CppUnit::TestResultCollector *collector =
+  // CppUnit::TestResultCollector *collector =
   //  new CppUnit::TestResultCollector();
-  //runner.eventManager().addListener(collector);
+  // runner.eventManager().addListener(collector);
 
   bool wasSuccessful = false;
 
-  try
-  {
+  try {
     wasSuccessful = runner.run( testPath, false, true, false );
   }
 
   // Test path not resolved
-  catch ( std::invalid_argument &e )
-  {
-    std::cout  << std::endl << "ERROR: " << e.what() << std::endl;
+  catch ( std::invalid_argument& e ) {
+    std::cout << std::endl << "ERROR: " << e.what() << std::endl;
     return 0;
   }
 
   // Should never happen?
-  catch ( std::exception& e )
-  {
-    std::cout  << std::endl
-               << "UNEXPECTED STD EXCEPTION CAUGHT: "
-               << e.what() << std::endl;
+  catch ( std::exception& e ) {
+    std::cout << std::endl << "UNEXPECTED STD EXCEPTION CAUGHT: " << e.what() << std::endl;
     return 0;
   }
 
   // Should never happen?
-  catch ( ... )
-  {
-    std::cout  << std::endl
-               << "UNKNOWN EXCEPTION CAUGHT" << std::endl;
+  catch ( ... ) {
+    std::cout << std::endl << "UNKNOWN EXCEPTION CAUGHT" << std::endl;
     return 0;
   }
 
   // Return error code 1 if the one of tests failed.
   // Print a message on standard error if something failed (for QMTest)
-  if ( ! wasSuccessful ) std::cerr << "Error: CppUnit Failures" << std::endl;
+  if ( !wasSuccessful ) std::cerr << "Error: CppUnit Failures" << std::endl;
   int retcode = wasSuccessful ? 0 : 1;
 
   // Uncomment the next line if you want to integrate CppUnit with Oval
   // std::cout << "[OVAL] Cppunit-result =" << retcode << std::endl;
   return retcode;
-
 }

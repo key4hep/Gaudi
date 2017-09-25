@@ -3,8 +3,8 @@
 // ============================================================================
 // GauduKernel
 // ============================================================================
-#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Range.h"
+#include "GaudiKernel/GaudiException.h"
 // ============================================================================
 /** @file
  *
@@ -27,12 +27,9 @@
  *  @param size  range size
  */
 // ============================================================================
-void Gaudi::details::rangeException
-( const long   /* index */ ,
-  const size_t /* size  */ )
+void Gaudi::details::rangeException( const long /* index */, const size_t /* size  */ )
 {
-  throw GaudiException
-    ( "Out-of-Range for class Gaudi::Range_" , "RangeError", StatusCode::FAILURE ) ;
+  throw GaudiException( "Out-of-Range for class Gaudi::Range_", "RangeError", StatusCode::FAILURE );
 }
 // ============================================================================
 // The END

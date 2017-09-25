@@ -1,8 +1,8 @@
 // $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/xtoa.cpp,v 1.3 2003/11/27 10:20:59 mato Exp $
-#if !defined(_WIN32)
-#include <stdlib.h>
-#include <limits.h>
+#if !defined( _WIN32 )
 #include "GaudiKernel/xtoa.h"
+#include <limits.h>
+#include <stdlib.h>
 
 /***
 *xtoa.c - convert integers/longs to ASCII string
@@ -36,65 +36,69 @@
 
 /* helper routine that does the main job. */
 
-static void __cdecl xtoa (unsigned long val,char *buf,unsigned radix,int is_neg)  {
-  char *p;    /* pointer to traverse string */
-  char *firstdig;   /* pointer to first digit */
-  char temp;    /* temp char */
-  unsigned digval;  /* value of digit */
+static void __cdecl xtoa( unsigned long val, char* buf, unsigned radix, int is_neg )
+{
+  char* p;         /* pointer to traverse string */
+  char* firstdig;  /* pointer to first digit */
+  char temp;       /* temp char */
+  unsigned digval; /* value of digit */
 
   p = buf;
 
-  if (is_neg) {
+  if ( is_neg ) {
     /* negative, so output '-' and negate */
     *p++ = '-';
-    val = (unsigned long)(-(long)val);
+    val  = (unsigned long)( -(long)val );
   }
 
-  firstdig = p;     /* save pointer to first digit */
+  firstdig = p; /* save pointer to first digit */
 
   do {
-    digval = (unsigned) (val % radix);
-    val /= radix;   /* get next digit */
+    digval = (unsigned)( val % radix );
+    val /= radix; /* get next digit */
 
     /* convert to ascii and store */
-    if (digval > 9)
-      *p++ = (char) (digval - 10 + 'a');  /* a letter */
+    if ( digval > 9 )
+      *p++ = (char)( digval - 10 + 'a' ); /* a letter */
     else
-      *p++ = (char) (digval + '0');       /* a digit */
-  } while (val > 0);
+      *p++ = (char)( digval + '0' ); /* a digit */
+  } while ( val > 0 );
 
   /* We now have the digit of the number in the buffer, but in reverse
      order.  Thus we reverse them now. */
 
-  *p-- = '\0';    /* terminate string; p points to last digit */
+  *p-- = '\0'; /* terminate string; p points to last digit */
 
   do {
-    temp = *p;
-    *p = *firstdig;
-    *firstdig = temp;   /* swap *p and *firstdig */
+    temp      = *p;
+    *p        = *firstdig;
+    *firstdig = temp; /* swap *p and *firstdig */
     --p;
-    ++firstdig;   /* advance to next two digits */
-  } while (firstdig < p); /* repeat until halfway */
+    ++firstdig;             /* advance to next two digits */
+  } while ( firstdig < p ); /* repeat until halfway */
 }
 
 /* Actual functions just call conversion helper with neg flag set correctly,
    and return pointer to buffer. */
 
-extern "C" char * __cdecl _itoa (int val,char *buf,int radix)    {
-  if (radix == 10 && val < 0)
-    xtoa((unsigned long)val, buf, radix, 1);
+extern "C" char* __cdecl _itoa( int val, char* buf, int radix )
+{
+  if ( radix == 10 && val < 0 )
+    xtoa( (unsigned long)val, buf, radix, 1 );
   else
-    xtoa((unsigned long)(unsigned int)val, buf, radix, 0);
+    xtoa( (unsigned long)(unsigned int)val, buf, radix, 0 );
   return buf;
 }
 
-extern "C" char * __cdecl _ltoa (long val,char *buf,int radix)   {
-  xtoa((unsigned long)val, buf, radix, (radix == 10 && val < 0));
+extern "C" char* __cdecl _ltoa( long val, char* buf, int radix )
+{
+  xtoa( (unsigned long)val, buf, radix, ( radix == 10 && val < 0 ) );
   return buf;
 }
 
-extern "C" char * __cdecl _ultoa (unsigned long val,char *buf,int radix)	{
-  xtoa(val, buf, radix, 0);
+extern "C" char* __cdecl _ultoa( unsigned long val, char* buf, int radix )
+{
+  xtoa( val, buf, radix, 0 );
   return buf;
 }
 
@@ -168,6 +172,6 @@ extern "C" char * __cdecl ui64toa (unsigned __int64 val,char *buf,int radix)    
   return buf;
 }
 
-#endif  /* _NO_INT64 */
+#endif /* _NO_INT64 */
 
 #endif /* WIN32   */

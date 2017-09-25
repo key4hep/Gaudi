@@ -17,10 +17,11 @@
   * @author Marco Clemencic
   * @date 22/06/2012
   */
-class TBBMessageSvc: public MessageSvc {
+class TBBMessageSvc : public MessageSvc
+{
 public:
   /// Standard constructor
-  TBBMessageSvc(const std::string& name, ISvcLocator* pSvcLocator);
+  TBBMessageSvc( const std::string& name, ISvcLocator* pSvcLocator );
 
   ~TBBMessageSvc() override; ///< Destructor
 
@@ -33,69 +34,70 @@ public:
   using MessageSvc::reportMessage;
 
   /// Implementation of IMessageSvc::reportMessage()
-  void reportMessage(const Message& msg) override;
+  void reportMessage( const Message& msg ) override;
 
   /// Implementation of IMessageSvc::reportMessage()
-  void reportMessage(const Message& msg, int outputLevel) override;
+  void reportMessage( const Message& msg, int outputLevel ) override;
 
   /// Implementation of IMessageSvc::reportMessage()
-  void reportMessage(const StatusCode& code, const std::string& source = "") override;
+  void reportMessage( const StatusCode& code, const std::string& source = "" ) override;
 
 protected:
 private:
-
   // ============================================================================
   // Helper tasks for message reporting.
   // ============================================================================
   /// Common base class for the different reportMessage cases.
-  class MessageTaskCommon: public Gaudi::SerialTaskQueue::WorkItem {
+  class MessageTaskCommon : public Gaudi::SerialTaskQueue::WorkItem
+  {
   public:
-    MessageTaskCommon(TBBMessageSvc& svc):
-      m_svc(svc),
-      m_sender(std::this_thread::get_id()) {}
+    MessageTaskCommon( TBBMessageSvc& svc ) : m_svc( svc ), m_sender( std::this_thread::get_id() ) {}
+
   protected:
     TBBMessageSvc& m_svc;
     std::thread::id m_sender;
   };
 
   /// Specialized class to report a message with explicit output level.
-  class MessageWithLevel: public MessageTaskCommon {
+  class MessageWithLevel : public MessageTaskCommon
+  {
   public:
-    MessageWithLevel(TBBMessageSvc& svc, Message msg, int level):
-      MessageTaskCommon(svc),
-      m_msg(msg), m_level(level) {}
-    virtual void run() override {
-      m_svc.i_reportMessage(m_msg, m_level);
+    MessageWithLevel( TBBMessageSvc& svc, Message msg, int level )
+        : MessageTaskCommon( svc ), m_msg( msg ), m_level( level )
+    {
     }
+    virtual void run() override { m_svc.i_reportMessage( m_msg, m_level ); }
+
   private:
     Message m_msg;
     int m_level;
   };
 
   /// Specialized class to report a message with implicit output level.
-  class MessageWithoutLevel: public MessageTaskCommon {
+  class MessageWithoutLevel : public MessageTaskCommon
+  {
   public:
-    MessageWithoutLevel(TBBMessageSvc& svc, Message msg):
-      MessageTaskCommon(svc),
-      m_msg(msg) {}
-    virtual void run() override {
-      const int level = m_svc.outputLevel(m_msg.getSource());
-      m_svc.i_reportMessage(m_msg, level);
+    MessageWithoutLevel( TBBMessageSvc& svc, Message msg ) : MessageTaskCommon( svc ), m_msg( msg ) {}
+    virtual void run() override
+    {
+      const int level = m_svc.outputLevel( m_msg.getSource() );
+      m_svc.i_reportMessage( m_msg, level );
     }
+
   private:
     Message m_msg;
   };
 
   /// Specialized class to report a StatusCode message.
-  class StatusCodeMessage: public MessageTaskCommon {
+  class StatusCodeMessage : public MessageTaskCommon
+  {
   public:
-    StatusCodeMessage(TBBMessageSvc& svc, const StatusCode &sc, const std::string& source):
-      MessageTaskCommon(svc),
-      m_sc(sc),
-      m_source(source) {}
-    virtual void run() override {
-      m_svc.i_reportMessage(m_sc, m_source);
+    StatusCodeMessage( TBBMessageSvc& svc, const StatusCode& sc, const std::string& source )
+        : MessageTaskCommon( svc ), m_sc( sc ), m_source( source )
+    {
     }
+    virtual void run() override { m_svc.i_reportMessage( m_sc, m_source ); }
+
   private:
     StatusCode m_sc;
     std::string m_source;

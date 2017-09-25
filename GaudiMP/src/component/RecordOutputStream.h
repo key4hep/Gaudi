@@ -31,6 +31,7 @@ public:
   /// Return the path in the Transient Store used to record the triggered
   /// instances.
   static inline const std::string locationRoot() { return "TriggeredOutputStreams"; }
+
 protected:
 private:
   Gaudi::Property<std::string> m_streamName{

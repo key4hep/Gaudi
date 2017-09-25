@@ -8,14 +8,14 @@
 
     @author Marco Clemencic
 */
-class GAUDI_API IComponentManager: virtual public IStateful {
+class GAUDI_API IComponentManager : virtual public IStateful
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IComponentManager,1,0);
+  DeclareInterfaceID( IComponentManager, 1, 0 );
 
   /// Basic interface id of the managed components.
   virtual const InterfaceID& componentBaseInterface() const = 0;
-
 };
 
 #endif /* ICOMPONENTMANAGER_H_ */

@@ -1,11 +1,9 @@
 #ifndef GAUDIKERNEL_FINDBYMASSRANGE_H
 #define GAUDIKERNEL_FINDBYMASSRANGE_H
 
-
 // Include files
 #include "GaudiKernel/IParticlePropertySvc.h"
 #include "GaudiKernel/ParticleProperty.h"
-
 
 /** @class FindByMassRange FindByMassRange.h GaudiKernel/FindByMassRange.h
     IParticlePropertySvc::value_type is a typedef that defines the
@@ -23,25 +21,22 @@
 
     @author Ian Last
 */
-class GAUDI_API FindByMassRange {
+class GAUDI_API FindByMassRange
+{
 
 public:
-
   /// Constructor - sets the mass range in Gev.
-  FindByMassRange( double low, double high ) : m_low( low ), m_high( high ) { }
+  FindByMassRange( double low, double high ) : m_low( low ), m_high( high ) {}
 
   /** This routine check to see if the mass of a particle lies within the
       given mass range and returns true if it does.
   */
-  bool operator() ( const ParticleProperty* pp ) const                        {
-    return pp && pp->mass() >= m_low && pp->mass() <= m_high;
-  }
+  bool operator()( const ParticleProperty* pp ) const { return pp && pp->mass() >= m_low && pp->mass() <= m_high; }
 
 private:
-
   /// Low and high mass range (GeV)
   double m_low;
   double m_high;
 };
 
-#endif  // GAUDIKERNEL_FINDBYMASSRANGE_H
+#endif // GAUDIKERNEL_FINDBYMASSRANGE_H

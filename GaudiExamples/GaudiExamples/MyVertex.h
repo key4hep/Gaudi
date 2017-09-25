@@ -2,16 +2,17 @@
 #define GAUDIPOOLDB_TEST_MYVERTEX_H
 
 // Include files
-#include "GaudiKernel/KeyedObject.h"
 #include "GaudiKernel/KeyedContainer.h"
+#include "GaudiKernel/KeyedObject.h"
 #include "GaudiKernel/SmartRefVector.h"
 
 #include "GaudiExamples/Event.h"
 #include "GaudiExamples/MyTrack.h"
 
-
-namespace Gaudi {
-  namespace Examples {
+namespace Gaudi
+{
+  namespace Examples
+  {
     // Forward declarations
     //    class MyTrack;
 
@@ -24,16 +25,17 @@ namespace Gaudi {
      *
      *  @author Markus Frank
      */
-    class GAUDI_API MyVertex : public KeyedObject<int>   {
+    class GAUDI_API MyVertex : public KeyedObject<int>
+    {
     protected:
       /// The vertex location
-      float                    m_x, m_y, m_z;
+      float m_x, m_y, m_z;
       /// Link to Top level event
-      SmartRef<Event>          m_event;
+      SmartRef<Event> m_event;
       /// Link to mother track
-      SmartRef<MyTrack>        m_motherParticle;
+      SmartRef<MyTrack> m_motherParticle;
       /// Links to all daughter particles
-      SmartRefVector<MyTrack>  m_decayParticles;
+      SmartRefVector<MyTrack> m_decayParticles;
       /// Vector of collisions this object belongs to
       SmartRefVector<Collision> m_collisions;
 
@@ -41,56 +43,52 @@ namespace Gaudi {
       /// Standard constructor
       MyVertex();
       /// Standard constructor
-      MyVertex(float x, float y, float z);
+      MyVertex( float x, float y, float z );
       /// Standard Destructor
       ~MyVertex() override;
       /// Retrieve pointer to class definition structure
-      const CLID& clID() const override    { return classID(); }
-      static const CLID& classID()        { return CLID_MyVertex; }
+      const CLID& clID() const override { return classID(); }
+      static const CLID& classID() { return CLID_MyVertex; }
       /// Accessors: Retrieve x-component of the track momentum
-      float x()  const         { return m_x;  }
+      float x() const { return m_x; }
       /// Accessors: Retrieve y-component of the track momentum
-      float y()  const         { return m_y;  }
+      float y() const { return m_y; }
       /// Accessors: Retrieve z-component of the track momentum
-      float z()  const         { return m_z;  }
+      float z() const { return m_z; }
       /// Accessors: Update x-component of the track momentum
-      void setX(float x)       { m_x = x;     }
+      void setX( float x ) { m_x = x; }
       /// Accessors: Update y-component of the track momentum
-      void setY(float y)       { m_y = y;     }
+      void setY( float y ) { m_y = y; }
       /// Accessors: Update z-component of the track momentum
-      void setZ(float z)       { m_z = z;     }
+      void setZ( float z ) { m_z = z; }
 
       /// Access to the source track object (constant case)
-      const Event* event()  const  {
-        return m_event;
-      }
+      const Event* event() const { return m_event; }
       /// Access to event object
-      void setEvent(Event* evt)    {
-        m_event = evt;
-      }
+      void setEvent( Event* evt ) { m_event = evt; }
       /// Mother track
-      const MyTrack* motherParticle()  const;
+      const MyTrack* motherParticle() const;
 
       /// Set mother track
-      void setMotherParticle(MyTrack* mother);
+      void setMotherParticle( MyTrack* mother );
 
       /// Access to decay particles
       const SmartRefVector<MyTrack>& decayParticles() const;
 
       /// Add decay particle
-      void addDecayParticle(MyTrack* track);
+      void addDecayParticle( MyTrack* track );
 
       /// Remove decay vertex
-      void removeDecayParticle(MyTrack* vtx);
+      void removeDecayParticle( MyTrack* vtx );
 
       /// Access to collisions
       const SmartRefVector<Collision>& collisions() const;
 
       /// Add collision
-      void addCollision(Collision* vtx);
+      void addCollision( Collision* vtx );
 
       /// Remove collision
-      void removeCollision(Collision* vtx);
+      void removeCollision( Collision* vtx );
 
       /// Serialize the object for writing
       StreamBuffer& serialize( StreamBuffer& s ) const override;
@@ -101,68 +99,47 @@ namespace Gaudi {
     // Definition of all container types of MCParticle
     typedef KeyedContainer<MyVertex> MyVertexVector;
 
-
     /// Mother particle
-    inline const MyTrack* MyVertex::motherParticle()  const
-    {
-      return m_motherParticle;
-    }
+    inline const MyTrack* MyVertex::motherParticle() const { return m_motherParticle; }
 
     /// Set origin vertex
-    inline void MyVertex::setMotherParticle(MyTrack* mother)
-    {
-      m_motherParticle = mother;
-    }
+    inline void MyVertex::setMotherParticle( MyTrack* mother ) { m_motherParticle = mother; }
 
     /// Access to decay vertices
-    inline const SmartRefVector<MyTrack>& MyVertex::decayParticles() const
-    {
-      return m_decayParticles;
-    }
+    inline const SmartRefVector<MyTrack>& MyVertex::decayParticles() const { return m_decayParticles; }
 
     /// Add decay vertex
-    inline void MyVertex::addDecayParticle(MyTrack* p)
-    {
-      m_decayParticles.push_back(SmartRef<MyTrack>(p));
-    }
+    inline void MyVertex::addDecayParticle( MyTrack* p ) { m_decayParticles.push_back( SmartRef<MyTrack>( p ) ); }
 
     /// Remove decay vertex
-    inline void MyVertex::removeDecayParticle(MyTrack* p)
+    inline void MyVertex::removeDecayParticle( MyTrack* p )
     {
       SmartRefVector<MyTrack>::iterator i;
-      for(i=m_decayParticles.begin(); i != m_decayParticles.end(); ++i) {
+      for ( i = m_decayParticles.begin(); i != m_decayParticles.end(); ++i ) {
         if ( i->target() == p ) {
-          m_decayParticles.erase(i);
+          m_decayParticles.erase( i );
           return;
         }
       }
     }
-
 
     /// Access to decay vertices
-    inline const SmartRefVector<Collision>& MyVertex::collisions() const
-    {
-      return m_collisions;
-    }
+    inline const SmartRefVector<Collision>& MyVertex::collisions() const { return m_collisions; }
 
     /// Add decay vertex
-    inline void MyVertex::addCollision(Collision* c)
-    {
-      m_collisions.push_back(SmartRef<Collision>(c));
-    }
+    inline void MyVertex::addCollision( Collision* c ) { m_collisions.push_back( SmartRef<Collision>( c ) ); }
 
     /// Remove decay vertex
-    inline void MyVertex::removeCollision(Collision* c)
+    inline void MyVertex::removeCollision( Collision* c )
     {
       SmartRefVector<Collision>::iterator i;
-      for(i=m_collisions.begin(); i != m_collisions.end(); ++i) {
+      for ( i = m_collisions.begin(); i != m_collisions.end(); ++i ) {
         if ( i->target() == c ) {
-          m_collisions.erase(i);
+          m_collisions.erase( i );
           return;
         }
       }
     }
-
   }
 }
 

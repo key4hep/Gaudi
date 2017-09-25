@@ -1,30 +1,30 @@
-#include "GaudiKernel/DataObject.h"
 #include "DataCreator.h"
+#include "GaudiKernel/DataObject.h"
 
 // Static Factory declaration
-DECLARE_COMPONENT(DataCreator)
-
+DECLARE_COMPONENT( DataCreator )
 
 //------------------------------------------------------------------------------
-StatusCode DataCreator::initialize() {
-//------------------------------------------------------------------------------
+StatusCode DataCreator::initialize()
+{
+  //------------------------------------------------------------------------------
   info() << "initializing...." << endmsg;
   return StatusCode::SUCCESS;
 }
 
-
 //------------------------------------------------------------------------------
-StatusCode DataCreator::execute() {
-//------------------------------------------------------------------------------
+StatusCode DataCreator::execute()
+{
+  //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
-  put(new DataObject(), m_data);
+  put( new DataObject(), m_data );
   return StatusCode::SUCCESS;
 }
 
-
 //------------------------------------------------------------------------------
-StatusCode DataCreator::finalize() {
-//------------------------------------------------------------------------------
+StatusCode DataCreator::finalize()
+{
+  //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;
 }

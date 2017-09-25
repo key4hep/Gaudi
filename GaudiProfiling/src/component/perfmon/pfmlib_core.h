@@ -38,51 +38,51 @@
 extern "C" {
 #endif
 
-#define PMU_CORE_NUM_FIXED_COUNTERS 3	/* number of fixed counters */
-#define PMU_CORE_NUM_GEN_COUNTERS 2	/* number of generic counters */
-#define PMU_CORE_NUM_COUNTERS 5		/* number of counters */
+#define PMU_CORE_NUM_FIXED_COUNTERS 3 /* number of fixed counters */
+#define PMU_CORE_NUM_GEN_COUNTERS 2   /* number of generic counters */
+#define PMU_CORE_NUM_COUNTERS 5       /* number of counters */
 
 typedef union {
-	unsigned long long val;			/* complete register value */
-	struct {
-		unsigned long sel_event_select:8;	/* event mask */
-		unsigned long sel_unit_mask:8;		/* unit mask */
-		unsigned long sel_usr:1;		/* user level */
-		unsigned long sel_os:1;			/* system level */
-		unsigned long sel_edge:1;		/* edge detec */
-		unsigned long sel_pc:1;			/* pin control */
-		unsigned long sel_int:1;		/* enable APIC intr */
-		unsigned long sel_res1:1;		/* reserved */
-		unsigned long sel_en:1;			/* enable */
-		unsigned long sel_inv:1;		/* invert counter mask */
-		unsigned long sel_cnt_mask:8;		/* counter mask */
-		unsigned long sel_res2:32;
-	} perfevtsel;
+  unsigned long long val; /* complete register value */
+  struct {
+    unsigned long sel_event_select : 8; /* event mask */
+    unsigned long sel_unit_mask : 8;    /* unit mask */
+    unsigned long sel_usr : 1;          /* user level */
+    unsigned long sel_os : 1;           /* system level */
+    unsigned long sel_edge : 1;         /* edge detec */
+    unsigned long sel_pc : 1;           /* pin control */
+    unsigned long sel_int : 1;          /* enable APIC intr */
+    unsigned long sel_res1 : 1;         /* reserved */
+    unsigned long sel_en : 1;           /* enable */
+    unsigned long sel_inv : 1;          /* invert counter mask */
+    unsigned long sel_cnt_mask : 8;     /* counter mask */
+    unsigned long sel_res2 : 32;
+  } perfevtsel;
 } pfm_core_sel_reg_t;
 
 typedef struct {
-	unsigned long		cnt_mask;	/* threshold (cnt_mask)  */
-	unsigned int		flags;		/* counter specific flag */
+  unsigned long cnt_mask; /* threshold (cnt_mask)  */
+  unsigned int flags;     /* counter specific flag */
 } pfmlib_core_counter_t;
 
-#define PFM_CORE_SEL_INV	0x1	/* inverse */
-#define PFM_CORE_SEL_EDGE	0x2	/* edge detect */
+#define PFM_CORE_SEL_INV 0x1  /* inverse */
+#define PFM_CORE_SEL_EDGE 0x2 /* edge detect */
 
 /*
  * model-specific parameters for the library
  */
 typedef struct {
-	unsigned int pebs_used; /* set to 1 if PEBS is used */
+  unsigned int pebs_used; /* set to 1 if PEBS is used */
 } pfmlib_core_pebs_t;
 
 typedef struct {
-	pfmlib_core_counter_t	pfp_core_counters[PMU_CORE_NUM_COUNTERS];
-	pfmlib_core_pebs_t	pfp_core_pebs;
-	uint64_t		reserved[4];	/* for future use */
+  pfmlib_core_counter_t pfp_core_counters[PMU_CORE_NUM_COUNTERS];
+  pfmlib_core_pebs_t pfp_core_pebs;
+  uint64_t reserved[4]; /* for future use */
 } pfmlib_core_input_param_t;
 
 typedef struct {
-	uint64_t	reserved[8];		/* for future use */
+  uint64_t reserved[8]; /* for future use */
 } pfmlib_core_output_param_t;
 
 #ifdef __cplusplus /* extern C */
@@ -92,6 +92,6 @@ typedef struct {
 /*
  * PMU-specific interface
  */
-extern int pfm_core_is_pebs(pfmlib_event_t *e);
+extern int pfm_core_is_pebs( pfmlib_event_t* e );
 
 #endif /* __PFMLIB_CORE_H__ */

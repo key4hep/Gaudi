@@ -14,60 +14,49 @@
     @author M.Frank
     @version 1.0
 */
-class DataStoreItem   {
+class DataStoreItem
+{
 protected:
   /// Path of item to be loaded
   std::string m_path;
   /// Depth to be auto-loaded from the requested path onwards
-  int         m_depth;
+  int m_depth;
+
 public:
   /// Standard Constructor
-  DataStoreItem (std::string path, int depth = 1)
-  : m_path(std::move(path)), m_depth(depth)  {
-    analyse();
-  }
+  DataStoreItem( std::string path, int depth = 1 ) : m_path( std::move( path ) ), m_depth( depth ) { analyse(); }
   /// Copy constructor
-  DataStoreItem (const DataStoreItem& item)
-  : m_path(item.m_path), m_depth(item.m_depth)  {
-    analyse();
-  }
+  DataStoreItem( const DataStoreItem& item ) : m_path( item.m_path ), m_depth( item.m_depth ) { analyse(); }
   /// Standard Destructor
   virtual ~DataStoreItem() = default;
 
   /// Equality operator
-  bool operator==(const DataStoreItem& cmp)  const   {
-    return m_path == cmp.path() && m_depth == cmp.depth();
-  }
+  bool operator==( const DataStoreItem& cmp ) const { return m_path == cmp.path() && m_depth == cmp.depth(); }
   /// Inequality operator
-  bool operator!=(const DataStoreItem& cmp)  const   {
-    return ! ( m_path == cmp.path() && m_depth == cmp.depth() );
-  }
+  bool operator!=( const DataStoreItem& cmp ) const { return !( m_path == cmp.path() && m_depth == cmp.depth() ); }
   /// Equivalence operator
-  DataStoreItem& operator=(const DataStoreItem& cmp)  {
+  DataStoreItem& operator=( const DataStoreItem& cmp )
+  {
     m_path  = cmp.path();
     m_depth = cmp.depth();
     analyse();
     return *this;
   }
   /// Interprete the load path for special options
-  void analyse()    {
-    int len = m_path.length()-1;
-    if ( m_path[len] == '*' )   {
+  void analyse()
+  {
+    int len = m_path.length() - 1;
+    if ( m_path[len] == '*' ) {
       m_depth = 99999999;
-      (m_path[len-1] == '/') ? m_path.erase(len-1, 2) : m_path.erase(len, 1);
-    }
-    else if ( m_path[len] == '+' )  {
-      (m_path[len-1] == '/') ? m_path.erase(len-1, 2) : m_path.erase(len, 1);
+      ( m_path[len - 1] == '/' ) ? m_path.erase( len - 1, 2 ) : m_path.erase( len, 1 );
+    } else if ( m_path[len] == '+' ) {
+      ( m_path[len - 1] == '/' ) ? m_path.erase( len - 1, 2 ) : m_path.erase( len, 1 );
       m_depth = 2;
     }
   }
   /// Accessor: Retrieve load path
-  const std::string& path()   const   {
-    return m_path;
-  }
+  const std::string& path() const { return m_path; }
   /// Accessor: Retrieve load depth
-  int depth() const   {
-    return m_depth;
-  }
+  int depth() const { return m_depth; }
 };
 #endif // GAUDIKERNEL_DATASTOREITEM_H

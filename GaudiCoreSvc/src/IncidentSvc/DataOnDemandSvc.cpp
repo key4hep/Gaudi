@@ -23,9 +23,9 @@
 #include "GaudiKernel/LockedChrono.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/TypeNameString.h"
-#include "GaudiKernel/ThreadLocalContext.h"
 // ============================================================================
 // Local
 // ============================================================================
@@ -692,7 +692,7 @@ StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Leaf& l )
   // if (!l.algorithm->getContext()) {
   //   l.algorithm->setContext( &Gaudi::Hive::currentContext() );
   // }
-  StatusCode sc = l.algorithm->sysExecute(Gaudi::Hive::currentContext());
+  StatusCode sc = l.algorithm->sysExecute( Gaudi::Hive::currentContext() );
   if ( sc.isFailure() ) {
     error() << "Failed to execute the algorithm:" << l.algorithm->name() << " for location:" << tag << endmsg;
     return sc; // RETURN

@@ -33,7 +33,8 @@ AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
 AlgResourcePool(OutputLevel=DEBUG)
 
 # Assemble data flow graph
-a1 = CPUCruncher("AlgA", InvertDecision=True) # algorithm that triggers an early exit from "Branch2"
+# algorithm that triggers an early exit from "Branch2"
+a1 = CPUCruncher("AlgA", InvertDecision=True)
 a1.outKeys = ['/Event/A']
 
 a2 = CPUCruncher("AlgB")
@@ -42,22 +43,23 @@ a2.inpKeys = ['/Event/A']
 a3 = CPUCruncher("AlgC")
 a3.inpKeys = ['/Event/A']
 
-for a in [a1,a2,a3]:
+for a in [a1, a2, a3]:
     a.shortCalib = True
     a.avgRuntime = .01
 
 # Assemble control flow graph
 branch1 = GaudiSequencer("Branch1", ModeOR=False, ShortCircuit=False)
-branch2 = GaudiSequencer("Branch2", ModeOR=False, ShortCircuit=True, Sequential=True)
+branch2 = GaudiSequencer("Branch2", ModeOR=False,
+                         ShortCircuit=True, Sequential=True)
 
-branch2.Members = [a1,a2]
-branch1.Members = [branch2,a3]
+branch2.Members = [a1, a2]
+branch1.Members = [branch2, a3]
 
 
-ApplicationMgr(EvtMax = evtMax,
-               EvtSel = 'NONE',
-               ExtSvc = [whiteboard],
-               EventLoop = slimeventloopmgr,
-               TopAlg = [branch1],
-               MessageSvcType = "InertMessageSvc",
-               OutputLevel = INFO)
+ApplicationMgr(EvtMax=evtMax,
+               EvtSel='NONE',
+               ExtSvc=[whiteboard],
+               EventLoop=slimeventloopmgr,
+               TopAlg=[branch1],
+               MessageSvcType="InertMessageSvc",
+               OutputLevel=INFO)

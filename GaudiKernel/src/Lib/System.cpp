@@ -11,16 +11,16 @@
 //	Changes    :
 //====================================================================
 #define SYSTEM_SYSTEM_CPP
-#include <ctime>
-#include <cstring>
+#include <array>
 #include <cstdlib>
+#include <cstring>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <typeinfo>
 #include <memory>
 #include <regex>
-#include <array>
+#include <sstream>
+#include <typeinfo>
 
 #include "GaudiKernel/System.h"
 
@@ -29,191 +29,190 @@
 #undef VCL_NAMESPACE
 
 #ifdef _WIN32
-  #define strcasecmp  _stricmp
-  #define strncasecmp _strnicmp
-  #define getpid _getpid
-  #define NOMSG
-  #define NOGDI
-  #include "process.h"
-  #include "windows.h"
-  #undef NOMSG
-  #undef NOGDI
-  static const std::array< const char*, 1 > SHLIB_SUFFIXES = { ".dll" };
-#else  // UNIX...: first the EGCS stuff, then the OS dependent includes
-  #include <errno.h>
-  #include <string.h>
-  #include "sys/times.h"
-  #include "unistd.h"
-  #include "libgen.h"
-  #include <cstdio>
-  #include <cxxabi.h>
-#if defined(__linux) || defined(__APPLE__)
-  #include "dlfcn.h"
-  #include <sys/utsname.h>
-  #include <unistd.h>
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define getpid _getpid
+#define NOMSG
+#define NOGDI
+#include "process.h"
+#include "windows.h"
+#undef NOMSG
+#undef NOGDI
+static const std::array<const char*, 1> SHLIB_SUFFIXES = {".dll"};
+#else // UNIX...: first the EGCS stuff, then the OS dependent includes
+#include "libgen.h"
+#include "sys/times.h"
+#include "unistd.h"
+#include <cstdio>
+#include <cxxabi.h>
+#include <errno.h>
+#include <string.h>
+#if defined( __linux ) || defined( __APPLE__ )
+#include "dlfcn.h"
+#include <sys/utsname.h>
+#include <unistd.h>
 #elif __hpux
-  #include "dl.h"
+#include "dl.h"
 struct HMODULE {
   shl_descriptor dsc;
-  long           numSym;
-  shl_symbol*    sym;
+  long numSym;
+  shl_symbol* sym;
 };
 #endif // HPUX or not...
 
 #ifdef __APPLE__
-  static const std::array< const char*, 2 > SHLIB_SUFFIXES = { ".dylib", ".so" };
+static const std::array<const char*, 2> SHLIB_SUFFIXES = {".dylib", ".so"};
 #else
-  static const std::array< const char*, 1 > SHLIB_SUFFIXES = { ".so" };
+static const std::array<const char*, 1> SHLIB_SUFFIXES = {".so"};
 #endif // __APPLE__
 
 #endif // Windows or Unix...
 
 // Note: __attribute__ is a GCC keyword available since GCC 3.4
 #ifdef __GNUC__
-#  if __GNUC__ < 3 || \
-      (__GNUC__ == 3 && (__GNUC_MINOR__ < 4 ))
+#if __GNUC__ < 3 || ( __GNUC__ == 3 && ( __GNUC_MINOR__ < 4 ) )
 // GCC < 3.4
-#    define __attribute__(x)
-#  endif
+#define __attribute__( x )
+#endif
 #else
 // non-GCC
-#  define __attribute__(x)
+#define __attribute__( x )
 #endif
 
 static std::vector<std::string> s_argvStrings;
 static std::vector<const char*> s_argvChars;
 
-static unsigned long doLoad(const std::string& name, System::ImageHandle* handle)  {
+static unsigned long doLoad( const std::string& name, System::ImageHandle* handle )
+{
 #ifdef _WIN32
-  void* mh = ::LoadLibrary( name.length() == 0 ? System::exeName().c_str() : name.c_str());
-  *handle = mh;
+  void* mh = ::LoadLibrary( name.length() == 0 ? System::exeName().c_str() : name.c_str() );
+  *handle  = mh;
 #else
   const char* path = name.c_str();
-#if defined(__linux) || defined(__APPLE__)
-  void *mh = ::dlopen(name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL);
-  *handle = mh;
+#if defined( __linux ) || defined( __APPLE__ )
+  void* mh         = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
+  *handle          = mh;
 #elif __hpux
-  shl_t mh = ::shl_load(name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0);
+  shl_t mh     = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
   HMODULE* mod = new HMODULE;
   if ( 0 != mh ) {
-    if ( 0 != ::shl_gethandle_r(mh, &mod->dsc) ) {
-      std::cout << "System::loadDynamicLib>" << ::strerror(getLastError()) << std::endl;
-    }
-    else {
-      typedef void* (*___all)();
+    if ( 0 != ::shl_gethandle_r( mh, &mod->dsc ) ) {
+      std::cout << "System::loadDynamicLib>" << ::strerror( getLastError() ) << std::endl;
+    } else {
+      typedef void* ( *___all )();
       ___all _alloc = (___all)malloc;
-      mod->numSym = ::shl_getsymbols(mod->dsc.handle, TYPE_PROCEDURE, EXPORT_SYMBOLS, malloc, &mod->sym);
-      *handle = mod;
+      mod->numSym   = ::shl_getsymbols( mod->dsc.handle, TYPE_PROCEDURE, EXPORT_SYMBOLS, malloc, &mod->sym );
+      *handle       = mod;
     }
   }
 #endif
 #endif
-  if ( ! *handle )   {
+  if ( !*handle ) {
     return System::getLastError();
   }
   return 1;
 }
 
-static unsigned long loadWithoutEnvironment( const std::string& name,
-                                             System::ImageHandle* handle ) {
+static unsigned long loadWithoutEnvironment( const std::string& name, System::ImageHandle* handle )
+{
 
-   // If the name is empty, don't do anything complicated.
-   if( name.length() == 0 ) {
-      return doLoad( name, handle );
-   }
+  // If the name is empty, don't do anything complicated.
+  if ( name.length() == 0 ) {
+    return doLoad( name, handle );
+  }
 
-   // Check if the specified name has a shared library suffix already. If it
-   // does, don't bother the name any more.
-   std::string dllName = name;
-   bool hasShlibSuffix = false;
-   for( const char* suffix : SHLIB_SUFFIXES ) {
-      const size_t len = strlen( suffix );
-      if( dllName.compare( dllName.length() - len, len, suffix ) == 0 ) {
-         hasShlibSuffix = true;
-         break;
-      }
-   }
+  // Check if the specified name has a shared library suffix already. If it
+  // does, don't bother the name any more.
+  std::string dllName = name;
+  bool hasShlibSuffix = false;
+  for ( const char* suffix : SHLIB_SUFFIXES ) {
+    const size_t len = strlen( suffix );
+    if ( dllName.compare( dllName.length() - len, len, suffix ) == 0 ) {
+      hasShlibSuffix = true;
+      break;
+    }
+  }
 
-   // If it doesn't have a shared library suffix on it, add the "default" shared
-   // library suffix to the name.
-   if( ! hasShlibSuffix ) {
-      dllName += SHLIB_SUFFIXES[ 0 ];
-   }
+  // If it doesn't have a shared library suffix on it, add the "default" shared
+  // library suffix to the name.
+  if ( !hasShlibSuffix ) {
+    dllName += SHLIB_SUFFIXES[0];
+  }
 
-   // Load the library.
-   return doLoad( dllName, handle );
+  // Load the library.
+  return doLoad( dllName, handle );
 }
 
 /// Load dynamic link library
-unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handle) {
+unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* handle )
+{
   unsigned long res;
   // if name is empty, just load it
-  if (name.length() == 0) {
-    res = loadWithoutEnvironment(name, handle);
+  if ( name.length() == 0 ) {
+    res = loadWithoutEnvironment( name, handle );
   } else {
     // If the name is a logical name (environment variable), the try
     // to load the corresponding library from there.
     std::string imgName;
-    if ( getEnv(name, imgName) )    {
-      res = loadWithoutEnvironment(imgName, handle);
+    if ( getEnv( name, imgName ) ) {
+      res = loadWithoutEnvironment( imgName, handle );
     } else {
       // build the dll name
       std::string dllName = name;
-      // Add a possible "lib" prefix to the name on unix platforms. But only if
-      // it's not an absolute path name.
-#if defined(__linux) || defined(__APPLE__)
-      if( ( dllName.find( '/' ) == std::string::npos ) &&
-          ( dllName.compare( 0, 3, "lib" ) != 0 ) ) {
-         dllName = "lib" + dllName;
+// Add a possible "lib" prefix to the name on unix platforms. But only if
+// it's not an absolute path name.
+#if defined( __linux ) || defined( __APPLE__ )
+      if ( ( dllName.find( '/' ) == std::string::npos ) && ( dllName.compare( 0, 3, "lib" ) != 0 ) ) {
+        dllName = "lib" + dllName;
       }
 #endif // unix
       // Now try loading the library with all possible suffixes supported by the
       // platform.
-      for( const char* suffix : SHLIB_SUFFIXES ) {
-         // Add the suffix if necessary.
-         std::string libName = dllName;
-         const size_t len = strlen( suffix );
-         if( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) {
-            libName += suffix;
-         }
-         // Try to load the library.
-         res = loadWithoutEnvironment( libName, handle );
-         // If the load succeeded, stop here.
-         if( res == 1 ) {
-            break;
-         }
+      for ( const char* suffix : SHLIB_SUFFIXES ) {
+        // Add the suffix if necessary.
+        std::string libName = dllName;
+        const size_t len    = strlen( suffix );
+        if ( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) {
+          libName += suffix;
+        }
+        // Try to load the library.
+        res = loadWithoutEnvironment( libName, handle );
+        // If the load succeeded, stop here.
+        if ( res == 1 ) {
+          break;
+        }
       }
     }
     if ( res != 1 ) {
-#if defined(__linux) || defined(__APPLE__)
+#if defined( __linux ) || defined( __APPLE__ )
       errno = 0xAFFEDEAD;
 #endif
-     // std::cout << "System::loadDynamicLib>" << getLastErrorString() << std::endl;
+      // std::cout << "System::loadDynamicLib>" << getLastErrorString() << std::endl;
     }
   }
   return res;
 }
 
 /// unload dynamic link library
-unsigned long System::unloadDynamicLib(ImageHandle handle)    {
+unsigned long System::unloadDynamicLib( ImageHandle handle )
+{
 #ifdef _WIN32
-  if ( !::FreeLibrary((HINSTANCE)handle) ) {
-#elif defined(__linux) || defined(__APPLE__)
+  if ( !::FreeLibrary( (HINSTANCE)handle ) ) {
+#elif defined( __linux ) || defined( __APPLE__ )
   ::dlclose( handle );
   if ( 0 ) {
 #elif __hpux
   // On HP we have to run finalization ourselves.....
   Creator pFinalize = 0;
-  if ( getProcedureByName(handle, "_fini", &pFinalize) ) {
+  if ( getProcedureByName( handle, "_fini", &pFinalize ) ) {
     pFinalize();
   }
   HMODULE* mod = (HMODULE*)handle;
   if ( 0 == ::shl_unload( mod->dsc.handle ) ) {
     delete mod;
-  }
-  else {
+  } else {
 #else
-  if (false){
+  if ( false ) {
 #endif
     return getLastError();
   }
@@ -221,36 +220,37 @@ unsigned long System::unloadDynamicLib(ImageHandle handle)    {
 }
 
 /// Get a specific function defined in the DLL
-unsigned long System::getProcedureByName(ImageHandle handle, const std::string& name, EntryPoint* pFunction)    {
+unsigned long System::getProcedureByName( ImageHandle handle, const std::string& name, EntryPoint* pFunction )
+{
 #ifdef _WIN32
-  *pFunction = (EntryPoint)::GetProcAddress((HINSTANCE)handle, name.data());
-  if ( 0 == *pFunction )    {
+  *pFunction = ( EntryPoint )::GetProcAddress( (HINSTANCE)handle, name.data() );
+  if ( 0 == *pFunction ) {
     return System::getLastError();
   }
   return 1;
-#elif defined(__linux)
+#elif defined( __linux )
 #if __GNUC__ < 4
-  *pFunction = (EntryPoint)::dlsym(handle, name.c_str());
+  *pFunction = ( EntryPoint )::dlsym( handle, name.c_str() );
 #else
-  *pFunction = FuncPtrCast<EntryPoint>(::dlsym(handle, name.c_str()));
+  *pFunction = FuncPtrCast<EntryPoint>(::dlsym( handle, name.c_str() ) );
 #endif
-  if ( ! *pFunction )    {
+  if ( !*pFunction ) {
     errno = 0xAFFEDEAD;
-   // std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
+    // std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
     return 0;
   }
   return 1;
-#elif defined(__APPLE__)
-  *pFunction = (EntryPoint)::dlsym(handle, name.c_str());
-  if(!(*pFunction)) {
+#elif defined( __APPLE__ )
+  *pFunction = ( EntryPoint )::dlsym( handle, name.c_str() );
+  if ( !( *pFunction ) ) {
     // Try with an underscore :
     std::string sname = "_" + name;
-    *pFunction = (EntryPoint)::dlsym(handle, sname.c_str());
+    *pFunction        = ( EntryPoint )::dlsym( handle, sname.c_str() );
   }
-  if ( 0 == *pFunction )    {
+  if ( 0 == *pFunction ) {
     errno = 0xAFFEDEAD;
     std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
-    //std::cout << "System::getProcedureByName> failure" << std::endl;
+    // std::cout << "System::getProcedureByName> failure" << std::endl;
     return 0;
   }
   return 1;
@@ -259,10 +259,10 @@ unsigned long System::getProcedureByName(ImageHandle handle, const std::string& 
   if ( 0 != mod ) {
     long ll1 = name.length();
     for ( int i = 0; i < mod->numSym; i++ ) {
-      long ll2 = strlen(mod->sym[i].name);
-      if ( 0 != ::strncmp(mod->sym[i].name, name.c_str(), (ll1>ll2) ? ll1 : ll2)==0 ) {
-	      *pFunction = (EntryPoint) mod->sym[i].value;
-	      return 1;
+      long ll2 = strlen( mod->sym[i].name );
+      if ( 0 != ::strncmp( mod->sym[i].name, name.c_str(), ( ll1 > ll2 ) ? ll1 : ll2 ) == 0 ) {
+        *pFunction = (EntryPoint)mod->sym[i].value;
+        return 1;
       }
     }
   }
@@ -271,113 +271,110 @@ unsigned long System::getProcedureByName(ImageHandle handle, const std::string& 
 }
 
 /// Get a specific function defined in the DLL
-unsigned long System::getProcedureByName(ImageHandle handle, const std::string& name, Creator* pFunction)    {
-  return getProcedureByName(handle, name, (EntryPoint*)pFunction);
+unsigned long System::getProcedureByName( ImageHandle handle, const std::string& name, Creator* pFunction )
+{
+  return getProcedureByName( handle, name, (EntryPoint*)pFunction );
 }
 
 /// Retrieve last error code
-unsigned long System::getLastError()    {
+unsigned long System::getLastError()
+{
 #ifdef _WIN32
   return ::GetLastError();
 #else
   // convert errno (int) to unsigned long
-  return static_cast<unsigned long>(static_cast<unsigned int>(errno));
+  return static_cast<unsigned long>( static_cast<unsigned int>( errno ) );
 #endif
 }
 
 /// Retrieve last error code as string
-const std::string System::getLastErrorString()    {
-  const std::string errString = getErrorString(getLastError());
+const std::string System::getLastErrorString()
+{
+  const std::string errString = getErrorString( getLastError() );
   return errString;
 }
 
 /// Retrieve error code as string for a given error
-const std::string System::getErrorString(unsigned long error)    {
-  std::string errString =  "";
+const std::string System::getErrorString( unsigned long error )
+{
+  std::string errString = "";
 #ifdef _WIN32
   LPVOID lpMessageBuffer;
-  ::FormatMessage(
-    FORMAT_MESSAGE_ALLOCATE_BUFFER |  FORMAT_MESSAGE_FROM_SYSTEM,
-    NULL,
-    error,
-    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), //The user default language
-    (LPTSTR) &lpMessageBuffer,
-    0,
-    NULL );
+  ::FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error,
+                   MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), // The user default language
+                   (LPTSTR)&lpMessageBuffer, 0, NULL );
   errString = (const char*)lpMessageBuffer;
   // Free the buffer allocated by the system
   ::LocalFree( lpMessageBuffer );
 #else
-  char *cerrString(nullptr);
+  char* cerrString( nullptr );
   // Remember: for linux dl* routines must be handled differently!
   if ( error == 0xAFFEDEAD ) {
-    cerrString = (char*)::dlerror();
-    if ( !cerrString ) cerrString = ::strerror(error);
+    cerrString                    = (char*)::dlerror();
+    if ( !cerrString ) cerrString = ::strerror( error );
     if ( !cerrString ) {
-      cerrString = (char *)"Unknown error. No information found in strerror()!";
-    }
-    else {
-      errString = std::string(cerrString);
+      cerrString = (char*)"Unknown error. No information found in strerror()!";
+    } else {
+      errString = std::string( cerrString );
     }
     errno = 0;
-  }
-  else    {
-    cerrString = ::strerror(error);
-    errString = std::string(cerrString);
+  } else {
+    cerrString = ::strerror( error );
+    errString  = std::string( cerrString );
   }
 #endif
   return errString;
 }
 
-const std::string System::typeinfoName( const std::type_info& tinfo ) {
-  return typeinfoName( tinfo.name() );
-}
+const std::string System::typeinfoName( const std::type_info& tinfo ) { return typeinfoName( tinfo.name() ); }
 
-const std::string System::typeinfoName( const char* class_name ) {
+const std::string System::typeinfoName( const char* class_name )
+{
   std::string result;
 #ifdef _WIN32
   long off = 0;
-  if ( ::strncmp(class_name, "class ", 6) == 0 )   {
+  if (::strncmp( class_name, "class ", 6 ) == 0 ) {
     // The returned name is prefixed with "class "
     off = 6;
   }
-  if ( ::strncmp(class_name, "struct ", 7) == 0 )   {
+  if (::strncmp( class_name, "struct ", 7 ) == 0 ) {
     // The returned name is prefixed with "struct "
     off = 7;
   }
-  if ( off > 0 )    {
+  if ( off > 0 ) {
     std::string tmp = class_name + off;
-    long loc = 0;
-    while( (loc = tmp.find("class ")) > 0 )  {
-      tmp.erase(loc, 6);
+    long loc        = 0;
+    while ( ( loc = tmp.find( "class " ) ) > 0 ) {
+      tmp.erase( loc, 6 );
     }
     loc = 0;
-    while( (loc = tmp.find("struct ")) > 0 )  {
-      tmp.erase(loc, 7);
+    while ( ( loc = tmp.find( "struct " ) ) > 0 ) {
+      tmp.erase( loc, 7 );
     }
     result = tmp;
-  }
-  else  {
+  } else {
     result = class_name;
   }
   // Change any " *" to "*"
-  while ( (off=result.find(" *")) != std::string::npos ) {
-    result.replace(off, 2, "*");
+  while ( ( off = result.find( " *" ) ) != std::string::npos ) {
+    result.replace( off, 2, "*" );
   }
   // Change any " &" to "&"
-  while ( (off=result.find(" &")) != std::string::npos ) {
-    result.replace(off, 2, "&");
+  while ( ( off = result.find( " &" ) ) != std::string::npos ) {
+    result.replace( off, 2, "&" );
   }
 
-#elif defined(__linux) || defined(__APPLE__)
-  int   status;
-  auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, nullptr, nullptr, &status), std::free );
-  if (!realname) return class_name;
+#elif defined( __linux ) || defined( __APPLE__ )
+  int status;
+  auto realname = std::unique_ptr<char, decltype( free )*>(
+      abi::__cxa_demangle( class_name, nullptr, nullptr, &status ), std::free );
+  if ( !realname ) return class_name;
 #if _GLIBCXX_USE_CXX11_ABI
-  static const std::regex cxx11_string{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"};
+  static const std::regex cxx11_string{
+      "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"};
   result = std::regex_replace( realname.get(), cxx11_string, "std::string" );
 #else
-  result = std::string{realname.get()};
+  result     = std::string{realname.get()};
 #endif
   // substitute ', ' with ','
   static const std::regex comma_space{", "};
@@ -386,34 +383,38 @@ const std::string System::typeinfoName( const char* class_name ) {
   return result;
 }
 
-namespace {
-    std::string init_hostName()  {
-        std::array<char,512> buffer;
-        std::fill_n(buffer.begin(),buffer.size(),0);
+namespace
+{
+  std::string init_hostName()
+  {
+    std::array<char, 512> buffer;
+    std::fill_n( buffer.begin(), buffer.size(), 0 );
 #ifdef _WIN32
-        unsigned long len = buffer.size();
-        ::GetComputerName(buffer.data(), &len);
+    unsigned long len = buffer.size();
+    ::GetComputerName( buffer.data(), &len );
 #else
-        ::gethostname(buffer.data(), buffer.size());
+    ::gethostname( buffer.data(), buffer.size() );
 #endif
-        return { buffer.data() };
-      }
+    return {buffer.data()};
+  }
 }
 
 /// Host name
-const std::string& System::hostName() {
+const std::string& System::hostName()
+{
   static const std::string host = init_hostName();
   return host;
 }
 
 /// OS name
-const std::string& System::osName() {
+const std::string& System::osName()
+{
   static std::string osname = "";
 #ifdef _WIN32
   osname = "Windows";
 #else
   struct utsname ut;
-  if (uname(&ut) == 0) {
+  if ( uname( &ut ) == 0 ) {
     osname = ut.sysname;
   } else {
     osname = "UNKNOWN";
@@ -422,20 +423,20 @@ const std::string& System::osName() {
   return osname;
 }
 
-
 /// OS version
-const std::string& System::osVersion() {
+const std::string& System::osVersion()
+{
   static std::string osver = "";
 #ifdef _WIN32
   OSVERSIONINFO ut;
-  ut.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-  ::GetVersionEx(&ut);
+  ut.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+  ::GetVersionEx( &ut );
   std::ostringstream ver;
   ver << ut.dwMajorVersion << '.' << ut.dwMinorVersion;
   osver = ver.str();
 #else
   struct utsname ut;
-  if (uname(&ut) == 0) {
+  if ( uname( &ut ) == 0 ) {
     osver = ut.release;
   } else {
     osver = "UNKNOWN";
@@ -445,17 +446,18 @@ const std::string& System::osVersion() {
 }
 
 /// Machine type
-const std::string& System::machineType() {
+const std::string& System::machineType()
+{
   static std::string mach = "";
 #ifdef _WIN32
   SYSTEM_INFO ut;
-  ::GetSystemInfo(&ut);
+  ::GetSystemInfo( &ut );
   std::ostringstream arch;
   arch << ut.wProcessorArchitecture;
   mach = arch.str();
 #else
   struct utsname ut;
-  if (uname(&ut) == 0) {
+  if ( uname( &ut ) == 0 ) {
     mach = ut.machine;
   } else {
     mach = "UNKNOWN";
@@ -464,98 +466,93 @@ const std::string& System::machineType() {
   return mach;
 }
 
-
-int System::instructionsetLevel() {
+int System::instructionsetLevel()
+{
   using namespace Gaudi;
   return instrset_detect();
 }
 
-
 /// User login name
-const std::string& System::accountName() {
+const std::string& System::accountName()
+{
   static std::string account = "";
   if ( account == "" ) {
 #ifdef _WIN32
     char buffer[512];
-    unsigned long buflen = sizeof(buffer);
-    ::GetUserName(buffer, &buflen);
+    unsigned long buflen = sizeof( buffer );
+    ::GetUserName( buffer, &buflen );
     account = buffer;
 #else
-    const char* acct = ::getlogin();
-    if ( !acct ) acct = ::getenv("LOGNAME");
-    if ( !acct ) acct = ::getenv("USER");
-    account = (acct) ? acct : "Unknown";
+    const char* acct  = ::getlogin();
+    if ( !acct ) acct = ::getenv( "LOGNAME" );
+    if ( !acct ) acct = ::getenv( "USER" );
+    account           = ( acct ) ? acct : "Unknown";
 #endif
   }
   return account;
 }
 
 /// Number of arguments passed to the commandline
-long System::numCmdLineArgs()   {
-  return cmdLineArgs().size();
-}
+long System::numCmdLineArgs() { return cmdLineArgs().size(); }
 
 /// Number of arguments passed to the commandline
-long System::argc()    {
-  return cmdLineArgs().size();
-}
+long System::argc() { return cmdLineArgs().size(); }
 
 /// Const char** command line arguments including executable name as arg[0]
-const std::vector<std::string> System::cmdLineArgs()    {
-  if ( s_argvChars.size() == 0 )    {
+const std::vector<std::string> System::cmdLineArgs()
+{
+  if ( s_argvChars.size() == 0 ) {
     char exe[1024];
 #ifdef _WIN32
-    /// @todo: rewrite the tokenizer to avoid strncpy, etc
-    // Disable warning C4996 triggered by C standard library calls
-#pragma warning(push)
-#pragma warning(disable:4996)
+/// @todo: rewrite the tokenizer to avoid strncpy, etc
+// Disable warning C4996 triggered by C standard library calls
+#pragma warning( push )
+#pragma warning( disable : 4996 )
     // For compatibility with UNIX we CANNOT use strtok!
     // If we would use strtok, options like -g="My world" at
     // the command line level would result on NT in TWO options
     // instead in one as in UNIX.
     char *next, *tmp1, *tmp2;
-    for(LPTSTR cmd = ::GetCommandLine(); *cmd; cmd=next)   {
-      memset(exe,0,sizeof(exe));
+    for ( LPTSTR cmd = ::GetCommandLine(); *cmd; cmd = next ) {
+      memset( exe, 0, sizeof( exe ) );
       while ( *cmd == ' ' ) cmd++;
-      next=::strchr(cmd,' ');
-      if ( !next ) next = cmd + strlen(cmd);
-      if ( (tmp1=::strchr(cmd,'\"')) > 0 && tmp1 < next )  {
-        tmp2 = ::strchr(++tmp1,'\"');
-        if ( tmp2 > 0 )   {
+      next              = ::strchr( cmd, ' ' );
+      if ( !next ) next = cmd + strlen( cmd );
+      if ( ( tmp1 = ::strchr( cmd, '\"' ) ) > 0 && tmp1 < next ) {
+        tmp2 = ::strchr( ++tmp1, '\"' );
+        if ( tmp2 > 0 ) {
           next = ++tmp2;
-          if ( cmd < tmp1 ) strncpy(exe, cmd, tmp1-cmd-1);
-          strncpy(&exe[strlen(exe)], tmp1, tmp2-tmp1-1);
-        }
-        else    {
+          if ( cmd < tmp1 ) strncpy( exe, cmd, tmp1 - cmd - 1 );
+          strncpy( &exe[strlen( exe )], tmp1, tmp2 - tmp1 - 1 );
+        } else {
           std::cout << "Mismatched \" in command line arguments" << std::endl;
-          s_argvChars.erase(s_argvChars.begin(), s_argvChars.end());
-          s_argvStrings.erase(s_argvStrings.begin(), s_argvStrings.end());
+          s_argvChars.erase( s_argvChars.begin(), s_argvChars.end() );
+          s_argvStrings.erase( s_argvStrings.begin(), s_argvStrings.end() );
           return s_argvStrings;
         }
+      } else {
+        strncpy( exe, cmd, next - cmd );
       }
-      else    {
-        strncpy(exe, cmd, next-cmd);
-      }
-      s_argvStrings.push_back(exe);
-      s_argvChars.push_back( s_argvStrings.back().c_str());
+      s_argvStrings.push_back( exe );
+      s_argvChars.push_back( s_argvStrings.back().c_str() );
     }
-#pragma warning(pop)
-#elif defined(__linux) || defined(__APPLE__)
-    sprintf(exe, "/proc/%d/cmdline", ::getpid());
-    FILE *cmdLine = ::fopen(exe,"r");
+#pragma warning( pop )
+#elif defined( __linux ) || defined( __APPLE__ )
+    sprintf( exe, "/proc/%d/cmdline", ::getpid() );
+    FILE* cmdLine = ::fopen( exe, "r" );
     char cmd[1024];
-    if ( cmdLine )   {
-      long len = fread(cmd, sizeof(char), sizeof(cmd), cmdLine);
-      if ( len > 0 )   {
+    if ( cmdLine ) {
+      long len = fread( cmd, sizeof( char ), sizeof( cmd ), cmdLine );
+      if ( len > 0 ) {
         cmd[len] = 0;
-        for ( char* token = cmd; token-cmd < len; token += strlen(token)+1 )  {
-          s_argvStrings.push_back(token);
-          s_argvChars.push_back( s_argvStrings.back().c_str());
+        for ( char* token = cmd; token - cmd < len; token += strlen( token ) + 1 ) {
+          s_argvStrings.push_back( token );
+          s_argvChars.push_back( s_argvStrings.back().c_str() );
         }
         s_argvStrings[0] = exeName();
         s_argvChars[0]   = s_argvStrings[0].c_str();
       }
-      ::fclose(cmdLine);
+      ::fclose( cmdLine );
     }
 #endif
   }
@@ -563,9 +560,12 @@ const std::vector<std::string> System::cmdLineArgs()    {
 }
 
 /// Const char** command line arguments including executable name as arg[0]
-char** System::argv()    {
+char** System::argv()
+{
   ///
-  if( s_argvChars.empty() ) { cmdLineArgs(); }  /// added by I.B.
+  if ( s_argvChars.empty() ) {
+    cmdLineArgs();
+  } /// added by I.B.
   ///
   // We rely here on the fact that a vector's allocation table is contiguous
   return (char**)&s_argvChars[0];
@@ -574,13 +574,14 @@ char** System::argv()    {
 #ifdef WIN32
 // disable warning
 //   C4996: 'getenv': This function or variable may be unsafe.
-#pragma warning(disable:4996)
+#pragma warning( disable : 4996 )
 #endif
 
 /// get a particular env var, return "UNKNOWN" if not defined
-std::string System::getEnv(const char* var) {
+std::string System::getEnv( const char* var )
+{
   char* env;
-  if  ( (env = getenv(var)) != nullptr ) {
+  if ( ( env = getenv( var ) ) != nullptr ) {
     return env;
   } else {
     return "UNKNOWN";
@@ -588,9 +589,10 @@ std::string System::getEnv(const char* var) {
 }
 
 /// get a particular env var, storing the value in the passed string (if set)
-bool System::getEnv(const char* var, std::string &value) {
+bool System::getEnv( const char* var, std::string& value )
+{
   char* env;
-  if  ( (env = getenv(var)) != nullptr ) {
+  if ( ( env = getenv( var ) ) != nullptr ) {
     value = env;
     return true;
   } else {
@@ -598,24 +600,23 @@ bool System::getEnv(const char* var, std::string &value) {
   }
 }
 
-bool System::isEnvSet(const char* var) {
-  return getenv(var) != nullptr;
-}
+bool System::isEnvSet( const char* var ) { return getenv( var ) != nullptr; }
 
 /// get all defined environment vars
-#if defined(__APPLE__)
+#if defined( __APPLE__ )
 // Needed for _NSGetEnviron(void)
 #include "crt_externs.h"
 #endif
-std::vector<std::string> System::getEnv() {
-#if defined(_WIN32)
-#  define environ _environ
-#elif defined(__APPLE__)
-  static char **environ = *_NSGetEnviron();
+std::vector<std::string> System::getEnv()
+{
+#if defined( _WIN32 )
+#define environ _environ
+#elif defined( __APPLE__ )
+  static char** environ = *_NSGetEnviron();
 #endif
   std::vector<std::string> vars;
-  for (int i=0; environ[i] != nullptr; ++i) {
-    vars.push_back(environ[i]);
+  for ( int i = 0; environ[i] != nullptr; ++i ) {
+    vars.push_back( environ[i] );
   }
   return vars;
 }
@@ -627,8 +628,7 @@ std::vector<std::string> System::getEnv() {
 #include <execinfo.h>
 #endif
 
-int System::backTrace(void** addresses __attribute__ ((unused)),
-                       const int depth __attribute__ ((unused)))
+int System::backTrace( void** addresses __attribute__( ( unused ) ), const int depth __attribute__( ( unused ) ) )
 {
 
 #ifdef __linux
@@ -639,97 +639,91 @@ int System::backTrace(void** addresses __attribute__ ((unused)),
 #else // windows and osx parts not implemented
   return 0;
 #endif
-
 }
 
-bool System::backTrace(std::string& btrace, const int depth, const int offset)
+bool System::backTrace( std::string& btrace, const int depth, const int offset )
 {
   try {
-      // Always hide the first two levels of the stack trace (that's us)
-      const int totalOffset = offset + 2;
-      const int totalDepth = depth + totalOffset;
+    // Always hide the first two levels of the stack trace (that's us)
+    const int totalOffset = offset + 2;
+    const int totalDepth  = depth + totalOffset;
 
-      std::string fnc, lib;
+    std::string fnc, lib;
 
-      std::vector<void*> addresses( totalDepth, nullptr );
-      int count = System::backTrace(addresses.data(),totalDepth);
-      for (int i = totalOffset; i < count; ++i) {
-        void *addr = nullptr;
+    std::vector<void*> addresses( totalDepth, nullptr );
+    int count = System::backTrace( addresses.data(), totalDepth );
+    for ( int i = totalOffset; i < count; ++i ) {
+      void* addr = nullptr;
 
-        if (System::getStackLevel(addresses[i],addr,fnc,lib)) {
-          std::ostringstream ost;
-          ost << "#" << std::setw(3) << std::setiosflags( std::ios::left ) << i-totalOffset+1;
-          ost << std::hex << addr << std::dec << " " << fnc << "  [" << lib << "]" << std::endl;
-          btrace += ost.str();
-        }
+      if ( System::getStackLevel( addresses[i], addr, fnc, lib ) ) {
+        std::ostringstream ost;
+        ost << "#" << std::setw( 3 ) << std::setiosflags( std::ios::left ) << i - totalOffset + 1;
+        ost << std::hex << addr << std::dec << " " << fnc << "  [" << lib << "]" << std::endl;
+        btrace += ost.str();
       }
-      return true;
+    }
+    return true;
   } catch ( const std::bad_alloc& e ) {
-      return false;
+    return false;
   }
 }
 
-bool System::getStackLevel(void* addresses  __attribute__ ((unused)),
-                           void*& addr      __attribute__ ((unused)),
-                           std::string& fnc __attribute__ ((unused)),
-                           std::string& lib __attribute__ ((unused)))
+bool System::getStackLevel( void* addresses __attribute__( ( unused ) ), void*& addr __attribute__( ( unused ) ),
+                            std::string& fnc __attribute__( ( unused ) ), std::string& lib __attribute__( ( unused ) ) )
 {
 
 #ifdef __linux
 
   Dl_info info;
 
-  if ( dladdr( addresses, &info ) && info.dli_fname
-      && info.dli_fname[0] != '\0' ) {
-    const char* symbol = info.dli_sname
-    && info.dli_sname[0] != '\0' ? info.dli_sname : nullptr;
+  if ( dladdr( addresses, &info ) && info.dli_fname && info.dli_fname[0] != '\0' ) {
+    const char* symbol = info.dli_sname && info.dli_sname[0] != '\0' ? info.dli_sname : nullptr;
 
-    lib = info.dli_fname;
+    lib  = info.dli_fname;
     addr = info.dli_saddr;
 
-    if (symbol) {
+    if ( symbol ) {
       int stat = -1;
-      auto dmg = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(symbol,nullptr,nullptr,&stat), std::free );
-      fnc = (stat == 0) ? dmg.get() : symbol;
+      auto dmg =
+          std::unique_ptr<char, decltype( free )*>( abi::__cxa_demangle( symbol, nullptr, nullptr, &stat ), std::free );
+      fnc = ( stat == 0 ) ? dmg.get() : symbol;
     } else {
       fnc = "local";
     }
-    return true ;
+    return true;
   } else {
-    return false ;
+    return false;
   }
 
 #else // not implemented for windows and osx
-  return false ;
+  return false;
 #endif
-
 }
 
-///set an environment variables. @return 0 if successful, -1 if not
-int System::setEnv(const std::string &name, const std::string &value, int overwrite)
+/// set an environment variables. @return 0 if successful, -1 if not
+int System::setEnv( const std::string& name, const std::string& value, int overwrite )
 {
 #ifndef WIN32
   // UNIX version
   return value.empty() ?
-    // remove if set to nothing (and return success)
-    ::unsetenv(name.c_str()) , 0 :
-    // set the value
-    ::setenv(name.c_str(),value.c_str(), overwrite);
+                       // remove if set to nothing (and return success)
+         ::unsetenv( name.c_str() ),
+         0 :
+                       // set the value
+         ::setenv( name.c_str(), value.c_str(), overwrite );
 #else
   // Windows version
   if ( value.empty() ) {
     // equivalent to unsetenv
-    return ::_putenv((name+"=").c_str());
-  }
-  else {
-    if ( !getenv(name.c_str()) || overwrite ) {
+    return ::_putenv( ( name + "=" ).c_str() );
+  } else {
+    if ( !getenv( name.c_str() ) || overwrite ) {
       // set if not yet present or overwrite is set (force)
-      return ::_putenv((name+"="+value).c_str());
+      return ::_putenv( ( name + "=" + value ).c_str() );
     }
   }
   return 0; // if we get here, we are trying to set a variable already set, but
             // not to overwrite.
             // It is considered a success on Linux (man P setenv)
 #endif
-
 }

@@ -12,13 +12,14 @@ class EventContext;
     The interface implemented by any class wanting to listen to Incidents.
     @author Pere Mato
 */
-class GAUDI_API IIncidentListener: virtual public IInterface {
+class GAUDI_API IIncidentListener : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IIncidentListener,2,0);
+  DeclareInterfaceID( IIncidentListener, 2, 0 );
 
   /// Inform that a new incident has occurred
-  virtual void handle(const Incident&) = 0;
+  virtual void handle( const Incident& ) = 0;
 };
 
 #endif // GAUDIKERNEL_IINCIDENTLISTENER_H

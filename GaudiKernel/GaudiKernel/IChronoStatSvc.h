@@ -1,6 +1,6 @@
 // ============================================================================
-#ifndef     GAUDIKERNEL_ICHRONOSTATSVC_H
-#define     GAUDIKERNEL_ICHRONOSTATSVC_H
+#ifndef GAUDIKERNEL_ICHRONOSTATSVC_H
+#define GAUDIKERNEL_ICHRONOSTATSVC_H
 // ============================================================================
 // Include files
 // ============================================================================
@@ -11,8 +11,8 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/IService.h"
 #include "GaudiKernel/IChronoSvc.h"
+#include "GaudiKernel/IService.h"
 #include "GaudiKernel/IStatSvc.h"
 // ============================================================================
 /** @class IChronoStatSvc IChronoStatSvc.h GaudiKernel/IChronoStatSvc.h
@@ -30,17 +30,14 @@
  *  @date December 1, 1999
  *  @date 2007-07-08
  */
-class GAUDI_API IChronoStatSvc: virtual public extend_interfaces<IService,
-                                                                 IChronoSvc,
-                                                                 IStatSvc>
+class GAUDI_API IChronoStatSvc : virtual public extend_interfaces<IService, IChronoSvc, IStatSvc>
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IChronoStatSvc,6,0);
+  DeclareInterfaceID( IChronoStatSvc, 6, 0 );
 };
 // ============================================================================
 // The END
 // ============================================================================
-#endif  //  GAUDIKERNEL_ICHRONOSTATSVC_H
+#endif //  GAUDIKERNEL_ICHRONOSTATSVC_H
 // ============================================================================
-

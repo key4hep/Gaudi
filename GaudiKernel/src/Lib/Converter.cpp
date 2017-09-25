@@ -1,179 +1,152 @@
 // Include Files
 #include "GaudiKernel/Converter.h"
-#include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/ConversionSvc.h"
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/INamedInterface.h"
+#include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/ThreadGaudi.h"
-#include "GaudiKernel/ConversionSvc.h"
 
 /// Retrieve the class type of objects the converter produces.
-const CLID& Converter::objType() const    {
-  return m_classType;
-}
+const CLID& Converter::objType() const { return m_classType; }
 
 /// Retrieve the class type of the data store the converter uses.
-long Converter::i_repSvcType() const   {
-  return m_storageType;
-}
+long Converter::i_repSvcType() const { return m_storageType; }
 
 /// Create the transient representation of an object.
-StatusCode Converter::createObj(IOpaqueAddress*, DataObject*&)   {
-  return StatusCode::SUCCESS;
-}
-
+StatusCode Converter::createObj( IOpaqueAddress*, DataObject*& ) { return StatusCode::SUCCESS; }
 
 /// Resolve the references of the created transient object.
-StatusCode Converter::fillObjRefs(IOpaqueAddress*, DataObject*)    {
-  return StatusCode::SUCCESS;
-}
+StatusCode Converter::fillObjRefs( IOpaqueAddress*, DataObject* ) { return StatusCode::SUCCESS; }
 
 /// Update the transient object from the other representation.
-StatusCode Converter::updateObj(IOpaqueAddress*, DataObject*)   {
-  return StatusCode::SUCCESS;
-}
+StatusCode Converter::updateObj( IOpaqueAddress*, DataObject* ) { return StatusCode::SUCCESS; }
 
 /// Update the references of an updated transient object.
-StatusCode Converter::updateObjRefs(IOpaqueAddress*, DataObject*)  {
-  return StatusCode::SUCCESS;
-}
+StatusCode Converter::updateObjRefs( IOpaqueAddress*, DataObject* ) { return StatusCode::SUCCESS; }
 
 /// Convert the transient object to the requested representation.
-StatusCode Converter::createRep(DataObject*, IOpaqueAddress*&)  {
-  return StatusCode::SUCCESS;
-}
+StatusCode Converter::createRep( DataObject*, IOpaqueAddress*& ) { return StatusCode::SUCCESS; }
 
 /// Resolve the references of the converted object.
-StatusCode Converter::fillRepRefs(IOpaqueAddress*, DataObject*)  {
-  return StatusCode::SUCCESS;
-}
+StatusCode Converter::fillRepRefs( IOpaqueAddress*, DataObject* ) { return StatusCode::SUCCESS; }
 
 /// Update the converted representation of a transient object.
-StatusCode Converter::updateRep(IOpaqueAddress*, DataObject*)  {
-  return StatusCode::SUCCESS;
-}
+StatusCode Converter::updateRep( IOpaqueAddress*, DataObject* ) { return StatusCode::SUCCESS; }
 
 /// Update the references of an already converted object.
-StatusCode Converter::updateRepRefs(IOpaqueAddress*, DataObject*)    {
-  return StatusCode::SUCCESS;
-}
+StatusCode Converter::updateRepRefs( IOpaqueAddress*, DataObject* ) { return StatusCode::SUCCESS; }
 
 /// Initialize the converter
-StatusCode Converter::initialize()    {
+StatusCode Converter::initialize()
+{
   // Get a reference to the Message Service
-  if ( !msgSvc() )   {
+  if ( !msgSvc() ) {
     return StatusCode::FAILURE;
   }
   return StatusCode::SUCCESS;
 }
 
 /// Finalize the converter
-StatusCode Converter::finalize() {
+StatusCode Converter::finalize()
+{
   // release services
-  m_messageSvc = nullptr;
-  m_dataManager = nullptr;
-  m_dataProvider = nullptr;
-  m_conversionSvc = nullptr;
+  m_messageSvc     = nullptr;
+  m_dataManager    = nullptr;
+  m_dataProvider   = nullptr;
+  m_conversionSvc  = nullptr;
   m_addressCreator = nullptr;
   return StatusCode::SUCCESS;
 }
 
 /// Set data provider service
-StatusCode Converter::setDataProvider(IDataProviderSvc* svc) {
+StatusCode Converter::setDataProvider( IDataProviderSvc* svc )
+{
   m_dataProvider = svc;
-  m_dataManager = svc;
+  m_dataManager  = svc;
   return StatusCode::SUCCESS;
 }
 
 /// Get data provider service
-SmartIF<IDataProviderSvc>& Converter::dataProvider()  const    {
-  return m_dataProvider;
-}
+SmartIF<IDataProviderSvc>& Converter::dataProvider() const { return m_dataProvider; }
 
 /// Get data manager service
-SmartIF<IDataManagerSvc>& Converter::dataManager()  const    {
-  return m_dataManager;
-}
+SmartIF<IDataManagerSvc>& Converter::dataManager() const { return m_dataManager; }
 
 /// Set conversion service the converter is connected to
-StatusCode Converter::setConversionSvc(IConversionSvc* svc)   {
+StatusCode Converter::setConversionSvc( IConversionSvc* svc )
+{
   m_conversionSvc = svc;
   return StatusCode::SUCCESS;
 }
 
 /// Get data conversion service the converter is connected to
-SmartIF<IConversionSvc>& Converter::conversionSvc()  const    {
-  return m_conversionSvc;
-}
+SmartIF<IConversionSvc>& Converter::conversionSvc() const { return m_conversionSvc; }
 
 /// Set address creator facility
-StatusCode Converter::setAddressCreator(IAddressCreator* creator)   {
+StatusCode Converter::setAddressCreator( IAddressCreator* creator )
+{
   m_addressCreator = creator;
   return StatusCode::SUCCESS;
 }
 
 /// Access the transient store
-SmartIF<IAddressCreator>& Converter::addressCreator()  const   {
-  return m_addressCreator;
-}
+SmartIF<IAddressCreator>& Converter::addressCreator() const { return m_addressCreator; }
 
 ///--- Retrieve pointer to service locator
-SmartIF<ISvcLocator>& Converter::serviceLocator()  const     {
-  return m_svcLocator;
-}
+SmartIF<ISvcLocator>& Converter::serviceLocator() const { return m_svcLocator; }
 
 ///--- Retrieve pointer to message service
-SmartIF<IMessageSvc>& Converter::msgSvc()  const   {
+SmartIF<IMessageSvc>& Converter::msgSvc() const
+{
   if ( !m_messageSvc ) {
     m_messageSvc = serviceLocator();
-    if( !m_messageSvc ) {
-      throw GaudiException("Service [MessageSvc] not found", "Converter", StatusCode::FAILURE);
+    if ( !m_messageSvc ) {
+      throw GaudiException( "Service [MessageSvc] not found", "Converter", StatusCode::FAILURE );
     }
   }
   return m_messageSvc;
 }
 
 /// Standard Constructor
-Converter::Converter(long storage_type, const CLID& class_type, ISvcLocator* svc) :
-  m_storageType(storage_type),
-  m_classType(class_type),
-  m_svcLocator(svc)
+Converter::Converter( long storage_type, const CLID& class_type, ISvcLocator* svc )
+    : m_storageType( storage_type ), m_classType( class_type ), m_svcLocator( svc )
 {
 }
 
-StatusCode
-Converter::service_i(const std::string& svcName, bool createIf,
-		     const InterfaceID& iid, void** ppSvc) const {
+StatusCode Converter::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const
+{
   // Check for name of conversion service
-  SmartIF<INamedInterface> cnvsvc(conversionSvc());
-  if (cnvsvc) {
-    const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
-    return helper.getService(svcName, createIf, iid, ppSvc);
+  SmartIF<INamedInterface> cnvsvc( conversionSvc() );
+  if ( cnvsvc ) {
+    const ServiceLocatorHelper helper( *serviceLocator(), "Converter", cnvsvc->name() );
+    return helper.getService( svcName, createIf, iid, ppSvc );
   }
   return StatusCode::FAILURE;
 }
 
-StatusCode
-Converter::service_i(const std::string& svcType, const std::string& svcName,
-		     const InterfaceID& iid, void** ppSvc) const {
+StatusCode Converter::service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
+                                 void** ppSvc ) const
+{
   // Check for name of conversion service
-  SmartIF<INamedInterface> cnvsvc(conversionSvc());
-  if (cnvsvc) {
-    const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
-    return helper.createService(svcType, svcName, iid, ppSvc);
+  SmartIF<INamedInterface> cnvsvc( conversionSvc() );
+  if ( cnvsvc ) {
+    const ServiceLocatorHelper helper( *serviceLocator(), "Converter", cnvsvc->name() );
+    return helper.createService( svcType, svcName, iid, ppSvc );
   }
   return StatusCode::FAILURE;
 }
 
-SmartIF<IService> Converter::service(const std::string& name, const bool createIf) const {
-  SmartIF<INamedInterface> cnvsvc(conversionSvc());
+SmartIF<IService> Converter::service( const std::string& name, const bool createIf ) const
+{
+  SmartIF<INamedInterface> cnvsvc( conversionSvc() );
   SmartIF<IService> svc;
-  if (cnvsvc) {
-    const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
-    svc = helper.service(name, false, createIf);
+  if ( cnvsvc ) {
+    const ServiceLocatorHelper helper( *serviceLocator(), "Converter", cnvsvc->name() );
+    svc = helper.service( name, false, createIf );
   }
   return svc;
 }

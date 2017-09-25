@@ -14,19 +14,18 @@
  *  @author Roel Aaij
  *  @date   2016-05-26
  */
-template<class T>
-class AnyDataGetAlgorithm : public GaudiAlgorithm {
+template <class T>
+class AnyDataGetAlgorithm : public GaudiAlgorithm
+{
 public:
   /// Standard constructor
-  AnyDataGetAlgorithm(const std::string& name, ISvcLocator* svcLoc): GaudiAlgorithm(name, svcLoc) {}
+  AnyDataGetAlgorithm( const std::string& name, ISvcLocator* svcLoc ) : GaudiAlgorithm( name, svcLoc ) {}
 
-  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode execute() override; ///< Algorithm execution
 
 private:
+  Gaudi::Property<std::string> m_location{this, "Location"};
 
-   Gaudi::Property<std::string> m_location{this, "Location"};
-
-   AnyDataHandle<std::vector<int>> m_ids{"/Event/Test/Ids", Gaudi::DataHandle::Reader, this};
-
+  AnyDataHandle<std::vector<int>> m_ids{"/Event/Test/Ids", Gaudi::DataHandle::Reader, this};
 };
 #endif // ANYDATA_ANADATAGETALGORITHM_H

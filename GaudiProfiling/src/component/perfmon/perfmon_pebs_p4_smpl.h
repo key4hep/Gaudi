@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2005-2007 Hewlett-Packard Development Company, L.P.
  *               Contributed by Stephane Eranian <eranian@hpl.hp.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
  * License as published by the Free Software Foundation.
@@ -80,35 +80,35 @@ extern "C" {
 #include <perfmon/perfmon.h>
 
 #ifdef __i386__
-#define PFM_PEBS_P4_SMPL_NAME	"pebs32_p4"
+#define PFM_PEBS_P4_SMPL_NAME "pebs32_p4"
 #else
-#define PFM_PEBS_P4_SMPL_NAME	"pebs64_p4"
+#define PFM_PEBS_P4_SMPL_NAME "pebs64_p4"
 #endif
 
 /*
  * format specific parameters (passed at context creation)
  */
 typedef struct {
-	uint64_t	cnt_reset;	/* counter reset value */
-	size_t		buf_size;	/* size of the buffer in bytes */
-	size_t		intr_thres;	/* index of interrupt threshold entry */
-	uint64_t	reserved[6];	/* for future use */
+  uint64_t cnt_reset;   /* counter reset value */
+  size_t buf_size;      /* size of the buffer in bytes */
+  size_t intr_thres;    /* index of interrupt threshold entry */
+  uint64_t reserved[6]; /* for future use */
 } pfm_pebs_p4_smpl_arg_t;
 
 /*
  * DS Save Area as described in section 15.10.5
  */
 typedef struct {
-	unsigned long	bts_buf_base;
-	unsigned long	bts_index;
-	unsigned long	bts_abs_max;
-	unsigned long	bts_intr_thres;
-	unsigned long	pebs_buf_base;
-	unsigned long	pebs_index;
-	unsigned long	pebs_abs_max;
-	unsigned long	pebs_intr_thres;
-	uint64_t	pebs_cnt_reset;
-} pfm_ds_area_p4_t; 
+  unsigned long bts_buf_base;
+  unsigned long bts_index;
+  unsigned long bts_abs_max;
+  unsigned long bts_intr_thres;
+  unsigned long pebs_buf_base;
+  unsigned long pebs_index;
+  unsigned long pebs_abs_max;
+  unsigned long pebs_intr_thres;
+  uint64_t pebs_cnt_reset;
+} pfm_ds_area_p4_t;
 
 /*
  * This header is at the beginning of the sampling buffer returned to the user.
@@ -121,45 +121,45 @@ typedef struct {
  * 	actual_buffer = (unsigned long)(hdr+1)+hdr->hdr_start_offs
  */
 typedef struct {
-	uint64_t		overflows;	/* #overflows for buffer */
-	size_t			buf_size;	/* bytes in the buffer */
-	size_t			start_offs;	/* actual buffer start offset */
-	uint32_t		version;	/* smpl format version */
-	uint32_t		reserved1;	/* for future use */
-	uint64_t		reserved2[5];	/* for future use */
-	pfm_ds_area_p4_t	ds;		/* DS management Area */
+  uint64_t overflows;    /* #overflows for buffer */
+  size_t buf_size;       /* bytes in the buffer */
+  size_t start_offs;     /* actual buffer start offset */
+  uint32_t version;      /* smpl format version */
+  uint32_t reserved1;    /* for future use */
+  uint64_t reserved2[5]; /* for future use */
+  pfm_ds_area_p4_t ds;   /* DS management Area */
 } pfm_pebs_p4_smpl_hdr_t;
 
 /*
  * PEBS record format as for both 32-bit and 64-bit modes
  */
 typedef struct {
-	unsigned long eflags;
-	unsigned long ip;
-	unsigned long eax;
-	unsigned long ebx;
-	unsigned long ecx;
-	unsigned long edx;
-	unsigned long esi;
-	unsigned long edi;
-	unsigned long ebp;
-	unsigned long esp;
+  unsigned long eflags;
+  unsigned long ip;
+  unsigned long eax;
+  unsigned long ebx;
+  unsigned long ecx;
+  unsigned long edx;
+  unsigned long esi;
+  unsigned long edi;
+  unsigned long ebp;
+  unsigned long esp;
 #ifdef __x86_64__
-	unsigned long r8;
-	unsigned long r9;
-	unsigned long r10;
-	unsigned long r11;
-	unsigned long r12;
-	unsigned long r13;
-	unsigned long r14;
-	unsigned long r15;
+  unsigned long r8;
+  unsigned long r9;
+  unsigned long r10;
+  unsigned long r11;
+  unsigned long r12;
+  unsigned long r13;
+  unsigned long r14;
+  unsigned long r15;
 #endif
 } pfm_pebs_p4_smpl_entry_t;
 
 #define PFM_PEBS_P4_SMPL_VERSION_MAJ 1U
 #define PFM_PEBS_P4_SMPL_VERSION_MIN 0U
-#define PFM_PEBS_P4_SMPL_VERSION (((PFM_PEBS_P4_SMPL_VERSION_MAJ&0xffff)<<16)|\
-				   (PFM_PEBS_P4_SMPL_VERSION_MIN & 0xffff))
+#define PFM_PEBS_P4_SMPL_VERSION                                                                                       \
+  ( ( ( PFM_PEBS_P4_SMPL_VERSION_MAJ & 0xffff ) << 16 ) | ( PFM_PEBS_P4_SMPL_VERSION_MIN & 0xffff ) )
 
 #ifdef __cplusplus
 };

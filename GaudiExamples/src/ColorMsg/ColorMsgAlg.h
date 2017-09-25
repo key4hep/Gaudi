@@ -1,5 +1,5 @@
 #ifndef COLORMSG_COLORMSGALG_H
-# define COLORMSG_COLORMSGALG_H
+#define COLORMSG_COLORMSGALG_H
 
 //<<<<<< INCLUDES                                                       >>>>>>
 #include "GaudiKernel/Algorithm.h"
@@ -9,21 +9,17 @@
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
  */
 
-
-
-class ColorMsgAlg : public Algorithm {
+class ColorMsgAlg : public Algorithm
+{
 
 public:
-  ColorMsgAlg (const std::string& name, ISvcLocator* pSvcLocator);
+  ColorMsgAlg( const std::string& name, ISvcLocator* pSvcLocator );
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
-  
+
 private:
-
 };
-
-
 
 //<<<<<< INLINE PUBLIC FUNCTIONS                                        >>>>>>
 //<<<<<< INLINE MEMBER FUNCTIONS                                        >>>>>>

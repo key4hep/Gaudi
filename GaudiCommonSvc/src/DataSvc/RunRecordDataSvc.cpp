@@ -15,7 +15,7 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#define  DATASVC_RUNRECORDDATASVC_CPP
+#define DATASVC_RUNRECORDDATASVC_CPP
 
 #include "RecordDataSvc.h"
 
@@ -35,23 +35,22 @@
  *   @author  M.Frank
  *   @version 1.0
  */
-class RunRecordDataSvc  : public RecordDataSvc   {
- public:
-
+class RunRecordDataSvc : public RecordDataSvc
+{
+public:
   /// Standard Constructor
-  RunRecordDataSvc(const std::string& nam, ISvcLocator* svc) : RecordDataSvc(nam,svc) {
-    m_cnvSvc = nullptr;
-    m_rootName = "/RunRecords";
-    m_incidentName = "NEW_RUN_RECORD";
+  RunRecordDataSvc( const std::string& nam, ISvcLocator* svc ) : RecordDataSvc( nam, svc )
+  {
+    m_cnvSvc           = nullptr;
+    m_rootName         = "/RunRecords";
+    m_incidentName     = "NEW_RUN_RECORD";
     m_saveIncidentName = "SAVE_RUN_RECORD";
-    m_persSvcName = "PersistencySvc/RecordPersistencySvc";
+    m_persSvcName      = "PersistencySvc/RecordPersistencySvc";
   }
 
   /// Standard Destructor
   ~RunRecordDataSvc() override = default;
-
 };
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_COMPONENT(RunRecordDataSvc)
-
+DECLARE_COMPONENT( RunRecordDataSvc )

@@ -21,34 +21,32 @@
  */
 
 MyClass1A::MyClass1A() {}
-MyClass1A::~MyClass1A(){}
-
+MyClass1A::~MyClass1A() {}
 
 // ============================================================================
 // Anonymous namespace to hide the allocator
 // ============================================================================
 namespace
 {
-  GaudiUtils::Allocator<MyClass1A> s_Allocator ;
+  GaudiUtils::Allocator<MyClass1A> s_Allocator;
 }
 // ============================================================================
 
 // ============================================================================
 /// overloaded 'new' operator
 // ============================================================================
-void* MyClass1A::operator new(size_t)
+void* MyClass1A::operator new( size_t )
 {
-  void *hit  ;
-  hit = (void *) s_Allocator.MallocSingle () ;
-  return hit ;
+  void* hit;
+  hit = (void*)s_Allocator.MallocSingle();
+  return hit;
 }
 // ============================================================================
 
 // ============================================================================
 /// overloaded 'delete' operator
 // ============================================================================
-void MyClass1A::operator delete( void *hit )
-{ s_Allocator.FreeSingle( (MyClass1A*) hit ); }
+void MyClass1A::operator delete( void* hit ) { s_Allocator.FreeSingle( (MyClass1A*)hit ); }
 // ============================================================================
 
 // ============================================================================

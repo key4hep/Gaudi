@@ -4,115 +4,100 @@
 // book the 2D histogram (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram2D*  GaudiHistos<PBASE>::book2D
-( const std::string&   title        ,
-  const HistoBinEdges& edgesX       ,
-  const HistoBinEdges& edgesY       ) const
+AIDA::IHistogram2D* GaudiHistos<PBASE>::book2D( const std::string& title, const HistoBinEdges& edgesX,
+                                                const HistoBinEdges& edgesY ) const
 {
   //
-  if  ( !produceHistos() )                   { return nullptr; } // RETURN
+  if ( !produceHistos() ) {
+    return nullptr;
+  } // RETURN
   //
   // exist?
-  auto hist = histo2D ( title ) ;
+  auto hist = histo2D( title );
   // histogram is already booked
-  if ( hist )                                { return hist ; } // RETURN !!
+  if ( hist ) {
+    return hist;
+  } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
   newHistoID( title, ID );
 
   // Create a new histogram and return
-  return this -> book2D ( ID, title, edgesX, edgesY );
+  return this->book2D( ID, title, edgesX, edgesY );
 }
 // ============================================================================
 // book the 2D histogram with forced ID (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram2D*  GaudiHistos<PBASE>::book2D
-( const HistoID&       ID           ,
-  const std::string&   title        ,
-  const HistoBinEdges& edgesX       ,
-  const HistoBinEdges& edgesY       ) const
+AIDA::IHistogram2D* GaudiHistos<PBASE>::book2D( const HistoID& ID, const std::string& title,
+                                                const HistoBinEdges& edgesX, const HistoBinEdges& edgesY ) const
 {
   //
-  if  ( !produceHistos() )                   { return nullptr; } // RETURN
+  if ( !produceHistos() ) {
+    return nullptr;
+  } // RETURN
   //
   // Check ID
-  if (ID.undefined())
-  {
-    this->Error("Undefined Histogram ID : Title='"+title+"'");
+  if ( ID.undefined() ) {
+    this->Error( "Undefined Histogram ID : Title='" + title + "'" );
     return nullptr;
   }
 
   // exist?
-  auto hist = histo2D ( ID ) ;
+  auto hist = histo2D( ID );
   // histogram is already booked
-  if ( hist )                 { return hist ; } // RETURN !!
+  if ( hist ) {
+    return hist;
+  } // RETURN !!
 
   // Histogram title
-  const std::string & htitle =
-    ( title.empty() ? "Unnamed 2D Histogram ID="+ID.idAsString() : title ) ;
+  const std::string& htitle = ( title.empty() ? "Unnamed 2D Histogram ID=" + ID.idAsString() : title );
 
   // book the histogram
-  if ( ID.numeric() )
-  {
-    hist = this->histoSvc() -> book ( histoPath()  ,
-                                      ID.numericID() ,
-                                      htitle       ,
-                                      edgesX       ,
-                                      edgesY       ) ;
-  }
-  else if ( ID.literal() )
-  {
-    hist = this->histoSvc() -> book ( histoPath()+"/"+
-                                      ID.literalID() ,
-                                      htitle         ,
-                                      edgesX         ,
-                                      edgesY         ) ;
+  if ( ID.numeric() ) {
+    hist = this->histoSvc()->book( histoPath(), ID.numericID(), htitle, edgesX, edgesY );
+  } else if ( ID.literal() ) {
+    hist = this->histoSvc()->book( histoPath() + "/" + ID.literalID(), htitle, edgesX, edgesY );
   }
 
   // check OK
-  if( !hist )
-  { this->Error( "IHistogram2D* points to NULL! ID='" + ID.idAsString() +
-                 "' title='"+htitle+"'" ) ; return nullptr; } // RETURN !!
+  if ( !hist ) {
+    this->Error( "IHistogram2D* points to NULL! ID='" + ID.idAsString() + "' title='" + htitle + "'" );
+    return nullptr;
+  } // RETURN !!
 
   // add histogram into histogram storages
-  m_histo2DMapID    [ ID    ] = hist ;
-  m_histo2DMapTitle [ title ] = hist ;
+  m_histo2DMapID[ID]       = hist;
+  m_histo2DMapTitle[title] = hist;
 
   // Declare to monitoring service
-  monitorHisto( Gaudi::Utils::Histos::toBase ( hist ) , ID );
+  monitorHisto( Gaudi::Utils::Histos::toBase( hist ), ID );
 
   // Printout and return
-  if ( this->msgLevel(MSG::DEBUG) )
-  { this->debug() << "Booked 2D Histogram : ID='" << ID
-                  << "' Path=" << histoPath()
-                  << " Title='"
-                  << Gaudi::Utils::Histos::htitle ( hist )
-                  << "'" << endmsg; }
-  return hist ;
+  if ( this->msgLevel( MSG::DEBUG ) ) {
+    this->debug() << "Booked 2D Histogram : ID='" << ID << "' Path=" << histoPath() << " Title='"
+                  << Gaudi::Utils::Histos::htitle( hist ) << "'" << endmsg;
+  }
+  return hist;
 }
 // ============================================================================
 // fill the 2D histogram (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram2D*
-GaudiHistos<PBASE>::plot2D
-( const double        valueX ,
-  const double        valueY ,
-  const std::string&  title  ,
-  const HistoBinEdges& edgesX ,
-  const HistoBinEdges& edgesY ,
-  const double        weight ) const
+AIDA::IHistogram2D* GaudiHistos<PBASE>::plot2D( const double valueX, const double valueY, const std::string& title,
+                                                const HistoBinEdges& edgesX, const HistoBinEdges& edgesY,
+                                                const double weight ) const
 {
-  AIDA::IHistogram2D * h(nullptr);
-  if ( produceHistos() )
-  {
+  AIDA::IHistogram2D* h( nullptr );
+  if ( produceHistos() ) {
     // retrieve or book the histogram
-    h = histo2D ( title ) ;
-    if ( !h ) { h = book2D ( title , edgesX , edgesY ) ; }
+    h = histo2D( title );
+    if ( !h ) {
+      h = book2D( title, edgesX, edgesY );
+    }
     // fill the histogram
-    h = fill ( h , valueX , valueY , weight , title );
+    h = fill( h, valueX, valueY, weight, title );
   }
   return h;
 }
@@ -120,28 +105,22 @@ GaudiHistos<PBASE>::plot2D
 // fill the 2D variable histogram with forced ID assignment (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram2D*
-GaudiHistos<PBASE>::plot2D
-( const double        valueX ,
-  const double        valueY ,
-  const HistoID&      ID     ,
-  const std::string&  title  ,
-  const HistoBinEdges& edgesX ,
-  const HistoBinEdges& edgesY ,
-  const double        weight ) const
+AIDA::IHistogram2D* GaudiHistos<PBASE>::plot2D( const double valueX, const double valueY, const HistoID& ID,
+                                                const std::string& title, const HistoBinEdges& edgesX,
+                                                const HistoBinEdges& edgesY, const double weight ) const
 {
-  AIDA::IHistogram2D * h(nullptr);
-  if ( produceHistos() )
-  {
+  AIDA::IHistogram2D* h( nullptr );
+  if ( produceHistos() ) {
     // retrieve or book the histogram
-    h = histo2D ( ID ) ;
-    if ( !h ) {  h = book2D ( ID , title , edgesX , edgesY ) ; }
+    h = histo2D( ID );
+    if ( !h ) {
+      h = book2D( ID, title, edgesX, edgesY );
+    }
     // fill
-    h = fill ( h , valueX , valueY , weight , title ) ;
+    h = fill( h, valueX, valueY, weight, title );
   }
   return h;
 }
 // ============================================================================
 // The END
 // ============================================================================
-

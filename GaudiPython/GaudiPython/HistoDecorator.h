@@ -13,7 +13,7 @@
 #include "GaudiPython/GaudiPython.h"
 #include "GaudiPython/Vector.h"
 // ============================================================================
-struct GaudiHistoTool ;
+struct GaudiHistoTool;
 // ============================================================================
 namespace GaudiPython
 {
@@ -27,12 +27,12 @@ namespace GaudiPython
   {
   public:
     // ========================================================================
-    typedef std::vector<GaudiAlg::ID>        IDs        ;
-    typedef std::vector<AIDA::IHistogram1D*> Histos1D   ;
-    typedef std::vector<AIDA::IHistogram2D*> Histos2D   ;
-    typedef std::vector<AIDA::IHistogram3D*> Histos3D   ;
-    typedef std::vector<AIDA::IProfile1D*>   Profiles1D ;
-    typedef std::vector<AIDA::IProfile2D*>   Profiles2D ;
+    typedef std::vector<GaudiAlg::ID> IDs;
+    typedef std::vector<AIDA::IHistogram1D*> Histos1D;
+    typedef std::vector<AIDA::IHistogram2D*> Histos2D;
+    typedef std::vector<AIDA::IHistogram3D*> Histos3D;
+    typedef std::vector<AIDA::IProfile1D*> Profiles1D;
+    typedef std::vector<AIDA::IProfile2D*> Profiles2D;
     // ========================================================================
   public:
     // ========================================================================
@@ -45,13 +45,8 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const double                 data         ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const double data, const std::string& title,
+                                       const double low, const double high, const unsigned long bins = 100 );
     // ========================================================================
     /** "plot"(book&fill) a sequence of data from the vector (implicit loop)
      *  (Expected to be more efficient)
@@ -63,14 +58,9 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const double                 data         ,
-      const GaudiAlg::HistoID&     ID           ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const double data, const GaudiAlg::HistoID& ID,
+                                       const std::string& title, const double low, const double high,
+                                       const unsigned long bins = 100 );
     // ========================================================================
     /** "plot"(book&fill) a sequence of data from the vector (implicit loop)
      *  (Expected to be more efficient)
@@ -82,14 +72,9 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const double                 data         ,
-      const long                   ID           ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const double data, const long ID,
+                                       const std::string& title, const double low, const double high,
+                                       const unsigned long bins = 100 );
     // ========================================================================
     /** "plot"(book&fill) a sequence of data from the vector (implicit loop)
      *  (Expected to be more efficient)
@@ -101,14 +86,9 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const double                 data         ,
-      const std::string&           ID           ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const double data, const std::string& ID,
+                                       const std::string& title, const double low, const double high,
+                                       const unsigned long bins = 100 );
     // ========================================================================
     /** "plot"(book&fill) a sequence of data from the vector (implicit loop)
      *  (Expected to be more efficient)
@@ -119,13 +99,9 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const GaudiPython::Vector&   data         ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data,
+                                       const std::string& title, const double low, const double high,
+                                       const unsigned long bins = 100 );
     // ========================================================================
     /** "plot"(book&fill) a sequence of data from the vector (implicit loop)
      *  (Expected to be more efficient)
@@ -137,14 +113,9 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const GaudiPython::Vector&   data         ,
-      const GaudiAlg::HistoID&     ID           ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data,
+                                       const GaudiAlg::HistoID& ID, const std::string& title, const double low,
+                                       const double high, const unsigned long bins = 100 );
     // ========================================================================
     /** "plot"(book&fill) a sequence of data from the vector (implicit loop)
      *  (Expected to be more efficient)
@@ -156,14 +127,9 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const GaudiPython::Vector&   data         ,
-      const long                   ID           ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data, const long ID,
+                                       const std::string& title, const double low, const double high,
+                                       const unsigned long bins = 100 );
     // ========================================================================
     /** "plot"(book&fill) a sequence of data from the vector (implicit loop)
      *  (Expected to be more efficient)
@@ -175,14 +141,9 @@ namespace GaudiPython
      *  @param high  high edge
      *  @param bins  number of bins
      */
-    static AIDA::IHistogram1D*   plot1D
-    ( const GaudiHistoAlg&         algo         ,
-      const GaudiPython::Vector&   data         ,
-      const std::string&           ID           ,
-      const std::string&           title        ,
-      const double                 low          ,
-      const double                 high         ,
-      const unsigned long          bins  = 100  ) ;
+    static AIDA::IHistogram1D* plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data,
+                                       const std::string& ID, const std::string& title, const double low,
+                                       const double high, const unsigned long bins = 100 );
     // ========================================================================
     /** fill the 2D histogram (book on demand)
      *  @param valueX x value to be filled
@@ -197,18 +158,10 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 2D histogram
      */
-    static AIDA::IHistogram2D*  plot2D
-    ( const GaudiHistoAlg&      algo         ,
-      const double              valueX       ,
-      const double              valueY       ,
-      const std::string&        title        ,
-      const double              lowX         ,
-      const double              highX        ,
-      const double              lowY         ,
-      const double              highY        ,
-      const unsigned long       binsX  = 50  ,
-      const unsigned long       binsY  = 50  ,
-      const double              weight = 1.0 ) ;
+    static AIDA::IHistogram2D* plot2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const std::string& title, const double lowX, const double highX,
+                                       const double lowY, const double highY, const unsigned long binsX = 50,
+                                       const unsigned long binsY = 50, const double weight = 1.0 );
     // ========================================================================
     /** fill the 2D histogram with forced ID assignment (book on demand)
      *  @param valueX x value to be filled
@@ -224,19 +177,11 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 2D histogram
      */
-    static AIDA::IHistogram2D*  plot2D
-    ( const GaudiHistoAlg&      algo         ,
-      const double              valueX       ,
-      const double              valueY       ,
-      const GaudiAlg::HistoID&  ID           ,
-      const std::string&        title        ,
-      const double              lowX         ,
-      const double              highX        ,
-      const double              lowY         ,
-      const double              highY        ,
-      const unsigned long       binsX  = 50  ,
-      const unsigned long       binsY  = 50  ,
-      const double              weight = 1.0 ) ;
+    static AIDA::IHistogram2D* plot2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const GaudiAlg::HistoID& ID, const std::string& title, const double lowX,
+                                       const double highX, const double lowY, const double highY,
+                                       const unsigned long binsX = 50, const unsigned long binsY = 50,
+                                       const double weight = 1.0 );
     // ========================================================================
     /** fill the 2D histogram with forced ID assignment (book on demand)
      *  @param valueX x value to be filled
@@ -252,19 +197,10 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 2D histogram
      */
-    static AIDA::IHistogram2D*  plot2D
-    ( const GaudiHistoAlg&      algo         ,
-      const double              valueX       ,
-      const double              valueY       ,
-      const long                ID           ,
-      const std::string&        title        ,
-      const double              lowX         ,
-      const double              highX        ,
-      const double              lowY         ,
-      const double              highY        ,
-      const unsigned long       binsX  = 50  ,
-      const unsigned long       binsY  = 50  ,
-      const double              weight = 1.0 ) ;
+    static AIDA::IHistogram2D* plot2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const long ID, const std::string& title, const double lowX, const double highX,
+                                       const double lowY, const double highY, const unsigned long binsX = 50,
+                                       const unsigned long binsY = 50, const double weight = 1.0 );
     // ========================================================================
     /** fill the 2D histogram with forced ID assignment (book on demand)
      *  @param valueX x value to be filled
@@ -280,19 +216,11 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 2D histogram
      */
-    static AIDA::IHistogram2D*  plot2D
-    ( const GaudiHistoAlg&      algo         ,
-      const double              valueX       ,
-      const double              valueY       ,
-      const std::string&        ID           ,
-      const std::string&        title        ,
-      const double              lowX         ,
-      const double              highX        ,
-      const double              lowY         ,
-      const double              highY        ,
-      const unsigned long       binsX  = 50  ,
-      const unsigned long       binsY  = 50  ,
-      const double              weight = 1.0 ) ;
+    static AIDA::IHistogram2D* plot2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const std::string& ID, const std::string& title, const double lowX,
+                                       const double highX, const double lowY, const double highY,
+                                       const unsigned long binsX = 50, const unsigned long binsY = 50,
+                                       const double weight = 1.0 );
     // ========================================================================
     /** fill the 3D histogram (book on demand)
      *  @param valueX x value to be filled
@@ -311,22 +239,12 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 3D histogram
      */
-    static AIDA::IHistogram3D*  plot3D
-    ( const GaudiHistoAlg&      algo   ,
-      const double        valueX       ,
-      const double        valueY       ,
-      const double        valueZ       ,
-      const std::string&  title        ,
-      const double        lowX         ,
-      const double        highX        ,
-      const double        lowY         ,
-      const double        highY        ,
-      const double        lowZ         ,
-      const double        highZ        ,
-      const unsigned long binsX  = 10  ,
-      const unsigned long binsY  = 10  ,
-      const unsigned long binsZ  = 10  ,
-      const double        weight = 1.0 ) ;
+    static AIDA::IHistogram3D* plot3D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const double valueZ, const std::string& title, const double lowX,
+                                       const double highX, const double lowY, const double highY, const double lowZ,
+                                       const double highZ, const unsigned long binsX = 10,
+                                       const unsigned long binsY = 10, const unsigned long binsZ = 10,
+                                       const double weight = 1.0 );
     // ========================================================================
     /** fill the 3D histogram (book on demand)
      *  @param valueX x value to be filled
@@ -346,23 +264,12 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 3D histogram
      */
-    static AIDA::IHistogram3D*  plot3D
-    ( const GaudiHistoAlg&      algo         ,
-      const double              valueX       ,
-      const double              valueY       ,
-      const double              valueZ       ,
-      const GaudiAlg::HistoID&  ID           ,
-      const std::string&        title        ,
-      const double              lowX         ,
-      const double              highX        ,
-      const double              lowY         ,
-      const double              highY        ,
-      const double              lowZ         ,
-      const double              highZ        ,
-      const unsigned long       binsX  = 10  ,
-      const unsigned long       binsY  = 10  ,
-      const unsigned long       binsZ  = 10  ,
-      const double              weight = 1.0 ) ;
+    static AIDA::IHistogram3D* plot3D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const double valueZ, const GaudiAlg::HistoID& ID, const std::string& title,
+                                       const double lowX, const double highX, const double lowY, const double highY,
+                                       const double lowZ, const double highZ, const unsigned long binsX = 10,
+                                       const unsigned long binsY = 10, const unsigned long binsZ = 10,
+                                       const double weight = 1.0 );
     // ========================================================================
     /** fill the 3D histogram (book on demand)
      *  @param valueX x value to be filled
@@ -382,23 +289,12 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 3D histogram
      */
-    static AIDA::IHistogram3D*  plot3D
-    ( const GaudiHistoAlg&      algo         ,
-      const double              valueX       ,
-      const double              valueY       ,
-      const double              valueZ       ,
-      const long                ID           ,
-      const std::string&        title        ,
-      const double              lowX         ,
-      const double              highX        ,
-      const double              lowY         ,
-      const double              highY        ,
-      const double              lowZ         ,
-      const double              highZ        ,
-      const unsigned long       binsX  = 10  ,
-      const unsigned long       binsY  = 10  ,
-      const unsigned long       binsZ  = 10  ,
-      const double              weight = 1.0 ) ;
+    static AIDA::IHistogram3D* plot3D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const double valueZ, const long ID, const std::string& title, const double lowX,
+                                       const double highX, const double lowY, const double highY, const double lowZ,
+                                       const double highZ, const unsigned long binsX = 10,
+                                       const unsigned long binsY = 10, const unsigned long binsZ = 10,
+                                       const double weight = 1.0 );
     // ========================================================================
     /** fill the 3D histogram (book on demand)
      *  @param valueX x value to be filled
@@ -418,240 +314,105 @@ namespace GaudiPython
      *  @param weight weight
      *  @return pointer to AIDA 3D histogram
      */
-    static AIDA::IHistogram3D*  plot3D
-    ( const GaudiHistoAlg&      algo         ,
-      const double              valueX       ,
-      const double              valueY       ,
-      const double              valueZ       ,
-      const std::string&        ID           ,
-      const std::string&        title        ,
-      const double              lowX         ,
-      const double              highX        ,
-      const double              lowY         ,
-      const double              highY        ,
-      const double              lowZ         ,
-      const double              highZ        ,
-      const unsigned long       binsX  = 10  ,
-      const unsigned long       binsY  = 10  ,
-      const unsigned long       binsZ  = 10  ,
-      const double              weight = 1.0 ) ;
+    static AIDA::IHistogram3D* plot3D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                       const double valueZ, const std::string& ID, const std::string& title,
+                                       const double lowX, const double highX, const double lowY, const double highY,
+                                       const double lowZ, const double highZ, const unsigned long binsX = 10,
+                                       const unsigned long binsY = 10, const unsigned long binsZ = 10,
+                                       const double weight = 1.0 );
     // ========================================================================
     // 1D-profiles: by title
     // ========================================================================
-    static AIDA::IProfile1D* profile1D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const unsigned long      binsX  = 100 ,
-      const std::string&       opt    = ""  ,
-      const double             lowY   = -std::numeric_limits<double>::max() ,
-      const double             highY  =  std::numeric_limits<double>::max() ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile1D* profile1D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                        const std::string& title, const double lowX, const double highX,
+                                        const unsigned long binsX = 100, const std::string& opt = "",
+                                        const double lowY   = -std::numeric_limits<double>::max(),
+                                        const double highY  = std::numeric_limits<double>::max(),
+                                        const double weight = 1.0 );
     // ========================================================================
     // 1D-profiles: by generic ID
     // ========================================================================
-    static AIDA::IProfile1D* profile1D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const GaudiAlg::HistoID& ID           ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const unsigned long      binsX  = 100 ,
-      const std::string&       opt    = ""  ,
-      const double             lowY   = -std::numeric_limits<double>::max() ,
-      const double             highY  =  std::numeric_limits<double>::max() ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile1D*
+    profile1D( const GaudiHistoAlg& algo, const double valueX, const double valueY, const GaudiAlg::HistoID& ID,
+               const std::string& title, const double lowX, const double highX, const unsigned long binsX = 100,
+               const std::string& opt = "", const double lowY = -std::numeric_limits<double>::max(),
+               const double highY = std::numeric_limits<double>::max(), const double weight = 1.0 );
     // ========================================================================
     // 1D-profiles: by numeric ID
     // ========================================================================
-    static AIDA::IProfile1D* profile1D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const long               ID           ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const unsigned long      binsX  = 100 ,
-      const std::string&       opt    = ""  ,
-      const double             lowY   = -std::numeric_limits<double>::max() ,
-      const double             highY  =  std::numeric_limits<double>::max() ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile1D* profile1D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                        const long ID, const std::string& title, const double lowX, const double highX,
+                                        const unsigned long binsX = 100, const std::string& opt = "",
+                                        const double lowY   = -std::numeric_limits<double>::max(),
+                                        const double highY  = std::numeric_limits<double>::max(),
+                                        const double weight = 1.0 );
     // ========================================================================
     // 1D-profiles: by string ID
     // ========================================================================
-    static AIDA::IProfile1D* profile1D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const std::string&       ID           ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const unsigned long      binsX  = 100 ,
-      const std::string&       opt    = ""  ,
-      const double             lowY   = -std::numeric_limits<double>::max() ,
-      const double             highY  =  std::numeric_limits<double>::max() ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile1D*
+    profile1D( const GaudiHistoAlg& algo, const double valueX, const double valueY, const std::string& ID,
+               const std::string& title, const double lowX, const double highX, const unsigned long binsX = 100,
+               const std::string& opt = "", const double lowY = -std::numeric_limits<double>::max(),
+               const double highY = std::numeric_limits<double>::max(), const double weight = 1.0 );
     // ========================================================================
     // 2D-profiles: by title
     // ========================================================================
-    static AIDA::IProfile2D* profile2D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const double             valueZ       ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const double             lowY         ,
-      const double             highY        ,
-      const unsigned long      binsX  = 50  ,
-      const unsigned long      binsY  = 50  ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile2D* profile2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                        const double valueZ, const std::string& title, const double lowX,
+                                        const double highX, const double lowY, const double highY,
+                                        const unsigned long binsX = 50, const unsigned long binsY = 50,
+                                        const double weight = 1.0 );
     // ========================================================================
     // 2D-profiles: by generic ID
     // ========================================================================
-    static AIDA::IProfile2D* profile2D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const double             valueZ       ,
-      const GaudiAlg::HistoID& ID           ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const double             lowY         ,
-      const double             highY        ,
-      const unsigned long      binsX  = 50  ,
-      const unsigned long      binsY  = 50  ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile2D* profile2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                        const double valueZ, const GaudiAlg::HistoID& ID, const std::string& title,
+                                        const double lowX, const double highX, const double lowY, const double highY,
+                                        const unsigned long binsX = 50, const unsigned long binsY = 50,
+                                        const double weight = 1.0 );
     // ========================================================================
     // 2D-profiles: by numeric ID
     // ========================================================================
-    static AIDA::IProfile2D* profile2D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const double             valueZ       ,
-      const long               ID           ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const double             lowY         ,
-      const double             highY        ,
-      const unsigned long      binsX  = 50  ,
-      const unsigned long      binsY  = 50  ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile2D* profile2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                        const double valueZ, const long ID, const std::string& title, const double lowX,
+                                        const double highX, const double lowY, const double highY,
+                                        const unsigned long binsX = 50, const unsigned long binsY = 50,
+                                        const double weight = 1.0 );
     // ========================================================================
     // 2D-profiles: by string ID
     // ========================================================================
-    static AIDA::IProfile2D* profile2D
-    ( const GaudiHistoAlg&     algo         ,
-      const double             valueX       ,
-      const double             valueY       ,
-      const double             valueZ       ,
-      const std::string&       ID           ,
-      const std::string&       title        ,
-      const double             lowX         ,
-      const double             highX        ,
-      const double             lowY         ,
-      const double             highY        ,
-      const unsigned long      binsX  = 50  ,
-      const unsigned long      binsY  = 50  ,
-      const double             weight = 1.0 ) ;
+    static AIDA::IProfile2D* profile2D( const GaudiHistoAlg& algo, const double valueX, const double valueY,
+                                        const double valueZ, const std::string& ID, const std::string& title,
+                                        const double lowX, const double highX, const double lowY, const double highY,
+                                        const unsigned long binsX = 50, const unsigned long binsY = 50,
+                                        const double weight = 1.0 );
     // ========================================================================
   public:
     // ========================================================================
-    static size_t _histos_a_
-    ( const GaudiHistoAlg*       cmp    , 
-      IDs&                       ids    ,
-      Histos1D&                  histos ) ;
-    static size_t _histos_t_
-    ( const GaudiHistoTool*      cmp    , 
-      IDs&                       ids    ,
-      Histos1D&                  histos ) ;
-    static size_t _histos_a_
-    ( const IAlgorithm*          cmp    , 
-      IDs&                       ids    ,
-      Histos1D&                  histos ) ;
-    static size_t _histos_t_
-    ( const IAlgTool*            cmp    , 
-      IDs&                       ids    ,
-      Histos1D&                  histos ) ;
+    static size_t _histos_a_( const GaudiHistoAlg* cmp, IDs& ids, Histos1D& histos );
+    static size_t _histos_t_( const GaudiHistoTool* cmp, IDs& ids, Histos1D& histos );
+    static size_t _histos_a_( const IAlgorithm* cmp, IDs& ids, Histos1D& histos );
+    static size_t _histos_t_( const IAlgTool* cmp, IDs& ids, Histos1D& histos );
     // ========================================================================
-    static size_t _histos_a_ 
-    ( const GaudiHistoAlg*       cmp    , 
-      IDs&                       ids    ,
-      Histos2D&                  histos ) ;
-    static size_t _histos_t_
-    ( const GaudiHistoTool*      cmp    , 
-      IDs&                       ids    ,
-      Histos2D&                  histos ) ;
-    static size_t _histos_a_
-    ( const IAlgorithm*          cmp    , 
-      IDs&                       ids    ,
-      Histos2D&                  histos ) ;
-    static size_t _histos_t_
-    ( const IAlgTool*            cmp    , 
-      IDs&                       ids    ,
-      Histos2D&                  histos ) ;
+    static size_t _histos_a_( const GaudiHistoAlg* cmp, IDs& ids, Histos2D& histos );
+    static size_t _histos_t_( const GaudiHistoTool* cmp, IDs& ids, Histos2D& histos );
+    static size_t _histos_a_( const IAlgorithm* cmp, IDs& ids, Histos2D& histos );
+    static size_t _histos_t_( const IAlgTool* cmp, IDs& ids, Histos2D& histos );
     // ========================================================================
-    static size_t _histos_a_
-    ( const GaudiHistoAlg*       cmp    , 
-      IDs&                       ids    ,
-      Histos3D&                  histos ) ;
-    static size_t _histos_t_
-    ( const GaudiHistoTool*      cmp    , 
-      IDs&                       ids    ,
-      Histos3D&                  histos ) ;
-    static size_t _histos_a_
-    ( const IAlgorithm*          cmp    , 
-      IDs&                       ids    ,
-      Histos3D&                  histos ) ;
-    static size_t _histos_t_
-    ( const IAlgTool*            cmp    , 
-      IDs&                       ids    ,
-      Histos3D&                  histos ) ;
+    static size_t _histos_a_( const GaudiHistoAlg* cmp, IDs& ids, Histos3D& histos );
+    static size_t _histos_t_( const GaudiHistoTool* cmp, IDs& ids, Histos3D& histos );
+    static size_t _histos_a_( const IAlgorithm* cmp, IDs& ids, Histos3D& histos );
+    static size_t _histos_t_( const IAlgTool* cmp, IDs& ids, Histos3D& histos );
     // ========================================================================
-    static size_t _histos_a_
-    ( const GaudiHistoAlg*       cmp    , 
-      IDs&                       ids    ,
-      Profiles1D&                histos ) ;
-    static size_t _histos_t_
-    ( const GaudiHistoTool*      cmp    , 
-      IDs&                       ids    ,
-      Profiles1D&                histos ) ;
-    static size_t _histos_a_
-    ( const IAlgorithm*          cmp    , 
-      IDs&                       ids    ,
-      Profiles1D&                histos ) ;
-    static size_t _histos_t_
-    ( const IAlgTool*            cmp    , 
-      IDs&                       ids    ,
-      Profiles1D&                histos ) ;
+    static size_t _histos_a_( const GaudiHistoAlg* cmp, IDs& ids, Profiles1D& histos );
+    static size_t _histos_t_( const GaudiHistoTool* cmp, IDs& ids, Profiles1D& histos );
+    static size_t _histos_a_( const IAlgorithm* cmp, IDs& ids, Profiles1D& histos );
+    static size_t _histos_t_( const IAlgTool* cmp, IDs& ids, Profiles1D& histos );
     // ========================================================================
-    static size_t _histos_a_
-    ( const GaudiHistoAlg*       cmp    , 
-      IDs&                       ids    ,
-      Profiles2D&                histos ) ;
-    static size_t _histos_t_
-    ( const GaudiHistoTool*      cmp    , 
-      IDs&                       ids    ,
-      Profiles2D&                histos ) ;
-    static size_t _histos_a_
-    ( const IAlgorithm*          cmp    , 
-      IDs&                       ids    ,
-      Profiles2D&                histos ) ;
-    static size_t _histos_t_
-    ( const IAlgTool*            cmp    , 
-      IDs&                       ids    ,
-      Profiles2D&                histos ) ;
+    static size_t _histos_a_( const GaudiHistoAlg* cmp, IDs& ids, Profiles2D& histos );
+    static size_t _histos_t_( const GaudiHistoTool* cmp, IDs& ids, Profiles2D& histos );
+    static size_t _histos_a_( const IAlgorithm* cmp, IDs& ids, Profiles2D& histos );
+    static size_t _histos_t_( const IAlgTool* cmp, IDs& ids, Profiles2D& histos );
     // ========================================================================
   };
   // ==========================================================================

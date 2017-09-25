@@ -8,7 +8,6 @@
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/SmartIF.h"

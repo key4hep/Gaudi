@@ -1,6 +1,7 @@
 from subprocess import Popen, PIPE
 import os
 
+
 def test():
     'https://its.cern.ch/jira/browse/GAUDI-1179'
     from os.path import dirname, join

@@ -44,75 +44,71 @@ class DataObject;
     Author:  M.Frank
     Version: 1.0
 */
-class GAUDI_API SmartRefBase {
+class GAUDI_API SmartRefBase
+{
 public:
   /// Object data: ID of the link hint to the identifiable object
-  mutable long                    m_hintID;
+  mutable long m_hintID;
   /// Object data: ID of the object within the identifiable container (if any)
-  mutable long                    m_linkID;
+  mutable long m_linkID;
   /// Object data: Pointer to the identifiable object the link originates
-  mutable const DataObject*       m_data;
+  mutable const DataObject* m_data;
   /// Object data: Pointer to the Contained object (if applicable)
-  mutable const ContainedObject*  m_contd;
+  mutable const ContainedObject* m_contd;
 
-  mutable long                    m_type;
+  mutable long m_type;
 
   enum { DATAOBJECT, CONTAINEDOBJECT };
 
   /// Load on demand of ContainedObject like references
-  const ContainedObject* accessData ( const ContainedObject* typ )   const;
+  const ContainedObject* accessData( const ContainedObject* typ ) const;
   /// Load on demand of DataObject like references
-  const DataObject* accessData ( const DataObject* typ )   const;
+  const DataObject* accessData( const DataObject* typ ) const;
 
   /// Extended equality check
-  bool isEqualEx(const DataObject* pObj, const SmartRefBase& c)  const;
+  bool isEqualEx( const DataObject* pObj, const SmartRefBase& c ) const;
   /// Extended equality check
-  bool isEqualEx(const ContainedObject* pObj, const SmartRefBase& c)  const;
+  bool isEqualEx( const ContainedObject* pObj, const SmartRefBase& c ) const;
   /// Equality operator for ContainedObject like references
-  bool isEqual          (const ContainedObject* /* pObj */, const SmartRefBase& c)  const  {
-    return (m_hintID == c.m_hintID && m_linkID == c.m_linkID &&
-            m_data   == c.m_data   && m_contd  == c.m_contd);
+  bool isEqual( const ContainedObject* /* pObj */, const SmartRefBase& c ) const
+  {
+    return ( m_hintID == c.m_hintID && m_linkID == c.m_linkID && m_data == c.m_data && m_contd == c.m_contd );
   }
   /// Equality operator for DataObject like references
-  bool isEqual          (const DataObject* /* pObj */, const SmartRefBase& c)  const    {
-    return m_linkID == c.m_linkID && m_data   == c.m_data;
+  bool isEqual( const DataObject* /* pObj */, const SmartRefBase& c ) const
+  {
+    return m_linkID == c.m_linkID && m_data == c.m_data;
   }
   /// Output streamer for DataObject like references
-  void writeObject  (const DataObject* pObject, StreamBuffer& s)  const   {
-    s.addIdentifiedLink(pObject, m_hintID);
-  }
+  void writeObject( const DataObject* pObject, StreamBuffer& s ) const { s.addIdentifiedLink( pObject, m_hintID ); }
   /// Output streamer for ContainedObject like references
-  void writeObject  (const ContainedObject* pObject, StreamBuffer& s)  const    {
-    s.addContainedLink(pObject, m_hintID, m_linkID);
+  void writeObject( const ContainedObject* pObject, StreamBuffer& s ) const
+  {
+    s.addContainedLink( pObject, m_hintID, m_linkID );
   }
   /// Input streamer for DataObject like references
-  DataObject* readObject   (const DataObject* /* pObject */, StreamBuffer& s)  const   {
+  DataObject* readObject( const DataObject* /* pObject */, StreamBuffer& s ) const
+  {
     DataObject* pObj = 0;
-    s.getIdentifiedLink(pObj, m_hintID);
+    s.getIdentifiedLink( pObj, m_hintID );
     return pObj;
   }
   /// Output streamer for ContainedObject like references
-  ContainedObject* readObject(const ContainedObject* /* pObject */, StreamBuffer& s)  const    {
+  ContainedObject* readObject( const ContainedObject* /* pObject */, StreamBuffer& s ) const
+  {
     ContainedObject* pObj = 0;
-    s.getContainedLink(pObj, m_hintID, m_linkID);
+    s.getContainedLink( pObj, m_hintID, m_linkID );
     return pObj;
   }
-  void setObjectType(const ContainedObject* /* pobj */) const {
-    m_type = CONTAINEDOBJECT;
-  }
-  void setObjectType(const DataObject* /* pobj */)  const {
-    m_type = DATAOBJECT;
-  }
+  void setObjectType( const ContainedObject* /* pobj */ ) const { m_type = CONTAINEDOBJECT; }
+  void setObjectType( const DataObject* /* pobj */ ) const { m_type = DATAOBJECT; }
 
   /// Shortcut to access the path to the linked object.
-  const std::string &path () const;
+  const std::string& path() const;
 
 public:
-  int objectType()  const {
-    return m_type;
-  }
+  int objectType() const { return m_type; }
   /// Setup smart reference when reading. Must be allowed from external sources.
-  void set(DataObject* pObj, long hint_id, long link_id);
-
+  void set( DataObject* pObj, long hint_id, long link_id );
 };
 #endif // KERNEL_SMARTREFBASE_H

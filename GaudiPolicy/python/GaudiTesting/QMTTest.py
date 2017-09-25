@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 
+
 class QMTTest(BaseTest):
 
     def __init__(self, path=None):
@@ -12,7 +13,7 @@ class QMTTest(BaseTest):
         if path:
             self.XMLParser(path)
 
-    def XMLParser(self, path) :
+    def XMLParser(self, path):
         '''
         Parse a QMTest XML test description (.qmt file) to initialize the test
         instance.
@@ -42,7 +43,6 @@ class QMTTest(BaseTest):
                             data = int(data)
                         setattr(self, name, data)
 
-
     def ValidateOutput(self, stdout, stderr, result):
         if self.validator:
             class CallWrapper(object):
@@ -50,7 +50,8 @@ class QMTTest(BaseTest):
                     Small wrapper class to dynamically bind some default arguments
                     to a callable.
                     """
-                def __init__(self, callable, extra_args = {}):
+
+                def __init__(self, callable, extra_args={}):
                     self.callable = callable
                     self.extra_args = extra_args
                     # get the list of names of positional arguments
@@ -60,11 +61,12 @@ class QMTTest(BaseTest):
                     # since it is added automatically
                     if self.args_order[0] == "self":
                         del self.args_order[0]
+
                 def __call__(self, *args, **kwargs):
                     # Check which positional arguments are used
                     positional = self.args_order[:len(args)]
 
-                    kwargs = dict(kwargs) # copy the arguments dictionary
+                    kwargs = dict(kwargs)  # copy the arguments dictionary
                     for a in self.extra_args:
                         # use "extra_args" for the arguments not specified as
                         # positional or keyword
@@ -109,7 +111,7 @@ class QMTTest(BaseTest):
                                                  "result": result,
                                                  "causes": self.causes})
                                 }
-            #print self.validator
+            # print self.validator
             exec self.validator in globals(), exported_symbols
             return result, self.causes
         else:

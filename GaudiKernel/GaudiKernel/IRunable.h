@@ -15,10 +15,11 @@
    @author Markus Frank
    @version 2.0
 */
-class GAUDI_API IRunable: virtual public IInterface {
+class GAUDI_API IRunable : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IRunable,2,0);
+  DeclareInterfaceID( IRunable, 2, 0 );
 
   /// Run the class implementation
   virtual StatusCode run() = 0;

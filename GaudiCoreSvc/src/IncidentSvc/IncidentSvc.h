@@ -5,17 +5,16 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <map>
 #include <list>
+#include <map>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/ChronoEntity.h"
+#include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/StringKey.h"
 // ============================================================================
 // TBB
 // ============================================================================
@@ -35,22 +34,22 @@
 
 struct isSingleShot_t;
 
-class IncidentSvc : public extends<Service,
-                                   IIncidentSvc>
+class IncidentSvc : public extends<Service, IIncidentSvc>
 {
-    public:
-  struct Listener final
-  {
+public:
+  struct Listener final {
     IIncidentListener* iListener;
     long priority;
     bool rethrow;
     bool singleShot;
 
-    Listener(IIncidentListener* il, long pri, bool thr=false, bool single=false):
-      iListener(il), priority(pri), rethrow(thr), singleShot(single){}
+    Listener( IIncidentListener* il, long pri, bool thr = false, bool single = false )
+        : iListener( il ), priority( pri ), rethrow( thr ), singleShot( single )
+    {
+    }
   };
-    private:
 
+private:
   // Typedefs
   // ListenerList should be a list rather than a vector because handing
   // a fired incident may result in a call to addListener.
@@ -65,53 +64,45 @@ public:
 
   // IIncidentSvc interfaces overwrite
   //
-  void addListener( IIncidentListener* lis       ,
-                    const std::string& type = "" ,
-                    long priority   = 0          ,
-                    bool rethrow    = false      ,
-                    bool singleShot = false      ) override;
+  void addListener( IIncidentListener* lis, const std::string& type = "", long priority = 0, bool rethrow = false,
+                    bool singleShot = false ) override;
 
   void removeListener( IIncidentListener* l, const std::string& type = "" ) override;
-  void fireIncident( const Incident& incident) override;
-  void fireIncident( std::unique_ptr<Incident> incident) override;
-  //TODO: return by value instead...
-  void getListeners (std::vector<IIncidentListener*>& lis,
-                     const std::string& type = "") const override;
+  void fireIncident( const Incident& incident ) override;
+  void fireIncident( std::unique_ptr<Incident> incident ) override;
+  // TODO: return by value instead...
+  void getListeners( std::vector<IIncidentListener*>& lis, const std::string& type = "" ) const override;
 
   // Standard Constructor.
   IncidentSvc( const std::string& name, ISvcLocator* svc );
   // Destructor.
   ~IncidentSvc() override;
-  IIncidentSvc::IncidentPack getIncidents(const EventContext* ctx) override;
+  IIncidentSvc::IncidentPack getIncidents( const EventContext* ctx ) override;
 
 private:
-  ListenerMap::iterator removeListenerFromList(ListenerMap::iterator, 
-                                               IIncidentListener* item, 
-                                               bool scheduleRemoval);
+  ListenerMap::iterator removeListenerFromList( ListenerMap::iterator, IIncidentListener* item, bool scheduleRemoval );
   // ==========================================================================
   /// Internal function to allow incidents listening to all events
-  void i_fireIncident(const Incident& incident, const std::string& type);
-
+  void i_fireIncident( const Incident& incident, const std::string& type );
 
   /// List of auditor names
-  ListenerMap  m_listenerMap;
+  ListenerMap m_listenerMap;
 
   /// Incident being fired. It is used to know if we can safely remove a listener or
   /// we have to schedule its removal for later.
-  const std::string *m_currentIncidentType = nullptr;
+  const std::string* m_currentIncidentType = nullptr;
 
   /// Mutex to synchronize access to m_listenerMap
   mutable std::recursive_mutex m_listenerMapMutex;
 
   /// timer & it's lock
-  mutable ChronoEntity m_timer     ;
-  mutable bool         m_timerLock = false ;
+  mutable ChronoEntity m_timer;
+  mutable bool m_timerLock = false;
   // ==========================================================================
   // When TBB supports unique_ptrs in concurrent queue typedef should be changed
-  //typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
+  // typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
   typedef tbb::concurrent_queue<Incident*> IncQueue_t;
-  tbb::concurrent_unordered_map<EventContext,IncQueue_t,EventContextHash,EventContextHash> m_firedIncidents;
-
+  tbb::concurrent_unordered_map<EventContext, IncQueue_t, EventContextHash, EventContextHash> m_firedIncidents;
 };
 // ============================================================================
 // The END

@@ -11,7 +11,7 @@
 # =============================================================================
 __author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
 # =============================================================================
-## @file
+# @file
 #  Simple example (identical to C++ Properties.opts) which illustrated
 #  the basic job-properties and theinr C++/Python intercommunication
 #  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -23,22 +23,25 @@ import gaudimodule
 SUCCESS = gaudimodule.SUCCESS
 
 # =============================================================================
-## the configurtaion of the job
-def configure ( gaudi = None ) :
+# the configurtaion of the job
+
+
+def configure(gaudi=None):
     """ the configurtaion of the job """
 
-    ## create applictaion manager if not done yet
-    if not gaudi : gaudi = gaudimodule.AppMgr()
+    # create applictaion manager if not done yet
+    if not gaudi:
+        gaudi = gaudimodule.AppMgr()
 
-    ## read main configuration files
-    gaudi.config ( files = [ '../options/Common.opts' ] )
+    # read main configuration files
+    gaudi.config(files=['../options/Common.opts'])
 
-    ## private algorithm configuration options
+    # private algorithm configuration options
 
-    gaudi.TopAlg = [ 'PropertyAlg' ]
+    gaudi.TopAlg = ['PropertyAlg']
 
     # test for the multiple inclusion of the same alg
-    gaudi.TopAlg  += [ "PropertyAlg", "PropertyProxy" ]
+    gaudi.TopAlg += ["PropertyAlg", "PropertyProxy"]
 
     # test for the removal of an algorithm
     gaudi.TopAlg.remove("PropertyAlg")
@@ -48,7 +51,7 @@ def configure ( gaudi = None ) :
     msgSvc = gaudi.service('MessageSvc')
     msgSvc.OutputLevel = 3
 
-    ## event related parameters
+    # event related parameters
     gaudi.EvtSel = 'NONE'
     gaudi.HistogramPersistency = 'NONE'
 
@@ -56,35 +59,34 @@ def configure ( gaudi = None ) :
 
     alg = gaudi.algorithm('PropertyAlg')
 
-    alg.OutputLevel = 3;
+    alg.OutputLevel = 3
 
-    alg.Int    = 101
+    alg.Int = 101
     alg.Double = 101.1e+10
     alg.String = "hundred one"
-    alg.Bool   = False
+    alg.Bool = False
 
-    alg.IntArray    = [ 1, 2, 3, 5 ]
-    alg.DoubleArray = [ -11.0 , 2., 3.3, 0.4e-03 ]
-    alg.StringArray = [ "one" , "two" , "four" ]
-    alg.BoolArray   = [ False , True , False ]
-    alg.EmptyArray  = []
+    alg.IntArray = [1, 2, 3, 5]
+    alg.DoubleArray = [-11.0, 2., 3.3, 0.4e-03]
+    alg.StringArray = ["one", "two", "four"]
+    alg.BoolArray = [False, True, False]
+    alg.EmptyArray = []
 
-    alg.PInt    = 101
+    alg.PInt = 101
     alg.PDouble = 101.E5
     alg.PString = "hundred one"
-    alg.PBool   = True
+    alg.PBool = True
 
+    alg.PIntArray = [1, 2, 3, 5]
+    alg.PDoubleArray = [1.1, 2., 3.3]
+    alg.PStringArray = ["one", "two", "four"]
+    alg.PBoolArray = [True, False, True, False]
 
-    alg.PIntArray    = [ 1, 2, 3, 5 ]
-    alg.PDoubleArray = [ 1.1 , 2., 3.3 ]
-    alg.PStringArray = [ "one", "two", "four" ]
-    alg.PBoolArray   = [  True , False , True , False ]
-
-    proxy = gaudi.algorithm( "PropertyProxy" )
+    proxy = gaudi.algorithm("PropertyProxy")
     proxy.String = "This is set by the proxy"
 
-    msgSvc.setDebug   = [ "EventLoopMgr" ]
-    msgSvc.setVerbose = [ "MsgTest"      ]
+    msgSvc.setDebug = ["EventLoopMgr"]
+    msgSvc.setVerbose = ["MsgTest"]
 
     return SUCCESS
 # =============================================================================
@@ -93,21 +95,21 @@ def configure ( gaudi = None ) :
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__ :
+if '__main__' == __name__:
 
-    print __doc__ , __author__
+    print __doc__, __author__
 
     gaudi = gaudimodule.AppMgr()
-    configure( gaudi )
+    configure(gaudi)
     gaudi.run(1)
 
-    alg = gaudi.algorithm( 'PropertyAlg' )
+    alg = gaudi.algorithm('PropertyAlg')
 
     props = alg.properties()
     print 'Properties of %s ' % alg.name()
-    for p in props :
+    for p in props:
         v = props[p].value()
-        print "Python: Name/Value:  '%s' / '%s' "%(p,v)
+        print "Python: Name/Value:  '%s' / '%s' " % (p, v)
 
 # =============================================================================
 # The END

@@ -22,21 +22,18 @@ class TimerForSequencer
 
 public:
   /** Constructor. Specify the name, for later printing. */
-  TimerForSequencer( std::string name,
-                     unsigned int size,
-                     double factor )
-    : m_name     ( std::move(name) ),
-      m_size     ( size ),
-      m_factor   ( factor )
-  { }
+  TimerForSequencer( std::string name, unsigned int size, double factor )
+      : m_name( std::move( name ) ), m_size( size ), m_factor( factor )
+  {
+  }
 
   ~TimerForSequencer() = default;
 
   /** Start a time measurement */
-  inline void start ()
+  inline void start()
   {
     m_startClock = System::currentTime( System::microSec );
-    m_startCpu   = System::cpuTime    ( System::microSec );
+    m_startCpu   = System::cpuTime( System::microSec );
   }
 
   /** Stop time measurement and return the last elapsed time.
@@ -63,7 +60,7 @@ public:
   inline uint64_t count() const { return m_num; }
 
   /** Write measured time into the message stream. */
-  MsgStream & fillStream(MsgStream & s) const;
+  MsgStream& fillStream( MsgStream& s ) const;
 
   /** header matching the previous format **/
   static std::string header( std::string::size_type size );
@@ -73,22 +70,18 @@ private:
   unsigned int m_size;
   double m_factor;
   uint64_t m_startClock = 0ULL;
-  uint64_t m_startCpu = 0ULL;
+  uint64_t m_startCpu   = 0ULL;
 
-  uint64_t m_num = 0ULL;
+  uint64_t m_num      = 0ULL;
   uint64_t m_lastTime = 0ULL;
-  uint64_t m_lastCpu = 0ULL;
-  uint64_t m_min = 0ULL;
-  uint64_t m_max = 0ULL;
-  uint64_t m_sum = 0ULL;
-  uint64_t m_sum2 = 0ULL;
-  uint64_t m_sumCpu = 0ULL;
-
+  uint64_t m_lastCpu  = 0ULL;
+  uint64_t m_min      = 0ULL;
+  uint64_t m_max      = 0ULL;
+  uint64_t m_sum      = 0ULL;
+  uint64_t m_sum2     = 0ULL;
+  uint64_t m_sumCpu   = 0ULL;
 };
 
-inline MsgStream& operator<<(MsgStream& ms, const TimerForSequencer& count)
-{
-  return count.fillStream( ms );
-}
+inline MsgStream& operator<<( MsgStream& ms, const TimerForSequencer& count ) { return count.fillStream( ms ); }
 
 #endif // TIMERFORSEQUENCER_H
