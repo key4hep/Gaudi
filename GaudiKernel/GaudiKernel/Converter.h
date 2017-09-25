@@ -110,9 +110,6 @@ protected:
   SmartIF<ISvcLocator>& serviceLocator() const;
   /// Retrieve pointer to message service
   SmartIF<IMessageSvc>& msgSvc() const;
-  /// \deprecated Use msgSvc() instead. Will be removed in v29r0, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80
-  [[deprecated("will be removed in v29r0, use msgSvc() instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80")]]
-  SmartIF<IMessageSvc>& messageService() const;
   /// Get Data Manager service
   SmartIF<IDataManagerSvc>& dataManager() const;
 

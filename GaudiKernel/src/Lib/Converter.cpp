@@ -136,11 +136,6 @@ SmartIF<IMessageSvc>& Converter::msgSvc()  const   {
   return m_messageSvc;
 }
 
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<IMessageSvc>& Converter::messageService()  const   {
-  return msgSvc();
-}
-
 /// Standard Constructor
 Converter::Converter(long storage_type, const CLID& class_type, ISvcLocator* svc) :
   m_storageType(storage_type),
