@@ -19,6 +19,8 @@ gaudi_add_library(GaudiKernel src/Lib/*.cpp
                   LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService
                   INCLUDE_DIRS Boost ROOT TBB
                   PUBLIC_HEADERS GaudiKernel)
+#Make sure VectorClass uses a custom namespace to avoid conflicts
+set_property(TARGET GaudiKernel APPEND_STRING PROPERTY COMPILE_FLAGS " -DVCL_NAMESPACE=Gaudi ")
 
 #---Tests-------------------------------------------------------------------
 if( CPPUNIT_FOUND )

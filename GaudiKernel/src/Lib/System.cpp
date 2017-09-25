@@ -462,7 +462,7 @@ const std::string& System::machineType() {
 }
 
 int System::instructionsetLevel() {
-    return instrset_detect();
+  return Gaudi::instrset_detect();
 }
 
 
