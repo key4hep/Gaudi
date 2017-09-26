@@ -4,6 +4,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
+#include <vector>
+// ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/IAlgContextSvc.h"
@@ -12,6 +14,7 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
 #include <boost/thread.hpp>
+
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -23,14 +26,16 @@ class IIncidentSvc;
  *  @author ATLAS Collaboration
  *  @author modified by Vanya BELYAEV ibelyaev@physics.sye.edu
  *  @author incident listening  removed by Benedikt Hegner
+ *  @author S. Kama. Added multi-context incident based queueing to support
+ *          Serial-MT cases
  *  @date 2007-03-07 (modified)
  */
 class AlgContextSvc : public extends<Service, IAlgContextSvc, IIncidentListener>
 {
 public:
-  /// set     the currently executing algorithm  ("push_back") @see IAlgContextSvc
+  /// set the currently executing algorithm ("push_back") @see IAlgContextSvc
   StatusCode setCurrentAlg( IAlgorithm* a ) override;
-  /// remove the algorithm                       ("pop_back") @see IAlgContextSvc
+  /// remove the algorithm ("pop_back") @see IAlgContextSvc
   StatusCode unSetCurrentAlg( IAlgorithm* a ) override;
   /// accessor to current algorithm: @see IAlgContextSvc
   IAlgorithm* currentAlg() const override;
@@ -44,6 +49,7 @@ public:
 public:
   /// standard initialization of the service @see IService
   StatusCode initialize() override;
+  StatusCode start() override;
   /// standard finalization  of the service  @see IService
   StatusCode finalize() override;
 
@@ -65,6 +71,9 @@ private:
   SmartIF<IIncidentSvc> m_inc = nullptr; ///< pointer to Incident Service
 
   Gaudi::Property<bool> m_check{this, "Check", true, "Flag to perform more checks"};
+  Gaudi::Property<bool> m_bypassInc{this, "BypassIncidents", false,
+                                    "Flag to bypass begin/endevent incident requirement"};
+  std::vector<int> m_inEvtLoop;
 };
 
 // ============================================================================

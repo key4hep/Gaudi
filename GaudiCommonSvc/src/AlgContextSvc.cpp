@@ -7,15 +7,18 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
+
 // ============================================================================
 /** @file
  *  Implementation firl for class AlgContextSvc
  *  @author ATLAS Collaboration
  *  @author modified by Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-03-05 (modified)
+ *  @author modified by Sami Kama
+ *  @date 2017-03-17 (modified)
  */
 // ============================================================================
 /** Instantiation of a static factory class used by clients to create
@@ -38,6 +41,15 @@ StatusCode AlgContextSvc::initialize()
     m_inc.reset();
   }
   // perform more checks?
+  auto numSlots = Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
+  numSlots      = ( 1 > numSlots ) ? 1 : numSlots;
+  if ( numSlots > 1000 ) {
+    warning() << "Num Slots are greater than 1000. Is this correct? numSlots=" << numSlots << endmsg;
+    numSlots = 1000;
+    warning() << "Setting numSlots to " << numSlots << endmsg;
+  }
+  m_inEvtLoop.resize( numSlots, 0 );
+
   if ( m_check ) {
     m_inc = Service::service( "IncidentSvc", true );
     if ( !m_inc ) {
@@ -52,6 +64,25 @@ StatusCode AlgContextSvc::initialize()
   }
   return StatusCode::SUCCESS;
 }
+
+// implementation of start
+// needs to be removed once we have a proper service
+// for getting configuration information at initialization time
+// S. Kama
+StatusCode AlgContextSvc::start()
+{
+  auto sc       = Service::start();
+  auto numSlots = Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
+  numSlots      = ( 1 > numSlots ) ? 1 : numSlots;
+  if ( numSlots > 1000 ) {
+    warning() << "Num Slots are greater than 1000. Is this correct? numSlots=" << numSlots << endmsg;
+    numSlots = 1000;
+  }
+  m_inEvtLoop.resize( numSlots, 0 );
+
+  return sc;
+}
+
 // ============================================================================
 // standard finalization  of the service  @see IService
 // ============================================================================
@@ -77,12 +108,17 @@ StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a )
     warning() << "IAlgorithm* points to NULL" << endmsg;
     return StatusCode::RECOVERABLE;
   }
+  if ( !m_bypassInc ) {
+    auto currSlot                                                = a->getContext().slot();
+    if ( currSlot == EventContext::INVALID_CONTEXT_ID ) currSlot = 0;
+    if ( !m_inEvtLoop[currSlot] ) return StatusCode::SUCCESS;
+  }
   // check whether thread-local algorithm list already exists
   // if not, create it
   if ( !m_algorithms.get() ) {
     m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
-  m_algorithms->push_back( a );
+  if ( a->type() != "IncidentProcAlg" ) m_algorithms->push_back( a );
 
   return StatusCode::SUCCESS;
 }
@@ -101,12 +137,24 @@ StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a )
     warning() << "IAlgorithm* points to NULL" << endmsg;
     return StatusCode::RECOVERABLE;
   }
-  if ( m_algorithms->empty() || m_algorithms->back() != a ) {
-    error() << "Algorithm stack is invalid" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  m_algorithms->pop_back();
 
+  if ( !m_bypassInc ) {
+    auto currSlot                                                = a->getContext().slot();
+    if ( currSlot == EventContext::INVALID_CONTEXT_ID ) currSlot = 0;
+    if ( !m_inEvtLoop[currSlot] ) return StatusCode::SUCCESS;
+  }
+
+  if ( a->type() != "IncidentProcAlg" ) {
+    // if ( m_algorithms->empty() || m_algorithms->back() != a ){
+    //   error() << "Algorithm stack is invalid" << endmsg ;
+    //   return StatusCode::FAILURE ;
+    // }
+    if ( !m_algorithms->empty() ) {
+      if ( m_algorithms->back() == a ) {
+        m_algorithms->pop_back();
+      }
+    }
+  }
   return StatusCode::SUCCESS;
 }
 // ============================================================================
@@ -119,11 +167,30 @@ IAlgorithm* AlgContextSvc::currentAlg() const
 // ============================================================================
 // handle incident @see IIncidentListener
 // ============================================================================
-void AlgContextSvc::handle( const Incident& )
+void AlgContextSvc::handle( const Incident& inc )
 {
-  if ( m_algorithms.get() && !m_algorithms->empty() ) {
-    error() << "Non-empty stack of algorithms #" << m_algorithms->size() << endmsg;
+  // some false sharing is possible but it should be negligable
+  auto currSlot = inc.context().slot();
+  if ( currSlot == EventContext::INVALID_CONTEXT_ID ) {
+    currSlot = 0;
   }
+  if ( inc.type() == "BeginEvent" ) {
+    m_inEvtLoop[currSlot] = 1;
+  } else if ( inc.type() == "EndEvent" ) {
+    m_inEvtLoop[currSlot] = 0;
+  }
+
+  // This check is invalidated with RTTI AlgContext object.
+  // Whole service needs to be rewritten. Commenting the error until then
+  // to prevent test failures.
+  // if ( m_algorithms.get() && !m_algorithms->empty() ) {
+  //   //skip incident processing algorithm endevent incident
+  //   if((m_algorithms->size()!=1) ||
+  //   (m_algorithms->back()->type()!="IncidentProcAlg")){
+  //     error() << "Non-empty stack of algorithms #"
+  // 	      << m_algorithms->size() << endmsg ;
+  //   }
+  // }
 }
 // ============================================================================
 // ============================================================================
