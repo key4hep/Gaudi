@@ -43,7 +43,7 @@ IssueLogger         DEBUG Writing INFO issues to MsgStream[m
 IssueLogger         DEBUG Writing RECOVERABLE issues to MsgStream[m
 IssueLogger         DEBUG Writing FATAL issues to MsgStream[m
 IssueLogger         DEBUG Writing ALWAYS issues to MsgStream[m
-[94;101;1mIssueLogger         FATAL FATAL  ErrorLogTest.cpp:33  "this is a fatal" [17:34:53 2016/12/19 CET]
+[94;101;1mIssueLogger         FATAL FATAL  ErrorLogTest.cpp:29  "this is a fatal" [17:34:53 2016/12/19 CET]
 #1  0x7fa2c8cb6260 MinimalEventLoopMgr::initialize()  [libGaudiKernel.so]
 #2  0x7fa2c4695980 EventLoopMgr::initialize()  [libGaudiCoreSvc.so]
 #3  0x7fa2c8c32500 Service::sysInitialize_imp()  [libGaudiKernel.so]
@@ -58,7 +58,7 @@ IssueLogger         DEBUG Writing ALWAYS issues to MsgStream[m
 #12 0x7fa2c8524740 __libc_start_main  [libc.so.6]
 #13 0x400800 _start  [Gaudi.exe]
 [m
-IssueLogger          INFO INFO  ErrorLogTest.cpp:39  "info ErrObj" [17:34:53 2016/12/19 CET][m
+IssueLogger          INFO INFO  ErrorLogTest.cpp:35  "info ErrObj" [17:34:53 2016/12/19 CET][m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
