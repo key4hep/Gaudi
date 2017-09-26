@@ -2,6 +2,7 @@
 #define GAUDISVC_TOOLSVC_H
 
 // Include Files
+#include "GaudiKernel/IHistorySvc.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/Service.h"
 #include <mutex>

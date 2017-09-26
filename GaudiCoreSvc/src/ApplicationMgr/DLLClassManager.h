@@ -4,6 +4,7 @@
 // Include files
 #include "GaudiKernel/IClassManager.h"
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/SmartIF.h"
 #include <list>
 #include <map>
 #include <string>
