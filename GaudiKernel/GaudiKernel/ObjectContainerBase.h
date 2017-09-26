@@ -2,8 +2,8 @@
 #define GAUDI_OBJECTCONTAINERBASE_H 1
 
 // Include files
-#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/Kernel.h"
 
 // Forward declarations
 class ContainedObject;
@@ -16,17 +16,16 @@ class ContainedObject;
     @author Pavel Binko
     @author Pere Mato
 */
-class GAUDI_API ObjectContainerBase : public DataObject  {
+class GAUDI_API ObjectContainerBase : public DataObject
+{
 
 protected:
-
   /// Constructor
-  ObjectContainerBase() = default;
-  ObjectContainerBase(ObjectContainerBase&&) = default;
-  ObjectContainerBase& operator=(ObjectContainerBase&&) = default;
+  ObjectContainerBase()                        = default;
+  ObjectContainerBase( ObjectContainerBase&& ) = default;
+  ObjectContainerBase& operator=( ObjectContainerBase&& ) = default;
 
 public:
-
   /// size_type, to conform the STL container interface
   typedef size_t size_type;
 
@@ -42,13 +41,12 @@ public:
   /** Virtual functions (forwards to the concrete container definitions)
       Add an object to the container. On success the object's index is
       returned.                                                      */
-  virtual long add(ContainedObject* pObject) = 0;
+  virtual long add( ContainedObject* pObject ) = 0;
 
   /** Release object from the container (the pointer will be removed
       from the container, but the object itself will remain alive).
       If the object was fount it's index is returned.                */
-  virtual long remove(ContainedObject* value) = 0;
-
+  virtual long remove( ContainedObject* value ) = 0;
 };
 
-#endif    // GAUDI_OBJECTCONTAINERBASE_H
+#endif // GAUDI_OBJECTCONTAINERBASE_H

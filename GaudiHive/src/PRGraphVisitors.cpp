@@ -4,40 +4,43 @@
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/ICondSvc.h"
 
-namespace concurrency {
+namespace concurrency
+{
 
   typedef AlgsExecutionStates::State State;
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visitEnter(AlgorithmNode& node) const {
+  bool DataReadyPromoter::visitEnter( AlgorithmNode& node ) const
+  {
 
-    if (State::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()])
-      return false;
+    if ( State::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()] ) return false;
 
     return true;
   }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visit(AlgorithmNode& node) {
+  bool DataReadyPromoter::visit( AlgorithmNode& node )
+  {
 
     bool result = true; // return true if this algorithm has no data inputs
 
     for ( auto dataNode : node.getInputDataNodes() ) {
 
-      result = dataNode->accept(*this);
+      result = dataNode->accept( *this );
 
       // With ConditionNodes, one may decide NOT to break here so that associated
       // ConditionAlgorithms are scheduled ASAP. This behavior can be made configurable
-      if (!result) break; // skip checking other inputs if this input was not produced yet
+      if ( !result ) break; // skip checking other inputs if this input was not produced yet
     }
 
-    if (result) {
+    if ( result ) {
       m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
 
-      if (m_trace) {
-        auto sourceNode = (m_cause.m_source == Cause::source::Task) ?
-                node.m_graph->getAlgorithmNode(m_cause.m_sourceName) : nullptr;
-        node.m_graph->addEdgeToPrecTrace(sourceNode, &node);
+      if ( m_trace ) {
+        auto sourceNode = ( m_cause.m_source == Cause::source::Task )
+                              ? node.m_graph->getAlgorithmNode( m_cause.m_sourceName )
+                              : nullptr;
+        node.m_graph->addEdgeToPrecTrace( sourceNode, &node );
       }
     }
 
@@ -46,12 +49,11 @@ namespace concurrency {
   }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visitEnter(DataNode&) const {
-    return true;
-  }
+  bool DataReadyPromoter::visitEnter( DataNode& ) const { return true; }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visit(DataNode& node) {
+  bool DataReadyPromoter::visit( DataNode& node )
+  {
     /* Implements 'observer' strategy, i.e., only check if producer of this DataNode
      * has been already executed or not */
 
@@ -70,36 +72,37 @@ namespace concurrency {
   }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visitEnter(ConditionNode& node) const {
+  bool DataReadyPromoter::visitEnter( ConditionNode& node ) const
+  {
 
-    if (node.m_condSvc->isValidID(*(m_slot->eventContext), node.getPath()))
+    if ( node.m_condSvc->isValidID( *( m_slot->eventContext ), node.getPath() ) )
       return false; // do not enter this ConditionNode if the condition has bee already loaded
 
     return true;
   }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visit(ConditionNode& node) {
+  bool DataReadyPromoter::visit( ConditionNode& node )
+  {
     /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
      * by its associated ConditionAlgorithm */
 
-    auto promoter = Supervisor(*m_slot, m_cause);
+    auto promoter = Supervisor( *m_slot, m_cause );
 
-    for (auto condAlg : node.getProducers())
-      condAlg->accept(promoter);
+    for ( auto condAlg : node.getProducers() ) condAlg->accept( promoter );
 
     // this method is called if, and only if, this ConditionNode is not yet produced.
     // thus, by definition, this ConditionNode is not yet available at this moment
     return false;
   }
 
-
   //--------------------------------------------------------------------------
-  bool DecisionUpdater::visit(AlgorithmNode& node) {
+  bool DecisionUpdater::visit( AlgorithmNode& node )
+  {
 
-    auto& states = m_slot->algsStates;
+    auto& states       = m_slot->algsStates;
     const State& state = states[node.getAlgoIndex()];
-    int decision = -1;
+    int decision       = -1;
 
     if ( true == node.isOptimist() )
       decision = 1;
@@ -112,14 +115,12 @@ namespace concurrency {
 
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
-      auto promoter = DataReadyPromoter(*m_slot, m_cause, m_trace);
+      auto promoter = DataReadyPromoter( *m_slot, m_cause, m_trace );
       for ( const auto& output : node.getOutputDataNodes() )
-        for ( auto& consumer : output->getConsumers() )
-          consumer->accept(promoter);
+        for ( auto& consumer : output->getConsumers() ) consumer->accept( promoter );
 
-      auto vis = concurrency::Supervisor(*m_slot, m_cause, m_trace);
-      for ( auto& p : node.getParentDecisionHubs() )
-        p->accept(vis);
+      auto vis = concurrency::Supervisor( *m_slot, m_cause, m_trace );
+      for ( auto& p : node.getParentDecisionHubs() ) p->accept( vis );
 
       return true; // return true only if the algorithm produced a decision
     }
@@ -128,59 +129,62 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool Supervisor::visitEnter(DecisionNode& node) const {
+  bool Supervisor::visitEnter( DecisionNode& node ) const
+  {
 
-    if (m_slot->controlFlowState[node.getNodeIndex()] != -1)
-      return false;
+    if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) return false;
     return true;
   }
 
   //---------------------------------------------------------------------------
-  bool Supervisor::visit(DecisionNode& node) {
+  bool Supervisor::visit( DecisionNode& node )
+  {
 
     bool foundNonResolvedChild = false;
-    bool foundNegativeChild = false;
-    bool foundPositiveChild = false;
-    int decision = -1;
+    bool foundNegativeChild    = false;
+    bool foundPositiveChild    = false;
+    int decision               = -1;
 
-    for (auto child : node.getDaughters()) {
+    for ( auto child : node.getDaughters() ) {
       int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
 
-      if (childDecision == -1)
+      if ( childDecision == -1 )
         foundNonResolvedChild = true;
-      else if (childDecision == 1)
+      else if ( childDecision == 1 )
         foundPositiveChild = true;
       else
         foundNegativeChild = true;
 
-      if (node.m_modePromptDecision) {
-        if (node.m_modeOR && foundPositiveChild) {
+      if ( node.m_modePromptDecision ) {
+        if ( node.m_modeOR && foundPositiveChild ) {
           decision = 1;
           break;
-        } else if (!node.m_modeOR && foundNegativeChild) {
+        } else if ( !node.m_modeOR && foundNegativeChild ) {
           decision = 0;
           break;
         }
       } else {
-        if (foundNonResolvedChild)
-          break;
+        if ( foundNonResolvedChild ) break;
       }
     } // end monitoring children
 
-    if (!foundNonResolvedChild && decision == -1) {
-      if (node.m_modeOR) { // OR
-        if (foundPositiveChild) decision = 1;
-        else decision = 0;
+    if ( !foundNonResolvedChild && decision == -1 ) {
+      if ( node.m_modeOR ) { // OR
+        if ( foundPositiveChild )
+          decision = 1;
+        else
+          decision = 0;
       } else { // AND
-        if (foundNegativeChild) decision = 0;
-        else decision = 1;
+        if ( foundNegativeChild )
+          decision = 0;
+        else
+          decision = 1;
       }
     }
 
-    if (node.m_allPass && !foundNonResolvedChild)
-      decision = 1;
+    if ( node.m_allPass && !foundNonResolvedChild ) decision = 1;
 
-    if (decision != -1) {
+    if ( decision != -1 ) {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
       return true;
     }
@@ -188,29 +192,29 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool Supervisor::visitEnter(AlgorithmNode& node) const {
+  bool Supervisor::visitEnter( AlgorithmNode& node ) const
+  {
 
-    if (m_slot->controlFlowState[node.getNodeIndex()] != -1)
-      return false;
+    if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) return false;
     return true;
   }
 
   //--------------------------------------------------------------------------
-  bool Supervisor::visit(AlgorithmNode& node) {
+  bool Supervisor::visit( AlgorithmNode& node )
+  {
 
     bool result = false;
 
     auto& states = m_slot->algsStates;
-    auto& state = states[node.getAlgoIndex()];
+    auto& state  = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
-    if ( State::INITIAL == state )
-      states.updateState( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
+    if ( State::INITIAL == state ) states.updateState( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      auto promoter = DataReadyPromoter(*m_slot, m_cause, m_trace);
-      result = promoter.visit(node);
+      auto promoter = DataReadyPromoter( *m_slot, m_cause, m_trace );
+      result        = promoter.visit( node );
     } else {
       result = true;
     }
@@ -221,15 +225,15 @@ namespace concurrency {
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByProductConsumption::visit(AlgorithmNode& node) {
+  bool RankerByProductConsumption::visit( AlgorithmNode& node )
+  {
 
     auto& products = node.getOutputDataNodes();
-    float rank = 0;
+    float rank     = 0;
 
-    for (auto p : products)
-      rank += p->getConsumers().size();
+    for ( auto p : products ) rank += p->getConsumers().size();
 
-    node.setRank(rank);
+    node.setRank( rank );
     /*std::stringstream s;
     s << node.getNodeName() << ", " << rank << "\n";
     std::ofstream myfile;
@@ -241,10 +245,11 @@ namespace concurrency {
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByCummulativeOutDegree::visit(AlgorithmNode& node) {
+  bool RankerByCummulativeOutDegree::visit( AlgorithmNode& node )
+  {
 
     std::ifstream myfile;
-    myfile.open("InputExecutionPlan.graphml", std::ios::in);
+    myfile.open( "InputExecutionPlan.graphml", std::ios::in );
 
     precedence::PrecTrace execPlan;
 
@@ -252,25 +257,25 @@ namespace concurrency {
     using boost::get;
 
     boost::dynamic_properties dp;
-    dp.property("name", get(&AlgoTraceProps::m_name, execPlan));
-    dp.property("index", get(&AlgoTraceProps::m_index, execPlan));
-    dp.property("dataRank", get(&AlgoTraceProps::m_rank, execPlan));
-    dp.property("runtime", get(&AlgoTraceProps::m_runtime, execPlan));
+    dp.property( "name", get( &AlgoTraceProps::m_name, execPlan ) );
+    dp.property( "index", get( &AlgoTraceProps::m_index, execPlan ) );
+    dp.property( "dataRank", get( &AlgoTraceProps::m_rank, execPlan ) );
+    dp.property( "runtime", get( &AlgoTraceProps::m_runtime, execPlan ) );
 
-    boost::read_graphml(myfile, execPlan, dp);
+    boost::read_graphml( myfile, execPlan, dp );
 
     typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
     std::pair<itV, itV> vp;
 
-    for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
+    for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v = *vp.first;
-      auto index = get(&AlgoTraceProps::m_name, execPlan);
-      if (index[v] == node.getNodeName()) {
-        runThroughAdjacents(v,execPlan);
+      auto index                    = get( &AlgoTraceProps::m_name, execPlan );
+      if ( index[v] == node.getNodeName() ) {
+        runThroughAdjacents( v, execPlan );
         float rank = m_nodesSucceeded;
-        node.setRank(rank);
+        node.setRank( rank );
         reset();
-        //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
+        // std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
       }
     }
 
@@ -278,92 +283,95 @@ namespace concurrency {
   }
 
   //--------------------------------------------------------------------------
-  void RankerByCummulativeOutDegree::runThroughAdjacents(boost::graph_traits<precedence::PrecTrace>::vertex_descriptor vertex,
-                                                         precedence::PrecTrace graph) {
+  void RankerByCummulativeOutDegree::runThroughAdjacents(
+      boost::graph_traits<precedence::PrecTrace>::vertex_descriptor vertex, precedence::PrecTrace graph )
+  {
     typename boost::graph_traits<precedence::PrecTrace>::adjacency_iterator itVB;
     typename boost::graph_traits<precedence::PrecTrace>::adjacency_iterator itVE;
 
-    for (boost::tie(itVB, itVE) = adjacent_vertices(vertex, graph); itVB != itVE; ++itVB) {
+    for ( boost::tie( itVB, itVE ) = adjacent_vertices( vertex, graph ); itVB != itVE; ++itVB ) {
       m_nodesSucceeded += 1;
-      runThroughAdjacents(*itVB, graph);
+      runThroughAdjacents( *itVB, graph );
     }
-
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByTiming::visit(AlgorithmNode& node) {
+  bool RankerByTiming::visit( AlgorithmNode& node )
+  {
 
     std::ifstream myfile;
-    myfile.open("InputExecutionPlan.graphml", std::ios::in);
+    myfile.open( "InputExecutionPlan.graphml", std::ios::in );
 
     precedence::PrecTrace execPlan;
     using precedence::AlgoTraceProps;
     using boost::get;
 
     boost::dynamic_properties dp;
-    dp.property("name", get(&AlgoTraceProps::m_name, execPlan));
-    dp.property("index", get(&AlgoTraceProps::m_index, execPlan));
-    dp.property("dataRank", get(&AlgoTraceProps::m_rank, execPlan));
-    dp.property("runtime", get(&AlgoTraceProps::m_runtime, execPlan));
+    dp.property( "name", get( &AlgoTraceProps::m_name, execPlan ) );
+    dp.property( "index", get( &AlgoTraceProps::m_index, execPlan ) );
+    dp.property( "dataRank", get( &AlgoTraceProps::m_rank, execPlan ) );
+    dp.property( "runtime", get( &AlgoTraceProps::m_runtime, execPlan ) );
 
-    boost::read_graphml(myfile, execPlan, dp);
+    boost::read_graphml( myfile, execPlan, dp );
 
     typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
     std::pair<itV, itV> vp;
 
-    for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
+    for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v = *vp.first;
-      auto index = get(&AlgoTraceProps::m_name, execPlan);
-      if (index[v] == node.getNodeName()) {
-        auto index_runtime = get(&AlgoTraceProps::m_runtime, execPlan);
-        float rank = index_runtime[v];
-        node.setRank(rank);
-        //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
+      auto index                    = get( &AlgoTraceProps::m_name, execPlan );
+      if ( index[v] == node.getNodeName() ) {
+        auto index_runtime = get( &AlgoTraceProps::m_runtime, execPlan );
+        float rank         = index_runtime[v];
+        node.setRank( rank );
+        // std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
       }
     }
     return true;
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByEccentricity::visit(AlgorithmNode& node) {
+  bool RankerByEccentricity::visit( AlgorithmNode& node )
+  {
 
     std::ifstream myfile;
-    myfile.open("Eccentricity.graphml", std::ios::in);
+    myfile.open( "Eccentricity.graphml", std::ios::in );
 
     precedence::PrecTrace execPlan;
 
     boost::dynamic_properties dp;
     using boost::get;
 
-    dp.property("name", get(&precedence::AlgoTraceProps::m_name, execPlan));
-    dp.property("Eccentricity", get(&precedence::AlgoTraceProps::m_eccentricity, execPlan));
+    dp.property( "name", get( &precedence::AlgoTraceProps::m_name, execPlan ) );
+    dp.property( "Eccentricity", get( &precedence::AlgoTraceProps::m_eccentricity, execPlan ) );
 
-    boost::read_graphml(myfile, execPlan, dp);
+    boost::read_graphml( myfile, execPlan, dp );
 
     typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
     std::pair<itV, itV> vp;
 
-    for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
+    for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v = *vp.first;
-      auto index = get(&precedence::AlgoTraceProps::m_name, execPlan);
-      if (index[v] == node.getNodeName()) {
-        auto index_eccentricity = get(&precedence::AlgoTraceProps::m_eccentricity, execPlan);
-        float rank = index_eccentricity[v];
-        node.setRank(rank);
-        //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
+      auto index                    = get( &precedence::AlgoTraceProps::m_name, execPlan );
+      if ( index[v] == node.getNodeName() ) {
+        auto index_eccentricity = get( &precedence::AlgoTraceProps::m_eccentricity, execPlan );
+        float rank              = index_eccentricity[v];
+        node.setRank( rank );
+        // std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
       }
     }
     return true;
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByDataRealmEccentricity::visit(AlgorithmNode& node) {
+  bool RankerByDataRealmEccentricity::visit( AlgorithmNode& node )
+  {
 
     // Find eccentricity of the node (only within the data realm of the execution flow graph)
-    recursiveVisit(node);
+    recursiveVisit( node );
 
     float rank = m_maxKnownDepth;
-    node.setRank(rank);
+    node.setRank( rank );
 
     // Reset visitor for next nodes, if any
     reset();
@@ -372,88 +380,87 @@ namespace concurrency {
   }
 
   //--------------------------------------------------------------------------
-  void RankerByDataRealmEccentricity::recursiveVisit(AlgorithmNode& node) {
+  void RankerByDataRealmEccentricity::recursiveVisit( AlgorithmNode& node )
+  {
 
     m_currentDepth += 1;
 
     auto& products = node.getOutputDataNodes();
 
-    if (products.empty())
-      if ( (m_currentDepth - 1) > m_maxKnownDepth)
-        m_maxKnownDepth = m_currentDepth - 1;
+    if ( products.empty() )
+      if ( ( m_currentDepth - 1 ) > m_maxKnownDepth ) m_maxKnownDepth = m_currentDepth - 1;
 
-    for (auto p : products)
-      for ( auto algoNode : p->getConsumers())
-        recursiveVisit(*algoNode);
+    for ( auto p : products )
+      for ( auto algoNode : p->getConsumers() ) recursiveVisit( *algoNode );
 
     m_currentDepth -= 1;
-
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visitEnter(DecisionNode& node) const {
+  bool RunSimulator::visitEnter( DecisionNode& node ) const
+  {
 
-    if (m_slot->controlFlowState[node.getNodeIndex()] != 1)
-      return true;
+    if ( m_slot->controlFlowState[node.getNodeIndex()] != 1 ) return true;
     return false;
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visit(DecisionNode& node) {
+  bool RunSimulator::visit( DecisionNode& node )
+  {
 
-    //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
+    // std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
     bool allChildDecisionsResolved = true;
-    for (auto child : node.getDaughters()) {
+    for ( auto child : node.getDaughters() ) {
       int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
 
-      if (childDecision == 1 && node.m_modeOR && node.m_modePromptDecision) {
+      if ( childDecision == 1 && node.m_modeOR && node.m_modePromptDecision ) {
         m_slot->controlFlowState[node.getNodeIndex()] = 1;
         return true;
       }
 
-      if (childDecision == -1) {
+      if ( childDecision == -1 ) {
         allChildDecisionsResolved = false;
       }
     }
 
-    if (allChildDecisionsResolved)
-      m_slot->controlFlowState[node.getNodeIndex()] = 1;
+    if ( allChildDecisionsResolved ) m_slot->controlFlowState[node.getNodeIndex()] = 1;
 
     return allChildDecisionsResolved;
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visitEnter(AlgorithmNode& node) const {
+  bool RunSimulator::visitEnter( AlgorithmNode& node ) const
+  {
 
-    if (m_slot->controlFlowState[node.getNodeIndex()] != 1)
-      return true;
+    if ( m_slot->controlFlowState[node.getNodeIndex()] != 1 ) return true;
     return false;
   }
 
   //--------------------------------------------------------------------------
-  bool RunSimulator::visit(AlgorithmNode& node) {
+  bool RunSimulator::visit( AlgorithmNode& node )
+  {
 
-    auto& states = m_slot->algsStates;
+    auto& states  = m_slot->algsStates;
     int& decision = m_slot->controlFlowState[node.getNodeIndex()];
 
-    auto dataPromoter = DataReadyPromoter(*m_slot, m_cause);
+    auto dataPromoter = DataReadyPromoter( *m_slot, m_cause );
 
-    if (State::INITIAL == states[node.getAlgoIndex()]) {
-      states.updateState(node.getAlgoIndex(), State::CONTROLREADY);
-      if (dataPromoter.visit(node)) {
-        states.updateState(node.getAlgoIndex(), State::SCHEDULED);
-        states.updateState(node.getAlgoIndex(), State::EVTACCEPTED);
+    if ( State::INITIAL == states[node.getAlgoIndex()] ) {
+      states.updateState( node.getAlgoIndex(), State::CONTROLREADY );
+      if ( dataPromoter.visit( node ) ) {
+        states.updateState( node.getAlgoIndex(), State::SCHEDULED );
+        states.updateState( node.getAlgoIndex(), State::EVTACCEPTED );
         decision = 1;
         ++m_nodesSucceeded;
-        //std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
+        // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
         return true;
       }
-    } else if (State::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit(node)) {
-      states.updateState(node.getAlgoIndex(), State::SCHEDULED);
-      states.updateState(node.getAlgoIndex(), State::EVTACCEPTED);
+    } else if ( State::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit( node ) ) {
+      states.updateState( node.getAlgoIndex(), State::SCHEDULED );
+      states.updateState( node.getAlgoIndex(), State::EVTACCEPTED );
       decision = 1;
       ++m_nodesSucceeded;
-      //std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
+      // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
       return true;
     }
 

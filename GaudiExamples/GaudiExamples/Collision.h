@@ -2,13 +2,14 @@
 #define GAUDIEXAMPLES_COLLISION_H 1
 
 // Include files
-#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StreamBuffer.h"
 
-
-namespace Gaudi {
-  namespace Examples {
+namespace Gaudi
+{
+  namespace Examples
+  {
 
     // CLID definition
     static const CLID& CLID_Collision = 111;
@@ -16,24 +17,21 @@ namespace Gaudi {
     /** @class Collision
      */
 
-    class GAUDI_API Collision : public DataObject {
+    class GAUDI_API Collision : public DataObject
+    {
     public:
       /// Constructors
-      Collision() : DataObject() { }
-      Collision(int num) : DataObject(), m_collision(num) { }
+      Collision() : DataObject() {}
+      Collision( int num ) : DataObject(), m_collision( num ) {}
       /// Destructor
-      ~Collision() override= default;
+      ~Collision() override = default;
 
       /// Retrieve reference to class definition structure
-      const CLID& clID() const override  { return classID(); }
+      const CLID& clID() const override { return classID(); }
       static const CLID& classID() { return CLID_Collision; }
 
-      void setCollision(int num) {
-        m_collision = num;
-      }
-      int collision() const {
-	return m_collision;
-      }
+      void setCollision( int num ) { m_collision = num; }
+      int collision() const { return m_collision; }
       //  std::vector<double, CLHEP::HepGenMatrix::Alloc<double,25> >& matrix() {
       //    return m_matrix;
       //  }
@@ -44,22 +42,16 @@ namespace Gaudi {
 
     private:
       /// Collision number
-      int                m_collision;
+      int m_collision;
       //  std::vector<double, CLHEP::HepGenMatrix::Alloc<double,25> >           m_matrix;
     };
 
     /// Serialize the object for writing
-    inline StreamBuffer& Collision::serialize( StreamBuffer& s ) const {
-      return s << m_collision;
-    }
-
+    inline StreamBuffer& Collision::serialize( StreamBuffer& s ) const { return s << m_collision; }
 
     /// Serialize the object for reading
-    inline StreamBuffer& Collision::serialize( StreamBuffer& s ) {
-      return s >> m_collision;
-    }
-
+    inline StreamBuffer& Collision::serialize( StreamBuffer& s ) { return s >> m_collision; }
   }
 }
 
-#endif    // GAUDIEXAMPLES_COLLISION_H
+#endif // GAUDIEXAMPLES_COLLISION_H

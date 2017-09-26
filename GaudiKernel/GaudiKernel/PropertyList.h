@@ -2,8 +2,8 @@
 #define GAUDIKERNEL_PROPERTYLIST_H
 
 // Include Files
-#include "Property.h"
 #include "GaudiKernel/IProperty.h"
+#include "Property.h"
 #include <vector>
 
 /** @class PropertyList PropertyList.h GaudiKernel/PropertyList.h
@@ -13,14 +13,15 @@
     @author David Quarrie
     @author Pere Mato
 */
-class GAUDI_API PropertyList : public Property {
+class GAUDI_API PropertyList : public Property
+{
 public:
   /// Constructor
-	PropertyList();
+  PropertyList();
   /// Constructor giving a name
-	PropertyList( const std::string& name );
+  PropertyList( const std::string& name );
   /// Virtual destructor
-	virtual ~PropertyList();
+  virtual ~PropertyList();
 
   /// Accessor members (const)
   bool isRef() const { return false; }
@@ -28,29 +29,29 @@ public:
   /// Add a property to the list
   void addProperty( const std::string& name, Property& p );
   /// Add a property to the list
-	void addProperty( Property& p );
+  void addProperty( Property& p );
   /// Remove a property from the list
-	void removeProperty( const std::string& name );
+  void removeProperty( const std::string& name );
   /// Remove a property from the list
-	void removeProperty( Property& p );
+  void removeProperty( Property& p );
 
-	/// Property implementation: set property
+  /// Property implementation: set property
   bool assign( const Property& p ) override;
-	/// Property implementation: get property
-  bool load( Property& p) const override;
+  /// Property implementation: get property
+  bool load( Property& p ) const override;
 
-	/// Property implementation: set property
+  /// Property implementation: set property
   bool assign( const std::string& name, const Property& p );
-	/// Property implementation: get property
-  bool load( const std::string& name, Property& p) const;
+  /// Property implementation: get property
+  bool load( const std::string& name, Property& p ) const;
 
   /// Get the property with a given name
-  const Property& getProperty( const std::string& name) const;
+  const Property& getProperty( const std::string& name ) const;
   /// Get the complete list of properties
   const std::vector<Property*>& getProperties() const;
+
 private:
-	std::vector<Property*> m_propertyList;
+  std::vector<Property*> m_propertyList;
 };
 
 #endif // GAUDIKERNEL_PROPERTYLIST_H
-

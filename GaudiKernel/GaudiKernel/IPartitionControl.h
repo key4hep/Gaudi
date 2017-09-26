@@ -63,10 +63,11 @@
   *  @author  Markus Frank
   *  @version 1.0
   */
-class GAUDI_API IPartitionControl: virtual public IInterface {
+class GAUDI_API IPartitionControl : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IPartitionControl,1,0);
+  DeclareInterfaceID( IPartitionControl, 1, 0 );
 
   /// Create a partition object. The name identifies the partition uniquely
   /** Create a new partition. If the partition exists already
@@ -80,8 +81,7 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode create(const std::string& name,
-                            const std::string& type) = 0;
+  virtual StatusCode create( const std::string& name, const std::string& type ) = 0;
 
   /// Create a partition object. The name identifies the partition uniquely
   /** Create a new partition. If the partition exists already
@@ -96,9 +96,7 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode create(const std::string& name,
-                            const std::string& type,
-                            IInterface*& pPartition) = 0;
+  virtual StatusCode create( const std::string& name, const std::string& type, IInterface*& pPartition ) = 0;
 
   /// Drop a partition object. The name identifies the partition uniquely
   /** Remove a partition object. If the partition object does not exists,
@@ -109,7 +107,7 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode drop(const std::string& name) = 0;
+  virtual StatusCode drop( const std::string& name ) = 0;
 
   /// Drop a partition object. The name identifies the partition uniquely
   /** Remove a partition object. If the partition object does not exists,
@@ -122,7 +120,7 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode drop(IInterface* pPartition) = 0;
+  virtual StatusCode drop( IInterface* pPartition ) = 0;
 
   /// Activate a partition object. The name identifies the partition uniquely.
   /** Access an existing partition object. Preferred call.
@@ -135,7 +133,7 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode activate(const std::string& name) = 0;
+  virtual StatusCode activate( const std::string& name ) = 0;
 
   /// Activate a partition object.
   /** Access an existing partition object.
@@ -151,7 +149,7 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode activate(IInterface* pPartition) = 0;
+  virtual StatusCode activate( IInterface* pPartition ) = 0;
 
   /// Access a partition object. The name identifies the partition uniquely.
   /** Access an existing partition object.
@@ -161,7 +159,7 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode get(const std::string& name, IInterface*& pPartition) const = 0;
+  virtual StatusCode get( const std::string& name, IInterface*& pPartition ) const = 0;
 
   /// Access the active partition object.
   /** Access the active partition object.
@@ -171,12 +169,9 @@ public:
     *
     * @return Status code indicating failure or success.
     */
-  virtual StatusCode activePartition(std::string& name, IInterface*& pPartition) const = 0;
+  virtual StatusCode activePartition( std::string& name, IInterface*& pPartition ) const = 0;
 
   // Return codes:
-  enum {  PARTITION_NOT_PRESENT = 2,
-          PARTITION_EXISTS = 4,
-          NO_ACTIVE_PARTITION = 6
-  };
+  enum { PARTITION_NOT_PRESENT = 2, PARTITION_EXISTS = 4, NO_ACTIVE_PARTITION = 6 };
 };
 #endif // GAUDIKERNEL_IPARTITIONCONTROL_H

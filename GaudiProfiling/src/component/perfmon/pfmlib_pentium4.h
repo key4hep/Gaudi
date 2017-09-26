@@ -56,18 +56,18 @@
 #define EVENT_SELECT_BITS 6
 
 typedef union {
-	unsigned long val;
-	struct {
-		unsigned long t1_usr:1;
-		unsigned long t1_os:1;
-		unsigned long t0_usr:1;
-		unsigned long t0_os:1;
-		unsigned long tag_enable:1;
-		unsigned long tag_value:4;
-		unsigned long event_mask:EVENT_MASK_BITS;
-		unsigned long event_select:EVENT_SELECT_BITS;
-		unsigned long reserved:1;
-	} bits;
+  unsigned long val;
+  struct {
+    unsigned long t1_usr : 1;
+    unsigned long t1_os : 1;
+    unsigned long t0_usr : 1;
+    unsigned long t0_os : 1;
+    unsigned long tag_enable : 1;
+    unsigned long tag_value : 4;
+    unsigned long event_mask : EVENT_MASK_BITS;
+    unsigned long event_select : EVENT_SELECT_BITS;
+    unsigned long reserved : 1;
+  } bits;
 } pentium4_escr_value_t;
 
 /* CCCR: Counter Configuration Control Register
@@ -109,23 +109,23 @@ typedef union {
  *   11 - 0    Reserved
  **/
 typedef union {
-	unsigned long val;
-	struct {
-		unsigned long reserved1:12;
-		unsigned long enable:1;
-		unsigned long escr_select:3;
-		unsigned long active_thread:2;
-		unsigned long compare:1;
-		unsigned long complement:1;
-		unsigned long threshold:4;
-		unsigned long edge:1;
-		unsigned long force_ovf:1;
-		unsigned long ovf_pmi_t0:1;
-		unsigned long ovf_pmi_t1:1;
-		unsigned long reserved2:2;
-		unsigned long cascade:1;
-		unsigned long overflow:1;
-	} bits;
+  unsigned long val;
+  struct {
+    unsigned long reserved1 : 12;
+    unsigned long enable : 1;
+    unsigned long escr_select : 3;
+    unsigned long active_thread : 2;
+    unsigned long compare : 1;
+    unsigned long complement : 1;
+    unsigned long threshold : 4;
+    unsigned long edge : 1;
+    unsigned long force_ovf : 1;
+    unsigned long ovf_pmi_t0 : 1;
+    unsigned long ovf_pmi_t1 : 1;
+    unsigned long reserved2 : 2;
+    unsigned long cascade : 1;
+    unsigned long overflow : 1;
+  } bits;
 } pentium4_cccr_value_t;
 
 #endif /* __PFMLIB_PENTIUM4_H__ */

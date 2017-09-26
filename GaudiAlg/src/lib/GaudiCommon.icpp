@@ -4,8 +4,8 @@
 // STL & STD
 // ============================================================================
 #include <algorithm>
-#include <numeric>
 #include <cstdlib>
+#include <numeric>
 // ============================================================================
 /* @file GaudiCommon.cpp
  *
@@ -80,8 +80,8 @@ void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
   }
 
   // Get the job option service
-  auto jos = PBASE::template service<IJobOptionsSvc>("JobOptionsSvc");
-  if (!jos) Exception("Cannot get JobOptionsSvc");
+  auto jos = PBASE::template service<IJobOptionsSvc>( "JobOptionsSvc" );
+  if ( !jos ) Exception( "Cannot get JobOptionsSvc" );
 
   // Get the "Context" option if in the file...
   const auto myList = jos->getProperties( this->name() );
@@ -152,15 +152,15 @@ StatusCode GaudiCommon<PBASE>::
   auto rootName = dataMgrSvc->rootName();
   if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
 
-  auto fixLocation = [this, rootName] ( const std::string & location ) -> std::string {
+  auto fixLocation = [this, rootName]( const std::string& location ) -> std::string {
     auto tokens = boost::tokenizer<boost::char_separator<char>>{location, boost::char_separator<char>{":"}};
-    auto result = std::accumulate( tokens.begin(), tokens.end(), std::string{},
-                     [&](std::string s, const std::string& tok) {
-                        std::string r = fullTESLocation(tok, UseRootInTES);
-                        //check whether we have an absolute path if yes use it - else prepend DataManager Root
-                        if (r[0]!='/') r = rootName + r;
-                        return s.empty() ? r : s + ':' + r;
-                     } );
+    auto result =
+        std::accumulate( tokens.begin(), tokens.end(), std::string{}, [&]( std::string s, const std::string& tok ) {
+          std::string r = fullTESLocation( tok, UseRootInTES );
+          // check whether we have an absolute path if yes use it - else prepend DataManager Root
+          if ( r[0] != '/' ) r = rootName + r;
+          return s.empty() ? r : s + ':' + r;
+        } );
     if ( result != location && this->msgLevel( MSG::DEBUG ) )
       this->debug() << "Changing " << location << " to " << result << endmsg;
     return result;
@@ -169,9 +169,10 @@ StatusCode GaudiCommon<PBASE>::
   class DHHFixer : public IDataHandleVisitor
   {
   public:
-    DHHFixer( std::function<std::string( const std::string& )> f ): m_f( std::move( f ) ) {}
-    void visit( const IDataHandleHolder* idhh ) override {
-      if (!idhh) return;
+    DHHFixer( std::function<std::string( const std::string& )> f ) : m_f( std::move( f ) ) {}
+    void visit( const IDataHandleHolder* idhh ) override
+    {
+      if ( !idhh ) return;
 
       std::string r;
       for ( auto h : idhh->inputHandles() ) {

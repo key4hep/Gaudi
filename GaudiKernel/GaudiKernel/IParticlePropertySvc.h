@@ -15,16 +15,17 @@ class ParticleProperty;
     @author Iain Last
     @author G.Corti
 */
-class GAUDI_API IParticlePropertySvc: virtual public IService {
+class GAUDI_API IParticlePropertySvc : virtual public IService
+{
 
 public:
   /// InterfaceID
-  DeclareInterfaceID(IParticlePropertySvc,3,0);
+  DeclareInterfaceID( IParticlePropertySvc, 3, 0 );
 
   // Typedefs for container type
   typedef std::vector<ParticleProperty*> VectPP;
-  typedef VectPP::const_iterator         const_iterator;
-  typedef VectPP::iterator               iterator;
+  typedef VectPP::const_iterator const_iterator;
+  typedef VectPP::iterator iterator;
 
   /** Create a new particle property
       @param  particle  String name of the particle
@@ -37,11 +38,8 @@ public:
       @param  pythiaId  ID of particle in Pythia
       @return StatusCode - SUCCESS if the particle property was added
   */
-  virtual StatusCode push_back( const std::string& particle,
-				int geantId, int jetsetId,
-				double charge, double mass, double tlife ,
-				const std::string& evtName , int pythiaId ,
-				double maxWidth ) = 0;
+  virtual StatusCode push_back( const std::string& particle, int geantId, int jetsetId, double charge, double mass,
+                                double tlife, const std::string& evtName, int pythiaId, double maxWidth ) = 0;
 
   /** Create a new particle property.
       @param  pp a particle property class
@@ -68,7 +66,7 @@ public:
   virtual ParticleProperty* find( const std::string& name ) = 0;
 
   /// Retrieve an object by PythiaID
-  virtual ParticleProperty* findByPythiaID( int pythiaID ) =0;
+  virtual ParticleProperty* findByPythiaID( int pythiaID ) = 0;
 
   /// Erase a property by geant3 id.
   virtual StatusCode erase( int geantId ) = 0;
@@ -78,9 +76,6 @@ public:
 
   /// Erase a property by StdHep id
   virtual StatusCode eraseByStdHepID( int stdHepID ) = 0;
-
 };
 
 #endif
-
-

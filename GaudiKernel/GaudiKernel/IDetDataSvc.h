@@ -5,7 +5,10 @@
 #include "GaudiKernel/IInterface.h"
 
 // Forward declarations
-namespace Gaudi { class Time; }
+namespace Gaudi
+{
+  class Time;
+}
 
 ///---------------------------------------------------------------------------
 /** @class IDetDataSvc IDetDataSvc.h GaudiKernel/IDetDataSvc.h
@@ -15,13 +18,13 @@ namespace Gaudi { class Time; }
 
     @author Andrea Valassi
     @date August 2001
-*///--------------------------------------------------------------------------
+*/ //--------------------------------------------------------------------------
 
-class GAUDI_API IDetDataSvc: virtual public IInterface
+class GAUDI_API IDetDataSvc : virtual public IInterface
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IDetDataSvc,2,0);
+  DeclareInterfaceID( IDetDataSvc, 2, 0 );
 
   /// Check if the event time has been set
   virtual bool validEventTime() const = 0;

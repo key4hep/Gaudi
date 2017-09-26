@@ -1,19 +1,17 @@
 #ifndef GAUDIKERNEL_REFTABLE_H
 #define GAUDIKERNEL_REFTABLE_H 1
 
-
 // Include files
-#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/StreamBuffer.h"
-#include "GaudiKernel/SmartRefVector.h"
-#include "GaudiKernel/SmartRef.h"
 #include "GaudiKernel/HashMap.h" // Cannot use maps through sharable images....
+#include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/SmartRef.h"
+#include "GaudiKernel/SmartRefVector.h"
+#include "GaudiKernel/StreamBuffer.h"
 
 // Externals
 static const CLID CLID_RefTable1to1 = 300;
 static const CLID CLID_RefTable1toN = 301;
-
 
 //------------------------------------------------------------------------------
 //
@@ -42,27 +40,30 @@ static const CLID CLID_RefTable1toN = 301;
    Author:      Markus Frank
 
 */
-template <class FROM, class MAPENTRY> class RefTableBase : public DataObject    {
+template <class FROM, class MAPENTRY>
+class RefTableBase : public DataObject
+{
 public:
   // Type of the key
-  typedef FROM                                      KeyType;
+  typedef FROM KeyType;
   // Type of map entries
-  typedef MAPENTRY                                  EntryType;
+  typedef MAPENTRY EntryType;
   // My own type
-  typedef RefTableBase<FROM, EntryType>             BaseType;
+  typedef RefTableBase<FROM, EntryType> BaseType;
   /** Define Reference map. Need to use index into vector,
       because location of vector entries is not fixed
   */
-  typedef GaudiUtils::HashMap< const void* , EntryType >      TableType;
+  typedef GaudiUtils::HashMap<const void*, EntryType> TableType;
   /// Definition of map iterator
-  typedef TableType::iterator       iterator;
+  typedef TableType::iterator iterator;
   /// Definition of map iterator (CONST)
   typedef TableType::const_iterator const_iterator;
   /// Class id of the reference table
-  CLID       m_clid;
+  CLID m_clid;
+
 private:
   /// Reference map
-  TableType  m_table;
+  TableType m_table;
   /** This is a completely useless entry, but the compiler
       wants it to be instantiated before the serialize
       function is defined.
@@ -71,58 +72,44 @@ private:
 
 protected:
   /// Insert new Entry into Reference container
-  bool insertMapElement ( const KeyType* from, EntryType& to )    {
-    return m_table.insert( from, to );
-  }
+  bool insertMapElement( const KeyType* from, EntryType& to ) { return m_table.insert( from, to ); }
   /// Find Reference from it's source entry
-  EntryType* i_reference(const KeyType* from)  {
+  EntryType* i_reference( const KeyType* from )
+  {
     auto i = m_table.find( from );
-    return  i != 0 ?  &(i->second) : nullptr;
+    return i != 0 ? &( i->second ) : nullptr;
   }
   /// Find Reference from it's source entry (CONST)
-  const EntryType* i_reference(const KeyType* from)  const  {
+  const EntryType* i_reference( const KeyType* from ) const
+  {
     auto i = m_table.find( from );
-    return  i != m_table.end() ?  &(i->second) : nullptr;
+    return i != m_table.end() ? &( i->second ) : nullptr;
   }
 
 public:
-	/// Constructors
-  RefTableBase(const CLID& clid, int len) : m_clid(clid), m_table(len)   {
-  }
+  /// Constructors
+  RefTableBase( const CLID& clid, int len ) : m_clid( clid ), m_table( len ) {}
   /// Destructor
-  virtual ~RefTableBase()  = default;
+  virtual ~RefTableBase() = default;
   /// Clear Reference map
-  virtual void clear()    {
-    m_table.clear();
-  }
+  virtual void clear() { m_table.clear(); }
   /// Start of direct access iterator
-  iterator begin()   {
-    return m_table.begin();
-  }
+  iterator begin() { return m_table.begin(); }
   /// Start of direct access iterator (CONST)
-  const_iterator begin()  const  {
-    return m_table.begin();
-  }
+  const_iterator begin() const { return m_table.begin(); }
   /// End of direct access iterator
-  iterator end()   {
-    return m_table.end();
-  }
+  iterator end() { return m_table.end(); }
   /// End of direct access iterator (CONST)
-  const_iterator end()  const  {
-    return m_table.end();
-  }
+  const_iterator end() const { return m_table.end(); }
   /// Size of References
-  long size()   const   {
-    return m_table.size();
-  }
+  long size() const { return m_table.size(); }
   /// Size of References
-  void reserve(int len)   {
-    m_table.reserve(len);
-  }
+  void reserve( int len ) { m_table.reserve( len ); }
   /// Serialize the object for writing
-  virtual StreamBuffer& serialize( StreamBuffer& s ) const   {
-    DataObject::serialize(s) << m_table.size();
-    //for (TableType::const_iterator i = m_table.begin(), stop = m_table.end(); i != stop; i++ )    {
+  virtual StreamBuffer& serialize( StreamBuffer& s ) const
+  {
+    DataObject::serialize( s ) << m_table.size();
+    // for (TableType::const_iterator i = m_table.begin(), stop = m_table.end(); i != stop; i++ )    {
     //  SmartRef<KeyType> fromRef;
     //  fromRef = (KeyType*)(*i).first;
     //  s << fromRef(this);
@@ -131,11 +118,12 @@ public:
     return s;
   }
   /// Serialize the object for reading
-  virtual StreamBuffer& serialize( StreamBuffer& s )         {
+  virtual StreamBuffer& serialize( StreamBuffer& s )
+  {
     long siz;
-    DataObject::serialize(s) >> siz;
-    m_table.reserve(siz);
-    //for ( long i = 0; i < siz; i++ )   {
+    DataObject::serialize( s ) >> siz;
+    m_table.reserve( siz );
+    // for ( long i = 0; i < siz; i++ )   {
     //  SmartRef<KeyType> fromRef;
     //  EntryType entry;
     //  s >> fromRef(this);
@@ -146,93 +134,91 @@ public:
   }
 };
 
-template <class FROM, class TO> class RefTable1to1
-: public RefTableBase< FROM , SmartRef<TO> >    {
+template <class FROM, class TO>
+class RefTable1to1 : public RefTableBase<FROM, SmartRef<TO>>
+{
 public:
   /// Standard Constructor
-  RefTable1to1 (const CLID& clid, int len=16)
-  : RefTableBase< FROM , SmartRef<TO> >(clid, len)
-  {
-  }
+  RefTable1to1( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRef<TO>>( clid, len ) {}
   /// Standard Destructor
   ~RefTable1to1() override = default;
-  
+
   /// Retrieve reference to class definition structure
-  virtual const CLID& clID() const  {
-    return m_clid;
-  }
+  virtual const CLID& clID() const { return m_clid; }
   /// Insert new Entry into Reference container
-  bool insert ( const FROM* from, TO* to )    {
-    return insertMapElement(from, EntryType(to));
-  }
+  bool insert( const FROM* from, TO* to ) { return insertMapElement( from, EntryType( to ) ); }
   /// Insert new Entry into Reference container
-  bool insert ( const FROM* from, const EntryType& to)    {
+  bool insert( const FROM* from, const EntryType& to )
+  {
     // We MUST check the environment of the smart pointer!
-    if ( 0 != to.data() || StreamBuffer::INVALID != to.hintID() )    {
-      return insertMapElement(from, EntryType(to));
+    if ( 0 != to.data() || StreamBuffer::INVALID != to.hintID() ) {
+      return insertMapElement( from, EntryType( to ) );
     }
     return false;
   }
   /// Find Reference from it's source entry
-  TO* reference(const FROM* from)  {
-    EntryType* e = i_reference(from);
-    return (0 == e) ? 0 : (*e);
+  TO* reference( const FROM* from )
+  {
+    EntryType* e = i_reference( from );
+    return ( 0 == e ) ? 0 : ( *e );
   }
 
   /// Find Reference from it's source entry (CONST)
-  const TO* reference(const FROM* from) const {
-    auto e = i_reference(from);
+  const TO* reference( const FROM* from ) const
+  {
+    auto e = i_reference( from );
     return e ? *e : nullptr;
   }
 
   /// Check if two entries are associated to each other
-  bool isReferenced(const FROM* from, const TO* to ) const {
-    auto e = i_reference(from);
+  bool isReferenced( const FROM* from, const TO* to ) const
+  {
+    auto e = i_reference( from );
     return e && ( *e == to );
   }
   /// Check if two entries are Referenced to each other
-  bool isReferenced(const FROM* from, const EntryType& to )   {
-    const EntryType* e = i_reference(from);
-    return assoc && (*e!=to) && (e->target()==to.target());
+  bool isReferenced( const FROM* from, const EntryType& to )
+  {
+    const EntryType* e = i_reference( from );
+    return assoc && ( *e != to ) && ( e->target() == to.target() );
   }
 };
 
-template <class FROM, class TO> class RefTable1toN
-: public RefTableBase< FROM , SmartRefVector<TO> >    {
+template <class FROM, class TO>
+class RefTable1toN : public RefTableBase<FROM, SmartRefVector<TO>>
+{
 public:
   /// Standard Constructor
-  RefTable1toN (const CLID& clid, int len=16)
-  : RefTableBase< FROM , SmartRefVector<TO> >(clid, len)    {
-  }
+  RefTable1toN( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRefVector<TO>>( clid, len ) {}
   /// Standard Destructor
   ~RefTable1toN() override = default;
-  
+
   /// Retrieve reference to class definition structure
-  virtual const CLID& clID() const  {
-    return m_clid;
-  }
+  virtual const CLID& clID() const { return m_clid; }
   /// Insert new Entry into Reference container
-  bool insert ( const FROM* from, TO* to)    {
-    EntryType* entry = i_reference(from);
-    if ( 0 == entry )   {
-      bool result = insertMapElement(from, EntryType());
-      EntryType* newEntry = i_reference(from);
-      if ( !( 0 == newEntry) )    {
-        newEntry->push_back( SmartRef<TO>(to) );
+  bool insert( const FROM* from, TO* to )
+  {
+    EntryType* entry = i_reference( from );
+    if ( 0 == entry ) {
+      bool result         = insertMapElement( from, EntryType() );
+      EntryType* newEntry = i_reference( from );
+      if ( !( 0 == newEntry ) ) {
+        newEntry->push_back( SmartRef<TO>( to ) );
         return true;
       }
       return false;
     }
-    entry->push_back( SmartRef<TO>(to) );
+    entry->push_back( SmartRef<TO>( to ) );
     return true;
   }
   /// Insert new Entry into Reference container
-  bool insert ( const FROM* from, const SmartRef<TO>& to)    {
-    EntryType* entry = i_reference(from);
-    if ( 0 == entry )   {
-      bool result = insertMapElement(from, EntryType());
-      EntryType* newEntry = i_reference(from);
-      if ( !(0 == newEntry) )    {
+  bool insert( const FROM* from, const SmartRef<TO>& to )
+  {
+    EntryType* entry = i_reference( from );
+    if ( 0 == entry ) {
+      bool result         = insertMapElement( from, EntryType() );
+      EntryType* newEntry = i_reference( from );
+      if ( !( 0 == newEntry ) ) {
         newEntry->push_back( to );
         return true;
       }
@@ -242,37 +228,38 @@ public:
     return true;
   }
   /// Insert new Entry into Reference container
-  bool insert ( const FROM* from, const EntryType& to)    {
-    return insertMapElement(from, const_cast<EntryType&>(to));
+  bool insert( const FROM* from, const EntryType& to )
+  {
+    return insertMapElement( from, const_cast<EntryType&>( to ) );
   }
   /// Find Reference from it's source entry
-  EntryType& reference(const FROM* from)  {
+  EntryType& reference( const FROM* from )
+  {
     static EntryType empty;
-    EntryType* e = i_reference(from);
-    return e ? *e : empty; 
+    EntryType* e = i_reference( from );
+    return e ? *e : empty;
   }
   /// Find Reference from it's source entry (CONST)
-  const EntryType& reference(const FROM* from)  const {
+  const EntryType& reference( const FROM* from ) const
+  {
     static const EntryType empty;
-    EntryType* e = i_reference(from);
-    return e ? *e : empty; 
+    EntryType* e = i_reference( from );
+    return e ? *e : empty;
   }
   /// Check if two entries are Referenced to each other
-  bool isReferenced(const FROM* from, const EntryType& to )   {
-    auto e = i_reference(from);
+  bool isReferenced( const FROM* from, const EntryType& to )
+  {
+    auto e = i_reference( from );
     return e && ( *e == to );
   }
   /// Check if two entries are Referenced to each other
-  bool isReferenced(const FROM* from, const TO* to )   {
-    return isReferenced(from, SmartRef<TO>(to));
-  }
+  bool isReferenced( const FROM* from, const TO* to ) { return isReferenced( from, SmartRef<TO>( to ) ); }
   /// Check if two entries are Referenced to each other
-  bool isReferenced(const FROM* from, const SmartRef<TO>& to )   {
-    const EntryType* e = i_reference(from);
-    return assoc && std::find(e->begin(), e->end(), to) != e->end();
+  bool isReferenced( const FROM* from, const SmartRef<TO>& to )
+  {
+    const EntryType* e = i_reference( from );
+    return assoc && std::find( e->begin(), e->end(), to ) != e->end();
   }
 };
 
-
 #endif // GAUDIKERNEL_REFTABLE_H
-

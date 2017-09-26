@@ -15,7 +15,7 @@ libname = 'libGaudiKernel.so'
 
 searchpath = [os.path.curdir, 'lib']
 # The day we can run the test on other platforms we can do this:
-#varname = {'darwin': 'DYLD_LIBRARY_PATH',
+# varname = {'darwin': 'DYLD_LIBRARY_PATH',
 #           'win32': 'PATH'}.get(sys.platform, 'LD_LIBRARY_PATH')
 varname = 'LD_LIBRARY_PATH'
 searchpath.extend(os.environ.get(varname, "").split(os.pathsep))
@@ -26,7 +26,8 @@ try:
                      for n in searchpath)
            if os.path.exists(p)).next()
 except StopIteration:
-    print >> sys.stderr, 'FAILURE: Cannot find', repr(libname), 'in', searchpath
+    print >> sys.stderr, 'FAILURE: Cannot find', repr(
+        libname), 'in', searchpath
     sys.exit(2)
 
 nm = Popen(["nm", '-C', lib], stdout=PIPE)

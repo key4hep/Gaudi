@@ -14,6 +14,7 @@ import re
 import platform
 from subprocess import check_output, STDOUT
 
+
 def _Linux_os():
     dist = platform.linux_distribution(full_distribution_name=False)
     dist_name = dist[0].lower()
@@ -37,17 +38,22 @@ def _Linux_os():
         dist_version = dist_version.replace('.', '')
     return dist_name + dist_version
 
+
 def _Darwin_os():
     version = platform.mac_ver()[0].split('.')
     return 'macos' + ''.join(version[:2])
 
+
 def _Windows_os():
     return 'win' + platform.win32_ver()[1].split('.', 1)[0]
+
 
 def _unknown_os():
     return 'unknown'
 
+
 os_id = globals().get('_%s_os' % platform.system(), _unknown_os)
+
 
 def _compiler_version(cmd=os.environ.get('CC', 'cc')):
     # prevent interference from localization
@@ -63,8 +69,10 @@ def _compiler_version(cmd=os.environ.get('CC', 'cc')):
         vers += m.group(3)
     return comp + vers
 
+
 def compiler_id():
     return _compiler_version()
+
 
 arch = platform.machine()
 if arch == 'AMD64':  # this is what we get on Windows

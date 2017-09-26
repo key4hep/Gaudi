@@ -37,16 +37,16 @@ from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
 # It's confortable to collect the relevant parameters at the top of the optionfile
 evtslots = 23
 evtMax = 50
-cardinality=10
-algosInFlight=10
+cardinality = 10
+algosInFlight = 10
 #-------------------------------------------------------------------------------
 
 # The configuration of the whiteboard ------------------------------------------
 # It is useful to call it EventDataSvc to replace the usual data service with
 # the whiteboard transparently.
 
-whiteboard   = HiveWhiteBoard("EventDataSvc",
-                              EventSlots = evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc",
+                            EventSlots=evtslots)
 
 #-------------------------------------------------------------------------------
 
@@ -63,8 +63,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algosInFlight,
-                                ThreadPoolSize = algosInFlight,
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=algosInFlight,
+                                ThreadPoolSize=algosInFlight,
                                 OutputLevel=WARNING)
 
 #-------------------------------------------------------------------------------
@@ -80,24 +80,24 @@ AlgResourcePool(OutputLevel=DEBUG)
 a1 = CPUCruncher("A1")
 a1.outKeys = ['/Event/a1']
 
-a2 = CPUCruncher("A2") 
+a2 = CPUCruncher("A2")
 a2.inpKeys = ['/Event/a1']
 a2.outKeys = ['/Event/a2']
 
-a3 = CPUCruncher("A3") 
+a3 = CPUCruncher("A3")
 a3.inpKeys = ['/Event/a1']
 a3.outKeys = ['/Event/a3']
 
-a4 = CPUCruncher("A4") 
-a4.inpKeys = ['/Event/a2','/Event/a3']
+a4 = CPUCruncher("A4")
+a4.inpKeys = ['/Event/a2', '/Event/a3']
 a4.outKeys = ['/Event/a4']
 
 for algo in [a1, a2, a3, a4]:
-  algo.shortCalib=True
-  algo.Cardinality = cardinality
-  algo.OutputLevel=DEBUG
-  algo.varRuntime=.3
-  algo.avgRuntime=.5  
+    algo.shortCalib = True
+    algo.Cardinality = cardinality
+    algo.OutputLevel = DEBUG
+    algo.varRuntime = .3
+    algo.avgRuntime = .5
 
 ctrp = ContextEventCounterPtr("CNT*", Cardinality=0, OutputLevel=INFO)
 ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
@@ -105,20 +105,20 @@ ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-# to show EventContext slot (%s), event (%e), and thread (%X) in 
+# to show EventContext slot (%s), event (%e), and thread (%X) in
 #    MessageSvc output:
 msgFmt = "% F%30W%S%4W%s%e%15W%X%7W%R%T %0W%M"
 
-msgSvc = InertMessageSvc("MessageSvc",OutputLevel=INFO)
+msgSvc = InertMessageSvc("MessageSvc", OutputLevel=INFO)
 msgSvc.Format = msgFmt
 ApplicationMgr().SvcMapping.append(msgSvc)
 
 
-ApplicationMgr( EvtMax = evtMax,
-                EvtSel = 'NONE',
-                ExtSvc =[whiteboard],
-                EventLoop = slimeventloopmgr,
-                TopAlg = [a1, a2, a3, a4, ctrp, ctrd],
-                MessageSvcType="InertMessageSvc")
+ApplicationMgr(EvtMax=evtMax,
+               EvtSel='NONE',
+               ExtSvc=[whiteboard],
+               EventLoop=slimeventloopmgr,
+               TopAlg=[a1, a2, a3, a4, ctrp, ctrd],
+               MessageSvcType="InertMessageSvc")
 
 #-------------------------------------------------------------------------------

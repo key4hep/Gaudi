@@ -9,8 +9,8 @@
 // ============================================================================
 // from Gaudi
 // ============================================================================
-#include "GaudiKernel/IAlgTool.h"
 #include "GaudiAlg/HistoID.h"
+#include "GaudiKernel/IAlgTool.h"
 // ============================================================================
 
 namespace AIDA
@@ -28,17 +28,16 @@ namespace AIDA
  *  @date   2004-06-28
  */
 
-class GAUDI_API IHistoTool: virtual public IAlgTool
+class GAUDI_API IHistoTool : virtual public IAlgTool
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IHistoTool,2,0);
+  DeclareInterfaceID( IHistoTool, 2, 0 );
 
   /// the actual type for histogram identifier (HBOOK style)
-  typedef Histos::HistoID       HistoID       ;
+  typedef Histos::HistoID HistoID;
 
 public:
-
   // ================================= 1D Histograms ========================================
 
   /** fill the 1D histogram (book on demand)
@@ -69,13 +68,8 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA 1D histogram
    */
-  virtual AIDA::IHistogram1D*  plot1D
-  ( const double        value        ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins   = 100 ,
-    const double        weight = 1.0 ) const  = 0 ;
+  virtual AIDA::IHistogram1D* plot1D( const double value, const std::string& title, const double low, const double high,
+                                      const unsigned long bins = 100, const double weight = 1.0 ) const = 0;
 
   /** fill the 1D histogram (book on demand)
    *
@@ -90,15 +84,10 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA 1D histogram
    */
-  AIDA::IHistogram1D*  plot
-  ( const double        value        ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins   = 100 ,
-    const double        weight = 1.0 ) const
+  AIDA::IHistogram1D* plot( const double value, const std::string& title, const double low, const double high,
+                            const unsigned long bins = 100, const double weight = 1.0 ) const
   {
-    return plot1D ( value, title, low, high, bins, weight );
+    return plot1D( value, title, low, high, bins, weight );
   }
 
   /** fill the 1D histogram with forced ID assignement (book on demand)
@@ -141,14 +130,9 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA histogram
    */
-  virtual AIDA::IHistogram1D*  plot1D
-  ( const double        value        ,
-    const HistoID&      ID           ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins   = 100 ,
-    const double        weight = 1.0 ) const = 0 ;
+  virtual AIDA::IHistogram1D* plot1D( const double value, const HistoID& ID, const std::string& title, const double low,
+                                      const double high, const unsigned long bins = 100,
+                                      const double weight = 1.0 ) const = 0;
 
   /** fill the 1D histogram with forced ID assignment (book on demand)
    *
@@ -164,16 +148,10 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA histogram
    */
-  AIDA::IHistogram1D*  plot
-  ( const double        value        ,
-    const HistoID&      ID           ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins   = 100 ,
-    const double        weight = 1.0 ) const
+  AIDA::IHistogram1D* plot( const double value, const HistoID& ID, const std::string& title, const double low,
+                            const double high, const unsigned long bins = 100, const double weight = 1.0 ) const
   {
-    return plot1D ( value, ID, title, low, high, bins, weight );
+    return plot1D( value, ID, title, low, high, bins, weight );
   };
 
   // ================================= 2D Histograms ========================================
@@ -212,17 +190,10 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA 2D histogram
    */
-  virtual AIDA::IHistogram2D*  plot2D
-  ( const double        valueX       ,
-    const double        valueY       ,
-    const std::string&  title        ,
-    const double        lowX         ,
-    const double        highX        ,
-    const double        lowY         ,
-    const double        highY        ,
-    const unsigned long binsX  = 50  ,
-    const unsigned long binsY  = 50  ,
-    const double        weight = 1.0 ) const = 0;
+  virtual AIDA::IHistogram2D* plot2D( const double valueX, const double valueY, const std::string& title,
+                                      const double lowX, const double highX, const double lowY, const double highY,
+                                      const unsigned long binsX = 50, const unsigned long binsY = 50,
+                                      const double weight = 1.0 ) const = 0;
 
   /** fill the 2D histogram with forced ID assignment (book on demand)
    *
@@ -270,18 +241,10 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA 2D histogram
    */
-  virtual AIDA::IHistogram2D*  plot2D
-  ( const double        valueX       ,
-    const double        valueY       ,
-    const HistoID&      ID           ,
-    const std::string&  title        ,
-    const double        lowX         ,
-    const double        highX        ,
-    const double        lowY         ,
-    const double        highY        ,
-    const unsigned long binsX  = 50  ,
-    const unsigned long binsY  = 50  ,
-    const double        weight = 1.0 ) const = 0;
+  virtual AIDA::IHistogram2D* plot2D( const double valueX, const double valueY, const HistoID& ID,
+                                      const std::string& title, const double lowX, const double highX,
+                                      const double lowY, const double highY, const unsigned long binsX = 50,
+                                      const unsigned long binsY = 50, const double weight = 1.0 ) const = 0;
 
   // ================================= 3D Histograms ========================================
 
@@ -325,21 +288,11 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA 3D histogram
    */
-  virtual AIDA::IHistogram3D*  plot3D
-  ( const double        valueX       ,
-    const double        valueY       ,
-    const double        valueZ       ,
-    const std::string&  title        ,
-    const double        lowX         ,
-    const double        highX        ,
-    const double        lowY         ,
-    const double        highY        ,
-    const double        lowZ         ,
-    const double        highZ        ,
-    const unsigned long binsX  = 10  ,
-    const unsigned long binsY  = 10  ,
-    const unsigned long binsZ  = 10  ,
-    const double        weight = 1.0 ) const = 0;
+  virtual AIDA::IHistogram3D* plot3D( const double valueX, const double valueY, const double valueZ,
+                                      const std::string& title, const double lowX, const double highX,
+                                      const double lowY, const double highY, const double lowZ, const double highZ,
+                                      const unsigned long binsX = 10, const unsigned long binsY = 10,
+                                      const unsigned long binsZ = 10, const double weight = 1.0 ) const = 0;
 
   /** fill the 3D histogram with forced ID assignment (book on demand)
    *
@@ -393,25 +346,13 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA 3D histogram
    */
-  virtual AIDA::IHistogram3D*  plot3D
-  ( const double        valueX       ,
-    const double        valueY       ,
-    const double        valueZ       ,
-    const HistoID&      ID           ,
-    const std::string&  title        ,
-    const double        lowX         ,
-    const double        highX        ,
-    const double        lowY         ,
-    const double        highY        ,
-    const double        lowZ         ,
-    const double        highZ        ,
-    const unsigned long binsX  = 10  ,
-    const unsigned long binsY  = 10  ,
-    const unsigned long binsZ  = 10  ,
-    const double        weight = 1.0 ) const = 0;
+  virtual AIDA::IHistogram3D* plot3D( const double valueX, const double valueY, const double valueZ, const HistoID& ID,
+                                      const std::string& title, const double lowX, const double highX,
+                                      const double lowY, const double highY, const double lowZ, const double highZ,
+                                      const unsigned long binsX = 10, const unsigned long binsY = 10,
+                                      const unsigned long binsZ = 10, const double weight = 1.0 ) const = 0;
 
 public:
-
   /** book the 1D histogram
    *
    *  The histogram will be assigned a unique identifier
@@ -423,11 +364,8 @@ public:
    *  @param bins  number of bins
    *  @return pointer to AIDA 1D histogram
    */
-  virtual AIDA::IHistogram1D*  book1D
-  ( const std::string&  title        ,
-    const double        low    =   0 ,
-    const double        high   = 100 ,
-    const unsigned long bins   = 100 ) const = 0 ;
+  virtual AIDA::IHistogram1D* book1D( const std::string& title, const double low = 0, const double high = 100,
+                                      const unsigned long bins = 100 ) const = 0;
 
   /** book the 1D histogram
    *
@@ -441,11 +379,8 @@ public:
    *  @param bins  number of bins
    *  @return pointer to AIDA 1D histogram
    */
-  AIDA::IHistogram1D*  book
-  ( const std::string&  title        ,
-    const double        low    =   0 ,
-    const double        high   = 100 ,
-    const unsigned long bins   = 100 ) const
+  AIDA::IHistogram1D* book( const std::string& title, const double low = 0, const double high = 100,
+                            const unsigned long bins = 100 ) const
   {
     return book1D( title, low, high, bins );
   }
@@ -464,14 +399,9 @@ public:
    *  @param binsY  number of bins in y
    *  @return pointer to AIDA 2D histogram
    */
-  virtual AIDA::IHistogram2D*  book2D
-  ( const std::string&  title         ,
-    const double        lowX    =   0 ,
-    const double        highX   = 100 ,
-    const unsigned long binsX   =  50 ,
-    const double        lowY    =   0 ,
-    const double        highY   = 100 ,
-    const unsigned long binsY   =  50 ) const = 0;
+  virtual AIDA::IHistogram2D* book2D( const std::string& title, const double lowX = 0, const double highX = 100,
+                                      const unsigned long binsX = 50, const double lowY = 0, const double highY = 100,
+                                      const unsigned long binsY = 50 ) const = 0;
 
   /** book the 3D histogram
    *
@@ -490,17 +420,10 @@ public:
    *  @param binsZ  number of bins in y
    *  @return pointer to AIDA 3D histogram
    */
-  virtual AIDA::IHistogram3D*  book3D
-  ( const std::string&  title         ,
-    const double        lowX    =   0 ,
-    const double        highX   = 100 ,
-    const unsigned long binsX   =  10 ,
-    const double        lowY    =   0 ,
-    const double        highY   = 100 ,
-    const unsigned long binsY   =  10 ,
-    const double        lowZ    =   0 ,
-    const double        highZ   = 100 ,
-    const unsigned long binsZ   =  10 ) const = 0;
+  virtual AIDA::IHistogram3D* book3D( const std::string& title, const double lowX = 0, const double highX = 100,
+                                      const unsigned long binsX = 10, const double lowY = 0, const double highY = 100,
+                                      const unsigned long binsY = 10, const double lowZ = 0, const double highZ = 100,
+                                      const unsigned long binsZ = 10 ) const = 0;
 
   /** book the 1D histogram with forced ID
    *
@@ -512,12 +435,8 @@ public:
    *  @param bins  number of bins
    *  @return pointer to AIDA histogram
    */
-  virtual AIDA::IHistogram1D*  book1D
-  ( const HistoID&      ID           ,
-    const std::string&  title  = ""  ,
-    const double        low    =   0 ,
-    const double        high   = 100 ,
-    const unsigned long bins   = 100 ) const = 0 ;
+  virtual AIDA::IHistogram1D* book1D( const HistoID& ID, const std::string& title = "", const double low = 0,
+                                      const double high = 100, const unsigned long bins = 100 ) const = 0;
 
   /** book the 1D histogram with forced ID
    *
@@ -532,12 +451,8 @@ public:
    *  @param bins  number of bins
    *  @return pointer to AIDA histogram
    */
-  AIDA::IHistogram1D*  book
-  ( const HistoID&      ID           ,
-    const std::string&  title  = ""  ,
-    const double        low    =   0 ,
-    const double        high   = 100 ,
-    const unsigned long bins   = 100 ) const
+  AIDA::IHistogram1D* book( const HistoID& ID, const std::string& title = "", const double low = 0,
+                            const double high = 100, const unsigned long bins = 100 ) const
   {
     return book1D( ID, title, low, high, bins );
   }
@@ -552,15 +467,9 @@ public:
    *  @param bins  number of bins
    *  @return pointer to AIDA histogram
    */
-  virtual AIDA::IHistogram2D*  book2D
-  ( const HistoID&      ID            ,
-    const std::string&  title         ,
-    const double        lowX    =   0 ,
-    const double        highX   = 100 ,
-    const unsigned long binsX   = 100 ,
-    const double        lowY    =   0 ,
-    const double        highY   = 100 ,
-    const unsigned long binsY   = 100 ) const = 0;
+  virtual AIDA::IHistogram2D* book2D( const HistoID& ID, const std::string& title, const double lowX = 0,
+                                      const double highX = 100, const unsigned long binsX = 100, const double lowY = 0,
+                                      const double highY = 100, const unsigned long binsY = 100 ) const = 0;
 
   /** book the 3D histogram with forced ID
    *
@@ -578,18 +487,10 @@ public:
    *  @param binsZ  number of bins in y
    *  @return pointer to AIDA 3D histogram
    */
-  virtual AIDA::IHistogram3D*  book3D
-  ( const HistoID&      ID            ,
-    const std::string&  title         ,
-    const double        lowX    =   0 ,
-    const double        highX   = 100 ,
-    const unsigned long binsX   =  10 ,
-    const double        lowY    =   0 ,
-    const double        highY   = 100 ,
-    const unsigned long binsY   =  10 ,
-    const double        lowZ    =   0 ,
-    const double        highZ   = 100 ,
-    const unsigned long binsZ   =  10 ) const = 0;
+  virtual AIDA::IHistogram3D* book3D( const HistoID& ID, const std::string& title, const double lowX = 0,
+                                      const double highX = 100, const unsigned long binsX = 10, const double lowY = 0,
+                                      const double highY = 100, const unsigned long binsY = 10, const double lowZ = 0,
+                                      const double highZ = 100, const unsigned long binsZ = 10 ) const = 0;
 
   /** fill the 1D histo with the value and weight
    *  @param histo 1D histogram to be filled
@@ -598,11 +499,8 @@ public:
    *  @param title  histogram title (to be used for error report)
    *  @return pointer to AIDA 1D histogram
    */
-  virtual AIDA::IHistogram1D* fill
-  ( AIDA::IHistogram1D* histo  ,
-    const double        value  ,
-    const double        weight ,
-    const std::string&  title  = "") const = 0 ;
+  virtual AIDA::IHistogram1D* fill( AIDA::IHistogram1D* histo, const double value, const double weight,
+                                    const std::string& title = "" ) const = 0;
 
   /** fill the 2D histo with the value and weight
    *  @param histo 2D histogram to be filled
@@ -612,12 +510,8 @@ public:
    *  @param title  histogram title (to be used for error report)
    *  @return pointer to AIDA 2D histogram
    */
-  virtual AIDA::IHistogram2D* fill
-  ( AIDA::IHistogram2D* histo  ,
-    const double        valueX ,
-    const double        valueY ,
-    const double        weight ,
-    const std::string&  title  = "" ) const = 0 ;
+  virtual AIDA::IHistogram2D* fill( AIDA::IHistogram2D* histo, const double valueX, const double valueY,
+                                    const double weight, const std::string& title = "" ) const = 0;
 
   /** fill the 3D histo with the value and weight
    *  @param histo 3D histogram to be filled
@@ -628,18 +522,13 @@ public:
    *  @param title  histogram title (to be used for error report)
    *  @return pointer to AIDA 3D histogram
    */
-  virtual AIDA::IHistogram3D* fill
-  ( AIDA::IHistogram3D* histo  ,
-    const double        valueX ,
-    const double        valueY ,
-    const double        valueZ ,
-    const double        weight ,
-    const std::string&  title  = "" ) const = 0 ;
+  virtual AIDA::IHistogram3D* fill( AIDA::IHistogram3D* histo, const double valueX, const double valueY,
+                                    const double valueZ, const double weight, const std::string& title = "" ) const = 0;
 
   /** access the EXISTING 1D histogram by title
    *  return the pointer to existing 1D histogram or NULL
    */
-  virtual AIDA::IHistogram1D*  histo1D ( const std::string& title  )  const = 0 ;
+  virtual AIDA::IHistogram1D* histo1D( const std::string& title ) const = 0;
 
   /** access the EXISTING 1D histogram by title
    *
@@ -648,26 +537,22 @@ public:
    *
    *  return the pointer to existing 1D histogram or NULL
    */
-  AIDA::IHistogram1D* histo ( const std::string& title  )  const
-  {
-    return histo1D( title );
-  };
+  AIDA::IHistogram1D* histo( const std::string& title ) const { return histo1D( title ); };
 
   /** access the EXISTING 2D histogram by title
    *  return the pointer to existing 2D histogram or NULL
    */
-  virtual AIDA::IHistogram2D* histo2D ( const std::string& title  )  const = 0;
-
+  virtual AIDA::IHistogram2D* histo2D( const std::string& title ) const = 0;
 
   /** access the EXISTING 3D histogram by title
    *  return the pointer to existing 3D histogram or NULL
    */
-  virtual AIDA::IHistogram3D* histo3D ( const std::string& title  )  const = 0;
+  virtual AIDA::IHistogram3D* histo3D( const std::string& title ) const = 0;
 
   /** access the EXISTING 1D histogram by ID
    *  return the pointer to existing 1D histogram or NULL
    */
-  virtual AIDA::IHistogram1D*  histo1D ( const HistoID&     ID     )  const = 0 ;
+  virtual AIDA::IHistogram1D* histo1D( const HistoID& ID ) const = 0;
 
   /** access the EXISTING 1D histogram by ID
    *
@@ -676,29 +561,25 @@ public:
    *
    *  return the pointer to existing 1D histogram or NULL
    */
-  AIDA::IHistogram1D* histo ( const HistoID&     ID     )  const
-  {
-    return histo1D( ID );
-  };
+  AIDA::IHistogram1D* histo( const HistoID& ID ) const { return histo1D( ID ); };
 
   /** access the EXISTING 2D histogram by ID
    *  return the pointer to existing 2D histogram or NULL
    */
-  virtual AIDA::IHistogram2D* histo2D ( const HistoID&     ID     )  const = 0;
+  virtual AIDA::IHistogram2D* histo2D( const HistoID& ID ) const = 0;
 
   /** access the EXISTING 3D histogram by ID
    *  return the pointer to existing 3D histogram or NULL
    */
-  virtual AIDA::IHistogram3D* histo3D ( const HistoID&     ID     )  const = 0;
+  virtual AIDA::IHistogram3D* histo3D( const HistoID& ID ) const = 0;
 
   /// check the existence AND validity of the histogram with given title
-  virtual bool histoExists ( const std::string& title  )  const = 0 ;
+  virtual bool histoExists( const std::string& title ) const = 0;
 
   /// check the existence AND validity of the histogram with given title
-  virtual bool histoExists ( const HistoID&     ID     )  const = 0 ;
+  virtual bool histoExists( const HistoID& ID ) const = 0;
 
-public:  // non-virtual methods
-
+public:
   /** fill the 1D histogram with information from
    *  [first,last) sequence
    *
@@ -748,22 +629,20 @@ public:  // non-virtual methods
    *  @param high  high limit for histogram
    *  @param bins  number of bins for histogram
    */
-  template <class FUNCTION,class OBJECT>
-  AIDA::IHistogram1D*  plot
-  ( const FUNCTION&     func         ,
-    OBJECT              first        ,
-    OBJECT              last         ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins  = 100  ) const
+  template <class FUNCTION, class OBJECT>
+  AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const std::string& title, const double low,
+                            const double high, const unsigned long bins = 100 ) const
   {
     // retrieve or book the histogram
-    AIDA::IHistogram1D* h = histo1D ( title ) ;
-    if ( !h  )      { h = book1D  ( title , low , high , bins ); }
-    while ( first != last && h  )
-    { h = fill ( h , func( *first ) , 1.0 , title  ) ; ++first ; }
-    return h ;
+    AIDA::IHistogram1D* h = histo1D( title );
+    if ( !h ) {
+      h = book1D( title, low, high, bins );
+    }
+    while ( first != last && h ) {
+      h = fill( h, func( *first ), 1.0, title );
+      ++first;
+    }
+    return h;
   }
 
   /** fill the 1D histogram with forced ID and information from
@@ -815,23 +694,21 @@ public:  // non-virtual methods
    *  @param high  high limit for histogram
    *  @param bins  number of bins for histogram
    */
-  template <class FUNCTION,class OBJECT>
-  AIDA::IHistogram1D*  plot
-  ( const FUNCTION&     func         ,
-    OBJECT              first        ,
-    OBJECT              last         ,
-    const HistoID&      ID           ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins  = 100  ) const
+  template <class FUNCTION, class OBJECT>
+  AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const HistoID& ID,
+                            const std::string& title, const double low, const double high,
+                            const unsigned long bins = 100 ) const
   {
     // retrieve or book the histogram
-    AIDA::IHistogram1D* h = histo1D ( ID ) ;
-    if ( !h ) { h = book1D  ( ID , title , low , high , bins ); }
-    while ( first != last && h )
-    { h = fill( h , func( *first ) , 1.0 , title  ) ; ++first ; }
-    return h ;
+    AIDA::IHistogram1D* h = histo1D( ID );
+    if ( !h ) {
+      h = book1D( ID, title, low, high, bins );
+    }
+    while ( first != last && h ) {
+      h = fill( h, func( *first ), 1.0, title );
+      ++first;
+    }
+    return h;
   }
 
   /** book and fill the 1D histogram with information from
@@ -888,25 +765,20 @@ public:  // non-virtual methods
    *  @param bins   number of bins for histogram
    *  @param weight weight function
    */
-  template <class FUNCTION,class OBJECT,class WEIGHT>
-  AIDA::IHistogram1D*  plot
-  ( const FUNCTION&     func         ,
-    OBJECT              first        ,
-    OBJECT              last         ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins         ,
-    const WEIGHT&       weight       ) const
+  template <class FUNCTION, class OBJECT, class WEIGHT>
+  AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const std::string& title, const double low,
+                            const double high, const unsigned long bins, const WEIGHT& weight ) const
   {
     // retrieve or book the histogram
-    AIDA::IHistogram1D* h = histo1D ( title ) ;
-    if ( !h     ) { h = book1D  ( title , low , high , bins ); }
-    while( first != last && h )
-    { h = fill ( h                 ,
-                 func   ( *first ) ,
-                 weight ( *first ) , title  ) ; ++first ; }
-    return h ;
+    AIDA::IHistogram1D* h = histo1D( title );
+    if ( !h ) {
+      h = book1D( title, low, high, bins );
+    }
+    while ( first != last && h ) {
+      h = fill( h, func( *first ), weight( *first ), title );
+      ++first;
+    }
+    return h;
   }
 
   /** book and fill the 1D histogram with forced ID and information from
@@ -968,32 +840,25 @@ public:  // non-virtual methods
    *  @param bins  number of bins for histogram
    *  @param weight weight function
    */
-  template <class FUNCTION,class OBJECT,class WEIGHT>
-  AIDA::IHistogram1D*  plot
-  ( const FUNCTION&     func         ,
-    OBJECT              first        ,
-    OBJECT              last         ,
-    const HistoID&      ID           ,
-    const std::string&  title        ,
-    const double        low          ,
-    const double        high         ,
-    const unsigned long bins         ,
-    const WEIGHT&       weight       ) const
+  template <class FUNCTION, class OBJECT, class WEIGHT>
+  AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const HistoID& ID,
+                            const std::string& title, const double low, const double high, const unsigned long bins,
+                            const WEIGHT& weight ) const
   {
     // retrieve or book the histogram
-    AIDA::IHistogram1D* h = histo1D ( ID ) ;
-    if ( !h     ) { h = book1D  ( ID , title , low , high , bins ); }
-    while( first != last && h )
-    { h  = fill ( h                 ,
-                  func   ( *first ) ,
-                  weight ( *first ) , title  ) ; ++first ; }
-    return h ;
+    AIDA::IHistogram1D* h = histo1D( ID );
+    if ( !h ) {
+      h = book1D( ID, title, low, high, bins );
+    }
+    while ( first != last && h ) {
+      h = fill( h, func( *first ), weight( *first ), title );
+      ++first;
+    }
+    return h;
   }
 
 protected:
-
   ~IHistoTool() override = default;
-
 };
 
 #endif // GAUDIALG_IHISTOTOOL_H

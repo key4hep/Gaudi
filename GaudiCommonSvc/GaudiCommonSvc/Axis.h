@@ -16,7 +16,8 @@
 
 #include "TAxis.h"
 
-namespace Gaudi {
+namespace Gaudi
+{
 
   /**
   * An IAxis represents a binned histogram axis. A 1D Histogram would have
@@ -26,20 +27,21 @@ namespace Gaudi {
   * @author The AIDA team (http://aida.freehep.org/)
   *
   */
-  class Axis  : public AIDA::IAxis
+  class Axis : public AIDA::IAxis
   {
   public:
-
-    static int toRootIndex(int index, int nbins) {
-      if (index==AIDA::IAxis::OVERFLOW_BIN)  return nbins+1;
-      if (index==AIDA::IAxis::UNDERFLOW_BIN) return 0;
-      return index+1;
+    static int toRootIndex( int index, int nbins )
+    {
+      if ( index == AIDA::IAxis::OVERFLOW_BIN ) return nbins + 1;
+      if ( index == AIDA::IAxis::UNDERFLOW_BIN ) return 0;
+      return index + 1;
     }
 
-    static int toAidaIndex(int index, int bins) {
-      if ( index == bins + 1 ) return AIDA::IAxis::OVERFLOW_BIN ;
-      if ( index == 0 ) return AIDA::IAxis::UNDERFLOW_BIN ;
-      return index - 1 ;
+    static int toAidaIndex( int index, int bins )
+    {
+      if ( index == bins + 1 ) return AIDA::IAxis::OVERFLOW_BIN;
+      if ( index == 0 ) return AIDA::IAxis::UNDERFLOW_BIN;
+      return index - 1;
     }
 
     /**
@@ -48,7 +50,7 @@ namespace Gaudi {
      * @return      The corresponding ROOT bin number.
      *
      */
-    int rIndex(int index) const { return toRootIndex(index, bins());}
+    int rIndex( int index ) const { return toRootIndex( index, bins() ); }
 
     /**
      * Convert a ROOT bin number on the axis to the AIDA bin number.
@@ -56,60 +58,58 @@ namespace Gaudi {
      * @return      The corresponding AIDA bin number.
      *
      */
-    int aIndex( int index ) const { return toAidaIndex(index, bins()); }
+    int aIndex( int index ) const { return toAidaIndex( index, bins() ); }
 
   public:
-
     Axis() = default;
-    explicit Axis ( TAxis * itaxi ) : taxis_(itaxi) {}
+    explicit Axis( TAxis* itaxi ) : taxis_( itaxi ) {}
 
-    void initialize (TAxis * itaxi , bool ) { taxis_ = itaxi; }
+    void initialize( TAxis* itaxi, bool ) { taxis_ = itaxi; }
 
     /**
     * Check if the IAxis has fixed binning, i.e. if all the bins have the same width.
     * @return <code>true</code> if the binning is fixed, <code>false</code> otherwise.
     *
     */
-    bool isFixedBinning() const override
-    {
-      return 0 == taxis_ ? true : !taxis_->IsVariableBinSize() ;
-    }
+    bool isFixedBinning() const override { return 0 == taxis_ ? true : !taxis_->IsVariableBinSize(); }
 
     /**
     * Get the lower edge of the IAxis.
     * @return The IAxis's lower edge.
     *
     */
-    double lowerEdge() const override { return taxis().GetXmin();}
+    double lowerEdge() const override { return taxis().GetXmin(); }
 
     /**
     * Get the upper edge of the IAxis.
     * @return The IAxis's upper edge.
     *
     */
-    double upperEdge() const override { return taxis().GetXmax();}
+    double upperEdge() const override { return taxis().GetXmax(); }
 
     /**
     * The number of bins (excluding underflow and overflow) on the IAxis.
     * @return The IAxis's number of bins.
     *
     */
-    int bins() const override { return taxis().GetNbins();}
+    int bins() const override { return taxis().GetNbins(); }
 
     /**
     * Get the lower edge of the specified bin.
     * @param index The bin number: 0 to bins()-1 for the in-range bins or OVERFLOW or UNDERFLOW.
-    * @return      The lower edge of the corresponding bin; for the underflow bin this is <tt>Double.NEGATIVE_INFINITY</tt>.
+    * @return      The lower edge of the corresponding bin; for the underflow bin this is
+    * <tt>Double.NEGATIVE_INFINITY</tt>.
     *
     */
-    double binLowerEdge(int index) const override { return taxis().GetBinLowEdge(rIndex(index));}
+    double binLowerEdge( int index ) const override { return taxis().GetBinLowEdge( rIndex( index ) ); }
     /**
     * Get the upper edge of the specified bin.
     * @param index The bin number: 0 to bins()-1 for the in-range bins or OVERFLOW or UNDERFLOW.
-    * @return      The upper edge of the corresponding bin; for the overflow bin this is <tt>Double.POSITIVE_INFINITY</tt>.
+    * @return      The upper edge of the corresponding bin; for the overflow bin this is
+    * <tt>Double.POSITIVE_INFINITY</tt>.
     *
     */
-    double binUpperEdge(int index) const override { return taxis().GetBinUpEdge(rIndex(index));}
+    double binUpperEdge( int index ) const override { return taxis().GetBinUpEdge( rIndex( index ) ); }
 
     /**
     * Get the width of the specified bin.
@@ -117,7 +117,7 @@ namespace Gaudi {
     * @return      The width of the corresponding bin.
     *
     */
-    double binWidth(int index) const override { return taxis().GetBinWidth(rIndex(index));}
+    double binWidth( int index ) const override { return taxis().GetBinWidth( rIndex( index ) ); }
 
     /**
     * Convert a coordinate on the axis to a bin number.
@@ -128,22 +128,17 @@ namespace Gaudi {
     *
     */
 
-    int coordToIndex(double coord) const override
-    {
-      return aIndex( taxis().FindBin(coord) );
-    }
+    int coordToIndex( double coord ) const override { return aIndex( taxis().FindBin( coord ) ); }
 
     /**
     *
     */
-    TAxis & taxis() const { return *me().taxis_;}
+    TAxis& taxis() const { return *me().taxis_; }
 
   private:
+    Axis& me() const { return const_cast<Axis&>( *this ); }
 
-    Axis & me() const { return const_cast<Axis&>(*this);}
-
-
-    TAxis * taxis_ = nullptr;
+    TAxis* taxis_ = nullptr;
 
   }; // class
 

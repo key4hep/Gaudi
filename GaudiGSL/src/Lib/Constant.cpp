@@ -26,20 +26,15 @@ namespace Genfun
      *  @param dim   dimensionality
      */
     // ========================================================================
-    Constant::Constant ( const double value ,
-                         const size_t dim   )
-    : AbsFunction ()
-    , m_value     ( value )
-    , m_DIM       ( dim   )
-    {}
+    Constant::Constant( const double value, const size_t dim ) : AbsFunction(), m_value( value ), m_DIM( dim ) {}
     // ========================================================================
 
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Derivative Constant::partial ( unsigned int /* index */ ) const
+    Derivative Constant::partial( unsigned int /* index */ ) const
     {
-      const AbsFunction& aux = Constant( 0.0 , m_DIM );
+      const AbsFunction& aux = Constant( 0.0, m_DIM );
       return FunctionNoop( &aux );
     }
     // ========================================================================

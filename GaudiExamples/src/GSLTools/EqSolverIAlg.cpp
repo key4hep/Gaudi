@@ -1,9 +1,9 @@
 // Include files
 
 // from Gaudi
+#include "GaudiGSL/IEqSolver.h"
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiGSL/IEqSolver.h"
 #include "GaudiMath/Adapters.h"
 // from CLHEP
 #include "CLHEP/GenericFunctions/GenericFunctions.hh"
@@ -15,11 +15,10 @@
 // disable warning about nullptr dereferencing (icc and clang)
 //   It's a real problem, but here it is used for test purposes
 #ifdef __ICC
-#pragma warning(disable:327)
+#pragma warning( disable : 327 )
 #elif __clang__
 #pragma clang diagnostic ignored "-Wnull-dereference"
 #endif
-
 
 //-----------------------------------------------------------------------------
 /** @file Implementation file for class : EqSolverIAlg
@@ -32,17 +31,15 @@
 using namespace Genfun;
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP { }
+namespace CLHEP
+{
+}
 using namespace CLHEP;
 
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
-EqSolverIAlg::EqSolverIAlg( const std::string& name,
-                        ISvcLocator* pSvcLocator)
-  : Algorithm ( name , pSvcLocator ) {
-
-}
+EqSolverIAlg::EqSolverIAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
 
 //=============================================================================
 // Destructor
@@ -56,126 +53,131 @@ typedef Genfun::AbsFunction GenFunc;
 class Function1 : virtual public AIDA::IFunction
 {
 public:
-  typedef std::vector<double> argument ;
+  typedef std::vector<double> argument;
+
 public:
-  Function1 () {}
-  ~Function1 () override {}
-  double value ( const argument& x ) const override { return x[0] - 1; }
-  int dimension () const override { return 3; }
-  bool setTitle(const std::string& ) override { return false; }
-  std::string title(void) const override {return "";}
-  bool isEqual(const AIDA::IFunction&) const override { return false; }
-  const std::vector<double>& gradient(const std::vector<double>&) const override { return m_values;}
-  bool providesGradient(void) const override { return false; }
-  std::string variableName(int) const override  { return ""; }
-  std::vector<std::string> variableNames(void) const override {return m_names;}
-  bool setParameters(const std::vector<double> &) override {return true;}
-  const std::vector<double>& parameters(void) const override {return m_values;}
-  int numberOfParameters(void) const override {return 0;}
-  std::vector<std::string> parameterNames() const override {return m_names;}
-  bool setParameter(const std::string&, double) override {return false;}
-  double parameter(const std::string&) const override { return 0.0;}
-  int indexOfParameter(const std::string&) const override {return 0;}
-  const AIDA::IAnnotation& annotation(void) const override {return *(AIDA::IAnnotation*)0;}
-  AIDA::IAnnotation& annotation(void) override {return *(AIDA::IAnnotation*)0;}
-  std::string codeletString(void) const override {return "";}
-  void* cast(const std::string &) const override { return 0; }
+  Function1() {}
+  ~Function1() override {}
+  double value( const argument& x ) const override { return x[0] - 1; }
+  int dimension() const override { return 3; }
+  bool setTitle( const std::string& ) override { return false; }
+  std::string title( void ) const override { return ""; }
+  bool isEqual( const AIDA::IFunction& ) const override { return false; }
+  const std::vector<double>& gradient( const std::vector<double>& ) const override { return m_values; }
+  bool providesGradient( void ) const override { return false; }
+  std::string variableName( int ) const override { return ""; }
+  std::vector<std::string> variableNames( void ) const override { return m_names; }
+  bool setParameters( const std::vector<double>& ) override { return true; }
+  const std::vector<double>& parameters( void ) const override { return m_values; }
+  int numberOfParameters( void ) const override { return 0; }
+  std::vector<std::string> parameterNames() const override { return m_names; }
+  bool setParameter( const std::string&, double ) override { return false; }
+  double parameter( const std::string& ) const override { return 0.0; }
+  int indexOfParameter( const std::string& ) const override { return 0; }
+  const AIDA::IAnnotation& annotation( void ) const override { return *(AIDA::IAnnotation*)0; }
+  AIDA::IAnnotation& annotation( void ) override { return *(AIDA::IAnnotation*)0; }
+  std::string codeletString( void ) const override { return ""; }
+  void* cast( const std::string& ) const override { return 0; }
+
 private:
-  std::string              m_version ;
-  std::string              m_label   ;
-  std::vector<std::string> m_names   ;
-  std::vector<double>      m_values  ;
+  std::string m_version;
+  std::string m_label;
+  std::vector<std::string> m_names;
+  std::vector<double> m_values;
 };
 
 // Class for the function "IFunction"
 class Function2 : virtual public AIDA::IFunction
 {
 public:
-  typedef std::vector<double> argument ;
+  typedef std::vector<double> argument;
+
 public:
-  Function2 () {}
-  ~Function2 () override {}
-  double value ( const argument& x ) const override { return x[1] - 1; }
-  int dimension () const override { return 3; }
-  bool setTitle(const std::string& ) override { return false; }
-  std::string title(void) const override {return "";}
-  bool isEqual(const AIDA::IFunction&) const override { return false; }
-  const std::vector<double>& gradient(const std::vector<double>&) const override { return m_values;}
-  bool providesGradient(void) const override { return false; }
-  std::string variableName(int) const  override { return ""; }
-  std::vector<std::string> variableNames(void) const override {return m_names;}
-  bool setParameters(const std::vector<double> &) override {return true;}
-  const std::vector<double>& parameters(void) const override {return m_values;}
-  int numberOfParameters(void) const override {return 0;}
-  std::vector<std::string> parameterNames() const override {return m_names;}
-  bool setParameter(const std::string&, double) override {return false;}
-  double parameter(const std::string&) const override { return 0.0;}
-  int indexOfParameter(const std::string&) const override {return 0;}
-  const AIDA::IAnnotation& annotation(void) const override {return *(AIDA::IAnnotation*)0;}
-  AIDA::IAnnotation& annotation(void) override {return *(AIDA::IAnnotation*)0;}
-  std::string codeletString(void) const override {return "";}
-  void* cast(const std::string &) const override { return 0; }
+  Function2() {}
+  ~Function2() override {}
+  double value( const argument& x ) const override { return x[1] - 1; }
+  int dimension() const override { return 3; }
+  bool setTitle( const std::string& ) override { return false; }
+  std::string title( void ) const override { return ""; }
+  bool isEqual( const AIDA::IFunction& ) const override { return false; }
+  const std::vector<double>& gradient( const std::vector<double>& ) const override { return m_values; }
+  bool providesGradient( void ) const override { return false; }
+  std::string variableName( int ) const override { return ""; }
+  std::vector<std::string> variableNames( void ) const override { return m_names; }
+  bool setParameters( const std::vector<double>& ) override { return true; }
+  const std::vector<double>& parameters( void ) const override { return m_values; }
+  int numberOfParameters( void ) const override { return 0; }
+  std::vector<std::string> parameterNames() const override { return m_names; }
+  bool setParameter( const std::string&, double ) override { return false; }
+  double parameter( const std::string& ) const override { return 0.0; }
+  int indexOfParameter( const std::string& ) const override { return 0; }
+  const AIDA::IAnnotation& annotation( void ) const override { return *(AIDA::IAnnotation*)0; }
+  AIDA::IAnnotation& annotation( void ) override { return *(AIDA::IAnnotation*)0; }
+  std::string codeletString( void ) const override { return ""; }
+  void* cast( const std::string& ) const override { return 0; }
+
 private:
-  std::string              m_version ;
-  std::string              m_label   ;
-  std::vector<std::string> m_names   ;
-  std::vector<double>      m_values  ;
+  std::string m_version;
+  std::string m_label;
+  std::vector<std::string> m_names;
+  std::vector<double> m_values;
 };
 
 // Class for the function "IFunction"
 class Function3 : virtual public AIDA::IFunction
 {
 public:
-  typedef std::vector<double> argument ;
+  typedef std::vector<double> argument;
+
 public:
-  Function3 () {}
-  virtual ~Function3 () override {}
-  double value ( const argument& x ) const override { return x[2] - 1; }
-  int dimension () const override { return 3; }
-  bool setTitle(const std::string& ) override { return false; }
-  std::string title(void) const override {return "";}
-  bool isEqual(const AIDA::IFunction&) const override { return false; }
-  const std::vector<double>& gradient(const std::vector<double>&) const override { return m_values;}
-  bool providesGradient(void) const override { return false; }
-  std::string variableName(int) const  override { return ""; }
-  std::vector<std::string> variableNames(void) const override {return m_names;}
-  bool setParameters(const std::vector<double> &) override {return true;}
-  const std::vector<double>& parameters(void) const override {return m_values;}
-  int numberOfParameters(void) const override {return 0;}
-  std::vector<std::string> parameterNames() const override {return m_names;}
-  bool setParameter(const std::string&, double) override {return false;}
-  double parameter(const std::string&) const override { return 0.0;}
-  int indexOfParameter(const std::string&) const override {return 0;}
-  const AIDA::IAnnotation& annotation(void) const override {return *(AIDA::IAnnotation*)0;}
-  AIDA::IAnnotation& annotation(void) override {return *(AIDA::IAnnotation*)0;}
-  std::string codeletString(void) const override {return "";}
-  void* cast(const std::string &) const override { return 0; }
+  Function3() {}
+  virtual ~Function3() override {}
+  double value( const argument& x ) const override { return x[2] - 1; }
+  int dimension() const override { return 3; }
+  bool setTitle( const std::string& ) override { return false; }
+  std::string title( void ) const override { return ""; }
+  bool isEqual( const AIDA::IFunction& ) const override { return false; }
+  const std::vector<double>& gradient( const std::vector<double>& ) const override { return m_values; }
+  bool providesGradient( void ) const override { return false; }
+  std::string variableName( int ) const override { return ""; }
+  std::vector<std::string> variableNames( void ) const override { return m_names; }
+  bool setParameters( const std::vector<double>& ) override { return true; }
+  const std::vector<double>& parameters( void ) const override { return m_values; }
+  int numberOfParameters( void ) const override { return 0; }
+  std::vector<std::string> parameterNames() const override { return m_names; }
+  bool setParameter( const std::string&, double ) override { return false; }
+  double parameter( const std::string& ) const override { return 0.0; }
+  int indexOfParameter( const std::string& ) const override { return 0; }
+  const AIDA::IAnnotation& annotation( void ) const override { return *(AIDA::IAnnotation*)0; }
+  AIDA::IAnnotation& annotation( void ) override { return *(AIDA::IAnnotation*)0; }
+  std::string codeletString( void ) const override { return ""; }
+  void* cast( const std::string& ) const override { return 0; }
+
 private:
-  std::string              m_version ;
-  std::string              m_label   ;
-  std::vector<std::string> m_names   ;
-  std::vector<double>      m_values  ;
+  std::string m_version;
+  std::string m_label;
+  std::vector<std::string> m_names;
+  std::vector<double> m_values;
 };
 
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode EqSolverIAlg::initialize() {
+StatusCode EqSolverIAlg::initialize()
+{
 
-  MsgStream log(msgSvc(), name());
+  MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Initialise" << endmsg;
 
   StatusCode sc;
-  sc = toolSvc()->retrieveTool("EqSolver", m_publicTool );
-  if( sc.isFailure() )
-    {
-      log << MSG::ERROR<< "Error retrieving the public tool" << endmsg;
-    }
-  sc = toolSvc()->retrieveTool("EqSolver", m_privateTool, this );
-  if( sc.isFailure() )
-    {
-      log << MSG::ERROR<< "Error retrieving the private tool" << endmsg;
-    }
+  sc = toolSvc()->retrieveTool( "EqSolver", m_publicTool );
+  if ( sc.isFailure() ) {
+    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
+  }
+  sc = toolSvc()->retrieveTool( "EqSolver", m_privateTool, this );
+  if ( sc.isFailure() ) {
+    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
+  }
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -184,48 +186,47 @@ StatusCode EqSolverIAlg::initialize() {
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode EqSolverIAlg::execute() {
+StatusCode EqSolverIAlg::execute()
+{
 
-  MsgStream  log( msgSvc(), name() );
+  MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Execute" << endmsg;
 
-  //the objects of IFunction's classes
+  // the objects of IFunction's classes
   const Function1* fun1 = new Function1();
   const Function2* fun2 = new Function2();
   const Function3* fun3 = new Function3();
 
   // the objects of the class AdapterIFunction
   // @see Adapter.h
-  const GaudiMath::AIDAFunction& adap1 = GaudiMath::adapter(*fun1);
-  const GaudiMath::AIDAFunction& adap2 = GaudiMath::adapter(*fun2);
-  const GaudiMath::AIDAFunction& adap3 = GaudiMath::adapter(*fun3);
+  const GaudiMath::AIDAFunction& adap1 = GaudiMath::adapter( *fun1 );
+  const GaudiMath::AIDAFunction& adap2 = GaudiMath::adapter( *fun2 );
+  const GaudiMath::AIDAFunction& adap3 = GaudiMath::adapter( *fun3 );
 
   std::vector<const GenFunc*> function;
 
-  function.push_back(&adap1);
-  function.push_back(&adap2);
-  function.push_back(&adap3);
+  function.push_back( &adap1 );
+  function.push_back( &adap2 );
+  function.push_back( &adap3 );
 
-//=============================================================================
+  //=============================================================================
 
   // Input number and value of the arguments of the function "GenFunc"
-  IEqSolver::Arg arg (function.size ());
+  IEqSolver::Arg arg( function.size() );
 
   arg[0] = 10;
   arg[1] = 5;
   arg[2] = 29;
 
   // Call of the method
-  m_publicTool->solver( function ,
-                        arg      );
+  m_publicTool->solver( function, arg );
   log << endmsg;
   log << "START OF THE METHOD" << endmsg;
   log << "SOLUTION FOUND AT: " << endmsg;
 
-  for (unsigned int i = 0; i < arg.dimension(); i++)
-    {
-      log << "Value of argument " << i <<" is " << arg[i] << endmsg;
-    }
+  for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
+    log << "Value of argument " << i << " is " << arg[i] << endmsg;
+  }
   log << endmsg;
 
   return StatusCode::SUCCESS;
@@ -234,12 +235,13 @@ StatusCode EqSolverIAlg::execute() {
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode EqSolverIAlg::finalize() {
+StatusCode EqSolverIAlg::finalize()
+{
 
-  MsgStream log(msgSvc(), name());
+  MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Finalize" << endmsg;
 
-  toolSvc()->releaseTool( m_publicTool  );
+  toolSvc()->releaseTool( m_publicTool );
   toolSvc()->releaseTool( m_privateTool );
 
   return StatusCode::SUCCESS;
@@ -247,4 +249,4 @@ StatusCode EqSolverIAlg::finalize() {
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(EqSolverIAlg)
+DECLARE_ALGORITHM_FACTORY( EqSolverIAlg )

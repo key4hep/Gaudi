@@ -10,23 +10,19 @@
  * @author Sami Kama
 */
 
-class EventContextHash{
- public:
-  size_t hash(const EventContext& ctx)const {
-    size_t en=ctx.evt();
-    size_t es=ctx.slot();
-    return en^(es+(en<<6)+(en>>2));
+class EventContextHash
+{
+public:
+  size_t hash( const EventContext& ctx ) const
+  {
+    size_t en = ctx.evt();
+    size_t es = ctx.slot();
+    return en ^ ( es + ( en << 6 ) + ( en >> 2 ) );
   }
-  bool equal(const EventContext& a, const EventContext& b)const{
-    return hash(a)==hash(b);
-  }
-  
-  std::size_t operator()(const EventContext& ctx)const{
-    return hash(ctx);
-  }
-  bool operator()(const EventContext& ctx,const EventContext& ctxb)const{
-    return equal(ctx,ctxb);
-  }
+  bool equal( const EventContext& a, const EventContext& b ) const { return hash( a ) == hash( b ); }
+
+  std::size_t operator()( const EventContext& ctx ) const { return hash( ctx ); }
+  bool operator()( const EventContext& ctx, const EventContext& ctxb ) const { return equal( ctx, ctxb ); }
 };
 
 #endif

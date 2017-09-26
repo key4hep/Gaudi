@@ -14,8 +14,11 @@
 // ============================================================================
 // Forward decalrations
 // ============================================================================
-class IHistogramSvc ;                      ///< GaudiKernel
-namespace AIDA { class IHistogram1D ; }    ///< AIDA
+class IHistogramSvc; ///< GaudiKernel
+namespace AIDA
+{
+  class IHistogram1D;
+} ///< AIDA
 // ============================================================================
 namespace Gaudi
 {
@@ -37,11 +40,7 @@ namespace Gaudi
      *  @param bins number of bins
      *  @param title the historgam title
      */
-    Histo1DDef
-    ( double       low         ,
-      double       high        ,
-      int          bins  = 100 ,
-      std::string  title = ""  );
+    Histo1DDef( double low, double high, int bins = 100, std::string title = "" );
     // ========================================================================
     /** full constructor from edges, #bins and the title
      *  @param title the historgam title
@@ -49,72 +48,67 @@ namespace Gaudi
      *  @param high the high edge of the histogram
      *  @param bins number of bins
      */
-    Histo1DDef
-    ( std::string  title = ""  ,
-      double       low   = 0.0 ,
-      double       high  = 1.0 ,
-      int          bins  = 100 ) ;
+    Histo1DDef( std::string title = "", double low = 0.0, double high = 1.0, int bins = 100 );
     // ========================================================================
     /// destructor
-    virtual ~Histo1DDef( ) = default; ///< virtual destructor
+    virtual ~Histo1DDef() = default; ///< virtual destructor
     // ========================================================================
   public:
     // ========================================================================
     /// get the low edge
-    double             lowEdge  () const { return m_low   ; }
+    double lowEdge() const { return m_low; }
     /// get the high  edge
-    double             highEdge () const { return m_high  ; }
+    double highEdge() const { return m_high; }
     /// get the number of bins
-    int                bins     () const { return m_bins  ; }
+    int bins() const { return m_bins; }
     /// get the title
-    const std::string& title    () const { return m_title ; }
+    const std::string& title() const { return m_title; }
     // ========================================================================
   public:
     // ========================================================================
     /// set low edge
-    void setLowEdge  ( double       value ) { m_low   = value ; }
+    void setLowEdge( double value ) { m_low = value; }
     /// set high edge
-    void setHighEdge ( double       value ) { m_high  = value ; }
+    void setHighEdge( double value ) { m_high = value; }
     /// set number of bis
-    void setBins     ( int          value ) { m_bins  = value ; }
+    void setBins( int value ) { m_bins = value; }
     /// set the title
-    void setTitle    ( std::string value ) { m_title = std::move(value); }
+    void setTitle( std::string value ) { m_title = std::move( value ); }
     // ========================================================================
   public:
     // ========================================================================
     /// printout of the histogram definition
-    std::ostream& fillStream ( std::ostream& o ) const ;
+    std::ostream& fillStream( std::ostream& o ) const;
     // ========================================================================
   public:
     // ========================================================================
     /// ordering operator (to please BoundedVerifier)
-    bool operator< ( const Histo1DDef& right ) const ;
+    bool operator<( const Histo1DDef& right ) const;
     /// equality operator
-    bool operator==( const Histo1DDef& right ) const ;
+    bool operator==( const Histo1DDef& right ) const;
     /// non-equality
-    bool operator!=( const Histo1DDef& right ) const ;
+    bool operator!=( const Histo1DDef& right ) const;
     // ========================================================================
   public:
     // ========================================================================
     /// check if all fields are "reasonable"
-    bool ok () const { return 0 < bins() && lowEdge() < highEdge() ; }
+    bool ok() const { return 0 < bins() && lowEdge() < highEdge(); }
     // ========================================================================
   private:
     // ========================================================================
     // Histogram title
-    std::string          m_title      ;   ///< Histogram title
+    std::string m_title; ///< Histogram title
     // Low  Edge
-    double               m_low        ;   ///< Low  Edge
+    double m_low; ///< Low  Edge
     // High Edge
-    double               m_high       ;   ///< High Edge
+    double m_high; ///< High Edge
     // Number of bins
-    int                  m_bins       ;   ///< Number of bins
+    int m_bins; ///< Number of bins
     // ========================================================================
   };
   // ==========================================================================
   /// the streamer operator for class Gaudi::Histo1DDef
-  GAUDI_API std::ostream& 
-  operator<<( std::ostream& o , const Gaudi::Histo1DDef& histo ) ;
+  GAUDI_API std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo );
   // ==========================================================================
   /** @namespace Gaudi::Histos
    *  collection of simple utilities to deal with histograms
@@ -129,10 +123,7 @@ namespace Gaudi
      *  @param path full path in Histogram Data Store
      *  @param hist histogram desctription
      */
-    GAUDI_API AIDA::IHistogram1D* book
-    ( IHistogramSvc*           svc  ,
-      const std::string&       path ,
-      const Gaudi::Histo1DDef& hist ) ;
+    GAUDI_API AIDA::IHistogram1D* book( IHistogramSvc* svc, const std::string& path, const Gaudi::Histo1DDef& hist );
     // ========================================================================
     /** helper function to book 1D-histogram
      *  @param svc  pointer to Histogram Service
@@ -140,11 +131,8 @@ namespace Gaudi
      *  @param id   historgam identifier
      *  @param hist histogram desctription
      */
-    GAUDI_API AIDA::IHistogram1D* book
-    ( IHistogramSvc*           svc  ,
-      const std::string&       dir  ,
-      const std::string&       id   ,
-      const Gaudi::Histo1DDef& hist ) ;
+    GAUDI_API AIDA::IHistogram1D* book( IHistogramSvc* svc, const std::string& dir, const std::string& id,
+                                        const Gaudi::Histo1DDef& hist );
     // ========================================================================
     /** helper function to book 1D-histogram
      *  @param svc pointer to Histogram Service
@@ -152,11 +140,8 @@ namespace Gaudi
      *  @param id  historgam identifier
      *  @param hist histogram desctription
      */
-    GAUDI_API AIDA::IHistogram1D* book
-    ( IHistogramSvc*           svc  ,
-      const std::string&       dir  ,
-      const int                id   ,
-      const Gaudi::Histo1DDef& hist ) ;
+    GAUDI_API AIDA::IHistogram1D* book( IHistogramSvc* svc, const std::string& dir, const int id,
+                                        const Gaudi::Histo1DDef& hist );
     // ========================================================================
   } // end of namespace Gaudi::Histos
   // ==========================================================================

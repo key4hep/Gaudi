@@ -14,14 +14,15 @@
  * @author Marco Clemencic
  * @date 13/01/2012
  */
-class IDODNodeMapper: virtual public IAlgTool {
+class IDODNodeMapper : virtual public IAlgTool
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IDODNodeMapper, 1, 0);
+  DeclareInterfaceID( IDODNodeMapper, 1, 0 );
 
   /// For the given path, returns a the type name of the object to be created at
   /// the path.
-  virtual std::string nodeTypeForPath(const std::string &path) = 0;
+  virtual std::string nodeTypeForPath( const std::string& path ) = 0;
 
 protected:
 private:

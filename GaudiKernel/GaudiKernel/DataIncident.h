@@ -12,9 +12,11 @@
  * @author   Markus Frank
  * @version  1.0
  */
-template<class T>
-class GAUDI_API ContextIncident: public Incident {
+template <class T>
+class GAUDI_API ContextIncident : public Incident
+{
   T m_tag;
+
 public:
   /// Initializing Constructor
   /** @param source   [IN]  Incident source (service or algorithm name)
@@ -23,17 +25,19 @@ public:
     *
     * @return Reference to ContextIncident object.
     */
-  ContextIncident(std::string src,std::string typ,T tag)
-    : Incident(std::move(src),std::move(typ)),m_tag(std::move(tag))  {  }
+  ContextIncident( std::string src, std::string typ, T tag )
+      : Incident( std::move( src ), std::move( typ ) ), m_tag( std::move( tag ) )
+  {
+  }
 
   /// Standard destructor
   ~ContextIncident() override = default;
 
   /// Accesssor to the tag value (CONST)
-  const T& tag()  const { return m_tag; }
+  const T& tag() const { return m_tag; }
 };
 
 /// Specific incident type used by the data-on-demand-service
 typedef ContextIncident<std::string> DataIncident;
 
-#endif //GAUDI_DATAINCIDENT_H
+#endif // GAUDI_DATAINCIDENT_H

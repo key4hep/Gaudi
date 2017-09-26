@@ -2,15 +2,15 @@
 #define INTERFACES_IINCIDENTSVC_H
 
 // Include Files
+#include "GaudiKernel/EventContextHash.h"
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/Incident.h"
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include "GaudiKernel/EventContextHash.h"
-#include "GaudiKernel/Incident.h"
 // Forward declarations
 class IIncidentListener;
-//class Incident;
+// class Incident;
 
 /** @class IIncidentSvc IIncidentSvc.h GaudiKernel/IIncidentSvc.h
 
@@ -20,53 +20,54 @@ class IIncidentListener;
 
     @author Pere Mato
 */
-class GAUDI_API IIncidentSvc: virtual public IInterface {
+class GAUDI_API IIncidentSvc : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IIncidentSvc,2,0);
+  DeclareInterfaceID( IIncidentSvc, 2, 0 );
 
   /** Add listener
       @param lis Listener address
       @param type Incident type
       @param priority  Priority in handling incident
   */
-  virtual void addListener(IIncidentListener* lis,
-                           const std::string& type = "",
-                           long priority = 0,
-                           bool rethrow = false,
-                           bool singleShot = false ) = 0;
+  virtual void addListener( IIncidentListener* lis, const std::string& type = "", long priority = 0,
+                            bool rethrow = false, bool singleShot = false ) = 0;
   /** Remove listener
       @param lis Listener address
       @param type Incident type
   */
-  virtual void removeListener(IIncidentListener* lis,
-                              const std::string& type = "" ) = 0;
+  virtual void removeListener( IIncidentListener* lis, const std::string& type = "" ) = 0;
 
   //@TODO: return vector by value instead...
-  virtual void getListeners(std::vector<IIncidentListener*>& lis,
-                            const std::string& type = "") const = 0;
+  virtual void getListeners( std::vector<IIncidentListener*>& lis, const std::string& type = "" ) const = 0;
 
   /** Fire an Incident
       @param Incident being fired
   */
   virtual void fireIncident( const Incident& incident ) = 0;
 
-  class IncidentPack{
+  class IncidentPack
+  {
   public:
     std::vector<std::unique_ptr<Incident>> incidents;
     std::vector<std::vector<IIncidentListener*>> listeners;
-    IncidentPack(IncidentPack&& o):incidents(std::move(o.incidents)),listeners(std::move(o.listeners)){};
-    IncidentPack& operator=(IncidentPack&& o){incidents=std::move(o.incidents);listeners=std::move(o.listeners);return *this;};
+    IncidentPack( IncidentPack&& o ) : incidents( std::move( o.incidents ) ), listeners( std::move( o.listeners ) ){};
+    IncidentPack& operator=( IncidentPack&& o )
+    {
+      incidents = std::move( o.incidents );
+      listeners = std::move( o.listeners );
+      return *this;
+    };
     IncidentPack(){};
   };
 
-  virtual IIncidentSvc::IncidentPack getIncidents(const EventContext* ctx)=0;
+  virtual IIncidentSvc::IncidentPack getIncidents( const EventContext* ctx ) = 0;
   /** Fire an Incident, Incident ownership has to be passed to the
-      service since it is going to be accessed asynchronously 
+      service since it is going to be accessed asynchronously
       @param Incident being fired
   */
-  virtual void fireIncident( std::unique_ptr<Incident> incident) = 0;
-
+  virtual void fireIncident( std::unique_ptr<Incident> incident ) = 0;
 };
 
 #endif // GAUDIKERNEL_IINCIDENTSVC_H

@@ -1,11 +1,11 @@
 // Framework include files
-#include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IDataManagerSvc.h"
+#include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/SmartDataPtr.h"
 
 // Example related include files
-#include "MIReadAlg.h"
 #include "MIHelpers.h"
+#include "MIReadAlg.h"
 
 // Event Model related classes
 #include "GaudiExamples/Event.h"
@@ -15,30 +15,28 @@
 
 #include <fstream>
 
-
 using namespace Gaudi::Examples::MultiInput;
 
-DECLARE_COMPONENT(ReadAlg)
+DECLARE_COMPONENT( ReadAlg )
 
 //--------------------------------------------------------------------
 // Initialize
 //--------------------------------------------------------------------
-StatusCode ReadAlg::initialize() {
+StatusCode ReadAlg::initialize()
+{
   StatusCode sc = Algorithm::initialize();
-  if (sc.isFailure()) return sc;
+  if ( sc.isFailure() ) return sc;
 
-  if (msgLevel(MSG::DEBUG))
-    debug() << "Reading " << m_addressfile.value() << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) debug() << "Reading " << m_addressfile.value() << endmsg;
   m_addresses.clear();
   std::ifstream input{m_addressfile};
-  while (input.good()) {
+  while ( input.good() ) {
     RootAddressArgs addr;
     input >> addr;
-    if (input.eof()) break;
-    m_addresses.push_back(addr);
+    if ( input.eof() ) break;
+    m_addresses.push_back( addr );
   }
-  if (msgLevel(MSG::DEBUG))
-    debug() << "Read " << m_addresses.size() << " addresses" << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) debug() << "Read " << m_addresses.size() << " addresses" << endmsg;
 
   m_count = 0;
 
@@ -48,38 +46,37 @@ StatusCode ReadAlg::initialize() {
 //--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
-StatusCode ReadAlg::execute() {
+StatusCode ReadAlg::execute()
+{
 
-  if (m_count < m_addresses.size()) {
+  if ( m_count < m_addresses.size() ) {
     // register the entry "Extra/Tracks" in the TES so that it is loaded
     // from the other file
-    StatusCode sc = eventSvc()->registerObject("Extra", new DataObject);
-    if (sc.isFailure()) {
-      error() << "Cannot add entry 'Extra' to the TES"
-          << endmsg;
+    StatusCode sc = eventSvc()->registerObject( "Extra", new DataObject );
+    if ( sc.isFailure() ) {
+      error() << "Cannot add entry 'Extra' to the TES" << endmsg;
       return sc;
     }
-    sc = SmartIF<IDataManagerSvc>(eventSvc())
-        ->registerAddress("Extra/Tracks", make_address(m_addresses[m_count]));
-    if (sc.isFailure()) {
-      error() << "Failed to register the address to the extra data"
-          << endmsg;
+    sc =
+        SmartIF<IDataManagerSvc>( eventSvc() )->registerAddress( "Extra/Tracks", make_address( m_addresses[m_count] ) );
+    if ( sc.isFailure() ) {
+      error() << "Failed to register the address to the extra data" << endmsg;
       return sc;
     }
     ++m_count;
   }
 
-  SmartDataPtr<MyTrackVector> trks1(eventSvc(), "Tracks");
-  SmartDataPtr<MyTrackVector> trks2(eventSvc(), "Extra/Tracks");
+  SmartDataPtr<MyTrackVector> trks1( eventSvc(), "Tracks" );
+  SmartDataPtr<MyTrackVector> trks2( eventSvc(), "Extra/Tracks" );
 
-  if (trks1)
+  if ( trks1 )
     info() << "Base event tracks: " << trks1->size() << endmsg;
   else
     warning() << "No tracks container in base event" << endmsg;
-  if (trks2)
+  if ( trks2 )
     info() << "Extra event tracks: " << trks2->size() << endmsg;
   else
-      warning() << "No tracks container in extra event" << endmsg;
+    warning() << "No tracks container in extra event" << endmsg;
 
   return StatusCode::SUCCESS;
 }

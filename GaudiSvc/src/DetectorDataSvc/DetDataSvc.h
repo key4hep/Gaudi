@@ -10,7 +10,6 @@
 #include "GaudiKernel/Time.h"
 #include "GaudiKernel/TsDataSvc.h"
 
-
 // Forward declarations
 class StatusCode;
 class IAddressCreator;
@@ -62,9 +61,11 @@ private:
   StatusCode setupDetectorDescription();
 
   using TsDataSvc::loadObject;
-  StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode ) override final {
-    if ( LIKELY( m_allowLoadInRunning || serviceLocator().as<IStateful>()->FSMState() != Gaudi::StateMachine::RUNNING ) ) {
-      return TsDataSvc::loadObject(pLoader, pNode);
+  StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode ) override final
+  {
+    if ( LIKELY( m_allowLoadInRunning ||
+                 serviceLocator().as<IStateful>()->FSMState() != Gaudi::StateMachine::RUNNING ) ) {
+      return TsDataSvc::loadObject( pLoader, pNode );
     }
     error() << "Trying to load " << pNode->identifier() << " while RUNNING" << endmsg;
     return StatusCode::FAILURE;

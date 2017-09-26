@@ -11,8 +11,8 @@ if( NOT AIDA_FOUND )
    return()
 endif()
 
-# Hide some ROOT compile time warnings
-include_directories(SYSTEM ${ROOT_INCLUDE_DIRS})
+# Hide some ROOT, Boost compile time warnings
+include_directories(SYSTEM ${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(RootHistCnv src/*.cpp

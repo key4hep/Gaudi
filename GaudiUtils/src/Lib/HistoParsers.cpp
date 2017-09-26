@@ -14,12 +14,12 @@
 // ============================================================================
 // ROOT
 // ============================================================================
+#include "TAxis.h"
 #include "TH1D.h"
-#include "TH2D.h"
 #include "TH1F.h"
+#include "TH2D.h"
 #include "TH2F.h"
 #include "TH3D.h"
-#include "TAxis.h"
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -46,9 +46,8 @@ namespace Gaudi
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-26
      */
-    template<typename Iterator, typename Skipper>
-    class EdgeGrammar : public qi::grammar<Iterator, Edges(), qi::locals<char>,
-      Skipper>
+    template <typename Iterator, typename Skipper>
+    class EdgeGrammar : public qi::grammar<Iterator, Edges(), qi::locals<char>, Skipper>
     {
       // ======================================================================
     public:
@@ -57,43 +56,33 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      EdgeGrammar(): EdgeGrammar::base_type(result)  {
-          inner =
-                    ( ( qi::lit("edges") | "'edges'" | "\"edges\"" )
-                      >> ":" >> edges[qi::_val *= qi::_1] )
-                    | inner_pairs[qi::_val = qi::_1];
-          inner_pairs =
-               ((( qi::lit("nbins")  | "'nbins'"  | "\"nbins\"")
-               >> ":" >> nbins [ qi::_val /= qi::_1 ])
-               |
-               (( qi::lit("low")    | "'low'"    | "\"low\""    )
-               >> ":" >> low [qi::_val -= qi::_1])
-               |
-              (( qi::lit("high")   | "'high'"   | "\"high\""   )
-               >> ":" >> high  [qi::_val += qi::_1])) % ',';
+      EdgeGrammar() : EdgeGrammar::base_type( result )
+      {
+        inner = ( ( qi::lit( "edges" ) | "'edges'" | "\"edges\"" ) >> ":" >> edges[qi::_val *= qi::_1] ) |
+                inner_pairs[qi::_val = qi::_1];
+        inner_pairs = ( ( ( qi::lit( "nbins" ) | "'nbins'" | "\"nbins\"" ) >> ":" >> nbins[qi::_val /= qi::_1] ) |
+                        ( ( qi::lit( "low" ) | "'low'" | "\"low\"" ) >> ":" >> low[qi::_val -= qi::_1] ) |
+                        ( ( qi::lit( "high" ) | "'high'" | "\"high\"" ) >> ":" >> high[qi::_val += qi::_1] ) ) %
+                      ',';
 
-          begin = enc::char_('[')[qi::_val=']']
-                | enc::char_('{')[qi::_val='}']
-                | enc::char_('(')[qi::_val=')'];
-          end = enc::char_(qi::_r1);
-          result =  begin[qi::_a = qi::_1]
-            >> inner[qi::_val = qi::_1]
-            >> end(qi::_a) ;
-        }
-        VectorGrammar<Iterator, std::vector<double>, Skipper> edges  ;
-        RealGrammar<Iterator, double, Skipper> low, high;
-        IntGrammar<Iterator, unsigned int, Skipper> nbins  ;
-        qi::rule<Iterator, Edges(), qi::locals<char>, Skipper> result;
-        qi::rule<Iterator, Edges(), Skipper> inner, inner_pairs;
-        qi::rule<Iterator, char()> begin;
-        qi::rule<Iterator, void(char)> end;
+        begin =
+            enc::char_( '[' )[qi::_val = ']'] | enc::char_( '{' )[qi::_val = '}'] | enc::char_( '(' )[qi::_val = ')'];
+        end    = enc::char_( qi::_r1 );
+        result = begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a );
+      }
+      VectorGrammar<Iterator, std::vector<double>, Skipper> edges;
+      RealGrammar<Iterator, double, Skipper> low, high;
+      IntGrammar<Iterator, unsigned int, Skipper> nbins;
+      qi::rule<Iterator, Edges(), qi::locals<char>, Skipper> result;
+      qi::rule<Iterator, Edges(), Skipper> inner, inner_pairs;
+      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, void( char )> end;
       // ======================================================================
-    } ;
-    REGISTER_GRAMMAR(Edges, EdgeGrammar);
+    };
+    REGISTER_GRAMMAR( Edges, EdgeGrammar );
     // ========================================================================
-    template<typename Iterator, typename Skipper>
-    class H1Grammar : public qi::grammar<Iterator, H1(), qi::locals<char>,
-      Skipper>
+    template <typename Iterator, typename Skipper>
+    class H1Grammar : public qi::grammar<Iterator, H1(), qi::locals<char>, Skipper>
     {
       // ======================================================================
     public:
@@ -102,57 +91,39 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      H1Grammar(): H1Grammar::base_type(result) {
-          inner =
-            (((qi::lit("name")  | "'name'"  | "\"name\""  )
-            >> ":" >> name[qi::_val *= qi::_1 ])
-            |
-            (( qi::lit("title") | "'title'" | "\"title\"" )
-            >> ":" >> title  [ qi::_val /= qi::_1 ])
-             |
-             ( -(( qi::lit("X") | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':' )
-               >> edges [ qi::_val &= qi::_1 ])
-            |
-            (( qi::lit("nbins")  | "'nbins'"  | "\"nbins\""  )
-               >> ":" >> nbins [qi::_val  |= qi::_1])
-            |
-            (( qi::lit("low")    | "'low'"    | "\"low\""    )
-               >> ":" >> low   [qi::_val  -= qi::_1])
-            |
-            (( qi::lit("high")   | "'high'"   | "\"high\""   )
-               >> ":" >> high  [qi::_val ^= qi::_1])
-            |
-            (( qi::lit("bins") | "'bins'" | "\"bins\"" )
-            >> ':' >> bins  [qi::_val += qi::_1])) % ',';
+      H1Grammar() : H1Grammar::base_type( result )
+      {
+        inner = ( ( ( qi::lit( "name" ) | "'name'" | "\"name\"" ) >> ":" >> name[qi::_val *= qi::_1] ) |
+                  ( ( qi::lit( "title" ) | "'title'" | "\"title\"" ) >> ":" >> title[qi::_val /= qi::_1] ) |
+                  ( -( ( qi::lit( "X" ) | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':' ) >>
+                    edges[qi::_val &= qi::_1] ) |
+                  ( ( qi::lit( "nbins" ) | "'nbins'" | "\"nbins\"" ) >> ":" >> nbins[qi::_val |= qi::_1] ) |
+                  ( ( qi::lit( "low" ) | "'low'" | "\"low\"" ) >> ":" >> low[qi::_val -= qi::_1] ) |
+                  ( ( qi::lit( "high" ) | "'high'" | "\"high\"" ) >> ":" >> high[qi::_val ^= qi::_1] ) |
+                  ( ( qi::lit( "bins" ) | "'bins'" | "\"bins\"" ) >> ':' >> bins[qi::_val += qi::_1] ) ) %
+                ',';
 
-           begin = enc::char_('[')[qi::_val=']']
-                 | enc::char_('{')[qi::_val='}']
-                 | enc::char_('(')[qi::_val=')'];
-           end = enc::char_(qi::_r1);
-           result = (begin[qi::_a = qi::_1]
-                    >> inner[qi::_val = qi::_1]
-                    >> end(qi::_a)) | inner;
+        begin =
+            enc::char_( '[' )[qi::_val = ']'] | enc::char_( '{' )[qi::_val = '}'] | enc::char_( '(' )[qi::_val = ')'];
+        end    = enc::char_( qi::_r1 );
+        result = ( begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a ) ) | inner;
+      }
 
-        }
+      StringGrammar<Iterator, Skipper> name, title;
+      EdgeGrammar<Iterator, Skipper> edges;
+      RealGrammar<Iterator, double, Skipper> low, high;
+      IntGrammar<Iterator, unsigned int, Skipper> nbins;
 
-        StringGrammar<Iterator, Skipper> name, title;
-        EdgeGrammar<Iterator, Skipper> edges;
-        RealGrammar<Iterator, double, Skipper> low, high;
-        IntGrammar<Iterator, unsigned int, Skipper>  nbins ;
-
-        VectorGrammar<Iterator, std::vector<std::pair<double, double> >,
-          Skipper> bins ;
-        qi::rule<Iterator, H1(), qi::locals<char>, Skipper> result;
-        qi::rule<Iterator, H1(), Skipper> inner;
-        qi::rule<Iterator, char()> begin;
-        qi::rule<Iterator, void(char)> end;
-
-      };
-    REGISTER_GRAMMAR(H1, H1Grammar);
+      VectorGrammar<Iterator, std::vector<std::pair<double, double>>, Skipper> bins;
+      qi::rule<Iterator, H1(), qi::locals<char>, Skipper> result;
+      qi::rule<Iterator, H1(), Skipper> inner;
+      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, void( char )> end;
+    };
+    REGISTER_GRAMMAR( H1, H1Grammar );
     // ========================================================================
-    template<typename Iterator, typename Skipper>
-    class H2Grammar : public qi::grammar<Iterator, H2(), qi::locals<char>,
-      Skipper>
+    template <typename Iterator, typename Skipper>
+    class H2Grammar : public qi::grammar<Iterator, H2(), qi::locals<char>, Skipper>
     {
       // ======================================================================
     public:
@@ -161,44 +132,32 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      H2Grammar(): H2Grammar::base_type(result) {
-          inner =
-            ((( qi::lit("name")  | "'name'"  | "\"name\""  )
-            >> ":" >> name [qi::_val *= qi::_1])
-            |
-            (( qi::lit("title") | "'title'" | "\"title\"" )
-            >> ":" >> title  [qi::_val /= qi::_1])
-            |
-            (( qi::lit("X") | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':'
-            >> edges [qi::_val &= qi::_1 ])
-            |
-            (( qi::lit("Y") | "'Y'" | "\"Y\"" | "y" | "'y'" | "\"y\"" ) >> ':'
-            >> edges [qi::_val |= qi::_1 ])
-            |
-            (( qi::lit("bins") | "'bins'" | "\"bins\"" )
-            >> ':' >> bins  [ qi::_val += qi::_1 ])) % ',';
+      H2Grammar() : H2Grammar::base_type( result )
+      {
+        inner = ( ( ( qi::lit( "name" ) | "'name'" | "\"name\"" ) >> ":" >> name[qi::_val *= qi::_1] ) |
+                  ( ( qi::lit( "title" ) | "'title'" | "\"title\"" ) >> ":" >> title[qi::_val /= qi::_1] ) |
+                  ( ( qi::lit( "X" ) | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':' >> edges[qi::_val &= qi::_1] ) |
+                  ( ( qi::lit( "Y" ) | "'Y'" | "\"Y\"" | "y" | "'y'" | "\"y\"" ) >> ':' >> edges[qi::_val |= qi::_1] ) |
+                  ( ( qi::lit( "bins" ) | "'bins'" | "\"bins\"" ) >> ':' >> bins[qi::_val += qi::_1] ) ) %
+                ',';
 
-          begin = enc::char_('[')[qi::_val=']']
-                           | enc::char_('{')[qi::_val='}']
-                           | enc::char_('(')[qi::_val=')'];
-          end = enc::char_(qi::_r1);
-          result = (begin[qi::_a = qi::_1]
-                   >> inner[qi::_val = qi::_1]
-                   >> end(qi::_a)) | inner[qi::_val = qi::_1];
-        }
+        begin =
+            enc::char_( '[' )[qi::_val = ']'] | enc::char_( '{' )[qi::_val = '}'] | enc::char_( '(' )[qi::_val = ')'];
+        end    = enc::char_( qi::_r1 );
+        result = ( begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a ) ) | inner[qi::_val = qi::_1];
+      }
 
-        StringGrammar<Iterator,  Skipper> name, title;
-        EdgeGrammar<Iterator, Skipper> edges ;
-        VectorGrammar<Iterator, std::vector<std::pair<double, double> >,
-          Skipper> bins ;
-        qi::rule<Iterator, H2(), qi::locals<char>, Skipper> result;
-        qi::rule<Iterator, H2(), Skipper> inner;
-        qi::rule<Iterator, char()> begin;
-        qi::rule<Iterator, void(char)> end;
+      StringGrammar<Iterator, Skipper> name, title;
+      EdgeGrammar<Iterator, Skipper> edges;
+      VectorGrammar<Iterator, std::vector<std::pair<double, double>>, Skipper> bins;
+      qi::rule<Iterator, H2(), qi::locals<char>, Skipper> result;
+      qi::rule<Iterator, H2(), Skipper> inner;
+      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, void( char )> end;
 
       // ======================================================================
     };
-    REGISTER_GRAMMAR(H2, H2Grammar);
+    REGISTER_GRAMMAR( H2, H2Grammar );
     // ========================================================================
   } //                                          end of namespace Gaudi::Parsers
   // ==========================================================================
@@ -208,124 +167,131 @@ namespace
 {
   // ==========================================================================
   /// parse the histogram
-  StatusCode _parse ( H1& h1 , const std::string& input ) {
+  StatusCode _parse( H1& h1, const std::string& input )
+  {
     // check the parsing
-    StatusCode sc  = Gaudi::Parsers::parse_(h1, input);
-    if ( sc.isFailure () ){ return sc ; }                  // RETURN
-    return h1.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE ;
+    StatusCode sc = Gaudi::Parsers::parse_( h1, input );
+    if ( sc.isFailure() ) {
+      return sc;
+    } // RETURN
+    return h1.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
   // ==========================================================================
   /// parse the histogram
-  StatusCode _parse ( H2& h2 , const std::string& input) {
+  StatusCode _parse( H2& h2, const std::string& input )
+  {
     // check the parsing
-    StatusCode sc  = Gaudi::Parsers::parse_(h2, input);
-    if ( sc.isFailure () ){ return sc ; }                  // RETURN
-    return h2.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE ;
+    StatusCode sc = Gaudi::Parsers::parse_( h2, input );
+    if ( sc.isFailure() ) {
+      return sc;
+    } // RETURN
+    return h2.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
   // ==========================================================================
   template <class HISTO1>
-  std::unique_ptr<HISTO1>
-  _parse_1D ( const std::string& input , std::string& name )
+  std::unique_ptr<HISTO1> _parse_1D( const std::string& input, std::string& name )
   {
     //
-    typedef std::unique_ptr<HISTO1>   H1P ;
+    typedef std::unique_ptr<HISTO1> H1P;
     // ==========================================================================
     // 1) parse the custom format
     //
-    H1        h1 ;
-    StatusCode sc = _parse ( h1 , input ) ;
-    if ( sc.isFailure() || !h1.ok() ) { return H1P() ; }   // RETURN
+    H1 h1;
+    StatusCode sc = _parse( h1, input );
+    if ( sc.isFailure() || !h1.ok() ) {
+      return H1P();
+    } // RETURN
     //
     // 2) create the histogram
     //
-    H1P histo
-      ( h1.m_edges.edges.empty() ?          // FIXED binning?
-        new HISTO1 ( "" , //h1.m_name.c_str   ()         ,           // NAME
-                     h1.m_title.c_str() ,           // TITLE
-                     h1.m_edges.nbins   ,           // #bins
-                     h1.m_edges.low     ,           // low edge
-                     h1.m_edges.high    ) :         // high  edge
-        new HISTO1 ( "" , // h1.m_name .c_str ()          ,     // NAME
-                     h1.m_title .c_str()  ,            // TITLE
-                     h1.m_edges.edges.size() -1  ,     // #bins
-                     &h1.m_edges.edges.front()   ) ) ; // vector of edges
+    H1P histo( h1.m_edges.edges.empty() ?          // FIXED binning?
+                   new HISTO1( "",                 // h1.m_name.c_str   ()         ,           // NAME
+                               h1.m_title.c_str(), // TITLE
+                               h1.m_edges.nbins,   // #bins
+                               h1.m_edges.low,     // low edge
+                               h1.m_edges.high )
+                                        :                     // high  edge
+                   new HISTO1( "",                            // h1.m_name .c_str ()          ,     // NAME
+                               h1.m_title.c_str(),            // TITLE
+                               h1.m_edges.edges.size() - 1,   // #bins
+                               &h1.m_edges.edges.front() ) ); // vector of edges
 
     // fill the histogram
-    for ( unsigned int ibin = 0 ; ibin < h1.m_bins.size() ; ++ibin )
-    {
-      histo -> SetBinContent ( ibin , h1.m_bins[ibin].first  ) ;
-      histo -> SetBinError   ( ibin , h1.m_bins[ibin].second ) ;
+    for ( unsigned int ibin = 0; ibin < h1.m_bins.size(); ++ibin ) {
+      histo->SetBinContent( ibin, h1.m_bins[ibin].first );
+      histo->SetBinError( ibin, h1.m_bins[ibin].second );
     }
     //
-    name = h1.m_name ;
+    name = h1.m_name;
     //
-    return histo ;
+    return histo;
   }
   // ==========================================================================
   template <class HISTO2>
-  std::unique_ptr<HISTO2> _parse_2D ( const std::string& input , std::string& name )
+  std::unique_ptr<HISTO2> _parse_2D( const std::string& input, std::string& name )
   {
     //
-    typedef std::unique_ptr<HISTO2>   H2P ;
+    typedef std::unique_ptr<HISTO2> H2P;
     // 1) parse the custom format
     //
-    H2        h2 ;
-    StatusCode sc = _parse ( h2 , input ) ;
-    if ( sc.isFailure() || !h2.ok() ) { return H2P() ; }   // RETURN
+    H2 h2;
+    StatusCode sc = _parse( h2, input );
+    if ( sc.isFailure() || !h2.ok() ) {
+      return H2P();
+    } // RETURN
     //
     // 2) create the histogram
     //
-    H2P histo
-      ( h2.m_xedges.edges.empty() &&
-        h2.m_yedges.edges.empty()     ?            // FIXED binning?
-        new HISTO2 ( "" , //h1.m_name.c_str   ()         ,           // NAME
-                     h2.m_title.c_str() ,            // TITLE
-                     h2.m_xedges.nbins   ,           // #bins
-                     h2.m_xedges.low     ,           // low edge
-                     h2.m_xedges.high    ,           // high edge
-                     h2.m_yedges.nbins   ,           // #bins
-                     h2.m_yedges.low     ,           // low edge
-                     h2.m_yedges.high    ) :
-        h2.m_xedges.edges.empty() && !h2.m_xedges.edges.empty() ?
-        new HISTO2 ( "" , //h1.m_name.c_str   ()         ,           // NAME
-                     h2.m_title.c_str() ,            // TITLE
-                     h2.m_xedges.nbins   ,           // #bins
-                     h2.m_xedges.low     ,           // low edge
-                     h2.m_xedges.high    ,           // high edge
-                     h2.m_yedges.nBins() ,           // #bins
-                     &h2.m_yedges.edges.front() ) : // vector of edges
-        !h2.m_xedges.edges.empty() && h2.m_xedges.edges.empty() ?
-        new HISTO2 ( "" , //h1.m_name.c_str   ()         ,           // NAME
-                     h2.m_title.c_str() ,            // TITLE
-                     h2.m_xedges.nBins() ,           // #bins
-                     &h2.m_xedges.edges.front() ,    // vector of edges
-                     h2.m_yedges.nbins   ,           // #bins
-                     h2.m_yedges.low     ,           // low edge
-                     h2.m_yedges.high    )        :         // high edge
-        new HISTO2 ( "" , //h1.m_name.c_str   ()         ,           // NAME
-                     h2.m_title.c_str() ,            // TITLE
-                     h2.m_xedges.nBins() ,           // #bins
-                     &h2.m_xedges.edges.front() ,    // vector of edges
-                     h2.m_yedges.nBins() ,           // #bins
-                     &h2.m_yedges.edges.front() ) ) ; // vector of edges
+    H2P histo( h2.m_xedges.edges.empty() && h2.m_yedges.edges.empty()
+                   ?                               // FIXED binning?
+                   new HISTO2( "",                 // h1.m_name.c_str   ()         ,           // NAME
+                               h2.m_title.c_str(), // TITLE
+                               h2.m_xedges.nbins,  // #bins
+                               h2.m_xedges.low,    // low edge
+                               h2.m_xedges.high,   // high edge
+                               h2.m_yedges.nbins,  // #bins
+                               h2.m_yedges.low,    // low edge
+                               h2.m_yedges.high )
+                   : h2.m_xedges.edges.empty() && !h2.m_xedges.edges.empty()
+                         ? new HISTO2( "",                  // h1.m_name.c_str   ()         ,           // NAME
+                                       h2.m_title.c_str(),  // TITLE
+                                       h2.m_xedges.nbins,   // #bins
+                                       h2.m_xedges.low,     // low edge
+                                       h2.m_xedges.high,    // high edge
+                                       h2.m_yedges.nBins(), // #bins
+                                       &h2.m_yedges.edges.front() )
+                         : // vector of edges
+                         !h2.m_xedges.edges.empty() && h2.m_xedges.edges.empty()
+                             ? new HISTO2( "",                  // h1.m_name.c_str   ()         ,           // NAME
+                                           h2.m_title.c_str(),  // TITLE
+                                           h2.m_xedges.nBins(), // #bins
+                                           &h2.m_xedges.edges.front(), // vector of edges
+                                           h2.m_yedges.nbins,          // #bins
+                                           h2.m_yedges.low,            // low edge
+                                           h2.m_yedges.high )
+                             :                                       // high edge
+                             new HISTO2( "",                         // h1.m_name.c_str   ()         ,           // NAME
+                                         h2.m_title.c_str(),         // TITLE
+                                         h2.m_xedges.nBins(),        // #bins
+                                         &h2.m_xedges.edges.front(), // vector of edges
+                                         h2.m_yedges.nBins(),        // #bins
+                                         &h2.m_yedges.edges.front() ) ); // vector of edges
 
-    int ibin = 0 ;
-    const int xBins = h2.m_xedges.nBins() ;
-    const int yBins = h2.m_yedges.nBins() ;
+    int ibin        = 0;
+    const int xBins = h2.m_xedges.nBins();
+    const int yBins = h2.m_yedges.nBins();
 
-    for ( int jBin = yBins + 1 ; jBin >= 0 ; --jBin )
-    {
-      for ( int iBin = 0 ; iBin <= xBins + 1  ; ++iBin )
-      {
-        histo -> SetBinContent ( iBin , jBin , h2.m_bins[ibin].first  ) ;
-        histo -> SetBinError   ( iBin , jBin , h2.m_bins[ibin].second ) ;
-        ++ibin ;
+    for ( int jBin = yBins + 1; jBin >= 0; --jBin ) {
+      for ( int iBin = 0; iBin <= xBins + 1; ++iBin ) {
+        histo->SetBinContent( iBin, jBin, h2.m_bins[ibin].first );
+        histo->SetBinError( iBin, jBin, h2.m_bins[ibin].second );
+        ++ibin;
       }
     }
     //
-    name = h2.m_name ;
+    name = h2.m_name;
     //
-    return histo ;
+    return histo;
   }
   // ==========================================================================
 } //                                                 end of anonymous namespace
@@ -336,25 +302,22 @@ namespace
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( TH1D& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( TH1D& result, const std::string& input )
 {
   // 1) check the parsing
-  std::string name ;
+  std::string name;
   //
-  auto h1 = _parse_1D<TH1D> ( input , name ) ;
-  if ( h1 )
-  {
-    result.Reset() ;
-    h1->Copy ( result )  ;                            // ASSIGN
-    result.SetName ( name.c_str () ) ;
-    return StatusCode::SUCCESS ;                           // RETURN
+  auto h1 = _parse_1D<TH1D>( input, name );
+  if ( h1 ) {
+    result.Reset();
+    h1->Copy( result ); // ASSIGN
+    result.SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
   }
   //
   // XML-like text?
-  return ( std::string::npos != input.find('<') )
-         ? Gaudi::Utils::Histos::fromXml ( result , input )
-         : StatusCode::FAILURE ;
+  return ( std::string::npos != input.find( '<' ) ) ? Gaudi::Utils::Histos::fromXml( result, input )
+                                                    : StatusCode::FAILURE;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -363,25 +326,22 @@ StatusCode Gaudi::Parsers::parse
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( TH1F& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( TH1F& result, const std::string& input )
 {
   // 1) check the parsing
-  std::string name ;
+  std::string name;
   //
-  auto h1 = _parse_1D<TH1F> ( input , name ) ;
-  if ( h1 )
-  {
-    result.Reset() ;
-    h1->Copy ( result )  ;                            // ASSIGN
-    result.SetName ( name.c_str () ) ;
-    return StatusCode::SUCCESS ;                           // RETURN
+  auto h1 = _parse_1D<TH1F>( input, name );
+  if ( h1 ) {
+    result.Reset();
+    h1->Copy( result ); // ASSIGN
+    result.SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
   }
   //
   // XML-like text?
-  return  ( std::string::npos != input.find('<') )
-          ? Gaudi::Utils::Histos::fromXml ( result , input )
-          :  StatusCode::FAILURE ;
+  return ( std::string::npos != input.find( '<' ) ) ? Gaudi::Utils::Histos::fromXml( result, input )
+                                                    : StatusCode::FAILURE;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -390,24 +350,21 @@ StatusCode Gaudi::Parsers::parse
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( TH2D& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( TH2D& result, const std::string& input )
 {
   // 1) check the parsing
-  std::string name ;
-  auto h2 = _parse_2D<TH2D> ( input , name ) ;
-  if ( h2 )
-  {
-    result.Reset() ;
-    h2->Copy ( result )  ;                            // ASSIGN
-    result.SetName ( name.c_str () ) ;
-    return StatusCode::SUCCESS ;                           // RETURN
+  std::string name;
+  auto h2 = _parse_2D<TH2D>( input, name );
+  if ( h2 ) {
+    result.Reset();
+    h2->Copy( result ); // ASSIGN
+    result.SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
   }
   //
   // XML-like text?
-  return ( std::string::npos != input.find('<') )
-         ? Gaudi::Utils::Histos::fromXml ( result , input )
-         : StatusCode::FAILURE ;
+  return ( std::string::npos != input.find( '<' ) ) ? Gaudi::Utils::Histos::fromXml( result, input )
+                                                    : StatusCode::FAILURE;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -416,25 +373,24 @@ StatusCode Gaudi::Parsers::parse
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( TH2F& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input )
 {
   // 1) check the parsing
-  std::string name ;
-  auto h2 = _parse_2D<TH2F> ( input , name ) ;
-  if ( h2 )
-  {
-    result.Reset() ;
-    h2->Copy ( result )  ;                            // ASSIGN
-    result.SetName ( name.c_str () ) ;
-    return StatusCode::SUCCESS ;                           // RETURN
+  std::string name;
+  auto h2 = _parse_2D<TH2F>( input, name );
+  if ( h2 ) {
+    result.Reset();
+    h2->Copy( result ); // ASSIGN
+    result.SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
   }
   //
   // XML-like text?
-  if ( std::string::npos != input.find('<') )
-  { return Gaudi::Utils::Histos::fromXml ( result , input ) ; }
+  if ( std::string::npos != input.find( '<' ) ) {
+    return Gaudi::Utils::Histos::fromXml( result, input );
+  }
   //
-  return StatusCode::FAILURE ;
+  return StatusCode::FAILURE;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -443,25 +399,24 @@ StatusCode Gaudi::Parsers::parse
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( TH1D*& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input )
 {
-  if ( result ) { return parse ( *result , input ) ; } // RETURN
+  if ( result ) {
+    return parse( *result, input );
+  } // RETURN
 
   // 1) check the parsing
-  std::string name ;
-  auto h1 = _parse_1D<TH1D>  ( input , name ) ;
-  if ( h1 )
-  {
-    result = h1.release() ;
-    result->SetName ( name.c_str() ) ;
-    return StatusCode::SUCCESS ;                           // RETURN
+  std::string name;
+  auto h1 = _parse_1D<TH1D>( input, name );
+  if ( h1 ) {
+    result = h1.release();
+    result->SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
   }
   //
   // XML-like text?
-  return  ( std::string::npos != input.find('<') )
-          ? Gaudi::Utils::Histos::fromXml ( result , input )
-          : StatusCode::FAILURE ;
+  return ( std::string::npos != input.find( '<' ) ) ? Gaudi::Utils::Histos::fromXml( result, input )
+                                                    : StatusCode::FAILURE;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -470,25 +425,24 @@ StatusCode Gaudi::Parsers::parse
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( TH2D*& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input )
 {
-  if ( result ) { return parse ( *result , input ) ; } // RETURN
+  if ( result ) {
+    return parse( *result, input );
+  } // RETURN
 
   // 1) check the parsing
-  std::string name ;
-  auto h2 = _parse_2D<TH2D>  ( input , name ) ;
-  if ( h2 )
-  {
-    result = h2.release() ;
-    result->SetName ( name.c_str() ) ;
-    return StatusCode::SUCCESS ;                           // RETURN
+  std::string name;
+  auto h2 = _parse_2D<TH2D>( input, name );
+  if ( h2 ) {
+    result = h2.release();
+    result->SetName( name.c_str() );
+    return StatusCode::SUCCESS; // RETURN
   }
   //
   // XML-like text?
-  return ( std::string::npos != input.find('<') ) 
-         ? Gaudi::Utils::Histos::fromXml ( result , input )
-         : StatusCode::FAILURE ;
+  return ( std::string::npos != input.find( '<' ) ) ? Gaudi::Utils::Histos::fromXml( result, input )
+                                                    : StatusCode::FAILURE;
 }
 // ============================================================================
 /*  parse AIDA histogram from text representation
@@ -497,13 +451,12 @@ StatusCode Gaudi::Parsers::parse
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( AIDA::IHistogram1D& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, const std::string& input )
 {
   // 1) convert to ROOT
-  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram
-  return root ? parse ( *root , input ) : StatusCode::FAILURE ; 
+  return root ? parse( *root, input ) : StatusCode::FAILURE;
 }
 // ============================================================================
 /*  parse AIDA histogram from text representation
@@ -512,13 +465,12 @@ StatusCode Gaudi::Parsers::parse
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse
-( AIDA::IHistogram2D& result , const std::string& input )
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram2D& result, const std::string& input )
 {
   // 1) convert to ROOT
-  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram
-  return root ? parse ( *root , input ) : StatusCode::FAILURE ; 
+  return root ? parse( *root, input ) : StatusCode::FAILURE;
 }
 // ============================================================================
 // The END

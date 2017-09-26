@@ -2,9 +2,9 @@
 
 // Include files
 // from Gaudi
+#include "GaudiGSL/IFuncMinimum.h"
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiGSL/IFuncMinimum.h"
 #include "GaudiMath/Adapters.h"
 #include "GaudiMath/GaudiMath.h"
 // from CLHEP
@@ -13,7 +13,9 @@
 #include "FuncMinimumPAlg.h"
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP { }
+namespace CLHEP
+{
+}
 using namespace CLHEP;
 
 //-----------------------------------------------------------------------------
@@ -27,10 +29,8 @@ using namespace CLHEP;
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
-FuncMinimumPAlg::FuncMinimumPAlg( const std::string& name,
-                                ISvcLocator* pSvcLocator)
-  : Algorithm ( name , pSvcLocator ) {
-
+FuncMinimumPAlg::FuncMinimumPAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
+{
 }
 
 //=============================================================================
@@ -40,30 +40,26 @@ FuncMinimumPAlg::~FuncMinimumPAlg() {}
 
 //=============================================================================
 // Our function
-double function ( const std::vector<double>& x  )
-{
-  return 10 * x[0] * x[0] + 20 * x[1] * x[1] + 40;
-}
+double function( const std::vector<double>& x ) { return 10 * x[0] * x[0] + 20 * x[1] * x[1] + 40; }
 
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode FuncMinimumPAlg::initialize() {
+StatusCode FuncMinimumPAlg::initialize()
+{
 
-  MsgStream log(msgSvc(), name());
+  MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Initialise" << endmsg;
 
   StatusCode sc;
-  sc = toolSvc()->retrieveTool("FuncMinimum", m_publicTool );
-  if( sc.isFailure() )
-    {
-      log << MSG::ERROR<< "Error retrieving the public tool" << endmsg;
-    }
-  sc = toolSvc()->retrieveTool("FuncMinimum", m_privateTool, this );
-  if( sc.isFailure() )
-    {
-      log << MSG::ERROR<< "Error retrieving the private tool" << endmsg;
-    }
+  sc = toolSvc()->retrieveTool( "FuncMinimum", m_publicTool );
+  if ( sc.isFailure() ) {
+    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
+  }
+  sc = toolSvc()->retrieveTool( "FuncMinimum", m_privateTool, this );
+  if ( sc.isFailure() ) {
+    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
+  }
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -72,70 +68,64 @@ StatusCode FuncMinimumPAlg::initialize() {
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode FuncMinimumPAlg::execute() {
+StatusCode FuncMinimumPAlg::execute()
+{
 
-  MsgStream  log( msgSvc(), name() );
+  MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Execute" << endmsg;
 
   // the object of the class AdapterPFunction
   // @see Adapter.h
-  const GaudiMath::Function& func = GaudiMath::adapter( 2 , &function ) ;
+  const GaudiMath::Function& func = GaudiMath::adapter( 2, &function );
 
- //=============================================================================
+  //=============================================================================
   // Input number and value of the arguments of the function "GenFunc"
-  IFuncMinimum::Arg arg (func.dimensionality ());
+  IFuncMinimum::Arg arg( func.dimensionality() );
 
   arg[0] = 2;
   arg[1] = 4;
 
   // Matrix of error
-  IFuncMinimum::Covariance matrix_error (arg.dimension(), 0);
+  IFuncMinimum::Covariance matrix_error( arg.dimension(), 0 );
 
   // Call of the method
-  m_publicTool->minimum( func ,
-                         arg  );
+  m_publicTool->minimum( func, arg );
   log << endmsg;
   log << "START OF THR METHOD" << endmsg;
   log << "MINIMUM FOUND AT: " << endmsg;
 
-  for (unsigned int i = 0; i < arg.dimension(); i++)
-    {
+  for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
 
-      log << "Value of argument " << i <<" is " << arg[i] << endmsg;
-    }
+    log << "Value of argument " << i << " is " << arg[i] << endmsg;
+  }
 
   log << endmsg;
-//=============================================================================
+  //=============================================================================
   // With Covariance matrix (matrix of error)
   arg[0] = 2;
   arg[1] = 4;
 
   // Call of the method(with covariance matrix (matrix of error))
-  m_publicTool->minimum( func        ,
-                         arg         ,
-                         matrix_error);
+  m_publicTool->minimum( func, arg, matrix_error );
   log << endmsg;
   log << "THE METHOD WITH MATRIX OF ERROR" << endmsg;
   log << "MINIMUM FOUND AT: " << endmsg;
 
-  for (unsigned int i = 0; i < arg.dimension(); i++)
-    {
+  for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
 
-      log << "Value of argument " << i <<" is " << arg[i] << endmsg;
-    }
+    log << "Value of argument " << i << " is " << arg[i] << endmsg;
+  }
 
   log << endmsg;
   log << "MATRIX OF ERROR";
 
-  for (unsigned int i = 0; i < arg.dimension(); i++)
-    {
-      log << endmsg;
+  for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
+    log << endmsg;
 
-      for (unsigned int j = 0; j < arg.dimension(); j++)
-        {
-          log << matrix_error (i+1, j+1) << " ";
-        }
+    for ( unsigned int j = 0; j < arg.dimension(); j++ ) {
+      log << matrix_error( i + 1, j + 1 ) << " ";
     }
+  }
   log << endmsg;
 
   return StatusCode::SUCCESS;
@@ -144,12 +134,13 @@ StatusCode FuncMinimumPAlg::execute() {
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode FuncMinimumPAlg::finalize() {
+StatusCode FuncMinimumPAlg::finalize()
+{
 
-  MsgStream log(msgSvc(), name());
+  MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Finalize" << endmsg;
 
-  toolSvc()->releaseTool( m_publicTool  );
+  toolSvc()->releaseTool( m_publicTool );
   toolSvc()->releaseTool( m_privateTool );
 
   return StatusCode::SUCCESS;
@@ -157,4 +148,4 @@ StatusCode FuncMinimumPAlg::finalize() {
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(FuncMinimumPAlg)
+DECLARE_ALGORITHM_FACTORY( FuncMinimumPAlg )

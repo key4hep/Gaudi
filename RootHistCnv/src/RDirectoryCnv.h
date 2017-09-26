@@ -5,33 +5,35 @@
 #include "GaudiKernel/NTuple.h"
 #include "RConverter.h"
 
-namespace RootHistCnv {
+namespace RootHistCnv
+{
 
   /** @class RootHistCnv::RDirectoryCnv RDirectoryCnv.h
 
-      Create persistent and transient representations of 
+      Create persistent and transient representations of
         data store directories
       @author Charles Leggett
   */
-  class RDirectoryCnv : public RConverter {
+  class RDirectoryCnv : public RConverter
+  {
   public:
     /// Create the transient representation of an object.
-    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override;
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;
     /// Update the transient object from the other representation.
-    StatusCode fillObjRefs(IOpaqueAddress* pAddr, DataObject* refpObj) override;
+    StatusCode fillObjRefs( IOpaqueAddress* pAddr, DataObject* refpObj ) override;
     /// Convert the transient object to the requested representation.
-    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr) override;
+    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override;
     /// Convert the transient object to the requested representation.
     StatusCode updateRep( IOpaqueAddress* pAddr, DataObject* pObject ) override;
     /// Inquire class type
-    static const CLID& classID()      {      return CLID_NTupleDirectory;    }
+    static const CLID& classID() { return CLID_NTupleDirectory; }
     /// Standard constructor
-    RDirectoryCnv(ISvcLocator* svc) : RConverter(CLID_NTupleDirectory, svc) {}
+    RDirectoryCnv( ISvcLocator* svc ) : RConverter( CLID_NTupleDirectory, svc ) {}
     /// Standard constructor
-    RDirectoryCnv(ISvcLocator* svc,const CLID& clid) : RConverter(clid, svc){}
+    RDirectoryCnv( ISvcLocator* svc, const CLID& clid ) : RConverter( clid, svc ) {}
     /// Standard destructor
     ~RDirectoryCnv() override = default;
   };
-}    // namespace RootHistCnv
+} // namespace RootHistCnv
 
-#endif    // RootHistCnv_RDirectORYCNV_H 
+#endif // RootHistCnv_RDirectORYCNV_H

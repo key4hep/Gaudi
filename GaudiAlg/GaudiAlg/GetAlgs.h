@@ -8,12 +8,12 @@
 // ============================================================================
 // forward declarations
 // ============================================================================
-class IAlgContextSvc ;
-class GaudiAlgorithm ;
-struct GaudiHistoAlg ;
-struct GaudiTupleAlg ;
-class GaudiSequencer ;
-class Sequencer      ;
+class IAlgContextSvc;
+class GaudiAlgorithm;
+struct GaudiHistoAlg;
+struct GaudiTupleAlg;
+class GaudiSequencer;
+class Sequencer;
 // ============================================================================
 namespace Gaudi
 {
@@ -35,7 +35,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API GaudiAlgorithm* getGaudiAlg       ( const IAlgContextSvc* svc ) ;
+    GAUDI_API GaudiAlgorithm* getGaudiAlg( const IAlgContextSvc* svc );
     // ========================================================================
     /** simple function to extract the last active
      *   GaudiHistoAlg from the context
@@ -52,7 +52,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API GaudiHistoAlg*  getHistoAlg       ( const IAlgContextSvc* svc ) ;
+    GAUDI_API GaudiHistoAlg* getHistoAlg( const IAlgContextSvc* svc );
     // ========================================================================
     /** simple function to extract the last active
      *   GaudiTupleAlg from the context
@@ -69,7 +69,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API GaudiTupleAlg*  getTupleAlg       ( const IAlgContextSvc* svc ) ;
+    GAUDI_API GaudiTupleAlg* getTupleAlg( const IAlgContextSvc* svc );
     // ========================================================================
     /** simple function to extract the last active
      *   GaudiSequencer from the context
@@ -86,7 +86,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API GaudiSequencer* getGaudiSequencer ( const IAlgContextSvc* svc ) ;
+    GAUDI_API GaudiSequencer* getGaudiSequencer( const IAlgContextSvc* svc );
     // ========================================================================
     /** simple function to extract the last active
      *   Sequencer from the context
@@ -103,7 +103,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API Sequencer*      getSequencerAlg   ( const IAlgContextSvc* svc ) ;
+    GAUDI_API Sequencer* getSequencerAlg( const IAlgContextSvc* svc );
     // ========================================================================
     /** simple function to extract the last active
      *   "Sequencer" () GaudiSequencer or simple Sequencer)
@@ -121,7 +121,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    GAUDI_API IAlgorithm*     getSequencer      ( const IAlgContextSvc* svc ) ;
+    GAUDI_API IAlgorithm* getSequencer( const IAlgContextSvc* svc );
     // ========================================================================
   } // end of namespace Gaudi::Utils
 } // end of namespace Gaudi

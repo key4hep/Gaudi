@@ -25,17 +25,17 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 #include <zlib.h>
 
 #include <algorithm>
+#include <iostream>
 #include <list>
 #include <map>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
-#include <iostream>
 
 #include <dirent.h>
 #include <errno.h>
 
-//Core
+// Core
 #define CORE_L2_MISS_CYCLES 200
 #define CORE_L2_HIT_CYCLES 14.5
 #define CORE_L1_DTLB_MISS_CYCLES 10
@@ -44,15 +44,15 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 #define CORE_OVERLAPPING_CYCLES 6
 #define CORE_SPAN_ACROSS_CACHE_LINE_CYCLES 20
 
-//Nehalem
+// Nehalem
 #define I7_L1_DTLB_WALK_COMPLETED_CYCLES 35
 #define I7_L1_ITLB_WALK_COMPLETED_CYCLES 35
 #define I7_L2_HIT_CYCLES 6
 #define I7_L3_UNSHARED_HIT_CYCLES 35
 #define I7_OTHER_CORE_L2_HIT_CYCLES 60
 #define I7_OTHER_CORE_L2_HITM_CYCLES 75
-#define I7_L3_MISS_LOCAL_DRAM_HIT_CYCLES 225 //average of 200 (not modified) and 225-250 (modified)
-#define I7_L3_MISS_REMOTE_DRAM_HIT_CYCLES 360 //average of 350 (not modified) and 370 (modified)
+#define I7_L3_MISS_LOCAL_DRAM_HIT_CYCLES 225  // average of 200 (not modified) and 225-250 (modified)
+#define I7_L3_MISS_REMOTE_DRAM_HIT_CYCLES 360 // average of 350 (not modified) and 370 (modified)
 #define I7_L3_MISS_REMOTE_CACHE_HIT_CYCLES 180
 #define I7_IFETCH_L3_MISS_LOCAL_DRAM_HIT 200
 #define I7_IFETCH_L3_MISS_REMOTE_DRAM_HIT 350
@@ -88,60 +88,53 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 
 class PipeReader
 {
- public:
-  PipeReader(const char *cmd)
+public:
+  PipeReader( const char* cmd )
   {
-   pipe = popen(cmd, "r");
-   if(!pipe)
-   {
-    printf("Cannot open pipe. Exiting...\n");
-    exit(1);
-   }
-   char buffer[PIPE_BUFFER_LENGTH];
-   bzero(buffer, PIPE_BUFFER_LENGTH);
-   std::string result = "";
-   while(!feof(pipe))
-   {
-    if(fgets(buffer, PIPE_BUFFER_LENGTH, pipe)!=NULL)
-    {
-     result += buffer;
+    pipe = popen( cmd, "r" );
+    if ( !pipe ) {
+      printf( "Cannot open pipe. Exiting...\n" );
+      exit( 1 );
     }
-    bzero(buffer, PIPE_BUFFER_LENGTH);
-   }
-   iss = new std::istringstream(result, std::istringstream::in);
+    char buffer[PIPE_BUFFER_LENGTH];
+    bzero( buffer, PIPE_BUFFER_LENGTH );
+    std::string result = "";
+    while ( !feof( pipe ) ) {
+      if ( fgets( buffer, PIPE_BUFFER_LENGTH, pipe ) != NULL ) {
+        result += buffer;
+      }
+      bzero( buffer, PIPE_BUFFER_LENGTH );
+    }
+    iss = new std::istringstream( result, std::istringstream::in );
   }
 
-  ~PipeReader(void)
+  ~PipeReader( void )
   {
-   pclose(pipe);
-   delete iss;
+    pclose( pipe );
+    delete iss;
   }
 
-  std::istringstream &output(void)
-  {
-   return *iss;
-  }
- private:
+  std::istringstream& output( void ) { return *iss; }
+
+private:
   FILE* pipe;
-  std::istringstream *iss;
+  std::istringstream* iss;
 };
 
 // skipWhitespaces()
 // const char *srcbuffer  : source string
 // const char **dstbuffer : destination string
 // Skips white spaces
-bool skipWhitespaces(const char *srcbuffer, const char **destbuffer)
+bool skipWhitespaces( const char* srcbuffer, const char** destbuffer )
 {
- if(!isspace(*srcbuffer++))
- {
-  return false;
- }
- while(isspace(*srcbuffer))
- {
-  srcbuffer++;
- }
- *destbuffer = srcbuffer;
- return true;
+  if ( !isspace( *srcbuffer++ ) ) {
+    return false;
+  }
+  while ( isspace( *srcbuffer ) ) {
+    srcbuffer++;
+  }
+  *destbuffer = srcbuffer;
+  return true;
 }
 
 // skipString()
@@ -151,160 +144,145 @@ bool skipWhitespaces(const char *srcbuffer, const char **destbuffer)
 // Skips strings of the form '\\s+strptr\\s+' starting from buffer.
 // Returns a pointer to the first char which does not match the above regexp,
 // or 0 in case the regexp is not matched.
-bool skipString(const char *strptr, const char *srcbuffer, const char **dstbuffer)
+bool skipString( const char* strptr, const char* srcbuffer, const char** dstbuffer )
 {
- if(strncmp(srcbuffer, strptr, strlen(strptr)))
- {
-  return false;
- }
- *dstbuffer = srcbuffer + strlen(strptr);
- return true;
+  if ( strncmp( srcbuffer, strptr, strlen( strptr ) ) ) {
+    return false;
+  }
+  *dstbuffer = srcbuffer + strlen( strptr );
+  return true;
 }
 
 class FileInfo
 {
- public:
+public:
   typedef int Offset;
   std::string NAME;
-  FileInfo(void) : NAME("<dynamically generated>") {}
-  FileInfo(const std::string &name, bool useGdb) : NAME(name)
+  FileInfo( void ) : NAME( "<dynamically generated>" ) {}
+  FileInfo( const std::string& name, bool useGdb ) : NAME( name )
   {
-   if(useGdb)
-   {
-    this->createOffsetMap();
-   }
+    if ( useGdb ) {
+      this->createOffsetMap();
+    }
   }
 
-  const char *symbolByOffset(Offset offset)
+  const char* symbolByOffset( Offset offset )
   {
-   if(m_symbolCache.empty())
-   {
-    return 0;
-   }
+    if ( m_symbolCache.empty() ) {
+      return 0;
+    }
 
-   SymbolCache::iterator i = lower_bound(m_symbolCache.begin(), m_symbolCache.end(), offset, CacheItemComparator());
-   if(i->OFFSET == offset)
-   {
+    SymbolCache::iterator i = lower_bound( m_symbolCache.begin(), m_symbolCache.end(), offset, CacheItemComparator() );
+    if ( i->OFFSET == offset ) {
+      return i->NAME.c_str();
+    }
+
+    if ( i == m_symbolCache.begin() ) {
+      return m_symbolCache.begin()->NAME.c_str();
+    }
+
+    --i;
+
     return i->NAME.c_str();
-   }
-
-   if(i == m_symbolCache.begin())
-   {
-    return m_symbolCache.begin()->NAME.c_str();
-   }
-
-   --i;
-
-   return i->NAME.c_str();
   }
 
-  Offset next(Offset offset)
+  Offset next( Offset offset )
   {
-   SymbolCache::iterator i = upper_bound(m_symbolCache.begin(), m_symbolCache.end(), offset, CacheItemComparator());
-   if(i == m_symbolCache.end())
-   {
-    return 0;
-   }
-   return i->OFFSET;
+    SymbolCache::iterator i = upper_bound( m_symbolCache.begin(), m_symbolCache.end(), offset, CacheItemComparator() );
+    if ( i == m_symbolCache.end() ) {
+      return 0;
+    }
+    return i->OFFSET;
   }
 
- private:
-  struct CacheItem
-  {
-   CacheItem(Offset offset, const std::string &name) : OFFSET(offset), NAME(name) {};
-   Offset OFFSET;
-   std::string NAME;
+private:
+  struct CacheItem {
+    CacheItem( Offset offset, const std::string& name ) : OFFSET( offset ), NAME( name ){};
+    Offset OFFSET;
+    std::string NAME;
   };
 
   typedef std::vector<CacheItem> SymbolCache;
   SymbolCache m_symbolCache;
 
-  struct CacheItemComparator
-  {
-   bool operator()(const CacheItem& a, const int &b) const
-   {
-    return a.OFFSET < b;
-   }
-   bool operator()(const int& a, const CacheItem &b) const
-   {
-    return a < b.OFFSET;
-   }
+  struct CacheItemComparator {
+    bool operator()( const CacheItem& a, const int& b ) const { return a.OFFSET < b; }
+    bool operator()( const int& a, const CacheItem& b ) const { return a < b.OFFSET; }
   };
 
-  void createOffsetMap(void)
+  void createOffsetMap( void )
   {
-   std::string commandLine = "objdump -p " + NAME;
-   PipeReader objdump(commandLine.c_str());
-   std::string oldname;
-   std::string suffix;
-   int vmbase = 0;
-   bool matched = false;
-   while(objdump.output())
-   {
-    // Checks the following regexp
-    //
-    //    LOAD\\s+off\\s+(0x[0-9A-Fa-f]+)\\s+vaddr\\s+(0x[0-9A-Fa-f]+)
-    //
-    // and sets vmbase to be $2 - $1 of the first matched entry.
+    std::string commandLine = "objdump -p " + NAME;
+    PipeReader objdump( commandLine.c_str() );
+    std::string oldname;
+    std::string suffix;
+    int vmbase   = 0;
+    bool matched = false;
+    while ( objdump.output() ) {
+      // Checks the following regexp
+      //
+      //    LOAD\\s+off\\s+(0x[0-9A-Fa-f]+)\\s+vaddr\\s+(0x[0-9A-Fa-f]+)
+      //
+      // and sets vmbase to be $2 - $1 of the first matched entry.
 
-    std::string line;
-    std::getline(objdump.output(), line);
+      std::string line;
+      std::getline( objdump.output(), line );
 
-    if(!objdump.output()) break;
-    if(line.empty()) continue;
-    const char *lineptr = line.c_str();
-    if(!skipWhitespaces(lineptr, &lineptr)) continue;
-    if(!skipString("LOAD", lineptr, &lineptr)) continue;
-    if(!skipWhitespaces(lineptr, &lineptr)) continue;
-    if(!skipString("off", lineptr, &lineptr))  continue;
-    char *endptr = 0;
-    int initialBase = strtol(lineptr, &endptr, 16);
-    if(lineptr == endptr) continue;
-    lineptr = endptr;
-    if(!skipWhitespaces(lineptr, &lineptr)) continue;
-    if(!skipString("vaddr", lineptr, &lineptr)) continue;
-    if(!skipWhitespaces(lineptr, &lineptr)) continue;
-    int finalBase = strtol(lineptr, &endptr, 16);
-    if(lineptr == endptr) continue;
-    vmbase=finalBase - initialBase;
-    matched = true;
-    break;
-   }
-   if(!matched)
-   {
-    fprintf(stderr, "Cannot determine VM base address for %s\n", NAME.c_str());
-    fprintf(stderr, "Error while running `objdump -p %s`\n", NAME.c_str());
-    exit(1);
-   }
-   std::string commandLine2 = "nm -t d -n " + NAME;
-   PipeReader nm(commandLine2.c_str());
-   while(nm.output())
-   {
-    std::string line;
-    std::getline(nm.output(), line);
-    if(!nm.output()) break;
-    if(line.empty()) continue;
-    // If line does not match "^(\\d+)[ ]\\S[ ](\S+)$", exit.
-    const char *begin = line.c_str();
-    char *endptr = 0;
-    int address = strtol(begin, &endptr, 10);
-    if(endptr == begin) continue;
-    if(*endptr++ != ' ') continue;
-    if(isspace(*endptr++)) continue;
-    if(*endptr++ != ' ') continue;
-    char *symbolName = endptr;
-    while(*endptr && !isspace(*endptr)) endptr++;
-    if(*endptr != 0) continue;
-    // If line starts with '.' forget about it.
-    if(symbolName[0] == '.') continue;
-    // Create a new symbol with the given fileoffset.
-    // The symbol is automatically saved in the FileInfo cache by offset.
-    // If a symbol with the same offset is already there, the new one
-    // replaces the old one.
-    int offset = address-vmbase;
-    if(m_symbolCache.size() && (m_symbolCache.back().OFFSET == offset)) m_symbolCache.back().NAME = symbolName;
-    else m_symbolCache.push_back(CacheItem(address-vmbase, symbolName));
-   }
+      if ( !objdump.output() ) break;
+      if ( line.empty() ) continue;
+      const char* lineptr = line.c_str();
+      if ( !skipWhitespaces( lineptr, &lineptr ) ) continue;
+      if ( !skipString( "LOAD", lineptr, &lineptr ) ) continue;
+      if ( !skipWhitespaces( lineptr, &lineptr ) ) continue;
+      if ( !skipString( "off", lineptr, &lineptr ) ) continue;
+      char* endptr    = 0;
+      int initialBase = strtol( lineptr, &endptr, 16 );
+      if ( lineptr == endptr ) continue;
+      lineptr = endptr;
+      if ( !skipWhitespaces( lineptr, &lineptr ) ) continue;
+      if ( !skipString( "vaddr", lineptr, &lineptr ) ) continue;
+      if ( !skipWhitespaces( lineptr, &lineptr ) ) continue;
+      int finalBase = strtol( lineptr, &endptr, 16 );
+      if ( lineptr == endptr ) continue;
+      vmbase  = finalBase - initialBase;
+      matched = true;
+      break;
+    }
+    if ( !matched ) {
+      fprintf( stderr, "Cannot determine VM base address for %s\n", NAME.c_str() );
+      fprintf( stderr, "Error while running `objdump -p %s`\n", NAME.c_str() );
+      exit( 1 );
+    }
+    std::string commandLine2 = "nm -t d -n " + NAME;
+    PipeReader nm( commandLine2.c_str() );
+    while ( nm.output() ) {
+      std::string line;
+      std::getline( nm.output(), line );
+      if ( !nm.output() ) break;
+      if ( line.empty() ) continue;
+      // If line does not match "^(\\d+)[ ]\\S[ ](\S+)$", exit.
+      const char* begin = line.c_str();
+      char* endptr      = 0;
+      int address       = strtol( begin, &endptr, 10 );
+      if ( endptr == begin ) continue;
+      if ( *endptr++ != ' ' ) continue;
+      if ( isspace( *endptr++ ) ) continue;
+      if ( *endptr++ != ' ' ) continue;
+      char* symbolName = endptr;
+      while ( *endptr && !isspace( *endptr ) ) endptr++;
+      if ( *endptr != 0 ) continue;
+      // If line starts with '.' forget about it.
+      if ( symbolName[0] == '.' ) continue;
+      // Create a new symbol with the given fileoffset.
+      // The symbol is automatically saved in the FileInfo cache by offset.
+      // If a symbol with the same offset is already there, the new one
+      // replaces the old one.
+      int offset = address - vmbase;
+      if ( m_symbolCache.size() && ( m_symbolCache.back().OFFSET == offset ) )
+        m_symbolCache.back().NAME = symbolName;
+      else
+        m_symbolCache.push_back( CacheItem( address - vmbase, symbolName ) );
+    }
   }
 };
 
@@ -312,7 +290,7 @@ static std::map<std::string, unsigned int> modules_tot_samples;
 static std::map<std::string, FileInfo> libsInfo;
 static int nehalem;
 
-static std::map<std::string, std::map<std::string, double> > C_modules;
+static std::map<std::string, std::map<std::string, double>> C_modules;
 static std::vector<std::string> C_events;
 static std::vector<std::string> S_events;
 
@@ -323,407 +301,508 @@ static std::vector<std::string> nhm_caa_events_displ;
 
 void init_core_caa_events()
 {
- core_caa_events.push_back("BRANCH_INSTRUCTIONS_RETIRED");
- core_caa_events.push_back("ILD_STALL");
- core_caa_events.push_back("INST_RETIRED:LOADS");
- core_caa_events.push_back("INST_RETIRED:OTHER");
- core_caa_events.push_back("INST_RETIRED:STORES");
- core_caa_events.push_back("INSTRUCTIONS_RETIRED");
- core_caa_events.push_back("LOAD_BLOCK:OVERLAP_STORE");
- core_caa_events.push_back("LOAD_BLOCK:STA");
- core_caa_events.push_back("LOAD_BLOCK:UNTIL_RETIRE");
- core_caa_events.push_back("MEM_LOAD_RETIRED:DTLB_MISS");
- core_caa_events.push_back("MEM_LOAD_RETIRED:L1D_LINE_MISS");
- core_caa_events.push_back("MEM_LOAD_RETIRED:L2_LINE_MISS");
- core_caa_events.push_back("MISPREDICTED_BRANCH_RETIRED");
- //core_caa_events.push_back("RS_UOPS_DISPATCHED");
- //core_caa_events.push_back("RS_UOPS_DISPATCHED CMASK=1");
- core_caa_events.push_back("RS_UOPS_DISPATCHED CMASK=1 INV=1");
- core_caa_events.push_back("SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE");
- core_caa_events.push_back("UNHALTED_CORE_CYCLES");
- //core_caa_events.push_back("UOPS_RETIRED:ANY");
- //core_caa_events.push_back("UOPS_RETIRED:FUSED");
- //core_caa_events.push_back("IDLE_DURING_DIV");
+  core_caa_events.push_back( "BRANCH_INSTRUCTIONS_RETIRED" );
+  core_caa_events.push_back( "ILD_STALL" );
+  core_caa_events.push_back( "INST_RETIRED:LOADS" );
+  core_caa_events.push_back( "INST_RETIRED:OTHER" );
+  core_caa_events.push_back( "INST_RETIRED:STORES" );
+  core_caa_events.push_back( "INSTRUCTIONS_RETIRED" );
+  core_caa_events.push_back( "LOAD_BLOCK:OVERLAP_STORE" );
+  core_caa_events.push_back( "LOAD_BLOCK:STA" );
+  core_caa_events.push_back( "LOAD_BLOCK:UNTIL_RETIRE" );
+  core_caa_events.push_back( "MEM_LOAD_RETIRED:DTLB_MISS" );
+  core_caa_events.push_back( "MEM_LOAD_RETIRED:L1D_LINE_MISS" );
+  core_caa_events.push_back( "MEM_LOAD_RETIRED:L2_LINE_MISS" );
+  core_caa_events.push_back( "MISPREDICTED_BRANCH_RETIRED" );
+  // core_caa_events.push_back("RS_UOPS_DISPATCHED");
+  // core_caa_events.push_back("RS_UOPS_DISPATCHED CMASK=1");
+  core_caa_events.push_back( "RS_UOPS_DISPATCHED CMASK=1 INV=1" );
+  core_caa_events.push_back( "SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE" );
+  core_caa_events.push_back( "UNHALTED_CORE_CYCLES" );
+  // core_caa_events.push_back("UOPS_RETIRED:ANY");
+  // core_caa_events.push_back("UOPS_RETIRED:FUSED");
+  // core_caa_events.push_back("IDLE_DURING_DIV");
 }
 
 void init_nhm_caa_events()
 {
- nhm_caa_events.push_back("ARITH:CYCLES_DIV_BUSY");
- nhm_caa_events.push_back("BR_INST_EXEC:ANY");
- nhm_caa_events.push_back("BR_INST_EXEC:DIRECT_NEAR_CALL");
- nhm_caa_events.push_back("BR_INST_EXEC:INDIRECT_NEAR_CALL");
- nhm_caa_events.push_back("BR_INST_EXEC:INDIRECT_NON_CALL");
- nhm_caa_events.push_back("BR_INST_EXEC:NEAR_CALLS");
- nhm_caa_events.push_back("BR_INST_EXEC:NON_CALLS");
- nhm_caa_events.push_back("BR_INST_EXEC:RETURN_NEAR");
- nhm_caa_events.push_back("BR_INST_RETIRED:ALL_BRANCHES");
- nhm_caa_events.push_back("BR_INST_RETIRED:CONDITIONAL");
- nhm_caa_events.push_back("BR_INST_RETIRED:NEAR_CALL");
- nhm_caa_events.push_back("BR_MISP_EXEC:ANY");
- nhm_caa_events.push_back("CPU_CLK_UNHALTED:THREAD_P");
- nhm_caa_events.push_back("DTLB_LOAD_MISSES:WALK_COMPLETED");
- nhm_caa_events.push_back("INST_RETIRED:ANY_P");
- nhm_caa_events.push_back("ITLB_MISSES:WALK_COMPLETED");
- nhm_caa_events.push_back("L2_RQSTS:IFETCH_HIT");
- nhm_caa_events.push_back("L2_RQSTS:IFETCH_MISS");
- nhm_caa_events.push_back("MEM_INST_RETIRED:LOADS");
- nhm_caa_events.push_back("MEM_INST_RETIRED:STORES");
- nhm_caa_events.push_back("MEM_LOAD_RETIRED:L2_HIT");
- nhm_caa_events.push_back("MEM_LOAD_RETIRED:L3_MISS");
- nhm_caa_events.push_back("MEM_LOAD_RETIRED:L3_UNSHARED_HIT");
- nhm_caa_events.push_back("MEM_LOAD_RETIRED:OTHER_CORE_L2_HIT_HITM");
- nhm_caa_events.push_back("MEM_UNCORE_RETIRED:LOCAL_DRAM");
- nhm_caa_events.push_back("MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM");
- nhm_caa_events.push_back("MEM_UNCORE_RETIRED:REMOTE_CACHE_LOCAL_HOME_HIT");
- nhm_caa_events.push_back("MEM_UNCORE_RETIRED:REMOTE_DRAM");
- nhm_caa_events.push_back("OFFCORE_RESPONSE_0:DMND_IFETCH:LOCAL_DRAM");
- nhm_caa_events.push_back("OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HITM");
- nhm_caa_events.push_back("OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HIT_SNP");
- nhm_caa_events.push_back("OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_CACHE_FWD");
- nhm_caa_events.push_back("OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_DRAM");
- nhm_caa_events.push_back("OFFCORE_RESPONSE_0:DMND_IFETCH:UNCORE_HIT");
- nhm_caa_events.push_back("RESOURCE_STALLS:ANY");
- nhm_caa_events.push_back("SSEX_UOPS_RETIRED:PACKED_DOUBLE");
- nhm_caa_events.push_back("SSEX_UOPS_RETIRED:PACKED_SINGLE");
- nhm_caa_events.push_back("UOPS_DECODED:MS CMASK=1");
- nhm_caa_events.push_back("UOPS_ISSUED:ANY CMASK=1 INV=1");
- nhm_caa_events.push_back("ITLB_MISS_RETIRED");
- nhm_caa_events.push_back("UOPS_RETIRED:ANY");
+  nhm_caa_events.push_back( "ARITH:CYCLES_DIV_BUSY" );
+  nhm_caa_events.push_back( "BR_INST_EXEC:ANY" );
+  nhm_caa_events.push_back( "BR_INST_EXEC:DIRECT_NEAR_CALL" );
+  nhm_caa_events.push_back( "BR_INST_EXEC:INDIRECT_NEAR_CALL" );
+  nhm_caa_events.push_back( "BR_INST_EXEC:INDIRECT_NON_CALL" );
+  nhm_caa_events.push_back( "BR_INST_EXEC:NEAR_CALLS" );
+  nhm_caa_events.push_back( "BR_INST_EXEC:NON_CALLS" );
+  nhm_caa_events.push_back( "BR_INST_EXEC:RETURN_NEAR" );
+  nhm_caa_events.push_back( "BR_INST_RETIRED:ALL_BRANCHES" );
+  nhm_caa_events.push_back( "BR_INST_RETIRED:CONDITIONAL" );
+  nhm_caa_events.push_back( "BR_INST_RETIRED:NEAR_CALL" );
+  nhm_caa_events.push_back( "BR_MISP_EXEC:ANY" );
+  nhm_caa_events.push_back( "CPU_CLK_UNHALTED:THREAD_P" );
+  nhm_caa_events.push_back( "DTLB_LOAD_MISSES:WALK_COMPLETED" );
+  nhm_caa_events.push_back( "INST_RETIRED:ANY_P" );
+  nhm_caa_events.push_back( "ITLB_MISSES:WALK_COMPLETED" );
+  nhm_caa_events.push_back( "L2_RQSTS:IFETCH_HIT" );
+  nhm_caa_events.push_back( "L2_RQSTS:IFETCH_MISS" );
+  nhm_caa_events.push_back( "MEM_INST_RETIRED:LOADS" );
+  nhm_caa_events.push_back( "MEM_INST_RETIRED:STORES" );
+  nhm_caa_events.push_back( "MEM_LOAD_RETIRED:L2_HIT" );
+  nhm_caa_events.push_back( "MEM_LOAD_RETIRED:L3_MISS" );
+  nhm_caa_events.push_back( "MEM_LOAD_RETIRED:L3_UNSHARED_HIT" );
+  nhm_caa_events.push_back( "MEM_LOAD_RETIRED:OTHER_CORE_L2_HIT_HITM" );
+  nhm_caa_events.push_back( "MEM_UNCORE_RETIRED:LOCAL_DRAM" );
+  nhm_caa_events.push_back( "MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM" );
+  nhm_caa_events.push_back( "MEM_UNCORE_RETIRED:REMOTE_CACHE_LOCAL_HOME_HIT" );
+  nhm_caa_events.push_back( "MEM_UNCORE_RETIRED:REMOTE_DRAM" );
+  nhm_caa_events.push_back( "OFFCORE_RESPONSE_0:DMND_IFETCH:LOCAL_DRAM" );
+  nhm_caa_events.push_back( "OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HITM" );
+  nhm_caa_events.push_back( "OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HIT_SNP" );
+  nhm_caa_events.push_back( "OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_CACHE_FWD" );
+  nhm_caa_events.push_back( "OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_DRAM" );
+  nhm_caa_events.push_back( "OFFCORE_RESPONSE_0:DMND_IFETCH:UNCORE_HIT" );
+  nhm_caa_events.push_back( "RESOURCE_STALLS:ANY" );
+  nhm_caa_events.push_back( "SSEX_UOPS_RETIRED:PACKED_DOUBLE" );
+  nhm_caa_events.push_back( "SSEX_UOPS_RETIRED:PACKED_SINGLE" );
+  nhm_caa_events.push_back( "UOPS_DECODED:MS CMASK=1" );
+  nhm_caa_events.push_back( "UOPS_ISSUED:ANY CMASK=1 INV=1" );
+  nhm_caa_events.push_back( "ITLB_MISS_RETIRED" );
+  nhm_caa_events.push_back( "UOPS_RETIRED:ANY" );
 }
 
 bool check_for_core_caa_events()
 {
- for(std::vector<std::string>::const_iterator it=core_caa_events.begin(); it!=core_caa_events.end(); ++it)
- {
-  if(find(C_events.begin(), C_events.end(), (*it))==C_events.end())
-  {
-   fprintf(stderr, "ERROR: Cannot find event %s!!!\naborting...\n", (*it).c_str());
-   return false;
+  for ( std::vector<std::string>::const_iterator it = core_caa_events.begin(); it != core_caa_events.end(); ++it ) {
+    if ( find( C_events.begin(), C_events.end(), ( *it ) ) == C_events.end() ) {
+      fprintf( stderr, "ERROR: Cannot find event %s!!!\naborting...\n", ( *it ).c_str() );
+      return false;
+    }
   }
- }
- return true;
+  return true;
 }
 
 bool check_for_nhm_caa_events()
 {
- for(std::vector<std::string>::const_iterator it=nhm_caa_events.begin(); it!=nhm_caa_events.end(); ++it)
- {
-  if(find(C_events.begin(), C_events.end(), (*it))==C_events.end())
-  {
-   fprintf(stderr, "ERROR: Cannot find event %s!!!\naborting...\n", (*it).c_str());
-   return false;
+  for ( std::vector<std::string>::const_iterator it = nhm_caa_events.begin(); it != nhm_caa_events.end(); ++it ) {
+    if ( find( C_events.begin(), C_events.end(), ( *it ) ) == C_events.end() ) {
+      fprintf( stderr, "ERROR: Cannot find event %s!!!\naborting...\n", ( *it ).c_str() );
+      return false;
+    }
   }
- }
- return true;
+  return true;
 }
 
 void init_core_caa_events_displ()
 {
- core_caa_events_displ.push_back("Total Cycles");
- core_caa_events_displ.push_back("Stalled Cycles");
- core_caa_events_displ.push_back("% of Total Cycles");
- core_caa_events_displ.push_back("Instructions Retired");
- core_caa_events_displ.push_back("CPI");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("iMargin");
- core_caa_events_displ.push_back("iFactor");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("Counted Stalled Cycles");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("L2 Miss Impact");
- core_caa_events_displ.push_back("L2 Miss % of counted Stalled Cycles");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("L2 Hit Impact");
- core_caa_events_displ.push_back("L2 Hit % of counted Stalled Cycles");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("L1 DTLB Miss Impact");
- core_caa_events_displ.push_back("L1 DTLB Miss % of counted Stalled Cycles");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("LCP Stalls Impact");
- core_caa_events_displ.push_back("LCP Stalls % of counted Stalled Cycles");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("Store-Fwd Stalls Impact");
- core_caa_events_displ.push_back("Store-Fwd Stalls % of counted Stalled Cycles");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("Loads Blocked by Unknown Address Store Impact");
- core_caa_events_displ.push_back("Loads Blocked % of Store-Fwd Stalls Cycles");
- core_caa_events_displ.push_back("Loads Overlapped with Stores Impact");
- core_caa_events_displ.push_back("Loads Overlapped % of Store-Fwd Stalls Cycles");
- core_caa_events_displ.push_back("Loads Spanning across Cache Lines Impact");
- core_caa_events_displ.push_back("Loads Spanning % of Store-Fwd Stalls Cycles");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("Load Instructions");
- core_caa_events_displ.push_back("Load % of all Instructions");
- core_caa_events_displ.push_back("Store Instructions");
- core_caa_events_displ.push_back("Store % of all Instructions");
- core_caa_events_displ.push_back("Branch Instructions");
- core_caa_events_displ.push_back("Branch % of all Instructions");
- core_caa_events_displ.push_back("Packed SIMD Computational Instructions");
- core_caa_events_displ.push_back("Packed SIMD % of all Instructions");
- core_caa_events_displ.push_back("Other Instructions");
- core_caa_events_displ.push_back("Other % of all Instructions");
- core_caa_events_displ.push_back("");
- core_caa_events_displ.push_back("ITLB Miss Rate in %");
- core_caa_events_displ.push_back("% of Mispredicted Branches");
+  core_caa_events_displ.push_back( "Total Cycles" );
+  core_caa_events_displ.push_back( "Stalled Cycles" );
+  core_caa_events_displ.push_back( "% of Total Cycles" );
+  core_caa_events_displ.push_back( "Instructions Retired" );
+  core_caa_events_displ.push_back( "CPI" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "iMargin" );
+  core_caa_events_displ.push_back( "iFactor" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "Counted Stalled Cycles" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "L2 Miss Impact" );
+  core_caa_events_displ.push_back( "L2 Miss % of counted Stalled Cycles" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "L2 Hit Impact" );
+  core_caa_events_displ.push_back( "L2 Hit % of counted Stalled Cycles" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "L1 DTLB Miss Impact" );
+  core_caa_events_displ.push_back( "L1 DTLB Miss % of counted Stalled Cycles" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "LCP Stalls Impact" );
+  core_caa_events_displ.push_back( "LCP Stalls % of counted Stalled Cycles" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "Store-Fwd Stalls Impact" );
+  core_caa_events_displ.push_back( "Store-Fwd Stalls % of counted Stalled Cycles" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "Loads Blocked by Unknown Address Store Impact" );
+  core_caa_events_displ.push_back( "Loads Blocked % of Store-Fwd Stalls Cycles" );
+  core_caa_events_displ.push_back( "Loads Overlapped with Stores Impact" );
+  core_caa_events_displ.push_back( "Loads Overlapped % of Store-Fwd Stalls Cycles" );
+  core_caa_events_displ.push_back( "Loads Spanning across Cache Lines Impact" );
+  core_caa_events_displ.push_back( "Loads Spanning % of Store-Fwd Stalls Cycles" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "Load Instructions" );
+  core_caa_events_displ.push_back( "Load % of all Instructions" );
+  core_caa_events_displ.push_back( "Store Instructions" );
+  core_caa_events_displ.push_back( "Store % of all Instructions" );
+  core_caa_events_displ.push_back( "Branch Instructions" );
+  core_caa_events_displ.push_back( "Branch % of all Instructions" );
+  core_caa_events_displ.push_back( "Packed SIMD Computational Instructions" );
+  core_caa_events_displ.push_back( "Packed SIMD % of all Instructions" );
+  core_caa_events_displ.push_back( "Other Instructions" );
+  core_caa_events_displ.push_back( "Other % of all Instructions" );
+  core_caa_events_displ.push_back( "" );
+  core_caa_events_displ.push_back( "ITLB Miss Rate in %" );
+  core_caa_events_displ.push_back( "% of Mispredicted Branches" );
 }
 
-void calc_core_deriv_values(double totalCycles)
+void calc_core_deriv_values( double totalCycles )
 {
- for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
- {
-  (it->second)["Total Cycles"] = (it->second)["UNHALTED_CORE_CYCLES"];
-  (it->second)["Stalled Cycles"] = (it->second)["RS_UOPS_DISPATCHED CMASK=1 INV=1"];
-  (it->second)["L2 Miss Impact"] = (it->second)["MEM_LOAD_RETIRED:L2_LINE_MISS"] * CORE_L2_MISS_CYCLES;
-  (it->second)["L2 Hit Impact"] = ((it->second)["MEM_LOAD_RETIRED:L1D_LINE_MISS"] - (it->second)["MEM_LOAD_RETIRED:L2_LINE_MISS"]) * CORE_L2_HIT_CYCLES;
-  (it->second)["L1 DTLB Miss Impact"] = (it->second)["MEM_LOAD_RETIRED:DTLB_MISS"] * CORE_L1_DTLB_MISS_CYCLES;
-  (it->second)["LCP Stalls Impact"] = (it->second)["ILD_STALL"] * CORE_LCP_STALL_CYCLES;
-  (it->second)["Loads Blocked by Unknown Address Store Impact"] = (it->second)["LOAD_BLOCK:STA"] * CORE_UNKNOWN_ADDR_STORE_CYCLES;
-  (it->second)["Loads Overlapped with Stores Impact"] = (it->second)["LOAD_BLOCK:OVERLAP_STORE"] * CORE_OVERLAPPING_CYCLES;
-  (it->second)["Loads Spanning across Cache Lines Impact"] = (it->second)["LOAD_BLOCK:UNTIL_RETIRE"] * CORE_SPAN_ACROSS_CACHE_LINE_CYCLES;
-  (it->second)["Store-Fwd Stalls Impact"] = (it->second)["Loads Blocked by Unknown Address Store Impact"] + (it->second)["Loads Overlapped with Stores Impact"] + (it->second)["Loads Spanning across Cache Lines Impact"];
-  (it->second)["Counted Stalled Cycles"] = (it->second)["L2 Miss Impact"] + (it->second)["L2 Hit Impact"] + (it->second)["LCP Stalls Impact"] + (it->second)["L1 DTLB Miss Impact"] + (it->second)["Store-Fwd Stalls Impact"];
-  (it->second)["Instructions Retired"] = (it->second)["INSTRUCTIONS_RETIRED"];
-  (it->second)["ITLB Miss Rate in %"] = ((it->second)["ITLB_MISS_RETIRED"]/(it->second)["INSTRUCTIONS_RETIRED"])*100;
-  (it->second)["Branch Instructions"] = (it->second)["BRANCH_INSTRUCTIONS_RETIRED"];
-  (it->second)["Load Instructions"] = (it->second)["INST_RETIRED:LOADS"];
-  (it->second)["Store Instructions"] = (it->second)["INST_RETIRED:STORES"];
-  (it->second)["Other Instructions"] = (it->second)["INST_RETIRED:OTHER"] - (it->second)["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"] - (it->second)["BRANCH_INSTRUCTIONS_RETIRED"];
-  (it->second)["% of Mispredicted Branches"] = ((it->second)["MISPREDICTED_BRANCH_RETIRED"]/(it->second)["BRANCH_INSTRUCTIONS_RETIRED"])*100;
-  (it->second)["Packed SIMD Computational Instructions"] = (it->second)["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"];
-  (it->second)["Counted Instructions Retired"] = (it->second)["Branch Instructions"] + (it->second)["Load Instructions"] + (it->second)["Store Instructions"] + (it->second)["Other Instructions"] + (it->second)["Packed SIMD Computational Instructions"];
-  (it->second)["CPI"] = (it->second)["UNHALTED_CORE_CYCLES"]/(it->second)["INSTRUCTIONS_RETIRED"];
+  for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+        ++it ) {
+    ( it->second )["Total Cycles"]   = ( it->second )["UNHALTED_CORE_CYCLES"];
+    ( it->second )["Stalled Cycles"] = ( it->second )["RS_UOPS_DISPATCHED CMASK=1 INV=1"];
+    ( it->second )["L2 Miss Impact"] = ( it->second )["MEM_LOAD_RETIRED:L2_LINE_MISS"] * CORE_L2_MISS_CYCLES;
+    ( it->second )["L2 Hit Impact"] =
+        ( ( it->second )["MEM_LOAD_RETIRED:L1D_LINE_MISS"] - ( it->second )["MEM_LOAD_RETIRED:L2_LINE_MISS"] ) *
+        CORE_L2_HIT_CYCLES;
+    ( it->second )["L1 DTLB Miss Impact"] = ( it->second )["MEM_LOAD_RETIRED:DTLB_MISS"] * CORE_L1_DTLB_MISS_CYCLES;
+    ( it->second )["LCP Stalls Impact"]   = ( it->second )["ILD_STALL"] * CORE_LCP_STALL_CYCLES;
+    ( it->second )["Loads Blocked by Unknown Address Store Impact"] =
+        ( it->second )["LOAD_BLOCK:STA"] * CORE_UNKNOWN_ADDR_STORE_CYCLES;
+    ( it->second )["Loads Overlapped with Stores Impact"] =
+        ( it->second )["LOAD_BLOCK:OVERLAP_STORE"] * CORE_OVERLAPPING_CYCLES;
+    ( it->second )["Loads Spanning across Cache Lines Impact"] =
+        ( it->second )["LOAD_BLOCK:UNTIL_RETIRE"] * CORE_SPAN_ACROSS_CACHE_LINE_CYCLES;
+    ( it->second )["Store-Fwd Stalls Impact"] = ( it->second )["Loads Blocked by Unknown Address Store Impact"] +
+                                                ( it->second )["Loads Overlapped with Stores Impact"] +
+                                                ( it->second )["Loads Spanning across Cache Lines Impact"];
+    ( it->second )["Counted Stalled Cycles"] =
+        ( it->second )["L2 Miss Impact"] + ( it->second )["L2 Hit Impact"] + ( it->second )["LCP Stalls Impact"] +
+        ( it->second )["L1 DTLB Miss Impact"] + ( it->second )["Store-Fwd Stalls Impact"];
+    ( it->second )["Instructions Retired"] = ( it->second )["INSTRUCTIONS_RETIRED"];
+    ( it->second )["ITLB Miss Rate in %"] =
+        ( ( it->second )["ITLB_MISS_RETIRED"] / ( it->second )["INSTRUCTIONS_RETIRED"] ) * 100;
+    ( it->second )["Branch Instructions"] = ( it->second )["BRANCH_INSTRUCTIONS_RETIRED"];
+    ( it->second )["Load Instructions"]   = ( it->second )["INST_RETIRED:LOADS"];
+    ( it->second )["Store Instructions"]  = ( it->second )["INST_RETIRED:STORES"];
+    ( it->second )["Other Instructions"]  = ( it->second )["INST_RETIRED:OTHER"] -
+                                           ( it->second )["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"] -
+                                           ( it->second )["BRANCH_INSTRUCTIONS_RETIRED"];
+    ( it->second )["% of Mispredicted Branches"] =
+        ( ( it->second )["MISPREDICTED_BRANCH_RETIRED"] / ( it->second )["BRANCH_INSTRUCTIONS_RETIRED"] ) * 100;
+    ( it->second )["Packed SIMD Computational Instructions"] =
+        ( it->second )["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"];
+    ( it->second )["Counted Instructions Retired"] =
+        ( it->second )["Branch Instructions"] + ( it->second )["Load Instructions"] +
+        ( it->second )["Store Instructions"] + ( it->second )["Other Instructions"] +
+        ( it->second )["Packed SIMD Computational Instructions"];
+    ( it->second )["CPI"] = ( it->second )["UNHALTED_CORE_CYCLES"] / ( it->second )["INSTRUCTIONS_RETIRED"];
 
-  double localPerformanceImprovement = (it->second)["CPI"]/EXPECTED_CPI;
-  double cyclesAfterImprovement = (it->second)["UNHALTED_CORE_CYCLES"]/localPerformanceImprovement;
-  double totalCyclesAfterImprovement = totalCycles-(it->second)["UNHALTED_CORE_CYCLES"]+cyclesAfterImprovement;
-  (it->second)["iMargin"] = 100-(totalCyclesAfterImprovement/totalCycles)*100;
+    double localPerformanceImprovement = ( it->second )["CPI"] / EXPECTED_CPI;
+    double cyclesAfterImprovement      = ( it->second )["UNHALTED_CORE_CYCLES"] / localPerformanceImprovement;
+    double totalCyclesAfterImprovement = totalCycles - ( it->second )["UNHALTED_CORE_CYCLES"] + cyclesAfterImprovement;
+    ( it->second )["iMargin"]          = 100 - ( totalCyclesAfterImprovement / totalCycles ) * 100;
 
-  (it->second)["% of Total Cycles"] = (it->second)["RS_UOPS_DISPATCHED CMASK=1 INV=1"]*100/(it->second)["UNHALTED_CORE_CYCLES"];
-  (it->second)["L2 Miss % of counted Stalled Cycles"] =(it->second)["L2 Miss Impact"]*100/(it->second)["Counted Stalled Cycles"];
-  (it->second)["L2 Hit % of counted Stalled Cycles"] =(it->second)["L2 Hit Impact"]*100/(it->second)["Counted Stalled Cycles"];
-  (it->second)["L1 DTLB Miss % of counted Stalled Cycles"] =(it->second)["L1 DTLB Miss Impact"]*100/(it->second)["Counted Stalled Cycles"];
-  (it->second)["LCP Stalls % of counted Stalled Cycles"] =(it->second)["LCP Stalls Impact"]*100/(it->second)["Counted Stalled Cycles"];
-  (it->second)["Store-Fwd Stalls % of counted Stalled Cycles"] =(it->second)["Store-Fwd Stalls Impact"]*100/(it->second)["Counted Stalled Cycles"];
-  (it->second)["Loads Blocked % of Store-Fwd Stalls Cycles"] =(it->second)["Loads Blocked by Unknown Address Store Impact"]*100/(it->second)["Store-Fwd Stalls Impact"];
-  (it->second)["Loads Overlapped % of Store-Fwd Stalls Cycles"] =(it->second)["Loads Overlapped with Stores Impact"]*100/(it->second)["Store-Fwd Stalls Impact"];
-  (it->second)["Loads Spanning % of Store-Fwd Stalls Cycles"] =(it->second)["Loads Spanning across Cache Lines Impact"]*100/(it->second)["Store-Fwd Stalls Impact"];
+    ( it->second )["% of Total Cycles"] =
+        ( it->second )["RS_UOPS_DISPATCHED CMASK=1 INV=1"] * 100 / ( it->second )["UNHALTED_CORE_CYCLES"];
+    ( it->second )["L2 Miss % of counted Stalled Cycles"] =
+        ( it->second )["L2 Miss Impact"] * 100 / ( it->second )["Counted Stalled Cycles"];
+    ( it->second )["L2 Hit % of counted Stalled Cycles"] =
+        ( it->second )["L2 Hit Impact"] * 100 / ( it->second )["Counted Stalled Cycles"];
+    ( it->second )["L1 DTLB Miss % of counted Stalled Cycles"] =
+        ( it->second )["L1 DTLB Miss Impact"] * 100 / ( it->second )["Counted Stalled Cycles"];
+    ( it->second )["LCP Stalls % of counted Stalled Cycles"] =
+        ( it->second )["LCP Stalls Impact"] * 100 / ( it->second )["Counted Stalled Cycles"];
+    ( it->second )["Store-Fwd Stalls % of counted Stalled Cycles"] =
+        ( it->second )["Store-Fwd Stalls Impact"] * 100 / ( it->second )["Counted Stalled Cycles"];
+    ( it->second )["Loads Blocked % of Store-Fwd Stalls Cycles"] =
+        ( it->second )["Loads Blocked by Unknown Address Store Impact"] * 100 /
+        ( it->second )["Store-Fwd Stalls Impact"];
+    ( it->second )["Loads Overlapped % of Store-Fwd Stalls Cycles"] =
+        ( it->second )["Loads Overlapped with Stores Impact"] * 100 / ( it->second )["Store-Fwd Stalls Impact"];
+    ( it->second )["Loads Spanning % of Store-Fwd Stalls Cycles"] =
+        ( it->second )["Loads Spanning across Cache Lines Impact"] * 100 / ( it->second )["Store-Fwd Stalls Impact"];
 
-  (it->second)["Load % of all Instructions"] =(it->second)["INST_RETIRED:LOADS"]*100/(it->second)["Counted Instructions Retired"];
-  (it->second)["Store % of all Instructions"] =(it->second)["INST_RETIRED:STORES"]*100/(it->second)["Counted Instructions Retired"];
-  (it->second)["Branch % of all Instructions"] =(it->second)["BRANCH_INSTRUCTIONS_RETIRED"]*100/(it->second)["Counted Instructions Retired"];
-  (it->second)["Packed SIMD % of all Instructions"] =(it->second)["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"]*100/(it->second)["Counted Instructions Retired"];
-  (it->second)["Other % of all Instructions"] =(it->second)["Other Instructions"]*100/(it->second)["Counted Instructions Retired"];
- }
+    ( it->second )["Load % of all Instructions"] =
+        ( it->second )["INST_RETIRED:LOADS"] * 100 / ( it->second )["Counted Instructions Retired"];
+    ( it->second )["Store % of all Instructions"] =
+        ( it->second )["INST_RETIRED:STORES"] * 100 / ( it->second )["Counted Instructions Retired"];
+    ( it->second )["Branch % of all Instructions"] =
+        ( it->second )["BRANCH_INSTRUCTIONS_RETIRED"] * 100 / ( it->second )["Counted Instructions Retired"];
+    ( it->second )["Packed SIMD % of all Instructions"] =
+        ( it->second )["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"] * 100 /
+        ( it->second )["Counted Instructions Retired"];
+    ( it->second )["Other % of all Instructions"] =
+        ( it->second )["Other Instructions"] * 100 / ( it->second )["Counted Instructions Retired"];
+  }
 }
 
 void init_nhm_caa_events_displ()
 {
- nhm_caa_events_displ.push_back("Total Cycles");
- nhm_caa_events_displ.push_back("Instructions Retired");
- nhm_caa_events_displ.push_back("CPI");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("iMargin");
- nhm_caa_events_displ.push_back("iFactor");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Stalled Cycles");
- nhm_caa_events_displ.push_back("% of Total Cycles");
- nhm_caa_events_displ.push_back("Total Counted Stalled Cycles");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Instruction Starvation % of Total Cycles");
- nhm_caa_events_displ.push_back("# of Instructions per Call");
- nhm_caa_events_displ.push_back("% of Total Cycles spent handling FP exceptions");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Counted Stalled Cycles due to Load Ops");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("L2 Hit Impact");
- nhm_caa_events_displ.push_back("L2 Hit % of Load Stalls");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("L3 Unshared Hit Impact");
- nhm_caa_events_displ.push_back("L3 Unshared Hit % of Load Stalls");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("L2 Other Core Hit Impact");
- nhm_caa_events_displ.push_back("L2 Other Core Hit % of Load Stalls");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("L2 Other Core Hit Modified Impact");
- nhm_caa_events_displ.push_back("L2 Other Core Hit Modified % of Load Stalls");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("L3 Miss -> Local DRAM Hit Impact");
- nhm_caa_events_displ.push_back("L3 Miss -> Remote DRAM Hit Impact");
- nhm_caa_events_displ.push_back("L3 Miss -> Remote Cache Hit Impact");
- nhm_caa_events_displ.push_back("L3 Miss -> Total Impact");
- nhm_caa_events_displ.push_back("L3 Miss % of Load Stalls");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("L1 DTLB Miss Impact");
- nhm_caa_events_displ.push_back("L1 DTLB Miss % of Load Stalls");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Cycles spent during DIV & SQRT Ops");
- nhm_caa_events_displ.push_back("DIV & SQRT Ops % of counted Stalled Cycles");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Total L2 IFETCH misses");
- nhm_caa_events_displ.push_back("% of L2 IFETCH misses");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("% of IFETCHes served by Local DRAM");
- nhm_caa_events_displ.push_back("% of IFETCHes served by L3 (Modified)");
- nhm_caa_events_displ.push_back("% of IFETCHes served by L3 (Clean Snoop)");
- nhm_caa_events_displ.push_back("% of IFETCHes served by Remote L2");
- nhm_caa_events_displ.push_back("% of IFETCHes served by Remote DRAM");
- nhm_caa_events_displ.push_back("% of IFETCHes served by L3 (No Snoop)");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Total L2 IFETCH miss Impact");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Cycles IFETCH served by Local DRAM");
- nhm_caa_events_displ.push_back("Local DRAM IFECTHes % Impact");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Cycles IFETCH served by L3 (Modified)");
- nhm_caa_events_displ.push_back("L3 (Modified) IFECTHes % Impact");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Cycles IFETCH served by L3 (Clean Snoop)");
- nhm_caa_events_displ.push_back("L3 (Clean Snoop) IFECTHes % Impact");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Cycles IFETCH served by Remote L2");
- nhm_caa_events_displ.push_back("Remote L2 IFECTHes % Impact");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Cycles IFETCH served by Remote DRAM");
- nhm_caa_events_displ.push_back("Remote DRAM IFECTHes % Impact");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Cycles IFETCH served by L3 (No Snoop)");
- nhm_caa_events_displ.push_back("L3 (No Snoop) IFECTHes % Impact");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Total Branch Instructions Executed");
- nhm_caa_events_displ.push_back("% of Mispredicted Branches");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Direct Near Calls % of Total Branches Executed");
- nhm_caa_events_displ.push_back("Indirect Near Calls % of Total Branches Executed");
- nhm_caa_events_displ.push_back("Indirect Near Non-Calls % of Total Branches Executed");
- nhm_caa_events_displ.push_back("All Near Calls % of Total Branches Executed");
- nhm_caa_events_displ.push_back("All Non Calls % of Total Branches Executed");
- nhm_caa_events_displ.push_back("All Returns % of Total Branches Executed");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Total Branch Instructions Retired");
- nhm_caa_events_displ.push_back("Conditionals % of Total Branches Retired");
- nhm_caa_events_displ.push_back("Near Calls % of Total Branches Retired");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("L1 ITLB Miss Impact");
- nhm_caa_events_displ.push_back("ITLB Miss Rate in %");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Branch Instructions");
- nhm_caa_events_displ.push_back("Branch % of all Instructions");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Load Instructions");
- nhm_caa_events_displ.push_back("Load % of all Instructions");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Store Instructions");
- nhm_caa_events_displ.push_back("Store % of all Instructions");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Other Instructions");
- nhm_caa_events_displ.push_back("Other % of all Instructions");
- nhm_caa_events_displ.push_back("");
- nhm_caa_events_displ.push_back("Packed UOPS Retired");
- nhm_caa_events_displ.push_back("Packed % of all UOPS Retired");
+  nhm_caa_events_displ.push_back( "Total Cycles" );
+  nhm_caa_events_displ.push_back( "Instructions Retired" );
+  nhm_caa_events_displ.push_back( "CPI" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "iMargin" );
+  nhm_caa_events_displ.push_back( "iFactor" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Stalled Cycles" );
+  nhm_caa_events_displ.push_back( "% of Total Cycles" );
+  nhm_caa_events_displ.push_back( "Total Counted Stalled Cycles" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Instruction Starvation % of Total Cycles" );
+  nhm_caa_events_displ.push_back( "# of Instructions per Call" );
+  nhm_caa_events_displ.push_back( "% of Total Cycles spent handling FP exceptions" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Counted Stalled Cycles due to Load Ops" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "L2 Hit Impact" );
+  nhm_caa_events_displ.push_back( "L2 Hit % of Load Stalls" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "L3 Unshared Hit Impact" );
+  nhm_caa_events_displ.push_back( "L3 Unshared Hit % of Load Stalls" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "L2 Other Core Hit Impact" );
+  nhm_caa_events_displ.push_back( "L2 Other Core Hit % of Load Stalls" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "L2 Other Core Hit Modified Impact" );
+  nhm_caa_events_displ.push_back( "L2 Other Core Hit Modified % of Load Stalls" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "L3 Miss -> Local DRAM Hit Impact" );
+  nhm_caa_events_displ.push_back( "L3 Miss -> Remote DRAM Hit Impact" );
+  nhm_caa_events_displ.push_back( "L3 Miss -> Remote Cache Hit Impact" );
+  nhm_caa_events_displ.push_back( "L3 Miss -> Total Impact" );
+  nhm_caa_events_displ.push_back( "L3 Miss % of Load Stalls" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "L1 DTLB Miss Impact" );
+  nhm_caa_events_displ.push_back( "L1 DTLB Miss % of Load Stalls" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Cycles spent during DIV & SQRT Ops" );
+  nhm_caa_events_displ.push_back( "DIV & SQRT Ops % of counted Stalled Cycles" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Total L2 IFETCH misses" );
+  nhm_caa_events_displ.push_back( "% of L2 IFETCH misses" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "% of IFETCHes served by Local DRAM" );
+  nhm_caa_events_displ.push_back( "% of IFETCHes served by L3 (Modified)" );
+  nhm_caa_events_displ.push_back( "% of IFETCHes served by L3 (Clean Snoop)" );
+  nhm_caa_events_displ.push_back( "% of IFETCHes served by Remote L2" );
+  nhm_caa_events_displ.push_back( "% of IFETCHes served by Remote DRAM" );
+  nhm_caa_events_displ.push_back( "% of IFETCHes served by L3 (No Snoop)" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Total L2 IFETCH miss Impact" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Cycles IFETCH served by Local DRAM" );
+  nhm_caa_events_displ.push_back( "Local DRAM IFECTHes % Impact" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Cycles IFETCH served by L3 (Modified)" );
+  nhm_caa_events_displ.push_back( "L3 (Modified) IFECTHes % Impact" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Cycles IFETCH served by L3 (Clean Snoop)" );
+  nhm_caa_events_displ.push_back( "L3 (Clean Snoop) IFECTHes % Impact" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Cycles IFETCH served by Remote L2" );
+  nhm_caa_events_displ.push_back( "Remote L2 IFECTHes % Impact" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Cycles IFETCH served by Remote DRAM" );
+  nhm_caa_events_displ.push_back( "Remote DRAM IFECTHes % Impact" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Cycles IFETCH served by L3 (No Snoop)" );
+  nhm_caa_events_displ.push_back( "L3 (No Snoop) IFECTHes % Impact" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Total Branch Instructions Executed" );
+  nhm_caa_events_displ.push_back( "% of Mispredicted Branches" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Direct Near Calls % of Total Branches Executed" );
+  nhm_caa_events_displ.push_back( "Indirect Near Calls % of Total Branches Executed" );
+  nhm_caa_events_displ.push_back( "Indirect Near Non-Calls % of Total Branches Executed" );
+  nhm_caa_events_displ.push_back( "All Near Calls % of Total Branches Executed" );
+  nhm_caa_events_displ.push_back( "All Non Calls % of Total Branches Executed" );
+  nhm_caa_events_displ.push_back( "All Returns % of Total Branches Executed" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Total Branch Instructions Retired" );
+  nhm_caa_events_displ.push_back( "Conditionals % of Total Branches Retired" );
+  nhm_caa_events_displ.push_back( "Near Calls % of Total Branches Retired" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "L1 ITLB Miss Impact" );
+  nhm_caa_events_displ.push_back( "ITLB Miss Rate in %" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Branch Instructions" );
+  nhm_caa_events_displ.push_back( "Branch % of all Instructions" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Load Instructions" );
+  nhm_caa_events_displ.push_back( "Load % of all Instructions" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Store Instructions" );
+  nhm_caa_events_displ.push_back( "Store % of all Instructions" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Other Instructions" );
+  nhm_caa_events_displ.push_back( "Other % of all Instructions" );
+  nhm_caa_events_displ.push_back( "" );
+  nhm_caa_events_displ.push_back( "Packed UOPS Retired" );
+  nhm_caa_events_displ.push_back( "Packed % of all UOPS Retired" );
 }
 
-void calc_nhm_deriv_values(double totalCycles)
+void calc_nhm_deriv_values( double totalCycles )
 {
- for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
- {
-  (it->second)["Total Cycles"] = (it->second)["CPU_CLK_UNHALTED:THREAD_P"];
+  for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+        ++it ) {
+    ( it->second )["Total Cycles"] = ( it->second )["CPU_CLK_UNHALTED:THREAD_P"];
 
-  (it->second)["L2 Hit Impact"] = (it->second)["MEM_LOAD_RETIRED:L2_HIT"] * I7_L2_HIT_CYCLES;
-  (it->second)["L3 Unshared Hit Impact"] = (it->second)["MEM_LOAD_RETIRED:L3_UNSHARED_HIT"] * I7_L3_UNSHARED_HIT_CYCLES;
-  if((it->second)["MEM_LOAD_RETIRED:OTHER_CORE_L2_HIT_HITM"]>(it->second)["MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM"])
-  {
-   (it->second)["L2 Other Core Hit Impact"] = ((it->second)["MEM_LOAD_RETIRED:OTHER_CORE_L2_HIT_HITM"] - (it->second)["MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM"])* I7_OTHER_CORE_L2_HIT_CYCLES;
+    ( it->second )["L2 Hit Impact"] = ( it->second )["MEM_LOAD_RETIRED:L2_HIT"] * I7_L2_HIT_CYCLES;
+    ( it->second )["L3 Unshared Hit Impact"] =
+        ( it->second )["MEM_LOAD_RETIRED:L3_UNSHARED_HIT"] * I7_L3_UNSHARED_HIT_CYCLES;
+    if ( ( it->second )["MEM_LOAD_RETIRED:OTHER_CORE_L2_HIT_HITM"] >
+         ( it->second )["MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM"] ) {
+      ( it->second )["L2 Other Core Hit Impact"] = ( ( it->second )["MEM_LOAD_RETIRED:OTHER_CORE_L2_HIT_HITM"] -
+                                                     ( it->second )["MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM"] ) *
+                                                   I7_OTHER_CORE_L2_HIT_CYCLES;
+    } else {
+      ( it->second )["L2 Other Core Hit Impact"] = 0.0;
+    }
+    ( it->second )["L2 Other Core Hit Modified Impact"] =
+        ( it->second )["MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM"] * I7_OTHER_CORE_L2_HITM_CYCLES;
+    ( it->second )["L3 Miss -> Local DRAM Hit Impact"] =
+        ( it->second )["MEM_UNCORE_RETIRED:LOCAL_DRAM"] * I7_L3_MISS_LOCAL_DRAM_HIT_CYCLES;
+    ( it->second )["L3 Miss -> Remote DRAM Hit Impact"] =
+        ( it->second )["MEM_UNCORE_RETIRED:REMOTE_DRAM"] * I7_L3_MISS_REMOTE_DRAM_HIT_CYCLES;
+    ( it->second )["L3 Miss -> Remote Cache Hit Impact"] =
+        ( it->second )["MEM_UNCORE_RETIRED:REMOTE_CACHE_LOCAL_HOME_HIT"] * I7_L3_MISS_REMOTE_CACHE_HIT_CYCLES;
+    ( it->second )["L3 Miss -> Total Impact"] = ( it->second )["L3 Miss -> Local DRAM Hit Impact"] +
+                                                ( it->second )["L3 Miss -> Remote DRAM Hit Impact"] +
+                                                ( it->second )["L3 Miss -> Remote Cache Hit Impact"];
+    ( it->second )["L1 DTLB Miss Impact"] =
+        ( it->second )["DTLB_LOAD_MISSES:WALK_COMPLETED"] * I7_L1_DTLB_WALK_COMPLETED_CYCLES;
+    ( it->second )["Counted Stalled Cycles due to Load Ops"] =
+        ( it->second )["L3 Miss -> Total Impact"] + ( it->second )["L2 Hit Impact"] +
+        ( it->second )["L1 DTLB Miss Impact"] + ( it->second )["L3 Unshared Hit Impact"] +
+        ( it->second )["L2 Other Core Hit Modified Impact"] + ( it->second )["L2 Other Core Hit Impact"];
+    ( it->second )["Cycles spent during DIV & SQRT Ops"] = ( it->second )["ARITH:CYCLES_DIV_BUSY"];
+    ( it->second )["Total Counted Stalled Cycles"] =
+        ( it->second )["Counted Stalled Cycles due to Load Ops"] + ( it->second )["Cycles spent during DIV & SQRT Ops"];
+    ( it->second )["Stalled Cycles"] =
+        ( it->second )["Total Counted Stalled Cycles"]; // TO BE FIXED when UOPS_EXECUTED:0x3f is fixed!!
+    ( it->second )["% of Total Cycles"] =
+        ( it->second )["Stalled Cycles"] * 100 / ( it->second )["CPU_CLK_UNHALTED:THREAD_P"]; // TO BE FIXED!! see above
+    ( it->second )["L3 Miss % of Load Stalls"] =
+        ( it->second )["L3 Miss -> Total Impact"] * 100 / ( it->second )["Counted Stalled Cycles due to Load Ops"];
+    ( it->second )["L2 Hit % of Load Stalls"] =
+        ( it->second )["L2 Hit Impact"] * 100 / ( it->second )["Counted Stalled Cycles due to Load Ops"];
+    ( it->second )["L1 DTLB Miss % of Load Stalls"] =
+        ( it->second )["L1 DTLB Miss Impact"] * 100 / ( it->second )["Counted Stalled Cycles due to Load Ops"];
+    ( it->second )["L3 Unshared Hit % of Load Stalls"] =
+        ( it->second )["L3 Unshared Hit Impact"] * 100 / ( it->second )["Counted Stalled Cycles due to Load Ops"];
+    ( it->second )["L2 Other Core Hit % of Load Stalls"] =
+        ( it->second )["L2 Other Core Hit Impact"] * 100 / ( it->second )["Counted Stalled Cycles due to Load Ops"];
+    ( it->second )["L2 Other Core Hit Modified % of Load Stalls"] =
+        ( it->second )["L2 Other Core Hit Modified Impact"] * 100 /
+        ( it->second )["Counted Stalled Cycles due to Load Ops"];
+    ( it->second )["DIV & SQRT Ops % of counted Stalled Cycles"] =
+        ( it->second )["Cycles spent during DIV & SQRT Ops"] * 100 / ( it->second )["Total Counted Stalled Cycles"];
+
+    ( it->second )["Cycles IFETCH served by Local DRAM"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:LOCAL_DRAM"] * I7_IFETCH_L3_MISS_LOCAL_DRAM_HIT;
+    ( it->second )["Cycles IFETCH served by L3 (Modified)"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HITM"] * I7_IFETCH_L2_MISS_L3_HITM;
+    ( it->second )["Cycles IFETCH served by L3 (Clean Snoop)"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HIT_SNP"] * I7_IFETCH_L2_MISS_L3_HIT_SNOOP;
+    ( it->second )["Cycles IFETCH served by Remote L2"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_CACHE_FWD"] * I7_IFETCH_L3_MISS_REMOTE_CACHE_FWD;
+    ( it->second )["Cycles IFETCH served by Remote DRAM"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_DRAM"] * I7_IFETCH_L3_MISS_REMOTE_DRAM_HIT;
+    ( it->second )["Cycles IFETCH served by L3 (No Snoop)"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:UNCORE_HIT"] * I7_IFETCH_L2_MISS_L3_HIT_NO_SNOOP;
+    ( it->second )["Total L2 IFETCH miss Impact"] =
+        ( it->second )["Cycles IFETCH served by Local DRAM"] + ( it->second )["Cycles IFETCH served by L3 (Modified)"] +
+        ( it->second )["Cycles IFETCH served by L3 (Clean Snoop)"] +
+        ( it->second )["Cycles IFETCH served by Remote L2"] + ( it->second )["Cycles IFETCH served by Remote DRAM"] +
+        ( it->second )["Cycles IFETCH served by L3 (No Snoop)"];
+    ( it->second )["Local DRAM IFECTHes % Impact"] =
+        ( it->second )["Cycles IFETCH served by Local DRAM"] * 100 / ( it->second )["Total L2 IFETCH miss Impact"];
+    ( it->second )["L3 (Modified) IFECTHes % Impact"] =
+        ( it->second )["Cycles IFETCH served by L3 (Modified)"] * 100 / ( it->second )["Total L2 IFETCH miss Impact"];
+    ( it->second )["L3 (Clean Snoop) IFECTHes % Impact"] = ( it->second )["Cycles IFETCH served by L3 (Clean Snoop)"] *
+                                                           100 / ( it->second )["Total L2 IFETCH miss Impact"];
+    ( it->second )["Remote L2 IFECTHes % Impact"] =
+        ( it->second )["Cycles IFETCH served by Remote L2"] * 100 / ( it->second )["Total L2 IFETCH miss Impact"];
+    ( it->second )["Remote DRAM IFECTHes % Impact"] =
+        ( it->second )["Cycles IFETCH served by Remote DRAM"] * 100 / ( it->second )["Total L2 IFETCH miss Impact"];
+    ( it->second )["L3 (No Snoop) IFECTHes % Impact"] =
+        ( it->second )["Cycles IFETCH served by L3 (No Snoop)"] * 100 / ( it->second )["Total L2 IFETCH miss Impact"];
+    ( it->second )["Total L2 IFETCH misses"] = ( it->second )["L2_RQSTS:IFETCH_MISS"];
+    ( it->second )["% of IFETCHes served by Local DRAM"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:LOCAL_DRAM"] * 100 / ( it->second )["L2_RQSTS:IFETCH_MISS"];
+    ( it->second )["% of IFETCHes served by L3 (Modified)"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HITM"] * 100 / ( it->second )["L2_RQSTS:IFETCH_MISS"];
+    ( it->second )["% of IFETCHes served by L3 (Clean Snoop)"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HIT_SNP"] * 100 /
+        ( it->second )["L2_RQSTS:IFETCH_MISS"];
+    ( it->second )["% of IFETCHes served by Remote L2"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_CACHE_FWD"] * 100 /
+        ( it->second )["L2_RQSTS:IFETCH_MISS"];
+    ( it->second )["% of IFETCHes served by Remote DRAM"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_DRAM"] * 100 / ( it->second )["L2_RQSTS:IFETCH_MISS"];
+    ( it->second )["% of IFETCHes served by L3 (No Snoop)"] =
+        ( it->second )["OFFCORE_RESPONSE_0:DMND_IFETCH:UNCORE_HIT"] * 100 / ( it->second )["L2_RQSTS:IFETCH_MISS"];
+    ( it->second )["% of L2 IFETCH misses"] =
+        ( it->second )["L2_RQSTS:IFETCH_MISS"] * 100 /
+        ( ( it->second )["L2_RQSTS:IFETCH_MISS"] + ( it->second )["L2_RQSTS:IFETCH_HIT"] );
+    ( it->second )["L1 ITLB Miss Impact"] =
+        ( it->second )["ITLB_MISSES:WALK_COMPLETED"] * I7_L1_ITLB_WALK_COMPLETED_CYCLES;
+
+    ( it->second )["Total Branch Instructions Executed"] = ( it->second )["BR_INST_EXEC:ANY"];
+    ( it->second )["% of Mispredicted Branches"] =
+        ( it->second )["BR_MISP_EXEC:ANY"] * 100 / ( it->second )["BR_INST_EXEC:ANY"];
+    ( it->second )["Direct Near Calls % of Total Branches Executed"] =
+        ( it->second )["BR_INST_EXEC:DIRECT_NEAR_CALL"] * 100 / ( it->second )["Total Branch Instructions Executed"];
+    ( it->second )["Indirect Near Calls % of Total Branches Executed"] =
+        ( it->second )["BR_INST_EXEC:INDIRECT_NEAR_CALL"] * 100 / ( it->second )["Total Branch Instructions Executed"];
+    ( it->second )["Indirect Near Non-Calls % of Total Branches Executed"] =
+        ( it->second )["BR_INST_EXEC:INDIRECT_NON_CALL"] * 100 / ( it->second )["Total Branch Instructions Executed"];
+    ( it->second )["All Near Calls % of Total Branches Executed"] =
+        ( it->second )["BR_INST_EXEC:NEAR_CALLS"] * 100 / ( it->second )["Total Branch Instructions Executed"];
+    ( it->second )["All Non Calls % of Total Branches Executed"] =
+        ( it->second )["BR_INST_EXEC:NON_CALLS"] * 100 / ( it->second )["Total Branch Instructions Executed"];
+    ( it->second )["All Returns % of Total Branches Executed"] =
+        ( it->second )["BR_INST_EXEC:RETURN_NEAR"] * 100 / ( it->second )["Total Branch Instructions Executed"];
+    ( it->second )["Total Branch Instructions Retired"] = ( it->second )["BR_INST_RETIRED:ALL_BRANCHES"];
+    ( it->second )["Conditionals % of Total Branches Retired"] =
+        ( it->second )["BR_INST_RETIRED:CONDITIONAL"] * 100 / ( it->second )["Total Branch Instructions Retired"];
+    ( it->second )["Near Calls % of Total Branches Retired"] =
+        ( it->second )["BR_INST_RETIRED:NEAR_CALL"] * 100 / ( it->second )["Total Branch Instructions Retired"];
+
+    ( it->second )["Instruction Starvation % of Total Cycles"] =
+        ( ( it->second )["UOPS_ISSUED:ANY CMASK=1 INV=1"] - ( it->second )["RESOURCE_STALLS:ANY"] ) * 100 /
+        ( it->second )["CPU_CLK_UNHALTED:THREAD_P"];
+    ( it->second )["% of Total Cycles spent handling FP exceptions"] =
+        ( it->second )["UOPS_DECODED:MS CMASK=1"] * 100 / ( it->second )["CPU_CLK_UNHALTED:THREAD_P"];
+    ( it->second )["# of Instructions per Call"] =
+        ( it->second )["INST_RETIRED:ANY_P"] / ( it->second )["BR_INST_EXEC:NEAR_CALLS"];
+
+    ( it->second )["Instructions Retired"] = ( it->second )["INST_RETIRED:ANY_P"];
+    ( it->second )["ITLB Miss Rate in %"] =
+        ( ( it->second )["ITLB_MISS_RETIRED"] / ( it->second )["INST_RETIRED:ANY_P"] ) * 100;
+
+    ( it->second )["Branch Instructions"] = ( it->second )["BR_INST_RETIRED:ALL_BRANCHES"];
+    ( it->second )["Load Instructions"]   = ( it->second )["MEM_INST_RETIRED:LOADS"];
+    ( it->second )["Store Instructions"]  = ( it->second )["MEM_INST_RETIRED:STORES"];
+    ( it->second )["Other Instructions"] =
+        ( it->second )["Instructions Retired"] - ( it->second )["MEM_INST_RETIRED:LOADS"] -
+        ( it->second )["MEM_INST_RETIRED:STORES"] - ( it->second )["BR_INST_RETIRED:ALL_BRANCHES"];
+    ( it->second )["Packed UOPS Retired"] =
+        ( it->second )["SSEX_UOPS_RETIRED:PACKED_DOUBLE"] + ( it->second )["SSEX_UOPS_RETIRED:PACKED_SINGLE"];
+    ( it->second )["CPI"] = ( it->second )["CPU_CLK_UNHALTED:THREAD_P"] / ( it->second )["INST_RETIRED:ANY_P"];
+
+    double localPerformanceImprovement = ( it->second )["CPI"] / EXPECTED_CPI;
+    double cyclesAfterImprovement      = ( it->second )["CPU_CLK_UNHALTED:THREAD_P"] / localPerformanceImprovement;
+    double totalCyclesAfterImprovement =
+        totalCycles - ( it->second )["CPU_CLK_UNHALTED:THREAD_P"] + cyclesAfterImprovement;
+    ( it->second )["iMargin"] = 100 - ( totalCyclesAfterImprovement / totalCycles ) * 100;
+
+    ( it->second )["Load % of all Instructions"] =
+        ( it->second )["MEM_INST_RETIRED:LOADS"] * 100 / ( it->second )["INST_RETIRED:ANY_P"];
+    ( it->second )["Store % of all Instructions"] =
+        ( it->second )["MEM_INST_RETIRED:STORES"] * 100 / ( it->second )["INST_RETIRED:ANY_P"];
+    ( it->second )["Branch % of all Instructions"] =
+        ( it->second )["BR_INST_RETIRED:ALL_BRANCHES"] * 100 / ( it->second )["INST_RETIRED:ANY_P"];
+    ( it->second )["Other % of all Instructions"] =
+        ( it->second )["Other Instructions"] * 100 / ( it->second )["INST_RETIRED:ANY_P"];
+
+    ( it->second )["Packed % of all UOPS Retired"] =
+        ( it->second )["Packed UOPS Retired"] * 100 / ( it->second )["UOPS_RETIRED:ANY"];
   }
-  else
-  {
-   (it->second)["L2 Other Core Hit Impact"] = 0.0;
-  }
-  (it->second)["L2 Other Core Hit Modified Impact"] = (it->second)["MEM_UNCORE_RETIRED:OTHER_CORE_L2_HITM"] * I7_OTHER_CORE_L2_HITM_CYCLES;
-  (it->second)["L3 Miss -> Local DRAM Hit Impact"] = (it->second)["MEM_UNCORE_RETIRED:LOCAL_DRAM"] * I7_L3_MISS_LOCAL_DRAM_HIT_CYCLES;
-  (it->second)["L3 Miss -> Remote DRAM Hit Impact"] = (it->second)["MEM_UNCORE_RETIRED:REMOTE_DRAM"] * I7_L3_MISS_REMOTE_DRAM_HIT_CYCLES;
-  (it->second)["L3 Miss -> Remote Cache Hit Impact"] = (it->second)["MEM_UNCORE_RETIRED:REMOTE_CACHE_LOCAL_HOME_HIT"] * I7_L3_MISS_REMOTE_CACHE_HIT_CYCLES;
-  (it->second)["L3 Miss -> Total Impact"] = (it->second)["L3 Miss -> Local DRAM Hit Impact"] + (it->second)["L3 Miss -> Remote DRAM Hit Impact"] + (it->second)["L3 Miss -> Remote Cache Hit Impact"];
-  (it->second)["L1 DTLB Miss Impact"] = (it->second)["DTLB_LOAD_MISSES:WALK_COMPLETED"] * I7_L1_DTLB_WALK_COMPLETED_CYCLES;
-  (it->second)["Counted Stalled Cycles due to Load Ops"] = (it->second)["L3 Miss -> Total Impact"] + (it->second)["L2 Hit Impact"] + (it->second)["L1 DTLB Miss Impact"] + (it->second)["L3 Unshared Hit Impact"] + (it->second)["L2 Other Core Hit Modified Impact"] + (it->second)["L2 Other Core Hit Impact"];
-  (it->second)["Cycles spent during DIV & SQRT Ops"] = (it->second)["ARITH:CYCLES_DIV_BUSY"];
-  (it->second)["Total Counted Stalled Cycles"] = (it->second)["Counted Stalled Cycles due to Load Ops"] + (it->second)["Cycles spent during DIV & SQRT Ops"];
-  (it->second)["Stalled Cycles"] = (it->second)["Total Counted Stalled Cycles"]; //TO BE FIXED when UOPS_EXECUTED:0x3f is fixed!!
-  (it->second)["% of Total Cycles"] = (it->second)["Stalled Cycles"] * 100 / (it->second)["CPU_CLK_UNHALTED:THREAD_P"]; //TO BE FIXED!! see above
-  (it->second)["L3 Miss % of Load Stalls"] = (it->second)["L3 Miss -> Total Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
-  (it->second)["L2 Hit % of Load Stalls"] = (it->second)["L2 Hit Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
-  (it->second)["L1 DTLB Miss % of Load Stalls"] = (it->second)["L1 DTLB Miss Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
-  (it->second)["L3 Unshared Hit % of Load Stalls"] = (it->second)["L3 Unshared Hit Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
-  (it->second)["L2 Other Core Hit % of Load Stalls"] = (it->second)["L2 Other Core Hit Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
-  (it->second)["L2 Other Core Hit Modified % of Load Stalls"] = (it->second)["L2 Other Core Hit Modified Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
-  (it->second)["DIV & SQRT Ops % of counted Stalled Cycles"] = (it->second)["Cycles spent during DIV & SQRT Ops"] * 100 / (it->second)["Total Counted Stalled Cycles"];
-
-  (it->second)["Cycles IFETCH served by Local DRAM"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:LOCAL_DRAM"] * I7_IFETCH_L3_MISS_LOCAL_DRAM_HIT;
-  (it->second)["Cycles IFETCH served by L3 (Modified)"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HITM"] * I7_IFETCH_L2_MISS_L3_HITM;
-  (it->second)["Cycles IFETCH served by L3 (Clean Snoop)"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HIT_SNP"] * I7_IFETCH_L2_MISS_L3_HIT_SNOOP;
-  (it->second)["Cycles IFETCH served by Remote L2"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_CACHE_FWD"] * I7_IFETCH_L3_MISS_REMOTE_CACHE_FWD;
-  (it->second)["Cycles IFETCH served by Remote DRAM"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_DRAM"] * I7_IFETCH_L3_MISS_REMOTE_DRAM_HIT;
-  (it->second)["Cycles IFETCH served by L3 (No Snoop)"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:UNCORE_HIT"] * I7_IFETCH_L2_MISS_L3_HIT_NO_SNOOP;
-  (it->second)["Total L2 IFETCH miss Impact"] = (it->second)["Cycles IFETCH served by Local DRAM"] + (it->second)["Cycles IFETCH served by L3 (Modified)"] + (it->second)["Cycles IFETCH served by L3 (Clean Snoop)"] + (it->second)["Cycles IFETCH served by Remote L2"] + (it->second)["Cycles IFETCH served by Remote DRAM"] + (it->second)["Cycles IFETCH served by L3 (No Snoop)"];
-  (it->second)["Local DRAM IFECTHes % Impact"] = (it->second)["Cycles IFETCH served by Local DRAM"] * 100 / (it->second)["Total L2 IFETCH miss Impact"];
-  (it->second)["L3 (Modified) IFECTHes % Impact"] = (it->second)["Cycles IFETCH served by L3 (Modified)"] * 100 / (it->second)["Total L2 IFETCH miss Impact"];
-  (it->second)["L3 (Clean Snoop) IFECTHes % Impact"] = (it->second)["Cycles IFETCH served by L3 (Clean Snoop)"] * 100 / (it->second)["Total L2 IFETCH miss Impact"];
-  (it->second)["Remote L2 IFECTHes % Impact"] = (it->second)["Cycles IFETCH served by Remote L2"] * 100 / (it->second)["Total L2 IFETCH miss Impact"];
-  (it->second)["Remote DRAM IFECTHes % Impact"] = (it->second)["Cycles IFETCH served by Remote DRAM"] * 100 / (it->second)["Total L2 IFETCH miss Impact"];
-  (it->second)["L3 (No Snoop) IFECTHes % Impact"] = (it->second)["Cycles IFETCH served by L3 (No Snoop)"] * 100 / (it->second)["Total L2 IFETCH miss Impact"];
-  (it->second)["Total L2 IFETCH misses"] = (it->second)["L2_RQSTS:IFETCH_MISS"];
-  (it->second)["% of IFETCHes served by Local DRAM"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:LOCAL_DRAM"] * 100 / (it->second)["L2_RQSTS:IFETCH_MISS"];
-  (it->second)["% of IFETCHes served by L3 (Modified)"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HITM"] * 100 / (it->second)["L2_RQSTS:IFETCH_MISS"];
-  (it->second)["% of IFETCHes served by L3 (Clean Snoop)"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:OTHER_CORE_HIT_SNP"] * 100 / (it->second)["L2_RQSTS:IFETCH_MISS"];
-  (it->second)["% of IFETCHes served by Remote L2"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_CACHE_FWD"] * 100 / (it->second)["L2_RQSTS:IFETCH_MISS"];
-  (it->second)["% of IFETCHes served by Remote DRAM"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:REMOTE_DRAM"] * 100 / (it->second)["L2_RQSTS:IFETCH_MISS"];
-  (it->second)["% of IFETCHes served by L3 (No Snoop)"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:UNCORE_HIT"] * 100 / (it->second)["L2_RQSTS:IFETCH_MISS"];
-  (it->second)["% of L2 IFETCH misses"] = (it->second)["L2_RQSTS:IFETCH_MISS"] * 100 / ((it->second)["L2_RQSTS:IFETCH_MISS"] + (it->second)["L2_RQSTS:IFETCH_HIT"]);
-  (it->second)["L1 ITLB Miss Impact"] = (it->second)["ITLB_MISSES:WALK_COMPLETED"] * I7_L1_ITLB_WALK_COMPLETED_CYCLES;
-
-  (it->second)["Total Branch Instructions Executed"] = (it->second)["BR_INST_EXEC:ANY"];
-  (it->second)["% of Mispredicted Branches"] = (it->second)["BR_MISP_EXEC:ANY"] * 100 / (it->second)["BR_INST_EXEC:ANY"];
-  (it->second)["Direct Near Calls % of Total Branches Executed"] = (it->second)["BR_INST_EXEC:DIRECT_NEAR_CALL"] * 100 / (it->second)["Total Branch Instructions Executed"];
-  (it->second)["Indirect Near Calls % of Total Branches Executed"] = (it->second)["BR_INST_EXEC:INDIRECT_NEAR_CALL"] * 100 / (it->second)["Total Branch Instructions Executed"];
-  (it->second)["Indirect Near Non-Calls % of Total Branches Executed"] = (it->second)["BR_INST_EXEC:INDIRECT_NON_CALL"] * 100 / (it->second)["Total Branch Instructions Executed"];
-  (it->second)["All Near Calls % of Total Branches Executed"] = (it->second)["BR_INST_EXEC:NEAR_CALLS"] * 100 / (it->second)["Total Branch Instructions Executed"];
-  (it->second)["All Non Calls % of Total Branches Executed"] = (it->second)["BR_INST_EXEC:NON_CALLS"] * 100 / (it->second)["Total Branch Instructions Executed"];
-  (it->second)["All Returns % of Total Branches Executed"] = (it->second)["BR_INST_EXEC:RETURN_NEAR"] * 100 / (it->second)["Total Branch Instructions Executed"];
-  (it->second)["Total Branch Instructions Retired"] = (it->second)["BR_INST_RETIRED:ALL_BRANCHES"];
-  (it->second)["Conditionals % of Total Branches Retired"] = (it->second)["BR_INST_RETIRED:CONDITIONAL"] * 100 / (it->second)["Total Branch Instructions Retired"];
-  (it->second)["Near Calls % of Total Branches Retired"] = (it->second)["BR_INST_RETIRED:NEAR_CALL"] * 100 / (it->second)["Total Branch Instructions Retired"];
-
-  (it->second)["Instruction Starvation % of Total Cycles"] = ((it->second)["UOPS_ISSUED:ANY CMASK=1 INV=1"] - (it->second)["RESOURCE_STALLS:ANY"])* 100 / (it->second)["CPU_CLK_UNHALTED:THREAD_P"];
-  (it->second)["% of Total Cycles spent handling FP exceptions"] = (it->second)["UOPS_DECODED:MS CMASK=1"]* 100 / (it->second)["CPU_CLK_UNHALTED:THREAD_P"];
-  (it->second)["# of Instructions per Call"] = (it->second)["INST_RETIRED:ANY_P"] / (it->second)["BR_INST_EXEC:NEAR_CALLS"];
-
-  (it->second)["Instructions Retired"] = (it->second)["INST_RETIRED:ANY_P"];
-  (it->second)["ITLB Miss Rate in %"] = ((it->second)["ITLB_MISS_RETIRED"] / (it->second)["INST_RETIRED:ANY_P"]) * 100;
-
-  (it->second)["Branch Instructions"] = (it->second)["BR_INST_RETIRED:ALL_BRANCHES"];
-  (it->second)["Load Instructions"] = (it->second)["MEM_INST_RETIRED:LOADS"];
-  (it->second)["Store Instructions"] = (it->second)["MEM_INST_RETIRED:STORES"];
-  (it->second)["Other Instructions"] = (it->second)["Instructions Retired"] - (it->second)["MEM_INST_RETIRED:LOADS"] - (it->second)["MEM_INST_RETIRED:STORES"] - (it->second)["BR_INST_RETIRED:ALL_BRANCHES"];
-  (it->second)["Packed UOPS Retired"] = (it->second)["SSEX_UOPS_RETIRED:PACKED_DOUBLE"] + (it->second)["SSEX_UOPS_RETIRED:PACKED_SINGLE"];
-  (it->second)["CPI"] = (it->second)["CPU_CLK_UNHALTED:THREAD_P"] / (it->second)["INST_RETIRED:ANY_P"];
-
-  double localPerformanceImprovement = (it->second)["CPI"]/EXPECTED_CPI;
-  double cyclesAfterImprovement = (it->second)["CPU_CLK_UNHALTED:THREAD_P"]/localPerformanceImprovement;
-  double totalCyclesAfterImprovement = totalCycles-(it->second)["CPU_CLK_UNHALTED:THREAD_P"]+cyclesAfterImprovement;
-  (it->second)["iMargin"] = 100-(totalCyclesAfterImprovement/totalCycles)*100;
-
-  (it->second)["Load % of all Instructions"] = (it->second)["MEM_INST_RETIRED:LOADS"] * 100 / (it->second)["INST_RETIRED:ANY_P"];
-  (it->second)["Store % of all Instructions"] = (it->second)["MEM_INST_RETIRED:STORES"] * 100 / (it->second)["INST_RETIRED:ANY_P"];
-  (it->second)["Branch % of all Instructions"] = (it->second)["BR_INST_RETIRED:ALL_BRANCHES"] * 100 / (it->second)["INST_RETIRED:ANY_P"];
-  (it->second)["Other % of all Instructions"] = (it->second)["Other Instructions"] * 100 / (it->second)["INST_RETIRED:ANY_P"];
-
-  (it->second)["Packed % of all UOPS Retired"] = (it->second)["Packed UOPS Retired"] * 100 / (it->second)["UOPS_RETIRED:ANY"];
- }
 }
 
 // S_module class defining the objects containing sampling results for each module
 class S_module
 {
- private:
+private:
   std::map<std::string, unsigned int> samples;
   unsigned int total_num_samples;
   std::string module_name;
@@ -733,397 +812,272 @@ class S_module
   unsigned int inv;
   unsigned int sp;
 
- public:
-  S_module()
-  {
-   clear();
-  }
+public:
+  S_module() { clear(); }
   void clear()
   {
-   samples.clear();
-   total_num_samples = 0;
-   sp = 0;
-   module_name = "";
-   cmask = 0;
-   inv = 0;
-   sp = 0;
+    samples.clear();
+    total_num_samples = 0;
+    sp                = 0;
+    module_name       = "";
+    cmask             = 0;
+    inv               = 0;
+    sp                = 0;
   }
-  void init(const char* name, const char* architecture, const char* event_name, unsigned int c_mask, unsigned int inv_mask, unsigned int smpl_period)
+  void init( const char* name, const char* architecture, const char* event_name, unsigned int c_mask,
+             unsigned int inv_mask, unsigned int smpl_period )
   {
-   module_name = name;
-   arch = architecture;
-   event = event_name;
-   cmask = c_mask;
-   inv = inv_mask;
-   sp = smpl_period;
+    module_name = name;
+    arch        = architecture;
+    event       = event_name;
+    cmask       = c_mask;
+    inv         = inv_mask;
+    sp          = smpl_period;
   }
-  void set_total(unsigned int total)
+  void set_total( unsigned int total )
   {
-   total_num_samples = total;
-   return;
+    total_num_samples = total;
+    return;
   }
-  unsigned int get_smpl_period()
+  unsigned int get_smpl_period() { return sp; }
+  unsigned int get_inv_mask() { return inv; }
+  unsigned int get_c_mask() { return cmask; }
+  std::string get_arch() { return arch; }
+  std::string get_event() { return event; }
+  void add_sample( const char* index, unsigned int value )
   {
-   return sp;
+    samples[index] += value;
+    return;
   }
-  unsigned int get_inv_mask()
+  bool get_max( char* index, unsigned int* value )
   {
-   return inv;
-  }
-  unsigned int get_c_mask()
-  {
-   return cmask;
-  }
-  std::string get_arch()
-  {
-   return arch;
-  }
-  std::string get_event()
-  {
-   return event;
-  }
-  void add_sample(const char* index, unsigned int value)
-  {
-   samples[index] += value;
-   return;
-  }
-  bool get_max(char *index, unsigned int *value)
-  {
-   if(samples.empty()) return false;
-   unsigned int cur_max = 0;
-   std::map<std::string, unsigned int>::iterator max_pos;
-   for(std::map<std::string, unsigned int>::iterator it = samples.begin(); it != samples.end(); ++it)
-   {
-    if(it->second > cur_max)
-    {
-     cur_max = it->second;
-     max_pos = it;
+    if ( samples.empty() ) return false;
+    unsigned int cur_max = 0;
+    std::map<std::string, unsigned int>::iterator max_pos;
+    for ( std::map<std::string, unsigned int>::iterator it = samples.begin(); it != samples.end(); ++it ) {
+      if ( it->second > cur_max ) {
+        cur_max = it->second;
+        max_pos = it;
+      }
     }
-   }
-   strcpy(index, (max_pos->first).c_str());
-   *value = max_pos->second;
-   samples.erase(max_pos);
-   return true;
+    strcpy( index, ( max_pos->first ).c_str() );
+    *value = max_pos->second;
+    samples.erase( max_pos );
+    return true;
   }
-  std::string get_module_name()
-  {
-   return module_name;
-  }
-  unsigned int get_total_num_samples()
-  {
-   return total_num_samples;
-  }
+  std::string get_module_name() { return module_name; }
+  unsigned int get_total_num_samples() { return total_num_samples; }
 };
 
 // void html_special_chars()
 // const char *s : source string
 // char *s_mod   : destination string
 // replaces special HTML characters with correctly escaped sequences to be used inside HTML code
-void html_special_chars(const char *s, char *s_mod)
+void html_special_chars( const char* s, char* s_mod )
 {
- int n = strlen(s);
- *s_mod = '\0';
- for (int i=0; i < n; i++)
- {
-  switch(s[i])
-  {
-   case '<':
-    strcat(s_mod, "&lt;");
-    break;
-   case '>':
-    strcat(s_mod, "&gt;");
-    break;
-   case '&':
-    strcat(s_mod, "&amp;");
-    break;
-   case '"':
-    strcat(s_mod, "&quot;");
-    break;
-   default:
-    char to_app[2];
-    to_app[0]=s[i];
-    to_app[1]='\0';
-    strcat(s_mod, to_app);
-    break;
+  int n  = strlen( s );
+  *s_mod = '\0';
+  for ( int i = 0; i < n; i++ ) {
+    switch ( s[i] ) {
+    case '<':
+      strcat( s_mod, "&lt;" );
+      break;
+    case '>':
+      strcat( s_mod, "&gt;" );
+      break;
+    case '&':
+      strcat( s_mod, "&amp;" );
+      break;
+    case '"':
+      strcat( s_mod, "&quot;" );
+      break;
+    default:
+      char to_app[2];
+      to_app[0] = s[i];
+      to_app[1] = '\0';
+      strcat( s_mod, to_app );
+      break;
+    }
   }
- }
- return;
+  return;
 }
 
 // func_name()
 // const char *demangled_symbol : string corresponding to the demangled symbol found by the read_file() function
 // parses the argument and returns just the function name without arguments or return types
-const char *func_name(const char *demangled_symbol)
+const char* func_name( const char* demangled_symbol )
 {
- char *operator_string_begin = const_cast<char *>(strstr(demangled_symbol, "operator"));
- if(operator_string_begin != NULL)
- {
-  char *operator_string_end = operator_string_begin+8;
-  while(*operator_string_end == ' ') operator_string_end++;
-  if(strstr(operator_string_end, "delete[]")==operator_string_end)
-  {
-   operator_string_end+=8;
-   *operator_string_end='\0';
+  char* operator_string_begin = const_cast<char*>( strstr( demangled_symbol, "operator" ) );
+  if ( operator_string_begin != NULL ) {
+    char* operator_string_end = operator_string_begin + 8;
+    while ( *operator_string_end == ' ' ) operator_string_end++;
+    if ( strstr( operator_string_end, "delete[]" ) == operator_string_end ) {
+      operator_string_end += 8;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "delete" ) == operator_string_end ) {
+      operator_string_end += 6;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "new[]" ) == operator_string_end ) {
+      operator_string_end += 5;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "new" ) == operator_string_end ) {
+      operator_string_end += 3;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, ">>=" ) == operator_string_end ) {
+      operator_string_end += 3;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "<<=" ) == operator_string_end ) {
+      operator_string_end += 3;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "->*" ) == operator_string_end ) {
+      operator_string_end += 3;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "<<" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, ">>" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, ">=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "<=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "==" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "!=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "|=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "&=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "^=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "%=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "/=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "*=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "-=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "+=" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "&&" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "||" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "[]" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "()" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "++" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "--" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "->" ) == operator_string_end ) {
+      operator_string_end += 2;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "<" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, ">" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "~" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "!" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "+" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "-" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "*" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "/" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "%" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "^" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "&" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "|" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "," ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    } else if ( strstr( operator_string_end, "=" ) == operator_string_end ) {
+      operator_string_end += 1;
+      *operator_string_end = '\0';
+    }
+    return operator_string_begin;
   }
-  else if(strstr(operator_string_end, "delete")==operator_string_end)
-  {
-   operator_string_end+=6;
-   *operator_string_end='\0';
+  char* end_of_demangled_name = const_cast<char*>( strrchr( demangled_symbol, ')' ) );
+  if ( end_of_demangled_name != NULL ) {
+    int pars = 1;
+    char c;
+    while ( pars > 0 && end_of_demangled_name != demangled_symbol ) {
+      c = *( --end_of_demangled_name );
+      if ( c == ')' ) {
+        pars++;
+      } else if ( c == '(' ) {
+        pars--;
+      }
+    }
+  } else {
+    return demangled_symbol;
   }
-  else if(strstr(operator_string_end, "new[]")==operator_string_end)
-  {
-   operator_string_end+=5;
-   *operator_string_end='\0';
+  char* end_of_func_name = end_of_demangled_name;
+  if ( end_of_func_name != NULL ) {
+    *end_of_func_name = '\0';
+    char c            = *( --end_of_func_name );
+    if ( c == '>' ) {
+      int pars = 1;
+      while ( pars > 0 && end_of_func_name != demangled_symbol ) {
+        c = *( --end_of_func_name );
+        if ( c == '>' ) {
+          pars++;
+        } else if ( c == '<' ) {
+          pars--;
+        }
+      }
+      *end_of_func_name = '\0';
+    }
+    c = *( --end_of_func_name );
+    while ( isalnum( c ) || c == '_' || c == '~' ) {
+      c = *( --end_of_func_name );
+    }
+    return ++end_of_func_name;
   }
-  else if(strstr(operator_string_end, "new")==operator_string_end)
-  {
-   operator_string_end+=3;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, ">>=")==operator_string_end)
-  {
-   operator_string_end+=3;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "<<=")==operator_string_end)
-  {
-   operator_string_end+=3;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "->*")==operator_string_end)
-  {
-   operator_string_end+=3;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "<<")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, ">>")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, ">=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "<=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "==")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "!=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "|=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "&=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "^=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "%=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "/=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "*=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "-=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "+=")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "&&")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "||")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "[]")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "()")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "++")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "--")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "->")==operator_string_end)
-  {
-   operator_string_end+=2;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "<")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, ">")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "~")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "!")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "+")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "-")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "*")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "/")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "%")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "^")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "&")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "|")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, ",")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  else if(strstr(operator_string_end, "=")==operator_string_end)
-  {
-   operator_string_end+=1;
-   *operator_string_end='\0';
-  }
-  return operator_string_begin;
- }
- char *end_of_demangled_name = const_cast<char *>(strrchr(demangled_symbol, ')'));
- if(end_of_demangled_name != NULL)
- {
-  int pars = 1;
-  char c;
-  while(pars>0 && end_of_demangled_name!=demangled_symbol)
-  {
-   c = *(--end_of_demangled_name);
-   if(c==')')
-   {
-    pars++;
-   }
-   else if(c=='(')
-   {
-    pars--;
-   }
-  }
- }
- else
- {
   return demangled_symbol;
- }
- char *end_of_func_name = end_of_demangled_name;
- if(end_of_func_name != NULL)
- {
-  *end_of_func_name = '\0';
-  char c = *(--end_of_func_name);
-  if(c=='>')
-  {
-   int pars = 1;
-   while(pars>0 && end_of_func_name!=demangled_symbol)
-   {
-    c = *(--end_of_func_name);
-    if(c=='>')
-    {
-     pars++;
-    }
-    else if(c=='<')
-    {
-     pars--;
-    }
-   }
-   *end_of_func_name = '\0';
-  }
-  c = *(--end_of_func_name);
-  while(isalnum(c) || c=='_' || c=='~')
-  {
-   c = *(--end_of_func_name);
-  }
-  return ++end_of_func_name;
- }
- return demangled_symbol;
 }
 
 // put_module()
@@ -1131,158 +1085,149 @@ const char *func_name(const char *demangled_symbol)
 // const char *event    : name of architectural event being analysed
 // const char *dir      : directory where sampling results input files are located
 // creates or updates the HTML output file using information contained inside the module object given as a parameter
-void put_S_module(S_module *cur_module, const char *dir)
+void put_S_module( S_module* cur_module, const char* dir )
 {
- char module_name[MAX_MODULE_NAME_LENGTH];
- bzero(module_name, MAX_MODULE_NAME_LENGTH);
- strcpy(module_name, (cur_module->get_module_name()).c_str());
- char module_filename[MAX_FILENAME_LENGTH];
- bzero(module_filename, MAX_FILENAME_LENGTH);
- strcpy(module_filename, dir);
- strcat(module_filename, "/HTML/");
- strcat(module_filename, module_name);
- strcat(module_filename, ".html");
- char event[MAX_EVENT_NAME_LENGTH];
- bzero(event, MAX_EVENT_NAME_LENGTH);
- strcpy(event, (cur_module->get_event()).c_str());
- std::map<std::string, unsigned int>::iterator result = modules_tot_samples.find(cur_module->get_module_name());
- FILE *module_file;
- if(result == modules_tot_samples.end()) //not found
- {
-  if((!strcmp(event, "UNHALTED_CORE_CYCLES") && !nehalem) || (!strcmp(event, "CPU_CLK_UNHALTED:THREAD_P") && nehalem))
+  char module_name[MAX_MODULE_NAME_LENGTH];
+  bzero( module_name, MAX_MODULE_NAME_LENGTH );
+  strcpy( module_name, ( cur_module->get_module_name() ).c_str() );
+  char module_filename[MAX_FILENAME_LENGTH];
+  bzero( module_filename, MAX_FILENAME_LENGTH );
+  strcpy( module_filename, dir );
+  strcat( module_filename, "/HTML/" );
+  strcat( module_filename, module_name );
+  strcat( module_filename, ".html" );
+  char event[MAX_EVENT_NAME_LENGTH];
+  bzero( event, MAX_EVENT_NAME_LENGTH );
+  strcpy( event, ( cur_module->get_event() ).c_str() );
+  std::map<std::string, unsigned int>::iterator result = modules_tot_samples.find( cur_module->get_module_name() );
+  FILE* module_file;
+  if ( result == modules_tot_samples.end() ) // not found
   {
-   modules_tot_samples.insert(std::pair<std::string, unsigned int>(cur_module->get_module_name(), cur_module->get_total_num_samples()));
+    if ( ( !strcmp( event, "UNHALTED_CORE_CYCLES" ) && !nehalem ) ||
+         ( !strcmp( event, "CPU_CLK_UNHALTED:THREAD_P" ) && nehalem ) ) {
+      modules_tot_samples.insert(
+          std::pair<std::string, unsigned int>( cur_module->get_module_name(), cur_module->get_total_num_samples() ) );
+    } else {
+      modules_tot_samples.insert( std::pair<std::string, unsigned int>( cur_module->get_module_name(), 0 ) );
+    }
+    module_file = fopen( module_filename, "w" );
+    if ( module_file == NULL ) {
+      fprintf( stderr, "ERROR: Cannot create file %s!!!\naborting...\n", module_filename );
+      exit( 1 );
+    }
+    fprintf( module_file, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"  "
+                          "\"http://www.w3.org/TR/html4/loose.dtd\">\n" );
+    fprintf( module_file, "<html>\n" );
+    fprintf( module_file, "<head>\n" );
+    fprintf( module_file, "<title>\n" );
+    fprintf( module_file, "%s\n", module_name );
+    fprintf( module_file, "</title>\n" );
+    fprintf( module_file, "</head>\n" );
+    fprintf( module_file, "<body>\n" );
+    fprintf( module_file, "<h2>%s</h2><br/>Events Sampled:<br/>\n", module_name );
+    fprintf( module_file, "<ul>\n" );
+    for ( std::vector<std::string>::const_iterator it = S_events.begin(); it != S_events.end(); ++it ) {
+      fprintf( module_file, "<li><a href=\"#%s\">%s</a></li>\n", it->c_str(), it->c_str() );
+    }
+    fprintf( module_file, "</ul>\n" );
+  } // if(result == modules_tot_samples.end()) //not found
+  else {
+    if ( ( !strcmp( event, "UNHALTED_CORE_CYCLES" ) && !nehalem ) ||
+         ( !strcmp( event, "CPU_CLK_UNHALTED:THREAD_P" ) && nehalem ) ) {
+      modules_tot_samples[cur_module->get_module_name()] = cur_module->get_total_num_samples();
+    }
+    module_file = fopen( module_filename, "a" );
+  } // else:: if(result != modules_tot_samples.end()) //found!!
+  char event_str[MAX_EVENT_NAME_LENGTH];
+  bzero( event_str, MAX_EVENT_NAME_LENGTH );
+  strcpy( event_str, event );
+  if ( cur_module->get_c_mask() > 0 ) {
+    sprintf( event_str, "%s CMASK=%d", event_str, cur_module->get_c_mask() );
   }
-  else
-  {
-   modules_tot_samples.insert(std::pair<std::string, unsigned int>(cur_module->get_module_name(), 0));
+  if ( cur_module->get_inv_mask() > 0 ) {
+    sprintf( event_str, "%s INV=%d", event_str, cur_module->get_inv_mask() );
   }
-  module_file = fopen(module_filename, "w");
-  if(module_file == NULL)
-  {
-   fprintf(stderr, "ERROR: Cannot create file %s!!!\naborting...\n", module_filename);
-   exit(1);
-  }
-  fprintf(module_file, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"  \"http://www.w3.org/TR/html4/loose.dtd\">\n");
-  fprintf(module_file, "<html>\n");
-  fprintf(module_file, "<head>\n");
-  fprintf(module_file, "<title>\n");
-  fprintf(module_file, "%s\n", module_name);
-  fprintf(module_file, "</title>\n");
-  fprintf(module_file, "</head>\n");
-  fprintf(module_file, "<body>\n");
-  fprintf(module_file, "<h2>%s</h2><br/>Events Sampled:<br/>\n", module_name);
-  fprintf(module_file, "<ul>\n");
-  for(std::vector<std::string>::const_iterator it = S_events.begin(); it != S_events.end(); ++it)
-  {
-   fprintf(module_file, "<li><a href=\"#%s\">%s</a></li>\n", it->c_str(), it->c_str());
-  }
-  fprintf(module_file, "</ul>\n");
- }// if(result == modules_tot_samples.end()) //not found
- else
- {
-  if((!strcmp(event, "UNHALTED_CORE_CYCLES") && !nehalem) || (!strcmp(event, "CPU_CLK_UNHALTED:THREAD_P") && nehalem))
-  {
-   modules_tot_samples[cur_module->get_module_name()] = cur_module->get_total_num_samples();
-  }
-  module_file = fopen(module_filename, "a");
- }//else:: if(result != modules_tot_samples.end()) //found!!
- char event_str[MAX_EVENT_NAME_LENGTH];
- bzero(event_str, MAX_EVENT_NAME_LENGTH);
- strcpy(event_str, event);
- if(cur_module->get_c_mask()>0)
- {
-  sprintf(event_str, "%s CMASK=%d", event_str, cur_module->get_c_mask());
- }
- if(cur_module->get_inv_mask()>0)
- {
-  sprintf(event_str, "%s INV=%d", event_str, cur_module->get_inv_mask());
- }
- fprintf(module_file, "<a name=\"%s\"><a>\n", event_str);
- fprintf(module_file, "<table cellpadding=\"5\">\n");
- fprintf(module_file, "<tr bgcolor=\"#EEEEEE\">\n");
- fprintf(module_file, "<th colspan=\"6\" align=\"left\">%s -- cmask: %u -- invmask: %u -- Total Samples: %u -- Sampling Period: %d</th>\n", event, cur_module->get_c_mask(), cur_module->get_inv_mask(), cur_module->get_total_num_samples(), cur_module->get_smpl_period());
- fprintf(module_file, "</tr>\n");
- fprintf(module_file, "<tr bgcolor=\"#EEEEEE\">\n");
- fprintf(module_file, "<th align=\"left\">Samples</th>\n");
- fprintf(module_file, "<th align=\"left\">Percentage</th>\n");
- fprintf(module_file, "<th align=\"left\">Symbol Name</th>\n");
- fprintf(module_file, "<th align=\"left\">Library Name</th>\n");
- fprintf(module_file, "<th align=\"left\">Complete Signature</th>\n");
- fprintf(module_file, "<th align=\"left\">Library Pathname</th>\n");
- fprintf(module_file, "</tr>\n");
- for(int j=0; j<20; j++)
- {
-  char sym[MAX_SYM_LENGTH];
-  char sym_mod[MAX_SYM_MOD_LENGTH];
-  char lib[MAX_LIB_LENGTH];
-  char lib_mod[MAX_LIB_MOD_LENGTH];
-  char simple_sym[MAX_SIMPLE_SYM_LENGTH];
-  char simple_sym_mod[MAX_SIMPLE_SYM_MOD_LENGTH];
-  char simple_lib[MAX_SIMPLE_LIB_LENGTH];
-  char simple_lib_mod[MAX_SIMPLE_LIB_MOD_LENGTH];
+  fprintf( module_file, "<a name=\"%s\"><a>\n", event_str );
+  fprintf( module_file, "<table cellpadding=\"5\">\n" );
+  fprintf( module_file, "<tr bgcolor=\"#EEEEEE\">\n" );
+  fprintf( module_file, "<th colspan=\"6\" align=\"left\">%s -- cmask: %u -- invmask: %u -- Total Samples: %u -- "
+                        "Sampling Period: %d</th>\n",
+           event, cur_module->get_c_mask(), cur_module->get_inv_mask(), cur_module->get_total_num_samples(),
+           cur_module->get_smpl_period() );
+  fprintf( module_file, "</tr>\n" );
+  fprintf( module_file, "<tr bgcolor=\"#EEEEEE\">\n" );
+  fprintf( module_file, "<th align=\"left\">Samples</th>\n" );
+  fprintf( module_file, "<th align=\"left\">Percentage</th>\n" );
+  fprintf( module_file, "<th align=\"left\">Symbol Name</th>\n" );
+  fprintf( module_file, "<th align=\"left\">Library Name</th>\n" );
+  fprintf( module_file, "<th align=\"left\">Complete Signature</th>\n" );
+  fprintf( module_file, "<th align=\"left\">Library Pathname</th>\n" );
+  fprintf( module_file, "</tr>\n" );
+  for ( int j = 0; j < 20; j++ ) {
+    char sym[MAX_SYM_LENGTH];
+    char sym_mod[MAX_SYM_MOD_LENGTH];
+    char lib[MAX_LIB_LENGTH];
+    char lib_mod[MAX_LIB_MOD_LENGTH];
+    char simple_sym[MAX_SIMPLE_SYM_LENGTH];
+    char simple_sym_mod[MAX_SIMPLE_SYM_MOD_LENGTH];
+    char simple_lib[MAX_SIMPLE_LIB_LENGTH];
+    char simple_lib_mod[MAX_SIMPLE_LIB_MOD_LENGTH];
 
-  bzero(sym, MAX_SYM_LENGTH);
-  bzero(sym_mod, MAX_SYM_MOD_LENGTH);
-  bzero(lib, MAX_LIB_LENGTH);
-  bzero(lib_mod, MAX_LIB_MOD_LENGTH);
-  bzero(simple_sym, MAX_SIMPLE_SYM_LENGTH);
-  bzero(simple_sym_mod, MAX_SIMPLE_SYM_MOD_LENGTH);
-  bzero(simple_lib, MAX_SIMPLE_LIB_LENGTH);
-  bzero(simple_lib_mod, MAX_SIMPLE_LIB_MOD_LENGTH);
+    bzero( sym, MAX_SYM_LENGTH );
+    bzero( sym_mod, MAX_SYM_MOD_LENGTH );
+    bzero( lib, MAX_LIB_LENGTH );
+    bzero( lib_mod, MAX_LIB_MOD_LENGTH );
+    bzero( simple_sym, MAX_SIMPLE_SYM_LENGTH );
+    bzero( simple_sym_mod, MAX_SIMPLE_SYM_MOD_LENGTH );
+    bzero( simple_lib, MAX_SIMPLE_LIB_LENGTH );
+    bzero( simple_lib_mod, MAX_SIMPLE_LIB_MOD_LENGTH );
 
-  char index[MAX_SAMPLE_INDEX_LENGTH];
-  bzero(index, MAX_SAMPLE_INDEX_LENGTH);
-  unsigned int value;
-  bool res = cur_module->get_max(index, &value);
-  if(!res) break;
-  char *sym_end = strchr(index, '%');
-  if(sym_end==NULL) //error
-  {
-   fprintf(stderr, "ERROR: Invalid sym and lib name! : %s\naborting...\n", index);
-   exit(1);
+    char index[MAX_SAMPLE_INDEX_LENGTH];
+    bzero( index, MAX_SAMPLE_INDEX_LENGTH );
+    unsigned int value;
+    bool res = cur_module->get_max( index, &value );
+    if ( !res ) break;
+    char* sym_end = strchr( index, '%' );
+    if ( sym_end == NULL ) // error
+    {
+      fprintf( stderr, "ERROR: Invalid sym and lib name! : %s\naborting...\n", index );
+      exit( 1 );
+    }
+    strncpy( sym, index, strlen( index ) - strlen( sym_end ) );
+    strcpy( lib, sym_end + 1 );
+    char temp[MAX_SYM_LENGTH];
+    bzero( temp, MAX_SYM_LENGTH );
+    strcpy( temp, sym );
+    strcpy( simple_sym, ( func_name( temp ) ) );
+    if ( strrchr( lib, '/' ) != NULL && *( strrchr( lib, '/' ) + 1 ) != '\0' ) {
+      strcpy( simple_lib, strrchr( lib, '/' ) + 1 );
+    } else {
+      strcpy( simple_lib, lib );
+    }
+    if ( j % 2 != 0 ) {
+      fprintf( module_file, "<tr bgcolor=\"#FFFFCC\">\n" );
+    } else {
+      fprintf( module_file, "<tr bgcolor=\"#CCFFCC\">\n" );
+    }
+    fprintf( module_file, "<td style=\"font-family:monospace;font-size:large;color:DarkBlue\">%u</td>\n", value );
+    fprintf( module_file, "<td style=\"font-family:monospace;font-size:large;color:DarkBlue\">%f%%</td>\n",
+             ( ( (double)( value ) ) / ( (double)( cur_module->get_total_num_samples() ) ) ) * 100 );
+    html_special_chars( simple_sym, simple_sym_mod );
+    html_special_chars( simple_lib, simple_lib_mod );
+    html_special_chars( sym, sym_mod );
+    html_special_chars( lib, lib_mod );
+    fprintf( module_file, "<td style=\"font-family:courier;\">%s</td>\n", simple_sym_mod );
+    fprintf( module_file, "<td style=\"font-family:courier;\">%s</td>\n", simple_lib_mod );
+    fprintf( module_file, "<td style=\"font-family:courier;\">%s</td>\n", sym_mod );
+    fprintf( module_file, "<td style=\"font-family:courier;\">%s</td>\n</tr>\n", lib_mod );
   }
-  strncpy(sym, index, strlen(index)-strlen(sym_end));
-  strcpy(lib, sym_end+1);
-  char temp[MAX_SYM_LENGTH];
-  bzero(temp, MAX_SYM_LENGTH);
-  strcpy(temp, sym);
-  strcpy(simple_sym, (func_name(temp)));
-  if(strrchr(lib, '/')!=NULL && *(strrchr(lib, '/')+1)!='\0')
-  {
-   strcpy(simple_lib, strrchr(lib, '/')+1);
+  fprintf( module_file, "</table><br/><br/>\n" );
+  int res = fclose( module_file );
+  if ( res ) {
+    fprintf( stderr, "ERROR: Cannot close file %s!!!\naborting...\n", module_filename );
+    exit( 1 );
   }
-  else
-  {
-   strcpy(simple_lib, lib);
-  }
-  if(j%2!=0)
-  {
-   fprintf(module_file, "<tr bgcolor=\"#FFFFCC\">\n");
-  }
-  else
-  {
-   fprintf(module_file, "<tr bgcolor=\"#CCFFCC\">\n");
-  }
-  fprintf(module_file, "<td style=\"font-family:monospace;font-size:large;color:DarkBlue\">%u</td>\n", value);
-  fprintf(module_file, "<td style=\"font-family:monospace;font-size:large;color:DarkBlue\">%f%%</td>\n", (((double)(value))/((double)(cur_module->get_total_num_samples())))*100);
-  html_special_chars(simple_sym, simple_sym_mod);
-  html_special_chars(simple_lib, simple_lib_mod);
-  html_special_chars(sym, sym_mod);
-  html_special_chars(lib, lib_mod);
-  fprintf(module_file, "<td style=\"font-family:courier;\">%s</td>\n", simple_sym_mod);
-  fprintf(module_file, "<td style=\"font-family:courier;\">%s</td>\n", simple_lib_mod);
-  fprintf(module_file, "<td style=\"font-family:courier;\">%s</td>\n", sym_mod);
-  fprintf(module_file, "<td style=\"font-family:courier;\">%s</td>\n</tr>\n", lib_mod);
- }
- fprintf(module_file, "</table><br/><br/>\n");
- int res = fclose(module_file);
- if(res)
- {
-  fprintf(stderr, "ERROR: Cannot close file %s!!!\naborting...\n", module_filename);
-  exit(1);
- }
- return;
+  return;
 }
 
 // read_S_file()
@@ -1292,373 +1237,355 @@ void put_S_module(S_module *cur_module, const char *dir)
 // demangles them to make them human-readable, creates the module objects (with their sampling values),
 // and calls the put_module() function to create (or update) the corresponding HTML output file
 // returns 0 on success
-int read_S_file(const char *dir, const char *filename)
+int read_S_file( const char* dir, const char* filename )
 {
- char line[MAX_LINE_LENGTH];
- char event[MAX_EVENT_NAME_LENGTH];
- char arch[MAX_ARCH_NAME_LENGTH];
- unsigned int cmask;
- unsigned int inv;
- unsigned int sp;
- char cur_module_name[MAX_MODULE_NAME_LENGTH];
- bzero(line, MAX_LINE_LENGTH);
- bzero(event, MAX_EVENT_NAME_LENGTH);
- bzero(cur_module_name, MAX_MODULE_NAME_LENGTH);
- bzero(arch, MAX_ARCH_NAME_LENGTH);
+  char line[MAX_LINE_LENGTH];
+  char event[MAX_EVENT_NAME_LENGTH];
+  char arch[MAX_ARCH_NAME_LENGTH];
+  unsigned int cmask;
+  unsigned int inv;
+  unsigned int sp;
+  char cur_module_name[MAX_MODULE_NAME_LENGTH];
+  bzero( line, MAX_LINE_LENGTH );
+  bzero( event, MAX_EVENT_NAME_LENGTH );
+  bzero( cur_module_name, MAX_MODULE_NAME_LENGTH );
+  bzero( arch, MAX_ARCH_NAME_LENGTH );
 
- S_module *cur_module = new S_module();
- unsigned int module_num = 0;
+  S_module* cur_module    = new S_module();
+  unsigned int module_num = 0;
 
- char path_name[MAX_FILENAME_LENGTH];
- bzero(path_name, MAX_FILENAME_LENGTH);
- strcpy(path_name, dir);
- strcat(path_name, "/");
- strcat(path_name, filename);
- gzFile res_file = gzopen(path_name, "rb");
+  char path_name[MAX_FILENAME_LENGTH];
+  bzero( path_name, MAX_FILENAME_LENGTH );
+  strcpy( path_name, dir );
+  strcat( path_name, "/" );
+  strcat( path_name, filename );
+  gzFile res_file = gzopen( path_name, "rb" );
 
- if(res_file != NULL)
- {
-  bzero(line, MAX_LINE_LENGTH);
-  gzgets(res_file, line, MAX_LINE_LENGTH);
-  if(line[strlen(line)-1]=='\n') line[strlen(line)-1]='\0';
-  bzero(event, MAX_EVENT_NAME_LENGTH);
-  sscanf(line, "%s %s %u %u %u", arch, event, &cmask, &inv, &sp);
-  if(!strcmp(arch, "NHM")) nehalem = true; else nehalem = false;
-  bzero(line, MAX_LINE_LENGTH);
-  while(gzgets(res_file, line, MAX_LINE_LENGTH)!=Z_NULL)
-  {
-   if(line[strlen(line)-1]=='\n') line[strlen(line)-1]='\0';
-   if(strchr(line, ' ')==NULL) //module
-   {
-    if(module_num>0)
-    {
-     put_S_module(cur_module, dir);
-     cur_module->clear();
-    }
-    module_num++;
-    char *end_sym = strchr(line, '%');
-    if(end_sym == NULL) //error
-    {
-     fprintf(stderr, "ERROR: Invalid module name. \nLINE: %s\naborting...\n", line);
-     exit(1);
-    }
-    bzero(cur_module_name, MAX_MODULE_NAME_LENGTH);
-    strncpy(cur_module_name, line, strlen(line)-strlen(end_sym));
-    cur_module->init(cur_module_name, arch, event, cmask, inv, sp);
-    cur_module->set_total(atoi(end_sym+1));
-   } //module
-   else //symbol, libName, libOffset, value
-   {
-    unsigned int value=0, libOffset=0;
-    char symbol[MAX_SYM_LENGTH];
-    char libName[MAX_LIB_LENGTH];
-    char final_sym[MAX_SYM_MOD_LENGTH];
-    char final_lib[MAX_LIB_MOD_LENGTH];
-    bzero(symbol, MAX_SYM_LENGTH);
-    bzero(libName, MAX_LIB_LENGTH);
-    bzero(final_sym, MAX_SYM_MOD_LENGTH);
-    bzero(final_lib, MAX_LIB_MOD_LENGTH);
-
-    sscanf(line, "%s %s %u %u", symbol, libName, &libOffset, &value);
-    char realPathName_s[FILENAME_MAX];
-    bzero(realPathName_s, FILENAME_MAX);
-    char *realPathName = realpath(libName, realPathName_s);
-    if(realPathName!=NULL && strlen(realPathName)>0)
-    {
-     std::map<std::string, FileInfo>::iterator result;
-     result = libsInfo.find(realPathName);
-     if(result == libsInfo.end())
-     {
-      libsInfo[realPathName] = FileInfo(realPathName, true);
-     }
-     const char *temp_sym = libsInfo[realPathName].symbolByOffset(libOffset);
-     if(temp_sym!=NULL && strlen(temp_sym)>0)
-     {
-      int status;
-      char *demangled_symbol = abi::__cxa_demangle(temp_sym, NULL, NULL, &status);
-      if(status == 0)
-      {
-       strcpy(final_sym, demangled_symbol);
-       free(demangled_symbol);
-      }
-      else
-      {
-       strcpy(final_sym, temp_sym);
-      }
-     }
-     else
-     {
-      strcpy(final_sym, "???");
-     }
-     strcpy(final_lib, realPathName);
-    }
+  if ( res_file != NULL ) {
+    bzero( line, MAX_LINE_LENGTH );
+    gzgets( res_file, line, MAX_LINE_LENGTH );
+    if ( line[strlen( line ) - 1] == '\n' ) line[strlen( line ) - 1] = '\0';
+    bzero( event, MAX_EVENT_NAME_LENGTH );
+    sscanf( line, "%s %s %u %u %u", arch, event, &cmask, &inv, &sp );
+    if ( !strcmp( arch, "NHM" ) )
+      nehalem = true;
     else
-    {
-     strcpy(final_sym, symbol);
-     strcpy(final_lib, libName);
-    }
-    char index[MAX_LINE_LENGTH];
-    bzero(index, MAX_LINE_LENGTH);
-    strcpy(index, final_sym);
-    strcat(index, "%");
-    strcat(index, final_lib);
-    cur_module->add_sample(index, value);
-   }// symbol, libName, libOffset, value
-   bzero(line, MAX_LINE_LENGTH);
-  }// while(gzgets(res_file, line, MAX_LINE_LENGTH)!=Z_NULL)
-  put_S_module(cur_module, dir);//last module!
-  cur_module->clear();
-  gzclose(res_file);
- }// if(res_file != NULL)
- else
- {
-  fprintf(stderr, "ERROR: Unable to open input file: %s\naborting...\n", filename);
-  exit(1);
- }
- delete cur_module; //delete it!
- return 0;
+      nehalem = false;
+    bzero( line, MAX_LINE_LENGTH );
+    while ( gzgets( res_file, line, MAX_LINE_LENGTH ) != Z_NULL ) {
+      if ( line[strlen( line ) - 1] == '\n' ) line[strlen( line ) - 1] = '\0';
+      if ( strchr( line, ' ' ) == NULL ) // module
+      {
+        if ( module_num > 0 ) {
+          put_S_module( cur_module, dir );
+          cur_module->clear();
+        }
+        module_num++;
+        char* end_sym = strchr( line, '%' );
+        if ( end_sym == NULL ) // error
+        {
+          fprintf( stderr, "ERROR: Invalid module name. \nLINE: %s\naborting...\n", line );
+          exit( 1 );
+        }
+        bzero( cur_module_name, MAX_MODULE_NAME_LENGTH );
+        strncpy( cur_module_name, line, strlen( line ) - strlen( end_sym ) );
+        cur_module->init( cur_module_name, arch, event, cmask, inv, sp );
+        cur_module->set_total( atoi( end_sym + 1 ) );
+      }    // module
+      else // symbol, libName, libOffset, value
+      {
+        unsigned int value = 0, libOffset = 0;
+        char symbol[MAX_SYM_LENGTH];
+        char libName[MAX_LIB_LENGTH];
+        char final_sym[MAX_SYM_MOD_LENGTH];
+        char final_lib[MAX_LIB_MOD_LENGTH];
+        bzero( symbol, MAX_SYM_LENGTH );
+        bzero( libName, MAX_LIB_LENGTH );
+        bzero( final_sym, MAX_SYM_MOD_LENGTH );
+        bzero( final_lib, MAX_LIB_MOD_LENGTH );
+
+        sscanf( line, "%s %s %u %u", symbol, libName, &libOffset, &value );
+        char realPathName_s[FILENAME_MAX];
+        bzero( realPathName_s, FILENAME_MAX );
+        char* realPathName = realpath( libName, realPathName_s );
+        if ( realPathName != NULL && strlen( realPathName ) > 0 ) {
+          std::map<std::string, FileInfo>::iterator result;
+          result = libsInfo.find( realPathName );
+          if ( result == libsInfo.end() ) {
+            libsInfo[realPathName] = FileInfo( realPathName, true );
+          }
+          const char* temp_sym = libsInfo[realPathName].symbolByOffset( libOffset );
+          if ( temp_sym != NULL && strlen( temp_sym ) > 0 ) {
+            int status;
+            char* demangled_symbol = abi::__cxa_demangle( temp_sym, NULL, NULL, &status );
+            if ( status == 0 ) {
+              strcpy( final_sym, demangled_symbol );
+              free( demangled_symbol );
+            } else {
+              strcpy( final_sym, temp_sym );
+            }
+          } else {
+            strcpy( final_sym, "???" );
+          }
+          strcpy( final_lib, realPathName );
+        } else {
+          strcpy( final_sym, symbol );
+          strcpy( final_lib, libName );
+        }
+        char index[MAX_LINE_LENGTH];
+        bzero( index, MAX_LINE_LENGTH );
+        strcpy( index, final_sym );
+        strcat( index, "%" );
+        strcat( index, final_lib );
+        cur_module->add_sample( index, value );
+      } // symbol, libName, libOffset, value
+      bzero( line, MAX_LINE_LENGTH );
+    }                                // while(gzgets(res_file, line, MAX_LINE_LENGTH)!=Z_NULL)
+    put_S_module( cur_module, dir ); // last module!
+    cur_module->clear();
+    gzclose( res_file );
+  } // if(res_file != NULL)
+  else {
+    fprintf( stderr, "ERROR: Unable to open input file: %s\naborting...\n", filename );
+    exit( 1 );
+  }
+  delete cur_module; // delete it!
+  return 0;
 }
 
-int read_S_events(const char *dir, const char *filename)
+int read_S_events( const char* dir, const char* filename )
 {
- char event[MAX_EVENT_NAME_LENGTH];
- char arch[MAX_ARCH_NAME_LENGTH];
- char line[MAX_LINE_LENGTH];
- char cmask_str[MAX_CMASK_STR_LENGTH];
- char inv_str[MAX_INV_STR_LENGTH];
- char sp_str[MAX_SP_STR_LENGTH];
- bzero(line, MAX_LINE_LENGTH);
- bzero(event, MAX_EVENT_NAME_LENGTH);
- bzero(arch, MAX_ARCH_NAME_LENGTH);
- bzero(cmask_str, MAX_CMASK_STR_LENGTH);
- bzero(inv_str, MAX_INV_STR_LENGTH);
- bzero(sp_str, MAX_SP_STR_LENGTH);
- char path_name[MAX_FILENAME_LENGTH];
- bzero(path_name, MAX_FILENAME_LENGTH);
- strcpy(path_name, dir);
- strcat(path_name, "/");
- strcat(path_name, filename);
- gzFile res_file = gzopen(path_name, "rb");
- if(res_file != NULL)
- {
-  bzero(line, MAX_LINE_LENGTH);
-  gzgets(res_file, line, MAX_LINE_LENGTH);
-  if(line[strlen(line)-1]=='\n') line[strlen(line)-1]='\0';
-  bzero(event, MAX_EVENT_NAME_LENGTH);
-  sscanf(line, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str);
-  std::string event_str(event);
-  if(atoi(cmask_str)>0)
-  {
-   event_str += " CMASK=";
-   event_str += cmask_str;
+  char event[MAX_EVENT_NAME_LENGTH];
+  char arch[MAX_ARCH_NAME_LENGTH];
+  char line[MAX_LINE_LENGTH];
+  char cmask_str[MAX_CMASK_STR_LENGTH];
+  char inv_str[MAX_INV_STR_LENGTH];
+  char sp_str[MAX_SP_STR_LENGTH];
+  bzero( line, MAX_LINE_LENGTH );
+  bzero( event, MAX_EVENT_NAME_LENGTH );
+  bzero( arch, MAX_ARCH_NAME_LENGTH );
+  bzero( cmask_str, MAX_CMASK_STR_LENGTH );
+  bzero( inv_str, MAX_INV_STR_LENGTH );
+  bzero( sp_str, MAX_SP_STR_LENGTH );
+  char path_name[MAX_FILENAME_LENGTH];
+  bzero( path_name, MAX_FILENAME_LENGTH );
+  strcpy( path_name, dir );
+  strcat( path_name, "/" );
+  strcat( path_name, filename );
+  gzFile res_file = gzopen( path_name, "rb" );
+  if ( res_file != NULL ) {
+    bzero( line, MAX_LINE_LENGTH );
+    gzgets( res_file, line, MAX_LINE_LENGTH );
+    if ( line[strlen( line ) - 1] == '\n' ) line[strlen( line ) - 1] = '\0';
+    bzero( event, MAX_EVENT_NAME_LENGTH );
+    sscanf( line, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str );
+    std::string event_str( event );
+    if ( atoi( cmask_str ) > 0 ) {
+      event_str += " CMASK=";
+      event_str += cmask_str;
+    }
+    if ( atoi( inv_str ) > 0 ) {
+      event_str += " INV=";
+      event_str += inv_str;
+    }
+    S_events.push_back( event_str );
+  } // if(res_file != NULL)
+  else {
+    fprintf( stderr, "ERROR: Unable to open input file: %s\naborting...\n", filename );
+    exit( 1 );
   }
-  if(atoi(inv_str)>0)
-  {
-   event_str += " INV=";
-   event_str += inv_str;
-  }
-  S_events.push_back(event_str);
- }// if(res_file != NULL)
- else
- {
-  fprintf(stderr, "ERROR: Unable to open input file: %s\naborting...\n", filename);
-  exit(1);
- }
- return 0;
+  return 0;
 }
 
 // finalize_html_pages()
 // const char *dir : directory contating sampling result files
 // puts footers in module HTML pages and creates index file
-int finalize_S_html_pages(const char *dir)
+int finalize_S_html_pages( const char* dir )
 {
- for(std::map<std::string, unsigned int>::const_iterator i = modules_tot_samples.begin(); i != modules_tot_samples.end(); i++)
- {
-  char module_filename[MAX_FILENAME_LENGTH];
-  strcpy(module_filename, dir);
-  strcat(module_filename, "/HTML/");
-  strcat(module_filename, (i->first).c_str());
-  strcat(module_filename, ".html");
-  FILE *module_file = fopen(module_filename, "a");
-  if(module_file == NULL)
-  {
-   fprintf(stderr, "ERROR: Unable to append to file: %s\naborting...\n", module_filename);
-   exit(1);
+  for ( std::map<std::string, unsigned int>::const_iterator i = modules_tot_samples.begin();
+        i != modules_tot_samples.end(); i++ ) {
+    char module_filename[MAX_FILENAME_LENGTH];
+    strcpy( module_filename, dir );
+    strcat( module_filename, "/HTML/" );
+    strcat( module_filename, ( i->first ).c_str() );
+    strcat( module_filename, ".html" );
+    FILE* module_file = fopen( module_filename, "a" );
+    if ( module_file == NULL ) {
+      fprintf( stderr, "ERROR: Unable to append to file: %s\naborting...\n", module_filename );
+      exit( 1 );
+    }
+    fprintf( module_file, "</body>\n</html>\n" );
+    if ( fclose( module_file ) ) {
+      fprintf( stderr, "ERROR: Cannot close file %s!!!\naborting...\n", module_filename );
+      exit( 1 );
+    }
   }
-  fprintf(module_file, "</body>\n</html>\n");
-  if(fclose(module_file))
-  {
-   fprintf(stderr, "ERROR: Cannot close file %s!!!\naborting...\n", module_filename);
-   exit(1);
-  }
- }
- return 0;
+  return 0;
 }
 
 // read_file()
 // const char *filename    : input file to analyse
 // analyses the event file and updates the list of modules with counter information found in the file
 // returns the number of modules found in the file
-int read_C_file(const char *dir, const char *filename)
+int read_C_file( const char* dir, const char* filename )
 {
- char event[MAX_EVENT_NAME_LENGTH];
- char arch[MAX_ARCH_NAME_LENGTH];
- char line[MAX_LINE_LENGTH];
- char cmask_str[MAX_CMASK_STR_LENGTH];
- char inv_str[MAX_INV_STR_LENGTH];
- char sp_str[MAX_SP_STR_LENGTH];
- char cur_module_name[MAX_MODULE_NAME_LENGTH];
- bzero(line, MAX_LINE_LENGTH);
- bzero(event, MAX_EVENT_NAME_LENGTH);
- bzero(cur_module_name, MAX_MODULE_NAME_LENGTH);
- bzero(arch, MAX_ARCH_NAME_LENGTH);
- bzero(line, MAX_LINE_LENGTH);
- bzero(cmask_str, MAX_CMASK_STR_LENGTH);
- bzero(inv_str, MAX_INV_STR_LENGTH);
- bzero(sp_str, MAX_SP_STR_LENGTH);
- int number_of_modules = 0;
- long cur_sum = 0;
- int no_of_values = 0;
- char path_name[MAX_FILENAME_LENGTH];
- bzero(path_name, MAX_FILENAME_LENGTH);
- strcpy(path_name, dir);
- strcat(path_name, "/");
- strcat(path_name, filename);
- FILE *fp = fopen(path_name, "r");
- int stat = fscanf(fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str);
- if ( stat != 5 ) {
-   std::cerr << "ERROR: failed to parse " << path_name << std::endl;
-   exit(1);
- }
- if(!strcmp(arch, "NHM")) nehalem = true; else nehalem = false;
- std::string event_str(event);
- if(atoi(cmask_str)>0)
- {
-  event_str += " CMASK=";
-  event_str += cmask_str;
- }
- if(atoi(inv_str)>0)
- {
-  event_str += " INV=";
-  event_str += inv_str;
- }
- C_events.push_back(event_str);
- while(fscanf(fp, "%s\n", line)!=EOF)
- {
-  if(isalpha(line[0])) //module
-  {
-   if(number_of_modules>0)
-   {
-    C_modules[cur_module_name][event_str]=(double)cur_sum/no_of_values;
-    cur_sum = 0;
-    no_of_values = 0;
-   }
-   strcpy(cur_module_name, line);
-   number_of_modules++;
+  char event[MAX_EVENT_NAME_LENGTH];
+  char arch[MAX_ARCH_NAME_LENGTH];
+  char line[MAX_LINE_LENGTH];
+  char cmask_str[MAX_CMASK_STR_LENGTH];
+  char inv_str[MAX_INV_STR_LENGTH];
+  char sp_str[MAX_SP_STR_LENGTH];
+  char cur_module_name[MAX_MODULE_NAME_LENGTH];
+  bzero( line, MAX_LINE_LENGTH );
+  bzero( event, MAX_EVENT_NAME_LENGTH );
+  bzero( cur_module_name, MAX_MODULE_NAME_LENGTH );
+  bzero( arch, MAX_ARCH_NAME_LENGTH );
+  bzero( line, MAX_LINE_LENGTH );
+  bzero( cmask_str, MAX_CMASK_STR_LENGTH );
+  bzero( inv_str, MAX_INV_STR_LENGTH );
+  bzero( sp_str, MAX_SP_STR_LENGTH );
+  int number_of_modules = 0;
+  long cur_sum          = 0;
+  int no_of_values      = 0;
+  char path_name[MAX_FILENAME_LENGTH];
+  bzero( path_name, MAX_FILENAME_LENGTH );
+  strcpy( path_name, dir );
+  strcat( path_name, "/" );
+  strcat( path_name, filename );
+  FILE* fp = fopen( path_name, "r" );
+  int stat = fscanf( fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str );
+  if ( stat != 5 ) {
+    std::cerr << "ERROR: failed to parse " << path_name << std::endl;
+    exit( 1 );
   }
-  else if(isdigit(line[0])) //value
-  {
-   cur_sum += strtol(line, NULL, 10);
-   no_of_values++;
+  if ( !strcmp( arch, "NHM" ) )
+    nehalem = true;
+  else
+    nehalem = false;
+  std::string event_str( event );
+  if ( atoi( cmask_str ) > 0 ) {
+    event_str += " CMASK=";
+    event_str += cmask_str;
   }
- }
- C_modules[cur_module_name][event_str]=(double)cur_sum/no_of_values; //last module
- fclose(fp);
- return number_of_modules;
-}
-
-void put_C_header(FILE *fp, std::vector<std::string> &columns)
-{
- fprintf(fp, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"  \"http://www.w3.org/TR/html4/loose.dtd\">\n");
- fprintf(fp, "<html>\n");
- fprintf(fp, "<head>\n");
- fprintf(fp, "<title>\n");
- fprintf(fp, "Analysis Result\n");
- fprintf(fp, "</title>\n");
- fprintf(fp, "<script src=\"sorttable.js\"></script>\n");
- fprintf(fp, "<style>\ntable.sortable thead {\nbackground-color:#eee;\ncolor:#666666;\nfont-weight:bold;\ncursor:default;\nfont-family:courier;\n}\n</style>\n");
- fprintf(fp, "</head>\n");
- fprintf(fp, "<body link=\"black\">\n");
- fprintf(fp, "<h1>RESULTS:</h1><br/>Click for detailed symbol view...<p/>\n");
- fprintf(fp, "<table class=\"sortable\" cellpadding=\"5\">\n");
- fprintf(fp, "<tr>\n");
- fprintf(fp, "<th>MODULE NAME</th>\n");
- for(std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it)
- {
-  if(strlen(it->c_str())==0) fprintf(fp, "<th bgcolor=\"#FFFFFF\">&nbsp;</th>\n");
-  else fprintf(fp, "<th>%s</th>\n", (*it).c_str());
- }
- fprintf(fp, "</tr>\n");
- return;
-}
-
-void put_C_modules(FILE *fp, std::vector<std::string> &columns)
-{
- int index = 0;
- for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
- {
-  if(index%2) fprintf(fp, "<tr bgcolor=\"#FFFFCC\">\n");
-  else fprintf(fp, "<tr bgcolor=\"#CCFFCC\">\n");
-  fprintf(fp, "<td style=\"font-family:monospace;font-size:large;color:Black\"><a href=\"%s.html\">%s</a></td>\n", (it->first).c_str(), (it->first).c_str());
-  for(std::vector<std::string>::const_iterator jt = columns.begin(); jt != columns.end(); ++jt)
-  {
-   if(strlen(jt->c_str())==0)
-   {
-    fprintf(fp, "<td bgcolor=\"#FFFFFF\">&nbsp;</td>");
-   }
-   else
-   {
-    if((it->second).find(*jt) == (it->second).end())
+  if ( atoi( inv_str ) > 0 ) {
+    event_str += " INV=";
+    event_str += inv_str;
+  }
+  C_events.push_back( event_str );
+  while ( fscanf( fp, "%s\n", line ) != EOF ) {
+    if ( isalpha( line[0] ) ) // module
     {
-     fprintf(stderr, "ERROR: Cannot find derivate value \"%s\"!!!\naborting...\n", (*jt).c_str());
-     exit(1);
-    }
-    fprintf(fp, "<td style=\"font-family:monospace;font-size:large;color:DarkBlue\" align=\"right\">%.2f</td>\n", (it->second)[*jt]);
-   }
-  }
-  fprintf(fp, "</tr>\n");
-  index++;
- }
-}
-
-void put_C_footer(FILE *fp)
-{
- fprintf(fp, "</table>\n</body>\n</html>\n");
- return;
-}
-
-void put_C_header_csv(FILE *fp, std::vector<std::string> &columns)
-{
- fprintf(fp, "MODULE NAME");
- for(std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it)
- {
-  if(strlen(it->c_str())==0) {}
-  else fprintf(fp, ",%s", (*it).c_str());
- }
- fprintf(fp, "\n");
- return;
-}
-
-void put_C_modules_csv(FILE *fp, std::vector<std::string> &columns)
-{
- for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
- {
-  fprintf(fp, "%s", (it->first).c_str()) ;
-  for(std::vector<std::string>::const_iterator jt = columns.begin(); jt != columns.end(); ++jt)
-  {
-   if(strlen(jt->c_str())==0) {}
-   else
-   {
-    if((it->second).find(*jt) == (it->second).end())
+      if ( number_of_modules > 0 ) {
+        C_modules[cur_module_name][event_str] = (double)cur_sum / no_of_values;
+        cur_sum                               = 0;
+        no_of_values                          = 0;
+      }
+      strcpy( cur_module_name, line );
+      number_of_modules++;
+    } else if ( isdigit( line[0] ) ) // value
     {
-     fprintf(stderr, "ERROR: Cannot find derivate value \"%s\"!!!\naborting...\n", (*jt).c_str());
-     exit(1);
+      cur_sum += strtol( line, NULL, 10 );
+      no_of_values++;
     }
-    fprintf(fp, ",%.2f", (it->second)[*jt]);
-   }
   }
-  fprintf(fp, "\n");
- }
+  C_modules[cur_module_name][event_str] = (double)cur_sum / no_of_values; // last module
+  fclose( fp );
+  return number_of_modules;
+}
+
+void put_C_header( FILE* fp, std::vector<std::string>& columns )
+{
+  fprintf(
+      fp,
+      "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"  \"http://www.w3.org/TR/html4/loose.dtd\">\n" );
+  fprintf( fp, "<html>\n" );
+  fprintf( fp, "<head>\n" );
+  fprintf( fp, "<title>\n" );
+  fprintf( fp, "Analysis Result\n" );
+  fprintf( fp, "</title>\n" );
+  fprintf( fp, "<script src=\"sorttable.js\"></script>\n" );
+  fprintf( fp, "<style>\ntable.sortable thead "
+               "{\nbackground-color:#eee;\ncolor:#666666;\nfont-weight:bold;\ncursor:default;\nfont-family:courier;\n}"
+               "\n</style>\n" );
+  fprintf( fp, "</head>\n" );
+  fprintf( fp, "<body link=\"black\">\n" );
+  fprintf( fp, "<h1>RESULTS:</h1><br/>Click for detailed symbol view...<p/>\n" );
+  fprintf( fp, "<table class=\"sortable\" cellpadding=\"5\">\n" );
+  fprintf( fp, "<tr>\n" );
+  fprintf( fp, "<th>MODULE NAME</th>\n" );
+  for ( std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it ) {
+    if ( strlen( it->c_str() ) == 0 )
+      fprintf( fp, "<th bgcolor=\"#FFFFFF\">&nbsp;</th>\n" );
+    else
+      fprintf( fp, "<th>%s</th>\n", ( *it ).c_str() );
+  }
+  fprintf( fp, "</tr>\n" );
+  return;
+}
+
+void put_C_modules( FILE* fp, std::vector<std::string>& columns )
+{
+  int index = 0;
+  for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+        ++it ) {
+    if ( index % 2 )
+      fprintf( fp, "<tr bgcolor=\"#FFFFCC\">\n" );
+    else
+      fprintf( fp, "<tr bgcolor=\"#CCFFCC\">\n" );
+    fprintf( fp, "<td style=\"font-family:monospace;font-size:large;color:Black\"><a href=\"%s.html\">%s</a></td>\n",
+             ( it->first ).c_str(), ( it->first ).c_str() );
+    for ( std::vector<std::string>::const_iterator jt = columns.begin(); jt != columns.end(); ++jt ) {
+      if ( strlen( jt->c_str() ) == 0 ) {
+        fprintf( fp, "<td bgcolor=\"#FFFFFF\">&nbsp;</td>" );
+      } else {
+        if ( ( it->second ).find( *jt ) == ( it->second ).end() ) {
+          fprintf( stderr, "ERROR: Cannot find derivate value \"%s\"!!!\naborting...\n", ( *jt ).c_str() );
+          exit( 1 );
+        }
+        fprintf( fp, "<td style=\"font-family:monospace;font-size:large;color:DarkBlue\" align=\"right\">%.2f</td>\n",
+                 ( it->second )[*jt] );
+      }
+    }
+    fprintf( fp, "</tr>\n" );
+    index++;
+  }
+}
+
+void put_C_footer( FILE* fp )
+{
+  fprintf( fp, "</table>\n</body>\n</html>\n" );
+  return;
+}
+
+void put_C_header_csv( FILE* fp, std::vector<std::string>& columns )
+{
+  fprintf( fp, "MODULE NAME" );
+  for ( std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it ) {
+    if ( strlen( it->c_str() ) == 0 ) {
+    } else
+      fprintf( fp, ",%s", ( *it ).c_str() );
+  }
+  fprintf( fp, "\n" );
+  return;
+}
+
+void put_C_modules_csv( FILE* fp, std::vector<std::string>& columns )
+{
+  for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+        ++it ) {
+    fprintf( fp, "%s", ( it->first ).c_str() );
+    for ( std::vector<std::string>::const_iterator jt = columns.begin(); jt != columns.end(); ++jt ) {
+      if ( strlen( jt->c_str() ) == 0 ) {
+      } else {
+        if ( ( it->second ).find( *jt ) == ( it->second ).end() ) {
+          fprintf( stderr, "ERROR: Cannot find derivate value \"%s\"!!!\naborting...\n", ( *jt ).c_str() );
+          exit( 1 );
+        }
+        fprintf( fp, ",%.2f", ( it->second )[*jt] );
+      }
+    }
+    fprintf( fp, "\n" );
+  }
 }
 
 // normalize()
@@ -1668,20 +1595,19 @@ void put_C_modules_csv(FILE *fp, std::vector<std::string> &columns)
 // double value       : value to be normalized
 // double normalizeTo      : value to which the value above should be normalized
 // returns the normalized value
-double normalize(std::string field, double value, double normalizeTo)
+double normalize( std::string field, double value, double normalizeTo )
 {
- double max = 0;
- double counter_value;
- for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
- {
-  counter_value = (it->second)[field];
-  if(max < counter_value) max = counter_value;
- }
- if(value>0 && max>0 && normalizeTo>0)
- {
-  return  1.*value/max*normalizeTo;
- }
- else return 0;
+  double max = 0;
+  double counter_value;
+  for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+        ++it ) {
+    counter_value                  = ( it->second )[field];
+    if ( max < counter_value ) max = counter_value;
+  }
+  if ( value > 0 && max > 0 && normalizeTo > 0 ) {
+    return 1. * value / max * normalizeTo;
+  } else
+    return 0;
 }
 
 // calc_post_deriv_values()
@@ -1691,26 +1617,25 @@ double normalize(std::string field, double value, double normalizeTo)
 // calculates the iFactor of each module
 void calc_post_deriv_values()
 {
- if(nehalem)
- {
-  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
-  {
-   double simdnorm = 1. - normalize("Packed % of all UOPS Retired", (it->second)["Packed % of all UOPS Retired"], 1);
-   double misspnorm = normalize("% of Mispredicted Branches", (it->second)["% of Mispredicted Branches"], 1);
-   double stallnorm = normalize("Stalled Cycles", (it->second)["Stalled Cycles"], 1);
-   (it->second)["iFactor"] = stallnorm*(simdnorm + misspnorm + stallnorm);
+  if ( nehalem ) {
+    for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+          ++it ) {
+      double simdnorm =
+          1. - normalize( "Packed % of all UOPS Retired", ( it->second )["Packed % of all UOPS Retired"], 1 );
+      double misspnorm = normalize( "% of Mispredicted Branches", ( it->second )["% of Mispredicted Branches"], 1 );
+      double stallnorm = normalize( "Stalled Cycles", ( it->second )["Stalled Cycles"], 1 );
+      ( it->second )["iFactor"] = stallnorm * ( simdnorm + misspnorm + stallnorm );
+    }
+  } else {
+    for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+          ++it ) {
+      double simdnorm =
+          1. - normalize( "Packed SIMD % of all Instructions", ( it->second )["Packed SIMD % of all Instructions"], 1 );
+      double misspnorm = normalize( "% of Mispredicted Branches", ( it->second )["% of Mispredicted Branches"], 1 );
+      double stallnorm = normalize( "Stalled Cycles", ( it->second )["Stalled Cycles"], 1 );
+      ( it->second )["iFactor"] = stallnorm * ( simdnorm + misspnorm + stallnorm );
+    }
   }
- }
- else
- {
-  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
-  {
-   double simdnorm = 1. - normalize("Packed SIMD % of all Instructions", (it->second)["Packed SIMD % of all Instructions"], 1);
-   double misspnorm = normalize("% of Mispredicted Branches", (it->second)["% of Mispredicted Branches"], 1);
-   double stallnorm = normalize("Stalled Cycles", (it->second)["Stalled Cycles"], 1);
-   (it->second)["iFactor"] = stallnorm*(simdnorm + misspnorm + stallnorm);
-  }
- }
 }
 
 // getTotalCycles()
@@ -1719,218 +1644,178 @@ void calc_post_deriv_values()
 // returns the number of total cycles spent by all the modules
 double getTotalCycles()
 {
- double sum=0;
- if(nehalem)
- {
-  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
-  {
-   sum += (it->second)["CPU_CLK_UNHALTED:THREAD_P"];
+  double sum = 0;
+  if ( nehalem ) {
+    for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+          ++it ) {
+      sum += ( it->second )["CPU_CLK_UNHALTED:THREAD_P"];
+    }
+  } else {
+    for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
+          ++it ) {
+      sum += ( it->second )["UNHALTED_CORE_CYCLES"];
+    }
   }
- }
- else
- {
-  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
-  {
-   sum += (it->second)["UNHALTED_CORE_CYCLES"];
-  }
- }
- return sum;
+  return sum;
 }
 
 // main()
 // takes as argument the directory containing results
 // and produces the HTML directory inside of it containing browsable statistics
-int main(int argc, char *argv[])
+int main( int argc, char* argv[] )
 {
- if(argc<2 || argc>4)
- {
-  printf("\n\nUsage: %s DIRECTORY [--caa] [--csv]\n\n", argv[0]);
-  exit(1);
- }
-
- bool caa = false;
- bool csv = false;
- for(int i=2; i<argc; i++)
- {
-  if(!strcmp(argv[i], "--caa")) caa = true;
-  if(!strcmp(argv[i], "--csv")) csv = true;
- }
-
- char dir[MAX_FILENAME_LENGTH];
- strcpy(dir, argv[1]);
- if(!csv)
- {
-  strcat(dir, "/HTML");
-  int res = mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  if(res!=0)
-  {
-   fprintf(stderr, "ERROR: Cannot create directory %s\naborting...\n", dir);
-   exit(1);
+  if ( argc < 2 || argc > 4 ) {
+    printf( "\n\nUsage: %s DIRECTORY [--caa] [--csv]\n\n", argv[0] );
+    exit( 1 );
   }
- }
 
- DIR *dp;
- struct dirent *dirp;
- int num_of_modules = 0;
- if((dp = opendir(argv[1]))==NULL)
- {
-  printf("Error(%d) opening %s\n", errno, argv[1]);
-  return errno;
- }
- while((dirp = readdir(dp))!=NULL)
- {
-  if(strstr(dirp->d_name, "_S_")!=NULL && strstr(dirp->d_name, ".txt.gz")!=NULL && !csv)
-  {
-   if(read_S_events(argv[1], dirp->d_name))
-   {
-    fprintf(stderr, "ERROR: Cannot read file %s\naborting...\n", dirp->d_name);
-    exit(1);
-   }
+  bool caa = false;
+  bool csv = false;
+  for ( int i = 2; i < argc; i++ ) {
+    if ( !strcmp( argv[i], "--caa" ) ) caa = true;
+    if ( !strcmp( argv[i], "--csv" ) ) csv = true;
   }
- }
- closedir(dp);
- sort(S_events.begin(), S_events.end());
- if((dp = opendir(argv[1]))==NULL)
- {
-  printf("Error(%d) opening %s\n", errno, argv[1]);
-  return errno;
- }
- while((dirp = readdir(dp))!=NULL)
- {
-  if(strstr(dirp->d_name, "_S_")!=NULL && strstr(dirp->d_name, ".txt.gz")!=NULL && !csv)
-  {
-   if(read_S_file(argv[1], dirp->d_name))
-   {
-    fprintf(stderr, "ERROR: Cannot read file %s\naborting...\n", dirp->d_name);
-    exit(1);
-   }
-  }
-  else if(strstr(dirp->d_name, "_C_")!=NULL && strstr(dirp->d_name, ".txt")!=NULL)
-  {
-   int res = read_C_file(argv[1], dirp->d_name);
-   if(res>num_of_modules)
-   {
-    num_of_modules = res;
-   }
-  }
- }
- closedir(dp);
 
- if(!csv)
- {
-  if(finalize_S_html_pages(argv[1]))
-  {
-   fprintf(stderr, "ERROR: Cannot finalize HTML pages!!!\naborting...\n");
-   exit(1);
+  char dir[MAX_FILENAME_LENGTH];
+  strcpy( dir, argv[1] );
+  if ( !csv ) {
+    strcat( dir, "/HTML" );
+    int res = mkdir( dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
+    if ( res != 0 ) {
+      fprintf( stderr, "ERROR: Cannot create directory %s\naborting...\n", dir );
+      exit( 1 );
+    }
   }
- }
 
- char filepath[MAX_FILENAME_LENGTH];
- bzero(filepath, MAX_FILENAME_LENGTH);
- if(!csv) sprintf(filepath, "%s/HTML/index.html", argv[1]);
- else sprintf(filepath, "%s/results.csv", argv[1]);
- FILE *fp = fopen(filepath, "w");
- if(fp == NULL)
- {
-  fprintf(stderr, "ERROR: Cannot create file index.html!!!\naborting...\n");
-  exit(1);
- }
-
- if(caa)
- {
-  double totalCycles;
-  if(!nehalem)
-  {
-   init_core_caa_events();
-   if(!check_for_core_caa_events())
-   {
-    fprintf(stderr, "(core) ERROR: One or more events for CAA missing!\naborting...\n");
-    exit(1);
-   }
-   init_core_caa_events_displ();
-   totalCycles = getTotalCycles();
-   calc_core_deriv_values(totalCycles);
-   calc_post_deriv_values();
-   if(!csv)
-   {
-    put_C_header(fp, core_caa_events_displ);
-    put_C_modules(fp, core_caa_events_displ);
-   }
-   else
-   {
-    put_C_header_csv(fp, core_caa_events_displ);
-    put_C_modules_csv(fp, core_caa_events_displ);
-   }
+  DIR* dp;
+  struct dirent* dirp;
+  int num_of_modules = 0;
+  if ( ( dp = opendir( argv[1] ) ) == NULL ) {
+    printf( "Error(%d) opening %s\n", errno, argv[1] );
+    return errno;
   }
+  while ( ( dirp = readdir( dp ) ) != NULL ) {
+    if ( strstr( dirp->d_name, "_S_" ) != NULL && strstr( dirp->d_name, ".txt.gz" ) != NULL && !csv ) {
+      if ( read_S_events( argv[1], dirp->d_name ) ) {
+        fprintf( stderr, "ERROR: Cannot read file %s\naborting...\n", dirp->d_name );
+        exit( 1 );
+      }
+    }
+  }
+  closedir( dp );
+  sort( S_events.begin(), S_events.end() );
+  if ( ( dp = opendir( argv[1] ) ) == NULL ) {
+    printf( "Error(%d) opening %s\n", errno, argv[1] );
+    return errno;
+  }
+  while ( ( dirp = readdir( dp ) ) != NULL ) {
+    if ( strstr( dirp->d_name, "_S_" ) != NULL && strstr( dirp->d_name, ".txt.gz" ) != NULL && !csv ) {
+      if ( read_S_file( argv[1], dirp->d_name ) ) {
+        fprintf( stderr, "ERROR: Cannot read file %s\naborting...\n", dirp->d_name );
+        exit( 1 );
+      }
+    } else if ( strstr( dirp->d_name, "_C_" ) != NULL && strstr( dirp->d_name, ".txt" ) != NULL ) {
+      int res = read_C_file( argv[1], dirp->d_name );
+      if ( res > num_of_modules ) {
+        num_of_modules = res;
+      }
+    }
+  }
+  closedir( dp );
+
+  if ( !csv ) {
+    if ( finalize_S_html_pages( argv[1] ) ) {
+      fprintf( stderr, "ERROR: Cannot finalize HTML pages!!!\naborting...\n" );
+      exit( 1 );
+    }
+  }
+
+  char filepath[MAX_FILENAME_LENGTH];
+  bzero( filepath, MAX_FILENAME_LENGTH );
+  if ( !csv )
+    sprintf( filepath, "%s/HTML/index.html", argv[1] );
   else
-  {
-   init_nhm_caa_events();
-   if(!check_for_nhm_caa_events())
-   {
-    fprintf(stderr, "(nehalem) ERROR: One or more events for CAA missing!\naborting...\n");
-    exit(1);
-   }
-   init_nhm_caa_events_displ();
-   totalCycles = getTotalCycles();
-   calc_nhm_deriv_values(totalCycles);
-   calc_post_deriv_values();
-   if(!csv)
-   {
-    put_C_header(fp, nhm_caa_events_displ);
-    put_C_modules(fp, nhm_caa_events_displ);
-   }
-   else
-   {
-    put_C_header_csv(fp, nhm_caa_events_displ);
-    put_C_modules_csv(fp, nhm_caa_events_displ);
-   }
+    sprintf( filepath, "%s/results.csv", argv[1] );
+  FILE* fp = fopen( filepath, "w" );
+  if ( fp == NULL ) {
+    fprintf( stderr, "ERROR: Cannot create file index.html!!!\naborting...\n" );
+    exit( 1 );
   }
-  if(!csv) put_C_footer(fp);
-  fclose(fp);
- }
- else
- {
-  if(!csv)
-  {
-   put_C_header(fp, C_events);
-   put_C_modules(fp, C_events);
-   put_C_footer(fp);
+
+  if ( caa ) {
+    double totalCycles;
+    if ( !nehalem ) {
+      init_core_caa_events();
+      if ( !check_for_core_caa_events() ) {
+        fprintf( stderr, "(core) ERROR: One or more events for CAA missing!\naborting...\n" );
+        exit( 1 );
+      }
+      init_core_caa_events_displ();
+      totalCycles = getTotalCycles();
+      calc_core_deriv_values( totalCycles );
+      calc_post_deriv_values();
+      if ( !csv ) {
+        put_C_header( fp, core_caa_events_displ );
+        put_C_modules( fp, core_caa_events_displ );
+      } else {
+        put_C_header_csv( fp, core_caa_events_displ );
+        put_C_modules_csv( fp, core_caa_events_displ );
+      }
+    } else {
+      init_nhm_caa_events();
+      if ( !check_for_nhm_caa_events() ) {
+        fprintf( stderr, "(nehalem) ERROR: One or more events for CAA missing!\naborting...\n" );
+        exit( 1 );
+      }
+      init_nhm_caa_events_displ();
+      totalCycles = getTotalCycles();
+      calc_nhm_deriv_values( totalCycles );
+      calc_post_deriv_values();
+      if ( !csv ) {
+        put_C_header( fp, nhm_caa_events_displ );
+        put_C_modules( fp, nhm_caa_events_displ );
+      } else {
+        put_C_header_csv( fp, nhm_caa_events_displ );
+        put_C_modules_csv( fp, nhm_caa_events_displ );
+      }
+    }
+    if ( !csv ) put_C_footer( fp );
+    fclose( fp );
+  } else {
+    if ( !csv ) {
+      put_C_header( fp, C_events );
+      put_C_modules( fp, C_events );
+      put_C_footer( fp );
+    } else {
+      put_C_header_csv( fp, C_events );
+      put_C_modules_csv( fp, C_events );
+    }
+    fclose( fp );
   }
-  else
-  {
-   put_C_header_csv(fp, C_events);
-   put_C_modules_csv(fp, C_events);
+  if ( !csv ) {
+    char src[MAX_FILENAME_LENGTH];
+    char dst[MAX_FILENAME_LENGTH];
+    sprintf( src, "sorttable.js" );
+    sprintf( dst, "%s/HTML/sorttable.js", argv[1] );
+    int fd_src = open( src, O_RDONLY );
+    if ( fd_src == -1 ) {
+      fprintf( stderr, "ERROR: Cannot open file \"%s\"!\naborting...\n", src );
+      exit( 1 );
+    }
+    int fd_dst = open( dst, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
+    if ( fd_dst == -1 ) {
+      fprintf( stderr, "ERROR: Cannot open file \"%s\" (%s)!\naborting...\n", dst, strerror( errno ) );
+      exit( 1 );
+    }
+    char c;
+    while ( read( fd_src, &c, 1 ) ) {
+      if ( write( fd_dst, &c, 1 ) == -1 ) {
+        std::cerr << "ERROR: failed to write to " << dst << std::endl;
+        exit( 1 );
+      }
+    }
+    close( fd_dst );
+    close( fd_src );
   }
-  fclose(fp);
- }
- if(!csv)
- {
-  char src[MAX_FILENAME_LENGTH];
-  char dst[MAX_FILENAME_LENGTH];
-  sprintf(src, "sorttable.js");
-  sprintf(dst, "%s/HTML/sorttable.js", argv[1]);
-  int fd_src = open(src, O_RDONLY);
-  if(fd_src == -1)
-  {
-   fprintf(stderr, "ERROR: Cannot open file \"%s\"!\naborting...\n", src);
-   exit(1);
-  }
-  int fd_dst = open(dst, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-  if(fd_dst == -1)
-  {
-   fprintf(stderr, "ERROR: Cannot open file \"%s\" (%s)!\naborting...\n", dst, strerror(errno));
-   exit(1);
-  }
-  char c;
-  while(read(fd_src, &c, 1))
-  {
-   if ( write(fd_dst, &c, 1) == -1 ) {
-     std::cerr << "ERROR: failed to write to " << dst << std::endl;
-     exit(1);
-   }
-  }
-  close(fd_dst);
-  close(fd_src);
- }
- return 0;
+  return 0;
 }

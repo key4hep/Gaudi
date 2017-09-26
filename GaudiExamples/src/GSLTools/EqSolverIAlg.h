@@ -1,13 +1,12 @@
 #ifndef ALGTOOLS_EQSOLVERIALG_H
 #define ALGTOOLS_EQSOLVERIALG_H 1
 
-
 // Include files
 
 // from Gaudi
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Property.h"
 
 /// Forward references
 struct IEqSolver;
@@ -21,24 +20,22 @@ struct IEqSolver;
  */
 //-----------------------------------------------------------------------------
 
-class EqSolverIAlg : public Algorithm {
+class EqSolverIAlg : public Algorithm
+{
 
 public:
   /// Standard constructor
   EqSolverIAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
-  ~EqSolverIAlg( ) override; ///< Destructor
+  ~EqSolverIAlg() override; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
 protected:
-
 private:
-
-  IEqSolver*   m_privateTool;
-  IEqSolver*   m_publicTool;
-
+  IEqSolver* m_privateTool;
+  IEqSolver* m_publicTool;
 };
 #endif // ALGTOOLS_EQSOLVERIALG_H

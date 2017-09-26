@@ -58,32 +58,32 @@ extern "C" {
 
 #include <perfmon/perfmon.h>
 
-#define PFM_PEBS_CORE_SMPL_NAME	"pebs_core"
+#define PFM_PEBS_CORE_SMPL_NAME "pebs_core"
 
 /*
  * format specific parameters (passed at context creation)
  */
 typedef struct {
-	uint64_t	cnt_reset;	/* counter reset value */
-	uint64_t	buf_size;	/* size of the buffer in bytes */
-	uint64_t	intr_thres;	/* index of interrupt threshold entry */
-	uint64_t	reserved[6];	/* for future use */
+  uint64_t cnt_reset;   /* counter reset value */
+  uint64_t buf_size;    /* size of the buffer in bytes */
+  uint64_t intr_thres;  /* index of interrupt threshold entry */
+  uint64_t reserved[6]; /* for future use */
 } pfm_pebs_core_smpl_arg_t;
 
 /*
  * DS Save Area
  */
 typedef struct {
-	uint64_t	bts_buf_base;
-	uint64_t	bts_index;
-	uint64_t	bts_abs_max;
-	uint64_t	bts_intr_thres;
-	uint64_t	pebs_buf_base;
-	uint64_t	pebs_index;
-	uint64_t	pebs_abs_max;
-	uint64_t	pebs_intr_thres;
-	uint64_t	pebs_cnt_reset;
-} pfm_ds_area_core_t; 
+  uint64_t bts_buf_base;
+  uint64_t bts_index;
+  uint64_t bts_abs_max;
+  uint64_t bts_intr_thres;
+  uint64_t pebs_buf_base;
+  uint64_t pebs_index;
+  uint64_t pebs_abs_max;
+  uint64_t pebs_intr_thres;
+  uint64_t pebs_cnt_reset;
+} pfm_ds_area_core_t;
 
 /*
  * This header is at the beginning of the sampling buffer returned to the user.
@@ -96,43 +96,43 @@ typedef struct {
  * 	actual_buffer = (unsigned long)(hdr+1)+hdr->hdr_start_offs
  */
 typedef struct {
-	uint64_t		overflows;	/* #overflows for buffer */
-	size_t			buf_size;	/* bytes in the buffer */
-	size_t			start_offs;	/* actual buffer start offset */
-	uint32_t		version;	/* smpl format version */
-	uint32_t		reserved1;	/* for future use */
-	uint64_t		reserved2[5];	/* for future use */
-	pfm_ds_area_core_t	ds;		/* DS management Area */
+  uint64_t overflows;    /* #overflows for buffer */
+  size_t buf_size;       /* bytes in the buffer */
+  size_t start_offs;     /* actual buffer start offset */
+  uint32_t version;      /* smpl format version */
+  uint32_t reserved1;    /* for future use */
+  uint64_t reserved2[5]; /* for future use */
+  pfm_ds_area_core_t ds; /* DS management Area */
 } pfm_pebs_core_smpl_hdr_t;
 
 /*
  * PEBS record format as for both 32-bit and 64-bit modes
  */
 typedef struct {
-	uint64_t eflags;
-	uint64_t ip;
-	uint64_t eax;
-	uint64_t ebx;
-	uint64_t ecx;
-	uint64_t edx;
-	uint64_t esi;
-	uint64_t edi;
-	uint64_t ebp;
-	uint64_t esp;
-	uint64_t r8;	/* 0 in 32-bit mode */
-	uint64_t r9;	/* 0 in 32-bit mode */
-	uint64_t r10;	/* 0 in 32-bit mode */
-	uint64_t r11;	/* 0 in 32-bit mode */
-	uint64_t r12;	/* 0 in 32-bit mode */
-	uint64_t r13;	/* 0 in 32-bit mode */
-	uint64_t r14;	/* 0 in 32-bit mode */
-	uint64_t r15;	/* 0 in 32-bit mode */
+  uint64_t eflags;
+  uint64_t ip;
+  uint64_t eax;
+  uint64_t ebx;
+  uint64_t ecx;
+  uint64_t edx;
+  uint64_t esi;
+  uint64_t edi;
+  uint64_t ebp;
+  uint64_t esp;
+  uint64_t r8;  /* 0 in 32-bit mode */
+  uint64_t r9;  /* 0 in 32-bit mode */
+  uint64_t r10; /* 0 in 32-bit mode */
+  uint64_t r11; /* 0 in 32-bit mode */
+  uint64_t r12; /* 0 in 32-bit mode */
+  uint64_t r13; /* 0 in 32-bit mode */
+  uint64_t r14; /* 0 in 32-bit mode */
+  uint64_t r15; /* 0 in 32-bit mode */
 } pfm_pebs_core_smpl_entry_t;
 
 #define PFM_PEBS_CORE_SMPL_VERSION_MAJ 1U
 #define PFM_PEBS_CORE_SMPL_VERSION_MIN 0U
-#define PFM_PEBS_CORE_SMPL_VERSION (((PFM_PEBS_CORE_SMPL_VERSION_MAJ&0xffff)<<16)|\
-				   (PFM_PEBS_CORE_SMPL_VERSION_MIN & 0xffff))
+#define PFM_PEBS_CORE_SMPL_VERSION                                                                                     \
+  ( ( ( PFM_PEBS_CORE_SMPL_VERSION_MAJ & 0xffff ) << 16 ) | ( PFM_PEBS_CORE_SMPL_VERSION_MIN & 0xffff ) )
 
 #ifdef __cplusplus
 };

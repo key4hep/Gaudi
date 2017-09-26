@@ -15,7 +15,7 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#define  DATASVC_FILERECORDDATASVC_CPP
+#define DATASVC_FILERECORDDATASVC_CPP
 
 #include "RecordDataSvc.h"
 
@@ -35,11 +35,12 @@
  *   @author  M.Frank
  *   @version 1.0
  */
-class FileRecordDataSvc  : public RecordDataSvc   {
- public:
-
+class FileRecordDataSvc : public RecordDataSvc
+{
+public:
   /// Standard Constructor
-  FileRecordDataSvc(const std::string& nam, ISvcLocator* svc) : RecordDataSvc(nam,svc) {
+  FileRecordDataSvc( const std::string& nam, ISvcLocator* svc ) : RecordDataSvc( nam, svc )
+  {
     m_cnvSvc           = nullptr;
     m_rootName         = "/FileRecords";
     m_incidentName     = "NEW_FILE_RECORD";
@@ -51,5 +52,4 @@ class FileRecordDataSvc  : public RecordDataSvc   {
 };
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_COMPONENT(FileRecordDataSvc)
-
+DECLARE_COMPONENT( FileRecordDataSvc )

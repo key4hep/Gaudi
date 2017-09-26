@@ -7,9 +7,9 @@
 // ============================================================================
 // from CLHEP
 // ============================================================================
-#include "CLHEP/GenericFunctions/GenericFunctions.hh"
-#include "CLHEP/GenericFunctions/Argument.hh"
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
+#include "CLHEP/GenericFunctions/Argument.hh"
+#include "CLHEP/GenericFunctions/GenericFunctions.hh"
 // ============================================================================
 // GaudiGSL/GaudiMath
 // ============================================================================
@@ -22,10 +22,10 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
@@ -35,44 +35,47 @@ namespace Genfun
   namespace GaudiMathImplementation
   {
     /// the actual type for primitive adaptor
-    typedef Genfun::GaudiMathImplementation::SimpleFunction GSLFunction ;
+    typedef Genfun::GaudiMathImplementation::SimpleFunction GSLFunction;
 
     class GAUDI_API GSLFunctionWithError : public AbsFunction
     {
     public:
       /// the actual type of the function
-      typedef int (*Function)( double , gsl_sf_result* ) ;
+      typedef int ( *Function )( double, gsl_sf_result* );
+
     public:
       /// mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( GSLFunctionWithError )
     public:
       /// constructor with pointer to function
-      GSLFunctionWithError ( Function function ) ;
+      GSLFunctionWithError( Function function );
       /// copy constructor
-      GSLFunctionWithError ( const GSLFunctionWithError& ) ;
+      GSLFunctionWithError( const GSLFunctionWithError& );
       /// destructor
-      ~GSLFunctionWithError () override  = default;
+      ~GSLFunctionWithError() override = default;
       /// the main method
-      double operator() (       double    x ) const override;
-      double operator() ( const Argument& x ) const override;
-      bool         hasAnalyticDerivative () const override { return true ; }
-      unsigned int dimensionality        () const override { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const override;
+      double operator()( double x ) const override;
+      double operator()( const Argument& x ) const override;
+      bool hasAnalyticDerivative() const override { return true; }
+      unsigned int dimensionality() const override { return 1; }
+      Genfun::Derivative partial( unsigned int i ) const override;
 
       /// get the function itself
-      Function             function () const ;
+      Function function() const;
       /// get the last evaluated result
-      const gsl_sf_result& result   () const ;
+      const gsl_sf_result& result() const;
       /// get the error in the last estimate of the result
-      double               error    () const ;
+      double error() const;
+
     private:
       // default constructor is disabled
-      GSLFunctionWithError () ;
+      GSLFunctionWithError();
       // assignement operator is disabled
-      GSLFunctionWithError& operator=( const GSLFunctionWithError & ) ;
+      GSLFunctionWithError& operator=( const GSLFunctionWithError& );
+
     private:
-      Function        m_function ;
-      std::unique_ptr<gsl_sf_result>  m_result   ;
+      Function m_function;
+      std::unique_ptr<gsl_sf_result> m_result;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLFunctionWithError )
@@ -81,36 +84,38 @@ namespace Genfun
     {
     public:
       /// the actual type of the function
-      typedef double (*Function)( double , gsl_mode_t ) ;
+      typedef double ( *Function )( double, gsl_mode_t );
+
     public:
       /// mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( GSLFunctionWithMode )
     public:
       /// constructor with pointer to function
-      GSLFunctionWithMode ( Function          fun  ,
-                            const gsl_mode_t& mode ) ;
+      GSLFunctionWithMode( Function fun, const gsl_mode_t& mode );
       /// copy constructor
-      GSLFunctionWithMode ( const GSLFunctionWithMode& ) ;
+      GSLFunctionWithMode( const GSLFunctionWithMode& );
       /// destructor
-      ~GSLFunctionWithMode () override = default;
+      ~GSLFunctionWithMode() override = default;
       /// the main method
-      double operator() (       double    x ) const override;
-      double operator() ( const Argument& x ) const override;
-      bool         hasAnalyticDerivative () const override { return true ; }
-      unsigned int dimensionality        () const override { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const override ;
+      double operator()( double x ) const override;
+      double operator()( const Argument& x ) const override;
+      bool hasAnalyticDerivative() const override { return true; }
+      unsigned int dimensionality() const override { return 1; }
+      Genfun::Derivative partial( unsigned int i ) const override;
       /// get the function itself
-      Function             function () const ;
+      Function function() const;
       /// get the current mode
-      const gsl_mode_t&    mode     () const ;
+      const gsl_mode_t& mode() const;
+
     private:
       // default constructor is disabled
-      GSLFunctionWithMode () ;
+      GSLFunctionWithMode();
       // assignement operator is disabled
-      GSLFunctionWithMode& operator=( const GSLFunctionWithError & ) ;
+      GSLFunctionWithMode& operator=( const GSLFunctionWithError& );
+
     private:
-      Function        m_function ;
-      std::unique_ptr<gsl_mode_t>     m_mode     ;
+      Function m_function;
+      std::unique_ptr<gsl_mode_t> m_mode;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLFunctionWithMode )
@@ -119,44 +124,43 @@ namespace Genfun
     {
     public:
       /// the actual type of the function
-      typedef int (*Function)( double          ,
-                               gsl_mode_t      ,
-                               gsl_sf_result*  ) ;
+      typedef int ( *Function )( double, gsl_mode_t, gsl_sf_result* );
+
     public:
       /// mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( GSLFunctionWithModeAndError )
     public:
       /// constructor with pointer to function
-      GSLFunctionWithModeAndError ( Function          fun  ,
-                                    const gsl_mode_t& mode ) ;
+      GSLFunctionWithModeAndError( Function fun, const gsl_mode_t& mode );
       /// copy constructor
-      GSLFunctionWithModeAndError ( const GSLFunctionWithModeAndError& ) ;
+      GSLFunctionWithModeAndError( const GSLFunctionWithModeAndError& );
       /// destructor
-      ~GSLFunctionWithModeAndError () override = default;
+      ~GSLFunctionWithModeAndError() override = default;
       /// the main method
-      double operator() (       double    x ) const override;
-      double operator() ( const Argument& x ) const override;
-      bool         hasAnalyticDerivative () const override { return true ; }
-      unsigned int dimensionality        () const override { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const override;
+      double operator()( double x ) const override;
+      double operator()( const Argument& x ) const override;
+      bool hasAnalyticDerivative() const override { return true; }
+      unsigned int dimensionality() const override { return 1; }
+      Genfun::Derivative partial( unsigned int i ) const override;
       /// get the function itself
-      Function             function () const ;
+      Function function() const;
       /// get the current mode
-      const gsl_mode_t&    mode     () const ;
+      const gsl_mode_t& mode() const;
       /// get the last evaluated result
-      const gsl_sf_result& result   () const ;
+      const gsl_sf_result& result() const;
       /// get the error in the last estimate of the result
-      double               error    () const ;
+      double error() const;
+
     private:
       // default constructor is disabled
-      GSLFunctionWithModeAndError () ;
+      GSLFunctionWithModeAndError();
       // assignement operator is disabled
-      GSLFunctionWithModeAndError& operator=
-      ( const GSLFunctionWithModeAndError & ) ;
+      GSLFunctionWithModeAndError& operator=( const GSLFunctionWithModeAndError& );
+
     private:
-      Function        m_function ;
-      std::unique_ptr<gsl_mode_t>     m_mode     ;
-      std::unique_ptr<gsl_sf_result>  m_result   ;
+      Function m_function;
+      std::unique_ptr<gsl_mode_t> m_mode;
+      std::unique_ptr<gsl_sf_result> m_result;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLFunctionWithModeAndError )
@@ -164,9 +168,9 @@ namespace Genfun
   } // end of namespace GaudiMath Implemnentation
 } // end of namespace Genfun
 
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic pop
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic pop
 #endif
 

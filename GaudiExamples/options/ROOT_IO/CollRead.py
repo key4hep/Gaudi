@@ -4,7 +4,7 @@ from Configurables import (SequencerTimerTool, GaudiPersistency, ReadAlg)
 # Basic configuration for Gaudi persistency
 GaudiPersistency()
 
-FileCatalog(Catalogs = [ "xmlcatalog_file:ROOTIO.xml" ])
+FileCatalog(Catalogs=["xmlcatalog_file:ROOTIO.xml"])
 
 # Input
 esel = EventSelector(PrintFreq=100)
@@ -19,4 +19,4 @@ app = ApplicationMgr(TopAlg=[ReadAlg()],
 app.ExtSvc.append(evtColl)
 
 # Verbosity
-#SequencerTimerTool(OutputLevel=WARNING)
+# SequencerTimerTool(OutputLevel=WARNING)

@@ -13,7 +13,7 @@
 // ============================================================================
 // forward declaration
 // ============================================================================
-class ChronoEntity ;
+class ChronoEntity;
 // ============================================================================
 /** @class IChronoSvc IChronoSvc.h GaudiKernel/IChronoSvc.h
  *  "Chrono"-related part of interface IChronoStatSvc
@@ -28,34 +28,24 @@ class ChronoEntity ;
  *  @date December 1, 1999
  *  @date 2007-07-08
  */
-class GAUDI_API IChronoSvc: virtual public IInterface
+class GAUDI_API IChronoSvc : virtual public IInterface
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IChronoSvc,3,0);
+  DeclareInterfaceID( IChronoSvc, 3, 0 );
   // ==========================================================================
   /// the actual type of identifier for Chrono objects
-  typedef    std::string     ChronoTag  ;
+  typedef std::string ChronoTag;
   /// Type of the delta-time
-  //typedef    longlong        ChronoTime ;
-  typedef    double          ChronoTime ;
+  // typedef    longlong        ChronoTime ;
+  typedef double ChronoTime;
   // ==========================================================================
 public:
   // ==========================================================================
   // status of Chrono objects
-  enum ChronoStatus
-    {
-      UNKNOWN = 0 ,
-      RUNNING     ,
-      STOPPED
-    };
+  enum ChronoStatus { UNKNOWN = 0, RUNNING, STOPPED };
   // types of Chrono objects
-  enum ChronoType
-    {
-      USER = 0 ,
-      KERNEL   ,
-      ELAPSED
-    } ;
+  enum ChronoType { USER = 0, KERNEL, ELAPSED };
   // ==========================================================================
 public:
   // ==========================================================================
@@ -63,38 +53,38 @@ public:
    *     @param t chrono tag (name)
    *     @return chrono object
    */
-  virtual       ChronoEntity* chronoStart   ( const ChronoTag& t ) = 0;
+  virtual ChronoEntity* chronoStart( const ChronoTag& t ) = 0;
   // ==========================================================================
   /**    stop    chrono, tagged by its name
    *     @param t chrono tag (name)
    *     @return status code
    */
-  virtual const ChronoEntity* chronoStop    ( const ChronoTag& t ) = 0;
+  virtual const ChronoEntity* chronoStop( const ChronoTag& t ) = 0;
   // ==========================================================================
   /**    return chrono delta time of last start/stop pair
    *     @param t chrono tag (name)
    *     @param f chtono type
    *     @return delta time
    */
-  virtual ChronoTime  chronoDelta   ( const ChronoTag& t , ChronoType f ) = 0 ;
+  virtual ChronoTime chronoDelta( const ChronoTag& t, ChronoType f ) = 0;
   // ==========================================================================
   /**    prints (using message service)  info about chrono, tagged by its name
    *     @param t chrono tag (name)
    *     @return status code
    */
-  virtual void  chronoPrint   ( const ChronoTag&  t ) = 0;
+  virtual void chronoPrint( const ChronoTag& t ) = 0;
   // ==========================================================================
   /**    return the status of named chrono
    *     @param t chrono tag (name)
    *     @return chrono status
    */
-  virtual ChronoStatus  chronoStatus ( const ChronoTag&  t ) = 0;
+  virtual ChronoStatus chronoStatus( const ChronoTag& t ) = 0;
   // ==========================================================================
   /** extract the chrono entity for the given tag (name)
    *  @param t chrono tag(name)
    *  @return pointer to chrono entity
    */
-  virtual const ChronoEntity* chrono ( const ChronoTag& t ) const = 0 ;
+  virtual const ChronoEntity* chrono( const ChronoTag& t ) const = 0;
   // ==========================================================================
 };
 // ============================================================================

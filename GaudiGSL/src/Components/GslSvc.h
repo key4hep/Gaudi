@@ -83,7 +83,6 @@ struct IGslErrorHandler; // from GaudiGSL
 class GslSvc : public extends<Service, IGslSvc>
 {
 public:
-
   using extends::extends;
 
   ///  no copy constructor / assignment

@@ -11,6 +11,7 @@ import logging
 import re
 from subprocess import check_output, CalledProcessError
 
+
 def checkGitVersion():
     '''
     Ensure we have a usable version of Git (>= 1.7.9.1).
@@ -21,9 +22,13 @@ def checkGitVersion():
     '''
     version = check_output(['git', '--version']).split()[-1]
     if versionKey(version) < versionKey('1.7.9.1'):
-        raise RuntimeError('bad version of git found: %s (1.7.9.1 required)' % version)
+        raise RuntimeError(
+            'bad version of git found: %s (1.7.9.1 required)' % version)
+
 
 _VK_RE = re.compile(r'(\d+|\D+)')
+
+
 def versionKey(x):
     '''
     Key function to be passes to list.sort() to sort strings
@@ -32,6 +37,7 @@ def versionKey(x):
     return [int(i) if i[0] in '0123456789' else i
             for i in _VK_RE.split(x)
             if i]
+
 
 def findLatestTag():
     '''
@@ -50,6 +56,7 @@ def findLatestTag():
         logging.info('found %s', tags[-1])
         return tags[-1]
     logging.info('no valid tag found')
+
 
 def releaseNotes(path=os.curdir, from_tag=None, branch=None):
     '''
@@ -84,6 +91,7 @@ def releaseNotes(path=os.curdir, from_tag=None, branch=None):
     out = re.sub(r' - commit ([0-9a-f]+)', add_contributors, out)
     return out
 
+
 def updateReleaseNotes(path, notes):
     '''
     Smartly prepend the content of notes to the release.notes file in path.
@@ -91,6 +99,7 @@ def updateReleaseNotes(path, notes):
     notes_filename = os.path.join(path, 'doc', 'release.notes')
     logging.info('updating %s', notes_filename)
     from itertools import takewhile, dropwhile
+
     def dropuntil(predicate, iterable):
         return dropwhile(lambda x: not predicate(x), iterable)
     with open(notes_filename) as notes_file:
@@ -101,7 +110,8 @@ def updateReleaseNotes(path, notes):
         notes_file.write('\n')
         notes_file.writelines(l.rstrip() + '\n' for l in notes.splitlines())
         notes_file.write('\n')
-        notes_file.writelines(dropuntil(re.compile(r'^!?============').match, orig_data))
+        notes_file.writelines(
+            dropuntil(re.compile(r'^!?============').match, orig_data))
 
 
 def tag_bar(pkg, version=None):

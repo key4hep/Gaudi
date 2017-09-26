@@ -12,25 +12,28 @@
 
 #include <boost/python.hpp>
 
-#define cpuid(func,ax,bx,cx,dx) __asm__ __volatile__ ("cpuid": "=a" (ax), "=b" (bx), "=c" (cx), "=d" (dx) : "a" (func));
+#define cpuid( func, ax, bx, cx, dx )                                                                                  \
+  __asm__ __volatile__( "cpuid" : "=a"( ax ), "=b"( bx ), "=c"( cx ), "=d"( dx ) : "a"( func ) );
 
-bool is_nehalem() {
-    int a,b,c,d; 
-    cpuid(1,a,b,c,d); 
-    int sse4_2_mask = 1 << 20; 
-    return (c & sse4_2_mask);
-}
-
-const char* CPUFamily() {
-    if (is_nehalem()) {
-        return "nehalem";
-    } else {
-        return "core";
-    }
-}
-
-BOOST_PYTHON_MODULE(PyCPUFamily)
+bool is_nehalem()
 {
-    using namespace boost::python;
-    def("CPUFamily", CPUFamily);
+  int a, b, c, d;
+  cpuid( 1, a, b, c, d );
+  int sse4_2_mask = 1 << 20;
+  return ( c & sse4_2_mask );
+}
+
+const char* CPUFamily()
+{
+  if ( is_nehalem() ) {
+    return "nehalem";
+  } else {
+    return "core";
+  }
+}
+
+BOOST_PYTHON_MODULE( PyCPUFamily )
+{
+  using namespace boost::python;
+  def( "CPUFamily", CPUFamily );
 }

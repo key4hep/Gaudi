@@ -1,9 +1,9 @@
 #include "CPUCruncher.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 #include "HiveNumbers.h"
 #include <ctime>
 #include <sys/resource.h>
 #include <sys/times.h>
-#include "GaudiKernel/ThreadLocalContext.h"
 
 #include <tbb/tick_count.h>
 #include <thread>
@@ -14,10 +14,10 @@ CPUCruncher::CHM CPUCruncher::m_name_ncopies_map;
 
 DECLARE_COMPONENT( CPUCruncher )
 
-#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define DEBUG_MSG ON_DEBUG debug()
 
-#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
+#define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 #define VERBOSE_MSG ON_VERBOSE verbose()
 
 //------------------------------------------------------------------------------
@@ -85,15 +85,8 @@ The relation is a sqrt for times greater than 10^-4 seconds.
 */
 void CPUCruncher::calibrate()
 {
-  m_niters_vect = { 0, 500, 600, 700, 800,
-                    1000, 1300, 1600,
-                    2000, 2300, 2600,
-                    3000, 3300, 3500, 3900,
-                    4200, 5000, 6000, 8000,
-                    10000, 12000, 15000, 17000,
-                    20000, 25000,
-                    30000, 35000,
-                    40000, 60000 };
+  m_niters_vect = {0,    500,  600,  700,  800,   1000,  1300,  1600,  2000,  2300,  2600,  3000,  3300,  3500, 3900,
+                   4200, 5000, 6000, 8000, 10000, 12000, 15000, 17000, 20000, 25000, 30000, 35000, 40000, 60000};
   if ( !m_shortCalib ) {
     m_niters_vect.push_back( 100000 );
     m_niters_vect.push_back( 200000 );
@@ -238,9 +231,9 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
       double unif1, unif2;
       do {
-        unif1  = getUnifRandom( seed );
-        unif2  = getUnifRandom( seed );
-      } while (unif1 == 0.);
+        unif1 = getUnifRandom( seed );
+        unif2 = getUnifRandom( seed );
+      } while ( unif1 == 0. );
 
       const double normal = sqrt( -2. * log( unif1 ) ) * cos( 2 * M_PI * unif2 );
 
@@ -277,7 +270,8 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
     ON_DEBUG endSleeptbb = tbb::tick_count::now();
 
     // actual sleeping time can be longer due to scheduling or resource contention delays
-    ON_DEBUG {
+    ON_DEBUG
+    {
       const double actualDreamTime = ( endSleeptbb - startSleeptbb ).seconds();
       debug() << "Actual dreaming time was: " << actualDreamTime << "s" << endmsg;
     }
@@ -285,8 +279,8 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
   DEBUG_MSG << "Crunching time will be: " << crunchtime << endmsg;
   const EventContext& context = Gaudi::Hive::currentContext();
-  DEBUG_MSG << "Start event " << context.evt() << " in slot " << context.slot()
-            << " on pthreadID " << std::hex << pthread_self() << std::dec << endmsg;
+  DEBUG_MSG << "Start event " << context.evt() << " in slot " << context.slot() << " on pthreadID " << std::hex
+            << pthread_self() << std::dec << endmsg;
 
   VERBOSE_MSG << "inputs number: " << m_inputHandles.size() << endmsg;
   for ( auto& inputHandle : m_inputHandles ) {
@@ -316,14 +310,14 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   const double actualRuntime = ( endtbb - starttbb ).seconds();
 
   DEBUG_MSG << "Finish event " << context.evt()
-    //      << " on pthreadID " << context.m_thread_id
+            //      << " on pthreadID " << context.m_thread_id
             << " in " << actualRuntime << " seconds" << endmsg;
 
   DEBUG_MSG << "Timing: ExpectedCrunchtime= " << crunchtime << " ExpectedDreamtime= " << dreamtime
             << " ActualTotalRuntime= " << actualRuntime << " Ratio= " << ( crunchtime + dreamtime ) / actualRuntime
             << " Niters= " << n_iters << endmsg;
 
-  setFilterPassed(!m_invertCFD);
+  setFilterPassed( !m_invertCFD );
 
   return StatusCode::SUCCESS;
 }
@@ -345,8 +339,8 @@ StatusCode CPUCruncher::finalize() // the finalization of the algorithm
   constexpr double s2ms = 1000.;
   // do not show repetitions
   if ( ninstances != 0 ) {
-    info() << "Summary: name= " << name() << "\t avg_runtime= " << m_avg_runtime * s2ms
-           << "\t n_clones= " << ninstances << endmsg;
+    info() << "Summary: name= " << name() << "\t avg_runtime= " << m_avg_runtime * s2ms << "\t n_clones= " << ninstances
+           << endmsg;
 
     CHM::accessor name_ninstances;
     m_name_ncopies_map.find( name_ninstances, name() );

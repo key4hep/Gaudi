@@ -48,8 +48,8 @@
 #ifndef GAUDIKERNEL_AllocatorPool_h
 #define GAUDIKERNEL_AllocatorPool_h 1
 
-#include <memory>
 #include "GaudiKernel/Kernel.h"
+#include <memory>
 
 namespace GaudiUtils
 {
@@ -63,38 +63,33 @@ namespace GaudiUtils
   class GAUDI_API AllocatorPool final
   {
   public:
-
     /// Create a pool of elements of size n
-    explicit AllocatorPool( unsigned int n=0 );
+    explicit AllocatorPool( unsigned int n = 0 );
     /// Destructor. Return storage to the free store
     ~AllocatorPool();
     /// Copy constructor
-    AllocatorPool(const AllocatorPool& right);
+    AllocatorPool( const AllocatorPool& right );
     /// Allocate one element
     inline void* Alloc();
     /// Return an element back to the pool
-    inline void  Free( void* b );
+    inline void Free( void* b );
     /// Return storage size
-    inline unsigned int  Size() const;
+    inline unsigned int Size() const;
     /// Return storage to the free store
-    void  Reset();
+    void Reset();
 
   private:
-
     /// Private equality operator
-    AllocatorPool& operator= (const AllocatorPool& right);
+    AllocatorPool& operator=( const AllocatorPool& right );
 
   private:
-
-    struct PoolLink final
-    {
+    struct PoolLink final {
       PoolLink* next = nullptr;
     };
     class PoolChunk final
     {
     public:
-      explicit PoolChunk(unsigned int sz)
-        : size(sz), mem{new char[size]}  {}
+      explicit PoolChunk( unsigned int sz ) : size( sz ), mem{new char[size]} {}
       const unsigned int size;
       std::unique_ptr<char[]> mem;
       PoolChunk* next = nullptr;
@@ -104,28 +99,26 @@ namespace GaudiUtils
     void Grow();
 
   private:
-
     const unsigned int esize;
     const unsigned int csize;
     PoolChunk* chunks = nullptr;
-    PoolLink* head = nullptr;
-    int nchunks = 0;
+    PoolLink* head    = nullptr;
+    int nchunks       = 0;
   };
 
 } // end of namespace GaudiUtils
-
-
 
 // ************************************************************
 // Alloc
 // ************************************************************
 //
-inline void*
-GaudiUtils::AllocatorPool::Alloc()
+inline void* GaudiUtils::AllocatorPool::Alloc()
 {
-  if ( head==0 ) { Grow(); }
-  PoolLink* p = head;  // return first element
-  head = p->next;
+  if ( head == 0 ) {
+    Grow();
+  }
+  PoolLink* p = head; // return first element
+  head        = p->next;
   return p;
 }
 
@@ -133,28 +126,21 @@ GaudiUtils::AllocatorPool::Alloc()
 // Free
 // ************************************************************
 //
-inline void
-GaudiUtils::AllocatorPool::Free( void* b )
+inline void GaudiUtils::AllocatorPool::Free( void* b )
 {
-  PoolLink* p = static_cast<PoolLink*>(b);
-  p->next = head;        // put b back as first element
-  head = p;
+  PoolLink* p = static_cast<PoolLink*>( b );
+  p->next     = head; // put b back as first element
+  head        = p;
 }
 
 // ************************************************************
 // Size
 // ************************************************************
 //
-inline unsigned int
-GaudiUtils::AllocatorPool::Size() const
-{
-  return nchunks*csize;
-}
-
+inline unsigned int GaudiUtils::AllocatorPool::Size() const { return nchunks * csize; }
 
 // ============================================================================
 // The END
 // ============================================================================
 #endif
 // ============================================================================
-

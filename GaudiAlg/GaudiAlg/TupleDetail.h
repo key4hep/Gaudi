@@ -3,9 +3,9 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include "GaudiAlg/Tuples.h"
 #include "GaudiAlg/Tuple.h"
 #include "GaudiAlg/TupleObj.h"
+#include "GaudiAlg/Tuples.h"
 // ============================================================================
 
 // ============================================================================
@@ -74,8 +74,8 @@ namespace Tuples
      * @author Vanya BELYAEV Ivan.Belyaev@itep.ru
      * @date   2004-1-24
      */
-    template<class HANDLER1, class HANDLER2>
-    class TupleObjImp: public TupleObj
+    template <class HANDLER1, class HANDLER2>
+    class TupleObjImp : public TupleObj
     {
     public:
       /** constructor
@@ -86,34 +86,32 @@ namespace Tuples
        *  @param  clid  NTuple CLID
        *  @param  type  NTuple type
        */
-      TupleObjImp ( HANDLER1              handler1                      ,
-                    HANDLER2              handler2                      ,
-                    const std::string&    name                          ,
-                    NTuple::Tuple*        tuple                         ,
-                    const CLID&           clid = CLID_ColumnWiseTuple   ,
-                    const Tuples::Type    type = Tuples::NTUPLE         )
-        : TupleObj ( name , tuple , clid, type )
-        , m_handler1 ( handler1 )
-        , m_handler2 ( handler2 )
-      {}
+      TupleObjImp( HANDLER1 handler1, HANDLER2 handler2, const std::string& name, NTuple::Tuple* tuple,
+                   const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
+          : TupleObj( name, tuple, clid, type ), m_handler1( handler1 ), m_handler2( handler2 )
+      {
+      }
+
     public:
+      StatusCode Error( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override
+      {
+        m_handler1( name() + " " + msg, sc );
+        return sc;
+      }
 
-      StatusCode Error
-      ( const std::string& msg ,
-        const StatusCode   sc  = StatusCode::FAILURE ) const override
-      { m_handler1 ( name() + " " + msg , sc  ) ; return sc ; }
-
-      StatusCode Warning
-      ( const std::string& msg ,
-        const StatusCode   sc  = StatusCode::FAILURE ) const override
-      { m_handler2 ( name() + " " + msg , sc  ) ; return sc ; }
+      StatusCode Warning( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override
+      {
+        m_handler2( name() + " " + msg, sc );
+        return sc;
+      }
 
     protected:
       /// empty protected  destructor
       ~TupleObjImp() override = default;
+
     private:
-      HANDLER1 m_handler1 ;
-      HANDLER2 m_handler2 ;
+      HANDLER1 m_handler1;
+      HANDLER2 m_handler2;
     };
 
     /** Templated helper functions allow to avoid heavy semantics of
@@ -144,18 +142,12 @@ namespace Tuples
      * @author Vanya BELYAEV Ivan.Belyaev@itep.ru
      * @date   2004-1-24
      */
-    template<class HANDLER1, class HANDLER2>
-    inline TupleObj* createTupleObj
-    ( HANDLER1 handler1  ,
-      HANDLER2 handler2  ,
-      const std::string& name                          ,
-      NTuple::Tuple*     tuple                         ,
-      const CLID&        clid = CLID_ColumnWiseTuple   ,
-      const Tuples::Type type = Tuples::NTUPLE         )
+    template <class HANDLER1, class HANDLER2>
+    inline TupleObj* createTupleObj( HANDLER1 handler1, HANDLER2 handler2, const std::string& name,
+                                     NTuple::Tuple* tuple, const CLID& clid = CLID_ColumnWiseTuple,
+                                     const Tuples::Type type = Tuples::NTUPLE )
     {
-      return new TupleObjImp<HANDLER1,HANDLER2>
-        ( handler1 , handler2 ,
-          name     , tuple    , clid     , type  ) ;
+      return new TupleObjImp<HANDLER1, HANDLER2>( handler1, handler2, name, tuple, clid, type );
     }
 
     /** @class ErrorHandler
@@ -173,23 +165,22 @@ namespace Tuples
     {
     public:
       /// constructor
-      ErrorHandler( const OBJECT* obj ,
-                    FUNCTION      fun )
-        : m_obj ( obj ) , m_fun ( fun ) {}
+      ErrorHandler( const OBJECT* obj, FUNCTION fun ) : m_obj( obj ), m_fun( fun ) {}
+
     public:
       /// the only one 'useful' method
-      StatusCode operator() ( const std::string& msg     ,
-                              const StatusCode   sc      ,
-                              const size_t       mp = 10 ) const
+      StatusCode operator()( const std::string& msg, const StatusCode sc, const size_t mp = 10 ) const
       {
-        return (m_obj->*m_fun)( msg , sc , mp ) ;
+        return ( m_obj->*m_fun )( msg, sc, mp );
       }
+
     private:
       // default constructor is private
       ErrorHandler();
+
     private:
       const OBJECT* m_obj = nullptr;
-      FUNCTION      m_fun ;
+      FUNCTION m_fun;
     };
 
     /** Templated helper functions allow to avoid heavy semantics of
@@ -212,11 +203,10 @@ namespace Tuples
      * @date   2004-1-24
      */
     template <class OBJECT, class FUNCTION>
-    inline ErrorHandler<OBJECT,FUNCTION>
-    make_handler ( const OBJECT* object   ,
-                   FUNCTION      function )
-    { return ErrorHandler<OBJECT,FUNCTION>( object , function ); }
-
+    inline ErrorHandler<OBJECT, FUNCTION> make_handler( const OBJECT* object, FUNCTION function )
+    {
+      return ErrorHandler<OBJECT, FUNCTION>( object, function );
+    }
   }
 
   /** Templated helper functions allow to avoid heavy semantics of
@@ -238,22 +228,14 @@ namespace Tuples
    * @date   2004-1-24
    */
   template <class OWNER>
-  inline TupleObj* createTupleObj
-  ( const OWNER*       owner                         ,
-    const std::string& name                          ,
-    NTuple::Tuple*     tuple                         ,
-    const CLID&        clid = CLID_ColumnWiseTuple   ,
-    const Tuples::Type type = Tuples::NTUPLE         )
+  inline TupleObj* createTupleObj( const OWNER* owner, const std::string& name, NTuple::Tuple* tuple,
+                                   const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
   {
-    return detail::createTupleObj
-      ( detail::make_handler ( owner , &OWNER::Error   ) ,
-        detail::make_handler ( owner , &OWNER::Warning ) ,
-        name , tuple , clid , type ) ;
+    return detail::createTupleObj( detail::make_handler( owner, &OWNER::Error ),
+                                   detail::make_handler( owner, &OWNER::Warning ), name, tuple, clid, type );
   }
 
 } // end of namespace Tuples
-
-
 
 // ============================================================================
 // The END

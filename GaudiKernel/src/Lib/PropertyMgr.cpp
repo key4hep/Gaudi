@@ -67,50 +67,41 @@ PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProp
 // ============================================================================
 // Declare a property
 // ============================================================================
-PropertyBase*
-PropertyMgr::declareProperty ( const std::string& name,
-                               GaudiHandleBase& ref,
-                               const std::string& doc )
+PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleBase& ref, const std::string& doc )
 {
-  assertUniqueName(name);
-  m_todelete   . emplace_back (new GaudiHandleProperty( name, ref ));
+  assertUniqueName( name );
+  m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
   Property* p = m_todelete.back().get();
   //
-  p -> setDocumentation    ( doc ) ;
-  m_properties . push_back ( p   ) ;
+  p->setDocumentation( doc );
+  m_properties.push_back( p );
   //
-  return p ;
+  return p;
 }
 // ============================================================================
-PropertyBase*
-PropertyMgr::declareProperty ( const std::string& name,
-                               GaudiHandleArrayBase& ref,
-                               const std::string& doc )
+PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleArrayBase& ref, const std::string& doc )
 {
-  assertUniqueName(name);
-  m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
+  assertUniqueName( name );
+  m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
   Property* p = m_todelete.back().get();
   //
-  p -> setDocumentation    ( doc ) ;
-  m_properties . push_back ( p   ) ;
+  p->setDocumentation( doc );
+  m_properties.push_back( p );
   //
-  return p ;
+  return p;
 }
 
 // ============================================================================
-PropertyBase*
-PropertyMgr::declareProperty ( const std::string& name,
-                               DataObjectHandleBase& ref,
-                               const std::string& doc )
+PropertyBase* PropertyMgr::declareProperty( const std::string& name, DataObjectHandleBase& ref, const std::string& doc )
 {
-  assertUniqueName(name);
-  m_todelete   . emplace_back( new DataObjectHandleProperty( name, ref ) );
+  assertUniqueName( name );
+  m_todelete.emplace_back( new DataObjectHandleProperty( name, ref ) );
   Property* p = m_todelete.back().get();
   //
-  p -> setDocumentation    ( doc ) ;
-  m_properties . push_back ( p   ) ;
+  p->setDocumentation( doc );
+  m_properties.push_back( p );
   //
-  return p ;
+  return p;
 }
 // ====================================================================
 // get the property by name form the proposed list

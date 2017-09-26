@@ -15,9 +15,9 @@
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "Rtypes.h"
+#include "ThreadLocalStorage.h"
 #include "tbb/recursive_mutex.h"
 #include "tbb/spin_mutex.h"
-#include "ThreadLocalStorage.h"
 
 // Interfaces
 #include "GaudiKernel/IAddressCreator.h"

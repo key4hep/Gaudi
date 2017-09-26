@@ -21,15 +21,15 @@
 // ============================================================================
 namespace AIDA
 {
-  class IHistogram   ;
-  class IHistogram1D ;
-  class IHistogram2D ;
-  class IHistogram3D ;
-  class IProfile1D ;
-  class IProfile2D ;
+  class IHistogram;
+  class IHistogram1D;
+  class IHistogram2D;
+  class IHistogram3D;
+  class IProfile1D;
+  class IProfile2D;
 }
-class StatEntity ;
-class INTuple    ;
+class StatEntity;
+class INTuple;
 // ============================================================================
 /** @file
  *  collection of useful utilities to print certain objects
@@ -52,9 +52,8 @@ namespace GaudiAlg
   class GAUDI_API Print
   {
   public:
-    static const std::string& location
-    ( const AIDA::IHistogram*   aida ) ;
-  } ;
+    static const std::string& location( const AIDA::IHistogram* aida );
+  };
   /** @class  Print1D Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print IHistogram1D
    *  (currently used for implementation of class
@@ -66,15 +65,10 @@ namespace GaudiAlg
   class GAUDI_API Print1D
   {
   public:
-    static void        print
-    ( MsgStream &               stream ,
-      const AIDA::IHistogram1D* aida   ,
-      const GaudiAlg::HistoID&  ID     ) ;
+    static void print( MsgStream& stream, const AIDA::IHistogram1D* aida, const GaudiAlg::HistoID& ID );
     //
-    static std::string toString
-    ( const AIDA::IHistogram1D* aida  ,
-      const GaudiAlg::HistoID&  ID    ) ;
-  } ;
+    static std::string toString( const AIDA::IHistogram1D* aida, const GaudiAlg::HistoID& ID );
+  };
   /** @class  Print2D Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print IHistogram1D
    *  (currently used for implementation of class
@@ -87,15 +81,10 @@ namespace GaudiAlg
   {
   public:
     //
-    static void print
-    ( MsgStream &               stream ,
-      const AIDA::IHistogram2D* aida   ,
-      const GaudiAlg::HistoID&  ID     ) ;
+    static void print( MsgStream& stream, const AIDA::IHistogram2D* aida, const GaudiAlg::HistoID& ID );
     //
-    static std::string toString
-    ( const AIDA::IHistogram2D* aida  ,
-      const GaudiAlg::HistoID&  ID    ) ;
-  } ;
+    static std::string toString( const AIDA::IHistogram2D* aida, const GaudiAlg::HistoID& ID );
+  };
   /** @class  Print3D Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print IHistogram1D
    *  (currently used for implementation of class
@@ -108,15 +97,10 @@ namespace GaudiAlg
   {
   public:
     //
-    static void print
-    ( MsgStream & stream,
-      const AIDA::IHistogram3D* aida ,
-      const GaudiAlg::HistoID&  ID   ) ;
+    static void print( MsgStream& stream, const AIDA::IHistogram3D* aida, const GaudiAlg::HistoID& ID );
     //
-    static std::string toString
-    ( const AIDA::IHistogram3D* aida  ,
-      const GaudiAlg::HistoID&  ID    ) ;
-  } ;
+    static std::string toString( const AIDA::IHistogram3D* aida, const GaudiAlg::HistoID& ID );
+  };
   /** @class  Print1DProf Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print IProfile1D
    *  (currently used for implementation of class
@@ -129,15 +113,10 @@ namespace GaudiAlg
   {
   public:
     //
-    static void        print
-    ( MsgStream & stream,
-      const AIDA::IProfile1D* aida ,
-      const GaudiAlg::HistoID&  ID   ) ;
+    static void print( MsgStream& stream, const AIDA::IProfile1D* aida, const GaudiAlg::HistoID& ID );
     //
-    static std::string toString
-    ( const AIDA::IProfile1D* aida  ,
-      const GaudiAlg::HistoID&  ID    ) ;
-  } ;
+    static std::string toString( const AIDA::IProfile1D* aida, const GaudiAlg::HistoID& ID );
+  };
   /** @class  Print2DProf Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print IProfile2D
    *  (currently used for implementation of class
@@ -150,15 +129,10 @@ namespace GaudiAlg
   {
   public:
     //
-    static void       print
-    ( MsgStream & stream,
-      const AIDA::IProfile2D* aida ,
-      const GaudiAlg::HistoID&  ID   ) ;
+    static void print( MsgStream& stream, const AIDA::IProfile2D* aida, const GaudiAlg::HistoID& ID );
     //
-    static std::string toString
-    ( const AIDA::IProfile2D* aida  ,
-      const GaudiAlg::HistoID&  ID    ) ;
-  } ;
+    static std::string toString( const AIDA::IProfile2D* aida, const GaudiAlg::HistoID& ID );
+  };
   // ==========================================================================
   /** @class  PrintTuple Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print INTuple object
@@ -170,15 +144,12 @@ namespace GaudiAlg
    */
   class GAUDI_API PrintTuple
   {
-  public :
+  public:
     //
-    static std::string print
-    ( const INTuple*           tuple ,
-      const GaudiAlg::TupleID& ID    ) ;
+    static std::string print( const INTuple* tuple, const GaudiAlg::TupleID& ID );
     //
-    static std::string print
-    ( const INTuple*           tuple ) ;
-  } ;
+    static std::string print( const INTuple* tuple );
+  };
   // ==========================================================================
   /** @class  PrintStat Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print StatEntity
@@ -191,10 +162,8 @@ namespace GaudiAlg
   class GAUDI_API PrintStat
   {
   public:
-    static std::string   print
-    ( const StatEntity&  stat ,
-      const std::string& tag  ) ;
-  } ;
+    static std::string print( const StatEntity& stat, const std::string& tag );
+  };
   // ==========================================================================
 } // end of namespace GaudiAlg
 

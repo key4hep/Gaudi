@@ -1,12 +1,8 @@
-#include <set>
 #include <algorithm>
 #include <numeric>
+#include <set>
 
-#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IAlgContextSvc.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IConversionSvc.h"
@@ -48,8 +44,8 @@ namespace
 }
 
 // Constructor
-Algorithm::Algorithm(const std::string& name, ISvcLocator* pSvcLocator, const std::string& version) :
-      m_name( name )
+Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const std::string& version )
+    : m_name( name )
     , m_version( version )
     , m_index( 0 )
     , // incremented by AlgResourcePool
@@ -157,7 +153,7 @@ StatusCode Algorithm::sysInitialize()
   //
 
   // ignore this step if we're a Sequence
-  if (this->isSequence()) {
+  if ( this->isSequence() ) {
     return sc;
   }
 
@@ -168,14 +164,12 @@ StatusCode Algorithm::sysInitialize()
 
   // check for explicit circular data dependencies in declared handles
   DataObjIDColl out;
-  for (auto &h : outputHandles()) {
-    if (!h->objKey().empty())
-      out.emplace(h->fullKey());
+  for ( auto& h : outputHandles() ) {
+    if ( !h->objKey().empty() ) out.emplace( h->fullKey() );
   }
-  for (auto &h: inputHandles()) {
-    if (!h->objKey().empty() && out.find(h->fullKey()) != out.end()) {
-      error() << "Explicit circular data dependency detected for id "
-              << h->fullKey() << endmsg;
+  for ( auto& h : inputHandles() ) {
+    if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
+      error() << "Explicit circular data dependency detected for id " << h->fullKey() << endmsg;
       sc = StatusCode::FAILURE;
     }
   }
@@ -188,18 +182,15 @@ StatusCode Algorithm::sysInitialize()
   DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
   acceptDHVisitor( &avis );
 
-
   // check for implicit circular data deps from child Algs/AlgTools
-  for (auto &h: m_outputDataObjs) {
-    auto i = m_inputDataObjs.find(h);
-    if (i != m_inputDataObjs.end()) {
-      if (m_filterCircDeps) {
-        warning() << "Implicit circular data dependency detected for id "
-                  << h << endmsg;
-        m_inputDataObjs.erase(i);
+  for ( auto& h : m_outputDataObjs ) {
+    auto i = m_inputDataObjs.find( h );
+    if ( i != m_inputDataObjs.end() ) {
+      if ( m_filterCircDeps ) {
+        warning() << "Implicit circular data dependency detected for id " << h << endmsg;
+        m_inputDataObjs.erase( i );
       } else {
-        error() << "Implicit circular data dependency detected for id "
-                << h << endmsg;
+        error() << "Implicit circular data dependency detected for id " << h << endmsg;
         sc = StatusCode::FAILURE;
       }
     }
@@ -210,8 +201,8 @@ StatusCode Algorithm::sysInitialize()
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
     // sort out DataObjects by path so that logging is reproducable
     // we define a little helper creating an ordered set from a non ordered one
-    auto sort = [](const DataObjID a, const DataObjID b) -> bool {return a.fullKey() < b.fullKey();};
-    auto orderset = [&sort](const DataObjIDColl& in) -> std::set<DataObjID, decltype(sort)> {
+    auto sort     = []( const DataObjID a, const DataObjID b ) -> bool { return a.fullKey() < b.fullKey(); };
+    auto orderset = [&sort]( const DataObjIDColl& in ) -> std::set<DataObjID, decltype( sort )> {
       return {in.begin(), in.end(), sort};
     };
     // Logging
@@ -222,7 +213,7 @@ StatusCode Algorithm::sysInitialize()
     for ( auto id : orderset( avis.ignoredInpKeys() ) ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for ( auto h : orderset( m_outputDataObjs)) {
+    for ( auto h : orderset( m_outputDataObjs ) ) {
       debug() << "\n  + OUTPUT " << h;
     }
     for ( auto id : orderset( avis.ignoredOutKeys() ) ) {
@@ -237,16 +228,16 @@ StatusCode Algorithm::sysInitialize()
   return sc;
 }
 
-void Algorithm::acceptDHVisitor(IDataHandleVisitor *vis) const {
+void Algorithm::acceptDHVisitor( IDataHandleVisitor* vis ) const
+{
 
-  vis->visit(this);
+  vis->visit( this );
 
   // loop through tools
   for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
 
   // loop through sub-algs
   for ( auto alg : *subAlgorithms() ) vis->visit( alg );
-
 }
 
 // IAlgorithm implementation
@@ -435,34 +426,26 @@ StatusCode Algorithm::sysBeginRun()
     if ( sc.isSuccess() ) {
 
       // Now call beginRun for any sub-algorithms
-      if( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
+      if ( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
         sc = StatusCode::FAILURE;
-        error() << " Error executing BeginRun for one or several sub-algorithms"
-                << endmsg;
+        error() << " Error executing BeginRun for one or several sub-algorithms" << endmsg;
       }
     }
+  } catch ( const GaudiException& Exception ) {
+    fatal() << " Exception with tag=" << Exception.tag() << " is caught " << endmsg;
+    error() << Exception << endmsg;
+    Stat stat( chronoSvc(), Exception.tag() );
+    sc = StatusCode::FAILURE;
+  } catch ( const std::exception& Exception ) {
+    fatal() << " Standard std::exception is caught " << endmsg;
+    error() << Exception.what() << endmsg;
+    Stat stat( chronoSvc(), "*std::exception*" );
+    sc = StatusCode::FAILURE;
+  } catch ( ... ) {
+    fatal() << "UNKNOWN Exception is caught " << endmsg;
+    Stat stat( chronoSvc(), "*UNKNOWN Exception*" );
+    sc = StatusCode::FAILURE;
   }
-  catch ( const GaudiException& Exception )
-    {
-      fatal() << " Exception with tag=" << Exception.tag()
-              << " is caught " << endmsg;
-      error() << Exception  << endmsg;
-      Stat stat( chronoSvc() , Exception.tag() );
-      sc = StatusCode::FAILURE;
-    }
-  catch( const std::exception& Exception )
-    {
-      fatal() << " Standard std::exception is caught " << endmsg;
-      error() << Exception.what()  << endmsg;
-      Stat stat( chronoSvc() , "*std::exception*" );
-      sc = StatusCode::FAILURE;
-    }
-  catch(...)
-    {
-      fatal() << "UNKNOWN Exception is caught " << endmsg;
-      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-      sc = StatusCode::FAILURE;
-    }
   return sc;
 }
 
@@ -516,7 +499,7 @@ StatusCode Algorithm::sysEndRun()
 
 StatusCode Algorithm::endRun() { return StatusCode::SUCCESS; }
 
-StatusCode Algorithm::sysExecute(const EventContext& ctx)
+StatusCode Algorithm::sysExecute( const EventContext& ctx )
 {
 
   m_event_context = ctx;
@@ -543,9 +526,9 @@ StatusCode Algorithm::sysExecute(const EventContext& ctx)
 
   TimelineEvent timeline;
   timeline.algorithm = this->name();
-  timeline.thread = pthread_self();
-  timeline.slot   = ctx.slot();
-  timeline.event  = ctx.evt();
+  timeline.thread    = pthread_self();
+  timeline.slot      = ctx.slot();
+  timeline.event     = ctx.evt();
 
   try {
 
@@ -599,13 +582,11 @@ StatusCode Algorithm::sysExecute(const EventContext& ctx)
     unsigned int nerr = m_aess->incrementErrorCount( this );
     // Check if maximum is exeeded
     if ( nerr < m_errorMax ) {
-      warning() << "Continuing from error (cnt=" << nerr << ", max=" 
-                << m_errorMax << ")" << endmsg;
+      warning() << "Continuing from error (cnt=" << nerr << ", max=" << m_errorMax << ")" << endmsg;
       // convert to success
       status = StatusCode::SUCCESS;
     } else {
-      error() << "Maximum number of errors (" << m_errorMax << ") reached."
-              << endmsg;
+      error() << "Maximum number of errors (" << m_errorMax << ") reached." << endmsg;
     }
   }
   return status;
@@ -757,34 +738,39 @@ unsigned int Algorithm::index() const { return m_index; }
 
 void Algorithm::setIndex( const unsigned int& idx ) { m_index = idx; }
 
-bool Algorithm::isExecuted() const {
+bool Algorithm::isExecuted() const
+{
   const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).state()==AlgExecState::State::Done;
+  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context ).state() == AlgExecState::State::Done;
 }
 
-void Algorithm::setExecuted( bool state ) const {
+void Algorithm::setExecuted( bool state ) const
+{
   const EventContext& context = Gaudi::Hive::currentContext();
-  AlgExecState::State s = state ? AlgExecState::State::Done : AlgExecState::State::None;
-  algExecStateSvc()->algExecState(const_cast<IAlgorithm*>((const IAlgorithm*)this), context).setState(s);
+  AlgExecState::State s       = state ? AlgExecState::State::Done : AlgExecState::State::None;
+  algExecStateSvc()->algExecState( const_cast<IAlgorithm*>( (const IAlgorithm*)this ), context ).setState( s );
 }
 
-void Algorithm::resetExecuted() {
+void Algorithm::resetExecuted()
+{
   const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context).reset();
+  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context ).reset();
 }
 
-bool Algorithm::isEnabled() const {
-  return m_isEnabled;
+bool Algorithm::isEnabled() const { return m_isEnabled; }
+
+bool Algorithm::filterPassed() const
+{
+  const EventContext& context = Gaudi::Hive::currentContext();
+  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context ).filterPassed();
 }
 
-bool Algorithm::filterPassed() const {
+void Algorithm::setFilterPassed( bool state ) const
+{
   const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).filterPassed();
-}
-
-void Algorithm::setFilterPassed( bool state ) const {
-  const EventContext& context = Gaudi::Hive::currentContext();
-  algExecStateSvc()->algExecState(const_cast<IAlgorithm*>((const IAlgorithm*)this), context).setFilterPassed(state);
+  algExecStateSvc()
+      ->algExecState( const_cast<IAlgorithm*>( (const IAlgorithm*)this ), context )
+      .setFilterPassed( state );
 }
 
 const std::vector<Algorithm*>* Algorithm::subAlgorithms() const { return &m_subAlgms; }
@@ -1007,12 +993,9 @@ void Algorithm::deregisterTool( IAlgTool* tool ) const
   }
 }
 
-std::ostream& Algorithm::toControlFlowExpression(std::ostream& os) const {
+std::ostream& Algorithm::toControlFlowExpression( std::ostream& os ) const
+{
   return os << type() << "('" << name() << "')";
 }
 
-
-unsigned int
-Algorithm::errorCount() const {
-  return m_aess->algErrorCount(static_cast<const IAlgorithm*>(this));
-}
+unsigned int Algorithm::errorCount() const { return m_aess->algErrorCount( static_cast<const IAlgorithm*>( this ) ); }

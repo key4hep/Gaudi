@@ -6,8 +6,8 @@
 #include <vector>
 
 // Framework include files
-#include "GaudiKernel/IService.h"
 #include "GaudiKernel/IRndmGen.h"
+#include "GaudiKernel/IService.h"
 #include "GaudiKernel/SmartIF.h"
 
 // Forward declarations
@@ -32,10 +32,11 @@ class IRndmGenFactory;
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API IRndmGenSvc: virtual public IService {
+class GAUDI_API IRndmGenSvc : virtual public IService
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IRndmGenSvc,2,1);
+  DeclareInterfaceID( IRndmGenSvc, 2, 1 );
   /** Retrieve engine.
       @return pointer to random number engine
   */
@@ -45,16 +46,19 @@ public:
       @param fac Pointer to factory to be added
       @return StatusCode indicating success or failure.
   */
-  virtual StatusCode generator(const IRndmGen::Param& par, IRndmGen*& refpGen) = 0;
+  virtual StatusCode generator( const IRndmGen::Param& par, IRndmGen*& refpGen ) = 0;
 
-  SmartIF<IRndmGen> generator(const IRndmGen::Param& par) {
-    IRndmGen *gen = nullptr;;
-    generator(par, gen).ignore();
-    auto r = SmartIF<IRndmGen>{ gen };
-    if (gen) { gen->release(); }
+  SmartIF<IRndmGen> generator( const IRndmGen::Param& par )
+  {
+    IRndmGen* gen = nullptr;
+    ;
+    generator( par, gen ).ignore();
+    auto r = SmartIF<IRndmGen>{gen};
+    if ( gen ) {
+      gen->release();
+    }
     return r;
   }
-
 };
 
 #endif // GAUDIKERNEL_IRNDMGENSVC_H

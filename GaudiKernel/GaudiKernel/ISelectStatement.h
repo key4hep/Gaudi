@@ -29,28 +29,28 @@
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API ISelectStatement: virtual public IInterface {
+class GAUDI_API ISelectStatement : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(ISelectStatement,2,0);
+  DeclareInterfaceID( ISelectStatement, 2, 0 );
 
   /// Statement type definition
-  enum SelectType { FUNCTION=1<<1, STRING=1<<2, FULL=1<<3, OTHER=1<<4 };
+  enum SelectType { FUNCTION = 1 << 1, STRING = 1 << 2, FULL = 1 << 3, OTHER = 1 << 4 };
 
 public:
   /// Access the type of the object
-  virtual long type()   const  = 0;
+  virtual long type() const = 0;
   /// Access the selection string
-  virtual const std::string& criteria()  const = 0;
+  virtual const std::string& criteria() const = 0;
   /// Set the type
-  virtual void setCriteria(const std::string& crit) = 0;
+  virtual void setCriteria( const std::string& crit ) = 0;
   /// Change activity flag
-  virtual void setActive(bool flag = true) = 0;
+  virtual void setActive( bool flag = true ) = 0;
   /// Check if selection is active
-  virtual bool isActive()   const = 0;
+  virtual bool isActive() const = 0;
   /// Stupid default implementation
-  virtual bool operator()(void* val) = 0;
+  virtual bool operator()( void* val ) = 0;
 };
 
-
-#endif  // GAUDIKERNEL_ISELECTSTATEMENT_H
+#endif // GAUDIKERNEL_ISELECTSTATEMENT_H

@@ -1,4 +1,4 @@
-#ifndef GAUDIALG_HISTOID_H 
+#ifndef GAUDIALG_HISTOID_H
 #define GAUDIALG_HISTOID_H 1
 // ============================================================================
 // Include files
@@ -11,13 +11,13 @@
 
 // ============================================================================
 /** @namespace Histos
- *  helper namespace to collect useful definitions, types, constants 
+ *  helper namespace to collect useful definitions, types, constants
  *  and functions, related to manipulations with histograms
  *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *  @date 2005-08-06
  */
 // ============================================================================
-namespace Histos 
+namespace Histos
 {
   /// The actual type for histogram identifier
   typedef GaudiAlg::ID HistoID;
@@ -28,7 +28,7 @@ namespace Histos
 namespace GaudiAlg
 {
   /// The actual type for histogram identifier
-  typedef Histos::HistoID HistoID ;
+  typedef Histos::HistoID HistoID;
   /// Type for bin edges for variable binning histograms
   typedef std::vector<double> HistoBinEdges;
 }

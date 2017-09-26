@@ -5,8 +5,8 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <vector>
 #include <algorithm>
+#include <vector>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -41,26 +41,28 @@ namespace Gaudi
      *  @date 2009-09-05
      */
     template <class SCALAR, unsigned int N>
-    StatusCode parse
-    ( ROOT::Math::SVector<SCALAR,N>& result ,
-      const std::string&             input  )
+    StatusCode parse( ROOT::Math::SVector<SCALAR, N>& result, const std::string& input )
     {
-      std::vector<double> tmp ;
-      StatusCode sc = parse ( tmp , input ) ;
-      if ( sc.isFailure()  ) { return sc                  ; } // RETURN
-      if ( N != tmp.size() ) { return StatusCode::FAILURE ; } // RETURN
+      std::vector<double> tmp;
+      StatusCode sc = parse( tmp, input );
+      if ( sc.isFailure() ) {
+        return sc;
+      } // RETURN
+      if ( N != tmp.size() ) {
+        return StatusCode::FAILURE;
+      } // RETURN
 #ifdef WIN32
 // Disable warning
 //    C4996: 'std::copy': Function call with parameters that may be unsafe
 // The parameters are checked
-#pragma warning(push)
-#pragma warning(disable:4996)
+#pragma warning( push )
+#pragma warning( disable : 4996 )
 #endif
-      std::copy ( tmp.begin() , tmp.end() , result.begin() ) ;
+      std::copy( tmp.begin(), tmp.end(), result.begin() );
 #ifdef WIN32
-#pragma warning(pop)
+#pragma warning( pop )
 #endif
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // ========================================================================
   } //                                          end of namespace Gaudi::Parsers
@@ -74,21 +76,21 @@ namespace Gaudi
   {
     // ========================================================================
     template <class SCALAR>
-    std::ostream& toStream ( const SCALAR& , std::ostream& ) ;
+    std::ostream& toStream( const SCALAR&, std::ostream& );
     // ========================================================================
     /** the general streaming function for SVector using python-tupel format
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-07
      */
     template <class SCALAR, unsigned int N>
-    std::ostream& toStream
-    ( const ROOT::Math::SVector<SCALAR,N>& obj , std::ostream& s )
+    std::ostream& toStream( const ROOT::Math::SVector<SCALAR, N>& obj, std::ostream& s )
     {
       s << "( ";
-      for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
-      {
-        if ( obj.begin() != cur ) { s << " , "; }
-        toStream ( *cur , s ) ;
+      for ( auto cur = obj.begin(); obj.end() != cur; ++cur ) {
+        if ( obj.begin() != cur ) {
+          s << " , ";
+        }
+        toStream( *cur, s );
       }
       return s << " )";
     }

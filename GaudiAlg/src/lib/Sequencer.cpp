@@ -506,8 +506,8 @@ StatusCode Sequencer::execute( const std::vector<Algorithm*>& theAlgs, std::vect
 StatusCode Sequencer::executeMember( Algorithm* theAlgorithm )
 {
   StatusCode result = StatusCode::SUCCESS;
-  if ( theAlgorithm->isEnabled( ) ) {
-    if ( ! theAlgorithm->isExecuted( ) ) {
+  if ( theAlgorithm->isEnabled() ) {
+    if ( !theAlgorithm->isExecuted() ) {
       result = theAlgorithm->sysExecute( getContext() );
 
       // Set the executed state of the algorithm.
@@ -536,18 +536,19 @@ StatusCode Sequencer::remove( const std::string& algname, std::vector<Algorithm*
   return result;
 }
 
-std::ostream& Sequencer::toControlFlowExpression(std::ostream& os) const {
-  auto &theAlgs = *subAlgorithms();
-  if (theAlgs.empty()) return os << "CFTrue";
+std::ostream& Sequencer::toControlFlowExpression( std::ostream& os ) const
+{
+  auto& theAlgs = *subAlgorithms();
+  if ( theAlgs.empty() ) return os << "CFTrue";
 
   os << "seq(";
   const auto algs_count = theAlgs.size();
-  const auto op = isStopOverride() ? " >> " : " & ";
-  size_t i = 0;
-  while (i < algs_count) {
-    if (i) os << op;
-    if (m_isInverted[i]) os << "~";
-    theAlgs[i]->toControlFlowExpression(os);
+  const auto op         = isStopOverride() ? " >> " : " & ";
+  size_t i              = 0;
+  while ( i < algs_count ) {
+    if ( i ) os << op;
+    if ( m_isInverted[i] ) os << "~";
+    theAlgs[i]->toControlFlowExpression( os );
     ++i;
   }
   return os << ")";

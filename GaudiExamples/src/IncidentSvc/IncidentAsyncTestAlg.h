@@ -29,7 +29,6 @@ private:
   SmartIF<IIncidentAsyncTestSvc> m_service;
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputObjHandles;
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputObjHandles;
-
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENTREGISTRYTESTALG_H_*/

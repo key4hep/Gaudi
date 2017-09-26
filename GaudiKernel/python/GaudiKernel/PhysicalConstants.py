@@ -44,21 +44,21 @@ from GaudiKernel.SystemOfUnits import *
 #
 #
 #
-pi     = 3.14159265358979323846
-twopi  = 2*pi
-halfpi = pi/2
-pi2    = pi*pi
+pi = 3.14159265358979323846
+twopi = 2 * pi
+halfpi = pi / 2
+pi2 = pi * pi
 
 #
 #
 #
-Avogadro = 6.0221367e+23/mole
+Avogadro = 6.0221367e+23 / mole
 
 #
 # c   = 299.792458 mm/ns
 # c^2 = 898.7404 (mm/ns)^2
 #
-c_light   = 2.99792458e+8 * m/s
+c_light = 2.99792458e+8 * m / s
 c_squared = c_light * c_light
 
 #
@@ -66,15 +66,15 @@ c_squared = c_light * c_light
 # hbar  = 6.58212e-13 MeV*ns
 # hbarc = 197.32705e-12 MeV*mm
 #
-h_Planck      = 6.6260755e-34 * joule*s
-hbar_Planck   = h_Planck/twopi
-hbarc         = hbar_Planck * c_light
+h_Planck = 6.6260755e-34 * joule * s
+hbar_Planck = h_Planck / twopi
+hbarc = hbar_Planck * c_light
 hbarc_squared = hbarc * hbarc
 
 #
 #
 #
-electron_charge = - eplus # see SystemOfUnits.h
+electron_charge = - eplus  # see SystemOfUnits.h
 e_squared = eplus * eplus
 
 #
@@ -82,43 +82,44 @@ e_squared = eplus * eplus
 # amu    - atomic mass unit
 #
 electron_mass_c2 = 0.51099906 * MeV
-proton_mass_c2   = 938.27231 * MeV
-neutron_mass_c2  = 939.56563 * MeV
-amu_c2           = 931.49432 * MeV
-amu              = amu_c2/c_squared
+proton_mass_c2 = 938.27231 * MeV
+neutron_mass_c2 = 939.56563 * MeV
+amu_c2 = 931.49432 * MeV
+amu = amu_c2 / c_squared
 
 #
 # permeability of free space mu0    = 2.01334e-16 Mev*(ns*eplus)^2/mm
 # permittivity of free space epsil0 = 5.52636e+10 eplus^2/(MeV*mm)
 #
-mu0      = 4*pi*1.e-7 * henry/m
-epsilon0 = 1./(c_squared*mu0)
+mu0 = 4 * pi * 1.e-7 * henry / m
+epsilon0 = 1. / (c_squared * mu0)
 
 #
 # electromagnetic coupling = 1.43996e-12 MeV*mm/(eplus^2)
 #
-elm_coupling           = e_squared/(4*pi*epsilon0)
-fine_structure_const   = elm_coupling/hbarc
-classic_electr_radius  = elm_coupling/electron_mass_c2
-electron_Compton_length = hbarc/electron_mass_c2
-Bohr_radius = electron_Compton_length/fine_structure_const
+elm_coupling = e_squared / (4 * pi * epsilon0)
+fine_structure_const = elm_coupling / hbarc
+classic_electr_radius = elm_coupling / electron_mass_c2
+electron_Compton_length = hbarc / electron_mass_c2
+Bohr_radius = electron_Compton_length / fine_structure_const
 
-alpha_rcl2 = fine_structure_const*classic_electr_radius*classic_electr_radius
+alpha_rcl2 = fine_structure_const * classic_electr_radius * classic_electr_radius
 
-twopi_mc2_rcl2 = twopi*electron_mass_c2*classic_electr_radius*classic_electr_radius
+twopi_mc2_rcl2 = twopi * electron_mass_c2 * \
+    classic_electr_radius * classic_electr_radius
 #
 #
 #
-k_Boltzmann = 8.617385e-11 * MeV/kelvin
-
-#
-#
-#
-STP_Temperature = 273.15*kelvin
-STP_Pressure    = 1.*atmosphere
-kGasThreshold   = 10.*mg/cm3
+k_Boltzmann = 8.617385e-11 * MeV / kelvin
 
 #
 #
 #
-universe_mean_density = 1.e-25*g/cm3
+STP_Temperature = 273.15 * kelvin
+STP_Pressure = 1. * atmosphere
+kGasThreshold = 10. * mg / cm3
+
+#
+#
+#
+universe_mean_density = 1.e-25 * g / cm3

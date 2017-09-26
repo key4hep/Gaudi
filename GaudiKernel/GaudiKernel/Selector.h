@@ -18,43 +18,41 @@
 #include "GaudiKernel/SelectStatement.h"
 
 // Forward declarations
-namespace NTuple    {
+namespace NTuple
+{
   class Tuple;
 }
 
-namespace NTuple    {
+namespace NTuple
+{
 
   /** NTuple Selector class.
   */
-  class GAUDI_API Selector : public SelectStatement {
+  class GAUDI_API Selector : public SelectStatement
+  {
   protected:
     /// reference to parent interface
     IInterface* m_parent;
     /// Boolean to indicate need for initialization
-    bool        m_firstCall;
+    bool m_firstCall;
     /// StatusCode indication initialization result
-    StatusCode  m_status;
+    StatusCode m_status;
+
   public:
     /// Standard constructor
-    Selector(IInterface* svc) : m_parent(svc), m_firstCall(true)
-    {
-    }
+    Selector( IInterface* svc ) : m_parent( svc ), m_firstCall( true ) {}
     /// Standard Destructor
     virtual ~Selector() = default;
     /// Check for first call
-    bool firstCall()  const   {
-      return m_firstCall;
-    }
+    bool firstCall() const { return m_firstCall; }
     /// Access initialization status
-    StatusCode initResult()  const    {
-      return m_status;
-    }
+    StatusCode initResult() const { return m_status; }
     /// Default callback from interface
-    bool operator()(void* nt) override;
+    bool operator()( void* nt ) override;
     /// Specialized callback for NTuples
-    virtual bool operator()(NTuple::Tuple* nt);
+    virtual bool operator()( NTuple::Tuple* nt );
     /// Selector Initialization
-    virtual StatusCode initialize(NTuple::Tuple* nt);
+    virtual StatusCode initialize( NTuple::Tuple* nt );
   };
 }
 #endif // GAUDI_NTUPLESVC_SELECTOR_H

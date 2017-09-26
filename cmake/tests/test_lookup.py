@@ -5,6 +5,7 @@ from os.path import join, dirname
 
 from cmake_test_utils import CMakeTestScripts
 
+
 class Tests(CMakeTestScripts):
     base_dir = dirname(__file__)
     scripts_dir = join(base_dir, 'cmake_scripts')
@@ -12,8 +13,10 @@ class Tests(CMakeTestScripts):
     def setup(self):
         # There is no 'projects_cmt' directory, but it helps testing the priorities
         # of CMAKE_PREFIX_PATH and CMTPROJECTPATH
-        os.environ['CMTPROJECTPATH'] = join(self.base_dir, 'data', 'projects_cmt')
-        os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data', 'projects')
+        os.environ['CMTPROJECTPATH'] = join(
+            self.base_dir, 'data', 'projects_cmt')
+        os.environ['CMAKE_PREFIX_PATH'] = join(
+            self.base_dir, 'data', 'projects')
         #os.environ['CMTPROJECTPATH'] = ''
         #os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data', 'projects')
         os.environ['BINARY_TAG'] = 'x86_64-slc0-gcc99-opt'

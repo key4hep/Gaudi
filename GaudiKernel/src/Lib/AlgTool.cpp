@@ -211,18 +211,16 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     m_state = m_targetState;
-    if (m_updateDataHandles) acceptDHVisitor(m_updateDataHandles.get());
+    if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
 
     // check for explicit circular data dependencies in declared handles
     DataObjIDColl out;
-    for (auto &h : outputHandles()) {
-      if (!h->objKey().empty())
-        out.emplace(h->fullKey());
+    for ( auto& h : outputHandles() ) {
+      if ( !h->objKey().empty() ) out.emplace( h->fullKey() );
     }
-    for (auto &h: inputHandles()) {
-      if (!h->objKey().empty() && out.find(h->fullKey()) != out.end()) {
-        error() << "Explicit circular data dependency found for id "
-                << h->fullKey() << endmsg;
+    for ( auto& h : inputHandles() ) {
+      if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
+        error() << "Explicit circular data dependency found for id " << h->fullKey() << endmsg;
         sc = StatusCode::FAILURE;
       }
     }
@@ -230,8 +228,8 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     // visit all sub-tools, build full set
-    DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
-    acceptDHVisitor(&avis);
+    DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
+    acceptDHVisitor( &avis );
 
     // initialize handles
     initDataHandleHolder(); // this should 'freeze' the handle configuration.

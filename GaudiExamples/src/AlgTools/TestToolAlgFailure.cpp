@@ -13,25 +13,26 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_COMPONENT(TestToolAlgFailure)
+DECLARE_COMPONENT( TestToolAlgFailure )
 
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode TestToolAlgFailure::initialize() {
+StatusCode TestToolAlgFailure::initialize()
+{
 
   debug() << "Initialize" << endmsg;
 
   if ( !GaudiAlgorithm::initialize() ) return StatusCode::FAILURE;
 
   // setup tool registry
-  //IAlgTool * mytool;
-  for ( const auto& i :m_tools ) {
+  // IAlgTool * mytool;
+  for ( const auto& i : m_tools ) {
     info() << "Loading tool " << i << endmsg;
     try {
       /* mytool = */ tool<IAlgTool>( i );
       info() << "Tool loaded successfully" << endmsg;
-    } catch (GaudiException &e) {
+    } catch ( GaudiException& e ) {
       if ( m_ignoreFailure ) {
         warning() << "Got exception '" << e.what() << "'" << endmsg;
       } else {
@@ -47,7 +48,8 @@ StatusCode TestToolAlgFailure::initialize() {
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode TestToolAlgFailure::execute() {
+StatusCode TestToolAlgFailure::execute()
+{
 
   info() << "Execute" << endmsg;
 
@@ -57,7 +59,8 @@ StatusCode TestToolAlgFailure::execute() {
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode TestToolAlgFailure::finalize() {
+StatusCode TestToolAlgFailure::finalize()
+{
 
   info() << "Finalize" << endmsg;
 

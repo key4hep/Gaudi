@@ -18,7 +18,6 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/SystemBase.h"
 
-
 /** Note: OS specific details for memory usage
 
     Entrypoints:
@@ -51,32 +50,33 @@
     @author:  M.Frank
     @version: 1.0
 */
-namespace System    {
+namespace System
+{
   /// Unit of memory
   enum MemoryUnit { Byte, kByte, MByte, GByte, TByte, PByte, EByte };
   /// Convert time from kByte to requested representation (Experts only)
-  GAUDI_API long adjustMemory(MemoryUnit typ, long value);
+  GAUDI_API long adjustMemory( MemoryUnit typ, long value );
   /// Basic Process Information: Process ID
   GAUDI_API long procID();
   /// Basic Process Information: Parent's process ID
-  GAUDI_API long parentID(InfoType fetch = ProcessBasics, long pid = -1);
+  GAUDI_API long parentID( InfoType fetch = ProcessBasics, long pid = -1 );
   /// Basic Process Information: Affinity mask
-  GAUDI_API long affinityMask(InfoType fetch = ProcessBasics, long pid = -1);
+  GAUDI_API long affinityMask( InfoType fetch = ProcessBasics, long pid = -1 );
   /// Basic Process Information: Exit status (does not really make sense for the running process, but for others!)
-  GAUDI_API long exitStatus(InfoType fetch = ProcessBasics, long pid = -1);
+  GAUDI_API long exitStatus( InfoType fetch = ProcessBasics, long pid = -1 );
   /// Basic Process Information: Base priority
-  GAUDI_API long basePriority(InfoType fetch = ProcessBasics, long pid = -1);
+  GAUDI_API long basePriority( InfoType fetch = ProcessBasics, long pid = -1 );
   /// Basic Process Information: priority boost
-  GAUDI_API long priorityBoost(InfoType fetch = PriorityBoost, long pid = -1);
+  GAUDI_API long priorityBoost( InfoType fetch = PriorityBoost, long pid = -1 );
 
   /// Basic Process Information: Number of page faults
-  GAUDI_API long numPageFault(InfoType fetch = Memory, long pid = -1);
+  GAUDI_API long numPageFault( InfoType fetch = Memory, long pid = -1 );
   /// Basic Process Information: Current page file usage
-  GAUDI_API long pagefileUsage(MemoryUnit unit = kByte, InfoType fetch = Memory, long pid = -1);
+  GAUDI_API long pagefileUsage( MemoryUnit unit = kByte, InfoType fetch = Memory, long pid = -1 );
   /// Basic Process Information: Peak usage of page file
-  GAUDI_API long pagefileUsagePeak(MemoryUnit unit = kByte, InfoType fetch = Memory, long pid = -1);
+  GAUDI_API long pagefileUsagePeak( MemoryUnit unit = kByte, InfoType fetch = Memory, long pid = -1 );
   /// Basic Process Information: Peak usage of page file
-  GAUDI_API long pagefileUsageLimit(MemoryUnit unit = kByte, InfoType fetch = Quota, long pid = -1);
+  GAUDI_API long pagefileUsageLimit( MemoryUnit unit = kByte, InfoType fetch = Quota, long pid = -1 );
 
   /// Basic Process Information: Current usage of non paged memory
   GAUDI_API long nonPagedMemory( MemoryUnit unit = kByte, InfoType fetch = Memory, long pid = -1 );
@@ -107,4 +107,4 @@ namespace System    {
   /// System Process Limits: Maximum amount of the page file this process is allowed to use
   GAUDI_API long virtualMemoryLimit( MemoryUnit unit = kByte, InfoType fetch = Quota, long pid = -1 );
 }
-#endif //GAUDIKERNEL_MEMORY_H
+#endif // GAUDIKERNEL_MEMORY_H

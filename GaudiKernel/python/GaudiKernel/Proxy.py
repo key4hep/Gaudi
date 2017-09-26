@@ -9,6 +9,7 @@ try:
     # Try to import AthenaCommon
     from AthenaCommon import Configurable
     from AthenaCommon import ConfigurableDb
+
     def _getNeededConfigurables():
         """
         In Athena, the list of configurables to be used in GaudiPython.AppMgr

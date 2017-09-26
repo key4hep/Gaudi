@@ -9,16 +9,17 @@
  *
  *  @author Pere Mato
 */
-class IMyAudTool : virtual public IAlgTool {
+class IMyAudTool : virtual public IAlgTool
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IMyAudTool,2,0);
+  DeclareInterfaceID( IMyAudTool, 2, 0 );
 
   /// Get a message
-  virtual const std::string&  message() const = 0;
+  virtual const std::string& message() const = 0;
   /// Do something
-  virtual void  doErr() = 0;
-  virtual void  doFatal() = 0;
+  virtual void doErr()   = 0;
+  virtual void doFatal() = 0;
 };
 
 #endif // GAUDIEXAMPLE_IMYAUDTOOL_H

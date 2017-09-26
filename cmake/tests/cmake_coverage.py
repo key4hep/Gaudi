@@ -12,8 +12,9 @@ COVERAGE_FILE = '.cmake_coverage'
 # coverage reports
 coverage = defaultdict(set)
 
+
 def update_coverage():
-    #print 'Updating CMake coverage reports'
+    # print 'Updating CMake coverage reports'
     if os.path.exists(COVERAGE_FILE):
         data = cPickle.load(open(COVERAGE_FILE))
         if 'lines' not in data:
@@ -25,7 +26,10 @@ def update_coverage():
         lines[filename] = sorted(linenumbers.union(lines.get(filename, [])))
     with open(COVERAGE_FILE, 'w') as report:
         cPickle.dump(data, report)
+
+
 atexit.register(update_coverage)
+
 
 def cmake_script(name, cwd=None):
     proc = Popen(['cmake', '--trace', '-P', name],
@@ -40,7 +44,8 @@ def cmake_script(name, cwd=None):
         else:
             new_err.append(line)
     return out, '\n'.join(new_err), proc.returncode
-    #return out, err, proc.returncode
+    # return out, err, proc.returncode
+
 
 def get_ranges(numbers):
     '''
@@ -53,6 +58,7 @@ def get_ranges(numbers):
                                lambda (index, number): number - index):
         group = map(itemgetter(1), group)
         yield group[0], group[-1]
+
 
 def get_active_lines(filename):
     bracket_comment_open = re.compile(r'#\[(=*)\[')
@@ -68,7 +74,8 @@ def get_active_lines(filename):
             bracket_close = ']{0}]'.format(b.group(1))
             continue  # first line of a bracket comment
         if l and not l.startswith('#') and not l.startswith('end'):
-            yield i+1
+            yield i + 1
+
 
 if __name__ == '__main__':
     data = cPickle.load(open(COVERAGE_FILE))
@@ -81,7 +88,7 @@ if __name__ == '__main__':
         active_lines = set(get_active_lines(filename))
         touched_lines = set(lines[filename])
         missed_lines = active_lines.difference(touched_lines)
-        ranges = [str(a) if a == b else '%d-%d' % (a,b)
+        ranges = [str(a) if a == b else '%d-%d' % (a, b)
                   for a, b in get_ranges(sorted(missed_lines))]
         touched_count = len(touched_lines)
         active_count = len(active_lines)

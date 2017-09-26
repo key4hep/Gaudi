@@ -21,7 +21,6 @@
  *     python string is subsequently pickled.
  */
 
-
 #ifndef GAUDIMP_PYROOTPICKLE_H
 #define GAUDIMP_PYROOTPICKLE_H
 
@@ -29,23 +28,20 @@
 
 #include "GaudiKernel/Kernel.h"
 
-namespace GaudiMP {
-
-
-class GAUDI_API PyROOTPickle
+namespace GaudiMP
 {
-public:
-  /**
-   * @brief Install the pickling of ObjectProxy's functionality.
-   * @param libpyroot_pymodule The libPyROOT python module
-   * @param objectproxy_pytype The ObjectProxy python type
-   */
-  static void Initialize (PyObject* libpyroot_pymodule,
-                          PyObject* objectproxy_pytype);
-};
 
+  class GAUDI_API PyROOTPickle
+  {
+  public:
+    /**
+     * @brief Install the pickling of ObjectProxy's functionality.
+     * @param libpyroot_pymodule The libPyROOT python module
+     * @param objectproxy_pytype The ObjectProxy python type
+     */
+    static void Initialize( PyObject* libpyroot_pymodule, PyObject* objectproxy_pytype );
+  };
 
 } // namespace GaudiMP
-
 
 #endif // not GAUDIMP_PYROOTPICKLE_H

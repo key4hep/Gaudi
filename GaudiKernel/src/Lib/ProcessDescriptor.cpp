@@ -18,79 +18,77 @@
 static const long TICK_TO_100NSEC = 100000;
 #endif // not __APPLE__
 
-namespace System    {
+namespace System
+{
   enum ProcessInfoCommand {
-      ProcessBasicInformation,
-      ProcessQuotaLimits,
-      ProcessIoCounters,
-      ProcessVmCounters,
-      ProcessTimes,
-      ProcessBasePriority,
-      ProcessRaisePriority,
-      ProcessDebugPort,
-      ProcessExceptionPort,
-      ProcessAccessToken,
-      ProcessLdtInformation,
-      ProcessLdtSize,
-      ProcessDefaultHardErrorMode,
-      ProcessIoPortHandlers,          // Note: this is kernel mode only
-      ProcessPooledUsageAndLimits,
-      ProcessWorkingSetWatch,
-      ProcessUserModeIOPL,
-      ProcessEnableAlignmentFaultFixup,
-      ProcessPriorityClass,
-      ProcessWx86Information,
-      ProcessHandleCount,
-      ProcessAffinityMask,
-      ProcessPriorityBoost,
-      MaxProcessInfoClass,  //
-      ProcessEllapsedTime
+    ProcessBasicInformation,
+    ProcessQuotaLimits,
+    ProcessIoCounters,
+    ProcessVmCounters,
+    ProcessTimes,
+    ProcessBasePriority,
+    ProcessRaisePriority,
+    ProcessDebugPort,
+    ProcessExceptionPort,
+    ProcessAccessToken,
+    ProcessLdtInformation,
+    ProcessLdtSize,
+    ProcessDefaultHardErrorMode,
+    ProcessIoPortHandlers, // Note: this is kernel mode only
+    ProcessPooledUsageAndLimits,
+    ProcessWorkingSetWatch,
+    ProcessUserModeIOPL,
+    ProcessEnableAlignmentFaultFixup,
+    ProcessPriorityClass,
+    ProcessWx86Information,
+    ProcessHandleCount,
+    ProcessAffinityMask,
+    ProcessPriorityBoost,
+    MaxProcessInfoClass, //
+    ProcessEllapsedTime
   };
 }
 #ifdef _WIN32
-  #  define strcasecmp _stricmp
-  #  define strncasecmp _strnicmp
-  #define NOMSG
-  #define NOGDI
-  #include "process.h"
-  #include "windows.h"
-  #define getpid _getpid
-namespace NtApi {
-//__declspec(dllimport) long __stdcall NtQueryInformationProcess(
-//  typedef __declspec(dllimport) long __stdcall (*__NtQueryInformationProcess)(
-//  extern "C" long __cdecl NtQueryInformationProcess(
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define NOMSG
+#define NOGDI
+#include "process.h"
+#include "windows.h"
+#define getpid _getpid
+namespace NtApi
+{
+  //__declspec(dllimport) long __stdcall NtQueryInformationProcess(
+  //  typedef __declspec(dllimport) long __stdcall (*__NtQueryInformationProcess)(
+  //  extern "C" long __cdecl NtQueryInformationProcess(
 
-    typedef long (WINAPI *__NtQueryInformationProcess)(
+  typedef long( WINAPI* __NtQueryInformationProcess )(
 
-    void* ProcessHandle,
-    long ProcessInformationClass,
-    void* ProcessInformation,
-    unsigned long ProcessInformationLength,
-    unsigned long* ReturnLength
-    );
+      void* ProcessHandle, long ProcessInformationClass, void* ProcessInformation,
+      unsigned long ProcessInformationLength, unsigned long* ReturnLength );
   __NtQueryInformationProcess NtQueryInformationProcess;
 };
-#else  // UNIX...: first the EGCS stuff, then the OS dependent includes
+#else // UNIX...: first the EGCS stuff, then the OS dependent includes
 #define WINVER 0
-#include <errno.h>
-#include <string>
-#include "unistd.h"
 #include "libgen.h"
-#include <cstdio>
-#include <unistd.h>
-#include <sstream>
-#include <iostream>
-#include <fcntl.h>
 #include "sys/times.h"
-#include <sys/types.h>
+#include "unistd.h"
+#include <cstdio>
+#include <errno.h>
+#include <fcntl.h>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <sys/signal.h>
 #include <sys/syscall.h>
+#include <sys/types.h>
+#include <unistd.h>
 #ifndef __APPLE__
 #include <sys/procfs.h>
 #endif
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <cstdio>
+#include <sys/resource.h>
+#include <sys/time.h>
 
 /* Format of the Linux proc/stat (man 5 proc, kernel 2.6.35):
  pid %d      The process ID.
@@ -300,9 +298,10 @@ struct linux_proc {
 #ifdef __APPLE__
 // static long  pg_size = 0;
 #else
-static long  pg_size = sysconf(_SC_PAGESIZE); // getpagesize();
+static long pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
 #endif
-void readProcStat(long pid, linux_proc& pinfo) {
+void readProcStat( long pid, linux_proc& pinfo )
+{
 
   int cnt, fd;
   char buf[512];
@@ -311,103 +310,74 @@ void readProcStat(long pid, linux_proc& pinfo) {
 
   ost << "/proc/" << pid << "/stat";
   std::string fname = ost.str();
-  if((fd=open(fname.c_str(),O_RDONLY))<0)  {
+  if ( ( fd = open( fname.c_str(), O_RDONLY ) ) < 0 ) {
     std::cerr << "Failed to open " << ost.str() << std::endl;
     return;
   }
 
-  lseek(fd,0,SEEK_SET);
-  if((cnt=read(fd,buf,sizeof(buf)-1))<0) {
+  lseek( fd, 0, SEEK_SET );
+  if ( ( cnt = read( fd, buf, sizeof( buf ) - 1 ) ) < 0 ) {
     std::cout << "LINUX Read of Proc file failed:" << std::endl;
-    close(fd);
+    close( fd );
     return;
   }
 
   // Format
-  if(cnt>0) {
-    buf[cnt]='\0';
-    sscanf(buf,
-           //1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9   30  1   2   3   4   5
-           "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu",
-           &pinfo.pid,
-           pinfo.comm,
-           &pinfo.state,
-           &pinfo.ppid,
-           &pinfo.pgrp,
-           &pinfo.session,
-           &pinfo.tty,
-           &pinfo.tpgid,
-           &pinfo.flags,
-           &pinfo.minflt,
-           &pinfo.cminflt,
-           &pinfo.majflt,
-           &pinfo.cmajflt,
-           &pinfo.utime,
-           &pinfo.stime,
-           &pinfo.cutime,
-           &pinfo.cstime,
-           &pinfo.priority,
-           &pinfo.nice,
-           &pinfo.num_threads,
-           &pinfo.itrealvalue,
-           &pinfo.starttime,
-           &pinfo.vsize,
-           &pinfo.rss,
-           &pinfo.rlim,
-           &pinfo.startcode,
-           &pinfo.endcode,
-           &pinfo.startstack,
-           &pinfo.kstkesp,
-           &pinfo.kstkeip,
-           &pinfo.signal,
-           &pinfo.blocked,
-           &pinfo.sigignore,
-           &pinfo.sigcatch,
-           &pinfo.wchan
-           );
+  if ( cnt > 0 ) {
+    buf[cnt] = '\0';
+    sscanf( buf,
+            // 1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9
+            // 30  1   2   3   4   5
+            "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu "
+            "%lu %lu %lu %lu %lu %lu %lu",
+            &pinfo.pid, pinfo.comm, &pinfo.state, &pinfo.ppid, &pinfo.pgrp, &pinfo.session, &pinfo.tty, &pinfo.tpgid,
+            &pinfo.flags, &pinfo.minflt, &pinfo.cminflt, &pinfo.majflt, &pinfo.cmajflt, &pinfo.utime, &pinfo.stime,
+            &pinfo.cutime, &pinfo.cstime, &pinfo.priority, &pinfo.nice, &pinfo.num_threads, &pinfo.itrealvalue,
+            &pinfo.starttime, &pinfo.vsize, &pinfo.rss, &pinfo.rlim, &pinfo.startcode, &pinfo.endcode,
+            &pinfo.startstack, &pinfo.kstkesp, &pinfo.kstkeip, &pinfo.signal, &pinfo.blocked, &pinfo.sigignore,
+            &pinfo.sigcatch, &pinfo.wchan );
   }
-  close(fd);
+  close( fd );
 }
 #endif
 
-//static long s_myPid  = ::getpid();
+// static long s_myPid  = ::getpid();
 // In order to properly support e.g. fork() calls, we cannot keep a copy of the pid!
 
 #ifndef __APPLE__
-static inline long processID(long pid) {
-  return (pid>0) ? pid : (::getpid());
-}
+static inline long processID( long pid ) { return ( pid > 0 ) ? pid : (::getpid() ); }
 #endif // not __APPLE__
 
 // Framework include files
-#include "ProcessDescriptor.h"
 #include "GaudiKernel/ModuleInfo.h"
 #include "GaudiKernel/System.h"
+#include "ProcessDescriptor.h"
 
-System::ProcessDescriptor::ProcessHandle::ProcessHandle(long pid)   {
-  if ( pid > 0 )    {
-    if ( pid != ::getpid() )    {
+System::ProcessDescriptor::ProcessHandle::ProcessHandle( long pid )
+{
+  if ( pid > 0 ) {
+    if ( pid != ::getpid() ) {
 #ifdef _WIN32
-      m_handle = ::OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ,FALSE,
-                               pid);
+      m_handle = ::OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid );
 #else
       // Note: the return type of getpid is pid_t, which is int on 64bit machines too
-      m_handle = reinterpret_cast<void*>(static_cast<long>(::getpid()));
+      m_handle = reinterpret_cast<void*>( static_cast<long>(::getpid() ) );
 #endif
       m_needRelease = true;
       return;
     }
   }
-  m_handle = processHandle();
+  m_handle      = processHandle();
   m_needRelease = false;
 }
 
-System::ProcessDescriptor::ProcessHandle::~ProcessHandle()   {
-  if ( m_needRelease )    {
+System::ProcessDescriptor::ProcessHandle::~ProcessHandle()
+{
+  if ( m_needRelease ) {
 #ifdef _WIN32
-    ::CloseHandle(m_handle);
+    ::CloseHandle( m_handle );
 #else
-      m_handle = nullptr;
+    m_handle   = nullptr;
 #endif
   }
 }
@@ -416,332 +386,297 @@ System::ProcessDescriptor::ProcessDescriptor()
 {
 #ifdef _WIN32
   static bool first = true;
-  if ( first )    {
-    first = false;
-    void* mh = ::LoadLibrary("NTDll.dll");
-    if ( mh )  {
-      NtApi::NtQueryInformationProcess = (NtApi::__NtQueryInformationProcess)
-        ::GetProcAddress((HINSTANCE)mh, "NtQueryInformationProcess");
+  if ( first ) {
+    first    = false;
+    void* mh = ::LoadLibrary( "NTDll.dll" );
+    if ( mh ) {
+      NtApi::NtQueryInformationProcess =
+          ( NtApi::__NtQueryInformationProcess )::GetProcAddress( (HINSTANCE)mh, "NtQueryInformationProcess" );
     }
   }
 #endif
 }
 
-System::ProcessDescriptor::~ProcessDescriptor()   {
-}
+System::ProcessDescriptor::~ProcessDescriptor() {}
 
-long System::ProcessDescriptor::query(long pid,
-                                      InfoType fetch,
-                                      IO_COUNTERS* info) {
-  if (info==0) return 0;
+long System::ProcessDescriptor::query( long pid, InfoType fetch, IO_COUNTERS* info )
+{
+  if ( info == 0 ) return 0;
   long status = 1;
 
-  if ( fetch == IO )   {
-#if defined(_WIN32) && WINVER>=0x0400     // Windows NT
-    ProcessHandle h(pid);
-    status = NtApi::NtQueryInformationProcess(h.handle(),
-                                              ProcessIoCounters,
-                                              info,
-                                              sizeof(IO_COUNTERS),
-                                              0);
-    status = (status==0) ? 1 : 0;
-#elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(__linux)
+  if ( fetch == IO ) {
+#if defined( _WIN32 ) && WINVER >= 0x0400 // Windows NT
+    ProcessHandle h( pid );
+    status = NtApi::NtQueryInformationProcess( h.handle(), ProcessIoCounters, info, sizeof( IO_COUNTERS ), 0 );
+    status = ( status == 0 ) ? 1 : 0;
+#elif defined( _WIN32 ) // Windows 95,98...
+#elif defined( __linux )
     linux_proc prc;
-    readProcStat(processID(pid), prc);
+    readProcStat( processID( pid ), prc );
     rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
-    info->ReadOperationCount    = usage.ru_inblock;
-    info->WriteOperationCount   = usage.ru_oublock;
-    info->OtherOperationCount   = 0;
-    info->ReadTransferCount     = usage.ru_inblock;
-    info->WriteTransferCount    = usage.ru_oublock;
-    info->OtherTransferCount    = 0;
-#else                                     // All Other
-#endif                                    // End ALL OS
+    getrusage( RUSAGE_SELF, &usage );
+    info->ReadOperationCount  = usage.ru_inblock;
+    info->WriteOperationCount = usage.ru_oublock;
+    info->OtherOperationCount = 0;
+    info->ReadTransferCount   = usage.ru_inblock;
+    info->WriteTransferCount  = usage.ru_oublock;
+    info->OtherTransferCount  = 0;
+#else  // All Other
+#endif // End ALL OS
   }
   return status;
 }
 
-long System::ProcessDescriptor::query(long pid,
-                                      InfoType fetch,
-                                      POOLED_USAGE_AND_LIMITS* info)    {
-  if (info==0) return 0;
+long System::ProcessDescriptor::query( long pid, InfoType fetch, POOLED_USAGE_AND_LIMITS* info )
+{
+  if ( info == 0 ) return 0;
   long status = 1;
-  
-  if ( fetch == Quota )   {
-#if defined(_WIN32) && WINVER>=0x0400     // Windows NT
-    ProcessHandle h(pid);
-    status = NtApi::NtQueryInformationProcess(h.handle(),
-                                              ProcessPooledUsageAndLimits,
-                                              info,
-                                              sizeof(POOLED_USAGE_AND_LIMITS),
-                                              0);
-    status = (status==0) ? 1 : 0;
-#elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(__linux)                      // Linux
-    //rusage usage;
-    //getrusage(RUSAGE_SELF, &usage);
+
+  if ( fetch == Quota ) {
+#if defined( _WIN32 ) && WINVER >= 0x0400 // Windows NT
+    ProcessHandle h( pid );
+    status = NtApi::NtQueryInformationProcess( h.handle(), ProcessPooledUsageAndLimits, info,
+                                               sizeof( POOLED_USAGE_AND_LIMITS ), 0 );
+    status = ( status == 0 ) ? 1 : 0;
+#elif defined( _WIN32 )  // Windows 95,98...
+#elif defined( __linux ) // Linux
+    // rusage usage;
+    // getrusage(RUSAGE_SELF, &usage);
     rlimit lim;
 
-    getrlimit(RLIMIT_DATA, &lim);
+    getrlimit( RLIMIT_DATA, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PeakPagedPoolUsage = lim.rlim_cur;
-    info->PagedPoolUsage     = lim.rlim_cur;
-    info->PagedPoolLimit     = lim.rlim_max;
+    info->PeakPagedPoolUsage                          = lim.rlim_cur;
+    info->PagedPoolUsage                              = lim.rlim_cur;
+    info->PagedPoolLimit                              = lim.rlim_max;
 
-    getrlimit(RLIMIT_STACK, &lim);
+    getrlimit( RLIMIT_STACK, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PeakNonPagedPoolUsage = lim.rlim_cur;
-    info->NonPagedPoolUsage     = lim.rlim_cur;
-    info->NonPagedPoolLimit     = lim.rlim_max;
+    info->PeakNonPagedPoolUsage                       = lim.rlim_cur;
+    info->NonPagedPoolUsage                           = lim.rlim_cur;
+    info->NonPagedPoolLimit                           = lim.rlim_max;
 
     linux_proc prc;
-    readProcStat(processID(pid), prc);
-    info->PeakPagefileUsage     = prc.rss * pg_size;
-    info->PagefileUsage         = prc.rss * pg_size;
-    info->PagefileLimit         = 0xFFFFFFFF;
-#elif defined(__APPLE__)
-#else                                     // All Other
-#endif                                    // End ALL OS
+    readProcStat( processID( pid ), prc );
+    info->PeakPagefileUsage = prc.rss * pg_size;
+    info->PagefileUsage     = prc.rss * pg_size;
+    info->PagefileLimit     = 0xFFFFFFFF;
+#elif defined( __APPLE__ )
+#else  // All Other
+#endif // End ALL OS
   }
 
   return status;
 }
 
-long System::ProcessDescriptor::query(long pid, InfoType fetch, long* info)    {
+long System::ProcessDescriptor::query( long pid, InfoType fetch, long* info )
+{
 
-  if (info==0) return 0;
+  if ( info == 0 ) return 0;
   long status = 1;
 
-  switch ( fetch )    {
+  switch ( fetch ) {
   case PriorityBoost:
-#if defined(_WIN32) && WINVER>=0x0400     // Windows NT
-    ProcessHandle h(pid);
-    status = NtApi::NtQueryInformationProcess(h.handle(),
-                                              ProcessPriorityBoost,
-                                              info,
-                                              sizeof(long),
-                                              0);
-#elif defined(_WIN32)                     // Windows 95,98...
+#if defined( _WIN32 ) && WINVER >= 0x0400 // Windows NT
+    ProcessHandle h( pid );
+    status = NtApi::NtQueryInformationProcess( h.handle(), ProcessPriorityBoost, info, sizeof( long ), 0 );
+#elif defined( _WIN32 ) // Windows 95,98...
 #else
     // Not applicable
-    if (pid>0) status = 0;  // to avoid compiler warning
-    status = 0;
-    *info = 0;
-#endif                                    // End ALL OS
-    status = (status==0) ? 1 : 0;
+    if ( pid > 0 ) status = 0; // to avoid compiler warning
+    status                = 0;
+    *info                 = 0;
+#endif // End ALL OS
+    status = ( status == 0 ) ? 1 : 0;
     break;
   default:
     status = -1;
-    info = &status;
+    info   = &status;
     break;
   }
   return status;
 }
 
-long System::ProcessDescriptor::query(long pid,
-                                      InfoType fetch,
-                                      VM_COUNTERS* info)    {
-  if (info==0) return 0;
+long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* info )
+{
+  if ( info == 0 ) return 0;
   long status = 1;
 
-  if ( fetch == Memory )   {
-#if defined(_WIN32) && WINVER>=0x0400     // Windows NT
-    ProcessHandle h(pid);
-    status = NtApi::NtQueryInformationProcess(h.handle(),
-                                              ProcessVmCounters,
-                                              info,
-                                              sizeof(VM_COUNTERS),
-                                              0);
-    status = (status==0) ? 1 : 0;
-#elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(__linux)                      // Linux
+  if ( fetch == Memory ) {
+#if defined( _WIN32 ) && WINVER >= 0x0400 // Windows NT
+    ProcessHandle h( pid );
+    status = NtApi::NtQueryInformationProcess( h.handle(), ProcessVmCounters, info, sizeof( VM_COUNTERS ), 0 );
+    status = ( status == 0 ) ? 1 : 0;
+#elif defined( _WIN32 )  // Windows 95,98...
+#elif defined( __linux ) // Linux
     const ssize_t bufsize = 1024;
     char buf[bufsize];
-    pid = processID(pid);
-    sprintf(buf,"/proc/%ld/statm", pid);
+    pid = processID( pid );
+    sprintf( buf, "/proc/%ld/statm", pid );
     long size, resident, share, trs, lrs, drs, dt;
-    int fd = open(buf,O_RDONLY);
-    ssize_t nread = read(fd, buf, bufsize);
-    close(fd);
-    if ( nread < bufsize && nread >= 0 )
-      buf[nread]='\0';
-    fd = sscanf(buf, "%ld %ld %ld %ld %ld %ld %ld",
-                     &size, &resident, &share, &trs, &drs, &lrs, &dt);
+    int fd        = open( buf, O_RDONLY );
+    ssize_t nread = read( fd, buf, bufsize );
+    close( fd );
+    if ( nread < bufsize && nread >= 0 ) buf[nread] = '\0';
+    fd = sscanf( buf, "%ld %ld %ld %ld %ld %ld %ld", &size, &resident, &share, &trs, &drs, &lrs, &dt );
     linux_proc prc;
-    readProcStat( pid, prc);
+    readProcStat( pid, prc );
     info->PeakVirtualSize            = prc.vsize;
     info->VirtualSize                = prc.vsize;
     info->PeakWorkingSetSize         = resident * pg_size;
     info->WorkingSetSize             = resident * pg_size;
-    info->QuotaPeakPagedPoolUsage    = share    * pg_size;
-    info->QuotaPagedPoolUsage        = share    * pg_size;
-    info->QuotaNonPagedPoolUsage     = (trs+drs)* pg_size;// drs = data/stack size
-    info->QuotaPeakNonPagedPoolUsage = (trs+drs)* pg_size;// trs = VmExe size
+    info->QuotaPeakPagedPoolUsage    = share * pg_size;
+    info->QuotaPagedPoolUsage        = share * pg_size;
+    info->QuotaNonPagedPoolUsage     = ( trs + drs ) * pg_size; // drs = data/stack size
+    info->QuotaPeakNonPagedPoolUsage = ( trs + drs ) * pg_size; // trs = VmExe size
     info->PageFaultCount             = prc.majflt + prc.minflt;
-    info->PagefileUsage              = prc.vsize-resident*pg_size;
-    info->PeakPagefileUsage          = prc.vsize-resident*pg_size;
-#elif defined(__APPLE__)
-#else                                     // All Other
-#endif                                    // End ALL OS
+    info->PagefileUsage              = prc.vsize - resident * pg_size;
+    info->PeakPagefileUsage          = prc.vsize - resident * pg_size;
+#elif defined( __APPLE__ )
+#else  // All Other
+#endif // End ALL OS
   }
   return status;
 }
 
-long System::ProcessDescriptor::query(long pid,
-                                      InfoType fetch,
-                                      QUOTA_LIMITS* info)    {
-  if (info==0) return 0;
+long System::ProcessDescriptor::query( long pid, InfoType fetch, QUOTA_LIMITS* info )
+{
+  if ( info == 0 ) return 0;
   long status = 1;
 
-  if ( fetch == Quota )   {
-#if defined(_WIN32) && WINVER>=0x0400     // Windows NT
-    ProcessHandle h(pid);
-    status = NtApi::NtQueryInformationProcess(h.handle(),
-                                              ProcessQuotaLimits,
-                                              info,
-                                              sizeof(QUOTA_LIMITS),
-                                              0);
-    status = (status==0) ? 1 : 0;
-#elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(__linux)                      // Linux
+  if ( fetch == Quota ) {
+#if defined( _WIN32 ) && WINVER >= 0x0400 // Windows NT
+    ProcessHandle h( pid );
+    status = NtApi::NtQueryInformationProcess( h.handle(), ProcessQuotaLimits, info, sizeof( QUOTA_LIMITS ), 0 );
+    status = ( status == 0 ) ? 1 : 0;
+#elif defined( _WIN32 )  // Windows 95,98...
+#elif defined( __linux ) // Linux
     // On linux all this stuff typically is not set
     // (ie. rlim_max=RLIM_INFINITY...)
 
-    if (pid>0 && pid!=::getpid()) return 0;  // only possible for myself
+    if ( pid > 0 && pid != ::getpid() ) return 0; // only possible for myself
 
     rlimit lim;
-    getrlimit(RLIMIT_DATA, &lim);
+    getrlimit( RLIMIT_DATA, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PagedPoolLimit        = lim.rlim_max;
+    info->PagedPoolLimit                              = lim.rlim_max;
 
-    getrlimit(RLIMIT_STACK, &lim);
+    getrlimit( RLIMIT_STACK, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->NonPagedPoolLimit     = lim.rlim_max;
-    info->MinimumWorkingSetSize = 0;
+    info->NonPagedPoolLimit                           = lim.rlim_max;
+    info->MinimumWorkingSetSize                       = 0;
 
-    getrlimit(RLIMIT_RSS, &lim);
+    getrlimit( RLIMIT_RSS, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->MaximumWorkingSetSize = lim.rlim_max;
+    info->MaximumWorkingSetSize                       = lim.rlim_max;
 
-    getrlimit(RLIMIT_AS, &lim);
+    getrlimit( RLIMIT_AS, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PagefileLimit         = lim.rlim_max;
+    info->PagefileLimit                               = lim.rlim_max;
 
-    getrlimit(RLIMIT_CPU, &lim);
+    getrlimit( RLIMIT_CPU, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->TimeLimit             = lim.rlim_max;
-#elif defined(__APPLE__)
-#else                                     // All Other
-#endif                                    // End ALL OS
+    info->TimeLimit                                   = lim.rlim_max;
+#elif defined( __APPLE__ )
+#else  // All Other
+#endif // End ALL OS
   }
   return status;
 }
 
-long System::ProcessDescriptor::query(long pid,
-                                      InfoType fetch,
-                                      PROCESS_BASIC_INFORMATION* info)    {
-  if (info==0) return 0;
+long System::ProcessDescriptor::query( long pid, InfoType fetch, PROCESS_BASIC_INFORMATION* info )
+{
+  if ( info == 0 ) return 0;
   long status = 1;
 
-  if ( fetch == ProcessBasics )   {
-#if defined(_WIN32) && WINVER>=0x0400     // Windows NT
-    ProcessHandle h(pid);
-    status = NtApi::NtQueryInformationProcess(h.handle(),
-                                              ProcessBasicInformation,
-                                              info,
-                                              sizeof(PROCESS_BASIC_INFORMATION),
-                                              0);
-    status = (status==0) ? 1 : 0;
-#elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(__linux)                      // Linux
+  if ( fetch == ProcessBasics ) {
+#if defined( _WIN32 ) && WINVER >= 0x0400 // Windows NT
+    ProcessHandle h( pid );
+    status = NtApi::NtQueryInformationProcess( h.handle(), ProcessBasicInformation, info,
+                                               sizeof( PROCESS_BASIC_INFORMATION ), 0 );
+    status = ( status == 0 ) ? 1 : 0;
+#elif defined( _WIN32 )  // Windows 95,98...
+#elif defined( __linux ) // Linux
     linux_proc prc;
-    pid = processID(pid);
-    readProcStat(pid, prc);
-    info->ExitStatus                   = 0;
-    info->PebBaseAddress               = (PPEB)prc.startcode;
-    info->BasePriority                 = 2*15-prc.priority;
+    pid = processID( pid );
+    readProcStat( pid, prc );
+    info->ExitStatus     = 0;
+    info->PebBaseAddress = (PPEB)prc.startcode;
+    info->BasePriority   = 2 * 15 - prc.priority;
     // std::cout << "Base Priority=" << info->BasePriority << "|"
     // << prc.priority << std::endl;
-    info->AffinityMask                 = prc.flags;
+    info->AffinityMask = prc.flags;
     // std::cout << "Flags        =" << info->AffinityMask << "|"
     // << prc.flags << std::endl;
     info->UniqueProcessId              = pid;
     info->InheritedFromUniqueProcessId = prc.ppid;
-#else                                     // All Other
-#endif                                    // End ALL OS
+#else                    // All Other
+#endif                   // End ALL OS
   }
   return status;
 }
 
-long System::ProcessDescriptor::query(long pid,
-                                      InfoType fetch,
-                                      KERNEL_USER_TIMES* info)   {
-  if (info==0) return 0;
+long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIMES* info )
+{
+  if ( info == 0 ) return 0;
   long status = 1;
-  
-  if ( fetch == Times )   {
-#if defined(_WIN32) && WINVER>=0x0400     // Windows NT
-    ProcessHandle h(pid);
-    status = NtApi::NtQueryInformationProcess(h.handle(),
-                                              ProcessTimes,
-                                              info,
-                                              sizeof(KERNEL_USER_TIMES),
-                                              0);
-    status = (status==0) ? 1 : 0;
-#elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(__linux)                      // Linux
-    static longlong prc_start = 0;
-    bool myself = pid<=0 || pid==::getpid();  // avoid unnecessary calls to getpid if pid<0
-    if ( myself && prc_start == 0 ) {         // called only once to set prc_start
+
+  if ( fetch == Times ) {
+#if defined( _WIN32 ) && WINVER >= 0x0400 // Windows NT
+    ProcessHandle h( pid );
+    status = NtApi::NtQueryInformationProcess( h.handle(), ProcessTimes, info, sizeof( KERNEL_USER_TIMES ), 0 );
+    status = ( status == 0 ) ? 1 : 0;
+#elif defined( _WIN32 )  // Windows 95,98...
+#elif defined( __linux ) // Linux
+    static longlong prc_start          = 0;
+    bool myself                        = pid <= 0 || pid == ::getpid(); // avoid unnecessary calls to getpid if pid<0
+    if ( myself && prc_start == 0 ) {                                   // called only once to set prc_start
       linux_proc prc;
-      readProcStat( processID(pid), prc);
+      readProcStat( processID( pid ), prc );
       // prc.startup is in ticks since system start, need to offset for absolute time
       tms tmsb;
-      static longlong offset = 100*longlong(time(nullptr)) - longlong(times(&tmsb));
-      prc_start = (prc.starttime+offset) * TICK_TO_100NSEC;
+      static longlong offset = 100 * longlong( time( nullptr ) ) - longlong( times( &tmsb ) );
+      prc_start              = ( prc.starttime + offset ) * TICK_TO_100NSEC;
     }
 
-    if ( myself ) {  // myself
+    if ( myself ) { // myself
       tms tmsb;
-      times(&tmsb);
+      times( &tmsb );
       info->UserTime   = tmsb.tms_utime * TICK_TO_100NSEC;
       info->KernelTime = tmsb.tms_stime * TICK_TO_100NSEC;
       info->CreateTime = prc_start;
-    }
-    else {          // other process
+    } else { // other process
       linux_proc prc;
-      readProcStat( processID(pid), prc );
+      readProcStat( processID( pid ), prc );
       tms tmsb;
-      static longlong offset = 100*longlong(time(nullptr)) - longlong(times(&tmsb));
+      static longlong offset = 100 * longlong( time( nullptr ) ) - longlong( times( &tmsb ) );
 
       tms t;
-      times(&t);
+      times( &t );
       info->UserTime   = t.tms_utime * TICK_TO_100NSEC;
       info->KernelTime = t.tms_stime * TICK_TO_100NSEC;
-      info->CreateTime = (prc.starttime+offset) * TICK_TO_100NSEC;
+      info->CreateTime = ( prc.starttime + offset ) * TICK_TO_100NSEC;
     }
-    info->ExitTime    = 0;
+    info->ExitTime = 0;
 
     status = 1;
 
-#elif defined(__APPLE__)
-    // FIXME (MCl): Make an alternative function get timing on OSX
-    // times() seems to cause a segmentation fault
-#else  // no /proc file system: assume sys_start for the first call
+#elif defined( __APPLE__ )
+// FIXME (MCl): Make an alternative function get timing on OSX
+// times() seems to cause a segmentation fault
+#else // no /proc file system: assume sys_start for the first call
     tms tmsb;
-    static clock_t sys_start = times(0);
-    static longlong offset = 100*longlong(time(0)) - sys_start;
-    clock_t now = times(&tmsb);
-    info->CreateTime    = offset + now;
-    info->UserTime      = tmsb.tms_utime;
-    info->KernelTime    = tmsb.tms_stime;
-    info->CreateTime   *= TICK_TO_100NSEC;
-    info->UserTime     *= TICK_TO_100NSEC;
-    info->KernelTime   *= TICK_TO_100NSEC;
-    info->ExitTime      = 0;
-    status = 1;
+    static clock_t sys_start = times( 0 );
+    static longlong offset   = 100 * longlong( time( 0 ) ) - sys_start;
+    clock_t now              = times( &tmsb );
+    info->CreateTime         = offset + now;
+    info->UserTime           = tmsb.tms_utime;
+    info->KernelTime         = tmsb.tms_stime;
+    info->CreateTime *= TICK_TO_100NSEC;
+    info->UserTime *= TICK_TO_100NSEC;
+    info->KernelTime *= TICK_TO_100NSEC;
+    info->ExitTime = 0;
+    status         = 1;
 #endif
   }
 

@@ -4,14 +4,14 @@
 #include "GaudiKernel/AnyDataWrapper.h"
 #include <GaudiKernel/DataObjectHandle.h>
 
-//TODO: we should derive directly from DataObjectHandleBase
+// TODO: we should derive directly from DataObjectHandleBase
 //      now that that is sufficient to get all the declareProperty
 //      stuff done... (thanks to the SFINAE constraints in
 //      Algortihm and AlgTool!)
 //      And then we can avoid any confusion with the DataObjectHandle
 //      interface.
-template<typename T>
-struct AnyDataHandle final : public DataObjectHandle<AnyDataWrapper<T> > {
+template <typename T>
+struct AnyDataHandle final : public DataObjectHandle<AnyDataWrapper<T>> {
 
   using DataObjectHandle<AnyDataWrapper<T>>::DataObjectHandle;
 
@@ -23,25 +23,25 @@ struct AnyDataHandle final : public DataObjectHandle<AnyDataWrapper<T> > {
   /**
    * Register object in transient store
    */
-  const T* put(T&& object);
-
+  const T* put( T&& object );
 };
 
 //---------------------------------------------------------------------------
 
-template<typename T>
-const T* AnyDataHandle<T>::get() const {
+template <typename T>
+const T* AnyDataHandle<T>::get() const
+{
   auto doh = DataObjectHandle<AnyDataWrapper<T>>::get();
-  return &(doh->getData());
+  return &( doh->getData() );
 }
 
 //---------------------------------------------------------------------------
 
-template<typename T>
-const T* AnyDataHandle<T>::put (T&& objectp){
-  auto dw = new AnyDataWrapper<T>(std::move(objectp));
-  return &DataObjectHandle<AnyDataWrapper<T> >::put(dw)->getData();
+template <typename T>
+const T* AnyDataHandle<T>::put( T&& objectp )
+{
+  auto dw = new AnyDataWrapper<T>( std::move( objectp ) );
+  return &DataObjectHandle<AnyDataWrapper<T>>::put( dw )->getData();
 }
-
 
 #endif

@@ -6,20 +6,16 @@
 
 #include "GaudiKernel/MsgStream.h"
 
-DECLARE_COMPONENT(NameAuditor)
+DECLARE_COMPONENT( NameAuditor )
 
-NameAuditor::NameAuditor(const std::string& name, ISvcLocator* pSvcLocator):
-  CommonAuditor(name, pSvcLocator) {
+NameAuditor::NameAuditor( const std::string& name, ISvcLocator* pSvcLocator ) : CommonAuditor( name, pSvcLocator ) {}
+
+void NameAuditor::i_before( CustomEventTypeRef evt, const std::string& caller )
+{
+  info() << "About to Enter " << caller << " with auditor trigger " << evt << endmsg;
 }
 
-void NameAuditor::i_before(CustomEventTypeRef evt, const std::string& caller)
+void NameAuditor::i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& )
 {
-  info() << "About to Enter " << caller << " with auditor trigger "
-      << evt << endmsg;
-}
-
-void NameAuditor::i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode&)
-{
-  info() << "Just Exited " << caller << " with auditor trigger "
-      << evt << endmsg;
+  info() << "Just Exited " << caller << " with auditor trigger " << evt << endmsg;
 }

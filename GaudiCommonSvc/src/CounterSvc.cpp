@@ -3,9 +3,9 @@
 // ============================================================================
 #include <algorithm>
 #include <functional>
+#include <numeric>
 #include <utility>
 #include <vector>
-#include <numeric>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -147,12 +147,10 @@ private:
   // get the overall number of counters
   inline size_t num() const
   {
-    return std::accumulate( m_counts.begin(), m_counts.end(), size_t{0},
-                            []( size_t r, const CountMap::value_type& i ) {
-                              return r +
-                                     std::count_if( i.second.begin(), i.second.end(),
-                                                    []( const NameMap::value_type& j ) -> bool { return j.second; } );
-                            } );
+    return std::accumulate( m_counts.begin(), m_counts.end(), size_t{0}, []( size_t r, const CountMap::value_type& i ) {
+      return r + std::count_if( i.second.begin(), i.second.end(),
+                                []( const NameMap::value_type& j ) -> bool { return j.second; } );
+    } );
   }
 
 public:

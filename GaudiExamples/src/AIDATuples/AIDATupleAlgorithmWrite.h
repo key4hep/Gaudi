@@ -2,20 +2,20 @@
 #define AIDATUPLES_AIDATupleAlgorithmWrite_H 1
 
 // Include files
-#include "GaudiKernel/Algorithm.h"
 #include "AIDA/ITuple.h"
+#include "GaudiKernel/Algorithm.h"
 
 using namespace AIDA;
 
 // Forward declarations
 class AIDATupleSvc;
 
-
-class AIDATupleAlgorithmWrite : public Algorithm {
+class AIDATupleAlgorithmWrite : public Algorithm
+{
 
 public:
   // Constructor of this form must be provided
-  AIDATupleAlgorithmWrite(const std::string& name, ISvcLocator* pSvcLocator);
+  AIDATupleAlgorithmWrite( const std::string& name, ISvcLocator* pSvcLocator );
 
   // Three mandatory member functions of any algorithm
   StatusCode initialize();
@@ -23,9 +23,7 @@ public:
   StatusCode finalize();
 
 private:
-
-  AIDA::ITuple*   tuple;
-   
+  AIDA::ITuple* tuple;
 };
 
-#endif    // AIDATUPLES_AIDATupleAlgorithmWrite_H
+#endif // AIDATUPLES_AIDATupleAlgorithmWrite_H

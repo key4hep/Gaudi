@@ -26,15 +26,14 @@ namespace GaudiUtils
   //  }
   //  @endcode
   template <class T>
-  struct GenericHash
-  {
+  struct GenericHash {
     // ========================================================================
     /// the generic hash function
-    inline std::size_t operator() ( const T& key ) const {
+    inline std::size_t operator()( const T& key ) const
+    {
       const char* p = reinterpret_cast<const char*>( &key );
-      return std::accumulate( p, p + sizeof(T), std::size_t{0},
-                              [](std::size_t res, const char& c)
-                              { return ( res << 1 ) ^ c; } );
+      return std::accumulate( p, p + sizeof( T ), std::size_t{0},
+                              []( std::size_t res, const char& c ) { return ( res << 1 ) ^ c; } );
     }
     // ========================================================================
   };
@@ -93,79 +92,80 @@ namespace GaudiUtils
    * @date 2005-10-07
    */
   template <class T>
-  struct Hash
-  {
+  struct Hash {
     // ========================================================================
     /// the hash-function
-    inline std::size_t operator() ( const T& key ) const;
+    inline std::size_t operator()( const T& key ) const;
     // ========================================================================
   };
   // ==========================================================================
   /// the partial specialization for pointers
   template <class T>
-  struct Hash<T*>
-  {
+  struct Hash<T*> {
     // ========================================================================
     /// the hash-function
-    inline std::size_t operator() ( const T* key ) const;
+    inline std::size_t operator()( const T* key ) const;
     // ========================================================================
   };
   // ==========================================================================
   /// generic specialization for arrays
   template <class T, unsigned N>
-  struct Hash<T(&)[N]>
-  {
+  struct Hash<T ( & )[N]> {
     // ========================================================================
     /// the hash-function
-    inline std::size_t operator() ( T (&key) [N] ) const
-    { return boost::hash_range ( key , key + N ) ; }
+    inline std::size_t operator()( T ( &key )[N] ) const { return boost::hash_range( key, key + N ); }
     // ========================================================================
-  } ;
+  };
   /// generic specialization for arrays
   template <class T, unsigned N>
-  struct Hash<const T(&)[N]>
-  {
+  struct Hash<const T ( & )[N]> {
     // ========================================================================
     /// the hash-function
-    inline std::size_t operator() ( const T (&key) [N] ) const
-    { return boost::hash_range ( key , key + N ) ; }
+    inline std::size_t operator()( const T ( &key )[N] ) const { return boost::hash_range( key, key + N ); }
     // ========================================================================
-  } ;
+  };
   // ==========================================================================
   /// remove extra qualifiers:
-  template<class T>
-  struct Hash<const T>  : public Hash<T>  {} ;
+  template <class T>
+  struct Hash<const T> : public Hash<T> {
+  };
   /// remove extra qualifiers:
-  template<class T>
-  struct Hash<const T*> : public Hash<T*> {} ;
+  template <class T>
+  struct Hash<const T*> : public Hash<T*> {
+  };
   /// remove extra qualifiers:
-  template<class T>
-  struct Hash<T&>       : public Hash<T>  {} ;
+  template <class T>
+  struct Hash<T&> : public Hash<T> {
+  };
   /// remove extra qualifiers:
-  template<class T>
-  struct Hash<const T&> : public Hash<T>  {} ;
+  template <class T>
+  struct Hash<const T&> : public Hash<T> {
+  };
   // ==========================================================================
   /// the generic implementations of hash-function
   template <class T>
-  inline std::size_t Hash<T>::operator() ( const T& key ) const
+  inline std::size_t Hash<T>::operator()( const T& key ) const
   {
-    using namespace boost ;
-    return hash_value ( key ) ;
+    using namespace boost;
+    return hash_value( key );
   }
   /// the generic implementation of hash for pointers
   template <class T>
-  inline std::size_t Hash<T*>::operator() ( const T* key ) const
+  inline std::size_t Hash<T*>::operator()( const T* key ) const
   {
-    using namespace boost ;
-    return hash_value ( key ) ;
+    using namespace boost;
+    return hash_value( key );
   }
   /// (very)specific for C-strings
   template <>
-  inline std::size_t Hash<char*>::operator() ( const char* key ) const
+  inline std::size_t Hash<char*>::operator()( const char* key ) const
   {
-    std::size_t seed = 0 ;
-    while ( key ) { boost::hash_combine ( seed , *key ) ; ++key ; }
-    return seed ;
+    std::size_t seed = 0;
+    while ( key ) {
+      boost::hash_combine( seed, *key );
+      ++key;
+    }
+    return seed;
   }
 
   // ==========================================================================

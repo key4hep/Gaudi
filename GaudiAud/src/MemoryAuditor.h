@@ -8,25 +8,24 @@
 ///
 /// @author M. Shapiro, LBNL
 /// @author Marco Clemencic
-class MemoryAuditor:public CommonAuditor {
+class MemoryAuditor : public CommonAuditor
+{
 public:
-  MemoryAuditor(const std::string& name, ISvcLocator* pSvcLocator);
+  MemoryAuditor( const std::string& name, ISvcLocator* pSvcLocator );
 
 protected:
   /// Default (catch-all) "before" Auditor hook
-  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
+  void i_before( CustomEventTypeRef evt, const std::string& caller ) override;
 
   /// Default (catch-all) "after" Auditor hook
-  void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc) override;
+  void i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc ) override;
 
   /// Report the memory usage.
-  virtual void i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller);
+  virtual void i_printinfo( const std::string& msg, CustomEventTypeRef evt, const std::string& caller );
 
   /// Get the process informations.
   /// Returns true if it was possible to retrieve the informations.
-  inline static bool getProcInfo(procInfo &info) {
-    return ProcStats::instance()->fetch(info);
-  }
+  inline static bool getProcInfo( procInfo& info ) { return ProcStats::instance()->fetch( info ); }
 };
 
 #endif

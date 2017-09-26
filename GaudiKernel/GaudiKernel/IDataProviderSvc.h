@@ -42,10 +42,11 @@ class DataStoreItem;
  *  @author Sebastien Ponce
  *  @version 1.2
  */
-class GAUDI_API IDataProviderSvc: virtual public IInterface {
+class GAUDI_API IDataProviderSvc : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IDataProviderSvc,3,0);
+  DeclareInterfaceID( IDataProviderSvc, 3, 0 );
 
   enum { SEPARATOR = '/' };
 
@@ -56,8 +57,7 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject(const std::string& fullPath,
-                                    DataObject* pObject) = 0;
+  virtual StatusCode registerObject( const std::string& fullPath, DataObject* pObject ) = 0;
 
   /** Register object with the data store.
    *  Connect the object identified by the path to the parent object
@@ -67,9 +67,8 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject(const std::string& parentPath,
-                                    const std::string& objectPath,
-                                    DataObject* pObject) = 0;
+  virtual StatusCode registerObject( const std::string& parentPath, const std::string& objectPath,
+                                     DataObject* pObject ) = 0;
 
   /** Register object with the data store.
    *  Connect the object identified by its pointer to the parent object
@@ -79,9 +78,7 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject(const std::string& parentPath,
-                                    int item,
-                                    DataObject* pObject) = 0;
+  virtual StatusCode registerObject( const std::string& parentPath, int item, DataObject* pObject ) = 0;
 
   /** Register object with the data store.
    *  Connect the object identified by its pointer to the parent object
@@ -91,9 +88,7 @@ public:
    *  @param      pObject     Pointer to the object to be connected.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject(DataObject* parentObj,
-                                    const std::string& objectPath,
-                                    DataObject* pObject) = 0;
+  virtual StatusCode registerObject( DataObject* parentObj, const std::string& objectPath, DataObject* pObject ) = 0;
 
   /** Register object with the data store.
    *  Connect the object identified by its pointer to the node object
@@ -103,9 +98,7 @@ public:
    *  @param      pObject     Pointer to the object to be connected.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject(DataObject* parentObj,
-                                    int item,
-                                    DataObject* pObject) = 0;
+  virtual StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -120,7 +113,7 @@ public:
    *  @param      fullPath    Path name of the object.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject(const std::string& fullPath) = 0;
+  virtual StatusCode unregisterObject( const std::string& fullPath ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -136,8 +129,7 @@ public:
    *  @param      objPath     Path name of the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject(const std::string& parentPath,
-                                      const std::string& objPath) = 0;
+  virtual StatusCode unregisterObject( const std::string& parentPath, const std::string& objPath ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -153,8 +145,7 @@ public:
    *  @param      item        Integer identifier of the object item.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject(const std::string& parentPath,
-                                      int item) = 0;
+  virtual StatusCode unregisterObject( const std::string& parentPath, int item ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -169,7 +160,7 @@ public:
    *  @param      pObject     Pointer to the object.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject(DataObject* pObject) = 0;
+  virtual StatusCode unregisterObject( DataObject* pObject ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -185,8 +176,7 @@ public:
    *  @param      objPath     Path name of the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject(DataObject* pParent,
-                                      const std::string& objPath) = 0;
+  virtual StatusCode unregisterObject( DataObject* pParent, const std::string& objPath ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -202,7 +192,7 @@ public:
    *  @param      item        Integer identifier of the object item.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject(DataObject* pParent, int item) = 0;
+  virtual StatusCode unregisterObject( DataObject* pParent, int item ) = 0;
 
   /** Retrieve object identified by its directory entry.
    *  The result will be returned in the second argument.
@@ -214,9 +204,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject(IRegistry* pDirectory,
-                                    const std::string& path,
-                                    DataObject*& pObject) = 0;
+  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) = 0;
 
   /** Retrieve object identified by its full path from the data store.
    *  The result will be returned in the second argument.
@@ -226,8 +214,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject(const std::string& fullPath,
-                                    DataObject*& pObject) = 0;
+  virtual StatusCode retrieveObject( const std::string& fullPath, DataObject*& pObject ) = 0;
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the path of the parent object
@@ -239,9 +226,8 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject(const std::string& parentPath,
-                                    const std::string& objectPath,
-                                    DataObject*& pObject) = 0;
+  virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objectPath,
+                                     DataObject*& pObject ) = 0;
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the path to the parent object
@@ -253,8 +239,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject(const std::string& parentPath,
-                                    int item, DataObject*& pObject) = 0;
+  virtual StatusCode retrieveObject( const std::string& parentPath, int item, DataObject*& pObject ) = 0;
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the pointer to the parent
@@ -266,9 +251,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject(DataObject* parentObj,
-                                    const std::string& objectPath,
-                                    DataObject*& pObject) = 0;
+  virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objectPath, DataObject*& pObject ) = 0;
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the pointer to the parent
@@ -280,9 +263,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject(DataObject* parentObj,
-                                    int item,
-                                    DataObject*& pObject) = 0;
+  virtual StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject ) = 0;
 
   /** Find object identified by its directory entry.
    *  The result will be returned in the second argument.
@@ -293,9 +274,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject(IRegistry* pDirectory,
-                                const std::string& path,
-                                DataObject*& pObject) = 0;
+  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) = 0;
 
   /** Find object identified by its full path in the data store.
    *  The result will be returned in the second argument.
@@ -304,8 +283,7 @@ public:
    *  @param      pObject     Pointer to the object to be connected.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode findObject(const std::string& fullPath,
-                                DataObject*& pObject) = 0;
+  virtual StatusCode findObject( const std::string& fullPath, DataObject*& pObject ) = 0;
 
   /** Find object identified by its parent object and the path to the object
    *  relative to the parent.
@@ -316,9 +294,8 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject(const std::string& parentPath,
-                                const std::string& objectPath,
-                                DataObject*& pObject) = 0;
+  virtual StatusCode findObject( const std::string& parentPath, const std::string& objectPath,
+                                 DataObject*& pObject ) = 0;
 
   /** Find object identified by its parent object and an integer identifier
    *  in the data store.
@@ -328,9 +305,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject(const std::string& parentPath,
-                                int item,
-                                DataObject*& pObject) = 0;
+  virtual StatusCode findObject( const std::string& parentPath, int item, DataObject*& pObject ) = 0;
 
   /** Find object identified by its parent object and the path to the object
    *  relative to the parent.
@@ -341,9 +316,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject(DataObject* pNode,
-                                const std::string& objectPath,
-                                DataObject*& pObject) = 0;
+  virtual StatusCode findObject( DataObject* pNode, const std::string& objectPath, DataObject*& pObject ) = 0;
 
   /** Find object identified by its parent object and an integer identifier
    *  in the data store.
@@ -353,16 +326,14 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject(DataObject* parentObj,
-                                int item,
-                                DataObject*& pObject) = 0;
+  virtual StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject ) = 0;
 
   /** Update object identified by its directory entry.
    *  ** FASTEST ACCESS TO THE DATA STORE **
    *  @param      pDirectory  Pointer to the directory entry.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject(IRegistry* pDirectory) = 0;
+  virtual StatusCode updateObject( IRegistry* pDirectory ) = 0;
 
   /** Update object identified by its full path in the data store.
    *  If found, the object update will be initiated.
@@ -370,7 +341,7 @@ public:
    *  @param      fullPath    Path name of the object.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject(const std::string& fullPath) = 0;
+  virtual StatusCode updateObject( const std::string& fullPath ) = 0;
 
   /** Update object identified by its pointer.
    *  If found, the object update will be initiated.
@@ -378,7 +349,7 @@ public:
    *  @param      toUpdate    Pointer to the object.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject(DataObject* toUpdate) = 0;
+  virtual StatusCode updateObject( DataObject* toUpdate ) = 0;
 
   /** Update object identified by its parent's path and the path relative
    *  to the parent.
@@ -388,8 +359,7 @@ public:
    *  @param      updatePath  Path to the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject(const std::string& parentPath,
-                                  const std::string& updatePath) = 0;
+  virtual StatusCode updateObject( const std::string& parentPath, const std::string& updatePath ) = 0;
 
   /** Update object identified by its parent's pointer and the path relative
    *  to the parent.
@@ -399,33 +369,32 @@ public:
    *  @param      updatePath  Path to the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject(DataObject* pParent,
-                                  const std::string& updatePath) = 0;
+  virtual StatusCode updateObject( DataObject* pParent, const std::string& updatePath ) = 0;
 
   /** Add an item to the preload list
    *  @param      item        Specs of item to be preloaded
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode addPreLoadItem(const DataStoreItem& item) = 0;
+  virtual StatusCode addPreLoadItem( const DataStoreItem& item ) = 0;
 
   /** Add an item to the preload list. The item is identified by the path
    *  to the object.
    *  @param      itemPath    Path to the item to be preloaded.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode addPreLoadItem(const std::string& itemPath) = 0;
+  virtual StatusCode addPreLoadItem( const std::string& itemPath ) = 0;
 
   /** Remove an item from the preload list.
    *  @param      item        Specs of item to be removed from the preload list
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode removePreLoadItem(const DataStoreItem& item) = 0;
+  virtual StatusCode removePreLoadItem( const DataStoreItem& item ) = 0;
 
   /** Remove an item from the preload list.
    *  @param      itemPath    Path to the item to be preloaded.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode removePreLoadItem(const std::string& itemPath) = 0;
+  virtual StatusCode removePreLoadItem( const std::string& itemPath ) = 0;
 
   /** Clear the preload list.
    *  @return                 Status code indicating success or failure.
@@ -445,9 +414,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject(IRegistry* from,
-                                const std::string& objPath,
-                                DataObject* toObj) = 0;
+  virtual StatusCode linkObject( IRegistry* from, const std::string& objPath, DataObject* toObj ) = 0;
 
   /** Add a link to another object.
    *  Both objects must already be registered with the data store.
@@ -457,9 +424,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject(const std::string& fromPath,
-                                const std::string& objPath,
-                                DataObject* toObj) = 0;
+  virtual StatusCode linkObject( const std::string& fromPath, const std::string& objPath, DataObject* toObj ) = 0;
 
   /** Add a link to another object.
    *  Both objects must already be registered with the data store.
@@ -469,9 +434,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject(DataObject* fromObj,
-                                const std::string& objPath,
-                                DataObject* toObj) = 0;
+  virtual StatusCode linkObject( DataObject* fromObj, const std::string& objPath, DataObject* toObj ) = 0;
 
   /** Add a link to another object.
    *  Both objects must already be registered with the data store.
@@ -480,8 +443,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject(const std::string& fullPath,
-                                DataObject* toObj) = 0;
+  virtual StatusCode linkObject( const std::string& fullPath, DataObject* toObj ) = 0;
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -491,8 +453,7 @@ public:
    *  @param      objPath     Path of the entry to be linked relative to from.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject(IRegistry* from,
-                                  const std::string& objPath) = 0;
+  virtual StatusCode unlinkObject( IRegistry* from, const std::string& objPath ) = 0;
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -502,8 +463,7 @@ public:
    *  @param      objPath     Path of the entry to be linked relative to from.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject(const std::string& fromPath,
-                                  const std::string& objPath) = 0;
+  virtual StatusCode unlinkObject( const std::string& fromPath, const std::string& objPath ) = 0;
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -513,8 +473,7 @@ public:
    *  @param      objPath     Path of the entry to be linked relative to from.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject(DataObject* fromObj,
-                                  const std::string& objPath) = 0;
+  virtual StatusCode unlinkObject( DataObject* fromObj, const std::string& objPath ) = 0;
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -523,10 +482,10 @@ public:
    *  @param      fullPath    Full path of the entry to be linked.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject(const std::string& fullPath) = 0;
+  virtual StatusCode unlinkObject( const std::string& fullPath ) = 0;
 
   /// Status code definitions
-  enum Status  {
+  enum Status {
     /// Success
     IDataProviderSvc_NO_ERROR = 1,
     /// The path for this objects is already in use
@@ -554,7 +513,6 @@ public:
     /// Terminator
     LAST
   };
-
 };
 
 #endif // GAUDIKERNEL_IDATAPROVIDERSVC_H

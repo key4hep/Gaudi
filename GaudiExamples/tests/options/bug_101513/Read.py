@@ -13,19 +13,20 @@ shutil.copy('bug_101513.dst', 'B0101513-0000-0000-0000-000000000000')
 
 # I/O
 GaudiPersistency()
-FileCatalog(Catalogs = [ ])
+FileCatalog(Catalogs=[])
 esel = EventSelector(PrintFreq=50, FirstEvent=1)
-esel.Input = ["DATAFILE='PFN:B0101513-0000-0000-0000-000000000000'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
+esel.Input = [
+    "DATAFILE='PFN:B0101513-0000-0000-0000-000000000000'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
 
 # Application setup
 app = ApplicationMgr()
 # - Algorithms
-app.TopAlg = [ ]
+app.TopAlg = []
 # - Events
 app.EvtMax = 1
 app.HistogramPersistency = "NONE"
 
-#RootCnvSvc(OutputLevel=VERBOSE)
-#ChronoStatSvc(OutputLevel=WARNING)
-#SequencerTimerTool(OutputLevel=WARNING)
-#MessageSvc(OutputLevel=VERBOSE)
+# RootCnvSvc(OutputLevel=VERBOSE)
+# ChronoStatSvc(OutputLevel=WARNING)
+# SequencerTimerTool(OutputLevel=WARNING)
+# MessageSvc(OutputLevel=VERBOSE)

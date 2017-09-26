@@ -4,151 +4,125 @@
 // book the 1D histogram (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
-( const std::string&  title        ,
-  const double        low          ,
-  const double        high         ,
-  const unsigned long bins         ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::book1D( const std::string& title, const double low, const double high,
+                                                const unsigned long bins ) const
 {
   //
-  if  ( !produceHistos() )                   { return nullptr ; } // RETURN
+  if ( !produceHistos() ) {
+    return nullptr;
+  } // RETURN
   //
   // exist?
-  auto hist = histo1D ( title ) ;
+  auto hist = histo1D( title );
   // histogram is already booked
-  if( hist      )                    { return hist ; } // RETURN !!
+  if ( hist ) {
+    return hist;
+  } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
   newHistoID( title, ID );
 
   // Create a new histogram and return
-  return this -> book1D ( ID, title, low, high, bins );
+  return this->book1D( ID, title, low, high, bins );
 }
 // ============================================================================
 // book the 1D histogram with forced ID (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
-( const HistoID&                ID     ,
-  const std::string&            title  ,
-  const double                  low    ,
-  const double                  high   ,
-  const unsigned long           bins   ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::book1D( const HistoID& ID, const std::string& title, const double low,
+                                                const double high, const unsigned long bins ) const
 {
   //
-  if  ( !produceHistos() ) { return nullptr ; }  // RETURN
+  if ( !produceHistos() ) {
+    return nullptr;
+  } // RETURN
   //
 
   // Check ID
-  if ( ID.undefined() )
-  {
-    this->Error("Undefined Histogram ID : Title='"+title+"'");
+  if ( ID.undefined() ) {
+    this->Error( "Undefined Histogram ID : Title='" + title + "'" );
     return nullptr;
   }
 
   // exist?
-  auto* hist = histo1D ( ID ) ;
+  auto* hist = histo1D( ID );
   // histogram is already booked
-  if ( hist       )                  { return hist ; } // RETURN !!
+  if ( hist ) {
+    return hist;
+  } // RETURN !!
 
   // Histogram title
-  const std::string & htitle =
-    ( title.empty() ? "Unnamed 1D Histogram ID="+ID.idAsString() : title ) ;
+  const std::string& htitle = ( title.empty() ? "Unnamed 1D Histogram ID=" + ID.idAsString() : title );
 
   // book the histogram
-  if ( ID.numeric() )
-  {
-    hist = this->histoSvc() -> book ( histoPath()  ,
-                                      ID.numericID() ,
-                                      htitle       ,
-                                      bins         ,
-                                      low          ,
-                                      high         ) ;
-  }
-  else if ( ID.literal() )
-  {
-    hist = this->histoSvc() -> book ( histoPath()+"/"+
-                                      ID.literalID() ,
-                                      htitle         ,
-                                      bins           ,
-                                      low            ,
-                                      high         ) ;
+  if ( ID.numeric() ) {
+    hist = this->histoSvc()->book( histoPath(), ID.numericID(), htitle, bins, low, high );
+  } else if ( ID.literal() ) {
+    hist = this->histoSvc()->book( histoPath() + "/" + ID.literalID(), htitle, bins, low, high );
   }
 
   // check OK
-  if( !hist )
-  { this->Error( "IHistogram1D* points to NULL! ID='" + ID.idAsString() +
-                 "' title='"+htitle+"'" ) ; return nullptr; } // RETURN !!
+  if ( !hist ) {
+    this->Error( "IHistogram1D* points to NULL! ID='" + ID.idAsString() + "' title='" + htitle + "'" );
+    return nullptr;
+  } // RETURN !!
 
   // add histogram into histogram storages
-  m_histo1DMapID    [ ID    ] = hist ;
-  m_histo1DMapTitle [ title ] = hist ;
+  m_histo1DMapID[ID]       = hist;
+  m_histo1DMapTitle[title] = hist;
 
   // Declare to monitoring service
-  monitorHisto( Gaudi::Utils::Histos::toBase ( hist ) , ID );
+  monitorHisto( Gaudi::Utils::Histos::toBase( hist ), ID );
 
   // Printout and return
-  if ( this->msgLevel(MSG::DEBUG) )
-  { this->debug() << "Booked 1D Histogram : ID='" << ID
-                  << "' Path=" << histoPath()
-                  << " Title='"
-                  << Gaudi::Utils::Histos::htitle ( hist )
-                  << "'" << endmsg; }
-  return hist ;
+  if ( this->msgLevel( MSG::DEBUG ) ) {
+    this->debug() << "Booked 1D Histogram : ID='" << ID << "' Path=" << histoPath() << " Title='"
+                  << Gaudi::Utils::Histos::htitle( hist ) << "'" << endmsg;
+  }
+  return hist;
 }
 // ============================================================================
 // fill the 1D histogram with the value and weight
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D* GaudiHistos<PBASE>::fill
-( AIDA::IHistogram1D*  histo  ,
-  const double         value  ,
-  const double         weight ,
-  const std::string&   title  ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::fill( AIDA::IHistogram1D* histo, const double value, const double weight,
+                                              const std::string& title ) const
 {
-  if ( !histo     ) { return nullptr ; }                          // RETURN
+  if ( !histo ) {
+    return nullptr;
+  } // RETURN
   //
-  if ( !checkForNaN() )
-  { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
-  else if  ( std::isfinite ( value ) && std::isfinite ( weight ) )
-  { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
-  else if  ( std::isnan ( value ) || std::isnan ( weight ) )
-  {
-    this -> Warning
-      ("fill():: 'NaN'      value is skipped from the histogram '"
-       + Gaudi::Utils::Histos::htitle ( histo , title ) + "'" ) ;
-  }
-  else
-  {
-    this -> Warning
-      ("fill():: 'Infinite' value is skipped from the histogram '"
-       + Gaudi::Utils::Histos::htitle ( histo , title ) + "'" ) ;
+  if ( !checkForNaN() ) {
+    Gaudi::Utils::Histos::fill( histo, value, weight );
+  } else if ( std::isfinite( value ) && std::isfinite( weight ) ) {
+    Gaudi::Utils::Histos::fill( histo, value, weight );
+  } else if ( std::isnan( value ) || std::isnan( weight ) ) {
+    this->Warning( "fill():: 'NaN'      value is skipped from the histogram '" +
+                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" );
+  } else {
+    this->Warning( "fill():: 'Infinite' value is skipped from the histogram '" +
+                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" );
   }
   // return
-  return histo ;
+  return histo;
 }
 // ============================================================================
 // fill the 1D histogram (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*
-GaudiHistos<PBASE>::plot1D
-( const double        value  ,
-  const std::string&  title  ,
-  const double        low    ,
-  const double        high   ,
-  const unsigned long bins   ,
-  const double        weight ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::plot1D( const double value, const std::string& title, const double low,
+                                                const double high, const unsigned long bins, const double weight ) const
 {
-  AIDA::IHistogram1D * h(nullptr);
-  if ( produceHistos() )
-  {
+  AIDA::IHistogram1D* h( nullptr );
+  if ( produceHistos() ) {
     // retrieve or book the histogram
-    h = histo1D ( title ) ;
-    if ( !h ) { h = book1D  ( title , low , high , bins ) ; }
+    h = histo1D( title );
+    if ( !h ) {
+      h = book1D( title, low, high, bins );
+    }
     // fill the histogram
-    h = fill ( h , value , weight , title );
+    h = fill( h, value, weight, title );
   }
   return h;
 }
@@ -156,24 +130,19 @@ GaudiHistos<PBASE>::plot1D
 // fill the 1D histogram with forced ID assignment (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*
-GaudiHistos<PBASE>::plot1D
-( const double        value  ,
-  const HistoID&      ID     ,
-  const std::string&  title  ,
-  const double        low    ,
-  const double        high   ,
-  const unsigned long bins   ,
-  const double        weight ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::plot1D( const double value, const HistoID& ID, const std::string& title,
+                                                const double low, const double high, const unsigned long bins,
+                                                const double weight ) const
 {
-  AIDA::IHistogram1D* h(nullptr);
-  if ( produceHistos() )
-  {
+  AIDA::IHistogram1D* h( nullptr );
+  if ( produceHistos() ) {
     // retrieve or book the histogram
-    h = histo1D ( ID ) ;
-    if ( !h ) {  h = book1D ( ID , title , low , high , bins ) ; }
+    h = histo1D( ID );
+    if ( !h ) {
+      h = book1D( ID, title, low, high, bins );
+    }
     // fill
-    h = fill ( h , value , weight , title ) ;
+    h = fill( h, value, weight, title );
   }
   return h;
 }
@@ -181,62 +150,36 @@ GaudiHistos<PBASE>::plot1D
 // book the 1D histogram
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*
-GaudiHistos<PBASE>::book
-( const Gaudi::Histo1DDef& hdef ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::book( const Gaudi::Histo1DDef& hdef ) const
 {
-  return book1D ( hdef.title    () ,
-                  hdef.lowEdge  () ,
-                  hdef.highEdge () ,
-                  hdef.bins     () ) ;
+  return book1D( hdef.title(), hdef.lowEdge(), hdef.highEdge(), hdef.bins() );
 }
 // ============================================================================
 // book the 1D histogram with forced ID
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*
-GaudiHistos<PBASE>::book
-( const HistoID&           ID   ,
-  const Gaudi::Histo1DDef& hdef ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::book( const HistoID& ID, const Gaudi::Histo1DDef& hdef ) const
 {
-  return book1D ( ID               ,
-                  hdef.title    () ,
-                  hdef.lowEdge  () ,
-                  hdef.highEdge () ,
-                  hdef.bins     () ) ;
+  return book1D( ID, hdef.title(), hdef.lowEdge(), hdef.highEdge(), hdef.bins() );
 }
 // ============================================================================
 // fill the 1D histogram (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*
-GaudiHistos<PBASE>::plot1D
-( const double             value  ,
-  const Gaudi::Histo1DDef& hdef   ,
-  const double             weight ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::plot1D( const double value, const Gaudi::Histo1DDef& hdef,
+                                                const double weight ) const
 {
-  return plot1D
-    ( value  ,
-      hdef.title() , hdef.lowEdge() , hdef.highEdge() , hdef.bins() ,
-      weight ) ;
+  return plot1D( value, hdef.title(), hdef.lowEdge(), hdef.highEdge(), hdef.bins(), weight );
 }
 // ============================================================================
 // fill the 1D histogram with forced ID assignment (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D*
-GaudiHistos<PBASE>::plot1D
-( const double             value  ,
-  const HistoID&           ID     ,
-  const Gaudi::Histo1DDef& hdef   ,
-  const double             weight ) const
+AIDA::IHistogram1D* GaudiHistos<PBASE>::plot1D( const double value, const HistoID& ID, const Gaudi::Histo1DDef& hdef,
+                                                const double weight ) const
 {
-  return plot1D
-    ( value  , ID ,
-      hdef.title() , hdef.lowEdge() , hdef.highEdge() , hdef.bins() ,
-      weight ) ;
+  return plot1D( value, ID, hdef.title(), hdef.lowEdge(), hdef.highEdge(), hdef.bins(), weight );
 }
 // ============================================================================
 // The END
 // ============================================================================
-

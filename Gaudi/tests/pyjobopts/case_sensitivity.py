@@ -1,10 +1,13 @@
 from Gaudi.Configuration import *
 
+
 class MyAlgType(ConfigurableUser):
-    __slots__ = { "TestProperty": "None",
-                  "AnotherTest" :"None" }
+    __slots__ = {"TestProperty": "None",
+                 "AnotherTest": "None"}
+
     def getGaudiType(self):
-        return "Test" # To avoid skipping of ConfigurableUser
+        return "Test"  # To avoid skipping of ConfigurableUser
+
 
 # Instantiate the configurable before setting properties in old opts
 MyAlgType("MyAlg1")

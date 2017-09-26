@@ -18,6 +18,7 @@ Variable.processors = [Variable.EnvExpander,
                        Variable.PathNormalizer,
                        Variable.DuplicatesRemover]
 
+
 def buildDir(files, rootdir=os.curdir):
     '''
     Create a directory structure from the content of files.
@@ -47,10 +48,12 @@ def buildDir(files, rootdir=os.curdir):
                 f.write(data)
             f.close()
 
+
 class TempDir(object):
     '''
     Class for easy creation, use and removal of temporary directory structures.
     '''
+
     def __init__(self, files=None):
         self.tmpdir = mkdtemp()
         if files is None:
@@ -66,6 +69,7 @@ class TempDir(object):
         '''
         return os.path.join(self.tmpdir, *args)
 
+
 class TemporaryDir(object):
     '''
     Helper class to create a temporary directory and manage its lifetime.
@@ -73,28 +77,33 @@ class TemporaryDir(object):
     An instance of this class can be used inside the 'with' statement and
     returns the path to the temporary directory.
     '''
+
     def __init__(self, chdir=False, keep=False):
         '''Constructor.'''
         self.chdir = chdir
         self.keep = keep
         self.path = mkdtemp()
         self.old_dir = None
+
     def join(self, *args):
         '''
         Equivalent to os.path.join(self.path, *args).
         '''
         return os.path.join(self.path, *args)
+
     def __str__(self):
         '''String representation (path to the temporary directory).'''
         return self.path
+
     def remove(self):
         '''
         Remove the temporary directory.
         After a call to this method, the object is not usable anymore.
         '''
-        if self.path: # allow multiple calls to the remove method
+        if self.path:  # allow multiple calls to the remove method
             shutil.rmtree(self.path, ignore_errors=True)
             self.path = None
+
     def __enter__(self):
         '''
         Context Manager protocol 'enter' function.
@@ -103,6 +112,7 @@ class TemporaryDir(object):
             self.old_dir = os.getcwd()
             os.chdir(self.path)
         return self.path
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         '''
         Context Manager protocol 'exit' function.
@@ -117,15 +127,14 @@ class TemporaryDir(object):
             print "WARNING: not removing temporary directory", self.path
         return False
 
-class Test(unittest.TestCase):
 
+class Test(unittest.TestCase):
 
     def setUp(self):
         pass
 
     def tearDown(self):
         pass
-
 
     def testValues(self):
         '''Test of value appending, prepending, setting, unsetting, removing'''
@@ -137,7 +146,7 @@ class Test(unittest.TestCase):
         var = control.var('MY_PATH')
 
         control.append('MY_PATH', 'newValue:secondVal:valval')
-        self.assertTrue(var[len(var)-1] == 'valval')
+        self.assertTrue(var[len(var) - 1] == 'valval')
 
         self.assertTrue('newValue' in var)
         control.remove('MY_PATH', 'newValue')
@@ -153,7 +162,6 @@ class Test(unittest.TestCase):
         control.unset('MY_PATH')
         self.assertTrue('MY_PATH' not in control)
 
-
     def testHidingDotVar(self):
         control = Control.Environment()
         control.variables['.'].set('some/dir')
@@ -166,11 +174,9 @@ class Test(unittest.TestCase):
         self.assertEqual(control.var('MY_DIR').value(True), 'some/dir')
         self.assertEqual(control.vars()['MY_DIR'], 'some/dir')
 
-
-
     def testWrite(self):
         """XML file write and load test"""
-        control = Control.Environment(useAsWriter = True)
+        control = Control.Environment(useAsWriter=True)
         control.unset('MY_PATH')
         control.set('MY_PATH', 'set:toDelete')
         control.append('MY_PATH', 'appended:toDelete')
@@ -191,14 +197,13 @@ class Test(unittest.TestCase):
 
         os.remove('testOutputFile.xml')
 
-
     def testWriteWithList(self):
         """XML file write and load test"""
-        control = Control.Environment(useAsWriter = True)
+        control = Control.Environment(useAsWriter=True)
         control.unset('MY_PATH')
-        control.set('MY_PATH', ['set','toDelete'])
-        control.append('MY_PATH', ['appended','toDelete'])
-        control.prepend('MY_PATH', ['prepended','toDelete'])
+        control.set('MY_PATH', ['set', 'toDelete'])
+        control.append('MY_PATH', ['appended', 'toDelete'])
+        control.prepend('MY_PATH', ['prepended', 'toDelete'])
         control.remove('MY_PATH', ['toDelete'])
         control.finishXMLinput('testOutputFile.xml')
 
@@ -214,7 +219,6 @@ class Test(unittest.TestCase):
         self.assertFalse('toDelete' in var)
 
         os.remove('testOutputFile.xml')
-
 
     def testSaveToXML(self):
         """XML file write and load test"""
@@ -262,7 +266,7 @@ class Test(unittest.TestCase):
 
         control.append('MY_PATH', 'newValue:mess:something new:aaaabbcc')
 
-        def count(val, regExp = False):
+        def count(val, regExp=False):
             return len(control.search('MY_PATH', val, regExp))
 
         self.assertEqual(count('new'), 0)
@@ -288,52 +292,63 @@ class Test(unittest.TestCase):
 
         control.append('MY_PATH', 'newValue')
         self.assertFalse(control.var('MY_PATH').local)
-        self.assertTrue(isinstance(control.var('MY_PATH'),Variable.List))
+        self.assertTrue(isinstance(control.var('MY_PATH'), Variable.List))
 
         control.declare('loc', 'list', True)
         self.assertTrue(control.var('loc').local)
-        self.assertTrue(isinstance(control.var('loc'),Variable.List))
+        self.assertTrue(isinstance(control.var('loc'), Variable.List))
 
         control.declare('myVar2', 'scalar', False)
         self.assertFalse(control.var('myVar2').local)
-        self.assertTrue(isinstance(control.var('myVar2'),Variable.Scalar))
+        self.assertTrue(isinstance(control.var('myVar2'), Variable.Scalar))
 
         control.declare('loc2', 'scalar', True)
         self.assertTrue(control.var('loc2').local)
-        self.assertTrue(isinstance(control.var('loc2'),Variable.Scalar))
+        self.assertTrue(isinstance(control.var('loc2'), Variable.Scalar))
 
         control.declare('MY_PATH', 'list', False)
-        self.failUnlessRaises(Variable.EnvError, control.declare, 'MY_PATH', 'list', True)
-        self.failUnlessRaises(Variable.EnvError, control.declare, 'MY_PATH', 'scalar', True)
-        self.failUnlessRaises(Variable.EnvError, control.declare, 'MY_PATH', 'scalar', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'MY_PATH', 'list', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'MY_PATH', 'scalar', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'MY_PATH', 'scalar', True)
 
         control.declare('loc', 'list', True)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'loc', 'list', False)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'loc', 'scalar', True)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'loc', 'scalar', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'loc', 'list', False)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'loc', 'scalar', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'loc', 'scalar', True)
 
         control.declare('myVar2', 'scalar', False)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'myVar2', 'list', False)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'myVar2', 'list', True)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'myVar2', 'scalar', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'myVar2', 'list', False)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'myVar2', 'list', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'myVar2', 'scalar', True)
 
         control.declare('loc2', 'scalar', True)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'loc2', 'list', False)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'loc2', 'list', True)
-        self.failUnlessRaises(Variable.EnvError, control.declare,'loc2', 'scalar', False)
-
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'loc2', 'list', False)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'loc2', 'list', True)
+        self.failUnlessRaises(
+            Variable.EnvError, control.declare, 'loc2', 'scalar', False)
 
     def testDelete(self):
         control = Control.Environment()
 
-        control.append('MY_PATH','myVal:anotherVal:lastVal')
-        control.remove('MY_PATH','anotherVal')
+        control.append('MY_PATH', 'myVal:anotherVal:lastVal')
+        control.remove('MY_PATH', 'anotherVal')
 
         self.assertFalse('anotherVal' in control['MY_PATH'])
         self.assertTrue('myVal' in control['MY_PATH'])
         self.assertTrue('lastVal' in control['MY_PATH'])
 
-        control.set('MY_PATH','myVal:anotherVal:lastVal:else')
+        control.set('MY_PATH', 'myVal:anotherVal:lastVal:else')
         control.remove('MY_PATH', '^anotherVal$', False)
         self.assertTrue('anotherVal' in control['MY_PATH'])
         control.remove('MY_PATH', '^anotherVal$', True)
@@ -345,12 +360,10 @@ class Test(unittest.TestCase):
         self.assertTrue('else' in control['MY_PATH'])
         self.assertTrue(len(control['MY_PATH']) == 1)
 
-
         control.declare('myLoc', 'scalar', False)
-        control.append('myLoc','myVal:anotherVal:lastVal')
+        control.append('myLoc', 'myVal:anotherVal:lastVal')
         control.remove('myLoc', 'Val:', True)
         self.assertTrue(str(control['myLoc']) == 'myanotherlastVal')
-
 
     def testSystemEnvironment(self):
         control = Control.Environment()
@@ -358,15 +371,14 @@ class Test(unittest.TestCase):
         os.environ['MY_PATH'] = '$myVal'
         os.environ['myScal'] = '$myVal'
 
-        control.set('ABC','anyValue')
+        control.set('ABC', 'anyValue')
         control.declare('MY_PATH', 'list', False)
-        control.append('MY_PATH','$ABC')
+        control.append('MY_PATH', '$ABC')
         self.assertTrue(control['MY_PATH'].value(True) == '$myVal:anyValue')
 
         control.declare('myScal', 'scalar', False)
         control.append('myScal', '$ABC')
         self.assertTrue(control['myScal'].value(True) == '$myValanyValue')
-
 
     def testDependencies(self):
         control = Control.Environment()
@@ -374,99 +386,103 @@ class Test(unittest.TestCase):
         control.declare('myVar', 'list', False)
 
         control.declare('loc', 'list', True)
-        control.append('loc','locVal')
-        control.append('loc','locVal2')
+        control.append('loc', 'locVal')
+        control.append('loc', 'locVal2')
 
         control.declare('scal', 'scalar', False)
-        control.append('scal','scalVal')
-        control.append('scal','scalVal2')
+        control.append('scal', 'scalVal')
+        control.append('scal', 'scalVal2')
 
         control.declare('scal2', 'scalar', True)
-        control.append('scal2','locScal')
-        control.append('scal2','locScal2')
+        control.append('scal2', 'locScal')
+        control.append('scal2', 'locScal2')
 
         control.set('myVar', 'newValue:$loc:endValue')
-        self.assertEqual(str(control['myVar']),'newValue:locVal:locVal2:endValue')
+        self.assertEqual(str(control['myVar']),
+                         'newValue:locVal:locVal2:endValue')
 
         control.set('myVar', 'newValue:$scal:endValue')
-        self.assertEqual(str(control['myVar']),'newValue:scalValscalVal2:endValue')
+        self.assertEqual(str(control['myVar']),
+                         'newValue:scalValscalVal2:endValue')
 
         control.set('myVar', 'new${scal}Value:endValue')
-        self.assertEqual(str(control['myVar']),'newscalValscalVal2Value:endValue')
+        self.assertEqual(str(control['myVar']),
+                         'newscalValscalVal2Value:endValue')
 
         control.set('myVar', 'bla:$myVar:Value')
-        self.assertEqual(str(control['myVar']),'bla:newscalValscalVal2Value:endValue:Value')
+        self.assertEqual(
+            str(control['myVar']), 'bla:newscalValscalVal2Value:endValue:Value')
 
         control.set('scal', 'new${scal2}Value')
-        self.assertEqual(str(control['scal']),'newlocScallocScal2Value')
+        self.assertEqual(str(control['scal']), 'newlocScallocScal2Value')
 
         control.set('scal', 'new${loc}Value')
-        self.assertEqual(str(control['scal']),'newlocVal:locVal2Value')
+        self.assertEqual(str(control['scal']), 'newlocVal:locVal2Value')
 
         control.set('scal2', 'new${scal2}Value')
-        self.assertEqual(str(control['scal2']),'newlocScallocScal2Value')
+        self.assertEqual(str(control['scal2']), 'newlocScallocScal2Value')
 
     def testInclude(self):
         tmp = TempDir({'first.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:set variable="main">first</env:set>
 <env:append variable="test_path">data1</env:append>
 <env:include>first_inc.xml</env:include>
 </env:config>''',
                        'second.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:set variable="main">second</env:set>
 <env:include>second_inc.xml</env:include>
 <env:append variable="test_path">data1</env:append>
 </env:config>''',
                        'third.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:set variable="main">third</env:set>
 <env:append variable="test_path">data1</env:append>
 <env:include>subdir/first_inc.xml</env:include>
 </env:config>''',
                        'fourth.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:set variable="main">fourth</env:set>
 <env:include hints="subdir2">fourth_inc.xml</env:include>
 </env:config>''',
                        'recursion.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:set variable="main">recursion</env:set>
 <env:include>recursion.xml</env:include>
 </env:config>''',
                        'first_inc.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:append variable="test_path">data2</env:append>
 <env:append variable="derived">another_${main}</env:append>
 </env:config>''',
                        'subdir': {'second_inc.xml':
-'''<?xml version="1.0" ?>
+                                  '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:append variable="test_path">data0</env:append>
 <env:set variable="map">this_is_second_inc</env:set>
 </env:config>''',
                                   'first_inc.xml':
-'''<?xml version="1.0" ?>
+                                  '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:append variable="derived">second_${main}</env:append>
 </env:config>''',
                                   'fourth_inc.xml':
-'''<?xml version="1.0" ?>
+                                  '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:append variable="included">from subdir</env:append>
-</env:config>''',},
+</env:config>''', },
                        'subdir2': {'fourth_inc.xml':
-'''<?xml version="1.0" ?>
+                                   '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:append variable="included">from subdir2</env:append>
-</env:config>''',}})
+</env:config>''', }})
 
         # set the basic search path to the minimal default
         if 'ENVXMLPATH' in os.environ:
@@ -574,12 +590,13 @@ class Test(unittest.TestCase):
             control = Control.Environment(searchPath=[])
             control.loadXML('EntryPoint.xenv')
 
-            self.assertEqual(str(control['INCLUDED_FILE_PATH']), os.path.join(tmp, 'subdir'))
+            self.assertEqual(
+                str(control['INCLUDED_FILE_PATH']), os.path.join(tmp, 'subdir'))
             self.assertEqual(str(control['INCLUDED_FILE']), 'OK')
 
     def testFileDir(self):
         tmp = TempDir({'env.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:set variable="mydirs">${.}</env:set>
 <env:set variable="myparent">${.}/..</env:set>
@@ -602,7 +619,7 @@ class Test(unittest.TestCase):
 
     def testDefaults(self):
         tmp = TempDir({'env.xml':
-'''<?xml version="1.0" ?>
+                       '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:default variable="var1">value1</env:default>
 <env:declare variable="var2" local="true" />
@@ -622,7 +639,6 @@ class Test(unittest.TestCase):
         self.assertEqual(str(control['var1']), "some_value")
         self.assertEqual(str(control['var2']), "test2")
 
-
     def testVariableManipulations(self):
         l = Variable.List('PATH')
 
@@ -630,13 +646,16 @@ class Test(unittest.TestCase):
         assert l.value(asString=True) == "/usr/bin:/some/nice/location"
 
         l.append("/another/path")
-        assert l.value(asString=True) == "/usr/bin:/some/nice/location:/another/path"
+        assert l.value(
+            asString=True) == "/usr/bin:/some/nice/location:/another/path"
 
         # duplicates removal
         l.append("/usr/bin")
-        assert l.value(asString=True) == "/usr/bin:/some/nice/location:/another/path"
+        assert l.value(
+            asString=True) == "/usr/bin:/some/nice/location:/another/path"
         l.prepend("/another/path")
-        assert l.value(asString=True) == "/another/path:/usr/bin:/some/nice/location"
+        assert l.value(
+            asString=True) == "/another/path:/usr/bin:/some/nice/location"
 
         s = Variable.Scalar('VAR')
 
@@ -651,6 +670,7 @@ class Test(unittest.TestCase):
 
         s.set("http://cern.ch")
         assert s.value(asString=True) == "http://cern.ch"
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

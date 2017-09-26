@@ -18,12 +18,10 @@
  */
 // ============================================================================
 
-class ErrorTool :         public  GaudiTool ,
-                          virtual public IErrorTool
+class ErrorTool : public GaudiTool, virtual public IErrorTool
 {
 
 public:
-
   /** Standard constructor
    *  @see GaudiTool
    *  @see   AlgTool
@@ -31,15 +29,12 @@ public:
    *  @param name   tool name
    *  @param parent pointer to parent component
    */
-  ErrorTool ( const std::string& type,
-              const std::string& name,
-              const IInterface* parent);
+  ErrorTool( const std::string& type, const std::string& name, const IInterface* parent );
 
   /// virtual and protected destructor
-  ~ErrorTool( ) override = default;
+  ~ErrorTool() override = default;
 
 public:
-
   /** Print the error  message, return status code
    *  and perform the statistics of error messages
    *
@@ -61,11 +56,11 @@ public:
    *  @param mx     maximal number of printouts
    *  @return       status code
    */
-  StatusCode Error
-  ( const std::string& msg ,
-    const StatusCode   st  = StatusCode::FAILURE ,
-    const size_t       mx  = 10                  ) const override
-  { return GaudiTool::Error ( msg , st, mx ) ; }
+  StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
+                    const size_t mx = 10 ) const override
+  {
+    return GaudiTool::Error( msg, st, mx );
+  }
 
   /** Print the warning  message, return status code
    *  and perform the statistics of warning  messages
@@ -77,11 +72,11 @@ public:
    *  @param mx     maximal number of printouts
    *  @return       status code
    */
-  StatusCode Warning
-  ( const std::string& msg ,
-    const StatusCode   st  = StatusCode::FAILURE ,
-    const size_t       mx  = 10                  ) const override
-  { return GaudiTool::Warning( msg , st , mx ) ; }
+  StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
+                      const size_t mx = 10 ) const override
+  {
+    return GaudiTool::Warning( msg, st, mx );
+  }
 
   /** Print the message and return status code
    *  @see MsgStream
@@ -92,11 +87,11 @@ public:
    *  @param lev    print level
    *  @return       status code
    */
-  StatusCode Print
-  ( const std::string& msg ,
-    const StatusCode   st  = StatusCode::SUCCESS ,
-    const MSG::Level   lev = MSG::INFO           ) const override
-  { return GaudiTool::Print( msg , st , lev ) ; }
+  StatusCode Print( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
+                    const MSG::Level lev = MSG::INFO ) const override
+  {
+    return GaudiTool::Print( msg, st, lev );
+  }
 
   /** Assertion - throw exception, if condition is not fulfilled
    *  @see CaloException
@@ -107,11 +102,11 @@ public:
    *  @param sc           status code to be returned (artificial)
    *  @return             status code
    */
-  void Assert
-  ( const bool         ok                            ,
-    const std::string& message = ""                  ,
-    const StatusCode   sc      = StatusCode::FAILURE ) const override
-  { GaudiTool::Assert ( ok , message , sc ) ; }
+  void Assert( const bool ok, const std::string& message = "",
+               const StatusCode sc = StatusCode::FAILURE ) const override
+  {
+    GaudiTool::Assert( ok, message, sc );
+  }
 
   /** Create and (re)-throw the exception
    *  @see GaudiException
@@ -121,11 +116,11 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  void Exception
-  ( const std::string    & msg                        ,
-    const GaudiException & exc                        ,
-    const StatusCode       sc  = StatusCode::FAILURE  ) const override
-  { GaudiTool::Exception ( msg , exc , sc ) ; }
+  void Exception( const std::string& msg, const GaudiException& exc,
+                  const StatusCode sc = StatusCode::FAILURE ) const override
+  {
+    GaudiTool::Exception( msg, exc, sc );
+  }
 
   /** Create and (re)-throw the exception
    *  @see GaudiException
@@ -135,11 +130,11 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  void Exception
-  ( const std::string    & msg                        ,
-    const std::exception & exc                        ,
-    const StatusCode       sc  = StatusCode::FAILURE  ) const override
-  { GaudiTool::Exception ( msg , exc , sc ) ; }
+  void Exception( const std::string& msg, const std::exception& exc,
+                  const StatusCode sc = StatusCode::FAILURE ) const override
+  {
+    GaudiTool::Exception( msg, exc, sc );
+  }
 
   /** Create and throw the exception
    *  @see GaudiException
@@ -148,11 +143,10 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  void Exception
-  ( const std::string& msg = "no message"        ,
-    const StatusCode   sc  = StatusCode::FAILURE ) const override
-  { GaudiTool::Exception ( msg , sc ) ; }
-
+  void Exception( const std::string& msg = "no message", const StatusCode sc = StatusCode::FAILURE ) const override
+  {
+    GaudiTool::Exception( msg, sc );
+  }
 };
 
 #endif // GAUDIALG_ERRORTOOL_H

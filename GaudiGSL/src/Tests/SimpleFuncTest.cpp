@@ -26,11 +26,9 @@ int main()
 
   const GaudiMath::Function& mysin = GaudiMath::SimpleFun( sin );
 
-  for( double x = 0 ; x < 10 ; x+= 0.25 ) {
-      printf( "x=%8.5f mysin=%+.10f sin=%+.10f sin-mysin=%+.19f \n",
-              x , mysin(x) , sin(x) , sin(x)-mysin(x) );
+  for ( double x = 0; x < 10; x += 0.25 ) {
+    printf( "x=%8.5f mysin=%+.10f sin=%+.10f sin-mysin=%+.19f \n", x, mysin( x ), sin( x ), sin( x ) - mysin( x ) );
   }
-
 }
 
 // ============================================================================

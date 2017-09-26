@@ -3,22 +3,28 @@ Module to configure the persistency type in GaudiPython.
 """
 __author__ = "Marco Clemencic <marco.clemencic@cern.ch>"
 
+
 class PersistencyError(RuntimeError):
     """
     Base class for exceptions in PersistencyHelper.
     """
     pass
 
+
 class UnknownPersistency(PersistencyError):
     """
     Exception raised if the persistency type is not known to the module.
     """
+
     def __init__(self, type_):
-        super(UnknownPersistency, self).__init__("Unknown persistency type %r" % type_)
+        super(UnknownPersistency, self).__init__(
+            "Unknown persistency type %r" % type_)
         self.type = type_
+
 
 # internal storage for the persistency helpers
 _implementations = []
+
 
 def get(type_):
     """
@@ -29,6 +35,7 @@ def get(type_):
             return i
     raise UnknownPersistency(type_)
 
+
 def add(instance):
     """
     Function to extend the list of known helpers.
@@ -36,6 +43,7 @@ def add(instance):
     New helpers are added to the top of the list.
     """
     _implementations.insert(0, instance)
+
 
 class FileDescription(object):
     def __init__(self, filename, opt, svc, sel=None, collection=None, fun=None):
@@ -55,6 +63,7 @@ class FileDescription(object):
         self.sel = sel
         self.collection = collection
         self.fun = fun
+
     def __data__(self):
         '''
         Return a list of pairs describing the instance.
@@ -65,6 +74,7 @@ class FileDescription(object):
                 ("SEL", self.sel),
                 ("COLLECTION", self.collection),
                 ("FUN", self.fun)]
+
     def __str__(self):
         """
         Return the string representation of the file description to be passed
@@ -72,15 +82,18 @@ class FileDescription(object):
         """
         return " ".join(["%s='%s'" % (k, v) for k, v in self.__data__() if v])
 
+
 class PersistencyHelper(object):
     """
     Base class for extensions to persistency configuration in GaudiPython.
     """
+
     def __init__(self, types):
         """
         Define the type of persistencies supported by the instance.
         """
         self.types = set(types)
+
     def handle(self, typ):
         """
         Returns True if the current instance understands the requested
@@ -88,10 +101,12 @@ class PersistencyHelper(object):
         """
         return typ in self.types
 
+
 class RootPersistency(PersistencyHelper):
     """
     Implementation of PersistencyHelper based on Gaudi::RootCnvSvc.
     """
+
     def __init__(self):
         """
         Constructor.
@@ -109,7 +124,7 @@ class RootPersistency(PersistencyHelper):
         if not self.configured:
             # instantiate the required services
             appMgr.service('Gaudi::RootCnvSvc/RootCnvSvc')
-            eps = appMgr.service ( 'EventPersistencySvc' )
+            eps = appMgr.service('EventPersistencySvc')
             eps.CnvServices += ['RootCnvSvc']
             self.configured = True
 
@@ -149,10 +164,12 @@ class RootPersistency(PersistencyHelper):
         '''
         if not self.configured:
             raise PersistencyError("Persistency not configured")
-        retval = str(FileDescription(filename, 'RECREATE', 'Gaudi::RootCnvSvc'))
+        retval = str(FileDescription(
+            filename, 'RECREATE', 'Gaudi::RootCnvSvc'))
         if 'lun' in kwargs:
             retval = "%s %s" % (kwargs['lun'], retval)
         return retval
+
 
 # Adding the know instances to the list of helpers
 add(RootPersistency())

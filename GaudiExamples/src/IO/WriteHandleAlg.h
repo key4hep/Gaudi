@@ -1,23 +1,23 @@
 #ifndef HANDLEWRITE_ALG_H
 #define HANDLEWRITE_ALG_H
 
-
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 #include "GaudiKernel/DataObjectHandle.h"
 
 // Event Model related classes
+#include "GaudiExamples/Counter.h"
 #include "GaudiExamples/Event.h"
 #include "GaudiExamples/MyTrack.h"
-#include "GaudiExamples/Counter.h"
 
 using namespace Gaudi::Examples;
 
 //------------------------------------------------------------------------------
 
-class WriteHandleAlg : public GaudiAlgorithm {
+class WriteHandleAlg : public GaudiAlgorithm
+{
 public:
-  WriteHandleAlg(const std::string& n, ISvcLocator* l): GaudiAlgorithm(n, l) {}
+  WriteHandleAlg( const std::string& n, ISvcLocator* l ) : GaudiAlgorithm( n, l ) {}
 
   bool isClonable() const override { return true; }
 

@@ -14,7 +14,7 @@
  *  @date   30/04/2002
  */
 // ============================================================================
-DECLARE_COMPONENT(GslErrorPrint)
+DECLARE_COMPONENT( GslErrorPrint )
 // ============================================================================
 
 // ============================================================================
@@ -25,19 +25,15 @@ DECLARE_COMPONENT(GslErrorPrint)
  *  @return status code
  */
 // ============================================================================
-StatusCode GslErrorPrint::handle
-( const GslError& error  ) const
+StatusCode GslErrorPrint::handle( const GslError& error ) const
 {
-  AlgTool::error()
-      << " GSL code " << error.code
-      << " Message '" << error.reason << "'"
-      << " File '"    << error.file   << "'"
-      << " Line "     << error.line   << endmsg ;
+  AlgTool::error() << " GSL code " << error.code << " Message '" << error.reason << "'"
+                   << " File '" << error.file << "'"
+                   << " Line " << error.line << endmsg;
   //
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
-
 
 // ============================================================================
 // The END

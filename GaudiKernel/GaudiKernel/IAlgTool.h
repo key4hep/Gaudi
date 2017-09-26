@@ -20,18 +20,19 @@ class IAlgorithm;
     @date 15/11/01 version 2 introduced
 */
 
-class GAUDI_API IAlgTool: virtual public INamedInterface {
+class GAUDI_API IAlgTool : virtual public INamedInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAlgTool,4,0);
+  DeclareInterfaceID( IAlgTool, 4, 0 );
 
   /// The type of an AlgTool, meaning the concrete AlgTool class.
-  virtual const std::string&  type() const = 0;
+  virtual const std::string& type() const = 0;
 
   /** The parent of the concrete AlgTool. It can be an Algorithm
       or a Service. A common AlgTool has the ToolSvc as parent.
   */
-  virtual const IInterface*   parent() const = 0;
+  virtual const IInterface* parent() const = 0;
 
   // --- Methods from IStateful ---
   /** Configuration (from OFFLINE to CONFIGURED).
@@ -57,7 +58,6 @@ public:
   /** Initialization (from CONFIGURED to OFFLINE).
   */
   virtual StatusCode terminate() = 0;
-
 
   /** Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
   */
@@ -106,7 +106,6 @@ public:
    *  could not be done with a simply a constructor.
    */
   virtual StatusCode sysRestart() = 0;
-
 };
 
-#endif  // GAUDIKERNEL_IALGTOOL_H
+#endif // GAUDIKERNEL_IALGTOOL_H

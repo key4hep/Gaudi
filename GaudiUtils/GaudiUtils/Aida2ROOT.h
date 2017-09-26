@@ -10,23 +10,23 @@
 // ============================================================================
 namespace AIDA
 {
-  class IBaseHistogram ;
-  class IHistogram     ;
-  class IHistogram1D   ;
-  class IHistogram2D   ;
-  class IHistogram3D   ;
-  class IProfile1D     ;
-  class IProfile2D     ;
+  class IBaseHistogram;
+  class IHistogram;
+  class IHistogram1D;
+  class IHistogram2D;
+  class IHistogram3D;
+  class IProfile1D;
+  class IProfile2D;
 }
 // ============================================================================
 // ROOT
 // ============================================================================
-class TH1D       ;
-class TH2D       ;
-class TH3D       ;
-class TProfile   ;
-class TProfile2D ;
-class TObject    ;
+class TH1D;
+class TH2D;
+class TH3D;
+class TProfile;
+class TProfile2D;
+class TObject;
 // ============================================================================
 namespace Gaudi
 {
@@ -61,24 +61,24 @@ namespace Gaudi
     {
     public:
       /// get the underlying pointer for 1D-histogram
-      static TH1D*       aida2root ( AIDA::IHistogram1D* aida ) ;
-      static const TH1D*       aida2root ( const AIDA::IHistogram1D* aida ) ;
+      static TH1D* aida2root( AIDA::IHistogram1D* aida );
+      static const TH1D* aida2root( const AIDA::IHistogram1D* aida );
       /// get the underlying pointer for 2D-histogram
-      static TH2D*       aida2root ( AIDA::IHistogram2D* aida ) ;
-      static const TH2D*       aida2root (  const AIDA::IHistogram2D* aida ) ;
+      static TH2D* aida2root( AIDA::IHistogram2D* aida );
+      static const TH2D* aida2root( const AIDA::IHistogram2D* aida );
       /// get the underlying pointer for 3D-histogram
-      static TH3D*       aida2root ( AIDA::IHistogram3D* aida ) ;
-      static const TH3D*       aida2root ( const AIDA::IHistogram3D* aida ) ;
+      static TH3D* aida2root( AIDA::IHistogram3D* aida );
+      static const TH3D* aida2root( const AIDA::IHistogram3D* aida );
       /// get the underlying pointer for 1D-profile
-      static TProfile*   aida2root ( AIDA::IProfile1D*   aida ) ;
-      static const TProfile*   aida2root ( const AIDA::IProfile1D*   aida ) ;
+      static TProfile* aida2root( AIDA::IProfile1D* aida );
+      static const TProfile* aida2root( const AIDA::IProfile1D* aida );
       /// get the underlying pointer for 2D-profile
-      static TProfile2D* aida2root ( AIDA::IProfile2D*   aida ) ;
-      static const TProfile2D* aida2root ( const AIDA::IProfile2D*   aida ) ;
+      static TProfile2D* aida2root( AIDA::IProfile2D* aida );
+      static const TProfile2D* aida2root( const AIDA::IProfile2D* aida );
       /// get root representation for other cases
-      static TObject*    aida2root ( AIDA::IHistogram*   aida ) ;
-      static const TObject*    aida2root ( const AIDA::IHistogram*   aida ) ;
-    } ;
+      static TObject* aida2root( AIDA::IHistogram* aida );
+      static const TObject* aida2root( const AIDA::IHistogram* aida );
+    };
     // ========================================================================
   } // end of namespace Gaudi::Utils
   // ==========================================================================

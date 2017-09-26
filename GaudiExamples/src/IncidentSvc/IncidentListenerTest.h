@@ -11,10 +11,10 @@ class IIncidentSvc;
 /** @class IncidentListenerTest IncidentListenerTest.h
  *
  */
-class IncidentListenerTest: public implements<IIncidentListener> {
+class IncidentListenerTest : public implements<IIncidentListener>
+{
 
 public:
-
   /// Constructor
   IncidentListenerTest( const std::string& name, ISvcLocator* svcloc, long shots = -1 );
 
@@ -22,7 +22,7 @@ public:
   ~IncidentListenerTest() override;
 
   /// Reimplements from IIncidentListener
-  void handle(const Incident& incident) override;
+  void handle( const Incident& incident ) override;
 
 private:
   std::string m_name;

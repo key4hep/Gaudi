@@ -46,7 +46,8 @@ class ToolHandleInfo;
  *  @author Pere Mato
  */
 class GAUDI_API AlgTool
-    : public DataHandleHolderBase<PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
+    : public DataHandleHolderBase<
+          PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
 #ifndef __REFLEX__
@@ -194,7 +195,6 @@ public:
     return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
   }
 
-
   template <class T>
   void addToolsArray( ToolHandleArray<T>& hndlArr )
   {
@@ -202,7 +202,6 @@ public:
   }
 
 public:
-
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
   void commitHandles() override;

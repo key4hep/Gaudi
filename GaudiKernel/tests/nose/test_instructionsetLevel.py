@@ -1,6 +1,7 @@
 import os
 from subprocess import Popen, PIPE
 
+
 def test():
     out = Popen(['instructionsetLevel.exe', 'all'],
                 stdout=PIPE).communicate()[0]

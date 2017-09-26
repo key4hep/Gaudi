@@ -1,14 +1,15 @@
-#ifndef ROOTCOMPRESSIONSETTINGS_H 
+#ifndef ROOTCOMPRESSIONSETTINGS_H
 #define ROOTCOMPRESSIONSETTINGS_H 1
 
 // STD
 #include <string>
 
-namespace RootHistCnv {
+namespace RootHistCnv
+{
 
   /** @class RootCompressionSettings RootCompressionSettings.h
    *
-   *  Simple class to decode a ROOT compression settings string, 
+   *  Simple class to decode a ROOT compression settings string,
    *  of the form '<Alg>:<level>' into the integer code to pass
    *  to ROOT.
    *
@@ -16,18 +17,18 @@ namespace RootHistCnv {
    *  @date   2013-10-24
    */
 
-  class RootCompressionSettings {
+  class RootCompressionSettings
+  {
     /// The cached ROOT compression level int
     int m_level;
 
   public:
     /// Standard constructor
-    RootCompressionSettings( const std::string & settings );
+    RootCompressionSettings( const std::string& settings );
 
     /// Get the level
     int level() const { return m_level; }
   };
-
 }
 
 #endif // ROOTCOMPRESSIONSETTINGS_H

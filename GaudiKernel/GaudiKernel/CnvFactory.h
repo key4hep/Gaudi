@@ -5,5 +5,4 @@
 #warning "obsolete empty header, please remove it"
 #endif
 
-
 #endif // GAUDIKERNEL_CNVFACTORY_H

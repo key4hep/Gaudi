@@ -8,6 +8,7 @@ import logging
 # FIXME: module alias for backward compatibility
 sys.modules['GaudiTest'] = GT
 
+
 def basic_report(results):
     '''
     Report function taking the dictionary from BasicTest.run() and display
@@ -41,9 +42,11 @@ def ctest_report(results):
     handler = {'Environment': lambda v: '\n'.join('{0}={1}'.format(*item)
                                                   for item in sorted(v.iteritems())),
                'Causes': lambda v: 'unexpected ' + ', '.join(v)}
-    id_handler = lambda v: str(v)
+
+    def id_handler(v): return str(v)
     ignore = set(['Status', 'Name', 'stdout', 'Exit Code'])
-    template = ('<DartMeasurement type="text/string" name="{0}">{1}</DartMeasurement>')
+    template = (
+        '<DartMeasurement type="text/string" name="{0}">{1}</DartMeasurement>')
 
     for key in results:
         if key in ignore:
@@ -85,33 +88,31 @@ def main():
     verbosity_opts = OptionGroup(parser, 'Verbosity Level',
                                  'set the verbosity level of messages')
     verbosity_opts.add_option('--silent',
-                      action='store_const', dest='log_level',
-                      const=logging.CRITICAL,
-                      help='only critical error messages')
+                              action='store_const', dest='log_level',
+                              const=logging.CRITICAL,
+                              help='only critical error messages')
     verbosity_opts.add_option('--quiet',
-                      action='store_const', dest='log_level',
-                      const=logging.ERROR,
-                      help='error messages')
+                              action='store_const', dest='log_level',
+                              const=logging.ERROR,
+                              help='error messages')
     verbosity_opts.add_option('--warning',
-                      action='store_const', dest='log_level',
-                      const=logging.WARNING,
-                      help='warning and error messages')
+                              action='store_const', dest='log_level',
+                              const=logging.WARNING,
+                              help='warning and error messages')
     verbosity_opts.add_option('--verbose',
-                      action='store_const', dest='log_level',
-                      const=logging.INFO,
-                      help='progress information messages')
+                              action='store_const', dest='log_level',
+                              const=logging.INFO,
+                              help='progress information messages')
     verbosity_opts.add_option('--debug',
-                      action='store_const', dest='log_level',
-                      const=logging.DEBUG,
-                      help='debugging messages')
+                              action='store_const', dest='log_level',
+                              const=logging.DEBUG,
+                              help='debugging messages')
     parser.add_option_group(verbosity_opts)
-
 
     parser.set_defaults(log_level=logging.WARNING,
                         report='basic',
                         workdir=os.curdir,
                         skip_return_code=0)
-
 
     opts, args = parser.parse_args()
     if len(args) != 1:
@@ -134,10 +135,10 @@ def main():
 
     # Testing the file beginning with "Test" or if it is a qmt file and doing the test
     logging.debug('processing %s', filename)
-    if filename.endswith('_test.py') :
-        indexFilePart= filename.rfind("/")
-        fileToImport = filename[indexFilePart+1:]
-        sys.path.append(GT.RationalizePath(filename)[:-len(fileToImport)-1])
+    if filename.endswith('_test.py'):
+        indexFilePart = filename.rfind("/")
+        fileToImport = filename[indexFilePart + 1:]
+        sys.path.append(GT.RationalizePath(filename)[:-len(fileToImport) - 1])
         imp = __import__(fileToImport[:-3])
         fileToExec = imp.Test()
         results = fileToExec.run()
@@ -145,13 +146,16 @@ def main():
         # Check which class should be used to instantiate QMTests
         # by default it is QMTTest but this can be overwritten via the environment
         try:
-            test_module = os.environ.get('GAUDI_QMTEST_MODULE', 'GaudiTesting.QMTTest')
+            test_module = os.environ.get(
+                'GAUDI_QMTEST_MODULE', 'GaudiTesting.QMTTest')
             test_class = os.environ.get('GAUDI_QMTEST_CLASS', 'QMTTest')
-            exec 'from {} import {} as test_class'.format(test_module, test_class)
+            exec 'from {} import {} as test_class'.format(
+                test_module, test_class)
             fileToTest = test_class(filename)
             results = fileToTest.run()
         except Exception, e:
-            logging.error('Exception caught when trying to instantiate qmt test python object')
+            logging.error(
+                'Exception caught when trying to instantiate qmt test python object')
             logging.error(e)
             return 1
 
@@ -165,6 +169,7 @@ def main():
     elif results.get('Status') == 'skipped':
         return opts.skip_return_code
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -11,10 +11,13 @@ xenv_cmd = os.path.join(os.path.dirname(__file__), os.pardir, 'xenv')
 
 build_log = None
 build_returncode = None
-build_err=None
+build_err = None
+
+
 def clean():
     Popen(['make', 'clean'], cwd=base_dir,
           stdout=PIPE, stderr=PIPE).communicate()
+
 
 def build():
     global build_log, build_returncode, build_err
@@ -26,9 +29,11 @@ def build():
     build_log, build_err = build_proc.communicate()
     build_returncode = build_proc.returncode
 
+
 def setup():
     clean()
     build()
+
 
 def test_build():
     assert build_returncode == 0
@@ -64,6 +69,7 @@ def test_env():
     # in the list (because of the InstallArea of Gaudi itself)
     root_inc_path = [l for l in root_inc_path if l != '.']
     assert root_inc_path == ['D', 'B', 'C', 'A'], root_inc_path
+
 
 def teardown():
     clean()

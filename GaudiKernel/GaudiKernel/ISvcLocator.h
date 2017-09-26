@@ -4,10 +4,10 @@
 // Include files
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/ISvcManager.h"
-#include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/SmartIF.h"
-#include <string>
+#include "GaudiKernel/TypeNameString.h"
 #include <list>
+#include <string>
 
 // Forward class declaration
 class IService;
@@ -22,21 +22,23 @@ class IService;
 
     @author Pere Mato
 */
-class GAUDI_API ISvcLocator: virtual public IInterface {
+class GAUDI_API ISvcLocator : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(ISvcLocator,3,0);
+  DeclareInterfaceID( ISvcLocator, 3, 0 );
 
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
+#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /** Get a reference to the service given a service name
       @param name Service name
       @param svc Returned service pointer
   */
-  virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
-                                 IService*&  svc, const bool createIf = true) {
-    SmartIF<IService> &s = service(typeName, createIf);
-    svc = s.get();
-    if (svc) {
+  virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, IService*& svc,
+                                 const bool createIf = true )
+  {
+    SmartIF<IService>& s = service( typeName, createIf );
+    svc                  = s.get();
+    if ( svc ) {
       svc->addRef(); // Needed to maintain the correct reference counting.
       return StatusCode::SUCCESS;
     }
@@ -48,64 +50,66 @@ public:
       @param iid Interface ID
       @param pinterface Returned pointer to the requested interface
   */
-  virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
-                                 const InterfaceID& iid,
-                                 IInterface*& pinterface ) {
-    auto svc = service(typeName, false);
-    return  svc ? svc->queryInterface(iid, (void**)&pinterface)
-                : StatusCode::FAILURE;
+  virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
+                                 IInterface*& pinterface )
+  {
+    auto svc = service( typeName, false );
+    return svc ? svc->queryInterface( iid, (void**)&pinterface ) : StatusCode::FAILURE;
   }
 
-  /** Get a reference to a service and create it if it does not exists
-      @param name Service name
-      @param svc Returned service pointer
-      @param createIf flag to control the creation
-  */
-  //virtual StatusCode getService( const Gaudi::Utils::TypeNameString& name,
-  //                               IService*& svc,
-  //                               bool createIf ) = 0;
+/** Get a reference to a service and create it if it does not exists
+    @param name Service name
+    @param svc Returned service pointer
+    @param createIf flag to control the creation
+*/
+// virtual StatusCode getService( const Gaudi::Utils::TypeNameString& name,
+//                               IService*& svc,
+//                               bool createIf ) = 0;
 #endif
 
   /// Return the list of Services
-  virtual const std::list<IService*> &getServices() const = 0;
+  virtual const std::list<IService*>& getServices() const = 0;
 
   /// Check the existence of a service given a service name
-  virtual bool existsService(const std::string& name) const = 0;
+  virtual bool existsService( const std::string& name ) const = 0;
 
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
+#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /// Templated method to access a service by name.
   template <class T>
-  StatusCode service( const Gaudi::Utils::TypeNameString& name, T*& svc, bool createIf = true ) {
-    if( createIf ) {
+  StatusCode service( const Gaudi::Utils::TypeNameString& name, T*& svc, bool createIf = true )
+  {
+    if ( createIf ) {
       IService* s;
-      StatusCode sc = getService( name, s, true);
-      if ( !sc.isSuccess() ) return sc;  // Must check if initialization was OK!
+      StatusCode sc = getService( name, s, true );
+      if ( !sc.isSuccess() ) return sc; // Must check if initialization was OK!
     }
     return getService( name, T::interfaceID(), (IInterface*&)svc );
   }
 
   /// Templated method to access a service by type and name.
   template <class T>
-  StatusCode service( const std::string& type, const std::string& name,
-		      T*& svc, bool createIf = true ) {
-    return service(type + "/" + name, svc, createIf);
+  StatusCode service( const std::string& type, const std::string& name, T*& svc, bool createIf = true )
+  {
+    return service( type + "/" + name, svc, createIf );
   }
 #endif
 
   /// Returns a smart pointer to a service.
-  virtual SmartIF<IService> &service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) = 0;
+  virtual SmartIF<IService>& service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) = 0;
 
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
-  inline SmartIF<T> service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) {
-    return SmartIF<T>{ service(typeName, createIf) };
+  inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true )
+  {
+    return SmartIF<T>{service( typeName, createIf )};
   }
 
   // try to access a different interface of  the _current_ serviceLocator...
   template <typename IFace>
-  SmartIF<IFace> as() { return SmartIF<IFace>{ this }; }
-
+  SmartIF<IFace> as()
+  {
+    return SmartIF<IFace>{this};
+  }
 };
 
-
-#endif  // GAUDI_ISVCLOCATOR_H
+#endif // GAUDI_ISVCLOCATOR_H

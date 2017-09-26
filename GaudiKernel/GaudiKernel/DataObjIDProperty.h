@@ -144,6 +144,7 @@ namespace Gaudi
 
     /// virtual Destructor
     virtual ~Property() {}
+
   private:
     std::unique_ptr<DataObjIDColl> m_data;
   };

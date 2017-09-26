@@ -27,23 +27,23 @@ namespace Gaudi
     public:
       // ======================================================================
       /// execute it!
-      StatusCode execute () override ;
+      StatusCode execute() override;
       // ======================================================================
     public:
       // ======================================================================
       /** Standard constructor
        *
        */
-      ArrayProperties ( const std::string& name ,    // algorithm instance name
-                        ISvcLocator*       pSvc )    //         service locator
-        : GaudiAlgorithm ( name , pSvc )
+      ArrayProperties( const std::string& name, // algorithm instance name
+                       ISvcLocator* pSvc )      //         service locator
+          : GaudiAlgorithm( name, pSvc )
       {
         //
-        std::fill_n ( m_doubles , 5 , -10              ) ;
-        std::fill_n ( m_strings , 4 , "blah-blah-blah" ) ;
+        std::fill_n( m_doubles, 5, -10 );
+        std::fill_n( m_strings, 4, "blah-blah-blah" );
         //
-        declareProperty ( "Doubles" , m_doubles , "C-array of doubles" ) ;
-        declareProperty ( "Strings" , m_strings , "C-array of strings" ) ;
+        declareProperty( "Doubles", m_doubles, "C-array of doubles" );
+        declareProperty( "Strings", m_strings, "C-array of strings" );
       }
       /// virtual destructor
       ~ArrayProperties() override {}
@@ -51,20 +51,20 @@ namespace Gaudi
     private:
       // ======================================================================
       /// the default constructor is disabled
-      ArrayProperties () ;               // the default constructor is disabled
+      ArrayProperties(); // the default constructor is disabled
       /// copy constructor is disabled
-      ArrayProperties ( const ArrayProperties& ) ; // no copy constructor
+      ArrayProperties( const ArrayProperties& ); // no copy constructor
       /// assignment operator is disabled
-      ArrayProperties& operator=( const ArrayProperties& ) ; // no assignment
+      ArrayProperties& operator=( const ArrayProperties& ); // no assignment
       // ======================================================================
     private:
       // ======================================================================
       /// array  of doubles
-      double       m_doubles[5] ;                          // array  of doubles
+      double m_doubles[5]; // array  of doubles
       /// array of strings
-      std::string  m_strings[4] ;                           // array of strings
+      std::string m_strings[4]; // array of strings
       // ======================================================================
-    } ;
+    };
     // ========================================================================
   } //                                         end of namespace Gaudi::Examples
   // ==========================================================================
@@ -72,20 +72,20 @@ namespace Gaudi
 // ============================================================================
 // execute it!
 // ============================================================================
-StatusCode Gaudi::Examples::ArrayProperties::execute ()
+StatusCode Gaudi::Examples::ArrayProperties::execute()
 {
-  propsPrint () ;
+  propsPrint();
   //
-  info() << " Doubles : " << Gaudi::Utils::toString ( m_doubles ) << endmsg ;
-  info() << " Strings : " << Gaudi::Utils::toString ( m_strings ) << endmsg ;
+  info() << " Doubles : " << Gaudi::Utils::toString( m_doubles ) << endmsg;
+  info() << " Strings : " << Gaudi::Utils::toString( m_strings ) << endmsg;
   //
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 /// The Factory
 // ============================================================================
 using Gaudi::Examples::ArrayProperties;
-DECLARE_COMPONENT(ArrayProperties)
+DECLARE_COMPONENT( ArrayProperties )
 // ============================================================================
 // The END
 // ============================================================================

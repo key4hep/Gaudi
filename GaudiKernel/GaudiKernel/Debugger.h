@@ -16,10 +16,11 @@
 
 #include "GaudiKernel/Kernel.h"
 
-namespace System  {
+namespace System
+{
   /// Break the execution of the application and invoke the debugger
   GAUDI_API long breakExecution();
   /// Break the execution of the application and invoke the debugger in a remote process
-  GAUDI_API long breakExecution(long pid);
+  GAUDI_API long breakExecution( long pid );
 }
-#endif    // GAUDI_SYSTEM_DEBUGGER_H
+#endif // GAUDI_SYSTEM_DEBUGGER_H

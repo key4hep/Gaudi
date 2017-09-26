@@ -8,16 +8,16 @@
  * @author M. Shapiro, LBNL
  * @author Marco Clemencic
  */
-class NameAuditor:public CommonAuditor {
+class NameAuditor : public CommonAuditor
+{
 public:
-  NameAuditor(const std::string& name, ISvcLocator* pSvcLocator);
+  NameAuditor( const std::string& name, ISvcLocator* pSvcLocator );
 
 private:
   /// Print a message on "before".
-  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
+  void i_before( CustomEventTypeRef evt, const std::string& caller ) override;
   /// Print a message on "after".
-  void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc) override;
-
+  void i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc ) override;
 };
 
 #endif

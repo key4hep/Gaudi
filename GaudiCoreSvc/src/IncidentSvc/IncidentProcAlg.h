@@ -2,13 +2,13 @@
 #define __INCIDENT_PROC_ALG_H
 
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/Property.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Property.h"
 
-class GAUDI_API IncidentProcAlg: public Algorithm {
- public:
-
+class GAUDI_API IncidentProcAlg : public Algorithm
+{
+public:
   /**
    ** Constructor(s)
    **/
@@ -17,7 +17,7 @@ class GAUDI_API IncidentProcAlg: public Algorithm {
   /**
    ** Destructor
    **/
-  virtual ~IncidentProcAlg( ){};
+  virtual ~IncidentProcAlg(){};
 
   /*****************************
    ** Public Function Members **
@@ -27,9 +27,8 @@ class GAUDI_API IncidentProcAlg: public Algorithm {
   StatusCode execute() override;
   StatusCode finalize() override;
 
-
- private:
-  SmartIF<IIncidentSvc> m_incSvc;  
+private:
+  SmartIF<IIncidentSvc> m_incSvc;
   /**************************
    ** Private Data Members **
    **************************/

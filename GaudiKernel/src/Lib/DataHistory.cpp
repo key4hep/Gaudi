@@ -22,38 +22,34 @@ using std::endl;
 
 // Default constructor.
 
-DataHistory::DataHistory(const CLID& id, std::string key,
-			 AlgorithmHistory* alg):
-  m_dataClassID(id), m_dataKey(std::move(key)), m_algHist(alg)
+DataHistory::DataHistory( const CLID& id, std::string key, AlgorithmHistory* alg )
+    : m_dataClassID( id ), m_dataKey( std::move( key ) ), m_algHist( alg )
 {
-
-
 }
 
 //**********************************************************************
 
-const CLID&
-DataHistory::classID() {
-  static const CLID CLID_DataHistory = 83814411;   // from `clid DataHistory`
-  
+const CLID& DataHistory::classID()
+{
+  static const CLID CLID_DataHistory = 83814411; // from `clid DataHistory`
+
   return CLID_DataHistory;
 }
-  
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void
-DataHistory::dump(std::ostream& ost, const bool /*isXML*/, int /*ind*/) const {
+void DataHistory::dump( std::ostream& ost, const bool /*isXML*/, int /*ind*/ ) const
+{
   ost << "ClassID: " << dataClassID() << endl
       << "Key: " << dataKey() << endl
-      << "AlgorithmHistory: " << (void*) algorithmHistory() << endl;
+      << "AlgorithmHistory: " << (void*)algorithmHistory() << endl;
 }
-  
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-  
-ostream& operator<<(ostream& lhs, const DataHistory& rhs) {
+ostream& operator<<( ostream& lhs, const DataHistory& rhs )
+{
 
-  rhs.dump(lhs,false);
+  rhs.dump( lhs, false );
   return lhs;
-
 }

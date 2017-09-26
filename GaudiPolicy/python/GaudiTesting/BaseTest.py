@@ -13,6 +13,7 @@ import logging
 
 from subprocess import Popen, PIPE, STDOUT
 
+
 def sanitize_for_xml(data):
     '''
     Take a string with invalid ASCII/UTF characters and quote them so that the
@@ -21,11 +22,14 @@ def sanitize_for_xml(data):
     >>> sanitize_for_xml('this is \x1b')
     'this is [NON-XML-CHAR-0x1B]'
     '''
-    bad_chars = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+    bad_chars = re.compile(
+        u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+
     def quote(match):
         'helper function'
         return ''.join('[NON-XML-CHAR-0x%2X]' % ord(c) for c in match.group())
     return bad_chars.sub(quote, data)
+
 
 def dumpProcs(name):
     '''helper to debug GAUDI-1084, dump the list of processes'''
@@ -34,6 +38,7 @@ def dumpProcs(name):
         p = Popen(['ps', '-fH', '-U', getuser()], stdout=PIPE)
         with open(os.path.join(os.environ['WORKSPACE'], name), 'w') as f:
             f.write(p.communicate()[0])
+
 
 def kill_tree(ppid, sig):
     '''
@@ -50,11 +55,13 @@ def kill_tree(ppid, sig):
         log.debug('killing process %d', ppid)
         os.kill(ppid, sig)
     except OSError, err:
-        if err.errno != 3: # No such process
+        if err.errno != 3:  # No such process
             raise
         log.debug('no such process %d', ppid)
 
 #-------------------------------------------------------------------------#
+
+
 class BaseTest(object):
 
     _common_tmpdir = None
@@ -73,7 +80,7 @@ class BaseTest(object):
         self.signal = None
         self.workdir = os.curdir
         self.use_temp_dir = False
-        #Variables not for users
+        # Variables not for users
         self.status = None
         self.name = ''
         self.causes = []
@@ -90,7 +97,7 @@ class BaseTest(object):
 
         if self.options:
             if re.search(r'from\s+Gaudi.Configuration\s+import\s+\*|'
-                          'from\s+Configurables\s+import', self.options):
+                         'from\s+Configurables\s+import', self.options):
                 optionFile = tempfile.NamedTemporaryFile(suffix='.py')
             else:
                 optionFile = tempfile.NamedTemporaryFile(suffix='.opts')
@@ -98,9 +105,12 @@ class BaseTest(object):
             optionFile.seek(0)
             self.args.append(RationalizePath(optionFile.name))
 
-        #If not specified, setting the environment
-        if self.environment is None : self.environment = os.environ
-        else : self.environment=dict(self.environment.items()+os.environ.items())
+        # If not specified, setting the environment
+        if self.environment is None:
+            self.environment = os.environ
+        else:
+            self.environment = dict(
+                self.environment.items() + os.environ.items())
 
         platform_id = (os.environ.get('BINARY_TAG') or
                        os.environ.get('CMTCONFIG') or
@@ -120,16 +130,16 @@ class BaseTest(object):
                     workdir = tempfile.mkdtemp()
 
             # prepare the command to execute
-            prog=''
+            prog = ''
             if self.program != '':
                 prog = self.program
-            elif "GAUDIEXE" in os.environ :
+            elif "GAUDIEXE" in os.environ:
                 prog = os.environ["GAUDIEXE"]
-            else :
+            else:
                 prog = "Gaudi.exe"
 
             dummy, prog_ext = os.path.splitext(prog)
-            if prog_ext not in [ ".exe", ".py", ".bat" ]:
+            if prog_ext not in [".exe", ".py", ".bat"]:
                 prog += ".exe"
                 prog_ext = ".exe"
 
@@ -137,9 +147,9 @@ class BaseTest(object):
 
             args = map(RationalizePath, self.args)
 
-            if prog_ext == ".py" :
+            if prog_ext == ".py":
                 params = ['python', RationalizePath(prog)] + args
-            else :
+            else:
                 params = [RationalizePath(prog)] + args
 
             validatorRes = Result({'CAUSE': None, 'EXCEPTION': None,
@@ -152,8 +162,8 @@ class BaseTest(object):
             # in the same dir as the program
             os.chdir(workdir)
 
-            #launching test in a different thread to handle timeout exception
-            def target() :
+            # launching test in a different thread to handle timeout exception
+            def target():
                 logging.debug('executing %r in %s',
                               params, workdir)
                 self.proc = Popen(params, stdout=PIPE, stderr=PIPE,
@@ -167,7 +177,8 @@ class BaseTest(object):
             thread.join(self.timeout)
 
             if thread.is_alive():
-                logging.debug('time out in test %s (pid %d)', self.name, self.proc.pid)
+                logging.debug('time out in test %s (pid %d)',
+                              self.name, self.proc.pid)
                 # get the stack trace of the stuck process
                 cmd = ['gdb', '--pid', str(self.proc.pid), '--batch',
                        '--eval-command=thread apply all backtrace']
@@ -182,7 +193,7 @@ class BaseTest(object):
             else:
                 logging.debug('completed test %s', self.name)
 
-                #Getting the error code
+                # Getting the error code
                 logging.debug('returnedCode = %s', self.proc.returncode)
                 self.returnedCode = self.proc.returncode
 
@@ -239,11 +250,10 @@ class BaseTest(object):
         resultDict.append(('Working Directory',
                            RationalizePath(os.path.join(os.getcwd(),
                                                         self.workdir))))
-        #print dict(resultDict).keys()
+        # print dict(resultDict).keys()
         resultDict.extend(self.result.annotations.iteritems())
-        #print self.result.annotations.keys()
+        # print self.result.annotations.keys()
         return dict(resultDict)
-
 
     #-------------------------------------------------#
     #----------------Validating tool------------------#
@@ -256,21 +266,26 @@ class BaseTest(object):
             self.causes.append('standard error')
         return result, self.causes
 
-    def findReferenceBlock(self,reference=None, stdout=None, result=None, causes=None, signature_offset=0, signature=None, id = None):
+    def findReferenceBlock(self, reference=None, stdout=None, result=None, causes=None, signature_offset=0, signature=None, id=None):
         """
             Given a block of text, tries to find it in the output. The block had to be identified by a signature line. By default, the first line is used as signature, or the line pointed to by signature_offset. If signature_offset points outside the block, a signature line can be passed as signature argument. Note: if 'signature' is None (the default), a negative signature_offset is interpreted as index in a list (e.g. -1 means the last line), otherwise the it is interpreted as the number of lines before the first one of the block the signature must appear. The parameter 'id' allow to distinguish between different calls to this function in the same validation code.
             """
 
-        if reference is None : reference=self.reference
-        if stdout is None : stdout=self.out
-        if result is None : result=self.result
-        if causes is None : causes=self.causes
+        if reference is None:
+            reference = self.reference
+        if stdout is None:
+            stdout = self.out
+        if result is None:
+            result = self.result
+        if causes is None:
+            causes = self.causes
 
-        reflines = filter(None,map(lambda s: s.rstrip(), reference.splitlines()))
+        reflines = filter(
+            None, map(lambda s: s.rstrip(), reference.splitlines()))
         if not reflines:
             raise RuntimeError("Empty (or null) reference")
         # the same on standard output
-        outlines = filter(None,map(lambda s: s.rstrip(), stdout.splitlines()))
+        outlines = filter(None, map(lambda s: s.rstrip(), stdout.splitlines()))
 
         res_field = "GaudiTest.RefBlock"
         if id:
@@ -278,18 +293,20 @@ class BaseTest(object):
 
         if signature is None:
             if signature_offset < 0:
-                signature_offset = len(reference)+signature_offset
+                signature_offset = len(reference) + signature_offset
             signature = reflines[signature_offset]
         # find the reference block in the output file
         try:
             pos = outlines.index(signature)
-            outlines = outlines[pos-signature_offset:pos+len(reflines)-signature_offset]
+            outlines = outlines[pos - signature_offset:pos +
+                                len(reflines) - signature_offset]
             if reflines != outlines:
                 msg = "standard output"
                 # I do not want 2 messages in causes if teh function is called twice
                 if not msg in causes:
                     causes.append(msg)
-                result[res_field + ".observed"] = result.Quote("\n".join(outlines))
+                result[res_field +
+                       ".observed"] = result.Quote("\n".join(outlines))
         except ValueError:
             causes.append("missing signature")
         result[res_field + ".signature"] = result.Quote(signature)
@@ -297,7 +314,7 @@ class BaseTest(object):
             result[res_field + ".expected"] = result.Quote("\n".join(reflines))
         return causes
 
-    def countErrorLines(self, expected = {'ERROR':0, 'FATAL':0}, stdout=None, result=None,causes=None):
+    def countErrorLines(self, expected={'ERROR': 0, 'FATAL': 0}, stdout=None, result=None, causes=None):
         """
             Count the number of messages with required severity (by default ERROR and FATAL)
             and check if their numbers match the expected ones (0 by default).
@@ -305,9 +322,12 @@ class BaseTest(object):
             allowed, or to limit the number of expected warnings etc.
             """
 
-        if stdout is None : stdout=self.out
-        if result is None : result=self.result
-        if causes is None : causes=self.causes
+        if stdout is None:
+            stdout = self.out
+        if result is None:
+            result = self.result
+        if causes is None:
+            causes = self.causes
 
         # prepare the dictionary to record the extracted lines
         errors = {}
@@ -316,35 +336,40 @@ class BaseTest(object):
 
         outlines = stdout.splitlines()
         from math import log10
-        fmt = "%%%dd - %%s" % (int(log10(len(outlines)+1)))
+        fmt = "%%%dd - %%s" % (int(log10(len(outlines) + 1)))
 
         linecount = 0
         for l in outlines:
             linecount += 1
             words = l.split()
             if len(words) >= 2 and words[1] in errors:
-                errors[words[1]].append(fmt%(linecount,l.rstrip()))
+                errors[words[1]].append(fmt % (linecount, l.rstrip()))
 
         for e in errors:
             if len(errors[e]) != expected[e]:
-                causes.append('%s(%d)'%(e,len(errors[e])))
-                result["GaudiTest.lines.%s"%e] = result.Quote('\n'.join(errors[e]))
-                result["GaudiTest.lines.%s.expected#"%e] = result.Quote(str(expected[e]))
+                causes.append('%s(%d)' % (e, len(errors[e])))
+                result["GaudiTest.lines.%s" %
+                       e] = result.Quote('\n'.join(errors[e]))
+                result["GaudiTest.lines.%s.expected#" %
+                       e] = result.Quote(str(expected[e]))
 
         return causes
 
     def CheckTTreesSummaries(self, stdout=None, result=None, causes=None,
-                             trees_dict = None,
-                             ignore = r"Basket|.*size|Compression"):
+                             trees_dict=None,
+                             ignore=r"Basket|.*size|Compression"):
         """
             Compare the TTree summaries in stdout with the ones in trees_dict or in
             the reference file. By default ignore the size, compression and basket
             fields.
             The presence of TTree summaries when none is expected is not a failure.
             """
-        if stdout is None : stdout=self.out
-        if result is None : result=self.result
-        if causes is None : causes=self.causes
+        if stdout is None:
+            stdout = self.out
+        if result is None:
+            result = self.result
+        if causes is None:
+            causes = self.causes
         if trees_dict is None:
             lreference = self._expandReferenceFileName(self.reference)
             # call the validator if the file exists
@@ -356,7 +381,8 @@ class BaseTest(object):
         from pprint import PrettyPrinter
         pp = PrettyPrinter()
         if trees_dict:
-            result["GaudiTest.TTrees.expected"] = result.Quote(pp.pformat(trees_dict))
+            result["GaudiTest.TTrees.expected"] = result.Quote(
+                pp.pformat(trees_dict))
             if ignore:
                 result["GaudiTest.TTrees.ignore"] = result.Quote(ignore)
 
@@ -364,24 +390,28 @@ class BaseTest(object):
         failed = cmpTreesDicts(trees_dict, trees, ignore)
         if failed:
             causes.append("trees summaries")
-            msg = "%s: %s != %s" % getCmpFailingValues(trees_dict, trees, failed)
+            msg = "%s: %s != %s" % getCmpFailingValues(
+                trees_dict, trees, failed)
             result["GaudiTest.TTrees.failure_on"] = result.Quote(msg)
             result["GaudiTest.TTrees.found"] = result.Quote(pp.pformat(trees))
 
         return causes
 
     def CheckHistosSummaries(self, stdout=None, result=None, causes=None,
-                             dict = None,
-                             ignore = None):
+                             dict=None,
+                             ignore=None):
         """
             Compare the TTree summaries in stdout with the ones in trees_dict or in
             the reference file. By default ignore the size, compression and basket
             fields.
             The presence of TTree summaries when none is expected is not a failure.
             """
-        if stdout is None : stdout=self.out
-        if result is None : result=self.result
-        if causes is None : causes=self.causes
+        if stdout is None:
+            stdout = self.out
+        if result is None:
+            result = self.result
+        if causes is None:
+            causes = self.causes
 
         if dict is None:
             lreference = self._expandReferenceFileName(self.reference)
@@ -394,7 +424,8 @@ class BaseTest(object):
         from pprint import PrettyPrinter
         pp = PrettyPrinter()
         if dict:
-            result["GaudiTest.Histos.expected"] = result.Quote(pp.pformat(dict))
+            result["GaudiTest.Histos.expected"] = result.Quote(
+                pp.pformat(dict))
             if ignore:
                 result["GaudiTest.Histos.ignore"] = result.Quote(ignore)
 
@@ -415,10 +446,14 @@ class BaseTest(object):
         reference files.
         '''
 
-        if stdout is None : stdout = self.out
-        if stderr is None : stderr = self.err
-        if result is None : result = self.result
-        if causes is None : causes = self.causes
+        if stdout is None:
+            stdout = self.out
+        if stderr is None:
+            stderr = self.err
+        if result is None:
+            result = self.result
+        if causes is None:
+            causes = self.causes
 
         # set the default output preprocessor
         if preproc is None:
@@ -434,13 +469,13 @@ class BaseTest(object):
         # Compare TTree summaries
         causes = self.CheckTTreesSummaries(stdout, result, causes)
         causes = self.CheckHistosSummaries(stdout, result, causes)
-        if causes: # Write a new reference file for stdout
+        if causes:  # Write a new reference file for stdout
             try:
-                newref = open(lreference + ".new","w")
+                newref = open(lreference + ".new", "w")
                 # sanitize newlines
                 for l in stdout.splitlines():
                     newref.write(l.rstrip() + '\n')
-                del newref # flush and close
+                del newref  # flush and close
             except IOError:
                 # Ignore IO errors when trying to update reference files
                 # because we may be in a read-only filesystem
@@ -455,14 +490,15 @@ class BaseTest(object):
                                                "Error Diff",
                                                preproc=preproc)(stderr, result)
             causes += newcauses
-            if newcauses: # Write a new reference file for stdedd
-                newref = open(lreference + ".new","w")
+            if newcauses:  # Write a new reference file for stdedd
+                newref = open(lreference + ".new", "w")
                 # sanitize newlines
                 for l in stderr.splitlines():
                     newref.write(l.rstrip() + '\n')
-                del newref # flush and close
+                del newref  # flush and close
         else:
-            causes += BasicOutputValidator(lreference, "standard error", "ExecTest.expected_stderr")(stderr, result)
+            causes += BasicOutputValidator(lreference, "standard error",
+                                           "ExecTest.expected_stderr")(stderr, result)
         return causes
 
     def _expandReferenceFileName(self, reffile):
@@ -471,7 +507,7 @@ class BaseTest(object):
             return ""
 
         # function to split an extension in constituents parts
-        platformSplit = lambda p: set(p.split('-' in p and '-' or '_'))
+        def platformSplit(p): return set(p.split('-' in p and '-' or '_'))
 
         reference = os.path.normpath(os.path.join(self.basedir,
                                                   os.path.expandvars(reffile)))
@@ -480,10 +516,11 @@ class BaseTest(object):
         spec_ref = reference[:-3] + GetPlatform(self)[0:3] + reference[-3:]
         if os.path.isfile(spec_ref):
             reference = spec_ref
-        else: # look for new-style platform specific reference files:
+        else:  # look for new-style platform specific reference files:
             # get all the files whose name start with the reference filename
             dirname, basename = os.path.split(reference)
-            if not dirname: dirname = '.'
+            if not dirname:
+                dirname = '.'
             head = basename + "."
             head_len = len(head)
             platform = platformSplit(GetPlatform(self))
@@ -494,19 +531,16 @@ class BaseTest(object):
                 if f.startswith(head):
                     req_plat = platformSplit(f[head_len:])
                     if platform.issuperset(req_plat):
-                        candidates.append( (len(req_plat), f) )
-            if candidates: # take the one with highest matching
+                        candidates.append((len(req_plat), f))
+            if candidates:  # take the one with highest matching
                 # FIXME: it is not possible to say if x86_64-slc5-gcc43-dbg
                 #        has to use ref.x86_64-gcc43 or ref.slc5-dbg
                 candidates.sort()
                 reference = os.path.join(dirname, candidates[-1][1])
         return reference
 
-#---------------------------------------------------------------------------------------------------#
-#---------------------------------------------------------------------------------------------------#
-#-----------------------------------------GAUDI TOOLS-----------------------------------------------------#
-#---------------------------------------------------------------------------------------------------#
-#---------------------------------------------------------------------------------------------------#
+# ======= GAUDI TOOLS =======
+
 
 import shutil
 import string
@@ -522,12 +556,13 @@ except ImportError:
 
 #--------------------------------- TOOLS ---------------------------------#
 
-def RationalizePath(p) :
+
+def RationalizePath(p):
     """
     Function used to normalize the used path
     """
     newPath = os.path.normpath(os.path.expandvars(p))
-    if os.path.exists(newPath) :
+    if os.path.exists(newPath):
         p = os.path.realpath(newPath)
     return p
 
@@ -543,9 +578,9 @@ def which(executable):
             if executable.endswith('.exe'):
                 if os.path.exists(executable[:-4]):
                     return executable[:-4]
-            else :
-                head,executable = os.path.split(executable)
-        else :
+            else:
+                head, executable = os.path.split(executable)
+        else:
             return executable
     for d in os.environ.get("PATH").split(os.pathsep):
         fullpath = os.path.join(d, executable)
@@ -562,12 +597,13 @@ def which(executable):
 #-------------------------------------------------------------------------#
 import types
 
+
 class Result:
 
-    PASS='PASS'
-    FAIL='FAIL'
-    ERROR='ERROR'
-    UNTESTED='UNTESTED'
+    PASS = 'PASS'
+    FAIL = 'FAIL'
+    ERROR = 'ERROR'
+    UNTESTED = 'UNTESTED'
 
     EXCEPTION = ""
     RESOURCE = ""
@@ -577,19 +613,19 @@ class Result:
     END_TIME = ""
     TIMEOUT_DETAIL = ""
 
-    def __init__(self,kind=None,id=None,outcome=PASS,annotations={}):
+    def __init__(self, kind=None, id=None, outcome=PASS, annotations={}):
         self.annotations = annotations.copy()
 
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         assert type(key) in types.StringTypes
         return self.annotations[key]
 
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         assert type(key) in types.StringTypes
         assert type(value) in types.StringTypes
-        self.annotations[key]=value
+        self.annotations[key] = value
 
-    def Quote(self,string):
+    def Quote(self, string):
         return string
 
 
@@ -597,17 +633,17 @@ class Result:
 #--------------------------- Validator Classes ---------------------------#
 #-------------------------------------------------------------------------#
 
-#Basic implementation of an option validator for Gaudi test. This implementation is based on the standard (LCG) validation functions used in QMTest.
+# Basic implementation of an option validator for Gaudi test. This implementation is based on the standard (LCG) validation functions used in QMTest.
 
 
 class BasicOutputValidator:
 
-    def __init__(self,ref,cause,result_key):
-        self.ref=ref
-        self.cause=cause
-        self.result_key=result_key
+    def __init__(self, ref, cause, result_key):
+        self.ref = ref
+        self.cause = cause
+        self.result_key = result_key
 
-    def __call__(self,out,result):
+    def __call__(self, out, result):
         """Validate the output of the program.
             'stdout' -- A string containing the data written to the standard output
             stream.
@@ -617,13 +653,11 @@ class BasicOutputValidator:
             the outcome according to the content of stderr.
             returns -- A list of strings giving causes of failure."""
 
-        causes=[]
-        #Check the output
-        if not self.__CompareText(out,self.ref):
+        causes = []
+        # Check the output
+        if not self.__CompareText(out, self.ref):
             causes.append(self.cause)
-            result[self.result_key] =result.Quote(self.ref)
-
-
+            result[self.result_key] = result.Quote(self.ref)
 
         return causes
 
@@ -635,62 +669,76 @@ class BasicOutputValidator:
             differences in line endings."""
         if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
             # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
-            to_ignore = re.compile(r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*')
-            keep_line = lambda l: not to_ignore.match(l)
+            to_ignore = re.compile(
+                r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*')
+
+            def keep_line(l): return not to_ignore.match(l)
             return filter(keep_line, s1.splitlines()) == filter(keep_line, s2.splitlines())
         else:
             return s1.splitlines() == s2.splitlines()
-
 
 
 #------------------------ Preprocessor elements ------------------------#
 class FilePreprocessor:
     """ Base class for a callable that takes a file and returns a modified
         version of it."""
+
     def __processLine__(self, line):
         return line
+
     def __processFile__(self, lines):
         output = []
         for l in lines:
             l = self.__processLine__(l)
-            if l: output.append(l)
+            if l:
+                output.append(l)
         return output
+
     def __call__(self, input):
-        if hasattr(input,"__iter__"):
+        if hasattr(input, "__iter__"):
             lines = input
             mergeback = False
         else:
             lines = input.splitlines()
             mergeback = True
         output = self.__processFile__(lines)
-        if mergeback: output = '\n'.join(output)
+        if mergeback:
+            output = '\n'.join(output)
         return output
+
     def __add__(self, rhs):
-        return FilePreprocessorSequence([self,rhs])
+        return FilePreprocessorSequence([self, rhs])
+
 
 class FilePreprocessorSequence(FilePreprocessor):
-    def __init__(self, members = []):
+    def __init__(self, members=[]):
         self.members = members
+
     def __add__(self, rhs):
         return FilePreprocessorSequence(self.members + [rhs])
+
     def __call__(self, input):
         output = input
         for pp in self.members:
             output = pp(output)
         return output
 
+
 class LineSkipper(FilePreprocessor):
-    def __init__(self, strings = [], regexps = []):
+    def __init__(self, strings=[], regexps=[]):
         import re
         self.strings = strings
-        self.regexps = map(re.compile,regexps)
+        self.regexps = map(re.compile, regexps)
 
     def __processLine__(self, line):
         for s in self.strings:
-            if line.find(s) >= 0: return None
+            if line.find(s) >= 0:
+                return None
         for r in self.regexps:
-            if r.search(line): return None
+            if r.search(line):
+                return None
         return line
+
 
 class BlockSkipper(FilePreprocessor):
     def __init__(self, start, end):
@@ -708,26 +756,30 @@ class BlockSkipper(FilePreprocessor):
             return None
         return line
 
+
 class RegexpReplacer(FilePreprocessor):
-    def __init__(self, orig, repl = "", when = None):
+    def __init__(self, orig, repl="", when=None):
         if when:
             when = re.compile(when)
-        self._operations = [ (when, re.compile(orig), repl) ]
-    def __add__(self,rhs):
+        self._operations = [(when, re.compile(orig), repl)]
+
+    def __add__(self, rhs):
         if isinstance(rhs, RegexpReplacer):
-            res = RegexpReplacer("","",None)
+            res = RegexpReplacer("", "", None)
             res._operations = self._operations + rhs._operations
         else:
             res = FilePreprocessor.__add__(self, rhs)
         return res
+
     def __processLine__(self, line):
-        for w,o,r in self._operations:
+        for w, o, r in self._operations:
             if w is None or w.search(line):
                 line = o.sub(r, line)
         return line
 
+
 # Common preprocessors
-maskPointers  = RegexpReplacer("0x[0-9a-fA-F]{4,16}","0x########")
+maskPointers = RegexpReplacer("0x[0-9a-fA-F]{4,16}", "0x########")
 normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9][ A-Z]*",
                                "00:00:00 1970-01-01")
 normalizeEOL = FilePreprocessor()
@@ -737,27 +789,33 @@ skipEmptyLines = FilePreprocessor()
 # FIXME: that's ugly
 skipEmptyLines.__processLine__ = lambda line: (line.strip() and line) or None
 
-## Special preprocessor sorting the list of strings (whitespace separated)
+# Special preprocessor sorting the list of strings (whitespace separated)
 #  that follow a signature on a single line
+
+
 class LineSorter(FilePreprocessor):
     def __init__(self, signature):
         self.signature = signature
         self.siglen = len(signature)
+
     def __processLine__(self, line):
         pos = line.find(self.signature)
-        if pos >=0:
-            line = line[:(pos+self.siglen)]
-            lst = line[(pos+self.siglen):].split()
+        if pos >= 0:
+            line = line[:(pos + self.siglen)]
+            lst = line[(pos + self.siglen):].split()
             lst.sort()
             line += " ".join(lst)
         return line
+
 
 class SortGroupOfLines(FilePreprocessor):
     '''
     Sort group of lines matching a regular expression
     '''
+
     def __init__(self, exp):
         self.exp = exp if hasattr(exp, 'match') else re.compile(exp)
+
     def __processFile__(self, lines):
         match = self.exp.match
         output = []
@@ -773,26 +831,31 @@ class SortGroupOfLines(FilePreprocessor):
                 output.append(l)
         return output
 
+
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
-for w,o,r in [
-              #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
-              ("TIMER.TIMER",r"\s+[+-]?[0-9]+[0-9.]*", " 0"), # Normalize time output
-              ("release all pending",r"^.*/([^/]*:.*)",r"\1"),
-              ("^#.*file",r"file '.*[/\\]([^/\\]*)$",r"file '\1"),
-              ("^JobOptionsSvc.*options successfully read in from",r"read in from .*[/\\]([^/\\]*)$",r"file \1"), # normalize path to options
-              # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
-              (None,r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}(?!-0{12})-[0-9A-Fa-f]{12}","00000000-0000-0000-0000-000000000000"),
-              # Absorb a change in ServiceLocatorHelper
-              ("ServiceLocatorHelper::", "ServiceLocatorHelper::(create|locate)Service", "ServiceLocatorHelper::service"),
-              # Remove the leading 0 in Windows' exponential format
-              (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
-              # Output line changed in Gaudi v24
-              (None, r'Service reference count check:', r'Looping over all active services...'),
-              # Ignore count of declared properties (anyway they are all printed)
-              (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
-              ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
-    normalizeExamples += RegexpReplacer(o,r,w)
+for w, o, r in [
+    #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
+    ("TIMER.TIMER", r"\s+[+-]?[0-9]+[0-9.]*", " 0"),  # Normalize time output
+    ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
+    ("^#.*file", r"file '.*[/\\]([^/\\]*)$", r"file '\1"),
+    ("^JobOptionsSvc.*options successfully read in from",
+     r"read in from .*[/\\]([^/\\]*)$", r"file \1"),  # normalize path to options
+    # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
+    (None, r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}(?!-0{12})-[0-9A-Fa-f]{12}",
+     "00000000-0000-0000-0000-000000000000"),
+    # Absorb a change in ServiceLocatorHelper
+    ("ServiceLocatorHelper::", "ServiceLocatorHelper::(create|locate)Service",
+     "ServiceLocatorHelper::service"),
+    # Remove the leading 0 in Windows' exponential format
+    (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
+    # Output line changed in Gaudi v24
+    (None, r'Service reference count check:',
+     r'Looping over all active services...'),
+    # Ignore count of declared properties (anyway they are all printed)
+    (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
+]:  # [ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
+    normalizeExamples += RegexpReplacer(o, r, w)
 
 lineSkipper = LineSkipper(["//GP:",
                            "JobOptionsSvc        INFO # ",
@@ -804,62 +867,69 @@ lineSkipper = LineSkipper(["//GP:",
                            "running on",
                            "ToolSvc.Sequenc...   INFO",
                            "DataListenerSvc      INFO XML written to file:",
-                           "[INFO]","[WARNING]",
+                           "[INFO]", "[WARNING]",
                            "DEBUG No writable file catalog found which contains FID:",
-                           "DEBUG Service base class initialized successfully", # changed between v20 and v21
-                           "DEBUG Incident  timing:", # introduced with patch #3487
-                           "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
+                           "DEBUG Service base class initialized successfully",  # changed between v20 and v21
+                           "DEBUG Incident  timing:",  # introduced with patch #3487
+                           # changed the level of the message from INFO to DEBUG
+                           "INFO  'CnvServices':[",
                            # The signal handler complains about SIGXCPU not defined on some platforms
                            'SIGXCPU',
-                           ],regexps = [
-                                        r"^JobOptionsSvc        INFO *$",
-                                        r"^# ", # Ignore python comments
-                                        r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
-                                        r"File '.*.xml' does not exist",
-                                        r"INFO Refer to dataset .* by its file ID:",
-                                        r"INFO Referring to dataset .* by its file ID:",
-                                        r"INFO Disconnect from dataset",
-                                        r"INFO Disconnected from dataset",
-                                        r"INFO Disconnected data IO:",
-                                        r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
-                                        # I want to ignore the header of the unchecked StatusCode report
-                                        r"^StatusCodeSvc.*listing all unchecked return codes:",
-                                        r"^StatusCodeSvc\s*INFO\s*$",
-                                        r"Num\s*\|\s*Function\s*\|\s*Source Library",
-                                        r"^[-+]*\s*$",
-                                        # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
-                                        r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
-                                        # Hide unchecked StatusCodes from dictionaries
-                                        r"^ +[0-9]+ \|.*ROOT",
-                                        r"^ +[0-9]+ \|.*\|.*Dict",
-                                        # Hide success StatusCodeSvc message
-                                        r"StatusCodeSvc.*all StatusCode instances where checked",
-                                        # Hide EventLoopMgr total timing report
-                                        r"EventLoopMgr.*---> Loop Finished",
-                                        # Remove ROOT TTree summary table, which changes from one version to the other
-                                        r"^\*.*\*$",
-                                        # Remove Histos Summaries
-                                        r"SUCCESS\s*Booked \d+ Histogram\(s\)",
-                                        r"^ \|",
-                                        r"^ ID=",
-                                        # Ignore added/removed properties
-                                        r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
-                                        r"Property(.*)'AuditRe(start|initialize)':", # these were missing in tools
-                                        r"Property(.*)'IsIOBound':",
-                                        r"Property(.*)'ErrorCount(er)?':", # removed with gaudi/Gaudi!273
-                                        r"Property(.*)'Sequential':",  # added with gaudi/Gaudi!306
-                                        r"Property(.*)'FilterCircularDependencies':", # added with gaudi/Gaudi!314
-                                        r"Property(.*)'IsClonable':", # removed with gaudi/Gaudi!316
-                                        # ignore uninteresting/obsolete messages
-                                        r"Property update for OutputLevel : new value =",
-                                        r"EventLoopMgr\s*DEBUG Creating OutputStream",
-                                        ] )
+                           ], regexps=[
+    r"^JobOptionsSvc        INFO *$",
+    r"^# ",  # Ignore python comments
+    # skip the message reporting the version of the root file
+    r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:",
+    r"File '.*.xml' does not exist",
+    r"INFO Refer to dataset .* by its file ID:",
+    r"INFO Referring to dataset .* by its file ID:",
+    r"INFO Disconnect from dataset",
+    r"INFO Disconnected from dataset",
+    r"INFO Disconnected data IO:",
+    r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
+    # I want to ignore the header of the unchecked StatusCode report
+    r"^StatusCodeSvc.*listing all unchecked return codes:",
+    r"^StatusCodeSvc\s*INFO\s*$",
+    r"Num\s*\|\s*Function\s*\|\s*Source Library",
+    r"^[-+]*\s*$",
+    # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
+    r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
+    # Hide unchecked StatusCodes from dictionaries
+    r"^ +[0-9]+ \|.*ROOT",
+    r"^ +[0-9]+ \|.*\|.*Dict",
+    # Hide success StatusCodeSvc message
+    r"StatusCodeSvc.*all StatusCode instances where checked",
+    # Hide EventLoopMgr total timing report
+    r"EventLoopMgr.*---> Loop Finished",
+    # Remove ROOT TTree summary table, which changes from one version to the other
+    r"^\*.*\*$",
+    # Remove Histos Summaries
+    r"SUCCESS\s*Booked \d+ Histogram\(s\)",
+    r"^ \|",
+    r"^ ID=",
+    # Ignore added/removed properties
+    r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
+    # these were missing in tools
+    r"Property(.*)'AuditRe(start|initialize)':",
+    r"Property(.*)'IsIOBound':",
+    # removed with gaudi/Gaudi!273
+    r"Property(.*)'ErrorCount(er)?':",
+    # added with gaudi/Gaudi!306
+    r"Property(.*)'Sequential':",
+    # added with gaudi/Gaudi!314
+    r"Property(.*)'FilterCircularDependencies':",
+    # removed with gaudi/Gaudi!316
+    r"Property(.*)'IsClonable':",
+    # ignore uninteresting/obsolete messages
+    r"Property update for OutputLevel : new value =",
+    r"EventLoopMgr\s*DEBUG Creating OutputStream",
+])
 
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
     # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
-    lineSkipper += LineSkipper(regexps = [
+    lineSkipper += LineSkipper(regexps=[
         r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*',
-        ])
+    ])
 
 normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
                      normalizeEOL + LineSorter("Services to release : ") +
@@ -867,14 +937,15 @@ normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
 
 #--------------------- Validation functions/classes ---------------------#
 
+
 class ReferenceFileValidator:
-    def __init__(self,reffile, cause, result_key, preproc=normalizeExamples):
+    def __init__(self, reffile, cause, result_key, preproc=normalizeExamples):
         self.reffile = os.path.expandvars(reffile)
-        self.cause=cause
+        self.cause = cause
         self.result_key = result_key
         self.preproc = preproc
 
-    def __call__(self,stdout, result) :
+    def __call__(self, stdout, result):
         causes = []
         if os.path.isfile(self.reffile):
             orig = open(self.reffile).xreadlines()
@@ -888,8 +959,9 @@ class ReferenceFileValidator:
         if self.preproc:
             new = self.preproc(new)
 
-        diffs = difflib.ndiff(orig,new,charjunk=difflib.IS_CHARACTER_JUNK)
-        filterdiffs = map(lambda x: x.strip(),filter(lambda x: x[0] != " ",diffs))
+        diffs = difflib.ndiff(orig, new, charjunk=difflib.IS_CHARACTER_JUNK)
+        filterdiffs = map(lambda x: x.strip(), filter(
+            lambda x: x[0] != " ", diffs))
         if filterdiffs:
             result[self.result_key] = result.Quote("\n".join(filterdiffs))
             result[self.result_key] += result.Quote("""
@@ -901,6 +973,7 @@ class ReferenceFileValidator:
             causes.append(self.cause)
         return causes
 
+
 def findTTreeSummaries(stdout):
     """
         Scan stdout to find ROOT TTree summaries and digest them.
@@ -911,7 +984,7 @@ def findTTreeSummaries(stdout):
     trees = {}
 
     i = 0
-    while i < nlines: #loop over the output
+    while i < nlines:  # loop over the output
         # look for
         while i < nlines and not stars.match(outlines[i]):
             i += 1
@@ -922,7 +995,8 @@ def findTTreeSummaries(stdout):
 
     return trees
 
-def cmpTreesDicts(reference, to_check, ignore = None):
+
+def cmpTreesDicts(reference, to_check, ignore=None):
     """
         Check that all the keys in reference are in to_check too, with the same value.
         If the value is a dict, the function is called recursively. to_check can
@@ -933,38 +1007,42 @@ def cmpTreesDicts(reference, to_check, ignore = None):
     # filter the keys in the reference dictionary
     if ignore:
         ignore_re = re.compile(ignore)
-        keys = [ key for key in reference if not ignore_re.match(key) ]
+        keys = [key for key in reference if not ignore_re.match(key)]
     else:
         keys = reference.keys()
     # loop over the keys (not ignored) in the reference dictionary
     for k in keys:
-        if k in to_check: # the key must be in the dictionary to_check
+        if k in to_check:  # the key must be in the dictionary to_check
             if (type(reference[k]) is dict) and (type(to_check[k]) is dict):
                 # if both reference and to_check values are dictionaries, recurse
-                failed = fail_keys = cmpTreesDicts(reference[k], to_check[k], ignore)
+                failed = fail_keys = cmpTreesDicts(
+                    reference[k], to_check[k], ignore)
             else:
                 # compare the two values
                 failed = to_check[k] != reference[k]
-        else: # handle missing keys in the dictionary to check (i.e. failure)
+        else:  # handle missing keys in the dictionary to check (i.e. failure)
             to_check[k] = None
             failed = True
         if failed:
             fail_keys.insert(0, k)
-            break # exit from the loop at the first failure
-    return fail_keys # return the list of keys bringing to the different values
+            break  # exit from the loop at the first failure
+    return fail_keys  # return the list of keys bringing to the different values
+
 
 def getCmpFailingValues(reference, to_check, fail_path):
     c = to_check
     r = reference
     for k in fail_path:
-        c = c.get(k,None)
-        r = r.get(k,None)
+        c = c.get(k, None)
+        r = r.get(k, None)
         if c is None or r is None:
-            break # one of the dictionaries is not deep enough
+            break  # one of the dictionaries is not deep enough
     return (fail_path, r, c)
 
+
 # signature of the print-out of the histograms
-h_count_re = re.compile(r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+([\s\w=-]*)")
+h_count_re = re.compile(
+    r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+([\s\w=-]*)")
 
 
 def _parseTTreeSummary(lines, pos):
@@ -974,10 +1052,11 @@ def _parseTTreeSummary(lines, pos):
     position of the first line after the summary.
     """
     result = {}
-    i = pos + 1 # first line is a sequence of '*'
+    i = pos + 1  # first line is a sequence of '*'
     count = len(lines)
 
-    splitcols = lambda l: [ f.strip() for f in l.strip("*\n").split(':',2) ]
+    def splitcols(l): return [f.strip() for f in l.strip("*\n").split(':', 2)]
+
     def parseblock(ll):
         r = {}
         cols = splitcols(ll[0])
@@ -1002,7 +1081,7 @@ def _parseTTreeSummary(lines, pos):
         return r
 
     if i < (count - 3) and lines[i].startswith("*Tree"):
-        result = parseblock(lines[i:i+3])
+        result = parseblock(lines[i:i + 3])
         result["Branches"] = {}
         i += 4
         while i < (count - 3) and lines[i].startswith("*Br"):
@@ -1010,11 +1089,12 @@ def _parseTTreeSummary(lines, pos):
                 # skip branch header
                 i += 3
                 continue
-            branch = parseblock(lines[i:i+3])
+            branch = parseblock(lines[i:i + 3])
             result["Branches"][branch["Name"]] = branch
             i += 4
 
     return (result, i)
+
 
 def parseHistosSummary(lines, pos):
     """
@@ -1022,7 +1102,8 @@ def parseHistosSummary(lines, pos):
         Returns the position of the first line after the summary block.
         """
     global h_count_re
-    h_table_head = re.compile(r'SUCCESS\s+List of booked (1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
+    h_table_head = re.compile(
+        r'SUCCESS\s+List of booked (1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
     h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]+)\"\s+(.*)")
 
     nlines = len(lines)
@@ -1032,7 +1113,7 @@ def parseHistosSummary(lines, pos):
     name = m.group(1).strip()
     total = int(m.group(2))
     header = {}
-    for k, v in [ x.split("=") for x in  m.group(3).split() ]:
+    for k, v in [x.split("=") for x in m.group(3).split()]:
         header[k] = int(v)
     pos += 1
     header["Total"] = total
@@ -1041,7 +1122,7 @@ def parseHistosSummary(lines, pos):
     while pos < nlines:
         m = h_table_head.search(lines[pos])
         if m:
-            t, d = m.groups(1) # type and directory
+            t, d = m.groups(1)  # type and directory
             t = t.replace(" profile", "Prof")
             pos += 1
             if pos < nlines:
@@ -1051,11 +1132,11 @@ def parseHistosSummary(lines, pos):
             cont = {}
             if l.startswith(" | ID"):
                 # table format
-                titles = [ x.strip() for x in l.split("|")][1:]
+                titles = [x.strip() for x in l.split("|")][1:]
                 pos += 1
                 while pos < nlines and lines[pos].startswith(" |"):
                     l = lines[pos]
-                    values = [ x.strip() for x in l.split("|")][1:]
+                    values = [x.strip() for x in l.split("|")][1:]
                     hcont = {}
                     for i in range(len(titles)):
                         hcont[titles[i]] = values[i]
@@ -1063,11 +1144,13 @@ def parseHistosSummary(lines, pos):
                     pos += 1
             elif l.startswith(" ID="):
                 while pos < nlines and lines[pos].startswith(" ID="):
-                    values = [ x.strip() for x in  h_short_summ.search(lines[pos]).groups() ]
+                    values = [x.strip()
+                              for x in h_short_summ.search(lines[pos]).groups()]
                     cont[values[0]] = values
                     pos += 1
-            else: # not interpreted
-                raise RuntimeError("Cannot understand line %d: '%s'" % (pos, l))
+            else:  # not interpreted
+                raise RuntimeError(
+                    "Cannot understand line %d: '%s'" % (pos, l))
             if not d in summ:
                 summ[d] = {}
             summ[d][t] = cont
@@ -1078,7 +1161,6 @@ def parseHistosSummary(lines, pos):
         # If the full table is not present, we use only the header
         summ[name] = {"header": header}
     return summ, pos
-
 
 
 def findHistosSummaries(stdout):
@@ -1103,36 +1185,40 @@ def findHistosSummaries(stdout):
         summaries.update(summ)
     return summaries
 
+
 def PlatformIsNotSupported(self, context, result):
     platform = GetPlatform(self)
-    unsupported = [ re.compile(x) for x in [ str(y).strip() for y in unsupported_platforms ] if x]
-    for p_re in unsupported :
-       if p_re.search(platform):
-           result.SetOutcome(result.UNTESTED)
-           result[result.CAUSE] = 'Platform not supported.'
-           return True
+    unsupported = [re.compile(x) for x in [str(y).strip()
+                                           for y in unsupported_platforms] if x]
+    for p_re in unsupported:
+        if p_re.search(platform):
+            result.SetOutcome(result.UNTESTED)
+            result[result.CAUSE] = 'Platform not supported.'
+            return True
     return False
 
+
 def GetPlatform(self):
-   """
-       Return the platform Id defined in CMTCONFIG or SCRAM_ARCH.
-       """
-   arch = "None"
-   # check architecture name
-   if "BINARY_TAG" in os.environ:
-       arch = os.environ["BINARY_TAG"]
-   elif "CMTCONFIG" in os.environ:
-       arch = os.environ["CMTCONFIG"]
-   elif "SCRAM_ARCH" in os.environ:
-       arch = os.environ["SCRAM_ARCH"]
-   return arch
+    """
+        Return the platform Id defined in CMTCONFIG or SCRAM_ARCH.
+        """
+    arch = "None"
+    # check architecture name
+    if "BINARY_TAG" in os.environ:
+        arch = os.environ["BINARY_TAG"]
+    elif "CMTCONFIG" in os.environ:
+        arch = os.environ["CMTCONFIG"]
+    elif "SCRAM_ARCH" in os.environ:
+        arch = os.environ["SCRAM_ARCH"]
+    return arch
+
 
 def isWinPlatform(self):
-   """
-       Return True if the current platform is Windows.
+    """
+        Return True if the current platform is Windows.
 
-       This function was needed because of the change in the CMTCONFIG format,
-       from win32_vc71_dbg to i686-winxp-vc9-dbg.
-       """
-   platform = GetPlatform(self)
-   return "winxp" in platform or platform.startswith("win")
+        This function was needed because of the change in the CMTCONFIG format,
+        from win32_vc71_dbg to i686-winxp-vc9-dbg.
+        """
+    platform = GetPlatform(self)
+    return "winxp" in platform or platform.startswith("win")

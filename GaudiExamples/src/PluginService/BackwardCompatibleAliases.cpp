@@ -8,33 +8,31 @@
 #include <string>
 #include <vector>
 
-namespace PluginServiceTest {
-  class MyAlg: public Algorithm {
+namespace PluginServiceTest
+{
+  class MyAlg : public Algorithm
+  {
   public:
-    MyAlg(const std::string& name, ISvcLocator *svcloc):
-      Algorithm(name, svcloc) {}
+    MyAlg( const std::string& name, ISvcLocator* svcloc ) : Algorithm( name, svcloc ) {}
     ~MyAlg() override {}
 
-    StatusCode execute() override {
-      return StatusCode::SUCCESS;
-    }
+    StatusCode execute() override { return StatusCode::SUCCESS; }
   };
 
   template <class T1, class T2>
-  class MyTemplatedAlg: public Algorithm {
+  class MyTemplatedAlg : public Algorithm
+  {
   public:
-    MyTemplatedAlg(const std::string& name, ISvcLocator *svcloc):
-      Algorithm(name, svcloc) {}
+    MyTemplatedAlg( const std::string& name, ISvcLocator* svcloc ) : Algorithm( name, svcloc ) {}
     ~MyTemplatedAlg() override {}
 
-    StatusCode execute() override {
-      return StatusCode::SUCCESS;
-    }
+    StatusCode execute() override { return StatusCode::SUCCESS; }
   };
 }
 
-DECLARE_COMPONENT(PluginServiceTest::MyAlg)
-namespace {
+DECLARE_COMPONENT( PluginServiceTest::MyAlg )
+namespace
+{
   typedef PluginServiceTest::MyTemplatedAlg<int&, double*> _dummy;
 }
-DECLARE_COMPONENT(_dummy)
+DECLARE_COMPONENT( _dummy )

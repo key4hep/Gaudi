@@ -13,10 +13,11 @@
  * @author Marco Clemencic
  * @date   2008-05-15
  */
-class GAUDI_API IStateful: virtual public IInterface {
+class GAUDI_API IStateful : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IStateful,1,0);
+  DeclareInterfaceID( IStateful, 1, 0 );
 
   /** Configuration (from OFFLINE to CONFIGURED).
   */
@@ -42,7 +43,6 @@ public:
   */
   virtual StatusCode terminate() = 0;
 
-
   /** Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
   */
   virtual StatusCode reinitialize() = 0;
@@ -59,7 +59,6 @@ public:
    *  transition is leading us. Otherwise it returns the same state as state().
    */
   virtual Gaudi::StateMachine::State targetFSMState() const = 0;
-
 };
 
 #endif // GAUDIKERNEL_ISTATEFUL_H

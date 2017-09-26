@@ -3,78 +3,87 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include <memory>
 #include <boost/variant.hpp>
+#include <memory>
 // ============================================================================
 // from CLHEP
 // ============================================================================
-#include "CLHEP/GenericFunctions/GenericFunctions.hh"
-#include "CLHEP/GenericFunctions/Argument.hh"
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
+#include "CLHEP/GenericFunctions/Argument.hh"
+#include "CLHEP/GenericFunctions/GenericFunctions.hh"
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-
-namespace detail {
-#if  __cplusplus > 201402L
-
-// C++17 version: https://godbolt.org/g/2vAZQt
-template <typename... lambda_ts>
-struct composer_t : lambda_ts...
+namespace detail
 {
-  template <typename... T>
-  composer_t(T&&... t) : lambda_ts(std::forward<T>(t))...  {}
+#if __cplusplus > 201402L
 
-  using lambda_ts::operator()...;
-};
+  // C++17 version: https://godbolt.org/g/2vAZQt
+  template <typename... lambda_ts>
+  struct composer_t : lambda_ts... {
+    template <typename... T>
+    composer_t( T&&... t ) : lambda_ts( std::forward<T>( t ) )...
+    {
+    }
+
+    using lambda_ts::operator()...;
+  };
 
 #else
 
-template <typename... lambda_ts>
-struct composer_t;
-
-template <typename lambda_t>
-struct composer_t<lambda_t> : lambda_t {
-  composer_t(const lambda_t& lambda): lambda_t{lambda} { }
-  composer_t(lambda_t&& lambda): lambda_t{std::move(lambda)} { }
-
-  using lambda_t::operator();
-};
-
-template <typename lambda_t, typename... more_lambda_ts>
-struct composer_t<lambda_t, more_lambda_ts...> : lambda_t, composer_t<more_lambda_ts...> {
-  using super_t = composer_t<more_lambda_ts...>;
   template <typename... lambda_ts>
-  composer_t(const lambda_t& lambda, lambda_ts&&... more_lambdas): lambda_t{lambda}, super_t{std::forward<lambda_ts>(more_lambdas)...} { }
-  template <typename... lambda_ts>
-  composer_t(lambda_t&& lambda, lambda_ts&&... more_lambdas): lambda_t{std::move(lambda)}, super_t{std::forward<lambda_ts>(more_lambdas)...} { }
-  using lambda_t::operator();
-  using super_t::operator();
-};
+  struct composer_t;
+
+  template <typename lambda_t>
+  struct composer_t<lambda_t> : lambda_t {
+    composer_t( const lambda_t& lambda ) : lambda_t{lambda} {}
+    composer_t( lambda_t&& lambda ) : lambda_t{std::move( lambda )} {}
+
+    using lambda_t::operator();
+  };
+
+  template <typename lambda_t, typename... more_lambda_ts>
+  struct composer_t<lambda_t, more_lambda_ts...> : lambda_t, composer_t<more_lambda_ts...> {
+    using super_t = composer_t<more_lambda_ts...>;
+    template <typename... lambda_ts>
+    composer_t( const lambda_t& lambda, lambda_ts&&... more_lambdas )
+        : lambda_t{lambda}, super_t{std::forward<lambda_ts>( more_lambdas )...}
+    {
+    }
+    template <typename... lambda_ts>
+    composer_t( lambda_t&& lambda, lambda_ts&&... more_lambdas )
+        : lambda_t{std::move( lambda )}, super_t{std::forward<lambda_ts>( more_lambdas )...}
+    {
+    }
+    using lambda_t::operator();
+    using super_t::operator();
+  };
 #endif
 
-template <typename... lambda_ts>
-composer_t<std::decay_t<lambda_ts>...>
-compose(lambda_ts&&... lambdas)
-{ return {std::forward<lambda_ts>(lambdas)...}; }
+  template <typename... lambda_ts>
+  composer_t<std::decay_t<lambda_ts>...> compose( lambda_ts&&... lambdas )
+  {
+    return {std::forward<lambda_ts>( lambdas )...};
+  }
 
-
-auto dispatch_variant = [](auto&& variant, auto&&... lambdas) -> decltype(auto) {
-  return boost::apply_visitor( compose( std::forward<decltype(lambdas)>(lambdas)... ),
-                               std::forward<decltype(variant)>(variant) );
-};
-
+  auto dispatch_variant = []( auto&& variant, auto&&... lambdas ) -> decltype( auto ) {
+    return boost::apply_visitor( compose( std::forward<decltype( lambdas )>( lambdas )... ),
+                                 std::forward<decltype( variant )>( variant ) );
+  };
 }
 
-namespace AIDA { class IFunction ; }
+namespace AIDA
+{
+  class IFunction;
+}
 
 namespace Genfun
 {
@@ -98,25 +107,26 @@ namespace Genfun
       /** constructor from AIDA::Function
        *  @param fun AIDA function
        */
-      AdapterIFunction ( const AIDA::IFunction& fun) ;
+      AdapterIFunction( const AIDA::IFunction& fun );
       /// copy constructor
-      AdapterIFunction ( const AdapterIFunction& ) = default;
+      AdapterIFunction( const AdapterIFunction& ) = default;
 
-      double operator() ( double a          ) const override;
+      double operator()( double a ) const override;
 
-      double operator() ( const Argument& x ) const override;
+      double operator()( const Argument& x ) const override;
 
-      unsigned int dimensionality () const override { return m_arg.size() ; }
+      unsigned int dimensionality() const override { return m_arg.size(); }
 
       /// Does this function have an analytic derivative?
-      bool  hasAnalyticDerivative() const override { return true ; }
+      bool hasAnalyticDerivative() const override { return true; }
       /// Derivatives
-      Genfun::Derivative partial( unsigned int i  ) const override;
+      Genfun::Derivative partial( unsigned int i ) const override;
 
-      AdapterIFunction& operator=(const AdapterIFunction&) = delete;
+      AdapterIFunction& operator=( const AdapterIFunction& ) = delete;
+
     private:
-      const AIDA::IFunction*      m_fun ;
-      mutable std::vector<double> m_arg ;
+      const AIDA::IFunction* m_fun;
+      mutable std::vector<double> m_arg;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( AdapterIFunction )
@@ -150,33 +160,35 @@ namespace Genfun
     {
     public:
       /// the actual type of the function "to be adapted"
-      typedef double (*Function)( const double ,
-                                  const double ) ;
+      typedef double ( *Function )( const double, const double );
+
     public:
       /// mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( Adapter2DoubleFunction )
     public:
       /// constructor
-      Adapter2DoubleFunction ( Function func );
+      Adapter2DoubleFunction( Function func );
       /// copy constructor
-      Adapter2DoubleFunction ( const Adapter2DoubleFunction& ) = default;
+      Adapter2DoubleFunction( const Adapter2DoubleFunction& ) = default;
 
-      double operator() (       double    x ) const override;
+      double operator()( double x ) const override;
 
-      double operator() ( const Argument& x ) const override;
+      double operator()( const Argument& x ) const override;
 
-      unsigned int dimensionality() const override { return 2    ; }
+      unsigned int dimensionality() const override { return 2; }
       /// Does this function have an analytic derivative?
-      bool  hasAnalyticDerivative() const override { return true ; }
+      bool hasAnalyticDerivative() const override { return true; }
       /// Derivatives
-      Genfun::Derivative partial( unsigned int i  ) const override;
+      Genfun::Derivative partial( unsigned int i ) const override;
+
     public:
-      double operator() ( const double x , const double y ) const ;
+      double operator()( const double x, const double y ) const;
 
       // assigmenet operator is disabled
-      Adapter2DoubleFunction& operator = ( const Adapter2DoubleFunction&) = delete;
+      Adapter2DoubleFunction& operator=( const Adapter2DoubleFunction& ) = delete;
+
     private:
-      Function                 m_func = nullptr ;
+      Function m_func = nullptr;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( Adapter2DoubleFunction )
@@ -211,36 +223,36 @@ namespace Genfun
     {
     public:
       /// the actual type of the function "to be adapted"
-      typedef double (*Function)( const double ,
-                                  const double ,
-                                  const double ) ;
+      typedef double ( *Function )( const double, const double, const double );
+
     public:
       /// mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( Adapter3DoubleFunction )
     public:
       /// constructor
-      Adapter3DoubleFunction ( Function func );
+      Adapter3DoubleFunction( Function func );
       /// copy coinstructor
-      Adapter3DoubleFunction ( const Adapter3DoubleFunction& ) = default;
+      Adapter3DoubleFunction( const Adapter3DoubleFunction& ) = default;
 
-      double operator() (       double    x ) const override ;
+      double operator()( double x ) const override;
 
-      double operator() ( const Argument& x ) const override ;
+      double operator()( const Argument& x ) const override;
 
-      unsigned int dimensionality() const override { return 3    ; }
+      unsigned int dimensionality() const override { return 3; }
       /// Does this function have an analytic derivative?
-      bool  hasAnalyticDerivative() const override { return true ; }
+      bool hasAnalyticDerivative() const override { return true; }
       /// Derivatives
-      Genfun::Derivative partial( unsigned int i  ) const override ;
+      Genfun::Derivative partial( unsigned int i ) const override;
+
     public:
-      double operator() ( const double x ,
-                          const double y ,
-                          const double z ) const ;
+      double operator()( const double x, const double y, const double z ) const;
+
     private:
       // assignment operator is disabled
-      Adapter3DoubleFunction& operator = ( const Adapter3DoubleFunction&);
+      Adapter3DoubleFunction& operator=( const Adapter3DoubleFunction& );
+
     private:
-      Function                 m_func = nullptr ;
+      Function m_func = nullptr;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( Adapter3DoubleFunction )
@@ -256,55 +268,51 @@ namespace Genfun
     class GAUDI_API SimpleFunction : public AbsFunction
     {
     public:
-      typedef double (*Function1)( const double               ) ;
-      typedef double (*Function2)( const double*              ) ;
-      typedef double (*Function3)( const std::vector<double>& ) ;
+      typedef double ( *Function1 )( const double );
+      typedef double ( *Function2 )( const double* );
+      typedef double ( *Function3 )( const std::vector<double>& );
+
     public:
       /// From CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( SimpleFunction )
 
     public:
-
       /** constructor from the trivial function
        *  @param func pointer to trivial function
        */
-      SimpleFunction ( Function1 func ) ;
+      SimpleFunction( Function1 func );
 
       /** constructor from the simple function with array-like argument
        *  @param func pointer to trivial function
        *  @param dim  dimension of the argument
        */
-      SimpleFunction ( Function2    func ,
-                       const size_t dim ) ;
+      SimpleFunction( Function2 func, const size_t dim );
 
       /** constructor from the simple function with vector argument
        *  @param func pointer to trivial function
        *  @param dim  dimension of the argument
        */
-      SimpleFunction ( Function3    func ,
-                       const size_t dim ) ;
+      SimpleFunction( Function3 func, const size_t dim );
 
     public:
-
       /// dimensionality of the problem
-      unsigned int dimensionality         () const override {
-        return detail::dispatch_variant( m_func,
-               [](Function1) { return 1ul; },
-               [&](auto) { return m_arg.size(); } );
+      unsigned int dimensionality() const override
+      {
+        return detail::dispatch_variant( m_func, []( Function1 ) { return 1ul; },
+                                         [&]( auto ) { return m_arg.size(); } );
       }
       /// Does this function have an analytic derivative?
-      bool  hasAnalyticDerivative         () const override { return true    ; }
+      bool hasAnalyticDerivative() const override { return true; }
       /// Function value
-      double             operator()  ( double          ) const override ;
+      double operator()( double ) const override;
       /// Function value
-      double             operator()  ( const Argument& ) const override ;
+      double operator()( const Argument& ) const override;
       /// Derivatives
-      Genfun::Derivative partial     ( unsigned int i  ) const override ;
+      Genfun::Derivative partial( unsigned int i ) const override;
 
     private:
-
-      boost::variant<Function1,Function2,Function3> m_func;
-      mutable std::vector<double>  m_arg     ;
+      boost::variant<Function1, Function2, Function3> m_func;
+      mutable std::vector<double> m_arg;
     };
     /// From CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( SimpleFunction )
@@ -312,9 +320,9 @@ namespace Genfun
   } // end of namespace GaudiMathImeplementation
 } // end of namespace Genfun
 
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic pop
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic pop
 #endif
 

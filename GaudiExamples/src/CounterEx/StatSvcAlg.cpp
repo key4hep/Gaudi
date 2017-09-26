@@ -42,56 +42,56 @@ namespace GaudiExamples
   {
   public:
     /// initialize the algorithm
-    StatusCode initialize () override
+    StatusCode initialize() override
     {
-      StatusCode sc = GaudiAlgorithm::initialize () ;
-      if ( sc.isFailure() ) { return sc ; }                      // RETURN
-      m_stat = service( "ChronoStatSvc" , true ) ;
-      return StatusCode::SUCCESS ;
+      StatusCode sc = GaudiAlgorithm::initialize();
+      if ( sc.isFailure() ) {
+        return sc;
+      } // RETURN
+      m_stat = service( "ChronoStatSvc", true );
+      return StatusCode::SUCCESS;
     }
     /// the main execution method
-    StatusCode execute    () override ;
+    StatusCode execute() override;
+
   public:
     /// standard constructor from name and Service Locator
-    StatSvcAlg ( const std::string& name , ISvcLocator* svc )
-      : GaudiAlgorithm ( name , svc )
-    {}
+    StatSvcAlg( const std::string& name, ISvcLocator* svc ) : GaudiAlgorithm( name, svc ) {}
     /// destructor (virtual and protected)
-    ~StatSvcAlg()  override {}
+    ~StatSvcAlg() override {}
+
   private:
     // pointer to Stat Service
-    SmartIF<IStatSvc> m_stat ; ///< pointer to Stat Service
-  } ;
+    SmartIF<IStatSvc> m_stat; ///< pointer to Stat Service
+  };
 } // end of namespace GaudiExamples
 // ============================================================================
 // the main execution method
 // ============================================================================
-StatusCode GaudiExamples::StatSvcAlg::execute    ()
+StatusCode GaudiExamples::StatSvcAlg::execute()
 {
-  Stat st1 ( m_stat , "counter1" ) ;
-  Stat st2 ( m_stat , "counter2" ) ;
-  Stat st3 ( m_stat , "counter3" , 0.3 ) ;
+  Stat st1( m_stat, "counter1" );
+  Stat st2( m_stat, "counter2" );
+  Stat st3( m_stat, "counter3", 0.3 );
 
-  Stat eff ( m_stat , "eff" , 0 < sin( 10 * st1->flag() ) ) ;
+  Stat eff( m_stat, "eff", 0 < sin( 10 * st1->flag() ) );
   //
-  st1 += 0.1     ;
-  st1 -= 0.1000452  ;
-  st2 += st1 ;
-  ++st3 ;
-  st2-- ;
+  st1 += 0.1;
+  st1 -= 0.1000452;
+  st2 += st1;
+  ++st3;
+  st2--;
 
-  eff += 0 < cos ( 20 * st2->flag() ) ;
+  eff += 0 < cos( 20 * st2->flag() );
 
   //
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 // Factory:
 // ============================================================================
 using GaudiExamples::StatSvcAlg;
-DECLARE_COMPONENT(StatSvcAlg)
+DECLARE_COMPONENT( StatSvcAlg )
 // ============================================================================
 // The END
 // ============================================================================
-
-

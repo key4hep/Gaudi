@@ -21,11 +21,10 @@
 // ============================================================================
 #include "gsl/gsl_integration.h"
 
-
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
@@ -83,20 +82,20 @@ namespace Genfun
     class GAUDI_API NumericalIndefiniteIntegral : public AbsFunction
     {
     public:
-      struct _Workspace { gsl_integration_workspace* ws ; };
-      struct _Function  ;
-    public:
+      struct _Workspace {
+        gsl_integration_workspace* ws;
+      };
+      struct _Function;
 
+    public:
       /// typedef for vector of singular points
-      typedef std::vector<double>   Points ;
+      typedef std::vector<double> Points;
 
     public:
-
       /// From CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( NumericalIndefiniteIntegral )
 
     public:
-
       /** Standard constructor
        *  The function, created with this constructor
        *  evaluates following indefinite integral:
@@ -160,19 +159,12 @@ namespace Genfun
        *  @param epsrel   relative precision for integration
        *  @param lim      bisection limit
        */
-      NumericalIndefiniteIntegral
-      ( const AbsFunction&                         function                   ,
-        const size_t                               index                      ,
-        const double                               a                          ,
-        const GaudiMath::Integration::Limit        limit  =
-        GaudiMath::Integration::VariableHighLimit ,
-        const GaudiMath::Integration::Type         type   =
-        GaudiMath::Integration::Adaptive          ,
-        const GaudiMath::Integration::KronrodRule  rule   =
-        GaudiMath::Integration::Default           ,
-        const double                               epsabs = 1e-10             ,
-        const double                               epsrel = 1.e-7             ,
-        const size_t                               size   = 1000              );
+      NumericalIndefiniteIntegral(
+          const AbsFunction& function, const size_t index, const double a,
+          const GaudiMath::Integration::Limit limit      = GaudiMath::Integration::VariableHighLimit,
+          const GaudiMath::Integration::Type type        = GaudiMath::Integration::Adaptive,
+          const GaudiMath::Integration::KronrodRule rule = GaudiMath::Integration::Default, const double epsabs = 1e-10,
+          const double epsrel = 1.e-7, const size_t size = 1000 );
 
       /** standard constructor
        *
@@ -215,16 +207,10 @@ namespace Genfun
        *  @param epsabs   absolute precision for integration
        *  @param epsrel   relative precision for integration
        */
-      NumericalIndefiniteIntegral
-      ( const AbsFunction&                  function                      ,
-        const size_t                        index                         ,
-        const double                        a                             ,
-        const Points&                       points                        ,
-        const GaudiMath::Integration::Limit limit     =
-        GaudiMath::Integration::VariableHighLimit ,
-        const double                        epsabs    = 1e-9              ,
-        const double                        epsrel    = 1.e-6             ,
-        const size_t                        size      = 1000              ) ;
+      NumericalIndefiniteIntegral(
+          const AbsFunction& function, const size_t index, const double a, const Points& points,
+          const GaudiMath::Integration::Limit limit = GaudiMath::Integration::VariableHighLimit,
+          const double epsabs = 1e-9, const double epsrel = 1.e-6, const size_t size = 1000 );
 
       /** standard constructor
        *  The function, created with this constructor
@@ -263,138 +249,120 @@ namespace Genfun
        *               from high variable limit
        *  @param singularities list of known function singularities
        */
-      NumericalIndefiniteIntegral
-      ( const AbsFunction&                  function                      ,
-        const size_t                        index                         ,
-        const GaudiMath::Integration::Limit limit     =
-        GaudiMath::Integration::VariableHighLimit ,
-        const double                        epsabs    = 1e-9              ,
-        const double                        epsrel    = 1.e-6             ,
-        const size_t                        size      = 1000              ) ;
+      NumericalIndefiniteIntegral(
+          const AbsFunction& function, const size_t index,
+          const GaudiMath::Integration::Limit limit = GaudiMath::Integration::VariableHighLimit,
+          const double epsabs = 1e-9, const double epsrel = 1.e-6, const size_t size = 1000 );
 
       /// copy constructor
-      NumericalIndefiniteIntegral
-      ( const NumericalIndefiniteIntegral& ) ;
+      NumericalIndefiniteIntegral( const NumericalIndefiniteIntegral& );
 
       /// destructor
       ~NumericalIndefiniteIntegral() override = default;
 
     public:
-
       /// dimensionality of the problem
-      unsigned int dimensionality() const override { return m_DIM ; }
+      unsigned int dimensionality() const override { return m_DIM; }
 
       /// Function value
-      double operator() ( double          argument ) const override;
+      double operator()( double argument ) const override;
       /// Function value
-      double operator() ( const Argument& argument ) const override;
+      double operator()( const Argument& argument ) const override;
 
       /// Does this function have an analytic derivative?
-      bool hasAnalyticDerivative() const override { return true ;}
+      bool hasAnalyticDerivative() const override { return true; }
 
       /// Derivatives
-      Genfun::Derivative partial ( unsigned int index ) const override;
+      Genfun::Derivative partial( unsigned int index ) const override;
 
     public:
-
       /// accessor to the function itself
-      const AbsFunction& function () const { return *m_function ; }
+      const AbsFunction& function() const { return *m_function; }
       /// integration limit
-      double             a        () const { return         m_a ; }
+      double a() const { return m_a; }
       /// known singularities
-      const Points&      points   () const { return    m_points ; }
+      const Points& points() const { return m_points; }
       /// absolute precision
-      double             epsabs   () const { return    m_epsabs ; }
+      double epsabs() const { return m_epsabs; }
       /// relatiove precision
-      double             epsrel   () const { return    m_epsrel ; }
+      double epsrel() const { return m_epsrel; }
 
       /// previous result
-      double             result   () const { return    m_result ; }
+      double result() const { return m_result; }
       /// evaluate of previous error
-      double             error    () const { return     m_error ; }
+      double error() const { return m_error; }
 
       // maximal number of bisection integvals for adaptive algorithms
-      size_t             size     () const { return      m_size ; }
+      size_t size() const { return m_size; }
 
       /// integration limit
-      GaudiMath::Integration::Limit
-      limit    () const { return     m_limit ; }
+      GaudiMath::Integration::Limit limit() const { return m_limit; }
       /// integration type
-      GaudiMath::Integration::Type
-      type     () const { return      m_type ; }
+      GaudiMath::Integration::Type type() const { return m_type; }
       /// integration category
-      GaudiMath::Integration::Category
-      category () const { return  m_category ; }
+      GaudiMath::Integration::Category category() const { return m_category; }
       /// integration rule
-      GaudiMath::Integration::KronrodRule
-      rule     () const { return      m_rule ; }
+      GaudiMath::Integration::KronrodRule rule() const { return m_rule; }
 
     protected:
-
       // adaptive integration on infinite intervals
-      double                     QAGI ( _Function* fun ) const ;
+      double QAGI( _Function* fun ) const;
       // adaptive integration  with known singular points
-      double                     QAGP ( _Function* fun ) const ;
+      double QAGP( _Function* fun ) const;
       // non-adaptive integration
-      double                     QNG  ( _Function* fun ) const ;
+      double QNG( _Function* fun ) const;
       // adaptive integration
-      double                     QAG  ( _Function* fun ) const ;
+      double QAG( _Function* fun ) const;
       // adaptive integral with singularities
-      double                     QAGS ( _Function* fun ) const ;
+      double QAGS( _Function* fun ) const;
 
       // allocate the integration workspace
-      _Workspace*                allocate                () const ;
+      _Workspace* allocate() const;
       // the integration workspace
-      _Workspace*                ws                      () const
-      { return m_ws.get(); }
+      _Workspace* ws() const { return m_ws.get(); }
 
       // throw the exception
-      StatusCode Exception
-      ( const std::string& message ,
-        const StatusCode&  sc = StatusCode::FAILURE ) const ;
+      StatusCode Exception( const std::string& message, const StatusCode& sc = StatusCode::FAILURE ) const;
 
-   private:
-
+    private:
       // default constructor is disabled
-      NumericalIndefiniteIntegral() ;
+      NumericalIndefiniteIntegral();
       // assignement operator is disabled
-      NumericalIndefiniteIntegral& operator=
-      ( const NumericalIndefiniteIntegral& ) ;
+      NumericalIndefiniteIntegral& operator=( const NumericalIndefiniteIntegral& );
 
     public:
-
       struct gsl_ws_deleter {
-          void operator()(_Workspace* p) const {
-            if (p) gsl_integration_workspace_free ( p->ws ) ;
-            delete p;
-          }
+        void operator()( _Workspace* p ) const
+        {
+          if ( p ) gsl_integration_workspace_free( p->ws );
+          delete p;
+        }
       };
+
     private:
+      std::unique_ptr<const AbsFunction> m_function;
+      size_t m_DIM;
+      size_t m_index;
 
-      std::unique_ptr<const AbsFunction>  m_function ;
-      size_t                              m_DIM      ;
-      size_t                              m_index    ;
+      double m_a;
 
-      double                              m_a        ;
+      GaudiMath::Integration::Limit m_limit;
+      GaudiMath::Integration::Type m_type;
+      GaudiMath::Integration::Category m_category;
+      GaudiMath::Integration::KronrodRule m_rule;
 
-      GaudiMath::Integration::Limit       m_limit    ;
-      GaudiMath::Integration::Type        m_type     ;
-      GaudiMath::Integration::Category    m_category ;
-      GaudiMath::Integration::KronrodRule m_rule     ;
+      Points m_points;
 
-      Points                              m_points   ;
+      double m_epsabs;
+      double m_epsrel;
 
-      double                              m_epsabs   ;
-      double                              m_epsrel   ;
+      mutable double m_result = GSL_NEGINF;
+      mutable double m_error  = GSL_POSINF;
 
-      mutable double                      m_result = GSL_NEGINF;
-      mutable double                      m_error  = GSL_POSINF;
+      size_t m_size;
+      mutable std::unique_ptr<_Workspace, gsl_ws_deleter> m_ws;
 
-      size_t                              m_size     ;
-      mutable std::unique_ptr<_Workspace,gsl_ws_deleter> m_ws       ;
-
-      mutable  Argument                   m_argument ;
-
+      mutable Argument m_argument;
     };
     /// From CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( NumericalIndefiniteIntegral )
@@ -402,9 +370,9 @@ namespace Genfun
   } // end of namespace GaudiMathImplementation
 } // end of namespace Genfun
 
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic pop
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic pop
 #endif
 

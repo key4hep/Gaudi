@@ -44,11 +44,9 @@ public:
 
 public:
   /// Declare a property (templated)
-  template <class TYPE,
-           typename = typename std::enable_if< !std::is_base_of<GaudiHandleBase,TYPE>::value
-                                            && !std::is_base_of<GaudiHandleArrayBase,TYPE>::value
-                                            && !std::is_base_of<DataObjectHandleBase,TYPE>::value
-                                             >::type  >
+  template <class TYPE, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
+                                                           !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
+                                                           !std::is_base_of<DataObjectHandleBase, TYPE>::value>::type>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value,
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
@@ -62,17 +60,14 @@ public:
 
   // partial specializations for various GaudiHandles
   /// Declare a property (specialization)
-  Gaudi::Details::PropertyBase* declareProperty ( const std::string& name,
-                                                  GaudiHandleBase& ref,
-                                                  const std::string& doc = "none" ) ;
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, GaudiHandleBase& ref,
+                                                 const std::string& doc = "none" );
   /// Declare a property (specialization)
-  Gaudi::Details::PropertyBase* declareProperty ( const std::string& name,
-                                                  GaudiHandleArrayBase& ref,
-                                                  const std::string& doc = "none" ) ;
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, GaudiHandleArrayBase& ref,
+                                                 const std::string& doc = "none" );
   /// Declare a property (specialization)
-  Gaudi::Details::PropertyBase* declareProperty ( const std::string& name,
-                                                  DataObjectHandleBase& ref,
-                                                  const std::string& doc = "none" ) ;
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandleBase& ref,
+                                                 const std::string& doc = "none" );
   /// Declare a remote property
   Gaudi::Details::PropertyBase* declareRemoteProperty( const std::string& name, IProperty* rsvc,
                                                        const std::string& rname = "" );
@@ -152,11 +147,9 @@ private:
 // ============================================================================
 /// Declare a property (templated)
 // ============================================================================
-template<class TYPE, typename >
-inline Gaudi::Details::PropertyBase*
-PropertyMgr::declareProperty ( const std::string& name  ,
-                               TYPE&              value,
-                               const std::string& doc )
+template <class TYPE, typename>
+inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, TYPE& value,
+                                                                   const std::string& doc )
 {
   assertUniqueName( name );
   m_todelete.emplace_back( new Gaudi::Property<TYPE&>( name, value ) );

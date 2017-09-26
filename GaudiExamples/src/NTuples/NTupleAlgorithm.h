@@ -7,11 +7,12 @@
 
 // Forward declarations
 
-class NTupleAlgorithm : public Algorithm {
+class NTupleAlgorithm : public Algorithm
+{
 
 public:
   // Constructor of this form must be provided
-  NTupleAlgorithm(const std::string& name, ISvcLocator* pSvcLocator); 
+  NTupleAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
 
   // Three mandatory member functions of any algorithm
   StatusCode initialize() override;
@@ -19,17 +20,15 @@ public:
   StatusCode finalize() override;
 
 private:
+  NTuple::Tuple* m_tuple1;
+  NTuple::Tuple* m_tuple2;
 
-  NTuple::Tuple*  m_tuple1;
-  NTuple::Tuple*  m_tuple2;
-
-  NTuple::Item<int>               m_ntrk;
-  NTuple::Item<float>             m_energy;
+  NTuple::Item<int> m_ntrk;
+  NTuple::Item<float> m_energy;
   // Items for the column wise n-tuple
-  NTuple::Array<int>              m_iNumbers;
-  NTuple::Array<float>            m_fNumbers;
-  NTuple::Item<int>               m_n;
+  NTuple::Array<int> m_iNumbers;
+  NTuple::Array<float> m_fNumbers;
+  NTuple::Item<int> m_n;
 };
 
-
-# endif    // HISTOGRAMS_NTupleAlgorithm_H
+#endif // HISTOGRAMS_NTupleAlgorithm_H

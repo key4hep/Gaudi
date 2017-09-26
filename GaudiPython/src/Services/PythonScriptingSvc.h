@@ -2,8 +2,8 @@
 #define GAUDIPYTHON_PYTHONSCRIPTINGSVC_H
 
 // Include Files
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
 
 /** @class PythonScriptingSvc PythonScriptingSvc.h GaudiPython/PythonScriptingSvc.h
     This service handles scripting implemented using Python.
@@ -12,8 +12,8 @@
     @author David Quarrie
     @date   2001
 */
-class PythonScriptingSvc : public extends<Service,
-                                          IRunable> {
+class PythonScriptingSvc : public extends<Service, IRunable>
+{
 
 public:
   /// Standard Constructor.
@@ -31,11 +31,10 @@ public:
 protected:
   /// Destructor.
   ~PythonScriptingSvc() override;
+
 private:
   /// Startup script
   std::string m_startupScript;
 };
 
 #endif // GAUDIPYTHON_PYTHONSCRIPTINGSVC_H
-
-

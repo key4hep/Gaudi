@@ -6,51 +6,44 @@
 
 #include "GaudiKernel/IssueSeverity.h"
 
-DECLARE_COMPONENT(ErrorLogTest)
+DECLARE_COMPONENT( ErrorLogTest )
 
 //------------------------------------------------------------------------------
-ErrorLogTest::ErrorLogTest(const std::string& name,
-				 ISvcLocator* pSvcLocator) :
-  Algorithm(name, pSvcLocator)
+ErrorLogTest::ErrorLogTest( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
 //------------------------------------------------------------------------------
 {
 }
-
 
 //------------------------------------------------------------------------------
 StatusCode ErrorLogTest::initialize()
 //------------------------------------------------------------------------------
 {
 
-//   if (service("THistSvc",m_ths).isFailure()) {
-//     error() << "Couldn't get THistSvc" << endmsg;
-//     return StatusCode::FAILURE;
-//   }
+  //   if (service("THistSvc",m_ths).isFailure()) {
+  //     error() << "Couldn't get THistSvc" << endmsg;
+  //     return StatusCode::FAILURE;
+  //   }
 
-
-  IssueSeverity err0 =ISSUE(IssueSeverity::ERROR,"ERROR level ErrObj");
-  IssueSeverity war = ISSUE(IssueSeverity::WARNING,"this is a warning");
-  IssueSeverity fat = ISSUE(IssueSeverity::FATAL,"this is a fatal");
+  IssueSeverity err0 = ISSUE( IssueSeverity::ERROR, "ERROR level ErrObj" );
+  IssueSeverity war  = ISSUE( IssueSeverity::WARNING, "this is a warning" );
+  IssueSeverity fat  = ISSUE( IssueSeverity::FATAL, "this is a fatal" );
 
   //  StatusCode sc(StatusCode::SUCCESS, ISSUE(IssueSeverity::DEBUG,"debug3 ErrObj"));
 
-  StatusCode sc = STATUSCODE(StatusCode::SUCCESS, IssueSeverity::DEBUG, "debug");
+  StatusCode sc = STATUSCODE( StatusCode::SUCCESS, IssueSeverity::DEBUG, "debug" );
 
-  StatusCode sc2(ISSUE(IssueSeverity::INFO,"info ErrObj"));
+  StatusCode sc2( ISSUE( IssueSeverity::INFO, "info ErrObj" ) );
 
   return sc2;
-
 }
-
 
 //------------------------------------------------------------------------------
 StatusCode ErrorLogTest::execute()
 //------------------------------------------------------------------------------
 {
-  ISSUE(IssueSeverity::WARNING,"warning level ErrObj in execute");
+  ISSUE( IssueSeverity::WARNING, "warning level ErrObj in execute" );
   return StatusCode::SUCCESS;
 }
-
 
 //------------------------------------------------------------------------------
 StatusCode ErrorLogTest::finalize()

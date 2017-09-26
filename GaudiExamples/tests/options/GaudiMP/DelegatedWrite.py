@@ -24,4 +24,4 @@ EventDataSvc(ForceLeaves=True)
 
 #from Gaudi.Configuration import VERBOSE
 #from Configurables import MessageSvc
-#MessageSvc(OutputLevel=VERBOSE)
+# MessageSvc(OutputLevel=VERBOSE)

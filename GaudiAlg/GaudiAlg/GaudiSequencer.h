@@ -56,6 +56,7 @@ protected:
     bool reverse() const { return m_reverse; }
     void setTimer( int nb ) { m_timer = nb; }
     int timer() const { return m_timer; }
+
   private:
     Algorithm* m_algorithm = nullptr; ///< Algorithm pointer
     bool m_reverse         = false;   ///< Indicates that the flag has to be inverted
@@ -67,7 +68,7 @@ protected:
 
 public:
   /// Produce string represention of the control flow expression.
-  std::ostream& toControlFlowExpression(std::ostream& os) const override;
+  std::ostream& toControlFlowExpression( std::ostream& os ) const override;
 
 private:
   /** copy not allowed **/

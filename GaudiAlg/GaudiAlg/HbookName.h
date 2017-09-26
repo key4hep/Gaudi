@@ -1,8 +1,8 @@
 #ifndef GAUDIALG_HBOOKNAME_H
 #define GAUDIALG_HBOOKNAME_H 1
 // Include files
-#include <string>
 #include <algorithm>
+#include <string>
 
 /** @file
  *  few useful function to construct names of Hbook histograms
@@ -29,29 +29,27 @@ namespace
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   06/07/2001
    */
-  inline std::string dirHbookName
-  ( const std::string& addr        ,
-    const int          maxLen = 16 )
+  inline std::string dirHbookName( const std::string& addr, const int maxLen = 16 )
   {
     // ignore empty locations
-    if( addr.empty() ) { return std::string(); }
+    if ( addr.empty() ) {
+      return std::string();
+    }
     //
     std::string old( addr );
     // remove long names
-    if( 0 < maxLen &&  maxLen < (int) old.size() )
-    {
+    if ( 0 < maxLen && maxLen < (int)old.size() ) {
       auto p1 = old.begin();
-      const char sep('/');
-      while( old.end() != p1 )
-      {
-        p1 =
-          std::find_if( p1        ,
-                        old.end() ,
-                        [&](const char& c) { return c!=sep; } );
-        auto p2 = std::find( p1 , old.end() , sep ) ;
-        if( ( p2 - p1 ) <= (int) maxLen  ) { p1 = p2 ; continue ; }
-        old.insert( p1 + maxLen , sep ) ;
-        p1 = old.begin() ;
+      const char sep( '/' );
+      while ( old.end() != p1 ) {
+        p1      = std::find_if( p1, old.end(), [&]( const char& c ) { return c != sep; } );
+        auto p2 = std::find( p1, old.end(), sep );
+        if ( ( p2 - p1 ) <= (int)maxLen ) {
+          p1 = p2;
+          continue;
+        }
+        old.insert( p1 + maxLen, sep );
+        p1 = old.begin();
       }
     }
     ///

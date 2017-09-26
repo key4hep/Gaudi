@@ -15,40 +15,41 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#define  DATASVC_EVTDATASVC_CPP
+#define DATASVC_EVTDATASVC_CPP
 
-#include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IConversionSvc.h"
+#include "GaudiKernel/ISvcLocator.h"
 
 #include "EvtDataSvc.h"
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_COMPONENT(EvtDataSvc)
+DECLARE_COMPONENT( EvtDataSvc )
 
 /// Service initialisation
-StatusCode EvtDataSvc::initialize()    {
+StatusCode EvtDataSvc::initialize()
+{
   // Nothing to do: just call base class initialisation
-  StatusCode      status  = DataSvc::initialize();
+  StatusCode status = DataSvc::initialize();
 
   // Attach data loader facility
-  m_cnvSvc = serviceLocator()->service("EventPersistencySvc");
-  status = setDataLoader( m_cnvSvc );
+  m_cnvSvc = serviceLocator()->service( "EventPersistencySvc" );
+  status   = setDataLoader( m_cnvSvc );
   return status;
 }
 /// Service reinitialisation
-StatusCode EvtDataSvc::reinitialize()    {
+StatusCode EvtDataSvc::reinitialize()
+{
   // Do nothing for this service
   return StatusCode::SUCCESS;
 }
 /// Service finalization
-StatusCode EvtDataSvc::finalize()    {
+StatusCode EvtDataSvc::finalize()
+{
   m_cnvSvc = nullptr; // release
   DataSvc::finalize().ignore();
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 
 /// Standard Constructor
-EvtDataSvc::EvtDataSvc(const std::string& name,ISvcLocator* svc):
-  DataSvc(name,svc) {
-}
+EvtDataSvc::EvtDataSvc( const std::string& name, ISvcLocator* svc ) : DataSvc( name, svc ) {}

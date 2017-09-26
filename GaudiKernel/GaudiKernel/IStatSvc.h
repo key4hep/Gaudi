@@ -13,7 +13,7 @@
 // ============================================================================
 // forward declaration
 // ============================================================================
-class StatEntity ;
+class StatEntity;
 // ============================================================================
 /** @class IStatSvc IStatSvc.h GaudiKernel/IStatSvc.h
  *  "Stat"-related part of interface IChronoStatSvc
@@ -22,32 +22,33 @@ class StatEntity ;
  *  @date December 1, 1999
  *  @date   2007-07-08
  */
-class GAUDI_API IStatSvc: virtual public IInterface
+class GAUDI_API IStatSvc : virtual public IInterface
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IStatSvc,2,0);
+  DeclareInterfaceID( IStatSvc, 2, 0 );
   /// the actual identificator of Stat
-  typedef    std::string     StatTag    ;
+  typedef std::string StatTag;
   /// the actual value type used for Stat
-  typedef    double          StatFlag   ;
+  typedef double StatFlag;
+
 public:
   /** add statistical information to the entity , tagged by its name
    *   @param t stat tag(name)
    *   @param f flag (quantity to be accumulated)
    *   @return status of stat
    */
-  virtual void  stat         ( const StatTag&    t , const StatFlag&   f ) = 0 ;
+  virtual void stat( const StatTag& t, const StatFlag& f ) = 0;
   /** prints (using message service)  info about statistical entity, tagged by its name
    *  @param t stat tag(name)
    *  @return status code
    */
-  virtual void statPrint      ( const StatTag&    t ) = 0;
+  virtual void statPrint( const StatTag& t ) = 0;
   /** extract the stat   entity for the given tag (name)
    *  @param t stat   tag(name)
    *  @return pointer to stat   entity
    */
-  virtual const StatEntity*   stat   ( const StatTag&   t ) const = 0 ;
+  virtual const StatEntity* stat( const StatTag& t ) const = 0;
 };
 // ============================================================================
 // The END

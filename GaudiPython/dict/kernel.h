@@ -5,7 +5,7 @@
 // ============================================================================
 // Python must always be the first.
 #ifndef __APPLE__
-#   include "Python.h"
+#include "Python.h"
 #endif // not __APPLE__
 
 #include "GaudiKernel/Algorithm.h"
@@ -64,21 +64,21 @@
 #include "GaudiPython/CallbackStreamBuf.h"
 #include "GaudiPython/GaudiPython.h"
 #ifdef AIDA_FOUND
-#   include "GaudiPython/HistoDecorator.h"
+#include "GaudiPython/HistoDecorator.h"
 #endif // AIDA_FOUND
 #include "GaudiPython/Interface.h"
 #include "GaudiPython/Printer.h"
 #include "GaudiPython/Vector.h"
 #ifdef CLHEP_FOUND
-#   include "GaudiPython/TupleDecorator.h"
+#include "GaudiPython/TupleDecorator.h"
 #endif // CLHEP_FOUND
 
 #ifdef AIDA_FOUND
-#   include "GaudiAlg/GaudiHistoAlg.h"
-#   include "GaudiAlg/GaudiTupleAlg.h"
-#   include "GaudiAlg/Print.h"
-    // Added to avoid warnings about inlined functions never implemented.
-#   include "GaudiAlg/GaudiHistos.icpp"
+#include "GaudiAlg/GaudiHistoAlg.h"
+#include "GaudiAlg/GaudiTupleAlg.h"
+#include "GaudiAlg/Print.h"
+// Added to avoid warnings about inlined functions never implemented.
+#include "GaudiAlg/GaudiHistos.icpp"
 #endif // AIDA_FOUND
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiCommon.h"
@@ -91,10 +91,10 @@
 #include "GaudiAlg/Tuple.h"
 
 #ifdef AIDA_FOUND
-#   include "GaudiUtils/Aida2ROOT.h"
-#   include "GaudiUtils/HistoDump.h"
-#   include "GaudiUtils/HistoStats.h"
-#   include "GaudiUtils/HistoStrings.h"
+#include "GaudiUtils/Aida2ROOT.h"
+#include "GaudiUtils/HistoDump.h"
+#include "GaudiUtils/HistoStats.h"
+#include "GaudiUtils/HistoStrings.h"
 #endif // AIDA_FOUND
 #include "GaudiUtils/IFileCatalog.h"
 #include "GaudiUtils/IFileCatalogMgr.h"

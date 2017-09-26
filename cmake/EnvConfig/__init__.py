@@ -18,11 +18,13 @@ if 'ENVXMLPATH' in os.environ:
 
 import Control
 
+
 class EnvError(RuntimeError):
     '''
     Simple class to wrap errors in the environment configuration.
     '''
     pass
+
 
 def splitNameValue(name_value):
     """split the "NAME=VALUE" string into the tuple ("NAME", "VALUE")
@@ -32,17 +34,19 @@ def splitNameValue(name_value):
     n, v = name_value.split('=', 1)
     return n, v.replace('[:]', os.pathsep)
 
+
 class Script(object):
     '''
     Environment Script class used to control the logic of the script and allow
     extensions.
     '''
-    __usage__  = "Usage: %prog [OPTION]... [NAME=VALUE]... [COMMAND [ARG]...]"
-    __desc__   = "Set each NAME to VALUE in the environment and run COMMAND."
+    __usage__ = "Usage: %prog [OPTION]... [NAME=VALUE]... [COMMAND [ARG]...]"
+    __desc__ = "Set each NAME to VALUE in the environment and run COMMAND."
     __epilog__ = ("The operations are performed in the order they appear on the "
                   "command line. If no COMMAND is provided, print the resulting "
                   "environment. (Note: this command is modeled after the Unix "
                   "command 'env', see \"man env\")")
+
     def __init__(self, args=None):
         '''
         Initializes the script instance parsing the command line arguments (or
@@ -79,7 +83,8 @@ class Script(object):
                 try:
                     value = splitNameValue(value)
                 except EnvError:
-                    raise OptionValueError("Invalid value for option %s: '%s', it requires NAME=VALUE." % (opt, value))
+                    raise OptionValueError(
+                        "Invalid value for option %s: '%s', it requires NAME=VALUE." % (opt, value))
             else:
                 value = (value,)
             parser.values.actions.append((action, value))
@@ -166,7 +171,8 @@ class Script(object):
         Check consistency of command line options and arguments.
         '''
         if self.opts.shell and self.cmd:
-            self.parser.error("Invalid arguments: --%s cannot be used with a command." % self.opts.shell)
+            self.parser.error(
+                "Invalid arguments: --%s cannot be used with a command." % self.opts.shell)
 
     def _makeEnv(self):
         '''
@@ -196,7 +202,8 @@ class Script(object):
                 other = None
             if other:
                 if other in env:
-                    env[other] = env[other] + os.pathsep + env["LD_LIBRARY_PATH"]
+                    env[other] = env[other] + \
+                        os.pathsep + env["LD_LIBRARY_PATH"]
                 else:
                     env[other] = env["LD_LIBRARY_PATH"]
                 del env["LD_LIBRARY_PATH"]

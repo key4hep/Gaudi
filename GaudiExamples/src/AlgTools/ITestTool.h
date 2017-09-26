@@ -8,7 +8,6 @@
 // from Gaudi
 #include "GaudiKernel/IAlgTool.h"
 
-
 /** @class ITestTool ITestTool.h
  *
  *
@@ -16,15 +15,15 @@
  *  @date   2004-03-08
  */
 
-class ITestTool : public virtual IAlgTool {
+class ITestTool : public virtual IAlgTool
+{
 
 public:
   /// InterfaceID
-  DeclareInterfaceID(ITestTool,2,0);
+  DeclareInterfaceID( ITestTool, 2, 0 );
   virtual ~ITestTool() {}
+
 protected:
-
 private:
-
 };
 #endif // ITESTTOOL_H

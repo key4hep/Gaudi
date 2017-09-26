@@ -17,7 +17,7 @@
 // ============================================================================
 // Declaration of the Tool Factory
 // ============================================================================
-DECLARE_COMPONENT(ErrorTool)
+DECLARE_COMPONENT( ErrorTool )
 // ============================================================================
 
 // ============================================================================
@@ -29,12 +29,9 @@ DECLARE_COMPONENT(ErrorTool)
  *  @param parent pointer to parent component
  */
 // ============================================================================
-ErrorTool::ErrorTool( const std::string& type,
-                      const std::string& name,
-                      const IInterface* parent )
-  : GaudiTool ( type, name , parent )
+ErrorTool::ErrorTool( const std::string& type, const std::string& name, const IInterface* parent )
+    : GaudiTool( type, name, parent )
 {
-  declareInterface<IErrorTool>(this);
+  declareInterface<IErrorTool>( this );
 }
 // ============================================================================
-

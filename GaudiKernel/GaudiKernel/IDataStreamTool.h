@@ -19,25 +19,26 @@ class EventSelectorDataStream;
  *  @date   2006-09-21
  */
 
-class GAUDI_API IDataStreamTool: virtual public IAlgTool {
+class GAUDI_API IDataStreamTool : virtual public IAlgTool
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IDataStreamTool,2,0);
+  DeclareInterfaceID( IDataStreamTool, 2, 0 );
 
-  typedef std::vector<std::string>                         StreamSpecs;
-  typedef long                                             size_type;
+  typedef std::vector<std::string> StreamSpecs;
+  typedef long size_type;
 
   virtual StatusCode initializeStream( EventSelectorDataStream* ) = 0;
 
   virtual StatusCode finalizeStream( EventSelectorDataStream* ) = 0;
 
-  virtual StatusCode getNextStream( const EventSelectorDataStream* &, size_type & ) = 0;
+  virtual StatusCode getNextStream( const EventSelectorDataStream*&, size_type& ) = 0;
 
-  virtual StatusCode getPreviousStream( const EventSelectorDataStream* &, size_type & ) = 0;
+  virtual StatusCode getPreviousStream( const EventSelectorDataStream*&, size_type& ) = 0;
 
-  virtual StatusCode addStream(const std::string &) = 0;
+  virtual StatusCode addStream( const std::string& ) = 0;
 
-  virtual StatusCode addStreams(const StreamSpecs &) = 0;
+  virtual StatusCode addStreams( const StreamSpecs& ) = 0;
 
   virtual StatusCode eraseStream( const std::string& ) = 0;
 
@@ -52,12 +53,8 @@ public:
   virtual StatusCode clear() = 0;
 
 protected:
+  virtual StatusCode createSelector( const std::string&, const std::string&, IEvtSelector*& ) = 0;
 
-  virtual StatusCode createSelector(const std::string& , const std::string& ,
-                                    IEvtSelector*&) = 0;
-
-  virtual StatusCode createStream(const std::string&, const std::string&,
-                                  EventSelectorDataStream*& ) = 0;
-
+  virtual StatusCode createStream( const std::string&, const std::string&, EventSelectorDataStream*& ) = 0;
 };
 #endif // GAUDIKERNEL_IDATASTREAMTOOL_H

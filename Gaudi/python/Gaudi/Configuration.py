@@ -16,40 +16,45 @@ _InstallRootLoggingHandler()
 
 allConfigurables = Configurable.allConfigurables
 
+
 def _fillConfDict():
     nFiles = loadConfigurableDb()
-    log = logging.getLogger( 'PropertyProxy' )
-    log.debug( "Read module info for %d configurables from %d genConfDb files",
-              len(cfgDb), nFiles )
+    log = logging.getLogger('PropertyProxy')
+    log.debug("Read module info for %d configurables from %d genConfDb files",
+              len(cfgDb), nFiles)
     if len(cfgDb.duplicates()) > 0:
-        log.warning( "Found %d duplicates among the %d genConfDb files :",
-                     len(cfgDb.duplicates()), nFiles )
-        log.warning( "--------------------------------------------------" )
-        log.warning( "  -%s: %s - %s",
-                     "<component name>", "<module>", "[ <duplicates> ]" )
-        log.warning( "--------------------------------------------------" )
+        log.warning("Found %d duplicates among the %d genConfDb files :",
+                    len(cfgDb.duplicates()), nFiles)
+        log.warning("--------------------------------------------------")
+        log.warning("  -%s: %s - %s",
+                    "<component name>", "<module>", "[ <duplicates> ]")
+        log.warning("--------------------------------------------------")
         dups = cfgDb.duplicates()
         for cfgName in dups.keys():
-            log.warning( "  -%s: %s - %s",
-                         cfgName,
-                         cfgDb[cfgName]['module'],
-                         str([ d['module'] for d in dups[cfgName]]) )
+            log.warning("  -%s: %s - %s",
+                        cfgName,
+                        cfgDb[cfgName]['module'],
+                        str([d['module'] for d in dups[cfgName]]))
             pass
         del dups
-        log.warning( "Fix your cmt/requirements file !!" )
+        log.warning("Fix your cmt/requirements file !!")
         pass
     else:
-        log.debug( "No duplicates have been found: that's good !" )
+        log.debug("No duplicates have been found: that's good !")
         pass
     return
+
 
 # fill the configurable dictionary at module load
 _fillConfDict()
 
-import os, sys
+import os
+import sys
 
-def importConfiguration(conf, local=locals()) :
+
+def importConfiguration(conf, local=locals()):
     local[conf] = confDbGetConfigurable(conf)
+
 
 def configurationDict(all=False):
     """Return a dictionary representing the configuration.
@@ -61,19 +66,19 @@ def configurationDict(all=False):
     from GaudiKernel.Proxy.Configurable import getNeededConfigurables
 
     catalog = allConfigurables
-    keys = getNeededConfigurables() # use only interesting configurables
+    keys = getNeededConfigurables()  # use only interesting configurables
     conf_dict = {}
     if all:
-        for n in keys :
+        for n in keys:
             if n not in conf_dict:
                 conf_dict[n] = {}
-            for p, v in  catalog[n].getDefaultProperties().items() :
+            for p, v in catalog[n].getDefaultProperties().items():
                 conf_dict[n][p] = v
 
-    for n in keys :
+    for n in keys:
         if n not in conf_dict:
             conf_dict[n] = {}
-        for p, v in catalog[n].getValuedProperties().items() :
+        for p, v in catalog[n].getValuedProperties().items():
             conf_dict[n][p] = v
     # purge empty configurables
     keys = conf_dict.keys()
@@ -82,7 +87,8 @@ def configurationDict(all=False):
             del conf_dict[n]
     return conf_dict
 
-def getConfigurable(name, defaultType = None):
+
+def getConfigurable(name, defaultType=None):
     """Helper function to get a configurable with the given name regardless
     for the type.
     If defaultType can be a class derived from configurable or a string. If not
@@ -105,6 +111,7 @@ def getConfigurable(name, defaultType = None):
                 defaultType = getattr(Configurables, defaultType)
         return defaultType(name)
 
+
 def setCustomMainLoop(runner):
     '''
     Replace the default main execution loop with the specified callable object.
@@ -124,6 +131,7 @@ class GaudiPersistency(ConfigurableUser):
     Note: it requires Gaudi::RootCnvSvc (package RootCnv).
     """
     __slots__ = {}
+
     def __apply_configuration__(self):
         """Apply low-level configuration"""
         from Configurables import (ApplicationMgr,
@@ -137,10 +145,10 @@ class GaudiPersistency(ConfigurableUser):
                                    IODataManager,
                                    FileCatalog,
                                    )
-        cnvSvcs = [ RootCnvSvc() ]
+        cnvSvcs = [RootCnvSvc()]
         EventPersistencySvc().CnvServices += cnvSvcs
         PersistencySvc("FileRecordPersistencySvc").CnvServices += cnvSvcs
         app = ApplicationMgr()
-        app.SvcOptMapping += [ FileCatalog(), IODataManager(),
-                               RootCnvSvc() ]
-        app.ExtSvc += [ FileRecordDataSvc() ]
+        app.SvcOptMapping += [FileCatalog(), IODataManager(),
+                              RootCnvSvc()]
+        app.ExtSvc += [FileRecordDataSvc()]

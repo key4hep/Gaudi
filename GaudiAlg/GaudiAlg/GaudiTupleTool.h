@@ -38,15 +38,13 @@
  */
 // ============================================================================
 
-struct  GAUDI_API GaudiTupleTool: GaudiTuples<GaudiHistoTool>
-{
+struct GAUDI_API GaudiTupleTool : GaudiTuples<GaudiHistoTool> {
 
   using GaudiTuples<GaudiHistoTool>::GaudiTuples;
 
-  GaudiTupleTool() = delete;
-  GaudiTupleTool           ( const GaudiTupleTool& ) = delete;
+  GaudiTupleTool()                        = delete;
+  GaudiTupleTool( const GaudiTupleTool& ) = delete;
   GaudiTupleTool& operator=( const GaudiTupleTool& ) = delete;
-
 };
 
 // ============================================================================

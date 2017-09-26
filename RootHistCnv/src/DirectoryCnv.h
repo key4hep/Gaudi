@@ -8,29 +8,30 @@
 //------------------------------------------------------------------------------
 //
 // ClassName:   RootHistCnv::DirectoryCnv
-//  
+//
 // Description: Histogram directory converter
 //
 // Author:      Charles Leggett
 //
 //------------------------------------------------------------------------------
-namespace RootHistCnv {
-  class DirectoryCnv : public RConverter {
+namespace RootHistCnv
+{
+  class DirectoryCnv : public RConverter
+  {
   public:
     /// Create the transient representation of an object.
-    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override;
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;
     /// Convert the transient object to the requested representation.
-    StatusCode createRep(DataObject* pObj, IOpaqueAddress*& refpAddr) override;
+    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override;
     /// Inquire class type
-    static const CLID& classID()      {  return CLID_DataObject;    }
+    static const CLID& classID() { return CLID_DataObject; }
     /// Standard constructor
-    DirectoryCnv(ISvcLocator* svc) : RConverter(CLID_DataObject, svc) {}
+    DirectoryCnv( ISvcLocator* svc ) : RConverter( CLID_DataObject, svc ) {}
     /// Standard constructor
-    DirectoryCnv(const CLID& clid, ISvcLocator* svc) : RConverter(clid, svc) {}
+    DirectoryCnv( const CLID& clid, ISvcLocator* svc ) : RConverter( clid, svc ) {}
     /// Standard destructor
     ~DirectoryCnv() override = default;
   };
-}    // namespace RootHistCnv
+} // namespace RootHistCnv
 
-
-#endif    // ROOTHISTCNV_DIRECTORYCNV_H 
+#endif // ROOTHISTCNV_DIRECTORYCNV_H

@@ -20,6 +20,7 @@ class MySuperAlg(SuperAlgorithm):
     In this case the boolean option UseHelloWorld defines if the HelloWorld
     instance has to be used or not.
     '''
+
     def __init__(self, *args, **kwargs):
         # preset the internal flag bypassing __setattr__
         self.__dict__['_hello_flag'] = kwargs.pop('UseHelloWorld', True)

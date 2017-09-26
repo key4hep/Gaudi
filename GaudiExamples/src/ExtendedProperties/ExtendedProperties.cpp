@@ -100,72 +100,74 @@ DECLARE_COMPONENT( ExtendedProperties )
 namespace
 {
   template <class TYPE>
-  inline SimplePropertyRef<TYPE> _prop ( TYPE& value )
+  inline SimplePropertyRef<TYPE> _prop( TYPE& value )
   {
     // construct a readable name
-    std::string name = System::typeinfoName ( typeid( value ) ) ;
-    std::string::size_type ipos = name.find("std::") ;
-    while ( std::string::npos != ipos )
-    {
-      name.erase( ipos , 5 ) ;
-      ipos = name.find("std::") ;
+    std::string name            = System::typeinfoName( typeid( value ) );
+    std::string::size_type ipos = name.find( "std::" );
+    while ( std::string::npos != ipos ) {
+      name.erase( ipos, 5 );
+      ipos = name.find( "std::" );
     }
-    ipos = name.find("__cxx11::") ;
-    while ( std::string::npos != ipos )
-    {
-      name.erase( ipos , 9 ) ;
-      ipos = name.find("__cxx11::") ;
+    ipos = name.find( "__cxx11::" );
+    while ( std::string::npos != ipos ) {
+      name.erase( ipos, 9 );
+      ipos = name.find( "__cxx11::" );
     }
-    ipos = name.find(" ") ;
-    while ( std::string::npos != ipos )
-    {
-      name.erase( ipos , 1 ) ;
-      ipos = name.find(" ") ;
+    ipos = name.find( " " );
+    while ( std::string::npos != ipos ) {
+      name.erase( ipos, 1 );
+      ipos = name.find( " " );
     }
-    ipos = name.find("const") ;
-    while ( std::string::npos != ipos )
-    {
-      name.erase( ipos , 5 ) ;
-      ipos = name.find("const") ;
+    ipos = name.find( "const" );
+    while ( std::string::npos != ipos ) {
+      name.erase( ipos, 5 );
+      ipos = name.find( "const" );
     }
-    ipos = name.find(",allocator<") ;
-    while( std::string::npos != ipos )
-    {
+    ipos = name.find( ",allocator<" );
+    while ( std::string::npos != ipos ) {
       std::string::size_type ip2 = ipos + 11;
-      int ip3 = 1 ;
-      for ( ; ip2 < name.size() ; ++ip2 )
-      {
-        if ( '<' == name[ip2] ) { ip3+=1 ; }
-        if ( '>' == name[ip2] ) { ip3-=1 ; }
-        if ( 0 == ip3 ) { break ; }
-      }
-      name.erase( ipos , ip2 + 1 - ipos ) ;
-      ipos = name.find(",allocator<") ;
-    }
-    if ( std::string::npos != name.find("map<") )
-    {
-      ipos = name.find(",less<") ;
-      while( std::string::npos != ipos )
-      {
-        std::string::size_type ip2 = ipos + 6;
-        int ip3 = 1 ;
-        for ( ; ip2 < name.size() ; ++ip2 )
-        {
-          if ( '<' == name[ip2] ) { ip3+=1 ; }
-          if ( '>' == name[ip2] ) { ip3-=1 ; }
-          if ( 0 == ip3 ) { break ; }
+      int ip3                    = 1;
+      for ( ; ip2 < name.size(); ++ip2 ) {
+        if ( '<' == name[ip2] ) {
+          ip3 += 1;
         }
-        name.erase( ipos , ip2 + 1 - ipos ) ;
-        ipos = name.find(",less<") ;
+        if ( '>' == name[ip2] ) {
+          ip3 -= 1;
+        }
+        if ( 0 == ip3 ) {
+          break;
+        }
+      }
+      name.erase( ipos, ip2 + 1 - ipos );
+      ipos = name.find( ",allocator<" );
+    }
+    if ( std::string::npos != name.find( "map<" ) ) {
+      ipos = name.find( ",less<" );
+      while ( std::string::npos != ipos ) {
+        std::string::size_type ip2 = ipos + 6;
+        int ip3                    = 1;
+        for ( ; ip2 < name.size(); ++ip2 ) {
+          if ( '<' == name[ip2] ) {
+            ip3 += 1;
+          }
+          if ( '>' == name[ip2] ) {
+            ip3 -= 1;
+          }
+          if ( 0 == ip3 ) {
+            break;
+          }
+        }
+        name.erase( ipos, ip2 + 1 - ipos );
+        ipos = name.find( ",less<" );
       }
     }
-    ipos = name.find(">>") ;
-    while ( std::string::npos != ipos )
-    {
-      name.replace( ipos , 2 , "> >" ) ;
-      ipos = name.find(">>") ;
+    ipos = name.find( ">>" );
+    while ( std::string::npos != ipos ) {
+      name.replace( ipos, 2, "> >" );
+      ipos = name.find( ">>" );
     }
-    return SimplePropertyRef<TYPE> ( name , value ) ;
+    return SimplePropertyRef<TYPE>( name, value );
   }
 }
 // ============================================================================

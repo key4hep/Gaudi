@@ -36,6 +36,7 @@ public:
   IAlgorithm* currentAlg() const override;
   /// get the stack of executed algorithms @see IAlgContextSvc
   const IAlgContextSvc::Algorithms& algorithms() const override { return *m_algorithms; }
+
 public:
   /// handle incident @see IIncidentListener
   void handle( const Incident& ) override;

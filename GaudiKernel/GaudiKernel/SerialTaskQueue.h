@@ -14,7 +14,8 @@
 #include <tbb/concurrent_queue.h>
 #include <tbb/task.h>
 
-namespace Gaudi {
+namespace Gaudi
+{
 
   /** Class for a generic serial queue of tasks (modeled on the Intel Threading
    *  Building Blocks Design Pattern "Local Serializer").
@@ -29,11 +30,13 @@ namespace Gaudi {
    *
    *  @author Marco Clemencic
    */
-  class SerialTaskQueue {
+  class SerialTaskQueue
+  {
   public:
     /// Base class for the task to be executed by the serial queue.
     /// Actual tasks must specialize this class implementing the method run().
-    class WorkItem {
+    class WorkItem
+    {
     public:
       virtual ~WorkItem();
       /// Method to be implemented by the actual task classes.
@@ -47,7 +50,7 @@ namespace Gaudi {
     virtual ~SerialTaskQueue();
 
     /// Enqueue a WorkItem for execution.
-    void add(WorkItem* item);
+    void add( WorkItem* item );
 
     /// Method used by the tasks to trigger the execution of the next task in
     /// the queue.
@@ -59,17 +62,17 @@ namespace Gaudi {
     void wait() const;
 
   private:
-
     /// Wrapper for the WorkItem class for internal concurrency bookkeeping.
-    class SerialWorkItem {
+    class SerialWorkItem
+    {
     public:
       /// Initialize the instance from the WorkiItem and the SerialTaskQueue
       /// (for synchronization).
       /// @note the object takes ownership of the WorkItem pointer.
-      SerialWorkItem(WorkItem* item, SerialTaskQueue* serializer):
-        m_item(item), m_serializer(serializer) {}
+      SerialWorkItem( WorkItem* item, SerialTaskQueue* serializer ) : m_item( item ), m_serializer( serializer ) {}
       /// Execute the WorkItem and notify the SerialTaskQueue of the completion.
       void run();
+
     private:
       /// Pointer to the WorkItem to run.
       std::unique_ptr<WorkItem> m_item;
@@ -78,15 +81,18 @@ namespace Gaudi {
     };
 
     /// Helper class to wrap a SerialWorkItem in a tbb::task.
-    class SerialWorkItemRunner: public tbb::task {
+    class SerialWorkItemRunner : public tbb::task
+    {
     public:
       /// Initialize the instance.
-      SerialWorkItemRunner(SerialWorkItem* item): m_item(item) {}
+      SerialWorkItemRunner( SerialWorkItem* item ) : m_item( item ) {}
       /// Call the run method of the work item.
-      tbb::task* execute() override {
+      tbb::task* execute() override
+      {
         m_item->run();
         return NULL;
       }
+
     private:
       /// Pointer to the work item to be executed.
       /// @note we do not own the work item (it deletes itself)
@@ -99,11 +105,10 @@ namespace Gaudi {
     std::atomic<int> m_count;
     /// Queue of the tasks to be executed.
     tbb::concurrent_queue<SerialWorkItem*> m_queue;
-
   };
 
-
-  inline void SerialTaskQueue::SerialWorkItem::run() {
+  inline void SerialTaskQueue::SerialWorkItem::run()
+  {
     // run the wrapped task
     m_item->run();
 

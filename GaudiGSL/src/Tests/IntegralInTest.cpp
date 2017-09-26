@@ -8,16 +8,18 @@
 // ============================================================================
 // GAUDI
 // ============================================================================
-#include "GaudiMath/GaudiMath.h"
 #include "GaudiKernel/SystemOfUnits.h"
+#include "GaudiMath/GaudiMath.h"
 // ============================================================================
 // CLHEP
 // ============================================================================
-#include "CLHEP/GenericFunctions/Sin.hh"
 #include "CLHEP/GenericFunctions/Cos.hh"
+#include "CLHEP/GenericFunctions/Sin.hh"
 // ============================================================================
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP { }
+namespace CLHEP
+{
+}
 using namespace CLHEP;
 
 // ============================================================================
@@ -33,21 +35,16 @@ using namespace CLHEP;
 int main()
 {
 
-  std::cout <<
-    " Test for numerical differentiation of Genfun::Cos(x) " << std::endl ;
+  std::cout << " Test for numerical differentiation of Genfun::Cos(x) " << std::endl;
 
-  const GaudiMath::IndIntegral& mysin =
-    GaudiMath::IndIntegral( Genfun::Cos() , 0 , 0.0 ) ;
+  const GaudiMath::IndIntegral& mysin = GaudiMath::IndIntegral( Genfun::Cos(), 0, 0.0 );
 
-  for( double x = -90 * Gaudi::Units::degree ;
-       x <= 180 * Gaudi::Units::degree ;
-       x += 10 * Gaudi::Units::degree ) {
-    double value = mysin ( x ) ;
-    double error = mysin.error() ;
-    printf( "x=%8.3f deg; I(Cos)=%+.19f; ActErr=%+.19f; EstErr=%+.19f;\n",
-	    x / Gaudi::Units::degree  , value , value-sin(x)  , error  );
+  for ( double x = -90 * Gaudi::Units::degree; x <= 180 * Gaudi::Units::degree; x += 10 * Gaudi::Units::degree ) {
+    double value = mysin( x );
+    double error = mysin.error();
+    printf( "x=%8.3f deg; I(Cos)=%+.19f; ActErr=%+.19f; EstErr=%+.19f;\n", x / Gaudi::Units::degree, value,
+            value - sin( x ), error );
   }
-
 }
 
 // ============================================================================

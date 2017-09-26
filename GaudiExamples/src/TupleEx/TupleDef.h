@@ -1,10 +1,10 @@
 // ============================================================================
-#ifndef TUPLEEX_TUPLEDEF_H 
+#ifndef TUPLEEX_TUPLEDEF_H
 #define TUPLEEX_TUPLEDEF_H 1
 // ============================================================================
 // Include files
 // ============================================================================
-// STD & STL 
+// STD & STL
 // ============================================================================
 #include <utility>
 // ============================================================================
@@ -15,82 +15,66 @@
 
 /** @class TupleDef TupleDef.h TupleEx/TupleDef.h
  *
- *  Simple example of partical specialization of 
- *  N-Tuple for different types, in particular for 
+ *  Simple example of partical specialization of
+ *  N-Tuple for different types, in particular for
  *
- *  std::pair<double,double> and 
- *  std::pair<std::pair<double,double>,double> and 
+ *  std::pair<double,double> and
+ *  std::pair<std::pair<double,double>,double> and
  *
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date   2005-11-29
  */
 
-/** @namespace TupleExample 
+/** @namespace TupleExample
  *  helper namespace for TupleEx example
  *
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date   2005-11-29
- */ 
+ */
 namespace TupleExample
 {
-  typedef std::pair<double,double> Dublet  ;
-  typedef std::pair<Dublet,double> Triplet ;
-  
-  /** helper function useful for the partial 
+  typedef std::pair<double, double> Dublet;
+  typedef std::pair<Dublet, double> Triplet;
+
+  /** helper function useful for the partial
    *  specialization of N-Tuple fills
-   *  @param t tuple 
-   *  @param n base column name 
-   *  @param p data dublet 
+   *  @param t tuple
+   *  @param n base column name
+   *  @param p data dublet
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2005-11-29
-   */ 
-  Tuples::Tuple& fillNTuple 
-  ( Tuples::Tuple&     t , 
-    const std::string& n ,
-    const Dublet&      p ) ;  
-  
-  /** helper function useful for the partial 
+   */
+  Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Dublet& p );
+
+  /** helper function useful for the partial
    *  specialization of N-Tuple fills
-   *  @param t tuple 
-   *  @param n base column name 
-   *  @param p data triplet 
+   *  @param t tuple
+   *  @param n base column name
+   *  @param p data triplet
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2005-11-29
-   */ 
-  Tuples::Tuple& fillNTuple 
-  ( Tuples::Tuple&     t , 
-    const std::string& n ,
-    const Triplet&     p ) ;  
-} // end of namespace TupleExample 
-
+   */
+  Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Triplet& p );
+} // end of namespace TupleExample
 
 // ============================================================================
-// define corresponding partial specializations: 
+// define corresponding partial specializations:
 // ============================================================================
-template <> 
-inline Tuples::Tuple& operator<< 
-  ( Tuples::Tuple&                                    tuple , 
-    const Tuples::TupleColumn<TupleExample::Dublet>&  item  ) 
+template <>
+inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColumn<TupleExample::Dublet>& item )
 {
-  return TupleExample::fillNTuple ( tuple         , 
-                                    item.name  () , 
-                                    item.value () ) ;
+  return TupleExample::fillNTuple( tuple, item.name(), item.value() );
 }
 // ============================================================================
-template <> 
-inline Tuples::Tuple& operator<< 
-  ( Tuples::Tuple&                                    tuple , 
-    const Tuples::TupleColumn<TupleExample::Triplet>& item  ) 
+template <>
+inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColumn<TupleExample::Triplet>& item )
 {
-  return TupleExample::fillNTuple ( tuple         , 
-                                    item.name  () , 
-                                    item.value () ) ;
+  return TupleExample::fillNTuple( tuple, item.name(), item.value() );
 }
 // ============================================================================
 
-
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // TUPLEEX_TUPLEDEF_H
 // ============================================================================

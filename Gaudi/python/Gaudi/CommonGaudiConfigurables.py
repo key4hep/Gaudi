@@ -17,13 +17,14 @@ packages = ['GaudiCoreSvc', 'GaudiCommonSvc', 'GaudiSvc', 'GaudiAlg',
 
 #--Loop open all listed packages and populate __all__ with the names and
 #  the local scope with the Configurable classes
-for package in packages :
+for package in packages:
     try:
-        mod = __import__( '%s.%sConf'%(package,package), globals(), locals(), ['%sConf'%package] )
-        for nam in dir(mod) :
+        mod = __import__('%s.%sConf' % (package, package),
+                         globals(), locals(), ['%sConf' % package])
+        for nam in dir(mod):
             cls = getattr(mod, nam)
-            if type(cls) is ConfigurableMeta and issubclass(cls, Configurable) :
-                globals()[nam]  =  cls
+            if type(cls) is ConfigurableMeta and issubclass(cls, Configurable):
+                globals()[nam] = cls
                 __all__.append(nam)
     except ImportError:
         # ignore the configurables from missing packages.
@@ -31,29 +32,29 @@ for package in packages :
 
 #--Fix some of the name idiosyncrasies in Gaudi
 aliases = {
-           'EventDataSvc':             'EvtDataSvc',
-           'DetectorDataSvc':          'DetDataSvc',
-           'HistogramDataSvc':         'HistogramSvc',
-           'HbookHistSvc':             'HbookCnv__PersSvc',
-           'RootHistSvc':              'RootHistCnv__PersSvc',
-           'EventPersistencySvc':      'EvtPersistencySvc',
-           'DetectorPersistencySvc':   'DetPersistencySvc',
-           'HistogramPersistencySvc':  'HistogramPersistencySvc',
-           'FileRecordPersistencySvc': 'PersistencySvc',
+    'EventDataSvc':             'EvtDataSvc',
+    'DetectorDataSvc':          'DetDataSvc',
+    'HistogramDataSvc':         'HistogramSvc',
+    'HbookHistSvc':             'HbookCnv__PersSvc',
+    'RootHistSvc':              'RootHistCnv__PersSvc',
+    'EventPersistencySvc':      'EvtPersistencySvc',
+    'DetectorPersistencySvc':   'DetPersistencySvc',
+    'HistogramPersistencySvc':  'HistogramPersistencySvc',
+    'FileRecordPersistencySvc': 'PersistencySvc',
 
-           'FileCatalog':              'Gaudi__MultiFileCatalog',
-           'IODataManager':            'Gaudi__IODataManager',
+    'FileCatalog':              'Gaudi__MultiFileCatalog',
+    'IODataManager':            'Gaudi__IODataManager',
 
-           'RootCnvSvc':               'Gaudi__RootCnvSvc',
-           'RootEvtSelector':          'Gaudi__RootEvtSelector',
-           }
+    'RootCnvSvc':               'Gaudi__RootCnvSvc',
+    'RootEvtSelector':          'Gaudi__RootEvtSelector',
+}
 
-_gbl = globals() # optimization
+_gbl = globals()  # optimization
 # This would be nicer with dict comprehension (http://www.python.org/dev/peps/pep-0274)
 # but it is available only in Python 2.7
 aliases = dict([(new, _gbl[old])
                 for new, old in aliases.items()
-                if old in _gbl]) # do the aliasing only if the original is available
+                if old in _gbl])  # do the aliasing only if the original is available
 # change the default name
 for new in aliases:
     aliases[new].DefaultedName = new

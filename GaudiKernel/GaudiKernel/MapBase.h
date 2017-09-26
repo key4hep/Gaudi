@@ -1,4 +1,4 @@
-#ifndef GAUDIKERNEL_MAPBASE_H 
+#ifndef GAUDIKERNEL_MAPBASE_H
 #define GAUDIKERNEL_MAPBASE_H 1
 // ============================================================================
 // Include files
@@ -10,15 +10,15 @@
 namespace Gaudi
 {
   // ==========================================================================
-  namespace Utils 
+  namespace Utils
   {
     // ========================================================================
     /** @class MapBase GaudiKernel/MapBase.h
      *  Helper base-class to allow the generic Python-decoration for
      *  all "map-like" classes in Gaudi.
      *
-     *  The corresponding Python class provide the useful iterators, 
-     *  look-up, etc. This base-class in python is decorated with 
+     *  The corresponding Python class provide the useful iterators,
+     *  look-up, etc. This base-class in python is decorated with
      *  the following methods
      *   - <c> __len__       </c>
      *   - <c> __iter__      </c>
@@ -35,25 +35,25 @@ namespace Gaudi
      *   - <c> get     </c>
      *   - <c> has_key </c>
      *
-     *  Thus it behaves practically identically 
+     *  Thus it behaves practically identically
      *  with builtin-type <c>dict</c>
      *
      *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
      *  @date 2010-02-20
      */
-    class GAUDI_API MapBase 
+    class GAUDI_API MapBase
     {
     public:
       // ======================================================================
       /// virtual destructor
-      virtual ~MapBase () ;
+      virtual ~MapBase();
       // ======================================================================
     protected:
       // ======================================================================
       /** throw std::out_of_range exception
-       *  @see std::out_of_range 
+       *  @see std::out_of_range
        */
-      void throw_out_of_range_exception() const ;
+      void throw_out_of_range_exception() const;
       // ======================================================================
     };
     // ========================================================================
@@ -61,7 +61,7 @@ namespace Gaudi
   // ==========================================================================
 }
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // GAUDIKERNEL_MAPBASE_H
 // ============================================================================

@@ -12,10 +12,10 @@
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 // ============================================================================
 
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
@@ -43,16 +43,13 @@ namespace Genfun
     {
     public:
       /// the type of numerical differentiation
-      enum Type
-        { Central  ,
-          Forward  ,
-          Backward } ;
+      enum Type { Central, Forward, Backward };
+
     public:
       /// From CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( NumericalDerivative )
 
     public:
-
       /** The standard constructor from
        *  AbsFunction and the index of the variable
        *
@@ -88,71 +85,62 @@ namespace Genfun
        *  @param function the function
        *  @param index    the variable index
        */
-      NumericalDerivative
-      ( const AbsFunction&   function          ,
-        const size_t         index             ,
-        const Type&          type    = Central ) ;
+      NumericalDerivative( const AbsFunction& function, const size_t index, const Type& type = Central );
 
       /// copy constructor
-      NumericalDerivative
-      ( const NumericalDerivative&   right    ) ;
+      NumericalDerivative( const NumericalDerivative& right );
 
       /// destructor
-      ~NumericalDerivative () override = default;
+      ~NumericalDerivative() override = default;
 
       /// dimensionality of the problem
-      unsigned int dimensionality() const override { return m_DIM ; }
+      unsigned int dimensionality() const override { return m_DIM; }
 
       /// Function value
-      double operator() ( double          argument ) const override ;
+      double operator()( double argument ) const override;
       /// Function value
-      double operator() ( const Argument& argument ) const override ;
+      double operator()( const Argument& argument ) const override;
 
       /// Does this function have an analytic derivative?
-      bool hasAnalyticDerivative() const override { return true ;}
+      bool hasAnalyticDerivative() const override { return true; }
 
       /// Derivatives
-      Derivative partial ( unsigned int index ) const override;
+      Derivative partial( unsigned int index ) const override;
 
     public:
-
       /// access to the function itself
-      const AbsFunction&  function () const { return *m_function ; }
+      const AbsFunction& function() const { return *m_function; }
       /// index
-      size_t              index    () const { return  m_index    ; }
+      size_t index() const { return m_index; }
       /// type
-      const Type&         type     () const { return  m_type     ; }
+      const Type& type() const { return m_type; }
 
       /// change the type of the adaptive differentiation
-      const Type&         setType  ( const Type& value );
+      const Type& setType( const Type& value );
 
       /// the result of the last call
-      double              result   () const { return m_result    ; }
+      double result() const { return m_result; }
       /// the absolute error estimate for the last call
-      double              error    () const { return m_error     ; }
+      double error() const { return m_error; }
 
     protected:
-
-      StatusCode Exception
-      ( const std::string& message                       ,
-        const StatusCode&  sc      = StatusCode::FAILURE ) const ;
+      StatusCode Exception( const std::string& message, const StatusCode& sc = StatusCode::FAILURE ) const;
 
     private:
-
       // default constructor  is disabled
-      NumericalDerivative ();
+      NumericalDerivative();
       // assignement operator is disabled
-      NumericalDerivative& operator=( const NumericalDerivative& ) ;
+      NumericalDerivative& operator=( const NumericalDerivative& );
 
     private:
-      std::unique_ptr<const AbsFunction> m_function  ;
-      size_t             m_index     ;
-      size_t             m_DIM       ;
-      Type               m_type      ;
+      std::unique_ptr<const AbsFunction> m_function;
+      size_t m_index;
+      size_t m_DIM;
+      Type m_type;
       //
-      mutable Argument   m_argument  ;
-      mutable double     m_result    ;
-      mutable double     m_error     ;
+      mutable Argument m_argument;
+      mutable double m_result;
+      mutable double m_error;
     };
     /// From CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( NumericalDerivative )
@@ -160,9 +148,9 @@ namespace Genfun
   } // end of namespace GaudiMathImplementation
 } // end of namespace GenFun
 
-#if defined(__clang__) || defined(__CLING__)
+#if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic pop
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif defined( __GNUC__ ) && __GNUC__ >= 5
 #pragma GCC diagnostic pop
 #endif
 

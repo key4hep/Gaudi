@@ -2,12 +2,13 @@
 
 #include "MyTool.h"
 
-
-namespace GaudiTesting {
+namespace GaudiTesting
+{
 
   /** Special service that issue a failure in one of the transitions (for testing).
    */
-  class SvcWithTool: public Service {
+  class SvcWithTool : public Service
+  {
   public:
     using Service::Service;
 
@@ -15,5 +16,5 @@ namespace GaudiTesting {
     PublicToolHandle<IMyTool> m_tool{this, "MyTool", "MyTool"};
   };
 
-  DECLARE_COMPONENT(SvcWithTool)
+  DECLARE_COMPONENT( SvcWithTool )
 }

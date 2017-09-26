@@ -19,6 +19,7 @@ logging.addLevelName(logging.VERBOSE, "VERBOSE")
 logging.verbose = lambda msg, *args, **kwargs: \
     apply(logging.log, (logging.VERBOSE, msg) + args, kwargs)
 
+
 def _inheritsfrom(derived, basenames):
     """
     Check if any of the class names in 'basenames' is anywhere in the base
@@ -36,6 +37,7 @@ def _inheritsfrom(derived, basenames):
             if _inheritsfrom(b, basenames):
                 return True
     return False
+
 
 def loadConfigurableDb():
     '''
@@ -57,18 +59,19 @@ def loadConfigurableDb():
                                     if f.endswith('.confdb')]]
     #  - load the confdb files
     for confDb in confDbFiles:
-        log.debug( "\t-loading [%s]..." % confDb )
+        log.debug("\t-loading [%s]..." % confDb)
         try:
-            cfgDb._loadModule( confDb )
+            cfgDb._loadModule(confDb)
         except Exception, err:
             # It may happen that the file is found but not completely
             # written, usually during parallel builds, but we do not care.
-            log.warning( "Could not load file [%s] !", confDb )
-            log.warning( "Reason: %s", err )
+            log.warning("Could not load file [%s] !", confDb)
+            log.warning("Reason: %s", err)
     # top up with the regular merged confDb (for the used projects)
     GaudiKernel.ConfigurableDb.loadConfigurableDb()
 
-def getConfigurableUsers(modulename, root, mayNotExist = False):
+
+def getConfigurableUsers(modulename, root, mayNotExist=False):
     """
     Find in the module 'modulename' all the classes that derive from ConfigurableUser.
     Return the list of the names.
@@ -111,25 +114,27 @@ def getConfigurableUsers(modulename, root, mayNotExist = False):
     if "__all__" in dir(mod) and mod.__all__:
         all = mod.__all__
     else:
-        all = [ n for n in dir(mod) if not n.startswith("_")]
+        all = [n for n in dir(mod) if not n.startswith("_")]
     result = []
     for name in all:
         cfg = cfgDb.get(name)
         if cfg and cfg["module"] != modulename:
             # This name comes from another module
-            logging.verbose("Object %r already found in module %r", name, cfg["module"])
+            logging.verbose(
+                "Object %r already found in module %r", name, cfg["module"])
             continue
         t = getattr(mod, name)
-        if isinstance(t, type) and  _inheritsfrom(t, ('ConfigurableUser',
-                                                      'SuperAlgorithm')):
+        if isinstance(t, type) and _inheritsfrom(t, ('ConfigurableUser',
+                                                     'SuperAlgorithm')):
             result.append(name)
     logging.verbose("Found %r", result)
     return result
 
+
 def main():
     from optparse import OptionParser
-    parser = OptionParser(prog = os.path.basename(sys.argv[0]),
-                          usage = "%prog [options] <PackageName> [<Module1> ...]")
+    parser = OptionParser(prog=os.path.basename(sys.argv[0]),
+                          usage="%prog [options] <PackageName> [<Module1> ...]")
     parser.add_option("-o", "--output", action="store", type="string",
                       help="output file for confDb data [default = '../genConf/<PackageName>_user_confDb.py'].")
     parser.add_option("-r", "--root", action="store", type="string",
@@ -138,7 +143,7 @@ def main():
                       help="print some debugging information")
     parser.add_option("--debug", action="store_true",
                       help="print more debugging information")
-    parser.set_defaults(root = os.path.join("..","python"))
+    parser.set_defaults(root=os.path.join("..", "python"))
 
     opts, args = parser.parse_args()
 
@@ -147,10 +152,11 @@ def main():
     elif opts.verbose:
         log_level = logging.VERBOSE
     else:
-        log_level = logging.INFO if os.environ.get('VERBOSE') else logging.WARNING
-    logging.basicConfig(format = "%(levelname)s: %(message)s",
-                        stream = sys.stdout,
-                        level = log_level)
+        log_level = logging.INFO if os.environ.get(
+            'VERBOSE') else logging.WARNING
+    logging.basicConfig(format="%(levelname)s: %(message)s",
+                        stream=sys.stdout,
+                        level=log_level)
 
     if len(args) < 1:
         parser.error("PackageName is required")
@@ -187,36 +193,40 @@ def main():
         # configurables
         sys.path.insert(0, genConfDir)
         sys.path.insert(0, os.path.join("..", "python"))
-        localConfDb = os.path.join(genConfDir, package_name, package_name + '.confdb')
+        localConfDb = os.path.join(
+            genConfDir, package_name, package_name + '.confdb')
         if os.path.exists(localConfDb):
             cfgDb._loadModule(localConfDb)
             # Extend the search path of the package module to find the configurables
             package_module = __import__(package_name)
-            package_module.__path__.insert(0, os.path.join(genConfDir, package_name))
+            package_module.__path__.insert(
+                0, os.path.join(genConfDir, package_name))
     except:
-        pass # ignore failures (not important)
+        pass  # ignore failures (not important)
 
     # Collecting ConfigurableUser specializations
     cus = {}
     for mod in args:
         lst = None
         try:
-            lst = getConfigurableUsers(mod, root = opts.root, mayNotExist = usingConvention)
+            lst = getConfigurableUsers(
+                mod, root=opts.root, mayNotExist=usingConvention)
         except ImportError:
             import traceback
             logging.error("Cannot import module %r:\n%s", mod,
-                          traceback.format_exc().rstrip()) # I remove the trailing '\n'
+                          traceback.format_exc().rstrip())  # I remove the trailing '\n'
             return 2
         if lst:
             cus[mod] = lst
             # Add the configurables to the database as fake entries to avoid duplicates
             for m in lst:
-                cfgDb.add(configurable = m,
-                          package = 'None',
-                          module  = 'None',
-                          lib     = 'None')
+                cfgDb.add(configurable=m,
+                          package='None',
+                          module='None',
+                          lib='None')
         elif not usingConvention:
-            logging.warning("Specified module %r does not contain ConfigurableUser specializations", mod)
+            logging.warning(
+                "Specified module %r does not contain ConfigurableUser specializations", mod)
 
     if cus:
         logging.info("ConfigurableUser found:\n%s", pformat(cus))
@@ -256,6 +266,7 @@ def main():
     logging.verbose("Writing confDb data to %r", outputfile)
     open(outputfile, "w").write(output)
     return 0
+
 
 if __name__ == '__main__':
     retcode = main()

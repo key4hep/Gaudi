@@ -51,6 +51,7 @@ public:
     inline Arg& argument() { return m_argum; }
     inline const Equations* equations() const { return m_eqs; }
     inline const Jacobi& jacobi() const { return m_jac; }
+
   private:
     // default constructor is disabled
     EqSolverMisc() = delete;

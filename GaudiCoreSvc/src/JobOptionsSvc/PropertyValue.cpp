@@ -12,95 +12,87 @@
 // ============================================================================
 namespace gp = Gaudi::Parsers;
 // ============================================================================
-bool gp::PropertyValue::IsSimple() const {
-  return boost::get<std::string>(&value_) != NULL;
-}
+bool gp::PropertyValue::IsSimple() const { return boost::get<std::string>( &value_ ) != NULL; }
 // ============================================================================
-bool gp::PropertyValue::IsVector() const {
-  return boost::get<std::vector<std::string> >(&value_) != NULL;
-}
+bool gp::PropertyValue::IsVector() const { return boost::get<std::vector<std::string>>( &value_ ) != NULL; }
 // ============================================================================
-bool gp::PropertyValue::IsMap() const {
-  return boost::get<std::map<std::string, std::string> >(&value_) != NULL;
-}
+bool gp::PropertyValue::IsMap() const { return boost::get<std::map<std::string, std::string>>( &value_ ) != NULL; }
 // ============================================================================
-gp::PropertyValue&
-gp::PropertyValue::operator += (const PropertyValue& right) {
+gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right )
+{
 
-  if (IsSimple() || IsReference()) {
+  if ( IsSimple() || IsReference() ) {
     throw PropertyValueException::WrongLValue();
   }
 
-  if (IsVector()) {
-    if (right.IsSimple()) {
-      boost::get<VectorOfStrings>(value_).push_back(
-          boost::get<std::string>(right.value_));
+  if ( IsVector() ) {
+    if ( right.IsSimple() ) {
+      boost::get<VectorOfStrings>( value_ ).push_back( boost::get<std::string>( right.value_ ) );
       return *this;
     }
-    if (right.IsVector()){
-      VectorOfStrings& vec = boost::get<VectorOfStrings>(value_);
-      for (const auto& item : boost::get<VectorOfStrings>(right.value_)) {
-        vec.push_back(item);
+    if ( right.IsVector() ) {
+      VectorOfStrings& vec = boost::get<VectorOfStrings>( value_ );
+      for ( const auto& item : boost::get<VectorOfStrings>( right.value_ ) ) {
+        vec.push_back( item );
       }
       return *this;
     }
     throw PropertyValueException::WrongRValue();
   }
 
-  if (IsMap()) {
-    if (!right.IsMap()) {
+  if ( IsMap() ) {
+    if ( !right.IsMap() ) {
       throw PropertyValueException::WrongRValue();
     }
-    MapOfStrings& map  = boost::get<MapOfStrings>(value_);
-    const MapOfStrings& rmap = boost::get<MapOfStrings>(right.value_);
-    for (const auto& item : rmap) {
-      map.insert(item);
+    MapOfStrings& map        = boost::get<MapOfStrings>( value_ );
+    const MapOfStrings& rmap = boost::get<MapOfStrings>( right.value_ );
+    for ( const auto& item : rmap ) {
+      map.insert( item );
     }
     return *this;
   }
   return *this;
 }
 
-const gp::PropertyValue
-gp::PropertyValue::operator+(const PropertyValue& right) {
-  return PropertyValue(*this) += right;
-
+const gp::PropertyValue gp::PropertyValue::operator+( const PropertyValue& right )
+{
+  return PropertyValue( *this ) += right;
 }
 
-gp::PropertyValue&
-gp::PropertyValue::operator-=(const PropertyValue& right) {
-  if (IsSimple() || IsReference()) {
+gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right )
+{
+  if ( IsSimple() || IsReference() ) {
     throw PropertyValueException::WrongLValue();
   }
 
-  if (IsVector()) {
+  if ( IsVector() ) {
     VectorOfStrings& vec = Vector();
-    if (right.IsSimple()) {
-      vec.erase(std::find(vec.begin(), vec.end(), right.String()));
+    if ( right.IsSimple() ) {
+      vec.erase( std::find( vec.begin(), vec.end(), right.String() ) );
       return *this;
     }
 
-    if (right.IsVector()) {
+    if ( right.IsVector() ) {
       const VectorOfStrings& rvec = right.Vector();
-      for (const auto& item : rvec) {
-        vec.erase(std::find(vec.begin(), vec.end(), item));
+      for ( const auto& item : rvec ) {
+        vec.erase( std::find( vec.begin(), vec.end(), item ) );
       }
       return *this;
     }
     throw PropertyValueException::WrongRValue();
   }
 
-  if (IsMap()) {
-    MapOfStrings& map  = Map();
-    if (right.IsSimple()) {
-      map.erase(right.String());
+  if ( IsMap() ) {
+    MapOfStrings& map = Map();
+    if ( right.IsSimple() ) {
+      map.erase( right.String() );
       return *this;
     }
 
-    if (right.IsVector()) {
+    if ( right.IsVector() ) {
       const VectorOfStrings& rvec = right.Vector();
-      for (const auto& item : rvec) {
-        map.erase(item);
+      for ( const auto& item : rvec ) {
+        map.erase( item );
       }
       return *this;
     }
@@ -109,45 +101,43 @@ gp::PropertyValue::operator-=(const PropertyValue& right) {
   throw PropertyValueException::WrongLValue();
 }
 
-const gp::PropertyValue
-gp::PropertyValue::operator-(const PropertyValue& right) {
-  return PropertyValue(*this) -= right;
+const gp::PropertyValue gp::PropertyValue::operator-( const PropertyValue& right )
+{
+  return PropertyValue( *this ) -= right;
 }
 // ============================================================================
-std::string gp::PropertyValue::ToString() const {
-  if  (IsReference()) {
-    const std::vector<std::string>*
-       value = boost::get<std::vector<std::string> >(&value_);
-    assert(value != NULL);
-    if (value->at(0) != "") {
-      return "@"+value->at(0)+"."+value->at(1);
+std::string gp::PropertyValue::ToString() const
+{
+  if ( IsReference() ) {
+    const std::vector<std::string>* value = boost::get<std::vector<std::string>>( &value_ );
+    assert( value != NULL );
+    if ( value->at( 0 ) != "" ) {
+      return "@" + value->at( 0 ) + "." + value->at( 1 );
     } else {
-      return "@"+value->at(0);
+      return "@" + value->at( 0 );
     }
   }
-  if (const std::string* value = boost::get<std::string>(&value_)) {
+  if ( const std::string* value = boost::get<std::string>( &value_ ) ) {
     return *value;
-  } else if (const std::vector<std::string>*
-      value = boost::get<std::vector<std::string> >(&value_)) {
+  } else if ( const std::vector<std::string>* value = boost::get<std::vector<std::string>>( &value_ ) ) {
     std::string result = "[";
-    std::string delim = "";
-    for (const auto& in : *value) {
+    std::string delim  = "";
+    for ( const auto& in : *value ) {
       result += delim + in;
       delim = ", ";
     }
-    return result+"]";
-  } else if (const std::map<std::string, std::string>*
-      value = boost::get<std::map<std::string, std::string> >(&value_)) {
+    return result + "]";
+  } else if ( const std::map<std::string, std::string>* value =
+                  boost::get<std::map<std::string, std::string>>( &value_ ) ) {
     std::string result = "{";
-    std::string delim = "";
-    for (const auto& in : *value) {
+    std::string delim  = "";
+    for ( const auto& in : *value ) {
       result += delim + in.first + ":" + in.second;
       delim = ", ";
     }
-    return result+"}";
+    return result + "}";
   }
-  assert(false);
+  assert( false );
   // @todo Check the validity of this logic
   return std::string(); // avoid compilation warning
 }
-

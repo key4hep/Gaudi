@@ -13,19 +13,19 @@ class IEventProcessor;
  *  @author Markus Frank
  *   @version 2
  */
-class GAUDI_API IEventProcessor: virtual public IInterface {
+class GAUDI_API IEventProcessor : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IEventProcessor,3,0);
+  DeclareInterfaceID( IEventProcessor, 3, 0 );
   /// Process single event
-  virtual StatusCode executeEvent(void* par=0) = 0;
+  virtual StatusCode executeEvent( void* par = 0 ) = 0;
   /// Process the maxevt events as a Run (beginRun() and endRun() called)
-  virtual StatusCode executeRun(int maxevt) = 0;
+  virtual StatusCode executeRun( int maxevt ) = 0;
   /// Process the next maxevt events
-  virtual StatusCode nextEvent(int maxevt) = 0;
+  virtual StatusCode nextEvent( int maxevt ) = 0;
   /// Schedule a stop of the current event processing
   virtual StatusCode stopRun() = 0;
 };
 
 #endif // GAUDIKERNEL_IEVENTPROCESSOR_H
-

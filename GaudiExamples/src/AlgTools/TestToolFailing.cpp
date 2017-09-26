@@ -10,34 +10,30 @@
 
 #include "ITestTool.h"
 
-
-class TestToolFailing: public extends<GaudiTool,
-                                      ITestTool> {
+class TestToolFailing : public extends<GaudiTool, ITestTool>
+{
 
 public:
-  TestToolFailing(const std::string& type,
-                  const std::string& name,
-                  const IInterface* parent);
+  TestToolFailing( const std::string& type, const std::string& name, const IInterface* parent );
 
   /// Initialize method
   StatusCode initialize() override;
 
-  ~TestToolFailing( ) override {} ///< Destructor
-
+  ~TestToolFailing() override {} ///< Destructor
 };
 
 // Declaration of the Tool Factory
-DECLARE_COMPONENT(TestToolFailing)
+DECLARE_COMPONENT( TestToolFailing )
 
-TestToolFailing::TestToolFailing(const std::string& type,
-                                 const std::string& name,
-                                 const IInterface* parent):
-  base_class(type, name, parent) {
+TestToolFailing::TestToolFailing( const std::string& type, const std::string& name, const IInterface* parent )
+    : base_class( type, name, parent )
+{
 }
 
-StatusCode TestToolFailing::initialize(){
+StatusCode TestToolFailing::initialize()
+{
   debug() << "Initialize" << endmsg;
   if ( !GaudiTool::initialize() ) return StatusCode::FAILURE;
 
-  return Error("Initialization failure");
+  return Error( "Initialization failure" );
 }

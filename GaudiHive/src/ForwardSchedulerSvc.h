@@ -115,24 +115,24 @@ private:
 
   Gaudi::Property<int> m_maxEventsInFlight{this, "MaxEventsInFlight", 0,
                                            "Maximum number of event processed simultaneously"};
-  Gaudi::Property<int> m_threadPoolSize{this, "ThreadPoolSize", -1,
-    "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  Gaudi::Property<int> m_threadPoolSize{
+      this, "ThreadPoolSize", -1,
+      "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
   Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
   Gaudi::Property<unsigned int> m_maxAlgosInFlight{this, "MaxAlgosInFlight", 1,
                                                    "[[deprecated]] Taken from the whiteboard"};
   Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
       this, "AlgosDependencies", {}, "[[deprecated]]"};
-  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, 
-      "Runtime check of Algorithm Data Dependencies"};
+  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};
   Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
-      "Attribute unmet input dependencies to this DataLoader Algorithm"};
+                                               "Attribute unmet input dependencies to this DataLoader Algorithm"};
 
   Gaudi::Property<bool> m_showDataDeps{this, "ShowDataDependencies", true,
-      "Show the INPUT and OUTPUT data dependencies of Algorithms"};
+                                       "Show the INPUT and OUTPUT data dependencies of Algorithms"};
   Gaudi::Property<bool> m_showDataFlow{this, "ShowDataFlow", false,
-      "Show the configuration of DataFlow between Algorithms"};
-    Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
-      "Show the configuration of all Algorithms and Sequences"};
+                                       "Show the configuration of DataFlow between Algorithms"};
+  Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
+                                          "Show the configuration of all Algorithms and Sequences"};
 
   // Utils and shortcuts ----------------------------------------------------
 
@@ -216,16 +216,19 @@ private:
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
   // helper task to enqueue the scheduler's actions (closures)
-  struct enqueueSchedulerActionTask: public tbb::task {
+  struct enqueueSchedulerActionTask : public tbb::task {
 
     std::function<StatusCode()> m_closure;
     SmartIF<ForwardSchedulerSvc> m_scheduler;
 
-    enqueueSchedulerActionTask(ForwardSchedulerSvc* scheduler, std::function<StatusCode()> _closure) :
-      m_closure(_closure), m_scheduler(scheduler) {}
+    enqueueSchedulerActionTask( ForwardSchedulerSvc* scheduler, std::function<StatusCode()> _closure )
+        : m_closure( _closure ), m_scheduler( scheduler )
+    {
+    }
 
-    tbb::task* execute() override {
-      m_scheduler->m_actionsQueue.push(m_closure);
+    tbb::task* execute() override
+    {
+      m_scheduler->m_actionsQueue.push( m_closure );
       return nullptr;
     }
   };

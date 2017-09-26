@@ -1,6 +1,6 @@
 // Framework include files
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/MsgStream.h"
 
 // Accessing data:
 #include "GaudiKernel/PhysicalConstants.h"
@@ -9,38 +9,37 @@
 #include "MyAudTool.h"
 
 // Declaration of the AlgTool Factory
-DECLARE_COMPONENT(MyAudTool)
+DECLARE_COMPONENT( MyAudTool )
 
 //------------------------------------------------------------------------------
-MyAudTool::MyAudTool( const std::string& type,
-                const std::string& name,
-                const IInterface* parent )
-//------------------------------------------------------------------------------
-: base_class( type, name, parent ) {
+MyAudTool::MyAudTool( const std::string& type, const std::string& name, const IInterface* parent )
+    //------------------------------------------------------------------------------
+    : base_class( type, name, parent )
+{
 }
 
 //------------------------------------------------------------------------------
-const std::string&  MyAudTool::message() const
+const std::string& MyAudTool::message() const
 //------------------------------------------------------------------------------
 {
-  static std::string msg("It works!!!");
+  static std::string msg( "It works!!!" );
   return msg;
 }
 
 //------------------------------------------------------------------------------
-void  MyAudTool::doErr()
+void MyAudTool::doErr()
 //------------------------------------------------------------------------------
 {
   error() << "doErr() has been called" << endmsg;
 }
-void  MyAudTool::doFatal()
+void MyAudTool::doFatal()
 //------------------------------------------------------------------------------
 {
   fatal() << "doFatal() has been called" << endmsg;
 }
 
 //------------------------------------------------------------------------------
-StatusCode  MyAudTool::initialize()
+StatusCode MyAudTool::initialize()
 //------------------------------------------------------------------------------
 {
   info() << "intialize() has been called" << endmsg;
@@ -48,7 +47,7 @@ StatusCode  MyAudTool::initialize()
   return StatusCode::SUCCESS;
 }
 //------------------------------------------------------------------------------
-StatusCode  MyAudTool::finalize()
+StatusCode MyAudTool::finalize()
 //------------------------------------------------------------------------------
 {
   info() << "finalize() has been called" << endmsg;
@@ -56,10 +55,8 @@ StatusCode  MyAudTool::finalize()
 }
 
 //------------------------------------------------------------------------------
-MyAudTool::~MyAudTool( )
+MyAudTool::~MyAudTool()
 //------------------------------------------------------------------------------
 {
   info() << "destructor has been called" << endmsg;
 }
-
-

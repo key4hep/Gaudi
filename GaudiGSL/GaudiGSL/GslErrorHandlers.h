@@ -29,11 +29,7 @@ namespace GslErrorHandlers
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   29/04/2002
    */
-  GAUDI_API void ignoreTheError
-  ( const char* reason ,
-    const char* file   ,
-    int         line   ,
-    int         code   );
+  GAUDI_API void ignoreTheError( const char* reason, const char* file, int line, int code );
 
   /** The simplest Gsl Error handler,
    *  It delegates the actual error handling to GSL Service
@@ -48,11 +44,7 @@ namespace GslErrorHandlers
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   29/04/2002
    */
-  GAUDI_API void handleTheError
-  ( const char* reason ,
-    const char* file   ,
-    int         line   ,
-    int         code   );
+  GAUDI_API void handleTheError( const char* reason, const char* file, int line, int code );
 
   /** The simple Gsl Error handler,
    *  it throwns the Gaudi Exception
@@ -68,12 +60,7 @@ namespace GslErrorHandlers
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   29/04/2002
    */
-  GAUDI_API void throwException
-  ( const char* reason ,
-    const char* file   ,
-    int         line   ,
-    int         code   );
-
+  GAUDI_API void throwException( const char* reason, const char* file, int line, int code );
 }
 
 // ============================================================================

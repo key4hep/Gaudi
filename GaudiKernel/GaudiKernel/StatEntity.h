@@ -1,13 +1,13 @@
-#ifndef   GAUDIKERNEL_STATENTITY_H
-#define   GAUDIKERNEL_STATENTITY_H 1
+#ifndef GAUDIKERNEL_STATENTITY_H
+#define GAUDIKERNEL_STATENTITY_H 1
 // ============================================================================
 // Include files
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <string>
 #include <iostream>
 #include <mutex>
+#include <string>
 // ============================================================================
 // Gaudi
 // ============================================================================
@@ -67,7 +67,7 @@ class GAUDI_API StatEntity final
 public:
   // ==========================================================================
   /// the default constructor
-  StatEntity  () = default;
+  StatEntity() = default;
   /* The full constructor from all important values:
    * @attention it need to be coherent with
    *            the actual structure of the class
@@ -79,34 +79,31 @@ public:
    *  @param minFlag the minimum value for flag
    *  @param maxFlag the maximum value for flag
    */
-  StatEntity ( const unsigned long entries ,
-               const double        flag    ,
-               const double        flag2   ,
-               const double        minFlag ,
-               const double        maxFlag ) ;
+  StatEntity( const unsigned long entries, const double flag, const double flag2, const double minFlag,
+              const double maxFlag );
   /// copy constructor
-  StatEntity ( const StatEntity& );
+  StatEntity( const StatEntity& );
   /// assignment operator
-  StatEntity& operator= ( const StatEntity& );
+  StatEntity& operator=( const StatEntity& );
   // ==========================================================================
 public: // the basic quantities
   // ==========================================================================
   /// getters -- no synchronization!
-  const unsigned long& nEntries () const { return m_se.nEntries         ; }
+  const unsigned long& nEntries() const { return m_se.nEntries; }
   /// accumulated value
-  const double&        sum      () const { return m_se.accumulatedFlag  ; }
+  const double& sum() const { return m_se.accumulatedFlag; }
   /// accumulated value**2
-  const double&        sum2     () const { return m_se.accumulatedFlag2 ; }
+  const double& sum2() const { return m_se.accumulatedFlag2; }
   /// mean value of counter
-  double               mean     () const { return m_se.mean(); }
+  double mean() const { return m_se.mean(); }
   /// r.m.s of value
-  double               rms      () const { return m_se.rms(); }
+  double rms() const { return m_se.rms(); }
   /// error in mean value of counter
-  double               meanErr  () const { return m_se.meanErr(); }
+  double meanErr() const { return m_se.meanErr(); }
   /// minimal value
-  const double&        min      () const { return m_se.minimalFlag ; }
+  const double& min() const { return m_se.minimalFlag; }
   /// maximal value
-  const double&        max      () const { return m_se.maximalFlag ; }
+  const double& max() const { return m_se.maximalFlag; }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -142,7 +139,7 @@ public:
    *  @see StatEntity::eff
    *  @see StatEntity::efficiencyErr
    */
-  double efficiency () const { return m_se.efficiency(); }
+  double efficiency() const { return m_se.efficiency(); }
   /** Interpret the counter as some measure of efficiency and evaluate the
    *  uncertainty of this efficiency using <b>binomial</b> estimate.
    *  The efficiency is calculated as the ratio of the weight
@@ -179,14 +176,15 @@ public:
    *  @see StatEntity::effErr
    *  @see StatEntity::flagMeanErr
    */
-  double efficiencyErr () const { return m_se.efficiencyErr(); }
+  double efficiencyErr() const { return m_se.efficiencyErr(); }
   /// shortcut, @see StatEntity::efficiency
-  double eff           () const { return efficiency    () ; }
+  double eff() const { return efficiency(); }
   /// shortcut, @see StatEntity::efficiencyErr
-  double effErr        () const { return efficiencyErr () ; }
+  double effErr() const { return efficiencyErr(); }
   // ==========================================================================
-public: // operators
+  // operators
   // ==========================================================================
+public:
   /** General increment operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
    *
@@ -206,10 +204,10 @@ public: // operators
    *
    *  @param f counter increment
    */
-  StatEntity& operator+= ( const double f )
+  StatEntity& operator+=( const double f )
   {
-    addFlag ( f ) ;
-    return *this ;
+    addFlag( f );
+    return *this;
   }
   /**  Pre-increment operator for the flag
    *   Could be used for easy manipulation with StatEntity object:
@@ -228,7 +226,7 @@ public: // operators
    *
    *  @endcode
    */
-  StatEntity& operator++ ()    { return   (*this)+= 1  ; }
+  StatEntity& operator++() { return ( *this ) += 1; }
   /** Post-increment operator for the flag.
    *  Actually it is the same as pre-increment.
    *  Could be used for easy manipulation with StatEntity object:
@@ -247,7 +245,7 @@ public: // operators
    *
    *  @endcode
    */
-  StatEntity& operator++ (int) { return ++(*this)      ; }
+  StatEntity& operator++( int ) { return ++( *this ); }
   /** General decrement operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
    *
@@ -267,10 +265,10 @@ public: // operators
    *
    *  @param f counter increment
    */
-  StatEntity& operator-= ( const double   f )
+  StatEntity& operator-=( const double f )
   {
-    addFlag ( -f ) ;
-    return *this ;
+    addFlag( -f );
+    return *this;
   }
   /** Pre-decrement operator for the flag
    *   Could be used for easy manipulation with StatEntity object:
@@ -289,7 +287,7 @@ public: // operators
    *
    *  @endcode
    */
-  StatEntity& operator-- () { return (*this)-=1  ; }
+  StatEntity& operator--() { return ( *this ) -= 1; }
   /** Post-decrement operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
    *
@@ -307,7 +305,7 @@ public: // operators
    *
    *  @endcode
    */
-  StatEntity& operator-- (int) { return --(*this) ; }
+  StatEntity& operator--( int ) { return --( *this ); }
   /** Assignment from the flag
    *  The action: reset and the general increment
    *  Such case could be useful for statistical monitoring
@@ -325,12 +323,12 @@ public: // operators
    *  @param f new value of the counter
    *  @return self-reference
    */
-  StatEntity& operator= ( const double   f )
+  StatEntity& operator=( const double f )
   {
     // reset the statistics
-    reset() ;            ///< reset the statistics
+    reset(); ///< reset the statistics
     // use the regular increment
-    return ((*this)+=f); ///< use the regular increment
+    return ( ( *this ) += f ); ///< use the regular increment
   }
   /** increment with other counter (useful for Monitoring/Adder )
    *
@@ -347,7 +345,7 @@ public: // operators
    *  @param other counter to be added
    *  @return self-reference
    */
-  StatEntity& operator+= ( const StatEntity& other ) ;
+  StatEntity& operator+=( const StatEntity& other );
   // ==========================================================================
 public:
   // ==========================================================================
@@ -357,62 +355,62 @@ public:
    *  @param Flag value to be added
    *  @return number of entries
    */
-  unsigned long add ( const double Flag ) ;
+  unsigned long add( const double Flag );
   /// reset the counters
-  void reset () ;
+  void reset();
   /// DR specify number of entry before reset
-  void setnEntriesBeforeReset ( unsigned long nEntriesBeforeReset );
+  void setnEntriesBeforeReset( unsigned long nEntriesBeforeReset );
   /// representation as string
   std::string toString() const;
   /** printout  to std::ostream
    *  @param s the reference to the output stream
    */
-  std::ostream& print      ( std::ostream& o = std::cout ) const ;
+  std::ostream& print( std::ostream& o = std::cout ) const;
   /** printout  to std::ostream
    *  @param s the reference to the output stream
    */
-  std::ostream& fillStream ( std::ostream& o ) const { return print ( o ) ; }
+  std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   // ==========================================================================
 public: // aliases (a'la ROOT)
   // ==========================================================================
   /// get sum
-  inline double Sum     () const { return sum     () ; } // get sum
+  inline double Sum() const { return sum(); } // get sum
   /// get mean
-  inline double Mean    () const { return mean    () ; } // get mean
+  inline double Mean() const { return mean(); } // get mean
   /// get error in mean
-  inline double MeanErr () const { return meanErr () ; } // get error in mean
+  inline double MeanErr() const { return meanErr(); } // get error in mean
   /// get rms
-  inline double Rms     () const { return rms     () ; } // get rms
+  inline double Rms() const { return rms(); } // get rms
   /// get rms
-  inline double RMS     () const { return rms     () ; } // get rms
+  inline double RMS() const { return rms(); } // get rms
   /// get efficiency
-  inline double Eff     () const { return eff     () ; } // get efficiency
+  inline double Eff() const { return eff(); } // get efficiency
   /// get minimal value
-  inline double Min     () const { return min     () ; } // get minimal value
+  inline double Min() const { return min(); } // get minimal value
   /// get maximal value
-  inline double Max     () const { return max     () ; } // get maximal value
+  inline double Max() const { return max(); } // get maximal value
   // ==========================================================================
 public: // some legacy methods, to be removed ...
   // ==========================================================================
   /// accumulated "flag"
-  inline double   flag               () const { return sum     () ; }
+  inline double flag() const { return sum(); }
   /// accumulated "flag squared"
-  inline double   flag2              () const { return sum2    () ; }
+  inline double flag2() const { return sum2(); }
   /// mean value of flag
-  inline double   flagMean           () const { return mean    () ; }
+  inline double flagMean() const { return mean(); }
   /// r.m.s of flag
-  inline double   flagRMS            () const { return rms     () ; }
+  inline double flagRMS() const { return rms(); }
   /// error in mean value of flag
-  inline double   flagMeanErr        () const { return meanErr () ; }
+  inline double flagMeanErr() const { return meanErr(); }
   /// minimal flag
-  inline double   flagMin            () const { return min     () ; }
+  inline double flagMin() const { return min(); }
   /// maximal flag
-  inline double   flagMax            () const { return max     () ; }
+  inline double flagMax() const { return max(); }
   /** add a flag
    *  @param Flag value to be added
    *  @return number of entries
    */
-  inline unsigned long addFlag ( const double Flag ) { return add ( Flag ) ; }
+  inline unsigned long addFlag( const double Flag ) { return add( Flag ); }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -422,67 +420,67 @@ public:
    *  It is useful for DIM publishing
    *  @see StatEntity::size
    */
-  static const std::string& format () ;
+  static const std::string& format();
   /** the actual size of published data
    *  @attention: it needs to be coherent with the actual
    *              class structure!
    *  It is useful for DIM publishing
    *  @see StatEntity::format
    */
-  static int                size  () ;
+  static int size();
   // ==========================================================================
   // ============================================================================
   /// external operator for addition of StatEntity and a number
-  GAUDI_API friend StatEntity operator+( const StatEntity& entity , const double      value  ) ;
+  GAUDI_API friend StatEntity operator+( const StatEntity& entity, const double value );
   /// external operator for addition of StatEntity and a number
-  GAUDI_API friend StatEntity operator+( const double      value  , const StatEntity& entity ) ;
+  GAUDI_API friend StatEntity operator+( const double value, const StatEntity& entity );
   /// external operator for addition of StatEntity and a number
-  GAUDI_API friend StatEntity operator+( const StatEntity& entity , const StatEntity& value  ) ;
+  GAUDI_API friend StatEntity operator+( const StatEntity& entity, const StatEntity& value );
   /// external operator for subtraction of StatEntity and a number
-  GAUDI_API friend StatEntity operator-( const StatEntity& entity , const double      value  ) ;
+  GAUDI_API friend StatEntity operator-( const StatEntity& entity, const double value );
   /// external printout operator to std::ostream
-  GAUDI_API friend std::ostream& operator<<( std::ostream& stream , const StatEntity& entity ) ;
+  GAUDI_API friend std::ostream& operator<<( std::ostream& stream, const StatEntity& entity );
   // ============================================================================
 private:
   // ==========================================================================
   struct se {
     /// number of calls
-    unsigned long                nEntries         = 0;
+    unsigned long nEntries = 0;
     /// accumulated flag
-    double                       accumulatedFlag  = 0;
-    double                       accumulatedFlag2 = 0;
-    double                       minimalFlag      = std::numeric_limits<double>::max() ;
-    double                       maximalFlag      =  -1 * std::numeric_limits<double>::max() ;
+    double accumulatedFlag  = 0;
+    double accumulatedFlag2 = 0;
+    double minimalFlag      = std::numeric_limits<double>::max();
+    double maximalFlag      = -1 * std::numeric_limits<double>::max();
     // DR number of calls before reset
-    long                         nEntriesBeforeReset = -1 ; // ?
+    long nEntriesBeforeReset = -1; // ?
 
-    se& operator+=(const struct se& other) {
-        nEntries         += other.nEntries ;
-        accumulatedFlag  += other.accumulatedFlag  ;
-        accumulatedFlag2 += other.accumulatedFlag2 ;
-        minimalFlag = std::min ( minimalFlag , other.minimalFlag ) ;
-        maximalFlag = std::max ( maximalFlag , other.maximalFlag ) ;
-        return *this;
+    se& operator+=( const struct se& other )
+    {
+      nEntries += other.nEntries;
+      accumulatedFlag += other.accumulatedFlag;
+      accumulatedFlag2 += other.accumulatedFlag2;
+      minimalFlag = std::min( minimalFlag, other.minimalFlag );
+      maximalFlag = std::max( maximalFlag, other.maximalFlag );
+      return *this;
     }
 
-    unsigned long add( double Flag ) ;
+    unsigned long add( double Flag );
     double mean() const;
     double rms() const;
     double meanErr() const;
     double efficiency() const;
-    double efficiencyErr () const;
+    double efficiencyErr() const;
 
-    friend bool operator<(const struct se& lhs, const struct se& rhs) {
-      auto order = [](const auto& s) { return std::tie( s.nEntries,
-                                                        s.accumulatedFlag,
-                                                        s.minimalFlag,
-                                                        s.maximalFlag,
-                                                        s.accumulatedFlag2 ); };
-      return order(lhs) < order(rhs);
+    friend bool operator<( const struct se& lhs, const struct se& rhs )
+    {
+      auto order = []( const auto& s ) {
+        return std::tie( s.nEntries, s.accumulatedFlag, s.minimalFlag, s.maximalFlag, s.accumulatedFlag2 );
+      };
+      return order( lhs ) < order( rhs );
     };
   } m_se = {};
   // Mutex to protect calls of add/reset/operator++, i.e. all _writes_ to (but not reads from!) m_se;
-  std::mutex                   m_mutex;
+  std::mutex m_mutex;
   // ==========================================================================
 };
 namespace Gaudi
@@ -540,13 +538,10 @@ namespace Gaudi
      *  @param format2 special row format for the "efficiency" rows
      *  @return formatted row in the table
      */
-    GAUDI_API std::string formatAsTableRow
-    ( const StatEntity&  counter ,
-      const bool         flag    ,
-      const std::string& format1 =
-      " |%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |%|#10.5g| |%|#10.5g| |"        ,
-      const std::string& format2 =
-      "*|%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|   -----   |   -----   |" );
+    GAUDI_API std::string formatAsTableRow(
+        const StatEntity& counter, const bool flag,
+        const std::string& format1 = " |%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |%|#10.5g| |%|#10.5g| |",
+        const std::string& format2 = "*|%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|   -----   |   -----   |" );
     // ========================================================================
     /** print the counter in a form of the table row
      *
@@ -608,14 +603,11 @@ namespace Gaudi
      *  @param format2 special row format for the "efficiency" rows
      *  @return formatted row in the table
      */
-    GAUDI_API std::string formatAsTableRow
-    ( const std::string& name           ,
-      const StatEntity&  counter        ,
-      const bool         flag    = true ,
-      const std::string& format1 =
-      " %|-15.15s|%|17t||%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |%|#10.5g| |%|#10.5g| |"       ,
-      const std::string& format2 =
-      "*%|-15.15s|%|17t||%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|   -----   |   -----   |" );
+    GAUDI_API std::string formatAsTableRow(
+        const std::string& name, const StatEntity& counter, const bool flag = true,
+        const std::string& format1 = " %|-15.15s|%|17t||%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |%|#10.5g| |%|#10.5g| |",
+        const std::string& format2 =
+            "*%|-15.15s|%|17t||%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|   -----   |   -----   |" );
     // ========================================================================
     /** print the counter in a form of the table row
      *
@@ -684,15 +676,12 @@ namespace Gaudi
      *  @param format2 the special row format for the "efficiency" rows
      *  @return formatted row in the table
      */
-    GAUDI_API std::string formatAsTableRow
-    ( const std::string& name           ,
-      const std::string& group          ,
-      const StatEntity&  entity         ,
-      const bool         flag    = true ,
-      const std::string& format1 =
-      " %|15.15s|%|-15.15s|%|32t||%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |%|#10.5g| |%|#10.5g| |"         ,
-      const std::string& format2 =
-      "*%|15.15s|%|-15.15s|%|32t||%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|    -----    |   -----   |" ) ;
+    GAUDI_API std::string formatAsTableRow(
+        const std::string& name, const std::string& group, const StatEntity& entity, const bool flag = true,
+        const std::string& format1 =
+            " %|15.15s|%|-15.15s|%|32t||%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |%|#10.5g| |%|#10.5g| |",
+        const std::string& format2 =
+            "*%|15.15s|%|-15.15s|%|32t||%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|    -----    |   -----   |" );
     // ========================================================================
   } //                                            end of namespace Gaudi::Utils
   // ==========================================================================

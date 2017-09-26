@@ -8,9 +8,9 @@
 class DataObject;
 
 /** 	This is only a placeholder to allow me compiling
-	until the responsible guy does his work!
-	M.Frank
+        until the responsible guy does his work!
+        M.Frank
 */
 typedef std::vector<DataObject*> IDataSelector;
 
-#endif  // KERNEL_IDATASELECTOR_H
+#endif // KERNEL_IDATASELECTOR_H

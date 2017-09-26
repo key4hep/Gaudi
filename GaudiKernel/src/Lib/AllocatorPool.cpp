@@ -35,7 +35,7 @@
 // Author: G.Cosmo, November 2000
 //
 // ============================================================================
-// Include files 
+// Include files
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -46,31 +46,29 @@
 // G4AllocatorPool constructor
 // ************************************************************
 //
-GaudiUtils::AllocatorPool::AllocatorPool
-( unsigned int sz )
-  : esize(sz<sizeof(PoolLink) ? sizeof(PoolLink) : sz),
-    csize(sz<1024/2-16 ? 1024-16 : sz*10-16)
-{}
+GaudiUtils::AllocatorPool::AllocatorPool( unsigned int sz )
+    : esize( sz < sizeof( PoolLink ) ? sizeof( PoolLink ) : sz ), csize( sz < 1024 / 2 - 16 ? 1024 - 16 : sz * 10 - 16 )
+{
+}
 
 // ************************************************************
 // G4AllocatorPool copy constructor
 // ************************************************************
 //
-GaudiUtils::AllocatorPool::AllocatorPool(const AllocatorPool& right)
-  : esize(right.esize), csize(right.csize)
+GaudiUtils::AllocatorPool::AllocatorPool( const AllocatorPool& right ) : esize( right.esize ), csize( right.csize )
 {
   *this = right;
-} 
+}
 
 // ************************************************************
 // G4AllocatorPool operator=
 // ************************************************************
 //
-GaudiUtils::AllocatorPool&
-GaudiUtils::AllocatorPool::operator= 
-(const GaudiUtils::AllocatorPool& right)
+GaudiUtils::AllocatorPool& GaudiUtils::AllocatorPool::operator=( const GaudiUtils::AllocatorPool& right )
 {
-  if (&right == this) { return *this; }
+  if ( &right == this ) {
+    return *this;
+  }
   chunks  = right.chunks;
   head    = right.head;
   nchunks = right.nchunks;
@@ -81,10 +79,7 @@ GaudiUtils::AllocatorPool::operator=
 // G4AllocatorPool destructor
 // ************************************************************
 //
-GaudiUtils::AllocatorPool::~AllocatorPool()
-{
-  Reset();
-}
+GaudiUtils::AllocatorPool::~AllocatorPool() { Reset(); }
 
 // ************************************************************
 // Reset
@@ -96,14 +91,13 @@ void GaudiUtils::AllocatorPool::Reset()
   //
   PoolChunk* n = chunks;
   PoolChunk* p = nullptr;
-  while (n)
-  {
+  while ( n ) {
     p = n;
     n = n->next;
     delete p;
   }
-  head = nullptr;
-  chunks = nullptr;
+  head    = nullptr;
+  chunks  = nullptr;
   nchunks = 0;
 }
 
@@ -116,24 +110,21 @@ void GaudiUtils::AllocatorPool::Grow()
   // Allocate new chunk, organize it as a linked list of
   // elements of size 'esize'
   //
-  auto  n = new PoolChunk(csize);
+  auto n  = new PoolChunk( csize );
   n->next = chunks;
-  chunks = n;
+  chunks  = n;
   ++nchunks;
-  
-  const int nelem = csize/esize;
-  char* start = n->mem.get();
-  char* last = &start[(nelem-1)*esize];
-  for (char* p=start; p<last; p+=esize)
-  {
-    reinterpret_cast<PoolLink*>(p)->next
-      = reinterpret_cast<PoolLink*>(p+esize);
+
+  const int nelem = csize / esize;
+  char* start     = n->mem.get();
+  char* last      = &start[( nelem - 1 ) * esize];
+  for ( char* p = start; p < last; p += esize ) {
+    reinterpret_cast<PoolLink*>( p )->next = reinterpret_cast<PoolLink*>( p + esize );
   }
-  reinterpret_cast<PoolLink*>(last)->next = nullptr;
-  head = reinterpret_cast<PoolLink*>(start);
+  reinterpret_cast<PoolLink*>( last )->next = nullptr;
+  head                                      = reinterpret_cast<PoolLink*>( start );
 }
 
-
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

@@ -2,8 +2,8 @@
 #define GAUDIEXAMPLE_WRITEALG_H
 
 // Framework include files
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiExamples/Counter.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class WriteAlg WriteAlg.h
 
@@ -12,8 +12,9 @@
     @author Markus Frank
 */
 
-class WriteAlg : public Algorithm {
- protected:
+class WriteAlg : public Algorithm
+{
+protected:
   /// Reference to run records data service
   SmartIF<IDataProviderSvc> m_recordSvc;
 
@@ -21,12 +22,11 @@ class WriteAlg : public Algorithm {
   Gaudi::Examples::Counter* m_evtCount = nullptr;
 
   /// Register data leaf
-  StatusCode put(IDataProviderSvc* s, const std::string& path, DataObject* pObj);
+  StatusCode put( IDataProviderSvc* s, const std::string& path, DataObject* pObj );
 
- public:
+public:
   /// Constructor: A constructor of this form must be provided.
-  WriteAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  : Algorithm(name, pSvcLocator) { }
+  WriteAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
   /// Initialize
   StatusCode initialize() override;
   /// Finalize

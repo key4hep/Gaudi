@@ -39,77 +39,71 @@ namespace Gaudi
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date   2004-11-19
    */
-  template <class CONTAINER, class ITERATOR= typename Gaudi::details::container<CONTAINER>::Iterator>
-  class NamedRange_ : public Gaudi::Range_<CONTAINER,ITERATOR>
+  template <class CONTAINER, class ITERATOR = typename Gaudi::details::container<CONTAINER>::Iterator>
+  class NamedRange_ : public Gaudi::Range_<CONTAINER, ITERATOR>
   {
   protected:
     // ========================================================================
     /// the base class
-    typedef Gaudi::Range_<CONTAINER,ITERATOR>  Base ;
+    typedef Gaudi::Range_<CONTAINER, ITERATOR> Base;
     /// "self"-type
-    typedef NamedRange_<CONTAINER,ITERATOR>   Self ;
+    typedef NamedRange_<CONTAINER, ITERATOR> Self;
     // ========================================================================
   public:
     // ========================================================================
     /// default constructor
-    NamedRange_()  = default;
+    NamedRange_() = default;
     /** Constructor
      *  @param ibegin  iterator to begin of the sequence
      *  @param iend    iterator to end   of the sequence
      *  @param name    name of the range
      */
-    NamedRange_( typename Base::iterator ibegin    ,
-                 typename Base::iterator iend      ,
-                 std::string      name = "" )
-      : Base   ( ibegin , iend ) , m_name ( std::move(name) ) {} ;
+    NamedRange_( typename Base::iterator ibegin, typename Base::iterator iend, std::string name = "" )
+        : Base( ibegin, iend ), m_name( std::move( name ) ){};
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
-    NamedRange_( const Base&        base      ,
-                 std::string name = "" )
-      : Base   ( base ) , m_name ( std::move(name) ) {};
+    NamedRange_( const Base& base, std::string name = "" ) : Base( base ), m_name( std::move( name ) ){};
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
-    NamedRange_( const typename Base::Base& base      ,
-                 std::string          name = "" )
-      : Base   ( base ) , m_name ( std::move(name) ) {};
+    NamedRange_( const typename Base::Base& base, std::string name = "" ) : Base( base ), m_name( std::move( name ) ){};
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
-    NamedRange_( const typename Base::Container& base      ,
-                 std::string              name = "" )
-      : Base   ( base ) , m_name ( std::move(name) ) {};
+    NamedRange_( const typename Base::Container& base, std::string name = "" )
+        : Base( base ), m_name( std::move( name ) ){};
     /* constructor of empty range/sequence
      * @param ibegin  iterator to begin of empty sequence
      *  @param name name of the range
      */
-    NamedRange_( typename Base::iterator ibegin      ,
-                 std::string      name   = "" )
-      : Base   ( ibegin , ibegin ) , m_name ( std::move(name) ) {};
+    NamedRange_( typename Base::iterator ibegin, std::string name = "" )
+        : Base( ibegin, ibegin ), m_name( std::move( name ) ){};
     /// destructor
     ~NamedRange_() = default;
     // ========================================================================
   public:
     // ========================================================================
     /// get a "slice" of a range, in Python style
-    inline NamedRange_ slice( long index1 , long index2 ) const
-    {  return NamedRange_( Base::slice ( index1 , index2 ) , m_name ) ; }
+    inline NamedRange_ slice( long index1, long index2 ) const
+    {
+      return NamedRange_( Base::slice( index1, index2 ), m_name );
+    }
     // ========================================================================
   public:
     // ========================================================================
     /// get the name of the range
-    const std::string& name() const { return m_name ; }
+    const std::string& name() const { return m_name; }
     /// set the name of the range
-    void  setName( const std::string& value ) { m_name = value ; }
+    void setName( const std::string& value ) { m_name = value; }
     // ========================================================================
   private:
     // ========================================================================
     /// the name, associated to the range
-    std::string m_name ; // the name associated to the range
+    std::string m_name; // the name associated to the range
     // ========================================================================
   };
   // ==========================================================================
@@ -124,11 +118,10 @@ namespace Gaudi
    *  @date 2007-11-29
    */
   template <class CONTAINER>
-  inline
-  NamedRange_<CONTAINER>
-  range ( const CONTAINER& cnt  ,
-          std::string      name )
-  { return NamedRange_<CONTAINER>( cnt.begin() , cnt.end() , std::move(name) ) ; }
+  inline NamedRange_<CONTAINER> range( const CONTAINER& cnt, std::string name )
+  {
+    return NamedRange_<CONTAINER>( cnt.begin(), cnt.end(), std::move( name ) );
+  }
   // ==========================================================================
 } // end of namespace Gaudi
 // ============================================================================

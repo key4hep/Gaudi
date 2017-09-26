@@ -17,7 +17,8 @@ class IDataManagerSvc;
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   /** @class RootStatCnv RootStatCnv.h Root/RootStatCnv.h
    *
@@ -27,18 +28,18 @@ namespace Gaudi {
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootStatCnv: public RootConverter   {
+  class GAUDI_API RootStatCnv : public RootConverter
+  {
   protected:
     /// Reference to data manager service to manipulate the TES
     SmartIF<IDataManagerSvc> m_dataMgr;
     /// Reference to logger object
-    std::unique_ptr<MsgStream>       m_log;
+    std::unique_ptr<MsgStream> m_log;
 
-    /// Helper to use mesage logger 
+    /// Helper to use mesage logger
     MsgStream& log() const { return *m_log; }
 
   protected:
-
     /// Initialize converter object
     StatusCode initialize() override;
 
@@ -50,21 +51,21 @@ namespace Gaudi {
      *
      * @return     Name of the container the object should be put to.
      */
-    virtual const std::string containerName(IRegistry* pDir)  const;
+    virtual const std::string containerName( IRegistry* pDir ) const;
 
     /** Retrieve the name of the file a given object is placed into
      * @param      pReg     [IN]    Pointer to registry entry.
      *
      * @return     Name of the file the object should be put to.
      */
-    virtual const std::string fileName(IRegistry* pReg) const;
+    virtual const std::string fileName( IRegistry* pReg ) const;
 
     /** Retrieve the full path of the file a given object is placed into
      * @param      pReg     [IN]    Pointer to registry entry.
      *
      * @return     Name of the file the object should be put to.
      */
-    virtual const std::string topLevel(IRegistry* pReg) const;
+    virtual const std::string topLevel( IRegistry* pReg ) const;
 
     /** Helper method to issue error messages.
      * @param      msg      [IN]     Text of the error message
@@ -72,7 +73,7 @@ namespace Gaudi {
      *
      * @return    Status code indicating success or failure.
      */
-    StatusCode makeError(const std::string& msg, bool throw_exception=false)  const;
+    StatusCode makeError( const std::string& msg, bool throw_exception = false ) const;
 
     /** Save statistics object description.
      * @param      path     [IN]    Path of file to save the description on.
@@ -84,14 +85,10 @@ namespace Gaudi {
      *
      * @return    Status code indicating success or failure.
      */
-    StatusCode saveDescription( const std::string&  path,
-				const std::string&  ident,
-				const std::string&  desc,
-				const std::string&  opt,
-				const CLID&         clid);
+    StatusCode saveDescription( const std::string& path, const std::string& ident, const std::string& desc,
+                                const std::string& opt, const CLID& clid );
 
   public:
-
     /** Initializing Constructor
      * @param      typ      [IN]     Concrete storage type of the converter
      * @param      clid     [IN]     Class identifier of the object
@@ -99,7 +96,7 @@ namespace Gaudi {
      *
      * @return Reference to RootBaseCnv object
      */
-    RootStatCnv(long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr);
+    RootStatCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr );
 
     /// Standard Destructor
     ~RootStatCnv() override = default;

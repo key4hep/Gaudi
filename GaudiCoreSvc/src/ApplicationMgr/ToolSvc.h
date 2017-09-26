@@ -2,10 +2,11 @@
 #define GAUDISVC_TOOLSVC_H
 
 // Include Files
-#include "GaudiKernel/Service.h"
+#include "GaudiKernel/IHistorySvc.h"
 #include "GaudiKernel/IToolSvc.h"
-#include <vector>
+#include "GaudiKernel/Service.h"
 #include <mutex>
+#include <vector>
 
 /** @class ToolSvc ToolSvc.h
  *  This service manages tools.
@@ -20,11 +21,10 @@
  *
  *  @author G. Corti, P. Mato
  */
-class ToolSvc : public extends<Service,
-                               IToolSvc> {
+class ToolSvc : public extends<Service, IToolSvc>
+{
 
 public:
-
   /// Initialize the service.
   StatusCode initialize() override;
 
@@ -38,14 +38,12 @@ public:
   StatusCode stop() override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  StatusCode retrieve(const std::string& type, const InterfaceID& iid,
-                      IAlgTool*& tool, const IInterface* parent,
-                      bool createIf) override;
+  StatusCode retrieve( const std::string& type, const InterfaceID& iid, IAlgTool*& tool, const IInterface* parent,
+                       bool createIf ) override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  StatusCode retrieve(const std::string& tooltype, const std::string& toolname,
-                      const InterfaceID& iid, IAlgTool*& tool,
-                      const IInterface* parent, bool createIf) override;
+  StatusCode retrieve( const std::string& tooltype, const std::string& toolname, const InterfaceID& iid,
+                       IAlgTool*& tool, const IInterface* parent, bool createIf ) override;
 
   /// Get names of all tool instances of a given type
   std::vector<std::string> getInstances( const std::string& toolType ) override;
@@ -60,18 +58,16 @@ public:
   StatusCode releaseTool( IAlgTool* tool ) override;
 
   /// Create Tool standard way with automatically assigned name
-  StatusCode create(const std::string& type, const IInterface* parent,
-                    IAlgTool*& tool);
+  StatusCode create( const std::string& type, const IInterface* parent, IAlgTool*& tool );
 
   /// Create Tool standard way with specified name
-  StatusCode create(const std::string& type, const std::string& name,
-                    const IInterface* parent, IAlgTool*& tool);
+  StatusCode create( const std::string& type, const std::string& name, const IInterface* parent, IAlgTool*& tool );
 
   /// Check if the tool instance exists
-  bool existsTool( const std::string& toolname) const;
+  bool existsTool( const std::string& toolname ) const;
 
   /// Get Tool full name by combining nameByUser and "parent" part
-  std::string nameTool(const std::string& nameByUser, const IInterface* parent);
+  std::string nameTool( const std::string& nameByUser, const IInterface* parent );
 
   /** Standard Constructor.
    *  @param  name   String with service name
@@ -82,8 +78,7 @@ public:
   /// Destructor.
   ~ToolSvc() override;
 
-  void registerObserver(IToolSvc::Observer *obs) override;
-
+  void registerObserver( IToolSvc::Observer* obs ) override;
 
 private: // methods
   // helper functions
@@ -97,9 +92,8 @@ private: // methods
   StatusCode finalizeTool( IAlgTool* itool ) const;
 
 private: // data
-
   /// Common Tools
-  std::vector<IAlgTool*> m_instancesTools;        // List of all instances of tools
+  std::vector<IAlgTool*> m_instancesTools; // List of all instances of tools
 
   /// Pointer to HistorySvc
   IHistorySvc* m_pHistorySvc = nullptr;
@@ -111,5 +105,3 @@ private: // data
 };
 
 #endif
-
-

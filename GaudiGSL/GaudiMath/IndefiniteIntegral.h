@@ -10,12 +10,12 @@
  *  @author Ivan BELYAEV
  *  @date   2003-08-31
  */
-class GAUDI_API IndefiniteIntegral {
+class GAUDI_API IndefiniteIntegral
+{
 public:
   /// Standard constructor
-  IndefiniteIntegral( );
+  IndefiniteIntegral();
 
-  virtual ~IndefiniteIntegral( ); ///< Destructor
-
+  virtual ~IndefiniteIntegral(); ///< Destructor
 };
 #endif // GAUDIMATH_INDEFINITEINTEGRAL_H

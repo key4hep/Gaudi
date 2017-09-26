@@ -11,7 +11,7 @@ from Configurables import Gaudi__Examples__CountSelectedTracks as CountSelectedT
 # I/O
 GaudiPersistency()
 FileRecordDataSvc(IncidentName="NEW_FILE_RECORD")
-FileCatalog(Catalogs = [ "xmlcatalog_file:ROOTIO.xml" ])
+FileCatalog(Catalogs=["xmlcatalog_file:ROOTIO.xml"])
 esel = EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1)
 esel.Input = ["DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'",
               "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootEvtSelector' OPT='READ'"]
@@ -27,11 +27,11 @@ fsrAlgs = GaudiSequencer("FSRAlgs",
 # Application setup
 app = ApplicationMgr()
 # - Algorithms
-app.TopAlg = [ evtAlgs, fsrAlgs ]
+app.TopAlg = [evtAlgs, fsrAlgs]
 # - Events
-app.EvtMax   = -1
+app.EvtMax = -1
 app.HistogramPersistency = "NONE"
 
 RootCnvSvc(OutputLevel=INFO)
-#ChronoStatSvc(OutputLevel=WARNING)
+# ChronoStatSvc(OutputLevel=WARNING)
 SequencerTimerTool(OutputLevel=WARNING)

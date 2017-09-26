@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 import collections
 import re
 
+
 def qmt_filename_to_name(path):
     '''
     convert the relative path to a .qmt/.qms file to the canonical QMTest test
@@ -25,6 +26,7 @@ def qmt_filename_to_name(path):
     return '.'.join(re.sub(r'\.qm[st]$', '', p)
                     for p in path.split(os.path.sep))
 
+
 def fix_test_name(name, pkg):
     '''
     Convert the QMTest test name to the name used in CTest.
@@ -36,6 +38,7 @@ def fix_test_name(name, pkg):
     'Package.simple'
     '''
     return re.sub(r'^(%s\.)?' % pkg.lower(), '%s.' % pkg, name)
+
 
 def find_files(rootdir, ext):
     '''
@@ -67,6 +70,7 @@ def analyze_deps(pkg, rootdir):
         if prereqs:
             print ('set_property(TEST {0} APPEND PROPERTY DEPENDS {1})'
                    .format(name, ' '.join(prereqs)))
+
 
 def analyze_suites(pkg, rootdir):
     '''
@@ -100,6 +104,7 @@ def analyze_suites(pkg, rootdir):
     for test, labels in test_labels.iteritems():
         print ('set_property(TEST {0} APPEND PROPERTY LABELS {1})'
                .format(test, ' '.join(labels)))
+
 
 def analyze_disabling(pkg, rootdir):
     '''

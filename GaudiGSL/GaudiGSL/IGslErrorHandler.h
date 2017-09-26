@@ -12,17 +12,16 @@ class GslError;
  *  @author Vanya Ivan.Belyaev@itep.ru
  *  @date   30/04/2002
  */
-struct GAUDI_API IGslErrorHandler: extend_interfaces<IAlgTool> {
+struct GAUDI_API IGslErrorHandler : extend_interfaces<IAlgTool> {
   /// InterfaceID
-  DeclareInterfaceID(IGslErrorHandler,3,0);
+  DeclareInterfaceID( IGslErrorHandler, 3, 0 );
 
   /** handle the GSL error
    *  @param error  error to be handled
    *  @see GslError
    *  @return status code
    */
-  virtual StatusCode handle ( const GslError& error ) const = 0 ;
-
+  virtual StatusCode handle( const GslError& error ) const = 0;
 };
 
 // ============================================================================

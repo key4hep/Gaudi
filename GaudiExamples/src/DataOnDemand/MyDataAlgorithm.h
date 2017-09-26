@@ -9,16 +9,18 @@
         @author nobody
 */
 
-class MyDataAlgorithm : public GaudiAlgorithm {
+class MyDataAlgorithm : public GaudiAlgorithm
+{
 public:
   /// Constructor of this form must be provided
-  MyDataAlgorithm(const std::string& name, ISvcLocator* pSvcLocator); 
+  MyDataAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
 
   /// Three mandatory member functions of any algorithm
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
+
 private:
 };
 
-#endif    // GAUDIEXAMPLE_MyDataAlgorithm_H
+#endif // GAUDIEXAMPLE_MyDataAlgorithm_H

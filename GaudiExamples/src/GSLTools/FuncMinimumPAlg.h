@@ -5,9 +5,8 @@
 
 // from Gaudi
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
-
+#include "GaudiKernel/Property.h"
 
 /// Forward references
 struct IFuncMinimum;
@@ -21,24 +20,22 @@ struct IFuncMinimum;
  */
 //-----------------------------------------------------------------------------
 
-class FuncMinimumPAlg : public Algorithm {
+class FuncMinimumPAlg : public Algorithm
+{
 
 public:
   /// Standard constructor
   FuncMinimumPAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
-  ~FuncMinimumPAlg( ) override; ///< Destructor
+  ~FuncMinimumPAlg() override; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
 protected:
-
 private:
-
-  IFuncMinimum*   m_privateTool;
-  IFuncMinimum*   m_publicTool;
-
+  IFuncMinimum* m_privateTool;
+  IFuncMinimum* m_publicTool;
 };
 #endif // ALGTOOLS_FUNCMINIMUMPALG_H

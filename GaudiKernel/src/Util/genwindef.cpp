@@ -1,76 +1,75 @@
 #ifdef _WIN32
-  // Disable a warning in Boost program_options headers:
-  // inconsistent linkage in program_options/variables_map.hpp
-  #pragma warning ( disable : 4273 )
-  #define popen _popen
-  #define pclose _pclose 
-  #define fileno _fileno 
-  #include <stdlib.h>
+// Disable a warning in Boost program_options headers:
+// inconsistent linkage in program_options/variables_map.hpp
+#pragma warning( disable : 4273 )
+#define popen _popen
+#define pclose _pclose
+#define fileno _fileno
+#include <stdlib.h>
 #endif
 
 // Include files----------------------------------------------------------------
-#include <vector>
-#include <string>
-#include <iostream>
-#include <fstream>
 #include "LibSymbolInfo.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 
-namespace windef {
-  void usage(){
+namespace windef
+{
+  void usage()
+  {
     cerr << "Usage: genwindef [-l <dllname>] [-o <output-file> | exports.def]  <obj or lib filenames>" << endl;
-    exit(1);
+    exit( 1 );
   }
 }
 
 //--- Command main program-----------------------------------------------------
-int main ( int argc, char** argv )
+int main( int argc, char** argv )
 //-----------------------------------------------------------------------------
 {
-  string outfile("exports.def");
-  string library("UnknownLib");
+  string outfile( "exports.def" );
+  string library( "UnknownLib" );
   string objfiles;
-  bool debug(false);
+  bool debug( false );
 
   int arg;
-  if (argc < 3) windef::usage();
+  if ( argc < 3 ) windef::usage();
   arg = 1;
-  while (argv[arg][0] == '-') {
-    if (strcmp(argv[arg], "--") == 0) {
+  while ( argv[arg][0] == '-' ) {
+    if ( strcmp( argv[arg], "--" ) == 0 ) {
       windef::usage();
-    } 
-    else if (strcmp(argv[arg], "-l") == 0) {
-      arg++; 
-      if (arg == argc) windef::usage();
+    } else if ( strcmp( argv[arg], "-l" ) == 0 ) {
+      arg++;
+      if ( arg == argc ) windef::usage();
       library = argv[arg];
-    } 
-    else if (strcmp(argv[arg], "-o") == 0) {
-      arg++; 
-      if (arg == argc) windef::usage();
+    } else if ( strcmp( argv[arg], "-o" ) == 0 ) {
+      arg++;
+      if ( arg == argc ) windef::usage();
       outfile = argv[arg];
-    } 
+    }
     arg++;
   }
-  if (arg == argc) windef::usage();
-  for (arg; arg < argc; arg++) {
-     objfiles += argv[arg];
-     if( arg+1 < argc) objfiles += " ";
+  if ( arg == argc ) windef::usage();
+  for ( arg; arg < argc; arg++ ) {
+    objfiles += argv[arg];
+    if ( arg + 1 < argc ) objfiles += " ";
   }
 
   CLibSymbolInfo libsymbols;
-  ofstream out(outfile);
-  if(out.fail()) {
+  ofstream out( outfile );
+  if ( out.fail() ) {
     cerr << "windef: Error opening file " << outfile << endl;
     return 1;
   }
   out << "LIBRARY " << library << endl;
   out << "EXPORTS" << endl;
 
-  libsymbols.DumpSymbols(const_cast<char*>(objfiles.c_str()), out);
+  libsymbols.DumpSymbols( const_cast<char*>( objfiles.c_str() ), out );
 
   out.close();
-
 
   return 0;
 }

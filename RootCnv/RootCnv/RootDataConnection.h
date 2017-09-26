@@ -6,14 +6,14 @@
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiUtils/IIODataManager.h"
-#include <string>
-#include <vector>
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
 
+#include "RootCnv/RootRefs.h"
 #include "TFile.h"
 #include "TTreePerfStats.h"
-#include "RootCnv/RootRefs.h"
 
 // Forward declarations
 class TTree;
@@ -28,7 +28,8 @@ class IIncidentSvc;
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi  {
+namespace Gaudi
+{
 
   /** @class RootConnectionSet RootDataConnection.h GaudiRootCnv/RootDataConnection.h
     *
@@ -40,10 +41,11 @@ namespace Gaudi  {
     *  @version 1.0
     *  @date    20/12/2009
     */
-  class GAUDI_API RootConnectionSetup final {
+  class GAUDI_API RootConnectionSetup final
+  {
   private:
     /// Reference to message service
-    std::unique_ptr<MsgStream>    m_msgSvc;
+    std::unique_ptr<MsgStream> m_msgSvc;
     /// Reference to incident service
     SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
@@ -52,33 +54,33 @@ namespace Gaudi  {
     typedef std::vector<std::string> StringVec;
 
     /// Vector of strings with branches to be cached for input files
-    StringVec     cacheBranches;
+    StringVec cacheBranches;
     /// Vector of strings with branches to NOT be cached for input files
-    StringVec     vetoBranches;
+    StringVec vetoBranches;
     /// RootCnvSvc Property: Root data cache size
-    std::string   loadSection;
+    std::string loadSection;
     /// RootCnvSvc Property: Root data cache size
-    int           cacheSize;
+    int cacheSize;
     /// RootCnvSvc Property: ROOT cache learn entries
-    int           learnEntries;
+    int learnEntries;
 
     /// Standard constructor
     RootConnectionSetup() = default;
 
     /// Set the global compression level
-    static long setCompression(const std::string& compression);
+    static long setCompression( const std::string& compression );
     /// Access to global compression level
     static int compression();
 
     /// Set message service reference
-    void setMessageSvc(MsgStream* m);
+    void setMessageSvc( MsgStream* m );
     /// Retrieve message service
-    MsgStream& msgSvc() const {  return *m_msgSvc; }
+    MsgStream& msgSvc() const { return *m_msgSvc; }
 
     /// Set incident service reference
-    void setIncidentSvc(IIncidentSvc* m);
+    void setIncidentSvc( IIncidentSvc* m );
     /// Retrieve incident service
-    IIncidentSvc* incidentSvc() const {  return m_incidentSvc.get(); }
+    IIncidentSvc* incidentSvc() const { return m_incidentSvc.get(); }
   };
 
   /** @class RootDataConnection RootDataConnection.h GaudiRootCnv/RootDataConnection.h
@@ -89,12 +91,10 @@ namespace Gaudi  {
     *  @version 1.0
     *  @date    20/12/2009
     */
-  class GAUDI_API RootDataConnection : virtual public Gaudi::IDataConnection  {
+  class GAUDI_API RootDataConnection : virtual public Gaudi::IDataConnection
+  {
   public:
-
-    enum { ROOT_READ_ERROR = 0x2,
-	   ROOT_OPEN_ERROR = 0x4
-    };
+    enum { ROOT_READ_ERROR = 0x2, ROOT_OPEN_ERROR = 0x4 };
 
     /** @class ContainerSection RootDataConnection.h GaudiRootCnv/RootDataConnection.h
      *
@@ -108,18 +108,19 @@ namespace Gaudi  {
      */
     struct ContainerSection {
       /// Default constructor
-      ContainerSection() : start(-1), length(0) {}
+      ContainerSection() : start( -1 ), length( 0 ) {}
       /// Initializing constructor
-      ContainerSection(int s, int l) : start(s), length(l) {}
+      ContainerSection( int s, int l ) : start( s ), length( l ) {}
       /// Copy constructor
-      ContainerSection(const ContainerSection& s) : start(s.start), length(s.length) {}
+      ContainerSection( const ContainerSection& s ) : start( s.start ), length( s.length ) {}
       /// Assignment operator to copy objects
-      ContainerSection& operator=(const ContainerSection& s) {
-	if ( this != &s ) {
-	  start=s.start;
-	  length=s.length; 
-	}
-	return *this;
+      ContainerSection& operator=( const ContainerSection& s )
+      {
+        if ( this != &s ) {
+          start  = s.start;
+          length = s.length;
+        }
+        return *this;
       }
       /// The start entry of the section
       int start;
@@ -128,23 +129,22 @@ namespace Gaudi  {
     };
 
     /// Type definition for string maps
-    typedef std::vector<std::string>                                 StringVec;
+    typedef std::vector<std::string> StringVec;
     /// Type definition for the parameter map
-    typedef std::vector<std::pair<std::string,std::string> >         ParamMap;
+    typedef std::vector<std::pair<std::string, std::string>> ParamMap;
     /// Definition of tree sections
-    typedef std::map<std::string,TTree*>                             Sections;
+    typedef std::map<std::string, TTree*> Sections;
     /// Definition of container sections to handle merged files
-    typedef std::vector<ContainerSection>                            ContainerSections;
+    typedef std::vector<ContainerSection> ContainerSections;
     /// Definition of database section to handle merged files
-    typedef std::map<std::string,ContainerSections>                  MergeSections;
+    typedef std::map<std::string, ContainerSections> MergeSections;
     /// Link sections definition
-    typedef std::vector<RootRef>                                     LinkSections;
+    typedef std::vector<RootRef> LinkSections;
     /// Client set
-    typedef std::set<const IInterface*>                              Clients;
+    typedef std::set<const IInterface*> Clients;
 
     /// Allow access to printer service
-    MsgStream& msgSvc() const {  return m_setup->msgSvc(); }
-
+    MsgStream& msgSvc() const { return m_setup->msgSvc(); }
 
   protected:
     /// Reference to the setup structure
@@ -154,27 +154,27 @@ namespace Gaudi  {
     /// Reference to ROOT file
     std::unique_ptr<TFile> m_file;
     /// Pointer to the reference tree
-    TTree               *m_refs = nullptr;
+    TTree* m_refs = nullptr;
     /// Tree sections in TFile
-    Sections             m_sections;
+    Sections m_sections;
     /// Map containing external database file names (fids)
-    StringVec            m_dbs;
+    StringVec m_dbs;
     /// Map containing external container names
-    StringVec            m_conts;
+    StringVec m_conts;
     /// Map containing internal links names
-    StringVec            m_links;
+    StringVec m_links;
     /// Map containing merge FIDs
-    StringVec            m_mergeFIDs;
+    StringVec m_mergeFIDs;
     /// Parameter map for file parameters
-    ParamMap             m_params;
+    ParamMap m_params;
     /// Database section map for merged files
-    MergeSections        m_mergeSects;
+    MergeSections m_mergeSects;
     /// Database link sections
-    LinkSections         m_linkSects;
+    LinkSections m_linkSects;
     /// Client list
-    Clients              m_clients;
+    Clients m_clients;
     /// Buffer for empty string reference
-    std::string          m_empty;
+    std::string m_empty;
 
     /// Empty string reference
     const std::string& empty() const;
@@ -192,43 +192,46 @@ namespace Gaudi  {
      * @author  M.Frank
      * @version 1.0
      */
-    class Tool {
+    class Tool
+    {
     protected:
-      typedef RootDataConnection::StringVec          StringVec;
-      typedef RootDataConnection::ParamMap           ParamMap;
-      typedef RootDataConnection::Sections           Sections;
-      typedef RootDataConnection::MergeSections      MergeSections;
-      typedef RootDataConnection::LinkSections       LinkSections;
-      typedef RootDataConnection::ContainerSection   ContainerSection;
-      typedef RootDataConnection::ContainerSections  ContainerSections;
+      typedef RootDataConnection::StringVec StringVec;
+      typedef RootDataConnection::ParamMap ParamMap;
+      typedef RootDataConnection::Sections Sections;
+      typedef RootDataConnection::MergeSections MergeSections;
+      typedef RootDataConnection::LinkSections LinkSections;
+      typedef RootDataConnection::ContainerSection ContainerSection;
+      typedef RootDataConnection::ContainerSections ContainerSections;
 
       /// Pointer to containing data connection object
       RootDataConnection* c;
+
     public:
-      TTree*             refs()               const { return c->m_refs;       }
-      StringVec&         dbs()                const { return c->m_dbs;        }
-      StringVec&         conts()              const { return c->m_conts;      }
-      StringVec&         links()              const { return c->m_links;      }
-      ParamMap&          params()             const { return c->m_params;     }
-      MsgStream&         msgSvc()             const { return c->msgSvc();     }
-      const std::string& name()               const { return c->m_name;       }
-      Sections&          sections()           const { return c->m_sections;   }
-      LinkSections&      linkSections()       const { return c->m_linkSects;  }
-      MergeSections&     mergeSections()      const { return c->m_mergeSects; }
+      TTree* refs() const { return c->m_refs; }
+      StringVec& dbs() const { return c->m_dbs; }
+      StringVec& conts() const { return c->m_conts; }
+      StringVec& links() const { return c->m_links; }
+      ParamMap& params() const { return c->m_params; }
+      MsgStream& msgSvc() const { return c->msgSvc(); }
+      const std::string& name() const { return c->m_name; }
+      Sections& sections() const { return c->m_sections; }
+      LinkSections& linkSections() const { return c->m_linkSects; }
+      MergeSections& mergeSections() const { return c->m_mergeSects; }
 
       /// Default destructor
       virtual ~Tool() = default;
       /// Access data branch by name: Get existing branch in read only mode
-      virtual TBranch* getBranch(const std::string&  section, const std::string& n) = 0;
+      virtual TBranch* getBranch( const std::string& section, const std::string& n ) = 0;
       /// Internal overload to facilitate the access to POOL files
-      virtual RootRef poolRef(size_t /* which */) const { return RootRef(); }
+      virtual RootRef poolRef( size_t /* which */ ) const { return RootRef(); }
 
       /// Read references section when opening data file
       virtual StatusCode readRefs() = 0;
       /// Save references section when closing data file
       virtual StatusCode saveRefs() = 0;
       /// Load references object
-      virtual int loadRefs(const std::string& section, const std::string& cnt, unsigned long entry, RootObjectRefs& refs) = 0;
+      virtual int loadRefs( const std::string& section, const std::string& cnt, unsigned long entry,
+                            RootObjectRefs& refs ) = 0;
     };
     std::unique_ptr<Tool> m_tool;
     friend class Tool;
@@ -237,96 +240,103 @@ namespace Gaudi  {
     Tool* makeTool();
 
   public:
-
     /// Standard constructor
-    RootDataConnection(const IInterface* own, const std::string& nam, std::shared_ptr<RootConnectionSetup> setup);
+    RootDataConnection( const IInterface* own, const std::string& nam, std::shared_ptr<RootConnectionSetup> setup );
     /// Standard destructor
     ~RootDataConnection() override = default;
 
     /// Direct access to TFile structure
-    TFile* file() const                         { return m_file.get();                   }
+    TFile* file() const { return m_file.get(); }
     /// Check if connected to data source
-    bool isConnected() const override           { return bool(m_file);                   }
+    bool isConnected() const override { return bool( m_file ); }
     /// Is the file writable?
-    bool isWritable() const                     { return m_file && m_file->IsWritable(); }
+    bool isWritable() const { return m_file && m_file->IsWritable(); }
     /// Access tool
-    Tool* tool() const                          { return m_tool.get();                   }
+    Tool* tool() const { return m_tool.get(); }
     /// Access merged data section inventory
-    const MergeSections& mergeSections() const  { return m_mergeSects;                   }
+    const MergeSections& mergeSections() const { return m_mergeSects; }
     /// Access merged FIDs
-    const StringVec& mergeFIDs() const          { return m_mergeFIDs;                    }
-
+    const StringVec& mergeFIDs() const { return m_mergeFIDs; }
 
     /// Add new client to this data source
-    void addClient(const IInterface* client);
+    void addClient( const IInterface* client );
     /// Remove client from this data source
-    size_t removeClient(const IInterface* client);
+    size_t removeClient( const IInterface* client );
     /// Lookup client for this data source
-    bool lookupClient(const IInterface* client) const;
+    bool lookupClient( const IInterface* client ) const;
 
     /// Error handler when bad write statements occur
-    void badWriteError(const std::string& msg)  const;
+    void badWriteError( const std::string& msg ) const;
 
     /// Access link section for single container and entry
-    std::pair<const RootRef*,const ContainerSection*>  getMergeSection(const std::string& container, int entry) const;
+    std::pair<const RootRef*, const ContainerSection*> getMergeSection( const std::string& container, int entry ) const;
 
     /// Enable TTreePerStats
-    void enableStatistics(const std::string& section);
+    void enableStatistics( const std::string& section );
     /// Save TTree access statistics if required
-    void saveStatistics(const std::string& statisticsFile);
+    void saveStatistics( const std::string& statisticsFile );
 
     /// Load object
-    int loadObj(const std::string& section, const std::string& cnt, unsigned long entry, DataObject*& pObj);
+    int loadObj( const std::string& section, const std::string& cnt, unsigned long entry, DataObject*& pObj );
 
     /// Load references object
-    int loadRefs(const std::string& section, const std::string& cnt, unsigned long entry, RootObjectRefs& refs);
+    int loadRefs( const std::string& section, const std::string& cnt, unsigned long entry, RootObjectRefs& refs );
 
     /// Save object of a given class to section and container
-    std::pair<int,unsigned long> saveObj(const std::string& section,const std::string& cnt, TClass* cl, DataObject* pObj, int buff_siz, int split_lvl,bool fill_missing=false);
+    std::pair<int, unsigned long> saveObj( const std::string& section, const std::string& cnt, TClass* cl,
+                                           DataObject* pObj, int buff_siz, int split_lvl, bool fill_missing = false );
     /// Save object of a given class to section and container
-    std::pair<int,unsigned long> save(const std::string& section,const std::string& cnt, TClass* cl, void* pObj, int buff_siz, int split_lvl,bool fill_missing=false);
-
+    std::pair<int, unsigned long> save( const std::string& section, const std::string& cnt, TClass* cl, void* pObj,
+                                        int buff_siz, int split_lvl, bool fill_missing = false );
 
     /// Open data stream in read mode
     StatusCode connectRead() override;
     /// Open data stream in write mode
-    StatusCode connectWrite(IoType typ) override;
+    StatusCode connectWrite( IoType typ ) override;
     /// Release data stream and release implementation dependent resources
     StatusCode disconnect() override;
     /// Read root byte buffer from input stream
-    StatusCode read(void* const, size_t) override  { return StatusCode::FAILURE; }
+    StatusCode read( void* const, size_t ) override { return StatusCode::FAILURE; }
     /// Write root byte buffer to output stream
-    StatusCode write(const void*, int) override { return StatusCode::FAILURE; }
+    StatusCode write( const void*, int ) override { return StatusCode::FAILURE; }
     /// Seek on the file described by ioDesc. Arguments as in ::seek()
-    long long int seek(long long int, int) override { return -1; }
+    long long int seek( long long int, int ) override { return -1; }
 
     /// Access TTree section from section name. The section is created if required.
-    TTree* getSection(const std::string& sect, bool create=false);
+    TTree* getSection( const std::string& sect, bool create = false );
 
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch(const std::string& section,const std::string& branch_name)
-    { return m_tool->getBranch(section,branch_name); }
+    TBranch* getBranch( const std::string& section, const std::string& branch_name )
+    {
+      return m_tool->getBranch( section, branch_name );
+    }
     /// Access data branch by name: Get existing branch in write mode
-    TBranch* getBranch(const std::string& section, const std::string& branch_name, TClass* cl, void* ptr, int buff_siz, int split_lvl);
+    TBranch* getBranch( const std::string& section, const std::string& branch_name, TClass* cl, void* ptr, int buff_siz,
+                        int split_lvl );
 
     /// Create reference object from registry entry
-    void makeRef(IRegistry* pA, RootRef& ref);
+    void makeRef( IRegistry* pA, RootRef& ref );
     /// Create reference object from values
-    void makeRef(const std::string& name, long clid, int tech, const std::string& db, const std::string& cnt, int entry, RootRef& ref);
+    void makeRef( const std::string& name, long clid, int tech, const std::string& db, const std::string& cnt,
+                  int entry, RootRef& ref );
 
     /// Convert path string to path index
-    int makeLink(const std::string& p);
+    int makeLink( const std::string& p );
 
     /// Access database/file name from saved index
-    const std::string& getDb(int which) const;
+    const std::string& getDb( int which ) const;
 
     /// Access container name from saved index
-    const std::string& getCont(int which) const
-      { return (which>=0)&&(size_t(which)<m_conts.size()) ? *(m_conts.begin()+which) : empty();    }
+    const std::string& getCont( int which ) const
+    {
+      return ( which >= 0 ) && ( size_t( which ) < m_conts.size() ) ? *( m_conts.begin() + which ) : empty();
+    }
 
     /// Access link name from saved index
-    const std::string& getLink(int which) const
-      { return (which>=0)&&(size_t(which)<m_links.size()) ? *(m_links.begin()+which) : empty();    }
+    const std::string& getLink( int which ) const
+    {
+      return ( which >= 0 ) && ( size_t( which ) < m_links.size() ) ? *( m_links.begin() + which ) : empty();
+    }
   };
-}         // End namespace Gaudi
-#endif    // GAUDIROOT_ROOTDATACONNECTION_H
+} // End namespace Gaudi
+#endif // GAUDIROOT_ROOTDATACONNECTION_H

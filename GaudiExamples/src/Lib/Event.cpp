@@ -1,7 +1,8 @@
 #include "GaudiExamples/Event.h"
 
-using namespace Gaudi::Examples ;
+using namespace Gaudi::Examples;
 
-Event::Event() : DataObject() {
-  //m_collisions(this);
+Event::Event() : DataObject()
+{
+  // m_collisions(this);
 }

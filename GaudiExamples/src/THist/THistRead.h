@@ -8,11 +8,12 @@ class TH1F;
 class ITHistSvc;
 class TDirectory;
 
-class THistRead : public Algorithm {
+class THistRead : public Algorithm
+{
 
 public:
   // Constructor of this form must be provided
-  THistRead(const std::string& name, ISvcLocator* pSvcLocator); 
+  THistRead( const std::string& name, ISvcLocator* pSvcLocator );
 
   // Three mandatory member functions of any algorithm
   StatusCode initialize() override;
@@ -20,12 +21,9 @@ public:
   StatusCode finalize() override;
 
 private:
-
   ITHistSvc* m_ths;
 
   TH1F* m_h1;
-
 };
 
-
-# endif    // THIST_HISTREAD_H
+#endif // THIST_HISTREAD_H

@@ -1,2 +1,2 @@
 from Gaudi.Configuration import *
-MessageSvc(OutputLevel = 100)
+MessageSvc(OutputLevel=100)

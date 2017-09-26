@@ -12,8 +12,8 @@
 #define GAUDISVC_EVENTSELECTOR_EVENTITERATOR_H 1
 
 // Include files
-#include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IDataStreamTool.h"
+#include "GaudiKernel/IEvtSelector.h"
 
 /** Definition of class EventIterator
 
@@ -29,28 +29,32 @@
    @author Markus Frank
    @version 1.0
 */
-class EvtSelectorContext  : public IEvtSelector::Context {
+class EvtSelectorContext : public IEvtSelector::Context
+{
   // Friend declaration
   friend class EventSelector;
   friend class EventCollectionSelector;
+
 private:
   /// Copy constructor
-  EvtSelectorContext ( const EvtSelectorContext& ) = default;
+  EvtSelectorContext( const EvtSelectorContext& ) = default;
+
 protected:
   /// Stream identifier
   IDataStreamTool::size_type m_streamID = -1;
   /// Event counter
-  long                       m_count = -1;
+  long m_count = -1;
   /// Event counter within stream
-  long                       m_strCount = -1;
+  long m_strCount = -1;
   /// Pointer to event selector
-  const IEvtSelector*     m_pSelector = nullptr;
+  const IEvtSelector* m_pSelector = nullptr;
   /// Pointer to "real" iterator
-  IEvtSelector::Context*  m_context = nullptr;
+  IEvtSelector::Context* m_context = nullptr;
   /// Pointer to opaque address
-  IOpaqueAddress*         m_pAddress = nullptr;
+  IOpaqueAddress* m_pAddress = nullptr;
   /// Set the address of the iterator
-  void set(const IEvtSelector* sel, IDataStreamTool::size_type id, IEvtSelector::Context* it, IOpaqueAddress* pA)    {
+  void set( const IEvtSelector* sel, IDataStreamTool::size_type id, IEvtSelector::Context* it, IOpaqueAddress* pA )
+  {
     m_pSelector = sel;
     m_context   = it;
     m_streamID  = id;
@@ -58,49 +62,40 @@ protected:
     m_strCount  = -1;
   }
   /// Set the address of the iterator
-  void set(IEvtSelector::Context* it, IOpaqueAddress* pA)    {
-    m_context = it;
+  void set( IEvtSelector::Context* it, IOpaqueAddress* pA )
+  {
+    m_context  = it;
     m_pAddress = pA;
   }
   /// Set the address of the iterator
-  void set(IOpaqueAddress* pA)    {
-    m_pAddress = pA;
-  }
+  void set( IOpaqueAddress* pA ) { m_pAddress = pA; }
   /// Access "real" iterator
-  IEvtSelector::Context* context()  const  {
-    return m_context;
-  }
+  IEvtSelector::Context* context() const { return m_context; }
   /// Increase counters
-  IDataStreamTool::size_type increaseCounters(bool reset=false)   {
+  IDataStreamTool::size_type increaseCounters( bool reset = false )
+  {
     m_count++;
-    m_strCount = (reset) ? 0 : m_strCount+1;
+    m_strCount = ( reset ) ? 0 : m_strCount + 1;
     return m_count;
   }
   /// Decrease counters
-  IDataStreamTool::size_type decreaseCounters(bool reset=false)   {
+  IDataStreamTool::size_type decreaseCounters( bool reset = false )
+  {
     m_count++;
-    m_strCount = (reset) ? 0 : m_strCount-1;
+    m_strCount = ( reset ) ? 0 : m_strCount - 1;
     return m_count;
   }
+
 public:
   /// Standard constructor
-  EvtSelectorContext( const IEvtSelector* selector )
-  : m_pSelector(selector) { }
+  EvtSelectorContext( const IEvtSelector* selector ) : m_pSelector( selector ) {}
 
   /// Stream identifier
-  virtual IDataStreamTool::size_type ID()   const {
-    return m_streamID;
-  }
+  virtual IDataStreamTool::size_type ID() const { return m_streamID; }
   /// Access counter
-  long numEvent()  const    {
-    return m_count;
-  }
+  long numEvent() const { return m_count; }
   /// Access counter within stream
-  long numStreamEvent()  const    {
-    return m_strCount;
-  }
-  void* identifier() const override {
-    return (void*)m_pSelector;
-  }
+  long numStreamEvent() const { return m_strCount; }
+  void* identifier() const override { return (void*)m_pSelector; }
 };
 #endif // GAUDISVC_EVENTSELECTOR_EVENTITERATOR_H

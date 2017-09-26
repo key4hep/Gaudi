@@ -13,7 +13,8 @@
 /*
  *   Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   /** @class RootDatabaseCnv RootDatabaseCnv.h Root/RootDatabaseCnv.h
    *
@@ -25,9 +26,9 @@ namespace Gaudi {
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootDatabaseCnv: public RootDirectoryCnv {
+  class GAUDI_API RootDatabaseCnv : public RootDirectoryCnv
+  {
   public:
-
     /** Initializing Constructor
      * @param      typ      [IN]     Concrete storage type of the converter
      * @param      svc      [IN]     Pointer to service locator object
@@ -35,7 +36,7 @@ namespace Gaudi {
      *
      * @return Reference to RootDatabaseCnv object
      */
-    RootDatabaseCnv(long typ, const CLID&, ISvcLocator* svc, RootCnvSvc* mgr);
+    RootDatabaseCnv( long typ, const CLID&, ISvcLocator* svc, RootCnvSvc* mgr );
 
     /// Standard destructor
     ~RootDatabaseCnv() override = default;
@@ -45,9 +46,7 @@ namespace Gaudi {
      *
      * @return     Name of the container the object should be put to.
      */
-    const std::string containerName(IRegistry* /* pReg */)  const  override {
-      return "<local>";
-    }
+    const std::string containerName( IRegistry* /* pReg */ ) const override { return "<local>"; }
 
     /** Converter overrides: Create transient object from persistent data
      *
@@ -56,7 +55,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override;
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;
   };
 }
-#endif    // GAUDIROOTCNV_ROOTDATABASECNV_H
+#endif // GAUDIROOTCNV_ROOTDATABASECNV_H

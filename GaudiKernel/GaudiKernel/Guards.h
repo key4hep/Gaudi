@@ -9,14 +9,14 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/IExceptionSvc.h"
 #include "GaudiKernel/IAuditor.h"
+#include "GaudiKernel/IExceptionSvc.h"
+#include "GaudiKernel/INamedInterface.h"
+#include "GaudiKernel/SmartIF.h"
 // ============================================================================
 // forward declaration
 // ============================================================================
-class GaudiException ;
+class GaudiException;
 // ============================================================================
 namespace Gaudi
 {
@@ -113,61 +113,62 @@ namespace Gaudi
        * @param log output log-stream
        */
       template <class OBJECT, class FUNCTION>
-      ExceptionGuard
-      ( OBJECT         obj     ,
-        FUNCTION       fun     ,
-        MsgStream&     log     ,
-        IExceptionSvc* svc = 0 )
+      ExceptionGuard( OBJECT obj, FUNCTION fun, MsgStream& log, IExceptionSvc* svc = 0 )
       {
-        try
-        {
+        try {
           // execute the functor:
-          m_sc = fun ( obj ) ;  ///< execute the functor
+          m_sc = fun( obj ); ///< execute the functor
           // in the case of error try use Exception Service
-          if ( svc && m_sc.isFailure() ) { m_sc = svc->handleErr ( *obj , m_sc ) ; }
-        }
-        catch ( const GaudiException& e )
-        {
+          if ( svc && m_sc.isFailure() ) {
+            m_sc = svc->handleErr( *obj, m_sc );
+          }
+        } catch ( const GaudiException& e ) {
           // Use the local handler and then (if possible) the Exception Service
-          handle ( e  , log ) ;
-          if ( svc ) { m_sc = svc -> handle ( *obj , e ) ; }
-        }
-        catch ( const std::exception& e )
-        {
+          handle( e, log );
+          if ( svc ) {
+            m_sc = svc->handle( *obj, e );
+          }
+        } catch ( const std::exception& e ) {
           // Use the local handler and then (if possible) the Exception Service
-          handle ( e  , log ) ;
-          if ( svc ) { m_sc = svc -> handle ( *obj , e ) ; }
-        }
-        catch ( ...  )
-        {
+          handle( e, log );
+          if ( svc ) {
+            m_sc = svc->handle( *obj, e );
+          }
+        } catch ( ... ) {
           // Use the local handler and then (if possible) the Exception Service
-          handle (      log ) ;
-          if ( svc ) { m_sc = svc -> handle ( *obj     ) ; }
+          handle( log );
+          if ( svc ) {
+            m_sc = svc->handle( *obj );
+          }
         }
       }
       /// destructor
-      ~ExceptionGuard() ;
+      ~ExceptionGuard();
+
     public:
       /// the result of function evaluation
-      const StatusCode&    code () const { return m_sc   ; }
+      const StatusCode& code() const { return m_sc; }
       /// cast operator, useful for the implicit conversions
-      operator const StatusCode&() const { return code() ; }
+      operator const StatusCode&() const { return code(); }
+
     private:
       // delete default/copy constructor and assignment
-      ExceptionGuard() = delete; 
-      ExceptionGuard           ( const ExceptionGuard& ) = delete;
+      ExceptionGuard()                        = delete;
+      ExceptionGuard( const ExceptionGuard& ) = delete;
       ExceptionGuard& operator=( const ExceptionGuard& ) = delete;
+
     protected:
       /// local handler of GaudiException
-      void handle ( const GaudiException& e , MsgStream& s ) ;
+      void handle( const GaudiException& e, MsgStream& s );
       /// local handler of std::exception
-      void handle ( const std::exception& e , MsgStream& s ) ;
+      void handle( const std::exception& e, MsgStream& s );
       /// local handler of UNKNOWN exceptions
-      void handle (                           MsgStream& s ) ;
+      void handle( MsgStream& s );
+
     private:
       // status code: result of the function evaluation
-      StatusCode m_sc = StatusCode::FAILURE   ; ///< status code : result of function evaluation
-    } ;
+      StatusCode m_sc = StatusCode::FAILURE; ///< status code : result of function evaluation
+    };
     // ========================================================================
     /** @class AuditorGuard Guards.h GaudiKernel/Guards.h
      *  It is a simple guard,
@@ -215,128 +216,112 @@ namespace Gaudi
     {
     public:
       /// constructor
-      AuditorGuard ( INamedInterface*             obj      ,
-                     IAuditor*                    svc      ,
-                     IAuditor::StandardEventType  evt      ) ;
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::StandardEventType evt );
       /// constructor
-      AuditorGuard ( INamedInterface*             obj      ,
-                     IAuditor*                    svc      ,
-                     IAuditor::CustomEventTypeRef evt      ) ;
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::CustomEventTypeRef evt );
 
       /// constructor
-      AuditorGuard ( INamedInterface*             obj      ,
-                     IAuditor*                    svc      ,
-                     IAuditor::StandardEventType  evt      ,
-                     const StatusCode            &sc       ) ;
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::StandardEventType evt, const StatusCode& sc );
       /// constructor
-      AuditorGuard ( INamedInterface*             obj      ,
-                     IAuditor*                    svc      ,
-                     IAuditor::CustomEventTypeRef evt      ,
-                     const StatusCode            &sc       ) ;
+      AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::CustomEventTypeRef evt, const StatusCode& sc );
       /// constructor
-      AuditorGuard ( std::string                  name     ,
-                     IAuditor*                    svc      ,
-                     IAuditor::StandardEventType  evt      ) ;
+      AuditorGuard( std::string name, IAuditor* svc, IAuditor::StandardEventType evt );
       /// constructor
-      AuditorGuard ( std::string                  name     ,
-                     IAuditor*                    svc      ,
-                     IAuditor::CustomEventTypeRef evt      ) ;
+      AuditorGuard( std::string name, IAuditor* svc, IAuditor::CustomEventTypeRef evt );
 
       /// constructor
-      AuditorGuard ( std::string                  name     ,
-                     IAuditor*                    svc      ,
-                     IAuditor::StandardEventType  evt      ,
-                     const StatusCode            &sc       ) ;
+      AuditorGuard( std::string name, IAuditor* svc, IAuditor::StandardEventType evt, const StatusCode& sc );
       /// constructor
-      AuditorGuard ( std::string                  name     ,
-                     IAuditor*                    svc      ,
-                     IAuditor::CustomEventTypeRef evt      ,
-                     const StatusCode            &sc       ) ;
+      AuditorGuard( std::string name, IAuditor* svc, IAuditor::CustomEventTypeRef evt, const StatusCode& sc );
 
       /// dectructor
-      ~AuditorGuard() ;
+      ~AuditorGuard();
+
     public:
       // get the status code
-      const StatusCode &code () const { return *m_sc ; }
+      const StatusCode& code() const { return *m_sc; }
+
     private:
       // delete the default/copy constructor and assigment
-      AuditorGuard () = delete;
-      AuditorGuard           ( const AuditorGuard& right ) = delete;
+      AuditorGuard()                            = delete;
+      AuditorGuard( const AuditorGuard& right ) = delete;
       AuditorGuard& operator=( const AuditorGuard& right ) = delete;
-    private :
+
+    private:
       /// the guarded object
-      INamedInterface*                     m_obj  = nullptr ;
+      INamedInterface* m_obj = nullptr;
       /// the guarded object name (if there is no INamedInterface)
-      std::string                 m_objName;
+      std::string m_objName;
       /// auditor service
-      SmartIF<IAuditor>                   m_svc   = nullptr;
+      SmartIF<IAuditor> m_svc = nullptr;
       /// Event type (standard events)
-      IAuditor::StandardEventType m_evt   ;
+      IAuditor::StandardEventType m_evt;
       /// Event type (custom events)
-      IAuditor::CustomEventType   m_cevt  ;
+      IAuditor::CustomEventType m_cevt;
       /// Pointer to a status code instance, to be passed to the "after" function if needed
       /// The instance must have a scope larger than the one of the guard.
       /// No check is performed.
-      const StatusCode           *m_sc    = nullptr;
+      const StatusCode* m_sc = nullptr;
       /// Flag to remember which event type was used.
-      bool                        m_customEvtType = false;
+      bool m_customEvtType = false;
 
-      inline void i_before() {
+      inline void i_before()
+      {
         if ( m_svc ) { // if the service is not available, we cannot do anything
-          if (m_obj) {
-            if (m_customEvtType) {
-              m_svc->before(m_cevt,m_obj);
+          if ( m_obj ) {
+            if ( m_customEvtType ) {
+              m_svc->before( m_cevt, m_obj );
             } else {
-              m_svc->before(m_evt,m_obj);
+              m_svc->before( m_evt, m_obj );
             }
           } else { // use object name
-            if (m_customEvtType) {
-              m_svc->before(m_cevt,m_objName);
+            if ( m_customEvtType ) {
+              m_svc->before( m_cevt, m_objName );
             } else {
-              m_svc->before(m_evt,m_objName);
+              m_svc->before( m_evt, m_objName );
             }
           }
         }
       }
 
-      inline void i_after() {
+      inline void i_after()
+      {
         if ( m_svc ) { // if the service is not available, we cannot do anything
-          if ( m_obj) {
-            if (m_customEvtType) {
-              if ( m_sc) {
-                m_svc->after(m_cevt,m_obj,*m_sc);
+          if ( m_obj ) {
+            if ( m_customEvtType ) {
+              if ( m_sc ) {
+                m_svc->after( m_cevt, m_obj, *m_sc );
               } else {
-                m_svc->after(m_cevt,m_obj);
+                m_svc->after( m_cevt, m_obj );
               }
             } else {
-              if (m_sc) {
-                m_svc->after(m_evt,m_obj,*m_sc);
+              if ( m_sc ) {
+                m_svc->after( m_evt, m_obj, *m_sc );
               } else {
-                m_svc->after(m_evt,m_obj);
+                m_svc->after( m_evt, m_obj );
               }
             }
           } else { // use object name
-            if (m_customEvtType) {
-              if (m_sc) {
-                m_svc->after(m_cevt,m_objName,*m_sc);
+            if ( m_customEvtType ) {
+              if ( m_sc ) {
+                m_svc->after( m_cevt, m_objName, *m_sc );
               } else {
-                m_svc->after(m_cevt,m_objName);
+                m_svc->after( m_cevt, m_objName );
               }
             } else {
-              if (m_sc) {
-                m_svc->after(m_evt,m_objName,*m_sc);
+              if ( m_sc ) {
+                m_svc->after( m_evt, m_objName, *m_sc );
               } else {
-                m_svc->after(m_evt,m_objName);
+                m_svc->after( m_evt, m_objName );
               }
             }
           }
           m_svc.reset();
         }
       }
-    } ;
+    };
   } // end of namespace Gaudi::Guards
-} //end of namespace Gaudi
-
+} // end of namespace Gaudi
 
 // ============================================================================
 // The END

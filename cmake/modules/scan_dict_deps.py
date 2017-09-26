@@ -4,6 +4,7 @@ import re
 from itertools import imap, ifilter
 from os.path import join, exists, isabs
 
+
 def find_file(filename, searchpath):
     '''
     Return the absolute path to filename in the searchpath.
@@ -45,10 +46,12 @@ def find_deps(filename, searchpath, deps=None):
 
     return deps
 
+
 def main():
     from optparse import OptionParser
 
-    parser = OptionParser(usage='%prog [options] output_file variable_name headers...')
+    parser = OptionParser(
+        usage='%prog [options] output_file variable_name headers...')
     parser.add_option('-I', action='append', dest='include_dirs')
 
     opts, args = parser.parse_args()
@@ -70,10 +73,11 @@ def main():
     new_deps = 'set({deps_var}\n    {deps})\n' \
         .format(deps='\n    '.join(deps), deps_var=variable)
 
-    if new_deps != old_deps: # write it only if it has changed
+    if new_deps != old_deps:  # write it only if it has changed
         open(output, 'w').write(new_deps)
         if old_deps:
             print 'info: dependencies changed: next build will trigger a reconfigure'
+
 
 if __name__ == '__main__':
     main()

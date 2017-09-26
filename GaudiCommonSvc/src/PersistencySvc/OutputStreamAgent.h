@@ -8,7 +8,7 @@
 //
 //	Author     : M.Frank
 //  Created    : 13/1/99
-//	Changes    : 
+//	Changes    :
 //
 //====================================================================
 #ifndef PERSISTENCYSVC_OUTPUTSTREAMAGENT_H
@@ -21,21 +21,23 @@ class IRegistry;
 class OutputStream;
 
 /** @name The OutputStreamAgent class.
- 
+
   Data store Agent to traverse data store trees and select all
   items to be written to the output file.
- 
+
   @author Markus Frank
  */
-class OutputStreamAgent : virtual public IDataStoreAgent  {
+class OutputStreamAgent : virtual public IDataStoreAgent
+{
   /// Reference to data writer
-  OutputStream*  m_OutputStream = nullptr;
+  OutputStream* m_OutputStream = nullptr;
+
 public:
   /// Standard Constructor
-  OutputStreamAgent(OutputStream* OutputStream);
+  OutputStreamAgent( OutputStream* OutputStream );
   /// Standard Destructor
   ~OutputStreamAgent() override = default;
   /// Analysis callback
-  bool analyse(IRegistry* dir, int level) override;
+  bool analyse( IRegistry* dir, int level ) override;
 };
 #endif // PERSISTENCYSVC_OUTPUTSTREAMAGENT_H

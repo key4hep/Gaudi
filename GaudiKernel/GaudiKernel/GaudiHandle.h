@@ -1,55 +1,50 @@
 #ifndef GAUDIKERNEL_GAUDIHANDLE_H
 #define GAUDIKERNEL_GAUDIHANDLE_H
 
-//Includes
+// Includes
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/System.h"
-#include "GaudiKernel/GaudiException.h"
 
-#include <string>
 #include <algorithm>
-#include <vector>
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
+#include <string>
 #include <type_traits>
+#include <vector>
 
-class GAUDI_API GaudiHandleInfo {
+class GAUDI_API GaudiHandleInfo
+{
 protected:
   /** Some basic information and helper functions shared between various handles/arrays.
    @param myComponentType: string indicating what type of component the handle is pointing to.
                         For example: "PublicTool", "PrivateTool", "Service".
                         This is used for printout and on the python side for type checking.
-			On the python side there are classes with these names with "Handle" appended:
+                        On the python side there are classes with these names with "Handle" appended:
                         PublicToolHandle,PrivateToolHandle,ServiceHandle
    @param myParentName: Name of the parent that has this handle as a member. Used in printout.
   */
   GaudiHandleInfo( std::string myComponentType, std::string myParentName )
-    : m_componentType(std::move(myComponentType)), m_parentName(std::move(myParentName))
-  {}
+      : m_componentType( std::move( myComponentType ) ), m_parentName( std::move( myParentName ) )
+  {
+  }
+
 public:
   /** virtual destructor so that derived class destructor is called. */
   virtual ~GaudiHandleInfo() = default;
   //
   // Public member functions
   //
-  const std::string& componentType() const {
-     return m_componentType;
-  }
+  const std::string& componentType() const { return m_componentType; }
 
   /** name as used in declareProperty(name,gaudiHandle) */
-  const std::string& propertyName() const {
-     return m_propertyName;
-  }
+  const std::string& propertyName() const { return m_propertyName; }
 
   /** set name as used in declareProperty(name,gaudiHandle). Used in printout. */
-  void setPropertyName( std::string propName ) {
-    m_propertyName = std::move(propName);
-  }
+  void setPropertyName( std::string propName ) { m_propertyName = std::move( propName ); }
 
   /** The name of the parent */
-  const std::string& parentName() const {
-    return m_parentName;
-  }
+  const std::string& parentName() const { return m_parentName; }
 
   /** The python class name for the property in the genconf-generated configurables.
       The python class is defined in GaudiPython/python/GaudiHandles.py.
@@ -63,16 +58,11 @@ public:
   virtual std::string pythonRepr() const = 0;
 
 protected:
-
   /** The component type */
-  void setComponentType(const std::string& componentType) {
-    m_componentType = componentType;
-  }
-  
+  void setComponentType( const std::string& componentType ) { m_componentType = componentType; }
+
   /** The name of the parent */
-  void setParentName(const std::string& parent) {
-    m_parentName = parent;
-  }
+  void setParentName( const std::string& parent ) { m_parentName = parent; }
 
 private:
   //
@@ -83,7 +73,6 @@ private:
   std::string m_parentName;    // name of the parent having this handle as a member
 };
 
-
 /** @class GaudiHandleBase GaudiHandle.h GaudiKernel/GaudiHandle.h
 
     Base class to handles to be used in lieu of naked pointers to various Gaudi components.
@@ -91,7 +80,8 @@ private:
     This base class implements common features.
     @author Martin.Woudstra@cern.ch
 */
-class GAUDI_API GaudiHandleBase : public GaudiHandleInfo {
+class GAUDI_API GaudiHandleBase : public GaudiHandleInfo
+{
   //
   // Ctors etc
   //
@@ -103,24 +93,22 @@ protected:
    @param myComponentType: string indicating what type of component the handle is pointing to.
                         For example: "PublicTool", "PrivateTool", "Service".
                         This is used for printout and on the python side for type checking.
-			On the python side there are classes with these names with "Handle" appended:
+                        On the python side there are classes with these names with "Handle" appended:
                         PublicToolHandle,PrivateToolHandle,ServiceHandle
    @param myParentName: Name of the parent that has this handle as a member. Used in printout.
   */
-  GaudiHandleBase( std::string myTypeAndName, std::string myComponentType,
-		           std::string myParentName )
-    : GaudiHandleInfo(std::move(myComponentType),std::move(myParentName))
+  GaudiHandleBase( std::string myTypeAndName, std::string myComponentType, std::string myParentName )
+      : GaudiHandleInfo( std::move( myComponentType ), std::move( myParentName ) )
   {
-    setTypeAndName(std::move(myTypeAndName));
+    setTypeAndName( std::move( myTypeAndName ) );
   }
+
 public:
   //
   // Public member functions
   //
   /** The full type and name: "type/name" */
-  std::string typeAndName() const {
-     return m_typeAndName;
-  }
+  std::string typeAndName() const { return m_typeAndName; }
 
   /** The concrete component class name: the part before the '/' */
   std::string type() const;
@@ -129,9 +117,7 @@ public:
   std::string name() const;
 
   /** Check if the handle has been set to empty string (i.e. typeAndName string is empty). */
-  bool empty() const {
-    return m_typeAndName.empty();
-  }
+  bool empty() const { return m_typeAndName.empty(); }
 
   /** The component "type/name" string */
   void setTypeAndName( std::string myTypeAndName );
@@ -156,9 +142,8 @@ private:
   //
   // Data member
   //
-  std::string m_typeAndName;   // the full type and name: "type/name"
+  std::string m_typeAndName; // the full type and name: "type/name"
 };
-
 
 /** @class GaudiHandle GaudiHandle.h GaudiKernel/GaudiHandle.h
 
@@ -168,192 +153,191 @@ private:
 
     @author Martin.Woudstra@cern.ch
 */
-template< class T >
-class GAUDI_API GaudiHandle: public GaudiHandleBase {
+template <class T>
+class GAUDI_API GaudiHandle : public GaudiHandleBase
+{
   //
   // Constructors etc.
   //
 protected:
-  GaudiHandle( std::string myTypeAndName, std::string myComponentType,
-               std::string myParentName )
-    : GaudiHandleBase(std::move(myTypeAndName), std::move(myComponentType), std::move(myParentName))
-  {}
+  GaudiHandle( std::string myTypeAndName, std::string myComponentType, std::string myParentName )
+      : GaudiHandleBase( std::move( myTypeAndName ), std::move( myComponentType ), std::move( myParentName ) )
+  {
+  }
 
 public:
-
   /** Copy constructor needed for correct ref-counting */
-  template< typename CT  = T,
-            typename NCT = typename std::remove_const<T>::type >
+  template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
   GaudiHandle( const GaudiHandle<NCT>& other,
-               typename std::enable_if< std::is_const<CT>::value &&
-                                        !std::is_same<CT,NCT>::value >::type * = nullptr )
-    : GaudiHandleBase( other ) {
+               typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
+      : GaudiHandleBase( other )
+  {
     m_pObject = other.get();
-    if ( m_pObject ) nonConst(m_pObject)->addRef();
+    if ( m_pObject ) nonConst( m_pObject )->addRef();
   }
 
   /** Copy constructor needed for correct ref-counting */
-  GaudiHandle( const GaudiHandle& other )
-    : GaudiHandleBase( other ) {
+  GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other )
+  {
     m_pObject = other.m_pObject;
-    if ( m_pObject ) nonConst(m_pObject)->addRef();
+    if ( m_pObject ) nonConst( m_pObject )->addRef();
   }
 
   /** Assignment operator for correct ref-counting */
-  template< typename CT  = T,
-            typename NCT = typename std::remove_const<T>::type >
-  typename std::enable_if< std::is_const<CT>::value && !std::is_same<CT,NCT>::value, GaudiHandle& >::type
-  operator=( const GaudiHandle<NCT>& other ) {
+  template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
+  typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value, GaudiHandle&>::type
+  operator=( const GaudiHandle<NCT>& other )
+  {
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();
     m_pObject = other.get();
     // update ref-counting
-    if ( m_pObject ) nonConst(m_pObject)->addRef();
+    if ( m_pObject ) nonConst( m_pObject )->addRef();
     return *this;
   }
 
   /** Assignment operator for correct ref-counting */
-  GaudiHandle& operator=( const GaudiHandle& other ) {
+  GaudiHandle& operator=( const GaudiHandle& other )
+  {
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();
     m_pObject = other.m_pObject;
     // update ref-counting
-    if ( m_pObject ) nonConst(m_pObject)->addRef();
+    if ( m_pObject ) nonConst( m_pObject )->addRef();
     return *this;
   }
 
   /** Retrieve the component. Release existing component if needed. */
-  StatusCode retrieve() const { // not really const, because it updates m_pObject
+  StatusCode retrieve() const
+  { // not really const, because it updates m_pObject
     StatusCode sc = StatusCode::SUCCESS;
-    if ( m_pObject && release().isFailure() ) { sc = StatusCode::FAILURE; }
-    if ( sc && retrieve( m_pObject ).isFailure() )
-    {
-      m_pObject = nullptr;
+    if ( m_pObject && release().isFailure() ) {
       sc = StatusCode::FAILURE;
+    }
+    if ( sc && retrieve( m_pObject ).isFailure() ) {
+      m_pObject = nullptr;
+      sc        = StatusCode::FAILURE;
     }
     return sc;
   }
 
   /** Release the component. */
-  StatusCode release() const { // not really const, because it updates m_pObject
+  StatusCode release() const
+  { // not really const, because it updates m_pObject
     StatusCode sc = StatusCode::SUCCESS;
-    if ( m_pObject ) 
-    {
-      sc = release( m_pObject );
+    if ( m_pObject ) {
+      sc        = release( m_pObject );
       m_pObject = nullptr;
     }
     return sc;
   }
 
   /// Check if the handle is valid (try to retrive the object is not done yet).
-  bool isValid() const { // not really const, because it may update m_pObject
+  bool isValid() const
+  { // not really const, because it may update m_pObject
     return m_pObject || retrieve().isSuccess();
   }
 
   /** For testing if handle has component. Does retrieve() if needed.
       If this returns false, the component could not be retrieved. */
-  operator bool() const { // not really const, because it may update m_pObject
+  operator bool() const
+  { // not really const, because it may update m_pObject
     return isValid();
   }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
-  T * get() { return m_pObject; }
+  T* get() { return m_pObject; }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
-  typename std::add_const<T>::type * get() const {
-    return m_pObject;
-  }
+  typename std::add_const<T>::type* get() const { return m_pObject; }
 
   /// True if the wrapped pointer is not null.
-  bool isSet() const {
-    return get();
-  }
+  bool isSet() const { return get(); }
 
-  T& operator*() {
+  T& operator*()
+  {
     assertObject();
     return *m_pObject;
   }
 
-  T* operator->() {
+  T* operator->()
+  {
     assertObject();
     return m_pObject;
   }
 
-  typename std::add_const<T>::type & operator*() const { 
+  typename std::add_const<T>::type& operator*() const
+  {
     // not really const, because it may update m_pObject
     assertObject();
     return *m_pObject;
   }
 
-  typename std::add_const<T>::type * operator->() const {
+  typename std::add_const<T>::type* operator->() const
+  {
     // not really const, because it may update m_pObject
     assertObject();
     return m_pObject;
   }
 
   /** Helper function to get default type string from the class type */
-  std::string getDefaultType() {
-    return System::typeinfoName( typeid(T) );
-  }
+  std::string getDefaultType() { return System::typeinfoName( typeid( T ) ); }
 
-  std::string getDefaultName() {
+  std::string getDefaultName()
+  {
     const auto defName = GaudiHandleBase::type();
     return ( defName.empty() ? getDefaultType() : defName );
   }
 
 protected:
-
   /** Retrieve the component. To be implemented by the derived class. It will pass the pointer */
   virtual StatusCode retrieve( T*& ) const = 0; // not really const, because it updates m_pObject
 
   /** Release the component. Default implementation calls release() on the component.
       Can be overridden by the derived class if something else is needed. */
-  virtual StatusCode release( T* comp ) const { // not really const, because it updates m_pObject
+  virtual StatusCode release( T* comp ) const
+  { // not really const, because it updates m_pObject
     // const cast to support T being a const type
-    nonConst(comp)->release();
+    nonConst( comp )->release();
     return StatusCode::SUCCESS;
   }
 
   /// Cast a pointer to a non const type
-  template< class CLASS >
-  typename std::remove_const<CLASS>::type * nonConst( CLASS* p ) const
+  template <class CLASS>
+  typename std::remove_const<CLASS>::type* nonConst( CLASS* p ) const
   {
-    return const_cast< typename std::remove_const<CLASS>::type * >( p );
+    return const_cast<typename std::remove_const<CLASS>::type*>( p );
   }
 
- private:
-
+private:
   /** Helper function to set default name and type */
-  void setDefaultTypeAndName() {
+  void setDefaultTypeAndName()
+  {
     const std::string& myType = getDefaultType();
-    GaudiHandleBase::setTypeAndName(myType+'/'+myType);
+    GaudiHandleBase::setTypeAndName( myType + '/' + myType );
   }
 
   /** Helper function to set default type from the class type T */
-  void setDefaultType() {
-    GaudiHandleBase::setTypeAndName( getDefaultType() );
-  }
+  void setDefaultType() { GaudiHandleBase::setTypeAndName( getDefaultType() ); }
 
   /** Load the pointer to the component. Do a retrieve if needed. Throw an exception if
       retrieval fails. */
-  void assertObject() const { // not really const, because it may update m_pObject
-    if ( UNLIKELY(!isValid()) ) {
-      throw GaudiException("Failed to retrieve " + componentType() + ": " + typeAndName(),
-			   componentType() + " retrieve", StatusCode::FAILURE);
+  void assertObject() const
+  { // not really const, because it may update m_pObject
+    if ( UNLIKELY( !isValid() ) ) {
+      throw GaudiException( "Failed to retrieve " + componentType() + ": " + typeAndName(),
+                            componentType() + " retrieve", StatusCode::FAILURE );
     }
   }
 
- private:
-
+private:
   //
   // Data members
   //
   mutable T* m_pObject = nullptr;
-
 };
-
 
 /**
    Base class of array's of various gaudihandles. Used in communication with
@@ -361,32 +345,35 @@ protected:
    This is a non-templated class to one Property can handle all kinds of concrete handles.
 */
 
-class GAUDI_API GaudiHandleArrayBase: public GaudiHandleInfo {
+class GAUDI_API GaudiHandleArrayBase : public GaudiHandleInfo
+{
 protected:
   GaudiHandleArrayBase( std::string myComponentType, std::string myParentName )
-    : GaudiHandleInfo(std::move(myComponentType),std::move(myParentName))
-  {}
+      : GaudiHandleInfo( std::move( myComponentType ), std::move( myParentName ) )
+  {
+  }
+
 public:
-  typedef std::vector< GaudiHandleBase* > BaseHandleArray;
-  typedef std::vector< const GaudiHandleBase* > ConstBaseHandleArray;
+  typedef std::vector<GaudiHandleBase*> BaseHandleArray;
+  typedef std::vector<const GaudiHandleBase*> ConstBaseHandleArray;
 
   /** Set the array of handles from list of "type/name" strings in
       &lt;myTypesAndNamesList&gt;. Return whether set was successful or not */
-  bool setTypesAndNames( const std::vector< std::string >& myTypesAndNamesList );
+  bool setTypesAndNames( const std::vector<std::string>& myTypesAndNamesList );
 
   /** Return a vector with "type/name" strings of all handles in the array.
       Inverse of setTypesAndNames() */
-  const std::vector< std::string > typesAndNames() const;
+  const std::vector<std::string> typesAndNames() const;
 
   /** Return a vector with "type" strings of all handles in the array. */
-  const std::vector< std::string > types() const;
+  const std::vector<std::string> types() const;
 
   /** Return a vector with "type/name" strings of all handles in the array. */
-  const std::vector< std::string > names() const;
+  const std::vector<std::string> names() const;
 
   /** Helper function to get a vector of strings filled with the return value
       of each tool of a member function if GaudiHandleBase */
-  const std::vector< std::string > getBaseInfos( std::string (GaudiHandleBase::*pMemFunc)() const ) const;
+  const std::vector<std::string> getBaseInfos( std::string ( GaudiHandleBase::*pMemFunc )() const ) const;
 
   /** Name of the componentType with "HandleArray" appended. Used as the python class name
       for the property in the genconf-generated configurables.
@@ -419,18 +406,17 @@ public:
 
   /** To be able to tell if Array was ever retreived **/
   virtual bool retrieved() const = 0;
-
 };
-
 
 /** T is the concrete handle type, e.g. ToolHandle<IMyTool> */
 template <class T>
-class GAUDI_API GaudiHandleArray: public GaudiHandleArrayBase {
+class GAUDI_API GaudiHandleArray : public GaudiHandleArrayBase
+{
 public:
   //
   // public nested types
   //
-  typedef std::vector< T > HandleVector;
+  typedef std::vector<T> HandleVector;
   typedef typename HandleVector::value_type value_type;
   typedef typename HandleVector::size_type size_type;
   typedef typename HandleVector::reference reference;
@@ -448,9 +434,9 @@ protected:
       @param typesAndNamesList : a vector of strings with the concrete "type/name" strings
                                  for the list of tools
  */
-  GaudiHandleArray( const std::vector< std::string >& myTypesAndNamesList,
-		            std::string myComponentType, std::string myParentName  )
-    : GaudiHandleArrayBase(std::move(myComponentType),std::move(myParentName))
+  GaudiHandleArray( const std::vector<std::string>& myTypesAndNamesList, std::string myComponentType,
+                    std::string myParentName )
+      : GaudiHandleArrayBase( std::move( myComponentType ), std::move( myParentName ) )
   {
     setTypesAndNames( myTypesAndNamesList );
   }
@@ -459,122 +445,108 @@ protected:
       @param typesAndNamesList : a vector of strings with the concrete "type/name" strings
                                  for the list of tools
  */
-  GaudiHandleArray( const std::string& myComponentType, const std::string& myParentName  )
-    : GaudiHandleArrayBase(myComponentType,myParentName)
-  {}
+  GaudiHandleArray( const std::string& myComponentType, const std::string& myParentName )
+      : GaudiHandleArrayBase( myComponentType, myParentName )
+  {
+  }
 
 public:
   virtual ~GaudiHandleArray() = default;
 
   /**Set the array of GaudiHandles from typeAndNames given in vector of strings. */
-  GaudiHandleArray& operator=( const std::vector< std::string >& myTypesAndNamesList ) {
+  GaudiHandleArray& operator=( const std::vector<std::string>& myTypesAndNamesList )
+  {
     setTypesAndNames( myTypesAndNamesList );
     return *this;
   }
 
-  GaudiHandleArrayBase::BaseHandleArray getBaseArray() override {
+  GaudiHandleArrayBase::BaseHandleArray getBaseArray() override
+  {
     GaudiHandleArrayBase::BaseHandleArray baseArray;
     iterator it = begin(), itEnd = end();
-    for (  ; it != itEnd; ++it ) baseArray.push_back( &*it );
+    for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
 
-  GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override {
+  GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override
+  {
     GaudiHandleArrayBase::ConstBaseHandleArray baseArray;
     const_iterator it = begin(), itEnd = end();
-    for (  ; it != itEnd; ++it ) baseArray.push_back( &*it );
+    for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
 
   //
   // Simulate (part of) an std::vector
   //
-  iterator begin() {
-    return m_handleArray.begin();
-  }
+  iterator begin() { return m_handleArray.begin(); }
 
-  iterator end() {
-    return m_handleArray.end();
-  }
+  iterator end() { return m_handleArray.end(); }
 
-  const_iterator begin() const {
-    return m_handleArray.begin();
-  }
+  const_iterator begin() const { return m_handleArray.begin(); }
 
-  const_iterator end() const {
-    return m_handleArray.end();
-  }
+  const_iterator end() const { return m_handleArray.end(); }
 
-  const_iterator rbegin() const {
-    return m_handleArray.rbegin();
-  }
+  const_iterator rbegin() const { return m_handleArray.rbegin(); }
 
-  const_iterator rend() const {
-    return m_handleArray.rend();
-  }
+  const_iterator rend() const { return m_handleArray.rend(); }
 
-  size_type size() const {
-    return m_handleArray.size();
-  }
+  size_type size() const { return m_handleArray.size(); }
 
-  void clear() override {
-    m_handleArray.clear();
-  }
+  void clear() override { m_handleArray.clear(); }
 
-  bool empty() const override {
-    return m_handleArray.empty();
-  }
+  bool empty() const override { return m_handleArray.empty(); }
 
-  T& operator[]( int index ) {
-    return m_handleArray[index];
-  }
+  T& operator[]( int index ) { return m_handleArray[index]; }
 
-  const T& operator[]( int index ) const {
-    return m_handleArray[index];
-  }
+  const T& operator[]( int index ) const { return m_handleArray[index]; }
 
   /** Get pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
-  T* operator[]( const std::string& name ) {
-    auto it = std::find_if(begin(),end(),[&](const_reference r) {
-            return r.name() == name;
-            } );
+  T* operator[]( const std::string& name )
+  {
+    auto it = std::find_if( begin(), end(), [&]( const_reference r ) { return r.name() == name; } );
     return it != end() ? &*it : nullptr;
   }
 
   /** Get const pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
-  const T* operator[]( const std::string& name ) const {
-    auto it = std::find_if(begin(),end(),[&](const_reference r) {
-            return r.name() == name;
-            } );
+  const T* operator[]( const std::string& name ) const
+  {
+    auto it = std::find_if( begin(), end(), [&]( const_reference r ) { return r.name() == name; } );
     return it != end() ? &*it : nullptr;
   }
 
   /** Add a handle with given type and name. Can be overridden in derived class.
       Return whether addition was successful or not. */
   using GaudiHandleArrayBase::push_back; // avoid compiler warning
-  virtual bool push_back( const T& myHandle ) {
+  virtual bool push_back( const T& myHandle )
+  {
     m_handleArray.push_back( myHandle );
     return true;
   }
-  
+
   /** Retrieve all tools */
-  StatusCode retrieve() 
+  StatusCode retrieve()
   {
     StatusCode sc = StatusCode::SUCCESS;
-    for ( auto& i : *this )
-    { 
+    for ( auto& i : *this ) {
       // stop at first failure
-      if ( i.retrieve().isFailure() ) { sc = StatusCode::FAILURE; break; }
+      if ( i.retrieve().isFailure() ) {
+        sc = StatusCode::FAILURE;
+        break;
+      }
     }
-    if ( sc ) { m_retrieved = true; }
+    if ( sc ) {
+      m_retrieved = true;
+    }
     return sc;
   }
 
   /** Release all tools */
-  StatusCode release() {
+  StatusCode release()
+  {
     StatusCode sc = StatusCode::SUCCESS;
-    for (auto& i : *this ) { 
-	  // continue trying to release other tools even if we fail...
+    for ( auto& i : *this ) {
+      // continue trying to release other tools even if we fail...
       if ( i.release().isFailure() ) sc = StatusCode::FAILURE;
     }
     return sc;
@@ -588,7 +560,7 @@ private:
   // Private data members
   //
   HandleVector m_handleArray;
-  bool m_retrieved { false };
+  bool m_retrieved{false};
 };
 
 // Easy printing out of Handles and HandleArrays

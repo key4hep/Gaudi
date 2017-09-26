@@ -4,6 +4,7 @@
 from cmake_coverage import cmake_script
 from os.path import join, curdir
 
+
 class CMakeTestScripts(object):
     '''
     Helper class to run CMake test scripts.

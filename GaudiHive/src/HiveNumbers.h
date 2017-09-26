@@ -6,8 +6,8 @@
 #include "GaudiKernel/SmartIF.h"
 
 // STL includes
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "tbb/spin_rw_mutex.h"
 
@@ -21,79 +21,77 @@ class IRndmGenSvc;
  * random numbers.
  */
 
-namespace HiveRndm{
+namespace HiveRndm
+{
 
   typedef tbb::spin_rw_mutex_v3 HiveNumbersMutex;
 
-  class GAUDI_API HiveNumbers   {
+  class GAUDI_API HiveNumbers
+  {
   private:
-	unsigned int m_buffer_index;
-	const unsigned int m_buffer_size;
-	std::vector<double> m_buffer;
-	static HiveNumbersMutex m_genMutex;
+    unsigned int m_buffer_index;
+    const unsigned int m_buffer_size;
+    std::vector<double> m_buffer;
+    static HiveNumbersMutex m_genMutex;
+
   protected:
     /// Pointer to random number generator
-    IRndmGen*           m_generator;
+    IRndmGen* m_generator;
+
   public:
     /// Standard constructor
     HiveNumbers();
     /// Copy constructor
-    HiveNumbers(const HiveNumbers& copy );
+    HiveNumbers( const HiveNumbers& copy );
     /// Initializing constructor
-    HiveNumbers(const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par);
+    HiveNumbers( const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par );
     /// Standard destructor
     virtual ~HiveNumbers();
     /// Initialization
-    virtual StatusCode initialize(const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par);
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
+    virtual StatusCode initialize( const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par );
+#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
     /// Initializing constructor
-    HiveNumbers(IRndmGenSvc* svc, const IRndmGen::Param& par);
+    HiveNumbers( IRndmGenSvc* svc, const IRndmGen::Param& par );
     /// Initialization
-    virtual StatusCode initialize(IRndmGenSvc* svc, const IRndmGen::Param& par);
+    virtual StatusCode initialize( IRndmGenSvc* svc, const IRndmGen::Param& par );
 #endif
     /// Finalization
     virtual StatusCode finalize();
     /// Check if the number supply is possible
-    operator bool  ()  const  {
-      return m_generator != 0;
-    }
+    operator bool() const { return m_generator != 0; }
     /// Operator () for the use within STL
-    double operator() ()   {
-      return this->shoot();
-    }
+    double operator()() { return this->shoot(); }
     /// Pop a new number from the buffer
-    double pop()    {
-      return this->shoot();
-    }
+    double pop() { return this->shoot(); }
     /// Pop a new number from the buffer
-    double shoot()    {
-      if ( 0 != m_generator )   {
-    	if (m_buffer_index==0){// we are out of numbers
-    		this->shootArray(m_buffer, m_buffer_size);
-    		m_buffer_index=m_buffer_size-1;
-    	}
-    	const double number=m_buffer[m_buffer_index];
-    	m_buffer_index--;
+    double shoot()
+    {
+      if ( 0 != m_generator ) {
+        if ( m_buffer_index == 0 ) { // we are out of numbers
+          this->shootArray( m_buffer, m_buffer_size );
+          m_buffer_index = m_buffer_size - 1;
+        }
+        const double number = m_buffer[m_buffer_index];
+        m_buffer_index--;
         return number;
       }
       return -1;
     }
     /// Pop a new number from the buffer
-    StatusCode shootArray(std::vector<double>& array, long num, long start=0)  {
-      if ( 0 != m_generator )   {
-         StatusCode status;
-    	 {
-    	  HiveNumbersMutex::scoped_lock lock(m_genMutex);
-    	  status = m_generator->shootArray(array, num, start);
-    	  }
+    StatusCode shootArray( std::vector<double>& array, long num, long start = 0 )
+    {
+      if ( 0 != m_generator ) {
+        StatusCode status;
+        {
+          HiveNumbersMutex::scoped_lock lock( m_genMutex );
+          status = m_generator->shootArray( array, num, start );
+        }
         return status;
       }
       return StatusCode::FAILURE;
     }
   };
 
-
 } // end of Rndm namespace
 
-
-#endif    // GAUDIHIVE_HIVENumbers_H
+#endif // GAUDIHIVE_HIVENumbers_H

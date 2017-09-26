@@ -29,17 +29,20 @@ class DataObject;
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API SmartDataObjectPtr {
+class GAUDI_API SmartDataObjectPtr
+{
 public:
-  using AccessFunction = DataObject*(*)(SmartDataObjectPtr* ptr);
+  using AccessFunction = DataObject* (*)( SmartDataObjectPtr* ptr );
   /// Helper class to configure smart pointer functionality
-  class ObjectLoader    {
+  class ObjectLoader
+  {
   public:
     static AccessFunction access();
   };
 
   /// Helper class to configure smart pointer functionality
-  class ObjectFinder    {
+  class ObjectFinder
+  {
   public:
     static AccessFunction access();
   };
@@ -51,73 +54,50 @@ public:
       @param  pDir         Pointer to data directory
       @param  path         path to object relative to data directory
   */
-  SmartDataObjectPtr(AccessFunction access, IDataProviderSvc* pService, IRegistry* pDir, std::string path)
-    : m_dataProvider(pService),
-      m_pRegistry(pDir),
-      m_path(std::move(path)),
-      m_accessFunc(access)
+  SmartDataObjectPtr( AccessFunction access, IDataProviderSvc* pService, IRegistry* pDir, std::string path )
+      : m_dataProvider( pService ), m_pRegistry( pDir ), m_path( std::move( path ) ), m_accessFunc( access )
   {
   }
   /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */
-  SmartDataObjectPtr(const SmartDataObjectPtr&) = default;
+  SmartDataObjectPtr( const SmartDataObjectPtr& ) = default;
 
   /// Standard Destructor
-  virtual ~SmartDataObjectPtr()  = default;
+  virtual ~SmartDataObjectPtr() = default;
 
   /// Assignment operator
-  virtual SmartDataObjectPtr& operator=(const SmartDataObjectPtr&);
+  virtual SmartDataObjectPtr& operator=( const SmartDataObjectPtr& );
 
   /// Automatic conversion to data directory
-  operator IRegistry*()    {
-    return m_pRegistry;
-  }
+  operator IRegistry*() { return m_pRegistry; }
 
   /// Path name
-  const std::string& path()   const   {
-    return m_path;
-  }
+  const std::string& path() const { return m_path; }
 
   /// Access to data directory
-  IRegistry* directory()    {
-    return m_pRegistry;
-  }
+  IRegistry* directory() { return m_pRegistry; }
 
   /// Assign data service
-  void setService( IDataProviderSvc* svc )    {
-    m_dataProvider = svc;
-  }
+  void setService( IDataProviderSvc* svc ) { m_dataProvider = svc; }
 
   /// Retrieve data service
-  IDataProviderSvc* service()    {
-    return m_dataProvider;
-  }
+  IDataProviderSvc* service() { return m_dataProvider; }
 
   /// Access to potential errors during data accesses
-  const StatusCode&  getLastError()   const   {
-    return m_status;
-  }
+  const StatusCode& getLastError() const { return m_status; }
 
   /// Static Object retrieval method: must call specific function
-  DataObject* accessData()    {
-    return m_accessFunc(this);
-  }
+  DataObject* accessData() { return m_accessFunc( this ); }
 
   /// Static Object retrieval method.
-  static DataObject* retrieve(SmartDataObjectPtr* ptr)   {
-    return ptr->retrieveObject();
-  }
+  static DataObject* retrieve( SmartDataObjectPtr* ptr ) { return ptr->retrieveObject(); }
 
   /// Static Object find method.
-  static DataObject* find(SmartDataObjectPtr* ptr)   {
-    return ptr->findObject();
-  }
+  static DataObject* find( SmartDataObjectPtr* ptr ) { return ptr->findObject(); }
 
   /// Static Object update method.
-  static DataObject* update(SmartDataObjectPtr* ptr)   {
-    return ptr->updateObject();
-  }
+  static DataObject* update( SmartDataObjectPtr* ptr ) { return ptr->updateObject(); }
 
   /** Object retrieve method.
      If the object is not known to the local object, it is requested
@@ -142,56 +122,54 @@ public:
   DataObject* updateObject();
 
 protected:
-
   /** Find the specified object from the data store.
       @param  pDirectory   Pointer to the directory entry holding the object.
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode find(IRegistry* pDirectory, const std::string& path, DataObject*& refpObject);
+  StatusCode find( IRegistry* pDirectory, const std::string& path, DataObject*& refpObject );
 
   /** Find the specified object from the data store.
       @param  fullPath     String containing the full path necessary to locate the object.
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode find(const std::string& fullPath, DataObject*& refpObject);
+  StatusCode find( const std::string& fullPath, DataObject*& refpObject );
 
   /** Retrieve the specified object from the data store.
       @param  pDirectory   Pointer to the directory entry holding the object.
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode retrieve(IRegistry* pDirectory, const std::string& path, DataObject*& refpObject);
+  StatusCode retrieve( IRegistry* pDirectory, const std::string& path, DataObject*& refpObject );
   /** Retrieve the specified object from the data store.
       @param  fullPath     String containing the full path necessary to locate the object.
       @param  refpObject   Reference to the pointer finally holding the object
       @return              StatusCode indicating success or failure.
   */
-  StatusCode retrieve(const std::string& fullPath, DataObject*& refpObject);
+  StatusCode retrieve( const std::string& fullPath, DataObject*& refpObject );
 
   /** Update the specified object from the data store.
       @param  pDirectory   Pointer to the directory entry holding the object.
       @return              StatusCode indicating success or failure.
   */
-  StatusCode update(IRegistry* pDirectory);
+  StatusCode update( IRegistry* pDirectory );
   /** Update the specified object from the data store.
       @param  fullPath     String containing the full path necessary to locate the object.
       @return              StatusCode indicating success or failure.
   */
-  StatusCode update(const std::string& fullPath);
+  StatusCode update( const std::string& fullPath );
 
 protected:
   /// Pointer to contained object
   mutable IDataProviderSvc* m_dataProvider = nullptr;
   /// Pointer to the data registry containing the object
-  mutable IRegistry*        m_pRegistry = nullptr;
+  mutable IRegistry* m_pRegistry = nullptr;
   /// Keep track of the last error
-  mutable StatusCode        m_status = { StatusCode::SUCCESS, true } ;
+  mutable StatusCode m_status = {StatusCode::SUCCESS, true};
   /// Path to object
-  std::string               m_path;
+  std::string m_path;
   /// Data access function
-  AccessFunction            m_accessFunc;
-
+  AccessFunction m_accessFunc;
 };
 #endif // GAUDIKERNEL_SMARTDATAOBJECTPTR_H

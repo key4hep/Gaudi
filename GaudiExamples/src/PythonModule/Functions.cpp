@@ -6,7 +6,4 @@
  */
 
 // Simple C++ function implementation
-char const* greet()
-{
-   return "hello, world";
-}
+char const* greet() { return "hello, world"; }

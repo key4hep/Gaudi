@@ -5,9 +5,9 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
+#include "GaudiKernel/ToStream.h"
 #include <algorithm>
 #include <array>
-#include "GaudiKernel/ToStream.h"
 // ============================================================================
 /** @file
  *  Collection of utilities, which allows to use class std::array
@@ -30,13 +30,12 @@ namespace Gaudi
   {
     // ========================================================================
     template <class ITERATOR>
-    inline std::ostream& toStream
-    ( ITERATOR           first ,                       // begin of the sequence
-      ITERATOR           last  ,                       //   end of the sequence
-      std::ostream&      s     ,                       //            the stream
-      const std::string& open  ,                       //               opening
-      const std::string& close ,                       //               closing
-      const std::string& delim ) ;                     //             delimiter
+    inline std::ostream& toStream( ITERATOR first,             // begin of the sequence
+                                   ITERATOR last,              //   end of the sequence
+                                   std::ostream& s,            //            the stream
+                                   const std::string& open,    //               opening
+                                   const std::string& close,   //               closing
+                                   const std::string& delim ); //             delimiter
     // ========================================================================
   } //                                            end of namespace Gaudi::Utils
   // ==========================================================================
@@ -62,21 +61,23 @@ namespace Gaudi
      *  @date 2009-09-16
      */
     template <class TYPE, std::size_t N>
-    StatusCode
-    parse ( std::array<TYPE,N>& result , const std::string& input )
+    StatusCode parse( std::array<TYPE, N>& result, const std::string& input )
     {
-      typedef std::vector<TYPE> _Vct ;
+      typedef std::vector<TYPE> _Vct;
       // create the temporaty vector
-      _Vct tmp ;
+      _Vct tmp;
       // parse the string
-      StatusCode sc = parse ( tmp , input ) ;
-      if ( sc.isFailure () ) { return sc ; }                         // RETURN
-      if ( N != tmp.size() )
-      { return StatusCode ( StatusCode::FAILURE , true ) ; }         // RETURN
+      StatusCode sc = parse( tmp, input );
+      if ( sc.isFailure() ) {
+        return sc;
+      } // RETURN
+      if ( N != tmp.size() ) {
+        return StatusCode( StatusCode::FAILURE, true );
+      } // RETURN
       // copy vector into array
-      std::copy ( tmp.begin() , tmp.end() , result.begin() ) ;
+      std::copy( tmp.begin(), tmp.end(), result.begin() );
       //
-      return StatusCode::SUCCESS ;
+      return StatusCode::SUCCESS;
     }
     // ========================================================================
   } //                                          end of namespace Gaudi::Parsers

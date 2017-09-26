@@ -15,10 +15,10 @@ FileCatalog(Catalogs=["xmlcatalog_file:MultiInput.xml"])
 
 app = ApplicationMgr()
 # - I/O
-app.OutStream += [ out ]
+app.OutStream += [out]
 # - Algorithms
-app.TopAlg = [ WriteAlg() ]
+app.TopAlg = [WriteAlg()]
 # - Events
-app.EvtMax   = 100
-app.EvtSel   = "NONE" # do not use any event input
+app.EvtMax = 100
+app.EvtSel = "NONE"  # do not use any event input
 app.HistogramPersistency = "NONE"

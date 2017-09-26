@@ -16,18 +16,15 @@
 // ============================================================================
 // Declaration of the Tool Factory
 // ============================================================================
-DECLARE_COMPONENT(HistoTool)
+DECLARE_COMPONENT( HistoTool )
 // ============================================================================
-
 
 // ============================================================================
 // Standard constructor
 // ============================================================================
-HistoTool::HistoTool( const std::string& type,
-                      const std::string& name,
-                      const IInterface* parent )
-  : GaudiHistoTool ( type, name , parent )
+HistoTool::HistoTool( const std::string& type, const std::string& name, const IInterface* parent )
+    : GaudiHistoTool( type, name, parent )
 {
-  declareInterface<IHistoTool>(this);
+  declareInterface<IHistoTool>( this );
 }
 // ============================================================================

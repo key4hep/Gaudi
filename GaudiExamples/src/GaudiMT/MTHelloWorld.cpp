@@ -2,19 +2,19 @@
 #include "GaudiKernel/MsgStream.h"
 #include "MTMessageSvc.h"
 
-DECLARE_COMPONENT(MTHelloWorld);
+DECLARE_COMPONENT( MTHelloWorld );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-StatusCode MTHelloWorld::initialize(){
+StatusCode MTHelloWorld::initialize()
+{
 
   // Part 1: Get the messaging service, print where you are
   info() << "initialize()" << endmsg;
 
-  MTMessageSvc* tmp_msgSvc = dynamic_cast<MTMessageSvc*> (msgSvc());
-  if(tmp_msgSvc != 0) {
-    info() << " Algorithm = " << name() << " is connected to Message Service = "
-        << tmp_msgSvc->name() << endmsg;
+  MTMessageSvc* tmp_msgSvc = dynamic_cast<MTMessageSvc*>( msgSvc() );
+  if ( tmp_msgSvc != 0 ) {
+    info() << " Algorithm = " << name() << " is connected to Message Service = " << tmp_msgSvc->name() << endmsg;
   }
 
   // Part 2: Print out the property values
@@ -22,9 +22,8 @@ StatusCode MTHelloWorld::initialize(){
   info() << "  MyBool =   " << (int)m_myBool.value() << endmsg;
   info() << "  MyDouble = " << m_myDouble.value() << endmsg;
 
-  for (unsigned int i=0; i < m_myStringVec.size(); i++) {
-    info() << "  MyStringVec[" << i << "] = " << m_myStringVec[i]
-           << endmsg;
+  for ( unsigned int i = 0; i < m_myStringVec.size(); i++ ) {
+    info() << "  MyStringVec[" << i << "] = " << m_myStringVec[i] << endmsg;
   }
 
   return StatusCode::SUCCESS;
@@ -32,7 +31,8 @@ StatusCode MTHelloWorld::initialize(){
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-StatusCode MTHelloWorld::execute() {
+StatusCode MTHelloWorld::execute()
+{
 
   // Part 1: Get the messaging service, print where you are
   info() << "execute()" << endmsg;
@@ -49,7 +49,8 @@ StatusCode MTHelloWorld::execute() {
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-StatusCode MTHelloWorld::finalize() {
+StatusCode MTHelloWorld::finalize()
+{
 
   // Part 1: Get the messaging service, print where you are
   info() << "finalize()" << endmsg;

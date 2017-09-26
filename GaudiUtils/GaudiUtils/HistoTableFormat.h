@@ -10,8 +10,8 @@
 // ============================================================================
 namespace AIDA
 {
-  class IHistogram1D   ;
-  class IBaseHistogram ;
+  class IHistogram1D;
+  class IBaseHistogram;
 }
 // ============================================================================
 namespace Gaudi
@@ -47,22 +47,22 @@ namespace Gaudi
        *   - 13 : the estimated uncertainty in the skewness value
        *   - 14 : kurtosis value
        *   - 15 : the estimated uncertainty in the kurtosis value
-       *   - 16 : full intergal (in and out-range) 
-       *   - 17 : error on the full intergal (16) 
-       *   - 18 : error on the full intergal in range (7) 
+       *   - 16 : full intergal (in and out-range)
+       *   - 17 : error on the full intergal (16)
+       *   - 18 : error on the full intergal in range (7)
        *   - 19 : fraction of overflow entries       [%]
        *   - 20 : (binomial) error on fraction of overflow entries [%]
-       *   - 21 : fraction of underflow entries      [%] 
+       *   - 21 : fraction of underflow entries      [%]
        *   - 22 : (binomial) error on fraction of underflow entries [%]
-       *   - 23 : fraction of overflow integral    
-       *   - 24 : error on fraction of overflow integral 
-       *   - 25 : fraction of underflow  integral 
-       *   - 26 : error on fraction of underflow integral 
+       *   - 23 : fraction of overflow integral
+       *   - 24 : error on fraction of overflow integral
+       *   - 25 : fraction of underflow  integral
+       *   - 26 : error on fraction of underflow integral
        *
        *  @see Gauid::Utils::HistoStats
        *
-       *  Unlike parameters 3-7 & 16-19, the parameters 
-       *  8-15 and 19-26 are sensitive only to 
+       *  Unlike parameters 3-7 & 16-19, the parameters
+       *  8-15 and 19-26 are sensitive only to
        *  the shape of the distribution.
        *
        *  Simple collection of predefiend formats for the histogram
@@ -73,34 +73,33 @@ namespace Gaudi
       {
         // ====================================================================
         /** the ID for predefined formats
-         *  - Default   : the default format 
+         *  - Default   : the default format
          *  - Old       : the old-style format (title,integra,entries,mean,rms)
-         *  - Full      : FULL information (all 15 predefiend values) 
-         *  - FullStat  : FULL statistical information (all 13 statistical values) 
-         *  - Stat      : title, #entries,mean, rms, skewness&kurtosis 
-         *  - StatOnly  : #entries,mean, rms, skewness&kurtosis 
-         *  - Stat1     : #entries,mean+-, rms+-, skewness+-&kurtosis+- 
+         *  - Full      : FULL information (all 15 predefiend values)
+         *  - FullStat  : FULL statistical information (all 13 statistical values)
+         *  - Stat      : title, #entries,mean, rms, skewness&kurtosis
+         *  - StatOnly  : #entries,mean, rms, skewness&kurtosis
+         *  - Stat1     : #entries,mean+-, rms+-, skewness+-&kurtosis+-
          *  - ShapeOnly : mean,rms,skewness,kurtosis,underflow&overflow fractions
-         *  - Shape     : as ShapeOnly but with errors 
-         *  - LineTitle : line-format title, mean,rms,skewness&kurtosis 
-         *  - LineOnly  : line-format mean,rms,skewness&kurtosis 
-         *  - PathTitle : path & title 
+         *  - Shape     : as ShapeOnly but with errors
+         *  - LineTitle : line-format title, mean,rms,skewness&kurtosis
+         *  - LineOnly  : line-format mean,rms,skewness&kurtosis
+         *  - PathTitle : path & title
          */
-        enum Format
-          {
-            Default = 0 , // default format
-            Old         , // "OLD"-line format: title,integral,#ent,mean,rms
-            Full        , // FULL format: the first 15 positions
-            FullStat    , // Full statistical info (3-15)
-            Stat        , // title,#ent,mean,rms,skewness&kurtosis
-            StatOnly    , // #entries,mean,rms,skewness&kurtosis
-            Stat1       , // #entries,mean+-,rms+-,skewness+-&kurtosis+-
-            ShapeOnly   , // mean,rms,skewness,kurtosis,underflow&overflow fractions
-            Shape       , // as ShapeOnly but with errors 
-            LineTitle   , // line-format : title,mean,rms,skewness&kurtosis
-            LineOnly    , // line-format : mean,rms,skewness&kurtosis
-            PathTitle     // "PathTitle" : path & title
-          } ;
+        enum Format {
+          Default = 0, // default format
+          Old,         // "OLD"-line format: title,integral,#ent,mean,rms
+          Full,        // FULL format: the first 15 positions
+          FullStat,    // Full statistical info (3-15)
+          Stat,        // title,#ent,mean,rms,skewness&kurtosis
+          StatOnly,    // #entries,mean,rms,skewness&kurtosis
+          Stat1,       // #entries,mean+-,rms+-,skewness+-&kurtosis+-
+          ShapeOnly,   // mean,rms,skewness,kurtosis,underflow&overflow fractions
+          Shape,       // as ShapeOnly but with errors
+          LineTitle,   // line-format : title,mean,rms,skewness&kurtosis
+          LineOnly,    // line-format : mean,rms,skewness&kurtosis
+          PathTitle    // "PathTitle" : path & title
+        };
         // ====================================================================
         /** get the format by enum
          *  @see Gaudi::Utils::Histos::Formats::Format
@@ -109,7 +108,7 @@ namespace Gaudi
          *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
          *  @date   2007-08-08
          */
-        GAUDI_API std::string format ( const int ID = Default ) ;
+        GAUDI_API std::string format( const int ID = Default );
         // ====================================================================
         /** get the recommended header by enum
          *  @see Gaudi::Utils::Histos::Formats::Format
@@ -118,7 +117,7 @@ namespace Gaudi
          *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
          *  @date   2007-08-08
          */
-        GAUDI_API std::string header ( const int ID = Default ) ;
+        GAUDI_API std::string header( const int ID = Default );
         // ====================================================================
       } // end of namespace Gaudi::Utils::Histos::Formats
       // ======================================================================
@@ -126,7 +125,7 @@ namespace Gaudi
        *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
        *  @date   2007-08-08
        */
-      GAUDI_API std::string path ( const AIDA::IBaseHistogram* aida ) ;
+      GAUDI_API std::string path( const AIDA::IBaseHistogram* aida );
       // ======================================================================
       /** Make the string representation of the historgam
        *  according to the specified format.
@@ -166,9 +165,7 @@ namespace Gaudi
        *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
        *  @date   2007-08-08
        */
-      GAUDI_API std::string format
-      ( const AIDA::IHistogram1D* histo  ,
-        const std::string&        fmt    ) ;
+      GAUDI_API std::string format( const AIDA::IHistogram1D* histo, const std::string& fmt );
       // ======================================================================
       /** format a full row in table, including ID, label, path or any other
        *  "extra" identifier in string form
@@ -198,11 +195,8 @@ namespace Gaudi
        *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
        *  @date   2007-08-08
        */
-      GAUDI_API std::string format
-      ( const AIDA::IHistogram1D* histo  ,
-        const std::string&        ID     ,
-        const std::string&        fmt1   ,
-        const std::string&        fmt2   ) ;
+      GAUDI_API std::string format( const AIDA::IHistogram1D* histo, const std::string& ID, const std::string& fmt1,
+                                    const std::string& fmt2 );
       // ========================================================================
       /** print the simple sequence (list-like) of histograms as table
        *
@@ -228,16 +222,12 @@ namespace Gaudi
        *  @param fmt    the format to be used
        */
       template <class HISTO, class STREAM, class TERMINATOR>
-      inline STREAM& printList
-      ( HISTO              first  ,
-        HISTO              last   ,
-        const std::string& fmt    ,
-        STREAM&            stream ,
-        TERMINATOR         term   )
+      inline STREAM& printList( HISTO first, HISTO last, const std::string& fmt, STREAM& stream, TERMINATOR term )
       {
-        for ( ; first != last ; ++first )
-        { stream << format   ( *first , fmt ) << term ; }  // print table rows
-        return stream ;                                    // RETURN
+        for ( ; first != last; ++first ) {
+          stream << format( *first, fmt ) << term;
+        }              // print table rows
+        return stream; // RETURN
       }
       // ======================================================================
       /** print the simple container of histograms as table
@@ -264,14 +254,9 @@ namespace Gaudi
        *  @param fmt    the format to be used
        */
       template <class LIST, class STREAM, class TERMINATOR>
-      inline STREAM& printList
-      ( const LIST&        histos ,
-        const std::string& fmt    ,
-        STREAM&            stream ,
-        TERMINATOR         term   )
+      inline STREAM& printList( const LIST& histos, const std::string& fmt, STREAM& stream, TERMINATOR term )
       {
-        return printList
-          ( histos.begin () , histos.end  () , fmt , stream , term ) ;
+        return printList( histos.begin(), histos.end(), fmt, stream, term );
       }
       // ======================================================================
       /** Print the "associative sequence"  (e.g. part of std:map) of
@@ -319,22 +304,16 @@ namespace Gaudi
        *  @param term   stream terminator
        */
       template <class HISTO, class STREAM, class TERMINATOR>
-      inline STREAM& printMap
-      ( HISTO              begin  ,
-        HISTO              end    ,
-        const std::string& fmt1   ,
-        const std::string& fmt2   ,
-        STREAM&            stream ,
-        TERMINATOR         term   )
+      inline STREAM& printMap( HISTO begin, HISTO end, const std::string& fmt1, const std::string& fmt2, STREAM& stream,
+                               TERMINATOR term )
       {
-        for ( ; begin != end ; ++begin )
-        {
-          stream << format
-            ( begin -> second , // the histogram
-              begin -> first  , // the key
-              fmt1  ,  fmt2   ) << term ;
+        for ( ; begin != end; ++begin ) {
+          stream << format( begin->second, // the histogram
+                            begin->first,  // the key
+                            fmt1, fmt2 )
+                 << term;
         }
-        return stream ;
+        return stream;
       }
       // ======================================================================
       /** Print the "associative sequence"  (e.g. part of std:map) of
@@ -380,25 +359,17 @@ namespace Gaudi
        *  @param term   stream terminator
        */
       template <class MAP, class STREAM, class TERMINATOR>
-      inline STREAM& printMap
-      ( const MAP&         histos ,
-        const std::string& fmt1   ,
-        const std::string& fmt2   ,
-        STREAM&            stream ,
-        TERMINATOR         term   )
+      inline STREAM& printMap( const MAP& histos, const std::string& fmt1, const std::string& fmt2, STREAM& stream,
+                               TERMINATOR term )
       {
-        return printMap
-          ( histos.begin () , histos.end() , fmt1 , fmt2 , stream , term ) ;
+        return printMap( histos.begin(), histos.end(), fmt1, fmt2, stream, term );
       }
       // ======================================================================
       /** helper method to merge the headers for short format table
        *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
        *  @date   2007-08-07
        */
-      GAUDI_API std::string format
-      ( const std::string& val1 ,
-        const std::string& val2 ,
-        const std::string& fmt  ) ;
+      GAUDI_API std::string format( const std::string& val1, const std::string& val2, const std::string& fmt );
       // ======================================================================
       /** @class Table HistoTableFormat.h GaudiUtils/HistoTableFormat.h
        *  Simple class for the customizeble printout of the histogram tables
@@ -411,12 +382,10 @@ namespace Gaudi
       {
       public:
         /// constructor from enum
-        Table  ( const int ID  = 0 ) ;
+        Table( const int ID = 0 );
         /// Constructor from the format, header and footer
-        Table
-        ( const std::string& format      ,
-          const std::string& header = "" ,
-          const std::string& footer = "" ) ;
+        Table( const std::string& format, const std::string& header = "", const std::string& footer = "" );
+
       public:
         // ======================================================================
         /** print the simple sequence of histograms as table
@@ -426,16 +395,16 @@ namespace Gaudi
          *  @param term   the terminmator for the stream
          */
         template <class HISTO, class STREAM, class TERMINATOR>
-        STREAM& printList
-        ( HISTO              first  ,
-          HISTO              last   ,
-          STREAM&            stream ,
-          TERMINATOR         term   ) const
+        STREAM& printList( HISTO first, HISTO last, STREAM& stream, TERMINATOR term ) const
         {
-          if ( !header().empty() ) { stream << header () << term ; }
-          Gaudi::Utils::Histos::printList ( first , last , format() , stream , term ) ;
-          if ( !footer().empty() ) { stream << footer () << term ; }
-          return stream ;
+          if ( !header().empty() ) {
+            stream << header() << term;
+          }
+          Gaudi::Utils::Histos::printList( first, last, format(), stream, term );
+          if ( !footer().empty() ) {
+            stream << footer() << term;
+          }
+          return stream;
         }
         // ======================================================================
       public:
@@ -452,46 +421,41 @@ namespace Gaudi
          *  @param term   stream terminator
          */
         template <class HISTO, class STREAM, class TERMINATOR>
-        STREAM& printMap
-        ( HISTO              first  ,
-          HISTO              last   ,
-          const std::string& fmt    ,
-          const std::string& hval   ,
-          STREAM&            stream ,
-          TERMINATOR         term   ) const
+        STREAM& printMap( HISTO first, HISTO last, const std::string& fmt, const std::string& hval, STREAM& stream,
+                          TERMINATOR term ) const
         {
-          if ( !hval.empty() || !header().empty() )
-          { stream << Gaudi::Utils::Histos::format ( hval , header() , fmt ) << term ; }
-          return Gaudi::Utils::Histos::printMap
-            ( first , last , fmt , format() , stream , term ) ;
+          if ( !hval.empty() || !header().empty() ) {
+            stream << Gaudi::Utils::Histos::format( hval, header(), fmt ) << term;
+          }
+          return Gaudi::Utils::Histos::printMap( first, last, fmt, format(), stream, term );
         }
         // ======================================================================
       public:
         // ======================================================================
         /// the table header
-        const std::string& header () const { return m_header ; }
+        const std::string& header() const { return m_header; }
         // ======================================================================
         /// the table footer
-        const std::string& footer () const { return m_footer ; }
+        const std::string& footer() const { return m_footer; }
         // ======================================================================
         /// the format
-        const std::string& format () const { return m_format ; }
+        const std::string& format() const { return m_format; }
         // ======================================================================
       public:
         // ======================================================================
         /// set new header
-        void setHeader ( std::string v ) { m_header = std::move(v) ; }
+        void setHeader( std::string v ) { m_header = std::move( v ); }
         // ======================================================================
         /// set new footer
-        void setFooter ( std::string v ) { m_footer = std::move(v) ; }
+        void setFooter( std::string v ) { m_footer = std::move( v ); }
         // ======================================================================
         /// set new format
-        void setFormat ( std::string v ) { m_format = std::move(v) ; }
+        void setFormat( std::string v ) { m_format = std::move( v ); }
         // ======================================================================
-      public :
+      public:
         // ======================================================================
         /// make the string representation according to the default format
-        std::string toString ( const AIDA::IHistogram1D* histo  ) const ;
+        std::string toString( const AIDA::IHistogram1D* histo ) const;
         // ======================================================================
       public:
         // ======================================================================
@@ -518,22 +482,19 @@ namespace Gaudi
          *  @param fmt "short" format used for the table
          *  @return formatted row
          */
-        std::string toString
-        ( const AIDA::IHistogram1D* histo  ,
-          const std::string&        ID     ,
-          const std::string&        fmt    ) const ;
+        std::string toString( const AIDA::IHistogram1D* histo, const std::string& ID, const std::string& fmt ) const;
         // ======================================================================
       public:
         // the table header
-        std::string m_header ; ///< the table header
+        std::string m_header; ///< the table header
         // the table footer
-        std::string m_footer ; ///< the table footer
+        std::string m_footer; ///< the table footer
         // the default format
-        std::string m_format ; ///< the defautl format
+        std::string m_format; ///< the defautl format
         //
-      } ;
+      };
     } // end of namespace Gaudi::Utils::Histos
-  } // end of namespace Gaudi::Utils
+  }   // end of namespace Gaudi::Utils
 } // end of namespace Gaudi
 // ============================================================================
 // The END

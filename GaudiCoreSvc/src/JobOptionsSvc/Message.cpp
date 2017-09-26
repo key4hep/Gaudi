@@ -12,19 +12,14 @@
 namespace gp = Gaudi::Parsers;
 // ============================================================================
 // ============================================================================
-void gp::Messages::AddMessage(MSG::Level level,
-        const std::string& message) {
-  stream_ << level << message << endmsg;
-}
+void gp::Messages::AddMessage( MSG::Level level, const std::string& message ) { stream_ << level << message << endmsg; }
 // ============================================================================
-void gp::Messages::AddMessage(MSG::Level level,
-        const Position& pos, const std::string& message) {
-  if (pos.filename() != m_currentFilename) {
+void gp::Messages::AddMessage( MSG::Level level, const Position& pos, const std::string& message )
+{
+  if ( pos.filename() != m_currentFilename ) {
     stream_ << level << "# =======> " << pos.filename() << endmsg;
     m_currentFilename = pos.filename();
   }
-  stream_ << level << "# " 
-          << boost::format("(%1%,%2%): %3%") % pos.line() % pos.column() % message
-          << endmsg;
+  stream_ << level << "# " << boost::format( "(%1%,%2%): %3%" ) % pos.line() % pos.column() % message << endmsg;
 }
 // ============================================================================

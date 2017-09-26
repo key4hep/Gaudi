@@ -31,6 +31,23 @@ build:
       - .ccache
     expire_in: 1 week
 
+coding-conventions:
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
+  stage: test
+  script:
+    - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
+    - pip install autopep8 argparse
+    - make BUILDDIR=build apply-formatting
+    - git diff > apply-formatting.patch
+    - git diff --stat | tee apply-formatting.stat
+  artifacts:
+    paths:
+      - apply-formatting.patch
+      - apply-formatting.stat
+    expire_in: 1 day
+
 doxygen:
   image: lhcbdev/slc6-build:latest
   tags:
@@ -70,13 +87,23 @@ test:
 test_report:
   stage: check
   script:
+    - status=0
+    - echo "=== code formatting report ==="
+    - if [ $(wc -c apply-formatting.stat | cut -d' ' -f1) != 0 ] ; then
+    -   cat apply-formatting.stat
+    -   status=1
+    - else
+    -   echo formatting OK
+    - fi
+    - echo "=== tests report ==="
     - if [ -e test_report/tests_failed ] ; then
     # this prints all lines starting with a white space after and including "The following tests...", excluding lines with "Not Run"
     -   awk '/^[^[:space:]]/{do_print=0}; /The following tests FAILED:/{do_print=1}; do_print&&!/Not Run/{print}' test_report/ctest.log
-    -   exit 1
+    -   status=1
     - else
     -   echo tests successful
     - fi
+    - exit $status
 
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration

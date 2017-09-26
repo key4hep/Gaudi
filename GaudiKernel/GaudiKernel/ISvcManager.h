@@ -8,7 +8,7 @@
 #include <string>
 
 // Forward class declaration
-#if defined(GAUDI_V20_COMPAT) || (!defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR))
+#if defined( GAUDI_V20_COMPAT ) || ( !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR ) )
 class ISvcFactory;
 #include "GaudiKernel/IService.h"
 #else
@@ -25,10 +25,11 @@ class ISvcLocator;
 
     @author Pere Mato
 */
-class GAUDI_API ISvcManager: virtual public IComponentManager {
+class GAUDI_API ISvcManager : virtual public IComponentManager
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(ISvcManager,4,0);
+  DeclareInterfaceID( ISvcManager, 4, 0 );
 
   static const int DEFAULT_SVC_PRIORITY = 100;
 
@@ -37,16 +38,17 @@ public:
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode addService( IService* svc, int prio = DEFAULT_SVC_PRIORITY) = 0;
+  virtual StatusCode addService( IService* svc, int prio = DEFAULT_SVC_PRIORITY ) = 0;
 
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
+#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /** Add a service to the "active" list of services of the factory
     * @param svc Pointer to the service
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode addService( const std::string& typ, const std::string& nam, int prio ){
-    return addService(Gaudi::Utils::TypeNameString(nam,typ), prio);
+  virtual StatusCode addService( const std::string& typ, const std::string& nam, int prio )
+  {
+    return addService( Gaudi::Utils::TypeNameString( nam, typ ), prio );
   }
 #endif
 
@@ -55,7 +57,7 @@ public:
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode addService( const Gaudi::Utils::TypeNameString& nametype, int prio = DEFAULT_SVC_PRIORITY) = 0;
+  virtual StatusCode addService( const Gaudi::Utils::TypeNameString& nametype, int prio = DEFAULT_SVC_PRIORITY ) = 0;
 
   /** Remove a service from the "active" list of services of the factory
     * @param svc Pointer to the service
@@ -71,15 +73,15 @@ public:
     */
   virtual StatusCode removeService( const std::string& nam ) = 0;
 
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
+#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /** Declare an abstract factory for a given service type
     * @param factory Abstract factory reference
     * @param svctype Service type name
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode declareSvcFactory( const ISvcFactory& /*factory*/,
-                                        const std::string& /*svctype*/ ) {
+  virtual StatusCode declareSvcFactory( const ISvcFactory& /*factory*/, const std::string& /*svctype*/ )
+  {
     // This function is never used.
     return StatusCode::FAILURE;
   }
@@ -91,8 +93,7 @@ public:
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode declareSvcType( const std::string& svcname,
-                                     const std::string& svctype ) = 0;
+  virtual StatusCode declareSvcType( const std::string& svcname, const std::string& svctype ) = 0;
 
   /** Creates and instance of a service type that has been declared beforehand and
     * assigns it a name. It returns a pointer to an IService.
@@ -109,9 +110,9 @@ public:
     *       just plain SmartIF<IService> (i.e. WITHOUT the &) then
     *       the underlying implementation would have much more freedom)
     */
-  virtual SmartIF<IService>& createService(const Gaudi::Utils::TypeNameString& nametype) = 0;
+  virtual SmartIF<IService>& createService( const Gaudi::Utils::TypeNameString& nametype ) = 0;
 
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
+#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /** Creates and instance of a service type that has been declared beforehand and
     * assigns it a name. It returns a pointer to an IService.
     * @param svctype Service type name
@@ -120,12 +121,11 @@ public:
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode createService( const std::string& svctype,
-                                    const std::string& svcname,
-                                    IService*& svc ){
-    SmartIF<IService> s = createService(svctype + "/" + svcname);
-    svc = s.get();
-    if (svc) {
+  virtual StatusCode createService( const std::string& svctype, const std::string& svcname, IService*& svc )
+  {
+    SmartIF<IService> s = createService( svctype + "/" + svcname );
+    svc                 = s.get();
+    if ( svc ) {
       svc->addRef(); // Needed to maintain the correct reference counting.
       return StatusCode::SUCCESS;
     }
@@ -138,8 +138,8 @@ public:
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode getFactory(    const std::string& /*svc_type*/,
-                                    const ISvcFactory*& /*fac*/) const {
+  virtual StatusCode getFactory( const std::string& /*svc_type*/, const ISvcFactory*& /*fac*/ ) const
+  {
     // This function is never used.
     return StatusCode::FAILURE;
   }
@@ -181,15 +181,13 @@ public:
   virtual StatusCode restartServices() { return restart(); }
 #endif
 
-  virtual int getPriority(const std::string& name) const = 0;
-  virtual StatusCode setPriority(const std::string& name, int pri) = 0;
+  virtual int getPriority( const std::string& name ) const = 0;
+  virtual StatusCode setPriority( const std::string& name, int pri ) = 0;
 
   /// Get the value of the initialization loop check flag.
   virtual bool loopCheckEnabled() const = 0;
   /// Set the value of the initialization loop check flag.
-  virtual void setLoopCheckEnabled(bool en = true) = 0;
-
+  virtual void setLoopCheckEnabled( bool en = true ) = 0;
 };
 
-#endif  // GAUDIKERNEL_ISVCMANAGER_H
-
+#endif // GAUDIKERNEL_ISVCMANAGER_H

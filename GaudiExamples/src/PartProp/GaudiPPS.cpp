@@ -10,58 +10,56 @@
 //
 // 2008-05-23 : Marco CLEMENCIC
 //-----------------------------------------------------------------------------
-namespace GaudiExamples {
-// Declaration of the Algorithm Factory
-DECLARE_COMPONENT( GaudiPPS )
-
-
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-GaudiPPS::GaudiPPS( const std::string& name,
-                  ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator )
+namespace GaudiExamples
 {
+  // Declaration of the Algorithm Factory
+  DECLARE_COMPONENT( GaudiPPS )
 
-}
-//=============================================================================
-// Destructor
-//=============================================================================
-GaudiPPS::~GaudiPPS() {}
+  //=============================================================================
+  // Standard constructor, initializes variables
+  //=============================================================================
+  GaudiPPS::GaudiPPS( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
+  //=============================================================================
+  // Destructor
+  //=============================================================================
+  GaudiPPS::~GaudiPPS() {}
 
-//=============================================================================
-// Initialization
-//=============================================================================
-StatusCode GaudiPPS::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;  // error printed already by GaudiAlgorithm
+  //=============================================================================
+  // Initialization
+  //=============================================================================
+  StatusCode GaudiPPS::initialize()
+  {
+    StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
+    if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
-  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Initialize" << endmsg;
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
 
-  auto pps = service<IParticlePropertySvc>("Gaudi::ParticlePropertySvc",true);
+    auto pps = service<IParticlePropertySvc>( "Gaudi::ParticlePropertySvc", true );
 
-  return StatusCode::SUCCESS;
-}
+    return StatusCode::SUCCESS;
+  }
 
-//=============================================================================
-// Main execution
-//=============================================================================
-StatusCode GaudiPPS::execute() {
+  //=============================================================================
+  // Main execution
+  //=============================================================================
+  StatusCode GaudiPPS::execute()
+  {
 
-  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Execute" << endmsg;
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
-  return StatusCode::SUCCESS;
-}
+    return StatusCode::SUCCESS;
+  }
 
-//=============================================================================
-//  Finalize
-//=============================================================================
-StatusCode GaudiPPS::finalize() {
+  //=============================================================================
+  //  Finalize
+  //=============================================================================
+  StatusCode GaudiPPS::finalize()
+  {
 
-  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Finalize" << endmsg;
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
-  return GaudiAlgorithm::finalize();  // must be called after all other actions
-}
+    return GaudiAlgorithm::finalize(); // must be called after all other actions
+  }
 
 } // namespace GaudiExamples
 //=============================================================================

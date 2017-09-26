@@ -2,33 +2,33 @@
 #define EVENTSLOT_H_
 
 // Framework includes
-#include "GaudiKernel/EventContext.h"
 #include "AlgsExecutionStates.h"
 #include "DataFlowManager.h"
+#include "GaudiKernel/EventContext.h"
 
 // Event slots management -------------------------------------------------
 /// Class representing the event slot
-class EventSlot{
+class EventSlot
+{
 public:
-  EventSlot(const std::vector<DataObjIDColl>& algoDependencies,
-            unsigned int numberOfAlgorithms,
-            unsigned int numberOfControlFlowNodes,
-            SmartIF<IMessageSvc> MS):
-              eventContext(nullptr),
-              algsStates(numberOfAlgorithms,MS),
-              complete(false),
-              dataFlowMgr(algoDependencies),
-              controlFlowState(numberOfControlFlowNodes,-1){};
+  EventSlot( const std::vector<DataObjIDColl>& algoDependencies, unsigned int numberOfAlgorithms,
+             unsigned int numberOfControlFlowNodes, SmartIF<IMessageSvc> MS )
+      : eventContext( nullptr )
+      , algsStates( numberOfAlgorithms, MS )
+      , complete( false )
+      , dataFlowMgr( algoDependencies )
+      , controlFlowState( numberOfControlFlowNodes, -1 ){};
 
   ~EventSlot(){};
 
   /// Reset all resources in order to reuse the slot
-  void reset(EventContext* theeventContext){
-    eventContext=theeventContext;
+  void reset( EventContext* theeventContext )
+  {
+    eventContext = theeventContext;
     algsStates.reset();
     dataFlowMgr.reset();
-    complete=false;
-    controlFlowState.assign(controlFlowState.size(),-1);
+    complete = false;
+    controlFlowState.assign( controlFlowState.size(), -1 );
   };
 
   /// Cache for the eventContext

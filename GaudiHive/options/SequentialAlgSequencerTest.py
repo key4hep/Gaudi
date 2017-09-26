@@ -10,16 +10,16 @@ from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
 # It's confortable to collect the relevant parameters at the top of the optionfile
 evtslots = 5
 evtMax = 20
-cardinality=5
-algosInFlight=10
+cardinality = 5
+algosInFlight = 10
 #-------------------------------------------------------------------------------
 
 # The configuration of the whiteboard ------------------------------------------
 # It is useful to call it EventDataSvc to replace the usual data service with
 # the whiteboard transparently.
 
-whiteboard   = HiveWhiteBoard("EventDataSvc",
-                              EventSlots = evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc",
+                            EventSlots=evtslots)
 
 #-------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize = algosInFlight,
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
                                   OutputLevel=DEBUG)
 
 #-------------------------------------------------------------------------------
@@ -65,25 +65,25 @@ a4.inpKeys = ['/Event/a2']
 a4.outKeys = ['/Event/a4']
 
 for algo in [a1, a2, a3, a4]:
-  algo.shortCalib=True
-  algo.OutputLevel=DEBUG
-  algo.varRuntime=.3
-  algo.avgRuntime=.5
+    algo.shortCalib = True
+    algo.OutputLevel = DEBUG
+    algo.varRuntime = .3
+    algo.avgRuntime = .5
 
 for algo in [a3]:
-  algo.Cardinality = cardinality
+    algo.Cardinality = cardinality
 
 seq = GaudiSequencer("CriticalSection",
-                     Members=[a1,a2,a4],
+                     Members=[a1, a2, a4],
                      Sequential=True,
                      OutputLevel=VERBOSE)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr( EvtMax = evtMax,
-                EvtSel = 'NONE',
-                ExtSvc =[whiteboard],
-                EventLoop = slimeventloopmgr,
-                TopAlg = [seq, a3],
-                MessageSvcType="InertMessageSvc")
+ApplicationMgr(EvtMax=evtMax,
+               EvtSel='NONE',
+               ExtSvc=[whiteboard],
+               EventLoop=slimeventloopmgr,
+               TopAlg=[seq, a3],
+               MessageSvcType="InertMessageSvc")

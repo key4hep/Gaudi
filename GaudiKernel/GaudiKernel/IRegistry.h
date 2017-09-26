@@ -19,7 +19,8 @@ class IDataProviderSvc;
     a light-weight interface to differing registry mechanism.
 
 */
-class GAUDI_API IRegistry  {
+class GAUDI_API IRegistry
+{
 public:
   /// Type definitions
   /// Name type
@@ -31,27 +32,27 @@ public:
   virtual ~IRegistry() = default;
 
   /// Add reference to object
-  virtual       unsigned long   addRef    ()         = 0;
+  virtual unsigned long addRef() = 0;
 
   /// release reference to object
-  virtual       unsigned long   release   ()         = 0;
+  virtual unsigned long release() = 0;
 
   /// Name of the directory (or key)
-  virtual const name_type&      name      ()   const = 0;
+  virtual const name_type& name() const = 0;
 
   /// Full identifier (or key)
-  virtual const id_type&        identifier()   const = 0;
+  virtual const id_type& identifier() const = 0;
 
   /// Retrieve pointer to Transient Store
-  virtual IDataProviderSvc*     dataSvc   ()   const = 0;
+  virtual IDataProviderSvc* dataSvc() const = 0;
 
   /// Retrieve object behind the link
-  virtual DataObject*           object    ()   const = 0;
+  virtual DataObject* object() const = 0;
 
   /// Retrieve opaque storage address
-  virtual IOpaqueAddress*       address   ()   const = 0;
+  virtual IOpaqueAddress* address() const = 0;
 
   /// Set/Update Opaque storage address
-  virtual void setAddress (IOpaqueAddress* pAddress) = 0;
+  virtual void setAddress( IOpaqueAddress* pAddress ) = 0;
 };
 #endif // KERNEL_IREGISTRY_H

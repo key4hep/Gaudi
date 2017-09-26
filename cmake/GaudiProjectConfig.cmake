@@ -47,7 +47,13 @@ endif()
 
 find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
-mark_as_advanced(ccache_cmd distcc_cmd)
+set(_clang_format_names)
+foreach(_clang_version 5.0 4.0 3.9 3.8 3.7)
+  list(APPEND _clang_format_names lcg-clang-format-${_clang_version} clang-format-${_clang_version})
+endforeach()
+list(APPEND _clang_format_names clang-format)
+find_program(clang_format_cmd NAMES ${_clang_format_names})
+mark_as_advanced(ccache_cmd distcc_cmd clang_format_cmd)
 
 if(ccache_cmd)
   option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
@@ -67,6 +73,14 @@ if(distcc_cmd)
       set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${distcc_cmd}")
       message(STATUS "Using distcc for building")
     endif()
+  endif()
+endif()
+
+if(clang_format_cmd AND NOT GAUDI_CLANG_STYLE)
+  if(EXISTS ${CMAKE_SOURCE_DIR}/.clang-format)
+    set(GAUDI_CLANG_STYLE file CACHE STRING "style to use for clang-format (apply-formatting command and target)")
+  else()
+    set(GAUDI_CLANG_STYLE google CACHE STRING "style to use for clang-format (apply-formatting command and target)")
   endif()
 endif()
 
@@ -381,6 +395,8 @@ macro(gaudi_project project version)
 
   find_program(gaudirun_cmd gaudirun.py HINTS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
+
+  find_program(autopep8_cmd autopep8 HINTS ${binary_paths})
 
   # genconf is special because it must be known before we actually declare the
   # target in GaudiKernel/src/Util (because we need to be dynamic and agnostic).
@@ -749,6 +765,41 @@ if os.path.exists('${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py')
                                   ${project} ${version} ${_manifest_args})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
 
+  #--- Settings to allow re-formatting of files (C++ and Python)
+  add_custom_target(apply-formatting)
+  file(WRITE ${CMAKE_BINARY_DIR}/apply-formatting "#!/bin/sh
+for f in \"$@\" ; do
+  case \"$f\" in
+    (*.h|*.cpp|*.icpp)\n")
+  if(clang_format_cmd)
+    file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
+    add_custom_target(apply-formatting-c++
+      COMMAND ${clang_format_cmd}
+                  -style=${GAUDI_CLANG_STYLE}
+                  -i ${_all_sources}
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      COMMENT "Applying coding conventions to C++ sources"
+    )
+    add_dependencies(apply-formatting apply-formatting-c++)
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${clang_format_cmd} -style=${GAUDI_CLANG_STYLE} -i \"$f\" ;;\n")
+  else()
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ code not supported (install clang-format first)' ; exit 1 ;;\n")
+  endif()
+
+  file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*.py)\n")
+  if(autopep8_cmd)
+    add_custom_target(apply-formatting-python
+      COMMAND ${autopep8_cmd}
+                  --recursive --in-place --exclude ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
+      COMMENT "Applying coding conventions to Python sources"
+    )
+    add_dependencies(apply-formatting apply-formatting-python)
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${autopep8_cmd} --in-place \"$f\" ;;\n")
+  else()
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of Python code not supported (install autopep8 first)' ; exit 1 ;;\n")
+  endif()
+  file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*) echo \"unknown file type $f\" ;;\n  esac\ndone\n")
+  execute_process(COMMAND chmod a+x ${CMAKE_BINARY_DIR}/apply-formatting)
 endmacro()
 
 #-------------------------------------------------------------------------------

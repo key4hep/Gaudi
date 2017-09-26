@@ -2,8 +2,8 @@
 #define GAUDIKERNEL_IADDRESSCREATOR_H
 
 // Framework include files
-#include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/ClassID.h"
+#include "GaudiKernel/IInterface.h"
 
 // C++ include files
 #include <string>
@@ -25,10 +25,11 @@ class IOpaqueAddress;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API IAddressCreator: virtual public IInterface {
+class GAUDI_API IAddressCreator : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAddressCreator,3,0);
+  DeclareInterfaceID( IAddressCreator, 3, 0 );
 
   /** Create a Generic address using explicit arguments to
       identify a single object.
@@ -44,19 +45,15 @@ public:
                               Address should be stored.
       @return     Status code indicating success or failure.
   */
-  virtual StatusCode createAddress( long svc_type,
-                                    const CLID& clid,
-                                    const std::string* par,
-                                    const unsigned long* ipar,
-                                    IOpaqueAddress*& refpAddress) = 0;
+  virtual StatusCode createAddress( long svc_type, const CLID& clid, const std::string* par, const unsigned long* ipar,
+                                    IOpaqueAddress*& refpAddress ) = 0;
 
   /** Convert an address to string form
       @param      pAddress    Input address.
       @param      refAddress  Output address in string form.
       @return     Status code indicating success or failure.
   */
-  virtual StatusCode convertAddress( const IOpaqueAddress* pAddress,
-                                     std::string& refAddress) = 0;
+  virtual StatusCode convertAddress( const IOpaqueAddress* pAddress, std::string& refAddress ) = 0;
 
   /** Creates an address in string form to object form
       @param      svc_type    Technology identifier encapsulated
@@ -67,10 +64,8 @@ public:
       @param      refpAddress Output address in string form.
       @return     Status code indicating success or failure.
   */
-  virtual StatusCode createAddress( long svc_type,
-                                    const CLID& clid,
-                                    const std::string& refAddress,
-                                    IOpaqueAddress*& refpAddress) = 0;
+  virtual StatusCode createAddress( long svc_type, const CLID& clid, const std::string& refAddress,
+                                    IOpaqueAddress*& refpAddress ) = 0;
 };
 
 #endif // GAUDIKERNEL_IADDRESSCREATOR_H

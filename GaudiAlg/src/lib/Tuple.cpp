@@ -20,10 +20,7 @@
  *  @param tuple pointer to "real" tuple object
  */
 // ============================================================================
-Tuples::Tuple::Tuple( Tuples::TupleObj* tuple )
-  : m_tuple( tuple )
-{
-}
+Tuples::Tuple::Tuple( Tuples::TupleObj* tuple ) : m_tuple( tuple ) {}
 // ============================================================================
 
 // ============================================================================

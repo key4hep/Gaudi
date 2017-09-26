@@ -13,37 +13,32 @@
 //====================================================================
 #define GAUDI_NTUPLEITEMS_CPP 1
 
-#include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/Selector.h"
+#include "GaudiKernel/NTuple.h"
 
 /// Selector Initialisation
-StatusCode NTuple::Selector::initialize(NTuple::Tuple* /* nt */ )    {
-  return StatusCode::SUCCESS;
-}
+StatusCode NTuple::Selector::initialize( NTuple::Tuple* /* nt */ ) { return StatusCode::SUCCESS; }
 
 /// Overloaded callback from SelectStatement
-bool NTuple::Selector::operator()(void* nt)   {
-  DataObject* p = static_cast<DataObject*>(nt);
-  bool result = false;
-  try   {
-    NTuple::Tuple* tuple = dynamic_cast<NTuple::Tuple*>(p);
-    if ( tuple )   {
-      if ( m_firstCall )    {
-        m_status = initialize(tuple);
+bool NTuple::Selector::operator()( void* nt )
+{
+  DataObject* p = static_cast<DataObject*>( nt );
+  bool result   = false;
+  try {
+    NTuple::Tuple* tuple = dynamic_cast<NTuple::Tuple*>( p );
+    if ( tuple ) {
+      if ( m_firstCall ) {
+        m_status    = initialize( tuple );
         m_firstCall = false;
       }
-      if ( m_status.isSuccess() )  {
-        result = this->operator()(tuple);
+      if ( m_status.isSuccess() ) {
+        result = this->operator()( tuple );
       }
     }
-  }
-  catch(...)    {
+  } catch ( ... ) {
   }
   return result;
 }
 
 /// Specialized overload for N-tuples
-bool NTuple::Selector::operator()(NTuple::Tuple* /* nt */ )  {
-  return true;
-}
-
+bool NTuple::Selector::operator()( NTuple::Tuple* /* nt */ ) { return true; }

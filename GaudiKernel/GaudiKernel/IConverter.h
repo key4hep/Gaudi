@@ -2,8 +2,8 @@
 #define GAUDIKERNEL_ICONVERTER_H
 
 // Include files
-#include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/ClassID.h"
+#include "GaudiKernel/IInterface.h"
 
 // Forward declarations
 class IDataProviderSvc;
@@ -11,7 +11,8 @@ class IAddressCreator;
 class IConversionSvc;
 class IOpaqueAddress;
 class DataObject;
-template<class T> class SmartIF;
+template <class T>
+class SmartIF;
 
 /** @class IConverter IConverter.h GaudiKernel/IConverter.h
 
@@ -20,11 +21,11 @@ template<class T> class SmartIF;
     creating transient objects representing parts of an event from
     the persistent (and disk based) representations. Converters will
     have to deal with the technology both representations are based on:
-  	in the upper example they have to know about the database internals
-	  as well as the structure of the transient representations.
+        in the upper example they have to know about the database internals
+          as well as the structure of the transient representations.
     The converters know about the mechanism to retrieve persistent objects
-	  (ZEBRA, Objectivity, ) and only pass abstract instances of the converted
-	  objects, hence shielding the calling service from internals.
+          (ZEBRA, Objectivity, ) and only pass abstract instances of the converted
+          objects, hence shielding the calling service from internals.
 
     Data converters are meant to be light. This means there should
     not be all-in-one converters, which are able to convert the "world",
@@ -54,10 +55,11 @@ template<class T> class SmartIF;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API IConverter: virtual public IInterface {
+class GAUDI_API IConverter : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IConverter,3,0);
+  DeclareInterfaceID( IConverter, 3, 0 );
 
   /** Initialize the converter
       @return    Status code indicating success or failure
@@ -86,7 +88,7 @@ public:
       @return    Status code indicating success or failure
       @param     pService   Pointer to data provider service
   */
-  virtual StatusCode setDataProvider(IDataProviderSvc* pService) = 0;
+  virtual StatusCode setDataProvider( IDataProviderSvc* pService ) = 0;
 
   /** Get Data provider service
       @return    Pointer to data provider service
@@ -97,23 +99,23 @@ public:
       @return    Status code indicating success or failure
       @param     pService   Pointer to IConversionSvc interface
   */
-  virtual StatusCode setConversionSvc(IConversionSvc* pService) = 0;
+  virtual StatusCode setConversionSvc( IConversionSvc* pService ) = 0;
 
   /** Get conversion service the converter is connected to
       @return    Pointer to IConversionSvc interface
   */
-  virtual SmartIF<IConversionSvc>& conversionSvc()    const = 0;
+  virtual SmartIF<IConversionSvc>& conversionSvc() const = 0;
 
   /** Set address creator facility.
       @param      creator     Reference to address creator interface
       @return     Status code indicating success or failure.
   */
-  virtual StatusCode setAddressCreator(IAddressCreator* creator) = 0;
+  virtual StatusCode setAddressCreator( IAddressCreator* creator ) = 0;
 
   /** Get address creation interface needed to resolve links between objects
       @return    Pointer to IAddressCreator interface
   */
-  virtual SmartIF<IAddressCreator>& addressCreator()    const = 0;
+  virtual SmartIF<IAddressCreator>& addressCreator() const = 0;
 
   /** Create the transient representation of an object.
       The transient representation is created by loading the
@@ -122,11 +124,11 @@ public:
       @return    Status code indicating success or failure
       @param     pAddress   Opaque address information to retrieve the
                             requested object from the store in order to
-			    produce the transient object.
+                            produce the transient object.
       @param     refpObject Reference to location of pointer of the
                             created object.
    */
-  virtual StatusCode createObj(IOpaqueAddress* pAddress, DataObject*& refpObject) = 0;
+  virtual StatusCode createObj( IOpaqueAddress* pAddress, DataObject*& refpObject ) = 0;
 
   /** Resolve the references of the created transient object.
       After the object creation references of the objects pointing
@@ -137,7 +139,7 @@ public:
                             requested object from the store.
       @param     pObject    Pointer to location of the object
    */
-  virtual StatusCode fillObjRefs(IOpaqueAddress* pAddress, DataObject* pObject) = 0;
+  virtual StatusCode fillObjRefs( IOpaqueAddress* pAddress, DataObject* pObject ) = 0;
 
   /** Update the transient object from the other representation.
       The transient representation will be updated by loading the
@@ -148,7 +150,7 @@ public:
                             requested object from the store.
       @param     pObject    Pointer to the object to be updated.
    */
-  virtual StatusCode updateObj(IOpaqueAddress* pAddress, DataObject* refpObject) = 0;
+  virtual StatusCode updateObj( IOpaqueAddress* pAddress, DataObject* refpObject ) = 0;
 
   /** Update the references of an updated transient object.
       After the object was updated also the references of the objects pointing
@@ -160,7 +162,7 @@ public:
                             requested object from the store.
       @param     pObject    Pointer to location of the object
    */
-  virtual StatusCode updateObjRefs(IOpaqueAddress* pAddress, DataObject* pObject) = 0;
+  virtual StatusCode updateObjRefs( IOpaqueAddress* pAddress, DataObject* pObject ) = 0;
 
   /** Convert the transient object to the requested representation.
       e.g. conversion to persistent objects.
@@ -169,7 +171,7 @@ public:
       @param     refpAddress Reference to location of pointer with the
                              object address.
    */
-  virtual StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress) = 0;
+  virtual StatusCode createRep( DataObject* pObject, IOpaqueAddress*& refpAddress ) = 0;
 
   /** Resolve the references of the converted object.
       After the requested representation was created the references in this
@@ -177,7 +179,7 @@ public:
       @return    Status code indicating success or failure
       @param     pObject    Pointer to location of the object
    */
-  virtual StatusCode fillRepRefs(IOpaqueAddress* pAddress, DataObject* pObject) = 0;
+  virtual StatusCode fillRepRefs( IOpaqueAddress* pAddress, DataObject* pObject ) = 0;
 
   /** Update the converted representation of a transient object.
       @return    Status code indicating success or failure
@@ -185,7 +187,7 @@ public:
       @param     refpAddress Reference to location of pointer with the
                              object address.
    */
-  virtual StatusCode updateRep(IOpaqueAddress* pAddress, DataObject* pObject)  = 0;
+  virtual StatusCode updateRep( IOpaqueAddress* pAddress, DataObject* pObject ) = 0;
 
   /** Update the references of an already converted object.
       The object must be retrieved before it can be updated.
@@ -194,12 +196,12 @@ public:
                             store.
       @param     pObject    Pointer to location of the object
    */
-  virtual StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject) = 0;
+  virtual StatusCode updateRepRefs( IOpaqueAddress* pAddress, DataObject* pObject ) = 0;
 
   /// Status code
   enum Status {
     /// Invalid address information
-    INVALID_ADDRESS = IInterface::LAST_ERROR+1,
+    INVALID_ADDRESS = IInterface::LAST_ERROR + 1,
     /// Object to be converted is invalid
     INVALID_OBJECT,
     /// No more memory available

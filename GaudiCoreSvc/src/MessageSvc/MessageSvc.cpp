@@ -4,11 +4,11 @@
 #define NOGDI
 #endif
 
-#include "GaudiKernel/Message.h"
+#include "MessageSvc.h"
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/Message.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
-#include "MessageSvc.h"
 
 #include <fstream>
 #include <iostream>
@@ -49,14 +49,23 @@ namespace
   std::string colTrans( const std::string& col, int offset )
   {
     int icol = 0;
-    if ( col == "black"  ) icol = MSG::BLACK  ; else
-    if ( col == "red"    ) icol = MSG::RED    ; else
-    if ( col == "green"  ) icol = MSG::GREEN  ; else
-    if ( col == "yellow" ) icol = MSG::YELLOW ; else
-    if ( col == "blue"   ) icol = MSG::BLUE   ; else
-    if ( col == "purple" ) icol = MSG::PURPLE ; else
-    if ( col == "cyan"   ) icol = MSG::CYAN   ; else
-    if ( col == "white"  ) icol = MSG::WHITE  ; else
+    if ( col == "black" )
+      icol = MSG::BLACK;
+    else if ( col == "red" )
+      icol = MSG::RED;
+    else if ( col == "green" )
+      icol = MSG::GREEN;
+    else if ( col == "yellow" )
+      icol = MSG::YELLOW;
+    else if ( col == "blue" )
+      icol = MSG::BLUE;
+    else if ( col == "purple" )
+      icol = MSG::PURPLE;
+    else if ( col == "cyan" )
+      icol = MSG::CYAN;
+    else if ( col == "white" )
+      icol = MSG::WHITE;
+    else
       icol = 8;
     return std::to_string( icol + offset );
   }
@@ -85,9 +94,9 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
     m_thresholdProp[ic].declareUpdateHandler( &MessageSvc::setupThreshold, this );
   }
 
-  m_logColors[MSG::FATAL].set({"blue", "red"});
-  m_logColors[MSG::ERROR].set({"white", "red"});
-  m_logColors[MSG::WARNING].set({"yellow"});
+  m_logColors[MSG::FATAL].set( {"blue", "red"} );
+  m_logColors[MSG::ERROR].set( {"white", "red"} );
+  m_logColors[MSG::WARNING].set( {"yellow"} );
 
   std::fill( std::begin( m_msgCount ), std::end( m_msgCount ), 0 );
 }
@@ -125,15 +134,22 @@ void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop )
 {
   const std::string& pname = prop.name();
   int level;
-  if ( pname == "fatalColorCode"   ) level = MSG::FATAL   ; else
-  if ( pname == "errorColorCode"   ) level = MSG::ERROR   ; else
-  if ( pname == "warningColorCode" ) level = MSG::WARNING ; else
-  if ( pname == "infoColorCode"    ) level = MSG::INFO    ; else
-  if ( pname == "debugColorCode"   ) level = MSG::DEBUG   ; else
-  if ( pname == "verboseColorCode" ) level = MSG::VERBOSE ; else
-  if ( pname == "alwaysColorCode"  ) level = MSG::ALWAYS  ; else {
-    throw GaudiException( "ERROR: Unknown message color parameter: " + pname,
-                          name(), StatusCode::FAILURE );
+  if ( pname == "fatalColorCode" )
+    level = MSG::FATAL;
+  else if ( pname == "errorColorCode" )
+    level = MSG::ERROR;
+  else if ( pname == "warningColorCode" )
+    level = MSG::WARNING;
+  else if ( pname == "infoColorCode" )
+    level = MSG::INFO;
+  else if ( pname == "debugColorCode" )
+    level = MSG::DEBUG;
+  else if ( pname == "verboseColorCode" )
+    level = MSG::VERBOSE;
+  else if ( pname == "alwaysColorCode" )
+    level = MSG::ALWAYS;
+  else {
+    throw GaudiException( "ERROR: Unknown message color parameter: " + pname, name(), StatusCode::FAILURE );
   }
 
   auto& code = m_logColorCodes[level];

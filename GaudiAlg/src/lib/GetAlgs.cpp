@@ -18,8 +18,8 @@
 // ============================================================================
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiHistoAlg.h"
-#include "GaudiAlg/GaudiTupleAlg.h"
 #include "GaudiAlg/GaudiSequencer.h"
+#include "GaudiAlg/GaudiTupleAlg.h"
 #include "GaudiAlg/Sequencer.h"
 // ============================================================================
 /** @file
@@ -31,15 +31,18 @@
 namespace
 {
   template <class TYPE>
-  TYPE* getAlg (  const IAlgContextSvc* svc )
+  TYPE* getAlg( const IAlgContextSvc* svc )
   {
-    if ( !svc ) { return nullptr ; }  // RETURN
-    const auto& algs = svc->algorithms() ;
-    auto it = std::find_if( algs.rbegin(), algs.rend(),
-                            Gaudi::Utils::AlgTypeSelector<TYPE>{} ) ;
-    if ( algs.rend() == it  ) { return nullptr ; }  // RETURN
-    IAlgorithm* alg = *it ;
-    return dynamic_cast<TYPE*>(  alg ) ;      // RETURN
+    if ( !svc ) {
+      return nullptr;
+    } // RETURN
+    const auto& algs = svc->algorithms();
+    auto it          = std::find_if( algs.rbegin(), algs.rend(), Gaudi::Utils::AlgTypeSelector<TYPE>{} );
+    if ( algs.rend() == it ) {
+      return nullptr;
+    } // RETURN
+    IAlgorithm* alg = *it;
+    return dynamic_cast<TYPE*>( alg ); // RETURN
   }
 }
 // ============================================================================
@@ -59,9 +62,7 @@ namespace
  *  @date 2007-09-07
  */
 // ============================================================================
-GaudiAlgorithm*
-Gaudi::Utils::getGaudiAlg       ( const IAlgContextSvc* svc )
-{ return getAlg<GaudiAlgorithm> ( svc ) ; }
+GaudiAlgorithm* Gaudi::Utils::getGaudiAlg( const IAlgContextSvc* svc ) { return getAlg<GaudiAlgorithm>( svc ); }
 // ============================================================================
 /*  simple function to extract the last active
  *   GaudiHistoAlg from the context
@@ -79,9 +80,7 @@ Gaudi::Utils::getGaudiAlg       ( const IAlgContextSvc* svc )
  *  @date 2007-09-07
  */
 // ============================================================================
-GaudiHistoAlg*
-Gaudi::Utils::getHistoAlg       ( const IAlgContextSvc* svc )
-{ return getAlg<GaudiHistoAlg> ( svc ) ; }
+GaudiHistoAlg* Gaudi::Utils::getHistoAlg( const IAlgContextSvc* svc ) { return getAlg<GaudiHistoAlg>( svc ); }
 // ============================================================================
 /* simple function to extract the last active
  *   GaudiTupleAlg from the context
@@ -99,9 +98,7 @@ Gaudi::Utils::getHistoAlg       ( const IAlgContextSvc* svc )
  *  @date 2007-09-07
  */
 // ============================================================================
-GaudiTupleAlg*
-Gaudi::Utils::getTupleAlg       ( const IAlgContextSvc* svc )
-{ return getAlg<GaudiTupleAlg> ( svc ) ; }
+GaudiTupleAlg* Gaudi::Utils::getTupleAlg( const IAlgContextSvc* svc ) { return getAlg<GaudiTupleAlg>( svc ); }
 // ============================================================================
 /*  simple function to extract the last active
  *   GaudiSequencer from the context
@@ -119,9 +116,7 @@ Gaudi::Utils::getTupleAlg       ( const IAlgContextSvc* svc )
  *  @date 2007-09-07
  */
 // ============================================================================
-GaudiSequencer*
-Gaudi::Utils::getGaudiSequencer ( const IAlgContextSvc* svc )
-{ return getAlg<GaudiSequencer> ( svc ) ; }
+GaudiSequencer* Gaudi::Utils::getGaudiSequencer( const IAlgContextSvc* svc ) { return getAlg<GaudiSequencer>( svc ); }
 // ============================================================================
 /* simple function to extract the last active
  *   Sequencer from the context
@@ -138,9 +133,7 @@ Gaudi::Utils::getGaudiSequencer ( const IAlgContextSvc* svc )
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-09-07
  */
-Sequencer*
-Gaudi::Utils::getSequencerAlg   ( const IAlgContextSvc* svc )
-{ return getAlg<Sequencer> ( svc ) ; }
+Sequencer* Gaudi::Utils::getSequencerAlg( const IAlgContextSvc* svc ) { return getAlg<Sequencer>( svc ); }
 // ========================================================================
 /* simple function to extract the last active
  *   "Sequencer" () GaudiSequencer or Sequencer)
@@ -159,21 +152,20 @@ Gaudi::Utils::getSequencerAlg   ( const IAlgContextSvc* svc )
  *  @date 2007-09-07
  */
 // ========================================================================
-IAlgorithm*
-Gaudi::Utils::getSequencer ( const IAlgContextSvc* svc )
+IAlgorithm* Gaudi::Utils::getSequencer( const IAlgContextSvc* svc )
 {
-  if ( !svc            ) { return nullptr ; }  // RETURN
+  if ( !svc ) {
+    return nullptr;
+  } // RETURN
   //
-  AlgTypeSelector<GaudiSequencer> sel1 ;
-  AlgTypeSelector<Sequencer>      sel2 ;
- 
+  AlgTypeSelector<GaudiSequencer> sel1;
+  AlgTypeSelector<Sequencer> sel2;
+
   const auto& algs = svc->algorithms();
-  auto a = std::find_if( algs.rbegin(), algs.rend(), 
-                         [&](IAlgorithm* alg) { return sel1(alg) || sel2(alg); } );
-  return a!=algs.rend() ?  *a  : nullptr;
+  auto a = std::find_if( algs.rbegin(), algs.rend(), [&]( IAlgorithm* alg ) { return sel1( alg ) || sel2( alg ); } );
+  return a != algs.rend() ? *a : nullptr;
 }
 // ========================================================================
-
 
 // ============================================================================
 // The END

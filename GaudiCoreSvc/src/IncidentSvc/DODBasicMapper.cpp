@@ -3,17 +3,20 @@
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/Parsers.h"
 // Local implementation of parsers from HashMap
-namespace Gaudi {
-  namespace Parsers {
+namespace Gaudi
+{
+  namespace Parsers
+  {
     /// Basic parser for the types of HashMap used in DODBasicMapper.
     /// Delegates to the parser of map<string,string>.
     template <typename K, typename V>
-    StatusCode parse(GaudiUtils::HashMap<K, V> &result, const std::string &input) {
+    StatusCode parse( GaudiUtils::HashMap<K, V>& result, const std::string& input )
+    {
       std::map<std::string, std::string> tmp;
-      StatusCode sc = parse(tmp, input);
-      if (sc.isSuccess()) {
+      StatusCode sc = parse( tmp, input );
+      if ( sc.isSuccess() ) {
         result.clear();
-        result.insert(tmp.begin(), tmp.end());
+        result.insert( tmp.begin(), tmp.end() );
       }
       return sc;
     }
@@ -28,19 +31,18 @@ namespace Gaudi {
 //
 // 16/01/2012: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_COMPONENT(DODBasicMapper)
+DECLARE_COMPONENT( DODBasicMapper )
 
-Gaudi::Utils::TypeNameString DODBasicMapper::algorithmForPath(const std::string & path)
+Gaudi::Utils::TypeNameString DODBasicMapper::algorithmForPath( const std::string& path )
 {
-  auto alg = m_algMap.find(path);
-  return (alg != m_algMap.end()) ? alg->second : "";
+  auto alg = m_algMap.find( path );
+  return ( alg != m_algMap.end() ) ? alg->second : "";
 }
 
-
-std::string DODBasicMapper::nodeTypeForPath(const std::string & path)
+std::string DODBasicMapper::nodeTypeForPath( const std::string& path )
 {
-  auto node = m_nodeMap.find(path);
-  return (node != m_nodeMap.end()) ? node->second : "";
+  auto node = m_nodeMap.find( path );
+  return ( node != m_nodeMap.end() ) ? node->second : "";
 }
 
 // ============================================================================

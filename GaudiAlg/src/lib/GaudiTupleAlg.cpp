@@ -20,7 +20,7 @@
 // ============================================================================
 // Force creation of templated class
 #include "GaudiAlg/GaudiTuples.icpp"
-template class GaudiTuples<GaudiHistoAlg> ;
+template class GaudiTuples<GaudiHistoAlg>;
 // ============================================================================
 
 // ============================================================================

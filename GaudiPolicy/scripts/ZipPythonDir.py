@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-## file ZipPythonDir.py
+# file ZipPythonDir.py
 #  Script to generate a zip file that can replace a directory in the python path.
 
 import os
@@ -13,17 +13,21 @@ import re
 import codecs
 from StringIO import StringIO
 
-## Class for generic exception coming from the zipdir() function
+# Class for generic exception coming from the zipdir() function
+
+
 class ZipdirError(RuntimeError):
     pass
 
-## Collect the changes to be applied to the zip file.
+# Collect the changes to be applied to the zip file.
 #
 #  @param directory: directory to be packed in the zip file
 #  @param infolist: list of ZipInfo objects already contained in the zip archive
 #
 #  @return: tuple of (added, modified, untouched, removed) entries in the directory with respect to the zip file
 #
+
+
 def _zipChanges(directory, infolist):
     # gets the dates of the files in the zip archive
     infos = {}
@@ -49,14 +53,15 @@ def _zipChanges(directory, infolist):
         arcdir = root[dirlen:]
         for f in files:
             ext = os.path.splitext(f)[1]
-            if ext == ".py": # extensions that can enter the zip file
+            if ext == ".py":  # extensions that can enter the zip file
                 filename = os.path.join(arcdir, f)
                 all_files.add(filename)
                 if filename not in infos:
                     action = "A"
                     added.append(filename)
                 else:
-                    filetime = time.localtime(os.stat(os.path.join(directory,filename))[stat.ST_MTIME])[:6]
+                    filetime = time.localtime(
+                        os.stat(os.path.join(directory, filename))[stat.ST_MTIME])[:6]
                     if filetime > infos[filename]:
                         action = "M"
                         modified.append(filename)
@@ -70,13 +75,15 @@ def _zipChanges(directory, infolist):
             # cases that can be ignored
             elif (ext not in [".pyc", ".pyo", ".stamp", ".cmtref", ".confdb"]
                   and not f.startswith('.__afs')):
-                raise ZipdirError("Cannot add '%s' to the zip file, only '.py' are allowed." % os.path.join(arcdir, f))
+                raise ZipdirError(
+                    "Cannot add '%s' to the zip file, only '.py' are allowed." % os.path.join(arcdir, f))
     # check for removed files
     for filename in infos:
         if filename not in all_files:
             removed.append(filename)
             log.info(" %s -> %s", "R", filename)
     return (added, modified, untouched, removed)
+
 
 def checkEncoding(fileObj):
     '''
@@ -115,8 +122,8 @@ def checkEncoding(fileObj):
     codecs.getreader(enc)(fileObj).read()
 
 
-## Make a zip file out of a directory containing python modules
-def zipdir(directory, no_pyc = False):
+# Make a zip file out of a directory containing python modules
+def zipdir(directory, no_pyc=False):
     filename = os.path.realpath(directory + ".zip")
     log = logging.getLogger("zipdir")
     if not os.path.isdir(directory):
@@ -174,17 +181,19 @@ def zipdir(directory, no_pyc = False):
     finally:
         zipFile.close()
 
-## Main function of the script.
+# Main function of the script.
 #  Parse arguments and call zipdir() for each directory passed as argument
-def main(argv = None):
+
+
+def main(argv=None):
     from optparse import OptionParser
-    parser = OptionParser(usage = "%prog [options] directory1 [directory2 ...]")
-    parser.add_option("--no-pyc", action = "store_true",
-                      help = "copy the .py files without pre-compiling them")
-    parser.add_option("--quiet", action = "store_true",
-                      help = "do not print info messages")
-    parser.add_option("--debug", action = "store_true",
-                      help = "print debug messages (has priority over --quiet)")
+    parser = OptionParser(usage="%prog [options] directory1 [directory2 ...]")
+    parser.add_option("--no-pyc", action="store_true",
+                      help="copy the .py files without pre-compiling them")
+    parser.add_option("--quiet", action="store_true",
+                      help="do not print info messages")
+    parser.add_option("--debug", action="store_true",
+                      help="print debug messages (has priority over --quiet)")
 
     if argv is None:
         argv = sys.argv
@@ -204,6 +213,7 @@ def main(argv = None):
     # zip all the directories passed as arguments
     for d in args:
         zipdir(d, opts.no_pyc)
+
 
 if __name__ == '__main__':
     main()

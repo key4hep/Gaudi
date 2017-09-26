@@ -7,10 +7,11 @@
  * @brief  an algorithm to test the StatusCodeSvc
  * @author Charles Leggett, Marco Clemencic
  */
-class SCSAlg : public Algorithm {
+class SCSAlg : public Algorithm
+{
 
 public:
-  SCSAlg (const std::string& name, ISvcLocator* pSvcLocator);
+  SCSAlg( const std::string& name, ISvcLocator* pSvcLocator );
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
@@ -23,7 +24,6 @@ public:
   void fncIgnored();
 
 private:
-
 };
 
 #endif

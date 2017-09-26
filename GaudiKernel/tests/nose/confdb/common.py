@@ -7,6 +7,8 @@ __all__ = ('data_root', 'MockLoggingHandler')
 data_root = join(dirname(dirname(dirname(__file__))), 'data', 'confdb')
 
 # Code taken from http://stackoverflow.com/a/1049375/576333
+
+
 class MockLoggingHandler(logging.Handler):
     """Mock logging handler to check for expected logs."""
 

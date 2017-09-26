@@ -15,7 +15,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_COMPONENT(HistoTimingAlg)
+DECLARE_COMPONENT( HistoTimingAlg )
 
 //=============================================================================
 // Initialization
@@ -28,17 +28,15 @@ StatusCode HistoTimingAlg::initialize()
 
   // random number generator
   auto randSvc = service<IRndmGenSvc>( "RndmGenSvc", true );
-  if ( !randSvc || !m_rand.initialize( randSvc, Rndm::Flat(0.,1.) ) )
-  {
+  if ( !randSvc || !m_rand.initialize( randSvc, Rndm::Flat( 0., 1. ) ) ) {
     return Error( "Unable to create Random generator" );
   }
 
   // book histos
-  for ( unsigned int iH = 0; iH < m_nHistos; ++iH )
-  {
+  for ( unsigned int iH = 0; iH < m_nHistos; ++iH ) {
     std::ostringstream title;
     title << "Histogram Number " << iH;
-    m_histos[ book1D(title.str(),0, 1,100) ] = title.str();
+    m_histos[book1D( title.str(), 0, 1, 100 )] = title.str();
   }
 
   return sc;
@@ -50,22 +48,16 @@ StatusCode HistoTimingAlg::initialize()
 StatusCode HistoTimingAlg::execute()
 {
 
-  for ( unsigned int iT = 0; iT < m_nTracks; ++iT )
-  {
+  for ( unsigned int iT = 0; iT < m_nTracks; ++iT ) {
 
     // fill histos
-    for ( HistoMap::iterator iH = m_histos.begin(); iH != m_histos.end(); ++iH )
-    {
-      if ( m_useGaudiAlg )
-      {
-        plot1D( m_rand(), iH->second, 0,1,100 );
-      }
-      else
-      {
+    for ( HistoMap::iterator iH = m_histos.begin(); iH != m_histos.end(); ++iH ) {
+      if ( m_useGaudiAlg ) {
+        plot1D( m_rand(), iH->second, 0, 1, 100 );
+      } else {
         iH->first->fill( m_rand() );
       }
     }
-
   }
 
   return StatusCode::SUCCESS;

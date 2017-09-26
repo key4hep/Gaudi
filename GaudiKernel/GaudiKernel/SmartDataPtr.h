@@ -13,8 +13,8 @@
 #define GAUDIKERNEL_SMARTDATAPTR_H 1
 
 // Framework include files
-#include "GaudiKernel/SmartDataStorePtr.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/SmartDataStorePtr.h"
 
 /** A small class used to access easily (and efficiently) data items
     residing in data stores.
@@ -43,11 +43,12 @@
     @version 1.0
 */
 
-template<class TYPE> class SmartDataPtr : public SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>    {
+template <class TYPE>
+class SmartDataPtr : public SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>
+{
 public:
-
-  /// unhides assignment operator of base class
-#if !defined(__ICC) && !defined(__COVERITY__)
+/// unhides assignment operator of base class
+#if !defined( __ICC ) && !defined( __COVERITY__ )
   // icc and Coverity do not like this line, they fail with
   // SmartDataPtr.h(147): internal error: assertion failed: add_symbol_to_overload_list:
   //   symbol not in symbol header list (shared/edgcpfe/symbol_tbl.c, line 4804)
@@ -61,8 +62,8 @@ public:
                             should be used to load the object.
       @param  fullPath      Full path leading to the data object.
   */
-  SmartDataPtr(IDataProviderSvc* pService, const std::string& fullPath)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,nullptr,fullPath)
+  SmartDataPtr( IDataProviderSvc* pService, const std::string& fullPath )
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, fullPath )
   {
   }
 
@@ -74,8 +75,8 @@ public:
                             should be used to load the object.
       @param  pDirectory    Pointer to the data directory entry.
   */
-  SmartDataPtr(IDataProviderSvc* pService, IRegistry* pDirectory)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,pDirectory,"")
+  SmartDataPtr( IDataProviderSvc* pService, IRegistry* pDirectory )
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, pDirectory, "" )
   {
   }
 
@@ -90,8 +91,8 @@ public:
       @param  pObject       Pointer to the parent object.
       @param  path          Path to the data object relative to the parent object.
   */
-  SmartDataPtr(IDataProviderSvc* pService, DataObject* pObject, const std::string& path)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,nullptr,path)
+  SmartDataPtr( IDataProviderSvc* pService, DataObject* pObject, const std::string& path )
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, path )
   {
     if ( pObject ) this->m_pRegistry = pObject->registry();
   }
@@ -105,8 +106,8 @@ public:
       @param  refObject     Smart Pointer to the parent object.
       @param  pDirectory    Pointer to the data directory entry.
   */
-  SmartDataPtr(SmartDataObjectPtr& refObject, IRegistry* pDirectory)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( refObject.service(), pDirectory, "")
+  SmartDataPtr( SmartDataObjectPtr& refObject, IRegistry* pDirectory )
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), pDirectory, "" )
   {
   }
 
@@ -119,18 +120,15 @@ public:
       @param  refObject     Smart Pointer to the parent object.
       @param  path          Path to the data object relative to the parent object.
   */
-  SmartDataPtr(SmartDataObjectPtr& refObject, const std::string& path)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( refObject.service(), refObject.directory(), path)
+  SmartDataPtr( SmartDataObjectPtr& refObject, const std::string& path )
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), refObject.directory(), path )
   {
   }
 
   /** Copy constructor: Construct an copy of a SmartDataPtr instance.
       @param  copy          Copy Smart Pointer to object.
   */
-  SmartDataPtr(const SmartDataObjectPtr& copy)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( copy )
-  {
-  }
+  SmartDataPtr( const SmartDataObjectPtr& copy ) : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( copy ) {}
 
   /** Standard destructor
   */
@@ -138,15 +136,17 @@ public:
 
   /// Automatic conversion to data type
   template <class OTHER>
-  SmartDataPtr& operator=( OTHER* pObj )    {
-    this->m_pObject = dynamic_cast<TYPE*>(pObj);
+  SmartDataPtr& operator=( OTHER* pObj )
+  {
+    this->m_pObject = dynamic_cast<TYPE*>( pObj );
     return *this;
   }
 
   /// Automatic conversion to data type
   template <class OTHER>
-  SmartDataPtr& operator=( const OTHER* pObj )    {
-    this->m_pObject = dynamic_cast<TYPE*>(const_cast<OTHER*>(pObj));
+  SmartDataPtr& operator=( const OTHER* pObj )
+  {
+    this->m_pObject = dynamic_cast<TYPE*>( const_cast<OTHER*>( pObj ) );
     return *this;
   }
 };

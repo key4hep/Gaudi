@@ -3,7 +3,6 @@
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/VectorMap.h"
 // ============================================================================

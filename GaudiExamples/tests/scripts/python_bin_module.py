@@ -3,6 +3,7 @@
 import unittest
 import sys
 
+
 class TestCase(unittest.TestCase):
 
     def setUp(self):
@@ -21,6 +22,7 @@ class TestCase(unittest.TestCase):
         import PyExample
         self.assertEquals(PyExample.greet(), "hello, world")
 
+
 if __name__ == '__main__':
-    unittest.main(testRunner = unittest.TextTestRunner(stream = sys.stdout,
-                                                       verbosity = 2))
+    unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stdout,
+                                                     verbosity=2))

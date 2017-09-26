@@ -3,15 +3,16 @@
 
 #include <string>
 
-namespace RootHistCnv {
+namespace RootHistCnv
+{
 
-  bool RootCd(const std::string& full);
+  bool RootCd( const std::string& full );
 
-  bool RootMkdir(const std::string& full);
+  bool RootMkdir( const std::string& full );
 
   std::string RootPwd();
 
-  bool RootTrimLeadingDir(std::string &full, std::string dir);
+  bool RootTrimLeadingDir( std::string& full, std::string dir );
 }
 
 #endif

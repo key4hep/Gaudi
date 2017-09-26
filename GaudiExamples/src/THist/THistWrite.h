@@ -8,11 +8,12 @@ class TH1F;
 class ITHistSvc;
 class TDirectory;
 
-class THistWrite : public Algorithm {
+class THistWrite : public Algorithm
+{
 
 public:
   // Constructor of this form must be provided
-  THistWrite(const std::string& name, ISvcLocator* pSvcLocator); 
+  THistWrite( const std::string& name, ISvcLocator* pSvcLocator );
 
   // Three mandatory member functions of any algorithm
   StatusCode initialize() override;
@@ -20,14 +21,11 @@ public:
   StatusCode finalize() override;
 
 private:
-
   ITHistSvc* m_ths;
 
   TH1F* m_h1;
 
-  void listKeys(TDirectory *td);
-
+  void listKeys( TDirectory* td );
 };
 
-
-# endif    // THIST_HISTOALGORITHM_H
+#endif // THIST_HISTOALGORITHM_H

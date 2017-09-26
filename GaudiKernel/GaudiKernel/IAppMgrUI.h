@@ -2,9 +2,9 @@
 #define GAUDIKERNEL_IAPPMGRUI_H 1
 
 // Include files
-#include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/StateMachine.h"
+#include "GaudiKernel/StatusCode.h"
 
 #include <string>
 
@@ -17,10 +17,11 @@
     @date   30/10/98
 */
 
-class GAUDI_API IAppMgrUI: virtual public INamedInterface {
+class GAUDI_API IAppMgrUI : virtual public INamedInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAppMgrUI,4,0);
+  DeclareInterfaceID( IAppMgrUI, 4, 0 );
   /// Run the complete job (from initialize to terminate)
   virtual StatusCode run() = 0;
   /// Configure the job
@@ -32,7 +33,7 @@ public:
   /// Finalize the job
   virtual StatusCode finalize() = 0;
   /// Process the next maxevt events
-  virtual StatusCode nextEvent(int maxevt) = 0;
+  virtual StatusCode nextEvent( int maxevt ) = 0;
 
   /// Start (from INITIALIZED to RUNNING).
   virtual StatusCode start() = 0;
@@ -48,6 +49,5 @@ public:
 
   /// Get the current state.
   virtual Gaudi::StateMachine::State FSMState() const = 0;
-
 };
-#endif  // KERNEL_IAPPMGRUI_H
+#endif // KERNEL_IAPPMGRUI_H

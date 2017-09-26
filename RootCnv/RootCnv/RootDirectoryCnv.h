@@ -15,7 +15,8 @@
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   /** @class RootDirectoryCnv RootDirectoryCnv.h src/RootDirectoryCnv.h
    *
@@ -27,9 +28,9 @@ namespace Gaudi {
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootDirectoryCnv: public RootStatCnv  {
+  class GAUDI_API RootDirectoryCnv : public RootStatCnv
+  {
   public:
-
     /** Initializing Constructor
      * @param      typ      [IN]     Concrete storage type of the converter
      * @param      clid     [IN]     Class identifier of the object
@@ -37,7 +38,7 @@ namespace Gaudi {
      *
      * @return Reference to RootBaseCnv object
      */
-    RootDirectoryCnv(long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr);
+    RootDirectoryCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr );
 
     /// Standard Destructor
     ~RootDirectoryCnv() override = default;
@@ -49,7 +50,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode createObj(IOpaqueAddress* pAddr,DataObject*& refpObj) override;
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;
 
     /** Converter overrides: Resolve the references of the transient object.
      *
@@ -58,7 +59,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode fillObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) override;
+    StatusCode fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override;
 
     /** Converter overrides: Update transient object from persistent data
      *
@@ -67,7 +68,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode updateObj(IOpaqueAddress* pAddr,DataObject* pObj) override;
+    StatusCode updateObj( IOpaqueAddress* pAddr, DataObject* pObj ) override;
 
     /** Converter overrides: Update the references of
      * an updated transient object.
@@ -77,7 +78,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode updateObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) override;
+    StatusCode updateObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override;
 
     /** Converter overrides: Convert the transient object to the
      * requested representation.
@@ -87,7 +88,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode createRep(DataObject* pObj,IOpaqueAddress*& refpAddr) override;
+    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override;
 
     /** Converter overrides: Fill references of persistent object representation.
      *
@@ -96,7 +97,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode fillRepRefs(IOpaqueAddress* pAddr, DataObject* pObj) override;
+    StatusCode fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override;
 
     /** Converter overrides: Update persistent object representation.
      *
@@ -105,7 +106,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode updateRep(IOpaqueAddress* pAddr,DataObject* pObj) override;
+    StatusCode updateRep( IOpaqueAddress* pAddr, DataObject* pObj ) override;
 
     /** Converter overrides: Update references of persistent object representation.
      *
@@ -114,7 +115,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode updateRepRefs(IOpaqueAddress* pAddr,DataObject* pObj) override;
+    StatusCode updateRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override;
   };
 }
 #endif // POOLDB_POOLDBDIRECTORYCNV_H

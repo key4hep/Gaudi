@@ -11,15 +11,18 @@
 #define KERNEL_SMARTREF_H 1
 
 // Include files
-#include "GaudiKernel/SmartRefBase.h"
 #include "GaudiKernel/ContainedObject.h"
+#include "GaudiKernel/SmartRefBase.h"
 
 #include <typeinfo>
 
 // Forward declarations
-template <class TYPE> class SmartRefArray;
-template <class TYPE> class SmartRefList;
-template <class TYPE> class SmartRefMap;
+template <class TYPE>
+class SmartRefArray;
+template <class TYPE>
+class SmartRefList;
+template <class TYPE>
+class SmartRefMap;
 
 /** Kernel objects: SmartRef
 
@@ -59,7 +62,9 @@ template <class TYPE> class SmartRefMap;
     Author:  M.Frank
     Version: 1.0
 */
-template <class TYPE> class SmartRef  {
+template <class TYPE>
+class SmartRef
+{
   /// The container must be a friend
   friend class SmartRefArray<TYPE>;
   friend class SmartRefList<TYPE>;
@@ -68,191 +73,186 @@ template <class TYPE> class SmartRef  {
 public:
   enum { VALID = StreamBuffer::VALID, INVALID = StreamBuffer::INVALID };
   /// Entry type definition
-  typedef TYPE   entry_type;
+  typedef TYPE entry_type;
+
 protected:
-  SmartRefBase        m_base;
+  SmartRefBase m_base;
   /// Pointer to target data object
   mutable const TYPE* m_target = nullptr;
+
 public:
   /// Standard Constructor
-  SmartRef()  {
+  SmartRef()
+  {
     m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
-    _setEnvironment(0, 0);
+    _setEnvironment( 0, 0 );
   }
   /// Standard Constructor with initialisation
-  SmartRef(TYPE* pObject)  {
+  SmartRef( TYPE* pObject )
+  {
     m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
-    m_target = pObject;
-    _setEnvironment(0, 0);
+    m_target        = pObject;
+    _setEnvironment( 0, 0 );
   }
   /// Standard Constructor with initialisation from const object
-  SmartRef(const TYPE* pObject)  {
+  SmartRef( const TYPE* pObject )
+  {
     m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
-    m_target = const_cast<TYPE*>(pObject);
-    _setEnvironment(0, 0);
+    m_target        = const_cast<TYPE*>( pObject );
+    _setEnvironment( 0, 0 );
   }
   /// Copy Constructor
-  SmartRef(const SmartRef& copy)   {
+  SmartRef( const SmartRef& copy )
+  {
     m_base.m_hintID = copy.m_base.m_hintID;
     m_base.m_linkID = copy.m_base.m_linkID;
-    m_target = copy.m_target;
-    _setEnvironment(copy.m_base.m_data, copy.m_base.m_contd);
+    m_target        = copy.m_target;
+    _setEnvironment( copy.m_base.m_data, copy.m_base.m_contd );
   }
   /// Constructor
-  SmartRef(long hint, long link, TYPE* obj = nullptr)   {
+  SmartRef( long hint, long link, TYPE* obj = nullptr )
+  {
     m_base.m_hintID = hint;
     m_base.m_linkID = link;
-    m_target = obj;
-    _setEnvironment(0, 0);
+    m_target        = obj;
+    _setEnvironment( 0, 0 );
   }
   /// Constructor for references to contained objects passing environment
-  SmartRef(const ContainedObject* pObj, long hint, long link, TYPE* obj = nullptr)   {
-    m_base.m_hintID = hint;
-    m_base.m_linkID = link;
-    m_target = obj;
-    const DataObject* src = (0==pObj) ? 0 : pObj->parent();
-    _setEnvironment(src, pObj);
+  SmartRef( const ContainedObject* pObj, long hint, long link, TYPE* obj = nullptr )
+  {
+    m_base.m_hintID       = hint;
+    m_base.m_linkID       = link;
+    m_target              = obj;
+    const DataObject* src = ( 0 == pObj ) ? 0 : pObj->parent();
+    _setEnvironment( src, pObj );
   }
   /// Constructor for references to contained objects passing environment
-  SmartRef(const DataObject* pObj, long hint, long link, TYPE* obj = nullptr)   {
+  SmartRef( const DataObject* pObj, long hint, long link, TYPE* obj = nullptr )
+  {
     m_base.m_hintID = hint;
     m_base.m_linkID = link;
-    m_target = obj;
-    _setEnvironment(pObj, 0);
+    m_target        = obj;
+    _setEnvironment( pObj, 0 );
   }
   /// Constructor for references to DataObjects passing environment
-  SmartRef(const DataObject* pObj, long hint, TYPE* obj = nullptr)   {
+  SmartRef( const DataObject* pObj, long hint, TYPE* obj = nullptr )
+  {
     m_base.m_hintID = hint;
     m_base.m_linkID = INVALID;
-    m_target = obj;
-    _setEnvironment(pObj, 0);
+    m_target        = obj;
+    _setEnvironment( pObj, 0 );
   }
   /// Standard destructor
-  //virtual ~SmartRef()                  {
+  // virtual ~SmartRef()                  {
   //}
   /// Check if link should be followed: link must be valid and object not yet loaded
-  bool shouldFollowLink(const DataObject* /* typ */) const   {
-    return (!m_target && m_base.m_hintID != INVALID );
-  }
+  bool shouldFollowLink( const DataObject* /* typ */ ) const { return ( !m_target && m_base.m_hintID != INVALID ); }
   /// Check if link should be followed: link must be valid and object not yet loaded
-  bool shouldFollowLink(const ContainedObject* /* typ */) const   {
-    return (!m_target && m_base.m_hintID != INVALID && m_base.m_linkID != INVALID );
+  bool shouldFollowLink( const ContainedObject* /* typ */ ) const
+  {
+    return ( !m_target && m_base.m_hintID != INVALID && m_base.m_linkID != INVALID );
   }
   /// Access hint id:
-  long hintID()   const   {
-    return m_base.m_hintID;
-  }
+  long hintID() const { return m_base.m_hintID; }
   /// Access link id:
-  long linkID()   const   {
-    return m_base.m_linkID;
-  }
+  long linkID() const { return m_base.m_linkID; }
   /// Setup smart reference when reading. Must be allowed from external sources.
-  void set(DataObject* pObj, long hint_id, long link_id) {
-     m_base.set(pObj, hint_id, link_id);
-  }
+  void set( DataObject* pObj, long hint_id, long link_id ) { m_base.set( pObj, hint_id, link_id ); }
   /// Access to embedded type
-  const std::type_info* type()  const   {
-    return &typeid(TYPE);
-  }
+  const std::type_info* type() const { return &typeid( TYPE ); }
   /// Access to raw data pointer
-  TYPE* data()    {
-    return const_cast<TYPE*>(m_target);
-  }
-  const TYPE* data()  const   {
-    return m_target;
-  }
+  TYPE* data() { return const_cast<TYPE*>( m_target ); }
+  const TYPE* data() const { return m_target; }
   /// Access to the object
-  const TYPE* target()  const;
+  const TYPE* target() const;
   /// Access to the object
   TYPE* target();
   /// Return the path of the linked object inside the data store.
-  inline const std::string &path() const { return m_base.path(); }
+  inline const std::string& path() const { return m_base.path(); }
   /// Equality operator
-  bool operator==(const SmartRef<TYPE>& c)   const   {
-    if (  m_target &&  c.m_target ) return m_target == c.m_target;
-    if ( !m_target && !c.m_target ) return m_base.isEqual(m_target,c.m_base);
-    if (  m_target && !c.m_target ) return m_base.isEqualEx(m_target, c.m_base);
-    if ( !m_target &&  c.m_target ) return c.m_base.isEqualEx(c.m_target, m_base);
+  bool operator==( const SmartRef<TYPE>& c ) const
+  {
+    if ( m_target && c.m_target ) return m_target == c.m_target;
+    if ( !m_target && !c.m_target ) return m_base.isEqual( m_target, c.m_base );
+    if ( m_target && !c.m_target ) return m_base.isEqualEx( m_target, c.m_base );
+    if ( !m_target && c.m_target ) return c.m_base.isEqualEx( c.m_target, m_base );
     return false;
   }
   /// NON-Equality operator
-  bool operator!=(const SmartRef<TYPE>& c)   const   {
-    return !(this->operator==(c));
-  }
+  bool operator!=( const SmartRef<TYPE>& c ) const { return !( this->operator==( c ) ); }
   /// Set the environment (CONST)
-  const SmartRef<TYPE>& _setEnvironment(const DataObject* pObj, const ContainedObject* pContd)  const   {
+  const SmartRef<TYPE>& _setEnvironment( const DataObject* pObj, const ContainedObject* pContd ) const
+  {
     m_base.m_data  = pObj;
     m_base.m_contd = pContd;
-    m_base.setObjectType(data());
+    m_base.setObjectType( data() );
     return *this;
   }
   /// Set the environment (CONST)
-  SmartRef<TYPE>& _setEnvironment(const DataObject* pObj, const ContainedObject* pContd)    {
+  SmartRef<TYPE>& _setEnvironment( const DataObject* pObj, const ContainedObject* pContd )
+  {
     m_base.m_data  = pObj;
     m_base.m_contd = pContd;
-    m_base.setObjectType(data());
+    m_base.setObjectType( data() );
     return *this;
   }
   /// operator(): assigns parent object for serialisation
-  SmartRef<TYPE>& operator() (ContainedObject* pObj)    {
-    const DataObject* src = ( pObj  ? pObj->parent() : nullptr );
-    return _setEnvironment(src, pObj);
-  }
-  /// operator() const: assigns parent object for serialisation
-  const SmartRef<TYPE>& operator() (const ContainedObject* pObj)  const  {
+  SmartRef<TYPE>& operator()( ContainedObject* pObj )
+  {
     const DataObject* src = ( pObj ? pObj->parent() : nullptr );
-    return _setEnvironment(src, pObj);
-  }
-  /// operator(): assigns parent object for serialisation
-  SmartRef<TYPE>& operator() (DataObject* pObj)    {
-    return _setEnvironment(pObj,nullptr);
+    return _setEnvironment( src, pObj );
   }
   /// operator() const: assigns parent object for serialisation
-  const SmartRef<TYPE>& operator() (const DataObject* pObj)  const  {
-    return _setEnvironment(pObj,nullptr);
+  const SmartRef<TYPE>& operator()( const ContainedObject* pObj ) const
+  {
+    const DataObject* src = ( pObj ? pObj->parent() : nullptr );
+    return _setEnvironment( src, pObj );
   }
+  /// operator(): assigns parent object for serialisation
+  SmartRef<TYPE>& operator()( DataObject* pObj ) { return _setEnvironment( pObj, nullptr ); }
+  /// operator() const: assigns parent object for serialisation
+  const SmartRef<TYPE>& operator()( const DataObject* pObj ) const { return _setEnvironment( pObj, nullptr ); }
   /// Assignment
-  SmartRef<TYPE>& operator=(const SmartRef<TYPE>& c)  {
-    m_target = c.m_target;
+  SmartRef<TYPE>& operator=( const SmartRef<TYPE>& c )
+  {
+    m_target        = c.m_target;
     m_base.m_hintID = c.m_base.m_hintID;
     m_base.m_linkID = c.m_base.m_linkID;
-    return _setEnvironment(c.m_base.m_data, c.m_base.m_contd);  }
+    return _setEnvironment( c.m_base.m_data, c.m_base.m_contd );
+  }
   /// Assignment
-  SmartRef<TYPE>& operator=(TYPE* pObject)   {
-    m_target = pObject;
+  SmartRef<TYPE>& operator=( TYPE* pObject )
+  {
+    m_target        = pObject;
     m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
     return *this;
   }
   /// Dereference operator
-  TYPE& operator*()                 {  return *SmartRef<TYPE>::target(); }
+  TYPE& operator*() { return *SmartRef<TYPE>::target(); }
   /// Dereference operator
-  const TYPE& operator*()   const   {  return *SmartRef<TYPE>::target(); }
+  const TYPE& operator*() const { return *SmartRef<TYPE>::target(); }
   /// Dereference operator
-  TYPE* operator->()                {  return SmartRef<TYPE>::target();  }
+  TYPE* operator->() { return SmartRef<TYPE>::target(); }
   /// Dereference operator to const object
-  const TYPE* operator->()  const   {  return SmartRef<TYPE>::target();  }
+  const TYPE* operator->() const { return SmartRef<TYPE>::target(); }
   /// Implicit type conversion to const object
-  operator const TYPE* ()  const    {  return SmartRef<TYPE>::target();  }
+  operator const TYPE*() const { return SmartRef<TYPE>::target(); }
   /// Implicit type conversion
-  operator TYPE* ()                 {  return SmartRef<TYPE>::target();  }
+  operator TYPE*() { return SmartRef<TYPE>::target(); }
   /// Write the reference to the stream buffer (needed due to stupid G++ compiler)
-  StreamBuffer& writeRef(StreamBuffer& s)  const;
+  StreamBuffer& writeRef( StreamBuffer& s ) const;
   /// Read the reference from the stream buffer (needed due to stupid G++ compiler)
-  StreamBuffer& readRef(StreamBuffer& s);
+  StreamBuffer& readRef( StreamBuffer& s );
   /// Output Streamer operator
   // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
-  friend StreamBuffer& operator<< (StreamBuffer& _s, const SmartRef<TYPE>& ptr)  {
-    return ptr.writeRef(_s);
-  }
+  friend StreamBuffer& operator<<( StreamBuffer& _s, const SmartRef<TYPE>& ptr ) { return ptr.writeRef( _s ); }
   /// Input Streamer operator
   // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
-  friend StreamBuffer& operator>> (StreamBuffer& _s, SmartRef<TYPE>& ptr)    {
-    return ptr.readRef(_s);
-  }
+  friend StreamBuffer& operator>>( StreamBuffer& _s, SmartRef<TYPE>& ptr ) { return ptr.readRef( _s ); }
 };
 
 //
@@ -265,58 +265,66 @@ public:
 //
 
 /// Access to the object
-template <class TYPE> inline
-TYPE* SmartRef<TYPE>::target()  {
-  if ( !m_target )    {
-    m_target = dynamic_cast<const TYPE*>(m_base.accessData(m_target));
+template <class TYPE>
+inline TYPE* SmartRef<TYPE>::target()
+{
+  if ( !m_target ) {
+    m_target = dynamic_cast<const TYPE*>( m_base.accessData( m_target ) );
   }
-  return const_cast<TYPE*>(m_target);
+  return const_cast<TYPE*>( m_target );
 }
 
 /// Access to the object  (CONST)
-template <class TYPE> inline
-const TYPE* SmartRef<TYPE>::target()  const  {
-  if ( !m_target )    {
-    m_target = dynamic_cast<const TYPE*>(m_base.accessData(m_target));
+template <class TYPE>
+inline const TYPE* SmartRef<TYPE>::target() const
+{
+  if ( !m_target ) {
+    m_target = dynamic_cast<const TYPE*>( m_base.accessData( m_target ) );
   }
   return m_target;
 }
 
 /// Write the reference to the stream buffer (needed due to stupid G++ compiler)
-template <class TYPE> inline
-StreamBuffer& SmartRef<TYPE>::writeRef (StreamBuffer& s)    const   {
-  m_base.writeObject(m_target, s);
+template <class TYPE>
+inline StreamBuffer& SmartRef<TYPE>::writeRef( StreamBuffer& s ) const
+{
+  m_base.writeObject( m_target, s );
   return s;
 }
 
 /// Read the reference from the stream buffer (needed due to stupid G++ compiler)
-template <class TYPE> inline
-StreamBuffer& SmartRef<TYPE>::readRef (StreamBuffer& s)   {
-  m_target = dynamic_cast<TYPE*>( m_base.readObject(m_target, s) );
+template <class TYPE>
+inline StreamBuffer& SmartRef<TYPE>::readRef( StreamBuffer& s )
+{
+  m_target = dynamic_cast<TYPE*>( m_base.readObject( m_target, s ) );
   return s;
 }
 
 /// Friend helper to check for object existence (will load object)
-template <class TYPE> inline
-bool operator == (const SmartRef<TYPE>& ref, int)   {
+template <class TYPE>
+inline bool operator==( const SmartRef<TYPE>& ref, int )
+{
   return ref.target() == nullptr;
 }
 
 /// Friend helper to check for object existence (will load object)
-template <class TYPE> inline
-bool operator == (int, const SmartRef<TYPE>& ref)   {
+template <class TYPE>
+inline bool operator==( int, const SmartRef<TYPE>& ref )
+{
   return ref.target() == nullptr;
 }
 
 /// Friend helper to check for object existence (will load object)
-template <class TYPE> inline
-bool operator != (const SmartRef<TYPE>& ref, int)   {
+template <class TYPE>
+inline bool operator!=( const SmartRef<TYPE>& ref, int )
+{
   return ref.target() != nullptr;
 }
 
 /// Friend helper to check for object existence (will load object)
-template <class TYPE> inline
-bool operator != (int, const SmartRef<TYPE>& ref)   {
+template <class TYPE>
+inline bool operator!=( int, const SmartRef<TYPE>& ref )
+{
   return ref.target() != nullptr;
 }
 

@@ -17,11 +17,11 @@ FileCatalog(Catalogs=["xmlcatalog_file:MultiInput.xml"])
 
 app = ApplicationMgr()
 # - I/O
-app.OutStream += [ out, DumpAddress(OutputFile='addresses.txt',
-                                    ObjectPath='Tracks') ]
+app.OutStream += [out, DumpAddress(OutputFile='addresses.txt',
+                                   ObjectPath='Tracks')]
 # - Algorithms
-app.TopAlg = [ WriteAlg(RandomSeeds=[1, 2, 3, 4]) ]
+app.TopAlg = [WriteAlg(RandomSeeds=[1, 2, 3, 4])]
 # - Events
-app.EvtMax   = 100
-app.EvtSel   = "NONE" # do not use any event input
+app.EvtMax = 100
+app.EvtSel = "NONE"  # do not use any event input
 app.HistogramPersistency = "NONE"

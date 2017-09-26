@@ -11,7 +11,7 @@
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
-## @file
+# @file
 #  Simple which illustrates
 #  the 'array-like' job-properties and their C++/Python intercommunication
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
@@ -25,23 +25,19 @@ from Configurables import Gaudi__Examples__BoostArrayProperties as BAP
 
 
 bap = BAP(
-    'BoostArrayProps'
-    , Strings = ( 'a' , 'bb' , 'ccc' , 'dddd' )
-    , Doubles = ( 1 , 2, 3 , 4 , 5 )
-    )
+    'BoostArrayProps', Strings=('a', 'bb', 'ccc', 'dddd'), Doubles=(1, 2, 3, 4, 5)
+)
 
-ApplicationMgr (
-    EvtSel = "NONE"
-    , TopAlg  = [ bap ]
-    , EvtMax  = 10
-    )
+ApplicationMgr(
+    EvtSel="NONE", TopAlg=[bap], EvtMax=10
+)
 
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__ :
+if '__main__' == __name__:
 
-    print __doc__ , __author__
+    print __doc__, __author__
 
     from GaudiPython.Bindings import AppMgr
 
@@ -58,11 +54,10 @@ if '__main__' == __name__ :
     with warnings.catch_warnings():
         if ROOT6WorkAroundEnabled('ROOT-7142'):
             warnings.simplefilter("ignore")
-        bap.Doubles = [ -1 , -2 , -3 , -4 , -5 ]
-        bap.Strings = [ 'a1' , 'a2' , 'a3' , 'a4' ]
+        bap.Doubles = [-1, -2, -3, -4, -5]
+        bap.Strings = ['a1', 'a2', 'a3', 'a4']
 
     bap.PropertiesPrint = True
-
 
 
 # =============================================================================

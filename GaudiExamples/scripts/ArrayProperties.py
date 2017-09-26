@@ -11,7 +11,7 @@
 # =============================================================================
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
-## @file
+# @file
 #  Simple which illustrates
 #  the 'array-like' job-properties and their C++/Python intercommunication
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
@@ -25,23 +25,19 @@ from Configurables import Gaudi__Examples__ArrayProperties as AP
 
 
 ap = AP(
-    'ArrayProps'
-    , Strings = ( 'a' , 'bb' , 'ccc' , 'dddd' )
-    , Doubles = ( 1 , 2, 3 , 4 , 5 )
-    )
+    'ArrayProps', Strings=('a', 'bb', 'ccc', 'dddd'), Doubles=(1, 2, 3, 4, 5)
+)
 
-ApplicationMgr (
-    EvtSel = "NONE"
-    , TopAlg  = [ ap ]
-    , EvtMax  = 10
-    )
+ApplicationMgr(
+    EvtSel="NONE", TopAlg=[ap], EvtMax=10
+)
 
 # =============================================================================
 # The actual job excution
 # =============================================================================
-if '__main__' == __name__ :
+if '__main__' == __name__:
 
-    print __doc__ , __author__
+    print __doc__, __author__
 
     # make sure cling can generate all required methods in Gaudi::Property
     import cppyy
@@ -58,11 +54,10 @@ if '__main__' == __name__ :
 
     ap.PropertiesPrint = True
 
-    ap.Strings = [ 'qu-qu' , 'qu-qu' , 'qu-qu' , 'qu-qu' ]
-    ap.Doubles = [ 0 , -1 , 2 , -3 , 4 ]
+    ap.Strings = ['qu-qu', 'qu-qu', 'qu-qu', 'qu-qu']
+    ap.Doubles = [0, -1, 2, -3, 4]
 
     ap.PropertiesPrint = True
-
 
 
 # =============================================================================

@@ -7,15 +7,16 @@ This repository of (informations on) Configurables is used by the PropertyProxy
 class to locate Configurables and feed the JobOptionsSvc. It could also be used
 to feed the AthenaEmacs module..."""
 
-__all__ = [ 'CfgDb', 'cfgDb', 'loadConfigurableDb', 'getConfigurable' ]
+__all__ = ['CfgDb', 'cfgDb', 'loadConfigurableDb', 'getConfigurable']
 
 import string
 _transtable = string.maketrans('<>&*,: ().', '__rp__s___')
 
 import logging
-log = logging.getLogger( 'ConfigurableDb' )
+log = logging.getLogger('ConfigurableDb')
 
-class _CfgDb( dict ):
+
+class _CfgDb(dict):
     """
     A singleton class holding informations about automatically generated
     Configurables.
@@ -26,14 +27,14 @@ class _CfgDb( dict ):
     """
 
     __slots__ = {
-        '_duplicates' : { },
-        }
+        '_duplicates': {},
+    }
 
     def __init__(self):
         object.__init__(self)
         self._duplicates = {}
 
-    def add( self, configurable, package, module, lib ):
+    def add(self, configurable, package, module, lib):
         """Method to populate the Db.
         It is called from the auto-generated Xyz_confDb.py files (genconf.cpp)
         @param configurable: the name of the configurable being added
@@ -42,21 +43,21 @@ class _CfgDb( dict ):
         @param lib: the name of the library holding the component(s) (ie: the
                     C++ Gaudi component which is mapped by the Configurable)
         """
-        cfg = { 'package' : package,
-                'module'  : module,
-                'lib'     : lib }
-        if self.has_key( configurable ):
-            ## check if it comes from the same library...
+        cfg = {'package': package,
+               'module': module,
+               'lib': lib}
+        if self.has_key(configurable):
+            # check if it comes from the same library...
             if cfg['lib'] != self[configurable]['lib']:
-                log.debug( "dup!! [%s] p=%s m=%s lib=%s",
-                           configurable, package, module, lib )
+                log.debug("dup!! [%s] p=%s m=%s lib=%s",
+                          configurable, package, module, lib)
                 if self._duplicates.has_key(configurable):
-                    self._duplicates[configurable] += [ cfg ]
+                    self._duplicates[configurable] += [cfg]
                 else:
-                    self._duplicates[configurable]  = [ cfg ]
+                    self._duplicates[configurable] = [cfg]
         else:
-            log.debug( "added [%s] p=%s m=%s lib=%s",
-                       configurable, package, module, lib )
+            log.debug("added [%s] p=%s m=%s lib=%s",
+                      configurable, package, module, lib)
             self[configurable] = cfg
 
     def duplicates(self):
@@ -64,7 +65,7 @@ class _CfgDb( dict ):
 
     def _loadModule(self, fname):
         f = open(fname)
-        for i,ll in enumerate(f):
+        for i, ll in enumerate(f):
             l = ll.strip()
             if l.startswith('#') or len(l) <= 0:
                 continue
@@ -79,19 +80,20 @@ class _CfgDb( dict ):
                 f.close()
                 raise Exception(
                     "invalid line format: %s:%d: %r" %
-                    (fname, i+1, ll)
-                    )
+                    (fname, i + 1, ll)
+                )
         f.close()
 
 
-class _Singleton( object ):
+class _Singleton(object):
 
-    ## the object this singleton is holding
-    ## No other object will be created...
+    # the object this singleton is holding
+    # No other object will be created...
     __obj = _CfgDb()
 
-    def __call__( self ):
+    def __call__(self):
         return self.__obj
+
 
 CfgDb = _Singleton()
 
@@ -99,10 +101,12 @@ CfgDb = _Singleton()
 del _Singleton
 del _CfgDb
 
-## default name for CfgDb instance
+# default name for CfgDb instance
 cfgDb = CfgDb()
 
-## Helper function to load all ConfigurableDb files holding informations
+# Helper function to load all ConfigurableDb files holding informations
+
+
 def loadConfigurableDb():
     """Helper function to load all ConfigurableDb files (modules) holding
     informations about Configurables
@@ -111,8 +115,8 @@ def loadConfigurableDb():
     import sys
     from glob import glob
     from os.path import join as path_join
-    log.debug( "loading confDb files..." )
-    nFiles = 0 # counter of imported files
+    log.debug("loading confDb files...")
+    nFiles = 0  # counter of imported files
     if sys.platform == 'darwin':
         pathlist = os.getenv("DYLD_LIBRARY_PATH", "").split(os.pathsep)
     else:
@@ -120,7 +124,7 @@ def loadConfigurableDb():
     for path in pathlist:
         if not os.path.isdir(path):
             continue
-        log.debug( "walking in [%s]...", path )
+        log.debug("walking in [%s]...", path)
         confDbFiles = [f for f in [path_join(path, f) for f in os.listdir(path)
                                    if f.endswith('.confdb')]
                        if os.path.isfile(f)]
@@ -132,24 +136,24 @@ def loadConfigurableDb():
             confDbFiles = mergedConfDbFiles
 
         for confDb in confDbFiles:
-            log.debug( "\t-loading [%s]...", confDb )
+            log.debug("\t-loading [%s]...", confDb)
             try:
-                cfgDb._loadModule( confDb )
+                cfgDb._loadModule(confDb)
             except Exception, err:
-                log.warning( "Could not load file [%s] !", confDb )
-                log.warning( "Reason: %s", err )
+                log.warning("Could not load file [%s] !", confDb)
+                log.warning("Reason: %s", err)
             nFiles += 1
-    log.debug( "loading confDb files... [DONE]" )
-    nPkgs = len( set([k['package'] for k in cfgDb.values()]) )
-    log.debug( "loaded %i confDb packages", nPkgs )
+    log.debug("loading confDb files... [DONE]")
+    nPkgs = len(set([k['package'] for k in cfgDb.values()]))
+    log.debug("loaded %i confDb packages", nPkgs)
     return nFiles
 
 
-def getConfigurable( className, requester='', assumeCxxClass=True ):
-    confClass=className
+def getConfigurable(className, requester='', assumeCxxClass=True):
+    confClass = className
     if assumeCxxClass:
         # assume className is C++: --> translate to python
-        confClass = string.translate( confClass, _transtable )
+        confClass = string.translate(confClass, _transtable)
     # see if I have it in my dictionary
     confClassInfo = cfgDb.get(confClass)
     if not confClassInfo:
@@ -157,24 +161,24 @@ def getConfigurable( className, requester='', assumeCxxClass=True ):
     # get the python module
     confMod = confClassInfo and confClassInfo.get('module')
     if not confMod:
-        log.warning( "%s: Class %s not in database", requester, className )
+        log.warning("%s: Class %s not in database", requester, className)
         return None
     # load the module
     try:
-        mod = __import__(confMod,globals(),locals(),confClass)
+        mod = __import__(confMod, globals(), locals(), confClass)
     except ImportError:
-        log.warning( "%s: Module %s not found (needed for configurable %s)",
-                     requester, confMod, className )
+        log.warning("%s: Module %s not found (needed for configurable %s)",
+                    requester, confMod, className)
         return None
     # get the class
     try:
-        confClass = getattr(mod,confClass)
+        confClass = getattr(mod, confClass)
     except AttributeError:
-        log.warning( "%s: Configurable %s not found in module %s",
-                     requester, confClass, confMod )
+        log.warning("%s: Configurable %s not found in module %s",
+                    requester, confClass, confMod)
         return None
     # Got it!
-    log.debug( "%s: Found configurable %s in module %s",
-               requester, confClass, confMod )
+    log.debug("%s: Found configurable %s in module %s",
+              requester, confClass, confMod)
 
     return confClass

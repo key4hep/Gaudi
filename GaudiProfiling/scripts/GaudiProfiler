@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import os, sys, time
+import os
+import sys
+import time
 import shutil
 from GaudiProfiling.GenerateGaudiOpts import ConvertXmlToDict
 import xml.parsers.expat
@@ -18,7 +20,8 @@ if __name__ == '__main__':
     if 'GAUDIPROFILERCONFIG' in os.environ:
         configFile = os.environ['GAUDIPROFILERCONFIG']
     else:
-        configFile = os.path.sep.join([os.environ['GAUDIPROFILINGROOT'],'data','pfm_config_%s.xml' % CPUFamily()])
+        configFile = os.path.sep.join(
+            [os.environ['GAUDIPROFILINGROOT'], 'data', 'pfm_config_%s.xml' % CPUFamily()])
     try:
         conf = ConvertXmlToDict(configFile)
     except xml.parsers.expat.ExpatError:
@@ -29,7 +32,8 @@ if __name__ == '__main__':
     startAtEvent = conf.PFM_CONFIG.CONFIG.START_AT_EVENT
     family = conf.PFM_CONFIG.PROCESSOR.FAMILY
     moduleName = 'GaudiProfiling.GenerateGaudiOpts'
-    if not os.path.exists(storeResultsAt): os.makedirs(storeResultsAt)
+    if not os.path.exists(storeResultsAt):
+        os.makedirs(storeResultsAt)
     tmpc = 1
     for es in conf.PFM_CONFIG.EVENTS.EVENT_SET:
         tmpc += 1
@@ -43,8 +47,9 @@ if __name__ == '__main__':
             counter.append(es.EVENT[x].NAME)
             cmask.append(es.EVENT[x].CMASK)
             invmask.append(es.EVENT[x].INVMASK)
-            sampling_period.append(es.EVENT[x].SMPL_PERIOD) #os.getcwd()
-        res = Popen(['gaudirun.py'] + sys.argv[1:] + ['--option', 'from %s import generateOptions; generateOptions(%s, %s, %s, %s, %s, %r, %r)' % (moduleName, counter, cmask, invmask, sampling_period, startAtEvent, storeResultsAt, family)]).wait()
+            sampling_period.append(es.EVENT[x].SMPL_PERIOD)  # os.getcwd()
+        res = Popen(['gaudirun.py'] + sys.argv[1:] + ['--option', 'from %s import generateOptions; generateOptions(%s, %s, %s, %s, %s, %r, %r)' %
+                                                      (moduleName, counter, cmask, invmask, sampling_period, startAtEvent, storeResultsAt, family)]).wait()
         if res:
             print """
             ************************************** ERROR ***************************************
@@ -52,7 +57,8 @@ if __name__ == '__main__':
             ************************************************************************************
             """
             sys.exit(res)
-    #post-processing
+    # post-processing
     os.system("GaudiGenProfilingHtml.exe %s --caa" % storeResultsAt)
-    shutil.copy2(os.path.sep.join([os.environ['GAUDIPROFILINGROOT'],'data','sorttable.js']), os.path.sep.join([storeResultsAt, 'HTML']))  
+    shutil.copy2(os.path.sep.join([os.environ['GAUDIPROFILINGROOT'], 'data',
+                                   'sorttable.js']), os.path.sep.join([storeResultsAt, 'HTML']))
     print "Results:", os.path.sep.join([storeResultsAt, 'HTML', 'index.html'])

@@ -10,9 +10,9 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/IAlgorithm.h"
 // ============================================================================
 /** @class IAlgContextSvc
  *  An abstract interface for Algorithm Context Service
@@ -20,23 +20,24 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-03-07 (modified)
  */
-class GAUDI_API IAlgContextSvc: virtual public IInterface
+class GAUDI_API IAlgContextSvc : virtual public IInterface
 {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAlgContextSvc,3,0);
+  DeclareInterfaceID( IAlgContextSvc, 3, 0 );
   /// the actual type of algorithm' stack
-  typedef std::vector<IAlgorithm*>  Algorithms ;
+  typedef std::vector<IAlgorithm*> Algorithms;
+
 public:
   /// set     the currently executing algorithm  ("push_back")
-  virtual StatusCode     setCurrentAlg  ( IAlgorithm* a ) = 0 ;
+  virtual StatusCode setCurrentAlg( IAlgorithm* a ) = 0;
   /// remove the algorithm                       ("pop_back")
-  virtual StatusCode   unSetCurrentAlg  ( IAlgorithm* a ) = 0 ;
+  virtual StatusCode unSetCurrentAlg( IAlgorithm* a ) = 0;
   /// accessor to current algorithm:
-  virtual IAlgorithm*       currentAlg  () const = 0 ;
+  virtual IAlgorithm* currentAlg() const = 0;
   /// get the stack of executed algorithms
-  virtual const Algorithms& algorithms  () const = 0 ;
-} ;
+  virtual const Algorithms& algorithms() const = 0;
+};
 // ============================================================================
 namespace Gaudi
 {
@@ -83,9 +84,7 @@ namespace Gaudi
        *  @param svc pointer to algorithm context service
        *  @param alg pointer to the current algorithm
        */
-      AlgContext
-      ( IAlgContextSvc* svc ,
-        IAlgorithm*     alg ) ;
+      AlgContext( IAlgContextSvc* svc, IAlgorithm* alg );
       /** constructor from the algorithm and the service
        *  Internally invokes IAlgContextSvc::setCurrentAlg
        *  @see IAlgorithm
@@ -93,27 +92,27 @@ namespace Gaudi
        *  @param alg pointer to the current algorithm
        *  @param svc pointer to algorithm context service
        */
-      AlgContext
-      ( IAlgorithm*     alg ,
-        IAlgContextSvc* svc ) ;
+      AlgContext( IAlgorithm* alg, IAlgContextSvc* svc );
       /** destructor
        *  Internally invokes IAlgContextSvc::unSetCurrentAlg
        *  @see IAlgorithm
        *  @see IAlgContextSvc
        */
-      ~AlgContext() ;
+      ~AlgContext();
+
     private:
       // default constructor is disabled
       AlgContext() = delete;
       // copy constructor is disabled
-      AlgContext ( const AlgContext& right ) = delete;
+      AlgContext( const AlgContext& right ) = delete;
       // assignement operator is disabled
       AlgContext& operator=( const AlgContext& right ) = delete;
+
     private:
-      SmartIF<IAlgContextSvc> m_svc ;
-      SmartIF<IAlgorithm>     m_alg ;
+      SmartIF<IAlgContextSvc> m_svc;
+      SmartIF<IAlgorithm> m_alg;
     };
-  }  // end of namespace Gaudi::Utils
+  } // end of namespace Gaudi::Utils
 } // end of namespace Gaudi
 // ============================================================================
 // The END

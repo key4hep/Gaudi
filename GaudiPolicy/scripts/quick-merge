@@ -4,8 +4,8 @@ import sys
 import os
 from optparse import OptionParser
 
-parser = OptionParser(#desc='simple script to merge files',
-                      usage="%prog [options] input1 input2 ... output")
+parser = OptionParser(  # desc='simple script to merge files',
+    usage="%prog [options] input1 input2 ... output")
 parser.add_option('--ignore-missing', action='store_true',
                   help='do not fail if an input file is missing, '
                        'just ignore it')

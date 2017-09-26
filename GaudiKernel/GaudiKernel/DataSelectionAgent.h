@@ -1,9 +1,9 @@
 #ifndef GAUDIKERNEL_DATASELECTIONAGENT_H
 #define GAUDIKERNEL_DATASELECTIONAGENT_H
 
-#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IDataSelector.h"
 #include "GaudiKernel/IDataStoreAgent.h"
+#include "GaudiKernel/IRegistry.h"
 
 /** @class DataSelectionAgent DataSelectionAgent.h GaudiKernel/DataSelectionAgent.h
 
@@ -13,24 +13,23 @@
 
     @author Markus Frank
 */
-class DataSelectionAgent : virtual public IDataStoreAgent  {
+class DataSelectionAgent : virtual public IDataStoreAgent
+{
 protected:
   IDataSelector m_objects;
+
 public:
   /// Default creator
-  DataSelectionAgent() {
-  }
+  DataSelectionAgent() {}
   /// Destructor
-  virtual ~DataSelectionAgent()  {
-  }
+  virtual ~DataSelectionAgent() {}
   /// Return the set of selected DataObjects
-  IDataSelector* selectedObjects()    {
-    return &m_objects;
-  }
-  /// Analyses a given directory entry 
-  bool analyse(IRegistry* pRegistry, int ) override {
+  IDataSelector* selectedObjects() { return &m_objects; }
+  /// Analyses a given directory entry
+  bool analyse( IRegistry* pRegistry, int ) override
+  {
     DataObject* obj = pRegistry->object();
-    if ( 0 != obj ) m_objects.push_back(obj);
+    if ( 0 != obj ) m_objects.push_back( obj );
     return true;
   }
 };
