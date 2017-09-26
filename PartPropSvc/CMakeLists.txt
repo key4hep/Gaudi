@@ -10,8 +10,8 @@ if( NOT HEPPDT_FOUND )
    return()
 endif()
 
-# Hide some HepPDT compile time warnings
-include_directories(SYSTEM ${HEPPDT_INCLUDE_DIRS})
+# Hide some HepPDT, Boost compile time warnings
+include_directories(SYSTEM ${HEPPDT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(PartPropSvc src/*.cpp
