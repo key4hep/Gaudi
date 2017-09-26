@@ -7,10 +7,10 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/ConcurrencyFlags.h"
+#include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/MsgStream.h"
 
 // ============================================================================
 /** @file
@@ -24,169 +24,160 @@
 /** Instantiation of a static factory class used by clients to create
  *  instances of this service
  */
-DECLARE_COMPONENT(AlgContextSvc)
+DECLARE_COMPONENT( AlgContextSvc )
 // ============================================================================
 // standard initialization of the service
 // ============================================================================
-StatusCode AlgContextSvc::initialize ()
+StatusCode AlgContextSvc::initialize()
 {
   // Initialize the base class
-  StatusCode sc = Service::initialize () ;
-  if ( sc.isFailure () ) { return sc ; }
+  StatusCode sc = Service::initialize();
+  if ( sc.isFailure() ) {
+    return sc;
+  }
   // Incident Service
-  if ( m_inc     )
-  {
-    m_inc -> removeListener ( this ) ;
+  if ( m_inc ) {
+    m_inc->removeListener( this );
     m_inc.reset();
   }
   // perform more checks?
-  auto numSlots=Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
-  numSlots=(1>numSlots)?1:numSlots;
-  if(numSlots>1000){
-    warning()<<"Num Slots are greater than 1000. Is this correct? numSlots="<<
-      numSlots<<endmsg;
-    numSlots=1000;
-    warning()<<"Setting numSlots to "<<numSlots<<endmsg;
+  auto numSlots = Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
+  numSlots      = ( 1 > numSlots ) ? 1 : numSlots;
+  if ( numSlots > 1000 ) {
+    warning() << "Num Slots are greater than 1000. Is this correct? numSlots=" << numSlots << endmsg;
+    numSlots = 1000;
+    warning() << "Setting numSlots to " << numSlots << endmsg;
   }
-  m_inEvtLoop.resize(numSlots,0);
+  m_inEvtLoop.resize( numSlots, 0 );
 
-  if ( m_check )
-  {
-    m_inc = Service::service ( "IncidentSvc" , true ) ;
-    if ( !m_inc )
-    {
-      error() << "Could not locate 'IncidentSvc'" << endmsg ;
-      return StatusCode::FAILURE ;
+  if ( m_check ) {
+    m_inc = Service::service( "IncidentSvc", true );
+    if ( !m_inc ) {
+      error() << "Could not locate 'IncidentSvc'" << endmsg;
+      return StatusCode::FAILURE;
     }
-    m_inc -> addListener ( this , IncidentType::BeginEvent ) ;
-    m_inc -> addListener ( this , IncidentType::EndEvent   ) ;
+    m_inc->addListener( this, IncidentType::BeginEvent );
+    m_inc->addListener( this, IncidentType::EndEvent );
   }
-  if ( m_algorithms.get() && !m_algorithms->empty() )
-  {
-    warning() << "Non-empty stack of algorithms #"
-              << m_algorithms->size() << endmsg ;
+  if ( m_algorithms.get() && !m_algorithms->empty() ) {
+    warning() << "Non-empty stack of algorithms #" << m_algorithms->size() << endmsg;
   }
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 
 // implementation of start
-// needs to be removed once we have a proper service 
+// needs to be removed once we have a proper service
 // for getting configuration information at initialization time
-// S. Kama 
-StatusCode AlgContextSvc::start(){
-  auto sc=Service::start();
-  auto numSlots=Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
-  numSlots=(1>numSlots)?1:numSlots;
-  if(numSlots>1000){
-    warning()<<"Num Slots are greater than 1000. Is this correct? numSlots="<<
-      numSlots<<endmsg;
-    numSlots=1000;
+// S. Kama
+StatusCode AlgContextSvc::start()
+{
+  auto sc       = Service::start();
+  auto numSlots = Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
+  numSlots      = ( 1 > numSlots ) ? 1 : numSlots;
+  if ( numSlots > 1000 ) {
+    warning() << "Num Slots are greater than 1000. Is this correct? numSlots=" << numSlots << endmsg;
+    numSlots = 1000;
   }
-  m_inEvtLoop.resize(numSlots,0);
-  
+  m_inEvtLoop.resize( numSlots, 0 );
+
   return sc;
 }
 
 // ============================================================================
 // standard finalization  of the service  @see IService
 // ============================================================================
-StatusCode AlgContextSvc::finalize   ()
+StatusCode AlgContextSvc::finalize()
 {
-  if ( m_algorithms.get() && !m_algorithms->empty() )
-  {
-    warning() << "Non-empty stack of algorithms #"
-              << m_algorithms->size() << endmsg ;
+  if ( m_algorithms.get() && !m_algorithms->empty() ) {
+    warning() << "Non-empty stack of algorithms #" << m_algorithms->size() << endmsg;
   }
   // Incident Service
-  if ( m_inc )
-  {
-    m_inc -> removeListener ( this ) ;
+  if ( m_inc ) {
+    m_inc->removeListener( this );
     m_inc.reset();
   }
   // finalize the base class
-  return Service::finalize () ;
+  return Service::finalize();
 }
 // ============================================================================
 // set     the currently executing algorithm  ("push_back") @see IAlgContextSvc
 // ============================================================================
-StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
+StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a )
 {
-  if ( !a )
-  {
-    warning() << "IAlgorithm* points to NULL" << endmsg ;
-    return StatusCode::RECOVERABLE ;
+  if ( !a ) {
+    warning() << "IAlgorithm* points to NULL" << endmsg;
+    return StatusCode::RECOVERABLE;
   }
-  if(!m_bypassInc){
-    auto currSlot=a->getContext().slot();
-    if(currSlot==EventContext::INVALID_CONTEXT_ID)currSlot=0;
-    if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;
+  if ( !m_bypassInc ) {
+    auto currSlot                                                = a->getContext().slot();
+    if ( currSlot == EventContext::INVALID_CONTEXT_ID ) currSlot = 0;
+    if ( !m_inEvtLoop[currSlot] ) return StatusCode::SUCCESS;
   }
   // check whether thread-local algorithm list already exists
   // if not, create it
-  if ( ! m_algorithms.get()) {
+  if ( !m_algorithms.get() ) {
     m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
-  if(a->type()!="IncidentProcAlg")  m_algorithms->push_back ( a ) ;
+  if ( a->type() != "IncidentProcAlg" ) m_algorithms->push_back( a );
 
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 // remove the algorithm                       ("pop_back") @see IAlgContextSvc
 // ============================================================================
-StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
+StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a )
 {
   // check whether thread-local algorithm list already exists
   // if not, create it
-  if ( ! m_algorithms.get()) {
+  if ( !m_algorithms.get() ) {
     m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
 
-  if ( !a ){
-    warning() << "IAlgorithm* points to NULL" << endmsg ;
-    return StatusCode::RECOVERABLE ;
+  if ( !a ) {
+    warning() << "IAlgorithm* points to NULL" << endmsg;
+    return StatusCode::RECOVERABLE;
   }
 
-  if(!m_bypassInc){
-    auto currSlot=a->getContext().slot();
-    if(currSlot==EventContext::INVALID_CONTEXT_ID) currSlot=0;
-    if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;  
+  if ( !m_bypassInc ) {
+    auto currSlot                                                = a->getContext().slot();
+    if ( currSlot == EventContext::INVALID_CONTEXT_ID ) currSlot = 0;
+    if ( !m_inEvtLoop[currSlot] ) return StatusCode::SUCCESS;
   }
 
-  if(a->type()!="IncidentProcAlg"){
+  if ( a->type() != "IncidentProcAlg" ) {
     // if ( m_algorithms->empty() || m_algorithms->back() != a ){
     //   error() << "Algorithm stack is invalid" << endmsg ;
     //   return StatusCode::FAILURE ;
     // }
-    if(!m_algorithms->empty()){
-      if(m_algorithms->back()==a){
-	m_algorithms->pop_back() ;
+    if ( !m_algorithms->empty() ) {
+      if ( m_algorithms->back() == a ) {
+        m_algorithms->pop_back();
       }
     }
   }
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 /// accessor to current algorithm: @see IAlgContextSvc
 // ============================================================================
-IAlgorithm* AlgContextSvc::currentAlg  () const
+IAlgorithm* AlgContextSvc::currentAlg() const
 {
-  return (m_algorithms.get() && ! m_algorithms->empty())
-    ? m_algorithms->back()
-    : nullptr;
+  return ( m_algorithms.get() && !m_algorithms->empty() ) ? m_algorithms->back() : nullptr;
 }
 // ============================================================================
 // handle incident @see IIncidentListener
 // ============================================================================
-void AlgContextSvc::handle ( const Incident& inc ) {
-  //some false sharing is possible but it should be negligable
-  auto currSlot=inc.context().slot();
-  if (currSlot==EventContext::INVALID_CONTEXT_ID){
-    currSlot=0;
+void AlgContextSvc::handle( const Incident& inc )
+{
+  // some false sharing is possible but it should be negligable
+  auto currSlot = inc.context().slot();
+  if ( currSlot == EventContext::INVALID_CONTEXT_ID ) {
+    currSlot = 0;
   }
-  if(inc.type()=="BeginEvent"){
-    m_inEvtLoop[currSlot]=1;
-  }else if(inc.type()=="EndEvent"){
-    m_inEvtLoop[currSlot]=0;
+  if ( inc.type() == "BeginEvent" ) {
+    m_inEvtLoop[currSlot] = 1;
+  } else if ( inc.type() == "EndEvent" ) {
+    m_inEvtLoop[currSlot] = 0;
   }
 
   // This check is invalidated with RTTI AlgContext object.
@@ -194,7 +185,8 @@ void AlgContextSvc::handle ( const Incident& inc ) {
   // to prevent test failures.
   // if ( m_algorithms.get() && !m_algorithms->empty() ) {
   //   //skip incident processing algorithm endevent incident
-  //   if((m_algorithms->size()!=1) || (m_algorithms->back()->type()!="IncidentProcAlg")){
+  //   if((m_algorithms->size()!=1) ||
+  //   (m_algorithms->back()->type()!="IncidentProcAlg")){
   //     error() << "Non-empty stack of algorithms #"
   // 	      << m_algorithms->size() << endmsg ;
   //   }
