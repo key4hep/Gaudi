@@ -73,12 +73,11 @@ To prepare the build directory, you have to:
     $ mkdir Gaudi-build
     $ cd Gaudi-build
     $ export BINARY_TAG=$LCGPLAT                                      
-    $ export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases/LCG_XY 
+    $ export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
     $ cmake -DCMAKE_TOOLCHAIN_FILE=$src/toolchain.cmake \
         -G "Eclipse CDT4 - Unix Makefiles" $src
 
-where `LCG_XY` is the LCG version used for the build. `$LCGPLAT` is set if you
-used the LCG gcc setup script above, otherwise set it manually.
+`$LCGPLAT` is set if you used the LCG gcc setup script above, otherwise set it manually.
 This will create the required Unix makefiles and the Eclipse project
 configuration to build Gaudi.
 
