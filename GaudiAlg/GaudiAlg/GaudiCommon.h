@@ -28,6 +28,15 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
+
+#ifdef __CLING__
+#define WARN_UNUSED
+#elif __cplusplus > 201402L
+#define WARN_UNUSED [[nodiscard]]
+#else
+#define WARN_UNUSED [[gnu::warn_unused_result]]
+#endif
+
 // ============================================================================
 // forward declarations
 // ============================================================================
@@ -353,7 +362,7 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       StatusCode
    */
-  [[gnu::warn_unused_result]] // C++17 [[nodiscard]]
+  WARN_UNUSED
   StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the warning message and return with the given StatusCode.
    *
@@ -378,7 +387,7 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       The given StatusCode
    */
-  [[gnu::warn_unused_result]] // C++17 [[nodiscard]]
+  WARN_UNUSED
   StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the info message and return with the given StatusCode.
    *
@@ -395,7 +404,7 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       The given StatusCode
    */
-  [[gnu::warn_unused_result]] // C++17 [[nodiscard]]
+  WARN_UNUSED
   StatusCode Info( const std::string& msg, const StatusCode st = StatusCode::SUCCESS, const size_t mx = 10 ) const;
   /** Print the message and return with the given StatusCode.
    *
@@ -408,7 +417,7 @@ public:
    *  @param lev    Printout level for the given message
    *  @return       The given StatusCode
    */
-  [[gnu::warn_unused_result]] // C++17 [[nodiscard]]
+  WARN_UNUSED
   StatusCode Print( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
                     const MSG::Level lev = MSG::INFO ) const;
   /** Assertion - throw exception if the given condition is not fulfilled
