@@ -359,8 +359,9 @@ void GaudiHistos<PBASE>::newHistoID( const std::string& title, HistoID& ID ) con
   if ( useNumericAutoIDs() || title.empty() ) {
     if ( !useNumericAutoIDs() ) {
       this->Warning(
-          "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID",
-          StatusCode::SUCCESS ).ignore();
+              "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID",
+              StatusCode::SUCCESS )
+          .ignore();
     }
     // propose the histogram ID (always numeric)
     ID = HistoID( totalNumberOfHistos() + 1 + histoOffSet() );
