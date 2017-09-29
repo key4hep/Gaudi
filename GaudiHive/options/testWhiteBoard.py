@@ -1,5 +1,5 @@
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, HiveTestAlgorithm, ForwardSchedulerSvc
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, HiveTestAlgorithm, AvalancheSchedulerSvc
 
 evtslots = 10
 
@@ -8,8 +8,7 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=20,
-                                ThreadPoolSize=8,
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=8,
                                 OutputLevel=WARNING)
 
 a1 = HiveTestAlgorithm("A1", Output=['/Event/a1'])

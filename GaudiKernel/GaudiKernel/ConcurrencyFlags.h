@@ -6,7 +6,6 @@
 #include "GaudiKernel/Kernel.h"
 
 class ThreadPoolSvc;
-class ForwardSchedulerSvc;
 class AvalancheSchedulerSvc;
 
 /** @class ConcurrencyFlags ConcurrencyFlags.h GaudiKernel/ConcurrencyFlags.h
@@ -29,7 +28,6 @@ namespace Gaudi
     {
 
       friend class ::ThreadPoolSvc;
-      friend class ::ForwardSchedulerSvc;
       friend class ::AvalancheSchedulerSvc;
 
     public:

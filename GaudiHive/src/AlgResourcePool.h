@@ -6,8 +6,6 @@
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Service.h"
-// TODO: include here is only a workaround
-#include "ControlFlowGraph.h"
 
 #include <atomic>
 #include <bitset>
@@ -55,8 +53,6 @@ public:
 
   StatusCode stop() override;
 
-  concurrency::recursive_CF::ControlFlowGraph* getCFGraph() const { return m_CFGraph; }
-
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm>> ListAlg;
@@ -99,8 +95,6 @@ private:
   /// The top list of algorithms
   std::list<IAlgorithm*> m_topAlgPtrList;
 
-  /// OMG yet another hack
-  concurrency::recursive_CF::ControlFlowGraph* m_CFGraph = nullptr;
 };
 
 #endif // GAUDIHIVE_ALGRESOURCEPOOL_H

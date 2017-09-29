@@ -6,7 +6,7 @@
 #
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, CPUCruncher, AlgResourcePool, IncidentProcAlg, IncidentSvc, IncidentAsyncTestSvc, IncidentAsyncTestAlg
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, AlgResourcePool, IncidentProcAlg, IncidentSvc, IncidentAsyncTestSvc, IncidentAsyncTestAlg
 from Configurables import GaudiSequencer
 
 msgFmt = "% F%40W%S%4W%s%e%15W%X%7W%R%T %0W%M"
@@ -27,9 +27,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
-scheduler = ForwardSchedulerSvc(MaxEventsInFlight=evtslots,
-                                MaxAlgosInFlight=algosInFlight,
-                                OutputLevel=DEBUG)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
+                                  OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
 # Async Incident svc processing algs to be added at the beginning and
