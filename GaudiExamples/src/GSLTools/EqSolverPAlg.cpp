@@ -4,7 +4,6 @@
 
 // from Gaudi
 #include "GaudiGSL/IEqSolver.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiMath/Adapters.h"
 #include "GaudiMath/GaudiMath.h"

@@ -1,6 +1,5 @@
 
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RegistryEntry.h"
 #include "GaudiKernel/RndmGenerators.h"

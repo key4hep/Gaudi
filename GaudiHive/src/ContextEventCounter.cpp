@@ -1,7 +1,5 @@
 // Include files
 
-// From Gaudi
-#include "GaudiKernel/AlgFactory.h"
 // local
 #include "ContextEventCounter.h"
 

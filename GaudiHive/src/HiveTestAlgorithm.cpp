@@ -1,5 +1,4 @@
 #include "GaudiHive/HiveTestAlgorithm.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 

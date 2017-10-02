@@ -2,7 +2,6 @@
 #include <vector>
 
 // from Gaudi
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/AnyDataWrapper.h"
 
 // local
