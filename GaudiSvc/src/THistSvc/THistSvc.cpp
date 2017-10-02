@@ -1268,26 +1268,26 @@ void THistSvc::updateFiles()
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::write()
-{
-
+StatusCode THistSvc::write() {
   updateFiles();
 
-  std::for_each( m_files.begin(), m_files.end(), []( std::pair<const std::string, std::pair<TFile*, Mode>>& i ) {
-    auto mode = i.second.second;
-    auto file = i.second.first;
-    if ( mode == WRITE || mode == UPDATE || mode == SHARE ) {
-      file->Write( "", TObject::kOverwrite );
-    } else if ( mode == APPEND ) {
-      file->Write( "" );
-    }
-  } );
+  std::for_each( m_files.begin(), m_files.end(),
+    []( std::pair<const std::string, std::pair<TFile*, Mode>>& i ) {
+      auto mode = i.second.second;
+      auto file = i.second.first;
+      if ( mode == WRITE || mode == UPDATE || mode == SHARE ) {
+        file->Write( "", TObject::kOverwrite );
+      } else if ( mode == APPEND ) {
+        file->Write( "" );
+      }
+    } );
 
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "THistSvc::write()::List of Files connected in ROOT " << endmsg;
     TSeqCollection* filelist = gROOT->GetListOfFiles();
     for ( int ii = 0; ii < filelist->GetEntries(); ii++ ) {
-      debug() << "THistSvc::write()::List of Files connected in ROOT: \"" << filelist->At( ii )->GetName() << "\""
+      debug() << "THistSvc::write()::List of Files connected in ROOT: \""
+              << filelist->At( ii )->GetName() << "\""
               << endmsg;
     }
   }
@@ -2139,6 +2139,7 @@ THistSvc::merge(vhid_t* vh) {
     TH1* th = dynamic_cast<TH1*>( vh->at(i).obj );
     if (th != 0) {
       debug() << "clearing index " << i << "(" << th << ")" << endmsg;
+      th->SetDirectory( nullptr );
       th->Reset();
     } else {
       error() << "merge: could not dcast " << name << " index "
