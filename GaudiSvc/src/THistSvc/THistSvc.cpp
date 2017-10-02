@@ -2115,15 +2115,15 @@ THistSvc::merge(vhid_t* vh) {
   
   TList *l = new TList();
   for (size_t i = 1; i < vh->size(); ++i) {
-    debug() << "merge: id: \"" << name 
-            << "\" adding index " << i
+    debug() << "merge: id: \"" << name
+            << "\" (" << vh->at(i).obj << ") adding index " << i
             << endmsg;
     l->Add( vh->at(i).obj );
   }
   
   TH1* t0 = dynamic_cast<TH1*> (vh->at(0).obj);
   if (t0 == 0) {
-      error() << "merge: could not dcast " << name << " index "
+      error() << "merge: could not dcast " << name << "(" << t0 << ") index "
               << 0 << " to TH1"
               << endmsg;
       return StatusCode::FAILURE;
@@ -2136,9 +2136,9 @@ THistSvc::merge(vhid_t* vh) {
           << endmsg;
   
   for (size_t i=1; i<vh->size(); ++i) {
-    debug() << "clearing index " << i << endmsg;
     TH1* th = dynamic_cast<TH1*>( vh->at(i).obj );
     if (th != 0) {
+      debug() << "clearing index " << i << "(" << th << ")" << endmsg;
       th->Reset();
     } else {
       error() << "merge: could not dcast " << name << " index "
