@@ -13,6 +13,8 @@ available on the PATH, for example with something like:
 
     $ . /cvmfs/sft.cern.ch/lcg/contrib/gcc/7.1.0/x86_64-centos7/setup.sh
 
+In addition you will need at least python 2.7.
+
 **NOTE**: If you use the LHCb environment (as of LbScripts v7r7), you do not
 need to prepare the environment for the compiler.
 
@@ -70,9 +72,12 @@ To prepare the build directory, you have to:
     $ src=$PWD/Gaudi
     $ mkdir Gaudi-build
     $ cd Gaudi-build
+    $ export BINARY_TAG=$LCGPLAT                                      
+    $ export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
     $ cmake -DCMAKE_TOOLCHAIN_FILE=$src/toolchain.cmake \
         -G "Eclipse CDT4 - Unix Makefiles" $src
 
+`$LCGPLAT` is set if you used the LCG gcc setup script above, otherwise set it manually.
 This will create the required Unix makefiles and the Eclipse project
 configuration to build Gaudi.
 
