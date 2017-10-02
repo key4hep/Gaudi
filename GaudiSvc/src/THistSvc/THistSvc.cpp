@@ -206,7 +206,7 @@ StatusCode THistSvc::finalize()
   if ( msgLevel( MSG::DEBUG ) ) debug() << "THistSvc::finalize" << endmsg;
 
 #ifndef NDEBUG
-  if (m_log.level() <= MSG::DEBUG) {
+  if ( msgLevel(MSG::DEBUG) ) {
     for (auto& itr : m_uids ) {
 
       THistID& thid = itr.second->at(0);
@@ -242,16 +242,8 @@ StatusCode THistSvc::finalize()
       } else if ( !to ) {
         warning() << uid.first << " has NULL TObject ptr" << endmsg;
       }
-      } else if (! to ) {
-        m_log << MSG::WARNING << itr.first << " has NULL TObject ptr"
-	      << endmsg;
-    }
-
       debug() << "finalize: " << thid << endmsg;
-      // m_log << MSG::DEBUG << "uid: \"" << itr->first << "\"  temp: "
-      //       << uid.second.temp << "  dir: " << dirname
-      //       << endmsg;
-  }
+    }
   }
 #endif
 
