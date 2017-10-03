@@ -51,7 +51,15 @@ private:
 
 inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s )
 {
-  return ost << "e: " << s.state() << " f: " << s.filterPassed() << " sc: " << s.execStatus();
+  ost << "e: ";
+  if (s.state() == AlgExecState::State::None) {
+    ost << "n";
+  } else if (s.state() == AlgExecState::State::Executing) {
+    ost << "e";
+  } else {
+    ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
+  }
+  return ost;
 }
 
 namespace EventStatus
