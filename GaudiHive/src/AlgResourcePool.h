@@ -94,7 +94,6 @@ private:
 
   /// The top list of algorithms
   std::list<IAlgorithm*> m_topAlgPtrList;
-
 };
 
 #endif // GAUDIHIVE_ALGRESOURCEPOOL_H

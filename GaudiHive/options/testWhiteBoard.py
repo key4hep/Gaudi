@@ -9,7 +9,7 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=8,
-                                OutputLevel=WARNING)
+                                  OutputLevel=WARNING)
 
 a1 = HiveTestAlgorithm("A1", Output=['/Event/a1'])
 a2 = HiveTestAlgorithm("A2", Input=['/Event/a1'],

@@ -29,7 +29,6 @@ AlgResourcePool::~AlgResourcePool()
     auto* queue = algoId_algoQueue.second;
     delete queue;
   }
-
 }
 
 //---------------------------------------------------------------------------
