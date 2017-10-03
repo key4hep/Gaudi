@@ -1,8 +1,7 @@
 '''
 Classes for the implementation of the Control Flow Structure Syntax.
 
-@see:
-https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
+@see: https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
 '''
 
 
@@ -10,6 +9,7 @@ class ControlFlowNode(object):
     '''
     Basic entry in the control flow graph.
     '''
+
     def __and__(self, rhs):
         if rhs is CFTrue:
             return self
@@ -78,6 +78,7 @@ class ControlFlowBool(ControlFlowLeaf):
     def __repr__(self):
         return 'CFTrue' if self.value else 'CFFalse'
 
+
 CFTrue = ControlFlowBool(True)
 CFFalse = ControlFlowBool(False)
 del ControlFlowBool
@@ -87,12 +88,10 @@ class OrderedNode(ControlFlowNode):
     '''
     Represent order of execution of nodes.
     '''
+
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
-
-    def __str__(self):
-        return ">> "
 
     def __repr__(self):
         return "(%r >> %r)" % (self.lhs, self.rhs)
@@ -106,12 +105,10 @@ class AndNode(ControlFlowNode):
     '''
     And operation between control flow nodes.
     '''
+
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
-
-    def __str__(self):
-        return "& "
 
     def __repr__(self):
         return "(%r & %r)" % (self.lhs, self.rhs)
@@ -125,12 +122,10 @@ class OrNode(ControlFlowNode):
     '''
     Or operation between control flow nodes.
     '''
+
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
-
-    def __str__(self):
-        return "| "
 
     def __repr__(self):
         return "(%r | %r)" % (self.lhs, self.rhs)
@@ -144,11 +139,9 @@ class InvertNode(ControlFlowNode):
     '''
     Invert logic (negation) of a control flow node.
     '''
+
     def __init__(self, item):
         self.item = item
-
-    def __str__(self):
-        return "! "
 
     def __repr__(self):
         return "~%r" % self.item
@@ -157,29 +150,24 @@ class InvertNode(ControlFlowNode):
         self.item.visitNode(visitor)
 
 
-class ign(ControlFlowNode): # noqa
+class ignore(ControlFlowNode):
     '''
     Treat a control flow node as always successful, equivalent to (a | ~ a).
     '''
+
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "^ "
-
     def __repr__(self):
-        return "ign(%r)" % self.item
+        return "ignore(%r)" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
 
 
-class par(ControlFlowNode): # noqa
+class par(ControlFlowNode):
     def __init__(self, item):
         self.item = item
-
-    def __str__(self):
-        return "= "
 
     def __repr__(self):
         return "par(%r)" % self.item
@@ -188,12 +176,9 @@ class par(ControlFlowNode): # noqa
         self.item.visitNode(visitor)
 
 
-class seq(ControlFlowNode): # noqa
+class seq(ControlFlowNode):
     def __init__(self, item):
         self.item = item
-
-    def __str__(self):
-        return "- "
 
     def __repr__(self):
         return "seq(%r)" % self.item
@@ -202,13 +187,10 @@ class seq(ControlFlowNode): # noqa
         self.item.visitNode(visitor)
 
 
-class line(ControlFlowNode): # noqa
+class line(object):
     def __init__(self, name, item):
         self.name = name
         self.item = item
-
-    def __str__(self):
-        return self.name + ' '
 
     def __repr__(self):
         return "line(%r, %r)" % (self.name, self.item)
@@ -217,29 +199,15 @@ class line(ControlFlowNode): # noqa
         self.item.visitNode(visitor)
 
 
-class PolishVisitor(object):
-    def __init__(self):
-        self.sequence = ''
-
-    def enter(self, visitee):
-        self.sequence = str(visitee) + self.sequence
-
-    def leave(self, visitee):
-        pass
-
-
 class _TestVisitor(object):
     def __init__(self):
         self.depths = 0
-        self.polishNotation = ''
 
     def enter(self, visitee):
         self.depths += 1
         print "%sEntering %s" % (self.depths * " ", type(visitee))
-        self.polishNotation += str(type(visitee))
         if isinstance(visitee, ControlFlowLeaf):
             print "%s Algorithm name: %s" % (" " * self.depths, visitee)
-            self.polishNotation += str(visitee)
 
     def leave(self, visitee):
         print "%sLeaving %s" % (self.depths * " ", type(visitee))
@@ -249,9 +217,6 @@ class _TestVisitor(object):
 class _TestAlgorithm(ControlFlowLeaf):
     def __init__(self, name):
         self._name = name
-
-    def __str__(self):
-        return self._name + ' '
 
     def __repr__(self):
         return self._name
@@ -282,7 +247,7 @@ class DotVisitor(object):
             elif isinstance(visitee, AndNode):
                 entry = '%s [label="AND", shape=invhouse]' % dot_id
             elif isinstance(visitee, OrderedNode):
-                entry = '%s [label=">>", shape=circle, color=blue]' % dot_id
+                entry = '%s [label=">>", shape=point]' % dot_id
             elif isinstance(visitee, InvertNode):
                 entry = '%s [label="NOT", shape=circle, color=red]' % dot_id
             elif isinstance(visitee, par):
@@ -290,12 +255,12 @@ class DotVisitor(object):
             elif isinstance(visitee, seq):
                 entry = '%s [label="SEQ", shape=circle]' % dot_id
             else:
-                entry = '%s [label="%s", shape=circle]' %\
-                        (dot_id, type(visitee))
+                entry = '%s [label="%s", shape=circle]' % (
+                    dot_id, type(visitee))
             self.nodes.append(entry)
             if len(self.stack) != 0:
-                mother = self.collapse_identical_ancestors(type
-                                                           (self.stack[-1][0]))
+                mother = self.collapse_identical_ancestors(
+                    type(self.stack[-1][0]))
                 if not mother:
                     mother = self.stack[-1][1]
                 edge = "%s->%s" % (dot_id, mother)
@@ -310,7 +275,7 @@ class DotVisitor(object):
         If AND nodes are inside AND nodes, the graph could be simplified
         to not contain those (same true for OR and ordered)
         '''
-        # counter = 0
+        counter = 0
         if len(self.stack) != 0:
             mother = self.stack[-1][1]
             for entry in self.stack[::-1]:
@@ -345,46 +310,26 @@ rankdir=LR
 
 
 def test():
-    algorithm = _TestAlgorithm
+    Algorithm = _TestAlgorithm
 
-    a = algorithm("a")
-    b = algorithm("b")
-    c = algorithm("c")
-    d = algorithm("d")
-    e = algorithm("e")
-    f = algorithm("f")
-    g = algorithm("g")
+    a = Algorithm("a")
+    b = Algorithm("b")
+    c = Algorithm("c")
+    d = Algorithm("d")
+    e = Algorithm("e")
+    f = Algorithm("f")
+    g = Algorithm("g")
     sequence = seq(b >> a >> f)
     expression = sequence | ~c & par(d & e & g)
     a = (expression == expression)
-    aline = line("MyTriggerPath", expression)
+    aLine = line("MyTriggerPath", expression)
     visitor = _TestVisitor()
     visitor2 = DotVisitor()
     print "\nPrinting trigger line:"
-    print repr(aline)
+    print aLine
     print "\nPrinting expression:"
-    print repr(expression)
+    print expression
     print "\nTraversing through expression:\n"
     expression.visitNode(visitor)
     expression.visitNode(visitor2)
     visitor2.write("out.dot")
-
-    pvisitor = PolishVisitor()
-    aline.visitNode(pvisitor)
-    print pvisitor.sequence
-
-
-def test2():
-    algorithm = _TestAlgorithm
-
-    a = algorithm("a")
-    b = algorithm("b")
-    c = algorithm("c")
-
-    expression = a & b & c
-
-    aline = line("MyTriggerline", expression)
-    visitor = PolishVisitor()
-
-    aline.visitNode(visitor)
-    print visitor.sequence
