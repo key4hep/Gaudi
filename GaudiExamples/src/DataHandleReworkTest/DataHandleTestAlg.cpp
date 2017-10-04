@@ -5,6 +5,7 @@
 #include "GaudiKernel/DataHandle.h"
 
 /// Experimental Algorithm that can work with new-style DataHandles
+/// FIXME: Move that into a new version of DataHandleHolder
 class ExtendedAlg : public Algorithm {
 public:
   using Algorithm::Algorithm;

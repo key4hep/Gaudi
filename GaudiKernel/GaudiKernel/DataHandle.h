@@ -3,11 +3,11 @@
 
 #include <memory>
 #include <stdexcept>
-#include "GaudiKernel/AnyDataWrapper.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/EventContext.h"
+#include "GaudiKernel/HandleDetail.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/Property.h"
 
 //---------------------------------------------------------------------------
 
@@ -85,38 +85,67 @@ namespace Gaudi
     class DataHandle {
       public:
         /// (Configurable) ID of the data being accessed via this handle
-        /// FIXME: Is DataObjID the right type for data dependencies that are
-        ///        not stored in the whiteboard, such as conditions?
-        /// FIXME: How do we support alternate paths? ("Read from multiple IDs")
-        /// FIXME: How do we support writing to multiple IDs? (for ATLAS)
+        ///
+        /// The current proposal is to only support one ID per handle. If
+        /// experiments need to read from multiple whiteboard keys (LHCb
+        /// alternate paths) or to write an object that's accessible via
+        /// multiple whiteboard keys (ATLAS), they would need to implement the
+        /// underlying support on their own.
+        ///
+        /// For LHCb alternate paths, this can be handled at the DataProvider
+        /// level (try loading from alternate paths if original one is empty) or
+        /// via good old DataOnDemand for the sequential case.
+        ///
+        /// FIXME: For aliased writes, how would that work with the Scheduler?
+        ///
         const DataObjID& id() const { return m_id; }
 
         /// Initialize the data handle
         ///
         /// This must be done after the whiteboard has been set up. One safe
-        /// place to do this is Algorithm::initialize().
+        /// place to do this is in Algorithm::initialize().
         ///
         void initialize();
 
       protected:
+        /// Handles allow either to insert data ("write") or read it
+        enum struct Mode { Read, Write };
+
+        /// Which data store are we talking to
+        enum struct DataStore { IDataProviderSvc };
+
         /// Construct like a Gaudi property
         /// FIXME: Correctly detect if Owner is the right type...
         template<typename Owner>
         DataHandle(Owner& owner,
                    const std::string& propertyName,
                    DataObjID defaultID,
-                   const std::string& docString)
+                   const std::string& docString,
+                   Mode accessMode,
+                   DataStore /* store */)
           : m_id{&owner, propertyName, defaultID, docString}
           , m_owner{owner}
-        {}
+        {
+          switch(accessMode) {
+            case Mode::Read:
+              owner.registerInputHandle(*this);
+              break;
+            case Mode::Write:
+              owner.registerOutputHandle(*this);
+              break;
+            default:
+              throw std::runtime_error("Unsupported access mode");
+          }
+        }
 
         /// Data object ID of the target data, as a configurable property
         /// FIXME: Expose to Property machinery whether this is an input/output
+        ///        and what kind of store it is accessing
         Gaudi::Property<DataObjID> m_id;
 
         /// Reference to the owner Algorithm
         /// FIXME: Add support for owner tools?
-        Algorithm& m_owner;
+        std::reference_wrapper<const Algorithm> m_owner;
 
         /// Pointer to the whiteboard, set during initialize()
         /// FIXME: Usage of the Gaudi whiteboard should not be mandated, for
@@ -125,8 +154,9 @@ namespace Gaudi
     };
 
     /// Reentrant mechanism to read data from the EventStore
-    template<typename T>
-    class ReadHandle : public DataHandle {
+    /// FIXME: Support other stores by extracting the data access logic
+    template<typename T>/*, typename DataStore>*/
+    class ReadHandle/*Impl*/ : public DataHandle {
       public:
         /// Create a ReadHandle and set up the associated Gaudi property
         /// FIXME: Correctly detect if Owner is the right type...
@@ -135,28 +165,31 @@ namespace Gaudi
                    const std::string& propertyName,
                    DataObjID defaultID,
                    const std::string& docString = "")
-          : DataHandle{*owner, propertyName, defaultID, docString}
-        {
-          owner->registerInputHandle(*this);
-        }
+          : DataHandle{*owner,
+                       propertyName,
+                       defaultID,
+                       docString,
+                       DataHandle::Mode::Read,
+                       DataHandle::DataStore::IDataProviderSvc}
+        {}
 
-        /// Access the data associated with the current event context
-        const T& get(const EventContext& ctx) const {
+        /// Access the data for the current event context
+        decltype(auto) get(const EventContext& /* ctx */) const {
           // FIXME: Once this is working, start leveraging the new interface:
           //          - Shouldn't need to rely on implicit thread-local context
-          //          - Shouldn't need to dynamic_cast the data
           DataObject* ptr = nullptr;
           auto sc = m_whiteBoard->retrieveObject(id().key(), ptr);
           if(sc.isFailure()) {
             throw std::runtime_error("Failed to read input from whiteboard");
           }
-          return dynamic_cast<AnyDataWrapper<T>&>(*ptr).getData();
+          return HandleDetail::unwrapDataObject<T>(*ptr);
         }
     };
 
     /// Reentrant mechanism to write data into the EventStore
-    template<typename T>
-    class WriteHandle : public DataHandle {
+    /// FIXME: Support other stores by extracting the data access logic
+    template<typename T>/*, typename DataStore>*/
+    class WriteHandle/*Impl*/ : public DataHandle {
       public:
         /// Create a WriteHandle and set up the associated Gaudi property
         /// FIXME: Correctly detect if Owner is the right type...
@@ -165,29 +198,54 @@ namespace Gaudi
                     const std::string& propertyName,
                     DataObjID defaultID,
                     const std::string& docString = "")
-          : DataHandle{*owner, propertyName, defaultID, docString}
-        {
-          owner->registerOutputHandle(*this);
+          : DataHandle{*owner,
+                       propertyName,
+                       defaultID,
+                       docString,
+                       DataHandle::Mode::Write,
+                       DataHandle::DataStore::IDataProviderSvc}
+        {}
+
+        /// Move data into the store
+        const T& put(const EventContext& ctx, T data) const {
+          auto ptrAndRef = HandleDetail::wrapDataObject<T>(std::move(data));
+          putImpl(ctx, std::move(ptrAndRef.first));
+          return ptrAndRef.second;
         }
 
-        /// Insert data for the current event
-        const T& put(const EventContext& ctx, T data) const {
+        /// Transfer ownership of heap-allocated data to the store
+        ///
+        /// This is intended as a way to inject legacy non-movable DataObjects
+        /// into the store. New data types should be movable and use the other
+        /// overload of put. This method will eventually be removed.
+        ///
+        const T& put(const EventContext& ctx,
+                     std::unique_ptr<DataObject> ptr) const
+        {
+          auto ptrAndRef = HandleDetail::wrapDataObject<T>(std::move(ptr));
+          putImpl(ctx, std::move(ptrAndRef.first));
+          return ptrAndRef.second;
+        }
+
+      private:
+        /// Insert a valid DataObject into the transient event store
+        void putImpl(const EventContext& /* ctx */,
+                     std::unique_ptr<DataObject>&& ptr) const
+        {
           // FIXME: Once this is working, start leveraging the new interface:
           //          - Shouldn't need to rely on implicit thread-local context
-          auto ptr = new AnyDataWrapper<T>(std::move(data));
-          auto sc = m_whiteBoard->registerObject(id().key(), ptr);
+          auto sc = m_whiteBoard->registerObject(id().key(), ptr.release());
           if(sc.isFailure()) {
             throw std::runtime_error("Failed to write output into whiteboard");
           }
-          return ptr->getData();
         }
-
-#ifdef ATLAS
-        /// (ATLAS-specific) Insert heap allocated data for the current event
-        /// TODO: Implement this
-        const T& put(const EventContext& ctx, std::unique_ptr<T> data) const;
-#endif
     };
+
+    // FIXME: Fill in those typedefs later on
+    /* template<typename T> using EventReadHandle = ReadHandleImpl<T, IDataProviderSvc>;
+    template<typename T> using EventWriteHandle = WriteHandleImpl<T, IDataProviderSvc>; */
+    // template<typename T> using ConditionReadHandle = ReadHandleImpl<T, IConditionStore>;
+    // template<typename T> using ConditionWriteHandle = WriteHandleImpl<T, IConditionStore>;
   }
 }
 

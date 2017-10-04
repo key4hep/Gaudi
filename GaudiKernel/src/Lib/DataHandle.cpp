@@ -16,7 +16,7 @@ namespace Gaudi
 
   namespace experimental {
     void DataHandle::initialize() {
-      auto whiteBoard = m_owner.eventSvc();
+      auto whiteBoard = m_owner.get().eventSvc();
       if(!whiteBoard) throw std::runtime_error("Failed to access whiteboard");
       m_whiteBoard = whiteBoard.get();
     }
