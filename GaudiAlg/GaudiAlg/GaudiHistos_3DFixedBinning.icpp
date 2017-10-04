@@ -44,7 +44,7 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::book3D( const HistoID& ID, const std::st
   //
   // Check ID
   if ( ID.undefined() ) {
-    this->Error( "Undefined Histogram ID : Title='" + title + "'" );
+    this->Error( "Undefined Histogram ID : Title='" + title + "'" ).ignore();
     return nullptr;
   }
 
@@ -69,7 +69,7 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::book3D( const HistoID& ID, const std::st
 
   // Check OK
   if ( !hist ) {
-    this->Error( "IHistogram3D* points to NULL! ID='" + ID.idAsString() + "' title='" + htitle + "'" );
+    this->Error( "IHistogram3D* points to NULL! ID='" + ID.idAsString() + "' title='" + htitle + "'" ).ignore();
     return nullptr;
   } // RETURN !!
 
