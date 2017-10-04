@@ -205,9 +205,8 @@ StatusCode THistSvc::reinitialize() {
 StatusCode THistSvc::finalize() {
   GlobalDirectoryRestore restore( m_svcMut );
 
-  dump();
-
   if ( msgLevel( MSG::DEBUG ) ) {
+    dump();
     debug() << "THistSvc::finalize" << endmsg;
   }
 
@@ -2047,7 +2046,7 @@ void THistSvc::dump() const {
     ost << " - " << o << " -> " << i << endl;
   }
 
-  info() << "dumping THistSvc contents\n" << ost.str() << endmsg;
+  debug() << "dumping THistSvc contents\n" << ost.str() << endmsg;
 }
     
 
