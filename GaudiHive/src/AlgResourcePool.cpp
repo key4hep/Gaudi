@@ -29,8 +29,6 @@ AlgResourcePool::~AlgResourcePool()
     auto* queue = algoId_algoQueue.second;
     delete queue;
   }
-
-  delete m_CFGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -48,15 +46,6 @@ StatusCode AlgResourcePool::initialize()
     const Gaudi::Utils::TypeNameString appMgrName( "ApplicationMgr/ApplicationMgr" );
     SmartIF<IProperty> appMgrProps( serviceLocator()->service( appMgrName ) );
     m_topAlgNames.assign( appMgrProps->getProperty( "TopAlg" ) );
-  }
-
-  // Prepare empty control flow graph
-  // (Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-  //  The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc)
-  if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) ) {
-    const std::string& name  = "ControlFlowGraph";
-    SmartIF<ISvcLocator> svc = serviceLocator();
-    m_CFGraph                = new concurrency::recursive_CF::ControlFlowGraph( name, svc );
   }
 
   sc = decodeTopAlgs();
@@ -208,48 +197,11 @@ StatusCode AlgResourcePool::flattenSequencer( Algorithm* algo, ListAlg& alglist,
       ( subAlgorithms->empty() && !( isGaudiSequencer || isAthSequencer ) ) ) {
 
     alglist.emplace_back( algo );
-    // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-    // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
-    if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) ) {
-      m_CFGraph->addAlgorithmNode( algo, parentName, false, false ).ignore();
-      DEBUG_MSG << std::string( recursionDepth, ' ' ) << algo->name() << " is not a sequencer. Appending it" << endmsg;
-    }
     return sc;
   }
 
   // Recursively unroll
   ++recursionDepth;
-
-  // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-  // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
-  if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) ) {
-    DEBUG_MSG << std::string( recursionDepth, ' ' ) << algo->name() << " is a sequencer. Flattening it." << endmsg;
-
-    bool modeOR       = false;
-    bool allPass      = false;
-    bool isLazy       = false;
-    bool isSequential = false;
-
-    if ( isGaudiSequencer ) {
-      modeOR                = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
-      allPass               = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
-      isLazy                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" ) ? true : false;
-      if ( allPass ) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
-      isSequential =
-          ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
-    } else if ( isAthSequencer ) {
-      modeOR  = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
-      allPass = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
-      isLazy  = ( algo->getProperty( "StopOverride" ).toString() == "True" ) ? false : true;
-      isSequential =
-          ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
-    }
-    sc = m_CFGraph->addDecisionHubNode( algo, parentName, !isSequential, isLazy, modeOR, allPass );
-    if ( sc.isFailure() ) {
-      error() << "Failed to add DecisionHub " << algo->name() << " to control flow graph" << endmsg;
-      return sc;
-    }
-  }
 
   for ( Algorithm* subalgo : *subAlgorithms ) {
     sc = flattenSequencer( subalgo, alglist, algo->name(), recursionDepth );
@@ -301,12 +253,6 @@ StatusCode AlgResourcePool::decodeTopAlgs()
     m_topAlgList.push_back( algoSmartIF );
   }
   // Top Alg list filled ----
-
-  // start forming the control flow graph by adding the head decision hub
-  // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-  // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
-  if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) )
-    m_CFGraph->addHeadNode( "RootDecisionHub", true, false, true, true );
 
   // Now we unroll it ----
   for ( auto& algoSmartIF : m_topAlgList ) {

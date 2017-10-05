@@ -3,8 +3,8 @@
 ####################################################################
 
 from Gaudi.Configuration import *
-from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, HiveReadAlgorithm, ForwardSchedulerSvc, AlgResourcePool
+from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency, StoreSnifferAlg
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, HiveReadAlgorithm, AvalancheSchedulerSvc, AlgResourcePool
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
@@ -27,12 +27,13 @@ loader = HiveReadAlgorithm("Loader",
                            Cardinality=2  # framework should be able to fix this config problem
                            )
 
+sniffer = StoreSnifferAlg()
 reader = ReadHandleAlg("Reader",
                        Cardinality=4,
                        OutputLevel=INFO)
 reader.Input.Path = product_name
 
-evtslots = 5
+evtslots = 1
 algoparallel = 10
 
 whiteboard = HiveWhiteBoard("EventDataSvc",
@@ -42,12 +43,12 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=algoparallel,
-                                OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
+                                  OutputLevel=WARNING)
 
 
 # Application setup
-ApplicationMgr(TopAlg=[loader, reader],
+ApplicationMgr(TopAlg=[loader, sniffer, reader],
                EvtMax=500,
                HistogramPersistency="NONE",
                ExtSvc=[whiteboard],

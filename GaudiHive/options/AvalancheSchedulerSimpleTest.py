@@ -59,7 +59,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 
 #-------------------------------------------------------------------------------
 
-# ForwardScheduler -------------------------------------------------------------
+# AvalancheScheduler -----------------------------------------------------------
 # We just decide how many algorithms in flight we want to have and how many
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
