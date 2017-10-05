@@ -7,7 +7,7 @@ and having more dependencies than algorithms.
 '''
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, CPUCruncher, AlgResourcePool
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, AlgResourcePool
 
 InertMessageSvc(OutputLevel=INFO)
 
@@ -22,9 +22,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
-scheduler = ForwardSchedulerSvc(MaxEventsInFlight=evtslots,
-                                MaxAlgosInFlight=algosInFlight,
-                                OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
+                                  OutputLevel=WARNING)
 
 AlgResourcePool(OutputLevel=DEBUG)
 

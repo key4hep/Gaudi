@@ -5,7 +5,7 @@
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
 from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr
-from Configurables import ForwardSchedulerSvc
+from Configurables import AvalancheSchedulerSvc
 
 # Output setup
 # - DST
@@ -57,9 +57,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr()
 
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=algoparallel,
-                                ThreadPoolSize=algoparallel,
-                                OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
+                                  OutputLevel=WARNING)
 
 # Application setup
 app = ApplicationMgr()

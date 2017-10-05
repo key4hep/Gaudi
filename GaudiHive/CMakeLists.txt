@@ -41,17 +41,6 @@ gaudi_add_test(ReadAndWriteWhiteBoard
                TIMEOUT 120)
 
 # Test the Scheduler
-gaudi_add_test(ForwardScheduler
-               FRAMEWORK options/ForwardSchedulerSimpleTest.py
-               DEPENDS WhiteBoard
-               TIMEOUT 120)
-
-gaudi_add_test(ForwardSchedulerStall
-               FRAMEWORK options/ForwardSchedulerStall.py
-               DEPENDS ForwardScheduler,
-               PASSREGEX "Stall detected"
-               TIMEOUT 120)
-
 gaudi_add_test(AvalancheSchedulerSimpleTest
                FRAMEWORK options/AvalancheSchedulerSimpleTest.py
                TIMEOUT 120)

@@ -30,7 +30,7 @@ protected:
   Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "", ""};
   Gaudi::Property<std::string> m_evtsel{this, "EvtSel", "", ""};
   Gaudi::Property<bool> m_warnings{this, "Warnings", true, "Set this property to false to suppress warning messages"};
-  Gaudi::Property<std::string> m_schedulerName{this, "SchedulerName", "ForwardSchedulerSvc",
+  Gaudi::Property<std::string> m_schedulerName{this, "SchedulerName", "AvalancheSchedulerSvc",
                                                "Name of the scheduler to be used"};
   Gaudi::Property<std::vector<unsigned int>> m_eventNumberBlacklist{this, "EventNumberBlackList", {}, ""};
 
