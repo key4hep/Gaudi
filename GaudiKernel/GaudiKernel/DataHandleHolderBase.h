@@ -68,7 +68,6 @@ public:
     if ( mode & Gaudi::DataHandle::Writer ) m_outputDataObjs.emplace( id );
   }
 
-private:
 protected:
   /// initializes all handles - called by the sysInitialize method
   /// of any descendant of this
@@ -85,5 +84,88 @@ private:
   Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}};
   Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}};
 };
+
+
+/// Work-in-progress rewrite of the DataHandle infrastructure
+/// FIXME: If accepted, rename header to "DataHandleHolder"
+namespace Gaudi
+{
+  namespace experimental
+  {
+    /// Implementation of new-style data handle holders (Tools, Algorithms...)
+    template<typename Base,
+             std::enable_if_t<std::is_base_of<IDataHandleHolderReqs,
+                                              Base>::value>* = nullptr>
+    class GAUDI_API DataHandleHolder : public extends<Base, IDataHandleHolder> {
+        using Super = extends<Base, IDataHandleHolder>;
+      public:
+        // NOTE: Cannot use "using extends<Base, IDataHandleHolder>::extends;"
+        //       due to a GCC 6 bug
+        template<typename... Args>
+        DataHandleHolder( Args&&... args )
+          : Super( std::forward<Args>(args)... )
+        {}
+
+        // === INTERFACE FOR GAUDI STATE MACHINE ===
+
+        /// Defer handle initialization until the base class is ready
+        StatusCode initialize() override {
+          auto sc = Base::initialize();
+          if(sc.isFailure()) return sc;
+          initializeHandles(m_inputHandles);
+          initializeHandles(m_outputHandles);
+          return sc;
+        }
+
+        // === INTERFACE FOR DATA HANDLES ===
+
+        /// Register a data handle as an input of the algorithm
+        void registerInput(DataHandle& handle) final override {
+          m_inputHandles.push_back(&handle);
+        }
+
+        /// Register a data handle as an output of the algorithm
+        void registerOutput(DataHandle& handle) final override {
+          m_outputHandles.push_back(&handle);
+        }
+
+        // === INTERFACE FOR THE SCHEDULER ===
+
+        /// Tell which keys the algorithm will be reading from
+        DataObjIDColl inputKeys() const final override {
+          return getKeys(m_inputHandles);
+        }
+
+        /// Tell which keys the algorithm will be writing to
+        DataObjIDColl outputKeys() const final override {
+          return getKeys(m_outputHandles);
+        }
+
+
+      private:
+        /// Data handles associated with input and output event data
+        using HandleList = std::vector<DataHandle*>;
+        HandleList m_inputHandles;
+        HandleList m_outputHandles;
+
+        /// Query the keys associated with a set of handles
+        static DataObjIDColl getKeys(const HandleList& handles) {
+          DataObjIDColl result;
+          result.reserve(handles.size());
+          for(auto handlePtr: handles) {
+            result.insert(handlePtr->id());
+          }
+          return result;
+        }
+
+        /// Initialize a set of handles
+        void initializeHandles(HandleList& handles) {
+          for(auto handlePtr: handles) {
+            handlePtr->initialize(*this);
+          }
+        }
+    };
+  }
+}
 
 #endif // !GAUDIKERNEL_DATAHANDLEHOLDERBASE

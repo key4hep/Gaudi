@@ -77,7 +77,13 @@ class AlgorithmManager;
  */
 class GAUDI_API Algorithm
     : public DataHandleHolderBase<
-          PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
+             PropertyHolder<
+             CommonMessaging<
+             implements<IAlgorithm,
+                        IDataHandleHolder,
+                        IProperty,
+                        IStateful,
+                        Gaudi::experimental::IDataHandleHolderReqs>>>>
 {
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgorithm*( const std::string&, ISvcLocator* )>;
@@ -275,7 +281,7 @@ public:
   /** The standard event data service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
-  SmartIF<IDataProviderSvc>& eventSvc() const;
+  SmartIF<IDataProviderSvc>& eventSvc() const final override;
   /// shortcut for  method eventSvc
   SmartIF<IDataProviderSvc>&                                            evtSvc() const { return eventSvc(); }
   [[deprecated( "use eventSvc() instead" )]] SmartIF<IDataProviderSvc>& eventDataService() const { return eventSvc(); }
@@ -621,5 +627,18 @@ private:
   /// Private assignment operator: NO ASSIGNMENT ALLOWED
   Algorithm& operator=( const Algorithm& rhs ) = delete;
 };
+
+
+/// Work-in-progress rewrite of the DataHandle infrastructure
+namespace Gaudi
+{
+  namespace experimental
+  {
+    /// In order not to disturb the existing Algorithm implementation too much,
+    /// we temporarily build on top of it. Later, handles should be integrated
+    /// into it more cleanly.
+    using Algorithm = DataHandleHolder<::Algorithm>;
+  }
+}
 
 #endif // GAUDIKERNEL_ALGORITHM_H

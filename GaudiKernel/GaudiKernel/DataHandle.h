@@ -79,8 +79,11 @@ namespace Gaudi
     bool m_isCond = false;
   };
 
-  /// Work-in-progress rewrite of DataHandle and its children
-  namespace experimental {
+  /// Work-in-progress rewrite of the DataHandle infrastructure
+  namespace experimental
+  {
+    class IDataHandleHolder;
+
     /// Base class to all new-style data handles
     class DataHandle {
       public:
@@ -102,10 +105,9 @@ namespace Gaudi
 
         /// Initialize the data handle
         ///
-        /// This must be done after the whiteboard has been set up. One safe
-        /// place to do this is in Algorithm::initialize().
+        /// This must be done by the owner once it is initialized itself.
         ///
-        void initialize();
+        void initialize(const IDataHandleHolder& owner);
 
       protected:
         /// Handles allow either to insert data ("write") or read it
@@ -115,27 +117,18 @@ namespace Gaudi
         enum struct DataStore { IDataProviderSvc };
 
         /// Construct like a Gaudi property
-        /// FIXME: Correctly detect if Owner is the right type...
-        template<typename Owner>
+        template<typename Owner,
+                 std::enable_if_t<std::is_base_of<IDataHandleHolder,
+                                                  Owner>::value>* = nullptr>
         DataHandle(Owner& owner,
                    const std::string& propertyName,
                    DataObjID defaultID,
                    const std::string& docString,
                    Mode accessMode,
-                   DataStore /* store */)
+                   DataStore store)
           : m_id{&owner, propertyName, defaultID, docString}
-          , m_owner{owner}
         {
-          switch(accessMode) {
-            case Mode::Read:
-              owner.registerInputHandle(*this);
-              break;
-            case Mode::Write:
-              owner.registerOutputHandle(*this);
-              break;
-            default:
-              throw std::runtime_error("Unsupported access mode");
-          }
+          registerToOwner(owner, accessMode, store);
         }
 
         /// Data object ID of the target data, as a configurable property
@@ -143,14 +136,16 @@ namespace Gaudi
         ///        and what kind of store it is accessing
         Gaudi::Property<DataObjID> m_id;
 
-        /// Reference to the owner Algorithm
-        /// FIXME: Add support for owner tools?
-        std::reference_wrapper<const Algorithm> m_owner;
-
         /// Pointer to the whiteboard, set during initialize()
         /// FIXME: Usage of the Gaudi whiteboard should not be mandated, for
         ///        example conditions do not require it.
         IDataProviderSvc* m_whiteBoard = nullptr;
+
+      private:
+        /// Register ourselves to the owner
+        void registerToOwner(IDataHandleHolder& owner,
+                             Mode accessMode,
+                             DataStore store);
     };
 
     /// Reentrant mechanism to read data from the EventStore
@@ -159,7 +154,6 @@ namespace Gaudi
     class ReadHandle/*Impl*/ : public DataHandle {
       public:
         /// Create a ReadHandle and set up the associated Gaudi property
-        /// FIXME: Correctly detect if Owner is the right type...
         template<typename Owner>
         ReadHandle(Owner* owner,
                    const std::string& propertyName,
@@ -192,7 +186,6 @@ namespace Gaudi
     class WriteHandle/*Impl*/ : public DataHandle {
       public:
         /// Create a WriteHandle and set up the associated Gaudi property
-        /// FIXME: Correctly detect if Owner is the right type...
         template<typename Owner>
         WriteHandle(Owner* owner,
                     const std::string& propertyName,
