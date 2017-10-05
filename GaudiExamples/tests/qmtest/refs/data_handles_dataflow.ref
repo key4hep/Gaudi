@@ -1,0 +1,82 @@
+# setting LC_ALL to "C"
+# --> Including file '/tmp/tmpu9G5Lg.py'
+# <-- End of file '/tmp/tmpu9G5Lg.py'
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
+                                          running on localhost.localdomain on Fri Oct  6 14:13:47 2017
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+DataHandleFlowAlgA   INFO Checking input keys
+DataHandleFlowAlgA   INFO Checking output keys
+DataHandleFlowAlgA   INFO Checking input values
+DataHandleFlowAlgA   INFO Sending output values
+DataHandleFlowAlgB   INFO Checking input keys
+DataHandleFlowAlgB   INFO Checking output keys
+DataHandleFlowAlgB   INFO Checking input values
+DataHandleFlowAlgB   INFO Sending output values
+DataHandleFlowAlgH   INFO Checking input keys
+DataHandleFlowAlgH   INFO Checking output keys
+DataHandleFlowAlgH   INFO Checking input values
+DataHandleFlowAlgH   INFO Sending output values
+DataHandleFlowAlgD   INFO Checking input keys
+DataHandleFlowAlgD   INFO Checking output keys
+DataHandleFlowAlgD   INFO Checking input values
+DataHandleFlowAlgD   INFO Sending output values
+DataHandleFlowAlgG   INFO Checking input keys
+DataHandleFlowAlgG   INFO Checking output keys
+DataHandleFlowAlgG   INFO Checking input values
+DataHandleFlowAlgG   INFO Sending output values
+DataHandleFlowAlgE   INFO Checking input keys
+DataHandleFlowAlgE   INFO Checking output keys
+DataHandleFlowAlgE   INFO Checking input values
+DataHandleFlowAlgE   INFO Sending output values
+DataHandleFlowAlgC   INFO Checking input keys
+DataHandleFlowAlgC   INFO Checking output keys
+DataHandleFlowAlgC   INFO Checking input values
+DataHandleFlowAlgC   INFO Sending output values
+DataHandleFlowAlgF   INFO Checking input keys
+DataHandleFlowAlgF   INFO Checking output keys
+DataHandleFlowAlgF   INFO Checking input values
+DataHandleFlowAlgF   INFO Sending output values
+DataHandleFlowAlgA   INFO Checking input keys
+DataHandleFlowAlgA   INFO Checking output keys
+DataHandleFlowAlgA   INFO Checking input values
+DataHandleFlowAlgA   INFO Sending output values
+DataHandleFlowAlgB   INFO Checking input keys
+DataHandleFlowAlgB   INFO Checking output keys
+DataHandleFlowAlgB   INFO Checking input values
+DataHandleFlowAlgB   INFO Sending output values
+DataHandleFlowAlgH   INFO Checking input keys
+DataHandleFlowAlgH   INFO Checking output keys
+DataHandleFlowAlgH   INFO Checking input values
+DataHandleFlowAlgH   INFO Sending output values
+DataHandleFlowAlgD   INFO Checking input keys
+DataHandleFlowAlgD   INFO Checking output keys
+DataHandleFlowAlgD   INFO Checking input values
+DataHandleFlowAlgD   INFO Sending output values
+DataHandleFlowAlgG   INFO Checking input keys
+DataHandleFlowAlgG   INFO Checking output keys
+DataHandleFlowAlgG   INFO Checking input values
+DataHandleFlowAlgG   INFO Sending output values
+DataHandleFlowAlgE   INFO Checking input keys
+DataHandleFlowAlgE   INFO Checking output keys
+DataHandleFlowAlgE   INFO Checking input values
+DataHandleFlowAlgE   INFO Sending output values
+DataHandleFlowAlgC   INFO Checking input keys
+DataHandleFlowAlgC   INFO Checking output keys
+DataHandleFlowAlgC   INFO Checking input values
+DataHandleFlowAlgC   INFO Sending output values
+DataHandleFlowAlgF   INFO Checking input keys
+DataHandleFlowAlgF   INFO Checking output keys
+DataHandleFlowAlgF   INFO Checking input values
+DataHandleFlowAlgF   INFO Sending output values
+ApplicationMgr       INFO Application Manager Stopped successfully
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
