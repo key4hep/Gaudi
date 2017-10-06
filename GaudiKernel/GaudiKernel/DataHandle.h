@@ -2,6 +2,7 @@
 #define GAUDIKERNEL_DATAHANDLE 1
 
 #include <string>
+#include <type_traits>
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Property.h"
 

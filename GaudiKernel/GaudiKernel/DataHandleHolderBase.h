@@ -1,14 +1,15 @@
 #ifndef GAUDIKERNEL_DATAHANDLEHOLDERBASE
 #define GAUDIKERNEL_DATAHANDLEHOLDERBASE 1
 
+#include <algorithm>
+#include <type_traits>
+#include <unordered_set>
+#include <vector>
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/Property.h"
-
-#include <algorithm>
-#include <unordered_set>
 
 namespace
 {

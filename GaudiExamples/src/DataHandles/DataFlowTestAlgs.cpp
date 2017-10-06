@@ -1,4 +1,7 @@
-// FIXME: Add missing C++ standard library includes
+#include <array>
+#include <stdexcept>
+#include <string>
+#include <utility>
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/EventDataHandle.h"

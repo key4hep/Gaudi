@@ -4,7 +4,9 @@
 #include <memory>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 #include "GaudiKernel/AnyDataWrapper.h"
+#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataObjID.h"
 
 //---------------------------------------------------------------------------

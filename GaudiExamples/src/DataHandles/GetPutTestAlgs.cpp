@@ -1,4 +1,5 @@
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Algorithm.h"
