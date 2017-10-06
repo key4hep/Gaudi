@@ -299,6 +299,14 @@ StatusCode Service::setProperties()
   if ( !jos ) {
     throw GaudiException( "Service [JobOptionsSvc] not found", name(), StatusCode::FAILURE );
   }
+
+  // initialize messaging (except for MessageSvc)
+  if ( name() != "MessageSvc" ) {
+    // this initializes the messaging, in case property update handlers need to print
+    // and update the property value bypassing the update handler
+    m_outputLevel.value() = setUpMessaging();
+  }
+
   // set first generic Properties
   StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName( name() ), this );
   if ( sc.isFailure() ) return sc;
@@ -308,13 +316,6 @@ StatusCode Service::setProperties()
     if ( jos->setMyProperties( name(), this ).isFailure() ) {
       return StatusCode::FAILURE;
     }
-  }
-  // initialize output level (except for MessageSvc)
-  if ( name() != "MessageSvc" && msgSvc() ) {
-    if ( m_outputLevel == MSG::NIL ) // if not defined (via options)
-      m_outputLevel = msgLevel();    // set it from MessageSvc
-    else                             // otherwise notify MessageSvc
-      updateMsgStreamOutputLevel( m_outputLevel );
   }
   return sc;
 }

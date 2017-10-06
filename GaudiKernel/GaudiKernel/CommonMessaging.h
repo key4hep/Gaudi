@@ -67,17 +67,12 @@ public:
   /// Virtual destructor
   virtual ~CommonMessagingBase() = default;
   /// cold functionality
-  virtual void create_msgSvc() const    = 0;
   virtual void create_msgStream() const = 0;
 
   /** The standard message service.
    *  Returns a pointer to the standard message service.
    */
-  inline SmartIF<IMessageSvc>& msgSvc() const
-  {
-    if ( UNLIKELY( !m_msgsvc ) ) create_msgSvc();
-    return m_msgsvc;
-  }
+  inline const SmartIF<IMessageSvc>& msgSvc() const { return m_msgsvc; }
 
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const
@@ -125,14 +120,11 @@ public:
   /// shortcut for the method msgStream(MSG::INFO)
   inline MsgStream& msg() const { return msgStream( MSG::INFO ); }
 
-  /// get the output level from the embedded MsgStream
+  /// get the cached level (originally extracted from the embedded MsgStream)
   inline MSG::Level msgLevel() const
   {
-    if ( UNLIKELY( ( !m_msgStream.get() ) ) ) create_msgStream();
-    if ( UNLIKELY( ( !m_level.get() ) ) ) {
-      return MSG::NIL;
-    }
-    return *m_level;
+    assert( m_commonMessagingReady );
+    return m_level;
   }
 
   /// Backward compatibility function for getting the output level
@@ -145,14 +137,15 @@ private:
   template <typename Base>
   friend class CommonMessaging;
 
+  bool m_commonMessagingReady = false;
+
   /// The predefined message stream
   mutable boost::thread_specific_ptr<MsgStream> m_msgStream;
 
-  //  mutable MSG::Level m_level = MSG::NIL;
-  mutable boost::thread_specific_ptr<MSG::Level> m_level;
+  MSG::Level m_level = MSG::NIL;
 
   /// Pointer to the message service;
-  mutable SmartIF<IMessageSvc> m_msgsvc;
+  SmartIF<IMessageSvc> m_msgsvc;
 };
 
 template <typename BASE>
@@ -166,34 +159,43 @@ public:
 
 private:
   // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
-  void create_msgSvc() const override final
-  {
-    // Get default implementation of the message service.
-    m_msgsvc = this->serviceLocator();
-  }
-  void create_msgStream() const override final
-  {
-    auto& ms = msgSvc();
-    m_msgStream.reset( new MsgStream( ms, this->name() ) );
-    m_level.reset( new MSG::Level( m_msgStream.get() ? m_msgStream->level() : MSG::NIL ) );
-  }
+  void create_msgStream() const override final { m_msgStream.reset( new MsgStream( msgSvc(), this->name() ) ); }
 
 protected:
+  /// Set up local caches
+  MSG::Level setUpMessaging()
+  {
+    if ( !m_commonMessagingReady ) {
+      if ( !m_msgsvc ) {
+        // Get default implementation of the message service.
+        m_msgsvc = this->serviceLocator();
+      }
+      create_msgStream();
+      m_level = MSG::Level( m_msgStream.get() ? m_msgStream->level() : MSG::NIL );
+      // if we could not get a MessageSvc, we should try again the initial set up
+      m_commonMessagingReady = m_msgsvc;
+    }
+    return m_level;
+  }
+  /// Reinitialize internal states.
+  MSG::Level resetMessaging()
+  {
+    m_commonMessagingReady = false;
+    return setUpMessaging();
+  }
   /// Update the output level of the cached MsgStream.
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel( int level )
   {
-    if ( !m_msgStream.get() ) {
-      create_msgStream();
-    }
-    if ( level != MSG::NIL && level != *m_level ) {
+    setUpMessaging();
+    if ( level != MSG::NIL && level != m_level ) {
       if ( msgSvc() ) {
         msgSvc()->setOutputLevel( this->name(), level );
       }
       if ( m_msgStream.get() ) m_msgStream->setLevel( level );
       if ( UNLIKELY( MSG::Level( level ) <= MSG::DEBUG ) )
         debug() << "Property update for OutputLevel : new value = " << level << endmsg;
-      *m_level = MSG::Level( level );
+      m_level = MSG::Level( level );
     }
   }
 };

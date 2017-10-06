@@ -583,6 +583,8 @@ public:
       svc->setProperty( m_rootName ).ignore();
       svc->setProperty( m_forceLeaves ).ignore();
       svc->setProperty( m_enableFaultHdlr ).ignore();
+      // make sure that CommonMessaging is initialized
+      svc->setProperty( m_outputLevel ).ignore();
 
       sc = svc->initialize();
       if ( !sc.isSuccess() ) {

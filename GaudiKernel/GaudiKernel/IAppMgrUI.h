@@ -49,5 +49,8 @@ public:
 
   /// Get the current state.
   virtual Gaudi::StateMachine::State FSMState() const = 0;
+
+  /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
+  virtual void outputLevelUpdate() = 0;
 };
 #endif // KERNEL_IAPPMGRUI_H

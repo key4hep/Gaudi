@@ -211,7 +211,10 @@ StatusCode Auditor::setProperties()
   if ( !m_pSvcLocator ) return StatusCode::FAILURE;
   auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
   if ( !jos ) return StatusCode::FAILURE;
-  jos->setMyProperties( name(), this ).ignore();
-  updateMsgStreamOutputLevel( m_outputLevel );
-  return StatusCode::SUCCESS;
+
+  // this initializes the messaging, in case property update handlers need to print
+  // and update the property value bypassing the update handler
+  m_outputLevel.value() = setUpMessaging();
+
+  return jos->setMyProperties( name(), this );
 }

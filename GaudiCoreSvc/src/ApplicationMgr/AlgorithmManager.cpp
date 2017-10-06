@@ -216,3 +216,12 @@ StatusCode AlgorithmManager::restart()
   }
   return rc;
 }
+
+void AlgorithmManager::outputLevelUpdate()
+{
+  resetMessaging();
+  for ( auto& algItem : m_algs ) {
+    const auto alg = dynamic_cast<Algorithm*>( algItem.algorithm.get() );
+    if ( alg ) alg->resetMessaging();
+  }
+}

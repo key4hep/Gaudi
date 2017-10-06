@@ -242,7 +242,6 @@ EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
 HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...WARNING Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
@@ -401,7 +400,7 @@ ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 20)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 24)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
