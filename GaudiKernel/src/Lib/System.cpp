@@ -146,7 +146,7 @@ static unsigned long loadWithoutEnvironment( const std::string& name, System::Im
 /// Load dynamic link library
 unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* handle )
 {
-  unsigned long res;
+  unsigned long res = 0;
   // if name is empty, just load it
   if ( name.length() == 0 ) {
     res = loadWithoutEnvironment( name, handle );
