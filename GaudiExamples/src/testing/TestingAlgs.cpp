@@ -23,7 +23,14 @@ namespace GaudiTesting
   {
   public:
     DestructorCheckAlg( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
-    ~DestructorCheckAlg() override { std::cout << "Destructor of " << name() << std::endl; }
+    ~DestructorCheckAlg() override
+    {
+      // do not print messages if we are created in genconf
+      const std::string cmd = System::cmdLineArgs()[0];
+      if ( cmd.find( "genconf" ) != std::string::npos ) return;
+
+      std::cout << "Destructor of " << name() << std::endl;
+    }
     StatusCode execute() override
     {
       info() << "Executing " << name() << endmsg;

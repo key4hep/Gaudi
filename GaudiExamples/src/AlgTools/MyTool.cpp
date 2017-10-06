@@ -51,5 +51,9 @@ StatusCode MyTool::finalize()
 MyTool::~MyTool()
 //------------------------------------------------------------------------------
 {
+  // to not print messages if we are created in genconf
+  const std::string cmd = System::cmdLineArgs()[0];
+  if ( cmd.find( "genconf" ) != std::string::npos ) return;
+
   info() << "destructor has been called" << endmsg;
 }

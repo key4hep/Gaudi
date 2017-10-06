@@ -29,7 +29,13 @@ namespace
     static IAlgorithm* creator( const std::string& name, ISvcLocator*&& svcLoc )
     {
       CustomFactoryAlgorithm* p = new CustomFactoryAlgorithm( name, svcLoc );
-      std::cout << "created CustomFactoryAlgorithm at " << p << std::endl;
+
+      // do not print messages if we are created in genconf
+      const std::string cmd = System::cmdLineArgs()[0];
+      if ( cmd.find( "genconf" ) == std::string::npos ) {
+        std::cout << "created CustomFactoryAlgorithm at " << p << std::endl;
+      }
+
       return p;
     }
     _register__CustomFactoryAlgorithm()
