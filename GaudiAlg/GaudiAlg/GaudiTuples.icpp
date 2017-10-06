@@ -155,8 +155,9 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple( const std::string& title, const CLID& 
   if ( this->useNumericAutoIDs() || title.empty() ) {
     if ( !this->useNumericAutoIDs() ) {
       this->Warning(
-          "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for nTuple ID",
-          StatusCode::SUCCESS );
+              "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for nTuple ID",
+              StatusCode::SUCCESS )
+          .ignore();
     }
     // propose the tuple ID
     ID = TupleID( m_nTupleMapID.size() + 1 + nTupleOffSet() );
@@ -193,8 +194,9 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol( const std::string& title, const CLID& 
   if ( this->useNumericAutoIDs() || title.empty() ) {
     if ( !this->useNumericAutoIDs() ) {
       this->Warning(
-          "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for evtCol ID",
-          StatusCode::SUCCESS );
+              "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for evtCol ID",
+              StatusCode::SUCCESS )
+          .ignore();
     }
     // proposed the tuple ID
     ID = TupleID( m_evtColMapID.size() + 1 + evtColOffSet() );
@@ -223,7 +225,7 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple( const TupleID& ID, const std::string& 
 {
   // Check ID
   if ( ID.undefined() ) {
-    this->Error( "Undefined NTuple ID : Title='" + title1 + "'" );
+    this->Error( "Undefined NTuple ID : Title='" + title1 + "'" ).ignore();
     return Tuple( 0 );
   }
 
@@ -248,7 +250,7 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple( const TupleID& ID, const std::string& 
     } else if ( ID.literal() ) {
       tup = this->ntupleSvc()->book( nTuplePath(), ID.literalID(), clid, title );
     } else {
-      this->Error( "Undefined NTuple ID" );
+      this->Error( "Undefined NTuple ID" ).ignore();
     }
 
     // assertion
@@ -279,7 +281,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol( const TupleID& ID, const std::string& 
 {
   // Check ID
   if ( ID.undefined() ) {
-    this->Error( "Undefined NTuple ID : Title='" + title1 + "'" );
+    this->Error( "Undefined NTuple ID : Title='" + title1 + "'" ).ignore();
     return Tuple( 0 );
   }
 
@@ -304,7 +306,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol( const TupleID& ID, const std::string& 
     } else if ( ID.literal() ) {
       tup = this->evtColSvc()->book( evtColPath(), ID.literalID(), clid, title );
     } else {
-      this->Error( "Undefined NTuple ID" );
+      this->Error( "Undefined NTuple ID" ).ignore();
     }
 
     // assertion

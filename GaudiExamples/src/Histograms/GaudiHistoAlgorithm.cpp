@@ -164,7 +164,7 @@ StatusCode GaudiHistoAlgorithm::execute()
   plot1D( gauss, "test1", "Forced Alpha ID time test", -5, 5, 100 );
   if ( nCalls > 0 ) chronoSvc()->chronoStop( "1DForcedAlphaID" );
 
-  if ( 0 == nCalls ) Print( "Filling Histograms...... Please be patient !" );
+  if ( 0 == nCalls ) Print( "Filling Histograms...... Please be patient !" ).ignore();
   ++nCalls;
   return StatusCode::SUCCESS;
 }
