@@ -5,6 +5,7 @@
 #endif
 
 #include "MessageSvc.h"
+#include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/StatusCode.h"
@@ -82,6 +83,11 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {"NIL",     "VERBOSE", "D
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
 {
   m_inactCount.declareUpdateHandler( &MessageSvc::setupInactCount, this );
+
+  m_outputLevel.declareUpdateHandler( [svcloc]( Gaudi::Details::PropertyBase& ) {
+    SmartIF<IAppMgrUI> app = svcloc;
+    if ( app ) app->outputLevelUpdate();
+  } );
 
 #ifndef NDEBUG
   // initialize the MsgStream static flag.

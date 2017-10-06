@@ -86,6 +86,9 @@ public:
   AlgTypeAliasesMap& typeAliases() { return m_algTypeAliases; }
   const AlgTypeAliasesMap& typeAliases() const { return m_algTypeAliases; }
 
+  /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
+  void outputLevelUpdate() override;
+
 private:
   std::vector<AlgorithmItem> m_algs; ///< algorithms maintained by AlgorithmManager
 

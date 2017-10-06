@@ -18,11 +18,12 @@ JobOptionsSvc        INFO # (28,1): FastHistorySvc.OutputFile = "history.dat"
 JobOptionsSvc        INFO # (35,1): ApplicationMgr.EvtMax = 2
 JobOptionsSvc        INFO # (36,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/History.opts
+MessageSvc          DEBUG Service base class initialized successfully[m
 ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
-                                          running on p05614910w96644.cern.ch on Fri Jan 27 19:47:03 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
+                                          running on pcphlbc16 on Sat Oct  7 10:18:11 2017
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -55,7 +56,6 @@ History             DEBUG Data Deps for History[m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 HistogramDataSvc    DEBUG Service base class initialized successfully[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
-HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
 HistogramPersis...  DEBUG Service base class initialized successfully[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
@@ -156,8 +156,8 @@ ToolSvc              INFO Removing all tools created by ToolSvc[m
 ToolSvc             DEBUG   Tool List : [m
 ToolSvc             DEBUG Deleting 0 finalized tools[m
 ServiceManager      DEBUG Finalizing service AlgContextSvc[m
-IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'[m
 IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'[m
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'[m
 ServiceManager      DEBUG Finalizing service AlgExecStateSvc[m
 ServiceManager      DEBUG Finalizing service TimelineSvc[m
 ServiceManager      DEBUG Finalizing service EventDataSvc[m
@@ -174,7 +174,7 @@ ServiceManager      DEBUG Finalizing service StatusCodeSvc[m
 StatusCodeSvc       DEBUG all StatusCode instances where checked[m
 ServiceManager      DEBUG Looping over all active services...[m
 ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)[m
-ServiceManager      DEBUG ---- MessageSvc (refCount = 18)[m
+ServiceManager      DEBUG ---- MessageSvc (refCount = 22)[m
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 5)[m
 ServiceManager      DEBUG ---- HistorySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m

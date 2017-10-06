@@ -129,6 +129,9 @@ public:
   using ISvcManager::addService;
 #endif
 
+  /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
+  void outputLevelUpdate() override;
+
 private:
   inline ListSvc::iterator find( const std::string& name )
   {

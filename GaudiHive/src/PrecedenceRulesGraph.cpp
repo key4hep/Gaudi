@@ -141,7 +141,6 @@ namespace concurrency
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::initialize()
   {
-
     if ( serviceLocator()->existsService( "CondSvc" ) ) {
       SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc" )};
       if ( condSvc.isValid() ) {

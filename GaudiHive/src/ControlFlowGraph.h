@@ -145,7 +145,10 @@ namespace concurrency
     {
     public:
       /// Constructor
-      ControlFlowGraph( const std::string& name, SmartIF<ISvcLocator> svc ) : m_svcLocator( svc ), m_name( name ) {}
+      ControlFlowGraph( const std::string& name, SmartIF<ISvcLocator> svc ) : m_svcLocator( svc ), m_name( name )
+      {
+        setUpMessaging();
+      }
       /// Destructor
       ~ControlFlowGraph() override
       {

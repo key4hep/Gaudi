@@ -69,7 +69,7 @@ JobOptionsSvc.AuditServices:False
 JobOptionsSvc.AuditStart:False
 JobOptionsSvc.AuditStop:False
 JobOptionsSvc.DUMPFILE:
-JobOptionsSvc.OutputLevel:0
+JobOptionsSvc.OutputLevel:3
 JobOptionsSvc.PATH:../options/job.opts
 JobOptionsSvc.PYTHONACTION:
 JobOptionsSvc.PYTHONPARAMS:

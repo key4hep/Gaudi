@@ -45,6 +45,7 @@
 
 class IAlgTool;
 class ToolHandleInfo;
+class AlgorithmManager;
 
 #ifndef PACKAGE_VERSION
 #define PACKAGE_VERSION "unknown"
@@ -83,6 +84,7 @@ public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*, const std::string&, ISvcLocator*> Factory;
 #endif
+  friend AlgorithmManager;
 
   /** Constructor
    *  @param name    The algorithm object's name

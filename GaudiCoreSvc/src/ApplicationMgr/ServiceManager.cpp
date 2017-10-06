@@ -535,4 +535,13 @@ void ServiceManager::dump() const
   log << endmsg;
 }
 
+void ServiceManager::outputLevelUpdate()
+{
+  resetMessaging();
+  for ( auto& svcItem : m_listsvc ) {
+    const auto svc = dynamic_cast<Service*>( svcItem.service.get() );
+    if ( svc ) svc->resetMessaging();
+  }
+}
+
 DECLARE_OBJECT_FACTORY( ServiceManager )

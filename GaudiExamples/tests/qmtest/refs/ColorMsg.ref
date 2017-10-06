@@ -15,11 +15,12 @@ JobOptionsSvc        INFO # (23,1): MessageSvc.verboseColorCode = ["[95;4m"]
 JobOptionsSvc        INFO # (31,1): ApplicationMgr.EvtMax = 2
 JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
+[92;1mMessageSvc          DEBUG Service base class initialized successfully[m
 [92;1mApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
-                                          running on pcphlbc16 on Tue Mar  7 10:58:03 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
+                                          running on pcphlbc16 on Sat Oct  7 10:17:01 2017
 ====================================================================================================================================[m
 [96;1mApplicationMgr       INFO Application Manager Configured successfully[m
 [92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -50,7 +51,6 @@ ApplicationMgr    SUCCESS
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [92;1mHistogramDataSvc    DEBUG Service base class initialized successfully[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
-[92;1mHistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
 [92;1mHistogramPersis...  DEBUG Service base class initialized successfully[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
@@ -128,7 +128,7 @@ Algs: 1
 [92;1mStatusCodeSvc       DEBUG all StatusCode instances where checked[m
 [92;1mServiceManager      DEBUG Looping over all active services...[m
 [92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
-[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 14)[m
+[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 18)[m
 [92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m

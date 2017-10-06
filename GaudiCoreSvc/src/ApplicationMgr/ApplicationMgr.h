@@ -150,6 +150,9 @@ public:
   /// Needed to locate the message service
   SmartIF<ISvcLocator>& serviceLocator() const override { return m_svcLocator; }
 
+  /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
+  void outputLevelUpdate() override;
+
 protected:
   /// declare one or more copies of svc type/name as determined by NoOfThreads
   StatusCode declareMultiSvcType( const std::string& name, const std::string& type );
