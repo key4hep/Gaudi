@@ -109,44 +109,52 @@ namespace Gaudi
         // === INTERFACE FOR GAUDI STATE MACHINE ===
 
         /// Defer handle initialization until the base class is ready
+        ///
+        /// FIXME: This is a hack. It will break as soon as a child Algorithm
+        ///        or AlgTool will implement its own version of initialize() and
+        ///        forget to call us back. The only long-term fix is to
+        ///        integrate handle initialization into the sysInitialize
+        ///        methods of Algorithm and AlgTool, a fairly invasive change
+        ///        which I would like to postpone at this point in time.
+        ///
         StatusCode initialize() override {
           auto sc = Base::initialize();
           if(sc.isFailure()) return sc;
-          initializeHandles(m_inputHandles);
-          initializeHandles(m_outputHandles);
+          initializeHandles(m_eventInputHandles);
+          initializeHandles(m_eventOutputHandles);
           return sc;
         }
 
         // === INTERFACE FOR DATA HANDLES ===
 
-        /// Register a data handle as an input of the algorithm
-        void registerInput(DataHandle& handle) final override {
-          m_inputHandles.push_back(&handle);
+        /// Register a data handle as an event data input of the algorithm
+        void registerEventInput(DataHandle& handle) final override {
+          m_eventInputHandles.push_back(&handle);
         }
 
-        /// Register a data handle as an output of the algorithm
-        void registerOutput(DataHandle& handle) final override {
-          m_outputHandles.push_back(&handle);
+        /// Register a data handle as an event data output of the algorithm
+        void registerEventOutput(DataHandle& handle) final override {
+          m_eventOutputHandles.push_back(&handle);
         }
 
         // === INTERFACE FOR THE SCHEDULER ===
 
-        /// Tell which keys the algorithm will be reading from
-        DataObjIDColl inputKeys() const final override {
-          return getKeys(m_inputHandles);
+        /// Tell which event store keys the algorithm will be reading from
+        DataObjIDColl eventInputKeys() const final override {
+          return getKeys(m_eventInputHandles);
         }
 
-        /// Tell which keys the algorithm will be writing to
-        DataObjIDColl outputKeys() const final override {
-          return getKeys(m_outputHandles);
+        /// Tell which event store keys the algorithm will be writing to
+        DataObjIDColl eventOutputKeys() const final override {
+          return getKeys(m_eventOutputHandles);
         }
 
 
       private:
         /// Data handles associated with input and output event data
         using HandleList = std::vector<DataHandle*>;
-        HandleList m_inputHandles;
-        HandleList m_outputHandles;
+        HandleList m_eventInputHandles;
+        HandleList m_eventOutputHandles;
 
         /// Query the keys associated with a set of handles
         static DataObjIDColl getKeys(const HandleList& handles) {

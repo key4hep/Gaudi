@@ -1,12 +1,8 @@
 #ifndef GAUDIKERNEL_DATAHANDLE
 #define GAUDIKERNEL_DATAHANDLE 1
 
-#include <memory>
-#include <stdexcept>
+#include <string>
 #include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/HandleDetail.h"
-#include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/Property.h"
 
 //---------------------------------------------------------------------------
@@ -93,9 +89,12 @@ namespace Gaudi
 
         // DataHandles pass a pointer to themselves to the host Algorithm during
         // registration, which happens at construction time. They should thus
-        // not be moved, as that would invalidate said pointer. The only reason
-        // why we don't delete the DataHandle move constructor as well is that
-        // it would also forbid safe and useful forms of in-place construction.
+        // not be moved, as that would invalidate said pointer.
+        //
+        // The only reason why we don't delete the DataHandle move constructor
+        // as well is that it would also forbid some safe and useful forms of
+        // in-place construction.
+        //
         DataHandle(DataHandle&&) = default;
         DataHandle& operator=(DataHandle&&) = delete;
 
@@ -118,11 +117,11 @@ namespace Gaudi
 
         /// Initialize the data handle
         ///
-        /// This must be done by the owner once it has initialized itself. It
-        /// is the step at which the handle performs deferred framework
+        /// This must be done by the owner once it has sysInitialized itself.
+        /// It is the stage at which the handle performs deferred framework
         /// operations such as acquiring access to the data stores.
         ///
-        void initialize(const IDataHandleHolder& owner);
+        virtual void initialize(const IDataHandleHolder& owner) = 0;
 
       protected:
         /// Handles allow either to insert data ("write") or read it back
@@ -141,121 +140,17 @@ namespace Gaudi
                    const std::string& propertyName,
                    DataObjID defaultID,
                    const std::string& docString,
-                   Mode accessMode,
-                   DataStore store)
+                   Mode /* accessMode */,
+                   DataStore /* store */)
           : m_id{&owner, propertyName, defaultID, docString}
-        {
-          registerToOwner(owner, accessMode, store);
-        }
-
-        /// Pointer to the whiteboard, set during initialize()
-        /// FIXME: Usage of the Gaudi whiteboard should not be mandated, for
-        ///        example conditions do not require it.
-        IDataProviderSvc* m_whiteBoard = nullptr;
+        {}
 
       private:
         /// The data object ID of the target data can be configured
         /// FIXME: Expose to Property machinery whether this is an input/output
         ///        and what kind of store it is accessing
         Gaudi::Property<DataObjID> m_id;
-
-        /// Register ourselves to the owner (algorithm or tool)
-        void registerToOwner(IDataHandleHolder& owner,
-                             Mode accessMode,
-                             DataStore store);
     };
-
-    /// Read handles provide a reentrant whiteboard readout mechanism
-    /// FIXME: Support other stores by extracting the data access logic
-    template<typename T>/*, typename DataStore>*/
-    class ReadHandle/*Impl*/ : public DataHandle {
-      public:
-        /// Create a ReadHandle and set up the associated Gaudi property
-        template<typename Owner>
-        ReadHandle(Owner* owner,
-                   const std::string& propertyName,
-                   DataObjID defaultID,
-                   const std::string& docString = "")
-          : DataHandle{*owner,
-                       propertyName,
-                       defaultID,
-                       docString,
-                       DataHandle::Mode::Read,
-                       DataHandle::DataStore::IDataProviderSvc}
-        {}
-
-        /// Access the data for the current event context
-        decltype(auto) get(const EventContext& /* ctx */) const {
-          // FIXME: Once this is working, start leveraging the new interface:
-          //          - Shouldn't need to rely on implicit thread-local context
-          DataObject* ptr = nullptr;
-          auto sc = m_whiteBoard->retrieveObject(id().key(), ptr);
-          if(sc.isFailure()) {
-            throw std::runtime_error("Failed to read input from whiteboard");
-          }
-          return HandleDetail::unwrapDataObject<T>(*ptr);
-        }
-    };
-
-    /// Read handles provide a reentrant whiteboard insertion mechanism
-    /// FIXME: Support other stores by extracting the data access logic
-    template<typename T>/*, typename DataStore>*/
-    class WriteHandle/*Impl*/ : public DataHandle {
-      public:
-        /// Create a WriteHandle and set up the associated Gaudi property
-        template<typename Owner>
-        WriteHandle(Owner* owner,
-                    const std::string& propertyName,
-                    DataObjID defaultID,
-                    const std::string& docString = "")
-          : DataHandle{*owner,
-                       propertyName,
-                       defaultID,
-                       docString,
-                       DataHandle::Mode::Write,
-                       DataHandle::DataStore::IDataProviderSvc}
-        {}
-
-        /// Move data into the store
-        const T& put(const EventContext& ctx, T data) const {
-          auto ptrAndRef = HandleDetail::wrapDataObject<T>(std::move(data));
-          putImpl(ctx, std::move(ptrAndRef.first));
-          return ptrAndRef.second;
-        }
-
-        /// Transfer ownership of heap-allocated data to the store
-        ///
-        /// This is intended as a way to inject legacy non-movable DataObjects
-        /// into the store. New data types should be movable and use the other
-        /// overload of put. This method will eventually be removed.
-        ///
-        const T& put(const EventContext& ctx,
-                     std::unique_ptr<DataObject> ptr) const
-        {
-          auto ptrAndRef = HandleDetail::wrapDataObject<T>(std::move(ptr));
-          putImpl(ctx, std::move(ptrAndRef.first));
-          return ptrAndRef.second;
-        }
-
-      private:
-        /// Insert a valid DataObject into the transient event store
-        void putImpl(const EventContext& /* ctx */,
-                     std::unique_ptr<DataObject>&& ptr) const
-        {
-          // FIXME: Once this is working, start leveraging the new interface:
-          //          - Shouldn't need to rely on implicit thread-local context
-          auto sc = m_whiteBoard->registerObject(id().key(), ptr.release());
-          if(sc.isFailure()) {
-            throw std::runtime_error("Failed to write output into whiteboard");
-          }
-        }
-    };
-
-    // FIXME: Fill in those typedefs later on
-    /* template<typename T> using EventReadHandle = ReadHandleImpl<T, IDataProviderSvc>;
-    template<typename T> using EventWriteHandle = WriteHandleImpl<T, IDataProviderSvc>; */
-    // template<typename T> using ConditionReadHandle = ReadHandleImpl<T, IConditionStore>;
-    // template<typename T> using ConditionWriteHandle = WriteHandleImpl<T, IConditionStore>;
   }
 }
 

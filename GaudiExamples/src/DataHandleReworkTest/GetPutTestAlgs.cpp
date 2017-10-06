@@ -2,8 +2,7 @@
 #include <string>
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/DataHandle.h"
-
+#include "GaudiKernel/EventDataHandle.h"
 
 // ============================================================================
 /** @file
@@ -108,7 +107,8 @@ public:
   }
 
 private:
-  template<typename T> using WriteHandle = Gaudi::experimental::WriteHandle<T>;
+  template<typename T>
+  using WriteHandle = Gaudi::experimental::EventWriteHandle<T>;
 
   /// We can write plain old data, like ints...
   WriteHandle<int> m_intWriter{this,
@@ -188,7 +188,8 @@ public:
   }
 
 private:
-  template<typename T> using ReadHandle = Gaudi::experimental::ReadHandle<T>;
+  template<typename T>
+  using ReadHandle = Gaudi::experimental::EventReadHandle<T>;
 
   /// We can read plain old data, like ints...
   ReadHandle<int> m_intReader{this,

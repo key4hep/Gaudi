@@ -1,8 +1,7 @@
 // FIXME: Add missing C++ standard library includes
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/DataHandle.h"
-
+#include "GaudiKernel/EventDataHandle.h"
 
 // ============================================================================
 /** @file
@@ -85,7 +84,7 @@ public:
     for(const auto& inputHandle: m_readers) {
       expectedInputKeys.emplace(inputHandle.id());
     }
-    if(inputKeys() != expectedInputKeys) {
+    if(eventInputKeys() != expectedInputKeys) {
       throw std::runtime_error("Unexpected input keys");
     }
 
@@ -95,7 +94,7 @@ public:
     for(const auto& outputHandle: m_writers) {
       expectedOutputKeys.emplace(outputHandle.id());
     }
-    if(outputKeys() != expectedOutputKeys) {
+    if(eventOutputKeys() != expectedOutputKeys) {
       throw std::runtime_error("Unexpected output keys");
     }
 
@@ -129,7 +128,7 @@ private:
   std::array<int, N_outputs> m_outputValues{outputIDs...};
 
   // Declare our inputs using ReadHandles
-  using IntReadHandle = Gaudi::experimental::ReadHandle<int>;
+  using IntReadHandle = Gaudi::experimental::EventReadHandle<int>;
   std::array<IntReadHandle, N_inputs> m_readers{
     IntReadHandle{
       this,
@@ -139,7 +138,7 @@ private:
   };
 
   // Declare our outputs using WriteHandles
-  using IntWriteHandle = Gaudi::experimental::WriteHandle<int>;
+  using IntWriteHandle = Gaudi::experimental::EventWriteHandle<int>;
   std::array<IntWriteHandle, N_outputs> m_writers{
     IntWriteHandle{
       this,

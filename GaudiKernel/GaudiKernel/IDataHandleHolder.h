@@ -46,7 +46,6 @@ public:
 
 
 /// Work-in-progress rewrite of the DataHandle infrastructure
-/// FIXME: Decide how conditions support is going to be added
 namespace Gaudi
 {
   namespace experimental
@@ -68,17 +67,17 @@ namespace Gaudi
 
     /// The DataHandleHolder implementation will provide the following interface
     struct IDataHandleHolder : public virtual IDataHandleHolderReqs {
-      /// Register a data handle as an input of the algorithm
-      virtual void registerInput(DataHandle& handle) = 0;
+      /// Register a data handle as an event data input of the algorithm
+      virtual void registerEventInput(DataHandle& handle) = 0;
 
-      /// Register a data handle as an output of the algorithm
-      virtual void registerOutput(DataHandle& handle) = 0;
+      /// Register a data handle as an event data output of the algorithm
+      virtual void registerEventOutput(DataHandle& handle) = 0;
 
-      /// Tell which whiteboard keys the algorithm will be reading from
-      virtual DataObjIDColl inputKeys() const = 0;
+      /// Tell which event data keys the algorithm will be reading from
+      virtual DataObjIDColl eventInputKeys() const = 0;
 
-      /// Tell which whiteboard keys the algorithm will be writing to
-      virtual DataObjIDColl outputKeys() const = 0;
+      /// Tell which event data keys the algorithm will be writing to
+      virtual DataObjIDColl eventOutputKeys() const = 0;
     };
   }
 }
