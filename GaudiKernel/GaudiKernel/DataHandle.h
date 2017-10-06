@@ -26,7 +26,6 @@
 
 //---------------------------------------------------------------------------
 
-class Algorithm;
 class IDataHandleHolder;
 
 namespace Gaudi
@@ -87,6 +86,19 @@ namespace Gaudi
     /// Base class to all new-style data handles
     class DataHandle {
       public:
+        // DataHandles are used for the purpose of accounting component data
+        // dependencies, and should thus never be copied.
+        DataHandle(const DataHandle&) = delete;
+        DataHandle& operator=(const DataHandle&) = delete;
+
+        // DataHandles pass a pointer to themselves to the host Algorithm during
+        // registration, which happens at construction time. They should thus
+        // not be moved, as that would invalidate said pointer. The only reason
+        // why we don't delete the DataHandle move constructor as well is that
+        // it would also forbid safe and useful forms of in-place construction.
+        DataHandle(DataHandle&&) = default;
+        DataHandle& operator=(DataHandle&&) = delete;
+
         /// (Configurable) ID of the data being accessed via this handle
         ///
         /// The current proposal is to only support one ID per handle. If
@@ -95,9 +107,10 @@ namespace Gaudi
         /// multiple whiteboard keys (ATLAS), they would need to implement the
         /// underlying support on their own.
         ///
-        /// For LHCb alternate paths, this can be handled at the DataProvider
-        /// level (try loading from alternate paths if original one is empty) or
-        /// via good old DataOnDemand for the sequential case.
+        /// For LHCb alternate paths, this can be handled at the DataLoader
+        /// level (try linking from alternate paths if original one is empty),
+        /// or via good old DataOnDemand for the sequential case. See
+        /// https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/422 .
         ///
         /// FIXME: For aliased writes, how would that work with the Scheduler?
         ///
@@ -105,18 +118,22 @@ namespace Gaudi
 
         /// Initialize the data handle
         ///
-        /// This must be done by the owner once it is initialized itself.
+        /// This must be done by the owner once it has initialized itself. It
+        /// is the step at which the handle performs deferred framework
+        /// operations such as acquiring access to the data stores.
         ///
         void initialize(const IDataHandleHolder& owner);
 
       protected:
-        /// Handles allow either to insert data ("write") or read it
+        /// Handles allow either to insert data ("write") or read it back
         enum struct Mode { Read, Write };
 
-        /// Which data store are we talking to
+        /// Handles will eventually support multiple storage backends, even if
+        /// they currently only support the standard Gaudi event store
         enum struct DataStore { IDataProviderSvc };
 
-        /// Construct like a Gaudi property
+        /// Handles are constructed like a Gaudi property (and effectively
+        /// behave as one, which sets the associated data object identifier)
         template<typename Owner,
                  std::enable_if_t<std::is_base_of<IDataHandleHolder,
                                                   Owner>::value>* = nullptr>
@@ -131,24 +148,24 @@ namespace Gaudi
           registerToOwner(owner, accessMode, store);
         }
 
-        /// Data object ID of the target data, as a configurable property
-        /// FIXME: Expose to Property machinery whether this is an input/output
-        ///        and what kind of store it is accessing
-        Gaudi::Property<DataObjID> m_id;
-
         /// Pointer to the whiteboard, set during initialize()
         /// FIXME: Usage of the Gaudi whiteboard should not be mandated, for
         ///        example conditions do not require it.
         IDataProviderSvc* m_whiteBoard = nullptr;
 
       private:
-        /// Register ourselves to the owner
+        /// The data object ID of the target data can be configured
+        /// FIXME: Expose to Property machinery whether this is an input/output
+        ///        and what kind of store it is accessing
+        Gaudi::Property<DataObjID> m_id;
+
+        /// Register ourselves to the owner (algorithm or tool)
         void registerToOwner(IDataHandleHolder& owner,
                              Mode accessMode,
                              DataStore store);
     };
 
-    /// Reentrant mechanism to read data from the EventStore
+    /// Read handles provide a reentrant whiteboard readout mechanism
     /// FIXME: Support other stores by extracting the data access logic
     template<typename T>/*, typename DataStore>*/
     class ReadHandle/*Impl*/ : public DataHandle {
@@ -180,7 +197,7 @@ namespace Gaudi
         }
     };
 
-    /// Reentrant mechanism to write data into the EventStore
+    /// Read handles provide a reentrant whiteboard insertion mechanism
     /// FIXME: Support other stores by extracting the data access logic
     template<typename T>/*, typename DataStore>*/
     class WriteHandle/*Impl*/ : public DataHandle {
