@@ -1070,25 +1070,19 @@ namespace Tuples
      *  @param maxv     maximal length of the array
      *  @return status code
      */
-    template <typename Iterator, template <typename, typename...> class Container = std::initializer_list,
-              typename Fun  = std::function<float( detail::const_ref_t<Iterator> )>,
-              typename Item = std::pair<std::string, Fun>,
-              typename      = std::enable_if_t<!std::is_same<std::string, Container<Item>>::value>>
-    StatusCode farray( const Container<Item>& items, Iterator first, Iterator last, const std::string& length,
-                       size_t maxv )
-    {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
 
-      // adjust the lenfth
+    template <typename FunIterator, typename DataIterator>
+    StatusCode farray_impl( FunIterator first_item, FunIterator last_item, DataIterator first, DataIterator last,
+                            const std::string& length, size_t maxv )
+    {
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
+
+      // adjust the length
       if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
         using GaudiUtils::details::ostream_joiner;
         std::ostringstream os;
-        ostream_joiner( os, items, ",",
+        ostream_joiner( os, first_item, last_item, ",",
                         []( std::ostream& os, const auto& i ) -> std::ostream& { return os << i.first; } );
         Warning( "farray('" + os.str() + "'): array overflow, skipping extra entries" ).ignore();
         last = std::next( first, maxv );
@@ -1105,8 +1099,8 @@ namespace Tuples
 
       // get the arrays themselves
       std::vector<FArray*> vars;
-      vars.reserve( items.size() );
-      std::transform( items.begin(), items.end(), std::back_inserter( vars ),
+      vars.reserve( std::distance( first_item, last_item ) );
+      std::transform( first_item, last_item, std::back_inserter( vars ),
                       [&]( const auto& item ) { return this->fArray( item.first, len ); } );
       if ( std::any_of( vars.begin(), vars.end(), []( const FArray* f ) { return !f; } ) ) {
         return InvalidColumn;
@@ -1114,13 +1108,33 @@ namespace Tuples
 
       // fill the array
       for ( size_t index = 0; first != last; ++first, ++index ) {
-        auto item = items.begin();
+        auto item = first_item;
         for ( auto& var : vars ) {
           ( *var )[index] = ( item++ )->second( *first );
         }
       }
 
       return StatusCode::SUCCESS;
+    }
+
+    template <
+        typename DataIterator, template <typename, typename...> class Container = std::initializer_list,
+        typename NamedFunction = std::pair<std::string, std::function<float( detail::const_ref_t<DataIterator> )>>,
+        typename               = std::enable_if_t<!std::is_convertible<Container<NamedFunction>, std::string>::value>>
+    StatusCode farray( const Container<NamedFunction>& funs, DataIterator first, DataIterator last,
+                       const std::string& length, size_t maxv )
+    {
+      return farray_impl( funs.begin(), funs.end(), std::forward<DataIterator>( first ),
+                          std::forward<DataIterator>( last ), length, maxv );
+    }
+
+    template <typename NamedFunctions, typename DataIterator,
+              typename = std::enable_if_t<!std::is_convertible<NamedFunctions, std::string>::value>>
+    StatusCode farray( const NamedFunctions& funs, DataIterator first, DataIterator last, const std::string& length,
+                       size_t maxv )
+    {
+      return farray_impl( funs.begin(), funs.end(), std::forward<DataIterator>( first ),
+                          std::forward<DataIterator>( last ), length, maxv );
     }
     // =======================================================================
     /** Put two functions from one data array  into LoKi-style N-Tuple
