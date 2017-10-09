@@ -501,10 +501,13 @@ namespace concurrency
     /// Constructor
     DataNode( PrecedenceRulesGraph& graph, const DataObjID& path ) : m_graph( &graph ), m_data_object_path( path ) {}
 
+    /// Destructor
+    virtual ~DataNode() = default;
+
     const DataObjID& getPath() { return m_data_object_path; }
 
     /// Entry point for a visitor
-    bool accept( IGraphVisitor& visitor )
+    virtual bool accept( IGraphVisitor& visitor )
     {
       if ( visitor.visitEnter( *this ) ) return visitor.visit( *this );
       return true;
@@ -547,7 +550,7 @@ namespace concurrency
     /// Need to hide the (identical) base method with this one so that
     /// visitEnter(ConditionNode&) and visit(ConditionNode&) are called.
     /// using DataNode::accept; ?
-    bool accept( IGraphVisitor& visitor )
+    bool accept( IGraphVisitor& visitor ) override
     {
       if ( visitor.visitEnter( *this ) ) return visitor.visit( *this );
       return true;
