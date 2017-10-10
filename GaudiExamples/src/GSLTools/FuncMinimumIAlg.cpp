@@ -1,7 +1,6 @@
 // Include files
 // from Gaudi
 #include "GaudiGSL/IFuncMinimum.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiMath/Adapters.h"
 // from CLHEP

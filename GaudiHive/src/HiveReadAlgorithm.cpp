@@ -1,5 +1,4 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataStoreItem.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 

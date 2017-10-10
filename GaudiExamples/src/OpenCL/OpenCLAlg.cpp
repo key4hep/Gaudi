@@ -107,8 +107,6 @@ namespace Gaudi
   }
 }
 
-#include "GaudiKernel/AlgFactory.h"
-
 namespace Gaudi
 {
   namespace Examples
