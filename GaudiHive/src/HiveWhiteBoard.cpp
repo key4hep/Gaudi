@@ -16,6 +16,7 @@
 #include "ThreadLocalStorage.h"
 #include "tbb/mutex.h"
 #include "tbb/recursive_mutex.h"
+#include <utility>
 
 // Interfaces
 #include "GaudiKernel/IAddressCreator.h"
@@ -52,7 +53,7 @@ namespace
     return dataManager.get();
   }
 
-  template <typename T, typename Mutex = tbb::mutex>
+  template <typename T, typename Mutex = tbb::recursive_mutex>
   class Synced
   {
     T m_obj;
@@ -554,19 +555,15 @@ public:
   size_t getNumberOfStores() const override { return m_slots; }
 
   /// Get the list of new DataObjects in the current store.
-  StatusCode getNewDataObjects( DataObjIDColl& products ) override
+  DataObjIDColl getNewDataObjects() override
   {
-    s_current->with_lock( [&]( Partition& p ) {
-      products = p.newDataObjects;
-      p.newDataObjects.clear();
-    } );
-    return StatusCode::SUCCESS;
+    return s_current->with_lock( [&]( Partition& p ) { return std::exchange( p.newDataObjects, {} ); } );
   }
 
-  /// Check if new DataObjects are in the current store.
-  bool newDataObjectsPresent() override
+  /// add to the list of new DataObjects in the current store.
+  void addNewDataObjects( DataObjIDColl& products ) override
   {
-    return s_current->with_lock( []( Partition& p ) { return p.newDataObjects.size() != 0; } );
+    s_current->with_lock( [&]( Partition& p ) { p.newDataObjects.insert( begin( products ), end( products ) ); } );
   }
 
   /// Allocate a store partition for a given event number
