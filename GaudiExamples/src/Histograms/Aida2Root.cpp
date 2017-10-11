@@ -199,12 +199,12 @@ StatusCode Aida2Root::finalize()
       AIDA::IProfile2D* aida = 0;
       StatusCode sc          = histoSvc()->retrieveObject( path, aida );
       if ( sc.isFailure() || 0 == aida ) {
-        Error( "Unable to retrieve 2D-profile '" + ( path ) + "'" );
+        Error( "Unable to retrieve 2D-profile '" + ( path ) + "'" ).ignore();
       }
       /// convert it to ROOT
       TProfile2D* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
       if ( 0 == root ) {
-        Error( "Unable to convert to ROOT the 2D-profile '" + ( path ) + "'" );
+        Error( "Unable to convert to ROOT the 2D-profile '" + ( path ) + "'" ).ignore();
       }
       /// use the native printout from ROOT
       info() << "The native ROOT printout for 2D-profile '" << ( path ) << "':" << endmsg;

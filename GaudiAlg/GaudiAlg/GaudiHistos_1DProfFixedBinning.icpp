@@ -41,7 +41,7 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const HistoID& ID, const st
   //
   // Check ID
   if ( ID.undefined() ) {
-    this->Error( "Undefined Histogram ID : Title='" + title + "'" );
+    this->Error( "Undefined Histogram ID : Title='" + title + "'" ).ignore();
     return nullptr;
   }
 
@@ -64,7 +64,7 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const HistoID& ID, const st
 
   // test ok
   if ( !hist ) {
-    this->Error( "IProfile1D* points to NULL! ID='" + ID.idAsString() + "' title='" + htitle + "'" );
+    this->Error( "IProfile1D* points to NULL! ID='" + ID.idAsString() + "' title='" + htitle + "'" ).ignore();
     return nullptr;
   } // RETURN !!
 
@@ -100,10 +100,12 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::fill( AIDA::IProfile1D* histo, const doubl
     Gaudi::Utils::Histos::fill( histo, valueX, valueY, weight );
   } else if ( std::isnan( valueX ) || std::isnan( valueY ) || std::isnan( weight ) ) {
     this->Warning( "fill():: 'NaN'      value is skipped from the histogram '" +
-                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" );
+                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" )
+        .ignore();
   } else {
     this->Warning( "fill():: 'Infinite' value is skipped from the histogram '" +
-                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" );
+                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" )
+        .ignore();
   }
   // return
   return histo;

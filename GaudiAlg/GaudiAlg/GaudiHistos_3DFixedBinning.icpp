@@ -105,10 +105,12 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::fill( AIDA::IHistogram3D* histo, const d
     Gaudi::Utils::Histos::fill( histo, valueX, valueY, valueZ, weight );
   } else if ( std::isnan( valueX ) || std::isnan( valueY ) || std::isnan( valueZ ) || std::isnan( weight ) ) {
     this->Warning( "fill():: 'NaN'      value is skipped from the histogram '" +
-                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" );
+                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" )
+        .ignore();
   } else {
     this->Warning( "fill():: 'Infinite' value is skipped from the histogram '" +
-                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" );
+                   Gaudi::Utils::Histos::htitle( histo, title ) + "'" )
+        .ignore();
   }
   // return
   return histo;
