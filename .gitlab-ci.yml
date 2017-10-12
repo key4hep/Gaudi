@@ -23,6 +23,7 @@ build:
     - unzip -q artifacts.zip '.ccache/*' || true
     - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -z
     - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
+    - echo 'set(clang_format_cmd "'$(which lcg-clang-format-3.9)'" CACHE FILEPATH "")' >> cache_preload.cmake
     - make BUILDDIR=build
     - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -s
   artifacts:
