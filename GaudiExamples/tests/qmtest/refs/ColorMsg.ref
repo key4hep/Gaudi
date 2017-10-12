@@ -73,7 +73,7 @@ ApplicationMgr    SUCCESS
 Event: Invalid
 Algs: 1
  - Slot 0
-  + ColorMsgAlg  e: 0 f: 1 sc: FAILURE
+  + ColorMsgAlg  e: n
 [m
 [94;101;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
