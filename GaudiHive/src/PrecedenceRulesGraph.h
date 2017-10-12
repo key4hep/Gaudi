@@ -582,6 +582,8 @@ namespace concurrency
         , m_name( name )
         , m_initTime( std::chrono::system_clock::now() )
     {
+      // make sure that CommonMessaging is initialized
+      setUpMessaging();
     }
     /// Destructor
     ~PrecedenceRulesGraph() override

@@ -135,16 +135,31 @@ StatusCode ApplicationMgr::i_startup()
   // declare factories in current module
   m_classManager->loadModule( "" ).ignore();
 
+#pragma message "warning: cannot use CommonMessaging here yet!"
+
   // Create the Message service
   auto msgsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "MessageSvc", m_messageSvcType ) );
   if ( !msgsvc ) {
     fatal() << "Error creating MessageSvc of type " << m_messageSvcType << endmsg;
     return StatusCode::FAILURE;
   }
-  // Create the Job Options service
+  // Get the useful interface from Message services
+  m_messageSvc = m_svcLocator->service( "MessageSvc" );
+  if ( !m_messageSvc ) {
+    fatal() << "Error retrieving MessageSvc." << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   auto jobsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "JobOptionsSvc", m_jobOptionsSvcType ) );
+  // Create the Job Options service
   if ( !jobsvc ) {
     fatal() << "Error creating JobOptionsSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  // Get the useful interface from Message services
+  m_jobOptionsSvc = m_svcLocator->service( "JobOptionsSvc" );
+  if ( !m_jobOptionsSvc ) {
+    fatal() << "Error retrieving JobOptionsSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -213,17 +228,8 @@ StatusCode ApplicationMgr::i_startup()
     return sc;
   }
 
-  // Get the useful interface from Message and JobOptions services
-  m_messageSvc = m_svcLocator->service( "MessageSvc" );
-  if ( !m_messageSvc ) {
-    fatal() << "Error retrieving MessageSvc." << endmsg;
-    return StatusCode::FAILURE;
-  }
-  m_jobOptionsSvc = m_svcLocator->service( "JobOptionsSvc" );
-  if ( !m_jobOptionsSvc ) {
-    fatal() << "Error retrieving JobOptionsSvc." << endmsg;
-    return StatusCode::FAILURE;
-  }
+  // Make sure output level caches are up to date.
+  outputLevelUpdate();
 
   return sc;
 }
@@ -429,9 +435,12 @@ StatusCode ApplicationMgr::configure()
 //============================================================================
 StatusCode ApplicationMgr::initialize()
 {
+  StatusCode sc;
 
   MsgStream log( m_messageSvc, name() );
-  StatusCode sc;
+
+  // Make sure output level caches are up to date.
+  outputLevelUpdate();
 
   // I cannot add these services in configure() because they are coming from GaudiUtils
   // and it messes up genconf when rebuilding it.
@@ -1220,4 +1229,12 @@ void ApplicationMgr::pluginDebugPropertyHandler( Gaudi::Details::PropertyBase& )
 void ApplicationMgr::initLoopCheckHndlr( Gaudi::Details::PropertyBase& )
 {
   svcManager()->setLoopCheckEnabled( m_loopCheck );
+}
+
+void ApplicationMgr::outputLevelUpdate()
+{
+  resetMessaging();
+  for ( auto& mgrItem : m_managers ) {
+    mgrItem.second->outputLevelUpdate();
+  }
 }
