@@ -17,7 +17,7 @@ dst.Output = "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='R
 # - MiniDST
 mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'";
+mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 mini.OutputLevel = VERBOSE
 
 
