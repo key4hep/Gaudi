@@ -53,7 +53,7 @@ StatusCode PrecedenceSvc::initialize()
 
   ON_DEBUG debug() << "Assembling CF precedence realm:" << endmsg;
   // create the root CF node
-  m_PRGraph.addHeadNode( "RootDecisionHub", true, false, true, true );
+  m_PRGraph.addHeadNode( "RootDecisionHub", true, false, true, true, false );
   // assemble the CF rules
   for ( const auto& ialgoPtr : m_algResourcePool->getTopAlgList() ) {
     auto algorithm = dynamic_cast<Algorithm*>( ialgoPtr );
@@ -139,11 +139,13 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
   bool allPass      = false;
   bool isLazy       = false;
   bool isSequential = false;
+  bool isInverted   = false;
 
   if ( isGaudiSequencer ) {
     modeOR                = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
     allPass               = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
     isLazy                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" ) ? true : false;
+    isInverted            = ( algo->getProperty( "Invert" ).toString() == "True" ) ? true : false;
     if ( allPass ) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   } else if ( isAthSequencer ) {
@@ -152,7 +154,7 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
     isLazy       = ( algo->getProperty( "StopOverride" ).toString() == "True" ) ? false : true;
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   }
-  sc = m_PRGraph.addDecisionHubNode( algo, parentName, !isSequential, isLazy, modeOR, allPass );
+  sc = m_PRGraph.addDecisionHubNode( algo, parentName, !isSequential, isLazy, modeOR, allPass, isInverted );
   if ( sc.isFailure() ) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
