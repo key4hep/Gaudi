@@ -142,10 +142,10 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
   bool isInverted   = false;
 
   if ( isGaudiSequencer ) {
-    modeOR                = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
-    allPass               = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
-    isLazy                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" ) ? true : false;
-    isInverted            = ( algo->getProperty( "Invert" ).toString() == "True" ) ? true : false;
+    modeOR                = ( algo->getProperty( "ModeOR" ).toString() == "True" );
+    allPass               = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
+    isLazy                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" );
+    isInverted            = ( algo->getProperty( "Invert" ).toString() == "True" );
     if ( allPass ) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   } else if ( isAthSequencer ) {
