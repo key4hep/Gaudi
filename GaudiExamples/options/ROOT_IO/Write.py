@@ -19,7 +19,7 @@ dst.Output = "DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 # - MiniDST
 mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output = "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'";
+mini.Output = "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 
 # - File Summary Record
 fsr = RecordStream("FileRecords")

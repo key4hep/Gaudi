@@ -401,8 +401,10 @@ if __name__ == '__main__':
 
     testFile, referenceFile = args
 
-    tfs = TFile(testFile, 'REC'); print 'opening Test File : %s' % (testFile)
-    tfp = TFile(referenceFile, 'REC'); print 'opening Reference File : %s' % (referenceFile)
+    tfs = TFile(testFile, 'REC')
+    print 'opening Test File : %s' % (testFile)
+    tfp = TFile(referenceFile, 'REC')
+    print 'opening Reference File : %s' % (referenceFile)
 
     # get structure of TFiles in a list of (path, object) tuples
     lref = rec(tfs)

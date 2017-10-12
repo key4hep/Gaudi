@@ -208,9 +208,11 @@ def ComparisonEngine(pQueue, sQueue):
             print 'Termination Signals received ok'
             break
         elif pitem == None:
-            print 'pitem != sitem : ', pitem, sitem; break
+            print 'pitem != sitem : ', pitem, sitem
+            break
         elif sitem == None:
-            print 'pitem != sitem : ', pitem, sitem; break
+            print 'pitem != sitem : ', pitem, sitem
+            break
         results.append(compareEvents(pitem, sitem))
     print '=' * 80
     print 'Comparison Engine Finished'
