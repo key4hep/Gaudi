@@ -135,49 +135,50 @@ StatusCode ApplicationMgr::i_startup()
   // declare factories in current module
   m_classManager->loadModule( "" ).ignore();
 
-#pragma message "warning: cannot use CommonMessaging here yet!"
+  // Note: we cannot use CommonMessaging methods here because MessageSvc is not there yet
+  MsgStream log( nullptr, name() );
 
   // Create the Message service
   auto msgsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "MessageSvc", m_messageSvcType ) );
   if ( !msgsvc ) {
-    fatal() << "Error creating MessageSvc of type " << m_messageSvcType << endmsg;
+    log << MSG::FATAL << "Error creating MessageSvc of type " << m_messageSvcType << endmsg;
     return StatusCode::FAILURE;
   }
   // Get the useful interface from Message services
   m_messageSvc = m_svcLocator->service( "MessageSvc" );
   if ( !m_messageSvc ) {
-    fatal() << "Error retrieving MessageSvc." << endmsg;
+    log << MSG::FATAL << "Error retrieving MessageSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
   auto jobsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "JobOptionsSvc", m_jobOptionsSvcType ) );
   // Create the Job Options service
   if ( !jobsvc ) {
-    fatal() << "Error creating JobOptionsSvc" << endmsg;
+    log << MSG::FATAL << "Error creating JobOptionsSvc" << endmsg;
     return StatusCode::FAILURE;
   }
   // Get the useful interface from Message services
   m_jobOptionsSvc = m_svcLocator->service( "JobOptionsSvc" );
   if ( !m_jobOptionsSvc ) {
-    fatal() << "Error retrieving JobOptionsSvc." << endmsg;
+    log << MSG::FATAL << "Error retrieving JobOptionsSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
   auto jobOptsIProp = jobsvc.as<IProperty>();
   if ( !jobOptsIProp ) {
-    fatal() << "Error locating JobOptionsSvc" << endmsg;
+    log << MSG::FATAL << "Error locating JobOptionsSvc" << endmsg;
     return StatusCode::FAILURE;
   }
   sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "TYPE", m_jobOptionsType ) );
   if ( !sc.isSuccess() ) {
-    fatal() << "Error setting TYPE option in JobOptionsSvc" << endmsg;
+    log << MSG::FATAL << "Error setting TYPE option in JobOptionsSvc" << endmsg;
     return sc;
   }
 
   if ( !m_jobOptionsPreAction.empty() ) {
     sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PYTHONPARAMS", m_jobOptionsPreAction ) );
     if ( !sc.isSuccess() ) {
-      fatal() << "Error setting JobOptionsPreAction option in JobOptionsSvc" << endmsg;
+      log << MSG::FATAL << "Error setting JobOptionsPreAction option in JobOptionsSvc" << endmsg;
       return sc;
     }
   }
@@ -185,7 +186,7 @@ StatusCode ApplicationMgr::i_startup()
   if ( !m_jobOptionsPostAction.empty() ) {
     sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PYTHONACTION", m_jobOptionsPostAction ) );
     if ( !sc.isSuccess() ) {
-      fatal() << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
+      log << MSG::FATAL << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
       return sc;
     }
   }
@@ -193,19 +194,19 @@ StatusCode ApplicationMgr::i_startup()
   if ( !m_jobOptionsPath.empty() ) { // The command line takes precedence
     sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PATH", m_jobOptionsPath ) );
     if ( !sc.isSuccess() ) {
-      fatal() << "Error setting PATH option in JobOptionsSvc" << endmsg;
+      log << MSG::FATAL << "Error setting PATH option in JobOptionsSvc" << endmsg;
       return sc;
     }
   } else if ( isEnvSet( "JOBOPTPATH" ) ) { // Otherwise the Environment JOBOPTPATH
     sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PATH", getEnv( "JOBOPTPATH" ) ) );
     if ( !sc.isSuccess() ) {
-      fatal() << "Error setting PATH option in JobOptionsSvc from env" << endmsg;
+      log << MSG::FATAL << "Error setting PATH option in JobOptionsSvc from env" << endmsg;
       return sc;
     }
   } else { // Otherwise the default
     sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PATH", "../options/job.opts" ) );
     if ( !sc.isSuccess() ) {
-      fatal() << "Error setting PATH option in JobOptionsSvc to default" << endmsg;
+      log << MSG::FATAL << "Error setting PATH option in JobOptionsSvc to default" << endmsg;
       return sc;
     }
   }
@@ -219,12 +220,12 @@ StatusCode ApplicationMgr::i_startup()
 
   sc = jobsvc->sysInitialize();
   if ( !sc.isSuccess() ) {
-    fatal() << "Error initializing JobOptionsSvc" << endmsg;
+    log << MSG::FATAL << "Error initializing JobOptionsSvc" << endmsg;
     return sc;
   }
   sc = msgsvc->sysInitialize();
   if ( !sc.isSuccess() ) {
-    fatal() << "Error initializing MessageSvc" << endmsg;
+    log << MSG::FATAL << "Error initializing MessageSvc" << endmsg;
     return sc;
   }
 
