@@ -64,6 +64,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <type_traits>
 #include <vector>
 
 #include "DsoUtils.h"
@@ -113,7 +114,7 @@ namespace
     static const std::array<std::string, 11> names = {"Module",    "DefaultName", "Algorithm",      "AlgTool",
                                                       "Auditor",   "Service",     "ApplicationMgr", "IInterface",
                                                       "Converter", "DataObject",  "Unknown"};
-    return names.at( static_cast<int>( type ) );
+    return names.at( static_cast<std::underlying_type_t<component_t>>( type ) );
   }
   std::ostream& operator<<( std::ostream& os, component_t type ) { return os << toString( type ); }
 
@@ -455,7 +456,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
   using Gaudi::PluginService::Details::Registry;
   Registry& registry = Registry::instance();
 
-  auto bkgNames = registry.loadedFactories();
+  auto bkgNames = registry.loadedFactoryNames();
 
   ISvcLocator* svcLoc  = Gaudi::svcLocator();
   IInterface* dummySvc = new Service( "DummySvc", svcLoc );
@@ -483,15 +484,15 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       continue;
     }
 
-    for ( const auto& ident : registry.loadedFactories() ) {
-      if ( bkgNames.find( ident ) != bkgNames.end() ) {
+    for ( const auto& factoryName : registry.loadedFactoryNames() ) {
+      if ( bkgNames.find( factoryName ) != bkgNames.end() ) {
         if ( Gaudi::PluginService::Details::logger().level() <= 1 ) {
-          LOG_INFO << "\t==> skipping [" << ident << "]...";
+          LOG_INFO << "\t==> skipping [" << factoryName << "]...";
         }
         continue;
       }
 
-      const Registry::FactoryInfo info = registry.getInfo( ident );
+      const Registry::FactoryInfo info = registry.getInfo( factoryName );
       const std::string& rtype         = info.rtype;
 
       // do not generate configurables for the Reflex-compatible aliases
@@ -502,13 +503,13 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       // from the same library we are processing (i.e. we found a symbol that
       // is coming from a library loaded by the linker).
       if ( !DsoUtils::inDso( info.ptr, DsoUtils::libNativeName( iLib ) ) ) {
-        LOG_WARNING << "library [" << iLib << "] exposes factory [" << ident << "] which is declared in ["
+        LOG_WARNING << "library [" << iLib << "] exposes factory [" << factoryName << "] which is declared in ["
                     << DsoUtils::dsoName( info.ptr ) << "] !!";
         continue;
       }
 
       component_t type = component_t::Unknown;
-      if ( ident == "ApplicationMgr" )
+      if ( factoryName == "ApplicationMgr" )
         type = component_t::ApplicationMgr;
       else if ( rtype == typeid( IInterface* ).name() )
         type = component_t::IInterface;
@@ -525,7 +526,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       else if ( rtype == typeid( DataObject* ).name() )
         type = component_t::DataObject;
       // handle possible problems with templated components
-      std::string name = boost::trim_copy( ident );
+      std::string name = boost::trim_copy( factoryName );
 
       if ( type == component_t::IInterface ) {
         /// not enough information...
@@ -540,7 +541,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
       if ( type == component_t::Unknown ) {
         LOG_WARNING << "Unknown (return) type [" << System::typeinfoName( rtype.c_str() ) << "] !!"
-                    << " Component [" << ident << "] is skipped !";
+                    << " Component [" << factoryName << "] is skipped !";
         continue;
       }
 
@@ -552,18 +553,18 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       try {
         switch ( type ) {
         case component_t::Algorithm:
-          prop = SmartIF<IAlgorithm>( Algorithm::Factory::create( ident, cname, svcLoc ) );
+          prop = SmartIF<IAlgorithm>( Algorithm::Factory::create( factoryName, cname, svcLoc ) );
           break;
         case component_t::Service:
-          prop = SmartIF<IService>( Service::Factory::create( ident, cname, svcLoc ) );
+          prop = SmartIF<IService>( Service::Factory::create( factoryName, cname, svcLoc ) );
           break;
         case component_t::AlgTool:
-          prop = SmartIF<IAlgTool>( AlgTool::Factory::create( ident, cname, toString( type ), dummySvc ) );
+          prop = SmartIF<IAlgTool>( AlgTool::Factory::create( factoryName, cname, toString( type ), dummySvc ) );
           // FIXME: AlgTool base class increase artificially by 1 the refcount.
           prop->release();
           break;
         case component_t::Auditor:
-          prop = SmartIF<IAuditor>( Auditor::Factory::create( ident, cname, svcLoc ) );
+          prop = SmartIF<IAuditor>( Auditor::Factory::create( factoryName, cname, svcLoc ) );
           break;
         case component_t::ApplicationMgr:
           prop = SmartIF<ISvcLocator>( svcLoc );
