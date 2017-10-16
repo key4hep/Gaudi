@@ -113,7 +113,7 @@ AlgExecStateSvc   VERBOSE dumping state:
 Event: Invalid
 Algs: 1
  - Slot 0
-  + History  e: 0 f: 1 sc: FAILURE
+  + History  e: n
 [m
 AlgExecStateSvc   VERBOSE reset(0)[m
 EventLoopMgr        DEBUG ---> Loop Finished -  WSS 46.0273 | total time (skipping 1st evt) 31410 ns[m

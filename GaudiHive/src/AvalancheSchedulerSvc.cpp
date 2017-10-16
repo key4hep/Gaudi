@@ -851,13 +851,6 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
           }
         }
 
-        if ( !missing.empty() ) {
-          outputMessageStream << ". The following are missing: ";
-          for ( auto d : missing ) {
-            outputMessageStream << d << " ";
-          }
-        }
-
         outputMessageStream << std::endl;
       }
 
