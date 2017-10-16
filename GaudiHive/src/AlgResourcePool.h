@@ -75,8 +75,7 @@ private:
   StatusCode decodeTopAlgs();
 
   /// Recursively flatten an algList
-  StatusCode flattenSequencer( Algorithm* sequencer, ListAlg& alglist, const std::string& parentName,
-                               unsigned int recursionDepth = 0 );
+  StatusCode flattenSequencer( Algorithm* sequencer, ListAlg& alglist, unsigned int recursionDepth = 0 );
 
   Gaudi::Property<bool> m_lazyCreation{this, "CreateLazily", false, ""};
   Gaudi::Property<std::vector<std::string>> m_topAlgNames{
