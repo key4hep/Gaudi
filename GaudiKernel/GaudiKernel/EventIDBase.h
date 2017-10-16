@@ -13,10 +13,10 @@
  *
  */
 
+#include <iomanip>
 #include <iostream>
 #include <stdint.h>
 #include <tuple>
-#include <iomanip>
 
 /**
  * @class EventIDBase
@@ -254,12 +254,11 @@ inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs )
   if ( rhs.m_event_number != EventIDBase::UNDEFEVT ) {
     os << "," << rhs.m_event_number;
   }
- 
+
   if ( rhs.isTimeStamp() ) {
     os << ",t:" << rhs.m_time_stamp;
     if ( rhs.m_time_stamp_ns_offset != 0 ) {
-      os << "." << std::setfill('0') << std::setw(9) 
-         << rhs.m_time_stamp_ns_offset;
+      os << "." << std::setfill( '0' ) << std::setw( 9 ) << rhs.m_time_stamp_ns_offset;
     }
   }
 
