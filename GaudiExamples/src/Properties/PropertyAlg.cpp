@@ -20,6 +20,10 @@
 //------------------------------------------------------------------------------
 void PropertyAlg::readHandler( Gaudi::Details::PropertyBase& p )
 {
+  // do not print messages if we are created in genconf
+  const std::string cmd = System::cmdLineArgs()[0];
+  if ( cmd.find( "genconf" ) != std::string::npos ) return;
+
   info() << "Read handler called for property: " << p << endmsg;
 }
 
@@ -43,6 +47,12 @@ PropertyAlg::PropertyAlg( const std::string& name, ISvcLocator* ploc ) : Algorit
 
   p_double.declareUpdateHandler( &PropertyAlg::updateHandler, this );
   p_double.declareReadHandler( &PropertyAlg::readHandler, this );
+
+  {
+    // do not print messages if we are created in genconf
+    const std::string cmd = System::cmdLineArgs()[0];
+    if ( cmd.find( "genconf" ) != std::string::npos ) return;
+  }
 
   info() << "Before Initialization......" << endmsg;
 

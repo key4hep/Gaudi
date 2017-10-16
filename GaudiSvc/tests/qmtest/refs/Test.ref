@@ -21,11 +21,12 @@ JobOptionsSvc        INFO # (7,1): Switcher.Partition = "Buffer2"
 JobOptionsSvc        INFO # (8,1): Switcher.Tool = "PartitionSwitchTool"
 JobOptionsSvc        INFO # (9,1): Switcher.PartitionSwitchTool.Actor = "EventDataSvc"
 JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/leggett/Gaudi/GaudiSvc/options/Test.opts
+MessageSvc          DEBUG Service base class initialized successfully
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
-                                          running on p05614910w96644.cern.ch on Fri Jan 27 19:37:52 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
+                                          running on pcphlbc16 on Sat Oct  7 10:20:20 2017
 ====================================================================================================================================
 ApplicationMgr       INFO Successfully loaded modules : GaudiSvcTest
 ApplicationMgr       INFO Application Manager Configured successfully
@@ -76,7 +77,6 @@ Switcher          VERBOSE ServiceLocatorHelper::service: found service TimelineS
 ToolSvc             DEBUG Service base class initialized successfully
 Switcher          VERBOSE ServiceLocatorHelper::service: found service ToolSvc
 ToolSvc           VERBOSE Created tool PartitionSwitchTool/Switcher.PartitionSwitchTool
-Switcher.Partit...  DEBUG Property update for OutputLevel : new value = 1
 Switcher.Partit...VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 Switcher          VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 Switcher            DEBUG input handles: 0
@@ -93,7 +93,6 @@ EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
 HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...WARNING Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
@@ -567,7 +566,7 @@ IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] T
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 18)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 22)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)

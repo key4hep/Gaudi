@@ -873,6 +873,8 @@ lineSkipper = LineSkipper(["//GP:",
                            "DEBUG Incident  timing:",  # introduced with patch #3487
                            # changed the level of the message from INFO to DEBUG
                            "INFO  'CnvServices':[",
+                           # message removed because could be printed in constructor
+                           "DEBUG  'CnvServices':[",
                            # The signal handler complains about SIGXCPU not defined on some platforms
                            'SIGXCPU',
                            ], regexps=[

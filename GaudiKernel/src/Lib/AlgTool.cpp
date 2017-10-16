@@ -131,7 +131,6 @@ StatusCode AlgTool::setProperties()
       return StatusCode::FAILURE;
     }
   }
-  updateMsgStreamOutputLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
 
@@ -145,16 +144,6 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
   addRef(); // Initial count set to 1
 
   IInterface* _p = const_cast<IInterface*>( parent );
-
-  // inherit output level from parent
-  { // get the "OutputLevel" property from parent
-    SmartIF<IProperty> pprop( _p );
-    if ( pprop && pprop->hasProperty( "OutputLevel" ) ) {
-      m_outputLevel.assign( pprop->getProperty( "OutputLevel" ) );
-    }
-  }
-  m_outputLevel.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
 
   if ( Algorithm* _alg = dynamic_cast<Algorithm*>( _p ) ) {
     m_svcLocator = _alg->serviceLocator();
@@ -172,6 +161,19 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
     throw GaudiException( "Failure to create tool '" + type + "/" + name + "': illegal parent type '" +
                               System::typeinfoName( typeid( *_p ) ) + "'",
                           "AlgTool", 0 );
+  }
+
+  // initialize output level from MessageSvc and initialize messaging (before enabling update handler)
+  m_outputLevel.value() = setUpMessaging();
+  m_outputLevel.declareUpdateHandler(
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
+
+  // inherit output level from parent
+  { // get the "OutputLevel" property from parent
+    SmartIF<IProperty> pprop( _p );
+    if ( pprop && pprop->hasProperty( "OutputLevel" ) ) {
+      m_outputLevel.assign( pprop->getProperty( "OutputLevel" ) );
+    }
   }
 
   {
