@@ -352,8 +352,8 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-                                                       bool modeConcurrent, bool modePromptDecision, bool modeOR,
-                                                       bool allPass, bool isInverted )
+                                                       Concurrent modeConcurrent, PromptDecision modePromptDecision, ModeOr modeOR,
+                                                       AllPass allPass, Inverted isInverted )
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -397,8 +397,9 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision,
-                                          bool modeOR, bool allPass, bool isInverted )
+  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, concurrency::Concurrent modeConcurrent,
+                                          concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOr,
+                                          concurrency::AllPass allPass, concurrency::Inverted isInverted )
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
@@ -406,13 +407,13 @@ namespace concurrency
       m_headNode = itH->second;
     } else {
       m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modePromptDecision,
-                                                  modeOR, allPass, isInverted );
+                                                  modeOr, allPass, isInverted );
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
 
       ON_DEBUG
       { // Mirror the action above in the BGL-based graph
         boost::add_vertex(
-            DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR, allPass, isInverted ),
+            DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOr, allPass, isInverted ),
             m_PRGraph );
       }
 
