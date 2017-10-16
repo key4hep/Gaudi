@@ -20,9 +20,7 @@
 #include <typeinfo>
 #include <utility>
 
-#if defined( __GXX_EXPERIMENTAL_CXX0X__ ) || __cplusplus >= 201103L
 #include <mutex>
-#endif
 
 #if __GNUC__ >= 4
 #define GAUDIPS_HASCLASSVISIBILITY
@@ -118,7 +116,7 @@ namespace Gaudi
         typedef std::map<KeyType, std::string> Properties;
 
         struct FactoryInfo {
-          FactoryInfo( std::string lib, void* p = 0, std::string t = "", std::string rt = "", std::string cn = "",
+          FactoryInfo( std::string lib, void* p = nullptr, std::string t = "", std::string rt = "", std::string cn = "",
                        Properties props = Properties() )
               : library( std::move( lib ) )
               , ptr( p )
@@ -174,7 +172,7 @@ namespace Gaudi
         Registry& addProperty( const std::string& id, const std::string& k, const std::string& v );
 
         /// Return a list of all the known and loaded factories
-        std::set<KeyType> loadedFactories() const;
+        std::set<KeyType> loadedFactoryNames() const;
 
         /// Return the known factories (loading the list if not yet done).
         inline const FactoryMap& factories() const
@@ -214,10 +212,8 @@ namespace Gaudi
         /// Internal storage for factories.
         FactoryMap m_factories;
 
-#if defined( __GXX_EXPERIMENTAL_CXX0X__ ) || __cplusplus >= 201103L
         /// Mutex used to control concurrent access to the internal data.
         mutable std::recursive_mutex m_mutex;
-#endif
       };
 
       /// Simple logging class, just to provide a default implementation.
