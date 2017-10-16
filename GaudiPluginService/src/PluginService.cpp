@@ -25,7 +25,6 @@
 #include <cxxabi.h>
 #include <sys/stat.h>
 
-#if defined( __GXX_EXPERIMENTAL_CXX0X__ ) || __cplusplus >= 201103L
 #define REG_SCOPE_LOCK std::lock_guard<std::recursive_mutex> _guard( m_mutex );
 
 namespace
@@ -33,10 +32,6 @@ namespace
   std::mutex registrySingletonMutex;
 }
 #define SINGLETON_LOCK std::lock_guard<std::mutex> _guard(::registrySingletonMutex );
-#else
-#define REG_SCOPE_LOCK
-#define SINGLETON_LOCK
-#endif
 
 #include <algorithm>
 
@@ -322,12 +317,11 @@ namespace Gaudi
         return *this;
       }
 
-      std::set<Registry::KeyType> Registry::loadedFactories() const
+      std::set<Registry::KeyType> Registry::loadedFactoryNames() const
       {
         REG_SCOPE_LOCK
-        const FactoryMap& facts = factories();
         std::set<KeyType> l;
-        for ( const auto& f : facts ) {
+        for ( const auto& f : factories() ) {
           if ( f.second.ptr ) l.insert( f.first );
         }
         return l;

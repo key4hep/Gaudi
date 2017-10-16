@@ -52,7 +52,7 @@ int main( int argc, char* argv[] )
   // cache to keep track of the loaded factories
   std::map<key_type, std::string> loaded;
   // initialize the local cache
-  for ( const auto& elem : reg.loadedFactories() ) loaded.emplace( elem, "<preloaded>" );
+  for ( const auto& name : reg.loadedFactoryNames() ) loaded.emplace( name, "<preloaded>" );
 
   // Parse command line
   std::list<char*> libs;
@@ -99,13 +99,13 @@ int main( int argc, char* argv[] )
   // loop over the list of libraries passed on the command line
   for ( char* lib : libs ) {
     if ( dlopen( lib, RTLD_LAZY | RTLD_LOCAL ) ) {
-      for ( const auto& factory : reg.loadedFactories() ) {
-        auto f = loaded.find( factory );
+      for ( const auto& factoryName : reg.loadedFactoryNames() ) {
+        auto f = loaded.find( factoryName );
         if ( f == loaded.end() ) {
-          output << lib << ":" << factory << std::endl;
-          loaded.emplace( factory, lib );
+          output << lib << ":" << factoryName << std::endl;
+          loaded.emplace( factoryName, lib );
         } else
-          std::cerr << "WARNING: factory '" << factory << "' already found in " << f->second << std::endl;
+          std::cerr << "WARNING: factory '" << factoryName << "' already found in " << f->second << std::endl;
       }
     } else {
       std::cerr << "ERROR: failed to load " << lib << ": " << dlerror() << std::endl;
