@@ -186,7 +186,8 @@ StatusCode AlgResourcePool::releaseResource( const std::string& name )
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::flattenSequencer( Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth )
+StatusCode AlgResourcePool::flattenSequencer( Algorithm* algo, ListAlg& alglist, const std::string& parentName,
+                                              unsigned int recursionDepth )
 {
 
   StatusCode sc = StatusCode::SUCCESS;
@@ -251,7 +252,7 @@ StatusCode AlgResourcePool::flattenSequencer( Algorithm* algo, ListAlg& alglist,
   }
 
   for ( Algorithm* subalgo : *subAlgorithms ) {
-    sc = flattenSequencer( subalgo, alglist, recursionDepth );
+    sc = flattenSequencer( subalgo, alglist, algo->name(), recursionDepth );
     if ( sc.isFailure() ) {
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
       return sc;
@@ -311,7 +312,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()
   for ( auto& algoSmartIF : m_topAlgList ) {
     Algorithm* algorithm = dynamic_cast<Algorithm*>( algoSmartIF.get() );
     if ( !algorithm ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    sc = flattenSequencer( algorithm, m_flatUniqueAlgList );
+    sc = flattenSequencer( algorithm, m_flatUniqueAlgList, "RootDecisionHub" );
   }
   // stupid O(N^2) unique-ification..
   for ( auto i = begin( m_flatUniqueAlgList ); i != end( m_flatUniqueAlgList ); ++i ) {
