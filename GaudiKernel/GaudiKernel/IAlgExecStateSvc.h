@@ -52,9 +52,9 @@ private:
 inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s )
 {
   ost << "e: ";
-  if (s.state() == AlgExecState::State::None) {
+  if ( s.state() == AlgExecState::State::None ) {
     ost << "n";
-  } else if (s.state() == AlgExecState::State::Executing) {
+  } else if ( s.state() == AlgExecState::State::Executing ) {
     ost << "e";
   } else {
     ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
