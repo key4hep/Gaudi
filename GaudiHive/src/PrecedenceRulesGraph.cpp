@@ -352,8 +352,8 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-                                                       Concurrent modeConcurrent, PromptDecision modePromptDecision, ModeOr modeOR,
-                                                       AllPass allPass, Inverted isInverted )
+                                                       Concurrent modeConcurrent, PromptDecision modePromptDecision,
+                                                       ModeOr modeOR, AllPass allPass, Inverted isInverted )
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -375,9 +375,9 @@ namespace concurrency
 
         ON_DEBUG
         { // Mirror the action above in the BGL-based graph
-          auto source = boost::add_vertex(
-              DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR, allPass, isInverted ),
-              m_PRGraph );
+          auto source = boost::add_vertex( DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent,
+                                                             modePromptDecision, modeOR, allPass, isInverted ),
+                                           m_PRGraph );
           boost::add_edge( source, node( parentName ), m_PRGraph );
         }
 
@@ -412,9 +412,9 @@ namespace concurrency
 
       ON_DEBUG
       { // Mirror the action above in the BGL-based graph
-        boost::add_vertex(
-            DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOr, allPass, isInverted ),
-            m_PRGraph );
+        boost::add_vertex( DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOr,
+                                             allPass, isInverted ),
+                           m_PRGraph );
       }
 
       ++m_nodeCounter;

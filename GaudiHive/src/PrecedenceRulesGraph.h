@@ -85,7 +85,7 @@ namespace precedence
   struct DecisionHubProps {
     DecisionHubProps( const std::string& name, uint nodeIndex, concurrency::Concurrent modeConcurrent,
                       concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOR,
-                      concurrency::AllPass allPass, concurrency::Inverted isInverted)
+                      concurrency::AllPass allPass, concurrency::Inverted isInverted )
         : m_name( name )
         , m_nodeIndex( nodeIndex )
         , m_modeConcurrent( modeConcurrent )
@@ -379,14 +379,15 @@ namespace concurrency
   {
   public:
     /// Constructor
-    DecisionNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name, Concurrent modeConcurrent,
-                  PromptDecision modePromptDecision, ModeOr modeOR, AllPass allPass, Inverted isInverted )
+    DecisionNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name,
+                  Concurrent modeConcurrent, PromptDecision modePromptDecision, ModeOr modeOR, AllPass allPass,
+                  Inverted isInverted )
         : ControlFlowNode( graph, nodeIndex, name )
         , m_modeConcurrent( modeConcurrent )
         , m_modePromptDecision( modePromptDecision )
         , m_modeOR( modeOR )
         , m_allPass( allPass )
-        , m_inverted( isInverted)
+        , m_inverted( isInverted )
         , m_children()
     {
     }
@@ -627,8 +628,8 @@ namespace concurrency
     StatusCode buildDataDependenciesRealm();
 
     /// Add a node, which has no parents
-    void addHeadNode( const std::string& headName, concurrency::Concurrent, concurrency::PromptDecision, concurrency::ModeOr,
-                      concurrency::AllPass, concurrency::Inverted );
+    void addHeadNode( const std::string& headName, concurrency::Concurrent, concurrency::PromptDecision,
+                      concurrency::ModeOr, concurrency::AllPass, concurrency::Inverted );
     /// Get head node
     DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
@@ -637,7 +638,8 @@ namespace concurrency
     AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
     StatusCode addDecisionHubNode( Algorithm* daughterAlgo, const std::string& parentName, concurrency::Concurrent,
-                                   concurrency::PromptDecision, concurrency::ModeOr, concurrency::AllPass, concurrency::Inverted );
+                                   concurrency::PromptDecision, concurrency::ModeOr, concurrency::AllPass,
+                                   concurrency::Inverted );
     /// Get total number of control flow graph nodes
     unsigned int getControlFlowNodeCounter() const { return m_nodeCounter; }
 

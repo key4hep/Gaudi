@@ -54,7 +54,8 @@ StatusCode PrecedenceSvc::initialize()
 
   ON_DEBUG debug() << "Assembling CF precedence realm:" << endmsg;
   // create the root CF node
-  m_PRGraph.addHeadNode( "RootDecisionHub", Concurrent{true}, PromptDecision{false}, ModeOr{true}, AllPass{true}, Inverted{false} );
+  m_PRGraph.addHeadNode( "RootDecisionHub", Concurrent{true}, PromptDecision{false}, ModeOr{true}, AllPass{true},
+                         Inverted{false} );
   // assemble the CF rules
   for ( const auto& ialgoPtr : m_algResourcePool->getTopAlgList() ) {
     auto algorithm = dynamic_cast<Algorithm*>( ialgoPtr );
@@ -145,19 +146,20 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
   bool isInverted     = false;
 
   if ( isGaudiSequencer ) {
-    modeOr                = ( algo->getProperty( "ModeOR" ).toString() == "True" );
-    allPass               = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
-    promptDecision        = ( algo->getProperty( "ShortCircuit" ).toString() == "True" );
-    isInverted            = ( algo->getProperty( "Invert" ).toString() == "True" );
+    modeOr                        = ( algo->getProperty( "ModeOR" ).toString() == "True" );
+    allPass                       = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
+    promptDecision                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" );
+    isInverted                    = ( algo->getProperty( "Invert" ).toString() == "True" );
     if ( allPass ) promptDecision = false; // standard GaudiSequencer behavior on all pass is to execute everything
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   } else if ( isAthSequencer ) {
     modeOr         = ( algo->getProperty( "ModeOR" ).toString() == "True" );
     allPass        = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
     promptDecision = ( algo->getProperty( "StopOverride" ).toString() == "True" ) ? false : true;
-    isSequential   = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
+    isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   }
-  sc = m_PRGraph.addDecisionHubNode( algo, parentName, Concurrent{!isSequential}, PromptDecision{promptDecision}, ModeOr{modeOr}, AllPass{allPass}, Inverted{isInverted} );
+  sc = m_PRGraph.addDecisionHubNode( algo, parentName, Concurrent{!isSequential}, PromptDecision{promptDecision},
+                                     ModeOr{modeOr}, AllPass{allPass}, Inverted{isInverted} );
   if ( sc.isFailure() ) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;

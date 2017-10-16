@@ -182,9 +182,9 @@ namespace concurrency
       }
     }
 
-    if (node.m_inverted && decision == 1)
+    if ( node.m_inverted && decision == 1 )
       decision = 0;
-    else if (node.m_inverted && decision == 0)
+    else if ( node.m_inverted && decision == 0 )
       decision = 1;
 
     if ( node.m_allPass && !foundNonResolvedChild ) decision = 1;
