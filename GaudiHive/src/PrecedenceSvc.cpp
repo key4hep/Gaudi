@@ -155,7 +155,7 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
   } else if ( isAthSequencer ) {
     modeOr         = ( algo->getProperty( "ModeOR" ).toString() == "True" );
     allPass        = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
-    promptDecision = ( algo->getProperty( "StopOverride" ).toString() == "True" ) ? false : true;
+    promptDecision = ( algo->getProperty( "StopOverride" ).toString() == "False" );
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   }
   sc = m_PRGraph.addDecisionHubNode( algo, parentName, Concurrent{!isSequential}, PromptDecision{promptDecision},
