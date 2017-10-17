@@ -192,11 +192,6 @@ namespace Gaudi
       typedef typename tuple_get_first_type<TupleT>::type HeadT;
       //---------------------------------------------------------------------------
       struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
-                  typename D = boost::fusion::unused_type>
-        struct result {
-          typedef void type;
-        };
         //----------------------------------------------------------------------
 
         void operator()( ResultT& res, HeadT& head, TailT& tail ) const
@@ -225,11 +220,6 @@ namespace Gaudi
       // typedef typename ResultT::value_type Tuple1T;
       //---------------------------------------------------------------------------
       struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
-                  typename D = boost::fusion::unused_type>
-        struct result {
-          typedef void type;
-        };
         //---------------------------------------------------------------------
         void operator()( ResultT& res, const typename std::tuple_element<0, ResultT>::type& val ) const
         {
@@ -373,11 +363,6 @@ namespace Gaudi
       struct tag_mapped {
       };
       struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
-                  typename D = boost::fusion::unused_type>
-        struct result {
-          typedef void type;
-        };
         //----------------------------------------------------------------------
         void operator()( ResultT& res, const VectorPairT& vec ) const
         {
@@ -429,11 +414,6 @@ namespace Gaudi
       typedef typename PointT::Scalar Scalar;
       // ----------------------------------------------------------------------------
       struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
-                  typename D = boost::fusion::unused_type>
-        struct result {
-          typedef void type;
-        };
         void operator()( ResultT& res, const Scalar& scalar, const char xyz ) const
         {
           switch ( xyz ) {
@@ -487,11 +467,6 @@ namespace Gaudi
       typedef typename PointT::Scalar ScalarT;
       //-----------------------------------------------------------------------------
       struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
-                  typename D = boost::fusion::unused_type>
-        struct result {
-          typedef void type;
-        };
 
         void operator()( ResultT& res, const ScalarT& scalar, const char xyz ) const
         {
@@ -553,11 +528,6 @@ namespace Gaudi
       typedef Gaudi::Histo1DDef ResultT;
       // ----------------------------------------------------------------------------
       struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
-                  typename D = boost::fusion::unused_type>
-        struct result {
-          typedef void type;
-        };
         void operator()( ResultT& res, const std::string& title ) const { res.setTitle( title ); }
         void operator()( ResultT& res, const double& val, const char lh ) const
         {
