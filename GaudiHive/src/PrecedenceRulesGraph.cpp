@@ -352,8 +352,8 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-                                                       bool modeConcurrent, bool modePromptDecision, bool modeOR,
-                                                       bool allPass )
+                                                       Concurrent modeConcurrent, PromptDecision modePromptDecision,
+                                                       ModeOr modeOR, AllPass allPass, Inverted isInverted )
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -370,14 +370,14 @@ namespace concurrency
         decisionHubNode = itA->second;
       } else {
         decisionHubNode = new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent,
-                                                         modePromptDecision, modeOR, allPass );
+                                                         modePromptDecision, modeOR, allPass, isInverted );
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
 
         ON_DEBUG
         { // Mirror the action above in the BGL-based graph
-          auto source = boost::add_vertex(
-              DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR, allPass ),
-              m_PRGraph );
+          auto source = boost::add_vertex( DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent,
+                                                             modePromptDecision, modeOR, allPass, isInverted ),
+                                           m_PRGraph );
           boost::add_edge( source, node( parentName ), m_PRGraph );
         }
 
@@ -397,8 +397,9 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision,
-                                          bool modeOR, bool allPass )
+  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, concurrency::Concurrent modeConcurrent,
+                                          concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOr,
+                                          concurrency::AllPass allPass, concurrency::Inverted isInverted )
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
@@ -406,14 +407,14 @@ namespace concurrency
       m_headNode = itH->second;
     } else {
       m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modePromptDecision,
-                                                  modeOR, allPass );
+                                                  modeOr, allPass, isInverted );
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
 
       ON_DEBUG
       { // Mirror the action above in the BGL-based graph
-        boost::add_vertex(
-            DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR, allPass ),
-            m_PRGraph );
+        boost::add_vertex( DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOr,
+                                             allPass, isInverted ),
+                           m_PRGraph );
       }
 
       ++m_nodeCounter;

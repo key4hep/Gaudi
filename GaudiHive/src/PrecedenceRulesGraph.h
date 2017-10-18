@@ -20,7 +20,17 @@
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/ICondSvc.h"
 #include "GaudiKernel/ITimelineSvc.h"
+#include "GaudiKernel/TaggedBool.h"
 #include "IGraphVisitor.h"
+
+namespace concurrency
+{
+  using Concurrent     = Gaudi::tagged_bool<class Concurrent_tag>;
+  using PromptDecision = Gaudi::tagged_bool<class PromptDecision_tag>;
+  using ModeOr         = Gaudi::tagged_bool<class ModeOr_tag>;
+  using AllPass        = Gaudi::tagged_bool<class AllPass_tag>;
+  using Inverted       = Gaudi::tagged_bool<class Inverted_tag>;
+}
 
 namespace precedence
 {
@@ -73,12 +83,14 @@ namespace precedence
   };
 
   struct DecisionHubProps {
-    DecisionHubProps( const std::string& name, uint nodeIndex, bool modeConcurrent, bool modePromptDecision,
-                      bool modeOR, bool allPass )
+    DecisionHubProps( const std::string& name, uint nodeIndex, concurrency::Concurrent modeConcurrent,
+                      concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOR,
+                      concurrency::AllPass allPass, concurrency::Inverted isInverted )
         : m_name( name )
         , m_nodeIndex( nodeIndex )
         , m_modeConcurrent( modeConcurrent )
         , m_modePromptDecision( modePromptDecision )
+        , m_inverted( isInverted )
         , m_modeOR( modeOR )
         , m_allPass( allPass )
     {
@@ -92,6 +104,8 @@ namespace precedence
     /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
     /// Applicable to both concurrent and sequential cases.
     bool m_modePromptDecision;
+    /// Whether the selection result is negated or not
+    bool m_inverted{false};
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
@@ -365,13 +379,15 @@ namespace concurrency
   {
   public:
     /// Constructor
-    DecisionNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeConcurrent,
-                  bool modePromptDecision, bool modeOR, bool allPass )
+    DecisionNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name,
+                  Concurrent modeConcurrent, PromptDecision modePromptDecision, ModeOr modeOR, AllPass allPass,
+                  Inverted isInverted )
         : ControlFlowNode( graph, nodeIndex, name )
         , m_modeConcurrent( modeConcurrent )
         , m_modePromptDecision( modePromptDecision )
         , m_modeOR( modeOR )
         , m_allPass( allPass )
+        , m_inverted( isInverted )
         , m_children()
     {
     }
@@ -401,6 +417,8 @@ namespace concurrency
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
     bool m_allPass;
+    /// Whether the selection result is negated or not
+    bool m_inverted{false};
     /// All direct daughter nodes in the tree
     std::vector<ControlFlowNode*> m_children;
     /// Direct parent nodes
@@ -610,8 +628,8 @@ namespace concurrency
     StatusCode buildDataDependenciesRealm();
 
     /// Add a node, which has no parents
-    void addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR,
-                      bool allPass );
+    void addHeadNode( const std::string& headName, concurrency::Concurrent, concurrency::PromptDecision,
+                      concurrency::ModeOr, concurrency::AllPass, concurrency::Inverted );
     /// Get head node
     DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
@@ -619,8 +637,9 @@ namespace concurrency
     /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
-    StatusCode addDecisionHubNode( Algorithm* daughterAlgo, const std::string& parentName, bool modeConcurrent,
-                                   bool modePromptDecision, bool modeOR, bool allPass );
+    StatusCode addDecisionHubNode( Algorithm* daughterAlgo, const std::string& parentName, concurrency::Concurrent,
+                                   concurrency::PromptDecision, concurrency::ModeOr, concurrency::AllPass,
+                                   concurrency::Inverted );
     /// Get total number of control flow graph nodes
     unsigned int getControlFlowNodeCounter() const { return m_nodeCounter; }
 
