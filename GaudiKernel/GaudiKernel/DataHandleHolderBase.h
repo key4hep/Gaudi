@@ -94,11 +94,13 @@ namespace Gaudi
   namespace experimental
   {
     /// Implementation of new-style data handle holders (Tools, Algorithms...)
-    template<typename Base,
-             std::enable_if_t<std::is_base_of<IDataHandleHolderReqs,
-                                              Base>::value>* = nullptr>
-    class GAUDI_API DataHandleHolder : public extends<Base, IDataHandleHolder> {
-        using Super = extends<Base, IDataHandleHolder>;
+    template<typename BASE>
+    class GAUDI_API DataHandleHolder : public extends<BASE, IDataHandleHolder>
+    {
+      static_assert(std::is_base_of<IDataHandleHolderReqs, BASE>::value,
+                    "Base class must implement IDataHandleHolderReqs");
+      using Super = extends<BASE, IDataHandleHolder>;
+
       public:
         // NOTE: Cannot use "using extends<Base, IDataHandleHolder>::extends;"
         //       due to a GCC 6 bug
@@ -111,15 +113,17 @@ namespace Gaudi
 
         /// Defer handle initialization until the base class is ready
         ///
-        /// FIXME: This is a hack. It will break as soon as a child Algorithm
-        ///        or AlgTool will implement its own version of initialize() and
-        ///        forget to call us back. The only long-term fix is to
-        ///        integrate handle initialization into the sysInitialize
-        ///        methods of Algorithm and AlgTool, a fairly invasive change
-        ///        which I would like to postpone at this point in time.
+        /// FIXME: This ugly hack prevents daughter classes from using the
+        ///        initialize() hook, which prevents making DataHandleHolder a
+        ///        true part of the Algorithm or AlgTool implementation.
         ///
-        StatusCode initialize() override {
-          auto sc = Base::initialize();
+        ///        The proper long-term fix is to somehow integrate this handle
+        ///        initialization into the sysInitialize() method of Algorithms
+        ///        and AlgTools, which is a more intrusive change than I'm
+        ///        willing to perform at this stage of development.
+        ///
+        StatusCode initialize() final override {
+          auto sc = BASE::initialize();
           if(sc.isFailure()) return sc;
           initializeHandles(m_eventInputHandles);
           initializeHandles(m_eventOutputHandles);

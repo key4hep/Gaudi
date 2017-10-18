@@ -53,20 +53,42 @@ namespace Gaudi
     class DataHandle;
 
     /// The DataHandleHolder implementation will expect the following interface
-    /// from the underlying class (Algorithm, AlgTool...).
+    /// from the underlying base class (an Algorithm, AlgTool...).
     ///
-    /// One additional contract which cannot be checked cleanly by the compiler
-    /// in today's C++ is that the class should inherit from PropertyHolder.
+    /// One additional interface contract that sadly cannot be fully expressed
+    /// in code is that the base class should inherit from the PropertyHolder
+    /// class template, so that we can declare DataHandles as properties of the
+    /// host Algorithm or Tool using the declareProperty mechanism.
+    ///
+    /// As the ability of current C++ to express interface requirements on
+    /// templated classes and methods is very limited, we cannot elegantly check
+    /// that the base class has a declareProperty<>() member function template,
+    /// nor that it is is an instance of the PropertyHolder template. All we can
+    /// check for is the IProperty interface, of which PropertyHolder is only
+    /// one possible implementation...
     ///
     struct GAUDI_API IDataHandleHolderReqs
-      : public extend_interfaces<IProperty, IStateful>
+      : virtual public extend_interfaces<IProperty, IStateful>
     {
+      DeclareInterfaceID( IDataHandleHolderReqs, 1, 0 );
+
       /// Provide access to the whiteboard after initialization
       virtual SmartIF<IDataProviderSvc>& eventSvc() const = 0;
     };
 
+
     /// The DataHandleHolder implementation will provide the following interface
-    struct IDataHandleHolder : public virtual IDataHandleHolderReqs {
+    ///
+    /// This interface, which only has a single implementation, solely exists
+    /// in order to work around various C++ limitations pertaining to templates,
+    /// forward declarations, and circular dependencies between classes. If you
+    /// can call the relevant DataHandleHolder methods directly, go for it.
+    ///
+    struct GAUDI_API IDataHandleHolder
+      : virtual public extend_interfaces<IDataHandleHolderReqs>
+    {
+      DeclareInterfaceID( IDataHandleHolder, 1, 0 );
+
       /// Register a data handle as an event data input of the algorithm
       virtual void registerEventInput(DataHandle& handle) = 0;
 

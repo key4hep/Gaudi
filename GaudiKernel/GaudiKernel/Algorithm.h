@@ -79,11 +79,11 @@ class GAUDI_API Algorithm
     : public DataHandleHolderBase<
              PropertyHolder<
              CommonMessaging<
-             implements<IAlgorithm,
+             implements<Gaudi::experimental::IDataHandleHolderReqs,
+                        IAlgorithm,
                         IDataHandleHolder,
                         IProperty,
-                        IStateful,
-                        Gaudi::experimental::IDataHandleHolderReqs>>>>
+                        IStateful>>>>
 {
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgorithm*( const std::string&, ISvcLocator* )>;
