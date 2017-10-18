@@ -14,8 +14,13 @@
 class AlgoExecutionTask : public tbb::task
 {
 public:
-  AlgoExecutionTask( IAlgorithm* algorithm, EventContext* ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem )
-      : m_algorithm( algorithm ), m_evtCtx( ctx ), m_aess( aem ), m_serviceLocator( svcLocator ){};
+  AlgoExecutionTask( IAlgorithm* algorithm, EventContext* ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem,
+                     std::function<StatusCode()> promote2ExecutedClosure )
+      : m_algorithm( algorithm )
+      , m_evtCtx( ctx )
+      , m_aess( aem )
+      , m_serviceLocator( svcLocator )
+      , m_promote2ExecutedClosure( std::move( promote2ExecutedClosure ) ){};
   tbb::task* execute() override;
 
 private:
@@ -23,6 +28,7 @@ private:
   EventContext* m_evtCtx;
   IAlgExecStateSvc* m_aess;
   SmartIF<ISvcLocator> m_serviceLocator;
+  std::function<StatusCode()> m_promote2ExecutedClosure;
 };
 
 #endif

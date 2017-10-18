@@ -71,6 +71,9 @@ tbb::task* AlgoExecutionTask::execute()
   // TODO reproduce the commented out functionality in a different service
   // m_schedSvc->delAlg(this_algo);
 
+  // update scheduler state
+  m_promote2ExecutedClosure();
+
   Gaudi::Hive::setCurrentContextEvt( -1 );
 
   return nullptr;
