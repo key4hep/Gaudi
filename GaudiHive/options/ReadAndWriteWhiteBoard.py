@@ -50,7 +50,9 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
-                                  OutputLevel=WARNING)
+                                  OutputLevel=WARNING,
+                                  CheckDependencies=True,
+                                  DataLoaderAlg=loader.name())
 
 ApplicationMgr(TopAlg=[loader, reader, dst],
                EvtMax=44,

@@ -8,7 +8,7 @@ from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSli
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
-IncidentSvc(OutputLevel=DEBUG)
+IncidentSvc(OutputLevel=INFO)
 RootCnvSvc(OutputLevel=INFO)
 SequencerTimerTool(OutputLevel=WARNING)
 
@@ -44,7 +44,9 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
-                                  OutputLevel=WARNING)
+                                  OutputLevel=WARNING,
+                                  DataLoaderAlg=loader.name(),
+                                  CheckDependencies=True)
 
 
 # Application setup
