@@ -227,8 +227,8 @@ private:
   unsigned int m_IOBoundAlgosInFlight = 0;
 
   /// Loop on algorithm in the slots and promote them to successive states
-  /// (-1 means all slots, while empty string means skipping an update of the Control Flow state)
-  StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
+  /// (-1 for algo_index means skipping an update of the Control Flow state)
+  StatusCode updateStates( int si = -1, int algo_index = -1 );
 
   /// Algorithm promotion
   StatusCode promoteToScheduled( unsigned int iAlgo, int si );
