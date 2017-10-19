@@ -17,12 +17,7 @@
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/repository/include/qi_confix.hpp>
-
-#if BOOST_VERSION <= 104400
-#include "iter_pos.hpp"
-#else
 #include <boost/spirit/repository/include/qi_iter_pos.hpp>
-#endif
 
 // ============================================================================
 //  Project:

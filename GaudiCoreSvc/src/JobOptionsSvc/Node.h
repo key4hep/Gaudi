@@ -24,9 +24,7 @@ namespace Gaudi
   namespace Parsers
   {
     // ============================================================================
-    class Node final
-    {
-    public:
+    struct Node final {
       enum NodeType {
         kRoot,
         kInclude,
@@ -70,15 +68,8 @@ namespace Gaudi
       std::string ToString( int indent = 0 ) const;
     };
     // ============================================================================
-    class NodeOperations final
-    {
-    public:
+    struct NodeOperations final {
       struct value {
-      };
-      template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
-                typename D = boost::fusion::unused_type>
-      struct result {
-        typedef void type;
       };
       //---------------------------------------------------------------------------
       void operator()( Node& node, Node::NodeType type ) const { node.type = type; }
