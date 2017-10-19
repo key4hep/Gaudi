@@ -74,7 +74,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
-  m_thread = std::thread( std::bind( &AvalancheSchedulerSvc::activate, this ) );
+  m_thread = std::thread( [this]() { this->activate(); } );
 
   while ( m_isActive != ACTIVE ) {
     if ( m_isActive == FAILURE ) {
@@ -408,7 +408,7 @@ StatusCode AvalancheSchedulerSvc::deactivate()
 
   if ( m_isActive == ACTIVE ) {
     // Drain the scheduler
-    m_actionsQueue.push( std::bind( &AvalancheSchedulerSvc::m_drain, this ) );
+    m_actionsQueue.push( [this]() { return this->m_drain(); } );
     // This would be the last action
     m_actionsQueue.push( [this]() -> StatusCode {
       m_isActive = INACTIVE;
@@ -1009,8 +1009,7 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
             << m_algosInFlight << endmsg;
 
   // Schedule an update of the status of the algorithms
-  auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
-  m_actionsQueue.push( updateAction );
+  m_actionsQueue.push( [ this, name = algo->name() ]() { return this->updateStates( -1, name ); } );
 
   return sc;
 }
@@ -1064,8 +1063,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
             << ". Algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
 
   // Schedule an update of the status of the algorithms
-  auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
-  m_actionsQueue.push( updateAction );
+  m_actionsQueue.push( [ this, name = algo->name() ]() { return this->updateStates( -1, name ); } );
 
   return sc;
 }
