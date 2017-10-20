@@ -13,6 +13,7 @@
  *
  */
 
+#include <iomanip>
 #include <iostream>
 #include <stdint.h>
 #include <tuple>
@@ -248,10 +249,17 @@ inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs )
     return os;
   }
 
-  os << "[" << rhs.m_run_number << "," << rhs.m_event_number;
+  os << "[" << rhs.m_run_number;
+
+  if ( rhs.m_event_number != EventIDBase::UNDEFEVT ) {
+    os << "," << rhs.m_event_number;
+  }
 
   if ( rhs.isTimeStamp() ) {
-    os << "," << rhs.m_time_stamp << ":" << rhs.m_time_stamp_ns_offset;
+    os << ",t:" << rhs.m_time_stamp;
+    if ( rhs.m_time_stamp_ns_offset != 0 ) {
+      os << "." << std::setfill( '0' ) << std::setw( 9 ) << rhs.m_time_stamp_ns_offset;
+    }
   }
 
   if ( rhs.isLumiEvent() || rhs.isRunLumi() ) {

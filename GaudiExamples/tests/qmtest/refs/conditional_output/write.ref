@@ -272,10 +272,10 @@ AlgExecStateSvc   VERBOSE dumping state:
 Event: Invalid
 Algs: 4
  - Slot 0
-  +    OddEvents  e: 0 f: 1 sc: FAILURE
-  + OutputStream  e: 0 f: 1 sc: FAILURE
-  +   EvenEvents  e: 0 f: 1 sc: FAILURE
-  +  DataCreator  e: 0 f: 1 sc: FAILURE
+  +    OddEvents  e: n
+  + OutputStream  e: n
+  +   EvenEvents  e: n
+  +  DataCreator  e: n
 
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
