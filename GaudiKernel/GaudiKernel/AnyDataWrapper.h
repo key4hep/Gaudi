@@ -4,42 +4,26 @@
 // Include files
 #include "GaudiKernel/DataObject.h"
 
-struct GAUDI_API AnyDataWrapperBase : DataObject {
-  // ugly hack to circumvent the usage of boost::any yet
-  // DataSvc would need a templated register method
-  virtual int size() const = 0;
-};
-
 namespace details
 {
-
-  template <typename>
-  struct void_t {
-    using type = void;
-  };
   template <typename T>
-  using is_valid_t = typename void_t<T>::type;
-
-  template <typename T, typename SFINAE = void>
-  struct has_size_method : std::false_type {
-  };
-
-  template <typename T>
-  struct has_size_method<T, is_valid_t<decltype( std::declval<const T&>().size() )>> : std::true_type {
-  };
-
-  template <typename T>
-  int size( const T& t, std::true_type )
+  auto size( const T& t ) -> decltype( t.size() )
   {
     return t.size();
   }
 
-  template <typename T>
-  int size( const T&, std::false_type )
+  template <typename T, typename... Args>
+  constexpr int size( const T&, Args&&... )
   {
+    static_assert( sizeof...( Args ) == 0, "No extra args please" );
     return -1;
   }
 }
+
+// ugly hack to circumvent the usage of boost::any
+struct GAUDI_API AnyDataWrapperBase : DataObject {
+  virtual int size() const = 0;
+};
 
 template <class T>
 class GAUDI_API AnyDataWrapper final : public AnyDataWrapperBase
@@ -53,7 +37,7 @@ public:
   const T& getData() const { return m_data; }
   T& getData() { return m_data; }
 
-  int size() const override { return details::size( m_data, details::has_size_method<T>{} ); }
+  int size() const override { return details::size( m_data ); }
 
 private:
   T m_data;
