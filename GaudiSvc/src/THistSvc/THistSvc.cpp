@@ -34,14 +34,12 @@ using namespace std;
 
 DECLARE_COMPONENT( THistSvc )
 
-namespace {
-  template <typename InputIterator, typename OutputIterator,
-            typename UnaryOperation, typename UnaryPredicate>
-  OutputIterator transform_if( InputIterator first,
-                               InputIterator last,
-                               OutputIterator result,
-                               UnaryOperation op,
-                               UnaryPredicate pred ) {
+namespace
+{
+  template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
+  OutputIterator transform_if( InputIterator first, InputIterator last, OutputIterator result, UnaryOperation op,
+                               UnaryPredicate pred )
+  {
     while ( first != last ) {
       if ( pred( *first ) ) *result++ = op( *first );
       ++first;
@@ -51,7 +49,8 @@ namespace {
 
   constexpr struct select1st_t {
     template <typename T, typename S>
-    const T& operator()( const std::pair<T, S>& p ) const {
+    const T& operator()( const std::pair<T, S>& p ) const
+    {
       return p.first;
     }
   } select1st{};
@@ -59,17 +58,17 @@ namespace {
 
 //*************************************************************************//
 
-THistSvc::THistSvc( const std::string& name, ISvcLocator* svc )
-  : base_class( name, svc ) {
-  m_compressionLevel.declareUpdateHandler( &THistSvc::setupCompressionLevel,
-                                           this );
+THistSvc::THistSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
+{
+  m_compressionLevel.declareUpdateHandler( &THistSvc::setupCompressionLevel, this );
   m_outputfile.declareUpdateHandler( &THistSvc::setupOutputFile, this );
   m_inputfile.declareUpdateHandler( &THistSvc::setupInputFile, this );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::initialize() {
+StatusCode THistSvc::initialize()
+{
   GlobalDirectoryRestore restore( m_svcMut );
 
   StatusCode status = Service::initialize();
@@ -98,7 +97,7 @@ StatusCode THistSvc::initialize() {
   // Protect against multiple instances of TROOT
   if ( !gROOT ) {
     static TROOT root( "root", "ROOT I/O" );
-    //gDebug = 99;
+    // gDebug = 99;
   } else {
     if ( msgLevel( MSG::VERBOSE ) ) {
       verbose() << "ROOT already initialized, debug = " << gDebug << endmsg;
@@ -121,19 +120,15 @@ StatusCode THistSvc::initialize() {
 
   // Register open/close callback actions
   using namespace std::placeholders;
-  auto boa = [this]( const Io::FileAttr* fa, const std::string& caller ) {
-    return this->rootOpenAction( fa, caller );
-  };
+  auto boa = [this]( const Io::FileAttr* fa, const std::string& caller ) { return this->rootOpenAction( fa, caller ); };
   if ( p_fileMgr->regAction( boa, Io::OPEN, Io::ROOT ).isFailure() ) {
-    error() << "unable to register ROOT file open action with FileMgr"
-            << endmsg;
+    error() << "unable to register ROOT file open action with FileMgr" << endmsg;
   }
   auto bea = [this]( const Io::FileAttr* fa, const std::string& caller ) {
     return this->rootOpenErrAction( fa, caller );
   };
   if ( p_fileMgr->regAction( bea, Io::OPEN_ERR, Io::ROOT ).isFailure() ) {
-    error() << "unable to register ROOT file open Error action with FileMgr"
-            << endmsg;
+    error() << "unable to register ROOT file open Error action with FileMgr" << endmsg;
   }
 
   m_okToConnect = true;
@@ -166,12 +161,9 @@ StatusCode THistSvc::initialize() {
       for ( const auto& reg : m_files ) {
         const std::string& fname = reg.second.first->GetName();
         const IIoComponentMgr::IoMode::Type iomode =
-          ( reg.second.second == THistSvc::READ ?
-              IIoComponentMgr::IoMode::READ :
-              IIoComponentMgr::IoMode::WRITE );
+            ( reg.second.second == THistSvc::READ ? IIoComponentMgr::IoMode::READ : IIoComponentMgr::IoMode::WRITE );
         if ( !iomgr->io_register( this, iomode, fname ).isSuccess() ) {
-          warning() << "could not register file [" << fname
-                    << "] with the I/O component manager..." << endmsg;
+          warning() << "could not register file [" << fname << "] with the I/O component manager..." << endmsg;
           all_good = false;
         } else {
           info() << "registered file [" << fname << "]... [ok]" << endmsg;
@@ -194,7 +186,8 @@ StatusCode THistSvc::initialize() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::reinitialize() {
+StatusCode THistSvc::reinitialize()
+{
   GlobalDirectoryRestore restore( m_svcMut );
   warning() << "reinitialize not implemented" << endmsg;
   return StatusCode::SUCCESS;
@@ -202,7 +195,8 @@ StatusCode THistSvc::reinitialize() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::finalize() {
+StatusCode THistSvc::finalize()
+{
   GlobalDirectoryRestore restore( m_svcMut );
 
   if ( msgLevel( MSG::DEBUG ) ) {
@@ -211,11 +205,11 @@ StatusCode THistSvc::finalize() {
   }
 
 #ifndef NDEBUG
-  if ( msgLevel(MSG::DEBUG) ) {
+  if ( msgLevel( MSG::DEBUG ) ) {
     for ( auto& itr : m_uids ) {
 
       THistID& thid = itr.second->at( 0 );
-      TObject* to = thid.obj;
+      TObject* to   = thid.obj;
 
       string dirname( "none" );
       if ( to && to->IsA()->InheritsFrom( "TTree" ) ) {
@@ -223,7 +217,7 @@ StatusCode THistSvc::finalize() {
         if ( tr->GetDirectory() != 0 ) {
           dirname = tr->GetDirectory()->GetPath();
         }
-      } else if ( to && to->IsA()->InheritsFrom("TGraph") ) {
+      } else if ( to && to->IsA()->InheritsFrom( "TGraph" ) ) {
         if ( !thid.temp ) {
           dirname = thid.file->GetPath();
           string id2( thid.id );
@@ -235,6 +229,15 @@ StatusCode THistSvc::finalize() {
           dirname += id2;
         } else {
           dirname = "/tmp";
+        }
+      } else if ( to && to->IsA()->InheritsFrom( "TH1" ) ) {
+        TH1* th = dynamic_cast<TH1*>( to );
+        if ( th == 0 ) {
+          error() << "Couldn't dcast: " << itr.first << endmsg;
+        } else {
+          if ( th->GetDirectory() != 0 ) {
+            dirname = th->GetDirectory()->GetPath();
+          }
         }
       } else if ( !to ) {
         warning() << uid.first << " has NULL TObject ptr" << endmsg;
@@ -254,14 +257,12 @@ StatusCode THistSvc::finalize() {
   }
   vector<TFile*> deleted_files;
   for ( auto& itr : m_files ) {
-    if ( find( deleted_files.begin(), deleted_files.end(),
-               itr.second.first ) == deleted_files.end() ) {
+    if ( find( deleted_files.begin(), deleted_files.end(), itr.second.first ) == deleted_files.end() ) {
       deleted_files.push_back( itr.second.first );
 
 #ifndef NDEBUG
-      if ( msgLevel( MSG::DEBUG ) ){
-        debug() << "finalizing stream/file " << itr.first << ":"
-                << itr.second.first->GetName() << endmsg;
+      if ( msgLevel( MSG::DEBUG ) ) {
+        debug() << "finalizing stream/file " << itr.first << ":" << itr.second.first->GetName() << endmsg;
       }
 #endif
     } else {
@@ -274,8 +275,7 @@ StatusCode THistSvc::finalize() {
     }
 
     if ( m_print && msgLevel( MSG::INFO ) ) {
-      info() << "==> File: " << itr.second.first->GetName() << "  stream: "
-             << itr.first << endmsg;
+      info() << "==> File: " << itr.second.first->GetName() << "  stream: " << itr.first << endmsg;
 
       itr.second.first->Print( "base" );
     }
@@ -296,14 +296,12 @@ StatusCode THistSvc::finalize() {
       int r    = p_fileMgr->open( Io::ROOT, name(), m_sharedFiles[itr.first], Io::WRITE | Io::APPEND, vf, "HIST" );
 
       if ( r ) {
-        error() << "unable to open Final Output File: \""
-                << m_sharedFiles[itr.first] << "\" for merging" << endmsg;
+        error() << "unable to open Final Output File: \"" << m_sharedFiles[itr.first] << "\" for merging" << endmsg;
         return StatusCode::FAILURE;
       }
 
       TFile* outputfile = (TFile*)vf;
-      pi->fireIncident( FileIncident( name(), IncidentType::WroteToOutputFile,
-                                      m_sharedFiles[itr.first] ) );
+      pi->fireIncident( FileIncident( name(), IncidentType::WroteToOutputFile, m_sharedFiles[itr.first] ) );
 
       if ( msgLevel( MSG::DEBUG ) ) {
         debug() << "THistSvc::write()::Merging Rootfile " << endmsg;
@@ -328,8 +326,7 @@ StatusCode THistSvc::finalize() {
       p_fileMgr->close( inputfile, name() );
 
       if ( msgLevel( MSG::DEBUG ) ) {
-        debug() << "Trying to remove temporary file \"" << tmpfn << "\""
-                << endmsg;
+        debug() << "Trying to remove temporary file \"" << tmpfn << "\"" << endmsg;
       }
 
       std::remove( tmpfn.c_str() );
@@ -350,19 +347,20 @@ StatusCode THistSvc::finalize() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-bool THistSvc::browseTDir( TDirectory* dir ) const {
+bool THistSvc::browseTDir( TDirectory* dir ) const
+{
   if ( !dir ) {
     std::cerr << "TDirectory == 0" << std::endl;
     return false;
   }
 
-  GlobalDirectoryRestore restore(m_svcMut);
+  GlobalDirectoryRestore restore( m_svcMut );
 
   dir->cd();
 
   cout << "-> " << dir->GetPath() << "  " << dir->GetListOfKeys()->GetSize() << endl;
 
-  //TIter nextkey(dir->GetListOfKeys());
+  // TIter nextkey(dir->GetListOfKeys());
   TIter nextkey( dir->GetList() );
   while ( TKey* key = (TKey*)nextkey() ) {
     TObject* obj = key->ReadObj();
@@ -395,7 +393,8 @@ bool THistSvc::browseTDir( TDirectory* dir ) const {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTHists( TDirectory *td, TList & tl, bool rcs ) const {
+StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs ) const
+{
   GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
@@ -406,8 +405,7 @@ StatusCode THistSvc::getTHists( TDirectory *td, TList & tl, bool rcs ) const {
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "getTHists: \"" << td->GetPath() << "\": found "
-            << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+    debug() << "getTHists: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
   }
 
   TIter nextkey( td->GetListOfKeys() );
@@ -443,10 +441,10 @@ StatusCode THistSvc::getTHists( TDirectory *td, TList & tl, bool rcs ) const {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTHists( const std::string& dir, TList& tl,
-                                bool rcs ) const {
+StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs ) const
+{
 
-  GlobalDirectoryRestore restore(m_svcMut);
+  GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
 
@@ -463,8 +461,7 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl,
 
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "getTHists: \"" << dir << "\" looks like a stream name."
-              << " associated TFile: \"" << itr->second.first->GetName()
-              << "\"" << endmsg;
+              << " associated TFile: \"" << itr->second.first->GetName() << "\"" << endmsg;
     }
 
     if ( gDirectory->cd( r2.c_str() ) ) {
@@ -485,8 +482,7 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl,
   }
 
   if ( !gDirectory->cd( dir.c_str() ) ) {
-    error() << "getTHists: No such TDirectory/stream \"" << dir << "\""
-            << endmsg;
+    error() << "getTHists: No such TDirectory/stream \"" << dir << "\"" << endmsg;
     sc = StatusCode::FAILURE;
   } else {
     sc = getTHists( gDirectory, tl, rcs );
@@ -497,20 +493,19 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTTrees( TDirectory *td, TList & tl, bool rcs ) const {
-  GlobalDirectoryRestore restore(m_svcMut);
+StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs ) const
+{
+  GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
 
   if ( !td->cd() ) {
-    error() << "getTTrees: No such TDirectory \"" << td->GetPath() << "\""
-            << endmsg;
+    error() << "getTTrees: No such TDirectory \"" << td->GetPath() << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "getTHists: \"" << td->GetPath() << "\": found "
-            << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+    debug() << "getTHists: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
   }
 
   TIter nextkey( td->GetListOfKeys() );
@@ -546,8 +541,8 @@ StatusCode THistSvc::getTTrees( TDirectory *td, TList & tl, bool rcs ) const {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTTrees( const std::string& dir, TList & tl,
-                                bool rcs ) const {
+StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs ) const
+{
   GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
@@ -565,8 +560,7 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList & tl,
 
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "getTTrees: \"" << dir << "\" looks like a stream name."
-              << " associated TFile: \"" << itr->second.first->GetName()
-              << "\"" << endmsg;
+              << " associated TFile: \"" << itr->second.first->GetName() << "\"" << endmsg;
     }
 
     if ( gDirectory->cd( r2.c_str() ) ) {
@@ -582,8 +576,7 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList & tl,
   }
 
   if ( !gDirectory->cd( dir.c_str() ) ) {
-    error() << "getTTrees: No such TDirectory/stream \"" << dir << "\""
-            << endmsg;
+    error() << "getTTrees: No such TDirectory/stream \"" << dir << "\"" << endmsg;
     sc = StatusCode::FAILURE;
   } else {
     sc = getTTrees( gDirectory, tl, rcs );
@@ -593,21 +586,19 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList & tl,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs,
-                                bool reg ) {
-  GlobalDirectoryRestore restore(m_svcMut);
+StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs, bool reg )
+{
+  GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
 
   if ( !td->cd() ) {
-    error() << "getTHists: No such TDirectory \"" << td->GetPath() << "\""
-            << endmsg;
+    error() << "getTHists: No such TDirectory \"" << td->GetPath() << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "getTHists: \"" << td->GetPath() << "\": found "
-            << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+    debug() << "getTHists: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
   }
 
   TIter nextkey( td->GetListOfKeys() );
@@ -660,9 +651,9 @@ StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs,
-                                bool reg ) {
-  GlobalDirectoryRestore restore(m_svcMut);
+StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs, bool reg )
+{
+  GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
 
@@ -679,8 +670,7 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs,
 
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "getTHists: \"" << dir << "\" looks like a stream name."
-              << " associated TFile: \"" << itr->second.first->GetName()
-              << "\"" << endmsg;
+              << " associated TFile: \"" << itr->second.first->GetName() << "\"" << endmsg;
     }
 
     if ( gDirectory->cd( r2.c_str() ) ) {
@@ -699,8 +689,7 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs,
   }
 
   if ( !gDirectory->cd( dir.c_str() ) ) {
-    error() << "getTHists: No such TDirectory/stream \"" << dir << "\""
-            << endmsg;
+    error() << "getTHists: No such TDirectory/stream \"" << dir << "\"" << endmsg;
     sc = StatusCode::FAILURE;
   } else {
     if ( reg ) {
@@ -716,21 +705,19 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs,
-                                bool reg ) {
-  GlobalDirectoryRestore restore(m_svcMut);
+StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs, bool reg )
+{
+  GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
 
   if ( !td->cd() ) {
-    error() << "getTTrees: No such TDirectory \"" << td->GetPath() << "\""
-            << endmsg;
+    error() << "getTTrees: No such TDirectory \"" << td->GetPath() << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "getTHists: \"" << td->GetPath() << "\": found "
-            << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+    debug() << "getTHists: \"" << td->GetPath() << "\": found " << td->GetListOfKeys()->GetSize() << " keys" << endmsg;
   }
 
   TIter nextkey( td->GetListOfKeys() );
@@ -783,9 +770,9 @@ StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs,
-                                bool reg ) {
-  GlobalDirectoryRestore restore(m_svcMut);
+StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs, bool reg )
+{
+  GlobalDirectoryRestore restore( m_svcMut );
 
   gErrorIgnoreLevel = kBreak;
 
@@ -802,8 +789,7 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs,
 
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "getTTrees: \"" << dir << "\" looks like a stream name."
-              << " associated TFile: \"" << itr->second.first->GetName()
-              << "\"" << endmsg;
+              << " associated TFile: \"" << itr->second.first->GetName() << "\"" << endmsg;
     }
 
     if ( gDirectory->cd( r2.c_str() ) ) {
@@ -820,8 +806,7 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs,
   }
 
   if ( !gDirectory->cd( dir.c_str() ) ) {
-    error() << "getTTrees: No such TDirectory/stream \"" << dir << "\""
-            << endmsg;
+    error() << "getTTrees: No such TDirectory/stream \"" << dir << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -830,17 +815,17 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::deReg( TObject* obj ) {
-  auto itr = m_tobjs.find(obj);
+StatusCode THistSvc::deReg( TObject* obj )
+{
+  auto itr = m_tobjs.find( obj );
   if ( itr != m_tobjs.end() ) {
     vhid_t* vhid = itr->second.first;
-    THistID hid = itr->second.first->at(itr->second.second);
+    THistID hid  = itr->second.first->at( itr->second.second );
 
-    auto itr2 = m_uids.find(hid.id);
+    auto itr2 = m_uids.find( hid.id );
     if ( itr2 == m_uids.end() ) {
-      error() << "Problems deregistering TObject \""
-              << obj->GetName()
-              << "\" with id \"" << hid.id << "\": not in uidMap" << endmsg;
+      error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id
+              << "\": not in uidMap" << endmsg;
       return StatusCode::FAILURE;
     }
 
@@ -853,25 +838,22 @@ StatusCode THistSvc::deReg( TObject* obj ) {
 
     debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg;
 
-    std::string id,root,rem;
-    parseString(hid.id, root, rem);
+    std::string id, root, rem;
+    parseString( hid.id, root, rem );
 
-    auto mitr = m_ids.equal_range(rem);
+    auto mitr = m_ids.equal_range( rem );
     auto itr3 = std::find_if( mitr.first, mitr.second,
-                              [&]( idMap_t::const_reference i )
-                              { return i.second->at(0).obj == obj; } ) ;
-    if (itr3 == mitr.second ) {
-      m_log << MSG::ERROR << "Problems deregistering TObject \""
-            << obj->GetName()
-            << "\" with id \"" << hid.id << "\": not in idMap" << endmsg;
+                              [&]( idMap_t::const_reference i ) { return i.second->at( 0 ).obj == obj; } );
+    if ( itr3 == mitr.second ) {
+      error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id
+              << "\": not in idMap" << endmsg;
       return StatusCode::FAILURE;
     }
 
     auto itr4 = std::find( m_hlist.begin(), m_hlist.end(), vhid );
-    if (itr4 == m_hlist.end()) {
-      m_log << MSG::ERROR << "Problems deregistering TObject \""
-            << obj->GetName()
-            << "\" with id \"" << hid.id << "\": not in hlist" << endmsg;
+    if ( itr4 == m_hlist.end() ) {
+      error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id
+              << "\": not in hlist" << endmsg;
       return StatusCode::FAILURE;
     }
 
@@ -883,32 +865,28 @@ StatusCode THistSvc::deReg( TObject* obj ) {
 
     return StatusCode::SUCCESS;
   } else {
-    error() << "Cannot unregister TObject \"" << obj->GetName()
-            << "\": not known to THistSvc" << endmsg;
+    error() << "Cannot unregister TObject \"" << obj->GetName() << "\": not known to THistSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::deReg( const std::string& id ) {
+StatusCode THistSvc::deReg( const std::string& id )
+{
   auto itr = m_uids.find( id );
   if ( itr == m_uids.end() ) {
-    error() << "Problem deregistering id \"" << id
-            << "\": not found in registry" << endmsg;
+    error() << "Problem deregistering id \"" << id << "\": not found in registry" << endmsg;
     return StatusCode::FAILURE;
   }
 
   vhid_t* vh = itr->second;
-  debug() << "will deregister " << vh->size() << " elements of id \""
-          << id << "\"" << endmsg;
+  debug() << "will deregister " << vh->size() << " elements of id \"" << id << "\"" << endmsg;
   StatusCode sc( StatusCode::SUCCESS );
   while ( vh->size() > 0 ) {
     if ( deReg( vh->back().obj ).isFailure() ) {
       sc = StatusCode::FAILURE;
-      error() << "Problems deRegistering " << vh->size() 
-              << " element of id \"" << id << "\""
-              << endmsg;
+      error() << "Problems deRegistering " << vh->size() << " element of id \"" << id << "\"" << endmsg;
       break;
     }
   }
@@ -919,44 +897,50 @@ StatusCode THistSvc::deReg( const std::string& id ) {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regHist( const std::string& id ) {
-  TH1 *hist = nullptr;
+StatusCode THistSvc::regHist( const std::string& id )
+{
+  TH1* hist = nullptr;
   THistID* hid;
   return regHist_i( hist, id, false, hid );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regHist( const std::string& id, TH1* hist ) {
+StatusCode THistSvc::regHist( const std::string& id, TH1* hist )
+{
   THistID* hid;
   return regHist_i( hist, id, false, hid );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regHist( const std::string& id, TH2* hist ) {
+StatusCode THistSvc::regHist( const std::string& id, TH2* hist )
+{
   THistID* hid;
   return regHist_i( hist, id, false, hid );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regHist( const std::string& id, TH3* hist ) {
+StatusCode THistSvc::regHist( const std::string& id, TH3* hist )
+{
   THistID* hid;
   return regHist_i( hist, id, false, hid );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regTree( const std::string& id ) {
-  TTree *hist = nullptr;
+StatusCode THistSvc::regTree( const std::string& id )
+{
+  TTree* hist = nullptr;
   THistID* hid;
   return regHist_i( hist, id, false, hid );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regTree( const std::string& id, TTree* hist ) {
+StatusCode THistSvc::regTree( const std::string& id, TTree* hist )
+{
   THistID* hid;
   StatusCode sc = regHist_i( hist, id, false, hid );
   if ( hist && sc.isSuccess() ) {
@@ -970,15 +954,17 @@ StatusCode THistSvc::regTree( const std::string& id, TTree* hist ) {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regGraph( const std::string& id ) {
-  TGraph *hist = nullptr;
+StatusCode THistSvc::regGraph( const std::string& id )
+{
+  TGraph* hist = nullptr;
   THistID* hid;
   return regHist_i( hist, id, false, hid );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regGraph( const std::string& id, TGraph* hist ) {
+StatusCode THistSvc::regGraph( const std::string& id, TGraph* hist )
+{
   if ( strcmp( hist->GetName(), "Graph" ) == 0 ) {
     std::string id2( id );
     string::size_type i = id2.rfind( "/" );
@@ -986,8 +972,7 @@ StatusCode THistSvc::regGraph( const std::string& id, TGraph* hist ) {
       id2.erase( 0, i + 1 );
     }
 
-    info() << "setting name of TGraph id: \"" << id << "\" to \"" << id2
-           << "\" since it is unset" << endmsg;
+    info() << "setting name of TGraph id: \"" << id << "\" to \"" << id2 << "\" since it is unset" << endmsg;
     hist->SetName( id2.c_str() );
   }
 
@@ -997,108 +982,89 @@ StatusCode THistSvc::regGraph( const std::string& id, TGraph* hist ) {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getHist( const std::string& id, TH1*& hist,
-                              size_t ind ) const {
+StatusCode THistSvc::getHist( const std::string& id, TH1*& hist, size_t ind ) const
+{
   return getHist_i( id, hist, ind );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getHist( const std::string& id, TH2*& hist,
-                              size_t ind ) const {
+StatusCode THistSvc::getHist( const std::string& id, TH2*& hist, size_t ind ) const
+{
   return getHist_i( id, hist, ind );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getHist( const std::string& id, TH3*& hist,
-                              size_t ind ) const {
+StatusCode THistSvc::getHist( const std::string& id, TH3*& hist, size_t ind ) const
+{
   return getHist_i( id, hist, ind );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-std::vector<std::string> THistSvc::getHists() const {
+std::vector<std::string> THistSvc::getHists() const
+{
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
-  transform_if( std::begin( m_uids ), std::end( m_uids ),
-                std::back_inserter( names ), select1st,
-                []( uidMap_t::const_reference i ) {
-                  return i.second->at(0).obj->IsA()->InheritsFrom( "TH1" ); }
-  );
+  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
+                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TH1" ); } );
   return names;
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTree( const std::string& id, TTree*& hist ) const {
-  return getHist_i( id, hist );
-}
+StatusCode THistSvc::getTree( const std::string& id, TTree*& hist ) const { return getHist_i( id, hist ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-std::vector<std::string> THistSvc::getTrees() const {
+std::vector<std::string> THistSvc::getTrees() const
+{
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
-  transform_if( std::begin( m_uids ), std::end( m_uids ),
-                std::back_inserter( names ),
-                select1st,
-                []( uidMap_t::const_reference i ) {
-                  return i.second->at(0).obj->IsA()->InheritsFrom( "TTree" ); }
-  );
+  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
+                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TTree" ); } );
   return names;
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getGraph( const std::string& id, TGraph*& hist ) const {
-  return getHist_i( id, hist );
-}
+StatusCode THistSvc::getGraph( const std::string& id, TGraph*& hist ) const { return getHist_i( id, hist ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-std::vector<std::string> THistSvc::getGraphs() const {
+std::vector<std::string> THistSvc::getGraphs() const
+{
   std::vector<std::string> names;
   names.reserve( m_uids.size() );
-  transform_if( std::begin( m_uids ), std::end( m_uids ),
-                std::back_inserter( names ), select1st,
-                []( uidMap_t::const_reference i ) {
-                  return i.second->at(0).obj->IsA()->InheritsFrom( "TGraph" ); }
-  );
+  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
+                []( uidMap_t::const_reference i ) { return i.second->at( 0 ).obj->IsA()->InheritsFrom( "TGraph" ); } );
   return names;
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::readHist( const std::string& id, TH1*& hist ) const {
-  return readHist_i( id, hist );
-}
+StatusCode THistSvc::readHist( const std::string& id, TH1*& hist ) const { return readHist_i( id, hist ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::readHist( const std::string& id, TH2*& hist ) const {
-  return readHist_i( id, hist );
-}
+StatusCode THistSvc::readHist( const std::string& id, TH2*& hist ) const { return readHist_i( id, hist ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::readHist( const std::string& id, TH3*& hist ) const {
-  return readHist_i( id, hist );
-}
+StatusCode THistSvc::readHist( const std::string& id, TH3*& hist ) const { return readHist_i( id, hist ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::readTree( const std::string& id, TTree*& hist ) const {
-  return readHist_i( id, hist );
-}
+StatusCode THistSvc::readTree( const std::string& id, TTree*& hist ) const { return readHist_i( id, hist ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-bool THistSvc::findStream( const string& id, string& stream, string& rem,
-                           TFile*& file ) const {
+bool THistSvc::findStream( const string& id, string& stream, string& rem, TFile*& file ) const
+{
   auto pos = id.find( "/" );
 
   if ( pos == string::npos ) {
     // no "/" in id
     stream = "temp";
-    rem = id;
+    rem    = id;
   } else if ( pos != 0 ) {
     // id does not start with "/"
     stream = "temp";
@@ -1125,8 +1091,7 @@ bool THistSvc::findStream( const string& id, string& stream, string& rem,
   auto itr = m_files.find( stream );
   file     = ( itr != m_files.end() ? itr->second.first : nullptr );
   if ( !file ) {
-    warning() << "no stream \"" << stream << "\" associated with id: \""
-              << id << "\"" << endmsg;
+    warning() << "no stream \"" << stream << "\" associated with id: \"" << id << "\"" << endmsg;
   }
 
   return true;
@@ -1134,8 +1099,8 @@ bool THistSvc::findStream( const string& id, string& stream, string& rem,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-void THistSvc::parseString( const string& id, string& root,
-                            string& rem ) const {
+void THistSvc::parseString( const string& id, string& root, string& rem ) const
+{
   auto pos = id.find( "/" );
 
   if ( pos == string::npos ) {
@@ -1152,16 +1117,17 @@ void THistSvc::parseString( const string& id, string& root,
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 void THistSvc::setupCompressionLevel( Gaudi::Details::PropertyBase&
-                                      /* cl */ ) {
+                                      /* cl */ )
+{
   warning() << "\"CompressionLevel\" Property has been deprecated. "
-            << "Set it via the \"CL=\" parameter in the \"Output\" Property"
-            << endmsg;
+            << "Set it via the \"CL=\" parameter in the \"Output\" Property" << endmsg;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
-                               /*m_inputfile*/ ) {
+                               /*m_inputfile*/ )
+{
   if ( FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
     debug() << "Delaying connection of Input Files until Initialize"
             << ". now in " << FSMState() << endmsg;
@@ -1173,8 +1139,7 @@ void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
     StatusCode sc = StatusCode::SUCCESS;
 
     for ( const auto& itr : m_inputfile.value() ) {
-      if ( m_alreadyConnectedInFiles.end() !=
-           m_alreadyConnectedInFiles.find( itr ) ) {
+      if ( m_alreadyConnectedInFiles.end() != m_alreadyConnectedInFiles.find( itr ) ) {
         continue;
       }
       if ( connect( itr ).isFailure() ) {
@@ -1185,8 +1150,7 @@ void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
     }
 
     if ( !sc.isSuccess() ) {
-      throw GaudiException( "Problem connecting inputfile !!", name(),
-                            StatusCode::FAILURE );
+      throw GaudiException( "Problem connecting inputfile !!", name(), StatusCode::FAILURE );
     }
   }
 }
@@ -1194,7 +1158,8 @@ void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 void THistSvc::setupOutputFile( Gaudi::Details::PropertyBase&
-                                /*m_outputfile*/ ) {
+                                /*m_outputfile*/ )
+{
   if ( FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
     debug() << "Delaying connection of Input Files until Initialize"
             << ". now in " << FSMState() << endmsg;
@@ -1202,8 +1167,7 @@ void THistSvc::setupOutputFile( Gaudi::Details::PropertyBase&
   } else {
     StatusCode sc = StatusCode::SUCCESS;
     for ( const auto& itr : m_outputfile.value() ) {
-      if ( m_alreadyConnectedOutFiles.end() !=
-           m_alreadyConnectedOutFiles.find( itr ) ) {
+      if ( m_alreadyConnectedOutFiles.end() != m_alreadyConnectedOutFiles.find( itr ) ) {
         continue;
       }
       if ( connect( itr ).isFailure() ) {
@@ -1214,15 +1178,15 @@ void THistSvc::setupOutputFile( Gaudi::Details::PropertyBase&
     }
 
     if ( !sc.isSuccess() ) {
-      throw GaudiException( "Problem connecting outputfile !!", name(),
-                            StatusCode::FAILURE );
+      throw GaudiException( "Problem connecting outputfile !!", name(), StatusCode::FAILURE );
     }
   }
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-void THistSvc::updateFiles() {
+void THistSvc::updateFiles()
+{
   // If TTrees grow beyond TTree::fgMaxTreeSize, a new file is
   // automatically created by root, and the old one closed. We
   // need to migrate all the UIDs over to show the correct file
@@ -1230,7 +1194,7 @@ void THistSvc::updateFiles() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "updateFiles()" << endmsg;
 
-  for ( auto uitr=m_uidsX.begin(); uitr != m_uidsX.end(); ++uitr ) {
+  for ( auto uitr = m_uidsX.begin(); uitr != m_uidsX.end(); ++uitr ) {
 #ifndef NDEBUG
     if ( msgLevel( MSG::VERBOSE ) )
       verbose() << " update: " << uitr->first << " " << uitr->second.id << " " << uitr->second.mode << endmsg;
@@ -1261,23 +1225,20 @@ void THistSvc::updateFiles() {
           }
         }
 
-        for (auto uitr2 = uitr; uitr2 != m_uidsX.end(); ++uitr2) {
-          if (uitr2->second.file == oldFile) {
+        for ( auto uitr2 = uitr; uitr2 != m_uidsX.end(); ++uitr2 ) {
+          if ( uitr2->second.file == oldFile ) {
             uitr2->second.file = newFile;
           }
         }
 
-        auto sitr = std::find_if( std::begin( m_fileStreams ),
-                                  std::end( m_fileStreams ),
-                                  [&]( streamMap::const_reference s )
-                                  { return s.second == streamName; } );
-        if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
+        auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
+                                  [&]( streamMap::const_reference s ) { return s.second == streamName; } );
+        if ( sitr != std::end( m_fileStreams ) ) oldFileName= sitr->first;
 
 #ifndef NDEBUG
         if ( msgLevel( MSG::DEBUG ) ) {
-          debug() << "migrating uid: " << uitr->second.id << "   stream: "
-                  << streamName << "   oldFile: " << oldFileName
-                  << "   newFile: " << newFileName << endmsg;
+          debug() << "migrating uid: " << uitr->second.id << "   stream: " << streamName
+                  << "   oldFile: " << oldFileName << "   newFile: " << newFileName << endmsg;
         }
 #endif
 
@@ -1286,9 +1247,8 @@ void THistSvc::updateFiles() {
           while ( i != std::end( m_fileStreams ) && i->first == oldFileName ) {
 #ifndef NDEBUG
             if ( msgLevel( MSG::DEBUG ) ) {
-              debug() << "changing filename \"" << i->first << "\" to \""
-                      << newFileName << "\" for stream \"" << i->second
-                      << "\"" << endmsg;
+              debug() << "changing filename \"" << i->first << "\" to \"" << newFileName << "\" for stream \""
+                      << i->second << "\"" << endmsg;
             }
 #endif
             std::string nm = std::move( i->second );
@@ -1305,26 +1265,25 @@ void THistSvc::updateFiles() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::write() {
+StatusCode THistSvc::write()
+{
   updateFiles();
 
-  std::for_each( m_files.begin(), m_files.end(),
-    []( std::pair<const std::string, std::pair<TFile*, Mode>>& i ) {
-      auto mode = i.second.second;
-      auto file = i.second.first;
-      if ( mode == WRITE || mode == UPDATE || mode == SHARE ) {
-        file->Write( "", TObject::kOverwrite );
-      } else if ( mode == APPEND ) {
-        file->Write( "" );
-      }
-    } );
+  std::for_each( m_files.begin(), m_files.end(), []( std::pair<const std::string, std::pair<TFile*, Mode>>& i ) {
+    auto mode = i.second.second;
+    auto file = i.second.first;
+    if ( mode == WRITE || mode == UPDATE || mode == SHARE ) {
+      file->Write( "", TObject::kOverwrite );
+    } else if ( mode == APPEND ) {
+      file->Write( "" );
+    }
+  } );
 
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "THistSvc::write()::List of Files connected in ROOT " << endmsg;
     TSeqCollection* filelist = gROOT->GetListOfFiles();
     for ( int ii = 0; ii < filelist->GetEntries(); ii++ ) {
-      debug() << "THistSvc::write()::List of Files connected in ROOT: \""
-              << filelist->At( ii )->GetName() << "\""
+      debug() << "THistSvc::write()::List of Files connected in ROOT: \"" << filelist->At( ii )->GetName() << "\""
               << endmsg;
     }
   }
@@ -1334,7 +1293,8 @@ StatusCode THistSvc::write() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::connect( const std::string& ident ) {
+StatusCode THistSvc::connect( const std::string& ident )
+{
   auto loc      = ident.find( " " );
   string stream = ident.substr( 0, loc );
   char typ( 0 );
@@ -1378,20 +1338,17 @@ StatusCode THistSvc::connect( const std::string& ident ) {
   }
 
   if ( stream == "temp" ) {
-    error() << "in JobOption \"" << ident
-            << "\": stream name \"temp\" reserved." << endmsg;
+    error() << "in JobOption \"" << ident << "\": stream name \"temp\" reserved." << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( db_typ != "ROOT" ) {
-    error() << "in JobOption \"" << ident << "\": technology type \""
-            << db_typ << "\" not supported." << endmsg;
+    error() << "in JobOption \"" << ident << "\": technology type \"" << db_typ << "\" not supported." << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( m_files.find( stream ) != m_files.end() ) {
-    error() << "in JobOption \"" << ident << "\":\n stream \"" << stream
-            << "\" already connected to file: \""
+    error() << "in JobOption \"" << ident << "\":\n stream \"" << stream << "\" already connected to file: \""
             << m_files[stream].first->GetName() << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -1409,8 +1366,7 @@ StatusCode THistSvc::connect( const std::string& ident ) {
     newMode = THistSvc::SHARE;
   } else {
     // something else?
-    error() << "No OPT= specified or unknown access mode in: " << ident
-            << endmsg;
+    error() << "No OPT= specified or unknown access mode in: " << ident << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -1423,16 +1379,14 @@ StatusCode THistSvc::connect( const std::string& ident ) {
     const auto& f_info = m_files[oldstream];
 
     if ( newMode != f_info.second ) {
-      error() << "in JobOption \"" << ident << "\":\n file \"" << filename
-              << "\" already opened by stream: \"" << oldstream
-              << "\" with different access mode." << endmsg;
-      return StatusCode::FAILURE;
-    } else {
-      TFile* f2       = f_info.first;
-      m_files[stream] = make_pair( f2, newMode );
-      if ( msgLevel( MSG::DEBUG ) )
-        debug() << "Connecting stream: \"" << stream
-                << "\" to previously opened TFile: \"" << filename << "\""
+    error() << "in JobOption \"" << ident << "\":\n file \"" << filename << "\" already opened by stream: \""
+            << oldstream << "\" with different access mode." << endmsg;
+    return StatusCode::FAILURE;
+  } else {
+    TFile* f2       = f_info.first;
+    m_files[stream] = make_pair( f2, newMode );
+    if ( msgLevel( MSG::DEBUG ) )
+        debug() << "Connecting stream: \"" << stream << "\" to previously opened TFile: \"" << filename << "\""
                 << endmsg;
       return StatusCode::SUCCESS;
     }
@@ -1449,12 +1403,10 @@ StatusCode THistSvc::connect( const std::string& ident ) {
 
   if ( newMode == THistSvc::READ ) {
     // old file
-    int r = p_fileMgr->open( Io::ROOT, name(), filename, Io::READ, vf,
-                             "HIST" );
+    int r = p_fileMgr->open( Io::ROOT, name(), filename, Io::READ, vf, "HIST" );
 
     if ( r != 0 ) {
-      error() << "Unable to open ROOT file " << filename << " for reading"
-              << endmsg;
+      error() << "Unable to open ROOT file " << filename << " for reading" << endmsg;
       return StatusCode::FAILURE;
     }
 
@@ -1465,13 +1417,10 @@ StatusCode THistSvc::connect( const std::string& ident ) {
 
   } else if ( newMode == THistSvc::WRITE ) {
     // new file. error if file exists
-    int r = p_fileMgr->open( Io::ROOT, name(), filename,
-                             ( Io::WRITE | Io::CREATE | Io::EXCL ), vf,
-                             "HIST" );
+    int r = p_fileMgr->open( Io::ROOT, name(), filename, ( Io::WRITE | Io::CREATE | Io::EXCL ), vf, "HIST" );
 
     if ( r != 0 ) {
-      error() << "Unable to open ROOT file " << filename << " for writing"
-              << endmsg;
+      error() << "Unable to open ROOT file " << filename << " for writing" << endmsg;
       return StatusCode::FAILURE;
     }
 
@@ -1479,11 +1428,9 @@ StatusCode THistSvc::connect( const std::string& ident ) {
 
   } else if ( newMode == THistSvc::APPEND ) {
     // update file
-    int r = p_fileMgr->open( Io::ROOT, name(), filename,
-                             ( Io::WRITE | Io::APPEND ), vf, "HIST" );
+    int r = p_fileMgr->open( Io::ROOT, name(), filename, ( Io::WRITE | Io::APPEND ), vf, "HIST" );
     if ( r != 0 ) {
-      error() << "unable to open file \"" << filename << "\" for appending"
-              << endmsg;
+      error() << "unable to open file \"" << filename << "\" for appending" << endmsg;
       return StatusCode::FAILURE;
     }
 
@@ -1496,22 +1443,17 @@ StatusCode THistSvc::connect( const std::string& ident ) {
     // solve some confliction. e.g. with storegate
     static int ishared  = 0;
     string realfilename = filename;
-    filename            = "tmp_THistSvc_" + std::to_string( ishared++ )
-                          + ".root";
+    filename            = "tmp_THistSvc_" + std::to_string( ishared++ ) + ".root";
 
     if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "Creating temp file \"" << filename << "\" and realfilename="
-              << realfilename << endmsg;
+      debug() << "Creating temp file \"" << filename << "\" and realfilename=" << realfilename << endmsg;
     }
     m_sharedFiles[stream] = realfilename;
 
-    int r = p_fileMgr->open( Io::ROOT, name(), filename,
-                             ( Io::WRITE | Io::CREATE | Io::EXCL ), vf,
-                             "HIST" );
+    int r = p_fileMgr->open( Io::ROOT, name(), filename, ( Io::WRITE | Io::CREATE | Io::EXCL ), vf, "HIST" );
 
     if ( r != 0 ) {
-      error() << "Unable to open ROOT file " << filename << " for writing"
-              << endmsg;
+      error() << "Unable to open ROOT file " << filename << " for writing" << endmsg;
       return StatusCode::FAILURE;
     }
 
@@ -1519,12 +1461,10 @@ StatusCode THistSvc::connect( const std::string& ident ) {
 
   } else if ( newMode == THistSvc::UPDATE ) {
     // update file
-    int r = p_fileMgr->open( Io::ROOT, name(), filename,
-                             ( Io::WRITE | Io::CREATE ), vf, "HIST" );
+    int r = p_fileMgr->open( Io::ROOT, name(), filename, ( Io::WRITE | Io::CREATE ), vf, "HIST" );
 
     if ( r != 0 ) {
-      error() << "Unable to open ROOT file " << filename << " for appending"
-              << endmsg;
+      error() << "Unable to open ROOT file " << filename << " for appending" << endmsg;
       return StatusCode::FAILURE;
     }
 
@@ -1535,8 +1475,7 @@ StatusCode THistSvc::connect( const std::string& ident ) {
   m_fileStreams.insert( make_pair( filename, stream ) );
 
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "Opening TFile \"" << filename << "\"  stream: \"" << stream
-            << "\"  mode: \"" << typ << "\""
+    debug() << "Opening TFile \"" << filename << "\"  stream: \"" << stream << "\"  mode: \"" << typ << "\""
             << " comp level: " << cl << endmsg;
   }
 
@@ -1545,7 +1484,8 @@ StatusCode THistSvc::connect( const std::string& ident ) {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TDirectory* THistSvc::changeDir( const THistSvc::THistID& hid ) const {
+TDirectory* THistSvc::changeDir( const THistSvc::THistID& hid ) const
+{
   string uid  = hid.id;
   TFile* file = hid.file;
   string stream, fdir, bdir, dir, id;
@@ -1571,7 +1511,8 @@ TDirectory* THistSvc::changeDir( const THistSvc::THistID& hid ) const {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-std::string THistSvc::dirname( std::string& dir ) const {
+std::string THistSvc::dirname( std::string& dir ) const
+{
   string::size_type i = dir.find( "/" );
 
   if ( i == string::npos ) return {};
@@ -1589,14 +1530,15 @@ std::string THistSvc::dirname( std::string& dir ) const {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-THistSvc::GlobalDirectoryRestore::GlobalDirectoryRestore( THistSvcMutex_t& mut
-                                                          ) : m_lock(mut) {
+THistSvc::GlobalDirectoryRestore::GlobalDirectoryRestore( THistSvcMutex_t& mut ) : m_lock( mut )
+{
   m_gd = gDirectory;
   m_gf = gFile;
   m_ge = gErrorIgnoreLevel;
 }
 
-THistSvc::GlobalDirectoryRestore::~GlobalDirectoryRestore() {
+THistSvc::GlobalDirectoryRestore::~GlobalDirectoryRestore()
+{
   gDirectory        = m_gd;
   gFile             = m_gf;
   gErrorIgnoreLevel = m_ge;
@@ -1604,7 +1546,8 @@ THistSvc::GlobalDirectoryRestore::~GlobalDirectoryRestore() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-void THistSvc::removeDoubleSlash( std::string& id ) const {
+void THistSvc::removeDoubleSlash( std::string& id ) const
+{
   while ( id.find( "//" ) != std::string::npos ) {
     id.replace( id.find( "//" ), 2, "/" );
   }
@@ -1612,7 +1555,8 @@ void THistSvc::removeDoubleSlash( std::string& id ) const {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source ) {
+void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source )
+{
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "Target path: " << target->GetPath() << endmsg;
   }
@@ -1628,8 +1572,7 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source ) {
   TKey* key;
   for ( int jj = 0; jj < nkeys; jj++ ) {
     key                     = (TKey*)lkeys->At( jj );
-    string pathnameinsource = current_sourcedir->GetPath() + string( "/" )
-                              + key->GetName();
+    string pathnameinsource = current_sourcedir->GetPath() + string( "/" ) + key->GetName();
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "Reading Key:" << pathnameinsource << endmsg;
     }
@@ -1644,8 +1587,7 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source ) {
 
         // create a new subdir of same name and title in the target file
         target->cd();
-        TDirectory* newtargetdir = target->mkdir( obj->GetName(),
-                                                  obj->GetTitle() );
+        TDirectory* newtargetdir = target->mkdir( obj->GetName(), obj->GetTitle() );
 
         MergeRootFile( newtargetdir, source );
 
@@ -1673,14 +1615,16 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source ) {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-bool THistSvc::exists( const std::string& name ) const {
+bool THistSvc::exists( const std::string& name ) const
+{
   TH1* h;
   return getHist_i( name, h, 0, true ).isSuccess();
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-void THistSvc::handle( const Incident& /* inc */ ) {
+void THistSvc::handle( const Incident& /* inc */ )
+{
   if ( signaledStop ) return;
 
   if ( m_maxFileSize.value() == -1 ) return;
@@ -1697,8 +1641,7 @@ void THistSvc::handle( const Incident& /* inc */ ) {
 
 #ifndef NDEBUG
     if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "stream: " << f.first << "  name: " << tf->GetName()
-              << "  size: " << tf->GetSize() << endmsg;
+      debug() << "stream: " << f.first << "  name: " << tf->GetName() << "  size: " << tf->GetSize() << endmsg;
     }
 #endif
 
@@ -1707,9 +1650,8 @@ void THistSvc::handle( const Incident& /* inc */ ) {
 
       signaledStop = true;
 
-      fatal() << "file \"" << tf->GetName() << "\" associated with stream \""
-              << f.first << "\" has exceeded the max file size of "
-              << m_maxFileSize.value() << "MB. Terminating Job." << endmsg;
+      fatal() << "file \"" << tf->GetName() << "\" associated with stream \"" << f.first
+              << "\" has exceeded the max file size of " << m_maxFileSize.value() << "MB. Terminating Job." << endmsg;
 
       IEventProcessor* evt = nullptr;
       if ( service( "ApplicationMgr", evt, true ).isSuccess() ) {
@@ -1719,10 +1661,8 @@ void THistSvc::handle( const Incident& /* inc */ ) {
         abort();
       }
     } else if ( tf->GetSize() > mfs_warn ) {
-      warning() << "file \"" << tf->GetName() << "\" associated with stream \"" 
-                << f.first
-                << "\" is at 95% of its maximum allowable file size of "
-                << m_maxFileSize.value() << "MB" << endmsg;
+      warning() << "file \"" << tf->GetName() << "\" associated with stream \"" << f.first
+                << "\" is at 95% of its maximum allowable file size of " << m_maxFileSize.value() << "MB" << endmsg;
     }
   }
 }
@@ -1731,7 +1671,8 @@ void THistSvc::handle( const Incident& /* inc */ ) {
 
 /** helper function to recursively copy the layout of a TFile into a new TFile
  */
-void THistSvc::copyFileLayout( TDirectory* dst, TDirectory* src ) {
+void THistSvc::copyFileLayout( TDirectory* dst, TDirectory* src )
+{
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "copyFileLayout() to dst path: " << dst->GetPath() << endmsg;
   }
@@ -1748,8 +1689,7 @@ void THistSvc::copyFileLayout( TDirectory* dst, TDirectory* src ) {
   int n           = key_list->GetEntries();
   for ( int j = 0; j < n; ++j ) {
     TKey* k                        = (TKey*)key_list->At( j );
-    const std::string src_pathname = cur_src_dir->GetPath()
-                                     + std::string( "/" ) + k->GetName();
+    const std::string src_pathname = cur_src_dir->GetPath() + std::string( "/" ) + k->GetName();
     TObject* o                     = src->Get( src_pathname.c_str() );
 
     if ( o && o->IsA()->InheritsFrom( "TDirectory" ) ) {
@@ -1768,7 +1708,8 @@ void THistSvc::copyFileLayout( TDirectory* dst, TDirectory* src ) {
 /** @brief callback method to reinitialize the internal state of
  *         the component for I/O purposes (e.g. upon @c fork(2))
  */
-StatusCode THistSvc::io_reinit() {
+StatusCode THistSvc::io_reinit()
+{
   bool all_good = true;
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "reinitializing I/O..." << endmsg;
@@ -1783,7 +1724,7 @@ StatusCode THistSvc::io_reinit() {
     return StatusCode::FAILURE;
   }
 
-  GlobalDirectoryRestore restore(m_svcMut);
+  GlobalDirectoryRestore restore( m_svcMut );
   // to hide the expected errors upon closing the files whose
   // file descriptors have been swept under the rug...
   gErrorIgnoreLevel = kFatal;
@@ -1792,22 +1733,19 @@ StatusCode THistSvc::io_reinit() {
     TFile* f          = ifile.second.first;
     std::string fname = f->GetName();
     if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "file [" << fname << "] mode: [" << f->GetOption() << "] r:"
-              << f->GetFileBytesRead() << " w:" << f->GetFileBytesWritten()
-              << " cnt:" << f->GetFileCounter() << endmsg;
+      debug() << "file [" << fname << "] mode: [" << f->GetOption() << "] r:" << f->GetFileBytesRead()
+              << " w:" << f->GetFileBytesWritten() << " cnt:" << f->GetFileCounter() << endmsg;
     }
 
     if ( ifile.second.second == READ ) {
       if ( msgLevel( MSG::DEBUG ) ) {
-        debug() << "  TFile opened in READ mode: not reassigning names"
-                << endmsg;
+        debug() << "  TFile opened in READ mode: not reassigning names" << endmsg;
       }
       continue;
     }
 
     if ( !iomgr->io_retrieve( this, fname ).isSuccess() ) {
-      error() << "could not retrieve new name for [" << fname << "] !!"
-              << endmsg;
+      error() << "could not retrieve new name for [" << fname << "] !!" << endmsg;
       all_good = false;
       continue;
     } else {
@@ -1818,11 +1756,9 @@ StatusCode THistSvc::io_reinit() {
 
     void* vf;
     Option_t* opts = f->GetOption();
-    int r          = p_fileMgr->open( Io::ROOT, name(), fname, Io::WRITE, vf,
-                                      "HIST" );
+    int r          = p_fileMgr->open( Io::ROOT, name(), fname, Io::WRITE, vf, "HIST" );
     if ( r != 0 ) {
-      error() << "unable to open file \"" << fname << "\" for writing"
-              << endmsg;
+      error() << "unable to open file \"" << fname << "\" for writing" << endmsg;
       return StatusCode::FAILURE;
     }
     TFile* newfile = (TFile*)vf;
@@ -1858,9 +1794,9 @@ StatusCode THistSvc::io_reinit() {
       } else {
         error() << "id: \"" << hid.id << "\" is not a inheriting from a class "
                 << "we know how to handle (received [" << cl->GetName() << "], "
-                << "expected [TTree, TH1 or TGraph]) !" << endmsg
-                << "attaching to current dir [" << newdir->GetPath()
-                << "] " << "nonetheless..." << endmsg;
+                << "expected [TTree, TH1 or TGraph]) !" << endmsg << "attaching to current dir [" << newdir->GetPath()
+                << "] "
+                << "nonetheless..." << endmsg;
         olddir->Remove( hid.obj );
         newdir->Append( hid.obj );
       }
@@ -1875,8 +1811,8 @@ StatusCode THistSvc::io_reinit() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::rootOpenAction( const Io::FileAttr* fa,
-                                     const std::string& caller ) {
+StatusCode THistSvc::rootOpenAction( const Io::FileAttr* fa, const std::string& caller )
+{
   if ( fa->tech() != Io::ROOT ) {
     // This should never happen
     return StatusCode::SUCCESS;
@@ -1889,17 +1825,12 @@ StatusCode THistSvc::rootOpenAction( const Io::FileAttr* fa,
   p_incSvc->fireIncident( FileIncident( caller, "OpenHistFile", fa->name() ) );
 
   if ( fa->flags().isRead() ) {
-    p_incSvc->fireIncident( FileIncident( caller, "BeginHistFile",
-                                          fa->name() ) );
+    p_incSvc->fireIncident( FileIncident( caller, "BeginHistFile", fa->name() ) );
   } else if ( fa->flags().isWrite() ) {
-    p_incSvc->fireIncident( FileIncident( caller,
-                                          IncidentType::BeginOutputFile,
-                                          fa->name() ) );
+    p_incSvc->fireIncident( FileIncident( caller, IncidentType::BeginOutputFile, fa->name() ) );
   } else {
     // for Io::RW
-    p_incSvc->fireIncident( FileIncident( caller,
-                                          IncidentType::BeginOutputFile,
-                                          fa->name() ) );
+    p_incSvc->fireIncident( FileIncident( caller, IncidentType::BeginOutputFile, fa->name() ) );
   }
 
   return StatusCode::SUCCESS;
@@ -1907,8 +1838,8 @@ StatusCode THistSvc::rootOpenAction( const Io::FileAttr* fa,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::rootOpenErrAction( const Io::FileAttr* fa,
-                                        const std::string& caller ) {
+StatusCode THistSvc::rootOpenErrAction( const Io::FileAttr* fa, const std::string& caller )
+{
   if ( fa->tech() != Io::ROOT ) {
     // This should never happen
     return StatusCode::SUCCESS;
@@ -1919,13 +1850,9 @@ StatusCode THistSvc::rootOpenErrAction( const Io::FileAttr* fa,
   }
 
   if ( fa->flags().isRead() ) {
-    p_incSvc->fireIncident( FileIncident( caller,
-                                          IncidentType::FailInputFile,
-                                          fa->name() ) );
+    p_incSvc->fireIncident( FileIncident( caller, IncidentType::FailInputFile, fa->name() ) );
   } else if ( fa->flags().isWrite() ) {
-    p_incSvc->fireIncident( FileIncident( caller,
-                                          IncidentType::FailOutputFile,
-                                          fa->name() ) );
+    p_incSvc->fireIncident( FileIncident( caller, IncidentType::FailOutputFile, fa->name() ) );
   } else {
     // for Io::RW
     p_incSvc->fireIncident( FileIncident( caller, "FailRWFile", fa->name() ) );
@@ -1936,9 +1863,8 @@ StatusCode THistSvc::rootOpenErrAction( const Io::FileAttr* fa,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-size_t
-THistSvc::findHistID( const std::string& id, const THistID*& hid,
-                      const size_t& index ) const {
+size_t THistSvc::findHistID( const std::string& id, const THistID*& hid, const size_t& index ) const
+{
   GlobalDirectoryRestore restore( m_svcMut );
 
   std::string idr( id );
@@ -1955,11 +1881,10 @@ THistSvc::findHistID( const std::string& id, const THistID*& hid,
     } else {
       // one or more matches found (clones).
       if ( index >= itr->second->size() ) {
-        error() << "no index " << index << " found for Hist "
-                << idr << endmsg;
+        error() << "no index " << index << " found for Hist " << idr << endmsg;
         return 0;
       }
-      hid = & ( itr->second->at( index ) );
+      hid = &( itr->second->at( index ) );
       return 1;
     }
   } else {
@@ -1971,34 +1896,31 @@ THistSvc::findHistID( const std::string& id, const THistID*& hid,
     } else if ( distance( mitr.first, mitr.second ) == 1 ) {
       // one found
       if ( index >= mitr.first->second->size() ) {
-        error() << "no index " << index << " found for Hist "
-                << idr << endmsg;
+        error() << "no index " << index << " found for Hist " << idr << endmsg;
         return 0;
       }
-      hid = & ( mitr.first->second->at(0) );
+      hid = &( mitr.first->second->at( 0 ) );
       return 1;
     } else {
       // multiple matches
-      return distance(mitr.first, mitr.second);
+      return distance( mitr.first, mitr.second );
     }
   }
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-#define REG_SHARED_THING( FCN, OBJ )                                     \
-  StatusCode THistSvc::regShared ## FCN  ( const std::string& id,        \
-                                           std::unique_ptr< OBJ >& hist, \
-                                           LockedHandle< OBJ >& lh ) {   \
-    return regSharedObj_i( id, hist, lh );                               \
+#define REG_SHARED_THING( FCN, OBJ )                                                                                   \
+  StatusCode THistSvc::regShared##FCN( const std::string& id, std::unique_ptr<OBJ>& hist, LockedHandle<OBJ>& lh )      \
+  {                                                                                                                    \
+    return regSharedObj_i( id, hist, lh );                                                                             \
   }
 
-#define GET_SHARED_THING( FCN, OBJ )                                          \
-  StatusCode THistSvc::getShared ## FCN ( const std::string& name,            \
-                                          LockedHandle< OBJ >& hist ) const { \
-    return getSharedObj_i( name, hist );                                      \
-}
-
+#define GET_SHARED_THING( FCN, OBJ )                                                                                   \
+  StatusCode THistSvc::getShared##FCN( const std::string& name, LockedHandle<OBJ>& hist ) const                        \
+  {                                                                                                                    \
+    return getSharedObj_i( name, hist );                                                                               \
+  }
 
 REG_SHARED_THING( Hist, TH1 )
 REG_SHARED_THING( Hist, TH2 )
@@ -2012,35 +1934,39 @@ GET_SHARED_THING( Graph, TGraph )
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-void THistSvc::dump() const {
+void THistSvc::dump() const
+{
   ostringstream ost;
 
   // list< vector<THistID> >
   ost << "m_hlist:  size: " << m_hlist.size() << "\n";
   for ( auto& vh : m_hlist ) {
-    ost << " - " << vh->at( 0 ) << " :: [" << vh << "] " << vh->size() <<  " {";
-    for ( auto &e : *vh ) {
-      TObject *o = e.obj;
+    ost << " - " << vh->at( 0 ) << " :: [" << vh << "] " << vh->size() << " {";
+    for ( auto& e : *vh ) {
+      TObject* o = e.obj;
       ost << "[" << o << "]";
     }
     ost << "}\n";
   }
 
   // map uid -> vector<THistID>*
-  ost << "\n" << "m_uids: " << m_uids.size() << "\n";
+  ost << "\n"
+      << "m_uids: " << m_uids.size() << "\n";
   for ( auto& e : m_uids ) {
     ost << " - " << e.first << "  [" << e.second << "]" << endl;
   }
 
   // multimap id -> vector<THistID>*
-  ost << "\n" << "m_ids: " << m_ids.size() << "\n";
+  ost << "\n"
+      << "m_ids: " << m_ids.size() << "\n";
   for ( auto& e : m_ids ) {
     ost << " - " << e.first << "  [" << e.second << "]" << endl;
   }
 
   // map TObject* -> THistID*
-  ost << "\n" << "m_tobjs: " << m_tobjs.size() << "\n";
-  for ( auto &e : m_tobjs ) {
+  ost << "\n"
+      << "m_tobjs: " << m_tobjs.size() << "\n";
+  for ( auto& e : m_tobjs ) {
     TObject* o = e.first;
     THistID& i = e.second.first->at( e.second.second );
     ost << " - " << o << " -> " << i << endl;
@@ -2050,9 +1976,10 @@ void THistSvc::dump() const {
 }
     
 
-void THistSvc::dumpVHID( const vhid_t* vi ) const {
+void THistSvc::dumpVHID( const vhid_t* vi ) const
+{
   debug() << "vHID: " << vi << " [" << vi->size() << "]";
-  for ( auto &e : *vi ) {
+  for ( auto& e : *vi ) {
     debug() << " " << &e;
   }
   debug() << endmsg;
@@ -2060,22 +1987,21 @@ void THistSvc::dumpVHID( const vhid_t* vi ) const {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::merge( const THistID& hid ) {
-  return merge( hid.id );
-  
-}
+StatusCode THistSvc::merge( const THistID& hid ) { return merge( hid.id ); }
 
-StatusCode THistSvc::merge( TObject* obj ) {
+StatusCode THistSvc::merge( TObject* obj )
+{
   objMap_t::iterator itr = m_tobjs.find( obj );
   if ( itr != m_tobjs.end() ) {
-    return merge( itr->second.first);
+    return merge( itr->second.first );
   } else {
     error() << "merge: unknown object " << obj << endmsg;
     return StatusCode::FAILURE;
   }
 }
 
-StatusCode THistSvc::merge( const std::string& name ) {
+StatusCode THistSvc::merge( const std::string& name )
+{
   uidMap_t::iterator itr = m_uids.find( name );
   if ( itr == m_uids.end() ) {
     error() << "merge: id \"" << name << "\" not found" << endmsg;
@@ -2085,49 +2011,43 @@ StatusCode THistSvc::merge( const std::string& name ) {
   return merge( itr->second );
 }
 
-StatusCode THistSvc::merge( vhid_t* vh ) {
+StatusCode THistSvc::merge( vhid_t* vh )
+{
   const std::string& name = vh->at( 0 ).id;
   if ( vh->size() == 1 ) {
-    debug() << "merge: id: \"" << name << "\" is size 1. nothing to do"
-            << endmsg;
+    debug() << "merge: id: \"" << name << "\" is size 1. nothing to do" << endmsg;
     return StatusCode::SUCCESS;
   }
 
-  if ( ! vh->at(0).obj->IsA()->InheritsFrom( "TH1" ) ) {
-    error() << "merge: id \"" << name << "\" is not a THn. Cannot merge"
-            << endmsg;
+  if ( !vh->at( 0 ).obj->IsA()->InheritsFrom( "TH1" ) ) {
+    error() << "merge: id \"" << name << "\" is not a THn. Cannot merge" << endmsg;
     return StatusCode::FAILURE;
   }
-  
-  TList *l = new TList();
+
+  TList* l = new TList();
   for ( size_t i = 1; i < vh->size(); ++i ) {
-    debug() << "merge: id: \"" << name
-            << "\" (" << vh->at(i).obj << ") adding index " << i << endmsg;
-    l->Add( vh->at(i).obj );
+    debug() << "merge: id: \"" << name << "\" (" << vh->at( i ).obj << ") adding index " << i << endmsg;
+    l->Add( vh->at( i ).obj );
   }
 
-  TH1* t0 = dynamic_cast<TH1*> ( vh->at(0).obj );
+  TH1* t0 = dynamic_cast<TH1*>( vh->at( 0 ).obj );
   if ( t0 == 0 ) {
-      error() << "merge: could not dcast " << name << "(" << t0 << ") index "
-              << 0 << " to TH1" << endmsg;
-      return StatusCode::FAILURE;
+    error() << "merge: could not dcast " << name << "(" << t0 << ") index " << 0 << " to TH1" << endmsg;
+    return StatusCode::FAILURE;
   }
 
   Long64_t n = t0->Merge( l );
 
-  debug() << "merge: id: \"" << name << "\" merged " << n << " entries"
-          << endmsg;
+  debug() << "merge: id: \"" << name << "\" merged " << n << " entries" << endmsg;
 
-  for ( size_t i=1; i<vh->size(); ++i ) {
-    TH1* th = dynamic_cast<TH1*>( vh->at(i).obj );
+  for ( size_t i = 1; i < vh->size(); ++i ) {
+    TH1* th = dynamic_cast<TH1*>( vh->at( i ).obj );
     if ( th != 0 ) {
       debug() << "clearing index " << i << "(" << th << ")" << endmsg;
       th->SetDirectory( nullptr );
       th->Reset();
     } else {
-      error() << "merge: could not dcast " << name << " index "
-              << i << " to TH1"
-              << endmsg;
+      error() << "merge: could not dcast " << name << " index " << i << " to TH1" << endmsg;
       return StatusCode::FAILURE;
     }
   }
