@@ -8,14 +8,20 @@
 
 namespace details
 {
-  template <typename T>
-  auto size( const T& t ) -> decltype( t.size() )
+  template <typename C>
+  constexpr auto size( const C& c ) noexcept(noexcept(c.size())) -> decltype( c.size() )
   {
-    return t.size();
+    return c.size();
+  }
+
+  template <typename T, std::size_t N>
+  constexpr auto size( const T(&array)[N] ) noexcept
+  {
+    return N;
   }
 
   template <typename T, typename... Args>
-  auto size( const T&, Args&&... )
+  constexpr auto size( const T&, Args&&... ) noexcept
   {
     static_assert( sizeof...( Args ) == 0, "No extra args please" );
     return boost::none;
@@ -24,6 +30,7 @@ namespace details
 
 // ugly hack to circumvent the usage of boost::any
 struct GAUDI_API AnyDataWrapperBase : DataObject {
+  // TODO:  C++17: replace with 'std::optional<std::size_t>'
   virtual boost::optional<std::size_t> size() const = 0;
 };
 
@@ -39,7 +46,11 @@ public:
   const T& getData() const { return m_data; }
   T& getData() { return m_data; }
 
-  boost::optional<std::size_t> size() const override { return details::size( m_data ); }
+  boost::optional<std::size_t> size() const override {
+      // TODO: C++17:  add 'using std::size' and remove the first two implementations in details...
+      using details::size;
+      return size( m_data );
+  }
 
 private:
   T m_data;
