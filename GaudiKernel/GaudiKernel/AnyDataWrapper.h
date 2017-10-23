@@ -9,13 +9,13 @@
 namespace details
 {
   template <typename C>
-  constexpr auto size( const C& c ) noexcept(noexcept(c.size())) -> decltype( c.size() )
+  constexpr auto size( const C& c ) noexcept( noexcept( c.size() ) ) -> decltype( c.size() )
   {
     return c.size();
   }
 
   template <typename T, std::size_t N>
-  constexpr auto size( const T(&array)[N] ) noexcept
+  constexpr auto size( const T ( &array )[N] ) noexcept
   {
     return N;
   }
@@ -46,10 +46,11 @@ public:
   const T& getData() const { return m_data; }
   T& getData() { return m_data; }
 
-  boost::optional<std::size_t> size() const override {
-      // TODO: C++17:  add 'using std::size' and remove the first two implementations in details...
-      using details::size;
-      return size( m_data );
+  boost::optional<std::size_t> size() const override
+  {
+    // TODO: C++17:  add 'using std::size' and remove the first two implementations in details...
+    using details::size;
+    return size( m_data );
   }
 
 private:
