@@ -3,6 +3,8 @@
 
 // Include files
 #include "GaudiKernel/DataObject.h"
+#include "boost/optional.hpp"
+#include <cstddef>
 
 namespace details
 {
@@ -13,16 +15,16 @@ namespace details
   }
 
   template <typename T, typename... Args>
-  constexpr int size( const T&, Args&&... )
+  auto size( const T&, Args&&... )
   {
     static_assert( sizeof...( Args ) == 0, "No extra args please" );
-    return -1;
+    return boost::none;
   }
 }
 
 // ugly hack to circumvent the usage of boost::any
 struct GAUDI_API AnyDataWrapperBase : DataObject {
-  virtual int size() const = 0;
+  virtual boost::optional<std::size_t> size() const = 0;
 };
 
 template <class T>
@@ -37,7 +39,7 @@ public:
   const T& getData() const { return m_data; }
   T& getData() { return m_data; }
 
-  int size() const override { return details::size( m_data ); }
+  boost::optional<std::size_t> size() const override { return details::size( m_data ); }
 
 private:
   T m_data;
