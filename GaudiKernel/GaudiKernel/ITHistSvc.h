@@ -76,7 +76,7 @@ public:
   virtual StatusCode merge( const std::string& id ) = 0;
   virtual StatusCode merge( TObject* )              = 0;
 
-  virtual bool exists(const std::string& name) const = 0;
+  virtual bool exists( const std::string& name ) const = 0;
 
   /// virtual destructor
   virtual ~ITHistSvc() = default;

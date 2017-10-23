@@ -892,7 +892,6 @@ StatusCode THistSvc::deReg( const std::string& id )
   }
 
   return sc;
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -1076,8 +1075,7 @@ bool THistSvc::findStream( const string& id, string& stream, string& rem, TFile*
 
     if ( pos2 == string::npos ) {
       // need at least 2 "/" in format "/STREAM/name" or "/STREAM/dir/name"
-      m_log << MSG::ERROR << "badly formed Hist/Tree id: \"" << id << "\""
-            << endmsg;
+      error() << "badly formed Hist/Tree id: \"" << id << "\"" << endmsg;
       return false;
     }
     parseString( id, stream, rem );
@@ -1379,13 +1377,13 @@ StatusCode THistSvc::connect( const std::string& ident )
     const auto& f_info = m_files[oldstream];
 
     if ( newMode != f_info.second ) {
-    error() << "in JobOption \"" << ident << "\":\n file \"" << filename << "\" already opened by stream: \""
-            << oldstream << "\" with different access mode." << endmsg;
-    return StatusCode::FAILURE;
-  } else {
-    TFile* f2       = f_info.first;
-    m_files[stream] = make_pair( f2, newMode );
-    if ( msgLevel( MSG::DEBUG ) )
+      error() << "in JobOption \"" << ident << "\":\n file \"" << filename << "\" already opened by stream: \""
+              << oldstream << "\" with different access mode." << endmsg;
+      return StatusCode::FAILURE;
+    } else {
+      TFile* f2       = f_info.first;
+      m_files[stream] = make_pair( f2, newMode );
+      if ( msgLevel( MSG::DEBUG ) )
         debug() << "Connecting stream: \"" << stream << "\" to previously opened TFile: \"" << filename << "\""
                 << endmsg;
       return StatusCode::SUCCESS;
@@ -1974,7 +1972,6 @@ void THistSvc::dump() const
 
   debug() << "dumping THistSvc contents\n" << ost.str() << endmsg;
 }
-    
 
 void THistSvc::dumpVHID( const vhid_t* vi ) const
 {
@@ -2007,7 +2004,7 @@ StatusCode THistSvc::merge( const std::string& name )
     error() << "merge: id \"" << name << "\" not found" << endmsg;
     return StatusCode::FAILURE;
   }
-  
+
   return merge( itr->second );
 }
 

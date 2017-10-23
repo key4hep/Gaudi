@@ -46,7 +46,6 @@ public:
   StatusCode getSharedHist( const std::string& name, LockedHandle<TH2>& ) const override;
   StatusCode getSharedHist( const std::string& name, LockedHandle<TH3>& ) const override;
 
-
   StatusCode regTree( const std::string& name ) override;
   StatusCode regTree( const std::string& name, TTree* ) override;
   StatusCode getTree( const std::string& name, TTree*& ) const override;
@@ -84,7 +83,7 @@ public:
   void handle( const Incident& ) override;
 
   // From IIoComponent
-  StatusCode io_reinit () override;
+  StatusCode io_reinit() override;
 
   StatusCode merge( const std::string& id ) override;
   StatusCode merge( TObject* ) override;
@@ -93,7 +92,6 @@ protected:
   ~THistSvc() override = default;
 
 private:
-
   typedef std::recursive_mutex THistSvcMutex_t;
 
   class GlobalDirectoryRestore
@@ -175,6 +173,8 @@ private:
   std::string dirname( std::string& dir ) const;
   void removeDoubleSlash( std::string& ) const;
 
+  void MergeRootFile( TDirectory*, TDirectory* );
+
   bool browseTDir( TDirectory* dir ) const;
 
   bool findStream( const std::string& name, std::string& root, std::string& rem, TFile*& file ) const;
@@ -189,7 +189,6 @@ private:
   void setupCompressionLevel( Gaudi::Details::PropertyBase& cmp );
 
   void copyFileLayout( TDirectory*, TDirectory* );
-
 
   size_t findHistID( const std::string& id, const THistID*& hid, const size_t& index = 0 ) const;
 
@@ -216,13 +215,12 @@ private:
   /// registered by the setupOutputFile callback method
   std::set<std::string> m_alreadyConnectedOutFiles;
 
-
   typedef std::map<std::string, THistID> uidXMap;
   typedef std::multimap<std::string, THistID> idXMap;
   typedef std::multimap<std::string, std::string> streamMap;
 
   uidXMap m_uidsX;
-  idXMap  m_idsX;
+  idXMap m_idsX;
 
   // containers for fast lookups
   // same uid for all elements in vec
@@ -235,11 +233,11 @@ private:
   typedef std::unordered_multimap<std::string, vhid_t*> idMap_t;
   typedef std::unordered_map<TObject*, std::pair<vhid_t*, size_t>> objMap_t;
 
-  hlist_t  m_hlist;
+  hlist_t m_hlist;
   uidMap_t m_uids;
-  idMap_t  m_ids;
+  idMap_t m_ids;
 
-  objMap_t  m_tobjs;
+  objMap_t m_tobjs;
 
   std::map<std::string, std::pair<TFile*, Mode>> m_files; // stream->file
   streamMap m_fileStreams;                                // fileName->streams

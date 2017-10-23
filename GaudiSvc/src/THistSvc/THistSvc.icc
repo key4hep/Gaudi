@@ -2,7 +2,7 @@
 #define GAUDISVC_THISTSVC_ICC
 
 #ifndef GAUDIKERNEL_MSGSTREAM_H
-  #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/MsgStream.h"
 #endif
 
 #include "GaudiKernel/System.h"
@@ -171,14 +171,12 @@ StatusCode THistSvc::getHist_i( const std::string& id, T*& hist, const size_t& i
     if ( !quiet ) {
       // return failure if trying to GET a single hist
       error() << "Multiple matches with id \"" << id << "\"."
-              << " Further specifications required."
-              << endmsg;
+              << " Further specifications required." << endmsg;
       hist = nullptr;
       return StatusCode::FAILURE;
     } else {
       // return a SUCCESS if just INQUIRING
-      info() << "Found multiple matches with id \"" << id
-             << "\"" << endmsg;
+      info() << "Found multiple matches with id \"" << id << "\"" << endmsg;
       hist = nullptr;
       return StatusCode::SUCCESS;
     }
@@ -256,7 +254,6 @@ StatusCode THistSvc::readHist_i( const std::string& id, T*& hist ) const
   }
 
   return StatusCode::SUCCESS;
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -302,7 +299,6 @@ StatusCode THistSvc::regSharedObj_i( const std::string& id, std::unique_ptr<T>& 
       }
     }
   }
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
