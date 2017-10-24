@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE( ctx_data_with_proto )
   BOOST_CHECK( i == 42 );
 
   BOOST_CHECK( i.accumulate( 0 ) == ( 42 + 23 ) );
-  BOOST_CHECK( i.accumulate( 1, std::multiplies<int>() ) == ( 42 * 23 ) );
+  BOOST_CHECK( i.accumulate( 1, std::multiplies<>() ) == ( 42 * 23 ) );
 }
 
 class TestClass
