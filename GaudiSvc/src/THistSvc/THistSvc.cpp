@@ -1231,7 +1231,7 @@ void THistSvc::updateFiles()
 
         auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
                                   [&]( streamMap::const_reference s ) { return s.second == streamName; } );
-        if ( sitr != std::end( m_fileStreams ) ) oldFileName= sitr->first;
+        if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
 
 #ifndef NDEBUG
         if ( msgLevel( MSG::DEBUG ) ) {
