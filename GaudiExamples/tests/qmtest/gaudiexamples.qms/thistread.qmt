@@ -8,17 +8,16 @@
   </set></argument>
   <argument name="validator"><text>
 preprocessor = normalizeExamples + \
-    SortGroupOfLines(r"(.+id: )(\/.*\/.*)( t: )([0,1])( s: )([0,1])( M: )([0-9]+)(.*o: 0x######## )(.*)") + \
-    SortGroupOfLines(r"^- ([\w\/]+)+  \[[\w\#]{10}\]") + \
     RegexpReplacer(when = "^THistSvc",
         orig = r"(.+M: )([0-9]+)(.*)",
         repl = r"\1########\3") + \
-    RegexpReplacer(when = "^ - id: ",
+    RegexpReplacer(when = "- id: ",
         orig = r"(.+M: )([0-9]+)(.*)",
         repl = r"\1########\3") + \
     RegexpReplacer(when = "^ - 0x########.*id: ",
         orig = r"(.+id: )(\/.*\/.*)( t: )([0,1])( s: )([0,1])( M: )([0-9]+)(.*o: 0x######## )(.*)",
-        repl = r"\1\2\3\4\5\6\7########\9\10")
+        repl = r"\1\2\3\4\5\6\7########\9\10") + \
+    SortGroupOfLines(r"^ -")
 
 validateWithReference(preproc = preprocessor)
 </text></argument>
