@@ -1,3 +1,5 @@
+#ifndef GAUDIKERNEL_INVOKE_H
+#define GAUDIKERNEL_INVOKE_H
 #include <functional>
 #include <type_traits>
 #include <utility>
@@ -88,3 +90,4 @@ namespace Gaudi
     return detail2::INVOKE( std::forward<F>( f ), std::forward<ArgTypes>( args )... );
   }
 }
+#endif
