@@ -1,6 +1,6 @@
 ---
 version: v29r1
-date: 2017-10-17
+date: 2017-10-25
 supported_builds: [CMake]
 ---
 Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
