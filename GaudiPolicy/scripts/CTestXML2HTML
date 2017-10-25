@@ -7,6 +7,8 @@ import re
 import shutil
 import bisect
 import time
+import base64
+import zlib
 
 from datetime import datetime, timedelta
 from optparse import OptionParser
@@ -67,6 +69,26 @@ def formatMeasurementText(txt, escape=False, preformat=True):
     if preformat:
         txt = '<pre>{0}</pre>'.format(txt)
     return txt
+
+
+VALUE_DECODE = {'base64': base64.b64decode}
+VALUE_DECOMP = {'gzip': zlib.decompress}
+
+
+def dropCustomMeasurements(s):
+    '''
+    Remove custom measurements (sections encompassed by
+    '<DartMeasurement ...></DartMeasurement>' tags) from the input string and
+    return the new value.
+    '''
+    pos = s.find('<DartMeasurement')
+    while pos >= 0:
+        end_pos = s.find('</DartMeasurement>', pos)
+        if end_pos < 0:
+            break  # no end tag, better not to drop the section
+        s = s[:pos] + s[end_pos + 18:]  # 18 is the size of the end tag
+        pos = s.find('<DartMeasurement')
+    return s
 
 
 # Some regular expression that is going to be used in the next functions
@@ -742,19 +764,27 @@ def main():
                 summaryFile.close()
 
                 # write the stdout
-                if Results.find("Measurement") is not None:
+                try:
                     value = Results.find("Measurement").find("Value")
-                    stdout = open(os.path.join(testCaseDir, "stdout"), "w")
-                    if value is not None and value.text is not None:
-                        stdout.write(formatMeasurementText(value.text,
-                                                           escape=True))
-                    else:
-                        stdout.write("<pre></pre>")
-                    stdout.close()
-                else:
-                    stdout = open(os.path.join(testCaseDir, "stdout"), "w")
-                    stdout.write("<pre></pre>")
-                    stdout.close()
+                    text = value.text
+                    if 'encoding' in value.attrib:
+                        text = VALUE_DECODE[value.attrib['encoding']](text)
+                    if 'compression' in value.attrib:
+                        text = VALUE_DECOMP[value.attrib['compression']](text)
+                    text = dropCustomMeasurements(text)
+                    text = formatMeasurementText(text, escape=True)
+                    # no "Measurement" or no "Value" or no text
+                except AttributeError as x:
+                    print 'WARNING: {0[id]}: AttributeError: {1}'.format(
+                        summary, x)
+                    text = '<i>no stdout</i>'
+                except KeyError as x:
+                    print 'WARNING: {0[id]}: KeyError: {1}'.format(
+                        summary, x)
+                    # encoding or compressions unknown, keep original text
+                    text = formatMeasurementText(value=text, escape=True)
+                with open(os.path.join(testCaseDir, "stdout"), "w") as stdout:
+                    stdout.write(text)
 
                 if "ctest" not in site.get("Generator"):
                     # write the other files
