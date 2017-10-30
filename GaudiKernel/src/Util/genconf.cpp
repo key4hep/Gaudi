@@ -168,7 +168,7 @@ class configGenerator
   ///  - Name of the configurable base class for the Algorithm component
   ///  - Name of the configurable base class for the AlgTool component
   ///  - Name of the configurable base class for the Service component
-  std::unordered_map<component_t, std::string> m_configurable;
+  std::map<component_t, std::string> m_configurable;
 
 public:
   configGenerator( const string& pkgName, const string& outputDirName )
