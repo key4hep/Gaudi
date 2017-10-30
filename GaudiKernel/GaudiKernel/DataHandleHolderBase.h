@@ -166,7 +166,7 @@ namespace Gaudi
           DataObjIDColl result;
           result.reserve(handles.size());
           for(auto handlePtr: handles) {
-            result.insert(handlePtr->id());
+            result.insert(handlePtr->targetID());
           }
           return result;
         }

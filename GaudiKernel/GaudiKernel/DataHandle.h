@@ -3,6 +3,7 @@
 
 #include <string>
 #include <type_traits>
+#include "GaudiKernel/DataHandleConfigurable.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Property.h"
 
@@ -114,7 +115,7 @@ namespace Gaudi
         ///
         /// FIXME: For aliased writes, how would that work with the Scheduler?
         ///
-        const DataObjID& id() const { return m_id; }
+        const DataObjID& targetID() const { return m_property.targetID(); }
 
         /// Initialize the data handle
         ///
@@ -125,12 +126,6 @@ namespace Gaudi
         virtual void initialize(const IDataHandleHolder& owner) = 0;
 
       protected:
-        /// Handles allow either to insert data ("write") or read it back
-        enum struct Mode { Read, Write };
-
-        /// Handles will eventually support multiple storage backends, even if
-        /// they currently only support the standard Gaudi event store
-        enum struct DataStore { IDataProviderSvc };
 
         /// Handles are constructed like a Gaudi property (and effectively
         /// behave as one, which sets the associated data object identifier)
@@ -139,18 +134,18 @@ namespace Gaudi
                                                   Owner>::value>* = nullptr>
         DataHandle(Owner& owner,
                    const std::string& propertyName,
-                   DataObjID defaultID,
+                   DataObjID&& defaultID,
                    const std::string& docString,
-                   Mode /* accessMode */,
-                   DataStore /* store */)
-          : m_id{&owner, propertyName, defaultID, docString}
+                   const IDataHandleMetadata& metadata)
+          : m_property{&owner,
+                       propertyName,
+                       {metadata, std::move(defaultID)},
+                       docString}
         {}
 
       private:
-        /// The data object ID of the target data can be configured
-        /// FIXME: Expose to Property machinery whether this is an input/output
-        ///        and what kind of store it is accessing
-        Gaudi::Property<DataObjID> m_id;
+        /// Configurable property associated with a DataHandle
+        Gaudi::Property<DataHandleConfigurable> m_property;
     };
   }
 }

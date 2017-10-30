@@ -30,6 +30,7 @@ namespace Gaudi
   {
     class IDataHandleHolder;
 
+
     /// Base class to all DataHandles interacting with the transient event store
     class EventDataHandle : public DataHandle {
       public:
@@ -37,22 +38,43 @@ namespace Gaudi
         void initialize(const IDataHandleHolder& owner) final override;
 
       protected:
+        using AccessMode = IDataHandleMetadata::AccessMode;
+
+        /// DataHandle subclass metadata for event data handles
+        class Metadata : public IDataHandleMetadata {
+          public:
+            // Initialize by specifying which access mode should be used
+            Metadata(AccessMode access)
+              : m_access{access}
+            {}
+
+            // Identifier for the whiteboard implementation that we use
+            std::string whiteBoard() const final override {
+              return "IDataProviderSvc";
+            }
+
+            // Tell what is the access mode
+            AccessMode access() const final override { return m_access; }
+
+          private:
+            AccessMode m_access;
+        };
+
         /// Handles are constructed like a Gaudi property (and effectively
         /// behave as one, which sets the associated data object identifier)
         template<typename Owner>
         EventDataHandle(Owner& owner,
                         const std::string& propertyName,
-                        DataObjID defaultID,
+                        DataObjID&& defaultID,
                         const std::string& docString,
-                        DataHandle::Mode accessMode)
+                        const Metadata& metadata)
           : DataHandle{owner,
                        propertyName,
-                       defaultID,
+                       std::move(defaultID),
                        docString,
-                       accessMode,
-                       DataHandle::DataStore::IDataProviderSvc}
+                       metadata}
         {
-          registerToOwner(owner, accessMode);
+          registerToOwner(owner, metadata.access());
         }
 
         /// Pointer to the whiteboard, set during initialize()
@@ -60,12 +82,16 @@ namespace Gaudi
 
       private:
         /// Register ourselves to the owner (algorithm or tool)
-        void registerToOwner(IDataHandleHolder& owner, Mode accessMode);
+        void registerToOwner(IDataHandleHolder& owner, AccessMode access);
     };
+
 
     /// Reentrant read handle for event data
     template<typename T>
     class EventReadHandle : public EventDataHandle {
+      protected:
+        using AccessMode = IDataHandleMetadata::AccessMode;
+
       public:
         /// Create a ReadHandle and set up the associated Gaudi property
         template<typename Owner>
@@ -75,16 +101,16 @@ namespace Gaudi
                         const std::string& docString = "")
           : EventDataHandle{*owner,
                             propertyName,
-                            defaultID,
+                            std::move(defaultID),
                             docString,
-                            DataHandle::Mode::Read}
+                            {AccessMode::Read}}
         {}
 
         /// Access the data for the current event context
         decltype(auto) get(const EventContext& /* ctx */) const {
           // TODO: Introduce and use an EventContext-aware whiteboard interface
           DataObject* ptr = nullptr;
-          auto sc = m_whiteBoard->retrieveObject(id().key(), ptr);
+          auto sc = m_whiteBoard->retrieveObject(targetID().key(), ptr);
           if(sc.isFailure()) {
             throw std::runtime_error("Failed to read input from whiteboard");
           }
@@ -92,9 +118,13 @@ namespace Gaudi
         }
     };
 
+
     /// Reentrant write handle for event data
     template<typename T>
     class EventWriteHandle : public EventDataHandle {
+      protected:
+        using AccessMode = IDataHandleMetadata::AccessMode;
+
       public:
         /// Create a WriteHandle and set up the associated Gaudi property
         template<typename Owner>
@@ -104,9 +134,9 @@ namespace Gaudi
                          const std::string& docString = "")
           : EventDataHandle{*owner,
                             propertyName,
-                            defaultID,
+                            std::move(defaultID),
                             docString,
-                            DataHandle::Mode::Write}
+                            {AccessMode::Write}}
         {}
 
         /// Move data into the store
@@ -136,7 +166,8 @@ namespace Gaudi
                      std::unique_ptr<DataObject>&& ptr) const
         {
           // TODO: Introduce and use an EventContext-aware whiteboard interface
-          auto sc = m_whiteBoard->registerObject(id().key(), ptr.release());
+          auto sc = m_whiteBoard->registerObject(targetID().key(),
+                                                 ptr.release());
           if(sc.isFailure()) {
             throw std::runtime_error("Failed to write output into whiteboard");
           }

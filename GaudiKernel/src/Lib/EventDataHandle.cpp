@@ -7,13 +7,13 @@ namespace Gaudi
   namespace experimental
   {
     void EventDataHandle::registerToOwner(IDataHandleHolder& owner,
-                                          Mode accessMode)
+                                          AccessMode access)
     {
-      switch(accessMode) {
-        case Mode::Read:
+      switch(access) {
+        case AccessMode::Read:
           owner.registerEventInput(*this);
           break;
-        case Mode::Write:
+        case AccessMode::Write:
           owner.registerEventOutput(*this);
           break;
         default:

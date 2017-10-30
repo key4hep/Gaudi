@@ -696,6 +696,11 @@ namespace Gaudi
     }
     /// Helpers for DataHandles and derived classes
     template <class T = const ValueType>
+    decltype( auto ) targetID() const
+    {
+      return value().targetID();
+    }
+    template <class T = const ValueType>
     decltype( auto ) key() const
     {
       return value().key();

@@ -3,8 +3,8 @@
 #include <string>
 #include <utility>
 #include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/EventDataHandle.h"
+#include "GaudiKernel/Algorithm.h"
 
 // ============================================================================
 /** @file
@@ -85,7 +85,7 @@ public:
     info() << "Checking input keys" << endmsg;
     DataObjIDColl expectedInputKeys;
     for(const auto& inputHandle: m_readers) {
-      expectedInputKeys.emplace(inputHandle.id());
+      expectedInputKeys.emplace(inputHandle.targetID());
     }
     if(eventInputKeys() != expectedInputKeys) {
       throw std::runtime_error("Unexpected input keys");
@@ -95,7 +95,7 @@ public:
     info() << "Checking output keys" << endmsg;
     DataObjIDColl expectedOutputKeys;
     for(const auto& outputHandle: m_writers) {
-      expectedOutputKeys.emplace(outputHandle.id());
+      expectedOutputKeys.emplace(outputHandle.targetID());
     }
     if(eventOutputKeys() != expectedOutputKeys) {
       throw std::runtime_error("Unexpected output keys");
