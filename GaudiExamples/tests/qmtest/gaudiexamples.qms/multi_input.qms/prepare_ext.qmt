@@ -9,4 +9,7 @@
 countErrorLines({"ERROR":0})
 </text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="prerequisites"><set>
+  <tuple><text>gaudiexamples.multi_input.prepare_base</text><enumeral>PASS</enumeral></tuple>
+</set></argument>
 </extension>
