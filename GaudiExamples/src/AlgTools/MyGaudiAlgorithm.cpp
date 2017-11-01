@@ -40,13 +40,8 @@ StatusCode MyGaudiAlgorithm::initialize()
   m_privateToolWithName   = tool<IMyTool>( m_privateToolType, "ToolWithName", this );
   m_privateOtherInterface = tool<IMyOtherTool>( "MyGaudiTool", this );
 
-  // force initialization of tool handles
-  if ( !( m_myPrivToolHandle.retrieve() && m_myConstToolHandle.retrieve() && m_myPubToolHandle.retrieve() &&
-          m_myCopiedConstToolHandle.retrieve() && m_myCopiedConstToolHandle2.retrieve() &&
-          m_myCopiedToolHandle.retrieve() && m_myGenericToolHandle.retrieve() ) ) {
-    error() << "Unable to retrive one of the ToolHandles" << endmsg;
-    return StatusCode::FAILURE;
-  }
+  // disable ToolHandle
+  m_myUnusedToolHandle.disable();
 
   info() << m_tracks.objKey() << endmsg;
   info() << m_hits.objKey() << endmsg;

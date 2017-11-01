@@ -178,7 +178,13 @@ StatusCode Algorithm::sysInitialize()
 
   if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
 
-  // visit all sub-algs and tools, build full set
+  // visit all sub-algs and tools, build full set. First initialize ToolHandles if needed
+  try {
+    if ( !m_toolHandlesInit ) initToolHandles();
+  } catch ( const GaudiException& Exception ) {
+    error() << "Failing initializing ToolHandles : " << Exception << endmsg;
+    return StatusCode::FAILURE;
+  }
   DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
   acceptDHVisitor( &avis );
 
@@ -905,15 +911,16 @@ void Algorithm::initToolHandles() const
   }
 
   for ( auto th : m_toolHandles ) {
-    tool = th->get();
-    if ( tool ) {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
-        debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
-                << tool->type() << ")" << endmsg;
-      m_tools.push_back( tool );
-    } else {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+    // ignore *disabled* tool handles (i.e. empty type/name)
+    if ( !th->enabled() ) continue;
+    auto sc = th->retrieve( tool );
+    if ( UNLIKELY( sc.isFailure() ) ) {
+      throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
     }
+    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+      debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
+              << tool->type() << ")" << endmsg;
+    m_tools.push_back( tool );
   }
 
   m_toolHandlesInit = true;
