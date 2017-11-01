@@ -81,6 +81,13 @@ public:
 
   virtual std::string typeAndName() const = 0;
 
+  /// Helper to check if the ToolHandle should be retrieved.
+  inline bool enabled() const
+  {
+    // by convention, an empty type/name means that we do not use the tool
+    return !typeAndName().empty();
+  }
+
 protected:
   virtual const IAlgTool* getAsIAlgTool() const = 0;
 
@@ -193,6 +200,13 @@ public:
     m_createIf = createIf;
 
     return m_pToolSvc.initialize( "ToolSvc", GaudiHandleBase::parentName() );
+  }
+
+  /// Helper to declare that the ToolHandle should not retrieved.
+  inline void disable()
+  {
+    // by convention, an empty type/name means that we do not use the tool
+    GaudiHandleBase::setTypeAndName( "" );
   }
 
   /** Retrieve the AlgTool. Release existing tool if needed.

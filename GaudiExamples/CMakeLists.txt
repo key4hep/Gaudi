@@ -64,6 +64,7 @@ set(GaudiExamples_srcs
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
     src/PluginService/*.cpp
+    src/ToolHandles/*.cpp
 )
 
 # Add the sources requiring non-standard externals:

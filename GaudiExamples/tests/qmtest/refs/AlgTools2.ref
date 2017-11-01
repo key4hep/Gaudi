@@ -147,27 +147,6 @@ MyAlg.ToolWithName   INFO String = hundred
 MyAlg.ToolWithName   INFO Bool   = 1
 MyAlg               DEBUG Registering tool MyAlg.ToolWithName
 MyAlg               DEBUG Registering tool MyAlg.MyGaudiTool
-MyAlg.PrivToolH...  DEBUG Property update for OutputLevel : new value = 2
-MyAlg.PrivToolH...   INFO intialize() has been called
-MyAlg.PrivToolH...   INFO Int    = 100
-MyAlg.PrivToolH...   INFO Double = 100
-MyAlg.PrivToolH...   INFO String = hundred
-MyAlg.PrivToolH...   INFO Bool   = 1
-ToolSvc.ConstGe...   INFO intialize() has been called
-ToolSvc.ConstGe...   INFO Int    = 100
-ToolSvc.ConstGe...   INFO Double = 100
-ToolSvc.ConstGe...   INFO String = hundred
-ToolSvc.ConstGe...   INFO Bool   = 1
-ToolSvc.PubTool...   INFO intialize() has been called
-ToolSvc.PubTool...   INFO Int    = 100
-ToolSvc.PubTool...   INFO Double = 100
-ToolSvc.PubTool...   INFO String = hundred
-ToolSvc.PubTool...   INFO Bool   = 1
-ToolSvc.Generic...   INFO intialize() has been called
-ToolSvc.Generic...   INFO Int    = 100
-ToolSvc.Generic...   INFO Double = 100
-ToolSvc.Generic...   INFO String = hundred
-ToolSvc.Generic...   INFO Bool   = 1
 MyAlg                INFO /Event/Rec/Tracks
 MyAlg                INFO /Event/Rec/Hits
 MyAlg                INFO /Rec/RAW
@@ -175,11 +154,32 @@ MyAlg                INFO /Event/MyAnalysis/Tracks
 MyAlg                INFO ....initialization done
 MyAlg               DEBUG input handles: 3
 MyAlg               DEBUG output handles: 1
+MyAlg.PrivToolH...  DEBUG Property update for OutputLevel : new value = 2
+MyAlg.PrivToolH...   INFO intialize() has been called
+MyAlg.PrivToolH...   INFO Int    = 100
+MyAlg.PrivToolH...   INFO Double = 100
+MyAlg.PrivToolH...   INFO String = hundred
+MyAlg.PrivToolH...   INFO Bool   = 1
 MyAlg               DEBUG Adding private ToolHandle tool MyAlg.PrivToolHandle (MyTool)
+ToolSvc.PubTool...   INFO intialize() has been called
+ToolSvc.PubTool...   INFO Int    = 100
+ToolSvc.PubTool...   INFO Double = 100
+ToolSvc.PubTool...   INFO String = hundred
+ToolSvc.PubTool...   INFO Bool   = 1
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.PubToolHandle (MyTool)
+ToolSvc.Generic...   INFO intialize() has been called
+ToolSvc.Generic...   INFO Int    = 100
+ToolSvc.Generic...   INFO Double = 100
+ToolSvc.Generic...   INFO String = hundred
+ToolSvc.Generic...   INFO Bool   = 1
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
-MyAlg               DEBUG ToolHandle TestToolFailing/UnusedToolHandle not used
-MyAlg               DEBUG ToolHandle MyTool/LegacyToolHandle not used
+MyAlg.LegacyToo...  DEBUG Property update for OutputLevel : new value = 2
+MyAlg.LegacyToo...   INFO intialize() has been called
+MyAlg.LegacyToo...   INFO Int    = 100
+MyAlg.LegacyToo...   INFO Double = 100
+MyAlg.LegacyToo...   INFO String = hundred
+MyAlg.LegacyToo...   INFO Bool   = 1
+MyAlg               DEBUG Adding private ToolHandle tool MyAlg.LegacyToolHandle (MyTool)
 MyAlg               DEBUG Data Deps for MyAlg
   + INPUT  ('/Event/Rec/Hits')
   + INPUT  ('/Event/Rec/Tracks')
@@ -270,6 +270,11 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO intialize() has been called
+ToolSvc.ConstGe...   INFO Int    = 100
+ToolSvc.ConstGe...   INFO Double = 100
+ToolSvc.ConstGe...   INFO String = hundred
+ToolSvc.ConstGe...   INFO Bool   = 1
 ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO tools copied assigned via ToolHandle<T>....
 ToolSvc.PubTool...   INFO doIt() has been called
@@ -561,18 +566,20 @@ ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
 ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
+MyAlg.LegacyToo...   INFO finalize() has been called
 ToolSvc.Generic...   INFO finalize() has been called
-MyAlg.PrivToolH...   INFO finalize() has been called
 ToolSvc.ConstGe...   INFO finalize() has been called
+MyAlg.PrivToolH...   INFO finalize() has been called
 ToolSvc.PubTool...   INFO finalize() has been called
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called
 ToolSvc.MyGaudi...   INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
+MyAlg.LegacyToo...   INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
-MyAlg.PrivToolH...   INFO destructor has been called
 ToolSvc.ConstGe...   INFO destructor has been called
+MyAlg.PrivToolH...   INFO destructor has been called
 ToolSvc.PubTool...   INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
