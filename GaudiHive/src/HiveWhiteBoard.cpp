@@ -163,6 +163,8 @@ protected:
   IAddressCreator* m_addrCreator = nullptr;
   /// Datastore partitions
   std::vector<Synced<Partition>> m_partitions;
+  /// number of free slots
+  std::atomic_int m_freeSlots{0};
 
 public:
   /// Inherited constructor
@@ -180,6 +182,9 @@ public:
     } );
     m_partitions.clear();
   }
+
+  /// Get free slots number
+  unsigned int freeSlots() override { return m_freeSlots.load(); };
 
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override { return (CLID)m_rootCLID; }
@@ -570,9 +575,10 @@ public:
   size_t allocateStore( int evtnumber ) override
   {
     enum class Status { NotFound, Allocated, StillActive };
-    auto attempt_to_allocate = with_lock( [evtnumber]( Partition& p ) {
+    auto attempt_to_allocate = with_lock( [evtnumber, this]( Partition& p ) {
       if ( p.eventNumber == evtnumber ) return Status::StillActive;
       if ( p.eventNumber == -1 ) {
+        this->m_freeSlots--;
         p.eventNumber = evtnumber;
         return Status::Allocated;
       }
@@ -600,6 +606,7 @@ public:
   {
     m_partitions[partition].with_lock( []( Partition& p ) { p.eventNumber = -1; } );
     // info() << "Freed slot..." << partition << endmsg;
+    m_freeSlots++;
     return StatusCode::SUCCESS;
   }
 
@@ -684,6 +691,7 @@ public:
       } );
     }
     selectStore( 0 ).ignore();
+    m_freeSlots.store( m_slots );
     return attachServices();
   }
 

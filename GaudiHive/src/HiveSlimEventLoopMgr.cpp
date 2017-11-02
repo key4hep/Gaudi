@@ -456,7 +456,8 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
     if ( ( newEvtAllowed or createdEvts == 0 ) &&  // Launch the first event alone
          createdEvts >= 0 &&                       // The events are not finished with an unlimited number of events
          ( createdEvts < maxevt or maxevt < 0 ) && // The events are not finished with a limited number of events
-         m_schedulerSvc->freeSlots() > 0 ) {       // There are still free slots in the scheduler
+         m_schedulerSvc->freeSlots() > 0 &&        // There are still free slots in the scheduler
+         m_whiteboard->freeSlots() > 0 ) {         // There are still free slots in the whiteboard
 
       if ( 1 == createdEvts ) // reset counter to count from event 1
         start_time = Clock::now();

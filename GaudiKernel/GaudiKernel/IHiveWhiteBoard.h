@@ -80,5 +80,8 @@ public:
    * @return    Partition number (npos to indicate an error).
    */
   virtual size_t getPartitionNumber( int eventnumber ) const = 0;
+
+  /// Get free slots number
+  virtual unsigned int freeSlots() = 0;
 };
 #endif // GAUDIKERNEL_IHIVEWHITEBOARD_H
