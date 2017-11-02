@@ -151,27 +151,57 @@ namespace Gaudi
     namespace Property
     {
       template <class TYPE>
-      struct StringConverter {
-        inline std::string toString( const TYPE& v )
-        {
-          using Gaudi::Utils::toString;
-          return toString( v );
-        }
-        inline TYPE fromString( const std::string& s )
-        {
-          TYPE tmp{};
-          using Gaudi::Parsers::parse;
-          if ( !parse( tmp, s ).isSuccess() ) {
-            throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
+      struct StringConverterImpl {
+        public:
+          inline std::string toString( const TYPE& v )
+          {
+            using Gaudi::Utils::toString;
+            return toString( v );
           }
-          return tmp;
-        }
+
+          // Implementation of fromString depends on whether TYPE is default-
+          // constructible (fastest, easiest) or only copy-constructible (still
+          // doable as long as the caller can provide a valid value of TYPE)
+          virtual TYPE fromString( const TYPE& ref_value, const std::string& s ) = 0;
+
+        protected:
+          inline void fromStringImpl( TYPE& buffer, const std::string& s )
+          {
+            using Gaudi::Parsers::parse;
+            if ( !parse( buffer, s ).isSuccess() ) {
+              throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
+            }
+          }
       };
+      // Specialization of toString for strings (identity function)
       template <>
-      inline std::string StringConverter<std::string>::toString( const std::string& v )
+      inline std::string StringConverterImpl<std::string>::toString( const std::string& v )
       {
         return v;
       }
+      // Implementation of fromString for a copy-constructible TYPE (worst case)
+      template <class TYPE, typename Enable = void>
+      struct StringConverter : StringConverterImpl<TYPE>
+      {
+        inline TYPE fromString( const TYPE& ref_value, const std::string& s ) final override {
+          TYPE buffer = ref_value;
+          this->fromStringImpl(buffer, s);
+          return buffer;
+        }
+      };
+      // Specialization for a default-constructible type (best case)
+      template <class TYPE>
+      struct StringConverter<TYPE,
+                             std::enable_if_t<std::is_default_constructible<TYPE>::value>>
+        : StringConverterImpl<TYPE>
+      {
+        inline TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override {
+          TYPE buffer{};
+          this->fromStringImpl(buffer, s);
+          return buffer;
+        }
+      };
+
       struct NullVerifier {
         template <class TYPE>
         void operator()( const TYPE& ) const
@@ -649,7 +679,7 @@ namespace Gaudi
     StatusCode fromString( const std::string& source ) override
     {
       using Converter = Details::Property::StringConverter<ValueType>;
-      *this           = Converter().fromString( source );
+      *this = Converter().fromString( m_value, source );
       return StatusCode::SUCCESS;
     }
     /// value  -> string
