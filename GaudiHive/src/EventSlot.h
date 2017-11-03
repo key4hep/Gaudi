@@ -3,7 +3,6 @@
 
 // Framework includes
 #include "AlgsExecutionStates.h"
-#include "DataFlowManager.h"
 #include "GaudiKernel/EventContext.h"
 
 // Event slots management -------------------------------------------------
@@ -11,12 +10,10 @@
 class EventSlot
 {
 public:
-  EventSlot( const std::vector<DataObjIDColl>& algoDependencies, unsigned int numberOfAlgorithms,
-             unsigned int numberOfControlFlowNodes, SmartIF<IMessageSvc> MS )
+  EventSlot( unsigned int numberOfAlgorithms, unsigned int numberOfControlFlowNodes, SmartIF<IMessageSvc> MS )
       : eventContext( nullptr )
       , algsStates( numberOfAlgorithms, MS )
       , complete( false )
-      , dataFlowMgr( algoDependencies )
       , controlFlowState( numberOfControlFlowNodes, -1 ){};
 
   ~EventSlot(){};
@@ -26,7 +23,6 @@ public:
   {
     eventContext = theeventContext;
     algsStates.reset();
-    dataFlowMgr.reset();
     complete = false;
     controlFlowState.assign( controlFlowState.size(), -1 );
   };
@@ -37,8 +33,6 @@ public:
   AlgsExecutionStates algsStates;
   /// Flags completion of the event
   bool complete;
-  /// DataFlowManager of this slot
-  DataFlowManager dataFlowMgr;
   /// State of the control flow
   std::vector<int> controlFlowState;
 };
