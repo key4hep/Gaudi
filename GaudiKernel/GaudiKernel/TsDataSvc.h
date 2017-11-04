@@ -95,22 +95,22 @@ public:
   const std::string& rootName() const override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( const std::string& fullPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( DataObject* parentObj, const std::string& objectPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( IRegistry* parentObj, const std::string& objectPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( const std::string& fullPath ) override;
+  StatusCode unregisterAddress( boost::string_ref fullPath ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( DataObject* pParent, const std::string& objPath ) override;
+  StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( IRegistry* pParent, const std::string& objPath ) override;
+  StatusCode unregisterAddress( IRegistry* pParent, boost::string_ref objPath ) override;
 
   /** IDataManagerSvc: Explore the object store: retrieve all leaves attached
    *  to the object
@@ -129,7 +129,7 @@ public:
   /** IDataManagerSvc: Remove all data objects below the sub tree identified
    *  by its full path name.
    */
-  StatusCode clearSubTree( const std::string& sub_tree_path ) override;
+  StatusCode clearSubTree( boost::string_ref sub_tree_path ) override;
 
   /** IDataManagerSvc: Remove all data objects below the sub tree identified
    *  by the object.
@@ -142,7 +142,7 @@ public:
   /** IDataManagerSvc: Analyze by traversing all data objects below the sub
    *  tree identified by its full path name.
    */
-  StatusCode traverseSubTree( const std::string& sub_tree_path, IDataStoreAgent* pAgent ) override;
+  StatusCode traverseSubTree( boost::string_ref sub_tree_path, IDataStoreAgent* pAgent ) override;
 
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
   StatusCode traverseSubTree( DataObject* pObject, IDataStoreAgent* pAgent ) override;
@@ -178,13 +178,13 @@ public:
   StatusCode addPreLoadItem( const DataStoreItem& item ) override;
 
   /// Add an item to the preload list
-  StatusCode addPreLoadItem( const std::string& itemPath ) override;
+  StatusCode addPreLoadItem( std::string itemPath ) override;
 
   /// Remove an item from the preload list
   StatusCode removePreLoadItem( const DataStoreItem& item ) override;
 
   /// Add an item to the preload list
-  StatusCode removePreLoadItem( const std::string& itemPath ) override;
+  StatusCode removePreLoadItem( std::string itemPath ) override;
 
   /// Clear the preload list
   StatusCode resetPreLoad() override;
@@ -202,112 +202,112 @@ public:
   StatusCode preLoad() override;
 
   /// Register object with the data store.
-  StatusCode registerObject( const std::string& fullPath, DataObject* pObject ) override;
+  StatusCode registerObject( boost::string_ref fullPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject( const std::string& parentPath, const std::string& objPath, DataObject* pObject ) override;
+  StatusCode registerObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject( const std::string& parentPath, int item, DataObject* pObject ) override;
+  StatusCode registerObject( boost::string_ref parentPath, int item, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject( DataObject* parentObj, const std::string& objPath, DataObject* pObject ) override;
+  StatusCode registerObject( DataObject* parentObj, boost::string_ref objPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
   StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject( const std::string& fullPath ) override;
+  StatusCode unregisterObject( boost::string_ref fullPath ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject( const std::string& parentPath, const std::string& objectPath ) override;
+  StatusCode unregisterObject( boost::string_ref parentPath, boost::string_ref objectPath ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject( const std::string& parentPath, int item ) override;
+  StatusCode unregisterObject( boost::string_ref parentPath, int item ) override;
 
   /// Unregister object from the data store.
   StatusCode unregisterObject( DataObject* pObject ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject( DataObject* pObject, const std::string& objectPath ) override;
+  StatusCode unregisterObject( DataObject* pObject, boost::string_ref objectPath ) override;
 
   /// Unregister object from the data store.
   StatusCode unregisterObject( DataObject* pObject, int item ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) override;
+  StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
 
   /// Retrieve object identified by its full path from the data store.
-  StatusCode retrieveObject( const std::string& fullPath, DataObject*& pObject ) override;
+  StatusCode retrieveObject( boost::string_ref fullPath, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath, DataObject*& pObject ) override;
+  StatusCode retrieveObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject( const std::string& parentPath, int item, DataObject*& pObject ) override;
+  StatusCode retrieveObject( boost::string_ref parentPath, int item, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath, DataObject*& pObject ) override;
+  StatusCode retrieveObject( DataObject* parentObj, boost::string_ref objPath, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
   StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject ) override;
 
   /// Find object identified by its full path in the data store.
-  StatusCode findObject( const std::string& fullPath, DataObject*& pObject ) override;
+  StatusCode findObject( boost::string_ref fullPath, DataObject*& pObject ) override;
 
   /// Find object identified by its full path in the data store.
-  StatusCode findObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) override;
+  StatusCode findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
 
   /// Find object in the data store.
-  StatusCode findObject( const std::string& parentPath, const std::string& objPath, DataObject*& pObject ) override;
+  StatusCode findObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject*& pObject ) override;
 
   /// Find object in the data store.
-  StatusCode findObject( const std::string& parentPath, int item, DataObject*& pObject ) override;
+  StatusCode findObject( boost::string_ref parentPath, int item, DataObject*& pObject ) override;
 
   /// Find object in the data store.
-  StatusCode findObject( DataObject* parentObj, const std::string& objPath, DataObject*& pObject ) override;
+  StatusCode findObject( DataObject* parentObj, boost::string_ref objPath, DataObject*& pObject ) override;
 
   /// Find object in the data store.
   StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject( IRegistry* from, const std::string& objPath, DataObject* to ) override;
+  StatusCode linkObject( IRegistry* from, boost::string_ref objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject( const std::string& fromPath, const std::string& objPath, DataObject* to ) override;
+  StatusCode linkObject( boost::string_ref fromPath, boost::string_ref objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject( DataObject* from, const std::string& objPath, DataObject* to ) override;
+  StatusCode linkObject( DataObject* from, boost::string_ref objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject( const std::string& fullPath, DataObject* to ) override;
+  StatusCode linkObject( boost::string_ref fullPath, DataObject* to ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject( IRegistry* from, const std::string& objPath ) override;
+  StatusCode unlinkObject( IRegistry* from, boost::string_ref objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject( const std::string& fromPath, const std::string& objPath ) override;
+  StatusCode unlinkObject( boost::string_ref fromPath, boost::string_ref objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject( DataObject* fromObj, const std::string& objPath ) override;
+  StatusCode unlinkObject( DataObject* fromObj, boost::string_ref objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject( const std::string& fullPath ) override;
+  StatusCode unlinkObject( boost::string_ref fullPath ) override;
 
   /// Update object identified by its directory entry.
   StatusCode updateObject( IRegistry* pDirectory ) override;
 
   /// Update object.
-  StatusCode updateObject( const std::string& updatePath ) override;
+  StatusCode updateObject( boost::string_ref updatePath ) override;
 
   /// Update object.
   StatusCode updateObject( DataObject* toUpdate ) override;
 
   /// Update object.
-  StatusCode updateObject( const std::string& parentPath, const std::string& updatePath ) override;
+  StatusCode updateObject( boost::string_ref parentPath, boost::string_ref updatePath ) override;
 
   /// Update object.
-  StatusCode updateObject( DataObject* pParent, const std::string& updatePath ) override;
+  StatusCode updateObject( DataObject* pParent, boost::string_ref updatePath ) override;
 
   /// Service initialization
   StatusCode initialize() override;
@@ -353,7 +353,7 @@ protected:
   virtual StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode );
 
   /// Retrieve registry entry from store
-  StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode, const std::string& path,
+  StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode, boost::string_ref path,
                             DataSvcHelpers::RegistryEntry*& pEntry );
   /** Invoke data fault handling if enabled
     * @param pReg  [IN]   Pointer to missing registry entry
@@ -361,7 +361,7 @@ protected:
     *
     * @return Object corresponding to the specified leaf
     */
-  DataObject* handleDataFault( IRegistry* pReg, const std::string& path = "" );
+  DataObject* handleDataFault( IRegistry* pReg, boost::string_ref path = {} );
 
   /// Mutex to protect access to the store
   tsDataSvcMutex m_accessMutex;

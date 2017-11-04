@@ -170,7 +170,7 @@ const IDataStoreLeaves::LeavesList& DataSvcFileEntriesTool::leaves() const
 IRegistry* DataSvcFileEntriesTool::i_getRootNode()
 {
   DataObject* obj = nullptr;
-  StatusCode sc   = m_dataSvc->retrieveObject( m_rootNode, obj );
+  StatusCode sc   = m_dataSvc->retrieveObject( m_rootNode.value(), obj );
   if ( sc.isFailure() ) {
     throw GaudiException( "Cannot get " + m_rootNode + " from " + m_dataSvcName, name(), StatusCode::FAILURE );
   }

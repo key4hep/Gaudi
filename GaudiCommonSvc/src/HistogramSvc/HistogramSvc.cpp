@@ -220,7 +220,7 @@ StatusCode HistogramSvc::connectInput( const string& ident )
 {
   using Parser      = Gaudi::Utils::AttribStringParser;
   DataObject* pO    = nullptr;
-  StatusCode status = this->findObject( m_rootName, pO );
+  StatusCode status = this->findObject( m_rootName.value(), pO );
   if ( status.isSuccess() ) {
     string::size_type loc = ident.find( " " );
     string filename, auth, svc = "", typ = "";

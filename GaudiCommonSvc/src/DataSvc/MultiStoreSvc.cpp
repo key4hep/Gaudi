@@ -118,31 +118,34 @@ public:
   const std::string& rootName() const override { return m_rootName; }
 
   /// IDataManagerSvc: Register object address with the data store.
-  STATUS registerAddress( CSTR& path, ADDRESS* pAddr ) override
+  STATUS registerAddress( boost::string_ref path, ADDRESS* pAddr ) override
   {
-    return call_<CSTR&, ADDRESS*>( &IDataManagerSvc::registerAddress, path, pAddr );
+    return call_<boost::string_ref, ADDRESS*>( &IDataManagerSvc::registerAddress, path, pAddr );
   }
   /// IDataManagerSvc: Register object address with the data store.
-  STATUS registerAddress( OBJECT* parent, CSTR& path, ADDRESS* pAddr ) override
+  STATUS registerAddress( OBJECT* parent, boost::string_ref path, ADDRESS* pAddr ) override
   {
-    return call_<OBJECT*, CSTR&, ADDRESS*>( &IDataManagerSvc::registerAddress, parent, path, pAddr );
+    return call_<OBJECT*, boost::string_ref, ADDRESS*>( &IDataManagerSvc::registerAddress, parent, path, pAddr );
   }
   /// IDataManagerSvc: Register object address with the data store.
-  STATUS registerAddress( IRegistry* parent, CSTR& path, ADDRESS* pAdd ) override
+  STATUS registerAddress( IRegistry* parent, boost::string_ref path, ADDRESS* pAdd ) override
   {
-    return call_<IRegistry*, CSTR&, ADDRESS*>( &IDataManagerSvc::registerAddress, parent, path, pAdd );
+    return call_<IRegistry*, boost::string_ref, ADDRESS*>( &IDataManagerSvc::registerAddress, parent, path, pAdd );
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  STATUS unregisterAddress( CSTR& path ) override { return call_<CSTR&>( &IDataManagerSvc::unregisterAddress, path ); }
-  /// IDataManagerSvc: Unregister object address from the data store.
-  STATUS unregisterAddress( OBJECT* pParent, CSTR& path ) override
+  STATUS unregisterAddress( boost::string_ref path ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataManagerSvc::unregisterAddress, pParent, path );
+    return call_<boost::string_ref>( &IDataManagerSvc::unregisterAddress, path );
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  STATUS unregisterAddress( IRegistry* pParent, CSTR& path ) override
+  STATUS unregisterAddress( OBJECT* pParent, boost::string_ref path ) override
   {
-    return call_<IRegistry*, CSTR&>( &IDataManagerSvc::unregisterAddress, pParent, path );
+    return call_<OBJECT*, boost::string_ref>( &IDataManagerSvc::unregisterAddress, pParent, path );
+  }
+  /// IDataManagerSvc: Unregister object address from the data store.
+  STATUS unregisterAddress( IRegistry* pParent, boost::string_ref path ) override
+  {
+    return call_<IRegistry*, boost::string_ref>( &IDataManagerSvc::unregisterAddress, pParent, path );
   }
   /// Explore the object store: retrieve all leaves attached to the object
   STATUS objectLeaves( const OBJECT* pObject, std::vector<IRegistry*>& leaves ) override
@@ -165,7 +168,10 @@ public:
     return call_<const IRegistry*, IRegistry*&>( &IDataManagerSvc::objectParent, pObject, refpParent );
   }
   /// Remove all data objects below the sub tree identified
-  STATUS clearSubTree( CSTR& path ) override { return call_<CSTR&>( &IDataManagerSvc::clearSubTree, path ); }
+  STATUS clearSubTree( boost::string_ref path ) override
+  {
+    return call_<boost::string_ref>( &IDataManagerSvc::clearSubTree, path );
+  }
   /// Remove all data objects below the sub tree identified
   STATUS clearSubTree( OBJECT* pObject ) override { return call_<OBJECT*>( &IDataManagerSvc::clearSubTree, pObject ); }
   /// IDataManagerSvc: Remove all data objects in the data store.
@@ -190,9 +196,9 @@ public:
     return STATUS::SUCCESS;
   }
   /// Analyze by traversing all data objects below the sub tree
-  STATUS traverseSubTree( CSTR& path, AGENT* pAgent ) override
+  STATUS traverseSubTree( boost::string_ref path, AGENT* pAgent ) override
   {
-    return call_<CSTR&, AGENT*>( &IDataManagerSvc::traverseSubTree, path, pAgent );
+    return call_<boost::string_ref, AGENT*>( &IDataManagerSvc::traverseSubTree, path, pAgent );
   }
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
   STATUS traverseSubTree( OBJECT* pObject, AGENT* pAgent ) override
@@ -262,34 +268,43 @@ public:
     return call_<const DataStoreItem&>( &IDataProviderSvc::addPreLoadItem, item );
   }
   /// Add an item to the preload list
-  STATUS addPreLoadItem( CSTR& item ) override { return call_<CSTR&>( &IDataProviderSvc::addPreLoadItem, item ); }
+  STATUS addPreLoadItem( std::string item ) override
+  {
+    return call_<std::string>( &IDataProviderSvc::addPreLoadItem, std::move( item ) );
+  }
   /// Remove an item from the preload list
   STATUS removePreLoadItem( const DataStoreItem& item ) override
   {
     return call_<const DataStoreItem&>( &IDataProviderSvc::removePreLoadItem, item );
   }
   /// Add an item to the preload list
-  STATUS removePreLoadItem( CSTR& item ) override { return call_<CSTR&>( &IDataProviderSvc::removePreLoadItem, item ); }
+  STATUS removePreLoadItem( std::string item ) override
+  {
+    return call_<std::string>( &IDataProviderSvc::removePreLoadItem, std::move( item ) );
+  }
   /// Clear the preload list
   STATUS resetPreLoad() override { return call_<>( &IDataProviderSvc::resetPreLoad ); }
   /// load all preload items of the list
   STATUS preLoad() override { return call_<>( &IDataProviderSvc::preLoad ); }
   /// Register object with the data store.
-  STATUS registerObject( CSTR& path, OBJECT* pObj ) override { return registerObject( nullptr, path, pObj ); }
-  /// Register object with the data store.
-  STATUS registerObject( CSTR& parent, CSTR& obj, OBJECT* pObj ) override
+  STATUS registerObject( boost::string_ref path, OBJECT* pObj ) override
   {
-    return call_<CSTR&, CSTR&, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
+    return registerObject( nullptr, path, pObj );
   }
   /// Register object with the data store.
-  STATUS registerObject( CSTR& parent, int item, OBJECT* pObj ) override
+  STATUS registerObject( boost::string_ref parent, boost::string_ref obj, OBJECT* pObj ) override
   {
-    return call_<CSTR&, int, OBJECT*>( &IDataProviderSvc::registerObject, parent, item, pObj );
+    return call_<boost::string_ref, boost::string_ref, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
   }
   /// Register object with the data store.
-  STATUS registerObject( OBJECT* parent, CSTR& obj, OBJECT* pObj ) override
+  STATUS registerObject( boost::string_ref parent, int item, OBJECT* pObj ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
+    return call_<boost::string_ref, int, OBJECT*>( &IDataProviderSvc::registerObject, parent, item, pObj );
+  }
+  /// Register object with the data store.
+  STATUS registerObject( OBJECT* parent, boost::string_ref obj, OBJECT* pObj ) override
+  {
+    return call_<OBJECT*, boost::string_ref, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
   }
   /// Register object with the data store.
   STATUS registerObject( OBJECT* parent, int obj, OBJECT* pObj ) override
@@ -297,16 +312,19 @@ public:
     return call_<OBJECT*, int, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
   }
   /// Unregister object from the data store.
-  STATUS unregisterObject( CSTR& path ) override { return call_<CSTR&>( &IDataProviderSvc::unregisterObject, path ); }
-  /// Unregister object from the data store.
-  STATUS unregisterObject( CSTR& parent, CSTR& obj ) override
+  STATUS unregisterObject( boost::string_ref path ) override
   {
-    return call_<CSTR&, CSTR&>( &IDataProviderSvc::unregisterObject, parent, obj );
+    return call_<boost::string_ref>( &IDataProviderSvc::unregisterObject, path );
   }
   /// Unregister object from the data store.
-  STATUS unregisterObject( CSTR& parent, int obj ) override
+  STATUS unregisterObject( boost::string_ref parent, boost::string_ref obj ) override
   {
-    return call_<CSTR&, int>( &IDataProviderSvc::unregisterObject, parent, obj );
+    return call_<boost::string_ref, boost::string_ref>( &IDataProviderSvc::unregisterObject, parent, obj );
+  }
+  /// Unregister object from the data store.
+  STATUS unregisterObject( boost::string_ref parent, int obj ) override
+  {
+    return call_<boost::string_ref, int>( &IDataProviderSvc::unregisterObject, parent, obj );
   }
   /// Unregister object from the data store.
   STATUS unregisterObject( OBJECT* pObj ) override
@@ -314,9 +332,9 @@ public:
     return call_<OBJECT*>( &IDataProviderSvc::unregisterObject, pObj );
   }
   /// Unregister object from the data store.
-  STATUS unregisterObject( OBJECT* pObj, CSTR& path ) override
+  STATUS unregisterObject( OBJECT* pObj, boost::string_ref path ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataProviderSvc::unregisterObject, pObj, path );
+    return call_<OBJECT*, boost::string_ref>( &IDataProviderSvc::unregisterObject, pObj, path );
   }
   /// Unregister object from the data store.
   STATUS unregisterObject( OBJECT* pObj, int item ) override
@@ -324,29 +342,30 @@ public:
     return call_<OBJECT*, int>( &IDataProviderSvc::unregisterObject, pObj, item );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( IRegistry* parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( IRegistry* parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<IRegistry*, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return call_<IRegistry*, boost::string_ref, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
   }
   /// Retrieve object identified by its full path from the data store.
-  STATUS retrieveObject( CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, path, pObj );
+    return call_<boost::string_ref, OBJECT*&>( &IDataProviderSvc::retrieveObject, path, pObj );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( CSTR& parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( boost::string_ref parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return call_<boost::string_ref, boost::string_ref, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path,
+                                                                  pObj );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( CSTR& parent, int item, OBJECT*& pObj ) override
+  STATUS retrieveObject( boost::string_ref parent, int item, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, int, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, item, pObj );
+    return call_<boost::string_ref, int, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, item, pObj );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( OBJECT* parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( OBJECT* parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return call_<OBJECT*, boost::string_ref, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
   }
   /// Retrieve object from data store.
   STATUS retrieveObject( OBJECT* parent, int item, OBJECT*& pObj ) override
@@ -354,29 +373,30 @@ public:
     return call_<OBJECT*, int, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, item, pObj );
   }
   /// Find object identified by its full path in the data store.
-  STATUS findObject( CSTR& path, OBJECT*& pObj ) override
+  STATUS findObject( boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, path, pObj );
+    return call_<boost::string_ref, OBJECT*&>( &IDataProviderSvc::retrieveObject, path, pObj );
   }
   /// Find object identified by its full path in the data store.
-  STATUS findObject( IRegistry* parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS findObject( IRegistry* parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<IRegistry*, CSTR&, OBJECT*&>( &IDataProviderSvc::findObject, parent, path, pObj );
+    return call_<IRegistry*, boost::string_ref, OBJECT*&>( &IDataProviderSvc::findObject, parent, path, pObj );
   }
   /// Find object in the data store.
-  STATUS findObject( CSTR& parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS findObject( boost::string_ref parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return call_<boost::string_ref, boost::string_ref, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path,
+                                                                  pObj );
   }
   /// Find object in the data store.
-  STATUS findObject( CSTR& parent, int item, OBJECT*& pObject ) override
+  STATUS findObject( boost::string_ref parent, int item, OBJECT*& pObject ) override
   {
-    return call_<CSTR&, int, OBJECT*&>( &IDataProviderSvc::findObject, parent, item, pObject );
+    return call_<boost::string_ref, int, OBJECT*&>( &IDataProviderSvc::findObject, parent, item, pObject );
   }
   /// Find object in the data store.
-  STATUS findObject( OBJECT* parent, CSTR& path, OBJECT*& pObject ) override
+  STATUS findObject( OBJECT* parent, boost::string_ref path, OBJECT*& pObject ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*&>( &IDataProviderSvc::findObject, parent, path, pObject );
+    return call_<OBJECT*, boost::string_ref, OBJECT*&>( &IDataProviderSvc::findObject, parent, path, pObject );
   }
   /// Find object in the data store.
   STATUS findObject( OBJECT* parent, int item, OBJECT*& pObject ) override
@@ -384,60 +404,66 @@ public:
     return call_<OBJECT*, int, OBJECT*&>( &IDataProviderSvc::findObject, parent, item, pObject );
   }
   /// Add a link to another object.
-  STATUS linkObject( IRegistry* from, CSTR& objPath, OBJECT* to ) override
+  STATUS linkObject( IRegistry* from, boost::string_ref objPath, OBJECT* to ) override
   {
-    return call_<IRegistry*, CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
+    return call_<IRegistry*, boost::string_ref, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
   }
   /// Add a link to another object.
-  STATUS linkObject( CSTR& from, CSTR& objPath, OBJECT* to ) override
+  STATUS linkObject( boost::string_ref from, boost::string_ref objPath, OBJECT* to ) override
   {
-    return call_<CSTR&, CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
+    return call_<boost::string_ref, boost::string_ref, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
   }
   /// Add a link to another object.
-  STATUS linkObject( OBJECT* from, CSTR& objPath, OBJECT* to ) override
+  STATUS linkObject( OBJECT* from, boost::string_ref objPath, OBJECT* to ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
+    return call_<OBJECT*, boost::string_ref, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
   }
   /// Add a link to another object.
-  STATUS linkObject( CSTR& fullPath, OBJECT* to ) override
+  STATUS linkObject( boost::string_ref fullPath, OBJECT* to ) override
   {
-    return call_<CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, fullPath, to );
+    return call_<boost::string_ref, OBJECT*>( &IDataProviderSvc::linkObject, fullPath, to );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( IRegistry* from, CSTR& objPath ) override
+  STATUS unlinkObject( IRegistry* from, boost::string_ref objPath ) override
   {
-    return call_<IRegistry*, CSTR&>( &IDataProviderSvc::unlinkObject, from, objPath );
+    return call_<IRegistry*, boost::string_ref>( &IDataProviderSvc::unlinkObject, from, objPath );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( CSTR& from, CSTR& objPath ) override
+  STATUS unlinkObject( boost::string_ref from, boost::string_ref objPath ) override
   {
-    return call_<CSTR&, CSTR&>( &IDataProviderSvc::unlinkObject, from, objPath );
+    return call_<boost::string_ref, boost::string_ref>( &IDataProviderSvc::unlinkObject, from, objPath );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( OBJECT* from, CSTR& objPath ) override
+  STATUS unlinkObject( OBJECT* from, boost::string_ref objPath ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataProviderSvc::unlinkObject, from, objPath );
+    return call_<OBJECT*, boost::string_ref>( &IDataProviderSvc::unlinkObject, from, objPath );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( CSTR& path ) override { return call_<CSTR&>( &IDataProviderSvc::unlinkObject, path ); }
+  STATUS unlinkObject( boost::string_ref path ) override
+  {
+    return call_<boost::string_ref>( &IDataProviderSvc::unlinkObject, path );
+  }
   /// Update object identified by its directory entry.
   STATUS updateObject( IRegistry* pDirectory ) override
   {
     return call_<IRegistry*>( &IDataProviderSvc::updateObject, pDirectory );
   }
   /// Update object.
-  STATUS updateObject( CSTR& path ) override { return call_<CSTR&>( &IDataProviderSvc::updateObject, path ); }
+  STATUS updateObject( boost::string_ref path ) override
+  {
+    return call_<boost::string_ref>( &IDataProviderSvc::updateObject, path );
+  }
   /// Update object.
   STATUS updateObject( OBJECT* pObj ) override { return call_<OBJECT*>( &IDataProviderSvc::updateObject, pObj ); }
   /// Update object.
-  STATUS updateObject( CSTR& parent, CSTR& updatePath ) override
+  STATUS updateObject( boost::string_ref parent, boost::string_ref updatePath ) override
   {
-    return call_<CSTR&, CSTR&>( &IDataProviderSvc::updateObject, parent, updatePath );
+    return call_<boost::string_ref, boost::string_ref>( &IDataProviderSvc::updateObject, parent, updatePath );
   }
   /// Update object.
-  STATUS updateObject( OBJECT* parent, CSTR& updatePath ) override
+  STATUS updateObject( OBJECT* parent, boost::string_ref updatePath ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataProviderSvc::updateObject, parent, updatePath );
+    return call_<OBJECT*, boost::string_ref>( &IDataProviderSvc::updateObject, parent, updatePath );
   }
 
   /// Create a partition object. The name identifies the partition uniquely
