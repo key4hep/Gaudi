@@ -115,7 +115,7 @@ StatusCode NTupleSvc::updateDirectories()
   typedef std::vector<IRegistry*> Leaves;
   long need_update = 0;
   DataObject* pO   = nullptr;
-  StatusCode iret  = findObject( m_rootName, pO );
+  StatusCode iret  = findObject( m_rootName.value(), pO );
   //  debug() << "in finalize()" << endmsg;
   if ( iret.isSuccess() ) {
     Leaves leaves;
@@ -211,7 +211,7 @@ StatusCode NTupleSvc::connect( const std::string& ident )
 StatusCode NTupleSvc::connect( const std::string& ident, std::string& logname )
 {
   DataObject* pO    = nullptr;
-  StatusCode status = findObject( m_rootName, pO );
+  StatusCode status = findObject( m_rootName.value(), pO );
   if ( status.isSuccess() ) {
     char typ = 0;
     std::vector<Prop> props;
@@ -464,7 +464,7 @@ StatusCode NTupleSvc::attachTuple( const std::string& filename, const std::strin
 {
   DataObject* p;
   // First get the root object
-  StatusCode status = retrieveObject( m_rootName, p );
+  StatusCode status = retrieveObject( m_rootName.value(), p );
   if ( status.isSuccess() ) {
     // Now add the registry entry to the store
     std::string entryname = m_rootName;

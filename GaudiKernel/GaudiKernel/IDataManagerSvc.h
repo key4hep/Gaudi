@@ -4,6 +4,7 @@
 // Include files
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/IInterface.h"
+#include "boost/utility/string_ref.hpp"
 #include <string>
 #include <vector>
 
@@ -42,11 +43,9 @@ class IDataProviderSvc;
    @author Markus Frank
    @version 1.0
 */
-class GAUDI_API IDataManagerSvc : virtual public IInterface
-{
-public:
+struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
   /// InterfaceID
-  DeclareInterfaceID( IDataManagerSvc, 3, 0 );
+  DeclareInterfaceID( IDataManagerSvc, 4, 0 );
 
   /// Get class ID of root Event
   virtual CLID rootCLID() const = 0;
@@ -102,7 +101,7 @@ public:
       @param      sub_path   [IN] Path to sub-tree node.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode clearSubTree( const std::string& sub_path ) = 0;
+  virtual StatusCode clearSubTree( boost::string_ref sub_path ) = 0;
 
   /** Remove all data objects below the sub tree
       identified by the object. The object itself is removed as well.
@@ -120,7 +119,7 @@ public:
       @param      sub_path   [IN] Path to sub-tree node.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode traverseSubTree( const std::string& sub_path, IDataStoreAgent* pAgent ) = 0;
+  virtual StatusCode traverseSubTree( boost::string_ref sub_path, IDataStoreAgent* pAgent ) = 0;
 
   /** Analyse by traversing all data objects below the sub tree
       identified by the object. The object itself is removed as well.
@@ -158,7 +157,7 @@ public:
      @param      pAddress    [IN] Pointer to the object to be registered.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode registerAddress( const std::string& fullPath, IOpaqueAddress* pAddress ) = 0;
+  virtual StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) = 0;
 
   /** Register object address with the data store.
       Connect the object identified by its pointer to the parent object
@@ -168,7 +167,7 @@ public:
       @param      pAddress   [IN] Pointer to the object to be connected.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode registerAddress( DataObject* parentObj, const std::string& objectPath,
+  virtual StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath,
                                       IOpaqueAddress* pAddress ) = 0;
 
   /** Register object address with the data store.
@@ -179,7 +178,7 @@ public:
       @param      pAddress   [IN] Pointer to the object to be connected.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode registerAddress( IRegistry* parentObj, const std::string& objectPath,
+  virtual StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath,
                                       IOpaqueAddress* pAddress ) = 0;
 
   /** Unregister object address from the data store.
@@ -187,7 +186,7 @@ public:
       @param      fullPath [IN] Path name of the object.
       @return                   Status code indicating success or failure.
   */
-  virtual StatusCode unregisterAddress( const std::string& fullPath ) = 0;
+  virtual StatusCode unregisterAddress( boost::string_ref fullPath ) = 0;
 
   /** Unregister object address from the data store.
       The object is identified by parent object and the path of the
@@ -196,7 +195,7 @@ public:
       @param      objPath  [IN] Path name of the object relative to the parent.
       @return                   Status code indicating success or failure.
   */
-  virtual StatusCode unregisterAddress( DataObject* pParent, const std::string& objPath ) = 0;
+  virtual StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath ) = 0;
 
   /** Unregister object address from the data store.
       The object is identified by parent object and the path of the
@@ -205,7 +204,7 @@ public:
       @param      objPath  [IN] Path name of the object relative to the parent.
       @return                   Status code indicating success or failure.
   */
-  virtual StatusCode unregisterAddress( IRegistry* pParent, const std::string& objPath ) = 0;
+  virtual StatusCode unregisterAddress( IRegistry* pParent, boost::string_ref objPath ) = 0;
 };
 
 #endif // GAUDIKERNEL_IDATAMANAGERSVC_H
