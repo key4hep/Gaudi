@@ -88,21 +88,15 @@ typedef DataSvcHelpers::RegistryEntry RegEntry;
  */
 StatusCode TsDataSvc::clearSubTree( boost::string_ref sub_tree_path )
 {
-  DataObject* pObject = 0;
+  DataObject* pObject = nullptr;
   StatusCode status   = findObject( sub_tree_path, pObject );
-  if ( status.isSuccess() ) {
-    RegEntry* node_entry = CAST_REGENTRY( RegEntry*, pObject->registry() );
-    if ( 0 != node_entry ) {
-      RegEntry* parent = node_entry->parentEntry();
-      if ( 0 != parent ) {
-        parent->remove( node_entry );
-        return StatusCode::SUCCESS;
-      }
-      return INVALID_PARENT;
-    }
-    return INVALID_OBJECT;
-  }
-  return status;
+  if ( !status.isSuccess() ) return status;
+  RegEntry* node_entry = CAST_REGENTRY( RegEntry*, pObject->registry() );
+  if ( !node_entry ) return INVALID_OBJECT;
+  RegEntry* parent = node_entry->parentEntry();
+  if ( !parent ) return INVALID_PARENT;
+  parent->remove( node_entry );
+  return StatusCode::SUCCESS;
 }
 
 /** IDataManagerSvc: Remove all data objects below the sub tree
@@ -110,19 +104,13 @@ StatusCode TsDataSvc::clearSubTree( boost::string_ref sub_tree_path )
  */
 StatusCode TsDataSvc::clearSubTree( DataObject* pObject )
 {
-  if ( checkRoot() ) {
-    RegEntry* entry = CAST_REGENTRY( RegEntry*, pObject->registry() );
-    if ( 0 != entry ) {
-      RegEntry* parent = entry->parentEntry();
-      if ( 0 != parent ) {
-        parent->remove( entry );
-        return SUCCESS;
-      }
-      return INVALID_PARENT;
-    }
-    return INVALID_OBJECT;
-  }
-  return INVALID_ROOT;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  RegEntry* entry = CAST_REGENTRY( RegEntry*, pObject->registry() );
+  if ( !entry ) return INVALID_OBJECT;
+  RegEntry* parent = entry->parentEntry();
+  if ( !parent ) return INVALID_PARENT;
+  parent->remove( entry );
+  return SUCCESS;
 }
 
 /// IDataManagerSvc: Remove all data objects in the data store.
@@ -180,7 +168,7 @@ StatusCode TsDataSvc::setRoot( std::string root_path, DataObject* pRootObj )
  */
 StatusCode TsDataSvc::i_setRoot( std::string root_path, DataObject* pRootObj )
 {
-  if ( 0 != pRootObj ) {
+  if ( pRootObj ) {
     m_root = new RegEntry( std::move( root_path ) );
     m_root->makeHard( pRootObj );
     m_root->setDataSvc( this );
@@ -206,7 +194,7 @@ StatusCode TsDataSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAddr 
  */
 StatusCode TsDataSvc::i_setRoot( std::string root_path, IOpaqueAddress* pRootAddr )
 {
-  if ( 0 != pRootAddr ) {
+  if ( pRootAddr ) {
     m_root = new RegEntry( std::move( root_path ) );
     m_root->makeHard( pRootAddr );
     m_root->setDataSvc( this );
@@ -218,9 +206,9 @@ StatusCode TsDataSvc::i_setRoot( std::string root_path, IOpaqueAddress* pRootAdd
 /// IDataManagerSvc: Pass a default data loader to the service.
 StatusCode TsDataSvc::setDataLoader( IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc )
 {
-  if ( 0 != pDataLoader ) pDataLoader->addRef();
-  if ( 0 != m_dataLoader ) m_dataLoader->release();
-  if ( 0 != pDataLoader ) {
+  if ( pDataLoader ) pDataLoader->addRef();
+  if ( m_dataLoader ) m_dataLoader->release();
+  if ( pDataLoader ) {
     pDataLoader->setDataProvider( dpsvc == nullptr ? this : dpsvc ).ignore();
   }
   m_dataLoader = pDataLoader;
@@ -231,34 +219,26 @@ StatusCode TsDataSvc::setDataLoader( IConversionSvc* pDataLoader, IDataProviderS
 StatusCode TsDataSvc::objectParent( const DataObject* pObject, IRegistry*& refpParent )
 {
   STD_LOCK_GUARD_MACRO
-  if ( pObject ) {
-    return objectParent( pObject->registry(), refpParent );
-  }
-  return INVALID_OBJECT;
+  if ( !pObject ) return INVALID_OBJECT;
+  return objectParent( pObject->registry(), refpParent );
 }
 /// IDataManagerSvc: Explore the object store: retrieve the object's parent
 StatusCode TsDataSvc::objectParent( const IRegistry* pRegistry, IRegistry*& refpParent )
 {
   STD_LOCK_GUARD_MACRO
-  if ( checkRoot() ) {
-    const RegEntry* node_entry = CAST_REGENTRY( const RegEntry*, pRegistry );
-    if ( node_entry ) {
-      refpParent = node_entry->parent();
-      return StatusCode::SUCCESS;
-    }
-    return INVALID_OBJECT;
-  }
-  return INVALID_ROOT;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  const RegEntry* node_entry = CAST_REGENTRY( const RegEntry*, pRegistry );
+  if ( !node_entry ) return INVALID_OBJECT;
+  refpParent = node_entry->parent();
+  return StatusCode::SUCCESS;
 }
 
 /// IDataManagerSvc: Explore an object identified by its pointer.
 StatusCode TsDataSvc::objectLeaves( const DataObject* pObject, std::vector<IRegistry*>& leaves )
 {
   STD_LOCK_GUARD_MACRO
-  if ( pObject ) {
-    return objectLeaves( pObject->registry(), leaves );
-  }
-  return INVALID_OBJECT;
+  if ( !pObject ) return INVALID_OBJECT;
+  return objectLeaves( pObject->registry(), leaves );
 }
 
 /** IDataManagerSvc: Explore an object identified by the pointer to the
@@ -267,35 +247,29 @@ StatusCode TsDataSvc::objectLeaves( const DataObject* pObject, std::vector<IRegi
 StatusCode TsDataSvc::objectLeaves( const IRegistry* pRegistry, std::vector<IRegistry*>& leaves )
 {
   STD_LOCK_GUARD_MACRO
-  if ( checkRoot() ) {
-    const RegEntry* node_entry = CAST_REGENTRY( const RegEntry*, pRegistry );
-    if ( node_entry ) {
-      std::copy( node_entry->leaves().begin(), node_entry->leaves().end(), back_inserter( leaves ) );
-      // leaves = node_entry->leaves();
-      return StatusCode::SUCCESS;
-    }
-    return INVALID_OBJECT;
-  }
-  return INVALID_ROOT;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  const RegEntry* node_entry = CAST_REGENTRY( const RegEntry*, pRegistry );
+  if ( !node_entry ) return INVALID_OBJECT;
+  leaves.insert( leaves.end(), node_entry->leaves().begin(), node_entry->leaves().end() );
+  // leaves = node_entry->leaves();
+  return StatusCode::SUCCESS;
 }
 
 ///  IDataManagerSvc: Register object address with the data store.
 StatusCode TsDataSvc::registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress )
 {
-  if ( fullPath.length() > 0 ) {
-    if ( fullPath[0] != SEPARATOR ) {
-      return registerAddress( m_root, fullPath, pAddress );
-    }
-    IRegistry* pRegistry = 0;
-    return registerAddress( pRegistry, fullPath, pAddress );
+  if ( fullPath.empty() ) return INVALID_OBJ_PATH;
+  if ( fullPath.front() != SEPARATOR ) {
+    return registerAddress( m_root, fullPath, pAddress );
   }
-  return INVALID_OBJ_PATH;
+  IRegistry* pRegistry = nullptr;
+  return registerAddress( pRegistry, fullPath, pAddress );
 }
 
 ///  IDataManagerSvc: Register object address with the data store.
 StatusCode TsDataSvc::registerAddress( DataObject* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress )
 {
-  IRegistry* pRegistry = ( 0 == parentObj ) ? 0 : parentObj->registry();
+  IRegistry* pRegistry = ( parentObj ? parentObj->registry() : nullptr );
   return registerAddress( pRegistry, objectPath, pAddress );
 }
 
@@ -320,7 +294,7 @@ StatusCode TsDataSvc::registerAddress( IRegistry* parentObj, boost::string_ref o
   RegEntry* par_entry = CAST_REGENTRY( RegEntry*, parentObj );
   if ( !par_entry ) return INVALID_PARENT;
   auto sep = objPath.rfind( SEPARATOR );
-  if ( sep > 0 && sep != std::string::npos ) {
+  if ( sep > 0 && sep != boost::string_ref::npos ) {
     auto p_path       = objPath.substr( 0, sep );
     auto o_path       = objPath.substr( sep );
     RegEntry* p_entry = par_entry->findLeaf( p_path );
@@ -353,7 +327,7 @@ StatusCode TsDataSvc::unregisterAddress( boost::string_ref fullPath )
 ///  IDataManagerSvc: Unregister object address from the data store.
 StatusCode TsDataSvc::unregisterAddress( DataObject* pParent, boost::string_ref objPath )
 {
-  IRegistry* pRegistry = ( 0 == pParent ) ? 0 : pParent->registry();
+  IRegistry* pRegistry = ( pParent ? pParent->registry() : nullptr );
   return unregisterAddress( pRegistry, objPath );
 }
 
@@ -394,25 +368,20 @@ StatusCode TsDataSvc::unregisterAddress( IRegistry* pParent, boost::string_ref o
 /// Register object with the data store.
 StatusCode TsDataSvc::registerObject( boost::string_ref fullPath, DataObject* pObject )
 {
-  return registerObject( 0, fullPath, pObject );
+  return registerObject( nullptr, fullPath, pObject );
 }
 
 /// Register object with the data store.
 StatusCode TsDataSvc::registerObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject* pObject )
 {
-  DataObject* pO    = 0;
+  DataObject* pO    = nullptr;
   StatusCode status = retrieveObject( parentPath, pO );
   if ( !status.isSuccess() && m_forceLeaves ) {
     pO     = createDefaultObject();
     status = registerObject( parentPath, pO );
-    if ( !status.isSuccess() ) {
-      pO->release();
-    }
+    if ( !status.isSuccess() ) pO->release();
   }
-  if ( status.isSuccess() ) {
-    status = registerObject( pO, objPath, pObject );
-  }
-  return status;
+  return status.isSuccess() ? registerObject( pO, objPath, pObject ) : status;
 }
 
 /// Register object with the data store.
@@ -458,7 +427,7 @@ StatusCode TsDataSvc::registerObject( DataObject* parentObj, boost::string_ref o
         StatusCode sc     = registerObject( parentObj, p_path, pLeaf );
         if ( !sc.isSuccess() ) delete pLeaf;
         par_entry = node_entry->findLeaf( p_path );
-      } else if ( 0 != par_entry && par_entry->object() == 0 ) {
+      } else if ( par_entry && !par_entry->object() ) {
         status = retrieveEntry( node_entry, p_path, par_entry );
         if ( !status.isSuccess() && !par_entry->address() && m_forceLeaves ) {
           DataObject* pLeaf = createDefaultObject();
@@ -501,38 +470,25 @@ StatusCode TsDataSvc::registerObject( DataObject* parentObj, boost::string_ref o
 /// Unregister object from the data store.
 StatusCode TsDataSvc::unregisterObject( boost::string_ref fullPath )
 {
-  DataObject* pObject = 0;
+  DataObject* pObject = nullptr;
   StatusCode status   = findObject( fullPath, pObject );
-  if ( status.isSuccess() ) {
-    RegEntry* pEntry = CAST_REGENTRY( RegEntry*, pObject->registry() );
-    if ( 0 != pEntry ) {
-      if ( pEntry->isEmpty() ) {
-        RegEntry* pParent = pEntry->parentEntry();
-        if ( 0 != pParent ) {
-          if ( 0 != pObject ) {
-            pObject->addRef();
-          }
-          pParent->remove( pEntry );
-          return StatusCode::SUCCESS;
-        }
-        return INVALID_PARENT;
-      }
-      return DIR_NOT_EMPTY;
-    }
-    return INVALID_ROOT;
-  }
-  return status;
+  if ( status.isFailure() ) return status;
+  RegEntry* pEntry = CAST_REGENTRY( RegEntry*, pObject->registry() );
+  if ( !pEntry ) return INVALID_ROOT;
+  if ( !pEntry->isEmpty() ) return DIR_NOT_EMPTY;
+  RegEntry* pParent = pEntry->parentEntry();
+  if ( !pParent ) return INVALID_PARENT;
+  if ( pObject ) pObject->addRef();
+  pParent->remove( pEntry );
+  return StatusCode::SUCCESS;
 }
 
 /// Unregister object from the data store.
 StatusCode TsDataSvc::unregisterObject( boost::string_ref parentPath, boost::string_ref objPath )
 {
-  DataObject* pO    = 0;
+  DataObject* pO    = nullptr;
   StatusCode status = findObject( parentPath, pO );
-  if ( status.isSuccess() ) {
-    status = unregisterObject( pO, objPath );
-  }
-  return status;
+  return status.isSuccess() ? unregisterObject( pO, objPath ) : status;
 }
 
 /// Unregister object from the data store.
@@ -544,54 +500,34 @@ StatusCode TsDataSvc::unregisterObject( boost::string_ref parentPath, int item )
 /// Unregister object from the data store.
 StatusCode TsDataSvc::unregisterObject( DataObject* pObject )
 {
-  if ( checkRoot() ) {
-    RegEntry* entry = m_root->findLeaf( pObject );
-    if ( 0 != entry ) {
-      RegEntry* parent = entry->parentEntry();
-      if ( 0 != parent ) {
-        if ( entry->isEmpty() ) {
-          if ( 0 != entry->object() ) {
-            entry->object()->addRef();
-          }
-          if ( 0 != parent ) {
-            parent->remove( entry );
-          }
-          return SUCCESS;
-        }
-        return INVALID_PARENT;
-      }
-      return DIR_NOT_EMPTY;
-    }
-    return INVALID_OBJECT;
-  }
-  return INVALID_ROOT;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  RegEntry* entry = m_root->findLeaf( pObject );
+  if ( !entry ) return INVALID_OBJECT;
+  RegEntry* parent = entry->parentEntry();
+  if ( !parent ) return INVALID_PARENT;
+  if ( !entry->isEmpty() ) return DIR_NOT_EMPTY;
+  if ( entry->object() ) entry->object()->addRef();
+  if ( parent ) parent->remove( entry );
+  return SUCCESS;
 }
 
 /// Unregister object from the data store.
 StatusCode TsDataSvc::unregisterObject( DataObject* pParentObj, boost::string_ref objectPath )
 {
-  if ( checkRoot() ) {
-    try {
-      RegEntry* parent = CAST_REGENTRY( RegEntry*, pParentObj->registry() );
-      if ( 0 != parent ) {
-        RegEntry* entry = parent->findLeaf( objectPath );
-        if ( 0 != entry ) {
-          if ( entry->isEmpty() ) {
-            if ( 0 != entry->object() ) {
-              entry->object()->addRef();
-            }
-            parent->remove( entry );
-            return SUCCESS;
-          }
-          return DIR_NOT_EMPTY;
-        }
-        return INVALID_OBJECT;
-      }
-    } catch ( ... ) {
+  if ( !checkRoot() ) return INVALID_ROOT;
+  try {
+    RegEntry* parent = CAST_REGENTRY( RegEntry*, pParentObj->registry() );
+    if ( parent ) {
+      RegEntry* entry = parent->findLeaf( objectPath );
+      if ( !entry ) return INVALID_OBJECT;
+      if ( !entry->isEmpty() ) return DIR_NOT_EMPTY;
+      if ( entry->object() ) entry->object()->addRef();
+      parent->remove( entry );
+      return SUCCESS;
     }
-    return INVALID_PARENT;
+  } catch ( ... ) {
   }
-  return INVALID_ROOT;
+  return INVALID_PARENT;
 }
 
 /// Unregister object from the data store.
@@ -619,7 +555,7 @@ DataObject* TsDataSvc::handleDataFault( IRegistry* pReg, boost::string_ref path 
       pLeaf = m_root->findLeaf( p );
     } else {
       std::string p = m_root->identifier();
-      if ( path[0] != SEPARATOR ) p += SEPARATOR;
+      if ( path.front() != SEPARATOR ) p += SEPARATOR;
       p.append( path.data(), path.size() );
       DataIncident incident( name(), m_faultName, p );
       m_incidentSvc->fireIncident( incident );
@@ -646,15 +582,15 @@ StatusCode TsDataSvc::loadObject( IConversionSvc* pLoader, IRegistry* pRegistry 
 {
   STD_LOCK_GUARD_MACRO
   StatusCode status   = INVALID_OBJ_ADDR;
-  DataObject* pObject = 0;
-  if ( 0 == pLoader ) { // Precondition: Data loader must be present
-    if ( handleDataFault( pRegistry ) != 0 )
+  DataObject* pObject = nullptr;
+  if ( !pLoader ) { // Precondition: Data loader must be present
+    if ( handleDataFault( pRegistry ) )
       return SUCCESS;
     else
       return NO_DATA_LOADER;
   }
-  if ( 0 == pRegistry ) { // Precondition: Directory must be valid
-    if ( handleDataFault( pRegistry ) != 0 )
+  if ( !pRegistry ) { // Precondition: Directory must be valid
+    if ( handleDataFault( pRegistry ) )
       return SUCCESS;
     else
       return INVALID_OBJ_ADDR;
@@ -667,15 +603,13 @@ StatusCode TsDataSvc::loadObject( IConversionSvc* pLoader, IRegistry* pRegistry 
     DataIncident incident( name(), m_accessName, pRegistry->identifier() );
     m_incidentSvc->fireIncident( incident );
   }
-  if ( m_inhibitPathes.size() > 0 ) {
+  if ( !m_inhibitPathes.empty() ) {
     const auto& ident = pRegistry->identifier();
     auto inhibit      = std::find( m_inhibitPathes.begin(), m_inhibitPathes.end(), ident );
-    if ( inhibit != m_inhibitPathes.end() ) {
-      return NO_ACCESS;
-    }
+    if ( inhibit != m_inhibitPathes.end() ) return NO_ACCESS;
   }
   IOpaqueAddress* pAddress = pRegistry->address();
-  if ( 0 == pAddress ) {     // Precondition:
+  if ( !pAddress ) {         // Precondition:
     return INVALID_OBJ_ADDR; // Address must be valid
   }
   try {
@@ -691,28 +625,20 @@ StatusCode TsDataSvc::loadObject( IConversionSvc* pLoader, IRegistry* pRegistry 
       status = pLoader->fillObjRefs( pAddress, pObject );
     }
   } catch ( const GaudiException& exc ) {
-    if ( handleDataFault( pRegistry ) != 0 ) {
-      return SUCCESS;
-    }
+    if ( handleDataFault( pRegistry ) ) return SUCCESS;
     throw GaudiException( "GaudiException in loadObject() " + pRegistry->identifier(), name(), StatusCode::FAILURE,
                           exc );
   } catch ( const std::exception& x ) {
-    if ( handleDataFault( pRegistry ) != 0 ) {
-      return SUCCESS;
-    }
+    if ( handleDataFault( pRegistry ) ) return SUCCESS;
     throw GaudiException( "std::exception in loadObject() " + pRegistry->identifier() + ": " +
                               System::typeinfoName( typeid( x ) ) + ", " + x.what(),
                           name(), StatusCode::FAILURE );
   } catch ( ... ) {
-    if ( handleDataFault( pRegistry ) != 0 ) {
-      return SUCCESS;
-    }
+    if ( handleDataFault( pRegistry ) ) return SUCCESS;
     throw GaudiException( "UNKN exception in loadObject() " + pRegistry->identifier(), name(), StatusCode::FAILURE );
   }
   if ( !status.isSuccess() ) {
-    if ( handleDataFault( pRegistry ) != 0 ) {
-      return StatusCode::SUCCESS;
-    }
+    if ( handleDataFault( pRegistry ) ) return StatusCode::SUCCESS;
   }
   ON_VERBOSE if ( status.isSuccess() )
   {
@@ -730,22 +656,20 @@ StatusCode TsDataSvc::retrieveEntry( RegEntry* parentObj, boost::string_ref path
   pEntry            = nullptr;
   // A.Valassi 16.08.2001 avoid core dump if store is empty
   if ( checkRoot() ) {
-    if ( 0 == parentObj ) {
-      if ( path.length() == 0 || path == m_rootName ) {
+    if ( !parentObj ) {
+      if ( path.empty() || path == m_rootName ) {
         return retrieveEntry( m_root, "", pEntry );
-      } else if ( path[0] != SEPARATOR ) {
-        return retrieveEntry( m_root, path, pEntry );
-      } else if ( sep != std::string::npos ) {
-        if ( m_root->object() == 0 ) {
-          RegEntry* r = 0;
-          status      = retrieveEntry( m_root, "", r );
-          if ( !status.isSuccess() ) {
-            return status;
-          }
-        }
-        return retrieveEntry( m_root, path.substr( sep ), pEntry );
       }
-      return INVALID_OBJ_PATH;
+      if ( path.front() != SEPARATOR ) {
+        return retrieveEntry( m_root, path, pEntry );
+      }
+      if ( sep == boost::string_ref::npos ) return INVALID_OBJ_PATH;
+      if ( !m_root->object() ) {
+        RegEntry* r = nullptr;
+        status      = retrieveEntry( m_root, "", r );
+        if ( !status.isSuccess() ) return status;
+      }
+      return retrieveEntry( m_root, path.substr( sep ), pEntry );
     }
     if ( sep != boost::string_ref::npos ) { // the string contains a separator (after pos 0)
       auto p_path = path.substr( 0, sep );
@@ -765,12 +689,10 @@ StatusCode TsDataSvc::retrieveEntry( RegEntry* parentObj, boost::string_ref path
       }
       if ( root_entry ) {
         DataObject* pO = root_entry->object();
-        if ( 0 == pO ) {
+        if ( !pO ) {
           // Object is not loaded: load the object if at all possible
           status = loadObject( root_entry );
-          if ( !status.isSuccess() ) {
-            return status;
-          }
+          if ( !status.isSuccess() ) return status;
         }
         if ( root_entry->isSoft() ) {
           root_entry = CAST_REGENTRY( RegEntry*, pO->registry() );
@@ -778,27 +700,25 @@ StatusCode TsDataSvc::retrieveEntry( RegEntry* parentObj, boost::string_ref path
         return retrieveEntry( root_entry, o_path, pEntry );
       }
       return status;
-    } else if ( path.length() == 0 ) {
+    } else if ( path.empty() ) {
       pEntry = parentObj;
     } else {
       if ( !parentObj->object() ) { // if the parent object has not been loaded yet, load it now
         status = loadObject( parentObj );
-        if ( !status.isSuccess() ) {
-          return status;
-        }
+        if ( !status.isSuccess() ) return status;
       }
       // last leave in search: find leaf and load
       pEntry = parentObj->findLeaf( path );
       // If no registry entry was found, trigger incident for action-on-demand
       if ( !pEntry && m_enableFaultHdlr ) {
         handleDataFault( parentObj, path );
-        pEntry = ( 0 == path.length() ) ? parentObj : parentObj->findLeaf( path );
+        pEntry = ( path.empty() ? parentObj : parentObj->findLeaf( path ) );
       }
     }
     // Check results and return
-    if ( 0 == pEntry ) {
+    if ( !pEntry ) {
       status = INVALID_OBJ_PATH;
-    } else if ( 0 == pEntry->object() ) {
+    } else if ( !pEntry->object() ) {
       status = loadObject( pEntry );
     } else if ( m_enableAccessHdlr ) {
       // Fire data access incident
@@ -819,31 +739,26 @@ StatusCode TsDataSvc::retrieveEntry( RegEntry* parentObj, boost::string_ref path
 StatusCode TsDataSvc::retrieveObject( IRegistry* pRegistry, boost::string_ref path, DataObject*& pObject )
 {
   STD_LOCK_GUARD_MACRO
-  pObject          = 0;
-  RegEntry *result = 0, *parent = CAST_REGENTRY( RegEntry *, pRegistry );
-  StatusCode status = retrieveEntry( parent, path, result );
-  if ( status.isSuccess() ) {
-    pObject = result->object();
-  }
+  pObject          = nullptr;
+  RegEntry *result = nullptr, *parent = CAST_REGENTRY( RegEntry *, pRegistry );
+  StatusCode status                 = retrieveEntry( parent, path, result );
+  if ( status.isSuccess() ) pObject = result->object();
   return status;
 }
 
 /// Retrieve object identified by its full path from the data store.
 StatusCode TsDataSvc::retrieveObject( boost::string_ref fullPath, DataObject*& pObject )
 {
-  IRegistry* nullDir = 0;
+  IRegistry* nullDir = nullptr;
   return retrieveObject( nullDir, fullPath, pObject );
 }
 
 /// Retrieve object identified by its full path from the data store.
 StatusCode TsDataSvc::retrieveObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject )
 {
-  DataObject* parent = 0;
+  DataObject* parent = nullptr;
   StatusCode status  = retrieveObject( parentPath, parent );
-  if ( status.isSuccess() ) {
-    status = retrieveObject( parent, objectPath, pObject );
-  }
-  return status;
+  return status.isSuccess() ? retrieveObject( parent, objectPath, pObject ) : status;
 }
 
 /// Retrieve object identified by its full path from the data store.
@@ -855,7 +770,7 @@ StatusCode TsDataSvc::retrieveObject( boost::string_ref parentPath, int item, Da
 /// Retrieve object from data store.
 StatusCode TsDataSvc::retrieveObject( DataObject* parentObj, boost::string_ref path, DataObject*& pObject )
 {
-  IRegistry* pRegistry = ( 0 == parentObj ) ? 0 : parentObj->registry();
+  IRegistry* pRegistry = ( parentObj ? parentObj->registry() : nullptr );
   return retrieveObject( pRegistry, path, pObject );
 }
 
@@ -869,19 +784,15 @@ StatusCode TsDataSvc::retrieveObject( DataObject* parentObj, int item, DataObjec
 StatusCode TsDataSvc::findObject( IRegistry* pRegistry, boost::string_ref path, DataObject*& pObject )
 {
   STD_LOCK_GUARD_MACRO
-  pObject              = 0;
-  IRegistry* pReg      = ( 0 == pRegistry ) ? m_root : pRegistry;
+  pObject              = nullptr;
+  IRegistry* pReg      = ( pRegistry ? pRegistry : m_root );
   RegEntry* root_entry = CAST_REGENTRY( RegEntry*, pReg );
-  if ( 0 != root_entry ) {
-    if ( path.length() > 0 ) {
-      pReg = root_entry->find( path );
-    }
-    if ( 0 == pReg ) {
-      return INVALID_OBJ_PATH;
-    }
+  if ( root_entry ) {
+    if ( !path.empty() ) pReg = root_entry->find( path );
+    if ( !pReg ) return INVALID_OBJ_PATH;
     pObject = pReg->object();
   }
-  return ( 0 == pObject ) ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
+  return pObject ? IDataProviderSvc_NO_ERROR : OBJ_NOT_LOADED;
 }
 
 /// Find object identified by its full path in the data store.
@@ -892,7 +803,7 @@ StatusCode TsDataSvc::findObject( boost::string_ref path, DataObject*& pObject )
   if ( !checkRoot() ) return INVALID_ROOT;
   if ( path.empty() || path == m_rootName ) {
     pObject = m_root->object();
-    return ( !pObject ) ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
+    return !pObject ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
   }
   if ( path.front() != SEPARATOR ) {
     return findObject( m_rootName.value(), path, pObject );
@@ -903,12 +814,9 @@ StatusCode TsDataSvc::findObject( boost::string_ref path, DataObject*& pObject )
 /// Retrieve object identified by its full path from the data store.
 StatusCode TsDataSvc::findObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject )
 {
-  DataObject* parent = 0;
+  DataObject* parent = nullptr;
   StatusCode status  = findObject( parentPath, parent );
-  if ( status.isSuccess() ) {
-    status = findObject( parent, objectPath, pObject );
-  }
-  return status;
+  return status.isSuccess() ? findObject( parent, objectPath, pObject ) : status;
 }
 
 /// Retrieve object identified by its full path from the data store.
@@ -926,29 +834,25 @@ StatusCode TsDataSvc::findObject( DataObject* parentObj, int item, DataObject*& 
 /// Find object identified by its full path in the data store.
 StatusCode TsDataSvc::findObject( DataObject* parentObj, boost::string_ref path, DataObject*& pObject )
 {
-  IRegistry* pDir = ( 0 == parentObj ) ? 0 : parentObj->registry();
-  return findObject( pDir, path, pObject );
+  return findObject( parentObj ? parentObj->registry() : nullptr, path, pObject );
 }
 
 /// Update object.
 StatusCode TsDataSvc::updateObject( boost::string_ref updatePath )
 {
-  DataObject* pO    = 0;
+  DataObject* pO    = nullptr;
   StatusCode status = findObject( updatePath, pO );
-  if ( status.isSuccess() ) {
-    return updateObject( pO );
-  }
-  return retrieveObject( updatePath, pO );
+  return status.isSuccess() ? updateObject( pO ) : retrieveObject( updatePath, pO );
 }
 
 /// Update object.
 StatusCode TsDataSvc::updateObject( IRegistry* pRegistry )
 {
-  if ( 0 == pRegistry ) {    // Precondition:
+  if ( !pRegistry ) {        // Precondition:
     return INVALID_OBJ_ADDR; // Addres must be valid
   }
   DataObject* toUpdate = pRegistry->object();
-  if ( 0 == toUpdate ) { // Try first to load
+  if ( !toUpdate ) { // Try first to load
     return loadObject( pRegistry );
   }
   return updateObject( toUpdate );
@@ -959,27 +863,25 @@ StatusCode TsDataSvc::updateObject( DataObject* toUpdate )
 {
   STD_LOCK_GUARD_MACRO
   StatusCode status = INVALID_OBJ_ADDR;
-  if ( 0 == toUpdate ) {   // Precondition:
+  if ( !toUpdate ) {       // Precondition:
     return INVALID_OBJECT; // Address must be valid
   }
   IRegistry* pRegistry = toUpdate->registry(); // Precondition:
-  if ( 0 == pRegistry ) {                      // Need valid registry
+  if ( !pRegistry ) {                          // Need valid registry
     return INVALID_OBJECT;
   }
   IOpaqueAddress* pAddress = pRegistry->address(); // Precondition:
-  if ( 0 == pAddress ) {                           // Need valid address
+  if ( !pAddress ) {                               // Need valid address
     return INVALID_OBJ_ADDR;
   }
   IConversionSvc* pLoader = getDataLoader( pRegistry );
-  if ( 0 == pLoader ) {    // Precondition:
+  if ( !pLoader ) {        // Precondition:
     return NO_DATA_LOADER; // Data loader must be present
   }
-  if ( m_inhibitPathes.size() > 0 ) {
+  if ( !m_inhibitPathes.empty() ) {
     auto& ident  = pRegistry->identifier();
     auto inhibit = std::find( m_inhibitPathes.begin(), m_inhibitPathes.end(), ident );
-    if ( inhibit != m_inhibitPathes.end() ) {
-      return NO_ACCESS;
-    }
+    if ( inhibit != m_inhibitPathes.end() ) return NO_ACCESS;
   }
   try {
     status = pLoader->updateObj( pAddress, toUpdate ); // Call data loader
@@ -1001,23 +903,17 @@ StatusCode TsDataSvc::updateObject( DataObject* toUpdate )
 /// Update object.
 StatusCode TsDataSvc::updateObject( boost::string_ref parentPath, boost::string_ref updatePath )
 {
-  DataObject* pParent = 0;
+  DataObject* pParent = nullptr;
   StatusCode status   = findObject( parentPath, pParent );
-  if ( status.isSuccess() ) {
-    status = updateObject( pParent, updatePath );
-  }
-  return status;
+  return status.isSuccess() ? updateObject( pParent, updatePath ) : status;
 }
 
 /// Update object.
 StatusCode TsDataSvc::updateObject( DataObject* parent, boost::string_ref updatePath )
 {
-  DataObject* pObject = 0;
+  DataObject* pObject = nullptr;
   StatusCode status   = findObject( parent, updatePath, pObject );
-  if ( status.isSuccess() ) {
-    status = updateObject( pObject );
-  }
-  return status;
+  return status.isSuccess() ? updateObject( pObject ) : status;
 }
 
 // Link object
@@ -1027,18 +923,15 @@ StatusCode TsDataSvc::linkObject( IRegistry* from, boost::string_ref objPath, Da
   if ( checkRoot() ) {
     try {
       RegEntry* from_entry = CAST_REGENTRY( RegEntry*, from );
-      if ( 0 != from_entry ) {
+      if ( from_entry ) {
         // First check if both objects are already registered to the store
         RegEntry* to_entry = m_root->findLeaf( to );
         if ( !to_entry ) return INVALID_OBJECT;
         auto sep = objPath.rfind( SEPARATOR );
-        if ( sep > 0 && sep != std::string::npos ) { // in case the objPath is a sub-directory itself
+        if ( sep > 0 && sep != boost::string_ref::npos ) { // in case the objPath is a sub-directory itself
           DataObject* pO = nullptr;
           StatusCode sc  = retrieveObject( from, objPath.substr( 0, sep ), pO );
-          if ( sc.isSuccess() ) {
-            sc = linkObject( pO->registry(), objPath.substr( sep ), to );
-          }
-          return sc;
+          return sc.isSuccess() ? linkObject( pO->registry(), objPath.substr( sep ), to ) : sc;
         }
         // Now register the soft link
         StatusCode status = from_entry->add( to_string( objPath ), to, true );
@@ -1055,37 +948,30 @@ StatusCode TsDataSvc::linkObject( IRegistry* from, boost::string_ref objPath, Da
 StatusCode TsDataSvc::linkObject( boost::string_ref fullPath, DataObject* to )
 {
   STD_LOCK_GUARD_MACRO
-  if ( fullPath.length() > 0 ) {
-    if ( fullPath[0] != SEPARATOR ) {
-      return linkObject( m_rootName.value(), fullPath, to );
-    }
-    auto sep = fullPath.rfind( SEPARATOR );
-    return linkObject( fullPath.substr( 0, sep ), fullPath.substr( sep ), to );
+  if ( fullPath.empty() ) return INVALID_OBJ_PATH;
+  if ( fullPath.front() != SEPARATOR ) {
+    return linkObject( m_rootName.value(), fullPath, to );
   }
-  return INVALID_OBJ_PATH;
+  auto sep = fullPath.rfind( SEPARATOR );
+  return linkObject( fullPath.substr( 0, sep ), fullPath.substr( sep ), to );
 }
 
 /// Add a link to another object.
 StatusCode TsDataSvc::linkObject( boost::string_ref from, boost::string_ref objPath, DataObject* to )
 {
   STD_LOCK_GUARD_MACRO
-  DataObject* pO    = 0;
+  DataObject* pO    = nullptr;
   StatusCode status = retrieveObject( from, pO );
-  if ( status.isSuccess() ) {
-    return linkObject( pO->registry(), objPath, to );
-  }
-  return status;
+  return status.isSuccess() ? linkObject( pO->registry(), objPath, to ) : status;
 }
 
 /// Add a link to another object.
 StatusCode TsDataSvc::linkObject( DataObject* from, boost::string_ref objPath, DataObject* to )
 {
   STD_LOCK_GUARD_MACRO
-  if ( 0 != from ) {
+  if ( from ) {
     IRegistry* from_entry = from->registry();
-    if ( 0 != from_entry ) {
-      return linkObject( from_entry, objPath, to );
-    }
+    if ( from_entry ) return linkObject( from_entry, objPath, to );
   }
   return INVALID_PARENT;
 }
@@ -1094,30 +980,22 @@ StatusCode TsDataSvc::linkObject( DataObject* from, boost::string_ref objPath, D
 StatusCode TsDataSvc::unlinkObject( IRegistry* from, boost::string_ref objPath )
 {
   STD_LOCK_GUARD_MACRO
-  if ( checkRoot() ) {
-    try {
-      RegEntry* from_entry = CAST_REGENTRY( RegEntry*, from );
-      if ( 0 != from_entry ) {
-        std::string::size_type sep = objPath.rfind( SEPARATOR );
-        if ( sep > 0 && sep != std::string::npos ) { // in case the objPath is a sub-directory itself
-          DataObject* pO = nullptr;
-          StatusCode sc  = findObject( from, objPath.substr( 0, sep ), pO );
-          if ( sc.isSuccess() ) {
-            sc = unlinkObject( pO->registry(), objPath.substr( sep ) );
-          }
-          return sc;
-        }
-        StatusCode status = from_entry->remove( objPath );
-        if ( status.isSuccess() ) {
-          return status;
-        }
-        return INVALID_OBJ_PATH;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  try {
+    RegEntry* from_entry = CAST_REGENTRY( RegEntry*, from );
+    if ( from_entry ) {
+      auto sep = objPath.rfind( SEPARATOR );
+      if ( sep > 0 && sep != boost::string_ref::npos ) { // in case the objPath is a sub-directory itself
+        DataObject* pO = nullptr;
+        StatusCode sc  = findObject( from, objPath.substr( 0, sep ), pO );
+        return sc.isSuccess() ? unlinkObject( pO->registry(), objPath.substr( sep ) ) : sc;
       }
-    } catch ( ... ) {
+      StatusCode status = from_entry->remove( objPath );
+      return status.isSuccess() ? status : INVALID_OBJ_PATH;
     }
-    return INVALID_PARENT;
+  } catch ( ... ) {
   }
-  return INVALID_ROOT;
+  return INVALID_PARENT;
 }
 
 /// Remove a link to another object.
@@ -1136,29 +1014,21 @@ StatusCode TsDataSvc::unlinkObject( boost::string_ref from, boost::string_ref ob
 {
   DataObject* pObject = nullptr;
   StatusCode status   = findObject( from, pObject );
-  if ( status.isSuccess() ) {
-    status = unlinkObject( pObject->registry(), objPath );
-  }
-  return status;
+  return status.isSuccess() ? unlinkObject( pObject->registry(), objPath ) : status;
 }
 
 /// Remove a link to another object.
 StatusCode TsDataSvc::unlinkObject( DataObject* from, boost::string_ref objPath )
 {
-  if ( checkRoot() ) {
-    IRegistry* from_entry = m_root->findLeaf( from );
-    return unlinkObject( from_entry, objPath );
-  }
-  return INVALID_ROOT;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  return unlinkObject( m_root->findLeaf( from ), objPath );
 }
 
 /// Add an item to the preload list
 StatusCode TsDataSvc::addPreLoadItem( const DataStoreItem& item )
 {
-  LoadItems::iterator i = std::find( m_preLoads.begin(), m_preLoads.end(), item );
-  if ( i == m_preLoads.end() ) {
-    m_preLoads.push_back( item );
-  }
+  auto i = std::find( m_preLoads.begin(), m_preLoads.end(), item );
+  if ( i == m_preLoads.end() ) m_preLoads.push_back( item );
   return StatusCode::SUCCESS;
 }
 
@@ -1171,10 +1041,8 @@ StatusCode TsDataSvc::addPreLoadItem( std::string itemPath )
 /// Remove an item from the preload list
 StatusCode TsDataSvc::removePreLoadItem( const DataStoreItem& item )
 {
-  LoadItems::iterator i = std::remove( m_preLoads.begin(), m_preLoads.end(), item );
-  if ( i != m_preLoads.end() ) {
-    m_preLoads.erase( i, m_preLoads.end() );
-  }
+  auto i = std::remove( m_preLoads.begin(), m_preLoads.end(), item );
+  m_preLoads.erase( i, m_preLoads.end() );
   return StatusCode::SUCCESS;
 }
 
@@ -1187,7 +1055,7 @@ StatusCode TsDataSvc::removePreLoadItem( std::string itemPath )
 /// Clear the preload list
 StatusCode TsDataSvc::resetPreLoad()
 {
-  m_preLoads.erase( m_preLoads.begin(), m_preLoads.end() );
+  m_preLoads.clear();
   return StatusCode::SUCCESS;
 }
 
@@ -1195,12 +1063,12 @@ StatusCode TsDataSvc::resetPreLoad()
 StatusCode TsDataSvc::preLoad( int depth, int load_depth, DataObject* pObject )
 {
   // unused:  StatusCode sc = StatusCode::FAILURE;
-  if ( 0 != pObject && depth++ < load_depth ) {
+  if ( pObject && depth++ < load_depth ) {
     RegEntry* dir = CAST_REGENTRY( RegEntry*, pObject->registry() );
-    if ( 0 != dir ) {
-      for ( RegEntry::Iterator i = dir->begin(); i != dir->end(); i++ ) {
-        DataObject* pObj  = 0;
-        StatusCode status = retrieveObject( pObject, ( *i )->name(), pObj );
+    if ( dir ) {
+      for ( const auto& i : *dir ) {
+        DataObject* pObj  = nullptr;
+        StatusCode status = retrieveObject( pObject, i->name(), pObj );
         if ( status.isSuccess() && depth < load_depth ) {
           preLoad( depth, load_depth, pObj ).ignore();
         }
@@ -1213,10 +1081,10 @@ StatusCode TsDataSvc::preLoad( int depth, int load_depth, DataObject* pObject )
 /// load all preload items of the list
 StatusCode TsDataSvc::preLoad()
 {
-  DataObject* pObj = 0;
-  for ( LoadItems::iterator i = m_preLoads.begin(); i != m_preLoads.end(); i++ ) {
-    StatusCode sc  = retrieveObject( ( *i ).path(), pObj );
-    int load_depth = ( *i ).depth();
+  DataObject* pObj = nullptr;
+  for ( const auto& i : m_preLoads ) {
+    StatusCode sc  = retrieveObject( i.path(), pObj );
+    int load_depth = i.depth();
     if ( sc.isSuccess() && load_depth > 1 ) {
       preLoad( 1, load_depth, pObj ).ignore();
     }
@@ -1229,9 +1097,7 @@ StatusCode TsDataSvc::initialize()
 {
   // Nothing to do: just call base class initialisation
   StatusCode sc = Service::initialize();
-  if ( !sc.isSuccess() ) {
-    return sc;
-  }
+  if ( !sc.isSuccess() ) return sc;
   sc = service( "IncidentSvc", m_incidentSvc, true );
   if ( UNLIKELY( !sc.isSuccess() ) ) {
     error() << "Failed to access incident service." << endmsg;
@@ -1244,12 +1110,12 @@ StatusCode TsDataSvc::reinitialize()
 {
   StatusCode sc;
   // the finalize part is copied here
-  setDataLoader( 0 ).ignore();
+  setDataLoader( nullptr ).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
   if ( m_incidentSvc ) {
     m_incidentSvc->release();
-    m_incidentSvc = 0;
+    m_incidentSvc = nullptr;
   }
   // re-initialize the base class
   sc = Service::reinitialize();
@@ -1271,12 +1137,12 @@ StatusCode TsDataSvc::reinitialize()
 StatusCode TsDataSvc::finalize()
 {
   // Nothing to do: just call base class initialisation
-  setDataLoader( 0 ).ignore();
+  setDataLoader( nullptr ).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
   if ( m_incidentSvc ) {
     m_incidentSvc->release();
-    m_incidentSvc = 0;
+    m_incidentSvc = nullptr;
   }
   return Service::finalize();
 }
@@ -1298,7 +1164,7 @@ IConversionSvc* TsDataSvc::getDataLoader( IRegistry* /* pReg */ ) { return m_dat
 /// Standard Destructor
 TsDataSvc::~TsDataSvc()
 {
-  setDataLoader( 0 ).ignore();
+  setDataLoader( nullptr ).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
 }
