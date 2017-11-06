@@ -39,10 +39,27 @@ message(STATUS "Using VectorClass instrset_detect ${VectorClass_VERSION} at ${Ve
 
 include_directories(${VectorClass_INCLUDE_DIR})
 
+# Extra settings when building on MacOS:
+set( extra_sources )
+set( extra_libraries )
+if( APPLE )
+   set( extra_sources src/Lib/Platform/SystemMacOS.h
+                      src/Lib/Platform/SystemMacOS.mm )
+   find_library( FOUNDATION_FRAMEWORK Foundation )
+   set( extra_libraries ${FOUNDATION_FRAMEWORK} )
+elseif( WIN32 )
+   set( extra_sources src/Lib/Platform/SystemWin32.h
+                      src/Lib/Platform/SystemWin32.cpp )
+elseif( UNIX )
+   # The UNIX variable is set for MacOS as well, so we can't put this in the
+   # front.
+   set( extra_sources src/Lib/Platform/SystemLinux.h
+                      src/Lib/Platform/SystemLinux.cpp )
+endif()
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiKernel src/Lib/*.cpp
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService
+gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries}
                   INCLUDE_DIRS Boost ROOT TBB
                   PUBLIC_HEADERS GaudiKernel)
 
@@ -132,6 +149,9 @@ gaudi_add_unit_test(test_IssueSeverity tests/src/test_IssueSeverity.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
 gaudi_add_unit_test(test_SystemTypeinfoName tests/src/test_SystemTypeinfoName.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+gaudi_add_unit_test(test_SystemCmdLineArgs tests/src/test_SystemCmdLineArgs.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
 
