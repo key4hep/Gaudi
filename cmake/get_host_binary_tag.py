@@ -36,6 +36,9 @@ def _Linux_os():
             pass  # lsb-release is missing
     if dist_name == 'ubuntu':
         dist_version = dist_version.replace('.', '')
+    elif dist_name == '':
+        # Fall back on a generic Linux build if distribution detection fails
+        dist_name = 'linux'
     return dist_name + dist_version
 
 
