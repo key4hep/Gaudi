@@ -91,7 +91,8 @@ std::string Gaudi::Details::Property::StringConverter<DataObjIDColl>::toString( 
   return Gaudi::Utils::toString( v );
 }
 
-DataObjIDColl Gaudi::Details::Property::StringConverter<DataObjIDColl>::fromString( const std::string& s )
+DataObjIDColl Gaudi::Details::Property::StringConverter<DataObjIDColl>::fromString( const DataObjIDColl&,
+                                                                                    const std::string& s )
 {
   DataObjIDColl c;
   if ( !Gaudi::Parsers::parse_( c, s ).isSuccess() ) {

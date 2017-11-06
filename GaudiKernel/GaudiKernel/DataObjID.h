@@ -118,7 +118,7 @@ namespace Gaudi
       template <>
       struct StringConverter<DataObjIDColl> {
         std::string toString( const DataObjIDColl& v );
-        DataObjIDColl fromString( const std::string& s );
+        DataObjIDColl fromString( const DataObjIDColl&, const std::string& );
       };
     }
   }

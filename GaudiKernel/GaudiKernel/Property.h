@@ -150,8 +150,30 @@ namespace Gaudi
 
     namespace Property
     {
+      // The following code is going to be a bit unpleasant, but as far as its
+      // author can tell, it is as simple as the design constraints and C++'s
+      // implementation constraints will allow. If you disagree, please submit
+      // a patch which simplifies it. Here is the underlying design rationale:
+      //
+      // - For any given type T used in a Property, we want to have an
+      //   associated StringConverter<T> struct which explains how to convert a
+      //   value of that type into a string (toString) and parse that string
+      //   back (fromString).
+      // - There is a default implementation, called DefaultStringConverter<T>,
+      //   which is based on the overloadable parse() and toStream() global
+      //   methods of Gaudi. Its exact behaviour varies depending on whether T
+      //   is default-constructible or only copy-constructible, which requires a
+      //   layer of SFINAE indirection.
+      // - Some people want to be able to specialize StringConverter as an
+      //   alternative to defining parse/toStream overloads. This interferes
+      //   with the SFINAE tricks used by DefaultStringConverter, so we cannot
+      //   just call a DefaultStringConverter a StringConverter and must add one
+      //   more layer to the StringConverter type hierarchy.
+
+      // This class factors out commonalities between DefaultStringConverters
       template <class TYPE>
-      struct StringConverterImpl {
+      struct DefaultStringConverterImpl
+      {
         public:
           inline std::string toString( const TYPE& v )
           {
@@ -175,13 +197,20 @@ namespace Gaudi
       };
       // Specialization of toString for strings (identity function)
       template <>
-      inline std::string StringConverterImpl<std::string>::toString( const std::string& v )
+      inline std::string DefaultStringConverterImpl<std::string>::toString( const std::string& v )
       {
         return v;
       }
-      // Implementation of fromString for a copy-constructible TYPE (worst case)
-      template <class TYPE, typename Enable = void>
-      struct StringConverter : StringConverterImpl<TYPE>
+
+      // This class provides a default implementation of StringConverter based
+      // on the overloadable parse() and toStream() global Gaudi methods.
+      //
+      // It leverages the fact that TYPE is default-constructible if it can, and
+      // falls back fo a requirement of copy-constructibility if it must. So
+      // here is the "default" implementation for copy-constructible types...
+      //
+      template <typename TYPE, typename Enable = void>
+      struct DefaultStringConverter : DefaultStringConverterImpl<TYPE>
       {
         inline TYPE fromString( const TYPE& ref_value, const std::string& s ) final override {
           TYPE buffer = ref_value;
@@ -189,11 +218,13 @@ namespace Gaudi
           return buffer;
         }
       };
-      // Specialization for a default-constructible type (best case)
+      // ...and here is the preferred impl for default-constructible types:
       template <class TYPE>
-      struct StringConverter<TYPE,
-                             std::enable_if_t<std::is_default_constructible<TYPE>::value>>
-        : StringConverterImpl<TYPE>
+      struct DefaultStringConverter<TYPE,
+                                    std::enable_if_t<
+                                      std::is_default_constructible<TYPE>::value
+                                    >>
+        : DefaultStringConverterImpl<TYPE>
       {
         inline TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override {
           TYPE buffer{};
@@ -201,6 +232,11 @@ namespace Gaudi
           return buffer;
         }
       };
+
+      // Specializable StringConverter struct with a default implementation
+      template<typename TYPE>
+      struct StringConverter : DefaultStringConverter<TYPE> {};
+
 
       struct NullVerifier {
         template <class TYPE>
