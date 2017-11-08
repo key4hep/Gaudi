@@ -111,19 +111,20 @@ StatusCode AlgExecStateSvc::finalize() { return StatusCode::SUCCESS; }
 
 void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) const
 {
+  size_t slotID = ctx.valid() ? ctx.slot() : 0;
 
-  ost << "Event: " << trans( m_eventStatus.at( ctx.slot() ) ) << std::endl;
-  ost << "Algs: " << m_algStates.at( ctx.slot() ).size() << std::endl;
+  ost << "Event: " << trans( m_eventStatus.at( slotID ) ) << std::endl;
+  ost << "Algs: " << m_algStates.at( slotID ).size() << std::endl;
 
   size_t ml( 0 );
-  for ( auto& e : m_algStates.at( ctx.slot() ) ) {
+  for ( auto& e : m_algStates.at( slotID ) ) {
     if ( e.first.str().length() > ml ) {
       ml = e.first.str().length();
     }
   }
 
-  ost << " - Slot " << ctx.slot() << std::endl;
-  const AlgStateMap_t& m = m_algStates.at( ctx.slot() );
+  ost << " - Slot " << slotID << std::endl;
+  const AlgStateMap_t& m = m_algStates.at( slotID );
   for ( auto& e : m ) {
     ost << "  + " << std::setw( ml ) << e.first.str() << "  " << e.second << std::endl;
   }
