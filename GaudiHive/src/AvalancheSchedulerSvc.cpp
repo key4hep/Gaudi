@@ -302,8 +302,8 @@ StatusCode AvalancheSchedulerSvc::initialize()
   SmartIF<IMessageSvc> messageSvc( serviceLocator() );
   if ( !messageSvc.isValid() ) error() << "Error retrieving MessageSvc interface IMessageSvc." << endmsg;
 
-  m_eventSlots.assign( m_maxEventsInFlight, EventSlot( m_algosDependencies, algsNumber,
-                                                       precSvc->getRules()->getControlFlowNodeCounter(), messageSvc ) );
+  m_eventSlots.assign( m_maxEventsInFlight,
+                       EventSlot( algsNumber, precSvc->getRules()->getControlFlowNodeCounter(), messageSvc ) );
   std::for_each( m_eventSlots.begin(), m_eventSlots.end(), []( EventSlot& slot ) { slot.complete = true; } );
 
   if ( m_threadPoolSize > 1 ) {
@@ -832,34 +832,9 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
                         << "  event: " << thisSlot.eventContext->evt() << " -----------" << std::endl;
 
     if ( 0 > iSlot or iSlot == slotCount ) {
-      outputMessageStream << "Algorithms states:" << std::endl;
 
-      const DataObjIDColl& wbSlotContent( thisSlot.dataFlowMgr.content() );
-      for ( unsigned int algoIdx = 0; algoIdx < thisSlot.algsStates.size(); ++algoIdx ) {
-        outputMessageStream << " o " << index2algname( algoIdx ) << " ["
-                            << AlgsExecutionStates::stateNames[thisSlot.algsStates[algoIdx]] << "]  Data deps: ";
-        DataObjIDColl deps( thisSlot.dataFlowMgr.dataDependencies( algoIdx ) );
-        const int depsSize = deps.size();
-        if ( depsSize == 0 ) outputMessageStream << " none";
-
-        DataObjIDColl missing;
-        for ( auto d : deps ) {
-          outputMessageStream << d << " ";
-          if ( wbSlotContent.find( d ) == wbSlotContent.end() ) {
-            //      outputMessageStream << "[missing] ";
-            missing.insert( d );
-          }
-        }
-
-        outputMessageStream << std::endl;
-      }
-
-      // Snapshot of the WhiteBoard
-      outputMessageStream << "\nWhiteboard contents: " << std::endl;
-      for ( auto& product : wbSlotContent ) outputMessageStream << " o " << product << std::endl;
-
-      // Snapshot of the ControlFlow
-      outputMessageStream << "\nControl Flow:" << std::endl;
+      // Snapshot of the Control Flow and FSM states
+      outputMessageStream << "\nControl Flow and FSM states:" << std::endl;
       outputMessageStream << m_precSvc->printState( thisSlot ) << std::endl;
     }
   }
