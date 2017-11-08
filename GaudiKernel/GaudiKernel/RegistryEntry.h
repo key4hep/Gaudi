@@ -33,7 +33,7 @@ namespace DataSvcHelpers
    * @author Markus Frank
    * @author Sebastien Ponce
    */
-  class GAUDI_API RegistryEntry : public IRegistry
+  class GAUDI_API RegistryEntry final : public IRegistry
   {
   private:
     /// Definition of datastore type

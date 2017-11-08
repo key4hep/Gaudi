@@ -258,9 +258,8 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( boost::str
     } else {
       path.clear();
     }
-    auto i = std::find_if( std::begin( m_store ), std::end( m_store ), [&]( decltype( m_store )::const_reference reg ) {
-      return cpath == boost::string_ref{reg->name()}.substr( 1 );
-    } );
+    auto i = std::find_if( std::begin( m_store ), std::end( m_store ),
+                           [&]( const auto& reg ) { return cpath == boost::string_ref{reg->name()}.substr( 1 ); } );
     if ( i != std::end( m_store ) ) {
       RegistryEntry* regEnt = CAST_REGENTRY( RegistryEntry*, *i );
       return path.empty() ? regEnt : regEnt->i_find( path );
@@ -276,9 +275,7 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( boost::str
 DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( const DataObject* key ) const
 {
   if ( key ) {
-    if ( key == m_pObject ) {
-      return const_cast<RegistryEntry*>( this );
-    }
+    if ( key == m_pObject ) return const_cast<RegistryEntry*>( this );
     // Look in the immediate level:
     RegistryEntry* result = CAST_REGENTRY( RegistryEntry*, i_find( key->registry() ) );
     if ( result ) return result;
