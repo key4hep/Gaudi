@@ -795,16 +795,13 @@ StatusCode DataSvc::findObject( IRegistry* pRegistry, boost::string_ref path, Da
 StatusCode DataSvc::findObject( boost::string_ref path, DataObject*& pObject )
 {
   pObject = nullptr;
-  if ( checkRoot() ) {
-    if ( path.empty() || path == m_rootName.value() ) {
-      pObject = m_root->object();
-      return !pObject ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
-    } else if ( path.front() != SEPARATOR ) {
-      return findObject( m_rootName.value(), path, pObject );
-    }
-    return findObject( (IRegistry*)nullptr, path, pObject );
+  if ( !checkRoot() ) return INVALID_ROOT;
+  if ( path.empty() || path == m_rootName.value() ) {
+    pObject = m_root->object();
+    return !pObject ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
   }
-  return INVALID_ROOT;
+  return ( path.front() != SEPARATOR ) ? findObject( m_rootName.value(), path, pObject )
+                                       : findObject( static_cast<IRegistry*>( nullptr ), path, pObject );
 }
 
 /// Retrieve object identified by its full path from the data store.
@@ -916,46 +913,37 @@ StatusCode DataSvc::updateObject( DataObject* parent, boost::string_ref updatePa
 // Link object
 StatusCode DataSvc::linkObject( IRegistry* from, boost::string_ref objPath, DataObject* to )
 {
-  if ( checkRoot() ) {
-    try {
-      RegEntry* from_entry = CAST_REGENTRY( RegEntry*, from );
-      if ( from_entry ) {
-        // First check if both objects are already registered to the store
-        RegEntry* to_entry = m_root->findLeaf( to );
-        if ( !to_entry ) {
-          return INVALID_OBJECT;
-        }
-        auto sep = objPath.rfind( SEPARATOR );
-        if ( sep > 0 && sep != boost::string_ref::npos ) { // in case the objPath is a sub-directory itself
-          DataObject* pO = nullptr;
-          StatusCode sc  = retrieveObject( from, objPath.substr( 0, sep ), pO );
-          if ( sc.isSuccess() ) {
-            sc = linkObject( pO->registry(), objPath.substr( sep ), to );
-          }
-          return sc;
-        }
-        // Now register the soft link
-        StatusCode status = from_entry->add( to_string( objPath ), to, true );
-        return status.isSuccess() ? IDataProviderSvc_NO_ERROR : DOUBL_OBJ_PATH;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  try {
+    RegEntry* from_entry = CAST_REGENTRY( RegEntry*, from );
+    if ( from_entry ) {
+      // First check if both objects are already registered to the store
+      RegEntry* to_entry = m_root->findLeaf( to );
+      if ( !to_entry ) return INVALID_OBJECT;
+      auto sep = objPath.rfind( SEPARATOR );
+      if ( sep > 0 && sep != boost::string_ref::npos ) { // in case the objPath is a sub-directory itself
+        DataObject* pO = nullptr;
+        StatusCode sc  = retrieveObject( from, objPath.substr( 0, sep ), pO );
+        return sc.isSuccess() ? linkObject( pO->registry(), objPath.substr( sep ), to ) : sc;
       }
-    } catch ( ... ) {
+      // Now register the soft link
+      StatusCode status = from_entry->add( to_string( objPath ), to, true );
+      return status.isSuccess() ? IDataProviderSvc_NO_ERROR : DOUBL_OBJ_PATH;
     }
-    return INVALID_PARENT;
+  } catch ( ... ) {
   }
-  return INVALID_ROOT;
+  return INVALID_PARENT;
 }
 
 /// Add a link to another object.
 StatusCode DataSvc::linkObject( boost::string_ref fullPath, DataObject* to )
 {
-  if ( !fullPath.empty() ) {
-    if ( fullPath.front() != SEPARATOR ) {
-      return linkObject( m_rootName.value(), fullPath, to );
-    }
-    auto sep = fullPath.rfind( SEPARATOR );
-    return linkObject( fullPath.substr( 0, sep ), fullPath.substr( sep ), to );
+  if ( fullPath.empty() ) return INVALID_OBJ_PATH;
+  if ( fullPath.front() != SEPARATOR ) {
+    return linkObject( m_rootName.value(), fullPath, to );
   }
-  return INVALID_OBJ_PATH;
+  auto sep = fullPath.rfind( SEPARATOR );
+  return linkObject( fullPath.substr( 0, sep ), fullPath.substr( sep ), to );
 }
 
 /// Add a link to another object.
@@ -981,28 +969,23 @@ StatusCode DataSvc::linkObject( DataObject* from, boost::string_ref objPath, Dat
 /// Remove a link to another object.
 StatusCode DataSvc::unlinkObject( IRegistry* from, boost::string_ref objPath )
 {
-  if ( checkRoot() ) {
-    try {
-      RegEntry* from_entry = CAST_REGENTRY( RegEntry*, from );
-      if ( from_entry ) {
-        auto sep = objPath.rfind( SEPARATOR );
-        if ( sep > 0 && sep != boost::string_ref::npos ) { // in case the objPath is a sub-directory itself
-          DataObject* pO = nullptr;
-          StatusCode sc  = findObject( from, objPath.substr( 0, sep ), pO );
-          if ( sc.isSuccess() ) {
-            sc = unlinkObject( pO->registry(), objPath.substr( sep ) );
-          }
-          return sc;
-        }
-        StatusCode status = from_entry->remove( objPath );
-        if ( status.isSuccess() ) return status;
-        return INVALID_OBJ_PATH;
+  if ( !checkRoot() ) return INVALID_ROOT;
+  try {
+    RegEntry* from_entry = CAST_REGENTRY( RegEntry*, from );
+    if ( from_entry ) {
+      auto sep = objPath.rfind( SEPARATOR );
+      if ( sep > 0 && sep != boost::string_ref::npos ) { // in case the objPath is a sub-directory itself
+        DataObject* pO = nullptr;
+        StatusCode sc  = findObject( from, objPath.substr( 0, sep ), pO );
+        return sc.isSuccess() ? unlinkObject( pO->registry(), objPath.substr( sep ) ) : sc;
       }
-    } catch ( ... ) {
+      StatusCode status = from_entry->remove( objPath );
+      if ( status.isSuccess() ) return status;
+      return INVALID_OBJ_PATH;
     }
-    return INVALID_PARENT;
+  } catch ( ... ) {
   }
-  return INVALID_ROOT;
+  return INVALID_PARENT;
 }
 
 /// Remove a link to another object.
@@ -1148,7 +1131,7 @@ StatusCode DataSvc::finalize()
 }
 
 /// CLID for root Event
-CLID DataSvc::rootCLID() const { return ( (CLID)m_rootCLID ); }
+CLID DataSvc::rootCLID() const { return (CLID)m_rootCLID; }
 
 /// Name for root Event
 const std::string& DataSvc::rootName() const { return m_rootName; }
