@@ -960,7 +960,10 @@ void Algorithm::commitHandles()
   //-----------------------------------------------------------------------------
 
   for ( auto h : outputHandles() ) {
-    h->commit();
+    if ( h->commit().isFailure() ) {
+      throw GaudiException( "Failed to commit output handle [" + h->fullKey().fullKey() + "]", this->name(),
+                            StatusCode::FAILURE );
+    }
   }
 
   for ( auto t : m_tools ) {
