@@ -625,8 +625,6 @@ StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
 StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_name )
 {
 
-  m_updateNeeded = true;
-
   StatusCode global_sc( StatusCode::SUCCESS );
 
   // Sort from the oldest to the newest event
@@ -997,7 +995,6 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
   // Schedule an update of the status of the algorithms
   auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
   m_actionsQueue.push( updateAction );
-  m_updateNeeded = false;
 
   if ( msgLevel( MSG::DEBUG ) )
     debug() << "Trying to handle execution result of " << index2algname( iAlgo ) << " on slot " << si << endmsg;
@@ -1052,7 +1049,6 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   // Schedule an update of the status of the algorithms
   auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
   m_actionsQueue.push( updateAction );
-  m_updateNeeded = false;
 
   if ( msgLevel( MSG::DEBUG ) )
     debug() << "[Asynchronous] Trying to handle execution result of " << index2algname( iAlgo ) << " on slot " << si

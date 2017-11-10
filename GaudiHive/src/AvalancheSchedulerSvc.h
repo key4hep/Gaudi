@@ -244,9 +244,6 @@ private:
   /// Dump the state of the scheduler
   void dumpSchedulerState( int iSlot );
 
-  /// Keep track of update actions scheduled
-  bool m_updateNeeded = true;
-
   // Algos Management -------------------------------------------------------
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool> m_algResourcePool;
