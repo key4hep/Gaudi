@@ -39,8 +39,6 @@ using namespace Gaudi;
 
 DECLARE_COMPONENT( IODataManager )
 
-enum { S_OK = StatusCode::SUCCESS, S_ERROR = StatusCode::FAILURE };
-
 static std::set<std::string> s_badFiles;
 
 /// IService implementation: Db event selector override
@@ -80,7 +78,7 @@ StatusCode IODataManager::error( CSTR msg, bool rethrow )
   MsgStream log( msgSvc(), name() );
   log << MSG::ERROR << "Error: " << msg << endmsg;
   if ( rethrow ) System::breakExecution();
-  return S_ERROR;
+  return StatusCode::FAILURE;
 }
 
 /// Get connection by owner instance (0=ALL)
@@ -116,13 +114,13 @@ StatusCode IODataManager::connectWrite( Connection* con, IoType mode, CSTR docty
 /// Read raw byte buffer from input stream
 StatusCode IODataManager::read( Connection* con, void* const data, size_t len )
 {
-  return establishConnection( con ).isSuccess() ? con->read( data, len ) : S_ERROR;
+  return establishConnection( con ).isSuccess() ? con->read( data, len ) : StatusCode::FAILURE;
 }
 
 /// Write raw byte buffer to output stream
 StatusCode IODataManager::write( Connection* con, const void* data, int len )
 {
-  return establishConnection( con ).isSuccess() ? con->write( data, len ) : S_ERROR;
+  return establishConnection( con ).isSuccess() ? con->write( data, len ) : StatusCode::FAILURE;
 }
 
 /// Seek on the file described by ioDesc. Arguments as in ::seek()
@@ -166,12 +164,12 @@ StatusCode IODataManager::disconnect( Connection* con )
     }
     return sc;
   }
-  return S_ERROR;
+  return StatusCode::FAILURE;
 }
 
 StatusCode IODataManager::reconnect( Entry* e )
 {
-  StatusCode sc = S_ERROR;
+  StatusCode sc = StatusCode::FAILURE;
   if ( e && e->connection ) {
     switch ( e->ioType ) {
     case Connection::READ:
@@ -183,7 +181,7 @@ StatusCode IODataManager::reconnect( Entry* e )
       sc = e->connection->connectWrite( e->ioType );
       break;
     default:
-      return S_ERROR;
+      return StatusCode::FAILURE;
     }
     if ( sc.isSuccess() && e->ioType == Connection::READ ) {
       std::vector<Entry*> to_retire;
@@ -221,7 +219,7 @@ StatusCode IODataManager::establishConnection( Connection* con )
 
   if ( con->isConnected() ) {
     con->resetAge();
-    return S_OK;
+    return StatusCode::SUCCESS;
   }
   auto i = m_connectionMap.find( con->name() );
   if ( i != m_connectionMap.end() ) {
@@ -230,9 +228,9 @@ StatusCode IODataManager::establishConnection( Connection* con )
       m_incSvc->fireIncident( Incident( con->name(), IncidentType::FailInputFile ) );
       return error( "Severe logic bug: Twice identical connection object for DSN:" + con->name(), true );
     }
-    if ( reconnect( i->second ).isSuccess() ) return S_OK;
+    if ( reconnect( i->second ).isSuccess() ) return StatusCode::SUCCESS;
   }
-  return S_ERROR;
+  return StatusCode::FAILURE;
 }
 
 StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR technology, bool keep_open,
@@ -303,7 +301,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
             << files.size() << " entries." << endmsg;
         return IDataConnection::BAD_DATA_CONNECTION;
       }
-      return S_ERROR;
+      return StatusCode::FAILURE;
     }
     std::string fid;
     auto j = m_fidMap.find( dsn );
@@ -360,7 +358,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
           }
         }
         m_connectionMap.emplace( fid, e ); // note: only if we disconnect does e get deleted??
-        return S_OK;
+        return StatusCode::SUCCESS;
       }
       // Here we open the file!
       if ( !reconnect( ( *fi ).second ).isSuccess() ) {
@@ -369,7 +367,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
         error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid, false ).ignore();
         return IDataConnection::BAD_DATA_CONNECTION;
       }
-      return S_OK;
+      return StatusCode::SUCCESS;
     }
     sc = connectDataIO( FID, rw, fid, technology, keep_open, connection );
     if ( !sc.isSuccess() && m_quarantine ) {
