@@ -877,28 +877,24 @@ StatusCode AvalancheSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si
     }
 
     ++m_algosInFlight;
-    auto promote2ExecutedClosure = std::bind( &AvalancheSchedulerSvc::promoteToExecuted, this, iAlgo,
-                                              eventContext->slot(), ialgoPtr, eventContext );
+    auto promote2ExecutedClosure = [this, iAlgo, ialgoPtr, eventContext]() {
+      this->m_actionsQueue.push( [this, iAlgo, ialgoPtr, eventContext]() {
+        return this->AvalancheSchedulerSvc::promoteToExecuted( iAlgo, eventContext->slot(), ialgoPtr, eventContext );
+      } );
+      return StatusCode::SUCCESS;
+    };
+
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if ( -100 != m_threadPoolSize ) {
-
-      // this parent task is needed to promote an Algorithm as EXECUTED,
-      // it will be started as soon as the child task (see below) is completed
-      tbb::task* triggerAlgoStateUpdate =
-          new ( tbb::task::allocate_root() ) enqueueSchedulerActionTask( this, promote2ExecutedClosure );
-      // setting parent's refcount to 1 is made here only for consistency
-      // (in this case since it is not scheduled explicitly and there it has only one child task)
-      triggerAlgoStateUpdate->set_ref_count( 1 );
       // the child task that executes an Algorithm
-      tbb::task* algoTask = new ( triggerAlgoStateUpdate->allocate_child() )
-          AlgoExecutionTask( ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc );
+      tbb::task* algoTask = new ( tbb::task::allocate_root() )
+          AlgoExecutionTask( ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
       // schedule the algoTask
       tbb::task::enqueue( *algoTask );
 
     } else {
-      AlgoExecutionTask theTask( ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc );
+      AlgoExecutionTask theTask( ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
       theTask.execute();
-      promote2ExecutedClosure();
     }
 
     if ( msgLevel( MSG::DEBUG ) )

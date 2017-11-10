@@ -259,24 +259,6 @@ private:
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
-  // helper task to enqueue the scheduler's actions (closures)
-  struct enqueueSchedulerActionTask : public tbb::task {
-
-    std::function<StatusCode()> m_closure;
-    SmartIF<AvalancheSchedulerSvc> m_scheduler;
-
-    enqueueSchedulerActionTask( AvalancheSchedulerSvc* scheduler, std::function<StatusCode()> _closure )
-        : m_closure( _closure ), m_scheduler( scheduler )
-    {
-    }
-
-    tbb::task* execute() override
-    {
-      m_scheduler->m_actionsQueue.push( m_closure );
-      return nullptr;
-    }
-  };
-
   // ------------------------------------------------------------------------
 
   // Service for thread pool initialization
