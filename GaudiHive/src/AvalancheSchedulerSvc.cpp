@@ -989,14 +989,6 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
   EventSlot& thisSlot = m_eventSlots[si];
 
   if ( msgLevel( MSG::DEBUG ) )
-    debug() << "Algorithm " << algo->name() << " executed in slot " << si << ". Algorithms scheduled are "
-            << m_algosInFlight << endmsg;
-
-  // Schedule an update of the status of the algorithms
-  auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
-  m_actionsQueue.push( updateAction );
-
-  if ( msgLevel( MSG::DEBUG ) )
     debug() << "Trying to handle execution result of " << index2algname( iAlgo ) << " on slot " << si << endmsg;
   State state;
   if ( algo->filterPassed() ) {
@@ -1011,6 +1003,14 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
     if ( msgLevel( MSG::VERBOSE ) )
       verbose() << "Promoting " << index2algname( iAlgo ) << " on slot " << si << " to "
                 << AlgsExecutionStates::stateNames[state] << endmsg;
+
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Algorithm " << algo->name() << " executed in slot " << si << ". Algorithms scheduled are "
+            << m_algosInFlight << endmsg;
+
+  // Schedule an update of the status of the algorithms
+  auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
+  m_actionsQueue.push( updateAction );
 
   return sc;
 }
@@ -1043,14 +1043,6 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   EventSlot& thisSlot = m_eventSlots[si];
 
   if ( msgLevel( MSG::DEBUG ) )
-    debug() << "[Asynchronous] Algorithm " << algo->name() << " executed in slot " << si
-            << ". Algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
-
-  // Schedule an update of the status of the algorithms
-  auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
-  m_actionsQueue.push( updateAction );
-
-  if ( msgLevel( MSG::DEBUG ) )
     debug() << "[Asynchronous] Trying to handle execution result of " << index2algname( iAlgo ) << " on slot " << si
             << endmsg;
   State state;
@@ -1066,6 +1058,14 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
     if ( msgLevel( MSG::VERBOSE ) )
       verbose() << "[Asynchronous] Promoting " << index2algname( iAlgo ) << " on slot " << si << " to "
                 << AlgsExecutionStates::stateNames[state] << endmsg;
+
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "[Asynchronous] Algorithm " << algo->name() << " executed in slot " << si
+            << ". Algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
+
+  // Schedule an update of the status of the algorithms
+  auto updateAction = std::bind( &AvalancheSchedulerSvc::updateStates, this, -1, algo->name() );
+  m_actionsQueue.push( updateAction );
 
   return sc;
 }
