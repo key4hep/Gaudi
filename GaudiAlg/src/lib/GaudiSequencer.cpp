@@ -9,13 +9,6 @@
 namespace
 {
 
-  // TODO: this  adds C++14 'make_unique'... remove once we move to C++14...
-  template <typename T, typename... Args>
-  std::unique_ptr<T> make_unique_( Args&&... args )
-  {
-    return std::unique_ptr<T>( new T( std::forward<Args>( args )... ) );
-  }
-
   bool isDefault( const std::string& s ) { return s.empty(); }
 
   // utility class to populate some properties in the job options service
@@ -31,10 +24,10 @@ namespace
     void process( T&& t )
     {
       static_assert( std::tuple_size<T>::value == 2, "Expecting an std::tuple key-value pair" );
-      using type   = typename std::decay<typename std::tuple_element<1, T>::type>::type;
+      using type   = std::decay_t<std::tuple_element_t<1, T>>;
       using prop_t = Gaudi::Property<type>;
       if ( !isDefault( std::get<1>( t ) ) )
-        m_props.push_back( make_unique_<prop_t>( std::get<0>( t ), std::get<1>( t ) ) );
+        m_props.push_back( std::make_unique<prop_t>( std::get<0>( t ), std::get<1>( t ) ) );
     }
     template <typename T, typename... Args>
     void process( T&& t, Args&&... args )
@@ -47,9 +40,8 @@ namespace
       const auto* props = m_jos->getProperties( m_name );
       if ( !props ) return;
       for ( const auto& i : *props ) {
-        auto j = std::find_if(
-            std::begin( m_props ), std::end( m_props ),
-            [&i]( const std::unique_ptr<Gaudi::Details::PropertyBase>& prop ) { return prop->name() == i->name(); } );
+        auto j = std::find_if( std::begin( m_props ), std::end( m_props ),
+                               [&i]( const auto& prop ) { return prop->name() == i->name(); } );
         if ( j == std::end( m_props ) ) continue;
         m_props.erase( j );
         if ( m_props.empty() ) break; // done!
@@ -64,16 +56,12 @@ namespace
       process( std::forward<Args>( args )... );
       if ( !m_props.empty() ) check_veto();
       std::for_each( std::begin( m_props ), std::end( m_props ),
-                     [&]( const std::unique_ptr<Gaudi::Details::PropertyBase>& i ) {
-                       m_jos->addPropertyToCatalogue( m_name, *i ).ignore();
-                     } );
+                     [&]( const auto& i ) { m_jos->addPropertyToCatalogue( m_name, *i ).ignore(); } );
     }
     ~populate_JobOptionsSvc_t()
     {
       std::for_each( std::begin( m_props ), std::end( m_props ),
-                     [&]( const std::unique_ptr<Gaudi::Details::PropertyBase>& i ) {
-                       m_jos->removePropertyFromCatalogue( m_name, i->name() ).ignore();
-                     } );
+                     [&]( const auto& i ) { m_jos->removePropertyFromCatalogue( m_name, i->name() ).ignore(); } );
     }
   };
 

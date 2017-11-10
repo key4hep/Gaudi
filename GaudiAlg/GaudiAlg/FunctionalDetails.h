@@ -101,7 +101,7 @@ namespace Gaudi
 
       // implementation of C++17 std::as_const, see http://en.cppreference.com/w/cpp/utility/as_const
       template <typename T>
-      constexpr typename std::add_const<T>::type& as_const( T& t ) noexcept
+      constexpr std::add_const_t<T>& as_const( T& t ) noexcept
       {
         return t;
       }
@@ -111,15 +111,13 @@ namespace Gaudi
 
       /////////////////////////////////////////
 
-      template <typename Out1, typename Out2,
-                typename = typename std::enable_if<std::is_constructible<Out1, Out2>::value>::type>
+      template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
       Out1* put( DataObjectHandle<Out1>& out_handle, Out2&& out )
       {
         return out_handle.put( new Out1( std::forward<Out2>( out ) ) );
       }
 
-      template <typename Out1, typename Out2,
-                typename = typename std::enable_if<std::is_constructible<Out1, Out2>::value>::type>
+      template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
       void put( AnyDataHandle<Out1>& out_handle, Out2&& out )
       {
         out_handle.put( std::forward<Out2>( out ) );
@@ -139,7 +137,7 @@ namespace Gaudi
       constexpr struct insert_t {
         // for Container<T*>, return T
         template <typename Container>
-        using c_remove_ptr_t = typename std::remove_pointer<typename Container::value_type>::type;
+        using c_remove_ptr_t = std::remove_pointer_t<typename Container::value_type>;
 
         template <typename Container, typename Value>
         auto operator()( Container& c, Value&& v ) const -> decltype( c.push_back( v ) )
@@ -155,7 +153,7 @@ namespace Gaudi
 
         // Container<T*> with T&& as argument
         template <typename Container,
-                  typename = typename std::enable_if<std::is_pointer<typename Container::value_type>::value>::type>
+                  typename = std::enable_if_t<std::is_pointer<typename Container::value_type>::value>>
         auto operator()( Container& c, c_remove_ptr_t<Container>&& v ) const
         {
           return operator()( c, new c_remove_ptr_t<Container>{std::move( v )} );
@@ -171,7 +169,7 @@ namespace Gaudi
       /////////////////////////////////////////
 
       constexpr struct deref_t {
-        template <typename In, typename = typename std::enable_if<!std::is_pointer<In>::value>::type>
+        template <typename In, typename = std::enable_if_t<!std::is_pointer<In>::value>>
         In& operator()( In& in ) const
         {
           return in;
@@ -227,13 +225,13 @@ namespace Gaudi
         template <typename In>
         struct get_from_handle {
           template <template <typename> class Handle, typename I,
-                    typename = typename std::enable_if<std::is_convertible<I, In>::value>::type>
+                    typename = std::enable_if_t<std::is_convertible<I, In>::value>>
           auto operator()( const Handle<I>& h ) -> const In&
           {
             return *h.get();
           }
           template <template <typename> class Handle, typename I,
-                    typename = typename std::enable_if<std::is_convertible<I*, In>::value>::type>
+                    typename = std::enable_if_t<std::is_convertible<I*, In>::value>>
           auto operator()( const Handle<I>& h ) -> const In
           {
             return h.getIfExists();
@@ -359,8 +357,8 @@ namespace Gaudi
         template <typename Tr>
         using BaseClass_ = typename Tr::BaseClass;
         template <typename Tr, typename T>
-        using defaultHandle_ = typename std::conditional<std::is_base_of<DataObject, T>::value, DataObjectHandle<T>,
-                                                         AnyDataHandle<T>>::type;
+        using defaultHandle_ =
+            std::conditional_t<std::is_base_of<DataObject, T>::value, DataObjectHandle<T>, AnyDataHandle<T>>;
         template <typename Tr, typename T>
         using OutputHandle_ = typename Tr::template OutputHandle<T>;
         template <typename Tr, typename T>
@@ -386,14 +384,11 @@ namespace Gaudi
 
       namespace details2
       {
-        template <std::size_t N, typename Tuple>
-        using element_t = typename std::tuple_element<N, Tuple>::type;
-
         template <typename Tuple, typename KeyValues, std::size_t... I>
         Tuple make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m,
                                             std::index_sequence<I...> )
         {
-          return std::make_tuple( element_t<I, Tuple>{std::get<I>( initvalue ).second, m, o}... );
+          return std::make_tuple( std::tuple_element_t<I, Tuple>{std::get<I>( initvalue ).second, m, o}... );
         }
         template <typename KeyValues, typename Properties, std::size_t... I>
         void declare_tuple_of_properties_helper( Algorithm& owner, const KeyValues& inputs, Properties& props,

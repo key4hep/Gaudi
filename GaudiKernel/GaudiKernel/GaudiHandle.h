@@ -13,6 +13,16 @@
 #include <type_traits>
 #include <vector>
 
+namespace details
+{
+  /// Cast a pointer to a non const type
+  template <class T>
+  std::remove_const_t<T>* nonConst( T* p )
+  {
+    return const_cast<std::remove_const_t<T>*>( p );
+  }
+}
+
 class GAUDI_API GaudiHandleInfo
 {
 protected:
@@ -173,14 +183,14 @@ public:
       : GaudiHandleBase( other )
   {
     m_pObject = other.get();
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
   }
 
   /** Copy constructor needed for correct ref-counting */
   GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other )
   {
     m_pObject = other.m_pObject;
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
   }
 
   /** Assignment operator for correct ref-counting */
@@ -193,7 +203,7 @@ public:
     release().ignore();
     m_pObject = other.get();
     // update ref-counting
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
     return *this;
   }
 
@@ -205,7 +215,7 @@ public:
     release().ignore();
     m_pObject = other.m_pObject;
     // update ref-counting
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
     return *this;
   }
 
@@ -300,15 +310,8 @@ protected:
   virtual StatusCode release( T* comp ) const
   { // not really const, because it updates m_pObject
     // const cast to support T being a const type
-    nonConst( comp )->release();
+    details::nonConst( comp )->release();
     return StatusCode::SUCCESS;
-  }
-
-  /// Cast a pointer to a non const type
-  template <class CLASS>
-  typename std::remove_const<CLASS>::type* nonConst( CLASS* p ) const
-  {
-    return const_cast<typename std::remove_const<CLASS>::type*>( p );
   }
 
 private:

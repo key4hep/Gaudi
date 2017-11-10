@@ -334,9 +334,9 @@ namespace Gaudi
     /// helper typedefs for SFINAE
     /// @{
     template <class T>
-    using is_this_type = std::is_same<Property, typename std::remove_reference<T>::type>;
+    using is_this_type = std::is_same<Property, std::remove_reference_t<T>>;
     template <class T>
-    using not_copying = std::enable_if<!is_this_type<T>::value>;
+    using not_copying = std::enable_if_t<!is_this_type<T>::value>;
     /// @}
   public:
     // ==========================================================================
@@ -350,9 +350,9 @@ namespace Gaudi
     }
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = ValueType,
-              typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type,
-              typename = typename std::enable_if<std::is_default_constructible<T>::value>::type>
+    template <typename OWNER, typename T = ValueType,
+              typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>,
+              typename = std::enable_if_t<std::is_default_constructible<T>::value>>
     inline Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
     {
       owner->declareProperty( *this );
@@ -361,8 +361,7 @@ namespace Gaudi
 
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType,
-              typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
     inline Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
     {
@@ -373,14 +372,14 @@ namespace Gaudi
     /// Construct an anonymous property from a value.
     /// This constructor is not generated if T is the current type, so that the
     /// compiler picks up the copy constructor instead of this one.
-    template <class T, typename = typename not_copying<T>::type>
+    template <typename T, typename = not_copying<T>>
     Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
     {
     }
 
     /// Construct an anonymous property with default constructed value.
     /// Can be used only if StorageType is default constructible.
-    template <typename T = StorageType, typename = typename std::enable_if<!std::is_reference<T>::value>::type>
+    template <typename T = StorageType, typename = std::enable_if_t<!std::is_reference<T>::value>>
     Property() : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value()
     {
     }
