@@ -4,6 +4,7 @@
 // Framework include files
 #include "GaudiKernel/Kernel.h"
 // STL include files
+#include <cstring>
 #include <string>
 #include <typeinfo>
 #include <vector>
@@ -115,27 +116,17 @@ namespace System
   GAUDI_API bool getStackLevel( void* addresses, void*& addr, std::string& fnc, std::string& lib );
 
 #if __GNUC__ >= 4
-  /// Small helper function that allows the cast from void * to function pointer
-  /// and vice versa without the message
-  /// <verbatim>
-  /// warning: ISO C++ forbids casting between pointer-to-function and pointer-to-object
-  /// </verbatim>
-  /// It is an ugly trick but works.<br/>
-  /// See:
-  /// <ul>
-  ///  <li>http://www.trilithium.com/johan/2004/12/problem-with-dlsym/</li>
-  ///  <li>http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_active.html#573</li>
-  ///  <li>http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#195</li>
-  /// </ul>
-  template <typename DESTPTR, typename SRCPTR>
-  inline DESTPTR FuncPtrCast( SRCPTR ptr )
+  /// Small helper function that performs the cast from void * to function pointer
+  /// in a standards compliant way. For more information on this type of 'type punning, see
+  /// https://github.com/CppCon/CppCon2017/blob/master/Presentations/Type%20Punning%20In%20C%2B%2B17%20-%20Avoiding%20Pun-defined%20Behavior/Type%20Punning%20In%20C%2B%2B17%20-%20Avoiding%20Pun-defined%20Behavior%20-%20Scott%20Schurr%20-%20CppCon%202017.pdf
+  /// and https://www.youtube.com/watch?v=sCjZuvtJd-k
+  template <typename DESTPTR, typename SRC>
+  constexpr DESTPTR FuncPtrCast( SRC* const src_p ) noexcept
   {
-    union {
-      SRCPTR src;
-      DESTPTR dst;
-    } p2p;
-    p2p.src = ptr;
-    return p2p.dst;
+    static_assert( std::is_pointer<DESTPTR>::value, "must be a pointer" );
+    DESTPTR dst_p = nullptr; // must initialize to be a valid constexpr...
+    std::memcpy( &dst_p, &src_p, sizeof( dst_p ) );
+    return dst_p;
   }
 #endif
 }
