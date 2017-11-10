@@ -620,14 +620,14 @@ public:
 public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from Algorithm
-  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<Algorithm, PBASE>::value, U>::type>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Algorithm, PBASE>::value, U>>
   GaudiCommon( const std::string& name, ISvcLocator* pSvcLocator ) : base_class( name, pSvcLocator )
   {
     initGaudiCommonConstructor();
   }
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
-  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<AlgTool, PBASE>::value, U>::type>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<AlgTool, PBASE>::value, U>>
   GaudiCommon( const std::string& type, const std::string& name, const IInterface* ancestor )
       : base_class( type, name, ancestor )
   {

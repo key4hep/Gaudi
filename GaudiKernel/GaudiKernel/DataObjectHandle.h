@@ -74,7 +74,7 @@ struct DataObjectReadHandle : public DataObjectHandle<T> {
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, class K, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   inline DataObjectReadHandle( OWNER* owner, std::string name, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<T>( owner, Gaudi::DataHandle::Reader, std::move( name ), key, std::move( doc ) )
   {
@@ -95,7 +95,7 @@ struct DataObjectWriteHandle : public DataObjectHandle<T> {
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, class K, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   inline DataObjectWriteHandle( OWNER* owner, std::string name, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<T>( owner, Gaudi::DataHandle::Writer, std::move( name ), key, std::move( doc ) )
   {

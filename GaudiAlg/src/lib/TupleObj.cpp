@@ -132,7 +132,7 @@ namespace
                                                    ExtraArgs&&... ea )
   {
     using pointer   = typename C::mapped_type::pointer;
-    using reference = typename std::add_lvalue_reference<typename std::remove_pointer<pointer>::type>::type;
+    using reference = std::add_lvalue_reference_t<typename std::remove_pointer<pointer>::type>;
     auto found      = map.find( name );
     return found != map.end() ? found->second.get()
                               : create_( parent, map, name, [&]( const std::string& n, reference i ) {

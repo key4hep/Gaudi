@@ -73,7 +73,7 @@ namespace Tuples
     };
 
     template <typename Iterator>
-    using const_ref_t = typename std::add_const<typename std::iterator_traits<Iterator>::reference>::type;
+    using const_ref_t = std::add_const_t<typename std::iterator_traits<Iterator>::reference>;
   }
   // ==========================================================================
   /** @enum Type

@@ -173,7 +173,7 @@ public:
 
   /// Autodeclaring constructor with property name, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   inline ToolHandle( OWNER* owner, std::string name, std::string toolType, std::string doc = "" ) : ToolHandle( owner )
   {
     // convert name and type to a valid type/name string
@@ -232,7 +232,7 @@ public:
   }
 
   /** Do the real release of the AlgTool. */
-  StatusCode release( T* algTool ) const override { return m_pToolSvc->releaseTool( this->nonConst( algTool ) ); }
+  StatusCode release( T* algTool ) const override { return m_pToolSvc->releaseTool( details::nonConst( algTool ) ); }
 
   std::string typeAndName() const override { return GaudiHandleBase::typeAndName(); }
 
@@ -245,8 +245,8 @@ public:
   T* operator->() { return GaudiHandle<T>::operator->(); }
   T& operator*() { return *( GaudiHandle<T>::operator->() ); }
 
-  T* operator->() const { return GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ); }
-  T& operator*() const { return *( GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ) ); }
+  T* operator->() const { return details::nonConst( GaudiHandle<T>::operator->() ); }
+  T& operator*() const { return *( details::nonConst( GaudiHandle<T>::operator->() ) ); }
 #endif
 
 #ifdef ATLAS
@@ -266,7 +266,7 @@ protected:
   IAlgTool* getAsIAlgTool() override
   {
     // const cast to support T being const
-    return this->nonConst( GaudiHandle<T>::get() );
+    return details::nonConst( GaudiHandle<T>::get() );
   }
 
   StatusCode i_retrieve( IAlgTool*& algTool ) const override
@@ -301,9 +301,8 @@ public:
 
   /// Copy constructor from a non const T to const T tool handle
   template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
-  PublicToolHandle(
-      const PublicToolHandle<NCT>& other,
-      typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
+  PublicToolHandle( const PublicToolHandle<NCT>& other,
+                    std::enable_if_t<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>* = nullptr )
       : ToolHandle<T>( static_cast<const ToolHandle<NCT>&>( other ) )
   {
   }
@@ -387,7 +386,7 @@ public:
 
   /// Autodeclaring constructor with property name, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   inline ToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
                           std::string doc = "" )
       : ToolHandleArray( typesAndNames, owner )
