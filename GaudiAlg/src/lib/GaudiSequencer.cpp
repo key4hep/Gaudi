@@ -288,12 +288,14 @@ StatusCode GaudiSequencer::decodeNames()
   MsgStream& msg = info();
   if ( m_modeOR ) msg << "OR ";
   msg << "Member list: ";
-  GaudiUtils::details::ostream_joiner(
-      msg, m_entries, ", ", []( auto& os, const AlgorithmEntry& e ) -> decltype( auto ) {
-        Algorithm* alg  = e.algorithm();
-        std::string typ = System::typeinfoName( typeid( *alg ) );
-        return os << ( alg->name() == typ ? alg->name() : ( typ + "/" + alg->name() ) );
-      } );
+  GaudiUtils::details::ostream_joiner( msg, m_entries, ", ",
+                                       []( auto& os, const AlgorithmEntry& e ) -> decltype( auto ) {
+                                         Algorithm* alg  = e.algorithm();
+                                         std::string typ = System::typeinfoName( typeid( *alg ) );
+                                         os << typ;
+                                         if ( alg->name() != typ ) os << "/" << alg->name();
+                                         return os;
+                                       } );
   if ( !isDefault( context() ) ) msg << ", with context '" << context() << "'";
   if ( !isDefault( rootInTES() ) ) msg << ", with rootInTES '" << rootInTES() << "'";
   msg << endmsg;
