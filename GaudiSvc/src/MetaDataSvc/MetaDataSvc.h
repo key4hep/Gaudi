@@ -16,11 +16,10 @@ namespace Gaudi
   {
   public:
     using extends::extends;
-    ~MetaDataSvc() override = default;
 
     StatusCode start() override;
 
-    inline bool isEnabled() const { return m_isEnabled; }
+    bool isEnabled() const { return m_isEnabled; }
 
     StatusCode collectData();
 

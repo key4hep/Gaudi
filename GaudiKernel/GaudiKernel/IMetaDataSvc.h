@@ -10,11 +10,7 @@
 
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/MetaData.h"
-#include "GaudiKernel/System.h"
-#include "TFile.h"
-class GAUDI_API IMetaDataSvc : virtual public IService
-{
-public:
+struct GAUDI_API IMetaDataSvc : extend_interfaces<IService> {
   DeclareInterfaceID( IMetaDataSvc, 1, 0 );
 
   virtual MetaData* getMetaData() = 0;
