@@ -30,7 +30,7 @@ namespace Gaudi
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2007-09-17
    */
-  class GAUDI_API Histo1DDef
+  class GAUDI_API Histo1DDef final
   {
   public:
     // ========================================================================
@@ -49,9 +49,6 @@ namespace Gaudi
      *  @param bins number of bins
      */
     Histo1DDef( std::string title = "", double low = 0.0, double high = 1.0, int bins = 100 );
-    // ========================================================================
-    /// destructor
-    virtual ~Histo1DDef() = default; ///< virtual destructor
     // ========================================================================
   public:
     // ========================================================================
@@ -83,11 +80,14 @@ namespace Gaudi
   public:
     // ========================================================================
     /// ordering operator (to please BoundedVerifier)
-    bool operator<( const Histo1DDef& right ) const;
+    friend bool operator<( const Histo1DDef& left, const Histo1DDef& right );
     /// equality operator
-    bool operator==( const Histo1DDef& right ) const;
+    friend bool operator==( const Histo1DDef& left, const Histo1DDef& right );
     /// non-equality
-    bool operator!=( const Histo1DDef& right ) const;
+    friend bool operator!=( const Histo1DDef& left, const Histo1DDef& right );
+    // ========================================================================
+    /// the streamer operator for class Gaudi::Histo1DDef
+    friend std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo );
     // ========================================================================
   public:
     // ========================================================================
@@ -106,9 +106,6 @@ namespace Gaudi
     int m_bins; ///< Number of bins
     // ========================================================================
   };
-  // ==========================================================================
-  /// the streamer operator for class Gaudi::Histo1DDef
-  GAUDI_API std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo );
   // ==========================================================================
   /** @namespace Gaudi::Histos
    *  collection of simple utilities to deal with histograms
