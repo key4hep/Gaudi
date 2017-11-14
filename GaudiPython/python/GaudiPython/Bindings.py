@@ -500,13 +500,13 @@ class iDataSvc(iService):
         if not self._idp:
             raise AttributeError(
                 'C++ service %s does not exist' % self.__dict__['_name'])
-        return Helper.registerObject( self._idp, path, obj )
+        return Helper.registerObject(self._idp, path, obj)
 
     def unregisterObject(self, path):
         if not self._idp:
             raise AttributeError(
                 'C++ service %s does not exist' % self.__dict__['_name'])
-        return Helper.unregisterObject(self._idp,path)
+        return Helper.unregisterObject(self._idp, path)
 
     def retrieveObject(self, path):
         if not self._idp:
