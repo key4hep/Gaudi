@@ -14,6 +14,11 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
 
+#include "POSIXFileHandler.h"
+#include "RootFileHandler.h"
+
+#include "boost/optional.hpp"
+
 #include <list>
 #include <map>
 #include <string>
@@ -144,8 +149,8 @@ private:
   std::string m_lastErrS;
   int m_lastErr;
 
-  std::unique_ptr<RootFileHandler> m_rfh;
-  std::unique_ptr<POSIXFileHandler> m_pfh;
+  boost::optional<RootFileHandler> m_rfh;
+  boost::optional<POSIXFileHandler> m_pfh;
 };
 
 #endif

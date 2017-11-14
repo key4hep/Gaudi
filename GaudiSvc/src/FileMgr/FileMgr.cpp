@@ -5,9 +5,6 @@
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "POSIXFileHandler.h"
-#include "RootFileHandler.h"
-
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
@@ -22,9 +19,7 @@ using namespace Io;
 namespace
 {
 
-  void set_bit( int& f, const unsigned int& b ) { f |= 1 << b; }
-
-  bool get_bit( const int& f, const unsigned int& b ) { return f & ( 1 << b ); }
+  bool get_bit( int f, unsigned int b ) { return f & ( 1 << b ); }
 
   static const std::string s_empty = "";
 
@@ -33,21 +28,9 @@ namespace
     std::string operator()( const std::pair<std::string, FileAttr*>& f ) const { return f.first; }
   } to_name{};
 
-  constexpr struct select1st_t {
-    template <typename T, typename S>
-    const T& operator()( const std::pair<T, S>& p ) const
-    {
-      return p.first;
-    }
-  } select1st{};
+  const auto select1st = []( auto&& x ) -> decltype( auto ) { return std::get<0>( std::forward<decltype( x )>( x ) ); };
 
-  constexpr struct select2nd_t {
-    template <typename T, typename S>
-    const S& operator()( const std::pair<T, S>& p ) const
-    {
-      return p.second;
-    }
-  } select2nd{};
+  const auto select2nd = []( auto&& x ) -> decltype( auto ) { return std::get<1>( std::forward<decltype( x )>( x ) ); };
 
   template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
   OutputIterator transform_if( InputIterator first, InputIterator last, OutputIterator result, UnaryOperation op,
@@ -102,14 +85,14 @@ StatusCode FileMgr::initialize()
     // setup file handler for ROOT
 
     msgSvc()->setOutputLevel( "RootFileHandler", m_outputLevel.value() );
-    m_rfh.reset( new RootFileHandler( msgSvc(), m_ssl_proxy, m_ssl_cert ) );
+    m_rfh.emplace( msgSvc(), m_ssl_proxy, m_ssl_cert );
 
-    auto rfh = m_rfh.get(); // used in the lambdas to avoid capturing 'this'
+    auto& rfh = m_rfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlr(
-        Io::ROOT, [rfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
-                         void*& ptr ) -> Io::open_t { return rfh->openRootFile( n, f, desc, fd, ptr ); },
-        [rfh]( void* ptr ) -> Io::close_t { return rfh->closeRootFile( ptr ); },
-        [rfh]( void* ptr, const Io::IoFlags& f ) -> Io::reopen_t { return rfh->reopenRootFile( ptr, f ); } );
+        Io::ROOT, [&rfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
+                          void*& ptr ) -> Io::open_t { return rfh.openRootFile( n, f, desc, fd, ptr ); },
+        [&rfh]( void* ptr ) -> Io::close_t { return rfh.closeRootFile( ptr ); },
+        [&rfh]( void* ptr, const Io::IoFlags& f ) -> Io::reopen_t { return rfh.reopenRootFile( ptr, f ); } );
 
     if ( regHandler( hdlr ).isFailure() ) {
       error() << "unable to register ROOT file handler with FileMgr" << endmsg;
@@ -121,14 +104,14 @@ StatusCode FileMgr::initialize()
     // setup file handler for POSIX
 
     msgSvc()->setOutputLevel( "POSIXFileHandler", m_outputLevel.value() );
-    m_pfh.reset( new POSIXFileHandler( msgSvc() ) );
+    m_pfh.emplace( msgSvc() );
 
-    auto pfh = m_pfh.get(); // used in the lambdas to avoid capturing 'this'
+    auto& pfh = m_pfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlp(
-        Io::POSIX, [pfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
-                          void*& ptr ) -> Io::open_t { return pfh->openPOSIXFile( n, f, desc, fd, ptr ); },
-        [pfh]( Io::Fd fd ) -> Io::close_t { return pfh->closePOSIXFile( fd ); },
-        [pfh]( Io::Fd fd, const Io::IoFlags& f ) -> Io::reopen_t { return pfh->reopenPOSIXFile( fd, f ); } );
+        Io::POSIX, [&pfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
+                           void*& ptr ) -> Io::open_t { return pfh.openPOSIXFile( n, f, desc, fd, ptr ); },
+        [&pfh]( Io::Fd fd ) -> Io::close_t { return pfh.closePOSIXFile( fd ); },
+        [&pfh]( Io::Fd fd, const Io::IoFlags& f ) -> Io::reopen_t { return pfh.reopenPOSIXFile( fd, f ); } );
 
     if ( regHandler( hdlp ).isFailure() ) {
       error() << "unable to register ROOT file handler with FileMgr" << endmsg;
@@ -1244,14 +1227,13 @@ void FileMgr::suppressAction( const std::string& f ) { return suppressAction( f,
 
 void FileMgr::suppressAction( const std::string& f, const Io::Action& a )
 {
+  auto set_bit = []( int f, unsigned int b ) { return f | ( 1 << b ); };
 
-  auto it2 = m_supMap.find( f );
-  if ( it2 == m_supMap.end() ) {
-    int b( 0 );
-    set_bit( b, a );
-    m_supMap[f] = b;
+  auto i = m_supMap.find( f );
+  if ( i == m_supMap.end() ) {
+    m_supMap.emplace( f, set_bit( 0, a ) );
   } else {
-    set_bit( it2->second, a );
+    i->second = set_bit( i->second, a );
   }
 }
 
