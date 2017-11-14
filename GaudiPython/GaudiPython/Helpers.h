@@ -73,6 +73,16 @@ namespace GaudiPython
       return dpsvc->retrieveObject( path, o ).isSuccess() ? o : nullptr;
     }
     // ==========================================================================
+    static StatusCode registerObject( IDataProviderSvc* dpsvc, const std::string& path, DataObject* pObject )
+    {
+      return dpsvc->registerObject( path, pObject );
+    }
+    // ==========================================================================
+    static StatusCode unregisterObject( IDataProviderSvc* dpsvc, const std::string& path )
+    {
+      return dpsvc->unregisterObject( path );
+    }
+    // ==========================================================================
     /** simple wrapper for IDataProviderSvc::findObject
      *  The methdod does NOT trigger the loading the object from tape or Data-On-Demand action
      *  @see IDataProviderSvc
