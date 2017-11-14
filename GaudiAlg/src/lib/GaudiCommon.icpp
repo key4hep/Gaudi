@@ -458,7 +458,7 @@ StatusCode GaudiCommon<PBASE>::Print( const std::string& msg, const StatusCode s
 
   // test status code
   if ( st.isSuccess() ) {
-  } else if ( StatusCode::FAILURE != st.getCode() ) {
+  } else if ( StatusCode::FAILURE != st ) {
     str << " StatusCode=" << st.getCode();
   } else {
     str << " StatusCode=FAILURE";
