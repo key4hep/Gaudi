@@ -2,6 +2,7 @@
 #define GAUDIHIVE_ALGSEXECUTIONSTATES_H
 
 // Framework include files
+#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 
 // C++ include files
@@ -70,6 +71,8 @@ public:
 private:
   std::vector<State> m_states;
   SmartIF<IMessageSvc> m_MS;
+
+  MsgStream log() { return {m_MS, "AlgsExecutionStates"}; }
 
 public:
   class Iterator final : public std::iterator<std::forward_iterator_tag, uint>

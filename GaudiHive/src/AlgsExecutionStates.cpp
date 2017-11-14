@@ -16,8 +16,7 @@ std::map<AlgsExecutionStates::State, std::string> AlgsExecutionStates::stateName
 StatusCode AlgsExecutionStates::updateState( unsigned int iAlgo, State newState )
 {
   if ( iAlgo >= m_states.size() ) {
-    MsgStream( m_MS, "AlgsExecutionStates" ) << MSG::ERROR << "Index out of bound (" << iAlgo << " / "
-                                             << m_states.size() << ")" << endmsg;
+    log() << MSG::ERROR << "Index out of bound (" << iAlgo << " / " << m_states.size() << ")" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -30,9 +29,8 @@ StatusCode AlgsExecutionStates::updateState( unsigned int iAlgo, State newState 
     m_states[iAlgo] = newState;
     return StatusCode::SUCCESS;
   default:
-    MsgStream( m_MS, "AlgsExecutionStates" ) << MSG::ERROR << "[AlgIndex " << iAlgo << "] Transition from "
-                                             << stateNames.at( m_states[iAlgo] ) << " to " << stateNames.at( newState )
-                                             << " is not allowed" << endmsg;
+    log() << MSG::ERROR << "[AlgIndex " << iAlgo << "] Transition from " << stateNames.at( m_states[iAlgo] ) << " to "
+          << stateNames.at( newState ) << " is not allowed" << endmsg;
     m_states[iAlgo] = ERROR;
     return StatusCode::FAILURE;
   }
