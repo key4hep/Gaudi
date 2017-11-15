@@ -32,7 +32,8 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/TypeNameString.h"
-
+#include "GaudiKernel/compose.h"
+#include "boost/variant.hpp"
 #include <map>
 
 // Forward declarations
@@ -51,6 +52,39 @@ namespace
     SmartIF<IDataProviderSvc> dataProvider;
     SmartIF<IDataManagerSvc> dataManager;
     std::string name;
+
+    template <typename T>
+    T* get();
+  };
+  template <>
+  IDataProviderSvc* Partition::get<IDataProviderSvc>()
+  {
+    return dataProvider.get();
+  }
+  template <>
+  IDataManagerSvc* Partition::get<IDataManagerSvc>()
+  {
+    return dataManager.get();
+  }
+
+  namespace detail
+  {
+    template <typename lambda>
+    struct arg_helper : public arg_helper<decltype( &lambda::operator() )> {
+    };
+    template <typename T, typename Ret, typename Arg>
+    struct arg_helper<Ret ( T::* )( Arg ) const> {
+      using type = Arg;
+    };
+
+    // given a unary lambda whose argument is of type Arg_t,
+    // argument_t<lambda> will be equal to Arg_t
+    template <typename lambda>
+    using argument_t = typename arg_helper<lambda>::type;
+  }
+  auto dispatch_variant = []( auto&& variant, auto&&... lambdas ) -> decltype( auto ) {
+    return boost::apply_visitor( compose( std::forward<decltype( lambdas )>( lambdas )... ),
+                                 std::forward<decltype( variant )>( variant ) );
   };
 }
 
@@ -82,15 +116,9 @@ protected:
   /// Reference to address creator
   SmartIF<IAddressCreator> m_addrCreator;
   /// Root type (address or object)
-  enum { no_type = 0, address_type = 1, object_type = 2 };
   struct tagROOT {
-    int type = no_type;
     std::string path;
-    union {
-      ADDRESS* address;
-      OBJECT* object;
-    } root;
-    tagROOT() { root.address = nullptr; }
+    boost::variant<boost::blank, ADDRESS*, OBJECT*> root;
   } m_root;
   /// Current partition
   Partition m_current;
@@ -98,17 +126,11 @@ protected:
   Partitions m_partitions;
 
   // member templates to help writing the function calls
-  template <typename... Args, typename... UArgs>
-  STATUS call_( STATUS ( IDataProviderSvc::*pmf )( Args... ), UArgs&&... args )
+  template <typename Fun>
+  STATUS fwd( Fun f )
   {
-    return m_current.dataProvider ? ( m_current.dataProvider->*pmf )( std::forward<UArgs>( args )... )
-                                  : IDataProviderSvc::INVALID_ROOT;
-  }
-  template <typename... Args, typename... UArgs>
-  STATUS call_( STATUS ( IDataManagerSvc::*pmf )( Args... ), UArgs&&... args )
-  {
-    return m_current.dataManager ? ( m_current.dataManager->*pmf )( std::forward<UArgs>( args )... )
-                                 : IDataProviderSvc::INVALID_ROOT;
+    auto* svc = m_current.get<std::decay_t<detail::argument_t<Fun>>>();
+    return svc ? f( *svc ) : static_cast<StatusCode>( IDataProviderSvc::INVALID_ROOT );
   }
 
 public:
@@ -118,106 +140,106 @@ public:
   const std::string& rootName() const override { return m_rootName; }
 
   /// IDataManagerSvc: Register object address with the data store.
-  STATUS registerAddress( CSTR& path, ADDRESS* pAddr ) override
+  STATUS registerAddress( boost::string_ref path, ADDRESS* pAddr ) override
   {
-    return call_<CSTR&, ADDRESS*>( &IDataManagerSvc::registerAddress, path, pAddr );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.registerAddress( path, pAddr ); } );
   }
   /// IDataManagerSvc: Register object address with the data store.
-  STATUS registerAddress( OBJECT* parent, CSTR& path, ADDRESS* pAddr ) override
+  STATUS registerAddress( OBJECT* parent, boost::string_ref path, ADDRESS* pAddr ) override
   {
-    return call_<OBJECT*, CSTR&, ADDRESS*>( &IDataManagerSvc::registerAddress, parent, path, pAddr );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.registerAddress( parent, path, pAddr ); } );
   }
   /// IDataManagerSvc: Register object address with the data store.
-  STATUS registerAddress( IRegistry* parent, CSTR& path, ADDRESS* pAdd ) override
+  STATUS registerAddress( IRegistry* parent, boost::string_ref path, ADDRESS* pAddr ) override
   {
-    return call_<IRegistry*, CSTR&, ADDRESS*>( &IDataManagerSvc::registerAddress, parent, path, pAdd );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.registerAddress( parent, path, pAddr ); } );
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  STATUS unregisterAddress( CSTR& path ) override { return call_<CSTR&>( &IDataManagerSvc::unregisterAddress, path ); }
-  /// IDataManagerSvc: Unregister object address from the data store.
-  STATUS unregisterAddress( OBJECT* pParent, CSTR& path ) override
+  STATUS unregisterAddress( boost::string_ref path ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataManagerSvc::unregisterAddress, pParent, path );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.unregisterAddress( path ); } );
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  STATUS unregisterAddress( IRegistry* pParent, CSTR& path ) override
+  STATUS unregisterAddress( OBJECT* pParent, boost::string_ref path ) override
   {
-    return call_<IRegistry*, CSTR&>( &IDataManagerSvc::unregisterAddress, pParent, path );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.unregisterAddress( pParent, path ); } );
+  }
+  /// IDataManagerSvc: Unregister object address from the data store.
+  STATUS unregisterAddress( IRegistry* pParent, boost::string_ref path ) override
+  {
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.unregisterAddress( pParent, path ); } );
   }
   /// Explore the object store: retrieve all leaves attached to the object
   STATUS objectLeaves( const OBJECT* pObject, std::vector<IRegistry*>& leaves ) override
   {
-    return call_<const OBJECT*, std::vector<IRegistry*>&>( &IDataManagerSvc::objectLeaves, pObject, leaves );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.objectLeaves( pObject, leaves ); } );
   }
   /// Explore the object store: retrieve all leaves attached to the object
   STATUS objectLeaves( const IRegistry* pObject, std::vector<IRegistry*>& leaves ) override
   {
-    return call_<const IRegistry*, std::vector<IRegistry*>&>( &IDataManagerSvc::objectLeaves, pObject, leaves );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.objectLeaves( pObject, leaves ); } );
   }
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
   STATUS objectParent( const OBJECT* pObject, IRegistry*& refpParent ) override
   {
-    return call_<const OBJECT*, IRegistry*&>( &IDataManagerSvc::objectParent, pObject, refpParent );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.objectParent( pObject, refpParent ); } );
   }
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
   STATUS objectParent( const IRegistry* pObject, IRegistry*& refpParent ) override
   {
-    return call_<const IRegistry*, IRegistry*&>( &IDataManagerSvc::objectParent, pObject, refpParent );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.objectParent( pObject, refpParent ); } );
   }
   /// Remove all data objects below the sub tree identified
-  STATUS clearSubTree( CSTR& path ) override { return call_<CSTR&>( &IDataManagerSvc::clearSubTree, path ); }
+  STATUS clearSubTree( boost::string_ref path ) override
+  {
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.clearSubTree( path ); } );
+  }
   /// Remove all data objects below the sub tree identified
-  STATUS clearSubTree( OBJECT* pObject ) override { return call_<OBJECT*>( &IDataManagerSvc::clearSubTree, pObject ); }
+  STATUS clearSubTree( OBJECT* pObject ) override
+  {
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.clearSubTree( pObject ); } );
+  }
   /// IDataManagerSvc: Remove all data objects in the data store.
   STATUS clearStore() override
   {
     for ( auto& i : m_partitions ) {
       i.second.dataManager->clearStore().ignore();
     }
-    if ( m_root.root.object ) {
-      switch ( m_root.type ) {
-      case address_type:
-        m_root.root.address->release();
-        break;
-      case object_type:
-        m_root.root.object->release();
-        break;
-      }
-      m_root.root.object = nullptr;
-    }
+    dispatch_variant( m_root.root,
+                      []( auto* p ) {
+                        if ( p ) p->release();
+                      },
+                      []( boost::blank ) {} );
+    m_root.root = {};
     m_root.path.clear();
-    m_root.type = no_type;
     return STATUS::SUCCESS;
   }
   /// Analyze by traversing all data objects below the sub tree
-  STATUS traverseSubTree( CSTR& path, AGENT* pAgent ) override
+  STATUS traverseSubTree( boost::string_ref path, AGENT* pAgent ) override
   {
-    return call_<CSTR&, AGENT*>( &IDataManagerSvc::traverseSubTree, path, pAgent );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.traverseSubTree( path, pAgent ); } );
   }
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
   STATUS traverseSubTree( OBJECT* pObject, AGENT* pAgent ) override
   {
-    return call_<OBJECT*, AGENT*>( &IDataManagerSvc::traverseSubTree, pObject, pAgent );
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.traverseSubTree( pObject, pAgent ); } );
   }
   /// IDataManagerSvc: Analyze by traversing all data objects in the data store.
-  STATUS traverseTree( AGENT* pAgent ) override { return call_<AGENT*>( &IDataManagerSvc::traverseTree, pAgent ); }
+  STATUS traverseTree( AGENT* pAgent ) override
+  {
+    return fwd( [&]( IDataManagerSvc& svc ) { return svc.traverseTree( pAgent ); } );
+  }
   /** Initialize data store for new event by giving new event path and root
       object. Takes care to clear the store before reinitializing it  */
   STATUS setRoot( std::string path, OBJECT* pObj ) override
   {
-    if ( m_root.root.object ) {
-      switch ( m_root.type ) {
-      case address_type:
-        m_root.root.address->release();
-        break;
-      case object_type:
-        m_root.root.object->release();
-        break;
-      }
-    }
-    m_root.path        = std::move( path );
-    m_root.type        = object_type;
-    m_root.root.object = pObj;
+    dispatch_variant( m_root.root,
+                      []( auto* p ) {
+                        if ( p ) p->release();
+                      },
+                      []( boost::blank ) {} );
+    m_root.path = std::move( path );
+    m_root.root = pObj;
     preparePartitions();
     return activate( m_defaultPartition );
   }
@@ -226,25 +248,17 @@ public:
       of root object. Takes care to clear the store before reinitializing it */
   STATUS setRoot( std::string path, ADDRESS* pAddr ) override
   {
-    if ( m_root.root.object ) {
-      switch ( m_root.type ) {
-      case address_type:
-        m_root.root.address->release();
-        break;
-      case object_type:
-        m_root.root.object->release();
-        break;
-      }
-    }
-    m_root.path         = std::move( path );
-    m_root.type         = address_type;
-    m_root.root.address = pAddr;
-    if ( m_root.root.address ) {
-      m_root.root.address->addRef();
-      preparePartitions();
-      return activate( m_defaultPartition );
-    }
-    return STATUS::FAILURE;
+    dispatch_variant( m_root.root,
+                      []( auto* p ) {
+                        if ( p ) p->release();
+                      },
+                      []( boost::blank ) {} );
+    m_root.path = std::move( path );
+    m_root.root = pAddr;
+    if ( !pAddr ) return STATUS::FAILURE;
+    pAddr->addRef();
+    preparePartitions();
+    return activate( m_defaultPartition );
   }
   /// IDataManagerSvc: Pass a default data loader to the service.
   STATUS setDataLoader( IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc = nullptr ) override
@@ -259,185 +273,212 @@ public:
   /// Add an item to the preload list
   STATUS addPreLoadItem( const DataStoreItem& item ) override
   {
-    return call_<const DataStoreItem&>( &IDataProviderSvc::addPreLoadItem, item );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.addPreLoadItem( item ); } );
   }
   /// Add an item to the preload list
-  STATUS addPreLoadItem( CSTR& item ) override { return call_<CSTR&>( &IDataProviderSvc::addPreLoadItem, item ); }
+  STATUS addPreLoadItem( std::string item ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.addPreLoadItem( std::move( item ) ); } );
+  }
   /// Remove an item from the preload list
   STATUS removePreLoadItem( const DataStoreItem& item ) override
   {
-    return call_<const DataStoreItem&>( &IDataProviderSvc::removePreLoadItem, item );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.removePreLoadItem( item ); } );
   }
   /// Add an item to the preload list
-  STATUS removePreLoadItem( CSTR& item ) override { return call_<CSTR&>( &IDataProviderSvc::removePreLoadItem, item ); }
+  STATUS removePreLoadItem( std::string item ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.removePreLoadItem( std::move( item ) ); } );
+  }
   /// Clear the preload list
-  STATUS resetPreLoad() override { return call_<>( &IDataProviderSvc::resetPreLoad ); }
+  STATUS resetPreLoad() override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.resetPreLoad(); } );
+  }
   /// load all preload items of the list
-  STATUS preLoad() override { return call_<>( &IDataProviderSvc::preLoad ); }
-  /// Register object with the data store.
-  STATUS registerObject( CSTR& path, OBJECT* pObj ) override { return registerObject( nullptr, path, pObj ); }
-  /// Register object with the data store.
-  STATUS registerObject( CSTR& parent, CSTR& obj, OBJECT* pObj ) override
+  STATUS preLoad() override
   {
-    return call_<CSTR&, CSTR&, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.preLoad(); } );
   }
   /// Register object with the data store.
-  STATUS registerObject( CSTR& parent, int item, OBJECT* pObj ) override
+  STATUS registerObject( boost::string_ref path, OBJECT* pObj ) override
   {
-    return call_<CSTR&, int, OBJECT*>( &IDataProviderSvc::registerObject, parent, item, pObj );
+    return registerObject( nullptr, path, pObj );
   }
   /// Register object with the data store.
-  STATUS registerObject( OBJECT* parent, CSTR& obj, OBJECT* pObj ) override
+  STATUS registerObject( boost::string_ref parent, boost::string_ref obj, OBJECT* pObj ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.registerObject( parent, obj, pObj ); } );
+  }
+  /// Register object with the data store.
+  STATUS registerObject( boost::string_ref parent, int item, OBJECT* pObj ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.registerObject( parent, item, pObj ); } );
+  }
+  /// Register object with the data store.
+  STATUS registerObject( OBJECT* parent, boost::string_ref obj, OBJECT* pObj ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.registerObject( parent, obj, pObj ); } );
   }
   /// Register object with the data store.
   STATUS registerObject( OBJECT* parent, int obj, OBJECT* pObj ) override
   {
-    return call_<OBJECT*, int, OBJECT*>( &IDataProviderSvc::registerObject, parent, obj, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.registerObject( parent, obj, pObj ); } );
   }
   /// Unregister object from the data store.
-  STATUS unregisterObject( CSTR& path ) override { return call_<CSTR&>( &IDataProviderSvc::unregisterObject, path ); }
-  /// Unregister object from the data store.
-  STATUS unregisterObject( CSTR& parent, CSTR& obj ) override
+  STATUS unregisterObject( boost::string_ref path ) override
   {
-    return call_<CSTR&, CSTR&>( &IDataProviderSvc::unregisterObject, parent, obj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unregisterObject( path ); } );
   }
   /// Unregister object from the data store.
-  STATUS unregisterObject( CSTR& parent, int obj ) override
+  STATUS unregisterObject( boost::string_ref parent, boost::string_ref obj ) override
   {
-    return call_<CSTR&, int>( &IDataProviderSvc::unregisterObject, parent, obj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unregisterObject( parent, obj ); } );
+  }
+  /// Unregister object from the data store.
+  STATUS unregisterObject( boost::string_ref parent, int obj ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unregisterObject( parent, obj ); } );
   }
   /// Unregister object from the data store.
   STATUS unregisterObject( OBJECT* pObj ) override
   {
-    return call_<OBJECT*>( &IDataProviderSvc::unregisterObject, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unregisterObject( pObj ); } );
   }
   /// Unregister object from the data store.
-  STATUS unregisterObject( OBJECT* pObj, CSTR& path ) override
+  STATUS unregisterObject( OBJECT* pObj, boost::string_ref path ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataProviderSvc::unregisterObject, pObj, path );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unregisterObject( pObj, path ); } );
   }
   /// Unregister object from the data store.
   STATUS unregisterObject( OBJECT* pObj, int item ) override
   {
-    return call_<OBJECT*, int>( &IDataProviderSvc::unregisterObject, pObj, item );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unregisterObject( pObj, item ); } );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( IRegistry* parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( IRegistry* parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<IRegistry*, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( parent, path, pObj ); } );
   }
   /// Retrieve object identified by its full path from the data store.
-  STATUS retrieveObject( CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, path, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( path, pObj ); } );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( CSTR& parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( boost::string_ref parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( parent, path, pObj ); } );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( CSTR& parent, int item, OBJECT*& pObj ) override
+  STATUS retrieveObject( boost::string_ref parent, int item, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, int, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, item, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( parent, item, pObj ); } );
   }
   /// Retrieve object from data store.
-  STATUS retrieveObject( OBJECT* parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS retrieveObject( OBJECT* parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( parent, path, pObj ); } );
   }
   /// Retrieve object from data store.
   STATUS retrieveObject( OBJECT* parent, int item, OBJECT*& pObj ) override
   {
-    return call_<OBJECT*, int, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, item, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( parent, item, pObj ); } );
   }
   /// Find object identified by its full path in the data store.
-  STATUS findObject( CSTR& path, OBJECT*& pObj ) override
+  STATUS findObject( boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, path, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( path, pObj ); } );
   }
   /// Find object identified by its full path in the data store.
-  STATUS findObject( IRegistry* parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS findObject( IRegistry* parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<IRegistry*, CSTR&, OBJECT*&>( &IDataProviderSvc::findObject, parent, path, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.findObject( parent, path, pObj ); } );
   }
   /// Find object in the data store.
-  STATUS findObject( CSTR& parent, CSTR& path, OBJECT*& pObj ) override
+  STATUS findObject( boost::string_ref parent, boost::string_ref path, OBJECT*& pObj ) override
   {
-    return call_<CSTR&, CSTR&, OBJECT*&>( &IDataProviderSvc::retrieveObject, parent, path, pObj );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.retrieveObject( parent, path, pObj ); } );
   }
   /// Find object in the data store.
-  STATUS findObject( CSTR& parent, int item, OBJECT*& pObject ) override
+  STATUS findObject( boost::string_ref parent, int item, OBJECT*& pObject ) override
   {
-    return call_<CSTR&, int, OBJECT*&>( &IDataProviderSvc::findObject, parent, item, pObject );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.findObject( parent, item, pObject ); } );
   }
   /// Find object in the data store.
-  STATUS findObject( OBJECT* parent, CSTR& path, OBJECT*& pObject ) override
+  STATUS findObject( OBJECT* parent, boost::string_ref path, OBJECT*& pObject ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*&>( &IDataProviderSvc::findObject, parent, path, pObject );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.findObject( parent, path, pObject ); } );
   }
   /// Find object in the data store.
   STATUS findObject( OBJECT* parent, int item, OBJECT*& pObject ) override
   {
-    return call_<OBJECT*, int, OBJECT*&>( &IDataProviderSvc::findObject, parent, item, pObject );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.findObject( parent, item, pObject ); } );
   }
   /// Add a link to another object.
-  STATUS linkObject( IRegistry* from, CSTR& objPath, OBJECT* to ) override
+  STATUS linkObject( IRegistry* from, boost::string_ref objPath, OBJECT* to ) override
   {
-    return call_<IRegistry*, CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.linkObject( from, objPath, to ); } );
   }
   /// Add a link to another object.
-  STATUS linkObject( CSTR& from, CSTR& objPath, OBJECT* to ) override
+  STATUS linkObject( boost::string_ref from, boost::string_ref objPath, OBJECT* to ) override
   {
-    return call_<CSTR&, CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.linkObject( from, objPath, to ); } );
   }
   /// Add a link to another object.
-  STATUS linkObject( OBJECT* from, CSTR& objPath, OBJECT* to ) override
+  STATUS linkObject( OBJECT* from, boost::string_ref objPath, OBJECT* to ) override
   {
-    return call_<OBJECT*, CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, from, objPath, to );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.linkObject( from, objPath, to ); } );
   }
   /// Add a link to another object.
-  STATUS linkObject( CSTR& fullPath, OBJECT* to ) override
+  STATUS linkObject( boost::string_ref fullPath, OBJECT* to ) override
   {
-    return call_<CSTR&, OBJECT*>( &IDataProviderSvc::linkObject, fullPath, to );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.linkObject( fullPath, to ); } );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( IRegistry* from, CSTR& objPath ) override
+  STATUS unlinkObject( IRegistry* from, boost::string_ref objPath ) override
   {
-    return call_<IRegistry*, CSTR&>( &IDataProviderSvc::unlinkObject, from, objPath );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unlinkObject( from, objPath ); } );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( CSTR& from, CSTR& objPath ) override
+  STATUS unlinkObject( boost::string_ref from, boost::string_ref objPath ) override
   {
-    return call_<CSTR&, CSTR&>( &IDataProviderSvc::unlinkObject, from, objPath );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unlinkObject( from, objPath ); } );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( OBJECT* from, CSTR& objPath ) override
+  STATUS unlinkObject( OBJECT* from, boost::string_ref objPath ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataProviderSvc::unlinkObject, from, objPath );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unlinkObject( from, objPath ); } );
   }
   /// Remove a link to another object.
-  STATUS unlinkObject( CSTR& path ) override { return call_<CSTR&>( &IDataProviderSvc::unlinkObject, path ); }
+  STATUS unlinkObject( boost::string_ref path ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.unlinkObject( path ); } );
+  }
   /// Update object identified by its directory entry.
   STATUS updateObject( IRegistry* pDirectory ) override
   {
-    return call_<IRegistry*>( &IDataProviderSvc::updateObject, pDirectory );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.updateObject( pDirectory ); } );
   }
   /// Update object.
-  STATUS updateObject( CSTR& path ) override { return call_<CSTR&>( &IDataProviderSvc::updateObject, path ); }
-  /// Update object.
-  STATUS updateObject( OBJECT* pObj ) override { return call_<OBJECT*>( &IDataProviderSvc::updateObject, pObj ); }
-  /// Update object.
-  STATUS updateObject( CSTR& parent, CSTR& updatePath ) override
+  STATUS updateObject( boost::string_ref path ) override
   {
-    return call_<CSTR&, CSTR&>( &IDataProviderSvc::updateObject, parent, updatePath );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.updateObject( path ); } );
   }
   /// Update object.
-  STATUS updateObject( OBJECT* parent, CSTR& updatePath ) override
+  STATUS updateObject( OBJECT* pObj ) override
   {
-    return call_<OBJECT*, CSTR&>( &IDataProviderSvc::updateObject, parent, updatePath );
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.updateObject( pObj ); } );
+  }
+  /// Update object.
+  STATUS updateObject( boost::string_ref parent, boost::string_ref updatePath ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.updateObject( parent, updatePath ); } );
+  }
+  /// Update object.
+  STATUS updateObject( OBJECT* parent, boost::string_ref updatePath ) override
+  {
+    return fwd( [&]( IDataProviderSvc& svc ) { return svc.updateObject( parent, updatePath ); } );
   }
 
   /// Create a partition object. The name identifies the partition uniquely
@@ -494,7 +535,7 @@ public:
       m_current = i->second;
       return STATUS::SUCCESS;
     }
-    m_current = Partition();
+    m_current = {};
     return PARTITION_NOT_PRESENT;
   }
 
@@ -634,29 +675,22 @@ public:
   {
     STATUS iret = STATUS::SUCCESS;
     for ( auto& i : m_partitions ) {
-      STATUS sc = STATUS::FAILURE;
-      switch ( m_root.type ) {
-      case address_type:
-        if ( m_root.root.address ) {
-          ADDRESS* pAdd = nullptr;
-          ADDRESS* p    = m_root.root.address;
-          sc            = m_addrCreator->createAddress( p->svcType(), p->clID(), p->par(), p->ipar(), pAdd );
-          if ( sc.isSuccess() ) {
-            sc = i.second.dataManager->setRoot( m_root.path, pAdd );
-          }
-        }
-        break;
-      case object_type:
-        if ( m_root.root.object ) {
-          if ( m_root.root.object->clID() == CLID_DataObject ) {
-            sc = i.second.dataManager->setRoot( m_root.path, new DataObject() );
-          }
-        }
-        break;
-      default:
-        sc = STATUS::FAILURE;
-        break;
-      }
+      STATUS sc = dispatch_variant( m_root.root,
+                                    [&]( ADDRESS* address ) -> STATUS {
+                                      if ( !address ) return STATUS::FAILURE;
+                                      ADDRESS* pAdd = nullptr;
+                                      ADDRESS* p    = address;
+                                      auto sc       = m_addrCreator->createAddress( p->svcType(), p->clID(), p->par(),
+                                                                              p->ipar(), pAdd );
+                                      return sc.isSuccess() ? i.second.dataManager->setRoot( m_root.path, pAdd ) : sc;
+                                    },
+                                    [&]( OBJECT* object ) -> STATUS {
+                                      if ( object && object->clID() == CLID_DataObject ) {
+                                        return i.second.dataManager->setRoot( m_root.path, new DataObject() );
+                                      }
+                                      return STATUS::FAILURE;
+                                    },
+                                    []( boost::blank ) -> STATUS { return STATUS::FAILURE; } );
       if ( !sc.isSuccess() ) iret = sc;
     }
     return iret;

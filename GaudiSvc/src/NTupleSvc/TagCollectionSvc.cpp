@@ -49,7 +49,7 @@ TagCollectionSvc::TagCollectionSvc( const std::string& name, ISvcLocator* svc ) 
 StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& logname )
 {
   DataObject* pO    = nullptr;
-  StatusCode status = findObject( m_rootName, pO );
+  StatusCode status = findObject( m_rootName.value(), pO );
   if ( status.isSuccess() ) {
     status = INVALID_ROOT;
     if ( pO->registry() ) {

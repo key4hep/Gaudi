@@ -33,7 +33,7 @@ namespace DataSvcHelpers
    * @author Markus Frank
    * @author Sebastien Ponce
    */
-  class GAUDI_API RegistryEntry : public IRegistry
+  class GAUDI_API RegistryEntry final : public IRegistry
   {
   private:
     /// Definition of datastore type
@@ -139,18 +139,18 @@ namespace DataSvcHelpers
     /// Try to find an object identified by its pointer
     virtual IRegistry* find( const IRegistry* obj ) const { return i_find( obj ); }
     /// Try to find an object identified by its relative name to the directory
-    virtual IRegistry* find( const std::string& path ) const { return i_find( path ); }
+    virtual IRegistry* find( boost::string_ref path ) const { return i_find( path ); }
     /// Set/Update Opaque address
     void setAddress( IOpaqueAddress* pAddress ) override;
     /// Set/Update object address
     void setObject( DataObject* obj );
 
     /// Add entry to data store
-    virtual long add( const std::string& name, DataObject* pObject, bool is_soft = false );
+    virtual long add( std::string name, DataObject* pObject, bool is_soft = false );
     /// Add entry to data store
-    virtual long add( const std::string& name, IOpaqueAddress* pAddress, bool is_soft = false );
+    virtual long add( std::string name, IOpaqueAddress* pAddress, bool is_soft = false );
     /// Remove an entry from the store
-    virtual long remove( const std::string& name );
+    virtual long remove( boost::string_ref name );
     /// Add object to the container
     virtual long add( IRegistry* obj );
     /// Remove an object from the container
