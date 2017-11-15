@@ -573,6 +573,13 @@ public:
     s_current->with_lock( [&]( Partition& p ) { p.newDataObjects.insert( begin( products ), end( products ) ); } );
   }
 
+  /// check if a data object exists in the current store
+  bool exists( const DataObjID& id ) override
+  {
+    DataObject* pObject{nullptr};
+    return findObject( id.fullKey(), pObject ).isSuccess();
+  }
+
   /// Allocate a store partition for a given event number
   size_t allocateStore( int evtnumber ) override
   {

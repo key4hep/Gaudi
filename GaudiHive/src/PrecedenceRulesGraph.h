@@ -18,7 +18,9 @@
 #include "EventSlot.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ICondSvc.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/ITimelineSvc.h"
 #include "GaudiKernel/TaggedBool.h"
 #include "IGraphVisitor.h"
@@ -118,6 +120,10 @@ namespace precedence
     DataObjID m_id;
   };
 
+  struct CondDataProps : DataProps {
+    CondDataProps( const DataObjID& id ) : DataProps( id ) {}
+  };
+
   // Vertex unpacking ========================================================
 
   struct VertexName : static_visitor<std::string> {
@@ -192,11 +198,35 @@ namespace precedence
     EventSlot m_slot;
   };
 
-  struct FSMState : static_visitor<std::string> {
-    FSMState( const EventSlot& slot ) : m_slot( slot ) {}
+  struct EntityState : static_visitor<std::string> {
+    EntityState( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator, bool conditionsEnabled )
+        : m_slot( slot ), m_conditionsEnabled( conditionsEnabled )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream log{msgSvc, "EntityState.Getter"};
+
+      // Figure if we can discover the data object states
+      m_whiteboard = svcLocator->service<IHiveWhiteBoard>( "EventDataSvc", false );
+      if ( !m_whiteboard.isValid() ) {
+        log << MSG::WARNING << "Failed to locate EventDataSvc: no way to add DO "
+            << "states to the TTT dump " << endmsg;
+      }
+
+      if ( m_conditionsEnabled ) {
+        // Figure if we can discover Condition data object states
+        m_condSvc = svcLocator->service<ICondSvc>( "CondSvc", false );
+        if ( !m_condSvc.isValid() )
+          log << MSG::WARNING << "Failed to locate CondSvc: no way to add Condition DO "
+              << "states to the TTT dump " << endmsg;
+      }
+
+      if ( !m_slot.eventContext->valid() )
+        log << MSG::WARNING << "Event context is invalid: no way to add DO states"
+            << " in the TTT dump" << endmsg;
+    }
 
     std::string operator()( const AlgoProps& props ) const
-    {
+    { // Returns algorithm's FSM state
       using State = AlgsExecutionStates::State;
       State state = m_slot.algsStates[props.m_algoIndex];
       switch ( state ) {
@@ -206,6 +236,8 @@ namespace precedence
         return "CONTROLREADY";
       case State::DATAREADY:
         return "DATAREADY";
+      case State::SCHEDULED:
+        return "SCHEDULED";
       case State::EVTACCEPTED:
         return "EVTACCEPTED";
       case State::EVTREJECTED:
@@ -213,29 +245,66 @@ namespace precedence
       case State::ERROR:
         return "ERROR";
       default:
-        return "UKNOWN";
+        return "UNKNOWN";
       }
     }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
 
-    std::string operator()( const DataProps& ) const { return ""; }
+    std::string operator()( const DataProps& props ) const
+    {
+      std::string state;
+
+      if ( m_whiteboard.isValid() && m_slot.eventContext->valid() )
+        if ( m_whiteboard->selectStore( m_slot.eventContext->slot() ).isSuccess() )
+          state = m_whiteboard->exists( props.m_id.fullKey() ) ? "Produced" : "Missing";
+
+      return state;
+    }
+
+    std::string operator()( const CondDataProps& props ) const
+    {
+      std::string state;
+
+      if ( m_condSvc.isValid() && m_slot.eventContext->valid() )
+        state = m_condSvc->isValidID( *( m_slot.eventContext ), props.m_id.fullKey() ) ? "Produced" : "Missing";
+
+      return state;
+    }
 
     EventSlot m_slot;
+
+    SmartIF<IHiveWhiteBoard> m_whiteboard;
+    SmartIF<ICondSvc> m_condSvc;
+    bool m_conditionsEnabled{false};
   };
 
   struct StartTime : static_visitor<std::string> {
-    StartTime( SmartIF<ITimelineSvc> timelineSvc ) : m_timelineSvc( timelineSvc ) {}
+    StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream log{msgSvc, "StartTime.Getter"};
+
+      // Figure if we can discover the algorithm timings
+      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
+      if ( !m_timelineSvc.isValid() ) {
+        log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to "
+            << "add algorithm start time to the TTT dumps" << endmsg;
+      }
+    }
 
     std::string operator()( const AlgoProps& props ) const
     {
 
-      std::string startTime = "UKNOWN";
+      std::string startTime;
 
       if ( m_timelineSvc.isValid() ) {
 
         TimelineEvent te{};
         te.algorithm = props.m_name;
+        te.slot      = m_slot.eventContext->slot();
+        te.event     = m_slot.eventContext->evt();
+
         m_timelineSvc->getTimelineEvent( te );
         startTime = std::to_string(
             std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count() );
@@ -248,21 +317,35 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
+    EventSlot m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
   struct EndTime : static_visitor<std::string> {
-    EndTime( SmartIF<ITimelineSvc> timelineSvc ) : m_timelineSvc( timelineSvc ) {}
+    EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream log{msgSvc, "EndTime.Getter"};
+
+      // Figure if we can discover the algorithm timings
+      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
+      if ( !m_timelineSvc.isValid() )
+        log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to add "
+            << "algorithm completion time to the TTT dumps" << endmsg;
+    }
 
     std::string operator()( const AlgoProps& props ) const
     {
 
-      std::string endTime = "UKNOWN";
+      std::string endTime;
 
       if ( m_timelineSvc.isValid() ) {
 
         TimelineEvent te{};
         te.algorithm = props.m_name;
+        te.slot      = m_slot.eventContext->slot();
+        te.event     = m_slot.eventContext->evt();
+
         m_timelineSvc->getTimelineEvent( te );
         endTime =
             std::to_string( std::chrono::duration_cast<std::chrono::nanoseconds>( te.end.time_since_epoch() ).count() );
@@ -275,21 +358,35 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
+    EventSlot m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
   struct Duration : static_visitor<std::string> {
-    Duration( SmartIF<ITimelineSvc> timelineSvc ) : m_timelineSvc( timelineSvc ) {}
+    Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream log{msgSvc, "Duration.Getter"};
+
+      // Figure if we can discover the algorithm timings
+      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
+      if ( !m_timelineSvc.isValid() )
+        log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to add "
+            << "algorithm's runtimes to the TTT dumps" << endmsg;
+    }
 
     std::string operator()( const AlgoProps& props ) const
     {
 
-      std::string time = "UKNOWN";
+      std::string time;
 
       if ( m_timelineSvc.isValid() ) {
 
         TimelineEvent te;
         te.algorithm = props.m_name;
+        te.slot      = m_slot.eventContext->slot();
+        te.event     = m_slot.eventContext->evt();
+
         m_timelineSvc->getTimelineEvent( te );
         time = std::to_string( std::chrono::duration_cast<std::chrono::nanoseconds>( te.end - te.start ).count() );
       }
@@ -301,6 +398,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
+    EventSlot m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
@@ -312,13 +410,14 @@ namespace precedence
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
-  static inline std::ostream& operator<<( std::ostream& os, const AlgoProps& ) { return os << "Algo"; }
+  static inline std::ostream& operator<<( std::ostream& os, const AlgoProps& ) { return os << "Algorithm"; }
   static inline std::ostream& operator<<( std::ostream& os, const DecisionHubProps& ) { return os << "DecisionHub"; }
   static inline std::ostream& operator<<( std::ostream& os, const DataProps& ) { return os << "Data"; }
+  static inline std::ostream& operator<<( std::ostream& os, const CondDataProps& ) { return os << "ConditionData"; }
 
   //=========================================================================
 
-  using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps>;
+  using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps, CondDataProps>;
   using PRGraph            = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VariantVertexProps>;
   using PRVertexDesc       = boost::graph_traits<PRGraph>::vertex_descriptor;
 
@@ -341,6 +440,7 @@ namespace concurrency
   using precedence::AlgoProps;
   using precedence::DecisionHubProps;
   using precedence::DataProps;
+  using precedence::CondDataProps;
   using precedence::VariantVertexProps;
 
   // ==========================================================================
@@ -661,6 +761,7 @@ namespace concurrency
     }
 
     /// BGL-based facilities
+    void enableAnalysis() { m_enableAnalysis = true; };
     PRVertexDesc node( const std::string& ) const;
 
     /// Print out all data origins and destinations, as reflected in the EF graph
@@ -703,6 +804,7 @@ namespace concurrency
     /// facilities for algorithm precedence tracing
     precedence::PrecTrace m_precTrace;
     std::map<std::string, precedence::AlgoTraceVertex> m_prec_trace_map;
+    bool m_enableAnalysis{false};
     /// BGL-based graph of precedence rules
     precedence::PRGraph m_PRGraph;
 
