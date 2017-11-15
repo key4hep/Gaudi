@@ -7,6 +7,7 @@
 
 class ThreadPoolSvc;
 class AvalancheSchedulerSvc;
+class AthMpEvtLoopMgr;
 
 /** @class ConcurrencyFlags ConcurrencyFlags.h GaudiKernel/ConcurrencyFlags.h
  *
@@ -29,6 +30,7 @@ namespace Gaudi
 
       friend class ::ThreadPoolSvc;
       friend class ::AvalancheSchedulerSvc;
+      friend class ::AthMpEvtLoopMgr;
 
     public:
       /** number of Worker Threads (for MT)
