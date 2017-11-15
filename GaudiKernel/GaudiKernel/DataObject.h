@@ -6,6 +6,7 @@
 #include "GaudiKernel/StatusCode.h"
 
 // STL includes
+#include <memory>
 #include <ostream>
 #include <string>
 

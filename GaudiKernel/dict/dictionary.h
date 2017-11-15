@@ -64,7 +64,6 @@
 #include "GaudiKernel/IInspectable.h"
 #include "GaudiKernel/IInspector.h"
 #include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/IIssueLogger.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMagneticFieldSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
