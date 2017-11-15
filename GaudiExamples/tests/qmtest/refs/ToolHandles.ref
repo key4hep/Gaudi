@@ -15,8 +15,6 @@ AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application M
 AlgResourcePool      INFO Algorithm THDataProducer is un-Clonable but Cardinality was set to 0. Only creating 1 instance
 AlgResourcePool      INFO Algorithm THDataProducer2 is un-Clonable but Cardinality was set to 0. Only creating 1 instance
 AlgResourcePool      INFO Algorithm THDataConsumer is un-Clonable but Cardinality was set to 0. Only creating 1 instance
-PrecedenceSvc        INFO Assembling CF and DF task precedence rules
-PrecedenceSvc        INFO PrecedenceSvc initialized successfully
 AvalancheSchedu...   INFO Found 3 algorithms
 AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   THDataProducer
@@ -26,6 +24,8 @@ AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   THDataConsumer
     o INPUT  ('/Event/MyFloat')
     o INPUT  ('/Event/MyInt')
+PrecedenceSvc        INFO Assembling CF and DF task precedence rules
+PrecedenceSvc        INFO PrecedenceSvc initialized successfully
 AvalancheSchedu...   INFO Concurrency level information:
 AvalancheSchedu...   INFO  o Number of events in flight: 2
 AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':2
