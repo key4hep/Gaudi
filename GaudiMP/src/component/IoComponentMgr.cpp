@@ -6,17 +6,18 @@
 
 // GaudiMP includes
 #include "IoComponentMgr.h"
-#include "GaudiKernel/FileIncident.h"
-#include "GaudiKernel/IIncidentSvc.h"
-
-#include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/ServiceHandle.h"
-#include <boost/filesystem.hpp>
-
-// STL includes
-
 // FrameWork includes
+#include "GaudiKernel/FileIncident.h"
+#include "GaudiKernel/IFileMgr.h"
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/ServiceHandle.h"
+// BOOST includes
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/filesystem.hpp>
+// STL includes
+#include <algorithm>
+#include <array>
 
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
@@ -203,11 +204,15 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
     }
   }
 
-  // We need to take into account that boost::filesystem::absolute() does not
-  // work for files read from eos, i.e. starting with "root:"
-  std::string tmp_name = pfn.empty() ? fname : pfn;
-  bool from_eos        = tmp_name.find( "root:" ) == 0;
-  IoComponentEntry ioc( fname, ( from_eos ? tmp_name : boost::filesystem::absolute( tmp_name ).string() ), iomode );
+  // We need to take into account that boost::filesystem::absolute() does not work in following cases:
+  //  1. files read from eos, i.e. starting with "root:"
+  //  2. files read over http, i.e. starting either with 'http:' or with 'https:'
+  const std::string& tmp_name = ( pfn.empty() ? fname : pfn );
+  static const std::array<std::string, 4> prefixes = {"root:", "http:", "https:", "dcap:"};
+  bool special_case = std::any_of( begin( prefixes ), end( prefixes ), [&]( const std::string& pf ) {
+    return boost::algorithm::starts_with( tmp_name, pf );
+  } );
+  IoComponentEntry ioc( fname, ( special_case ? tmp_name : boost::filesystem::absolute( tmp_name ).string() ), iomode );
   m_cdict.insert( pair<IIoComponent*, IoComponentEntry>( iocomponent, ioc ) );
 
   return StatusCode::SUCCESS;
