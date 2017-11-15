@@ -23,8 +23,7 @@ namespace Gaudi
 
     StatusCode collectData();
 
-    MetaData* getMetaData() override;
-    std::map<std::string, std::string> getMetaDataMap() override;
+    std::map<std::string, std::string> getMetaDataMap() const override;
 
   private:
     Gaudi::Property<bool> m_isEnabled{this, "Enabled", true};

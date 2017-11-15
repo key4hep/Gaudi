@@ -16,7 +16,6 @@
 #include "GaudiKernel/KeyedObject.h"
 #include "GaudiKernel/LinkManager.h"
 #include "GaudiKernel/Memory.h"
-#include "GaudiKernel/MetaData.h"
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/NTupleImplementation.h"
 #include "GaudiKernel/ObjectVector.h"

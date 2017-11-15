@@ -9,11 +9,9 @@
 #define GAUDIKERNEL_GAUDIKERNEL_IMETADATASVC_H_
 
 #include "GaudiKernel/IService.h"
-#include "GaudiKernel/MetaData.h"
+#include <map>
 struct GAUDI_API IMetaDataSvc : extend_interfaces<IService> {
-  DeclareInterfaceID( IMetaDataSvc, 1, 0 );
-
-  virtual MetaData* getMetaData() = 0;
-  virtual std::map<std::string, std::string> getMetaDataMap() = 0;
+  DeclareInterfaceID( IMetaDataSvc, 2, 0 );
+  virtual std::map<std::string, std::string> getMetaDataMap() const = 0;
 };
 #endif /* GAUDIKERNEL_GAUDIKERNEL_IMETADATASVC_H_ */

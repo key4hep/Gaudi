@@ -6,8 +6,6 @@
  */
 
 // Framework include files
-#include "GaudiKernel/MetaData.h"
-
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IProperty.h"
@@ -56,8 +54,9 @@ StatusCode MetaDataSvc::start()
   if ( msgLevel( MSG::DEBUG ) ) debug() << "started" << endmsg;
   return collectData();
 }
-MetaData* MetaDataSvc::getMetaData() { return new MetaData( m_metadata ); }
-std::map<std::string, std::string> MetaDataSvc::getMetaDataMap() { return m_metadata; }
+
+std::map<std::string, std::string> MetaDataSvc::getMetaDataMap() const { return m_metadata; }
+
 StatusCode MetaDataSvc::collectData()
 {
   for ( const auto* name : {"ApplicationMgr", "MessageSvc", "NTupleSvc"} ) {
