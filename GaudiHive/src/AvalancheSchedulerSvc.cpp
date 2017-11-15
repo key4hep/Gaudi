@@ -103,18 +103,6 @@ StatusCode AvalancheSchedulerSvc::initialize()
     return StatusCode::FAILURE;
   }
 
-  // Get the precedence service
-  m_precSvc = serviceLocator()->service( "PrecedenceSvc" );
-  if ( !m_precSvc.isValid() ) {
-    fatal() << "Error retrieving PrecedenceSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  const PrecedenceSvc* precSvc = dynamic_cast<const PrecedenceSvc*>( m_precSvc.get() );
-  if ( !precSvc ) {
-    fatal() << "Unable to dcast PrecedenceSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
   m_algExecStateSvc = serviceLocator()->service( "AlgExecStateSvc" );
   if ( !m_algExecStateSvc.isValid() ) {
     fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
@@ -175,7 +163,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
   std::ostringstream ostdd;
   ostdd << "Data Dependencies for Algorithms:";
 
-  std::vector<DataObjIDColl> m_algosDependencies;
+  std::unordered_map<std::string, DataObjIDColl> algosDependenciesMap;
   for ( IAlgorithm* ialgoPtr : algos ) {
     Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
     if ( nullptr == algoPtr ) {
@@ -220,49 +208,40 @@ StatusCode AvalancheSchedulerSvc::initialize()
     } else {
       ostdd << "\n      none";
     }
-    m_algosDependencies.emplace_back( algoDependencies );
+    algosDependenciesMap[algoPtr->name()] = algoDependencies;
   }
 
   if ( m_showDataDeps ) {
     info() << ostdd.str() << endmsg;
   }
 
-  // Fill the containers to convert algo names to index
-  m_algname_vect.resize( algsNumber );
-  IAlgorithm* dataLoaderAlg( nullptr );
-  for ( IAlgorithm* algo : algos ) {
-    const std::string& name    = algo->name();
-    auto index                 = precSvc->getRules()->getAlgorithmNode( name )->getAlgoIndex();
-    m_algname_index_map[name]  = index;
-    m_algname_vect.at( index ) = name;
-    if ( algo->name() == m_useDataLoader ) {
-      dataLoaderAlg = algo;
-    }
-  }
-
-  // Check if we have unmet global input dependencies
+  // Check if we have unmet global input dependencies, and, optionally, heal them
+  // WARNING: this step must be done BEFORE the Precedence Service is initialized
   if ( m_checkDeps ) {
     DataObjIDColl unmetDep;
-    for ( auto o : globalInp ) {
-      if ( globalOutp.find( o ) == globalOutp.end() ) {
-        unmetDep.insert( o );
-      }
-    }
+    for ( auto o : globalInp )
+      if ( globalOutp.find( o ) == globalOutp.end() ) unmetDep.insert( o );
 
     if ( unmetDep.size() > 0 ) {
 
       std::ostringstream ost;
       for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
         ost << "\n   o " << *o << "    required by Algorithm: ";
-        for ( size_t i = 0; i < m_algosDependencies.size(); ++i ) {
-          if ( m_algosDependencies[i].find( *o ) != m_algosDependencies[i].end() ) {
-            ost << "\n       * " << m_algname_vect[i];
-          }
-        }
+
+        for ( const auto& p : algosDependenciesMap )
+          if ( p.second.find( *o ) != p.second.end() ) ost << "\n       * " << p.first;
       }
 
-      if ( m_useDataLoader != "" ) {
+      if ( !m_useDataLoader.empty() ) {
+
         // Find the DataLoader Alg
+        IAlgorithm* dataLoaderAlg( nullptr );
+        for ( IAlgorithm* algo : algos )
+          if ( algo->name() == m_useDataLoader ) {
+            dataLoaderAlg = algo;
+            break;
+          }
+
         if ( dataLoaderAlg == nullptr ) {
           fatal() << "No DataLoader Algorithm \"" << m_useDataLoader.value()
                   << "\" found, and unmet INPUT dependencies "
@@ -296,6 +275,27 @@ StatusCode AvalancheSchedulerSvc::initialize()
     } else {
       info() << "No unmet INPUT data dependencies were found" << endmsg;
     }
+  }
+
+  // Get the precedence service
+  m_precSvc = serviceLocator()->service( "PrecedenceSvc" );
+  if ( !m_precSvc.isValid() ) {
+    fatal() << "Error retrieving PrecedenceSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  const PrecedenceSvc* precSvc = dynamic_cast<const PrecedenceSvc*>( m_precSvc.get() );
+  if ( !precSvc ) {
+    fatal() << "Unable to dcast PrecedenceSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  // Fill the containers to convert algo names to index
+  m_algname_vect.resize( algsNumber );
+  for ( IAlgorithm* algo : algos ) {
+    const std::string& name    = algo->name();
+    auto index                 = precSvc->getRules()->getAlgorithmNode( name )->getAlgoIndex();
+    m_algname_index_map[name]  = index;
+    m_algname_vect.at( index ) = name;
   }
 
   // Shortcut for the message service

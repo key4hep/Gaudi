@@ -197,9 +197,28 @@ void CPUCruncher::findPrimes( const unsigned long int n_iterations )
 }
 
 //------------------------------------------------------------------------------
+void CPUCruncher::declareRuntimeRequestedOutputs()
+{
+  //
+  for ( const auto& k : outputDataObjs() ) {
+    auto outputHandle = new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this );
+    VERBOSE_MSG << "found late-attributed output: " << outputHandle->objKey() << endmsg;
+    m_outputHandles.push_back( outputHandle );
+    declareProperty( "dummy_out_" + outputHandle->objKey(), *( m_outputHandles.back() ) );
+  }
+
+  initDataHandleHolder();
+
+  m_declAugmented = true;
+}
+
+//------------------------------------------------------------------------------
 
 StatusCode CPUCruncher::execute() // the execution of the algorithm
 {
+
+  if ( m_loader && !m_declAugmented ) declareRuntimeRequestedOutputs();
+
   float crunchtime;
 
   if ( m_local_rndm_gen ) {

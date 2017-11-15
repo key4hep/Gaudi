@@ -52,6 +52,11 @@ private:
   void calibrate();
   long unsigned int getNCaliIters( double );
 
+  /// Pick up late-attributed data outputs
+  void declareRuntimeRequestedOutputs();
+  bool m_declAugmented{false};
+  Gaudi::Property<bool> m_loader{this, "Loader", false, "Declare the algorithm to be a data loader"};
+
   Gaudi::Property<std::vector<std::string>> m_inpKeys{this, "inpKeys", {}, ""};
   Gaudi::Property<std::vector<std::string>> m_outKeys{this, "outKeys", {}, ""};
 
