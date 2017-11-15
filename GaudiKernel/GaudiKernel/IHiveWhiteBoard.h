@@ -54,11 +54,19 @@ public:
    */
   virtual void addNewDataObjects( DataObjIDColl& products ) = 0;
 
-  /** Get the latest new data objects registred in store.
+  /** Get the latest new data objects registered in store.
    *
    * @return  collection of new data object locations
    */
   virtual DataObjIDColl getNewDataObjects() = 0;
+
+  /** Check if a data object exists in store.
+   *  TODO: remove the method ASA a cross-experiment
+   *        event data store interface emerges
+   *
+   * @return  boolean
+   */
+  virtual bool exists( const DataObjID& ) = 0;
 
   /** Allocate a store partition for new event
    *

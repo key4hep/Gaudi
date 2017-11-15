@@ -162,6 +162,9 @@ namespace concurrency
           for ( auto parent : algoNode->getParentDecisionHubs() ) {
             parent->m_children.erase( std::remove( parent->m_children.begin(), parent->m_children.end(), algoNode ),
                                       parent->m_children.end() );
+            // clean up also auxiliary BGL-based graph of precedence rules
+            if ( m_enableAnalysis )
+              boost::remove_edge( node( algoNode->getNodeName() ), node( parent->getNodeName() ), m_PRGraph );
           }
           algoNode->m_parents.clear();
 
@@ -221,10 +224,10 @@ namespace concurrency
         auto dataNode = getDataNode( output );
         dataNode->addProducerNode( algo.second );
         algo.second->addOutputDataNode( dataNode );
-        ON_DEBUG
-        { // Mirror the action above in the BGL-based graph
+
+        // Mirror the action above in the BGL-based graph
+        if ( m_enableAnalysis )
           boost::add_edge( node( algo.second->getNodeName() ), node( output.fullKey() ), m_PRGraph );
-        }
       }
     }
 
@@ -242,10 +245,10 @@ namespace concurrency
         if ( dataNode ) {
           dataNode->addConsumerNode( algo.second );
           algo.second->addInputDataNode( dataNode );
-          ON_DEBUG
-          { // Mirror the action above in the BGL-based graph
+
+          // Mirror the action above in the BGL-based graph
+          if ( m_enableAnalysis )
             boost::add_edge( node( input.fullKey() ), node( algo.second->getNodeName() ), m_PRGraph );
-          }
         }
       }
     }
@@ -268,8 +271,8 @@ namespace concurrency
       algoNode = itA->second;
     } else {
       algoNode = new concurrency::AlgorithmNode( *this, algo, m_nodeCounter, m_algoCounter, inverted, allPass );
-      ON_DEBUG
-      { // Mirror the action above in the BGL-based graph
+      // Mirror the action above in the BGL-based graph
+      if ( m_enableAnalysis ) {
         auto source =
             boost::add_vertex( AlgoProps( algo, m_nodeCounter, m_algoCounter, inverted, allPass ), m_PRGraph );
         boost::add_edge( source, node( parentName ), m_PRGraph );
@@ -320,24 +323,26 @@ namespace concurrency
       if ( !m_conditionsRealmEnabled ) {
         dataNode = new concurrency::DataNode( *this, dataPath );
         ON_VERBOSE verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+        // Mirror the action above in the BGL-based graph
+        if ( m_enableAnalysis ) boost::add_vertex( DataProps( dataPath ), m_PRGraph );
       } else {
         SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
         if ( condSvc->isRegistered( dataPath ) ) {
           dataNode = new concurrency::ConditionNode( *this, dataPath, condSvc );
           ON_VERBOSE verbose() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
+          // Mirror the action above in the BGL-based graph
+          if ( m_enableAnalysis ) boost::add_vertex( CondDataProps( dataPath ), m_PRGraph );
         } else {
           dataNode = new concurrency::DataNode( *this, dataPath );
           ON_VERBOSE verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+          // Mirror the action above in the BGL-based graph
+          if ( m_enableAnalysis ) boost::add_vertex( DataProps( dataPath ), m_PRGraph );
         }
       }
 
       m_dataPathToDataNodeMap[dataPath] = dataNode;
 
       sc = StatusCode::SUCCESS;
-      ON_DEBUG
-      { // Mirror the action above in the BGL-based graph
-        boost::add_vertex( DataProps( dataPath ), m_PRGraph );
-      }
     }
 
     return sc;
@@ -373,8 +378,8 @@ namespace concurrency
                                                          modePromptDecision, modeOR, allPass, isInverted );
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
 
-        ON_DEBUG
-        { // Mirror the action above in the BGL-based graph
+        // Mirror the action above in the BGL-based graph
+        if ( m_enableAnalysis ) {
           auto source = boost::add_vertex( DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent,
                                                              modePromptDecision, modeOR, allPass, isInverted ),
                                            m_PRGraph );
@@ -398,7 +403,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::addHeadNode( const std::string& headName, concurrency::Concurrent modeConcurrent,
-                                          concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOr,
+                                          concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOR,
                                           concurrency::AllPass allPass, concurrency::Inverted isInverted )
   {
 
@@ -407,12 +412,12 @@ namespace concurrency
       m_headNode = itH->second;
     } else {
       m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modePromptDecision,
-                                                  modeOr, allPass, isInverted );
+                                                  modeOR, allPass, isInverted );
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
 
-      ON_DEBUG
-      { // Mirror the action above in the BGL-based graph
-        boost::add_vertex( DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOr,
+      // Mirror the action above in the BGL-based graph
+      if ( m_enableAnalysis ) {
+        boost::add_vertex( DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR,
                                              allPass, isInverted ),
                            m_PRGraph );
       }
@@ -535,75 +540,71 @@ namespace concurrency
     using boost::vertex_bundle;
 
     dp.property( "Entity", make_transform_value_property_map(
-                               []( VariantVertexProps const& v ) { return boost::lexical_cast<std::string>( v ); },
+                               []( const VariantVertexProps& v ) { return boost::lexical_cast<std::string>( v ); },
                                get( vertex_bundle, m_PRGraph ) ) );
 
+    auto nameVis = precedence::VertexName();
     dp.property( "Name", make_transform_value_property_map(
-                             []( VariantVertexProps const& v ) { return apply_visitor( precedence::VertexName(), v ); },
+                             [&nameVis]( const VariantVertexProps& v ) { return apply_visitor( nameVis, v ); },
                              get( vertex_bundle, m_PRGraph ) ) );
 
+    auto gMVis = precedence::GroupMode();
     dp.property( "Mode", make_transform_value_property_map(
-                             []( VariantVertexProps const& v ) { return apply_visitor( precedence::GroupMode(), v ); },
+                             [&gMVis]( const VariantVertexProps& v ) { return apply_visitor( gMVis, v ); },
                              get( vertex_bundle, m_PRGraph ) ) );
 
-    dp.property( "Logic",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::GroupLogic(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
+    auto gLVis = precedence::GroupLogic();
+    dp.property( "Logic", make_transform_value_property_map(
+                              [&gLVis]( const VariantVertexProps& v ) { return apply_visitor( gLVis, v ); },
+                              get( vertex_bundle, m_PRGraph ) ) );
 
-    dp.property( "Decision Negation",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::DecisionNegation(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
+    auto dNVis = precedence::DecisionNegation();
+    dp.property( "Decision Negation", make_transform_value_property_map(
+                                          [&dNVis]( const VariantVertexProps& v ) { return apply_visitor( dNVis, v ); },
+                                          get( vertex_bundle, m_PRGraph ) ) );
 
+    auto aPVis = precedence::AllPass();
     dp.property( "Negative Decision Inversion",
                  make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::AllPass(), v ); },
+                     [&aPVis]( const VariantVertexProps& v ) { return apply_visitor( aPVis, v ); },
                      get( vertex_bundle, m_PRGraph ) ) );
 
-    dp.property( "Exit Policy",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::GroupExit(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Operations",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::Operations(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "CF Decision", make_transform_value_property_map(
-                                    [&slot]( VariantVertexProps const& v ) {
-                                      return apply_visitor( precedence::CFDecision( slot ), v );
-                                    },
+    auto gEVis = precedence::GroupExit();
+    dp.property( "Exit Policy", make_transform_value_property_map(
+                                    [&gEVis]( const VariantVertexProps& v ) { return apply_visitor( gEVis, v ); },
                                     get( vertex_bundle, m_PRGraph ) ) );
 
-    dp.property( "Algorithm State", make_transform_value_property_map(
-                                        [&slot]( VariantVertexProps const& v ) {
-                                          return apply_visitor( precedence::FSMState( slot ), v );
-                                        },
-                                        get( vertex_bundle, m_PRGraph ) ) );
+    auto opVis = precedence::Operations();
+    dp.property( "Operations", make_transform_value_property_map(
+                                   [&opVis]( const VariantVertexProps& v ) { return apply_visitor( opVis, v ); },
+                                   get( vertex_bundle, m_PRGraph ) ) );
 
-    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
-    if ( timelineSvc.isValid() ) {
-      dp.property( "Start Time (epoch ns)", make_transform_value_property_map(
-                                                [&timelineSvc]( VariantVertexProps const& v ) {
-                                                  return apply_visitor( precedence::StartTime( timelineSvc ), v );
-                                                },
-                                                get( vertex_bundle, m_PRGraph ) ) );
-      dp.property( "End Time (epoch ns)", make_transform_value_property_map(
-                                              [&timelineSvc]( VariantVertexProps const& v ) {
-                                                return apply_visitor( precedence::EndTime( timelineSvc ), v );
-                                              },
-                                              get( vertex_bundle, m_PRGraph ) ) );
-      dp.property( "Runtime (ns)", make_transform_value_property_map(
-                                       [&timelineSvc]( VariantVertexProps const& v ) {
-                                         return apply_visitor( precedence::Duration( timelineSvc ), v );
-                                       },
-                                       get( vertex_bundle, m_PRGraph ) ) );
-    } else {
-      warning() << "Failed to get the TimelineSvc, timing will not be added to "
-                << "the task precedence rules dump" << endmsg;
-    }
+    auto cFDVis = precedence::CFDecision( slot );
+    dp.property( "CF Decision", make_transform_value_property_map(
+                                    [&cFDVis]( const VariantVertexProps& v ) { return apply_visitor( cFDVis, v ); },
+                                    get( vertex_bundle, m_PRGraph ) ) );
+
+    auto stVis = precedence::EntityState( slot, serviceLocator(), m_conditionsRealmEnabled );
+    dp.property( "State", make_transform_value_property_map(
+                              [&stVis]( const VariantVertexProps& v ) { return apply_visitor( stVis, v ); },
+                              get( vertex_bundle, m_PRGraph ) ) );
+
+    auto sTVis = precedence::StartTime( slot, serviceLocator() );
+    dp.property( "Start Time (Epoch ns)",
+                 make_transform_value_property_map(
+                     [&sTVis]( const VariantVertexProps& v ) { return apply_visitor( sTVis, v ); },
+                     get( vertex_bundle, m_PRGraph ) ) );
+
+    auto eTVis = precedence::EndTime( slot, serviceLocator() );
+    dp.property( "End Time (Epoch ns)",
+                 make_transform_value_property_map(
+                     [&eTVis]( const VariantVertexProps& v ) { return apply_visitor( eTVis, v ); },
+                     get( vertex_bundle, m_PRGraph ) ) );
+
+    auto durVis = precedence::Duration( slot, serviceLocator() );
+    dp.property( "Runtime (ns)", make_transform_value_property_map(
+                                     [&durVis]( const VariantVertexProps& v ) { return apply_visitor( durVis, v ); },
+                                     get( vertex_bundle, m_PRGraph ) ) );
 
     boost::write_graphml( myfile, m_PRGraph, dp );
 

@@ -30,18 +30,17 @@ StatusCode PrecedenceSvc::initialize()
     return sc;
   }
 
-  ON_DEBUG
-  {
-    // prepare a directory to dump precedence analysis files to.
-    if ( m_dumpPrecTrace || m_dumpPrecRules ) {
-      if ( !boost::filesystem::create_directory( m_dumpDirName ) ) {
-        error() << "Could not create directory " << m_dumpDirName << "required "
-                                                                     "for task precedence tracing"
-                << endmsg;
-        return StatusCode::FAILURE;
-      }
+  // prepare a directory to dump precedence analysis files to.
+  if ( m_dumpPrecTrace || m_dumpPrecRules ) {
+    if ( !boost::filesystem::create_directory( m_dumpDirName ) ) {
+      error() << "Could not create directory " << m_dumpDirName << "required "
+                                                                   "for task precedence tracing"
+              << endmsg;
+      return StatusCode::FAILURE;
     }
   }
+
+  if ( m_dumpPrecRules ) m_PRGraph.enableAnalysis();
 
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service( "AlgResourcePool" );
@@ -179,26 +178,20 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
 StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
 {
 
-  bool ifTrace                            = false;
-  ON_DEBUG if ( m_dumpPrecTrace ) ifTrace = true; // enable precedence analysis
-
-  if ( Cause::source::Task == cause.m_source ) {
+  if ( LIKELY( Cause::source::Task == cause.m_source ) ) {
     ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '" << cause.m_sourceName << "'" << endmsg;
-    auto visitor = concurrency::DecisionUpdater( slot, cause, ifTrace );
+    auto visitor = concurrency::DecisionUpdater( slot, cause, m_dumpPrecTrace );
     m_PRGraph.getAlgorithmNode( cause.m_sourceName )->accept( visitor );
   } else {
     ON_VERBOSE verbose() << "Triggering top-down traversal at the root node" << endmsg;
-    auto visitor = concurrency::Supervisor( slot, cause, ifTrace );
+    auto visitor = concurrency::Supervisor( slot, cause, m_dumpPrecTrace );
     m_PRGraph.getHeadNode()->accept( visitor );
   }
 
-  ON_DEBUG
-  {
-    if ( m_dumpPrecTrace )
-      if ( CFRulesResolved( slot ) ) dumpPrecedenceTrace( slot );
-    if ( m_dumpPrecRules )
-      if ( CFRulesResolved( slot ) ) dumpPrecedenceRules( slot );
-  }
+  if ( UNLIKELY( m_dumpPrecTrace ) )
+    if ( UNLIKELY( CFRulesResolved( slot ) ) ) dumpPrecedenceTrace( slot );
+  if ( UNLIKELY( m_dumpPrecRules ) )
+    if ( UNLIKELY( CFRulesResolved( slot ) ) ) dumpPrecedenceRules( slot );
 
   return StatusCode::SUCCESS;
 }
@@ -283,11 +276,10 @@ const std::string PrecedenceSvc::printState( EventSlot& slot ) const
 void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot )
 {
 
-  if ( !m_dumpPrecRules || !msgLevel( MSG::DEBUG ) ) {
-    info() << "No temporal and topological aspects of execution flow were traced. "
-           << "To get them traced, please set DumpPrecedenceRules "
-           << "property to True *and* put the whole application in DEBUG "
-           << "logging mode" << endmsg;
+  if ( !m_dumpPrecRules ) {
+    warning() << "No temporal and topological aspects of execution flow were traced. "
+              << "To get them traced, please set DumpPrecedenceRules "
+              << "property to True " << endmsg;
     return;
   }
 
@@ -312,10 +304,9 @@ void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot )
 void PrecedenceSvc::dumpPrecedenceTrace( EventSlot& slot )
 {
 
-  if ( !m_dumpPrecTrace || !msgLevel( MSG::DEBUG ) ) {
-    info() << "Task precedence was not traced. To get it traced, please set "
-           << "DumpPrecedenceTrace property to True *and* put the "
-           << "whole application in DEBUG logging mode" << endmsg;
+  if ( !m_dumpPrecTrace ) {
+    warning() << "Task precedence was not traced. To get it traced, please set "
+              << "DumpPrecedenceTrace property to True " << endmsg;
     return;
   }
 

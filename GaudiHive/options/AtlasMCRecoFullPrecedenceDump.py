@@ -54,4 +54,4 @@ ApplicationMgr(EvtMax=evtMax,
                EventLoop=slimeventloopmgr,
                TopAlg=[sequencer],
                MessageSvcType="InertMessageSvc",
-               OutputLevel=DEBUG)
+               OutputLevel=INFO)

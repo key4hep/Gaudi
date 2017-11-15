@@ -87,7 +87,7 @@ namespace concurrency
     /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
      * by its associated ConditionAlgorithm */
 
-    auto promoter = Supervisor( *m_slot, m_cause );
+    auto promoter = Supervisor( *m_slot, m_cause, m_trace );
 
     for ( auto condAlg : node.getProducers() ) condAlg->accept( promoter );
 

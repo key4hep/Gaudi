@@ -591,6 +591,8 @@ StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
   info() << "Dumping Alg Exec State for slot " << eventContext->slot() << ":\n" << ost.str() << endmsg;
 
   dumpSchedulerState( -1 );
+  // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
+  m_precSvc->dumpPrecedenceRules( m_eventSlots[eventContext->slot()] );
 
   // Empty queue and deactivate the service
   action thisAction;
@@ -809,9 +811,6 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
   for ( auto& thisSlot : m_eventSlots ) {
     slotCount++;
     if ( thisSlot.complete ) continue;
-
-    // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
-    if ( msgLevel( MSG::DEBUG ) ) m_precSvc->dumpPrecedenceRules( thisSlot );
 
     outputMessageStream << "-----------  slot: " << thisSlot.eventContext->slot()
                         << "  event: " << thisSlot.eventContext->evt() << " -----------" << std::endl;
