@@ -7,6 +7,8 @@
 #include "xercesc/parsers/XercesDOMParser.hpp"
 #include "xercesc/sax/ErrorHandler.hpp"
 
+#include <memory>
+
 // Forward declarations
 class IMessageSvc;
 

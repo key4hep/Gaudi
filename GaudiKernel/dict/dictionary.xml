@@ -4,7 +4,6 @@
  <class pattern="DataObjectHandle*"/>
 
   <!-- Base classes in GaudiKernel -->
-  <class name="IssueSeverity"/>
   <class name="StatusCode"/>
   <class name="Gaudi::Details::PropertyBase">
     <field name="m_typeinfo" transient="true"/>
@@ -72,7 +71,6 @@
   <class name="IInspector"/>
   <class name="IInterface"/>
   <class name="InterfaceID"/>
-  <class name="IIssueLogger"/>
   <class name="IJobOptionsSvc"/>
   <class name="IMagneticFieldSvc"/>
   <class name="IMessageSvc"/>

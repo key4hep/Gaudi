@@ -7,6 +7,7 @@
 class AlgTool;
 class JobHistory;
 
+#include <memory>
 #include <string>
 #include <vector>
 

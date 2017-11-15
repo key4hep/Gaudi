@@ -5,7 +5,6 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IStatusCodeSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IssueSeverity.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 #include <exception>
@@ -21,12 +20,6 @@ void StatusCode::enableChecking() { s_checking = true; }
 void StatusCode::disableChecking() { s_checking = false; }
 
 bool StatusCode::checkingEnabled() { return s_checking; }
-
-const IssueSeverity& StatusCode::severity() const
-{
-  static const IssueSeverity dummy;
-  return m_severity ? *m_severity : dummy;
-}
 
 void StatusCode::check()
 {

@@ -2,6 +2,7 @@
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/IDataHandleHolder.h"
+#include <functional>
 #include <tuple>
 #include <typeinfo>
 

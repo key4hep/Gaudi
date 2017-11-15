@@ -12,6 +12,8 @@
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 // ============================================================================
 
+#include <memory>
+
 #if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
