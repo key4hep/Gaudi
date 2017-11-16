@@ -863,7 +863,7 @@ StatusCode Algorithm::createSubAlgorithm( const std::string& type, const std::st
 void Algorithm::initToolHandles() const
 {
 
-  IAlgTool* tool( 0 );
+  IAlgTool* tool = nullptr;
   for ( auto thArr : m_toolHandleArrays ) {
     if ( !thArr->retrieved() ) {
       if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
@@ -911,12 +911,18 @@ void Algorithm::initToolHandles() const
   }
 
   for ( auto th : m_toolHandles ) {
-    // ignore *disabled* tool handles (i.e. empty type/name)
-    if ( !th->enabled() ) continue;
-    auto sc = th->retrieve( tool );
-    if ( UNLIKELY( sc.isFailure() ) ) {
-      throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
+    if ( !th->isEnabled() ) {
+      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) && !th->typeAndName().empty() )
+        debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+      continue;
     }
+    if ( !th->get() ) {
+      auto sc = th->retrieve();
+      if ( UNLIKELY( sc.isFailure() ) ) {
+        throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
+      }
+    }
+    tool = th->get();
     if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
       debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
               << tool->type() << ")" << endmsg;

@@ -480,9 +480,9 @@ ToolSvc.ToolA       DEBUG Services to release :
 MyGaudiAlg.Lega...   INFO finalize() has been called
 ToolSvc.Generic...   INFO finalize() has been called
 ToolSvc.PubTool...   INFO finalize() has been called
-ToolSvc.ConstGe...   INFO finalize() has been called
 ToolSvc.TestPub...   INFO finalize() has been called
 MyGaudiAlg.Priv...   INFO finalize() has been called
+ToolSvc.ConstGe...   INFO finalize() has been called
 MyGaudiAlg.Tool...   INFO destructor has been called
 MyGaudiAlg.MyGa...   INFO destructor has been called
 MyGaudiAlg.MyTool    INFO destructor has been called
@@ -494,8 +494,8 @@ ToolSvc.MyTool       INFO destructor has been called
 MyGaudiAlg.Lega...   INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
 ToolSvc.PubTool...   INFO destructor has been called
-ToolSvc.ConstGe...   INFO destructor has been called
 ToolSvc.TestPub...   INFO destructor has been called
 MyGaudiAlg.Priv...   INFO destructor has been called
+ToolSvc.ConstGe...   INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
