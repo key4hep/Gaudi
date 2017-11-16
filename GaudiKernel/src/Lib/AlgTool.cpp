@@ -409,7 +409,7 @@ AlgTool::~AlgTool()
 void AlgTool::initToolHandles() const
 {
 
-  IAlgTool* tool( 0 );
+  IAlgTool* tool = nullptr;
   for ( auto thArr : m_toolHandleArrays ) {
     if ( !thArr->retrieved() ) {
       if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
@@ -457,15 +457,22 @@ void AlgTool::initToolHandles() const
   }
 
   for ( auto th : m_toolHandles ) {
-    tool = th->get();
-    if ( tool ) {
-      m_tools.push_back( tool );
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
-        debug() << "Adding " << ( th->isPublic() ? "Public" : "Private" ) << " ToolHandle tool " << tool->name() << " ("
-                << tool->type() << ")" << endmsg;
-    } else {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+    if ( !th->isEnabled() ) {
+      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) && !th->typeAndName().empty() )
+        debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+      continue;
     }
+    if ( !th->get() ) {
+      auto sc = th->retrieve();
+      if ( UNLIKELY( sc.isFailure() ) ) {
+        throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
+      }
+    }
+    tool = th->get();
+    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+      debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
+              << tool->type() << ")" << endmsg;
+    m_tools.push_back( tool );
   }
   m_toolHandlesInit = true;
 }

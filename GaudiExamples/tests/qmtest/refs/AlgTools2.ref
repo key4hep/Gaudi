@@ -11,19 +11,20 @@ JobOptionsSvc        INFO # (26,1): MyAlg.MyTool.Int = 101
 JobOptionsSvc        INFO # (27,1): MyAlg.MyTool.Double = 101.1e+10
 JobOptionsSvc        INFO # (28,1): MyAlg.MyTool.String = "hundred one"
 JobOptionsSvc        INFO # (29,1): MyAlg.MyTool.Bool = 0
-JobOptionsSvc        INFO # (31,1): ToolSvc.MyTool.Int = 201
-JobOptionsSvc        INFO # (32,1): ToolSvc.MyTool.Double = 201.1e+10
-JobOptionsSvc        INFO # (33,1): ToolSvc.MyTool.String = "two hundred and one"
-JobOptionsSvc        INFO # (34,1): ToolSvc.MyTool.Bool = 1
-JobOptionsSvc        INFO # (36,1): ToolSvc.MyTool.OutputLevel = 3
-JobOptionsSvc        INFO # (37,1): MyAlg.OutputLevel = 2
-JobOptionsSvc        INFO # (42,1): ApplicationMgr.TopAlg += ["TestToolAlg"]
-JobOptionsSvc        INFO # (43,1): TestToolAlg.Tools += ["TestTool/ToolA"]
-JobOptionsSvc        INFO # (44,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
-JobOptionsSvc        INFO # (45,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
-JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.OutputLevel = 2
-JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /scratch/fwinkl/Gaudi/src/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO # (31,1): MyAlg.InvalidToolHandle = ""
+JobOptionsSvc        INFO # (33,1): ToolSvc.MyTool.Int = 201
+JobOptionsSvc        INFO # (34,1): ToolSvc.MyTool.Double = 201.1e+10
+JobOptionsSvc        INFO # (35,1): ToolSvc.MyTool.String = "two hundred and one"
+JobOptionsSvc        INFO # (36,1): ToolSvc.MyTool.Bool = 1
+JobOptionsSvc        INFO # (38,1): ToolSvc.MyTool.OutputLevel = 3
+JobOptionsSvc        INFO # (39,1): MyAlg.OutputLevel = 2
+JobOptionsSvc        INFO # (44,1): ApplicationMgr.TopAlg += ["TestToolAlg"]
+JobOptionsSvc        INFO # (45,1): TestToolAlg.Tools += ["TestTool/ToolA"]
+JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
+JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
+JobOptionsSvc        INFO # (48,1): ToolSvc.ToolA.OutputLevel = 2
+JobOptionsSvc        INFO # (49,1): ToolSvc.ToolB.OutputLevel = 2
+JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
@@ -34,12 +35,14 @@ StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 46
+MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 48
+MyAlg               DEBUG Property ['Name': Value] =  'UndefinedToolHandle':
 MyAlg               DEBUG Property ['Name': Value] =  'LegacyToolHandle':MyTool/LegacyToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
 MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
 MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
+MyAlg               DEBUG Property ['Name': Value] =  'InvalidToolHandle':
 MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing/UnusedToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle
@@ -173,6 +176,7 @@ ToolSvc.Generic...   INFO Double = 100
 ToolSvc.Generic...   INFO String = hundred
 ToolSvc.Generic...   INFO Bool   = 1
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
+MyAlg               DEBUG ToolHandle TestToolFailing/UnusedToolHandle not used
 MyAlg.LegacyToo...  DEBUG Property update for OutputLevel : new value = 2
 MyAlg.LegacyToo...   INFO intialize() has been called
 MyAlg.LegacyToo...   INFO Int    = 100
@@ -568,8 +572,8 @@ ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is release
 ToolSvc.ToolA       DEBUG Services to release :
 MyAlg.LegacyToo...   INFO finalize() has been called
 ToolSvc.Generic...   INFO finalize() has been called
-ToolSvc.ConstGe...   INFO finalize() has been called
 MyAlg.PrivToolH...   INFO finalize() has been called
+ToolSvc.ConstGe...   INFO finalize() has been called
 ToolSvc.PubTool...   INFO finalize() has been called
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called
@@ -578,8 +582,8 @@ MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 MyAlg.LegacyToo...   INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
-ToolSvc.ConstGe...   INFO destructor has been called
 MyAlg.PrivToolH...   INFO destructor has been called
+ToolSvc.ConstGe...   INFO destructor has been called
 ToolSvc.PubTool...   INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

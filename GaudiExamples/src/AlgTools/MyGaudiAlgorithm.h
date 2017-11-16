@@ -41,7 +41,7 @@ private:
 
   IMyOtherTool* m_privateOtherInterface = nullptr;
 
-  ToolHandle<IMyTool> m_legacyToolHandle;
+  ToolHandle<IMyTool> m_legacyToolHandle{"MyTool/LegacyToolHandle", this};
 
   ToolHandle<IMyTool> m_myPrivToolHandle{this, "PrivToolHandle", "MyTool"};
   PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool"};
@@ -49,6 +49,9 @@ private:
   PublicToolHandle<IAlgTool> m_myGenericToolHandle{this, "GenericToolHandle", "MyTool"};
 
   ToolHandle<IAlgTool> m_myUnusedToolHandle{this, "UnusedToolHandle", "TestToolFailing"};
+
+  ToolHandle<IMyTool> m_undefinedToolHandle{this};
+  ToolHandle<IMyTool> m_invalidToolHandle{this, "InvalidToolHandle", "TestToolFailing"};
 
   PublicToolHandle<const IMyTool> m_myConstToolHandle{"MyTool/ConstGenericToolHandle"};
 

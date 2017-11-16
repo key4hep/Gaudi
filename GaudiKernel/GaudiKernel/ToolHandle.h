@@ -75,6 +75,8 @@ protected:
 public:
   StatusCode retrieve( IAlgTool*& tool ) const { return i_retrieve( tool ); }
 
+  virtual StatusCode retrieve() const = 0;
+
   const IAlgTool* get() const { return getAsIAlgTool(); }
 
   IAlgTool* get() { return getAsIAlgTool(); }
@@ -82,16 +84,30 @@ public:
   virtual std::string typeAndName() const = 0;
 
   /// Helper to check if the ToolHandle should be retrieved.
-  inline bool enabled() const
+  inline bool isEnabled() const
   {
-    // by convention, an empty type/name means that we do not use the tool
-    return !typeAndName().empty();
+    // the handle is considered enabled if the type/name is valid and the
+    // enabled flag was set to true, or it was already retrieved
+    return ( m_enabled && !typeAndName().empty() ) || get();
+  }
+
+  inline void enable() { m_enabled = true; }
+
+  inline void disable() { m_enabled = false; }
+
+  inline bool setEnabled( const bool flag )
+  {
+    auto old  = m_enabled;
+    m_enabled = flag;
+    return old;
   }
 
 protected:
   virtual const IAlgTool* getAsIAlgTool() const = 0;
 
   virtual IAlgTool* getAsIAlgTool() = 0;
+
+  bool m_enabled = true;
 };
 
 /** @class ToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
@@ -118,7 +134,7 @@ public:
       and you want to use the default name. */
   ToolHandle( const IInterface* parent = nullptr, bool createIf = true )
       : BaseToolHandle( parent, createIf )
-      , GaudiHandle<T>( GaudiHandle<T>::getDefaultType(), toolComponentType( parent ), toolParentName( parent ) )
+      , GaudiHandle<T>( "", toolComponentType( parent ), toolParentName( parent ) )
       , m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {
   }
@@ -202,16 +218,9 @@ public:
     return m_pToolSvc.initialize( "ToolSvc", GaudiHandleBase::parentName() );
   }
 
-  /// Helper to declare that the ToolHandle should not retrieved.
-  inline void disable()
-  {
-    // by convention, an empty type/name means that we do not use the tool
-    GaudiHandleBase::setTypeAndName( "" );
-  }
-
   /** Retrieve the AlgTool. Release existing tool if needed.
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */
-  StatusCode retrieve() const
+  StatusCode retrieve() const override
   { // not really const, because it updates m_pObject
     return GaudiHandle<T>::retrieve();
   }

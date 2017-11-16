@@ -51,6 +51,9 @@ mygalg.PrivToolHandle.String = "Is a private tool"
 pubtool = MyTool('TestPubToolHandle', String="Is a public tool")
 mygalg.PubToolHandle = pubtool
 
+# disable a ToolHandle
+mygalg.InvalidToolHandle = ""
+
 ApplicationMgr(EvtMax=10,
                EvtSel='NONE',
                HistogramPersistency='NONE',
