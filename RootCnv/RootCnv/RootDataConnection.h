@@ -68,7 +68,7 @@ namespace Gaudi
     RootConnectionSetup() = default;
 
     /// Set the global compression level
-    static long setCompression( const std::string& compression );
+    static StatusCode setCompression( const std::string& compression );
     /// Access to global compression level
     static int compression();
 

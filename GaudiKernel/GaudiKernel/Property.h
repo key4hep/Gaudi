@@ -840,7 +840,7 @@ public:
 
   bool load( PropertyBase& destination ) const override { return destination.assign( *this ); }
 
-  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ); }
+  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ).isSuccess(); }
 
   std::string toString() const override;
 
@@ -880,7 +880,7 @@ public:
 
   bool load( PropertyBase& destination ) const override { return destination.assign( *this ); }
 
-  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ); }
+  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ).isSuccess(); }
 
   std::string toString() const override;
 

@@ -69,5 +69,5 @@ int main( int argc, char** argv )
   propMgr->setProperty( "JobOptionsPath", fileName );
   propMgr->setProperty( "JobOptionsPreAction", params.str() );
   propMgr->setProperty( "JobOptionsPostAction", postAction ); // TODO: grep this from command line
-  return appUI->run();
+  return appUI->run().getCode();
 }

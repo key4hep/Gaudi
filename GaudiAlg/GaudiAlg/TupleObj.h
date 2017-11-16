@@ -793,7 +793,7 @@ namespace Tuples
     {
       auto scs = std::initializer_list<StatusCode>{
           this->column( std::get<I>( tup ).first, Gaudi::invoke( std::get<I>( tup ).second, value ) )...};
-      auto is_ok = []( const StatusCode& sc ) -> bool { return sc; };
+      auto is_ok = []( const StatusCode& sc ) -> bool { return sc.isSuccess(); };
       auto i     = std::find_if_not( begin( scs ), end( scs ), is_ok );
       if ( i != end( scs ) ) {
         // avoid unchecked StatusCodes...

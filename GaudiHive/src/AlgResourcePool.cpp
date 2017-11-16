@@ -93,9 +93,10 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
   StatusCode sc;
   if ( blocking ) {
     itQueueIAlgPtr->second->pop( algo );
-    sc = StatusCode::SUCCESS;
   } else {
-    sc = itQueueIAlgPtr->second->try_pop( algo );
+    if ( !itQueueIAlgPtr->second->try_pop( algo ) ) {
+      sc = StatusCode::FAILURE;
+    }
   }
 
   // Note that reentrant algos are not consumed so we put them

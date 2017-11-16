@@ -151,7 +151,7 @@ long DataSvcHelpers::RegistryEntry::remove( IRegistry* obj )
 }
 
 /// Remove entry from data store
-long DataSvcHelpers::RegistryEntry::remove( boost::string_ref path )
+StatusCode DataSvcHelpers::RegistryEntry::remove( boost::string_ref path )
 {
   if ( path.front() == SEPARATOR ) path.remove_prefix( 1 );
   auto i = std::find_if( m_store.begin(), m_store.end(), [&]( const auto* j ) {
@@ -205,7 +205,7 @@ long DataSvcHelpers::RegistryEntry::i_add( RegistryEntry* pEntry )
 }
 
 /// Add entry to the current data store item
-long DataSvcHelpers::RegistryEntry::add( std::string name, DataObject* pObject, bool is_soft )
+StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, DataObject* pObject, bool is_soft )
 {
   RegistryEntry* entry = i_create( std::move( name ) );
   if ( !entry ) return StatusCode::FAILURE;
@@ -215,7 +215,7 @@ long DataSvcHelpers::RegistryEntry::add( std::string name, DataObject* pObject, 
 }
 
 /// Add entry to the current data store item
-long DataSvcHelpers::RegistryEntry::add( std::string name, IOpaqueAddress* pAddress, bool is_soft )
+StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, IOpaqueAddress* pAddress, bool is_soft )
 {
   RegistryEntry* entry = i_create( std::move( name ) );
   if ( !entry ) return StatusCode::FAILURE;
@@ -295,15 +295,15 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( const Data
 }
 
 // Traverse registry tree
-long DataSvcHelpers::RegistryEntry::traverseTree( IDataStoreAgent* pAgent, int level )
+StatusCode DataSvcHelpers::RegistryEntry::traverseTree( IDataStoreAgent* pAgent, int level )
 {
   bool go_down = pAgent->analyse( this, level );
-  long status  = StatusCode::SUCCESS;
+  StatusCode status;
   if ( go_down ) {
     for ( auto& i : m_store ) {
       try {
         RegistryEntry* entry = CAST_REGENTRY( RegistryEntry*, i );
-        entry->traverseTree( pAgent, level + 1 );
+        entry->traverseTree( pAgent, level + 1 ).ignore();
       } catch ( ... ) {
         status = StatusCode::FAILURE;
       }

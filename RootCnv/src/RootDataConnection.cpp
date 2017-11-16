@@ -93,7 +93,7 @@ starCheck:
 }
 
 /// Set the global compression level
-long RootConnectionSetup::setCompression( const std::string& compression )
+StatusCode RootConnectionSetup::setCompression( const std::string& compression )
 {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
   int res = 0, level = ROOT::CompressionSettings( ROOT::kLZMA, 6 );
@@ -228,7 +228,7 @@ StatusCode RootDataConnection::connectRead()
     sc = m_tool->readRefs();
     sc.ignore();
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-    if ( sc.getCode() == ROOT_READ_ERROR ) {
+    if ( sc == ROOT_READ_ERROR ) {
       IIncidentSvc* inc = m_setup->incidentSvc();
       if ( inc ) {
         inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
@@ -297,7 +297,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ )
       if ( makeTool() ) {
         StatusCode sc = m_tool->readRefs();
         sc.ignore();
-        if ( sc.getCode() == ROOT_READ_ERROR ) {
+        if ( sc == ROOT_READ_ERROR ) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
           IIncidentSvc* inc = m_setup->incidentSvc();
           if ( inc ) {

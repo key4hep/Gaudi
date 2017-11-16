@@ -146,11 +146,11 @@ namespace DataSvcHelpers
     void setObject( DataObject* obj );
 
     /// Add entry to data store
-    virtual long add( std::string name, DataObject* pObject, bool is_soft = false );
+    virtual StatusCode add( std::string name, DataObject* pObject, bool is_soft = false );
     /// Add entry to data store
-    virtual long add( std::string name, IOpaqueAddress* pAddress, bool is_soft = false );
+    virtual StatusCode add( std::string name, IOpaqueAddress* pAddress, bool is_soft = false );
     /// Remove an entry from the store
-    virtual long remove( boost::string_ref name );
+    virtual StatusCode remove( boost::string_ref name );
     /// Add object to the container
     virtual long add( IRegistry* obj );
     /// Remove an object from the container
@@ -158,7 +158,7 @@ namespace DataSvcHelpers
     /// Delete all contained elements
     virtual long deleteElements();
     /// traverse data tree
-    virtual long traverseTree( IDataStoreAgent* pAgent, int level = 0 );
+    virtual StatusCode traverseTree( IDataStoreAgent* pAgent, int level = 0 );
   };
 }
 #endif // GAUDIKERNEL_REGISTRYENTRY_H

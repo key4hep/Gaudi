@@ -197,13 +197,14 @@ public:
     if ( i == end() ) {
       // Object cannot be released from the conatiner,
       // as it is not contained in it
-      return StatusCode::FAILURE;
+      return 0;
     }
+    long idx = std::distance( begin(), i );
     // Set the back pointer to 0 to avoid repetitional searching
     // for the object in the container and deleting the object
     ( *i )->setParent( nullptr );
     erase( i );
-    return StatusCode::SUCCESS;
+    return idx;
   }
 
   /// Insert "value" before "position"
