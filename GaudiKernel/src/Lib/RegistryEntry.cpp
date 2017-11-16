@@ -151,13 +151,12 @@ long DataSvcHelpers::RegistryEntry::remove( IRegistry* obj )
 }
 
 /// Remove entry from data store
-StatusCode DataSvcHelpers::RegistryEntry::remove( boost::string_ref path )
+StatusCode DataSvcHelpers::RegistryEntry::remove( boost::string_ref nam )
 {
-  if ( path.front() == SEPARATOR ) path.remove_prefix( 1 );
-  auto i = std::find_if( m_store.begin(), m_store.end(), [&]( const auto* j ) {
-    boost::string_ref name{j->name()};
-    name.remove_prefix( 1 ); // skip leading SEPARATOR
-    return name == path;
+  if ( nam.front() == SEPARATOR ) nam.remove_prefix( 1 );
+  auto i = std::find_if( m_store.begin(), m_store.end(), [&]( const auto* entry ) {
+    // skip leading SEPARATOR
+    return entry->name().compare( 1, std::string::npos, nam.data(), nam.size() ) == 0;
   } );
   // if the requested object is not present, this is an error....
   if ( i == m_store.end() ) return StatusCode::FAILURE;
