@@ -1,7 +1,6 @@
 stages:
   - build
   - test
-  - check
   - deploy
 
 before_script:
@@ -43,11 +42,11 @@ coding-conventions:
     - pip install autopep8
     - make BUILDDIR=build apply-formatting
     - git diff > apply-formatting.patch
-    - git diff --stat | tee apply-formatting.stat
+    - git diff --stat --exit-code
   artifacts:
     paths:
       - apply-formatting.patch
-      - apply-formatting.stat
+    when: on_failure
     expire_in: 1 day
 
 doxygen:
@@ -82,31 +81,18 @@ test:
     - mv build/html test_report
     - mv build/ctest.log test_report
     - mv build/Testing test_report
+    - if [ -e test_report/tests_failed ] ; then
+    # this prints all lines starting with a white space after and including "The following tests...", excluding lines with "Not Run"
+    -   echo "================================================================================"
+    -   awk '/^[^[:space:]]/{do_print=0}; /The following tests FAILED:/{do_print=1}; do_print&&!/Not Run/{print}' test_report/ctest.log
+    -   echo "================================================================================"
+    -   exit 1
+    - fi
   artifacts:
     paths:
       - test_report
+    when: always
     expire_in: 1 week
-
-test_report:
-  stage: check
-  script:
-    - status=0
-    - echo "=== code formatting report ==="
-    - if [ $(wc -c apply-formatting.stat | cut -d' ' -f1) != 0 ] ; then
-    -   cat apply-formatting.stat
-    -   status=1
-    - else
-    -   echo formatting OK
-    - fi
-    - echo "=== tests report ==="
-    - if [ -e test_report/tests_failed ] ; then
-    # this prints all lines starting with a white space after and including "The following tests...", excluding lines with "Not Run"
-    -   awk '/^[^[:space:]]/{do_print=0}; /The following tests FAILED:/{do_print=1}; do_print&&!/Not Run/{print}' test_report/ctest.log
-    -   status=1
-    - else
-    -   echo tests successful
-    - fi
-    - exit $status
 
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration
