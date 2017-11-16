@@ -8,6 +8,7 @@
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="timeout"><integer>120</integer></argument>
 <argument name="prerequisites"><set>
+  <tuple><text>gaudihive.whiteboard.read</text><enumeral>PASS</enumeral></tuple>
   <tuple><text>gaudihive.whiteboard.write</text><enumeral>PASS</enumeral></tuple>
 </set></argument>
 </extension>
