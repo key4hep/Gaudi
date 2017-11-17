@@ -47,8 +47,6 @@ public:
     m_saveIncidentName = "SAVE_FILE_RECORD";
     m_persSvcName      = "PersistencySvc/FileRecordPersistencySvc";
   }
-  /// Standard Destructor
-  ~FileRecordDataSvc() override = default;
 };
 
 // Instantiation of a static factory class used by clients to create instances of this service

@@ -57,8 +57,6 @@ namespace Gaudi
         setProperty( "EvtColsProduce", "true" ).ignore();
         setProperty( "EvtColsPrint", "true" ).ignore();
       }
-      /// virtual destructor
-      ~ExtendedEvtCol() override = default;
 
     private:
       Gaudi::Property<std::string> m_tracks{this, "Tracks", "MyTracks"};

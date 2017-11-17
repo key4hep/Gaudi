@@ -31,8 +31,6 @@ public:
 
   // Default constructor.
   MTMessageSvc( const std::string& name, ISvcLocator* svcloc );
-  // Destructor.
-  ~MTMessageSvc() override = default;
 
   // Implementation of IService::initialize()
   virtual StatusCode initialize();

@@ -34,7 +34,6 @@ public:
 public:
   /// standard constructor/destructor @see Auditor
   AlgContextAuditor( const std::string& name, ISvcLocator* pSvc );
-  ~AlgContextAuditor() override = default;
   /// standard initialization, @see IAuditor
   StatusCode initialize() override;
   /// standard finalization, @see IAuditor

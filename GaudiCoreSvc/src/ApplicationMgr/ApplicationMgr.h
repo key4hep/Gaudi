@@ -51,8 +51,6 @@ class ApplicationMgr
 public:
   // default creator
   ApplicationMgr( IInterface* = nullptr );
-  // virtual destructor
-  ~ApplicationMgr() override = default;
 
   // implementation of IInterface::queryInterface
   StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;

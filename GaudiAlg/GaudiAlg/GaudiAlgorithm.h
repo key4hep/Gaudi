@@ -640,9 +640,6 @@ public:
    */
   GaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
   // ==========================================================================
-  /// destructor, virtual and protected
-  ~GaudiAlgorithm() override = default;
-  // ==========================================================================
 public:
   // ==========================================================================
   /** Access the standard event collection service

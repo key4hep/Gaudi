@@ -36,6 +36,8 @@ struct DHH;
 class HistorySvc : public extends<Service, IHistorySvc, IIncidentListener>
 {
 public:
+  using extends::extends;
+
   StatusCode initialize() override;
   StatusCode reinitialize() override;
   StatusCode finalize() override;
@@ -68,12 +70,7 @@ public:
   virtual int getDataHistory( const CLID& id, const std::string& key, const std::string& storeName,
                               std::list<DataHistory*>& dhlist ) const;
 
-  using extends::extends;
-
   void handle( const Incident& inc ) override;
-
-  // Destructor.
-  ~HistorySvc() override = default;
 
 private:
   //   typedef std::map<const CLID, std::map<const std::string, DataHistory*> >

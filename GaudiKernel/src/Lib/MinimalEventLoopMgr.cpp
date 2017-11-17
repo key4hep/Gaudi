@@ -26,7 +26,6 @@ namespace
     {
       addRef(); // Initial count set to 1
     }
-    ~AbortEventListener() override = default;
     /// Inform that a new incident has occurred
     void handle( const Incident& i ) override
     {

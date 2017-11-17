@@ -13,8 +13,7 @@ namespace PluginServiceTest
   class MyAlg : public Algorithm
   {
   public:
-    MyAlg( const std::string& name, ISvcLocator* svcloc ) : Algorithm( name, svcloc ) {}
-    ~MyAlg() override {}
+    using Algorithm::Algorithm;
 
     StatusCode execute() override { return StatusCode::SUCCESS; }
   };
@@ -23,8 +22,7 @@ namespace PluginServiceTest
   class MyTemplatedAlg : public Algorithm
   {
   public:
-    MyTemplatedAlg( const std::string& name, ISvcLocator* svcloc ) : Algorithm( name, svcloc ) {}
-    ~MyTemplatedAlg() override {}
+    using Algorithm::Algorithm;
 
     StatusCode execute() override { return StatusCode::SUCCESS; }
   };

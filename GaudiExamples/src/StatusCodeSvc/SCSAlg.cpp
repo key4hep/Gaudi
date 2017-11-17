@@ -2,13 +2,6 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 
-///////////////////////////////////////////////////////////////////////////
-SCSAlg::SCSAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-StatusCode SCSAlg::initialize() { return Algorithm::initialize(); }
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode SCSAlg::execute()
@@ -23,8 +16,6 @@ StatusCode SCSAlg::execute()
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-StatusCode SCSAlg::finalize() { return Algorithm::finalize(); }
 
 StatusCode SCSAlg::test() { return StatusCode::SUCCESS; }
 

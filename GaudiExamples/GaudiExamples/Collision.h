@@ -21,10 +21,8 @@ namespace Gaudi
     {
     public:
       /// Constructors
-      Collision() : DataObject() {}
+      Collision() = default;
       Collision( int num ) : DataObject(), m_collision( num ) {}
-      /// Destructor
-      ~Collision() override = default;
 
       /// Retrieve reference to class definition structure
       const CLID& clID() const override { return classID(); }

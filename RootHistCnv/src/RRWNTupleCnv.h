@@ -22,8 +22,6 @@ namespace RootHistCnv
     static const CLID& classID() { return CLID_RowWiseTuple; }
     /// Standard constructor
     RRWNTupleCnv( ISvcLocator* svc ) : RNTupleCnv( svc, classID() ) {}
-    /// Standard destructor
-    ~RRWNTupleCnv() override = default;
 
   protected:
     /// Create the transient representation of an object.

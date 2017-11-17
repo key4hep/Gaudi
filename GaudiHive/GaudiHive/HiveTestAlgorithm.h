@@ -17,11 +17,6 @@ public:
    **/
   using GaudiAlgorithm::GaudiAlgorithm;
 
-  /**
-   ** Destructor
-   **/
-  ~HiveTestAlgorithm() override = default;
-
   /*****************************
    ** Public Function Members **
    *****************************/

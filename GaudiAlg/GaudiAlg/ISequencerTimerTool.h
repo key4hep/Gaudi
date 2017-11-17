@@ -52,9 +52,6 @@ public:
 
   /** prepares and saves the timing histograms **/
   virtual void saveHistograms() = 0;
-
-  /** Destructor */
-  ~ISequencerTimerTool() override = default;
 };
 
 #endif // ISEQUENCERTIMERTOOL_H

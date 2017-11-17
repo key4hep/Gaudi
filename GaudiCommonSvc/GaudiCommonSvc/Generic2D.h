@@ -45,8 +45,6 @@ namespace Gaudi
     Generic2D( IMPLEMENTATION* p ) : m_rep( p ) {}
 
   public:
-    /// Destructor.
-    ~Generic2D() override = default;
     /// ROOT object implementation
     TObject* representation() const override { return m_rep.get(); }
     /// Adopt ROOT histogram representation

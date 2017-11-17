@@ -96,8 +96,6 @@ protected:
 public:
   /// Standard algorithm Constructor
   TagCollectionStream( const std::string& name, ISvcLocator* pSvcLocator );
-  /// Standard Destructor
-  ~TagCollectionStream() override = default;
   /// Initialize TagCollectionStream
   StatusCode initialize() override;
   /// Terminate TagCollectionStream

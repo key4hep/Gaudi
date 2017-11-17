@@ -16,13 +16,10 @@ namespace GaudiExamples
   {
   public:
     /// Standard constructor
-    GaudiPPS( const std::string& name, ISvcLocator* pSvcLocator );
-
-    ~GaudiPPS() override; ///< Destructor
+    using GaudiAlgorithm::GaudiAlgorithm;
 
     StatusCode initialize() override; ///< Algorithm initialization
     StatusCode execute() override;    ///< Algorithm execution
-    StatusCode finalize() override;   ///< Algorithm finalization
   };
 }
 #endif // PARTPROP_GAUDIPPS_H

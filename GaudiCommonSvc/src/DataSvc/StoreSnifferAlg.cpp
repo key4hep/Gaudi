@@ -27,6 +27,9 @@ using namespace std;
 class StoreSnifferAlg : public Algorithm
 {
 public:
+  /// Standard algorithm constructor
+  using Algorithm::Algorithm;
+
   SmartIF<IDataManagerSvc> m_mgr;
 
   struct LeafInfo final {
@@ -39,11 +42,6 @@ public:
 
   SniffInfo m_info, m_curr;
   Correlations m_corr, m_links;
-
-  /// Standard algorithm constructor
-  StoreSnifferAlg( const string& name, ISvcLocator* pSvc ) : Algorithm( name, pSvc ) {}
-  /// Standard Destructor
-  ~StoreSnifferAlg() override = default;
 
   size_t explore( IRegistry* pObj )
   {

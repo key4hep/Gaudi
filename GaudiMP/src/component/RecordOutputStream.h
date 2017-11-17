@@ -22,8 +22,6 @@ class RecordOutputStream : public GaudiAlgorithm
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
 
-  ~RecordOutputStream() override = default; ///< Destructor
-
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
   StatusCode finalize() override;   ///< Algorithm finalization
@@ -32,7 +30,6 @@ public:
   /// instances.
   static inline const std::string locationRoot() { return "TriggeredOutputStreams"; }
 
-protected:
 private:
   Gaudi::Property<std::string> m_streamName{
       this, "OutputStreamName", {}, "Name of the OutputStream instance should be triggered."};

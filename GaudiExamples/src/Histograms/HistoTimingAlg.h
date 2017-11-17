@@ -26,8 +26,6 @@ public:
   /// Standard constructor
   using GaudiHistoAlg::GaudiHistoAlg;
 
-  ~HistoTimingAlg() override = default; ///< Destructor
-
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
 

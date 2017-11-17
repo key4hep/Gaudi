@@ -75,7 +75,7 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css )
     if ( m_statEntities.count( key ) )
       m_statEntities[key] += val;
     else
-      m_statEntities.insert( std::pair<IChronoStatSvc::StatTag, StatEntity>( key, val ) );
+      m_statEntities.emplace( key, val );
   }
 }
 ChronoStatSvc::ChronoStatSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )

@@ -11,8 +11,6 @@ template <typename... Interfaces>
 struct GAUDI_API extend_interfaces : virtual public Interfaces... {
   /// take union of the ext_iids of all Interfaces...
   using ext_iids = typename Gaudi::interface_list_cat<typename Interfaces::ext_iids...>::type;
-  /// Virtual destructor
-  ~extend_interfaces() override = default;
 };
 
 template <typename I1>

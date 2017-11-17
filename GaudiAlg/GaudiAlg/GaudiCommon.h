@@ -657,9 +657,6 @@ public:
   StatusCode i_gcFinalize()
 #endif
       ;
-protected:
-  /// Destructor
-  ~GaudiCommon() override = default;
 
 private:
   GaudiCommon()                     = delete;

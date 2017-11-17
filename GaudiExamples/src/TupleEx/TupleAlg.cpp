@@ -53,38 +53,31 @@ namespace CLHEP
 class TupleAlg : public GaudiTupleAlg
 {
 public:
+  /** standard constructor
+   */
+  using GaudiTupleAlg::GaudiTupleAlg;
+
   /// initialize the algorithm
   StatusCode initialize() override
   {
     StatusCode sc = GaudiTupleAlg::initialize();
-    if ( sc.isFailure() ) {
-      return sc;
-    }
+    if ( sc.isFailure() ) return sc;
     // check for random numbers service
     Assert( randSvc() != 0, "Random Service is not available!" );
     //
     return StatusCode::SUCCESS;
   }
   /** the only one essential method
-   *  @see IAlgoruthm
+   *  @see IAlgorithm
    */
   StatusCode execute() override;
 
-  /** standard constructor
-   *  @param name algorithm instance name
-   *  @param pSvc pointer to Service Locator
-   */
-  TupleAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc ) {}
-  // destructor
-  ~TupleAlg() override {}
+  // copy constructor is disabled
+  TupleAlg( const TupleAlg& ) = delete;
+  // assignment operator is disabled
+  TupleAlg& operator=( const TupleAlg& ) = delete;
 
 private:
-  // default constructor is disabled
-  TupleAlg();
-  // copy constructor is disabled
-  TupleAlg( const TupleAlg& );
-  // assignment operator is disabled
-  TupleAlg& operator=( const TupleAlg& );
   // Make a random generator for a type
   template <class T>
   T randomRange()
@@ -346,14 +339,7 @@ StatusCode TupleAlg::execute()
 
     typedef double ( *fun )( double );
     typedef std::vector<fun> Funs;
-
-    Funs funs;
-    funs.push_back( sin );
-    funs.push_back( cos );
-    funs.push_back( tan );
-    funs.push_back( sinh );
-    funs.push_back( cosh );
-    funs.push_back( tanh );
+    Funs funs{sin, cos, tan, sinh, cosh, tanh};
 
     tuple6->fmatrix( "m3flat", // N-tuple entry name
                      funs.begin(), funs.end(), array.begin(), array.end(), "Len3", 100 );

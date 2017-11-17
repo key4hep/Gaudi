@@ -50,6 +50,3 @@ StatusCode EvtDataSvc::finalize()
   DataSvc::finalize().ignore();
   return StatusCode::SUCCESS;
 }
-
-/// Standard Constructor
-EvtDataSvc::EvtDataSvc( const std::string& name, ISvcLocator* svc ) : DataSvc( name, svc ) {}

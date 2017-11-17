@@ -27,35 +27,15 @@ public:
   class DataHistoryOrder final
   {
   public:
-    bool operator()( const DataHistory* lhs, const DataHistory* rhs ) const
-    {
-      if ( lhs->m_dataClassID == rhs->m_dataClassID ) {
-        if ( lhs->m_dataKey == rhs->m_dataKey ) {
-          return ( lhs->m_algHist < rhs->m_algHist );
-        } else {
-          return ( lhs->m_dataKey < rhs->m_dataKey );
-        }
-      } else {
-        return ( lhs->m_dataClassID < rhs->m_dataClassID );
-      }
-    }
     bool operator()( const DataHistory& lhs, const DataHistory& rhs ) const
     {
-      if ( lhs.m_dataClassID == rhs.m_dataClassID ) {
-        if ( lhs.m_dataKey == rhs.m_dataKey ) {
-          return ( lhs.m_algHist < rhs.m_algHist );
-        } else {
-          return ( lhs.m_dataKey < rhs.m_dataKey );
-        }
-      } else {
-        return ( lhs.m_dataClassID < rhs.m_dataClassID );
-      }
+      return std::tie( lhs.m_dataClassID, lhs.m_dataKey, lhs.m_algHist ) <
+             std::tie( rhs.m_dataClassID, rhs.m_dataKey, rhs.m_algHist );
     }
+    bool operator()( const DataHistory* lhs, const DataHistory* rhs ) const { return ( *this )( *lhs, *rhs ); }
   };
 
   DataHistory( const CLID& id, std::string key, AlgorithmHistory* alg );
-
-  ~DataHistory() override = default;
 
   const CLID& clID() const override { return DataHistory::classID(); }
   static const CLID& classID();

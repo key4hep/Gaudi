@@ -42,9 +42,6 @@ namespace RootHistCnv
     /// Standard constructor
     RFileCnv( ISvcLocator* svc );
 
-    /// Standard destructor
-    ~RFileCnv() override = default;
-
   protected:
     TFile* rfile;            ///< Pointer to ROOT file
     std::string m_compLevel; ///< Compression setting, property RFileCnv.GlobalCompression

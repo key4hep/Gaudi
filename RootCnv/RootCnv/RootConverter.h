@@ -49,9 +49,6 @@ namespace Gaudi
     {
     }
 
-    /// Standard Destructor
-    ~RootConverter() override = default;
-
     /// Retrieve the class type of the data store the converter uses.
     long repSvcType() const override { return i_repSvcType(); }
 

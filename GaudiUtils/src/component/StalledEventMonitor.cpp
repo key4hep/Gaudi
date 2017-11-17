@@ -28,7 +28,6 @@ namespace
         : WatchdogThread( timeout, autostart ), log( msgSvc, name ), m_maxCount( maxCount ), m_stackTrace( stackTrace )
     {
     }
-    ~EventWatchdog() override = default;
 
   private:
     /// message stream used to report problems
@@ -81,9 +80,6 @@ namespace
   };
 }
 
-// Constructor
-StalledEventMonitor::StalledEventMonitor( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {}
-
 // Initialization of the service.
 StatusCode StalledEventMonitor::initialize()
 {
@@ -92,8 +88,8 @@ StatusCode StalledEventMonitor::initialize()
 
   if ( m_eventTimeout ) {
     // create the watchdog thread
-    m_watchdog.reset( new EventWatchdog( msgSvc(), "EventWatchdog", boost::posix_time::seconds( m_eventTimeout ),
-                                         m_stackTrace, m_maxTimeoutCount ) );
+    m_watchdog = std::make_unique<EventWatchdog>(
+        msgSvc(), "EventWatchdog", boost::posix_time::seconds( m_eventTimeout ), m_stackTrace, m_maxTimeoutCount );
 
     // register to the incident service
     static const std::string serviceName = "IncidentSvc";

@@ -38,9 +38,6 @@ public:
 
   void setUnknownParticleHandler( HepPDT::ProcessUnknownID*, const std::string& ) override;
 
-  // Destructor.
-  ~PartPropSvc() override = default;
-
 private:
   using inputFunPtr = bool ( * )( std::istream&, HepPDT::TableBuilder& );
 

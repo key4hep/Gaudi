@@ -56,9 +56,6 @@ public:
     m_ipar[1] = ip2;
   }
 
-  /// Standard Destructor
-  ~GenericAddress() override = default;
-
   /// Add reference to object
   unsigned long addRef() override { return ++m_refCount; }
   /// release reference to object

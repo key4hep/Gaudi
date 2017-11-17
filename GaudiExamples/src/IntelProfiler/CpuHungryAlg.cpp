@@ -13,8 +13,6 @@ class CpuHungryAlg : public GaudiAlgorithm
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
-  /// ... and destructor
-  ~CpuHungryAlg() override = default; ///< Destructor
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution

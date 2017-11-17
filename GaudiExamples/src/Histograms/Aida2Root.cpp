@@ -54,8 +54,6 @@ public:
   {
     setProperty( "PropertiesPrint", "True" ).ignore();
   }
-  /// virtual destructor
-  ~Aida2Root() override = default;
 
 private:
   Gaudi::Property<std::vector<std::string>> m_1Ds{

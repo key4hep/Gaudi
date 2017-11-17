@@ -43,8 +43,6 @@ namespace Gaudi
         setProperty( "PropertiesPrint", true ).ignore();
         setProperty( "HistoPrint", true ).ignore();
       }
-      /// destructor
-      ~HistoProps() override = default;
       // ======================================================================
     private:
       Gaudi::Property<Gaudi::Histo1DDef> m_hist1{this, "Histo1", Gaudi::Histo1DDef( "Histogram1", -3, 3, 200 ),

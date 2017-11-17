@@ -57,8 +57,6 @@ public:
     m_20["key"] = "value";
     m_21.value().push_back( 123 );
   }
-  /// destructor
-  ~ExtendedProperties() override = default;
 
 private:
   Gaudi::Property<std::pair<double, double>> m_1{this, "PairDD"};

@@ -76,8 +76,6 @@ public:
   public:
     /// Constructor
     Istream( std::istream& str ) : m_stream( &str ) {}
-    /// Destructor
-    ~Istream() override = default;
 
     /// Data load method
     void load( StreamBuffer& stream ) override

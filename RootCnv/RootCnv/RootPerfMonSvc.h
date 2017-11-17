@@ -76,9 +76,6 @@ namespace Gaudi
     /// Standard constructor
     using extends::extends;
 
-    /// Standard destructor
-    ~RootPerfMonSvc() override = default;
-
     /** Standard way to print errors. after the printout an exception is thrown.
      * @param      msg      [IN]     Message string to be printed.
      *

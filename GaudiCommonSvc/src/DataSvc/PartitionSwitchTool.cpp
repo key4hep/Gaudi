@@ -22,8 +22,6 @@ private:
 
 public:
   using extends::extends;
-  /// Standard destructor
-  ~PartitionSwitchTool() override = default;
 
   /// Initialize
   STATUS initialize() override

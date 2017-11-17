@@ -10,7 +10,7 @@ namespace GaudiTesting
     class GAUDI_1185 : public Algorithm
     {
     public:
-      GAUDI_1185( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
+      using Algorithm::Algorithm;
 
       StatusCode initialize() override
       {

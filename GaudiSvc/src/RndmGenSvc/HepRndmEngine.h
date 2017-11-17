@@ -37,8 +37,6 @@ namespace HepRndm
   public:
     /// Standard Constructor
     using BaseEngine::BaseEngine;
-    /// Standard Destructor
-    ~Engine() override = default;
     /// Initialize the Engine
     StatusCode initialize() override;
     /// Finalize the Engine

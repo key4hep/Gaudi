@@ -81,8 +81,6 @@ namespace GaudiPython
     // ========================================================================
   protected:
     // ========================================================================
-    /// virtual destructor
-    ~PyAlg() override = default; // virtual destructor
     /// get the object
     PyObject* _obj() const { return m_self; } //     get the object
     // ========================================================================

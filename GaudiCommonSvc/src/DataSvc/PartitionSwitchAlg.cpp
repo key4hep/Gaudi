@@ -38,9 +38,6 @@ private:
 public:
   using extends::extends;
 
-  /// Standard Destructor
-  ~PartitionSwitchAlg() override = default;
-
   /// Initialize
   STATUS initialize() override
   {

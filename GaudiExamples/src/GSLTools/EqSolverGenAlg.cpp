@@ -20,16 +20,6 @@ using namespace Genfun;
 // Declaration of the Algorithm Factory
 DECLARE_ALGORITHM_FACTORY( EqSolverGenAlg )
 
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-EqSolverGenAlg::EqSolverGenAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-EqSolverGenAlg::~EqSolverGenAlg() {}
-
 typedef Genfun::AbsFunction GenFunc;
 
 #ifdef __clang__
@@ -50,7 +40,6 @@ public:
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return x[0] - 1; };
   unsigned int dimensionality() const override { return 3; }
-  ~Func1() override {}
 };
 FUNCTION_OBJECT_IMP( Func1 )
 
@@ -66,7 +55,6 @@ public:
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return x[1] - 1; };
   unsigned int dimensionality() const override { return 3; }
-  ~Func2() override {}
 };
 FUNCTION_OBJECT_IMP( Func2 )
 
@@ -82,7 +70,6 @@ public:
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return x[2] - 1; };
   unsigned int dimensionality() const override { return 3; }
-  ~Func3() override {}
 };
 FUNCTION_OBJECT_IMP( Func3 )
 
@@ -95,20 +82,18 @@ FUNCTION_OBJECT_IMP( Func3 )
 //=============================================================================
 StatusCode EqSolverGenAlg::initialize()
 {
-
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Initialise" << endmsg;
+  info() << "==> Initialise" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "EqSolver", m_publicTool );
   if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
+    error() << "Error retrieving the public tool" << endmsg;
   }
   sc = toolSvc()->retrieveTool( "EqSolver", m_privateTool, this );
   if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
+    error() << "Error retrieving the private tool" << endmsg;
   }
-  log << MSG::INFO << "....initialization done" << endmsg;
+  info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -119,8 +104,7 @@ StatusCode EqSolverGenAlg::initialize()
 StatusCode EqSolverGenAlg::execute()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Execute" << endmsg;
+  info() << "==> Execute" << endmsg;
 
   std::vector<const GenFunc*> function;
 
@@ -139,14 +123,14 @@ StatusCode EqSolverGenAlg::execute()
 
   // Call of the method
   m_publicTool->solver( function, arg );
-  log << endmsg;
-  log << "START OF THE METHOD" << endmsg;
-  log << "SOLUTION FOUND AT: " << endmsg;
+  info() << endmsg;
+  info() << "START OF THE METHOD" << endmsg;
+  info() << "SOLUTION FOUND AT: " << endmsg;
 
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
-    log << "Value of argument " << i << " is " << arg[i] << endmsg;
+    info() << "Value of argument " << i << " is " << arg[i] << endmsg;
   }
-  log << endmsg;
+  info() << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -157,8 +141,7 @@ StatusCode EqSolverGenAlg::execute()
 StatusCode EqSolverGenAlg::finalize()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Finalize" << endmsg;
+  info() << "==> Finalize" << endmsg;
 
   toolSvc()->releaseTool( m_publicTool );
   toolSvc()->releaseTool( m_privateTool );

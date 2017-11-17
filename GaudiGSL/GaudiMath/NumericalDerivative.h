@@ -92,9 +92,6 @@ namespace Genfun
       /// copy constructor
       NumericalDerivative( const NumericalDerivative& right );
 
-      /// destructor
-      ~NumericalDerivative() override = default;
-
       /// dimensionality of the problem
       unsigned int dimensionality() const override { return m_DIM; }
 

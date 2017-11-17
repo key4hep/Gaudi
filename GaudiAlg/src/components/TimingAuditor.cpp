@@ -52,8 +52,6 @@ public:
 
 public:
   using extends::extends;
-  /// destructor
-  ~TimingAuditor() override = default;
 
   // delete default/copy constructor and assignment
   TimingAuditor()                       = delete;

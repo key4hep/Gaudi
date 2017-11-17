@@ -58,9 +58,6 @@ namespace RootHistCnv
       m_ipar[1] = ip2;
     }
 
-    /// Standard Destructor
-    ~RootObjAddress() override = default;
-
     /// Add reference to object
     unsigned long addRef() override { return ++m_refCount; }
 

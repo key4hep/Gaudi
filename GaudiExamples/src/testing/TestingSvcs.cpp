@@ -10,7 +10,6 @@ namespace GaudiTesting
   public:
     /// Standard Constructor
     using Service::Service;
-    ~FailingSvc() override = default;
 
     StatusCode initialize() override
     {

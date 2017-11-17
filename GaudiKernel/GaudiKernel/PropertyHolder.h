@@ -84,8 +84,7 @@ public:
   /// \endcode
   using PropertyHolderImpl = PropertyHolder<BASE>;
 
-  PropertyHolder()           = default;
-  ~PropertyHolder() override = default;
+  PropertyHolder() = default;
 
   /// \{
   /// prevent copies

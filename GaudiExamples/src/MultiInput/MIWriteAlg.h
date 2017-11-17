@@ -17,8 +17,6 @@ namespace Gaudi
       public:
         /// Constructor: A constructor of this form must be provided.
         using Algorithm::Algorithm;
-        /// Standard Destructor
-        ~WriteAlg() override = default;
         /// Initialize
         StatusCode initialize() override;
         /// Finalize

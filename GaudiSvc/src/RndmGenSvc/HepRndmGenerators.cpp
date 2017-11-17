@@ -305,8 +305,6 @@ namespace HepRndm
   public:
     /// Standard Constructor
     Generator( IInterface* engine ) : RndmGen( engine ) {}
-    /// Standard Destructor
-    ~Generator() override = default;
     /// Initialize the generator
     StatusCode initialize( const IRndmGen::Param& par ) override
     {

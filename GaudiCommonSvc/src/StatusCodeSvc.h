@@ -11,8 +11,8 @@
 
 class StatusCodeSvc : public extends<Service, IStatusCodeSvc>
 {
-
 public:
+  using extends::extends;
   StatusCode initialize() override;
   StatusCode reinitialize() override;
   StatusCode finalize() override;
@@ -20,11 +20,6 @@ public:
   void regFnc( const std::string& func, const std::string& lib ) override;
   void list() const override;
   bool suppressCheck() const override { return m_suppress.value(); }
-
-  using extends::extends;
-
-  // Destructor.
-  ~StatusCodeSvc() override = default;
 
 private:
   struct StatCodeDat final {

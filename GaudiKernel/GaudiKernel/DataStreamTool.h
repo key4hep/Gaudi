@@ -32,9 +32,7 @@ public:
   typedef std::vector<Gaudi::Property<std::string>> Properties;
 
   /// Standard constructor
-  DataStreamTool( const std::string& type, const std::string& name, const IInterface* parent );
-
-  ~DataStreamTool() override = default; ///< Destructor
+  using extends::extends;
 
   StatusCode initialize() override;
 

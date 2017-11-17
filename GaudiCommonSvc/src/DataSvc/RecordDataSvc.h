@@ -33,9 +33,6 @@ public:
   /// Standard Constructor
   RecordDataSvc( const std::string& name, ISvcLocator* svc );
 
-  /// Standard Destructor
-  ~RecordDataSvc() override = default;
-
 protected:
   /// Load new record into the data store if necessary
   void registerRecord( const std::string& data, IOpaqueAddress* pAddr );

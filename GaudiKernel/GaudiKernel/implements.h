@@ -33,8 +33,6 @@ public:
   implements( const implements& /*other*/ ) : m_refCount{0} {}
   /** Assignment operator (do not touch the reference count).*/
   implements& operator=( const implements& /*other*/ ) { return *this; }
-  /** Virtual destructor */
-  ~implements() override = default;
 
 public:
   /** Reference Interface instance               */

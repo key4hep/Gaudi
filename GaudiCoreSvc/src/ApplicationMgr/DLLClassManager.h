@@ -29,8 +29,6 @@ class DLLClassManager : public implements<IClassManager>
 public:
   // default creator
   DLLClassManager( IInterface* iface );
-  // virtual destructor
-  ~DLLClassManager() override = default;
 
   // implementation of IClassManager::loadModule
   StatusCode loadModule( const std::string& module, bool fireIncident = true ) override;

@@ -31,9 +31,6 @@ public:
    */
   ErrorTool( const std::string& type, const std::string& name, const IInterface* parent );
 
-  /// virtual and protected destructor
-  ~ErrorTool() override = default;
-
 public:
   /** Print the error  message, return status code
    *  and perform the statistics of error messages

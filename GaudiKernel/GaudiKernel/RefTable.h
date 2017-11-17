@@ -140,8 +140,6 @@ class RefTable1to1 : public RefTableBase<FROM, SmartRef<TO>>
 public:
   /// Standard Constructor
   RefTable1to1( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRef<TO>>( clid, len ) {}
-  /// Standard Destructor
-  ~RefTable1to1() override = default;
 
   /// Retrieve reference to class definition structure
   virtual const CLID& clID() const { return m_clid; }
@@ -190,8 +188,6 @@ class RefTable1toN : public RefTableBase<FROM, SmartRefVector<TO>>
 public:
   /// Standard Constructor
   RefTable1toN( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRefVector<TO>>( clid, len ) {}
-  /// Standard Destructor
-  ~RefTable1toN() override = default;
 
   /// Retrieve reference to class definition structure
   virtual const CLID& clID() const { return m_clid; }

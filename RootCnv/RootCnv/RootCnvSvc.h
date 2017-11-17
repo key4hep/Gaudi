@@ -102,11 +102,8 @@ namespace Gaudi
     /// Standard constructor
     RootCnvSvc( const std::string& name, ISvcLocator* svc );
 
-    /// Standard destructor
-    ~RootCnvSvc() override = default;
-
     /// Update state of the service
-    virtual StatusCode updateServiceState( IOpaqueAddress* /* pAddress */ ) override { return StatusCode::SUCCESS; }
+    StatusCode updateServiceState( IOpaqueAddress* /* pAddress */ ) override { return StatusCode::SUCCESS; }
 
     /** Standard way to print errors. after the printout an exception is thrown.
      * @param      msg      [IN]     Message string to be printed.

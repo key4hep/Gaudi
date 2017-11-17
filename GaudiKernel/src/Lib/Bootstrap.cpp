@@ -40,8 +40,6 @@ namespace Gaudi
   class BootSvcLocator : public implements<ISvcLocator>
   {
   public:
-    BootSvcLocator()           = default;
-    ~BootSvcLocator() override = default;
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
     StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
                            IInterface*& pinterface ) override;

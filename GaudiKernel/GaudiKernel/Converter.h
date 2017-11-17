@@ -104,9 +104,6 @@ public:
   SmartIF<IService> service( const std::string& name, const bool createIf = true ) const;
 
 protected:
-  /// Standard Destructor
-  ~Converter() override = default;
-
   /// Retrieve pointer to service locator
   SmartIF<ISvcLocator>& serviceLocator() const;
   /// Retrieve pointer to message service

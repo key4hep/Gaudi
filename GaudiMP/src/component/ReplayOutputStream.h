@@ -21,7 +21,6 @@ class ReplayOutputStream : public GaudiAlgorithm
 public:
   /// Inherited constructor
   using GaudiAlgorithm::GaudiAlgorithm;
-  ~ReplayOutputStream() override = default; ///< Destructor
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode start() override;      ///< Algorithm initialization

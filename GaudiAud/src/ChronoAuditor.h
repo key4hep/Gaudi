@@ -11,12 +11,10 @@
     @author David Quarrie
     @author Marco Clemencic
 */
-class ChronoAuditor : virtual public CommonAuditor
+class ChronoAuditor : public CommonAuditor
 {
 public:
-  ChronoAuditor( const std::string& name, ISvcLocator* pSvcLocator );
-
-  ~ChronoAuditor() override = default;
+  using CommonAuditor::CommonAuditor;
 
   StatusCode initialize() override;
 

@@ -51,8 +51,6 @@ namespace Genfun
       GSLFunctionWithError( Function function );
       /// copy constructor
       GSLFunctionWithError( const GSLFunctionWithError& );
-      /// destructor
-      ~GSLFunctionWithError() override = default;
       /// the main method
       double operator()( double x ) const override;
       double operator()( const Argument& x ) const override;
@@ -94,8 +92,6 @@ namespace Genfun
       GSLFunctionWithMode( Function fun, const gsl_mode_t& mode );
       /// copy constructor
       GSLFunctionWithMode( const GSLFunctionWithMode& );
-      /// destructor
-      ~GSLFunctionWithMode() override = default;
       /// the main method
       double operator()( double x ) const override;
       double operator()( const Argument& x ) const override;
@@ -134,8 +130,6 @@ namespace Genfun
       GSLFunctionWithModeAndError( Function fun, const gsl_mode_t& mode );
       /// copy constructor
       GSLFunctionWithModeAndError( const GSLFunctionWithModeAndError& );
-      /// destructor
-      ~GSLFunctionWithModeAndError() override = default;
       /// the main method
       double operator()( double x ) const override;
       double operator()( const Argument& x ) const override;

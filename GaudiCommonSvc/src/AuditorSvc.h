@@ -82,9 +82,6 @@ public:
 
   using extends::extends;
 
-  // Destructor.
-  ~AuditorSvc() override = default;
-
 private:
   // management helper
   SmartIF<IAuditor> newAuditor_( MsgStream&, const std::string& );

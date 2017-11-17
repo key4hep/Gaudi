@@ -46,7 +46,7 @@ public:
 
 public:
   /// finalization
-  virtual StatusCode finalize() override
+  StatusCode finalize() override
   {
     always() << endmsg << " FINALIZE " << endmsg << " \tTested maps : " << endmsg << " \t1) "
              << System::typeinfoName( typeid( m_map1 ) ) << endmsg << " \t2) "
@@ -64,17 +64,12 @@ public:
    *  @param name algoritmm instance name
    *  @param pSvc pointer to Servcie Locator
    */
-  MapAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {}
-  /// virtual protected destructor
-  ~MapAlg() override {}
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-private:
-  /// The default constructor is disabled
-  MapAlg();
   /// The copy constructor is disabled
-  MapAlg( const MapAlg& );
+  MapAlg( const MapAlg& ) = delete;
   /// The assignement is disabled
-  MapAlg& operator=( const MapAlg& );
+  MapAlg& operator=( const MapAlg& ) = delete;
 
 private:
   /// const-printout

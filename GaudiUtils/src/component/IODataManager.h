@@ -71,9 +71,6 @@ namespace Gaudi
     /// Inherited constructor
     using extends::extends;
 
-    /// Standard destructor
-    ~IODataManager() override = default;
-
     /// IService implementation: initialize the service
     StatusCode initialize() override;
 

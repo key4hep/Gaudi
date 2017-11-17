@@ -47,9 +47,6 @@ public:
   AlgToolHistory( const std::string& algVersion, const std::string& algName, const std::string& algType,
                   const AlgTool* tool, const PropertyList& props, const JobHistory* job );
 
-  // Destructor.
-  virtual ~AlgToolHistory() override {}
-
   // Class IDs
   const CLID& clID() const override { return classID(); }
   static const CLID& classID();

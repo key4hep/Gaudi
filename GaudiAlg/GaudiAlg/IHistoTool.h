@@ -856,9 +856,6 @@ public:
     }
     return h;
   }
-
-protected:
-  ~IHistoTool() override = default;
 };
 
 #endif // GAUDIALG_IHISTOTOOL_H

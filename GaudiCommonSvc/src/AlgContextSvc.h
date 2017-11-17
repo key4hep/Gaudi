@@ -55,8 +55,6 @@ public:
 
 public:
   using extends::extends;
-  /// Standard Destructor
-  ~AlgContextSvc() override = default;
 
 private:
   // default/copy constructor & asignment are deleted
