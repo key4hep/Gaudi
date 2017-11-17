@@ -80,6 +80,7 @@ protected:
 public:
   /// Standard Constructor
   HiveSlimEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc );
+
   /// Standard Destructor
   ~HiveSlimEventLoopMgr() override;
   /// Create event address using event selector
