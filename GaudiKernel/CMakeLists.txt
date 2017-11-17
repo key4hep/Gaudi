@@ -146,6 +146,9 @@ gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
 gaudi_add_unit_test(test_StatusCode tests/src/test_StatusCode.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_EventIDBase tests/src/test_EventIDBase.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 gaudi_add_unit_test(test_SystemTypeinfoName tests/src/test_SystemTypeinfoName.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
