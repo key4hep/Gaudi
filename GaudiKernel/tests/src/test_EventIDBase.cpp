@@ -46,6 +46,8 @@ BOOST_AUTO_TEST_CASE( comparison )
 
     EventIDBase ei1a = ei1;
     BOOST_CHECK( ei1a == ei1 );
+    ei1a = ei2;
+    BOOST_CHECK( ei1a == ei2 );
 
     std::array<EventIDBase, 3> a = {ei2, ei1, ei3};
     std::sort( begin( a ), end( a ), EventIDBase::SortByRunEvent() );
