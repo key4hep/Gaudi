@@ -89,7 +89,7 @@ endif()
 if( OpenCL_FOUND )
    list( APPEND GaudiExamples_srcs src/OpenCL/*.cpp )
 endif()
-if( RANGES_V3_FOUND )
+if( RANGEV3_FOUND )
    list( APPEND GaudiExamples_srcs src/FunctionalAlgorithms/*.cpp )
 endif()
 
