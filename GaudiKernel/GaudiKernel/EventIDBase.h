@@ -13,9 +13,9 @@
  *
  */
 
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <stdint.h>
 #include <tuple>
 
 #include "GaudiKernel/compose.h"
