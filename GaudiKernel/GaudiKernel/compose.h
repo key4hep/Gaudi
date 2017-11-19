@@ -1,4 +1,5 @@
-
+#ifndef GAUDIKERNEL_COMPOSE_H
+#define GAUDIKERNEL_COMPOSE_H
 
 namespace details
 {
@@ -55,3 +56,4 @@ details::composer_t<std::decay_t<lambda_ts>...> compose( lambda_ts&&... lambdas 
 {
   return {std::forward<lambda_ts>( lambdas )...};
 }
+#endif
