@@ -35,7 +35,8 @@ namespace Gaudi
       Skipper skipper;
       typename Grammar_<IteratorT, ResultT, Skipper>::Grammar g;
       IteratorT iter = input.begin(), end = input.end();
-      return qi::phrase_parse( iter, end, g, skipper, result ) && ( iter == end );
+      return ( qi::phrase_parse( iter, end, g, skipper, result ) && ( iter == end ) ? StatusCode::SUCCESS
+                                                                                    : StatusCode::FAILURE );
     }
     //=========================================================================
     template <>
@@ -48,7 +49,7 @@ namespace Gaudi
         result = input;
       }
       //@attention always
-      return true;
+      return StatusCode::SUCCESS;
     }
     //=========================================================================
     template <typename ResultT>

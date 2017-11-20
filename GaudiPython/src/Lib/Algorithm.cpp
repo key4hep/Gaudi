@@ -43,7 +43,7 @@ StatusCode GaudiPython::call_python_method( PyObject* self, const char* method )
   } // RETURN
 
   if ( PyInt_Check( r ) ) {
-    sc = PyInt_AS_LONG( r );
+    sc = StatusCode( PyInt_AS_LONG( r ) );
     Py_DECREF( r );
     return sc;
   } // RETURN
@@ -55,7 +55,7 @@ StatusCode GaudiPython::call_python_method( PyObject* self, const char* method )
   if ( !c ) {
     PyErr_Print();
   } else if ( PyLong_Check( c ) ) {
-    sc = PyLong_AsLong( c );
+    sc = StatusCode( PyLong_AsLong( c ) );
   } else {
     std::string msg( " call_python_method unexpected type from '" );
     msg += method;

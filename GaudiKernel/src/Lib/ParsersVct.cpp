@@ -44,7 +44,7 @@ namespace Gaudi
         return StatusCode::SUCCESS;
       }
       //@attention always
-      return true;
+      return StatusCode::SUCCESS;
     }
     // ==========================================================================
 

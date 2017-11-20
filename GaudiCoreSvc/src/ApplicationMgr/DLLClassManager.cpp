@@ -39,7 +39,7 @@ StatusCode DLLClassManager::loadModule( const std::string& module, bool fireInci
   void* libHandle   = nullptr;
   StatusCode status = StatusCode::FAILURE;
   try {
-    status = System::loadDynamicLib( module, &libHandle );
+    status = System::loadDynamicLib( module, &libHandle ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   } catch ( const std::exception& excpt ) {
     if ( m_msgsvc ) {
       log << MSG::ERROR << "Exception whilst loading " << module << " : " << excpt.what() << endmsg;

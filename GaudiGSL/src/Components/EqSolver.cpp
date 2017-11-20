@@ -186,7 +186,7 @@ StatusCode EqSolver::solver( const Equations& funcs, Arg& arg ) const
     return Error( "Method finished with '" + std::string( gsl_strerror( status ) ) + "' error" );
   }
 
-  return GSL_SUCCESS;
+  return StatusCode( GSL_SUCCESS );
 }
 
 //=============================================================================
