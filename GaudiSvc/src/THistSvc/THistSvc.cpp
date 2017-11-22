@@ -240,7 +240,7 @@ StatusCode THistSvc::finalize()
           }
         }
       } else if ( !to ) {
-        warning() << uid.first << " has NULL TObject ptr" << endmsg;
+        warning() << itr.first << " has NULL TObject ptr" << endmsg;
       }
       debug() << "finalize: " << thid << endmsg;
     }
