@@ -89,7 +89,7 @@ namespace DataSvcHelpers
     /// Set the transient data store
     void setDataSvc( IDataProviderSvc* s ) { m_pDataProviderSvc = s; }
     /// Pointer to parent registry entry
-    virtual RegistryEntry* parentEntry() { return m_pParent; }
+    RegistryEntry* parentEntry() { return m_pParent; }
     /// Find identified leaf in this registry node
     RegistryEntry* findLeaf( boost::string_ref path ) const { return i_find( path ); }
     /// Find identified leaf in this registry node
@@ -123,42 +123,42 @@ namespace DataSvcHelpers
     /// Retrieve opaque storage address
     IOpaqueAddress* address() const override { return m_pAddress; }
     /// Pointer to parent directory entry
-    virtual IRegistry* parent() const { return m_pParent; }
+    IRegistry* parent() const { return m_pParent; }
     /// Is the link soft or hard
-    virtual bool isSoft() const { return m_isSoft; }
+    bool isSoft() const { return m_isSoft; }
     /// Access the leaves of the object
     const Store& leaves() const { return m_store; }
     /// Return the size of the container(=number of objects)
-    virtual int size() const { return m_store.size(); }
+    int size() const { return m_store.size(); }
     /// Simple check if the Container is empty
-    virtual bool isEmpty() const { return m_store.size() == 0; }
+    bool isEmpty() const { return m_store.size() == 0; }
     /// Return starting point for container iteration
-    virtual Iterator begin() const { return m_store.begin(); }
+    Iterator begin() const { return m_store.begin(); }
     /// Return end elemtn if the container
-    virtual Iterator end() const { return m_store.end(); }
+    Iterator end() const { return m_store.end(); }
     /// Try to find an object identified by its pointer
-    virtual IRegistry* find( const IRegistry* obj ) const { return i_find( obj ); }
+    IRegistry* find( const IRegistry* obj ) const { return i_find( obj ); }
     /// Try to find an object identified by its relative name to the directory
-    virtual IRegistry* find( boost::string_ref path ) const { return i_find( path ); }
+    IRegistry* find( boost::string_ref path ) const { return i_find( path ); }
     /// Set/Update Opaque address
     void setAddress( IOpaqueAddress* pAddress ) override;
     /// Set/Update object address
     void setObject( DataObject* obj );
 
     /// Add entry to data store
-    virtual StatusCode add( std::string name, DataObject* pObject, bool is_soft = false );
+    StatusCode add( std::string name, DataObject* pObject, bool is_soft = false );
     /// Add entry to data store
-    virtual StatusCode add( std::string name, IOpaqueAddress* pAddress, bool is_soft = false );
+    StatusCode add( std::string name, IOpaqueAddress* pAddress, bool is_soft = false );
     /// Remove an entry from the store
-    virtual StatusCode remove( boost::string_ref name );
+    StatusCode remove( boost::string_ref name );
     /// Add object to the container
-    virtual long add( IRegistry* obj );
+    long add( IRegistry* obj );
     /// Remove an object from the container
-    virtual long remove( IRegistry* obj );
+    long remove( IRegistry* obj );
     /// Delete all contained elements
-    virtual long deleteElements();
+    long deleteElements();
     /// traverse data tree
-    virtual StatusCode traverseTree( IDataStoreAgent* pAgent, int level = 0 );
+    StatusCode traverseTree( IDataStoreAgent* pAgent, int level = 0 );
   };
 }
 #endif // GAUDIKERNEL_REGISTRYENTRY_H
