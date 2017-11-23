@@ -2,9 +2,11 @@
 
 namespace
 {
-  constexpr int transition( AlgsExecutionStates::State first, AlgsExecutionStates::State second )
+  constexpr auto transition( AlgsExecutionStates::State first, AlgsExecutionStates::State second )
   {
-    return first * 256 + second;
+    static_assert( sizeof( AlgsExecutionStates::State ) == 1, "no more than 255 states please!" );
+    using ui16 = uint_fast16_t;
+    return static_cast<ui16>( first ) * 256 + static_cast<ui16>( second );
   }
 }
 

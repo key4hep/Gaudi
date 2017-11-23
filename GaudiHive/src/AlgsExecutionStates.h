@@ -6,13 +6,12 @@
 #include "GaudiKernel/Service.h"
 
 // C++ include files
+#include <cstdint>
 #include <functional>
 #include <iterator>
 #include <map>
 #include <string>
 #include <vector>
-
-#include <boost/dynamic_bitset.hpp>
 
 //---------------------------------------------------------------------------
 
@@ -29,7 +28,7 @@ class AlgsExecutionStates final
 {
 public:
   /// Execution states of the algorithms
-  enum State : unsigned short {
+  enum State : uint8_t {
     INITIAL      = 0,
     CONTROLREADY = 1,
     DATAREADY    = 2,
@@ -109,14 +108,13 @@ public:
   };
 
   Iterator begin( State kind ) { return {kind, m_states, m_states.begin()}; }
-
   Iterator end( State kind ) { return {kind, m_states, m_states.end()}; }
 };
 
 /// Streaming of State values (required by C++11 scoped enums).
 inline std::ostream& operator<<( std::ostream& s, AlgsExecutionStates::State x )
 {
-  return s << static_cast<unsigned short>( x );
+  return s << static_cast<std::underlying_type_t<AlgsExecutionStates::State>>( x );
 }
 
 #endif // GAUDIHIVE_ALGSEXECUTIONSTATES_H
