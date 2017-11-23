@@ -112,7 +112,7 @@ StatusCode IOBoundAlgSchedulerSvc::deactivate()
     // the task doesn't complete by the time the last while-iteration is entered
     m_isActive = false;
     // This would be the last (empty) action, just to trigger one last while-iteration
-    m_actionsQueue.push( [this]() -> StatusCode { return StatusCode::SUCCESS; } );
+    m_actionsQueue.push( []() -> StatusCode { return StatusCode::SUCCESS; } );
   }
 
   return StatusCode::SUCCESS;
