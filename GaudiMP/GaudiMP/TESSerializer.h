@@ -14,7 +14,7 @@
 
 // forward declarations
 class IDataProviderSvc;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class TBufferFile;
 class DataStoreItem;
 class DataObject;

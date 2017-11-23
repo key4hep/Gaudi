@@ -16,7 +16,7 @@
 #include <set>
 
 // Forward declarations
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class IIncidentSvc;
 class TClass;
 

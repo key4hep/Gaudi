@@ -22,7 +22,7 @@ namespace Gaudi
     // Forward declarations:
     // ============================================================================
     class Messages;
-    class Node;
+    struct Node;
     class IncludedFiles;
     // ============================================================================
 

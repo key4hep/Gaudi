@@ -17,7 +17,7 @@
 class IIncidentSvc;
 class IRegistry;
 class IConversionSvc;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class OutputStreamAgent;
 class DataStoreItem;
 
