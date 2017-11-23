@@ -109,7 +109,6 @@
   <class name="IUpdateManagerSvc"/>
   <class name="IUpdateManagerSvc::PythonHelper"/>
   <class name="IValidity"/>
-  <class name="MetaData"/>
 
   <!-- Gaudi data store classes  -->
   <class name="ContainedObject"         id="000000BE-0000-0000-0000-000000000000">
