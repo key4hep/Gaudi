@@ -4,7 +4,6 @@
 // Framework include files
 #include "GaudiKernel/Kernel.h"
 // STL include files
-#include <cstring>
 #include <string>
 #include <typeinfo>
 #include <vector>
@@ -114,20 +113,5 @@ namespace System
   GAUDI_API int backTrace( void** addresses, const int depth );
   GAUDI_API bool backTrace( std::string& btrace, const int depth, const int offset = 0 );
   GAUDI_API bool getStackLevel( void* addresses, void*& addr, std::string& fnc, std::string& lib );
-
-#if __GNUC__ >= 4
-  /// Small helper function that performs the cast from void * to function pointer
-  /// in a standards compliant way. For more information on this type of 'type punning, see
-  /// https://github.com/CppCon/CppCon2017/blob/master/Presentations/Type%20Punning%20In%20C%2B%2B17%20-%20Avoiding%20Pun-defined%20Behavior/Type%20Punning%20In%20C%2B%2B17%20-%20Avoiding%20Pun-defined%20Behavior%20-%20Scott%20Schurr%20-%20CppCon%202017.pdf
-  /// and https://www.youtube.com/watch?v=sCjZuvtJd-k
-  template <typename DESTPTR, typename SRC>
-  constexpr DESTPTR FuncPtrCast( SRC* const src_p ) noexcept
-  {
-    static_assert( std::is_pointer<DESTPTR>::value, "must be a pointer" );
-    DESTPTR dst_p = nullptr; // must initialize to be a valid constexpr...
-    std::memcpy( &dst_p, &src_p, sizeof( dst_p ) );
-    return dst_p;
-  }
-#endif
 }
 #endif // SYSTEM_SYSTEM_H
