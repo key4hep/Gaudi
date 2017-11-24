@@ -504,6 +504,9 @@ protected:
   /// set instantiation index of Alg
   void setIndex( const unsigned int& idx ) override;
 
+  /// reference to AlgExecState of Alg
+  AlgExecState& execState( const EventContext& ctx ) const;
+
 public:
   /// Produce string represention of the control flow expression.
   std::ostream& toControlFlowExpression( std::ostream& os ) const override;

@@ -58,7 +58,6 @@ protected:
       if ( prlzr.m_measureTime ) prlzr.m_timerTool->start( timer() );
       m_returncode = m_algorithm->sysExecute( Gaudi::Hive::currentContext() );
       if ( prlzr.m_measureTime ) prlzr.m_timerTool->stop( timer() );
-      algorithm()->setExecuted( true );
     }
 
     StatusCode m_returncode; ///< StatusCode of an algorithm execution received from a thread

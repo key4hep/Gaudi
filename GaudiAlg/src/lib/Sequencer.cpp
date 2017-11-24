@@ -509,10 +509,6 @@ StatusCode Sequencer::executeMember( Algorithm* theAlgorithm )
   if ( theAlgorithm->isEnabled() ) {
     if ( !theAlgorithm->isExecuted() ) {
       result = theAlgorithm->sysExecute( getContext() );
-
-      // Set the executed state of the algorithm.
-      // I think this should be done by the algorithm itself, but just in case...
-      theAlgorithm->setExecuted( true );
     }
   }
   return result;
