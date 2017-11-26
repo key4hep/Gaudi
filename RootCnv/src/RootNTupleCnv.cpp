@@ -89,7 +89,7 @@ static StatusCode createItem( TTree* tree, INTuple* tuple, istream& is, const st
   if ( add ) {
     TBranch* b = tree->GetBranch( it->name().c_str() );
     if ( b ) {
-      b->SetAddress( (void*)it->buffer() );
+      b->SetAddress( const_cast<void*>( it->buffer() ) );
     } else {
       // return StatusCode::SUCCESS;
       return tuple->add( it );
@@ -208,10 +208,10 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
           break;
           */
           case DataTypeInfo::OBJECT_ADDR:
-            status = createItem( tree, nt, is, title, false, (IOpaqueAddress*)nullptr );
+            status = createItem( tree, nt, is, title, false, static_cast<IOpaqueAddress*>( nullptr ) );
             break;
           case DataTypeInfo::POINTER:
-            status = createItem( tree, nt, is, title, true, (void*)nullptr );
+            status = createItem( tree, nt, is, title, true, static_cast<void*>( nullptr ) );
             break;
           case DataTypeInfo::UNKNOWN:
           default:
@@ -226,7 +226,7 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
         if ( status.isSuccess() ) {
           unsigned long* ipar = const_cast<unsigned long*>( rpA->ipar() );
           log() << MSG::DEBUG << "Created N-tuple with description:" << par_val << endl;
-          ipar[0]      = (unsigned long)con;
+          ipar[0]      = reinterpret_cast<uintptr_t>( con );
           ipar[1]      = ~0x0UL;
           rpA->section = tree;
           refpObject   = nt;
@@ -245,25 +245,19 @@ StatusCode RootNTupleCnv::updateObj( IOpaqueAddress* pAddr, DataObject* pObj )
 {
   INTuple* tupl    = dynamic_cast<INTuple*>( pObj );
   RootAddress* rpA = dynamic_cast<RootAddress*>( pAddr );
-  if ( nullptr != tupl && nullptr != rpA ) {
-    RootDataConnection* con = (RootDataConnection*)rpA->ipar()[0];
-    if ( con ) {
-      TTree* tree = rpA->section;
-      if ( tree ) {
-        con->resetAge();
-        if ( con->tool()->refs() ) return i__updateObjRoot( rpA, tupl, tree, con );
+  if ( !tupl || !rpA ) return makeError( "updateObj> Invalid Tuple reference." );
+  RootDataConnection* con = reinterpret_cast<RootDataConnection*>( rpA->ipar()[0] );
+  if ( !con ) return makeError( "updateObj> Failed to access data source!" );
+  TTree* tree = rpA->section;
+  if ( !tree ) return makeError( "Failed to access data tree:" + pAddr->par()[1] );
+  con->resetAge();
+  if ( con->tool()->refs() ) return i__updateObjRoot( rpA, tupl, tree, con );
 #ifdef __POOL_COMPATIBILITY
-        // POOL compatibility mode:
-        return i__updateObjPool( rpA, tupl, tree, con );
+  // POOL compatibility mode:
+  return i__updateObjPool( rpA, tupl, tree, con );
 #else
-        return makeError( "Failed to access reference branch for data tree:" + rpA->par()[1] );
+  return makeError( "Failed to access reference branch for data tree:" + rpA->par()[1] );
 #endif
-      }
-      return makeError( "Failed to access data tree:" + pAddr->par()[1] );
-    }
-    return makeError( "updateObj> Failed to access data source!" );
-  }
-  return makeError( "updateObj> Invalid Tuple reference." );
 }
 
 // Update the transient object: NTuples end here when reading records
@@ -291,7 +285,7 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
       }
     }
 
-    ULong64_t last        = (ULong64_t)tree->GetEntries();
+    ULong64_t last        = tree->GetEntries();
     ISelectStatement* sel = tupl->selector();
     if ( sel ) {
       string criteria = ( sel && ( sel->type() & ISelectStatement::STRING ) ) ? sel->criteria() : string( "" );
@@ -372,11 +366,9 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
 StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
 {
   IRegistry* pRegistry = pObj->registry();
-  if ( nullptr != pRegistry ) {
+  if ( pRegistry ) {
     pAddr = pRegistry->address();
-    if ( nullptr != pAddr ) {
-      return S_OK;
-    }
+    if ( pAddr ) return S_OK;
 
     RootDataConnection* con = nullptr;
     string path             = fileName( pRegistry );
@@ -404,35 +396,35 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
           switch ( itm->type() ) {
           case DataTypeInfo::UCHAR:
             desc = n + "/b";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           case DataTypeInfo::USHORT:
             desc = n + "/s";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           case DataTypeInfo::UINT:
             desc = n + "/i";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           case DataTypeInfo::ULONG:
             desc = n + "/l";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           case DataTypeInfo::CHAR:
             desc = n + "/B";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           case DataTypeInfo::SHORT:
             desc = n + "/S";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           case DataTypeInfo::INT:
             desc = n + "/I";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           case DataTypeInfo::LONG:
             desc = n + "/L";
-            b    = tree->Branch( n.c_str(), (void*)itm->buffer(), desc.c_str() );
+            b    = tree->Branch( n.c_str(), const_cast<void*>( itm->buffer() ), desc.c_str() );
             break;
           default:
             return makeError( "Column " + it->index() + " is not a valid index column!" );
@@ -576,13 +568,13 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
           log() << MSG::DEBUG << "Create branch:" << n << " Desc:" << desc << " of type:" << it->type() << endmsg;
           switch ( it->type() ) {
           case DataTypeInfo::OBJECT_ADDR:
-            branches[n] = tree->Branch( n.c_str(), cl->GetName(), (void*)it->buffer() );
+            branches[n] = tree->Branch( n.c_str(), cl->GetName(), const_cast<void*>( it->buffer() ) );
             break;
           case DataTypeInfo::POINTER:
-            branches[n] = tree->Branch( n.c_str(), cl->GetName(), (void*)it->buffer() );
+            branches[n] = tree->Branch( n.c_str(), cl->GetName(), const_cast<void*>( it->buffer() ) );
             break;
           default:
-            branches[n] = tree->Branch( n.c_str(), (void*)it->buffer(), desc.c_str() );
+            branches[n] = tree->Branch( n.c_str(), const_cast<void*>( it->buffer() ), desc.c_str() );
             break;
           }
         }
@@ -622,7 +614,7 @@ StatusCode RootNTupleCnv::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
   if ( tupl && pReg && rpA ) {
     string cntName          = containerName( pReg );
     unsigned long* ipar     = const_cast<unsigned long*>( pAddr->ipar() );
-    RootDataConnection* con = (RootDataConnection*)rpA->ipar()[0];
+    RootDataConnection* con = reinterpret_cast<RootDataConnection*>( rpA->ipar()[0] );
     if ( con ) {
       TTree* tree = rpA->section;
       if ( tree ) {
