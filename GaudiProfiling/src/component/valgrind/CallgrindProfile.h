@@ -3,7 +3,7 @@
 
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class CallgrindProfile CallgrindProfile.h valgrind/CallgrindProfile.h
  *
@@ -12,16 +12,13 @@
  *  @author Ben Couturier
  *  @date   2014-08-22
  */
-class CallgrindProfile : public GaudiAlgorithm
+class CallgrindProfile : public Algorithm
 {
 public:
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
-  ~CallgrindProfile() override = default; ///< Destructor
-
-  StatusCode initialize() override; ///< Algorithm initialization
-  StatusCode execute() override;    ///< Algorithm execution
-  StatusCode finalize() override;   ///< Algorithm finalization
+  StatusCode execute() override;  ///< Algorithm execution
+  StatusCode finalize() override; ///< Algorithm finalization
 
 private:
   Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling."};
