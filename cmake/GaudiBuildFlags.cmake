@@ -140,6 +140,8 @@ foreach(_subtype ${BINARY_TAG_SUBTYPE})
     #message(STATUS "setting _opt_level_${_up_bt} -> ${_opt_level_${_up_bt}}")
   elseif(_subtype STREQUAL "g")
     set(_opt_ext_${_up_bt} "${_opt_ext_${_up_bt}} -g")
+  elseif(_subtype STREQUAL "cov")
+    set(_opt_ext_${_up_bt} "${_opt_ext_${_up_bt}} --coverage")
   endif()
 endforeach()
 
