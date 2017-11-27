@@ -9,6 +9,7 @@ find_package(PythonLibs)
 find_package(unwind)
 find_package(gperftools)
 find_package(IntelAmplifier)
+find_package(ZLIB)
 
 # Hide some Boost/libunwind compile time warnings
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
@@ -24,15 +25,16 @@ include_directories(src/component)
 #-----------------------------------
 if(UNWIND_FOUND AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   gaudi_add_module(GaudiProfiling src/component/*.cpp
-                   LINK_LIBRARIES GaudiKernel z
-                   INCLUDE_DIRS unwind)
+                   LINK_LIBRARIES GaudiKernel ZLIB
+                   INCLUDE_DIRS unwind ZLIB)
 
   gaudi_add_python_module(PyCPUFamily src/python/CPUFamily.cpp
                           LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
                           INCLUDE_DIRS PythonLibs)
 
   gaudi_add_executable(GaudiGenProfilingHtml src/app/pfm_gen_analysis.cpp
-                       LINK_LIBRARIES z GaudiKernel)
+                       LINK_LIBRARIES GaudiKernel ZLIB
+                       INCLUDE_DIRS unwind ZLIB)
 else()
   message(WARNING "The module GaudiProfiling is disabled (architecture ${CMAKE_SYSTEM_PROCESSOR}).")
 endif()
@@ -43,8 +45,8 @@ endif()
 #-----------------------------------
 if(GPERFTOOLS_FOUND)
   gaudi_add_module(GaudiGoogleProfiling src/component/google/*.cpp
-                   LINK_LIBRARIES GaudiKernel GaudiAlgLib z
-                   INCLUDE_DIRS ${GPERFTOOLS_INCLUDE_DIRS})
+                   LINK_LIBRARIES GaudiKernel GaudiAlgLib ZLIB
+                   INCLUDE_DIRS ${GPERFTOOLS_INCLUDE_DIRS} ZLIB)
 
 # Special handling of unresorlved symbols in GaudiGoogleProfiling.
 # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
@@ -87,8 +89,8 @@ endif()
 # Valgrind profiler
 #-----------------------------------
 gaudi_add_module(GaudiValgrindProfiling src/component/valgrind/*.cpp
-                 LINK_LIBRARIES GaudiKernel GaudiAlgLib z
-                 INCLUDE_DIRS tcmalloc)
+                 LINK_LIBRARIES GaudiKernel GaudiAlgLib ZLIB
+                 INCLUDE_DIRS tcmalloc ZLIB)
 
 
 #-----------------------------------
