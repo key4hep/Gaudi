@@ -23,18 +23,13 @@ namespace GaudiSvcTest
 {
   class CounterTestAlg : public Algorithm
   {
-    ICounterSvc::Counter* m_evtCount;
-    ICounterSvc::Counter* m_total;
-    ICounterSvc* m_cntSvc;
+    ICounterSvc::Counter* m_evtCount = nullptr;
+    ICounterSvc::Counter* m_total    = nullptr;
+    ICounterSvc* m_cntSvc            = nullptr;
 
   public:
-    /// Constructor: A constructor of this form must be provided.
-    CounterTestAlg( const std::string& name, ISvcLocator* pSvcLocator )
-        : Algorithm( name, pSvcLocator ), m_evtCount( 0 ), m_total( 0 ), m_cntSvc( 0 )
-    {
-    }
-    /// Standard Destructor
-    ~CounterTestAlg() override {}
+    /// Constructor
+    using Algorithm::Algorithm;
     /// Initialize
     StatusCode initialize() override
     {

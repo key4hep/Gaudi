@@ -45,12 +45,6 @@ namespace
 DECLARE_COMPONENT( ToolSvc )
 
 //------------------------------------------------------------------------------
-ToolSvc::ToolSvc( const std::string& name, ISvcLocator* svc )
-    //------------------------------------------------------------------------------
-    : base_class( name, svc )
-{
-}
-
 ToolSvc::~ToolSvc()
 {
   // tell the remaining observers that we're gone, and forget about unregistering..
