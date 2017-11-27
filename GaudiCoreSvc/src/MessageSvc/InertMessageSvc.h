@@ -27,9 +27,7 @@ class InertMessageSvc : public MessageSvc
 {
 public:
   /// Standard constructor
-  InertMessageSvc( const std::string& name, ISvcLocator* pSvcLocator );
-
-  ~InertMessageSvc() override; ///< Destructor
+  using MessageSvc::MessageSvc;
 
   /// Initialization of the service.
   StatusCode initialize() override;
@@ -51,12 +49,9 @@ public:
 private:
   void m_activate();
   void m_deactivate();
-  bool m_isActive;
+  bool m_isActive = false;
 
-  typedef std::function<void()> messageAction;
-  /// This is done since the copy of the lambda storage is too expensive
-  typedef std::shared_ptr<messageAction> messageActionPtr;
-  tbb::concurrent_bounded_queue<messageActionPtr> m_messageActionsQueue;
+  tbb::concurrent_bounded_queue<std::function<void()>> m_messageActionsQueue;
 
   std::thread m_thread;
 };

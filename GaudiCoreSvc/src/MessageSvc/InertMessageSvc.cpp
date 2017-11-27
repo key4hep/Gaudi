@@ -14,24 +14,13 @@ DECLARE_SERVICE_FACTORY( InertMessageSvc )
 
 //---------------------------------------------------------------------------
 
-InertMessageSvc::InertMessageSvc( const std::string& name, ISvcLocator* pSvcLocator )
-    : MessageSvc( name, pSvcLocator ), m_isActive( false )
-{
-}
-
-//---------------------------------------------------------------------------
-
-InertMessageSvc::~InertMessageSvc() {}
-
-//---------------------------------------------------------------------------
-
 StatusCode InertMessageSvc::initialize()
 {
   StatusCode sc = MessageSvc::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;          // error printed already by MessageSvc
 
   info() << "Activating in a separate thread" << endmsg;
-  m_thread = std::thread( std::bind( &InertMessageSvc::m_activate, this ) );
+  m_thread = std::thread( &InertMessageSvc::m_activate, this );
 
   return StatusCode::SUCCESS;
 }
@@ -40,11 +29,8 @@ StatusCode InertMessageSvc::initialize()
 
 StatusCode InertMessageSvc::InertMessageSvc::finalize()
 {
-
   m_deactivate();
-
   m_thread.join();
-
   return MessageSvc::finalize(); // must be called after all other actions
 }
 
@@ -53,10 +39,10 @@ StatusCode InertMessageSvc::InertMessageSvc::finalize()
 void InertMessageSvc::m_activate()
 {
   m_isActive = true;
-  messageActionPtr thisMessageAction;
-  while ( m_isActive or not m_messageActionsQueue.empty() ) {
+  std::function<void()> thisMessageAction;
+  while ( m_isActive || !m_messageActionsQueue.empty() ) {
     m_messageActionsQueue.pop( thisMessageAction );
-    ( *thisMessageAction )();
+    if ( thisMessageAction ) thisMessageAction();
   }
 }
 
@@ -64,10 +50,9 @@ void InertMessageSvc::m_activate()
 
 void InertMessageSvc::m_deactivate()
 {
-
   if ( m_isActive ) {
     // This would be the last action
-    m_messageActionsQueue.push( messageActionPtr( new messageAction( [this]() { m_isActive = false; } ) ) );
+    m_messageActionsQueue.emplace( [this]() { m_isActive = false; } );
   }
 }
 
@@ -80,9 +65,9 @@ void InertMessageSvc::m_deactivate()
  */
 void InertMessageSvc::reportMessage( const Message& msg, int outputLevel )
 {
-  // msg has to be copied as the reference may become invalid by the time it's used
-  m_messageActionsQueue.push( messageActionPtr(
-      new messageAction( [ this, m = Message( msg ), outputLevel ]() { this->i_reportMessage( m, outputLevel ); } ) ) );
+  // msg has to be copied as the reference may become invalid by the time it is used
+  m_messageActionsQueue.emplace(
+      [ this, m = Message( msg ), outputLevel ]() { this->i_reportMessage( m, outputLevel ); } );
 }
 
 //---------------------------------------------------------------------------
@@ -90,8 +75,8 @@ void InertMessageSvc::reportMessage( const Message& msg, int outputLevel )
 void InertMessageSvc::reportMessage( const Message& msg )
 {
   // msg has to be copied as the reference may become invalid by the time it's used
-  m_messageActionsQueue.push( messageActionPtr( new messageAction(
-      [ this, m = Message( msg ) ]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } ) ) );
+  m_messageActionsQueue.emplace(
+      [ this, m = Message( msg ) ]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
 }
 
 //---------------------------------------------------------------------------
@@ -99,8 +84,7 @@ void InertMessageSvc::reportMessage( const Message& msg )
 void InertMessageSvc::reportMessage( const StatusCode& code, const std::string& source )
 {
   // msg has to be copied as the source may become invalid by the time it's used
-  m_messageActionsQueue.push( messageActionPtr(
-      new messageAction( [ this, code, s = std::string( source ) ]() { this->i_reportMessage( code, s ); } ) ) );
+  m_messageActionsQueue.emplace( [ this, code, s = std::string( source ) ]() { this->i_reportMessage( code, s ); } );
 }
 
 //---------------------------------------------------------------------------
