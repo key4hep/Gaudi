@@ -136,7 +136,7 @@ StatusCode PartPropSvc::createTable()
     m_upid_local = true;
   }
 
-  m_pdt.reset( new HepPDT::ParticleDataTable( m_upid_name, m_upid ) );
+  m_pdt.emplace( m_upid_name, m_upid );
 
   HepPDT::TableBuilder tb( *m_pdt );
 
@@ -166,11 +166,11 @@ HepPDT::ParticleDataTable* PartPropSvc::PDT()
     debug() << "creating ParticleDataTable" << endmsg;
     if ( createTable().isFailure() ) {
       fatal() << "Could not create ParticleDataTable" << endmsg;
-      m_pdt.reset( nullptr );
+      m_pdt.reset();
     }
   }
 
-  return m_pdt.get();
+  return m_pdt.get_ptr();
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
