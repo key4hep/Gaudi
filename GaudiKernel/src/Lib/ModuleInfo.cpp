@@ -152,16 +152,7 @@ System::ImageHandle System::moduleHandle()
       return handle;
 #elif defined( __linux ) || defined( __APPLE__ )
       static Dl_info info;
-      if ( 0 != ::dladdr(
-#if __GNUC__ < 4
-                    (void*)System::moduleHandle
-#else
-                    FuncPtrCast<void*>( System::moduleHandle )
-#endif
-                    ,
-                    &info ) ) {
-        return &info;
-      }
+      if (::dladdr( reinterpret_cast<void*>( System::moduleHandle ), &info ) ) return &info;
 #elif __hpux
       return 0; // Don't know how to solve this .....
 #endif

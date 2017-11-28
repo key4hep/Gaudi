@@ -236,11 +236,7 @@ unsigned long System::getProcedureByName( ImageHandle handle, const std::string&
   }
   return 1;
 #elif defined( __linux )
-#if __GNUC__ < 4
-  *pFunction = ( EntryPoint )::dlsym( handle, name.c_str() );
-#else
-  *pFunction = FuncPtrCast<EntryPoint>(::dlsym( handle, name.c_str() ) );
-#endif
+  *pFunction = reinterpret_cast<EntryPoint>(::dlsym( handle, name.c_str() ) );
   if ( !*pFunction ) {
     errno = 0xAFFEDEAD;
     // std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
