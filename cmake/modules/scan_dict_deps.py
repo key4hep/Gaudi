@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import re
 
-from itertools import imap, ifilter
+import six
 from os.path import join, exists, isabs
 
 
@@ -16,8 +16,8 @@ def find_file(filename, searchpath):
     if isabs(filename):
         return filename if exists(filename) else None
     try:
-        return ifilter(exists, imap(lambda x: join(x, filename),
-                                    searchpath)).next()
+        return six.next(six.moves.filter(exists, six.moves.map(lambda x: join(x, filename),
+                                        searchpath)))
     except StopIteration:
         return None
 
@@ -37,11 +37,11 @@ def find_deps(filename, searchpath, deps=None):
 
     # Look for all "#include" lines in the file, then consider each of the
     # included files, ignoring those already included in the recursion
-    for included in ifilter(
+    for included in six.moves.filter(
             lambda f: f and f not in deps,
-            imap(
+            six.moves.map(
                 lambda m: m and find_file(m.group(1), searchpath),
-                imap(
+                six.moves.map(
                     re.compile(r'^\s*#\s*include\s*["<]([^">]*)[">]').match,
                     open(filename)))):
         deps.add(included)
