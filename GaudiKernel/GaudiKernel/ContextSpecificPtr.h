@@ -77,24 +77,20 @@ namespace Gaudi
       /// all the values corresponding to the contained pointers using init as
       /// first value.
       template <class Mapper>
-      typename std::result_of<Mapper( const T* )>::type
-      accumulate( Mapper f, typename std::result_of<Mapper( const T* )>::type init ) const
+      auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init ) const -> decltype( init )
       {
-        typedef typename std::result_of<Mapper( const T* )>::type R;
-        return accumulate( f, init, std::plus<R>() );
+        return accumulate( f, init, std::plus<>() );
       }
 
       /// Taking a function f that from a T* produces a value, return the
       /// accumulated  result, through the operation 'op', of all the values
       /// corresponding to the contained pointers using init as first value.
       template <class Mapper, class BinaryOperation>
-      typename std::result_of<Mapper( const T* )>::type
-      accumulate( Mapper f, typename std::result_of<Mapper( const T* )>::type init, BinaryOperation op ) const
+      auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init, BinaryOperation op ) const
+          -> decltype( init )
       {
-        typedef typename std::result_of<Mapper( const T* )>::type R;
-        typedef typename StorageType::value_type V;
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
-        return std::accumulate( m_ptrs.begin(), m_ptrs.end(), init, [&f, &op]( const R& partial, const V& p ) -> R {
+        return std::accumulate( m_ptrs.begin(), m_ptrs.end(), init, [&f, &op]( const auto& partial, const auto& p ) {
           return op( partial, f( p.second ) );
         } );
       }
@@ -154,42 +150,36 @@ namespace Gaudi
     class ContextSpecificData
     {
     public:
-      /// Constructor with default initialization.
-      ContextSpecificData() : m_proto() {}
       /// Constructor with prototype value.
-      ContextSpecificData( const T& proto ) : m_proto( proto ) {}
+      ContextSpecificData( T proto = {} ) : m_proto( std::move( proto ) ) {}
 
       /// Destructor.
       ~ContextSpecificData() { m_ptr.deleteAll(); }
 
-      inline operator T&()
+      operator T&()
       {
-        if ( m_ptr )
-          return *m_ptr;
-        else
-          return *( m_ptr = new T( m_proto ) );
+        if ( !m_ptr ) m_ptr = new T( m_proto );
+        return *m_ptr;
       }
 
-      inline operator T&() const
+      operator T&() const
       {
-        if ( m_ptr )
-          return *m_ptr;
-        else
-          return *( m_ptr = new T( m_proto ) );
+        if ( !m_ptr ) m_ptr = new T( m_proto );
+        return *m_ptr;
       }
 
       /// Assignment operator.
-      inline T& operator=( const T& other ) { return (T&)( *this ) = other; }
+      T& operator=( const T& other ) { return (T&)( *this ) = other; }
 
       /// Return the sum of all the contained values using init as first value.
-      inline T accumulate( T init ) const { return accumulate( init, std::plus<T>() ); }
+      T accumulate( T init ) const { return accumulate( init, std::plus<>() ); }
 
       /// Return the accumulated result, through the operation 'op', of all the
       /// contained values using init as first value.
       template <class T1, class BinaryOperation>
       T1 accumulate( T1 init, BinaryOperation op ) const
       {
-        return m_ptr.accumulate( []( const T* p ) -> T { return *p; }, init, op );
+        return m_ptr.accumulate( []( const T* p ) { return *p; }, init, op );
       }
 
       /// Call a function on each contained value.
@@ -223,7 +213,7 @@ namespace Gaudi
       ContextSpecificData( const ContextSpecificData& ) = delete;
 
       /// Prototype value.
-      T m_proto;
+      T m_proto = {};
       /// Internal implementation.
       mutable ContextSpecificPtr<T> m_ptr;
     };
