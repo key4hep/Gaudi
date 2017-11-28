@@ -4,7 +4,7 @@ from __future__ import print_function
 import os
 import re
 import atexit
-import cPickle
+from six.moves import cPickle
 from subprocess import Popen, PIPE
 from collections import defaultdict
 

@@ -64,7 +64,7 @@ if sys.platform == "win32":
     import win32pipe
     import win32process
 else:
-    import cPickle
+    from six.moves import cPickle
     import fcntl
     import select
     import qm.sigmask
