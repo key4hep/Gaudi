@@ -277,7 +277,7 @@ def main():
     output_dir = os.path.dirname(outputfile)
     try:
         logging.info("Creating directory %r", output_dir)
-        os.makedirs(output_dir, 0755)
+        os.makedirs(output_dir, 0o755)
     except OSError as err:
         import errno
         if err.errno == errno.EEXIST:
