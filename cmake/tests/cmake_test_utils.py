@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from __future__ import print_function
 from cmake_coverage import cmake_script
 from os.path import join, curdir
 
@@ -21,10 +21,10 @@ class CMakeTestScripts(object):
     def run(self, name):
         script_name = join(self.scripts_dir, 'test_%s.cmake' % name)
         out, err, returncode = cmake_script(script_name, cwd=self.base_dir)
-        print "---------- stdout ----------"
-        print out
-        print "---------- stderr ----------"
-        print err
+        print("---------- stdout ----------")
+        print(out)
+        print("---------- stderr ----------")
+        print(err)
         assert returncode == 0
 
     def test_scripts(self):

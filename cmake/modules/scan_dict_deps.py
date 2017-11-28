@@ -90,7 +90,7 @@ def main():
     if new_deps != old_deps:  # write it only if it has changed
         open(output, 'w').write(new_deps)
         if old_deps and not opts.for_make:
-            print 'info: dependencies changed: next build will trigger a reconfigure'
+            print('info: dependencies changed: next build will trigger a reconfigure')
 
 
 if __name__ == '__main__':

@@ -111,7 +111,7 @@ def analyze_suites(pkg, rootdir):
 
     # transpose the dictionary of lists
     test_labels = collections.defaultdict(set)
-    for label, tests in labels.iteritems():
+    for label, tests in labels.items():
         for test in tests:
             test_labels[test].add(label)
 
