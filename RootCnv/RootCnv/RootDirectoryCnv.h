@@ -40,9 +40,6 @@ namespace Gaudi
      */
     RootDirectoryCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr );
 
-    /// Standard Destructor
-    ~RootDirectoryCnv() override = default;
-
     /** Converter overrides: Create transient object from persistent data
      *
      * @param    pAddr       [IN]   Pointer to object address.

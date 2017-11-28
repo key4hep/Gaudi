@@ -257,9 +257,6 @@ namespace Genfun
       /// copy constructor
       NumericalIndefiniteIntegral( const NumericalIndefiniteIntegral& );
 
-      /// destructor
-      ~NumericalIndefiniteIntegral() override = default;
-
     public:
       /// dimensionality of the problem
       unsigned int dimensionality() const override { return m_DIM; }

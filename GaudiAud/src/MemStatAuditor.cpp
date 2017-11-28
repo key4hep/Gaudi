@@ -15,10 +15,6 @@
 
 DECLARE_COMPONENT( MemStatAuditor )
 
-MemStatAuditor::MemStatAuditor( const std::string& name, ISvcLocator* pSvcLocator ) : MemoryAuditor( name, pSvcLocator )
-{
-}
-
 StatusCode MemStatAuditor::initialize()
 {
   StatusCode sc = CommonAuditor::initialize();

@@ -36,7 +36,6 @@ namespace HepRndm
 
   public:
     Generator( IInterface* engine ) : RndmGen( engine ) {}
-    ~Generator() override = default;
     /// Initialize the generator
     StatusCode initialize( const IRndmGen::Param& par ) override;
     /// Single shot

@@ -23,9 +23,6 @@ public:
   /// Default creator
   HistogramAgent() = default;
 
-  /// Destructor
-  ~HistogramAgent() override = default;
-
   /// Return the set of selected DataObjects
   IDataSelector* selectedObjects() { return &m_objects; }
   /// Analyses a given directory entry

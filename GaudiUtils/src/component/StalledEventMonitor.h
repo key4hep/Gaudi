@@ -30,10 +30,7 @@ class StalledEventMonitor : public extends<Service, IIncidentListener>
 {
 public:
   /// Constructor
-  StalledEventMonitor( const std::string& name, ISvcLocator* svcLoc );
-
-  /// Destructor
-  ~StalledEventMonitor() override = default;
+  using extends::extends;
 
   /// Initialization of the service.
   /// Prepare the watchdog thread and configures it.

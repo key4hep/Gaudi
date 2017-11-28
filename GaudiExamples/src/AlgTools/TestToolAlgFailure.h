@@ -22,8 +22,6 @@ public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
 
-  ~TestToolAlgFailure() override = default; ///< Destructor
-
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;

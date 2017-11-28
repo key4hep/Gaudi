@@ -35,8 +35,6 @@ protected:
 public:
   /// inherit contructor
   using extends::extends;
-  /// Standard Destructor
-  ~AppMgrRunable() override = default;
 
   /// IService implementation: initialize the service
   StatusCode initialize() override;

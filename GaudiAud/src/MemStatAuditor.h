@@ -15,8 +15,7 @@
 class MemStatAuditor : public MemoryAuditor
 {
 public:
-  MemStatAuditor( const std::string& name, ISvcLocator* pSvcLocator );
-  ~MemStatAuditor() override = default;
+  using MemoryAuditor::MemoryAuditor;
 
   StatusCode initialize() override;
 

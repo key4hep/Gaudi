@@ -12,8 +12,6 @@ public:
       @param name    The algorithm object's name
       @param svcloc  A pointer to a service location service */
   CommonAuditor( const std::string& name, ISvcLocator* svcloc );
-  /// Destructor
-  ~CommonAuditor() override = default;
 
   /// \name "before" Auditor hooks
   /// The default behavior is to fall back on the version accepting 2 strings,

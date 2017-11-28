@@ -37,8 +37,6 @@ public:
 
   // Default constructor.
   MessageSvc( const std::string& name, ISvcLocator* svcloc );
-  // Destructor.
-  ~MessageSvc() override = default;
 
   // Implementation of IService::reinitialize()
   StatusCode reinitialize() override;

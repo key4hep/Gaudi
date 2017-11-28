@@ -16,15 +16,6 @@ namespace GaudiExamples
   DECLARE_COMPONENT( GaudiPPS )
 
   //=============================================================================
-  // Standard constructor, initializes variables
-  //=============================================================================
-  GaudiPPS::GaudiPPS( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
-  //=============================================================================
-  // Destructor
-  //=============================================================================
-  GaudiPPS::~GaudiPPS() {}
-
-  //=============================================================================
   // Initialization
   //=============================================================================
   StatusCode GaudiPPS::initialize()
@@ -48,17 +39,6 @@ namespace GaudiExamples
     if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
     return StatusCode::SUCCESS;
-  }
-
-  //=============================================================================
-  //  Finalize
-  //=============================================================================
-  StatusCode GaudiPPS::finalize()
-  {
-
-    if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
-
-    return GaudiAlgorithm::finalize(); // must be called after all other actions
   }
 
 } // namespace GaudiExamples

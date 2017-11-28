@@ -53,8 +53,6 @@ namespace Gaudi
   public:
     /// Standard constructor with initialization
     RootEvtSelectorContext( const RootEvtSelector* s ) : m_sel( s ), m_entry( -1 ), m_branch( nullptr ) {}
-    /// Standard destructor
-    ~RootEvtSelectorContext() override = default;
     /// Access to the file container
     const Files& files() const { return m_files; }
     /// Set the file container

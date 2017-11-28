@@ -27,8 +27,11 @@ namespace Gaudi
     {
     public:
       // ======================================================================
+      /// Constructor
+      using GaudiAlgorithm::GaudiAlgorithm;
+      // ======================================================================
       /// the only one essential method
-      virtual StatusCode execute() override
+      StatusCode execute() override
       {
 
         typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;
@@ -70,13 +73,6 @@ namespace Gaudi
 
         return StatusCode::SUCCESS;
       }
-      // ======================================================================
-    public:
-      // ======================================================================
-      /// Constructor
-      using GaudiAlgorithm::GaudiAlgorithm;
-      /// destructor
-      ~SelFilter() override = default;
       // ======================================================================
     private:
       // ======================================================================

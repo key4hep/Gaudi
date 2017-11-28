@@ -132,8 +132,6 @@ namespace Gaudi
      *  @param  svc    Pointer to service locator interface
      */
     ParticlePropertySvc( const std::string& name, ISvcLocator* svc );
-    /// Destructor.
-    ~ParticlePropertySvc() override = default;
 
   protected:
     /** helper (protected) function to

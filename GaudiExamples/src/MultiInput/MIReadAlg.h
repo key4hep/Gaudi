@@ -19,7 +19,6 @@ namespace Gaudi
       {
       public:
         using Algorithm::Algorithm;
-        ~ReadAlg() override = default;
         /// Initialize
         StatusCode initialize() override;
         /// Event callback

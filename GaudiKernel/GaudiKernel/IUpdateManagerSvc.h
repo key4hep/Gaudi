@@ -60,9 +60,6 @@ public:
   /// MemberFunctionType is the type for a pointer to a member function of class CallerClass.
   typedef StatusCode ( CallerClass::*MemberFunctionType )();
 
-  /// Virtual destructor.
-  ~ObjectMemberFunction() override = default;
-
   /// Calls the member function of the object and returns the StatusCode.
   /// If the pointer to the member function is nullptr, do nothing and return success.
   StatusCode operator()() const override

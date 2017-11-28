@@ -8,8 +8,7 @@ namespace PluginServiceTest
   class CustomFactoryAlgorithm : public GaudiAlgorithm
   {
   public:
-    CustomFactoryAlgorithm( const std::string& name, ISvcLocator* svcloc ) : GaudiAlgorithm( name, svcloc ) {}
-    ~CustomFactoryAlgorithm() override {}
+    using GaudiAlgorithm::GaudiAlgorithm;
 
     StatusCode execute() override
     {

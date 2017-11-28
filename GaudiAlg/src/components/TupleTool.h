@@ -32,9 +32,6 @@ public:
    */
   TupleTool( const std::string& type, const std::string& name, const IInterface* parent );
 
-  /// destructor: virtual and protected
-  ~TupleTool() override = default;
-
 public:
   /** get N-tuple object ( book on-demand ) with unique identidier
    *

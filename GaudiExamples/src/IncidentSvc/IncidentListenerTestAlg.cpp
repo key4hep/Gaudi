@@ -13,12 +13,6 @@ std::string IncidentListenerTestAlg::s_incidentType = "TestIncident";
 std::string& IncidentListenerTestAlg::incident() { return s_incidentType; }
 
 //=============================================================================
-IncidentListenerTestAlg::IncidentListenerTestAlg( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator )
-{
-}
-
-//=============================================================================
 StatusCode IncidentListenerTestAlg::initialize()
 {
   StatusCode sc = GaudiAlgorithm::initialize();

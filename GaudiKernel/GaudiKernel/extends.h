@@ -48,9 +48,6 @@ public:
     vb.insert( vb.end(), std::make_move_iterator( vi.begin() ), std::make_move_iterator( vi.end() ) );
     return vb;
   }
-
-  /// Virtual destructor
-  ~extends() override = default;
 };
 
 template <typename BASE, typename I1>

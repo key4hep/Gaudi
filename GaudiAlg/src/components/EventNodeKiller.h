@@ -18,7 +18,6 @@ class EventNodeKiller : public GaudiAlgorithm
 {
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
-  ~EventNodeKiller() override = default;
 
   StatusCode execute() override;
 

@@ -13,7 +13,7 @@ namespace GaudiTesting
     class Algorithm1 : public Algorithm
     {
     private:
-      Algorithm1( const std::string& name, ISvcLocator* svcloc ) : Algorithm( name, svcloc ) {}
+      using Algorithm::Algorithm;
       friend class AlgFactory<Algorithm1>;
 
     public:

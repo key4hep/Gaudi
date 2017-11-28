@@ -43,9 +43,6 @@ namespace RootHistCnv
     /// Standard constructor
     RNTupleCnv( ISvcLocator* svc, const CLID& clid );
 
-    /// Standard destructor
-    ~RNTupleCnv() override = default;
-
     /// Create the transient representation of an object.
     virtual StatusCode load( TTree* tree, INTuple*& refpObj ) = 0;
     /// Book a new N tuple

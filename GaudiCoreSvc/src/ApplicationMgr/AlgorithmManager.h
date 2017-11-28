@@ -44,8 +44,6 @@ public:
 
   /// default creator
   AlgorithmManager( IInterface* iface );
-  /// virtual destructor
-  ~AlgorithmManager() override = default;
 
   /// implementation of IAlgManager::addAlgorithm
   StatusCode addAlgorithm( IAlgorithm* alg ) override;

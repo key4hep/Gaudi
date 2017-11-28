@@ -101,8 +101,6 @@ namespace NTuple
   public:
     /// Standard Constructor
     ColumnWiseTuple( std::string title ) : TupleImp( std::move( title ) ) {}
-    /// Standard Destructor
-    ~ColumnWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
     const CLID& clID() const override { return classID(); }
     /// Static access to class defininition structure
@@ -115,8 +113,6 @@ namespace NTuple
   public:
     /// Standard Constructor
     RowWiseTuple( std::string title ) : TupleImp( std::move( title ) ) {}
-    /// Standard Destructor
-    ~RowWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
     const CLID& clID() const override { return classID(); }
     /// Static access to class defininition structure

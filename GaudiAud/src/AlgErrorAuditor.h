@@ -16,7 +16,6 @@ class AlgErrorAuditor : public Auditor
 {
 public:
   using Auditor::Auditor;
-  ~AlgErrorAuditor() override = default;
 
   StatusCode initialize() override;
   StatusCode finalize() override;

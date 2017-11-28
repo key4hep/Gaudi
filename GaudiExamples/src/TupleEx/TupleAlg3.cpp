@@ -44,20 +44,16 @@ public:
     return StatusCode::SUCCESS;
   }
   /** the only one essential method
-   *  @see IAlgoruthm
+   *  @see IAlgorithm
    */
   StatusCode execute() override;
   /** standard constructor
    *  @param name algorithm instance name
    *  @param pSvc pointer to Service Locator
    */
-  TupleAlg3( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc ) {}
-  // destructor
-  ~TupleAlg3() override {}
+  using GaudiTupleAlg::GaudiTupleAlg;
 
 private:
-  // default constructor is disabled
-  TupleAlg3();
   // copy constructor is disabled
   TupleAlg3( const TupleAlg3& );
   // assignement op[erator is disabled

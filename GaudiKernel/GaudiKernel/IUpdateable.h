@@ -38,9 +38,6 @@ class GAUDI_API IUpdateableIF : virtual public IInterface, virtual public IUpdat
 public:
   /// InterfaceID
   DeclareInterfaceID( IUpdateableIF, 1, 0 );
-
-  /// Default destructor
-  ~IUpdateableIF() override = default;
 };
 
 #endif // GAUDIKERNEL_IUPDATEABLE_H

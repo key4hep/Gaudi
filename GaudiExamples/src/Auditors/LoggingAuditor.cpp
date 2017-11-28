@@ -15,6 +15,9 @@ namespace GaudiExamples
   class LoggingAuditor : public Auditor
   {
   public:
+    /// constructor
+    using Auditor::Auditor;
+
     void before( StandardEventType evt, INamedInterface* caller ) override
     {
       auto& log = info();
@@ -66,12 +69,6 @@ namespace GaudiExamples
     {
       info() << "Auditing after of " << evt << " for " << caller << endmsg;
     }
-
-    /// constructor
-    LoggingAuditor( const std::string& name, ISvcLocator* pSvc ) : Auditor( name, pSvc ) {}
-
-    /// virtual destructor
-    ~LoggingAuditor() override = default;
   };
 
   DECLARE_COMPONENT( LoggingAuditor )

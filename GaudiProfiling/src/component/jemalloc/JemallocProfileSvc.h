@@ -31,9 +31,6 @@ public:
   // Handler for incident
   void handle( const Incident& incident ) override;
 
-  ///< Destructor
-  ~JemallocProfileSvc() override = default;
-
 protected:
   void handleBegin();
   void handleEnd();

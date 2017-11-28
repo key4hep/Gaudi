@@ -8,8 +8,6 @@
 
 DECLARE_COMPONENT( NameAuditor )
 
-NameAuditor::NameAuditor( const std::string& name, ISvcLocator* pSvcLocator ) : CommonAuditor( name, pSvcLocator ) {}
-
 void NameAuditor::i_before( CustomEventTypeRef evt, const std::string& caller )
 {
   info() << "About to Enter " << caller << " with auditor trigger " << evt << endmsg;

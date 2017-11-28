@@ -191,9 +191,6 @@ public:
 
   /// inherit constructor
   using extends::extends;
-
-  /// Standard Destructor
-  ~EventCollectionSelector() override = default;
 };
 
 #endif // GAUDISVC_EventCollectionSelector_EventCollectionSelector_H

@@ -43,8 +43,6 @@ protected:
 public:
   /// Inherited constructor
   using Algorithm::Algorithm;
-  /// Standard Destructor
-  ~EvtCollectionStream() override = default;
   /// Initialize EvtCollectionStream
   StatusCode initialize() override;
   /// Terminate EvtCollectionStream

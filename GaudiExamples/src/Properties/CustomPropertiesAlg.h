@@ -22,7 +22,6 @@ namespace Gaudi
     public:
       /// Standard constructor
       using GaudiAlgorithm::GaudiAlgorithm;
-      ~CustomPropertiesAlg() override = default; ///< Destructor
 
       StatusCode initialize() override; ///< Algorithm initialization
       StatusCode execute() override;    ///< Algorithm execution

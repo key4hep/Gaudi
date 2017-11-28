@@ -71,8 +71,6 @@ namespace Gaudi
         setProperty( "EvtColsProduce", "true" ).ignore();
         setProperty( "EvtColsPrint", "true" ).ignore();
       }
-      /// virtual and protected dectrustor
-      ~EvtColAlg() override {}
 
     private:
       // default constructor is private

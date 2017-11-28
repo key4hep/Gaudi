@@ -30,9 +30,6 @@ public:
   /// Inherited constructor
   using extends::extends;
 
-  /// Destructor
-  ~DataSvcFileEntriesTool() override = default;
-
   /// Initialize the tool.
   StatusCode initialize() override;
 

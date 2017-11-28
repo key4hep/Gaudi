@@ -101,8 +101,6 @@ public:
 
   /// Standard Constructor
   NTupleSvc( const std::string& name, ISvcLocator* svc );
-  /// Standard Destructor
-  ~NTupleSvc() override = default;
 
 protected:
   /// Create conversion service

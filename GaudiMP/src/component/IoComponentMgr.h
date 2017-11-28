@@ -34,9 +34,6 @@ public:
   /// Inherited constructor:
   using extends::extends;
 
-  /// Destructor:
-  ~IoComponentMgr() override = default;
-
   /// Gaudi Service Implementation
   //@{
   StatusCode initialize() override;

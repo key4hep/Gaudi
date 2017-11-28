@@ -34,8 +34,6 @@ public:
   /// Standard constructor
   SequencerTimerTool( const std::string& type, const std::string& name, const IInterface* parent );
 
-  ~SequencerTimerTool() override = default; ///< Destructor
-
   /** initialize method, to compute the normalization factor **/
   StatusCode initialize() override;
 

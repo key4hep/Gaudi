@@ -26,8 +26,7 @@ public:
   typedef std::vector<const Gaudi::Details::PropertyBase*> PropertiesT;
   // Constructor
   JobOptionsSvc( const std::string& name, ISvcLocator* svc );
-  /// destructor
-  ~JobOptionsSvc() override = default;
+
   StatusCode initialize() override;
 
   /** Override default properties of the calling client

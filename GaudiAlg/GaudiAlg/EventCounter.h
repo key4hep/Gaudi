@@ -9,11 +9,6 @@ public:
    **/
   EventCounter( const std::string& name, ISvcLocator* pSvcLocator );
 
-  /**
-   ** Destructor
-   **/
-  ~EventCounter() override = default;
-
   /*****************************
    ** Public Function Members **
    *****************************/

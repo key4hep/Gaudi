@@ -23,9 +23,6 @@ public:
   /// Standard algorithm Constructor
   InputCopyStream( const std::string& name, ISvcLocator* pSvcLocator );
 
-  /// Standard Destructor
-  ~InputCopyStream() override = default;
-
   /// Initialize the instance.
   StatusCode initialize() override;
 

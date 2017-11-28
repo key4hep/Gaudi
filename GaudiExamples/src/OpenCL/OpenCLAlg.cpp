@@ -30,7 +30,7 @@ namespace Gaudi
     class OpenCLAlg : public GaudiAlgorithm
     {
     public:
-      OpenCLAlg( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
+      using GaudiAlgorithm::GaudiAlgorithm;
       StatusCode initialize() override
       {
         StatusCode sc = GaudiAlgorithm::initialize();
@@ -49,7 +49,6 @@ namespace Gaudi
         info() << "Executing " << name() << endmsg;
         return StatusCode::SUCCESS;
       }
-      StatusCode finalize() override { return GaudiAlgorithm::finalize(); }
 
     private:
       void clChoosePlatform( cl_device_id*& devices, cl_platform_id& platform )

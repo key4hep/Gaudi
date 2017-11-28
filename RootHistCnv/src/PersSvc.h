@@ -31,9 +31,6 @@ namespace RootHistCnv
     /// Standard constructor
     PersSvc( const std::string& name, ISvcLocator* svc ) : ConversionSvc( name, svc, ROOT_StorageType ) {}
 
-    /// Standard destructor
-    ~PersSvc() override = default;
-
   private:
     // undefFileName is defined in PersSvc.cpp
     Gaudi::Property<std::string> m_defFileName{this, "OutputFile", undefFileName, "default file name"};

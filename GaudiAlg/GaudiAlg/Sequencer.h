@@ -30,11 +30,6 @@ public:
              ISvcLocator* svcloc      // A pointer to a service location service
              );
 
-  /**
-   ** Destructor
-   **/
-  ~Sequencer() override = default;
-
   /*****************************
    ** Public Function Members **
    *****************************/

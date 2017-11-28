@@ -30,9 +30,9 @@ public:
   }
 
   /// Destructor.
-  virtual ~UpdateManagerException() throw() {}
+  ~UpdateManagerException() throw() override = default;
 
   /// Clone the exception.
-  virtual UpdateManagerException* clone() const override { return new UpdateManagerException( *this ); }
+  UpdateManagerException* clone() const override { return new UpdateManagerException( *this ); }
 };
 #endif // GAUDIKERNEL_UPDATEMANAGEREXCEPTION_H

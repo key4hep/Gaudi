@@ -40,9 +40,6 @@ public:
    */
   HistoTool( const std::string& type, const std::string& name, const IInterface* parent );
 
-  // protected virtual destructor
-  ~HistoTool() override = default;
-
 public:
   // ================================= 1D Histograms ========================================
 

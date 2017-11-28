@@ -165,8 +165,6 @@ public:
    */
   DataOnDemandSvc( const std::string& name, //       Service instance name
                    ISvcLocator* svc );      //  Pointer to service locator
-  /// Standard destructor.
-  ~DataOnDemandSvc() override = default; // Standard destructor
   // ==========================================================================
 protected:
   // ==========================================================================

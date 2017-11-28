@@ -56,8 +56,6 @@ namespace RootHistCnv
   protected:
     /// Standard constructor
     RConverter( const CLID& clid, ISvcLocator* svc ) : Converter( storageType(), clid, svc ) {}
-    /// Standard destructor
-    ~RConverter() override = default;
     /// Create the transient representation of an object.
     virtual StatusCode readObject( IOpaqueAddress* pAddr, DataObject*& refpObj );
     /// Create the persistent representation of an object.

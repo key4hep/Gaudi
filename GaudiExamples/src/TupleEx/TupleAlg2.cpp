@@ -54,17 +54,13 @@ public:
    *  @param name algorithm instance name
    *  @param pSvc pointer to Service Locator
    */
-  TupleAlg2( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc ) {}
-  // destructor
-  ~TupleAlg2() override = default;
+  using GaudiTupleAlg::GaudiTupleAlg;
 
 private:
-  // default constructor is disabled
-  TupleAlg2();
   // copy constructor is disabled
-  TupleAlg2( const TupleAlg2& );
+  TupleAlg2( const TupleAlg2& ) = delete;
   // assignement op[erator is disabled
-  TupleAlg2& operator=( const TupleAlg2& );
+  TupleAlg2& operator=( const TupleAlg2& ) = delete;
 };
 
 // ============================================================================

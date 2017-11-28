@@ -39,8 +39,6 @@ public:
   PropertyMgr( const PropertyMgr& ) = delete;
   // assignment operator
   PropertyMgr& operator=( const PropertyMgr& ) = delete;
-  /// virtual destructor
-  ~PropertyMgr() override = default;
 
 public:
   /// Declare a property (templated)

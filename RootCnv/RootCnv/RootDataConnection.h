@@ -242,8 +242,6 @@ namespace Gaudi
   public:
     /// Standard constructor
     RootDataConnection( const IInterface* own, const std::string& nam, std::shared_ptr<RootConnectionSetup> setup );
-    /// Standard destructor
-    ~RootDataConnection() override = default;
 
     /// Direct access to TFile structure
     TFile* file() const { return m_file.get(); }

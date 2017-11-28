@@ -171,8 +171,6 @@ namespace NTuple
         : _DataImp<TYP>( tup, name, info, "", 1, min, max, def )
     {
     }
-    /// Standard Destructor
-    ~_ItemImp() override = default;
     /// Compiler type ID
     // virtual const std::type_info& typeID() const             { return typeid(NTuple::_Item<TYP>);  }
     /// Set default value
@@ -197,8 +195,6 @@ namespace NTuple
         : _DataImp<TYP>( tup, name, typ, index, len, min, max, def )
     {
     }
-    /// Standard Destructor
-    ~_ArrayImp() override = default;
     /// Compiler type ID
     // virtual const std::type_info& typeID() const             { return typeid(NTuple::_Array<TYP>); }
     /// Set default value
@@ -228,8 +224,6 @@ namespace NTuple
     {
       this->m_rows = nrow;
     }
-    /// Standard Destructor
-    ~_MatrixImp() override = default;
     /// Compiler type ID
     // virtual const std::type_info& typeID() const             { return typeid(NTuple::_Matrix<TYP>);}
     /// Set default value

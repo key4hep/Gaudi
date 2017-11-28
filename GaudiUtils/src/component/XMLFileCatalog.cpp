@@ -115,7 +115,6 @@ namespace
     void error( const SAXParseException& e ) override;
     /// Fatal error handler
     void fatalError( const SAXParseException& e ) override;
-    ~ErrHandler() override {}
   };
   struct DTDRedirect : public EntityResolver {
     InputSource* resolveEntity( const XMLCh* const /* pubId */, const XMLCh* const /* sysId */ ) override
@@ -143,7 +142,6 @@ namespace
       static const size_t len  = strlen( dtd );
       return new MemBufInputSource( (const XMLByte*)dtd, len, dtdID, false );
     }
-    ~DTDRedirect() override = default;
   };
 
   void ErrHandler::error( const SAXParseException& e )
@@ -189,10 +187,7 @@ namespace
 }
 
 // ----------------------------------------------------------------------------
-XMLFileCatalog::XMLFileCatalog( CSTR uri, IMessageSvc* m )
-    : m_rdOnly( false ), m_update( false ), m_doc( 0 ), m_file( uri ), m_msgSvc( m )
-{
-}
+XMLFileCatalog::XMLFileCatalog( CSTR uri, IMessageSvc* m ) : m_file( uri ), m_msgSvc( m ) {}
 // ----------------------------------------------------------------------------
 /// Create file identifier using UUID mechanism
 std::string XMLFileCatalog::createFID() const { return createGuidAsString(); }
@@ -207,9 +202,7 @@ void XMLFileCatalog::printError( CSTR msg, bool rethrow ) const
 {
   MsgStream log( m_msgSvc, "XMLCatalog" );
   log << MSG::FATAL << msg << endmsg;
-  if ( rethrow ) {
-    throw runtime_error( "XMLFileCatalog> " + msg );
-  }
+  if ( rethrow ) throw runtime_error( "XMLFileCatalog> " + msg );
 }
 // ----------------------------------------------------------------------------
 void XMLFileCatalog::init()

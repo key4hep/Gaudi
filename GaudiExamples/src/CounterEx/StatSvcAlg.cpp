@@ -41,24 +41,19 @@ namespace GaudiExamples
   class StatSvcAlg : public GaudiAlgorithm
   {
   public:
+    /// standard constructor from name and Service Locator
+    using GaudiAlgorithm::GaudiAlgorithm;
+
     /// initialize the algorithm
     StatusCode initialize() override
     {
       StatusCode sc = GaudiAlgorithm::initialize();
-      if ( sc.isFailure() ) {
-        return sc;
-      } // RETURN
+      if ( sc.isFailure() ) return sc; // RETURN
       m_stat = service( "ChronoStatSvc", true );
       return StatusCode::SUCCESS;
     }
     /// the main execution method
     StatusCode execute() override;
-
-  public:
-    /// standard constructor from name and Service Locator
-    StatSvcAlg( const std::string& name, ISvcLocator* svc ) : GaudiAlgorithm( name, svc ) {}
-    /// destructor (virtual and protected)
-    ~StatSvcAlg() override {}
 
   private:
     // pointer to Stat Service

@@ -31,8 +31,6 @@ public:
 
   /// Standard Constructor
   TagCollectionSvc( const std::string& name, ISvcLocator* svc );
-  /// Standard Destructor
-  ~TagCollectionSvc() override = default;
   /// Add file to list I/O list
 protected:
   StatusCode connect( const std::string& ident, std::string& logname ) override;

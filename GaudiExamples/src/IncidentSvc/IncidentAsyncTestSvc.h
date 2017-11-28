@@ -16,21 +16,19 @@ class IIncidentSvc;
 /** @class IncidentRegistryTestListener IncidentListenerTest.h
  *
  */
-class IncidentAsyncTestSvc : public extends<Service, IIncidentListener, IIncidentAsyncTestSvc>
+class IncidentAsyncTestSvc final : public extends<Service, IIncidentListener, IIncidentAsyncTestSvc>
 {
 
 public:
   /// Constructor
   using extends::extends;
 
-  /// Destructor
-  ~IncidentAsyncTestSvc() override = default;
   StatusCode initialize() override;
   StatusCode finalize() override;
 
   /// Reimplements from IIncidentListener
-  virtual void handle( const Incident& incident ) final override;
-  virtual void getData( uint64_t* data, EventContext* ctx = 0 ) const final override;
+  void handle( const Incident& incident ) override;
+  void getData( uint64_t* data, EventContext* ctx = 0 ) const override;
 
 private:
   Gaudi::Property<uint64_t> m_fileOffset{this, "FileOffset", 100000000};

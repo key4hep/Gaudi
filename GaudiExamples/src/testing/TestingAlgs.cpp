@@ -22,7 +22,7 @@ namespace GaudiTesting
   class DestructorCheckAlg : public GaudiAlgorithm
   {
   public:
-    DestructorCheckAlg( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
+    using GaudiAlgorithm::GaudiAlgorithm;
     ~DestructorCheckAlg() override
     {
       // do not print messages if we are created in genconf
@@ -63,7 +63,6 @@ namespace GaudiTesting
   {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    ~SignallingAlg() override = default;
     StatusCode execute() override
     {
       if ( m_eventCount <= 0 ) {
@@ -85,7 +84,6 @@ namespace GaudiTesting
   {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    ~StopLoopAlg() override = default;
     StatusCode execute() override
     {
       if ( m_eventCount <= 0 ) {
@@ -94,12 +92,11 @@ namespace GaudiTesting
           Exception( "Stopping loop" );
         } else if ( m_mode == "stopRun" ) {
           auto ep = serviceLocator()->as<IEventProcessor>();
-          if ( ep )
-            ep->stopRun();
-          else {
+          if ( !ep ) {
             error() << "Cannot get IEventProcessor" << endmsg;
             return StatusCode::FAILURE;
           }
+          ep->stopRun();
         } else { // "failure"
           return StatusCode::FAILURE;
         }
@@ -121,7 +118,6 @@ namespace GaudiTesting
   {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    ~CustomIncidentAlg() override = default;
     StatusCode initialize() override
     {
       StatusCode sc = GaudiAlgorithm::initialize();

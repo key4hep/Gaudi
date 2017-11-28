@@ -35,16 +35,6 @@ namespace CLHEP
 }
 using namespace CLHEP;
 
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-EqSolverIAlg::EqSolverIAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-EqSolverIAlg::~EqSolverIAlg() {}
-
 typedef Genfun::AbsFunction GenFunc;
 
 // Class for the function "IFunction"
@@ -55,8 +45,7 @@ public:
   typedef std::vector<double> argument;
 
 public:
-  Function1() {}
-  ~Function1() override {}
+  Function1() = default;
   double value( const argument& x ) const override { return x[0] - 1; }
   int dimension() const override { return 3; }
   bool setTitle( const std::string& ) override { return false; }
@@ -92,8 +81,7 @@ public:
   typedef std::vector<double> argument;
 
 public:
-  Function2() {}
-  ~Function2() override {}
+  Function2() = default;
   double value( const argument& x ) const override { return x[1] - 1; }
   int dimension() const override { return 3; }
   bool setTitle( const std::string& ) override { return false; }
@@ -129,8 +117,7 @@ public:
   typedef std::vector<double> argument;
 
 public:
-  Function3() {}
-  virtual ~Function3() override {}
+  Function3() = default;
   double value( const argument& x ) const override { return x[2] - 1; }
   int dimension() const override { return 3; }
   bool setTitle( const std::string& ) override { return false; }
@@ -165,19 +152,18 @@ private:
 StatusCode EqSolverIAlg::initialize()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Initialise" << endmsg;
+  info() << "==> Initialise" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "EqSolver", m_publicTool );
   if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
+    error() << "Error retrieving the public tool" << endmsg;
   }
   sc = toolSvc()->retrieveTool( "EqSolver", m_privateTool, this );
   if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
+    error() << "Error retrieving the private tool" << endmsg;
   }
-  log << MSG::INFO << "....initialization done" << endmsg;
+  info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -188,25 +174,20 @@ StatusCode EqSolverIAlg::initialize()
 StatusCode EqSolverIAlg::execute()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Execute" << endmsg;
+  info() << "==> Execute" << endmsg;
 
   // the objects of IFunction's classes
-  const Function1* fun1 = new Function1();
-  const Function2* fun2 = new Function2();
-  const Function3* fun3 = new Function3();
+  const Function1 fun1{};
+  const Function2 fun2{};
+  const Function3 fun3{};
 
   // the objects of the class AdapterIFunction
   // @see Adapter.h
-  const GaudiMath::AIDAFunction& adap1 = GaudiMath::adapter( *fun1 );
-  const GaudiMath::AIDAFunction& adap2 = GaudiMath::adapter( *fun2 );
-  const GaudiMath::AIDAFunction& adap3 = GaudiMath::adapter( *fun3 );
+  const GaudiMath::AIDAFunction& adap1 = GaudiMath::adapter( fun1 );
+  const GaudiMath::AIDAFunction& adap2 = GaudiMath::adapter( fun2 );
+  const GaudiMath::AIDAFunction& adap3 = GaudiMath::adapter( fun3 );
 
-  std::vector<const GenFunc*> function;
-
-  function.push_back( &adap1 );
-  function.push_back( &adap2 );
-  function.push_back( &adap3 );
+  std::vector<const GenFunc*> function = {&adap1, &adap2, &adap3};
 
   //=============================================================================
 
@@ -219,14 +200,14 @@ StatusCode EqSolverIAlg::execute()
 
   // Call of the method
   m_publicTool->solver( function, arg );
-  log << endmsg;
-  log << "START OF THE METHOD" << endmsg;
-  log << "SOLUTION FOUND AT: " << endmsg;
+  info() << endmsg;
+  info() << "START OF THE METHOD" << endmsg;
+  info() << "SOLUTION FOUND AT: " << endmsg;
 
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
-    log << "Value of argument " << i << " is " << arg[i] << endmsg;
+    info() << "Value of argument " << i << " is " << arg[i] << endmsg;
   }
-  log << endmsg;
+  info() << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -237,8 +218,7 @@ StatusCode EqSolverIAlg::execute()
 StatusCode EqSolverIAlg::finalize()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Finalize" << endmsg;
+  info() << "==> Finalize" << endmsg;
 
   toolSvc()->releaseTool( m_publicTool );
   toolSvc()->releaseTool( m_privateTool );

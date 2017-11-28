@@ -50,54 +50,54 @@ public:
   /** Implementation of IChronoStatSvc::chronoStart
    *  @see IChronoStatSvc
    */
-  virtual ChronoEntity* chronoStart( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  ChronoEntity* chronoStart( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoStop
    *  @see IChronoStatSvc
    */
-  virtual const ChronoEntity* chronoStop( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  const ChronoEntity* chronoStop( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IchronoStatSvc::chronoDelta
    *  @see IChronoStatSvc
    */
-  virtual IChronoStatSvc::ChronoTime chronoDelta( const IChronoStatSvc::ChronoTag& chronoTag,
-                                                  IChronoStatSvc::ChronoType theType ) override;
+  IChronoStatSvc::ChronoTime chronoDelta( const IChronoStatSvc::ChronoTag& chronoTag,
+                                          IChronoStatSvc::ChronoType theType ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoPrint
    *  @see IChronoStatSvc
    */
-  virtual void chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  void chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoStatus
    *  @see IChronoStatSvc
    */
-  virtual ChronoStatus chronoStatus( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  ChronoStatus chronoStatus( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::stat
    *  add statistical information to the entity , tagged by its name
    *  @see IChronoStatSvc
    */
-  virtual void stat( const IChronoStatSvc::StatTag& statTag, const IChronoStatSvc::StatFlag& statFlag ) override;
+  void stat( const IChronoStatSvc::StatTag& statTag, const IChronoStatSvc::StatFlag& statFlag ) override;
   // ============================================================================
   /** prints (using message service)  info about
    *  statistical entity, tagged by its name
    *  @see IChronoStatSvc
    */
-  virtual void statPrint( const IChronoStatSvc::ChronoTag& statTag ) override;
+  void statPrint( const IChronoStatSvc::ChronoTag& statTag ) override;
   // ============================================================================
   /** extract the chrono entity for the given tag (name)
    *  @see IChronoStatSvc
    *  @param t chrono tag(name)
    *  @return pointer to chrono entity
    */
-  virtual const ChronoEntity* chrono( const IChronoStatSvc::ChronoTag& t ) const override;
+  const ChronoEntity* chrono( const IChronoStatSvc::ChronoTag& t ) const override;
   // ============================================================================
   /** extract the stat   entity for the given tag (name)
    *  @see IChronoStatSvc
    *  @param t stat   tag(name)
    *  @return pointer to stat   entity
    */
-  virtual const StatEntity* stat( const IChronoStatSvc::StatTag& t ) const override;
+  const StatEntity* stat( const IChronoStatSvc::StatTag& t ) const override;
   // ============================================================================
   /**  Default constructor.
    *   @param name service instance name
@@ -106,8 +106,6 @@ public:
   ChronoStatSvc( const std::string& name, ISvcLocator* svcloc );
   /// Compound assignment operator
   void merge( const ChronoStatSvc& css );
-  /// Destructor.
-  ~ChronoStatSvc() override = default;
   // ============================================================================
 
 public:

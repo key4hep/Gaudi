@@ -34,18 +34,6 @@ using namespace CLHEP;
 //-----------------------------------------------------------------------------
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-FuncMinimumIAlg::FuncMinimumIAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
-}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-FuncMinimumIAlg::~FuncMinimumIAlg() {}
-
-//=============================================================================
 // Class for the function "IFunction"
 // @see AIDA/IFunction.h
 class Function : virtual public AIDA::IFunction
@@ -56,7 +44,6 @@ public:
 
 public:
   Function() { m_gradient.resize( 2 ); }
-  ~Function() override {}
   double value( const std::vector<double>& x ) const override { return 10 * x[0] * x[0] + 20 * x[1] * x[1]; }
   int dimension() const override { return 2; }
   bool setTitle( const std::string& ) override { return false; }

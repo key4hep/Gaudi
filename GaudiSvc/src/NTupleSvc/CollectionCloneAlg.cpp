@@ -128,9 +128,6 @@ public:
   /// Standard algorithm constructor
   using Algorithm::Algorithm;
 
-  /// Standard Destructor
-  ~CollectionCloneAlg() override = default;
-
   /// Initialize
   StatusCode initialize() override
   {

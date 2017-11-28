@@ -207,9 +207,6 @@ public:
   /// Standard Constructor
   PersistencySvc( const std::string& name, ISvcLocator* svc );
 
-  /// Standard Destructor
-  ~PersistencySvc() override = default;
-
 protected:
   /// Retrieve conversion service by name
   SmartIF<IConversionSvc>& service( const std::string& nam );

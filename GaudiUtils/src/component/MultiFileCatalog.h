@@ -63,8 +63,6 @@ namespace Gaudi
   public:
     /// Create a catalog file, initialization of XercesC.
     MultiFileCatalog( const std::string& nam, ISvcLocator* svc );
-    /// Destructor,
-    ~MultiFileCatalog() override = default;
 
     /** IService implementation                                               */
     /// Finalize service object

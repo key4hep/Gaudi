@@ -3,10 +3,8 @@
 
 #include "GaudiKernel/Service.h"
 
-class ServiceA : public Service
-{
-public:
-  ServiceA( const std::string& nam, ISvcLocator* svcLoc );
+struct ServiceA : Service {
+  using Service::Service;
   StatusCode initialize() override;
 };
 

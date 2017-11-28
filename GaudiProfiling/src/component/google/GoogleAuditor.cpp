@@ -44,9 +44,6 @@ namespace Google
     /// Constructor
     using extends::extends;
 
-    /// Destructor
-    ~AuditorBase() override = default;
-
     /// Initialize the auditor base
     StatusCode initialize() override
     {
@@ -341,9 +338,6 @@ namespace Google
     /// Constructor
     using AuditorBase::AuditorBase;
 
-    ~HeapChecker() override = default;
-
-  public:
     StatusCode initialize() override
     {
       const StatusCode sc = AuditorBase::initialize();

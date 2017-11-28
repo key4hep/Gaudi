@@ -51,16 +51,11 @@ public:
   {
     setProperty( "StatPrint", "true" ).ignore();
   }
-  /// virtual protected dectrustor
-  ~CounterAlg() override {}
 
-private:
-  // default constructor is disabled
-  CounterAlg();
   // copy constructor is disabled
-  CounterAlg( const CounterAlg& );
+  CounterAlg( const CounterAlg& ) = delete;
   // assignement operator is disabled
-  CounterAlg& operator=( const CounterAlg& );
+  CounterAlg& operator=( const CounterAlg& ) = delete;
 };
 // ============================================================================
 

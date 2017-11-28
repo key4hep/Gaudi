@@ -21,9 +21,6 @@ protected:
 public:
   using OutputStream::OutputStream;
 
-  /// Standard Destructor
-  ~SequentialOutputStream() override = default;
-
   StatusCode execute() override;
 
 private:

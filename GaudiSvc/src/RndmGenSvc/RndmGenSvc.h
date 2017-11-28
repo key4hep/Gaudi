@@ -59,7 +59,6 @@ private:
 public:
   // inherits constructor from base class
   using extends::extends;
-  ~RndmGenSvc() override = default;
 
 public:
   /// Service override: initialization

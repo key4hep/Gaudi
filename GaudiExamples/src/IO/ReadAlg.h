@@ -26,8 +26,6 @@ class ReadAlg : public Algorithm, virtual public IIncidentListener
 public:
   /// Constructor: A constructor of this form must be provided.
   using Algorithm::Algorithm;
-  /// Standard Destructor
-  ~ReadAlg() override = default;
   /// Initialize
   StatusCode initialize() override;
   /// Finalize
@@ -35,7 +33,7 @@ public:
   /// Event callback
   StatusCode execute() override;
   /// IIncidentListener override: Inform that a new incident has occured
-  virtual void handle( const Incident& incident ) override;
+  void handle( const Incident& incident ) override;
 };
 
 #endif // GAUDIEXAMPLES_READALG_H

@@ -24,16 +24,6 @@ using namespace Genfun;
 DECLARE_ALGORITHM_FACTORY( EqSolverPAlg )
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-EqSolverPAlg::EqSolverPAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-EqSolverPAlg::~EqSolverPAlg() {}
-
-//=============================================================================
 typedef Genfun::AbsFunction GenFunc;
 
 // Our functions

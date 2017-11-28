@@ -35,7 +35,6 @@ namespace HepRndm
 
   public:
     BaseEngine( const std::string& name, ISvcLocator* loc ) : RndmEngine( name, loc ) {}
-    ~BaseEngine() override = default;
     CLHEP::HepRandomEngine* hepEngine() { return m_hepEngine.get(); }
     const CLHEP::HepRandomEngine* hepEngine() const { return m_hepEngine.get(); }
     // Retrieve single random number

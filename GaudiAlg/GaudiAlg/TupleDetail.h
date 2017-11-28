@@ -105,10 +105,6 @@ namespace Tuples
         return sc;
       }
 
-    protected:
-      /// empty protected  destructor
-      ~TupleObjImp() override = default;
-
     private:
       HANDLER1 m_handler1;
       HANDLER2 m_handler2;

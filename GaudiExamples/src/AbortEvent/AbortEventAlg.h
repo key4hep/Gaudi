@@ -19,13 +19,10 @@ public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
 
-  ~AbortEventAlg() override = default; ///< Destructor
-
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
   StatusCode finalize() override;   ///< Algorithm finalization
 
-protected:
 private:
   Gaudi::Property<long> m_count{this, "AbortedEventNumber", 3, "At which event to trigger an abort"};
 

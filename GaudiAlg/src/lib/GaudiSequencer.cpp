@@ -183,15 +183,6 @@ StatusCode GaudiSequencer::execute()
   return m_returnOK ? ( result.ignore(), StatusCode::SUCCESS ) : result;
 }
 
-//=============================================================================
-//  Finalize
-//=============================================================================
-StatusCode GaudiSequencer::finalize()
-{
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
-  return GaudiAlgorithm::finalize();
-}
-
 //=========================================================================
 //  Execute the beginRun of every algorithm
 //=========================================================================

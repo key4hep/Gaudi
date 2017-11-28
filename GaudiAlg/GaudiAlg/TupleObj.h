@@ -1010,12 +1010,8 @@ namespace Tuples
     StatusCode farray( const std::string& name, const FUNCTION& function, ITERATOR first, ITERATOR last,
                        const std::string& length, size_t maxv )
     {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
 
       // adjust the length
       if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
@@ -1025,18 +1021,14 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) {
-        return InvalidColumn;
-      }
+      if ( !len ) return InvalidColumn;
 
       // adjust the length
       *len = std::distance( first, last );
 
       // get the array itself
       FArray* var = fArray( name, len );
-      if ( !var ) {
-        return InvalidColumn;
-      }
+      if ( !var ) return InvalidColumn;
 
       // fill the array
       std::transform( first, last, std::begin( *var ), std::cref( function ) );
@@ -1083,16 +1075,14 @@ namespace Tuples
         using GaudiUtils::details::ostream_joiner;
         std::ostringstream os;
         ostream_joiner( os, first_item, last_item, ",",
-                        []( std::ostream& os, const auto& i ) -> std::ostream& { return os << i.first; } );
+                        []( std::ostream& os, const auto& i ) -> decltype( auto ) { return os << i.first; } );
         Warning( "farray('" + os.str() + "'): array overflow, skipping extra entries" ).ignore();
         last = std::next( first, maxv );
       }
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) {
-        return InvalidColumn;
-      }
+      if ( !len ) return InvalidColumn;
 
       // adjust the length
       *len = std::distance( first, last );
@@ -1328,12 +1318,8 @@ namespace Tuples
     StatusCode fmatrix( const std::string& name, const MATRIX& data, size_t rows, const MIndex& cols,
                         const std::string& length, size_t maxv )
     {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
 
       // adjust the length
       if ( rows >= maxv ) {
@@ -1343,18 +1329,14 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) {
-        return InvalidColumn;
-      }
+      if ( !len ) return InvalidColumn;
 
       // adjust the length item
       *len = rows;
 
       // get the array itself
       FMatrix* var = fMatrix( name, len, cols );
-      if ( !var ) {
-        return InvalidColumn;
-      }
+      if ( !var ) return InvalidColumn;
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < cols; ++iCol ) {
@@ -1406,12 +1388,8 @@ namespace Tuples
     StatusCode fmatrix( const std::string& name, DATA first, DATA last, const MIndex& cols, const std::string& length,
                         size_t maxv )
     {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
 
       // adjust the length
       if ( first + maxv < last ) {
@@ -1421,18 +1399,14 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) {
-        return InvalidColumn;
-      }
+      if ( !len ) return InvalidColumn;
 
       // adjust the length item
       *len = last - first;
 
       // get the array itself
       FMatrix* var = fMatrix( name, len, cols );
-      if ( !var ) {
-        return InvalidColumn;
-      }
+      if ( !var ) return InvalidColumn;
 
       /// fill the matrix
       size_t iRow = 0;
@@ -1530,12 +1504,8 @@ namespace Tuples
     StatusCode fmatrix( const std::string& name, FUN funF, FUN funL, DATA first, DATA last, const std::string& length,
                         size_t maxv )
     {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
 
       // adjust the length
       if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
@@ -1545,9 +1515,7 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) {
-        return InvalidColumn;
-      }
+      if ( !len ) return InvalidColumn;
 
       // adjust the length item
       *len = std::distance( first, last );
@@ -1555,9 +1523,7 @@ namespace Tuples
       // get the array itself
       auto cols    = std::distance( funF, funL );
       FMatrix* var = fMatrix( name, len, cols );
-      if ( !var ) {
-        return InvalidColumn;
-      }
+      if ( !var ) return InvalidColumn;
 
       /// fill the matrix
       size_t iRow = 0;
@@ -1601,21 +1567,15 @@ namespace Tuples
     StatusCode array( const std::string& name, DATA first, DATA last )
 
     {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
 
       // get the length (fixed!)
       auto length = std::distance( first, last );
 
       // get the array itself
       FArray* var = fArray( name, length );
-      if ( !var ) {
-        return InvalidColumn;
-      }
+      if ( !var ) return InvalidColumn;
 
       /// fill the array
       std::copy( first, last, std::begin( *var ) );
@@ -1763,18 +1723,12 @@ namespace Tuples
     template <class MATRIX>
     StatusCode matrix( const std::string& name, const MATRIX& data, const MIndex& rows, const MIndex& cols )
     {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
 
       // get the matrix itself
       FMatrix* var = fMatrix( name, rows, cols );
-      if ( !var ) {
-        return InvalidColumn;
-      }
+      if ( !var ) return InvalidColumn;
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < cols; ++iCol ) {
@@ -1871,18 +1825,12 @@ namespace Tuples
     template <class TYPE, unsigned int D1, unsigned int D2, class REP>
     StatusCode matrix( const std::string& name, const ROOT::Math::SMatrix<TYPE, D1, D2, REP>& mtrx )
     {
-      if ( invalid() ) {
-        return InvalidTuple;
-      }
-      if ( rowWise() ) {
-        return InvalidOperation;
-      }
+      if ( invalid() ) return InvalidTuple;
+      if ( rowWise() ) return InvalidOperation;
 
       // get the matrix itself
       FMatrix* var = fMatrix( name, (MIndex)D1, (MIndex)D2 );
-      if ( !var ) {
-        return InvalidColumn;
-      }
+      if ( !var ) return InvalidColumn;
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < D2; ++iCol ) {
@@ -1918,7 +1866,7 @@ namespace Tuples
       using Info = std::pair<KEY, VALUE>;
       static const std::array<std::function<float( const Info& )>, 2> fns = {
           {[]( const Info& i ) { return i.first; }, []( const Info& i ) { return i.second; }}};
-      return fmatrix( name, std::begin( fns ), std::end( fns ), std::begin( info ), std::end( info ), length, maxv );
+      return fmatrix( name, begin( fns ), end( fns ), begin( info ), end( info ), length, maxv );
     }
     // =======================================================================
   public:

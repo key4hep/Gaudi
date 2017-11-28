@@ -33,8 +33,6 @@ public:
 
 public:
   using extends::extends;
-  /// Destructor.
-  ~ExceptionSvc() override = default;
 
 private:
   // default constructor is disabled

@@ -11,8 +11,7 @@ class IncidentListenerTest;
 class IncidentListenerTestAlg : public GaudiAlgorithm
 {
 public:
-  IncidentListenerTestAlg( const std::string& name, ISvcLocator* pSvcLocator );
-  ~IncidentListenerTestAlg() override = default;
+  using GaudiAlgorithm::GaudiAlgorithm;
 
   StatusCode initialize() override;
   StatusCode execute() override;

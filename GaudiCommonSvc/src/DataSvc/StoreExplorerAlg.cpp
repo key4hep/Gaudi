@@ -55,9 +55,6 @@ public:
   /// Inherited constructor
   using Algorithm::Algorithm;
 
-  /// Standard Destructor
-  ~StoreExplorerAlg() override = default;
-
   template <class T>
   std::string access( T* p )
   {

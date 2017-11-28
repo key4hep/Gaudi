@@ -64,8 +64,6 @@ public:
   /// Standard Constructor
   HistogramPersistencySvc( const std::string& name, ISvcLocator* svc );
 
-  /// Standard Destructor
-  ~HistogramPersistencySvc() override = default;
   //@}
 public:
   // ==========================================================================

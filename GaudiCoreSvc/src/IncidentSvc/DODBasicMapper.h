@@ -22,9 +22,6 @@ public:
   /// inherit contructor
   using extends::extends;
 
-  // DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent);
-  ~DODBasicMapper() override = default;
-
   /// @see IDODAlgMapper
   Gaudi::Utils::TypeNameString algorithmForPath( const std::string& path ) override;
 

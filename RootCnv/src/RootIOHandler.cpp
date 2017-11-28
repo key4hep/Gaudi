@@ -64,8 +64,6 @@ namespace GaudiRoot
   public:
     /// Initializing constructor
     IOHandler( TClass* c ) : m_root( c ) {}
-    /// Standard destructor
-    ~IOHandler() override = default;
     /// ROOT I/O callback
     void operator()( TBuffer& b, void* obj ) override
     {

@@ -29,8 +29,6 @@ namespace RootHistCnv
     DirectoryCnv( ISvcLocator* svc ) : RConverter( CLID_DataObject, svc ) {}
     /// Standard constructor
     DirectoryCnv( const CLID& clid, ISvcLocator* svc ) : RConverter( clid, svc ) {}
-    /// Standard destructor
-    ~DirectoryCnv() override = default;
   };
 } // namespace RootHistCnv
 

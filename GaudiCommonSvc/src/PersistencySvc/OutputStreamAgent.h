@@ -35,8 +35,6 @@ class OutputStreamAgent : virtual public IDataStoreAgent
 public:
   /// Standard Constructor
   OutputStreamAgent( OutputStream* OutputStream );
-  /// Standard Destructor
-  ~OutputStreamAgent() override = default;
   /// Analysis callback
   bool analyse( IRegistry* dir, int level ) override;
 };

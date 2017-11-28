@@ -58,8 +58,6 @@ namespace Gaudi
       {
         setProperty( "PropertiesPrint", true ).ignore();
       }
-      /// destructor
-      ~ExtendedProperties2() override = default;
       // ======================================================================
     private:
       // ======================================================================

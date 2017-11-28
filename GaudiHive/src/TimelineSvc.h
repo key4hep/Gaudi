@@ -11,8 +11,9 @@
 
 class TimelineSvc : public extends<Service, ITimelineSvc>
 {
-
 public:
+  using extends::extends;
+
   StatusCode initialize() override;
   StatusCode reinitialize() override;
   StatusCode finalize() override;
@@ -21,11 +22,6 @@ public:
   void getTimelineEvent( TimelineEvent& ) const override;
 
   bool isEnabled() const override { return m_isEnabled; }
-
-  using extends::extends;
-
-  // Destructor.
-  ~TimelineSvc() override = default;
 
 private:
   void outputTimeline();

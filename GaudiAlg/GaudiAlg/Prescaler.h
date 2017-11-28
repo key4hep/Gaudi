@@ -11,11 +11,6 @@ public:
    **/
   Prescaler( std::string name, ISvcLocator* pSvcLocator );
 
-  /**
-   ** Destructor
-   **/
-  ~Prescaler() override = default;
-
   /*****************************
    ** Public Function Members **
    *****************************/

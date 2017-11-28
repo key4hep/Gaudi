@@ -39,8 +39,6 @@ namespace Gaudi
       // ======================================================================
       /// standard constructor
       using GaudiAlgorithm::GaudiAlgorithm;
-      /// virtual & protected destructor
-      ~StringKeyEx() override = default;
       // ======================================================================
     private:
       // ======================================================================
