@@ -49,7 +49,7 @@ StatusCode JobOptionsSvc::initialize()
 StatusCode JobOptionsSvc::addPropertyToCatalogue( const std::string& client,
                                                   const Gaudi::Details::PropertyBase& property )
 {
-  std::unique_ptr<Gaudi::Details::PropertyBase> p{new Gaudi::Property<std::string>( property.name(), "" )};
+  auto p = std::make_unique<Gaudi::Property<std::string>>( property.name(), "" );
   return property.load( *p ) ? m_svc_catalog.addProperty( client, p.release() ) : StatusCode::FAILURE;
 }
 // ============================================================================

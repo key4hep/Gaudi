@@ -16,15 +16,8 @@ DECLARE_SERVICE_FACTORY( ThreadPoolSvc )
 
 //=============================================================================
 
-ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc )
-    : base_class( name, svcLoc )
-    , m_threadInitTools( this )
-    , m_init( false )
-    , m_threadPoolSize( 0 )
-    , m_tbbSchedInit( nullptr )
-    , m_barrier( nullptr )
+ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ) : extends( name, svcLoc )
 {
-
   declareProperty( "ThreadInitTools", m_threadInitTools, "ToolHandleArray of IThreadInitTools" );
 }
 
@@ -44,12 +37,11 @@ StatusCode ThreadPoolSvc::initialize()
     error() << "Unable to retrieve ThreadInitTools Array" << endmsg;
 
     return StatusCode::FAILURE;
+  }
+  if ( m_threadInitTools.size() != 0 ) {
+    info() << "retrieved " << m_threadInitTools.size() << " thread init tools" << endmsg;
   } else {
-    if ( m_threadInitTools.size() != 0 ) {
-      info() << "retrieved " << m_threadInitTools.size() << " thread init tools" << endmsg;
-    } else {
-      info() << "no thread init tools attached" << endmsg;
-    }
+    info() << "no thread init tools attached" << endmsg;
   }
 
   return StatusCode::SUCCESS;
@@ -98,7 +90,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize )
     if ( thePoolSize != -1 ) thePoolSize += 1;
 
     // Create the TBB task scheduler
-    m_tbbSchedInit = std::unique_ptr<tbb::task_scheduler_init>( new tbb::task_scheduler_init( thePoolSize ) );
+    m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
     // Create the barrier for task synchronization
     if ( m_threadPoolSize <= -1 ) thePoolSize = m_tbbSchedInit->default_num_threads();
     if ( msgLevel( MSG::DEBUG ) ) {
@@ -106,7 +98,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize )
     }
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( thePoolSize );
 
-    m_barrier = std::unique_ptr<boost::barrier>( new boost::barrier( thePoolSize ) );
+    m_barrier = std::make_unique<boost::barrier>( thePoolSize );
 
   } else {
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );

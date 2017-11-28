@@ -51,17 +51,15 @@ static bool UnitsNode( gp::Node* node, const std::string& search_path, gp::Inclu
 static std::unique_ptr<gp::PropertyName> GetPropertyName( const gp::Node* node )
 {
   if ( node->children.size() == 1 ) {
-    return std::unique_ptr<gp::PropertyName>( new gp::PropertyName( node->children[0].value, node->position ) );
-  } else {
-    std::string delim;
-    std::string client;
-    for ( unsigned int i = 0; i < ( node->children.size() - 1 ); ++i ) {
-      client += delim + node->children[i].value;
-      delim = '.';
-    }
-    return std::unique_ptr<gp::PropertyName>(
-        new gp::PropertyName( client, node->children[node->children.size() - 1].value, node->position ) );
+    return std::make_unique<gp::PropertyName>( node->children[0].value, node->position );
   }
+  std::string delim;
+  std::string client;
+  for ( unsigned int i = 0; i < ( node->children.size() - 1 ); ++i ) {
+    client += delim + node->children[i].value;
+    delim = '.';
+  }
+  return std::make_unique<gp::PropertyName>( client, node->children[node->children.size() - 1].value, node->position );
 }
 // ============================================================================
 static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node, gp::Catalog* catalog,
@@ -83,25 +81,25 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
       if ( units->Find( unit_name, unit_value ) ) {
         // We have found a unit
         double val = std::stod( node->value );
-        value.reset( new gp::PropertyValue( std::to_string( val * unit_value ) ) );
+        value      = std::make_unique<gp::PropertyValue>( std::to_string( val * unit_value ) );
       } else {
         // Unit not found
         throw gp::PositionalPropertyValueException::CouldNotFindUnit( node->children[0].position, unit_name );
       }
     } else {
-      value.reset( new gp::PropertyValue( node->value ) );
+      value = std::make_unique<gp::PropertyValue>( node->value );
     }
     break;
   }
   // ------------------------------------------------------------------------
   case gp::Node::kString: {
     // TODO,C++14: use std::quoted
-    value.reset( new gp::PropertyValue( '"' + node->value + '"' ) );
+    value = std::make_unique<gp::PropertyValue>( '"' + node->value + '"' );
     break;
   }
   // ------------------------------------------------------------------------
   case gp::Node::kBool: {
-    value.reset( new gp::PropertyValue( node->value ) );
+    value = std::make_unique<gp::PropertyValue>( node->value );
     break;
   }
   // ------------------------------------------------------------------------
@@ -110,7 +108,7 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
     result.reserve( node->children.size() );
     std::transform( std::begin( node->children ), std::end( node->children ), std::back_inserter( result ),
                     [&]( const gp::Node& child ) { return GetPropertyValue( &child, catalog, units )->ToString(); } );
-    value.reset( new gp::PropertyValue( std::move( result ) ) );
+    value = std::make_unique<gp::PropertyValue>( std::move( result ) );
     break;
   }
   // ------------------------------------------------------------------------
@@ -121,7 +119,7 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
       auto vvalue = GetPropertyValue( &child.children[1], catalog, units );
       result.emplace( kvalue->ToString(), vvalue->ToString() );
     }
-    value.reset( new gp::PropertyValue( std::move( result ) ) );
+    value = std::make_unique<gp::PropertyValue>( std::move( result ) );
     break;
   }
   // ------------------------------------------------------------------------
@@ -129,7 +127,7 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
     auto property        = GetPropertyName( node );
     gp::Property* exists = catalog->Find( property->client(), property->property() );
     if ( exists ) {
-      value.reset( new gp::PropertyValue( exists->property_value() ) );
+      value = std::make_unique<gp::PropertyValue>( exists->property_value() );
     } else {
       throw gp::PositionalPropertyValueException::CouldNotFindProperty( node->position, property->ToString() );
     }
@@ -142,7 +140,7 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
     reference.push_back( property->client() );
     reference.push_back( property->property() );
 
-    value.reset( new gp::PropertyValue( std::move( reference ), property->position(), true ) );
+    value = std::make_unique<gp::PropertyValue>( std::move( reference ), property->position(), true );
     break;
   }
   // ------------------------------------------------------------------------

@@ -46,8 +46,8 @@ namespace RootHistCnv
       if ( r && h ) {
         // Need to flip representation .... clumsy for the time being, because
         // THXY constructor has no "generic" copy constructor
-        std::unique_ptr<T> p( new T() );
-        S* s = dynamic_cast<S*>( r->tObj() );
+        auto p = std::make_unique<T>();
+        S* s   = dynamic_cast<S*>( r->tObj() );
         if ( s && p.get() ) {
           TTH<S>* casted = (TTH<S>*)s;
           TArray* a      = dynamic_cast<TArray*>( s );

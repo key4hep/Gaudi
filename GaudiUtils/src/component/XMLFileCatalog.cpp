@@ -209,12 +209,12 @@ void XMLFileCatalog::init()
 {
   string xmlFile = getfile( false );
   try {
-    m_parser.reset( new XercesDOMParser );
+    m_parser = std::make_unique<XercesDOMParser>();
     m_parser->setValidationScheme( XercesDOMParser::Val_Auto );
     m_parser->setDoNamespaces( false );
     DTDRedirect dtdinmem;
     m_parser->setEntityResolver( &dtdinmem );
-    if ( !m_errHdlr ) m_errHdlr.reset( new ErrHandler( m_msgSvc ) );
+    if ( !m_errHdlr ) m_errHdlr = std::make_unique<ErrHandler>( m_msgSvc );
     m_parser->setErrorHandler( m_errHdlr.get() );
     if ( !xmlFile.empty() ) {
       m_parser->parse( xmlFile.c_str() );
@@ -451,7 +451,7 @@ void XMLFileCatalog::commit()
       string xmlfile = getfile( true );
       XMLStr ii( "LS" );
       DOMImplementation* imp = DOMImplementationRegistry::getDOMImplementation( ii );
-      std::unique_ptr<XMLFormatTarget> tar{new LocalFileFormatTarget( xmlfile.c_str() )};
+      auto tar               = std::make_unique<LocalFileFormatTarget>( xmlfile.c_str() );
 #if _XERCES_VERSION <= 30000
       DOMWriter* wr = imp->createDOMWriter();
       wr->setFeature( XMLUni::fgDOMWRTFormatPrettyPrint, true );

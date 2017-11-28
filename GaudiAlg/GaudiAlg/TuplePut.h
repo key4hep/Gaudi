@@ -53,13 +53,9 @@ namespace Tuples
       // find the item by name
       auto ifound = m_map.find( key );
       // existing item?
-      if ( m_map.end() != ifound ) {
-        return ifound->second.get();
-      } // RETURN
+      if ( m_map.end() != ifound ) return ifound->second.get(); // RETURN
       // check the tuple for booking:
-      if ( !tuple ) {
-        return nullptr;
-      }
+      if ( !tuple ) return nullptr;
       // check the existence of the name
       if ( !tuple->goodItem( key ) ) {
         tuple->Error( "ItemStore::getItem('" + key + "') item name is not unique" ).ignore();
@@ -73,7 +69,7 @@ namespace Tuples
       }
       // create new item:
       // add the newly created item into the store:
-      auto stored = m_map.emplace( key, std::unique_ptr<NTuple::Item<VALUE>>{new NTuple::Item<VALUE>()} );
+      auto stored = m_map.emplace( key, std::make_unique<NTuple::Item<VALUE>>() );
       if ( !stored.second ) {
         tuple->Warning( "ItemStore::getItem('" + key + "') item already exists, new one not inserted!" ).ignore();
         return nullptr;
@@ -96,7 +92,6 @@ namespace Tuples
       return item.get(); // RETURN
     }
 
-  private:
     // delete copy constructor and assignment
     ItemStore( const ItemStore& ) = delete;
     ItemStore& operator=( const ItemStore& ) = delete;

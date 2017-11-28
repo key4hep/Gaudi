@@ -3,12 +3,6 @@
 
 DECLARE_COMPONENT( FileReadTool )
 
-FileReadTool::FileReadTool( const std::string& type, const std::string& name, const IInterface* parent )
-    : base_class( type, name, parent )
-{
-  // declareInterface<IFileAccess>(this);
-}
-
 std::unique_ptr<std::istream> FileReadTool::open( const std::string& url )
 {
   // remove the optional "file://" from the beginning of the url
@@ -18,7 +12,7 @@ std::unique_ptr<std::istream> FileReadTool::open( const std::string& url )
   } else {
     path = url;
   }
-  return std::unique_ptr<std::istream>( new std::ifstream{path} );
+  return std::make_unique<std::ifstream>( path );
 }
 
 const std::vector<std::string>& FileReadTool::protocols() const

@@ -215,8 +215,8 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
     bool fire_incident = false;
     *con               = nullptr;
     if ( !c ) {
-      std::unique_ptr<RootDataConnection> connection( new RootDataConnection( this, dataset, m_setup ) );
-      StatusCode sc = ( mode != IDataConnection::READ )
+      auto connection = std::make_unique<RootDataConnection>( this, dataset, m_setup );
+      StatusCode sc   = ( mode != IDataConnection::READ )
                           ? m_ioMgr->connectWrite( connection.get(), IDataConnection::IoType( mode ), "ROOT" )
                           : m_ioMgr->connectRead( false, connection.get() );
       c = sc.isSuccess() ? m_ioMgr->connection( dataset ) : nullptr;
