@@ -146,7 +146,7 @@ class PropertyProxy(object):
                     except AttributeError:
                         # value not yet set
                         pass
-            except ValueError, e:
+            except ValueError as e:
                 if allowcompat:
                     log.error('inconsistent value types for %s.%s (%s)' %
                               (obj.getName(), self.descr.__name__, str(e)))
@@ -199,7 +199,7 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                 default = self.convertDefaultToBeSet(obj, default)
                 if default:
                     self.__set__(obj, default)
-            except AttributeError, e:
+            except AttributeError as e:
                 # change type of exception to avoid false error message
                 raise RuntimeError(*e.args)
 
@@ -266,7 +266,7 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
 
 
 #               print self.fullPropertyName(obj) + ": Setting default private configurable (from default handle): %r" % conf
-                except AttributeError, e:
+                except AttributeError as e:
                     # change type of exception to avoid false error message
                     raise RuntimeError(*e.args)
                 if conf is None:
@@ -389,7 +389,7 @@ class DataObjectHandleBasePropertyProxy(PropertyProxy):
                 default = self.convertValueToBeSet(obj, default)
                 if default:
                     self.__set__(obj, default)
-            except AttributeError, e:
+            except AttributeError as e:
                 # change type of exception to avoid false error message
                 raise RuntimeError(*e.args)
 

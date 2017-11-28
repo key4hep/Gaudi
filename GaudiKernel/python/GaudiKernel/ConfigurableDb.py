@@ -138,7 +138,7 @@ def loadConfigurableDb():
             log.debug("\t-loading [%s]...", confDb)
             try:
                 cfgDb._loadModule(confDb)
-            except Exception, err:
+            except Exception as err:
                 log.warning("Could not load file [%s] !", confDb)
                 log.warning("Reason: %s", err)
             nFiles += 1

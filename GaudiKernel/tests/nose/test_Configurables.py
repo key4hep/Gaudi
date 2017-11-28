@@ -53,7 +53,7 @@ def test_invalid_value():
         raise
     except ValueError:
         pass
-    except Exception, x:
+    except Exception as x:
         assert False, 'ValueError exception expected, got %s' % type(
             x).__name__
 
@@ -64,7 +64,7 @@ def test_invalid_value():
         raise
     except ValueError:
         pass
-    except Exception, x:
+    except Exception as x:
         assert False, 'ValueError exception expected, got %s' % type(
             x).__name__
 
@@ -89,7 +89,7 @@ def test_invalid_key():
         raise
     except AttributeError:
         pass
-    except Exception, x:
+    except Exception as x:
         assert False, 'AttributeError exception expected, got %s' % type(
             x).__name__
 

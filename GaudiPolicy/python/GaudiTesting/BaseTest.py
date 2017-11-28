@@ -55,7 +55,7 @@ def kill_tree(ppid, sig):
     try:
         log.debug('killing process %d', ppid)
         os.kill(ppid, sig)
-    except OSError, err:
+    except OSError as err:
         if err.errno != 3:  # No such process
             raise
         log.debug('no such process %d', ppid)
