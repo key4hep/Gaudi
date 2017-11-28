@@ -720,7 +720,7 @@ class iHistogramSvc(iDataSvc):
         >>> svc = ...
         >>> histo = svc.book( .... )
         """
-        return apply(self._ihs.book, args)
+        return self._ihs.book(*args)
 
     def bookProf(self, *args):
         """
@@ -728,7 +728,7 @@ class iHistogramSvc(iDataSvc):
         >>> svc = ...
         >>> histo = svc.bookProf( .... )
         """
-        return apply(self._ihs.bookProf, args)
+        return self._ihs.bookProf(*args)
 
     def __getitem__(self, path):
         """
@@ -774,7 +774,7 @@ class iNTupleSvc(iDataSvc):
         iDataSvc.__init__(self, name, ints)
 
     def book(self, *args):
-        return apply(self._ints.book, args)
+        return self._ints.book(*args)
 
     def defineOutput(self, files, typ="Gaudi::RootCnvSvc"):
         """ Defines the mapping between logical names and the output file

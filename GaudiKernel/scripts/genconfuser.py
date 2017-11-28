@@ -17,7 +17,7 @@ from GaudiKernel.ConfigurableDb import cfgDb
 logging.VERBOSE = (logging.INFO + logging.DEBUG) / 2
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
 logging.verbose = lambda msg, *args, **kwargs: \
-    apply(logging.log, (logging.VERBOSE, msg) + args, kwargs)
+    logging.log(logging.VERBOSE, msg, *args, **kwargs)
 
 
 def _inheritsfrom(derived, basenames):

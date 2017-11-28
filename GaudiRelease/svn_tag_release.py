@@ -18,7 +18,7 @@ from ConfigParser import ConfigParser
 
 def svn(*args, **kwargs):
     print "> svn", " ".join(args)
-    return apply(Popen, (["svn"] + list(args), ), kwargs)
+    return Popen(["svn"] + list(args), **kwargs)
 
 
 def svn_ls(url):
@@ -42,7 +42,7 @@ def svn_exists(url):
 def checkout_structure(url, proj, branch):
     def checkout_level(base):
         dirs = ["%s/%s" % (base, d) for d in svn_ls(base) if d.endswith("/")]
-        apply(svn, ["up", "-N"] + dirs).wait()
+        svn("up", "-N", *args).wait()
         return dirs
 
     root = basename(url)
