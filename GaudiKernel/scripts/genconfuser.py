@@ -3,7 +3,7 @@
 """
 Generate _confDb.py files for ConfigurableUser classes.
 """
-
+from __future__ import division
 import os
 import sys
 import time
@@ -14,7 +14,7 @@ from pprint import pformat
 from glob import glob
 from GaudiKernel.ConfigurableDb import cfgDb
 
-logging.VERBOSE = (logging.INFO + logging.DEBUG) / 2
+logging.VERBOSE = (logging.INFO + logging.DEBUG) // 2
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
 logging.verbose = lambda msg, *args, **kwargs: \
     logging.log(logging.VERBOSE, msg, *args, **kwargs)
