@@ -73,28 +73,31 @@ namespace Containers
 }
 void Containers::cannotAssignObjectKey()
 {
-  throw GaudiException( "Cannot assign key to keyed object! Object already has a key.", "KeyedObject", 0 );
+  throw GaudiException( "Cannot assign key to keyed object! Object already has a key.", "KeyedObject",
+                        StatusCode::FAILURE );
 }
 void Containers::cannotInsertToContainer()
 {
-  throw GaudiException( "Cannot insert element to Keyed Container!", "KeyedContainer", 0 );
+  throw GaudiException( "Cannot insert element to Keyed Container!", "KeyedContainer", StatusCode::FAILURE );
 }
 
 void Containers::containerIsInconsistent()
 {
-  throw GaudiException( "Keyed Container structures are inconsistent - severe problem!", "KeyedContainer", 0 );
+  throw GaudiException( "Keyed Container structures are inconsistent - severe problem!", "KeyedContainer",
+                        StatusCode::FAILURE );
 }
 
 void Containers::invalidContainerOperation()
 {
-  throw GaudiException( "Keyed Container cannot satisfy request - severe problem!", "KeyedContainer", 0 );
+  throw GaudiException( "Keyed Container cannot satisfy request - severe problem!", "KeyedContainer",
+                        StatusCode::FAILURE );
 }
 
 template <class T>
 Containers::KeyedObjectManager<T>::KeyedObjectManager() : m_seq( nullptr ), m_direct( 0 )
 {
   if ( sizeof( typename T::map_type ) > sizeof( m_setup.buffer ) ) {
-    throw GaudiException( "Basic STL contaier sizes are incompatible", "KeyedContainer", 0 );
+    throw GaudiException( "Basic STL contaier sizes are incompatible", "KeyedContainer", StatusCode::FAILURE );
   }
   m_setup.s = ::new ( m_setup.buffer + sizeof( m_setup.s ) ) T();
   m_keyCtxt = -1;

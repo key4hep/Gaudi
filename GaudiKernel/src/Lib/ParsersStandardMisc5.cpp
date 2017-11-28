@@ -15,8 +15,9 @@ StatusCode Gaudi::Parsers::parse( std::string& name, std::string& value, const s
   if ( parse_result ) {
     name  = result.first;
     value = result.second;
+    return StatusCode::SUCCESS;
   }
-  return parse_result;
+  return StatusCode::FAILURE;
 }
 
 StatusCode Gaudi::Parsers::parse( std::map<std::string, std::pair<double, double>>& result, const std::string& input )

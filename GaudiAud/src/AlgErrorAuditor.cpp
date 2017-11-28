@@ -39,7 +39,7 @@ void AlgErrorAuditor::afterExecute( INamedInterface* alg, const StatusCode& sc )
     fail = true;
 
     if ( m_throw && !m_abort ) {
-      throw GaudiException( os.str(), "AlgErrorAuditor", 0 );
+      throw GaudiException( os.str(), "AlgErrorAuditor", StatusCode::FAILURE );
     }
   }
 
@@ -56,7 +56,7 @@ void AlgErrorAuditor::afterExecute( INamedInterface* alg, const StatusCode& sc )
     fail = true;
 
     if ( m_throw && !m_abort ) {
-      throw GaudiException( os.str(), "AlgErrorAuditor", 0 );
+      throw GaudiException( os.str(), "AlgErrorAuditor", StatusCode::FAILURE );
     }
   }
 

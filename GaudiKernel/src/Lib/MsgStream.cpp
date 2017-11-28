@@ -125,7 +125,7 @@ std::string format( const char* fmt, ... )
   va_start( arguments, fmt );
   if ( vsnprintf( buffer, buffsize, fmt, arguments ) >= buffsize )
     throw GaudiException( "Insufficient buffer size (" + std::to_string( buffsize ) + ") when formatting message",
-                          "MsgStream", 0 );
+                          "MsgStream", StatusCode::FAILURE );
   va_end( arguments );
   return std::string( buffer );
 }

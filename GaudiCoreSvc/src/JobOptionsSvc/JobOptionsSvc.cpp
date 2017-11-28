@@ -123,7 +123,8 @@ StatusCode JobOptionsSvc::readOptions( const std::string& file, const std::strin
   gp::Units units;
   gp::PragmaOptions pragma;
   gp::Node ast;
-  StatusCode sc = gp::ReadOptions( file, path, &messages, &catalog, &units, &pragma, &ast );
+  StatusCode sc = gp::ReadOptions( file, path, &messages, &catalog, &units, &pragma, &ast ) ? StatusCode::SUCCESS
+                                                                                            : StatusCode::FAILURE;
 
   // --------------------------------------------------------------------------
   if ( sc.isSuccess() ) {

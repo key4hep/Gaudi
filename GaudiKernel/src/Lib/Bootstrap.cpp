@@ -149,9 +149,8 @@ IInterface* Gaudi::createInstance( const std::string& name, const std::string& f
   IAlgorithm* ia = Algorithm::Factory::create( factname, name, nullptr );
   if ( ia ) return ia;
 
-  void* libHandle   = nullptr;
-  StatusCode status = System::loadDynamicLib( dllname, &libHandle );
-  if ( status.isSuccess() ) {
+  void* libHandle = nullptr;
+  if ( System::loadDynamicLib( dllname, &libHandle ) ) {
     ii = ObjFactory::create( factname, nullptr );
     if ( ii ) return ii;
     is = Service::Factory::create( factname, name, nullptr );

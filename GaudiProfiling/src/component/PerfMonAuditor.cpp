@@ -565,7 +565,7 @@ StatusCode PerfMonAuditor::initialize()
 {
   if ( !m_pfm.loaded ) {
     error() << "pfm library could not be loaded" << endmsg;
-    return false;
+    return StatusCode::FAILURE;
   }
 
   info() << "Initializing..." << endmsg;
