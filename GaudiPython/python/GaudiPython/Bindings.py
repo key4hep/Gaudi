@@ -66,7 +66,7 @@ namespace GaudiPython { namespace Helpers {
 
 # toIntArray, toShortArray, etc.
 for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
-    exec "%s = Helper.%s" % (l, l)
+    exec("%s = Helper.%s" % (l, l))
     __all__.append(l)
 
 # FIXME: (MCl) Hack to handle ROOT 5.18 and ROOT >= 5.20

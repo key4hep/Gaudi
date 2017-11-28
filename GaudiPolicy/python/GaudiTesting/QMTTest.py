@@ -131,7 +131,7 @@ class QMTTest(BaseTest):
                 })
             }
             # print self.validator
-            exec self.validator in globals(), exported_symbols
+            exec(self.validator, globals(), exported_symbols)
             return result, self.causes
         else:
             return super(QMTTest, self).ValidateOutput(stdout, stderr, result)
