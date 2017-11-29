@@ -176,9 +176,10 @@ SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& 
     LockGuard_t lk( m_gLock );
     auto mit = m_lockMap.find( name );
     if ( mit == m_lockMap.end() ) {
-      mit = m_lockMap.emplace( name, std::unique_ptr<Mutex_t>( new Mutex_t ) ).first;
+      mit = m_lockMap.emplace( std::piecewise_construct_t{}, std::forward_as_tuple( name ), std::forward_as_tuple() )
+                .first;
     }
-    imut = mit->second.get();
+    imut = &mit->second;
   }
 
   {

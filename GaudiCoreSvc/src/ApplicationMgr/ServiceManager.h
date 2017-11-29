@@ -185,7 +185,7 @@ private:
   typedef boost::lock_guard<Mutex_t> LockGuard_t;
 
   mutable Mutex_t m_gLock;
-  mutable std::map<std::string, std::unique_ptr<Mutex_t>> m_lockMap;
+  mutable std::map<std::string, Mutex_t> m_lockMap;
 
 private:
   void dump() const;
