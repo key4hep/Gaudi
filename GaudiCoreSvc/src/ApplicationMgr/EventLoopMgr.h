@@ -10,7 +10,7 @@
 
 // Forward declarations
 class IIncidentSvc;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class IDataProviderSvc;
 
 /** Class definition of EventLoopMgr.

@@ -8,7 +8,7 @@
 #include "GaudiKernel/ThreadLocalContext.h"
 
 class IAlgManager;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 
 /** @class ReplayOutputStream ReplayOutputStream.h component/ReplayOutputStream.h
   *
