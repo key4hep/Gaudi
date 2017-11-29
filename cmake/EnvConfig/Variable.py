@@ -6,6 +6,8 @@ Created on Jun 27, 2011
 import re
 import os
 import logging
+import functools
+from os import listdir
 from os.path import normpath
 from zipfile import is_zipfile
 
@@ -136,16 +138,46 @@ class DuplicatesRemover(ListProcessor):
         return val
 
 
+def memoize(func):
+    '''
+    Memoization decorator for a function taking a single argument.
+    '''
+
+    cache = func.cache = {}
+
+    @functools.wraps(func)
+    def memoizer(arg):
+        try:
+            return cache[arg]
+        except KeyError:
+            return cache.setdefault(arg, func(arg))
+
+    return memoizer
+
+
+normpath = memoize(normpath)
+is_zipfile = memoize(is_zipfile)
+
+
+@memoize
+def isnonemptydir(path):
+    '''
+    Return whether a path is a list-able non-empty directory.
+    '''
+
+    try:
+        return bool(listdir(path))
+    except OSError:
+        return False
+
+
 class EmptyDirsRemover(ListProcessor):
     '''
     Remove empty or not existing directories from lists.
     '''
 
     def process(self, variable, value):
-        from os.path import isdir
-        from os import listdir, access
-        return [s for s in value if s.endswith('.zip') or
-                (isdir(s) and access(s, os.R_OK) and listdir(s))]
+        return [s for s in value if s.endswith('.zip') or isnonemptydir(s)]
 
 
 class UsePythonZip(ListProcessor):
