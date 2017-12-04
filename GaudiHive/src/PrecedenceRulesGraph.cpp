@@ -73,13 +73,6 @@ namespace concurrency
         return false;
       }
 
-      // if no decision can be made yet, request further information downwards
-      for ( auto child : m_children ) {
-        bool result = child->accept( visitor );
-        if ( !m_modeConcurrent )
-          if ( result ) break; // stop on first unresolved child if its decision hub is sequential
-      }
-
       return true; // visitor was accepted to try to aggregate the node's decision
     }
 
