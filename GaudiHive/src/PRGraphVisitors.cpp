@@ -36,6 +36,11 @@ namespace concurrency
     if ( result ) {
       m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
 
+      // Inform parent slot if there is one
+      if ( m_slot->parentSlot ) {
+        m_slot->parentSlot->subSlotAlgsReady.push_back( std::make_pair( m_slot->eventContext, node.getAlgoIndex() ) );
+      }
+
       if ( m_trace ) {
         auto sourceNode = ( m_cause.m_source == Cause::source::Task )
                               ? node.m_graph->getAlgorithmNode( m_cause.m_sourceName )
@@ -57,18 +62,26 @@ namespace concurrency
     /* Implements 'observer' strategy, i.e., only check if producer of this DataNode
      * has been already executed or not */
 
-    bool result = false; // return false if this DataNode has no producers at all
-
-    for ( auto algoNode : node.getProducers() ) {
+    auto const& producers = node.getProducers();
+    for ( auto algoNode : producers ) {
       const auto& state = m_slot->algsStates[algoNode->getAlgoIndex()];
       if ( State::EVTACCEPTED == state || State::EVTREJECTED == state ) {
-        result = true;
-        break; // skip checking other producers if one was found to be executed
+        return true; // skip checking other producers if one was found to be executed
+      }
+    }
+
+    // Check parent slot if necessary
+    if ( m_slot->parentSlot ) {
+      for ( auto algoNode : producers ) {
+        const auto& state = m_slot->parentSlot->algsStates[algoNode->getAlgoIndex()];
+        if ( State::EVTACCEPTED == state || State::EVTREJECTED == state ) {
+          return true; // skip checking other producers if one was found to be executed
+        }
       }
     }
 
     // return true only if this DataNode is produced
-    return result;
+    return false;
   }
 
   //--------------------------------------------------------------------------
@@ -145,26 +158,73 @@ namespace concurrency
     bool foundPositiveChild    = false;
     int decision               = -1;
 
-    for ( auto child : node.getDaughters() ) {
-      int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+    // If currently in a sub-slot, leave it if you've got to the exit
+    if ( m_slot->parentSlot && m_slot->entryPoint == node.getNodeName() ) m_slot = m_slot->parentSlot;
 
-      if ( childDecision == -1 )
-        foundNonResolvedChild = true;
-      else if ( childDecision == 1 )
-        foundPositiveChild = true;
-      else
-        foundNegativeChild = true;
+    // If children are in sub-slots, loop over all
+    auto searchResult = m_slot->subSlotsByNode.find( node.getNodeName() );
+    if ( searchResult != m_slot->subSlotsByNode.end() ) {
+      bool breakout = false;
+      for ( unsigned int slotIndex : searchResult->second ) {
 
-      if ( node.m_modePromptDecision ) {
-        if ( node.m_modeOR && foundPositiveChild ) {
-          decision = 1;
-          break;
-        } else if ( !node.m_modeOR && foundNegativeChild ) {
-          decision = 0;
-          break;
+        // Enter the sub-slot
+        m_slot = &( m_slot->allSubSlots[slotIndex] );
+
+        for ( auto child : node.getDaughters() ) {
+
+          int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+
+          if ( childDecision == -1 )
+            foundNonResolvedChild = true;
+          else if ( childDecision == 1 )
+            foundPositiveChild = true;
+          else
+            foundNegativeChild = true;
+
+          if ( node.m_modePromptDecision ) {
+            if ( node.m_modeOR && foundPositiveChild ) {
+              decision = 1;
+              breakout = true;
+              break;
+            } else if ( !node.m_modeOR && foundNegativeChild ) {
+              decision = 0;
+              breakout = true;
+              break;
+            }
+          } else {
+            if ( foundNonResolvedChild ) {
+              breakout = true;
+              break;
+            }
+          }
         }
-      } else {
-        if ( foundNonResolvedChild ) break;
+
+        // Leave the sub-slot
+        m_slot = m_slot->parentSlot;
+        if ( breakout ) break;
+      }
+    } else {
+      for ( auto child : node.getDaughters() ) {
+        int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+
+        if ( childDecision == -1 )
+          foundNonResolvedChild = true;
+        else if ( childDecision == 1 )
+          foundPositiveChild = true;
+        else
+          foundNegativeChild = true;
+
+        if ( node.m_modePromptDecision ) {
+          if ( node.m_modeOR && foundPositiveChild ) {
+            decision = 1;
+            break;
+          } else if ( !node.m_modeOR && foundNegativeChild ) {
+            decision = 0;
+            break;
+          }
+        } else {
+          if ( foundNonResolvedChild ) break;
+        }
       }
     } // end monitoring children
 
@@ -193,6 +253,32 @@ namespace concurrency
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
       return true;
     }
+
+    // if no decision can be made yet, request further information downwards
+    // Enter subslots for children if needed
+    if ( searchResult != m_slot->subSlotsByNode.end() ) {
+      for ( unsigned int slotIndex : searchResult->second ) {
+
+        // Enter sub-slot
+        m_slot = &( m_slot->allSubSlots[slotIndex] );
+
+        for ( auto child : node.getDaughters() ) {
+          bool result = child->accept( *this );
+          if ( !node.m_modeConcurrent )
+            if ( result ) break; // stop on first unresolved child if its decision hub is sequential
+        }
+
+        // Leave sub-slot
+        m_slot = m_slot->parentSlot;
+      }
+    } else {
+      for ( auto child : node.getDaughters() ) {
+        bool result = child->accept( *this );
+        if ( !node.m_modeConcurrent )
+          if ( result ) break; // stop on first unresolved child if its decision hub is sequential
+      }
+    }
+
     return false;
   }
 
