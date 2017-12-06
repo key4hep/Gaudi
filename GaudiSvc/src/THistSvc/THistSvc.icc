@@ -14,11 +14,17 @@
 #include "TObject.h"
 
 template <typename T>
-StatusCode THistSvc::regHist_i( T* hist, const std::string& id, bool shared, THistID*& phid )
+StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::string& id, bool shared, THistID*& phid )
 {
   GlobalDirectoryRestore restore( m_svcMut );
   phid = nullptr;
 
+  // It is a bit sad that we lose the management here, but it is the easiest way
+  // to modernize the interface without touching everything else
+  T* hist = nullptr;
+  if( hist_unique != nullptr ) {
+    hist = hist_unique.release();
+  }
   debug() << "regHist_i obj: " << hist << "  id: " << id << "  s: " << shared << endmsg;
 
   std::string idr( id );
@@ -63,25 +69,25 @@ StatusCode THistSvc::regHist_i( T* hist, const std::string& id, bool shared, THi
 
   TObject* to = nullptr;
   THistID hid;
-
   // check to see if this hist is to be read in;
   if ( !temp && m_files.find( stream )->second.second == READ ) {
     if ( hist != 0 ) {
       warning() << "Registering id: \"" << idr << "\" with non zero pointer!" << endmsg;
     }
 
-    if ( readHist_i( idr, hist ).isFailure() ) {
+    hist = readHist_i<T>( idr );
+    if ( hist == nullptr ) {
       error() << "Unable to read in hist" << endmsg;
       return StatusCode::FAILURE;
     }
     to  = dynamic_cast<TObject*>( hist );
     hid = THistID( uid, temp, to, f, m_files.find( stream )->second.second );
-  } else if ( hist == 0 ) {
+  } else if ( !hist ) {
     error() << "Unable to read in hist with id: \"" << idr << "\"" << endmsg;
     return StatusCode::FAILURE;
   } else {
     to = dynamic_cast<TObject*>( hist );
-    if ( to == 0 ) {
+    if ( to == nullptr ) {
       error() << "Could not dcast to TObject. id: \"" << idr << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -99,7 +105,7 @@ StatusCode THistSvc::regHist_i( T* hist, const std::string& id, bool shared, THi
 
     if ( dynamic_cast<TTree*>( hist ) ) {
       dynamic_cast<TTree*>( hist )->SetDirectory( dir );
-    } else if ( dynamic_cast<TH1*>( hist ) ) {
+    } else if ( dynamic_cast<TH1*>( hist) ) {
       dynamic_cast<TH1*>( hist )->SetDirectory( dir );
     } else if ( dynamic_cast<TGraph*>( hist ) ) {
       dir->Append( hist );
@@ -149,15 +155,23 @@ StatusCode THistSvc::regHist_i( T* hist, const std::string& id, bool shared, THi
   return StatusCode::SUCCESS;
 }
 
+template <typename T>
+StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist, const std::string& id, bool shared )
+{
+  THistID* hid;
+  return regHist_i( std::move(hist), id, shared, hid );
+}
+
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 template <typename T>
-StatusCode THistSvc::getHist_i( const std::string& id, T*& hist, const size_t& ind, bool quiet ) const
+T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) const
 {
   // id starts with "/": unique
 
   GlobalDirectoryRestore restore( m_svcMut );
 
+  T* hist = nullptr;
   const THistID* hid;
   size_t num = findHistID( id, hid, ind );
   if ( num == 0 ) {
@@ -165,27 +179,24 @@ StatusCode THistSvc::getHist_i( const std::string& id, T*& hist, const size_t& i
     if ( !quiet ) {
       error() << "could not locate Hist with id \"" << id << "\"" << endmsg;
     }
-    hist = nullptr;
-    return StatusCode::FAILURE;
+    return nullptr;
   } else if ( num > 1 ) {
     if ( !quiet ) {
       // return failure if trying to GET a single hist
       error() << "Multiple matches with id \"" << id << "\"."
               << " Further specifications required." << endmsg;
-      hist = nullptr;
-      return StatusCode::FAILURE;
+      return nullptr;
     } else {
       // return a SUCCESS if just INQUIRING
       info() << "Found multiple matches with id \"" << id << "\"" << endmsg;
-      hist = nullptr;
-      return StatusCode::SUCCESS;
+      return nullptr; // TODO was StatusCode::SUCCESS!
     }
   } else {
     if ( !quiet ) {
       hist = dynamic_cast<T*>( hid->obj );
-      if ( !hist ) {
+      if ( hist == nullptr ) {
         error() << "dcast failed, Hist id: \"" << id << "\"" << endmsg;
-        return StatusCode::FAILURE;
+        return nullptr;
       }
 
       verbose() << "found unique Hist title: \"" << hist->GetTitle() << "\"  id: \"" << id << "\"" << endmsg;
@@ -193,14 +204,14 @@ StatusCode THistSvc::getHist_i( const std::string& id, T*& hist, const size_t& i
       verbose() << "found unique Hist id: \"" << id << "\" type: \"" << hid->obj->IsA()->GetName() << "\"" << endmsg;
     }
 
-    return StatusCode::SUCCESS;
+    return hist;
   }
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 template <typename T>
-StatusCode THistSvc::readHist_i( const std::string& id, T*& hist ) const
+T* THistSvc::readHist_i( const std::string& id ) const
 {
   GlobalDirectoryRestore restore( m_svcMut );
 
@@ -211,12 +222,12 @@ StatusCode THistSvc::readHist_i( const std::string& id, T*& hist ) const
   TFile* file;
 
   if ( !findStream( idr, stream, rem, file ) ) {
-    return StatusCode::FAILURE;
+    return nullptr;
   }
 
   if ( !file ) {
     error() << "no associated file found" << endmsg;
-    return StatusCode::FAILURE;
+    return nullptr;
   }
 
   file->cd( "/" );
@@ -227,7 +238,7 @@ StatusCode THistSvc::readHist_i( const std::string& id, T*& hist ) const
   while ( ( dir = dirname( fdir ) ) != "" ) {
     if ( !gDirectory->GetKey( dir.c_str() ) ) {
       error() << "Directory \"" << fdir2 << "\" doesnt exist in " << file->GetName() << endmsg;
-      return StatusCode::FAILURE;
+      return nullptr;
     }
     gDirectory->cd( dir.c_str() );
   }
@@ -237,14 +248,14 @@ StatusCode THistSvc::readHist_i( const std::string& id, T*& hist ) const
 
   if ( !to ) {
     error() << "Could not get obj \"" << fdir << "\" in " << gDirectory->GetPath() << endmsg;
-    return StatusCode::FAILURE;
+    return nullptr;
   }
 
-  hist = dynamic_cast<T*>( to );
-  if ( !hist ) {
+  T* hist = dynamic_cast<T*>( to );
+  if ( hist == nullptr ) {
     error() << "Could not convert \"" << idr << "\" to a " << System::typeinfoName( typeid( *hist ) ) << " as is a "
             << to->IsA()->GetName() << endmsg;
-    return StatusCode::FAILURE;
+    return nullptr;
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
@@ -253,83 +264,74 @@ StatusCode THistSvc::readHist_i( const std::string& id, T*& hist ) const
     hist->Print();
   }
 
-  return StatusCode::SUCCESS;
+  return hist;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 template <typename T>
-StatusCode THistSvc::regSharedObj_i( const std::string& id, std::unique_ptr<T>& hist, LockedHandle<T>& lh )
+LockedHandle<T> THistSvc::regSharedObj_i( const std::string& id, std::unique_ptr<T> hist )
 {
+  LockedHandle<T> lh( nullptr, nullptr );
   const THistID* hid;
   if ( findHistID( id, hid ) == 0 ) {
     T* phist = hist.get();
     THistID* phid;
-    if ( regHist_i( hist.release(), id, true, phid ).isSuccess() ) {
+    if ( regHist_i( std::move(hist), id, true, phid ).isSuccess() ) {
       lh.set( phist, phid->mutex );
 
-      return StatusCode::SUCCESS;
     } else {
       error() << "regSharedHist: unable to register shared hist with id \"" << id << "\"" << endmsg;
-      lh.set( nullptr, nullptr );
-      return StatusCode::FAILURE;
     }
   } else {
     if ( !hid->shared ) {
       error() << "regSharedHist: previously register Hist with id \"" << id << "\" was not marked shared" << endmsg;
-      lh.set( nullptr, nullptr );
-      return StatusCode::FAILURE;
     }
 
     if ( hist->Compare( hid->obj ) != 0 ) {
       error() << "regSharedHist: Histogram " << id << " does not compare with " << hid << endmsg;
-      lh.set( nullptr, nullptr );
-      return StatusCode::FAILURE;
     } else {
       T* phist = dynamic_cast<T*>( hid->obj );
       if ( phist == 0 ) {
         error() << "regSharedHist: unable to dcast retrieved shared hist \"" << id << "\" of type "
                 << hid->obj->IsA()->GetName() << " to requested type " << phist->IsA()->GetName() << endmsg;
-        lh.set( nullptr, nullptr );
-        return StatusCode::FAILURE;
       } else {
         lh.set( phist, hid->mutex );
         delete hist.release();
-        return StatusCode::SUCCESS;
       }
     }
   }
+  return lh;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 template <typename T>
-StatusCode THistSvc::getSharedObj_i( const std::string& name, LockedHandle<T>& hist ) const
+LockedHandle<T> THistSvc::getSharedObj_i( const std::string& name ) const
 {
   GlobalDirectoryRestore restore( m_svcMut );
 
   const THistID* hid;
   size_t i = findHistID( name, hid );
 
+  LockedHandle<T> hist( nullptr, nullptr );
+
   if ( i == 1 ) {
     if ( !hid->shared ) {
       error() << "getSharedHist: found Hist with id \"" << name << "\", but it's not marked as shared" << endmsg;
-      return StatusCode::FAILURE;
+      return hist;
     }
     T* h1 = dynamic_cast<T*>( hid->obj );
-    hist  = LockedHandle<T>( h1, hid->mutex );
+    hist = LockedHandle<T>( h1, hid->mutex );
 
     debug() << "getSharedHist: found THistID: " << *hid << endmsg;
-
-    return StatusCode::SUCCESS;
   } else if ( i == 0 ) {
     error() << "no histograms matching id \"" << name << "\" found" << endmsg;
-    return StatusCode::FAILURE;
   } else {
     info() << "multiple matches for id \"" << name << "\" found [" << i << "], probably from different streams"
            << endmsg;
-    return StatusCode::FAILURE;
   }
+  return hist;
 }
 
 #endif

@@ -35,41 +35,45 @@ StatusCode THistRead::initialize()
   }
 
   // stream read1, 1D in "/xxx"
-  TH1* h1 = nullptr;
-  if ( m_ths->regHist( "/read1/xxx/1Dgauss" ).isFailure() || m_ths->getHist( "/read1/xxx/1Dgauss", h1 ).isFailure() ) {
+  StatusCode sc1 = m_ths->regHist( "/read1/xxx/1Dgauss" );
+  TH1* h1 = m_ths->getHist( "/read1/xxx/1Dgauss" );
+  if ( sc1.isFailure() || h1 == nullptr ) {
     error() << "Couldn't read gauss1d" << endmsg;
   } else {
     info() << h1->GetName() << ": " << h1->GetEntries() << endmsg;
   }
 
   // stream read2, 2D tree in "/"
-  TH2* h2 = nullptr;
-  if ( m_ths->regHist( "/read2/2Dgauss" ).isFailure() || m_ths->getHist( "/read2/2Dgauss", h2 ).isFailure() ) {
+  StatusCode sc2 = m_ths->regHist( "/read2/2Dgauss" );
+  TH2* h2 = m_ths->getHistAsTH2( "/read2/2Dgauss" );
+  if ( sc2.isFailure() || h2 == nullptr ) {
     error() << "Couldn't read 2Dgauss" << endmsg;
   } else {
     info() << h2->GetName() << ": " << h2->GetEntries() << endmsg;
   }
 
   // 3D tree in "/"
-  TH3* h3 = nullptr;
-  if ( m_ths->regHist( "/read2/3Dgauss" ).isFailure() || m_ths->getHist( "/read2/3Dgauss", h3 ).isFailure() ) {
+  StatusCode sc3 = m_ths->regHist( "/read2/3Dgauss" );
+  TH3* h3 = m_ths->getHistAsTH3( "/read2/3Dgauss" );
+  if ( sc3.isFailure() || h3 == nullptr ) {
     error() << "Couldn't read 3Dgauss" << endmsg;
   } else {
     info() << h3->GetName() << ": " << h3->GetEntries() << endmsg;
   }
 
   // Profile in "/"
-  TH1* tp = nullptr;
-  if ( m_ths->regHist( "/read2/profile" ).isFailure() || m_ths->getHist( "/read2/profile", tp ).isFailure() ) {
+  StatusCode sc4 = m_ths->regHist( "/read2/profile" );
+  TH1* tp = m_ths->getHist( "/read2/profile" );
+  if ( sc4.isFailure() || tp == nullptr ) {
     error() << "Couldn't read profile" << endmsg;
   } else {
     info() << tp->GetName() << ": " << tp->GetEntries() << endmsg;
   }
 
   // Tree with branches in "/trees/stuff"
-  TTree* tr = nullptr;
-  if ( m_ths->regTree( "/read2/trees/stuff/treename" ).isFailure() ||
-       m_ths->getTree( "/read2/trees/stuff/treename", tr ).isFailure() ) {
+  StatusCode sc5 = m_ths->regTree( "/read2/trees/stuff/treename" );
+  TTree* tr = m_ths->getTree( "/read2/trees/stuff/treename" );
+  if ( sc5.isFailure() || tr == nullptr ) {
     error() << "Couldn't read tree" << endmsg;
   } else {
     info() << tr->GetName() << ": " << tr->GetEntries() << endmsg;

@@ -30,32 +30,30 @@ public:
   StatusCode finalize() override;
 
   StatusCode regHist( const std::string& name ) override;
-  StatusCode regHist( const std::string& name, TH1* ) override;
-  StatusCode regHist( const std::string& name, TH2* ) override;
-  StatusCode regHist( const std::string& name, TH3* ) override;
+  StatusCode regHist( const std::string& name, std::unique_ptr<TH1> ) override;
 
-  StatusCode getHist( const std::string& name, TH1*&, size_t ind = 0 ) const override;
-  StatusCode getHist( const std::string& name, TH2*&, size_t ind = 0 ) const override;
-  StatusCode getHist( const std::string& name, TH3*&, size_t ind = 0 ) const override;
+  TH1* getHist( const std::string& name, size_t ind = 0 ) const;
+  TH2* getHistAsTH2( const std::string& name, size_t ind = 0 ) const;
+  TH3* getHistAsTH3( const std::string& name, size_t ind = 0 ) const;
 
-  StatusCode regSharedHist( const std::string& name, std::unique_ptr<TH1>&, LockedHandle<TH1>& ) override;
-  StatusCode regSharedHist( const std::string& name, std::unique_ptr<TH2>&, LockedHandle<TH2>& ) override;
-  StatusCode regSharedHist( const std::string& name, std::unique_ptr<TH3>&, LockedHandle<TH3>& ) override;
+  LockedHandle<TH1> regSharedHist( const std::string& name, std::unique_ptr<TH1> ) override;
+  LockedHandle<TH2> regSharedHist( const std::string& name, std::unique_ptr<TH2> ) override;
+  LockedHandle<TH3> regSharedHist( const std::string& name, std::unique_ptr<TH3> ) override;
 
-  StatusCode getSharedHist( const std::string& name, LockedHandle<TH1>& ) const override;
-  StatusCode getSharedHist( const std::string& name, LockedHandle<TH2>& ) const override;
-  StatusCode getSharedHist( const std::string& name, LockedHandle<TH3>& ) const override;
+  LockedHandle<TH1> getSharedHist( const std::string& name ) const;
+  LockedHandle<TH2> getSharedHistAsTH2( const std::string& name ) const;
+  LockedHandle<TH3> getSharedHistAsTH3( const std::string& name ) const;
 
   StatusCode regTree( const std::string& name ) override;
-  StatusCode regTree( const std::string& name, TTree* ) override;
-  StatusCode getTree( const std::string& name, TTree*& ) const override;
+  StatusCode regTree( const std::string& name, std::unique_ptr<TTree> ) override;
+  TTree* getTree( const std::string& name ) const override;
 
   StatusCode regGraph( const std::string& name ) override;
-  StatusCode regGraph( const std::string& name, TGraph* ) override;
-  StatusCode getGraph( const std::string& name, TGraph*& ) const override;
+  StatusCode regGraph( const std::string& name, std::unique_ptr<TGraph> ) override;
+  TGraph* getGraph( const std::string& name ) const override;
 
-  StatusCode regSharedGraph( const std::string& name, std::unique_ptr<TGraph>&, LockedHandle<TGraph>& ) override;
-  StatusCode getSharedGraph( const std::string& name, LockedHandle<TGraph>& ) const override;
+  LockedHandle<TGraph> regSharedGraph( const std::string& name, std::unique_ptr<TGraph> ) override;
+  LockedHandle<TGraph> getSharedGraph( const std::string& name ) const override;
 
   StatusCode deReg( TObject* obj ) override;
   StatusCode deReg( const std::string& name ) override;
@@ -150,21 +148,22 @@ private:
   };
 
   template <typename T>
-  StatusCode regHist_i( T* hist, const std::string& name, bool shared, THistID*& hid );
+  StatusCode regHist_i( std::unique_ptr<T> hist, const std::string& name, bool shared );
   template <typename T>
-  StatusCode getHist_i( const std::string& name, T*& hist, const size_t& ind = 0, bool quiet = false ) const;
+  StatusCode regHist_i( std::unique_ptr<T> hist, const std::string& name, bool shared, THistID*& hid );
   template <typename T>
-  StatusCode readHist_i( const std::string& name, T*& hist ) const;
+  T* getHist_i( const std::string& name, const size_t& ind = 0, bool quiet = false ) const;
+  template <typename T>
+  T* readHist_i( const std::string& name ) const;
 
   template <typename T>
-  StatusCode regSharedObj_i( const std::string& id, std::unique_ptr<T>& hist, LockedHandle<T>& lh );
+  LockedHandle<T> regSharedObj_i( const std::string& id, std::unique_ptr<T> hist );
   template <typename T>
-  StatusCode getSharedObj_i( const std::string& name, LockedHandle<T>& lh ) const;
+  LockedHandle<T> getSharedObj_i( const std::string& name ) const;
 
-  StatusCode readHist( const std::string& name, TH1*& ) const;
-  StatusCode readHist( const std::string& name, TH2*& ) const;
-  StatusCode readHist( const std::string& name, TH3*& ) const;
-  StatusCode readTree( const std::string& name, TTree*& ) const;
+  template <typename T>
+  T* readHist( const std::string& name ) const;
+  TTree* readTree( const std::string& name ) const;
 
   void updateFiles();
   StatusCode write();

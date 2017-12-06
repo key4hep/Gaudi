@@ -35,49 +35,49 @@ StatusCode THistWrite::initialize()
   }
 
   // Temporary Trees
-  TH1F* h1 = new TH1F( "TempHist1", "Temporary Tree 1", 100, 0., 100. );
-  if ( m_ths->regHist( "TempHist1", h1 ).isFailure() ) {
+  std::unique_ptr<TH1F> h1 = std::make_unique<TH1F>( "TempHist1", "Temporary Tree 1", 100, 0., 100. );
+  if ( m_ths->regHist( "TempHist1", std::move(h1) ).isFailure() ) {
     error() << "Couldn't register TempHist1" << endmsg;
   }
 
-  TH1F* h1a = new TH1F( "TempHist1a", "Temporary Tree 1a", 100, 0., 100. );
-  if ( m_ths->regHist( "other/TempHist1a", h1a ).isFailure() ) {
+  std::unique_ptr<TH1F> h1a = std::make_unique<TH1F>( "TempHist1a", "Temporary Tree 1a", 100, 0., 100. );
+  if ( m_ths->regHist( "other/TempHist1a", std::move(h1a) ).isFailure() ) {
     error() << "Couldn't register TempHist1a" << endmsg;
   }
 
   // Write to stream "new"
-  TH1F* h2 = new TH1F( "Tree2", "Tree 2", 100, 0., 100. );
-  if ( m_ths->regHist( "/new/Tree2", h2 ).isFailure() ) {
+  std::unique_ptr<TH1F> h2 = std::make_unique<TH1F>( "Tree2", "Tree 2", 100, 0., 100. );
+  if ( m_ths->regHist( "/new/Tree2", std::move(h2) ).isFailure() ) {
     error() << "Couldn't register Tree2" << endmsg;
   }
 
   // Update to stream "upd", dir "/xxx"
-  TH1F* h3 = new TH1F( "1Dgauss", "1D Gaussian", 100, -50., 50. );
-  if ( m_ths->regHist( "/upd/xxx/gauss1d", h3 ).isFailure() ) {
+  std::unique_ptr<TH1F> h3 = std::make_unique<TH1F>( "1Dgauss", "1D Gaussian", 100, -50., 50. );
+  if ( m_ths->regHist( "/upd/xxx/gauss1d", std::move(h3) ).isFailure() ) {
     error() << "Couldn't register gauss1d" << endmsg;
   }
 
   // Recreate 2D tree in "/"
-  TH2F* h3a = new TH2F( "2Dgauss", "2D Gaussian", 100, -50., 50., 100, -50, 50 );
-  if ( m_ths->regHist( "/rec/gauss2d", h3a ).isFailure() ) {
+  std::unique_ptr<TH2F> h3a = std::make_unique<TH2F>( "2Dgauss", "2D Gaussian", 100, -50., 50., 100, -50, 50 );
+  if ( m_ths->regHist( "/rec/gauss2d", std::move(h3a) ).isFailure() ) {
     error() << "Couldn't register gauss2d" << endmsg;
   }
 
   // 3D tree in "/"
-  TH3F* h4 = new TH3F( "3Dgauss", "3D Gaussian", 100, -50., 50., 100, -50, 50, 100, -50, 50 );
-  if ( m_ths->regHist( "/rec/gauss3d", h4 ).isFailure() ) {
+  std::unique_ptr<TH3F> h4 = std::make_unique<TH3F>( "3Dgauss", "3D Gaussian", 100, -50., 50., 100, -50, 50, 100, -50, 50 );
+  if ( m_ths->regHist( "/rec/gauss3d", std::move(h4) ).isFailure() ) {
     error() << "Couldn't register gauss3d" << endmsg;
   }
 
   // Profile in "/"
-  TH1* tp = new TProfile( "profile", "profile", 100, -50., -50. );
-  if ( m_ths->regHist( "/rec/prof", tp ).isFailure() ) {
+  std::unique_ptr<TH1> tp = std::make_unique<TProfile>( "profile", "profile", 100, -50., -50. );
+  if ( m_ths->regHist( "/rec/prof", std::move(tp) ).isFailure() ) {
     error() << "Couldn't register prof" << endmsg;
   }
 
   // Tree with branches in "/trees/stuff"
-  TTree* tr = new TTree( "treename", "tree title" );
-  if ( m_ths->regTree( "/rec/trees/stuff/tree1", tr ).isFailure() ) {
+  std::unique_ptr<TTree> tr = std::make_unique<TTree>( "treename", "tree title" );
+  if ( m_ths->regTree( "/rec/trees/stuff/tree1", std::move(tr)).isFailure() ) {
     error() << "Couldn't register tr" << endmsg;
   }
 
@@ -95,26 +95,29 @@ StatusCode THistWrite::execute()
   double x = sin( double( n ) ) * 52. + 50.;
 
   TH1* h( 0 );
-  TH2* h2( 0 );
-  if ( m_ths->getHist( "TempHist1", h ).isSuccess() ) {
+  h = m_ths->getHist( "TempHist1" );
+  if ( h != nullptr ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve TempHist 1" << endmsg;
   }
 
-  if ( m_ths->getHist( "other/TempHist1a", h ).isSuccess() ) {
+  h = m_ths->getHist( "other/TempHist1a" );
+  if ( h != nullptr ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve TempHist 1a" << endmsg;
   }
 
-  if ( m_ths->getHist( "/new/Tree2", h ).isSuccess() ) {
+  h = m_ths->getHist( "/new/Tree2" );
+  if ( h != nullptr ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve Tree2" << endmsg;
   }
 
-  if ( m_ths->getHist( "/upd/xxx/gauss1d", h ).isSuccess() ) {
+  h = m_ths->getHist( "/upd/xxx/gauss1d" );
+  if ( h != nullptr ) {
     for ( int i = 0; i < 1000; ++i ) {
       h->Fill( gauss(), 1. );
     }
@@ -122,7 +125,9 @@ StatusCode THistWrite::execute()
     error() << "Couldn't retrieve 1Dgauss" << endmsg;
   }
 
-  if ( m_ths->getHist( "/rec/gauss2d", h2 ).isSuccess() ) {
+  TH2* h2( 0 );
+  h2 = m_ths->getHistAsTH2( "/rec/gauss2d" );
+  if ( h2 != nullptr ) {
     for ( int i = 0; i < 1000; ++i ) {
       h2->Fill( gauss(), gauss(), 1. );
     }
@@ -131,7 +136,8 @@ StatusCode THistWrite::execute()
   }
 
   TH3* h3( 0 );
-  if ( m_ths->getHist( "/rec/gauss3d", h3 ).isSuccess() ) {
+  h3 = m_ths->getHistAsTH3( "/rec/gauss3d" );
+  if ( h3 != nullptr ) {
     for ( int i = 0; i < 1000; ++i ) {
       h3->Fill( gauss(), gauss(), gauss(), 1. );
     }
@@ -140,7 +146,8 @@ StatusCode THistWrite::execute()
   }
 
   TTree* tr;
-  if ( m_ths->getTree( "/rec/trees/stuff/tree1", tr ).isFailure() ) {
+  tr = m_ths->getTree( "/rec/trees/stuff/tree1" );
+  if ( tr == nullptr ) {
     error() << "Couldn't retrieve tree tree1" << endmsg;
   } else {
     if ( n == 0 ) {
