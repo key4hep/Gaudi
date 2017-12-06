@@ -21,7 +21,7 @@ DECLARE_COMPONENT( THistWrite )
 THistWrite::THistWrite( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ), m_ths( 0 )
 //------------------------------------------------------------------------------
 {
-  m_h1 = 0;
+
 }
 
 //------------------------------------------------------------------------------
@@ -180,8 +180,8 @@ void THistWrite::listKeys( TDirectory* td )
   while ( TKey* key = (TKey*)nextkey() ) {
     if ( key != 0 ) {
       info() << key->GetName() << " (" << key->IsA()->GetName() << ") "
-             // 	  << key->GetObjectStat()
-             // 	  << "  " << key->IsOnHeap()
+             // << key->GetObjectStat()
+             // << "  " << key->IsOnHeap()
              << key->GetCycle() << endmsg;
     } else {
       info() << "key == 0" << endmsg;

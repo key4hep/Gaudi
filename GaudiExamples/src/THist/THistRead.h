@@ -22,8 +22,6 @@ public:
 
 private:
   ITHistSvc* m_ths;
-
-  TH1F* m_h1;
 };
 
 #endif // THIST_HISTREAD_H

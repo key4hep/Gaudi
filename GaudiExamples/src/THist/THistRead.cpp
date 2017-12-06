@@ -22,7 +22,7 @@ THistRead::THistRead( const std::string& name, ISvcLocator* pSvcLocator )
     : Algorithm( name, pSvcLocator ), m_ths( nullptr )
 //------------------------------------------------------------------------------
 {
-  m_h1 = nullptr;
+
 }
 
 //------------------------------------------------------------------------------
