@@ -16,6 +16,8 @@
 #include "ThreadLocalStorage.h"
 #include "tbb/mutex.h"
 #include "tbb/recursive_mutex.h"
+#include <mutex>
+#include <queue>
 #include <utility>
 
 // Interfaces
@@ -163,8 +165,10 @@ protected:
   IAddressCreator* m_addrCreator = nullptr;
   /// Datastore partitions
   std::vector<Synced<Partition>> m_partitions;
-  /// number of free slots
-  std::atomic_int m_freeSlots{0};
+  /// fifo queue of free slots
+  std::queue<int> m_freeSlots;
+  /// protection for the fifo queue of free slots
+  std::mutex m_freeSlotsMutex;
 
 public:
   /// Inherited constructor
@@ -184,7 +188,7 @@ public:
   }
 
   /// Get free slots number
-  unsigned int freeSlots() override { return m_freeSlots.load(); };
+  unsigned int freeSlots() override { return m_freeSlots.size(); };
 
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override { return (CLID)m_rootCLID; }
@@ -583,39 +587,26 @@ public:
   /// Allocate a store partition for a given event number
   size_t allocateStore( int evtnumber ) override
   {
-    enum class Status { NotFound, Allocated, StillActive };
-    auto attempt_to_allocate = with_lock( [evtnumber, this]( Partition& p ) {
-      if ( p.eventNumber == evtnumber ) return Status::StillActive;
-      if ( p.eventNumber == -1 ) {
-        this->m_freeSlots--;
-        p.eventNumber = evtnumber;
-        return Status::Allocated;
-      }
-      return Status::NotFound;
-    } );
-
-    size_t index = 0;
-    for ( auto& p : m_partitions ) {
-      switch ( attempt_to_allocate( p ) ) {
-      case Status::StillActive:
-        error() << "Attempt to allocate a store partition for an event that is still active" << endmsg;
-        return std::string::npos;
-      case Status::Allocated:
-        // info() << "Got allocated slot..." << index << endmsg;
-        return index;
-      default:
-        ++index;
-      }
-    };
-    return std::string::npos;
+    // make sure we are the only ones dealing with free slots
+    std::lock_guard<std::mutex> lock( m_freeSlotsMutex );
+    // take next free slot in the list
+    if ( m_freeSlots.empty() ) {
+      return std::string::npos;
+    } else {
+      size_t slot = m_freeSlots.front();
+      m_freeSlots.pop();
+      m_partitions[slot].with_lock( [evtnumber]( Partition& p ) { p.eventNumber = evtnumber; } );
+      return slot;
+    }
   }
 
   /// Free a store partition
   StatusCode freeStore( size_t partition ) override
   {
+    // make sure we are the only ones dealing with free slots
+    std::lock_guard<std::mutex> lock( m_freeSlotsMutex );
     m_partitions[partition].with_lock( []( Partition& p ) { p.eventNumber = -1; } );
-    // info() << "Freed slot..." << partition << endmsg;
-    m_freeSlots++;
+    m_freeSlots.push( partition );
     return StatusCode::SUCCESS;
   }
 
@@ -698,9 +689,9 @@ public:
         p.dataProvider = svc;
         p.dataManager  = svc;
       } );
+      m_freeSlots.push( i );
     }
     selectStore( 0 ).ignore();
-    m_freeSlots.store( m_slots );
     return attachServices();
   }
 
