@@ -899,14 +899,14 @@ StatusCode THistSvc::deReg( const std::string& id )
 StatusCode THistSvc::regHist( const std::string& id )
 {
   std::unique_ptr<TH1> hist = nullptr;
-  return regHist_i( std::move(hist), id, false );
+  return regHist_i( std::move( hist ), id, false );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist )
 {
-  return regHist_i( std::move(hist), id, false );
+  return regHist_i( std::move( hist ), id, false );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -914,7 +914,7 @@ StatusCode THistSvc::regHist( const std::string& id, std::unique_ptr<TH1> hist )
 StatusCode THistSvc::regTree( const std::string& id )
 {
   std::unique_ptr<TTree> tree = nullptr;
-  return regHist_i( std::move(tree), id, false );
+  return regHist_i( std::move( tree ), id, false );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -922,7 +922,7 @@ StatusCode THistSvc::regTree( const std::string& id )
 StatusCode THistSvc::regTree( const std::string& id, std::unique_ptr<TTree> tree )
 {
   StatusCode sc = regHist_i( std::move( tree ), id, false );
-  auto tr = getTree( id );
+  auto tr       = getTree( id );
   if ( tr != nullptr && sc.isSuccess() ) {
     if ( m_autoSave != 0 ) {
       tr->SetAutoSave( m_autoSave );
@@ -937,7 +937,7 @@ StatusCode THistSvc::regTree( const std::string& id, std::unique_ptr<TTree> tree
 StatusCode THistSvc::regGraph( const std::string& id )
 {
   std::unique_ptr<TGraph> hist = std::make_unique<TGraph>();
-  return regHist_i( std::move(hist), id, false );
+  return regHist_i( std::move( hist ), id, false );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -955,29 +955,20 @@ StatusCode THistSvc::regGraph( const std::string& id, std::unique_ptr<TGraph> gr
     graph->SetName( id2.c_str() );
   }
 
-  return regHist_i( std::move(graph), id, false );
+  return regHist_i( std::move( graph ), id, false );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TH1* THistSvc::getHistTH1( const std::string& id, size_t ind ) const
-{
-  return getHist_i<TH1>( id, ind );
-}
+TH1* THistSvc::getHistTH1( const std::string& id, size_t ind ) const { return getHist_i<TH1>( id, ind ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TH2* THistSvc::getHistTH2( const std::string& id, size_t ind ) const
-{
-  return getHist_i<TH2>( id, ind );
-}
+TH2* THistSvc::getHistTH2( const std::string& id, size_t ind ) const { return getHist_i<TH2>( id, ind ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TH3* THistSvc::getHistTH3( const std::string& id, size_t ind ) const
-{
-  return getHist_i<TH3>( id, ind );
-}
+TH3* THistSvc::getHistTH3( const std::string& id, size_t ind ) const { return getHist_i<TH3>( id, ind ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
@@ -1019,12 +1010,15 @@ std::vector<std::string> THistSvc::getGraphs() const
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-template< typename T >
-T* THistSvc::readHist( const std::string& id ) const { return dynamic_cast<T*> ( readHist_i<T>( id ) ); }
+template <typename T>
+T* THistSvc::readHist( const std::string& id ) const
+{
+  return dynamic_cast<T*>( readHist_i<T>( id ) );
+}
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TTree* THistSvc::readTree( const std::string& id ) const { return dynamic_cast<TTree*> ( readHist_i<TTree>( id ) ); }
+TTree* THistSvc::readTree( const std::string& id ) const { return dynamic_cast<TTree*>( readHist_i<TTree>( id ) ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
@@ -1585,10 +1579,7 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source )
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-bool THistSvc::exists( const std::string& name ) const
-{
-  return (getHist_i<TH1>( name, 0, true ) != nullptr);
-}
+bool THistSvc::exists( const std::string& name ) const { return ( getHist_i<TH1>( name, 0, true ) != nullptr ); }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
@@ -1882,44 +1873,34 @@ size_t THistSvc::findHistID( const std::string& id, const THistID*& hid, const s
 
 LockedHandle<TH1> THistSvc::regSharedHist( const std::string& id, std::unique_ptr<TH1> hist )
 {
-  return regSharedObj_i<TH1>( id, std::move(hist) );
+  return regSharedObj_i<TH1>( id, std::move( hist ) );
 }
 
 LockedHandle<TH2> THistSvc::regSharedHist( const std::string& id, std::unique_ptr<TH2> hist )
 {
-  return regSharedObj_i<TH2>( id, std::move(hist) );
+  return regSharedObj_i<TH2>( id, std::move( hist ) );
 }
 
 LockedHandle<TH3> THistSvc::regSharedHist( const std::string& id, std::unique_ptr<TH3> hist )
 {
-  return regSharedObj_i<TH3>( id, std::move(hist) );
+  return regSharedObj_i<TH3>( id, std::move( hist ) );
 }
 
 LockedHandle<TGraph> THistSvc::regSharedGraph( const std::string& id, std::unique_ptr<TGraph> hist )
 {
-  return regSharedObj_i<TGraph>( id, std::move(hist) );
+  return regSharedObj_i<TGraph>( id, std::move( hist ) );
 }
 
-LockedHandle<TH1> THistSvc::getSharedHistTH1( const std::string& name ) const
-{
-  return getSharedObj_i<TH1>( name );
-}
+LockedHandle<TH1> THistSvc::getSharedHistTH1( const std::string& name ) const { return getSharedObj_i<TH1>( name ); }
 
-LockedHandle<TH2> THistSvc::getSharedHistTH2( const std::string& name ) const
-{
-  return getSharedObj_i<TH2>( name );
-}
+LockedHandle<TH2> THistSvc::getSharedHistTH2( const std::string& name ) const { return getSharedObj_i<TH2>( name ); }
 
-LockedHandle<TH3> THistSvc::getSharedHistTH3( const std::string& name ) const
-{
-  return getSharedObj_i<TH3>( name );
-}
+LockedHandle<TH3> THistSvc::getSharedHistTH3( const std::string& name ) const { return getSharedObj_i<TH3>( name ); }
 
 LockedHandle<TGraph> THistSvc::getSharedGraph( const std::string& name ) const
 {
   return getSharedObj_i<TGraph>( name );
 }
-
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 

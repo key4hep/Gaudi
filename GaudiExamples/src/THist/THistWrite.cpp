@@ -21,7 +21,6 @@ DECLARE_COMPONENT( THistWrite )
 THistWrite::THistWrite( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ), m_ths( 0 )
 //------------------------------------------------------------------------------
 {
-
 }
 
 //------------------------------------------------------------------------------
@@ -36,48 +35,49 @@ StatusCode THistWrite::initialize()
 
   // Temporary Trees
   std::unique_ptr<TH1F> h1 = std::make_unique<TH1F>( "TempHist1", "Temporary Tree 1", 100, 0., 100. );
-  if ( m_ths->regHist( "TempHist1", std::move(h1) ).isFailure() ) {
+  if ( m_ths->regHist( "TempHist1", std::move( h1 ) ).isFailure() ) {
     error() << "Couldn't register TempHist1" << endmsg;
   }
 
   std::unique_ptr<TH1F> h1a = std::make_unique<TH1F>( "TempHist1a", "Temporary Tree 1a", 100, 0., 100. );
-  if ( m_ths->regHist( "other/TempHist1a", std::move(h1a) ).isFailure() ) {
+  if ( m_ths->regHist( "other/TempHist1a", std::move( h1a ) ).isFailure() ) {
     error() << "Couldn't register TempHist1a" << endmsg;
   }
 
   // Write to stream "new"
   std::unique_ptr<TH1F> h2 = std::make_unique<TH1F>( "Tree2", "Tree 2", 100, 0., 100. );
-  if ( m_ths->regHist( "/new/Tree2", std::move(h2) ).isFailure() ) {
+  if ( m_ths->regHist( "/new/Tree2", std::move( h2 ) ).isFailure() ) {
     error() << "Couldn't register Tree2" << endmsg;
   }
 
   // Update to stream "upd", dir "/xxx"
   std::unique_ptr<TH1F> h3 = std::make_unique<TH1F>( "1Dgauss", "1D Gaussian", 100, -50., 50. );
-  if ( m_ths->regHist( "/upd/xxx/gauss1d", std::move(h3) ).isFailure() ) {
+  if ( m_ths->regHist( "/upd/xxx/gauss1d", std::move( h3 ) ).isFailure() ) {
     error() << "Couldn't register gauss1d" << endmsg;
   }
 
   // Recreate 2D tree in "/"
   std::unique_ptr<TH2F> h3a = std::make_unique<TH2F>( "2Dgauss", "2D Gaussian", 100, -50., 50., 100, -50, 50 );
-  if ( m_ths->regHist( "/rec/gauss2d", std::move(h3a) ).isFailure() ) {
+  if ( m_ths->regHist( "/rec/gauss2d", std::move( h3a ) ).isFailure() ) {
     error() << "Couldn't register gauss2d" << endmsg;
   }
 
   // 3D tree in "/"
-  std::unique_ptr<TH3F> h4 = std::make_unique<TH3F>( "3Dgauss", "3D Gaussian", 100, -50., 50., 100, -50, 50, 100, -50, 50 );
-  if ( m_ths->regHist( "/rec/gauss3d", std::move(h4) ).isFailure() ) {
+  std::unique_ptr<TH3F> h4 =
+      std::make_unique<TH3F>( "3Dgauss", "3D Gaussian", 100, -50., 50., 100, -50, 50, 100, -50, 50 );
+  if ( m_ths->regHist( "/rec/gauss3d", std::move( h4 ) ).isFailure() ) {
     error() << "Couldn't register gauss3d" << endmsg;
   }
 
   // Profile in "/"
   std::unique_ptr<TH1> tp = std::make_unique<TProfile>( "profile", "profile", 100, -50., -50. );
-  if ( m_ths->regHist( "/rec/prof", std::move(tp) ).isFailure() ) {
+  if ( m_ths->regHist( "/rec/prof", std::move( tp ) ).isFailure() ) {
     error() << "Couldn't register prof" << endmsg;
   }
 
   // Tree with branches in "/trees/stuff"
   std::unique_ptr<TTree> tr = std::make_unique<TTree>( "treename", "tree title" );
-  if ( m_ths->regTree( "/rec/trees/stuff/tree1", std::move(tr)).isFailure() ) {
+  if ( m_ths->regTree( "/rec/trees/stuff/tree1", std::move( tr ) ).isFailure() ) {
     error() << "Couldn't register tr" << endmsg;
   }
 
