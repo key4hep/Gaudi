@@ -19,10 +19,9 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   GlobalDirectoryRestore restore( m_svcMut );
   phid = nullptr;
 
-  // It is a bit sad that we lose the management here, but it is the easiest way
-  // to modernize the interface without touching everything else
+  // It is sad that we lose propper memory management here
   T* hist = nullptr;
-  if( hist_unique != nullptr ) {
+  if( hist_unique.get() != nullptr ) {
     hist = hist_unique.release();
   }
   debug() << "regHist_i obj: " << hist << "  id: " << id << "  s: " << shared << endmsg;
@@ -187,25 +186,24 @@ T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) c
               << " Further specifications required." << endmsg;
       return nullptr;
     } else {
-      // return a SUCCESS if just INQUIRING
       info() << "Found multiple matches with id \"" << id << "\"" << endmsg;
-      return nullptr; // TODO was StatusCode::SUCCESS!
-    }
-  } else {
-    if ( !quiet ) {
+      // return first match if just INQUIRING (i.e. != nullptr)
       hist = dynamic_cast<T*>( hid->obj );
       if ( hist == nullptr ) {
         error() << "dcast failed, Hist id: \"" << id << "\"" << endmsg;
         return nullptr;
       }
-
-      verbose() << "found unique Hist title: \"" << hist->GetTitle() << "\"  id: \"" << id << "\"" << endmsg;
-    } else {
-      verbose() << "found unique Hist id: \"" << id << "\" type: \"" << hid->obj->IsA()->GetName() << "\"" << endmsg;
     }
-
-    return hist;
+  } else {
+    hist = dynamic_cast<T*>( hid->obj );
+    if ( hist == nullptr ) {
+      error() << "dcast failed, Hist id: \"" << id << "\"" << endmsg;
+      return nullptr;
+    }
+    verbose() << "found unique Hist title: \"" << hist->GetTitle() << "\"  id: \"" << id << "\"" << endmsg;
   }
+
+  return hist;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//

@@ -95,28 +95,28 @@ StatusCode THistWrite::execute()
   double x = sin( double( n ) ) * 52. + 50.;
 
   TH1* h( 0 );
-  h = m_ths->getHist( "TempHist1" );
+  h = m_ths->getHistTH1( "TempHist1" );
   if ( h != nullptr ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve TempHist 1" << endmsg;
   }
 
-  h = m_ths->getHist( "other/TempHist1a" );
+  h = m_ths->getHistTH1( "other/TempHist1a" );
   if ( h != nullptr ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve TempHist 1a" << endmsg;
   }
 
-  h = m_ths->getHist( "/new/Tree2" );
+  h = m_ths->getHistTH1( "/new/Tree2" );
   if ( h != nullptr ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve Tree2" << endmsg;
   }
 
-  h = m_ths->getHist( "/upd/xxx/gauss1d" );
+  h = m_ths->getHistTH1( "/upd/xxx/gauss1d" );
   if ( h != nullptr ) {
     for ( int i = 0; i < 1000; ++i ) {
       h->Fill( gauss(), 1. );
@@ -126,7 +126,7 @@ StatusCode THistWrite::execute()
   }
 
   TH2* h2( 0 );
-  h2 = m_ths->getHistAsTH2( "/rec/gauss2d" );
+  h2 = m_ths->getHistTH2( "/rec/gauss2d" );
   if ( h2 != nullptr ) {
     for ( int i = 0; i < 1000; ++i ) {
       h2->Fill( gauss(), gauss(), 1. );
@@ -136,7 +136,7 @@ StatusCode THistWrite::execute()
   }
 
   TH3* h3( 0 );
-  h3 = m_ths->getHistAsTH3( "/rec/gauss3d" );
+  h3 = m_ths->getHistTH3( "/rec/gauss3d" );
   if ( h3 != nullptr ) {
     for ( int i = 0; i < 1000; ++i ) {
       h3->Fill( gauss(), gauss(), gauss(), 1. );

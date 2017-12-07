@@ -32,17 +32,17 @@ public:
   StatusCode regHist( const std::string& name ) override;
   StatusCode regHist( const std::string& name, std::unique_ptr<TH1> ) override;
 
-  TH1* getHist( const std::string& name, size_t ind = 0 ) const;
-  TH2* getHistAsTH2( const std::string& name, size_t ind = 0 ) const;
-  TH3* getHistAsTH3( const std::string& name, size_t ind = 0 ) const;
+  TH1* getHistTH1( const std::string& name, size_t ind = 0 ) const;
+  TH2* getHistTH2( const std::string& name, size_t ind = 0 ) const;
+  TH3* getHistTH3( const std::string& name, size_t ind = 0 ) const;
 
   LockedHandle<TH1> regSharedHist( const std::string& name, std::unique_ptr<TH1> ) override;
   LockedHandle<TH2> regSharedHist( const std::string& name, std::unique_ptr<TH2> ) override;
   LockedHandle<TH3> regSharedHist( const std::string& name, std::unique_ptr<TH3> ) override;
 
-  LockedHandle<TH1> getSharedHist( const std::string& name ) const;
-  LockedHandle<TH2> getSharedHistAsTH2( const std::string& name ) const;
-  LockedHandle<TH3> getSharedHistAsTH3( const std::string& name ) const;
+  LockedHandle<TH1> getSharedHistTH1( const std::string& name ) const override;
+  LockedHandle<TH2> getSharedHistTH2( const std::string& name ) const override;
+  LockedHandle<TH3> getSharedHistTH3( const std::string& name ) const override;
 
   StatusCode regTree( const std::string& name ) override;
   StatusCode regTree( const std::string& name, std::unique_ptr<TTree> ) override;

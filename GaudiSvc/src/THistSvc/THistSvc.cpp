@@ -960,21 +960,21 @@ StatusCode THistSvc::regGraph( const std::string& id, std::unique_ptr<TGraph> gr
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TH1* THistSvc::getHist( const std::string& id, size_t ind ) const
+TH1* THistSvc::getHistTH1( const std::string& id, size_t ind ) const
 {
   return getHist_i<TH1>( id, ind );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TH2* THistSvc::getHistAsTH2( const std::string& id, size_t ind ) const
+TH2* THistSvc::getHistTH2( const std::string& id, size_t ind ) const
 {
   return getHist_i<TH2>( id, ind );
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-TH3* THistSvc::getHistAsTH3( const std::string& id, size_t ind ) const
+TH3* THistSvc::getHistTH3( const std::string& id, size_t ind ) const
 {
   return getHist_i<TH3>( id, ind );
 }
@@ -1872,6 +1872,7 @@ size_t THistSvc::findHistID( const std::string& id, const THistID*& hid, const s
       return 1;
     } else {
       // multiple matches
+      hid = &( mitr.first->second->at( 0 ) );
       return distance( mitr.first, mitr.second );
     }
   }
@@ -1899,17 +1900,17 @@ LockedHandle<TGraph> THistSvc::regSharedGraph( const std::string& id, std::uniqu
   return regSharedObj_i<TGraph>( id, std::move(hist) );
 }
 
-LockedHandle<TH1> THistSvc::getSharedHist( const std::string& name ) const
+LockedHandle<TH1> THistSvc::getSharedHistTH1( const std::string& name ) const
 {
   return getSharedObj_i<TH1>( name );
 }
 
-LockedHandle<TH2> THistSvc::getSharedHistAsTH2( const std::string& name ) const
+LockedHandle<TH2> THistSvc::getSharedHistTH2( const std::string& name ) const
 {
   return getSharedObj_i<TH2>( name );
 }
 
-LockedHandle<TH3> THistSvc::getSharedHistAsTH3( const std::string& name ) const
+LockedHandle<TH3> THistSvc::getSharedHistTH3( const std::string& name ) const
 {
   return getSharedObj_i<TH3>( name );
 }

@@ -29,17 +29,17 @@ public:
   virtual StatusCode regHist( const std::string& name ) = 0;
   virtual StatusCode regHist( const std::string& name, std::unique_ptr<TH1> ) = 0;
 
-  virtual TH1* getHist( const std::string& name, size_t index = 0 ) const = 0;
-  virtual TH2* getHistAsTH2( const std::string& name, size_t index = 0 ) const = 0;
-  virtual TH3* getHistAsTH3( const std::string& name, size_t index = 0 ) const = 0;
+  virtual TH1* getHistTH1( const std::string& name, size_t index = 0 ) const = 0;
+  virtual TH2* getHistTH2( const std::string& name, size_t index = 0 ) const = 0;
+  virtual TH3* getHistTH3( const std::string& name, size_t index = 0 ) const = 0;
 
   virtual LockedHandle<TH1> regSharedHist( const std::string& name, std::unique_ptr<TH1> ) = 0;
   virtual LockedHandle<TH2> regSharedHist( const std::string& name, std::unique_ptr<TH2> ) = 0;
   virtual LockedHandle<TH3> regSharedHist( const std::string& name, std::unique_ptr<TH3> ) = 0;
 
-  LockedHandle<TH1> getSharedHist( const std::string& name ) const;
-  LockedHandle<TH2> getSharedHistAsTH2( const std::string& name ) const;
-  LockedHandle<TH3> getSharedHistAsTH3( const std::string& name ) const;
+  virtual LockedHandle<TH1> getSharedHistTH1( const std::string& name ) const = 0;
+  virtual LockedHandle<TH2> getSharedHistTH2( const std::string& name ) const = 0;
+  virtual LockedHandle<TH3> getSharedHistTH3( const std::string& name ) const = 0;
 
   virtual StatusCode regTree( const std::string& name ) = 0;
   virtual StatusCode regTree( const std::string& name, std::unique_ptr<TTree> ) = 0;
