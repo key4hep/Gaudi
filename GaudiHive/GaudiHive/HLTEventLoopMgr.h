@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -26,20 +27,27 @@ class HLTEventLoopMgr : public extends<Service, IEventProcessor>
 
   struct HLTExecutionTask : public tbb::task {
 
-    HLTExecutionTask( std::vector<IAlgorithm*> algorithms, EventContext* ctx, ISvcLocator* svcLocator,
-                      IAlgExecStateSvc* aem, std::function<StatusCode()> promote2ExecutedClosure )
+    HLTExecutionTask( std::vector<IAlgorithm*>& algorithms, std::unique_ptr<EventContext> ctx, ISvcLocator* svcLocator,
+                      IAlgExecStateSvc* aem,
+                      std::function<void( std::unique_ptr<EventContext> )> promote2ExecutedClosure )
         : m_algorithms( algorithms )
-        , m_evtCtx( ctx )
+        , m_evtCtx( std::move( ctx ) )
         , m_aess( aem )
         , m_serviceLocator( svcLocator )
         , m_promote2ExecutedClosure( std::move( promote2ExecutedClosure ) ){};
     tbb::task* execute() override;
 
-    std::vector<IAlgorithm*> m_algorithms;
-    EventContext* m_evtCtx;
+    MsgStream log()
+    {
+      SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
+      return MsgStream( messageSvc, "HLTExecutionTask" );
+    }
+
+    std::vector<IAlgorithm*>& m_algorithms;
+    std::unique_ptr<EventContext> m_evtCtx;
     IAlgExecStateSvc* m_aess;
     SmartIF<ISvcLocator> m_serviceLocator;
-    std::function<StatusCode()> m_promote2ExecutedClosure;
+    std::function<void( std::unique_ptr<EventContext> )> m_promote2ExecutedClosure;
   };
 
 public:
@@ -63,16 +71,12 @@ public:
   StatusCode stopRun() override;
 
 private:
-  /// Send an event to the TBB scheduler
-  StatusCode pushNewEvent( EventContext* eventContext );
   /// Declare the root address of the event
   StatusCode declareEventRootAddress();
-  /// Create event context
-  StatusCode createEventContext( EventContext*& eventContext, int createdEvents );
   /// Method to check if an event failed and take appropriate actions
   StatusCode eventFailed( EventContext* eventContext );
   /// Algorithm promotion
-  StatusCode promoteToExecuted( EventContext* );
+  void promoteToExecuted( std::unique_ptr<EventContext> eventContext );
 
   /// Convert a name to an integer
   inline unsigned int algname2index( const std::string& algoname ) { return m_algname_index_map[algoname]; }

@@ -251,15 +251,13 @@ StatusCode HLTEventLoopMgr::initialize()
 
   // Repeatedly put in front algos for which input are already fullfilled
   while ( current != end ) {
-    current = std::partition( current, end,
-                              [start, current, &producers, &algosDependencies, &algo2Index]( const IAlgorithm* algo ) {
-                                for ( const DataObjID& idp : algosDependencies[algo2Index[algo]] ) {
-                                  if ( std::find( start, current, producers[idp] ) == current ) {
-                                    return false;
-                                  }
-                                }
-                                return true;
-                              } );
+    current = std::partition(
+        current, end, [start, current, &producers, &algosDependencies, &algo2Index]( const IAlgorithm* algo ) {
+          return std::none_of( algosDependencies[algo2Index[algo]].begin(), algosDependencies[algo2Index[algo]].end(),
+                               [start, current, &producers]( const DataObjID& id ) {
+                                 return std::find( start, current, producers[id] ) == current;
+                               } );
+        } );
   }
 
   // Fill the containers to convert algo names to index
@@ -308,12 +306,7 @@ StatusCode HLTEventLoopMgr::finalize()
   }
 
   StatusCode sc2 = Service::finalize();
-  if ( sc2.isFailure() ) {
-    error() << "Problems finalizing Service base class" << endmsg;
-  }
-
-  if ( sc.isFailure() ) return sc;
-  return sc2;
+  return sc.isFailure() ? sc2.ignore(), sc : sc2;
 }
 
 StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
@@ -321,9 +314,14 @@ StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
   // Leave the interface intact and swallow this C trick.
   int& createdEvts = *( (int*)createdEvts_IntPtr );
 
-  EventContext* evtContext( nullptr );
-  if ( createEventContext( evtContext, createdEvts ).isFailure() ) {
-    fatal() << "Impossible to create event context" << endmsg;
+  std::unique_ptr<EventContext> evtContext = std::make_unique<EventContext>();
+  evtContext->set( createdEvts, m_whiteboard->allocateStore( createdEvts ) );
+  m_algExecStateSvc->reset( *evtContext.get() );
+
+  StatusCode sc = m_whiteboard->selectStore( evtContext->slot() );
+  if ( sc.isFailure() ) {
+    fatal() << "Slot " << evtContext->slot() << " could not be selected for the WhiteBoard\n"
+            << "Impossible to create event context" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -335,13 +333,21 @@ StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
 
   // Now add event to the scheduler
   verbose() << "Adding event " << evtContext->evt() << ", slot " << evtContext->slot() << " to the scheduler" << endmsg;
-  StatusCode addEventStatus = pushNewEvent( evtContext );
 
-  // If this fails, we need to wait for something to complete
-  if ( !addEventStatus.isSuccess() ) {
-    fatal() << "An event processing slot should be now free in the scheduler, but it appears not to be the case."
-            << endmsg;
-  }
+  // Event processing slot forced to be the same as the wb slot
+  const unsigned int thisSlotNum = evtContext->slot();
+  m_eventSlots[thisSlotNum].reset( evtContext.get() );
+  // closure to be executed at the end of event
+  auto promote2ExecutedClosure = [this]( std::unique_ptr<EventContext> evtContext ) {
+    this->promoteToExecuted( std::move( evtContext ) );
+  };
+  // tbb task
+  tbb::task* task = new ( tbb::task::allocate_root() ) HLTExecutionTask(
+      m_algos, std::move( evtContext ), serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
+  tbb::task::enqueue( *task );
+
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "All algorithms were submitted on event " << evtContext->evt() << " in slot " << thisSlotNum << endmsg;
 
   createdEvts++;
   return StatusCode::SUCCESS;
@@ -376,8 +382,7 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
   }
 
   // create th tbb thread pool
-  auto tbbSchedInit =
-      std::unique_ptr<tbb::task_scheduler_init>( new tbb::task_scheduler_init( m_threadPoolSize.value() + 1 ) );
+  tbb::task_scheduler_init tbbSchedInit( m_threadPoolSize.value() + 1 );
 
   int createdEvts = 0;
   // Loop until the finished events did not reach the maxevt number
@@ -395,7 +400,7 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
             // The events are not finished with a limited number of events
             ( createdEvts < maxevt || maxevt < 0 ) &&
             // There are still free slots in the whiteboard
-            this->m_whiteboard->freeSlots() > 0 ) ) {
+            m_whiteboard->freeSlots() > 0 ) ) {
 
       std::unique_lock<std::mutex> lock{m_createEventMutex};
       using namespace std::chrono_literals;
@@ -440,7 +445,7 @@ StatusCode HLTEventLoopMgr::declareEventRootAddress()
   if ( sc.isSuccess() ) {
     // Create root address and assign address to data service
     sc = m_evtSelector->createAddress( *m_evtSelContext, pAddr );
-    if ( sc.isSuccess() ) {
+    if ( !sc.isSuccess() ) {
       sc = m_evtSelector->next( *m_evtSelContext );
       if ( sc.isSuccess() ) {
         sc = m_evtSelector->createAddress( *m_evtSelContext, pAddr );
@@ -459,36 +464,6 @@ StatusCode HLTEventLoopMgr::declareEventRootAddress()
   return StatusCode::SUCCESS;
 }
 
-StatusCode HLTEventLoopMgr::createEventContext( EventContext*& evtContext, int createdEvts )
-{
-  evtContext = new EventContext;
-  evtContext->set( createdEvts, m_whiteboard->allocateStore( createdEvts ) );
-  m_algExecStateSvc->reset( *evtContext );
-
-  StatusCode sc = m_whiteboard->selectStore( evtContext->slot() );
-  if ( sc.isFailure() ) {
-    warning() << "Slot " << evtContext->slot() << " could not be selected for the WhiteBoard" << endmsg;
-  }
-  return sc;
-}
-
-StatusCode HLTEventLoopMgr::pushNewEvent( EventContext* eventContext )
-{
-  // Event processing slot forced to be the same as the wb slot
-  const unsigned int thisSlotNum = eventContext->slot();
-  EventSlot& thisSlot            = m_eventSlots[thisSlotNum];
-  thisSlot.reset( eventContext );
-  // closure to be executed at the end of event
-  auto promote2ExecutedClosure = [this, eventContext]() { return this->promoteToExecuted( eventContext ); };
-  // tbb task
-  tbb::task* task = new ( tbb::task::allocate_root() )
-      HLTExecutionTask( m_algos, eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
-  tbb::task::enqueue( *task );
-  if ( msgLevel( MSG::DEBUG ) )
-    debug() << "All algorithms were submitted on event " << eventContext->evt() << " in slot " << thisSlotNum << endmsg;
-  return StatusCode::SUCCESS;
-}
-
 /**
  * It can be possible that an event fails. In this case this method is called.
  * It dumps the state of the scheduler, drains the actions (without executing
@@ -503,22 +478,22 @@ StatusCode HLTEventLoopMgr::eventFailed( EventContext* eventContext )
   return StatusCode::FAILURE;
 }
 
-StatusCode HLTEventLoopMgr::promoteToExecuted( EventContext* eventContext )
+void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventContext )
 {
   // Check if the execution failed
-  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext ).ignore();
+  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success )
+    eventFailed( eventContext.get() ).ignore();
   int si = eventContext->slot();
 
   if ( msgLevel( MSG::DEBUG ) )
     debug() << "Event " << eventContext->evt() << " executed in slot " << si << "." << endmsg;
 
   // Schedule the cleanup of the event
-  EventSlot& thisSlot = m_eventSlots[si];
   if ( m_algExecStateSvc->eventStatus( *eventContext ) == EventStatus::Success ) {
     if ( msgLevel( MSG::DEBUG ) )
       debug() << "Event " << eventContext->evt() << " finished (slot " << si << ")." << endmsg;
   } else {
-    fatal() << "Failed event detected on " << eventContext << endmsg;
+    fatal() << "Failed event detected on " << *eventContext << endmsg;
   }
 
   debug() << "Clearing slot " << si << " (event " << eventContext->evt() << ") of the whiteboard" << endmsg;
@@ -527,25 +502,21 @@ StatusCode HLTEventLoopMgr::promoteToExecuted( EventContext* eventContext )
   if ( !sc.isSuccess() ) {
     warning() << "Clear of Event data store failed" << endmsg;
   }
-  delete eventContext;
-  thisSlot.eventContext = nullptr;
-  sc                    = m_whiteboard->freeStore( si );
+  m_eventSlots[si].eventContext = nullptr;
+  sc                            = m_whiteboard->freeStore( si );
   if ( !sc.isSuccess() ) {
     error() << "Whiteboard slot " << eventContext->slot() << " could not be properly cleared";
   }
   m_finishedEvt++;
   m_createEventCond.notify_all();
-  return StatusCode::SUCCESS;
 }
 
 tbb::task* HLTEventLoopMgr::HLTExecutionTask::execute()
 {
   bool eventfailed = false;
-  Gaudi::Hive::setCurrentContext( m_evtCtx );
+  Gaudi::Hive::setCurrentContext( m_evtCtx.get() );
 
   const SmartIF<IProperty> appmgr( m_serviceLocator );
-  SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
-  MsgStream log( messageSvc, "HLTExecutionTask" );
 
   for ( IAlgorithm* ialg : m_algorithms ) {
     Algorithm* this_algo = dynamic_cast<Algorithm*>( ialg );
@@ -562,21 +533,20 @@ tbb::task* HLTEventLoopMgr::HLTExecutionTask::execute()
       m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Executing );
       sc = ialg->sysExecute( *m_evtCtx );
       if ( UNLIKELY( !sc.isSuccess() ) ) {
-        log << MSG::WARNING << "Execution of algorithm " << ialg->name() << " failed" << endmsg;
+        log() << MSG::WARNING << "Execution of algorithm " << ialg->name() << " failed" << endmsg;
         eventfailed = true;
       }
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
-      log << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ialg->name()
-          << endmsg;
-      log << MSG::ERROR << Exception << endmsg;
+      log() << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ialg->name()
+            << endmsg << MSG::ERROR << Exception << endmsg;
       eventfailed = true;
     } catch ( const std::exception& Exception ) {
-      log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << ialg->name() << endmsg;
-      log << MSG::ERROR << Exception.what() << endmsg;
+      log() << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << ialg->name() << endmsg
+            << MSG::ERROR << Exception.what() << endmsg;
       eventfailed = true;
     } catch ( ... ) {
-      log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ialg->name() << endmsg;
+      log() << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ialg->name() << endmsg;
       eventfailed = true;
     }
 
@@ -595,7 +565,7 @@ tbb::task* HLTEventLoopMgr::HLTExecutionTask::execute()
     }
   }
   // update scheduler state
-  m_promote2ExecutedClosure();
+  m_promote2ExecutedClosure( std::move( m_evtCtx ) );
   Gaudi::Hive::setCurrentContextEvt( -1 );
 
   return nullptr;
