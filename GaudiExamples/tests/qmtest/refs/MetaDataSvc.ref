@@ -44,8 +44,6 @@ ApplicationMgr.JobOptionsPreAction:
 ApplicationMgr.JobOptionsSvcType:JobOptionsSvc
 ApplicationMgr.JobOptionsType:NONE
 ApplicationMgr.MessageSvcType:MessageSvc
-ApplicationMgr.MultiThreadExtSvc:[  ]
-ApplicationMgr.NoOfThreads:0
 ApplicationMgr.OutStream:[  ]
 ApplicationMgr.OutStreamType:OutputStream
 ApplicationMgr.OutputLevel:3

@@ -1,5 +1,6 @@
 // Include files
 #include "ApplicationMgr.h"
+
 #include "AlgorithmManager.h"
 #include "DLLClassManager.h"
 #include "ServiceManager.h"
@@ -15,7 +16,6 @@
 #include "GaudiKernel/SmartIF.h"
 
 #include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/ThreadGaudi.h"
 
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
@@ -262,20 +262,23 @@ StatusCode ApplicationMgr::configure()
     return sc;
   }
 
-  MsgStream log( m_messageSvc, name() );
-
-  // Get my own options using the Job options service
-  if ( log.level() <= MSG::DEBUG ) log << MSG::DEBUG << "Getting my own properties" << endmsg;
-  sc = m_jobOptionsSvc->setMyProperties( name(), this );
-  if ( !sc.isSuccess() ) {
-    log << MSG::WARNING << "Problems getting my properties from JobOptionsSvc" << endmsg;
-    return sc;
+  {
+    MsgStream log( m_messageSvc, name() );
+    // Get my own options using the Job options service
+    if ( log.level() <= MSG::DEBUG ) log << MSG::DEBUG << "Getting my own properties" << endmsg;
+    sc = m_jobOptionsSvc->setMyProperties( name(), this );
+    if ( !sc.isSuccess() ) {
+      log << MSG::WARNING << "Problems getting my properties from JobOptionsSvc" << endmsg;
+      return sc;
+    }
   }
+
+  // Make sure that the OutputLevel is in sync
+  if ( m_outputLevel != MSG::NIL && m_messageSvc ) m_messageSvc->setOutputLevel( name(), m_outputLevel );
+  MsgStream log( m_messageSvc, name() );
 
   // Check current outputLevel to eventually inform the MessageSvc
   if ( m_outputLevel != MSG::NIL && !m_appName.empty() ) {
-    assert( m_messageSvc );
-    m_messageSvc->setOutputLevel( name(), m_outputLevel );
     // Print a welcome message
     log << MSG::ALWAYS << std::endl
         << "=================================================================="
@@ -315,10 +318,13 @@ StatusCode ApplicationMgr::configure()
   // Check if StatusCode need to be checked
   if ( m_codeCheck ) {
     StatusCode::enableChecking();
-    sc = addMultiSvc( "StatusCodeSvc", -9999 );
+    sc = svcManager()->addService( "StatusCodeSvc", -9999 );
     if ( sc.isFailure() ) {
-      log << MSG::FATAL << "Error adding StatusCodeSvc for multiple threads" << endmsg;
+      log << MSG::FATAL << "Error adding StatusCodeSvc" << endmsg;
       return StatusCode::FAILURE;
+    } else {
+      ON_VERBOSE
+      log << MSG::VERBOSE << "added service StatusCodeSvc" << endmsg;
     }
   } else {
     StatusCode::disableChecking();
@@ -337,15 +343,18 @@ StatusCode ApplicationMgr::configure()
   // Declare Service Types
   for ( auto& j : m_svcMapping ) {
     Gaudi::Utils::TypeNameString itm( j );
-    if ( declareMultiSvcType( itm.name(), itm.type() ).isFailure() ) {
+    if ( svcManager()->declareSvcType( itm.name(), itm.type() ).isFailure() ) {
       log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
+    } else {
+      ON_VERBOSE
+      log << MSG::VERBOSE << "declared service " << j << endmsg;
     }
   }
   for ( auto& j : m_svcOptMapping ) {
     Gaudi::Utils::TypeNameString itm( j );
-    if ( declareMultiSvcType( itm.name(), itm.type() ).isFailure() ) {
-      log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
+    if ( svcManager()->declareSvcType( itm.name(), itm.type() ).isFailure() ) {
+      log << MSG::ERROR << "declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -366,12 +375,6 @@ StatusCode ApplicationMgr::configure()
     return sc;
   }
 
-  sc = decodeMultiThreadSvcNameList();
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Failure during multi thread service creation" << endmsg;
-    return sc;
-  }
-
   sc = decodeCreateSvcNameList();
   if ( sc.isFailure() ) {
     log << MSG::ERROR << "Failure during external service creation" << endmsg;
@@ -382,31 +385,31 @@ StatusCode ApplicationMgr::configure()
   // Retrieve intrinsic services. If needed configure them.
   //--------------------------------------------------------------------------
   const Gaudi::Utils::TypeNameString evtloop_item( m_eventLoopMgr );
-  sc = addMultiSvc( evtloop_item, ServiceManager::DEFAULT_SVC_PRIORITY * 10 );
+  sc = svcManager()->addService( evtloop_item, ServiceManager::DEFAULT_SVC_PRIORITY * 10 );
   if ( !sc.isSuccess() ) {
     log << MSG::FATAL << "Error adding :" << m_eventLoopMgr << endmsg;
     return sc;
+  } else {
+    ON_VERBOSE
+    log << MSG::VERBOSE << "added service " << evtloop_item << endmsg;
   }
 
-  if ( m_noOfEvtThreads == 0 ) {
-    m_runable = m_svcLocator->service( m_runableType );
-    if ( !m_runable ) {
-      log << MSG::FATAL << "Error retrieving Runable: " << m_runableType.value() << "\n Check option ApplicationMgr."
-          << m_runableType.name() << endmsg;
-      return sc;
-    }
-    m_processingMgr = m_svcLocator->service( evtloop_item );
-    if ( !m_processingMgr ) {
-      log << MSG::FATAL << "Error retrieving Processing manager: " << m_eventLoopMgr.value()
-          << "\n Check option ApplicationMgr." << m_eventLoopMgr.name() << "\n No events will be processed." << endmsg;
-      return sc;
-    }
+  m_runable = m_svcLocator->service( m_runableType );
+  if ( !m_runable ) {
+    log << MSG::FATAL << "Error retrieving Runable: " << m_runableType.value() << "\n Check option ApplicationMgr."
+        << m_runableType.name() << endmsg;
+    return sc;
+  }
+  m_processingMgr = m_svcLocator->service( evtloop_item );
+  if ( !m_processingMgr ) {
+    log << MSG::FATAL << "Error retrieving Processing manager: " << m_eventLoopMgr.value()
+        << "\n Check option ApplicationMgr." << m_eventLoopMgr.name() << "\n No events will be processed." << endmsg;
+    return sc;
   }
 
   // Establish Update Handlers for ExtSvc and DLLs Properties
   m_extSvcNameList.declareUpdateHandler( &ApplicationMgr::extSvcNameListHandler, this );
   m_createSvcNameList.declareUpdateHandler( &ApplicationMgr::createSvcNameListHandler, this );
-  m_multiThreadSvcNameList.declareUpdateHandler( &ApplicationMgr::multiThreadSvcNameListHandler, this );
   m_dllNameList.declareUpdateHandler( &ApplicationMgr::dllNameListHandler, this );
 
   if ( m_actHistory ) {
@@ -415,14 +418,6 @@ StatusCode ApplicationMgr::configure()
     if ( sc.isFailure() ) {
       log << MSG::FATAL << "Error adding HistorySvc" << endmsg;
       return StatusCode::FAILURE;
-    }
-
-    if ( m_noOfEvtThreads > 0 ) {
-      sc = addMultiSvc( "HistorySvc", std::numeric_limits<int>::max() );
-      if ( sc.isFailure() ) {
-        log << MSG::FATAL << "Error adding HistorySvc for multiple threads" << endmsg;
-        return StatusCode::FAILURE;
-      }
     }
   }
 
@@ -1017,107 +1012,6 @@ StatusCode ApplicationMgr::decodeExtSvcNameList()
         MsgStream log( m_messageSvc, m_name );
         log << MSG::ERROR << "decodeExtSvcNameList: Cannot declare service " << item.type() << "/" << item.name()
             << endmsg;
-      }
-    }
-  }
-  return result;
-}
-
-//============================================================================
-// External Service List handler
-//============================================================================
-void ApplicationMgr::multiThreadSvcNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  if ( !( decodeMultiThreadSvcNameList() ).isSuccess() ) {
-    throw GaudiException( "Failed to create copies of mt services",
-                          "MinimalEventLoopMgr::multiThreadSvcNameListHandler", StatusCode::FAILURE );
-  }
-}
-
-//============================================================================
-//  decodeMultiExtSvcNameList
-//============================================================================
-StatusCode ApplicationMgr::decodeMultiThreadSvcNameList()
-{
-  StatusCode result    = StatusCode::SUCCESS;
-  const auto& theNames = m_multiThreadSvcNameList.value();
-  for ( int iCopy = 0; iCopy < m_noOfEvtThreads; ++iCopy ) {
-    for ( const auto& it : theNames ) {
-      Gaudi::Utils::TypeNameString item( it );
-      result = addMultiSvc( item, ServiceManager::DEFAULT_SVC_PRIORITY );
-      // FIXME SHOULD CLONE?
-      if ( result.isFailure() ) {
-        MsgStream log( m_messageSvc, m_name );
-        log << MSG::ERROR << "decodeMultiThreadSvcNameList: Cannot create service " << item.type() << "/" << item.name()
-            << endmsg;
-      } else {
-        ON_VERBOSE
-        {
-          MsgStream log( m_messageSvc, m_name );
-          log << MSG::VERBOSE << "decodeMultiThreadSvcNameList: created service " << item.type() << "/" << item.name()
-              << endmsg;
-        }
-      }
-    }
-  }
-  return result;
-}
-//=============================================================================
-//  declareMultiSvcType
-//=============================================================================
-StatusCode ApplicationMgr::declareMultiSvcType( const std::string& name, const std::string& type )
-{
-  StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( m_messageSvc, m_name );
-  if ( 0 == m_noOfEvtThreads ) {
-    result = svcManager()->declareSvcType( name, type );
-    if ( result.isFailure() ) {
-      log << MSG::ERROR << "declareMultiSvcType: Cannot declare service " << type << "/" << name << endmsg;
-    } else {
-      ON_VERBOSE
-      log << MSG::VERBOSE << "declareMultiSvcType: declared service " << type << "/" << name << endmsg;
-    }
-  } else {
-    for ( int iCopy = 0; iCopy < m_noOfEvtThreads; ++iCopy ) {
-      std::string thrName( name + getGaudiThreadIDfromID( iCopy ) );
-      result = svcManager()->declareSvcType( thrName, type );
-      if ( result.isFailure() ) {
-        log << MSG::ERROR << "declareMultiSvcType: Cannot declare service " << type << "/" << thrName << endmsg;
-      } else {
-        ON_VERBOSE
-        log << MSG::VERBOSE << "declareMultiSvcType: declared service " << type << "/" << thrName << endmsg;
-      }
-    }
-  }
-  return result;
-}
-//=============================================================================
-//  addMultiSvc
-//=============================================================================
-StatusCode ApplicationMgr::addMultiSvc( const Gaudi::Utils::TypeNameString& typeName, int prio )
-{
-  using Gaudi::Utils::TypeNameString;
-  StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( m_messageSvc, m_name );
-  if ( 0 == m_noOfEvtThreads ) {
-    result = svcManager()->addService( typeName, prio );
-    // result = svcManager()->addService(name, type, prio); // CHECKME???
-    if ( result.isFailure() ) {
-      log << MSG::ERROR << "addMultiSvc: Cannot add service " << typeName.type() << "/" << typeName.name() << endmsg;
-    } else {
-      ON_VERBOSE
-      log << MSG::VERBOSE << "addMultiSvc: added service " << typeName.type() << "/" << typeName.name() << endmsg;
-    }
-  } else {
-    for ( int iCopy = 0; iCopy < m_noOfEvtThreads; ++iCopy ) {
-      const std::string& type = typeName.type();
-      std::string thrName( typeName.name() + getGaudiThreadIDfromID( iCopy ) );
-      result = svcManager()->addService( TypeNameString( thrName, type ), prio );
-      if ( result.isFailure() ) {
-        log << MSG::ERROR << "addMultiSvc: Cannot add service " << type << "/" << thrName << endmsg;
-      } else {
-        ON_VERBOSE
-        log << MSG::VERBOSE << "addMultiSvc: added service " << type << "/" << thrName << endmsg;
       }
     }
   }

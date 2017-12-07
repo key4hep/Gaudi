@@ -30,7 +30,6 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/Stat.h"
 #include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/ToolHandle.h"
 
 #pragma GCC diagnostic push
@@ -837,18 +836,7 @@ StatusCode Algorithm::setProperties()
   // and update the property value bypassing the update handler
   m_outputLevel.value() = setUpMessaging();
 
-  // set first generic Properties
-  StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName( name() ), this );
-  if ( sc.isFailure() ) return StatusCode::FAILURE;
-
-  // set specific Properties
-  if ( isGaudiThreaded( name() ) ) {
-    if ( jos->setMyProperties( name(), this ).isFailure() ) {
-      return StatusCode::FAILURE;
-    }
-  }
-
-  return sc;
+  return jos->setMyProperties( name(), this );
 }
 
 StatusCode Algorithm::createSubAlgorithm( const std::string& type, const std::string& name, Algorithm*& pSubAlgorithm )
@@ -860,7 +848,7 @@ StatusCode Algorithm::createSubAlgorithm( const std::string& type, const std::st
 
   // Maybe modify the AppMgr interface to return Algorithm* ??
   IAlgorithm* tmp;
-  StatusCode sc = am->createAlgorithm( type, name + getGaudiThreadIDfromName( Algorithm::name() ), tmp );
+  StatusCode sc = am->createAlgorithm( type, name, tmp );
   if ( sc.isFailure() ) return StatusCode::FAILURE;
 
   try {

@@ -113,8 +113,6 @@ public:
   StatusCode decodeCreateSvcNameList();
   void createSvcNameListHandler( Gaudi::Details::PropertyBase& );
   void extSvcNameListHandler( Gaudi::Details::PropertyBase& theProp );
-  StatusCode decodeMultiThreadSvcNameList();
-  void multiThreadSvcNameListHandler( Gaudi::Details::PropertyBase& theProp );
   StatusCode decodeDllNameList();
   void dllNameListHandler( Gaudi::Details::PropertyBase& theProp );
   void pluginDebugPropertyHandler( Gaudi::Details::PropertyBase& theProp );
@@ -152,11 +150,6 @@ public:
   void outputLevelUpdate() override;
 
 protected:
-  /// declare one or more copies of svc type/name as determined by NoOfThreads
-  StatusCode declareMultiSvcType( const std::string& name, const std::string& type );
-  /// add one or more copies of svc type/name as determined by NoOfThreads
-  StatusCode addMultiSvc( const Gaudi::Utils::TypeNameString& typeName, int prio );
-
   // implementation of IService::setServiceManager
   void setServiceManager( ISvcManager* ) override {}
 
@@ -220,10 +213,6 @@ protected:
   Gaudi::Property<std::vector<std::string>> m_extSvcNameList{this, "ExtSvc", {}, "List of external services names"};
   Gaudi::Property<bool> m_extSvcCreates{this, "ExtSvcCreates", true,
                                         "LHCb (default) or ATLAS definition of \"ExtSvc\""};
-
-  /// List of external services names for which we want a copy per evt thread
-  Gaudi::Property<std::vector<std::string>> m_multiThreadSvcNameList{this, "MultiThreadExtSvc"};
-  Gaudi::Property<int> m_noOfEvtThreads{this, "NoOfThreads", 0, "MultiThreadSvc copies"};
 
   Gaudi::Property<std::vector<std::string>> m_dllNameList{this, "Dlls", {}, "List of DDL's names"};
   Gaudi::Property<std::string> m_jobOptionsType{this, "JobOptionsType", "FILE", "Source type (e.g. dbase, file...)"};

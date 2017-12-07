@@ -10,7 +10,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
-#include "GaudiKernel/ThreadGaudi.h"
 
 using std::string;
 
@@ -307,17 +306,7 @@ StatusCode Service::setProperties()
     m_outputLevel.value() = setUpMessaging();
   }
 
-  // set first generic Properties
-  StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName( name() ), this );
-  if ( sc.isFailure() ) return sc;
-
-  // set specific Properties
-  if ( isGaudiThreaded( name() ) ) {
-    if ( jos->setMyProperties( name(), this ).isFailure() ) {
-      return StatusCode::FAILURE;
-    }
-  }
-  return sc;
+  return jos->setMyProperties( name(), this );
 }
 
 //--- Local methods

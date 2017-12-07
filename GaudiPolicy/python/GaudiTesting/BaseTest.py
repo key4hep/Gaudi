@@ -866,6 +866,7 @@ for w, o, r in [
     # Ignore count of declared properties (anyway they are all printed)
     (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+",
      r"\1NN"),
+    ('ApplicationMgr', r'(declareMultiSvcType|addMultiSvc): ', ''),
 ]:  # [ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o, r, w)
 
