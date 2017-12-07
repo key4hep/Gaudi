@@ -32,6 +32,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   if ( idr.find( "/" ) == idr.length() ) {
     error() << "Badly formed identifier \"" << idr << "\": "
             << "Must not end with a /" << endmsg;
+    delete hist;
     return StatusCode::FAILURE;
   }
 
@@ -39,6 +40,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   std::string stream, name;
   if ( !findStream( idr, stream, name, f ) ) {
     error() << "Could not register id: \"" << idr << "\"" << endmsg;
+    delete hist;
     return StatusCode::FAILURE;
   }
 
@@ -52,6 +54,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     if ( hist->Compare( t1 ) != 0 ) {
       error() << "previously registered object with identifier \"" << uid << "\" does not compare to this one"
               << endmsg;
+      delete hist;
       return StatusCode::FAILURE;
     } else {
       debug() << "previously registered id \"" << uid << "\": num " << uitr->second->size() << endmsg;
@@ -77,17 +80,20 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     hist = readHist_i<T>( idr );
     if ( hist == nullptr ) {
       error() << "Unable to read in hist" << endmsg;
+      delete hist;
       return StatusCode::FAILURE;
     }
     to  = dynamic_cast<TObject*>( hist );
     hid = THistID( uid, temp, to, f, m_files.find( stream )->second.second );
   } else if ( !hist ) {
     error() << "Unable to read in hist with id: \"" << idr << "\"" << endmsg;
+    delete hist;
     return StatusCode::FAILURE;
   } else {
     to = dynamic_cast<TObject*>( hist );
     if ( to == nullptr ) {
       error() << "Could not dcast to TObject. id: \"" << idr << "\"" << endmsg;
+      delete hist;
       return StatusCode::FAILURE;
     }
 
@@ -95,6 +101,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     if ( oitr != m_tobjs.end() ) {
       error() << "already registered id: \"" << idr << "\" with identifier \""
               << oitr->second.first->at( oitr->second.second ).id << "\"" << endmsg;
+      delete hist;
       return StatusCode::FAILURE;
     }
 
