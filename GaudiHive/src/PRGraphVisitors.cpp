@@ -499,18 +499,21 @@ namespace concurrency
   bool RunSimulator::visit( DecisionNode& node )
   {
 
-    // std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
     bool allChildDecisionsResolved = true;
-    for ( auto child : node.getDaughters() ) {
-      int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+
+    for ( const auto& child : node.getDaughters() ) {
+
+      child->accept( *this );
+
+      int childDecision                                    = m_slot->controlFlowState[child->getNodeIndex()];
+      if ( childDecision == -1 ) allChildDecisionsResolved = false;
+
+      // process children sequentially if their decision hub is sequential
+      if ( !node.m_modeConcurrent && childDecision == -1 ) return false;
 
       if ( childDecision == 1 && node.m_modeOR && node.m_modePromptDecision ) {
         m_slot->controlFlowState[node.getNodeIndex()] = 1;
         return true;
-      }
-
-      if ( childDecision == -1 ) {
-        allChildDecisionsResolved = false;
       }
     }
 
