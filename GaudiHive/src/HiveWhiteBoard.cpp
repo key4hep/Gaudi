@@ -14,10 +14,9 @@
 #include "GaudiKernel/TypeNameString.h"
 #include "Rtypes.h"
 #include "ThreadLocalStorage.h"
+#include "tbb/concurrent_queue.h"
 #include "tbb/mutex.h"
 #include "tbb/recursive_mutex.h"
-#include <mutex>
-#include <queue>
 #include <utility>
 
 // Interfaces
@@ -55,7 +54,11 @@ namespace
     return dataManager.get();
   }
 
-  template <typename T, typename Mutex = tbb::recursive_mutex>
+  // C++20: replace with http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0290r2.html
+  //         http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4033.html
+
+  template <typename T, typename Mutex = tbb::recursive_mutex, typename ReadLock = typename Mutex::scoped_lock,
+            typename WriteLock = ReadLock>
   class Synced
   {
     T m_obj;
@@ -65,15 +68,13 @@ namespace
     template <typename F>
     auto with_lock( F&& f ) -> decltype( auto )
     {
-      typename Mutex::scoped_lock lock;
-      lock.acquire( m_mtx );
+      WriteLock lock{m_mtx};
       return f( m_obj );
     }
     template <typename F>
     auto with_lock( F&& f ) const -> decltype( auto )
     {
-      typename Mutex::scoped_lock lock;
-      lock.acquire( m_mtx );
+      ReadLock lock{m_mtx};
       return f( m_obj );
     }
   };
@@ -166,9 +167,7 @@ protected:
   /// Datastore partitions
   std::vector<Synced<Partition>> m_partitions;
   /// fifo queue of free slots
-  std::queue<int> m_freeSlots;
-  /// protection for the fifo queue of free slots
-  std::mutex m_freeSlotsMutex;
+  tbb::concurrent_queue<int> m_freeSlots;
 
 public:
   /// Inherited constructor
@@ -188,7 +187,7 @@ public:
   }
 
   /// Get free slots number
-  unsigned int freeSlots() override { return m_freeSlots.size(); };
+  unsigned int freeSlots() override { return m_freeSlots.unsafe_size(); }
 
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override { return (CLID)m_rootCLID; }
@@ -587,24 +586,16 @@ public:
   /// Allocate a store partition for a given event number
   size_t allocateStore( int evtnumber ) override
   {
-    // make sure we are the only ones dealing with free slots
-    std::lock_guard<std::mutex> lock( m_freeSlotsMutex );
     // take next free slot in the list
-    if ( m_freeSlots.empty() ) {
-      return std::string::npos;
-    } else {
-      size_t slot = m_freeSlots.front();
-      m_freeSlots.pop();
-      m_partitions[slot].with_lock( [evtnumber]( Partition& p ) { p.eventNumber = evtnumber; } );
-      return slot;
-    }
+    int slot;
+    if ( !m_freeSlots.try_pop( slot ) ) return std::string::npos;
+    m_partitions[slot].with_lock( [evtnumber]( Partition& p ) { p.eventNumber = evtnumber; } );
+    return slot;
   }
 
   /// Free a store partition
   StatusCode freeStore( size_t partition ) override
   {
-    // make sure we are the only ones dealing with free slots
-    std::lock_guard<std::mutex> lock( m_freeSlotsMutex );
     m_partitions[partition].with_lock( []( Partition& p ) { p.eventNumber = -1; } );
     m_freeSlots.push( partition );
     return StatusCode::SUCCESS;
