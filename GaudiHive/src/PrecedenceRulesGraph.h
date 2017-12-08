@@ -715,8 +715,8 @@ namespace concurrency
     /// Initialize graph
     StatusCode initialize();
 
-    /// A method to update algorithm node decision, and propagate it upwards
-    void accept( const std::string& algo_name, IGraphVisitor& visitor ) const;
+    /// An entry point to visit all graph nodes
+    void accept( IGraphVisitor& visitor ) const;
 
     /// Add DataNode that represents DataObject
     StatusCode addDataNode( const DataObjID& dataPath );
