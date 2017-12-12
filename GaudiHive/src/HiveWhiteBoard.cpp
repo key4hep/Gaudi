@@ -587,15 +587,22 @@ public:
   size_t allocateStore( int evtnumber ) override
   {
     // take next free slot in the list
-    int slot;
-    if ( !m_freeSlots.try_pop( slot ) ) return std::string::npos;
-    m_partitions[slot].with_lock( [evtnumber]( Partition& p ) { p.eventNumber = evtnumber; } );
+    int slot = std::string::npos;
+    if ( m_freeSlots.try_pop( slot ) ) {
+      assert( slot != std::string::npos );
+      assert( slot < m_partitions.size() );
+      m_partitions[slot].with_lock( [evtnumber]( Partition& p ) {
+        assert( p.eventNumber == -1 ); // or whatever value represents 'free'
+        p.eventNumber = evtnumber;
+      } );
+    }
     return slot;
   }
 
   /// Free a store partition
   StatusCode freeStore( size_t partition ) override
   {
+    assert( partition < m_partitions.size() );
     m_partitions[partition].with_lock( []( Partition& p ) { p.eventNumber = -1; } );
     m_freeSlots.push( partition );
     return StatusCode::SUCCESS;
