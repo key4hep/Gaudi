@@ -385,14 +385,12 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
   tbb::task_scheduler_init tbbSchedInit( m_threadPoolSize.value() + 1 );
 
   int createdEvts = 0;
-  // Loop until the finished events did not reach the maxevt number
-  bool loop_ended = false;
   // Run the first event before spilling more than one
   bool newEvtAllowed = false;
 
   info() << "Starting loop on events" << endmsg;
   auto start_time = Clock::now();
-  while ( !loop_ended && ( maxevt < 0 || m_finishedEvt < (unsigned int)maxevt ) ) {
+  while ( maxevt < 0 || m_finishedEvt < (unsigned int)maxevt ) {
     // if the created events did not reach maxevt, create an event
     if ( !( ( newEvtAllowed || createdEvts == 0 ) && // Launch the first event alone
             // The events are not finished with an unlimited number of events
