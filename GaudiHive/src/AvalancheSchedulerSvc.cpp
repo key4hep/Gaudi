@@ -583,16 +583,21 @@ StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
   // Set the number of slots available to an error code
   m_freeSlots.store( 0 );
 
-  fatal() << "*** Event " << eventContext->evt() << " on slot " << eventContext->slot() << " failed! ***" << endmsg;
+  const uint slotIdx = eventContext->slot();
+
+  fatal() << "*** Event " << eventContext->evt() << " on slot " << slotIdx << " failed! ***" << endmsg;
 
   std::ostringstream ost;
   m_algExecStateSvc->dump( ost, *eventContext );
+  info() << "Dumping Algorithm Execution States for slot " << slotIdx << ":" << std::endl << ost.str() << endmsg;
 
-  info() << "Dumping Alg Exec State for slot " << eventContext->slot() << ":\n" << ost.str() << endmsg;
+  if ( msgLevel( MSG::VERBOSE ) )
+    dumpSchedulerState( -1 );
+  else
+    dumpSchedulerState( slotIdx );
 
-  dumpSchedulerState( -1 );
   // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
-  m_precSvc->dumpPrecedenceRules( m_eventSlots[eventContext->slot()] );
+  m_precSvc->dumpPrecedenceRules( m_eventSlots[slotIdx] );
 
   // Empty queue and deactivate the service
   action thisAction;
@@ -816,7 +821,7 @@ StatusCode AvalancheSchedulerSvc::isStalled( int iSlot )
 
     info() << "About to declare a stall" << endmsg;
     fatal() << "*** Stall detected! ***\n" << endmsg;
-    dumpSchedulerState( iSlot );
+
     // throw GaudiException ("Stall detected",name(),StatusCode::FAILURE);
 
     return StatusCode::FAILURE;
@@ -837,12 +842,17 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
   // To have just one big message
   std::ostringstream outputMessageStream;
 
-  outputMessageStream << "============================== Execution Task State ============================="
+  if ( 0 < iSlot )
+    outputMessageStream << "Dumping scheduler state for all slots:" << std::endl;
+  else
+    outputMessageStream << "Dumping scheduler state for slot " << iSlot << ":" << std::endl;
+
+  outputMessageStream << "============================== Execution Task States ============================="
                       << std::endl;
   dumpState( outputMessageStream );
 
   outputMessageStream << std::endl
-                      << "============================== Scheduler State  ================================="
+                      << "============================== Control Flow and FSM States  ====================="
                       << std::endl;
 
   int slotCount = -1;
@@ -856,12 +866,11 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
     if ( 0 > iSlot or iSlot == slotCount ) {
 
       // Snapshot of the Control Flow and FSM states
-      outputMessageStream << "\nControl Flow and FSM states:" << std::endl;
       outputMessageStream << m_precSvc->printState( thisSlot ) << std::endl;
 
       // Mention sub slots
       if ( thisSlot.allSubSlots.size() ) {
-        outputMessageStream << "\nSub-slots:" << thisSlot.allSubSlots.size() << std::endl;
+        outputMessageStream << std::endl << "Number of sub-slots:" << thisSlot.allSubSlots.size() << std::endl;
         outputMessageStream << "Sub-slot algorithms ready:" << thisSlot.subSlotAlgsReady.size() << std::endl;
       }
     }
@@ -869,7 +878,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 
   outputMessageStream << "=================================== END ======================================" << std::endl;
 
-  info() << "Dumping Scheduler State " << std::endl << outputMessageStream.str() << endmsg;
+  info() << outputMessageStream.str() << endmsg;
 }
 
 //---------------------------------------------------------------------------
