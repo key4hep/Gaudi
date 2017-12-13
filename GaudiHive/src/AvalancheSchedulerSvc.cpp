@@ -66,7 +66,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
 
   // Initialise mother class (read properties, ...)
   StatusCode sc( Service::initialize() );
-  if ( !sc.isSuccess() ) warning() << "Base class could not be initialized" << endmsg;
+  if ( sc.isFailure() ) warning() << "Base class could not be initialized" << endmsg;
 
   // Get hold of the TBBSvc. This should initialize the thread pool
   m_threadPoolSvc = serviceLocator()->service( "ThreadPoolSvc" );
@@ -336,10 +336,10 @@ StatusCode AvalancheSchedulerSvc::finalize()
 {
 
   StatusCode sc( Service::finalize() );
-  if ( !sc.isSuccess() ) warning() << "Base class could not be finalized" << endmsg;
+  if ( sc.isFailure() ) warning() << "Base class could not be finalized" << endmsg;
 
   sc = deactivate();
-  if ( !sc.isSuccess() ) warning() << "Scheduler could not be deactivated" << endmsg;
+  if ( sc.isFailure() ) warning() << "Scheduler could not be deactivated" << endmsg;
 
   info() << "Joining Scheduler thread" << endmsg;
   m_thread.join();
@@ -742,7 +742,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
           partial_sc = promoteToScheduled( contextAlgPair->second, iSlot, contextAlgPair->first );
 
           // Add the alg back into the ready list if scheduling failed
-          if ( !partial_sc.isSuccess() ) failedAlgs.push_back( *contextAlgPair );
+          if ( partial_sc.isFailure() ) failedAlgs.push_back( *contextAlgPair );
         } else {
           // Don't loop through all remaining algs if we're already busy
           failedAlgs.insert( failedAlgs.end(), contextAlgPair, thisSlot.subSlotAlgsReady.end() );
@@ -789,7 +789,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
       thisSlot.eventContext = nullptr;
     } else {
       StatusCode eventStalledSC = isStalled( iSlot );
-      if ( !eventStalledSC.isSuccess() ) {
+      if ( eventStalledSC.isFailure() ) {
         m_algExecStateSvc->setEventStatus( EventStatus::AlgStall, *thisSlot.eventContext );
         eventFailed( thisSlot.eventContext ).ignore();
       }
@@ -1001,7 +1001,7 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
   Gaudi::Hive::setCurrentContext( eventContext );
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
 
-  if ( !sc.isSuccess() ) {
+  if ( sc.isFailure() ) {
     error() << "[Event " << eventContext->evt() << ", Slot " << eventContext->slot() << "] "
             << "Instance of algorithm " << algo->name() << " could not be properly put back." << endmsg;
     return StatusCode::FAILURE;
@@ -1049,7 +1049,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
 
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
 
-  if ( !sc.isSuccess() ) {
+  if ( sc.isFailure() ) {
     error() << "[Asynchronous]  [Event " << eventContext->evt() << ", Slot " << eventContext->slot() << "] "
             << "Instance of algorithm " << algo->name() << " could not be properly put back." << endmsg;
     return StatusCode::FAILURE;
