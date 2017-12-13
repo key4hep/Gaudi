@@ -841,7 +841,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
   // To have just one big message
   std::ostringstream outputMessageStream;
 
-  if ( 0 < iSlot )
+  if ( 0 > iSlot )
     outputMessageStream << "Dumping scheduler state for all slots:" << std::endl;
   else
     outputMessageStream << "Dumping scheduler state for slot " << iSlot << ":" << std::endl;
