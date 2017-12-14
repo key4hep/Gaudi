@@ -3,13 +3,11 @@
 #include "IOBoundAlgTask.h"
 
 // Framework includes
-#include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
+#include "GaudiKernel/Algorithm.h" // can be removed ASA dynamic casts to Algorithm are removed
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 
 // C++
@@ -833,7 +831,6 @@ StatusCode AvalancheSchedulerSvc::isStalled( int iSlot )
 /**
  * Used for debugging purposes, the state of the scheduler is dumped on screen
  * in order to be inspected.
- * The dependencies of each algo are printed and the missing ones specified.
 **/
 void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 {
