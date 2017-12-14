@@ -1,28 +1,24 @@
 Starting tracking the heap
 Dumping heap profile to HelloWorld-Initialize.0001.heap (HelloWorld-Initialize)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-BeginRun.0002.heap (HelloWorld-BeginRun)
+Dumping heap profile to HelloWorld-Execute-Event1.0002.heap (HelloWorld-Execute-Event1)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event1.0003.heap (HelloWorld-Execute-Event1)
+Dumping heap profile to HelloWorld-Execute-Event2.0003.heap (HelloWorld-Execute-Event2)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event2.0004.heap (HelloWorld-Execute-Event2)
+Dumping heap profile to HelloWorld-Execute-Event3.0004.heap (HelloWorld-Execute-Event3)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event3.0005.heap (HelloWorld-Execute-Event3)
+Dumping heap profile to HelloWorld-Execute-Event4.0005.heap (HelloWorld-Execute-Event4)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event4.0006.heap (HelloWorld-Execute-Event4)
+Dumping heap profile to HelloWorld-Execute-Event5.0006.heap (HelloWorld-Execute-Event5)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event5.0007.heap (HelloWorld-Execute-Event5)
+Dumping heap profile to HelloWorld-Execute-Event6.0007.heap (HelloWorld-Execute-Event6)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event6.0008.heap (HelloWorld-Execute-Event6)
+Dumping heap profile to HelloWorld-Execute-Event7.0008.heap (HelloWorld-Execute-Event7)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event7.0009.heap (HelloWorld-Execute-Event7)
+Dumping heap profile to HelloWorld-Execute-Event8.0009.heap (HelloWorld-Execute-Event8)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event8.0010.heap (HelloWorld-Execute-Event8)
+Dumping heap profile to HelloWorld-Execute-Event9.0010.heap (HelloWorld-Execute-Event9)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event9.0011.heap (HelloWorld-Execute-Event9)
+Dumping heap profile to HelloWorld-Execute-Event10.0011.heap (HelloWorld-Execute-Event10)
 Starting tracking the heap
-Dumping heap profile to HelloWorld-Execute-Event10.0012.heap (HelloWorld-Execute-Event10)
-Starting tracking the heap
-Dumping heap profile to HelloWorld-EndRun.0013.heap (HelloWorld-EndRun)
-Starting tracking the heap
-Dumping heap profile to HelloWorld-Finalize.0014.heap (HelloWorld-Finalize)
+Dumping heap profile to HelloWorld-Finalize.0012.heap (HelloWorld-Finalize)

@@ -336,32 +336,9 @@ StatusCode MinimalEventLoopMgr::nextEvent( int /* maxevt */ )
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::executeRun( int maxevt )
 {
-  StatusCode sc;
-  bool eventfailed = false;
-
-  // Call the beginRun() method of all top algorithms
-  for ( auto& ita : m_topAlgList ) {
-    sc = ita->sysBeginRun();
-    if ( !sc.isSuccess() ) {
-      warning() << "beginRun() of algorithm " << ita->name() << " failed" << endmsg;
-      eventfailed = true;
-    }
-  }
 
   // Call now the nextEvent(...)
-  sc                                 = nextEvent( maxevt );
-  if ( !sc.isSuccess() ) eventfailed = true;
-
-  // Call the endRun() method of all top algorithms
-  for ( auto& ita : m_topAlgList ) {
-    sc = ita->sysEndRun();
-    if ( !sc.isSuccess() ) {
-      warning() << "endRun() of algorithm " << ita->name() << " failed" << endmsg;
-      eventfailed = true;
-    }
-  }
-
-  return eventfailed ? StatusCode::FAILURE : StatusCode::SUCCESS;
+  return nextEvent( maxevt );
 }
 
 namespace

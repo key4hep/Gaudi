@@ -54,22 +54,3 @@ StatusCode HelloWorld::finalize()
   m_initialized = false;
   return StatusCode::SUCCESS;
 }
-//------------------------------------------------------------------------------
-StatusCode HelloWorld::beginRun()
-{
-  //------------------------------------------------------------------------------
-  info() << "beginning new run...." << endmsg;
-
-  m_initialized = true;
-  return StatusCode::SUCCESS;
-}
-
-//------------------------------------------------------------------------------
-StatusCode HelloWorld::endRun()
-{
-  //------------------------------------------------------------------------------
-  info() << "ending new run...." << endmsg;
-
-  m_initialized = true;
-  return StatusCode::SUCCESS;
-}

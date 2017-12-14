@@ -21,8 +21,6 @@ public:
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
-  StatusCode beginRun() override;
-  StatusCode endRun() override;
 
 private:
   bool m_initialized;

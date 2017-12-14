@@ -69,16 +69,6 @@ public:
   StatusCode finalize() override;
 
   /**
-   ** Sequencer beginRun.
-   **/
-  StatusCode beginRun() override;
-
-  /**
-   ** Sequencer endRun.
-   **/
-  StatusCode endRun() override;
-
-  /**
    ** Reset the Sequencer executed state for the current event.
    **/
   void resetExecuted() override;

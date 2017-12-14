@@ -385,49 +385,6 @@ std::list<IAlgorithm*> AlgResourcePool::getTopAlgList()
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::beginRun()
-{
-  auto algBeginRun = [&]( SmartIF<IAlgorithm>& algoSmartIF ) -> StatusCode {
-    StatusCode sc = algoSmartIF->sysBeginRun();
-    if ( !sc.isSuccess() ) {
-      warning() << "beginRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
-      return StatusCode::FAILURE;
-    }
-    return StatusCode::SUCCESS;
-  };
-  // Call the beginRun() method of all algorithms
-  for ( auto& algoSmartIF : m_flatUniqueAlgList ) {
-    if ( algBeginRun( algoSmartIF ).isFailure() ) return StatusCode::FAILURE;
-  }
-
-  return StatusCode::SUCCESS;
-}
-
-//---------------------------------------------------------------------------
-
-StatusCode AlgResourcePool::endRun()
-{
-
-  auto algEndRun = [&]( SmartIF<IAlgorithm>& algoSmartIF ) -> StatusCode {
-    StatusCode sc = algoSmartIF->sysEndRun();
-    if ( !sc.isSuccess() ) {
-      warning() << "endRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
-      return StatusCode::FAILURE;
-    }
-    return StatusCode::SUCCESS;
-  };
-  // Call the beginRun() method of all top algorithms
-  for ( auto& algoSmartIF : m_flatUniqueAlgList ) {
-    if ( algEndRun( algoSmartIF ).isFailure() ) return StatusCode::FAILURE;
-  }
-  for ( auto& algoSmartIF : m_topAlgList ) {
-    if ( algEndRun( algoSmartIF ).isFailure() ) return StatusCode::FAILURE;
-  }
-  return StatusCode::SUCCESS;
-}
-
-//---------------------------------------------------------------------------
-
 StatusCode AlgResourcePool::stop()
 {
 
