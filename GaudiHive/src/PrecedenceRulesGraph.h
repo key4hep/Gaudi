@@ -257,7 +257,7 @@ namespace precedence
 
       if ( m_whiteboard.isValid() && m_slot.eventContext->valid() )
         if ( m_whiteboard->selectStore( m_slot.eventContext->slot() ).isSuccess() )
-          state = m_whiteboard->exists( props.m_id.fullKey() ) ? "Produced" : "Missing";
+          state = m_whiteboard->exists( props.m_id ) ? "Produced" : "Missing";
 
       return state;
     }
@@ -267,7 +267,7 @@ namespace precedence
       std::string state;
 
       if ( m_condSvc.isValid() && m_slot.eventContext->valid() )
-        state = m_condSvc->isValidID( *( m_slot.eventContext ), props.m_id.fullKey() ) ? "Produced" : "Missing";
+        state = m_condSvc->isValidID( *( m_slot.eventContext ), props.m_id ) ? "Produced" : "Missing";
 
       return state;
     }
