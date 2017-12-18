@@ -507,7 +507,6 @@ StatusCode Algorithm::endRun() { return StatusCode::SUCCESS; }
 
 StatusCode Algorithm::sysExecute( const EventContext& ctx )
 {
-
   m_event_context = ctx;
 
   if ( !isEnabled() ) {
@@ -517,6 +516,8 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
     return StatusCode::SUCCESS;
   }
 
+  AlgExecState& algState = execState( ctx );
+  algState.setState( AlgExecState::State::Executing );
   StatusCode status;
 
   // Should performance profile be performed ?
@@ -542,16 +543,11 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
 
     status = execute();
 
-    if ( UNLIKELY( m_doTimeline ) ) timeline.end = Clock::now();
-
-    setExecuted( true ); // set the executed flag
-
     if ( status.isFailure() ) {
       status = exceptionSvc()->handleErr( *this, status );
     }
 
   } catch ( const GaudiException& Exception ) {
-    setExecuted( true ); // set the executed flag
 
     if ( Exception.code() == StatusCode::FAILURE ) {
       fatal();
@@ -566,14 +562,12 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
     // Stat stat( chronoSvc() , Exception.tag() ) ;
     status = exceptionSvc()->handle( *this, Exception );
   } catch ( const std::exception& Exception ) {
-    setExecuted( true ); // set the executed flag
 
     fatal() << " Standard std::exception is caught " << endmsg;
     error() << Exception.what() << endmsg;
     // Stat stat( chronoSvc() , "*std::exception*" ) ;
     status = exceptionSvc()->handle( *this, Exception );
   } catch ( ... ) {
-    setExecuted( true ); // set the executed flag
 
     fatal() << "UNKNOWN Exception is caught " << endmsg;
     // Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
@@ -581,7 +575,10 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
     status = exceptionSvc()->handle( *this );
   }
 
-  if ( UNLIKELY( m_doTimeline ) ) timelineSvc()->registerTimelineEvent( timeline );
+  if ( UNLIKELY( m_doTimeline ) ) {
+    timeline.end = Clock::now();
+    timelineSvc()->registerTimelineEvent( timeline );
+  }
 
   if ( status.isFailure() ) {
     // Increment the error count
@@ -595,6 +592,9 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
       error() << "Maximum number of errors (" << m_errorMax << ") reached." << endmsg;
     }
   }
+
+  algState.setState( AlgExecState::State::Done, status );
+
   return status;
 }
 
@@ -746,37 +746,28 @@ void Algorithm::setIndex( const unsigned int& idx ) { m_index = idx; }
 
 bool Algorithm::isExecuted() const
 {
-  const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context ).state() == AlgExecState::State::Done;
+  return execState( Gaudi::Hive::currentContext() ).state() == AlgExecState::State::Done;
 }
 
 void Algorithm::setExecuted( bool state ) const
 {
-  const EventContext& context = Gaudi::Hive::currentContext();
-  AlgExecState::State s       = state ? AlgExecState::State::Done : AlgExecState::State::None;
-  algExecStateSvc()->algExecState( const_cast<IAlgorithm*>( (const IAlgorithm*)this ), context ).setState( s );
+  execState( Gaudi::Hive::currentContext() ).setState( state ? AlgExecState::State::Done : AlgExecState::State::None );
 }
 
-void Algorithm::resetExecuted()
-{
-  const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context ).reset();
-}
+void Algorithm::resetExecuted() { execState( Gaudi::Hive::currentContext() ).reset(); }
 
 bool Algorithm::isEnabled() const { return m_isEnabled; }
 
-bool Algorithm::filterPassed() const
-{
-  const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context ).filterPassed();
-}
+bool Algorithm::filterPassed() const { return execState( Gaudi::Hive::currentContext() ).filterPassed(); }
 
 void Algorithm::setFilterPassed( bool state ) const
 {
-  const EventContext& context = Gaudi::Hive::currentContext();
-  algExecStateSvc()
-      ->algExecState( const_cast<IAlgorithm*>( (const IAlgorithm*)this ), context )
-      .setFilterPassed( state );
+  execState( Gaudi::Hive::currentContext() ).setFilterPassed( state );
+}
+
+AlgExecState& Algorithm::execState( const EventContext& ctx ) const
+{
+  return algExecStateSvc()->algExecState( const_cast<IAlgorithm*>( (const IAlgorithm*)this ), ctx );
 }
 
 const std::vector<Algorithm*>* Algorithm::subAlgorithms() const { return &m_subAlgms; }

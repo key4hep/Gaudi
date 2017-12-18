@@ -141,7 +141,6 @@ StatusCode GaudiSequencer::execute()
       if ( m_measureTime ) m_timerTool->start( entry.timer() );
       result = myAlg->sysExecute( getContext() );
       if ( m_measureTime ) m_timerTool->stop( entry.timer() );
-      myAlg->setExecuted( true );
       if ( !result.isSuccess() ) break; //== Abort and return bad status
     }
     //== Check the returned status
