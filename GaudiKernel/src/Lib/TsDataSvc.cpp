@@ -53,7 +53,7 @@ namespace
 
   std::string operator+( char c, boost::string_ref sr )
   {
-    std::string s{{c}};
+    std::string s{c};
     s.append( sr.data(), sr.size() );
     return s;
   }

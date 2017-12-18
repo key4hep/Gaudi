@@ -12,7 +12,7 @@
 #include "RootCnv/RootConverter.h"
 
 // Forward declarations
-class IDataManagerSvc;
+struct IDataManagerSvc;
 
 /*
  *  Gaudi namespace declaration

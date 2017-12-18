@@ -5,7 +5,7 @@
 #include "GaudiKernel/SmartIF.h"
 
 class IIncidentSvc;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class IDataProviderSvc;
 class IRegistry;
 /**

@@ -20,7 +20,7 @@
 
 // Forward declarations
 class IIncidentSvc;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class IDataProviderSvc;
 
 class HiveSlimEventLoopMgr : public extends<Service, IEventProcessor>
