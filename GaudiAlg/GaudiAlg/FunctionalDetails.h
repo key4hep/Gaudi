@@ -84,8 +84,9 @@ namespace Gaudi
         template <typename... Args>
         inline decltype( auto ) range( Args&&... args )
         {
-          // assert( check_sizes( args... ) );
+#ifndef NDEBUG
           verifySizes( args... );
+#endif
           return ranges::view::zip( std::forward<Args>( args )... );
         }
 
@@ -93,8 +94,9 @@ namespace Gaudi
         template <typename... Args>
         inline decltype( auto ) const_range( Args&&... args )
         {
-          // assert( check_sizes( args... ) );
+#ifndef NDEBUG
           verifySizes( args... );
+#endif
           return ranges::view::const_( ranges::view::zip( std::forward<Args>( args )... ) );
         }
       }
