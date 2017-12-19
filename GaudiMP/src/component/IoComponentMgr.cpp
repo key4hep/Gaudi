@@ -388,7 +388,8 @@ StatusCode IoComponentMgr::io_finalize()
   }
 
   bool allgood = true;
-  for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end(); io != ioEnd; ++io ) {
+  // reverse iteration to unwind component dependencies
+  for ( IoStack_t::reverse_iterator io = m_iostack.rbegin(), ioEnd = m_iostack.rend(); io != ioEnd; ++io ) {
     DEBMSG << " [" << ( *io )->name() << "]->io_finalize()..." << endmsg;
     if ( !( *io )->io_finalize().isSuccess() ) {
       allgood = false;
