@@ -474,11 +474,22 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
     debug() << "Executing event " << eventContext->evt() << " on slot " << thisSlotNum << endmsg;
     thisSlot.reset( eventContext );
 
+    // Result status code:
+    StatusCode result = StatusCode::SUCCESS;
+
     // promote to CR and DR the initial set of algorithms
     Cause cs = {Cause::source::Root, "RootDecisionHub"};
-    m_precSvc->iterate( thisSlot, cs );
+    if ( m_precSvc->iterate( thisSlot, cs ).isFailure() ) {
+      error() << "Failed to call IPrecedenceSvc::iterate for slot " << thisSlotNum << endmsg;
+      result = StatusCode::FAILURE;
+    }
 
-    return this->updateStates( thisSlotNum );
+    if ( this->updateStates( thisSlotNum ).isFailure() ) {
+      error() << "Failed to call AvalancheSchedulerSvc::updateStates for slot " << thisSlotNum << endmsg;
+      result = StatusCode::FAILURE;
+    }
+
+    return result;
   }; // end of lambda
 
   // Kick off the scheduling!
@@ -616,7 +627,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
 
   m_updateNeeded = true;
 
-  StatusCode global_sc( StatusCode::FAILURE, true );
+  StatusCode global_sc( StatusCode::SUCCESS );
 
   // Sort from the oldest to the newest event
   // Prepare a vector of pointers to the slots to avoid copies
@@ -645,7 +656,10 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
     // Perform the I->CR->DR transitions
     if ( !algo_name.empty() ) {
       Cause cs = {Cause::source::Task, algo_name};
-      m_precSvc->iterate( thisSlot, cs );
+      if ( m_precSvc->iterate( thisSlot, cs ).isFailure() ) {
+        error() << "Failed to call IPrecedenceSvc::iterate for slot " << iSlot << endmsg;
+        global_sc = StatusCode::FAILURE;
+      }
     }
 
     StatusCode partial_sc( StatusCode::FAILURE, true );
