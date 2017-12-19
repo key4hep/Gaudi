@@ -118,20 +118,20 @@ Algs: 1
 AlgExecStateSvc   VERBOSE reset(0)[m
 EventLoopMgr        DEBUG ---> Loop Finished -  WSS 46.0273 | total time (skipping 1st evt) 31410 ns[m
 ServiceManager      DEBUG Stopping service HistorySvc[m
-HistorySvc        VERBOSE MessageSvc is Service[m
-HistorySvc        VERBOSE JobOptionsSvc is Service[m
-HistorySvc        VERBOSE StatusCodeSvc is Service[m
-HistorySvc        VERBOSE EventLoopMgr is Service[m
-HistorySvc        VERBOSE AppMgrRunable is Service[m
-HistorySvc        VERBOSE HistorySvc is Service[m
-HistorySvc        VERBOSE IncidentSvc is Service[m
-HistorySvc        VERBOSE EventDataSvc is Service[m
-HistorySvc        VERBOSE EventPersistencySvc is Service[m
-HistorySvc        VERBOSE TimelineSvc is Service[m
+HistorySvc        VERBOSE AlgContextSvc is Service[m
 HistorySvc        VERBOSE AlgExecStateSvc is Service[m
+HistorySvc        VERBOSE AppMgrRunable is Service[m
+HistorySvc        VERBOSE EventDataSvc is Service[m
+HistorySvc        VERBOSE EventLoopMgr is Service[m
+HistorySvc        VERBOSE EventPersistencySvc is Service[m
 HistorySvc        VERBOSE HistogramDataSvc is Service[m
 HistorySvc        VERBOSE HistogramPersistencySvc is Service[m
-HistorySvc        VERBOSE AlgContextSvc is Service[m
+HistorySvc        VERBOSE HistorySvc is Service[m
+HistorySvc        VERBOSE IncidentSvc is Service[m
+HistorySvc        VERBOSE JobOptionsSvc is Service[m
+HistorySvc        VERBOSE MessageSvc is Service[m
+HistorySvc        VERBOSE StatusCodeSvc is Service[m
+HistorySvc        VERBOSE TimelineSvc is Service[m
 HistorySvc        VERBOSE ToolSvc is Service[m
 HistorySvc        VERBOSE History is Alg[m
 ServiceManager      DEBUG Stopping service EventLoopMgr[m
