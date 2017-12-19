@@ -27,7 +27,7 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
 
 # Declare project name and version
-gaudi_project(Gaudi v29r1)
+gaudi_project(Gaudi v29r2)
 
 # These tests do not really fit in a subdirectory.
 gaudi_add_test(cmake.EnvConfigTests
