@@ -142,7 +142,7 @@ namespace Gaudi
 #if _GLIBCXX_USE_CXX11_ABI
         return std::regex_replace(
             realname.get(),
-            std::regex{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > ?"},
+            std::regex{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"},
             "std::string" );
 #else
         return std::string{realname.get()};
