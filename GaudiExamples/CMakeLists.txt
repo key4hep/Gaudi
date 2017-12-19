@@ -47,7 +47,6 @@ set(GaudiExamples_srcs
     src/ColorMsg/ColorMsgAlg.cpp
     src/History/History.cpp
     src/THist/*.cpp
-    src/ErrorLog/ErrorLogTest.cpp
     src/Maps/*.cpp
     src/MultipleLogStreams/*.cpp
     src/GaudiCommonTests/*.cpp

@@ -2,11 +2,9 @@
 #define GAUDIKERNEL_STATUSCODE_H
 
 #include <ostream>
+#include <utility>
 
-#include "GaudiKernel/IssueSeverity.h"
 #include "GaudiKernel/Kernel.h"
-
-#include <memory>
 
 /**
  * @class StatusCode StatusCode.h GaudiKernel/StatusCode.h
@@ -33,35 +31,12 @@ public:
   /// Constructor.
   StatusCode() = default;
 
-  StatusCode( unsigned long code, IssueSeverity&& sev ) : d_code( code )
-  {
-    try { // ensure that we do not throw even if we cannot move the severity
-      m_severity = std::make_shared<const IssueSeverity>( std::move( sev ) );
-    } catch ( ... ) {
-    }
-  }
-
-  StatusCode( IssueSeverity&& is )
-      : StatusCode( is.getLevel() == IssueSeverity::RECOVERABLE
-                        ? StatusCode::RECOVERABLE
-                        : ( is.getLevel() < IssueSeverity::ERROR ? StatusCode::SUCCESS : StatusCode::FAILURE ),
-                    std::move( is ) )
-  {
-  }
-
   StatusCode( unsigned long code, bool checked = false ) : d_code( code ), m_checked( checked ) {}
 
-  StatusCode( const StatusCode& rhs ) : d_code( rhs.d_code ), m_checked( rhs.m_checked ), m_severity( rhs.m_severity )
-  {
-    rhs.m_checked = true;
-  }
+  StatusCode( const StatusCode& rhs ) : d_code( rhs.d_code ), m_checked( rhs.m_checked ) { rhs.m_checked = true; }
 
   /// Move constructor.
-  StatusCode( StatusCode&& rhs ) noexcept
-      : d_code( rhs.d_code ), m_checked( rhs.m_checked ), m_severity( std::move( rhs.m_severity ) )
-  {
-    rhs.m_checked = true;
-  }
+  StatusCode( StatusCode&& rhs ) noexcept : d_code( rhs.d_code ), m_checked( rhs.m_checked ) { rhs.m_checked = true; }
 
   /// Destructor.
   ~StatusCode()
@@ -108,11 +83,11 @@ public:
   void setChecked() const { m_checked = true; }
   void ignore() const { setChecked(); }
 
+  /// Has the StatusCode been checked?
+  bool checked() const { return m_checked; }
+
   /// Cast operator.
   operator unsigned long() const { return getCode(); }
-
-  /// Severity
-  GAUDI_API const IssueSeverity& severity() const;
 
   /// Assignment operator.
   StatusCode& operator=( unsigned long value )
@@ -122,11 +97,8 @@ public:
   }
   StatusCode& operator=( const StatusCode& rhs )
   {
-    if ( this == &rhs ) return *this; // Protection against self-assignment
-    d_code        = rhs.d_code;
-    m_checked     = rhs.m_checked;
-    rhs.m_checked = true;
-    m_severity    = rhs.m_severity;
+    d_code    = rhs.d_code;
+    m_checked = std::exchange( rhs.m_checked, true );
     return *this;
   }
 
@@ -179,9 +151,8 @@ public:
 
 protected:
   /// The status code.
-  unsigned long d_code   = SUCCESS;                ///< The status code
-  mutable bool m_checked = false;                  ///< If the Status code has been checked
-  std::shared_ptr<const IssueSeverity> m_severity; ///< Pointer to a IssueSeverity
+  unsigned long d_code   = SUCCESS; ///< The status code
+  mutable bool m_checked = false;   ///< If the Status code has been checked
 
   static bool s_checking; ///< Global flag to control if StatusCode need to be checked
 
