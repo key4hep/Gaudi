@@ -275,9 +275,8 @@ void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot )
 {
 
   if ( !m_dumpPrecRules ) {
-    warning() << "No temporal and topological aspects of execution flow were traced. "
-              << "To get them traced, please set DumpPrecedenceRules "
-              << "property to True " << endmsg;
+    warning() << "To trace temporal and topological aspects of execution flow, "
+              << "set DumpPrecedenceRules property to True " << endmsg;
     return;
   }
 
@@ -303,8 +302,8 @@ void PrecedenceSvc::dumpPrecedenceTrace( EventSlot& slot )
 {
 
   if ( !m_dumpPrecTrace ) {
-    warning() << "Task precedence was not traced. To get it traced, please set "
-              << "DumpPrecedenceTrace property to True " << endmsg;
+    warning() << "To trace task precedence patterns, set DumpPrecedenceTrace "
+              << "property to True " << endmsg;
     return;
   }
 
