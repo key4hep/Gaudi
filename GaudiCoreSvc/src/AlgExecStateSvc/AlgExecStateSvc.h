@@ -17,13 +17,7 @@ class AlgExecStateSvc : public extends<Service, IAlgExecStateSvc>
 {
 public:
   /// Constructor
-  AlgExecStateSvc( const std::string& name, ISvcLocator* svc );
-
-  /// Destructor
-  ~AlgExecStateSvc();
-
-  virtual StatusCode initialize() override final;
-  virtual StatusCode finalize() override final;
+  using extends::extends;
 
   typedef IAlgExecStateSvc::AlgStateMap_t AlgStateMap_t;
 
@@ -50,23 +44,18 @@ public:
   void dump( std::ostringstream& ost, const EventContext& ctx ) const override;
 
 private:
-  std::string trans( const EventStatus::Status& sc ) const;
-
   // one vector entry per event slot
-  //  typedef std::map<Gaudi::StringKey, AlgExecState> AlgStateMap_t;
-  typedef std::vector<AlgStateMap_t> AlgStates_t;
-  AlgStates_t m_algStates;
+  std::vector<AlgStateMap_t> m_algStates;
 
   std::vector<EventStatus::Status> m_eventStatus;
   std::vector<Gaudi::StringKey> m_preInitAlgs;
 
-  typedef std::map<Gaudi::StringKey, std::atomic<unsigned int>> AlgErrorMap_t;
-  AlgErrorMap_t m_errorCount;
+  std::map<Gaudi::StringKey, std::atomic<unsigned int>> m_errorCount;
 
   void init();
   void checkInit() const;
   std::once_flag m_initFlag;
-  bool m_isInit;
+  bool m_isInit = false;
 
   std::mutex m_mut;
 };
