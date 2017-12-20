@@ -16,16 +16,14 @@ namespace Gaudi
   {
   public:
     using extends::extends;
-    ~MetaDataSvc() override = default;
 
     StatusCode start() override;
 
-    inline bool isEnabled() const { return m_isEnabled; }
+    bool isEnabled() const { return m_isEnabled; }
 
     StatusCode collectData();
 
-    MetaData* getMetaData() override;
-    std::map<std::string, std::string> getMetaDataMap() override;
+    std::map<std::string, std::string> getMetaDataMap() const override;
 
   private:
     Gaudi::Property<bool> m_isEnabled{this, "Enabled", true};
