@@ -2,17 +2,16 @@
 #define GAUDIHIVE_ALGSEXECUTIONSTATES_H
 
 // Framework include files
+#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 
 // C++ include files
+#include <cstdint>
 #include <functional>
 #include <iterator>
+#include <map>
 #include <string>
-#include <thread>
-#include <unordered_map>
 #include <vector>
-
-#include <boost/dynamic_bitset.hpp>
 
 //---------------------------------------------------------------------------
 
@@ -25,11 +24,11 @@
  *  @author  Danilo Piparo
  *  @version 1.0
  */
-class AlgsExecutionStates
+class AlgsExecutionStates final
 {
 public:
   /// Execution states of the algorithms
-  enum State : unsigned short {
+  enum State : uint8_t {
     INITIAL      = 0,
     CONTROLREADY = 1,
     DATAREADY    = 2,
@@ -42,13 +41,11 @@ public:
   static std::map<State, std::string> stateNames;
 
   AlgsExecutionStates( unsigned int algsNumber, SmartIF<IMessageSvc> MS )
-      : m_states( algsNumber, INITIAL ), m_MS( MS ){};
-
-  ~AlgsExecutionStates(){};
+      : m_states( algsNumber, INITIAL ), m_MS( std::move( MS ) ){};
 
   StatusCode updateState( unsigned int iAlgo, State newState );
 
-  void reset() { m_states.assign( m_states.size(), INITIAL ); };
+  void reset() { std::fill( m_states.begin(), m_states.end(), INITIAL ); };
 
   bool algsPresent( State state ) const
   {
@@ -57,9 +54,8 @@ public:
 
   bool allAlgsExecuted()
   {
-    int execAlgos = std::count_if( m_states.begin(), m_states.end(),
-                                   []( State s ) { return ( s == EVTACCEPTED || s == EVTREJECTED ); } );
-    return m_states.size() == (unsigned int)execAlgos;
+    return std::all_of( m_states.begin(), m_states.end(),
+                        []( State s ) { return s == EVTACCEPTED || s == EVTREJECTED; } );
   };
 
   const State& operator[]( unsigned int i ) const { return m_states.at( i ); };
@@ -68,69 +64,57 @@ public:
 
   size_t sizeOfSubset( State state ) const
   {
-    return std::count_if( m_states.begin(), m_states.end(), [&]( State s ) { return ( s == state ); } );
+    return std::count_if( m_states.begin(), m_states.end(), [&]( State s ) { return s == state; } );
   }
 
 private:
   std::vector<State> m_states;
   SmartIF<IMessageSvc> m_MS;
 
+  MsgStream log() { return {m_MS, "AlgsExecutionStates"}; }
+
 public:
-  class Iterator : public std::iterator<std::forward_iterator_tag, uint>
+  class Iterator final : public std::iterator<std::forward_iterator_tag, uint>
   {
+    auto find_valid( std::vector<State>::const_iterator iter ) const { return std::find( iter, m_v->end(), m_s ); }
 
   public:
-    enum POS { BEGIN, END };
-
-    Iterator( POS pos, State s, const std::vector<State>& v ) : s_( s ), v_( &v )
+    Iterator( State s, const std::vector<State>& v, std::vector<State>::const_iterator pos )
+        : m_s( s ), m_v( &v ), m_pos( find_valid( pos ) )
     {
-      if ( pos == POS::BEGIN ) pos_ = std::find( v_->begin(), v_->end(), s_ );
-      if ( pos == POS::END ) pos_   = v_->end();
-      // std::cout << "initialized iterator at " << pos_ << std::endl;
     }
 
-    ~Iterator() {}
-
-    Iterator& operator=( const Iterator& other )
+    friend bool operator==( const Iterator& lhs, const Iterator& rhs )
     {
-      pos_ = other.pos_;
-      v_   = other.v_;
-      s_   = other.s_;
-      return ( *this );
+      return lhs.m_s == rhs.m_s && lhs.m_v == rhs.m_v && lhs.m_pos == rhs.m_pos;
     }
 
-    bool operator==( const Iterator& other ) { return pos_ == other.pos_ && s_ == other.s_ && v_ == other.v_; }
-
-    bool operator!=( const Iterator& other ) { return pos_ != other.pos_ || s_ != other.s_ || v_ != other.v_; }
+    friend bool operator!=( const Iterator& lhs, const Iterator& rhs ) { return !( lhs == rhs ); }
 
     Iterator& operator++()
     {
-      if ( pos_ != v_->end() ) {
-        pos_ = std::find( ++pos_, v_->end(), s_ );
-        // std::cout << "advanced iterator to " << pos_ << std::endl;
-      }
-      return ( *this );
+      if ( m_pos != m_v->end() ) m_pos = find_valid( std::next( m_pos ) );
+      return *this;
     }
 
-    Iterator& operator++( int ) { return ( ++( *this ) ); }
+    Iterator& operator++( int ) { return ++( *this ); }
 
-    uint operator*() { return std::distance( v_->begin(), pos_ ); }
+    uint operator*() { return std::distance( m_v->begin(), m_pos ); }
 
   private:
-    std::vector<State>::const_iterator pos_;
-    State s_;
-    const std::vector<State>* v_;
+    State m_s;
+    const std::vector<State>* m_v;
+    std::vector<State>::const_iterator m_pos;
   };
 
-  Iterator begin( State kind ) { return ( Iterator( Iterator::POS::BEGIN, kind, m_states ) ); }
-
-  Iterator end( State kind ) { return ( Iterator( Iterator::POS::END, kind, m_states ) ); }
+  Iterator begin( State kind ) { return {kind, m_states, m_states.begin()}; }
+  Iterator end( State kind ) { return {kind, m_states, m_states.end()}; }
 };
 
 /// Streaming of State values (required by C++11 scoped enums).
 inline std::ostream& operator<<( std::ostream& s, AlgsExecutionStates::State x )
 {
-  return s << static_cast<unsigned short>( x );
+  return s << static_cast<std::underlying_type_t<AlgsExecutionStates::State>>( x );
 }
 
 #endif // GAUDIHIVE_ALGSEXECUTIONSTATES_H
