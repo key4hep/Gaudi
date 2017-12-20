@@ -65,6 +65,11 @@ inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s )
 namespace EventStatus
 {
   enum Status { Invalid = 0, Success = 1, AlgFail = 2, AlgStall = 3, Other = 4 };
+  inline std::ostream& operator<<( std::ostream& os, Status s )
+  {
+    static const std::array<const char*, 5> label{"Invalid", "Success", "AlgFail", "AlgStall", "Other"};
+    return os << label.at( s );
+  }
 }
 
 class GAUDI_API IAlgExecStateSvc : virtual public IInterface
