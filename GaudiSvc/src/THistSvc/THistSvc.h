@@ -32,9 +32,9 @@ public:
   StatusCode regHist( const std::string& name ) override;
   StatusCode regHist( const std::string& name, std::unique_ptr<TH1> ) override;
 
-  TH1* getHistTH1( const std::string& name, size_t ind = 0 ) const;
-  TH2* getHistTH2( const std::string& name, size_t ind = 0 ) const;
-  TH3* getHistTH3( const std::string& name, size_t ind = 0 ) const;
+  TH1* getHistTH1( const std::string& name, size_t ind = 0 ) const override;
+  TH2* getHistTH2( const std::string& name, size_t ind = 0 ) const override;
+  TH3* getHistTH3( const std::string& name, size_t ind = 0 ) const override;
 
   LockedHandle<TH1> regSharedHist( const std::string& name, std::unique_ptr<TH1> ) override;
   LockedHandle<TH2> regSharedHist( const std::string& name, std::unique_ptr<TH2> ) override;
