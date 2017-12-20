@@ -29,7 +29,6 @@
 #include "tbb/task.h"
 
 class IAlgorithm;
-class Algorithm;
 
 typedef AlgsExecutionStates::State State;
 typedef std::function<StatusCode()> action;
@@ -274,9 +273,9 @@ private:
   {
 
   public:
-    SchedulerState( Algorithm* a, EventContext* e, pthread_t t ) : m_a( a ), m_e( *e ), m_t( t ) {}
+    SchedulerState( IAlgorithm* a, EventContext* e, pthread_t t ) : m_a( a ), m_e( *e ), m_t( t ) {}
 
-    Algorithm* alg() const { return m_a; }
+    IAlgorithm* alg() const { return m_a; }
     EventContext ctx() const { return m_e; }
     pthread_t thread() const { return m_t; }
 
@@ -289,12 +288,12 @@ private:
 
     bool operator==( const SchedulerState& ss ) const { return ( m_a == ss.alg() ); }
 
-    bool operator==( Algorithm* a ) const { return ( m_a == a ); }
+    bool operator==( IAlgorithm* a ) const { return ( m_a == a ); }
 
     bool operator<( const SchedulerState& rhs ) const { return ( m_a < rhs.alg() ); }
 
   private:
-    Algorithm* m_a;
+    IAlgorithm* m_a;
     EventContext m_e;
     pthread_t m_t;
   };
@@ -303,8 +302,8 @@ private:
   static std::mutex m_ssMut;
 
 public:
-  void addAlg( Algorithm*, EventContext*, pthread_t );
-  bool delAlg( Algorithm* );
+  void addAlg( IAlgorithm*, EventContext*, pthread_t );
+  bool delAlg( IAlgorithm* );
   void dumpState() override;
 
 private:

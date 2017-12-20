@@ -72,15 +72,16 @@ void TimelineSvc::registerTimelineEvent( const TimelineEvent& e )
   }
 }
 
-void TimelineSvc::getTimelineEvent( TimelineEvent& e ) const
+bool TimelineSvc::getTimelineEvent( TimelineEvent& e ) const
 {
 
   for ( const auto& candidate : m_events ) {
     if ( candidate.algorithm == e.algorithm && candidate.event == e.event && candidate.slot == e.slot ) {
       e = candidate;
-      break;
+      return true;
     }
   }
+  return false;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

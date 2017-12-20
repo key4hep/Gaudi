@@ -30,7 +30,7 @@ public:
 
   virtual void registerTimelineEvent( const TimelineEvent& ) = 0;
   // Augment a partially pre-filled TimelineEvent object with matching info
-  virtual void getTimelineEvent( TimelineEvent& ) const = 0;
+  virtual bool getTimelineEvent( TimelineEvent& ) const = 0;
   virtual bool isEnabled() const                        = 0;
 };
 
