@@ -14,6 +14,7 @@
 #include "GaudiKernel/TypeNameString.h"
 #include "Rtypes.h"
 #include "ThreadLocalStorage.h"
+#include "tbb/concurrent_queue.h"
 #include "tbb/mutex.h"
 #include "tbb/recursive_mutex.h"
 #include <utility>
@@ -53,7 +54,11 @@ namespace
     return dataManager.get();
   }
 
-  template <typename T, typename Mutex = tbb::recursive_mutex>
+  // C++20: replace with http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0290r2.html
+  //         http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4033.html
+
+  template <typename T, typename Mutex = tbb::recursive_mutex, typename ReadLock = typename Mutex::scoped_lock,
+            typename WriteLock = ReadLock>
   class Synced
   {
     T m_obj;
@@ -63,15 +68,13 @@ namespace
     template <typename F>
     auto with_lock( F&& f ) -> decltype( auto )
     {
-      typename Mutex::scoped_lock lock;
-      lock.acquire( m_mtx );
+      WriteLock lock{m_mtx};
       return f( m_obj );
     }
     template <typename F>
     auto with_lock( F&& f ) const -> decltype( auto )
     {
-      typename Mutex::scoped_lock lock;
-      lock.acquire( m_mtx );
+      ReadLock lock{m_mtx};
       return f( m_obj );
     }
   };
@@ -152,7 +155,7 @@ protected:
   Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc", ""};
-  Gaudi::Property<int> m_slots{this, "EventSlots", 1, "number of event slots"};
+  Gaudi::Property<size_t> m_slots{this, "EventSlots", 1, "number of event slots"};
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
@@ -163,8 +166,8 @@ protected:
   IAddressCreator* m_addrCreator = nullptr;
   /// Datastore partitions
   std::vector<Synced<Partition>> m_partitions;
-  /// number of free slots
-  std::atomic_int m_freeSlots{0};
+  /// fifo queue of free slots
+  tbb::concurrent_queue<size_t> m_freeSlots;
 
 public:
   /// Inherited constructor
@@ -184,7 +187,7 @@ public:
   }
 
   /// Get free slots number
-  unsigned int freeSlots() override { return m_freeSlots.load(); };
+  size_t freeSlots() override { return m_freeSlots.unsafe_size(); }
 
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override { return (CLID)m_rootCLID; }
@@ -550,7 +553,7 @@ public:
   /// Set the number of event slots (copies of DataSvc objects).
   StatusCode setNumberOfStores( size_t slots ) override
   {
-    if ( (int)slots != m_slots && FSMState() == Gaudi::StateMachine::INITIALIZED ) {
+    if ( slots != m_slots && FSMState() == Gaudi::StateMachine::INITIALIZED ) {
       warning() << "Too late to change the number of slots!" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -583,39 +586,25 @@ public:
   /// Allocate a store partition for a given event number
   size_t allocateStore( int evtnumber ) override
   {
-    enum class Status { NotFound, Allocated, StillActive };
-    auto attempt_to_allocate = with_lock( [evtnumber, this]( Partition& p ) {
-      if ( p.eventNumber == evtnumber ) return Status::StillActive;
-      if ( p.eventNumber == -1 ) {
-        this->m_freeSlots--;
+    // take next free slot in the list
+    size_t slot = std::string::npos;
+    if ( m_freeSlots.try_pop( slot ) ) {
+      assert( slot != std::string::npos );
+      assert( slot < m_partitions.size() );
+      m_partitions[slot].with_lock( [evtnumber]( Partition& p ) {
+        assert( p.eventNumber == -1 ); // or whatever value represents 'free'
         p.eventNumber = evtnumber;
-        return Status::Allocated;
-      }
-      return Status::NotFound;
-    } );
-
-    size_t index = 0;
-    for ( auto& p : m_partitions ) {
-      switch ( attempt_to_allocate( p ) ) {
-      case Status::StillActive:
-        error() << "Attempt to allocate a store partition for an event that is still active" << endmsg;
-        return std::string::npos;
-      case Status::Allocated:
-        // info() << "Got allocated slot..." << index << endmsg;
-        return index;
-      default:
-        ++index;
-      }
-    };
-    return std::string::npos;
+      } );
+    }
+    return slot;
   }
 
   /// Free a store partition
   StatusCode freeStore( size_t partition ) override
   {
+    assert( partition < m_partitions.size() );
     m_partitions[partition].with_lock( []( Partition& p ) { p.eventNumber = -1; } );
-    // info() << "Freed slot..." << partition << endmsg;
-    m_freeSlots++;
+    m_freeSlots.push( partition );
     return StatusCode::SUCCESS;
   }
 
@@ -673,13 +662,13 @@ public:
       error() << "Unable to initialize base class" << endmsg;
       return sc;
     }
-    if ( m_slots < 1 ) {
+    if ( m_slots < (size_t)1 ) {
       error() << "Invalid number of slots (" << m_slots << ")" << endmsg;
       return StatusCode::FAILURE;
     }
 
     m_partitions = std::vector<Synced<Partition>>( m_slots );
-    for ( int i = 0; i < m_slots; i++ ) {
+    for ( size_t i = 0; i < m_slots; i++ ) {
       DataSvc* svc = new DataSvc( name() + "_" + std::to_string( i ), serviceLocator() );
       // Percolate properties
       svc->setProperty( m_rootCLID ).ignore();
@@ -698,9 +687,9 @@ public:
         p.dataProvider = svc;
         p.dataManager  = svc;
       } );
+      m_freeSlots.push( i );
     }
     selectStore( 0 ).ignore();
-    m_freeSlots.store( m_slots );
     return attachServices();
   }
 

@@ -90,6 +90,6 @@ public:
   virtual size_t getPartitionNumber( int eventnumber ) const = 0;
 
   /// Get free slots number
-  virtual unsigned int freeSlots() = 0;
+  virtual size_t freeSlots() = 0;
 };
 #endif // GAUDIKERNEL_IHIVEWHITEBOARD_H
