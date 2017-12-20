@@ -74,17 +74,13 @@ void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) c
 {
   size_t slotID = ctx.valid() ? ctx.slot() : 0;
 
-  ost << "Event: " << m_eventStatus.at( slotID ) << '\n';
-  ost << "Algs: " << m_algStates.at( slotID ).size() << '\n';
+  ost << "  [slot: " << slotID << ", incident: " << m_eventStatus.at( slotID ) << "]:" << std::string( 2, '\n' );
 
   auto& algState = m_algStates.at( slotID );
   auto ml        = std::accumulate( begin( algState ), end( algState ), size_t{0},
                              []( size_t m, const auto& as ) { return std::max( m, as.first.str().length() ); } );
 
-  ost << " - Slot " << slotID << '\n';
-  for ( auto& e : algState ) {
-    ost << "  + " << std::setw( ml ) << e.first.str() << "  " << e.second << '\n';
-  }
+  for ( auto& e : algState ) ost << "  + " << std::setw( ml ) << e.first.str() << "  " << e.second << '\n';
 }
 
 //-----------------------------------------------------------------------------

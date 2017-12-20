@@ -588,10 +588,6 @@ StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
 
   fatal() << "*** Event " << eventContext->evt() << " on slot " << slotIdx << " failed! ***" << endmsg;
 
-  std::ostringstream ost;
-  m_algExecStateSvc->dump( ost, *eventContext );
-  info() << "Dumping Algorithm Execution States for slot " << slotIdx << ":" << std::endl << ost.str() << endmsg;
-
   dumpSchedulerState( msgLevel( MSG::VERBOSE ) ? -1 : slotIdx );
 
   // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
@@ -844,8 +840,8 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 
   //===========================================================================
 
-  outputMS << "------------------------- Last schedule: Task/Slot/Thread Mapping "
-           << "-----------------------" << std::endl
+  outputMS << "------------------ Last schedule: Task/Event/Slot/Thread/State Mapping "
+           << "------------------" << std::endl
            << std::endl;
 
   // Figure if TimelineSvc is available (used below to detect threads IDs)
@@ -870,8 +866,8 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 
         const std::string algoName{index2algname( (uint)*it )};
 
-        outputMS << "  task: " << std::setw( indt ) << algoName << " evt: " << slot.eventContext->evt()
-                 << " slot: " << slot.eventContext->slot();
+        outputMS << "  task: " << std::setw( indt ) << algoName << " evt/slot: " << slot.eventContext->evt() << "/"
+                 << slot.eventContext->slot();
 
         // Try to get POSIX threads IDs the currently running tasks are scheduled to
         if ( timelineSvc.isValid() ) {
@@ -888,7 +884,8 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
                                                  // but has not been assigned to a thread yet
                                                  // (i.e., not running yet)
         }
-        outputMS << " [" << m_algExecStateSvc->algExecState( algoName, *( slot.eventContext ) ) << "] " << std::endl;
+        outputMS << " state: [" << m_algExecStateSvc->algExecState( algoName, *( slot.eventContext ) ) << "] "
+                 << std::endl;
       }
     }
   }
@@ -923,6 +920,15 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
         outputMS << "Sub-slot algorithms ready:" << slot.subSlotAlgsReady.size() << std::endl;
       }
     }
+  }
+
+  //===========================================================================
+
+  if ( 0 <= iSlot ) {
+    outputMS << std::endl
+             << "------------------------------ Algorithm Execution States -----------------------------" << std::endl
+             << std::endl;
+    m_algExecStateSvc->dump( outputMS, *( m_eventSlots[iSlot].eventContext ) );
   }
 
   outputMS << std::endl
