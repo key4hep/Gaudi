@@ -9,7 +9,7 @@
 namespace NTuple
 {
   class Tuple;
-  class Directory;
+  struct Directory;
 }
 
 /** @class INTupleSvc INTupleSvc.h GaudiKernel/INTupleSvc.h
