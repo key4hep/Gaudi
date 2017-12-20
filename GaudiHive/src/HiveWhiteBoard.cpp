@@ -155,7 +155,7 @@ protected:
   Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc", ""};
-  Gaudi::Property<int> m_slots{this, "EventSlots", 1, "number of event slots"};
+  Gaudi::Property<size_t> m_slots{this, "EventSlots", 1, "number of event slots"};
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
@@ -167,7 +167,7 @@ protected:
   /// Datastore partitions
   std::vector<Synced<Partition>> m_partitions;
   /// fifo queue of free slots
-  tbb::concurrent_queue<int> m_freeSlots;
+  tbb::concurrent_queue<size_t> m_freeSlots;
 
 public:
   /// Inherited constructor
@@ -187,7 +187,7 @@ public:
   }
 
   /// Get free slots number
-  unsigned int freeSlots() override { return m_freeSlots.unsafe_size(); }
+  size_t freeSlots() override { return m_freeSlots.unsafe_size(); }
 
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override { return (CLID)m_rootCLID; }
@@ -553,7 +553,7 @@ public:
   /// Set the number of event slots (copies of DataSvc objects).
   StatusCode setNumberOfStores( size_t slots ) override
   {
-    if ( (int)slots != m_slots && FSMState() == Gaudi::StateMachine::INITIALIZED ) {
+    if ( slots != m_slots && FSMState() == Gaudi::StateMachine::INITIALIZED ) {
       warning() << "Too late to change the number of slots!" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -587,7 +587,7 @@ public:
   size_t allocateStore( int evtnumber ) override
   {
     // take next free slot in the list
-    int slot = std::string::npos;
+    size_t slot = std::string::npos;
     if ( m_freeSlots.try_pop( slot ) ) {
       assert( slot != std::string::npos );
       assert( slot < m_partitions.size() );
@@ -662,13 +662,13 @@ public:
       error() << "Unable to initialize base class" << endmsg;
       return sc;
     }
-    if ( m_slots < 1 ) {
+    if ( m_slots < (size_t)1 ) {
       error() << "Invalid number of slots (" << m_slots << ")" << endmsg;
       return StatusCode::FAILURE;
     }
 
     m_partitions = std::vector<Synced<Partition>>( m_slots );
-    for ( int i = 0; i < m_slots; i++ ) {
+    for ( size_t i = 0; i < m_slots; i++ ) {
       DataSvc* svc = new DataSvc( name() + "_" + std::to_string( i ), serviceLocator() );
       // Percolate properties
       svc->setProperty( m_rootCLID ).ignore();
