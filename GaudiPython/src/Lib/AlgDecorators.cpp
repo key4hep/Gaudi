@@ -77,7 +77,8 @@ size_t GaudiPython::AlgDecorator::_counters_a_( const GaudiAlgorithm* alg, std::
     return 0;
   } // RETURN
   //
-  for ( const auto& cnt : alg->counters() ) {
+  std::map<std::string, StatEntity> ordered_counters{begin( alg->counters() ), end( alg->counters() )};
+  for ( const auto& cnt : ordered_counters ) {
     names.push_back( cnt.first );
     out.push_back( &cnt.second );
   }
@@ -95,7 +96,8 @@ size_t GaudiPython::AlgDecorator::_counters_t_( const GaudiTool* alg, std::vecto
     return 0;
   } // RETURN
   //
-  for ( const auto& cnt : alg->counters() ) {
+  std::map<std::string, StatEntity> ordered_counters{begin( alg->counters() ), end( alg->counters() )};
+  for ( const auto& cnt : ordered_counters ) {
     names.push_back( cnt.first );
     out.push_back( &cnt.second );
   }

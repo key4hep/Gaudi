@@ -221,7 +221,8 @@ StatusCode GaudiCommon<PBASE>::
     Gaudi::Utils::RegEx::matchList statList{m_statEntityList.value()};
     Gaudi::Utils::RegEx::matchList counterList{m_counterList.value()};
 
-    for ( const auto& i : this->counters() ) {
+    std::map<std::string, StatEntity> ordered_counters{begin( this->counters() ), end( this->counters() )};
+    for ( const auto& i : ordered_counters ) {
       if ( statList.Or( i.first ) )
         m_counterSummarySvc->addCounter( this->name(), i.first, i.second, Gaudi::CounterSummary::SaveStatEntity );
       else if ( counterList.Or( i.first ) )
@@ -529,7 +530,8 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
     msg << std::endl << m_header.value();
   }
   //
-  for ( const auto& entry : counters() ) {
+  std::map<std::string, StatEntity> ordered_counters{begin( counters() ), end( counters() )};
+  for ( const auto& entry : ordered_counters ) {
     msg << std::endl
         << Gaudi::Utils::formatAsTableRow( entry.first, entry.second, m_useEffFormat, m_format1, m_format2 );
   }

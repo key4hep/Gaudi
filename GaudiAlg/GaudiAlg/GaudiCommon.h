@@ -28,6 +28,17 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
+// ============================================================================
+// TBB
+// ============================================================================
+#if defined( __GNUC__ ) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+#include "tbb/concurrent_unordered_map.h"
+#if defined( __GNUC__ ) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef __CLING__
 #define WARN_UNUSED
@@ -117,7 +128,7 @@ protected: // definitions
 protected: // few actual data types
   // ==========================================================================
   /// the actual type of general counters
-  typedef std::map<std::string, StatEntity> Statistics;
+  typedef tbb::concurrent_unordered_map<std::string, StatEntity> Statistics;
   /// the actual type error/warning counter
   typedef std::map<std::string, unsigned int> Counter;
   /// storage for active tools
