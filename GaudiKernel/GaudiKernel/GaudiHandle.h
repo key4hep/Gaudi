@@ -4,6 +4,7 @@
 // Includes
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/Property.h"
 #include "GaudiKernel/System.h"
 
 #include <algorithm>
@@ -147,6 +148,8 @@ public:
       Can be used in the genconf-generated configurables.
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py */
   std::string pythonRepr() const override;
+
+  using PropertyType = GaudiHandleProperty;
 
 private:
   //
@@ -357,6 +360,7 @@ protected:
   }
 
 public:
+  using PropertyType = GaudiHandleArrayProperty;
   typedef std::vector<GaudiHandleBase*> BaseHandleArray;
   typedef std::vector<const GaudiHandleBase*> ConstBaseHandleArray;
 

@@ -1,3 +1,5 @@
+#include "GaudiKernel/Algorithm.h"
+
 #include <algorithm>
 #include <numeric>
 #include <set>
@@ -30,8 +32,6 @@
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/ToolHandle.h"
-
-#include "GaudiKernel/Algorithm.h"
 
 namespace
 {

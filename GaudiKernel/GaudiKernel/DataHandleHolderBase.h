@@ -2,6 +2,7 @@
 #define GAUDIKERNEL_DATAHANDLEHOLDERBASE 1
 
 #include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/Property.h"

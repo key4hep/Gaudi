@@ -3,6 +3,7 @@
 // ============================================================================
 // Include files
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -16,8 +17,6 @@
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ToolHandle.h"
 #include <Gaudi/PluginService.h>
-
-#include "GaudiKernel/DataObjIDProperty.h"
 
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataHandleHolderBase.h"

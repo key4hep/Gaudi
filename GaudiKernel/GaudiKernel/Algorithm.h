@@ -10,7 +10,6 @@
 #include "GaudiKernel/IStateful.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ITimelineSvc.h"
-#include "GaudiKernel/PropertyHolder.h"
 
 #include <mutex>
 #include <string>
@@ -18,6 +17,7 @@
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/DataObjID.h" // must be include before Property.h, which is included in PropertyHolder.h
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IChronoStatSvc.h"
@@ -31,11 +31,10 @@
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ToolHandle.h"
 #include <Gaudi/PluginService.h>
-
-#include "GaudiKernel/DataObjIDProperty.h"
 
 // For concurrency
 #include "GaudiKernel/DataHandle.h"

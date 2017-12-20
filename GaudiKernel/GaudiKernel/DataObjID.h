@@ -23,7 +23,7 @@
  * or a combination of the std::hash<string> of the key and the ClassID
  *
  * Collections of DataObjIDs are std::unordered_set<DataObjID> with a provided
- * allocator DataObjID_Hasher which the hash function
+ * hash function DataObjID_Hasher
  *
  * @author Charles Leggett
  * @date   2015-09-01
@@ -39,11 +39,11 @@ class DataObjID
 public:
   friend DataObjID_Hasher;
 
-  DataObjID(){};
+  DataObjID()                   = default;
+  DataObjID( const DataObjID& ) = default;
   DataObjID( const std::string& key );
   DataObjID( const CLID& clid, const std::string& key );
   DataObjID( const std::string& className, const std::string& key );
-  DataObjID( const DataObjID& ) = default;
 
   // only return the last part of the key
   const std::string& key() const { return m_key; }
@@ -55,13 +55,13 @@ public:
 
   void updateKey( const std::string& key );
 
-  friend std::ostream& operator<<( std::ostream& str, const DataObjID& d );
-
   friend bool operator<( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash < rhs.m_hash; }
-
   friend bool operator==( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash == rhs.m_hash; }
-
   friend bool operator!=( const DataObjID& lhs, const DataObjID& rhs ) { return !( lhs == rhs ); }
+
+  friend StatusCode parse( DataObjID& dest, const std::string& src );
+  friend std::ostream& toStream( const DataObjID& v, std::ostream& o );
+  friend std::ostream& operator<<( std::ostream& os, const DataObjID& d ) { return toStream( d, os ); }
 
 private:
   void hashGen();
@@ -72,10 +72,9 @@ private:
   CLID m_clid{0};
   std::size_t m_hash{0};
 
-  std::string m_className{""};
   std::string m_key{"INVALID"};
+  std::string m_className;
 
-  static void getClidSvc();
   static IClassIDSvc* p_clidSvc;
   static std::once_flag m_ip;
 };
@@ -89,7 +88,7 @@ inline DataObjID::DataObjID( const CLID& clid, const std::string& key ) : m_clid
 }
 
 inline DataObjID::DataObjID( const std::string& className, const std::string& key )
-    : m_className( className ), m_key( key )
+    : m_key( key ), m_className( className )
 {
   setClid();
   hashGen();
@@ -105,19 +104,23 @@ struct DataObjID_Hasher {
   std::size_t operator()( const DataObjID& k ) const { return k.m_hash; }
 };
 
-typedef std::unordered_set<DataObjID, DataObjID_Hasher> DataObjIDColl;
+using DataObjIDColl = std::unordered_set<DataObjID, DataObjID_Hasher>;
 
 namespace Gaudi
 {
-  namespace Parsers
+  namespace Details
   {
-    StatusCode parse( DataObjID&, const std::string& );
-    StatusCode parse( DataObjIDColl&, const std::string& );
-  }
-  namespace Utils
-  {
-    GAUDI_API std::ostream& toStream( const DataObjID& v, std::ostream& o );
-    GAUDI_API std::ostream& toStream( const DataObjIDColl& v, std::ostream& o );
+    namespace Property
+    {
+      template <typename T>
+      struct StringConverter;
+
+      template <>
+      struct StringConverter<DataObjIDColl> {
+        std::string toString( const DataObjIDColl& v );
+        DataObjIDColl fromString( const std::string& s );
+      };
+    }
   }
 }
 

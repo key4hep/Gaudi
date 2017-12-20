@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 // ============================================================================
 // GaudiKernel
@@ -158,6 +159,15 @@ namespace Gaudi
     inline std::ostream& toStream( const std::set<TYPE, CMP, ALLOCATOR>& obj, std::ostream& s )
     {
       return toStream( obj.begin(), obj.end(), s, "[ ", " ]", " , " );
+    }
+    // ========================================================================
+    /** the partial template specialization of <c>std::unordered_set<TYPE,HASH,CMP,ALLOCATOR></c>
+     *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
+     */
+    template <class TYPE, class HASH, class CMP, class ALLOCATOR>
+    inline std::ostream& toStream( const std::unordered_set<TYPE, HASH, CMP, ALLOCATOR>& obj, std::ostream& s )
+    {
+      return toStream( obj.begin(), obj.end(), s, "[", "]", " , " );
     }
     // ========================================================================
     /** the partial template specialization of

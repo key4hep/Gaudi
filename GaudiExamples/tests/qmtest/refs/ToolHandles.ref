@@ -18,12 +18,12 @@ AlgResourcePool      INFO Algorithm THDataConsumer is un-Clonable but Cardinalit
 AvalancheSchedu...   INFO Found 3 algorithms
 AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   THDataProducer
-    o OUTPUT ('/Event/MyInt')
+    o OUTPUT '/Event/MyInt'
   THDataProducer2
-    o OUTPUT ('/Event/MyFloat')
+    o OUTPUT '/Event/MyFloat'
   THDataConsumer
-    o INPUT  ('/Event/MyFloat')
-    o INPUT  ('/Event/MyInt')
+    o INPUT  '/Event/MyFloat'
+    o INPUT  '/Event/MyInt'
 PrecedenceSvc        INFO Assembling CF and DF task precedence rules
 PrecedenceSvc        INFO PrecedenceSvc initialized successfully
 AvalancheSchedu...   INFO Concurrency level information:

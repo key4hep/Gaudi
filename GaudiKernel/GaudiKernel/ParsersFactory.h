@@ -55,7 +55,6 @@ namespace Gaudi
     template <typename ResultT>
     inline StatusCode parse( ResultT& result, const std::string& input )
     {
-
       return parse_( result, input );
     }
     //=========================================================================

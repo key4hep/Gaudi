@@ -14,6 +14,8 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 //==============================================================================
 // Boost:
@@ -306,6 +308,14 @@ namespace Gaudi
     struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper> {
       typedef VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper> Grammar;
     };
+    // ----------------------------------------------------------------------------
+    // Register VectorGrammar for std::unordered_set:
+    // ----------------------------------------------------------------------------
+    template <typename Iterator, typename InnerT, typename HashT, typename CompareT, typename AllocatorT,
+              typename Skipper>
+    struct Grammar_<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> {
+      typedef VectorGrammar<Iterator, std::unordered_set<InnerT, HashT, CompareT, AllocatorT>, Skipper> Grammar;
+    };
 
     //==============================================================================
     template <typename Iterator, typename PairT, typename Skipper>
@@ -315,15 +325,13 @@ namespace Gaudi
       typedef typename PairT::first_type first_type;
       typedef typename PairT::second_type second_type;
       //------------------------------------------------------------------------------
-      PairGrammar() : PairGrammar::base_type( pair ) { init( "," ); }
-
-      PairGrammar( const std::string& delimeter ) : PairGrammar::base_type( pair ) { init( delimeter ); }
-      //------------------------------------------------------------------------------
       struct first {
       };
       struct second {
       };
-      void init( const std::string& delimeter )
+      //------------------------------------------------------------------------------
+      PairGrammar() : PairGrammar( "," ) {}
+      PairGrammar( const std::string& delimeter ) : PairGrammar::base_type( pair )
       {
         begin = enc::char_( '(' )[qi::_val = ')'] | enc::char_( '[' )[qi::_val = ']'];
         end  = qi::char_( qi::_r1 );
@@ -398,6 +406,14 @@ namespace Gaudi
               typename Skipper>
     struct Grammar_<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> {
       typedef MapGrammar<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> Grammar;
+    };
+    // ----------------------------------------------------------------------------
+    // Register MapGrammar for std::unordered_map:
+    // ----------------------------------------------------------------------------
+    template <typename Iterator, typename KeyT, typename ValueT, typename HashT, typename KeyCompareT,
+              typename AllocatorT, typename Skipper>
+    struct Grammar_<Iterator, std::unordered_map<KeyT, ValueT, HashT, KeyCompareT, AllocatorT>, Skipper> {
+      typedef MapGrammar<Iterator, std::unordered_map<KeyT, ValueT, HashT, KeyCompareT, AllocatorT>, Skipper> Grammar;
     };
     // ----------------------------------------------------------------------------
     // Register MapGrammar for GaudiUtils::VectorMap:
