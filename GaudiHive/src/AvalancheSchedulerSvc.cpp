@@ -25,9 +25,6 @@
 // DP waiting for the TBB service
 #include "tbb/task_scheduler_init.h"
 
-std::mutex AvalancheSchedulerSvc::m_ssMut;
-std::list<AvalancheSchedulerSvc::SchedulerState> AvalancheSchedulerSvc::m_sState;
-
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY( AvalancheSchedulerSvc )
 
@@ -839,13 +836,16 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
   // To have just one big message
   std::ostringstream outputMS;
 
-  outputMS << "Dumping scheduler state (inhale, exhale - everything is gonna be okay!)" << std::endl
+  outputMS << "Dumping scheduler state (inhale, exhale..)" << std::endl
            << "=========================================================================================" << std::endl
-           << "++++++++++++++++++++++++++++++++ DUMPING SCHEDULER STATE ++++++++++++++++++++++++++++++++" << std::endl
+           << "++++++++++++++++++++++++++++++++++++ SCHEDULER STATE ++++++++++++++++++++++++++++++++++++" << std::endl
            << "=========================================================================================" << std::endl
            << std::endl;
 
-  outputMS << "------------------------- Last schedule: Task/Slot/Thread Mapping -----------------------" << std::endl
+  //===========================================================================
+
+  outputMS << "------------------------- Last schedule: Task/Slot/Thread Mapping "
+           << "-----------------------" << std::endl
            << std::endl;
 
   // Figure if TimelineSvc is available (used below to detect threads IDs)
@@ -893,7 +893,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
     }
   }
 
-  dumpState( outputMS );
+  //===========================================================================
 
   outputMS << std::endl
            << "---------------------------- Task/CF/FSM Mapping " << ( 0 > iSlot ? "[all slots] --" : "[target slot] " )
@@ -1138,55 +1138,6 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   m_actionsQueue.push( [this, iAlgo, eventContext]() { return this->updateStates( -1, iAlgo, eventContext ); } );
 
   return sc;
-}
-
-//===========================================================================
-void AvalancheSchedulerSvc::addAlg( IAlgorithm* a, EventContext* e, pthread_t t )
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-  m_sState.push_back( SchedulerState( a, e, t ) );
-}
-
-//===========================================================================
-bool AvalancheSchedulerSvc::delAlg( IAlgorithm* a )
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-
-  for ( std::list<SchedulerState>::iterator itr = m_sState.begin(); itr != m_sState.end(); ++itr ) {
-    if ( *itr == a ) {
-      m_sState.erase( itr );
-      return true;
-    }
-  }
-
-  error() << "could not find Alg " << a->name() << " in Scheduler!" << endmsg;
-  return false;
-}
-
-//===========================================================================
-void AvalancheSchedulerSvc::dumpState( std::ostringstream& ost )
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-
-  for ( auto it : m_sState ) {
-    ost << "  " << it << std::endl;
-  }
-}
-
-//===========================================================================
-void AvalancheSchedulerSvc::dumpState()
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-
-  std::ostringstream ost;
-  ost << "dumping Executing Threads: [" << m_sState.size() << "]" << std::endl;
-  dumpState( ost );
-
-  info() << ost.str() << endmsg;
 }
 
 // Method to inform the scheduler about event views
