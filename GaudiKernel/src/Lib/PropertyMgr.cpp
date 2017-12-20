@@ -56,9 +56,7 @@ PropertyMgr::PropertyMgr( IInterface* iface ) : m_pOuter( iface )
 // ====================================================================
 PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProperty* rsvc, const std::string& rname )
 {
-  if ( !rsvc ) {
-    return nullptr;
-  }
+  if ( !rsvc ) return nullptr;
   const std::string& nam = rname.empty() ? name : rname;
   PropertyBase* p        = property( nam, rsvc->getProperties() );
   m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
@@ -70,7 +68,7 @@ PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProp
 PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleBase& ref, const std::string& doc )
 {
   assertUniqueName( name );
-  m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
+  m_todelete.emplace_back( new typename GaudiHandleBase::PropertyType( name, ref ) );
   Property* p = m_todelete.back().get();
   //
   p->setDocumentation( doc );
@@ -82,7 +80,7 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandle
 PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleArrayBase& ref, const std::string& doc )
 {
   assertUniqueName( name );
-  m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
+  m_todelete.emplace_back( new typename GaudiHandleArrayBase::PropertyType( name, ref ) );
   Property* p = m_todelete.back().get();
   //
   p->setDocumentation( doc );
@@ -95,7 +93,7 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandle
 PropertyBase* PropertyMgr::declareProperty( const std::string& name, DataObjectHandleBase& ref, const std::string& doc )
 {
   assertUniqueName( name );
-  m_todelete.emplace_back( new DataObjectHandleProperty( name, ref ) );
+  m_todelete.emplace_back( new typename DataObjectHandleBase::PropertyType( name, ref ) );
   Property* p = m_todelete.back().get();
   //
   p->setDocumentation( doc );
@@ -118,18 +116,12 @@ PropertyBase* PropertyMgr::property( const std::string& name ) const
 {
   // local property ?
   PropertyBase* lp = property( name, m_properties );
-  if ( lp ) {
-    return lp;
-  } // RETURN
+  if ( lp ) return lp; // RETURN
   // look for remote property
   for ( const auto& it : m_remoteProperties ) {
-    if ( !noCaseCmp( it.first, name ) ) {
-      continue;
-    } // CONTINUE
+    if ( !noCaseCmp( it.first, name ) ) continue; // CONTINUE
     const IProperty* p = it.second.first;
-    if ( !p ) {
-      continue;
-    }                                                        // CONTINUE
+    if ( !p ) continue;
     return property( it.second.second, p->getProperties() ); // RETURN
   }
   return nullptr; // RETURN
@@ -143,9 +135,7 @@ StatusCode PropertyMgr::setProperty( const PropertyBase& p )
 {
   PropertyBase* pp = property( p.name() );
   try {
-    if ( pp && pp->assign( p ) ) {
-      return StatusCode::SUCCESS;
-    }
+    if ( pp && pp->assign( p ) ) return StatusCode::SUCCESS;
   } // RETURN
   catch ( ... ) {
   }
@@ -159,13 +149,9 @@ StatusCode PropertyMgr::setProperty( const PropertyBase& p )
 // =====================================================================
 StatusCode PropertyMgr::setProperty( const std::string& i )
 {
-  std::string name;
-  std::string value;
+  std::string name, value;
   StatusCode sc = Gaudi::Parsers::parse( name, value, i );
-  if ( sc.isFailure() ) {
-    return sc;
-  }
-  return setProperty( name, value );
+  return sc.isFailure() ? sc : setProperty( name, value );
 }
 // =====================================================================
 /* set a property from the string
@@ -211,9 +197,7 @@ StatusCode PropertyMgr::getProperty( const std::string& n, std::string& v ) cons
 {
   // get the property
   const PropertyBase* p = property( n );
-  if ( !p ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !p ) return StatusCode::FAILURE;
   // convert the value into the string
   v = p->toString();
   //
@@ -244,16 +228,13 @@ bool PropertyMgr::hasProperty( const std::string& name ) const
 }
 void PropertyMgr::assertUniqueName( const std::string& name ) const
 {
-  if ( UNLIKELY( hasProperty( name ) ) ) {
-    auto owner  = SmartIF<INamedInterface>( m_pOuter );
-    auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
-    if ( !msgSvc ) {
-      std::cerr << "error: cannot get MessageSvc!" << std::endl;
-    }
-    MsgStream log( msgSvc, owner ? owner->name() : "PropertyMgr" );
-    log << MSG::WARNING << "duplicated property name '" << name << "', see https://its.cern.ch/jira/browse/GAUDI-1023"
-        << endmsg;
-  }
+  if ( LIKELY( !hasProperty( name ) ) ) return;
+  auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
+  if ( !msgSvc ) std::cerr << "error: cannot get MessageSvc!" << std::endl;
+  auto owner = SmartIF<INamedInterface>( m_pOuter );
+  MsgStream log( msgSvc, owner ? owner->name() : "PropertyMgr" );
+  log << MSG::WARNING << "duplicated property name '" << name << "', see https://its.cern.ch/jira/browse/GAUDI-1023"
+      << endmsg;
 }
 // =====================================================================
 // The END

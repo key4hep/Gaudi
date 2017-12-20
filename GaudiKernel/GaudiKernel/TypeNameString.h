@@ -1,8 +1,8 @@
 #ifndef GAUDIKERNEL_TYPENAMESTRING_H
 #define GAUDIKERNEL_TYPENAMESTRING_H
-#include "GaudiKernel/Property.h"
 #include <ostream>
 #include <string>
+#include <utility>
 
 namespace Gaudi
 {
@@ -26,16 +26,20 @@ namespace Gaudi
         } else
           m_name = m_type;
       }
+
       TypeNameString( const std::string& tn, const std::string& deftyp ) : TypeNameString( tn )
       {
-        if ( !m_haveType ) {
-          m_type = deftyp;
-        }
+        if ( !m_haveType ) m_type = deftyp;
       }
-      template <class T, class V, class H>
-      TypeNameString( const Gaudi::Property<T, V, H>& prop ) : TypeNameString( prop.value() )
+
+      // support passing a Gaudi::Property<std::string> without having to include Property.h
+      // require that prop.value() can be used to construct a TypeNameString...
+      template <class T, typename = std::enable_if_t<std::is_constructible<
+                             TypeNameString, decltype( std::declval<const T&>().value() )>::value>>
+      TypeNameString( const T& prop ) : TypeNameString( prop.value() )
       {
       }
+
       const std::string& type() const { return m_type; }
       const std::string& name() const { return m_name; }
       bool haveType() const { return m_haveType; }

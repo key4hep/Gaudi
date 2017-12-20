@@ -10,7 +10,6 @@ namespace Gaudi
 {
   namespace Parsers
   {
-
     StatusCode parse( DataObjectHandleBase& v, const std::string& s )
     {
       std::string prop;
@@ -22,7 +21,6 @@ namespace Gaudi
 
   namespace Utils
   {
-
     std::ostream& toStream( const DataObjectHandleBase& v, std::ostream& o ) { return o << v; }
   }
 }
@@ -44,13 +42,11 @@ StatusCode DataObjectHandleProperty::fromString( const std::string& s )
   return useUpdateHandler() ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 
-std::string DataObjectHandleProperty::pythonRepr() const { return "DataObjectHandleBase(\"" + toString() + "\")"; }
-
 //---------------------------------------------------------------------------
 
 bool DataObjectHandleProperty::setValue( const DataObjectHandleBase& value )
 {
-  m_pValue->operator=( value );
+  *m_pValue = value;
   return useUpdateHandler();
 }
 

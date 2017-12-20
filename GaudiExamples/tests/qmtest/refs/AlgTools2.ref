@@ -185,10 +185,10 @@ MyAlg.LegacyToo...   INFO String = hundred
 MyAlg.LegacyToo...   INFO Bool   = 1
 MyAlg               DEBUG Adding private ToolHandle tool MyAlg.LegacyToolHandle (MyTool)
 MyAlg               DEBUG Data Deps for MyAlg
-  + INPUT  ('/Event/Rec/Hits')
-  + INPUT  ('/Event/Rec/Tracks')
-  + INPUT  ('/Rec/RAW')
-  + OUTPUT ('/Event/MyAnalysis/Tracks')
+  + INPUT  '/Event/Rec/Hits'
+  + INPUT  '/Event/Rec/Tracks'
+  + INPUT  '/Rec/RAW'
+  + OUTPUT '/Event/MyAnalysis/Tracks'
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>

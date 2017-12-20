@@ -12,7 +12,8 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/DataObjectHandleProperty.h"
+#include "GaudiKernel/DataObjectHandleBase.h"
+#include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Property.h"
 

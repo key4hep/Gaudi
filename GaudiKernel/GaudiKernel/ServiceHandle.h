@@ -6,6 +6,7 @@
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"

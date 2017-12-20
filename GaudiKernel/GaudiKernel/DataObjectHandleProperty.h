@@ -35,8 +35,6 @@ public:
   const DataObjectHandleBase& value() const;
   bool setValue( const DataObjectHandleBase& value );
 
-  std::string pythonRepr() const;
-
 private:
   /** Pointer to the real property. Reference would be better,
    *  but Reflex does not support references yet
