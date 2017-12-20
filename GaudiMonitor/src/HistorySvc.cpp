@@ -770,10 +770,14 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
     ofs << "SERVICES" << std::endl;
   }
 
-  for ( auto& item : m_svcmap ) {
-    const IService* svc = item.first;
-    dumpState( svc, ofs );
-  }
+  // helper to dump monitored components sorted by name
+  auto sortedDump = [&ofs, this]( const auto& map ) {
+    std::map<std::string, const INamedInterface*> sorted;
+    for ( const auto& item : map ) sorted[item.first->name()] = item.first;
+    for ( const auto& item : sorted ) dumpState( item.second, ofs );
+  };
+
+  sortedDump( m_svcmap );
 
   if ( m_outputFileTypeXML ) {
     ofs << "</SERVICES>" << endl << "<ALGORITHMS> " << endl;
@@ -781,10 +785,7 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
     ofs << "ALGORITHMS" << std::endl;
   }
 
-  for ( auto& item : m_algmap ) {
-    const Algorithm* alg = item.first;
-    dumpState( alg, ofs );
-  }
+  sortedDump( m_algmap );
 
   if ( m_outputFileTypeXML ) {
     ofs << "</ALGORITHMS>" << endl << "<ALGTOOLS> " << endl;
@@ -792,10 +793,7 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
     ofs << "ALGTOOLS" << std::endl;
   }
 
-  for ( auto& item : m_algtoolmap ) {
-    const AlgTool* algtool = item.first;
-    dumpState( algtool, ofs );
-  }
+  sortedDump( m_algtoolmap );
 
   if ( m_outputFileTypeXML ) {
     ofs << "</ALGTOOLS>" << endl << "</SETUP>" << endl;
