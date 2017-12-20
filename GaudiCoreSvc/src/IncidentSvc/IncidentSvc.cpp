@@ -99,7 +99,7 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
   auto itMap = m_listenerMap.find( ltype );
   if ( itMap == m_listenerMap.end() ) {
     // if not found, create and insert now a list of listeners
-    auto p = m_listenerMap.insert( {ltype, std::unique_ptr<ListenerList>( new ListenerList() )} );
+    auto p = m_listenerMap.insert( {ltype, std::make_unique<ListenerList>()} );
     if ( !p.second ) { /* OOPS */
     }
     itMap = p.first;

@@ -190,7 +190,7 @@ DataObject* HistogramSvc::createPath( const string& newPath )
 //------------------------------------------------------------------------------
 DataObject* HistogramSvc::createDirectory( const string& parentDir, const string& subDir )
 {
-  std::unique_ptr<DataObject> directory{new DataObject()};
+  auto directory = std::make_unique<DataObject>();
   if ( directory ) {
     DataObject* pnode;
     StatusCode status = DataSvc::retrieveObject( parentDir, pnode );
@@ -272,21 +272,19 @@ StatusCode HistogramSvc::initialize()
   StatusCode status = DataSvc::initialize();
   // Set root object
   if ( status.isSuccess() ) {
-    std::unique_ptr<DataObject> rootObj{new DataObject()};
-    status = setRoot( "/stat", rootObj.get() );
-    if ( status.isSuccess() ) {
-      rootObj.release();
-    } else {
+    auto rootObj = std::make_unique<DataObject>();
+    status       = setRoot( "/stat", rootObj.get() );
+    if ( status.isFailure() ) {
       error() << "Unable to set hstogram data store root." << endmsg;
       return status;
     }
+    rootObj.release();
     auto svc = service<IConversionSvc>( "HistogramPersistencySvc", true );
-    if ( svc ) {
-      setDataLoader( svc.get() ).ignore();
-    } else {
+    if ( !svc ) {
       error() << "Could not find HistogramPersistencySvc." << endmsg;
       return StatusCode::FAILURE;
     }
+    setDataLoader( svc.get() ).ignore();
     // Connect all input streams (if any)
     for ( auto& j : m_input ) {
       status = connectInput( j );
@@ -318,7 +316,7 @@ IHistogram1D* HistogramSvc::sliceX( const string& name, const IHistogram2D& h, i
     throw GaudiException( "Cannot cast 2D histogram to H2D to create sliceX `" + name + "'!", "HistogramSvc",
                           StatusCode::FAILURE );
   }
-  if ( o.first && registerObject( name, (IBaseHistogram*)o.second ).isSuccess() ) {
+  if ( o.first && registerObject( name, o.second ).isSuccess() ) {
     return o.second;
   }
   delete o.first;

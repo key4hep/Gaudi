@@ -221,8 +221,8 @@ StatusCode EventCollectionSelector::finalize()
 /// Create a new event loop context
 StatusCode EventCollectionSelector::createContext( Context*& refpCtxt ) const
 {
-  refpCtxt = nullptr;
-  std::unique_ptr<MyContextType> ctxt( new MyContextType() );
+  refpCtxt          = nullptr;
+  auto ctxt         = std::make_unique<MyContextType>();
   StatusCode status = connectCollection( ctxt.get() );
   if ( !status.isSuccess() ) {
     error() << "Unable to connect Collection file \"" << m_database << "\"" << endmsg;

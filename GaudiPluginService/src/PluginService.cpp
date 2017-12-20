@@ -335,7 +335,7 @@ namespace Gaudi
         }
       }
 
-      static std::unique_ptr<Logger> s_logger( new Logger );
+      static auto s_logger = std::make_unique<Logger>();
       Logger& logger() { return *s_logger; }
       void setLogger( Logger* logger ) { s_logger.reset( logger ); }
 
