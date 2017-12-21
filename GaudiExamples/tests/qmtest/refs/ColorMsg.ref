@@ -70,9 +70,8 @@ ApplicationMgr    SUCCESS
 [92;1mAlgExecStateSvc     DEBUG resizing state containers to : 1[m
 [92;1mAlgExecStateSvc     DEBUG adding alg ColorMsgAlg to 1 slots[m
 [95;4mAlgExecStateSvc   VERBOSE dumping state:
-Event: Invalid
-Algs: 1
- - Slot 0
+  [slot: 0, incident: Invalid]:
+
   + ColorMsgAlg  e: n
 [m
 [94;101;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
