@@ -120,32 +120,19 @@ public:
   /// shortcut for the method msgStream(MSG::INFO)
   inline MsgStream& msg() const { return msgStream( MSG::INFO ); }
 
-  /// get the cached level (originally extracted from the embedded MsgStream)
-  inline MSG::Level msgLevel() const
-  {
-    assert( m_commonMessagingReady );
-    return m_level;
-  }
-
-  /// Backward compatibility function for getting the output level
-  inline MSG::Level outputLevel() const __attribute__( ( deprecated ) ) { return msgLevel(); }
-
-  /// get the output level from the embedded MsgStream
-  inline bool msgLevel( MSG::Level lvl ) const { return UNLIKELY( msgLevel() <= lvl ); }
-
 private:
   template <typename Base>
   friend class CommonMessaging;
 
-  bool m_commonMessagingReady = false;
+  mutable bool m_commonMessagingReady = false;
 
   /// The predefined message stream
   mutable boost::thread_specific_ptr<MsgStream> m_msgStream;
 
-  MSG::Level m_level = MSG::NIL;
+  mutable MSG::Level m_level = MSG::NIL;
 
   /// Pointer to the message service;
-  SmartIF<IMessageSvc> m_msgsvc;
+  mutable SmartIF<IMessageSvc> m_msgsvc;
 };
 
 template <typename BASE>
@@ -157,13 +144,22 @@ public:
   /// Forward constructor to base class constructor
   using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
 
+  /// get the cached level (originally extracted from the embedded MsgStream)
+  inline MSG::Level msgLevel() const { return setUpMessaging(); }
+
+  /// Backward compatibility function for getting the output level
+  inline MSG::Level outputLevel() const __attribute__( ( deprecated ) ) { return msgLevel(); }
+
+  /// get the output level from the embedded MsgStream
+  inline bool msgLevel( MSG::Level lvl ) const { return UNLIKELY( msgLevel() <= lvl ); }
+
 private:
   // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
   void create_msgStream() const override final { m_msgStream.reset( new MsgStream( msgSvc(), this->name() ) ); }
 
 protected:
   /// Set up local caches
-  MSG::Level setUpMessaging()
+  MSG::Level setUpMessaging() const
   {
     if ( !m_commonMessagingReady ) {
       if ( !m_msgsvc ) {
