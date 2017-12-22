@@ -1,7 +1,8 @@
 #ifndef DETECTED_H
 #define DETECTED_H
 // implementation of Library Fundamentals TS V2 detected idiom,
-// taken from http://en.cppreference.com/w/cpp/experimental/is_detected
+// based on http://en.cppreference.com/w/cpp/experimental/is_detected
+// and the libstdc++ source, specificially libstdc++-v3/include/std/type_traits
 
 namespace Gaudi
 {
@@ -32,6 +33,10 @@ namespace Gaudi
     // Op<Args...> if that is a valid type, otherwise Default.
     template <typename Default, template <typename...> class Op, typename... Args>
     using detected_or_t = typename details::detector<Default, void, Op, Args...>::type;
+
+    // Op<Args...> if that is a valid type, otherwise Default<Args...>.
+    template <template <typename...> class Default, template <typename...> class Op, typename Tr, typename T>
+    using detected_or_t_ = detected_or_t<Default<Tr, T>, Op, Tr, T>;
   }
 }
 
