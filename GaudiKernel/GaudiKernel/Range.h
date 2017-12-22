@@ -141,7 +141,10 @@ namespace Gaudi
      *  @param ibegin  iterator to begin of the sequence
      *  @param iend    iterator to end   of the sequence
      */
-    Range_( iterator ibegin, iterator iend ) : m_base( ibegin, iend ) {}
+    template <typename InputIterator>
+    Range_( InputIterator first, InputIterator last ) : m_base( first, last )
+    {
+    }
     /** constructor from the pair of iterators
      *  @param base pair of the iterators
      */

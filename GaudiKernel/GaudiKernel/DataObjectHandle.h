@@ -5,10 +5,49 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/DataObjectHandleBase.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/NamedRange.h"
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
 
 #include <type_traits>
+
+//---------------------------------------------------------------------------
+//
+namespace details
+{
+  template <typename T>
+  using Converter_t = T ( * )( DataObject* );
+
+  template <typename T>
+  T just_cast( DataObject* obj )
+  {
+    return static_cast<T>( obj );
+  }
+
+  template <typename Range, typename StorageType>
+  Range make_range( DataObject* obj )
+  {
+    auto c = static_cast<StorageType*>( obj );
+    if ( UNLIKELY( !c ) ) return Range();
+    using std::begin;
+    using std::end;
+    auto first  = begin( *c );
+    auto last   = end( *c );
+    auto _first = reinterpret_cast<typename Range::const_iterator*>( &first );
+    auto _last  = reinterpret_cast<typename Range::const_iterator*>( &last );
+    return Range( *_first, *_last );
+  }
+  template <typename ValueType, typename Range = Gaudi::Range_<typename ValueType::ConstVector>>
+  Converter_t<Range> select_range_converter( DataObject* obj )
+  {
+    using Selection = typename ValueType::Selection;
+    auto sel        = dynamic_cast<Selection*>( obj );
+    if ( sel ) return &make_range<Range, typename ValueType::Selection>;
+    auto con = dynamic_cast<typename ValueType::Container*>( obj );
+    if ( con ) return &make_range<Range, typename ValueType::Container>;
+    return nullptr;
+  }
+}
 
 //---------------------------------------------------------------------------
 
@@ -126,25 +165,18 @@ T* DataObjectHandle<T>::get( bool mustExist ) const
   }
 
   if ( UNLIKELY( !m_goodType ) ) { // Check type compatibility once
-
     T* obj     = dynamic_cast<T*>( dataObj );
     m_goodType = ( obj != nullptr );
-
     if ( UNLIKELY( !m_goodType ) ) {
 
       std::string errorMsg( "The type provided for " + objKey() + " is " + System::typeinfoName( typeid( T ) ) +
                             " and is different from the one of the object in the store." );
-      // log << MSG::ERROR << errorMsg << endmsg;
       throw GaudiException( errorMsg, "Wrong DataObjectType", StatusCode::FAILURE );
     }
-    // log << MSG::DEBUG <<  "The data type (" <<  typeid(T).name()
-    //    << ") specified for the handle of " << dataProductName()
-    //    << " is the same of the object in the store. "
-    //    << "From now on the result of a static_cast will be returned." << endmsg;
+    assert( obj == static_cast<T*>( dataObj ) );
     return obj;
   }
 
-  //  setRead();
   // From the second read on, this is safe
   return static_cast<T*>( dataObj );
 }
@@ -165,22 +197,48 @@ T* DataObjectHandle<T>::put( T* objectp )
 template <typename T>
 T* DataObjectHandle<T>::getOrCreate()
 {
-
-  // this process needs to be locking for multi-threaded applications
-  // lock(); --> done in caller
-
   T* obj = get( false );
+  return obj ? obj : put( new T{} );
+}
 
-  // object exists, we are done
-  if ( obj ) {
-    // unlock();
-    return obj;
+//---------------------------------------------------------------------------
+
+/// specialization for Range_
+
+template <typename T>
+class DataObjectHandle<Gaudi::Range_<T>> : public DataObjectHandleBase
+{
+public:
+  using ValueType = std::remove_cv_t<std::remove_pointer_t<typename T::value_type>>;
+  using Range     = Gaudi::Range_<typename ValueType::ConstVector>;
+
+  using DataObjectHandleBase::DataObjectHandleBase;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  Range get() const;
+
+private:
+  mutable details::Converter_t<Range> m_converter = nullptr;
+};
+
+template <typename ValueType>
+auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range
+{
+  auto dataObj = fetch();
+  if ( UNLIKELY( !dataObj ) ) {
+    throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+                          m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
-
-  // create it
-  return put( new T{} );
-
-  // unlock();
+  if ( UNLIKELY( m_converter == nullptr ) ) {
+    m_converter = details::select_range_converter<ValueType>( dataObj );
+    if ( !m_converter ) {
+      throw GaudiException( "The type requested for " + objKey() + " cannot be obtained from object in event store",
+                            "Wrong DataObjectType", StatusCode::FAILURE );
+    }
+  }
+  return ( *m_converter )( dataObj );
 }
 
 #endif

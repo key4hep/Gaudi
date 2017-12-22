@@ -653,8 +653,6 @@ public:
   GaudiAlgorithm( const GaudiAlgorithm& ) = delete;
   GaudiAlgorithm& operator=( const GaudiAlgorithm& ) = delete;
 
-private:
-  GaudiAlgorithm();
   // ==========================================================================
 private:
   // ==========================================================================
