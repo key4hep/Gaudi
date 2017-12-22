@@ -846,10 +846,8 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 
   // Figure if TimelineSvc is available (used below to detect threads IDs)
   auto timelineSvc = serviceLocator()->service<ITimelineSvc>( "TimelineSvc", false );
-  if ( !timelineSvc.isValid() ) {
-    outputMS << "Enable TimelineSvc to trace task/slot/thread mapping" << std::endl;
-  } else if ( !timelineSvc->isEnabled() ) {
-    outputMS << "Turn on timelining in the TimelineSvc to trace task/slot/thread mapping" << std::endl;
+  if ( !timelineSvc.isValid() || !timelineSvc->isEnabled() ) {
+    outputMS << "WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the mapping" << std::endl;
   } else {
 
     // Figure optimal printout layout
