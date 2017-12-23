@@ -609,10 +609,10 @@ private:
                         void** ppSvc ) const;
 
   /// Private Copy constructor: NO COPY ALLOWED
-  Algorithm( const Algorithm& a );
+  Algorithm( const Algorithm& a ) = delete;
 
   /// Private assignment operator: NO ASSIGNMENT ALLOWED
-  Algorithm& operator=( const Algorithm& rhs );
+  Algorithm& operator=( const Algorithm& rhs ) = delete;
 };
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
