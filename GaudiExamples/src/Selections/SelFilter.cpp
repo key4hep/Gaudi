@@ -28,8 +28,10 @@ namespace Gaudi
     {
       // ======================================================================
       using Range = Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>;
+      using Selection = Gaudi::Examples::MyTrack::Selection;
 
       DataObjectReadHandle<Range> m_input{this, "Input", "", "TES location of input container"};
+      DataObjectWriteHandle<Selection> m_output{this, "Output", this->name() , "TES location of output container"};
       // ======================================================================
     public:
       // ======================================================================
@@ -75,7 +77,7 @@ namespace Gaudi
         info() << "Sample size is " << range.size() << "/" << size << "/" << sample->size() << endmsg;
 
         // register it in TES
-        put( sample.release(), name() );
+        m_output.put( std::move(sample) );
 
         return StatusCode::SUCCESS;
       }
