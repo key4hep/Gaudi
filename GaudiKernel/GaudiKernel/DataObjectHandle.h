@@ -16,34 +16,29 @@
 namespace details
 {
   template <typename T>
-  using Converter_t = T ( * )( DataObject* );
-
-  template <typename T>
-  T just_cast( DataObject* obj )
-  {
-    return static_cast<T>( obj );
-  }
+  using Converter_t = T ( * )( const DataObject* );
 
   template <typename Range, typename StorageType>
-  Range make_range( DataObject* obj )
+  Range make_range( const DataObject* obj )
   {
-    auto c = static_cast<StorageType*>( obj );
+    auto c = static_cast<const StorageType*>( obj );
     if ( UNLIKELY( !c ) ) return Range();
     using std::begin;
     using std::end;
     auto first  = begin( *c );
     auto last   = end( *c );
+    // return Range( first, last );
     auto _first = reinterpret_cast<typename Range::const_iterator*>( &first );
     auto _last  = reinterpret_cast<typename Range::const_iterator*>( &last );
     return Range( *_first, *_last );
   }
   template <typename ValueType, typename Range = Gaudi::Range_<typename ValueType::ConstVector>>
-  Converter_t<Range> select_range_converter( DataObject* obj )
+  Converter_t<Range> select_range_converter( const DataObject* obj )
   {
     using Selection = typename ValueType::Selection;
-    auto sel        = dynamic_cast<Selection*>( obj );
+    auto sel        = dynamic_cast<const Selection*>( obj );
     if ( sel ) return &make_range<Range, typename ValueType::Selection>;
-    auto con = dynamic_cast<typename ValueType::Container*>( obj );
+    auto con = dynamic_cast<std::add_const_t<typename ValueType::Container>*>( obj );
     if ( con ) return &make_range<Range, typename ValueType::Container>;
     return nullptr;
   }
@@ -93,7 +88,8 @@ public:
   /**
    * Register object in transient store
    */
-  T* put( T* object );
+  T* put( T* object ) { return put( std::unique_ptr<T>(object) ); }
+  T* put( std::unique_ptr<T> object );
 
 private:
   T* get( bool mustExist ) const;
@@ -183,14 +179,14 @@ T* DataObjectHandle<T>::get( bool mustExist ) const
 
 //---------------------------------------------------------------------------
 template <typename T>
-T* DataObjectHandle<T>::put( T* objectp )
+T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp )
 {
   assert( m_init );
-  StatusCode rc = m_EDS->registerObject( objKey(), objectp );
+  StatusCode rc = m_EDS->registerObject( objKey(), objectp.get() );
   if ( !rc.isSuccess() ) {
     throw GaudiException( "Error in put of " + objKey(), "DataObjectHandle<T>::put", StatusCode::FAILURE );
   }
-  return objectp;
+  return objectp.release();
 }
 
 //---------------------------------------------------------------------------
