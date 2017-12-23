@@ -12,6 +12,7 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/detected.h"
 // ============================================================================
 /** @file
  *
@@ -42,34 +43,13 @@ namespace Gaudi
      */
     GAUDI_API void rangeException( const long index, const size_t size );
     // ========================================================================
-    template <typename T>
-    struct _has_typename_container_ {
-    private:
-      template <typename T1>
-      static typename T1::Container test( int );
-      template <typename>
-      static void test( ... );
-
-    public:
-      enum { value = !std::is_void<decltype( test<T>( 0 ) )>::value };
-    };
-    template <class CONTAINER, bool>
-    struct _container;
-    template <class CONTAINER>
-    struct _container<CONTAINER, true> {
-      typedef typename CONTAINER::Container Container;
-    };
-    template <class CONTAINER>
-    struct _container<CONTAINER, false> {
-      typedef CONTAINER Container;
-    };
-    // ==========================================================================
     /// helper structure to get container type
     template <class CONTAINER>
     struct container {
-      typedef typename details::_container<CONTAINER, details::_has_typename_container_<CONTAINER>::value>::Container
-          Container;
-      typedef typename CONTAINER::const_iterator Iterator;
+      template <typename T>
+      using _has_container_t = typename T::Container;
+      using Container        = Gaudi::cpp17::detected_or_t<CONTAINER, _has_container_t, CONTAINER>;
+      using Iterator         = typename CONTAINER::const_iterator;
     };
     // =========================================================================
   } // the end of namespace Gaudi::details
