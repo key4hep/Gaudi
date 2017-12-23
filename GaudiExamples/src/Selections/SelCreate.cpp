@@ -34,7 +34,15 @@ namespace Gaudi
      */
     class SelCreate : public GaudiAlgorithm
     {
+      using Container = Gaudi::Examples::MyTrack::Container;
+      DataObjectWriteHandle<Container> m_output{this, "Output", this->name() , "TES location of output container"};
+
     public:
+      // ======================================================================
+      /** standard constructor
+       */
+      SelCreate( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
+      // using GaudiAlgorithm::GaudiAlgorithm;
       // ======================================================================
       /// the only one essential method
       StatusCode execute() override
@@ -44,14 +52,11 @@ namespace Gaudi
         static Rndm::Numbers flat( randSvc(), Rndm::Flat( 20.0, 100.0 ) );
 
         // create the data
-        Gaudi::Examples::MyTrack::Container* tracks = new Gaudi::Examples::MyTrack::Container();
-
-        // register the container in TES
-        put( tracks, name() );
+        auto tracks = std::make_unique<Gaudi::Examples::MyTrack::Container>();
 
         for ( int i = 0; i < 100; ++i ) {
           // create new track
-          Gaudi::Examples::MyTrack* track = new Gaudi::Examples::MyTrack();
+          auto track = std::make_unique<Gaudi::Examples::MyTrack>();
 
           // fill it with some "data"
           track->setPx( gauss() );
@@ -59,8 +64,11 @@ namespace Gaudi
           track->setPz( gauss() + flat() );
 
           // insert it into the container
-          tracks->insert( track );
+          tracks->insert( track.release() );
         }
+
+        // register the container in TES
+        m_output.put( tracks.release() );
 
         typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;
         if ( !exist<Range>( name() ) ) {
@@ -79,30 +87,6 @@ namespace Gaudi
 
         return StatusCode::SUCCESS;
       }
-      // ======================================================================
-    public:
-      // ======================================================================
-      /** standard constructor
-       *  @param name the algorithm instance name
-       *  @param pSvc pointer to Service Locator
-       */
-      SelCreate( const std::string& name, //    the algorithm instance name
-                 ISvcLocator* pSvc )      // pointer to the Service Locator
-          : GaudiAlgorithm( name, pSvc )
-      {
-      }
-      /// virtual (and protected) destructor
-      virtual ~SelCreate() {}
-      // ======================================================================
-    private:
-      // ======================================================================
-      /// the default constructor is disabled
-      SelCreate(); // no default constructor
-      /// copy constructor is disabled
-      SelCreate( const SelCreate& ); // no copy constructor
-      /// assignement operator is disabled
-      SelCreate& operator=( const SelCreate& ); // no assignement operator
-      // ======================================================================
     };
     // ========================================================================
   } // end of namespace Gaudi::Examples
