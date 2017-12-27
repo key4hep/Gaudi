@@ -12,9 +12,9 @@ namespace Gaudi
   {
     StatusCode parse( DataObjectHandleBase& v, const std::string& s )
     {
-      std::string prop;
-      auto sc = Gaudi::Parsers::parse( prop, s );
-      if ( sc ) v.setKey( DataObjID( s ) );
+      DataObjID id;
+      auto sc = parse( id, s );
+      if ( sc ) v.setKey( std::move( id ) );
       return sc;
     }
   }

@@ -65,7 +65,6 @@ public:
 
 private:
   void hashGen();
-  void parse( const std::string& key );
   void setClid();
   void setClassName();
 

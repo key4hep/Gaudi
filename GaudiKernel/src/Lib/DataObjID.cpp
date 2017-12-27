@@ -4,6 +4,19 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ParsersFactory.h"
 #include <functional>
+#include <iomanip>
+#include <iostream>
+
+namespace
+{
+  std::string quote( const std::string& in )
+  {
+    if ( !in.empty() && in.front() == in.back() && ( in.front() == '\'' || in.front() == '\"' ) ) return in;
+    std::stringstream s;
+    s << std::quoted( in );
+    return s.str();
+  }
+}
 
 namespace Gaudi
 {
@@ -35,6 +48,8 @@ namespace Gaudi
     REGISTER_GRAMMAR( DataObjID, DataObjIDGrammar );
   }
 }
+
+StatusCode parse( DataObjID& dest, const std::string& src ) { return Gaudi::Parsers::parse_( dest, quote( src ) ); }
 
 IClassIDSvc* DataObjID::p_clidSvc( nullptr );
 std::once_flag DataObjID::m_ip;
