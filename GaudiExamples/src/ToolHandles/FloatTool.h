@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GaudiAlg/GaudiTool.h"
-#include "GaudiKernel/AnyDataHandle.h"
+#include "GaudiKernel/DataObjectHandle.h"
 
 namespace Gaudi
 {
@@ -14,9 +14,10 @@ namespace Gaudi
           : GaudiTool( type, name, parent )
       {
       }
+
       float getFloat() const;
 
-      AnyDataHandle<float> m_float{"/Event/MyFloat", Gaudi::DataHandle::Reader, this};
+      DataObjectReadHandle<float> m_float{this, "Input", "/Event/MyFloat"};
     };
   }
 }

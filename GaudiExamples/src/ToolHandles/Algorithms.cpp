@@ -1,7 +1,6 @@
 #include "FloatTool.h"
 #include <GaudiAlg/Consumer.h>
 #include <GaudiAlg/Producer.h>
-#include <GaudiKernel/AnyDataHandle.h>
 #include <GaudiKernel/MsgStream.h>
 
 namespace Gaudi

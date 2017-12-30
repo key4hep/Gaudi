@@ -162,10 +162,16 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
+  // [[deprecated( "please pass a std::unique_ptr as 2nd argument" )]]
   inline void put( IDataProviderSvc* svc, DataObject* object, const std::string& address,
                    const bool useRootInTES = true ) const
   {
-    GaudiCommon<Algorithm>::put( svc, object, address, useRootInTES );
+    put( svc, std::unique_ptr<DataObject>( object ), address, useRootInTES );
+  }
+  inline void put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, const std::string& address,
+                   const bool useRootInTES = true ) const
+  {
+    GaudiCommon<Algorithm>::put( svc, std::move( object ), address, useRootInTES );
   }
 
   /** @brief Register a data object or container into Gaudi Event Transient Store
@@ -199,9 +205,14 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  inline void put( DataObject* object, const std::string& address, const bool useRootInTES = true ) const
+  inline const DataObject* put( DataObject* object, const std::string& address, const bool useRootInTES = true ) const
   {
-    GaudiCommon<Algorithm>::put( evtSvc(), object, address, useRootInTES );
+    return put( std::unique_ptr<DataObject>( object ), address, useRootInTES );
+  }
+  inline const DataObject* put( std::unique_ptr<DataObject> object, const std::string& address,
+                                const bool useRootInTES = true ) const
+  {
+    return GaudiCommon<Algorithm>::put( evtSvc(), std::move( object ), address, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -631,14 +642,20 @@ public:
     return GaudiCommon<Algorithm>::getOrCreate<TYPE, TYPE2>( evtSvc(), location, useRootInTES );
   }
 
-public:
   // ==========================================================================
-  /** Standard constructor (protected)
+  /** Standard constructor
    *  @see  Algorithm
    *  @param name           name of the algorithm
    *  @param pSvcLocator    pointer to Service Locator
    */
   GaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
+  // ==========================================================================
+  //
+  // no default/copy constructor, no assignment -- except that ROOT really
+  // wants a default constructor declared. So we define it, and don't implement
+  // it...
+  GaudiAlgorithm( const GaudiAlgorithm& ) = delete;
+  GaudiAlgorithm& operator=( const GaudiAlgorithm& ) = delete;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -646,12 +663,6 @@ public:
    *  @return pointer to the event collection service
    */
   SmartIF<INTupleSvc>& evtColSvc() const;
-  // ==========================================================================
-  // no default/copy constructor, no assignment -- except that ROOT really
-  // wants a default constructor declared. So we define it, and don't implement
-  // it...
-  GaudiAlgorithm( const GaudiAlgorithm& ) = delete;
-  GaudiAlgorithm& operator=( const GaudiAlgorithm& ) = delete;
 
   // ==========================================================================
 private:

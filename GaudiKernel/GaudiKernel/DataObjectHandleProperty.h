@@ -42,14 +42,5 @@ private:
   DataObjectHandleBase* m_pValue;
 };
 
-namespace Gaudi
-{
-  template <>
-  class Property<DataObjectHandleBase&> : public ::DataObjectHandleProperty
-  {
-  public:
-    Property( const std::string& name, DataObjectHandleBase& value ) : ::DataObjectHandleProperty( name, value ) {}
-  };
-}
 
 #endif

@@ -35,7 +35,7 @@ namespace Gaudi
     class SelCreate : public GaudiAlgorithm
     {
       using Container = Gaudi::Examples::MyTrack::Container;
-      DataObjectWriteHandle<Container> m_output{this, "Output", this->name() , "TES location of output container"};
+      DataObjectWriteHandle<Container> m_output{this, "Output", this->name(), "TES location of output container"};
 
     public:
       // ======================================================================
@@ -68,7 +68,7 @@ namespace Gaudi
         }
 
         // register the container in TES
-        m_output.put( tracks.release() );
+        m_output.put( std::move( tracks ) );
 
         typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;
         if ( !exist<Range>( name() ) ) {

@@ -596,18 +596,18 @@ long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const
 // put results into Gaudi Event Transient Store
 // ============================================================================
 template <class PBASE>
-DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
-                                     const bool useRootInTES ) const
+DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object,
+                                     const std::string& location, const bool useRootInTES ) const
 {
   // check arguments
   Assert( svc, "put():: Invalid 'service'!" );
-  Assert( object, "put():: Invalid 'Object'!" );
+  Assert( static_cast<bool>( object ), "put():: Invalid 'Object'!" );
   Assert( !location.empty(), "put():: Invalid 'address' = '' " );
   // final data location
   const std::string& fullLocation = fullTESLocation( location, useRootInTES );
   // register the object!
-  const StatusCode status = '/' == fullLocation[0] ? svc->registerObject( fullLocation, object )
-                                                   : svc->registerObject( "/Event/" + fullLocation, object );
+  const StatusCode status = '/' == fullLocation[0] ? svc->registerObject( fullLocation, object.get() )
+                                                   : svc->registerObject( "/Event/" + fullLocation, object.get() );
   // check the result!
   if ( status.isFailure() ) {
     Exception( "put():: could not register '" + System::typeinfoName( typeid( *object ) ) + "' at address '" +
@@ -620,7 +620,8 @@ DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, DataObject* object, 
            status, MSG::DEBUG )
         .ignore();
   }
-  return object;
+  // if we get here, ownership has been transferred to the IDataProviderSvc
+  return object.release();
 }
 // ============================================================================
 

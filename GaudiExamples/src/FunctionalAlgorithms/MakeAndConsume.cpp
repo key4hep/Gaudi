@@ -1,7 +1,6 @@
 #include <GaudiAlg/Consumer.h>
 #include <GaudiAlg/Producer.h>
 #include <GaudiAlg/Transformer.h>
-#include <GaudiKernel/AnyDataHandle.h>
 #include <GaudiKernel/MsgStream.h>
 
 namespace Gaudi

@@ -443,13 +443,14 @@ namespace Gaudi
       {
         SmartDataPtr<TYPE> obj( service, location );
         if ( !obj ) {
-          TYPE2* o = new TYPE2();
-          common.put( service, o, location2 );
+          auto o = std::make_unique<TYPE2>();
+          auto r = o.get();
+          common.put( service, std::move( o ), location2 );
           if ( common.msgLevel( MSG::DEBUG ) ) {
-            common.debug() << "The object of type '" << System::typeinfoName( typeid( *o ) )
+            common.debug() << "The object of type '" << System::typeinfoName( typeid( *r ) )
                            << "' has been created from TS at address '" << location2 << "'" << endmsg;
           }
-          return o;
+          return r;
         }
         auto ret = obj.ptr();
         /// check the data
@@ -494,7 +495,7 @@ namespace Gaudi
       {
         DataObject* obj = m_getter.getData( service, location );
         if ( !obj ) {
-          common.put( service, new TYPE2(), location2 );
+          common.put( service, std::make_unique<TYPE2>(), location2 );
           if ( common.msgLevel( MSG::DEBUG ) ) {
             common.debug() << "The object of type '" << System::typeinfoName( typeid( TYPE2 ) )
                            << "' has been created from TS at address '" << location2 << "'" << endmsg;

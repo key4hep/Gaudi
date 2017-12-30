@@ -268,8 +268,14 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
+  DataObject* put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, const std::string& location,
                    const bool useRootInTES = true ) const;
+  // [[deprecated( "please pass std::unique_ptr as 2nd argument" )]]
+  DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
+                   const bool useRootInTES = true ) const
+  {
+    return put( svc, std::unique_ptr<DataObject>( object ), location, useRootInTES );
+  }
   /** Useful method for the easy location of tools.
    *
    *  @code
