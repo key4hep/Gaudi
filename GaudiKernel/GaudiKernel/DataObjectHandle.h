@@ -270,7 +270,15 @@ const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj )
 //---------------------------- user-facing interface ----------
 
 template <typename T>
-struct DataObjectReadHandle : public DataObjectHandle<details::Payload_t<T>> {
+class DataObjectReadHandle : public DataObjectHandle<details::Payload_t<T>>
+{
+  template <typename... Args, std::size_t... Is>
+  DataObjectReadHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> )
+      : DataObjectReadHandle( std::get<Is>( args )... )
+  {
+  }
+
+public:
   DataObjectReadHandle( const DataObjID& k, IDataHandleHolder* owner )
       : DataObjectHandle<details::Payload_t<T>>{k, Gaudi::DataHandle::Reader, owner}
   {
@@ -278,16 +286,30 @@ struct DataObjectReadHandle : public DataObjectHandle<details::Payload_t<T>> {
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<details::Payload_t<T>>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key,
                                                  std::move( doc ) )
   {
   }
+
+  template <typename... Args>
+  DataObjectReadHandle( const std::tuple<Args...>& args )
+      : DataObjectReadHandle( args, std::index_sequence_for<Args...>{} )
+  {
+  }
 };
 
 template <typename T>
-struct DataObjectWriteHandle : public DataObjectHandle<details::Payload_t<T>> {
+class DataObjectWriteHandle : public DataObjectHandle<details::Payload_t<T>>
+{
+  template <typename... Args, std::size_t... Is>
+  DataObjectWriteHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> )
+      : DataObjectWriteHandle( std::get<Is>( args )... )
+  {
+  }
+
+public:
   DataObjectWriteHandle( const DataObjID& k, IDataHandleHolder* owner )
       : DataObjectHandle<details::Payload_t<T>>{k, Gaudi::DataHandle::Writer, owner}
   {
@@ -295,10 +317,16 @@ struct DataObjectWriteHandle : public DataObjectHandle<details::Payload_t<T>> {
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<details::Payload_t<T>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
                                                  std::move( doc ) )
+  {
+  }
+
+  template <typename... Args>
+  DataObjectWriteHandle( const std::tuple<Args...>& args )
+      : DataObjectWriteHandle( args, std::index_sequence_for<Args...>{} )
   {
   }
 };

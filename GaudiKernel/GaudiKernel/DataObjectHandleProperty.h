@@ -42,5 +42,4 @@ private:
   DataObjectHandleBase* m_pValue;
 };
 
-
 #endif
