@@ -1,4 +1,5 @@
 #include "AvalancheSchedulerSvc.h"
+
 #include "AlgoExecutionTask.h"
 #include "IOBoundAlgTask.h"
 
@@ -82,7 +83,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
       fatal() << "Terminating initialization" << endmsg;
       return StatusCode::FAILURE;
     } else {
-      info() << "Waiting for AvalancheSchedulerSvc to activate" << endmsg;
+      ON_DEBUG debug() << "Waiting for AvalancheSchedulerSvc to activate" << endmsg;
       sleep( 1 );
     }
   }
@@ -379,7 +380,7 @@ void AvalancheSchedulerSvc::activate()
   m_isActive = ACTIVE;
 
   // Continue to wait if the scheduler is running or there is something to do
-  info() << "Start checking the actionsQueue" << endmsg;
+  ON_DEBUG debug() << "Start checking the actionsQueue" << endmsg;
   while ( m_isActive == ACTIVE or m_actionsQueue.size() != 0 ) {
     m_actionsQueue.pop( thisAction );
     sc = thisAction();
@@ -392,7 +393,7 @@ void AvalancheSchedulerSvc::activate()
     }
   }
 
-  info() << "Terminating thread-pool resources" << endmsg;
+  ON_DEBUG debug() << "Terminating thread-pool resources" << endmsg;
   if ( m_threadPoolSvc->terminatePool().isFailure() ) {
     error() << "Problems terminating thread pool" << endmsg;
     m_isActive = FAILURE;
