@@ -11,7 +11,8 @@ namespace Gaudi
   namespace Examples
   {
 
-    class CountSelectedTracks : public Functional::FilterPredicate<bool( const MyTrackVector& )>
+    class CountSelectedTracks
+        : public Functional::FilterPredicate<bool( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )>
     {
     public:
       CountSelectedTracks( const std::string& name, ISvcLocator* pSvc )
@@ -29,7 +30,7 @@ namespace Gaudi
         return sc;
       }
 
-      bool operator()( const MyTrackVector& in_tracks ) const override
+      bool operator()( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& in_tracks ) const override
       {
         ++m_eventsCount;
         m_tracksCount += in_tracks.size();

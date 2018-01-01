@@ -20,25 +20,26 @@ namespace Gaudi
       using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final { return invoke( std::index_sequence_for<Out...>{} ); }
+      StatusCode execute() override final
+      {
+        try {
+          invoke( std::index_sequence_for<Out...>{} );
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
+        return StatusCode::SUCCESS;
+      }
 
       // ... instead, they must implement the following operator
       virtual std::tuple<Out...> operator()() const = 0;
 
     private:
       template <std::size_t... O>
-      StatusCode invoke( std::index_sequence<O...> )
+      void invoke( std::index_sequence<O...> )
       {
-        using details::as_const;
-        using details::put;
-        try {
-          std::initializer_list<int>{
-              ( put( std::get<O>( this->m_outputs ), std::get<O>( as_const( *this )() ) ), 0 )...};
-        } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
-          return e.code();
-        }
-        return StatusCode::SUCCESS;
+        std::initializer_list<int>{
+            ( details::put( std::get<O>( this->m_outputs ), std::get<O>( details::as_const( *this )() ) ), 0 )...};
       }
     };
 
@@ -55,7 +56,7 @@ namespace Gaudi
         try {
           put( std::get<0>( this->m_outputs ), as_const( *this )() );
         } catch ( GaudiException& e ) {
-          this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
         return StatusCode::SUCCESS;
