@@ -43,12 +43,12 @@ private:
 
   ToolHandle<IMyTool> m_legacyToolHandle{"MyTool/LegacyToolHandle", this};
 
-  ToolHandle<IMyTool> m_myPrivToolHandle{this, "PrivToolHandle", "MyTool"};
-  PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool"};
+  ToolHandle<IMyTool> m_myPrivToolHandle{this, "PrivToolHandle", "MyTool/PrivToolHandle"};
+  PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool/PubToolHandle"};
 
-  PublicToolHandle<IAlgTool> m_myGenericToolHandle{this, "GenericToolHandle", "MyTool"};
+  PublicToolHandle<IAlgTool> m_myGenericToolHandle{this, "GenericToolHandle", "MyTool/GenericToolHandle"};
 
-  ToolHandle<IAlgTool> m_myUnusedToolHandle{this, "UnusedToolHandle", "TestToolFailing"};
+  ToolHandle<IAlgTool> m_myUnusedToolHandle{this, "UnusedToolHandle", "TestToolFailing/UnusedToolHandle"};
 
   ToolHandle<IMyTool> m_undefinedToolHandle{this};
   ToolHandle<IMyTool> m_invalidToolHandle{this, "InvalidToolHandle", "TestToolFailing"};
