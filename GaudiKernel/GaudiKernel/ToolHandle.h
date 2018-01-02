@@ -187,20 +187,20 @@ public:
   {
   }
 
-  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// Autodeclaring constructor with property propName, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
-  inline ToolHandle( OWNER* owner, std::string name, std::string toolType, std::string doc = "" ) : ToolHandle( owner )
+  inline ToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
+      : ToolHandle( owner )
   {
     // convert name and type to a valid type/name string
-    // - if type does not contain '/' use type/name
+    // - if type does not contain '/' use type/type
     // - otherwise type is already a type/name string
     if ( !toolType.empty() and toolType.find( '/' ) == std::string::npos ) {
-      toolType += '/';
-      toolType += name;
+      toolType += '/' + toolType;
     }
     owner->declareTool( *this, std::move( toolType ) ).ignore();
-    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( name ), *this, std::move( doc ) );
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( propName ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
 
@@ -316,21 +316,20 @@ public:
   {
   }
 
-  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// Autodeclaring constructor with property propName, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-  inline PublicToolHandle( OWNER* owner, std::string name, std::string toolType, std::string doc = "" )
+  inline PublicToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
       : PublicToolHandle()
   {
     // convert name and type to a valid type/name string
-    // - if type does not contain '/' use type/name
+    // - if type does not contain '/' use type/type
     // - otherwise type is already a type/name string
     if ( !toolType.empty() and toolType.find( '/' ) == std::string::npos ) {
-      toolType += '/';
-      toolType += name;
+      toolType += '/' + toolType;
     }
     owner->declareTool( *this, std::move( toolType ) ).ignore();
-    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( name ), *this, std::move( doc ) );
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( propName ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
 };
