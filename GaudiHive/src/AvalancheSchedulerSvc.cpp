@@ -832,22 +832,20 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
   // To have just one big message
   std::ostringstream outputMS;
 
-  outputMS << "Dumping scheduler state (inhale, exhale..)" << std::endl
-           << "=========================================================================================" << std::endl
-           << "++++++++++++++++++++++++++++++++++++ SCHEDULER STATE ++++++++++++++++++++++++++++++++++++" << std::endl
-           << "=========================================================================================" << std::endl
-           << std::endl;
+  outputMS << "Dumping scheduler state (inhale, exhale..)\n"
+           << "=========================================================================================\n"
+           << "++++++++++++++++++++++++++++++++++++ SCHEDULER STATE ++++++++++++++++++++++++++++++++++++\n"
+           << "=========================================================================================\n\n";
 
   //===========================================================================
 
   outputMS << "------------------ Last schedule: Task/Event/Slot/Thread/State Mapping "
-           << "------------------" << std::endl
-           << std::endl;
+           << "------------------\n\n";
 
   // Figure if TimelineSvc is available (used below to detect threads IDs)
   auto timelineSvc = serviceLocator()->service<ITimelineSvc>( "TimelineSvc", false );
   if ( !timelineSvc.isValid() || !timelineSvc->isEnabled() ) {
-    outputMS << "WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the mapping" << std::endl;
+    outputMS << "WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the mapping\n";
   } else {
 
     // Figure optimal printout layout
@@ -882,18 +880,15 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
                                                  // but has not been assigned to a thread yet
                                                  // (i.e., not running yet)
         }
-        outputMS << " state: [" << m_algExecStateSvc->algExecState( algoName, *( slot.eventContext ) ) << "] "
-                 << std::endl;
+        outputMS << " state: [" << m_algExecStateSvc->algExecState( algoName, *( slot.eventContext ) ) << "]\n";
       }
     }
   }
 
   //===========================================================================
 
-  outputMS << std::endl
-           << "---------------------------- Task/CF/FSM Mapping " << ( 0 > iSlot ? "[all slots] --" : "[target slot] " )
-           << "--------------------------" << std::endl
-           << std::endl;
+  outputMS << "\n---------------------------- Task/CF/FSM Mapping "
+           << ( 0 > iSlot ? "[all slots] --" : "[target slot] " ) << "--------------------------\n\n";
 
   int slotCount = -1;
   for ( auto& slot : m_eventSlots ) {
@@ -904,18 +899,17 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
              << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]" )
              << "  event: "
              << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->evt() ) : "[ctx invalid]" )
-             << " ]:" << std::endl
-             << std::endl;
+             << " ]:\n\n";
 
     if ( 0 > iSlot or iSlot == slotCount ) {
 
       // Snapshot of the Control Flow and FSM states
-      outputMS << m_precSvc->printState( slot ) << std::endl;
+      outputMS << m_precSvc->printState( slot ) << "\n";
 
       // Mention sub slots
       if ( slot.allSubSlots.size() ) {
-        outputMS << std::endl << "Number of sub-slots:" << slot.allSubSlots.size() << std::endl;
-        outputMS << "Sub-slot algorithms ready:" << slot.subSlotAlgsReady.size() << std::endl;
+        outputMS << "\nNumber of sub-slots:" << slot.allSubSlots.size() << "\n";
+        outputMS << "Sub-slot algorithms ready:" << slot.subSlotAlgsReady.size() << "\n";
       }
     }
   }
@@ -923,17 +917,13 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
   //===========================================================================
 
   if ( 0 <= iSlot ) {
-    outputMS << std::endl
-             << "------------------------------ Algorithm Execution States -----------------------------" << std::endl
-             << std::endl;
+    outputMS << "\n------------------------------ Algorithm Execution States -----------------------------\n\n";
     m_algExecStateSvc->dump( outputMS, *( m_eventSlots[iSlot].eventContext ) );
   }
 
-  outputMS << std::endl
-           << "=========================================================================================" << std::endl
-           << "++++++++++++++++++++++++++++++++++++++ END OF DUMP ++++++++++++++++++++++++++++++++++++++" << std::endl
-           << "=========================================================================================" << std::endl
-           << std::endl;
+  outputMS << "\n=========================================================================================\n"
+           << "++++++++++++++++++++++++++++++++++++++ END OF DUMP ++++++++++++++++++++++++++++++++++++++\n"
+           << "=========================================================================================\n\n";
 
   info() << outputMS.str() << endmsg;
 }

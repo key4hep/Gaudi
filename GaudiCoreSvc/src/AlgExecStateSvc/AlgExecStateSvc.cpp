@@ -74,7 +74,7 @@ void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) c
 {
   size_t slotID = ctx.valid() ? ctx.slot() : 0;
 
-  ost << "  [slot: " << slotID << ", incident: " << m_eventStatus.at( slotID ) << "]:" << std::string( 2, '\n' );
+  ost << "  [slot: " << slotID << ", incident: " << m_eventStatus.at( slotID ) << "]:\n\n";
 
   auto& algState = m_algStates.at( slotID );
   auto ml        = std::accumulate( begin( algState ), end( algState ), size_t{0},
