@@ -11,7 +11,7 @@ namespace Gaudi
   namespace Examples
   {
 
-    class CountSelectedTracks
+    class CountSelectedTracks final
         : public Functional::FilterPredicate<bool( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )>
     {
     public:
