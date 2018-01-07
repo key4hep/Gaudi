@@ -4,6 +4,7 @@
 #include "GaudiKernel/AnyDataWrapper.h"
 #include "GaudiKernel/DataObjectHandleBase.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/NamedRange.h"
