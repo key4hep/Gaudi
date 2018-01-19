@@ -212,7 +212,7 @@ StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const
   while ( !CFRulesResolved( slot ) ) {
     cntr += 1;
     int prevAlgosNum = visitor.m_nodesSucceeded;
-    debug() << "  Proceeding with iteration #" << cntr << endmsg;
+    ON_DEBUG debug() << "  Proceeding with iteration #" << cntr << endmsg;
     prevNodeDecisions = slot.controlFlowState;
     m_PRGraph.getHeadNode()->accept( visitor );
     if ( prevNodeDecisions == nodeDecisions ) {
@@ -233,8 +233,7 @@ StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const
     if ( visitor.m_nodesSucceeded != prevAlgosNum ) counters.push_back( visitor.m_nodesSucceeded );
   }
 
-  info() << "Asymptotical concurrency speedup depth: " << (float)visitor.m_nodesSucceeded / (float)counters.size()
-         << endmsg;
+  info() << "Asymptotical intra-event speedup: " << (float)visitor.m_nodesSucceeded / (float)counters.size() << endmsg;
 
   // Reset algorithm states and node decisions
   slot.algsStates.reset();
