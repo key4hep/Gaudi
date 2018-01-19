@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/THistRead.opts
+JobOptionsSvc        INFO # =======> /home/merrenst/git/Gaudi/GaudiExamples/options/THistRead.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["THistRead"]
 JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
@@ -12,11 +12,11 @@ JobOptionsSvc        INFO # (25,1): THistSvc.Input += ["read2 DATAFILE='tuple3.r
 JobOptionsSvc        INFO # (27,1): THistSvc.PrintAll = 1
 JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtMax = 20
 JobOptionsSvc        INFO # (33,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/THistRead.opts
-ApplicationMgr    SUCCESS
+JobOptionsSvc        INFO Job options successfully read in from /home/merrenst/git/Gaudi/GaudiExamples/options/THistRead.opts
+ApplicationMgr    SUCCESS 
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Fri Mar  4 17:54:00 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
+                                          running on hpadpmt on Wed Oct  4 13:58:51 2017
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m
@@ -39,22 +39,31 @@ THistSvc            DEBUG Opening TFile "tuple2.rt"  stream: "read1"  mode: "O" 
 THistSvc            DEBUG Opening TFile "tuple3.rt"  stream: "read2"  mode: "O" comp level: 1[m
 THistSvc             INFO registered file [tuple2.rt]... [ok][m
 THistSvc             INFO registered file [tuple3.rt]... [ok][m
+THistSvc            DEBUG regHist_i obj: 0  id: /read1/xxx/1Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH1F  "1Dgauss" from file tuple2.rt[m
 TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
 THistSvc            DEBUG Registering TH1F title: "1D Gaussian"  id: "/read1/xxx/1Dgauss"  dir: tuple2.rt:/xxx  file: tuple2.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d1e9e0 TH1F[m
 THistRead            INFO 1Dgauss: 20000[m
+THistSvc            DEBUG regHist_i obj: 0  id: /read2/2Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH2F  "2Dgauss" from file tuple3.rt[m
 TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
 THistSvc            DEBUG Registering TH2F title: "2D Gaussian"  id: "/read2/2Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d266b0 TH2F[m
 THistRead            INFO 2Dgauss: 20000[m
+THistSvc            DEBUG regHist_i obj: 0  id: /read2/3Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH3F  "3Dgauss" from file tuple3.rt[m
 TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19944
 THistSvc            DEBUG Registering TH3F title: "3D Gaussian"  id: "/read2/3Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d25170 TH3F[m
 THistRead            INFO 3Dgauss: 20000[m
+THistSvc            DEBUG regHist_i obj: 0  id: /read2/profile  s: 0[m
 THistSvc            DEBUG Read in TProfile  "profile" from file tuple3.rt[m
 TH1.Print Name  = profile, Entries= 0, Total sum= 0
 THistSvc            DEBUG Registering TProfile title: "profile"  id: "/read2/profile"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x1d3e780 TProfile[m
 THistRead            INFO profile: 0[m
+THistSvc            DEBUG regHist_i obj: 0  id: /read2/trees/stuff/treename  s: 0[m
 THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
@@ -74,6 +83,7 @@ THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
 *Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
 *............................................................................*
 THistSvc            DEBUG Registering TTree title: "tree title"  id: "/read2/trees/stuff/treename"  dir: tuple3.rt:/trees/stuff  file: tuple3.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x1d69b60 TTree[m
 THistRead            INFO treename: 1000[m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
@@ -81,73 +91,102 @@ THistRead            INFO treename: 1000[m
 ApplicationMgr       INFO Application Manager Initialized successfully[m
 ApplicationMgr       INFO Application Manager Started successfully[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4008[m
-THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88801[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 48491[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88966[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
+THistSvc            DEBUG dumping THistSvc contents
+m_hlist:  size: 5
+ - id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d1e9e0 TH1F :: [0x1cf48a0] 1 {[0x1d1e9e0]}
+ - id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d266b0 TH2F :: [0x1d57660] 1 {[0x1d266b0]}
+ - id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d25170 TH3F :: [0x1d24b10] 1 {[0x1d25170]}
+ - id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x1d3e780 TProfile :: [0x1d3e740] 1 {[0x1d3e780]}
+ - id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x1d69b60 TTree :: [0x2fd9c40] 1 {[0x1d69b60]}
+
+m_uids: 5
+ - /read2/trees/stuff/treename  [0x2fd9c40]
+ - /read1/xxx/1Dgauss  [0x1cf48a0]
+ - /read2/2Dgauss  [0x1d57660]
+ - /read2/3Dgauss  [0x1d24b10]
+ - /read2/profile  [0x1d3e740]
+
+m_ids: 5
+ - trees/stuff/treename  [0x2fd9c40]
+ - xxx/1Dgauss  [0x1cf48a0]
+ - profile  [0x1d3e740]
+ - 3Dgauss  [0x1d24b10]
+ - 2Dgauss  [0x1d57660]
+
+m_tobjs: 5
+ - 0x1d1e9e0 -> id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d1e9e0 TH1F
+ - 0x1d266b0 -> id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d266b0 TH2F
+ - 0x1d69b60 -> id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x1d69b60 TTree
+ - 0x1d25170 -> id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d25170 TH3F
+ - 0x1d3e780 -> id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x1d3e780 TProfile
+[m
 THistSvc            DEBUG THistSvc::finalize[m
-THistSvc            DEBUG uid: "/read1/xxx/1Dgauss"  temp: 0  dir: tuple2.rt:/xxx[m
-THistSvc            DEBUG uid: "/read2/2Dgauss"  temp: 0  dir: tuple3.rt:/[m
-THistSvc            DEBUG uid: "/read2/3Dgauss"  temp: 0  dir: tuple3.rt:/[m
-THistSvc            DEBUG uid: "/read2/profile"  temp: 0  dir: tuple3.rt:/[m
-THistSvc            DEBUG uid: "/read2/trees/stuff/treename"  temp: 0  dir: tuple3.rt:/trees/stuff[m
+THistSvc            DEBUG finalize: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x1d69b60 TTree[m
+THistSvc            DEBUG finalize: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d1e9e0 TH1F[m
+THistSvc            DEBUG finalize: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d266b0 TH2F[m
+THistSvc            DEBUG finalize: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x1d25170 TH3F[m
+THistSvc            DEBUG finalize: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x1d3e780 TProfile[m
 THistSvc            DEBUG updateFiles()[m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT [m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"[m
