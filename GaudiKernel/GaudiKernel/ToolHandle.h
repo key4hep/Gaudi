@@ -7,6 +7,7 @@
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/ServiceHandle.h"
+#include "GaudiKernel/TaggedBool.h"
 
 #include <stdexcept>
 #include <string>
@@ -20,6 +21,8 @@ class IToolSvc;
 class Algorithm;
 class AlgTool;
 class Service;
+
+using DisableTool = Gaudi::tagged_bool<class DisableTool_tag>;
 
 /** General info and helper functions for toolhandles and arrays */
 class ToolHandleInfo
@@ -75,7 +78,8 @@ protected:
 public:
   StatusCode retrieve( IAlgTool*& tool ) const { return i_retrieve( tool ); }
 
-  virtual StatusCode retrieve() const = 0;
+  virtual StatusCode retrieve() const           = 0;
+  virtual StatusCode retrieve( DisableTool sd ) = 0;
 
   const IAlgTool* get() const { return getAsIAlgTool(); }
 
@@ -223,6 +227,16 @@ public:
   StatusCode retrieve() const override
   { // not really const, because it updates m_pObject
     return GaudiHandle<T>::retrieve();
+  }
+
+  StatusCode retrieve( DisableTool sd ) override
+  {
+    if ( isEnabled() && sd == DisableTool{false} ) {
+      return GaudiHandle<T>::retrieve();
+    } else {
+      disable();
+      return StatusCode::SUCCESS;
+    }
   }
 
   /** Release the AlgTool.
