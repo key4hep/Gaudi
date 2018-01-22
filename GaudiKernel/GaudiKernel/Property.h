@@ -172,28 +172,27 @@ namespace Gaudi
 
       // This class factors out commonalities between DefaultStringConverters
       template <class TYPE>
-      struct DefaultStringConverterImpl
-      {
-        public:
-          inline std::string toString( const TYPE& v )
-          {
-            using Gaudi::Utils::toString;
-            return toString( v );
-          }
+      struct DefaultStringConverterImpl {
+      public:
+        inline std::string toString( const TYPE& v )
+        {
+          using Gaudi::Utils::toString;
+          return toString( v );
+        }
 
-          // Implementation of fromString depends on whether TYPE is default-
-          // constructible (fastest, easiest) or only copy-constructible (still
-          // doable as long as the caller can provide a valid value of TYPE)
-          virtual TYPE fromString( const TYPE& ref_value, const std::string& s ) = 0;
+        // Implementation of fromString depends on whether TYPE is default-
+        // constructible (fastest, easiest) or only copy-constructible (still
+        // doable as long as the caller can provide a valid value of TYPE)
+        virtual TYPE fromString( const TYPE& ref_value, const std::string& s ) = 0;
 
-        protected:
-          inline void fromStringImpl( TYPE& buffer, const std::string& s )
-          {
-            using Gaudi::Parsers::parse;
-            if ( !parse( buffer, s ).isSuccess() ) {
-              throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
-            }
+      protected:
+        inline void fromStringImpl( TYPE& buffer, const std::string& s )
+        {
+          using Gaudi::Parsers::parse;
+          if ( !parse( buffer, s ).isSuccess() ) {
+            throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
           }
+        }
       };
       // Specialization of toString for strings (identity function)
       template <>
@@ -210,33 +209,30 @@ namespace Gaudi
       // here is the "default" implementation for copy-constructible types...
       //
       template <typename TYPE, typename Enable = void>
-      struct DefaultStringConverter : DefaultStringConverterImpl<TYPE>
-      {
-        inline TYPE fromString( const TYPE& ref_value, const std::string& s ) final override {
+      struct DefaultStringConverter : DefaultStringConverterImpl<TYPE> {
+        inline TYPE fromString( const TYPE& ref_value, const std::string& s ) final override
+        {
           TYPE buffer = ref_value;
-          this->fromStringImpl(buffer, s);
+          this->fromStringImpl( buffer, s );
           return buffer;
         }
       };
       // ...and here is the preferred impl for default-constructible types:
       template <class TYPE>
-      struct DefaultStringConverter<TYPE,
-                                    std::enable_if_t<
-                                      std::is_default_constructible<TYPE>::value
-                                    >>
-        : DefaultStringConverterImpl<TYPE>
-      {
-        inline TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override {
+      struct DefaultStringConverter<TYPE, std::enable_if_t<std::is_default_constructible<TYPE>::value>>
+          : DefaultStringConverterImpl<TYPE> {
+        inline TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override
+        {
           TYPE buffer{};
-          this->fromStringImpl(buffer, s);
+          this->fromStringImpl( buffer, s );
           return buffer;
         }
       };
 
       // Specializable StringConverter struct with a default implementation
-      template<typename TYPE>
-      struct StringConverter : DefaultStringConverter<TYPE> {};
-
+      template <typename TYPE>
+      struct StringConverter : DefaultStringConverter<TYPE> {
+      };
 
       struct NullVerifier {
         template <class TYPE>
@@ -715,7 +711,7 @@ namespace Gaudi
     StatusCode fromString( const std::string& source ) override
     {
       using Converter = Details::Property::StringConverter<ValueType>;
-      *this = Converter().fromString( m_value, source );
+      *this           = Converter().fromString( m_value, source );
       return StatusCode::SUCCESS;
     }
     /// value  -> string
