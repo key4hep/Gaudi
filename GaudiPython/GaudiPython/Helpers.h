@@ -11,9 +11,7 @@
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
-
-// FIXME: (MCl) workaround for ROOT-5847
-#include "GaudiKernel/PropertyFwd.h"
+#include "GaudiKernel/Property.h"
 
 // FIXME: (MCl) workaround for ROOT-5850
 namespace AIDA
