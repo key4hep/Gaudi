@@ -139,7 +139,7 @@ class RefTable1to1 : public RefTableBase<FROM, SmartRef<TO>>
 {
 public:
   using EntryType = typename RefTableBase<FROM, SmartRef<TO>>::EntryType;
-  //using m_clid = typename RefTableBase<FROM, SmartRef<TO>>::m_clid;
+  // using m_clid = typename RefTableBase<FROM, SmartRef<TO>>::m_clid;
 
   /// Standard Constructor
   RefTable1to1( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRef<TO>>( clid, len ) {}
@@ -190,7 +190,7 @@ class RefTable1toN : public RefTableBase<FROM, SmartRefVector<TO>>
 {
 public:
   using EntryType = typename RefTableBase<FROM, SmartRefVector<TO>>::EntryType;
-  //using m_clid = typename RefTableBase<FROM, SmartRefVector<TO>>::m_clid;
+  // using m_clid = typename RefTableBase<FROM, SmartRefVector<TO>>::m_clid;
 
   /// Standard Constructor
   RefTable1toN( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRefVector<TO>>( clid, len ) {}
