@@ -55,9 +55,9 @@ public:
   */
   typedef GaudiUtils::HashMap<const void*, EntryType> TableType;
   /// Definition of map iterator
-  typedef TableType::iterator iterator;
+  typedef typename TableType::iterator iterator;
   /// Definition of map iterator (CONST)
-  typedef TableType::const_iterator const_iterator;
+  typedef typename TableType::const_iterator const_iterator;
   /// Class id of the reference table
   CLID m_clid;
 
@@ -138,11 +138,14 @@ template <class FROM, class TO>
 class RefTable1to1 : public RefTableBase<FROM, SmartRef<TO>>
 {
 public:
+  using EntryType = typename RefTableBase<FROM, SmartRef<TO>>::EntryType;
+  //using m_clid = typename RefTableBase<FROM, SmartRef<TO>>::m_clid;
+
   /// Standard Constructor
   RefTable1to1( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRef<TO>>( clid, len ) {}
 
   /// Retrieve reference to class definition structure
-  virtual const CLID& clID() const { return m_clid; }
+  virtual const CLID& clID() const { return RefTableBase<FROM, SmartRef<TO>>::m_clid; }
   /// Insert new Entry into Reference container
   bool insert( const FROM* from, TO* to ) { return insertMapElement( from, EntryType( to ) ); }
   /// Insert new Entry into Reference container
@@ -186,11 +189,14 @@ template <class FROM, class TO>
 class RefTable1toN : public RefTableBase<FROM, SmartRefVector<TO>>
 {
 public:
+  using EntryType = typename RefTableBase<FROM, SmartRefVector<TO>>::EntryType;
+  //using m_clid = typename RefTableBase<FROM, SmartRefVector<TO>>::m_clid;
+
   /// Standard Constructor
   RefTable1toN( const CLID& clid, int len = 16 ) : RefTableBase<FROM, SmartRefVector<TO>>( clid, len ) {}
 
   /// Retrieve reference to class definition structure
-  virtual const CLID& clID() const { return m_clid; }
+  virtual const CLID& clID() const { return RefTableBase<FROM, SmartRefVector<TO>>::m_clid; }
   /// Insert new Entry into Reference container
   bool insert( const FROM* from, TO* to )
   {
