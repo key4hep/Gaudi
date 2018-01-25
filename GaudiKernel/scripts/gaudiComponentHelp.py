@@ -33,7 +33,8 @@ if __name__ == "__main__":
         if name not in cfgDb:
             print "Component %s not found." % (name)
             sys.exit()
-        print "\nDumping component information for %s:\n%s" % (name, (35 + len(name)) * "=")
+        print "\nDumping component information for %s:\n%s" % (
+            name, (35 + len(name)) * "=")
         print "  Library: %s" % (cfgDb[name]["lib"])
         print "  Package: %s" % (cfgDb[name]["package"])
         print "\nProperties:\n%s" % (11 * "-")
