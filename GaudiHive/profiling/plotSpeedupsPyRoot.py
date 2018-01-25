@@ -119,7 +119,8 @@ if len(sys.argv) > 1:
 for neif in neif_l:
     print "Events in flight: %s" % neif
     for tn in nts:
-        print "%s %s %s" % (tn, xtractTiming(neif, tn, False), xtractTiming(neif, tn, True))
+        print "%s %s %s" % (tn, xtractTiming(
+            neif, tn, False), xtractTiming(neif, tn, True))
 
 
 len_nt = len(nts) + 1

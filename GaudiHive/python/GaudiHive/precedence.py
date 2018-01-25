@@ -66,7 +66,8 @@ class RealTimeValue(object):
                 time = float(self.timings[capAlgoName])
             else:
                 time = self.defaultTime
-                print "WARNING: TimiNg for %s (or %s) not found in the provided library, using default one: %s" % (algoName, capAlgoName, time)
+                print "WARNING: TimiNg for %s (or %s) not found in the provided library, using default one: %s" % (
+                    algoName, capAlgoName, time)
 
         time = time * self.factor
 
@@ -161,20 +162,25 @@ class CruncherSequence(object):
             import pprint
 
             print "\n===== Statistics on Algorithms ====="
-            print "Total number of algorithm nodes: ", len(self.unique_algos) + sum([self.dupl_algos[i] - 1 for i in self.dupl_algos])
+            print "Total number of algorithm nodes: ", len(
+                self.unique_algos) + sum([self.dupl_algos[i] - 1 for i in self.dupl_algos])
             print "Number of unique algorithms: ", len(self.unique_algos)
-            print "  -->", len(self.dupl_algos), "of them being re-used with the following distribution: ", [self.dupl_algos[i] for i in self.dupl_algos]
+            print "  -->", len(self.dupl_algos), "of them being re-used with the following distribution: ", [
+                self.dupl_algos[i] for i in self.dupl_algos]
             # pprint.pprint(dupl_algos)
 
             print "\n===== Statistics on Sequencers ====="
-            print "Total number of sequencers: ", len(self.unique_sequencers) + sum([self.dupl_seqs[i] - 1 for i in self.dupl_seqs])
+            print "Total number of sequencers: ", len(
+                self.unique_sequencers) + sum([self.dupl_seqs[i] - 1 for i in self.dupl_seqs])
             print "Number of unique sequencers: ", len(self.unique_sequencers)
-            print "  -->", len(self.dupl_seqs), "of them being re-used with the following distribution: ", [self.dupl_seqs[i] for i in self.dupl_seqs]
+            print "  -->", len(self.dupl_seqs), "of them being re-used with the following distribution: ", [
+                self.dupl_seqs[i] for i in self.dupl_seqs]
             # pprint.pprint(dupl_seqs)
             print "Number of OR-sequencers: ", len(self.OR_sequencers)
 
             print "\n===== Statistics on DataObjects ====="
-            print "Number of unique DataObjects: ", len(self.unique_data_objects)
+            print "Number of unique DataObjects: ", len(
+                self.unique_data_objects)
             # pprint.pprint(self.unique_data_objects)
             print
 
