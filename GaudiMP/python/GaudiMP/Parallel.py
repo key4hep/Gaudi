@@ -192,7 +192,8 @@ class WorkManager(object):
         print 'Job execution statistics:'
         print 'job count | % of all jobs | job time sum | time per job | job server'
         for name, stat in self.stats.items():
-            print '       %d |        %6.2f |     %8.3f |    %8.3f | %s' % (stat.njob, 100. * stat.njob / njobs, stat.time, stat.time / stat.njob, name)
+            print '       %d |        %6.2f |     %8.3f |    %8.3f | %s' % (
+                stat.njob, 100. * stat.njob / njobs, stat.time, stat.time / stat.njob, name)
 
     def _mergeStatistics(self, stat):
         if stat.name not in self.stats:

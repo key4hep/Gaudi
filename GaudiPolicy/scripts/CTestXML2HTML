@@ -608,7 +608,8 @@ def main():
         print " No file found \n"
         exit()
 
-    print "Converting *Test.xml files from %s to HTML format in %s" % (options.inputDirectory, options.outputDirectory)
+    print "Converting *Test.xml files from %s to HTML format in %s" % (
+        options.inputDirectory, options.outputDirectory)
     # verify or create the output directory
     output = options.outputDirectory
     if not os.path.isdir(output):

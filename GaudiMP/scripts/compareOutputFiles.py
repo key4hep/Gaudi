@@ -310,13 +310,15 @@ def CheckFileRecords(par, ser):
     diff2 = set(parFSR["EventCountFSR"].iteritems()) - \
         set(serFSR["EventCountFSR"].iteritems())
 
-    print "\nDifferent entries in TimeSpanFSR:  \t" + str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2))
+    print "\nDifferent entries in TimeSpanFSR:  \t" + \
+        str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2))
 
     for k in ["LumiFSRBeamCrossing", "LumiFSRBeam2", "LumiFSRNoBeam"]:
         diff3 = set(parFSR[k]["key"]) - set(serFSR[k]["key"])
         diff4 = set(parFSR[k]["incr"]) - set(serFSR[k]["incr"])
         diff5 = set(parFSR[k]["integral"]) - set(serFSR[k]["integral"])
-        print "Different entries in " + str(k) + ": \tkey: " + str(len(diff3)) + " increment: " + str(len(diff4)) + " integral: " + str(len(diff5))
+        print "Different entries in " + str(k) + ": \tkey: " + str(
+            len(diff3)) + " increment: " + str(len(diff4)) + " integral: " + str(len(diff5))
 
 
 def LumiFSR(lumi):
@@ -414,13 +416,15 @@ def CompareFSR(pout, sout):
     diff2 = set(parFSR["EventCountFSR"].iteritems()) - \
         set(serFSR["EventCountFSR"].iteritems())
 
-    print "\nDifferent entries in TimeSpanFSR:  \t" + str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2))
+    print "\nDifferent entries in TimeSpanFSR:  \t" + \
+        str(len(diff1)) + "\nDifferent entries in EventCountFSR:\t" + str(len(diff2))
 
     for k in ["LumiFSRBeamCrossing", "LumiFSRBeam2", "LumiFSRNoBeam"]:
         diff3 = set(parFSR[k]['key']) - set(serFSR[k]['key'])
         diff4 = set(parFSR[k]['incr']) - set(serFSR[k]['incr'])
         diff5 = set(parFSR[k]['integral']) - set(serFSR[k]["integral"])
-        print "Different entries in " + str(k) + ": \tkey: " + str(len(diff3)) + " increment: " + str(len(diff4)) + " integral: " + str(len(diff5))
+        print "Different entries in " + str(k) + ": \tkey: " + str(
+            len(diff3)) + " increment: " + str(len(diff4)) + " integral: " + str(len(diff5))
 
     print "\nParallel: \n" + str(parFSR)
     print "\nSerial: \n" + str(serFSR)
