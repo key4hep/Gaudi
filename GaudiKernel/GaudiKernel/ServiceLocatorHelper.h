@@ -4,9 +4,9 @@
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/StatusCode.h>
+#include <GaudiKernel/ISvcLocator.h>
 #include <string>
 
-class ISvcLocator;
 class InterfaceID;
 class MsgStream;
 
