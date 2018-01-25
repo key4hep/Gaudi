@@ -9,7 +9,8 @@ import sys
 
 
 def usage():
-    print "Invalid arguments\nProper syntax is :\n  %s <log file> <callgrind file>" % sys.argv[0]
+    print "Invalid arguments\nProper syntax is :\n  %s <log file> <callgrind file>" % sys.argv[
+        0]
 
 
 if len(sys.argv) != 3:
