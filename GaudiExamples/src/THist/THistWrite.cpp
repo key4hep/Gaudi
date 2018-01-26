@@ -2,6 +2,7 @@
 #include "THistWrite.h"
 
 #include "GaudiKernel/ITHistSvc.h"
+#include "GaudiKernel/LockedHandle.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include <math.h>
@@ -18,7 +19,8 @@
 DECLARE_COMPONENT( THistWrite )
 
 //------------------------------------------------------------------------------
-THistWrite::THistWrite( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ), m_ths( 0 )
+THistWrite::THistWrite( const std::string& name, ISvcLocator* pSvcLocator )
+    : Algorithm( name, pSvcLocator ), m_ths( nullptr )
 //------------------------------------------------------------------------------
 {
 }
@@ -69,6 +71,22 @@ StatusCode THistWrite::initialize()
     error() << "Couldn't register gauss3d" << endmsg;
   }
 
+  TH1F* h5 = new TH1F( "TempHist5", "Temporary Tree 5", 100, 0., 100. );
+  if ( m_ths->regHist( "TempHist5", std::unique_ptr<TH1F>( h5 ) ).isFailure() ) {
+    error() << "Couldn't register TempHist5" << endmsg;
+  }
+  if ( strcmp( h5->GetName(), "TempHist5" ) ) {
+    error() << "Couldn't use TempHist5 afterwards. getName = " << h5->GetName() << endmsg;
+  }
+
+  TH1D* h6 = new TH1D( "TempHist6", "Temporary Tree 6", 100, 0., 100. );
+  if ( m_ths->regHist( "TempHist6", std::unique_ptr<TH1D>( h6 ), h6 ).isFailure() ) {
+    error() << "Couldn't register TempHist6" << endmsg;
+  }
+  if ( strcmp( h6->GetName(), "TempHist6" ) ) {
+    error() << "Couldn't use TempHist6 afterwards. getName = " << h6->GetName() << endmsg;
+  }
+
   // Profile in "/"
   std::unique_ptr<TH1> tp = std::make_unique<TProfile>( "profile", "profile", 100, -50., -50. );
   if ( m_ths->regHist( "/rec/prof", std::move( tp ) ).isFailure() ) {
@@ -79,6 +97,28 @@ StatusCode THistWrite::initialize()
   std::unique_ptr<TTree> tr = std::make_unique<TTree>( "treename", "tree title" );
   if ( m_ths->regTree( "/rec/trees/stuff/tree1", std::move( tr ) ).isFailure() ) {
     error() << "Couldn't register tr" << endmsg;
+  }
+
+  // Update to stream "upd", dir "/xxx"
+  std::unique_ptr<TH1F> h3s = std::make_unique<TH1F>( "1Dgauss_shared", "1D Gaussian", 100, -50., 50. );
+  LockedHandle<TH1> lh1( nullptr, nullptr );
+  if ( m_ths->regShared( "/upd/xxx/gauss1d_shared", std::move( h3s ), lh1 ).isFailure() ) {
+    error() << "Couldn't register gauss1d_shared" << endmsg;
+  }
+
+  // Recreate 2D tree in "/"
+  std::unique_ptr<TH2F> h3sa = std::make_unique<TH2F>( "2Dgauss_shared", "2D Gaussian", 100, -50., 50., 100, -50, 50 );
+  LockedHandle<TH2> lh2( nullptr, nullptr );
+  if ( m_ths->regShared( "/rec/gauss2d_shared", std::move( h3sa ), lh2 ).isFailure() ) {
+    error() << "Couldn't register gauss2d_shared" << endmsg;
+  }
+
+  // 3D tree in "/"
+  std::unique_ptr<TH3F> h4s =
+      std::make_unique<TH3F>( "3Dgauss_shared", "3D Gaussian", 100, -50., 50., 100, -50, 50, 100, -50, 50 );
+  LockedHandle<TH3> lh3( nullptr, nullptr );
+  if ( m_ths->regShared( "/rec/gauss3d_shared", std::move( h4s ), lh3 ).isFailure() ) {
+    error() << "Couldn't register gauss3d_shared" << endmsg;
   }
 
   return StatusCode::SUCCESS;
@@ -94,30 +134,26 @@ StatusCode THistWrite::execute()
 
   double x = sin( double( n ) ) * 52. + 50.;
 
-  TH1* h( 0 );
-  h = m_ths->getHistTH1( "TempHist1" );
-  if ( h != nullptr ) {
+  TH1* h( nullptr );
+  if ( m_ths->getHist( "TempHist1", h ).isSuccess() ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve TempHist 1" << endmsg;
   }
 
-  h = m_ths->getHistTH1( "other/TempHist1a" );
-  if ( h != nullptr ) {
+  if ( m_ths->getHist( "other/TempHist1a", h ).isSuccess() ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve TempHist 1a" << endmsg;
   }
 
-  h = m_ths->getHistTH1( "/new/Tree2" );
-  if ( h != nullptr ) {
+  if ( m_ths->getHist( "/new/Tree2", h ).isSuccess() ) {
     h->Fill( x );
   } else {
     error() << "Couldn't retrieve Tree2" << endmsg;
   }
 
-  h = m_ths->getHistTH1( "/upd/xxx/gauss1d" );
-  if ( h != nullptr ) {
+  if ( m_ths->getHist( "/upd/xxx/gauss1d", h ).isSuccess() ) {
     for ( int i = 0; i < 1000; ++i ) {
       h->Fill( gauss(), 1. );
     }
@@ -125,9 +161,8 @@ StatusCode THistWrite::execute()
     error() << "Couldn't retrieve 1Dgauss" << endmsg;
   }
 
-  TH2* h2( 0 );
-  h2 = m_ths->getHistTH2( "/rec/gauss2d" );
-  if ( h2 != nullptr ) {
+  TH2* h2( nullptr );
+  if ( m_ths->getHist( "/rec/gauss2d", h2 ).isSuccess() ) {
     for ( int i = 0; i < 1000; ++i ) {
       h2->Fill( gauss(), gauss(), 1. );
     }
@@ -135,9 +170,8 @@ StatusCode THistWrite::execute()
     error() << "Couldn't retrieve 2Dgauss" << endmsg;
   }
 
-  TH3* h3( 0 );
-  h3 = m_ths->getHistTH3( "/rec/gauss3d" );
-  if ( h3 != nullptr ) {
+  TH3* h3( nullptr );
+  if ( m_ths->getHist( "/rec/gauss3d", h3 ).isSuccess() ) {
     for ( int i = 0; i < 1000; ++i ) {
       h3->Fill( gauss(), gauss(), gauss(), 1. );
     }
@@ -145,9 +179,47 @@ StatusCode THistWrite::execute()
     error() << "Couldn't retrieve 3Dgauss" << endmsg;
   }
 
-  TTree* tr;
-  tr = m_ths->getTree( "/rec/trees/stuff/tree1" );
-  if ( tr == nullptr ) {
+  if ( m_ths->getHist( "TempHist5", h ).isSuccess() ) {
+    h->Fill( x );
+  } else {
+    error() << "Couldn't retrieve TempHist 5" << endmsg;
+  }
+
+  if ( m_ths->getHist( "TempHist6", h ).isSuccess() ) {
+    h->Fill( x );
+  } else {
+    error() << "Couldn't retrieve TempHist 6" << endmsg;
+  }
+
+  LockedHandle<TH1> lh1( nullptr, nullptr );
+  if ( m_ths->getShared( "/upd/xxx/gauss1d_shared", lh1 ).isSuccess() ) {
+    for ( int i = 0; i < 1000; ++i ) {
+      lh1->Fill( gauss(), 1. );
+    }
+  } else {
+    error() << "Couldn't retrieve 1Dgauss_shared" << endmsg;
+  }
+
+  LockedHandle<TH2> lh2( nullptr, nullptr );
+  if ( m_ths->getShared( "/rec/gauss2d_shared", lh2 ).isSuccess() ) {
+    for ( int i = 0; i < 1000; ++i ) {
+      lh2->Fill( gauss(), gauss(), 1. );
+    }
+  } else {
+    error() << "Couldn't retrieve 2Dgauss_shared" << endmsg;
+  }
+
+  LockedHandle<TH3> lh3( nullptr, nullptr );
+  if ( m_ths->getShared( "/rec/gauss3d_shared", lh3 ).isSuccess() ) {
+    for ( int i = 0; i < 1000; ++i ) {
+      lh3->Fill( gauss(), gauss(), gauss(), 1. );
+    }
+  } else {
+    error() << "Couldn't retrieve 3Dgauss_shared" << endmsg;
+  }
+
+  TTree* tr( nullptr );
+  if ( m_ths->getTree( "/rec/trees/stuff/tree1", tr ).isFailure() ) {
     error() << "Couldn't retrieve tree tree1" << endmsg;
   } else {
     if ( n == 0 ) {
