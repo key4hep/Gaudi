@@ -1,6 +1,8 @@
 #ifndef GAUDIKERNEL_COMPOSE_H
 #define GAUDIKERNEL_COMPOSE_H
 
+#include <utility> // std::forward, std::move (objects)
+
 namespace details
 {
 

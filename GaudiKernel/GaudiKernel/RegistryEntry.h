@@ -7,6 +7,7 @@
 // Framework include files
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/StatusCode.h"
 #include <boost/utility/string_ref.hpp>
 
 // Forward declarations

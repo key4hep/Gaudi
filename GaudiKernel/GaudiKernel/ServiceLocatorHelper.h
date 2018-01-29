@@ -2,11 +2,11 @@
 #define GAUDIKERNEL_SERVICELOCATORHELPER_H
 
 #include <GaudiKernel/IService.h>
+#include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/StatusCode.h>
 #include <string>
 
-class ISvcLocator;
 class InterfaceID;
 class MsgStream;
 

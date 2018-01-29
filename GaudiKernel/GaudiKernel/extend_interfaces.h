@@ -1,6 +1,9 @@
 #ifndef GAUDIKERNEL_EXTEND_INTERFACES_H
 #define GAUDIKERNEL_EXTEND_INTERFACES_H
 
+template <typename... Interfaces>
+struct extend_interfaces;
+
 #include "GaudiKernel/IInterface.h"
 
 // -----------------------------------------------------------------------------
