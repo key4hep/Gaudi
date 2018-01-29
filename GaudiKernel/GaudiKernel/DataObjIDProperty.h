@@ -4,9 +4,11 @@
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Property.h"
 
-[[deprecated( "replace DataObjIDProperty by Gaudi::Property<DataObjID>" )]] using DataObjIDProperty =
-    Gaudi::Property<DataObjID>;
-[[deprecated( "replace DataObjIDCollProperty by Gaudi::Property<DataObjIDColl>" )]] using DataObjIDCollProperty =
-    Gaudi::Property<DataObjIDColl>;
+[[deprecated( "replace DataObjIDProperty by Gaudi::Property<DataObjID>" )]] typedef Gaudi::Property<DataObjID>
+    DataObjIDProperty;
+
+[[deprecated(
+    "replace DataObjIDCollProperty by Gaudi::Property<DataObjIDColl>" )]] typedef Gaudi::Property<DataObjIDColl>
+    DataObjIDCollProperty;
 
 #endif
