@@ -437,9 +437,16 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::accept( const std::string& algo_name, IGraphVisitor& visitor ) const
+  void PrecedenceRulesGraph::accept( IGraphVisitor& visitor ) const
   {
-    getAlgorithmNode( algo_name )->accept( visitor );
+    // iterate through Algorithm nodes
+    for ( auto pr : m_algoNameToAlgoNodeMap ) pr.second->accept( visitor );
+
+    // iterate through DecisionHub nodes
+    for ( auto pr : m_decisionNameToDecisionHubMap ) pr.second->accept( visitor );
+
+    // iterate through Data [and Conditions] nodes
+    for ( auto pr : m_dataPathToDataNodeMap ) pr.second->accept( visitor );
   }
 
   //---------------------------------------------------------------------------

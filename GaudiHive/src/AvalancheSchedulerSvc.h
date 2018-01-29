@@ -7,7 +7,6 @@
 #include "PrecedenceSvc.h"
 
 // Framework include files
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
@@ -28,6 +27,9 @@
 // External libs
 #include "tbb/concurrent_queue.h"
 #include "tbb/task.h"
+
+class IAlgorithm;
+class Algorithm;
 
 typedef AlgsExecutionStates::State State;
 typedef std::function<StatusCode()> action;

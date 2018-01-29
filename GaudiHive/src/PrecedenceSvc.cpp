@@ -1,5 +1,4 @@
 #include "PrecedenceSvc.h"
-#include "AlgResourcePool.h"
 #include "EventSlot.h"
 #include "PRGraphVisitors.h"
 
