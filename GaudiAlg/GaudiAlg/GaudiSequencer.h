@@ -32,9 +32,6 @@ public:
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
 
-  StatusCode beginRun() override; ///< Algorithm beginRun
-  StatusCode endRun() override;   ///< Algorithm endRun
-
   bool isSequence() const override final { return true; }
 
   /// Produce string represention of the control flow expression.

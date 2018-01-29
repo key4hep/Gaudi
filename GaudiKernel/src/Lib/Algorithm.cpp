@@ -33,6 +33,11 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/ToolHandle.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include "GaudiKernel/Algorithm.h"
+#pragma GCC diagnostic pop
+
 namespace
 {
   template <StatusCode ( Algorithm::*f )(), typename C>
@@ -416,6 +421,8 @@ StatusCode Algorithm::sysBeginRun()
   // Bypass the beginRun if the algorithm is disabled.
   if ( !isEnabled() ) return StatusCode::SUCCESS;
 
+  warning() << "Algorithm::BeginRun is deprecated. Use Start instead" << endmsg;
+
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
@@ -426,8 +433,11 @@ StatusCode Algorithm::sysBeginRun()
       Gaudi::Guards::AuditorGuard guard( this,
                                          // check if we want to audit the initialize
                                          ( m_auditorBeginRun ) ? auditorSvc().get() : nullptr, IAuditor::BeginRun );
-      // Invoke the beginRun() method of the derived class
+// Invoke the beginRun() method of the derived class
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       sc = beginRun();
+#pragma GCC diagnostic pop
     }
     if ( sc.isSuccess() ) {
 
@@ -455,7 +465,10 @@ StatusCode Algorithm::sysBeginRun()
   return sc;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 StatusCode Algorithm::beginRun() { return StatusCode::SUCCESS; }
+#pragma GCC diagnostic pop
 
 // IAlgorithm implementation
 StatusCode Algorithm::sysEndRun()
@@ -474,8 +487,11 @@ StatusCode Algorithm::sysEndRun()
       Gaudi::Guards::AuditorGuard guard( this,
                                          // check if we want to audit the initialize
                                          ( m_auditorEndRun ) ? auditorSvc().get() : nullptr, IAuditor::EndRun );
-      // Invoke the endRun() method of the derived class
+// Invoke the endRun() method of the derived class
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       sc = endRun();
+#pragma GCC diagnostic pop
     }
     if ( sc.isSuccess() ) {
 
@@ -503,7 +519,10 @@ StatusCode Algorithm::sysEndRun()
   return sc;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 StatusCode Algorithm::endRun() { return StatusCode::SUCCESS; }
+#pragma GCC diagnostic pop
 
 StatusCode Algorithm::sysExecute( const EventContext& ctx )
 {

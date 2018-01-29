@@ -20,7 +20,7 @@ public:
   DeclareInterfaceID( IEventProcessor, 3, 0 );
   /// Process single event
   virtual StatusCode executeEvent( void* par = 0 ) = 0;
-  /// Process the maxevt events as a Run (beginRun() and endRun() called)
+  /// Process the maxevt events as a Run
   virtual StatusCode executeRun( int maxevt ) = 0;
   /// Process the next maxevt events
   virtual StatusCode nextEvent( int maxevt ) = 0;

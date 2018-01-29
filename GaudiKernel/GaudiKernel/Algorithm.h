@@ -207,10 +207,10 @@ public:
   /** Algorithm begin run. This method is called at the beginning
    *  of the event loop.
    */
-  StatusCode beginRun() override;
+  [[deprecated( "try using Algorithm::Start instead" )]] StatusCode beginRun() override;
 
   /// Algorithm end run. This method is called at the end of the event loop
-  StatusCode endRun() override;
+  [[deprecated( "try using Algorithm::Stop instead" )]] StatusCode endRun() override;
 
   /// Is this algorithm enabled or disabled?
   bool isEnabled() const override;

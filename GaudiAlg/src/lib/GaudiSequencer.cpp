@@ -183,26 +183,6 @@ StatusCode GaudiSequencer::execute()
 }
 
 //=========================================================================
-//  Execute the beginRun of every algorithm
-//=========================================================================
-StatusCode GaudiSequencer::beginRun()
-{
-  if ( !isEnabled() ) return StatusCode::SUCCESS;
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "==> beginRun" << endmsg;
-  return StatusCode::SUCCESS;
-}
-
-//=========================================================================
-//  Execute the endRun() of every algorithm
-//=========================================================================
-StatusCode GaudiSequencer::endRun()
-{
-  if ( !isEnabled() ) return StatusCode::SUCCESS;
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "==> endRun" << endmsg;
-  return StatusCode::SUCCESS;
-}
-
-//=========================================================================
 //  Decode the input names and fills the m_algs vector.
 //=========================================================================
 StatusCode GaudiSequencer::decodeNames()

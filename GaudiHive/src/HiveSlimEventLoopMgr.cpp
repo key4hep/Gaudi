@@ -376,14 +376,8 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
     }
   }
 
-  sc                                = m_algResourcePool->beginRun();
-  if ( sc.isFailure() ) eventfailed = true;
-
   // Call now the nextEvent(...)
   sc                                = nextEvent( maxevt );
-  if ( sc.isFailure() ) eventfailed = true;
-
-  sc                                = m_algResourcePool->endRun();
   if ( sc.isFailure() ) eventfailed = true;
 
   delete m_blackListBS;

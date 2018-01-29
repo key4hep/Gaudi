@@ -48,9 +48,6 @@ public:
   std::list<IAlgorithm*> getFlatAlgList() override;
   std::list<IAlgorithm*> getTopAlgList() override;
 
-  StatusCode beginRun() override;
-  StatusCode endRun() override;
-
   StatusCode stop() override;
 
 private:
