@@ -6,8 +6,8 @@
 // copied from https://github.com/akrzemi1/explicit/tree/master/include/ak_toolkit
 // last commit: bd572fe05a700cc6766b3d09f8916c9975ccbb45
 
-#ifndef AK_TOOLKIT_EXPLICIT_TAGGED_BOOL_HEADER_GUARD_
-#define AK_TOOLKIT_EXPLICIT_TAGGED_BOOL_HEADER_GUARD_
+#ifndef GAUDIKERNEL_TAGGEDBOOL_H
+#define GAUDIKERNEL_TAGGEDBOOL_H
 
 namespace Gaudi
 {
