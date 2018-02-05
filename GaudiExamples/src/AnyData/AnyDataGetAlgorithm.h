@@ -7,7 +7,7 @@
 
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/AnyDataHandle.h"
+#include "GaudiKernel/DataObjectHandle.h"
 /** @class AnyDataGetAlgorithm AnyDataGetAlgorithm.h AnyData/AnyDataGetAlgorithm.h
  *
  *
@@ -26,6 +26,6 @@ public:
 private:
   Gaudi::Property<std::string> m_location{this, "Location"};
 
-  AnyDataHandle<std::vector<int>> m_ids{"/Event/Test/Ids", Gaudi::DataHandle::Reader, this};
+  DataObjectReadHandle<std::vector<int>> m_ids{this, "Input", "/Event/Test/Ids"};
 };
 #endif // ANYDATA_ANADATAGETALGORITHM_H

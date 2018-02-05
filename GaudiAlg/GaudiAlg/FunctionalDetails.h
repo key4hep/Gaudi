@@ -12,6 +12,7 @@
 #include "GaudiKernel/AnyDataHandle.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/detected.h"
 
 // Boost
 #include "boost/optional.hpp"
@@ -309,50 +310,6 @@ namespace Gaudi
       };
 
       /////////////////////////////////////////
-
-      // detect whether a traits class defines the requested type,
-      //   if so, use it,
-      //   otherwise use the default
-      //
-      // based on http://en.cppreference.com/w/cpp/experimental/is_detected
-      // and the libstdc++ source, specificially libstdc++-v3/include/std/type_traits
-
-      namespace detail2
-      {
-#ifdef HAVE_CPP17
-        template <typename...>
-        using void_t = void;
-#else
-        template <typename...>
-        struct void_t_ {
-          using type = void;
-        };
-        template <typename... T>
-        using void_t = typename void_t_<T...>::type;
-#endif
-
-        /// Implementation of the detection idiom (negative case).
-        template <typename Default, typename AlwaysVoid, template <typename...> class Op, typename... Args>
-        struct detector {
-          using type = Default;
-        };
-
-        /// Implementation of the detection idiom (positive case).
-        template <typename Default, template <typename...> class Op, typename... Args>
-        struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
-          using type = Op<Args...>;
-        };
-      }
-
-      // Op<Args...> if that is a valid type, otherwise Default.
-      template <typename Default, template <typename...> class Op, typename... Args>
-      using detected_or_t = typename detail2::detector<Default, void, Op, Args...>::type;
-
-      // Op<Args...> if that is a valid type, otherwise Default<Args...>.
-      template <template <typename...> class Default, template <typename...> class Op, typename Tr, typename T>
-      using detected_or_t_ = detected_or_t<Default<Tr, T>, Op, Tr, T>;
-
-      ///////////////
       namespace detail2
       { // utilities for detected_or_t{,_} usage
 
@@ -371,16 +328,16 @@ namespace Gaudi
       // if so, define BaseClass_t<Traits> as being Traits::BaseClass
       // else   define                     as being GaudiAlgorithm
       template <typename Tr>
-      using BaseClass_t = detected_or_t<GaudiAlgorithm, detail2::BaseClass_, Tr>;
+      using BaseClass_t = Gaudi::cpp17::detected_or_t<GaudiAlgorithm, detail2::BaseClass_, Tr>;
 
       // check whether Traits::{Input,Output}Handle<T> is a valid type,
       // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
       // else   define                                  as being DataObjectHandle<T> if T derives from DataObject, else
-      // AnyDataHandle<T>
+      //                                                as being AnyDataHandle<T>
       template <typename Tr, typename T>
-      using OutputHandle_t = detected_or_t_<detail2::defaultHandle_, detail2::OutputHandle_, Tr, T>;
+      using OutputHandle_t = Gaudi::cpp17::detected_or_t_<detail2::defaultHandle_, detail2::OutputHandle_, Tr, T>;
       template <typename Tr, typename T>
-      using InputHandle_t = detected_or_t_<detail2::defaultHandle_, detail2::InputHandle_, Tr, T>;
+      using InputHandle_t = Gaudi::cpp17::detected_or_t_<detail2::defaultHandle_, detail2::InputHandle_, Tr, T>;
 
       /////////
 
