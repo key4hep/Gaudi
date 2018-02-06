@@ -101,6 +101,7 @@ namespace Gaudi
         }
       }
 
+#if __cplusplus < 201703L
       // implementation of C++17 std::as_const, see http://en.cppreference.com/w/cpp/utility/as_const
       template <typename T>
       constexpr typename std::add_const<T>::type& as_const( T& t ) noexcept
@@ -110,7 +111,9 @@ namespace Gaudi
 
       template <typename T>
       void as_const( T&& t ) = delete;
-
+#else
+      using std::as_const;
+#endif
       /////////////////////////////////////////
 
       template <typename Out1, typename Out2,
