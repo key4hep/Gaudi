@@ -157,20 +157,24 @@ private:
   // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
   void create_msgStream() const override final { m_msgStream.reset( new MsgStream( msgSvc(), this->name() ) ); }
 
+  /// Initialise the messaging objects
+  void initMessaging() const 
+  {
+    if ( !m_msgsvc ) {
+      // Get default implementation of the message service.
+      m_msgsvc = this->serviceLocator();
+    }
+    create_msgStream();
+    m_level = MSG::Level( m_msgStream.get() ? m_msgStream->level() : MSG::NIL );
+    // if we could not get a MessageSvc, we should try again the initial set up
+    m_commonMessagingReady = m_msgsvc;
+  }
+
 protected:
   /// Set up local caches
   MSG::Level setUpMessaging() const
   {
-    if ( !m_commonMessagingReady ) {
-      if ( !m_msgsvc ) {
-        // Get default implementation of the message service.
-        m_msgsvc = this->serviceLocator();
-      }
-      create_msgStream();
-      m_level = MSG::Level( m_msgStream.get() ? m_msgStream->level() : MSG::NIL );
-      // if we could not get a MessageSvc, we should try again the initial set up
-      m_commonMessagingReady = m_msgsvc;
-    }
+    if ( UNLIKELY( !m_commonMessagingReady ) ) { initMessaging(); }
     return m_level;
   }
   /// Reinitialize internal states.
