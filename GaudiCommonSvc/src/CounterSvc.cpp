@@ -227,7 +227,7 @@ StatusCode CounterSvc::create( const std::string& grp, const std::string& nam, l
   // try to find existing counter:
   refpCounter = get( grp, nam );
   if ( refpCounter ) {
-    return COUNTER_EXISTS;
+    return StatusCode( Status::COUNTER_EXISTS );
   } // RETURN
   // create the new counter
   auto newc   = new Counter();
@@ -268,11 +268,11 @@ StatusCode CounterSvc::remove( const std::string& grp, const std::string& nam )
 {
   auto i = m_counts.find( grp );
   if ( m_counts.end() == i ) {
-    return COUNTER_NOT_PRESENT;
+    return StatusCode( Status::COUNTER_NOT_PRESENT );
   } // RETURN
   auto j = i->second.find( nam );
   if ( i->second.end() == j ) {
-    return COUNTER_NOT_PRESENT;
+    return StatusCode( Status::COUNTER_NOT_PRESENT );
   } // RETURN
   delete j->second;
   i->second.erase( j );
@@ -285,7 +285,7 @@ StatusCode CounterSvc::remove( const std::string& grp )
 {
   auto i = m_counts.find( grp );
   if ( m_counts.end() == i ) {
-    return COUNTER_NOT_PRESENT;
+    return StatusCode( Status::COUNTER_NOT_PRESENT );
   } // RETURN
   for ( auto& j : i->second ) delete j.second;
   i->second.clear();
@@ -308,7 +308,7 @@ StatusCode CounterSvc::print( const std::string& grp, const std::string& nam, Pr
 {
   const Counter* c = get( grp, nam );
   if ( !c ) {
-    return COUNTER_NOT_PRESENT;
+    return StatusCode( Status::COUNTER_NOT_PRESENT );
   } // RETURN
   // create the stream and use it!
   return printer( msgStream(), c );
@@ -341,7 +341,7 @@ StatusCode CounterSvc::print( const std::string& grp, Printout& printer ) const
 {
   auto i = m_counts.find( grp );
   if ( m_counts.end() == i ) {
-    return COUNTER_NOT_PRESENT;
+    return StatusCode( Status::COUNTER_NOT_PRESENT );
   }
 
   // Force printing in alphabetical order

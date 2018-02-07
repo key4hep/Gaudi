@@ -131,36 +131,14 @@ public:
   /// methods  for overloaded printout to std::ostream& and MsgStream&
   virtual std::ostream& printOut( std::ostream& os = std::cerr ) const
   {
-    os << tag() << " \t " << message();
-    switch ( code() ) {
-    case StatusCode::SUCCESS:
-      os << "\t StatusCode=SUCCESS";
-      break;
-    case StatusCode::FAILURE:
-      os << "\t StatusCode=FAILURE";
-      break;
-    default:
-      os << "\t StatusCode=" << code();
-      break;
-    }
+    os << tag() << " \t " << message() << "\t StatusCode=" << code();
     return ( 0 != previous() ) ? previous()->printOut( os << std::endl ) : os;
   }
 
   /// Output the exception to the Gaudi MsgStream
   virtual MsgStream& printOut( MsgStream& os ) const
   {
-    os << tag() << "\t" << message();
-    switch ( code() ) {
-    case StatusCode::SUCCESS:
-      os << "\t StatusCode=SUCCESS";
-      break;
-    case StatusCode::FAILURE:
-      os << "\t StatusCode=FAILURE";
-      break;
-    default:
-      os << "\t StatusCode=" << code().getCode();
-      break;
-    }
+    os << tag() << " \t " << message() << "\t StatusCode=" << code();
     return ( 0 != previous() ) ? previous()->printOut( os << endmsg ) : os;
   }
 

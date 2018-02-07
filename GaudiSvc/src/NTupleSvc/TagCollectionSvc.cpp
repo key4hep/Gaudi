@@ -51,7 +51,7 @@ StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& log
   DataObject* pO    = nullptr;
   StatusCode status = findObject( m_rootName.value(), pO );
   if ( status.isSuccess() ) {
-    status = INVALID_ROOT;
+    status = Status::INVALID_ROOT;
     if ( pO->registry() ) {
       char typ = 0;
       std::vector<Prop> props;
@@ -157,7 +157,7 @@ StatusCode TagCollectionSvc::createService( const std::string& nam, const std::s
   auto mgr = serviceLocator()->as<ISvcManager>();
 
   // TagCollectionSvc has to directly create a ConversionSvc to manage it directly.
-  StatusCode status = NO_INTERFACE;
+  StatusCode status = IInterface::Status::NO_INTERFACE;
   if ( mgr ) {
     SmartIF<IService> isvc = mgr->createService( TypeNameString( nam, typ ) );
     if ( isvc ) {

@@ -94,7 +94,7 @@ namespace Gaudi
   class GAUDI_API RootDataConnection : virtual public Gaudi::IDataConnection
   {
   public:
-    enum { ROOT_READ_ERROR = 0x2, ROOT_OPEN_ERROR = 0x4 };
+    enum class Status : StatusCode::code_t { ROOT_READ_ERROR = 0x2, ROOT_OPEN_ERROR = 0x4 };
 
     /** @class ContainerSection RootDataConnection.h GaudiRootCnv/RootDataConnection.h
      *
@@ -337,4 +337,7 @@ namespace Gaudi
     }
   };
 } // End namespace Gaudi
+
+STATUSCODE_ENUM_DECL( Gaudi::RootDataConnection::Status )
+
 #endif // GAUDIROOT_ROOTDATACONNECTION_H

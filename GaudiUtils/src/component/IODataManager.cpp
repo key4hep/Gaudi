@@ -251,7 +251,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
 
     if ( std::find( s_badFiles.begin(), s_badFiles.end(), dsn ) != s_badFiles.end() ) {
       m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
-      return IDataConnection::BAD_DATA_CONNECTION;
+      return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
     }
     if ( typ == FID ) {
       auto fi = m_connectionMap.find( dsn );
@@ -263,7 +263,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
             if ( m_quarantine ) s_badFiles.insert( dsn );
             m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
             error( "connectDataIO> failed to resolve FID:" + dsn, false ).ignore();
-            return IDataConnection::BAD_DATA_CONNECTION;
+            return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
           } else if ( dsn.length() == 36 && dsn[8] == '-' && dsn[13] == '-' ) {
             std::string gfal_name = "gfal:guid:" + dsn;
             m_fidMap[dsn] = m_fidMap[dataset] = m_fidMap[gfal_name] = dsn;
@@ -274,7 +274,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
           if ( m_quarantine ) s_badFiles.insert( dsn );
           m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
           error( "connectDataIO> Failed to resolve FID:" + dsn, false ).ignore();
-          return IDataConnection::BAD_DATA_CONNECTION;
+          return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
         }
         // keep track of the current return code before we start iterating over
         // replicas
@@ -299,7 +299,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
         }
         log << MSG::ERROR << "Failed to open dsn:" << dsn << " Federated file could not be resolved from "
             << files.size() << " entries." << endmsg;
-        return IDataConnection::BAD_DATA_CONNECTION;
+        return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
       }
       return StatusCode::FAILURE;
     }
@@ -313,7 +313,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
         if ( fid.empty() ) {
           m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
           log << MSG::ERROR << "Failed to resolve LFN:" << dsn << " Cannot access this dataset." << endmsg;
-          return IDataConnection::BAD_DATA_CONNECTION;
+          return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
         }
         break;
       case PFN:
@@ -346,7 +346,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
           if ( m_quarantine ) s_badFiles.insert( dsn );
           m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
           error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid, false ).ignore();
-          return IDataConnection::BAD_DATA_CONNECTION;
+          return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
         }
         fid               = connection->fid();
         m_fidMap[dataset] = m_fidMap[dsn] = m_fidMap[fid] = fid;
@@ -365,7 +365,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
         if ( m_quarantine ) s_badFiles.insert( dsn );
         m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
         error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid, false ).ignore();
-        return IDataConnection::BAD_DATA_CONNECTION;
+        return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
       }
       return StatusCode::SUCCESS;
     }
@@ -384,5 +384,5 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
   m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
   error( "connectDataIO> The dataset " + dsn + " cannot be opened.", false ).ignore();
   s_badFiles.insert( dsn );
-  return IDataConnection::BAD_DATA_CONNECTION;
+  return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
 }

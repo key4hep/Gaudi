@@ -90,12 +90,12 @@ private:
   template <typename... FArgs, typename... Args>
   StatusCode fwd_( StatusCode ( IPartitionControl::*fun )( FArgs... ), Args&&... args )
   {
-    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : NO_INTERFACE;
+    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : IInterface::Status::NO_INTERFACE;
   }
   template <typename... FArgs, typename... Args>
   StatusCode fwd_( StatusCode ( IPartitionControl::*fun )( FArgs... ) const, Args&&... args ) const
   {
-    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : NO_INTERFACE;
+    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : IInterface::Status::NO_INTERFACE;
   }
 
 public:

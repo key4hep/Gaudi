@@ -485,7 +485,7 @@ public:
   virtual StatusCode unlinkObject( boost::string_ref fullPath ) = 0;
 
   /// Status code definitions
-  enum Status {
+  enum class Status : StatusCode::code_t {
     /// Success
     IDataProviderSvc_NO_ERROR = 1,
     /// The path for this objects is already in use
@@ -514,5 +514,7 @@ public:
     LAST
   };
 };
+
+STATUSCODE_ENUM_DECL( IDataProviderSvc::Status )
 
 #endif // GAUDIKERNEL_IDATAPROVIDERSVC_H

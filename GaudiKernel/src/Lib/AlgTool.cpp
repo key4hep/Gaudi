@@ -53,11 +53,11 @@ StatusCode AlgTool::queryInterface( const InterfaceID& riid, void** ppvi )
                          [&]( const std::pair<InterfaceID, void*>& item ) { return item.first.versionMatch( riid ); } );
   if ( i == std::end( m_interfaceList ) ) {
     *ppvi = nullptr;
-    return NO_INTERFACE; // RETURN
+    return Status::NO_INTERFACE; // RETURN
   }
   *ppvi = i->second;
   addRef();
-  return SUCCESS; // RETURN
+  return StatusCode::SUCCESS; // RETURN
 }
 //------------------------------------------------------------------------------
 const std::string& AlgTool::name() const
@@ -160,7 +160,7 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
   } else {
     throw GaudiException( "Failure to create tool '" + type + "/" + name + "': illegal parent type '" +
                               System::typeinfoName( typeid( *_p ) ) + "'",
-                          "AlgTool", 0 );
+                          "AlgTool", StatusCode::FAILURE );
   }
 
   // initialize output level from MessageSvc and initialize messaging (before enabling update handler)

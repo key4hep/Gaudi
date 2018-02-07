@@ -54,7 +54,27 @@ namespace
     std::iota( std::begin( table ), std::end( table ), 0 );
     return table;
   }
+
+  struct RootDataConnectionCategory : StatusCode::Category {
+    const char* name() const override { return "RootDataConnection"; }
+
+    bool isRecoverable( StatusCode::code_t ) const override { return false; }
+
+    std::string message( StatusCode::code_t code ) const override
+    {
+      switch ( static_cast<RootDataConnection::Status>( code ) ) {
+      case RootDataConnection::Status::ROOT_READ_ERROR:
+        return "ROOT_READ_ERROR";
+      case RootDataConnection::Status::ROOT_OPEN_ERROR:
+        return "ROOT_OPEN_ERROR";
+      default:
+        return StatusCode::default_category().message( code );
+      }
+    }
+  };
 }
+
+STATUSCODE_ENUM_IMPL( Gaudi::RootDataConnection::Status, RootDataConnectionCategory )
 
 static bool match_wild( const char* str, const char* pat )
 {
@@ -228,7 +248,7 @@ StatusCode RootDataConnection::connectRead()
     sc = m_tool->readRefs();
     sc.ignore();
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-    if ( sc == ROOT_READ_ERROR ) {
+    if ( sc == Status::ROOT_READ_ERROR ) {
       IIncidentSvc* inc = m_setup->incidentSvc();
       if ( inc ) {
         inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
@@ -297,7 +317,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ )
       if ( makeTool() ) {
         StatusCode sc = m_tool->readRefs();
         sc.ignore();
-        if ( sc == ROOT_READ_ERROR ) {
+        if ( sc == Status::ROOT_READ_ERROR ) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
           IIncidentSvc* inc = m_setup->incidentSvc();
           if ( inc ) {

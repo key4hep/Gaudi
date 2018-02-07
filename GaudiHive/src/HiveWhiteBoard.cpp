@@ -129,10 +129,10 @@ namespace
   template <typename Fun>
   StatusCode fwd( Fun f )
   {
-    if ( !s_current ) return IDataProviderSvc::INVALID_ROOT;
+    if ( !s_current ) return IDataProviderSvc::Status::INVALID_ROOT;
     return s_current->with_lock( [&]( Partition& p ) {
       auto* svc = p.get<std::decay_t<detail::argument_t<Fun>>>();
-      return svc ? f( *svc ) : static_cast<StatusCode>( IDataProviderSvc::INVALID_ROOT );
+      return svc ? f( *svc ) : IDataProviderSvc::Status::INVALID_ROOT;
     } );
   }
 }
@@ -304,7 +304,7 @@ public:
     if ( pDataLoader ) pDataLoader->setDataProvider( this );
     m_dataLoader = pDataLoader;
     for_( m_partitions, [&]( Partition& p ) { p.dataManager->setDataLoader( m_dataLoader, this ).ignore(); } );
-    return SUCCESS;
+    return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
   StatusCode addPreLoadItem( const DataStoreItem& item ) override

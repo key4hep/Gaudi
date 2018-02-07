@@ -526,7 +526,7 @@ StatusCode NTupleSvc::save( const std::string& fullPath )
 {
   NTuple::Tuple* pObj = nullptr;
   StatusCode status   = findObject( fullPath, *pp_cast<DataObject>( &pObj ) ); // Check if object is  present
-  return status.isSuccess() ? save( pObj ) : INVALID_OBJ_PATH;
+  return status.isSuccess() ? save( pObj ) : Status::INVALID_OBJ_PATH;
 }
 
 /// Save N tuple to disk. Must be called in order to close the ntuple file properly
@@ -545,11 +545,11 @@ StatusCode NTupleSvc::save( NTuple::Tuple* n_tuple )
         }
         return status;
       }
-      return IDataProviderSvc::NO_DATA_LOADER;
+      return Status::NO_DATA_LOADER;
     } catch ( ... ) {
     }
   }
-  return INVALID_OBJECT;
+  return Status::INVALID_OBJECT;
 }
 
 /// Save N tuple to disk. Must be called in order to close the ntuple file properly
@@ -557,7 +557,7 @@ StatusCode NTupleSvc::save( DataObject* pParent, const std::string& relPath )
 {
   NTuple::Tuple* pObj = nullptr;
   StatusCode status   = findObject( pParent, relPath, *pp_cast<DataObject>( &pObj ) ); // Check if object is  present
-  return status.isSuccess() ? save( pObj ) : INVALID_OBJ_PATH;
+  return status.isSuccess() ? save( pObj ) : Status::INVALID_OBJ_PATH;
 }
 
 /// Write single record to N tuple.
@@ -581,11 +581,11 @@ StatusCode NTupleSvc::writeRecord( NTuple::Tuple* n_tuple )
         }
         return status;
       }
-      return IDataProviderSvc::NO_DATA_LOADER;
+      return Status::NO_DATA_LOADER;
     } catch ( ... ) {
     }
   }
-  return INVALID_OBJECT;
+  return Status::INVALID_OBJECT;
 }
 
 /// Write single record to N tuple.
@@ -593,7 +593,7 @@ StatusCode NTupleSvc::writeRecord( const std::string& fullPath )
 {
   NTuple::Tuple* pObj = nullptr;
   StatusCode status   = findObject( fullPath, *pp_cast<DataObject>( &pObj ) ); // Check if object is  present
-  return status.isSuccess() ? writeRecord( pObj ) : INVALID_OBJ_PATH;
+  return status.isSuccess() ? writeRecord( pObj ) : Status::INVALID_OBJ_PATH;
 }
 
 /// Write single record to N tuple.
@@ -601,13 +601,13 @@ StatusCode NTupleSvc::writeRecord( DataObject* pParent, const std::string& relPa
 {
   NTuple::Tuple* pObj = nullptr;
   StatusCode status   = findObject( pParent, relPath, *pp_cast<DataObject>( &pObj ) ); // Check if object is  present
-  return status.isSuccess() ? writeRecord( pObj ) : INVALID_OBJ_PATH;
+  return status.isSuccess() ? writeRecord( pObj ) : Status::INVALID_OBJ_PATH;
 }
 
 /// Read single record from N tuple.
 StatusCode NTupleSvc::readRecord( NTuple::Tuple* n_tuple )
 {
-  StatusCode status       = INVALID_OBJECT;
+  StatusCode status       = Status::INVALID_OBJECT;
   NTuple::TupleImp* tuple = (NTuple::TupleImp*)n_tuple;
   if ( tuple ) {
     try {
@@ -625,9 +625,9 @@ StatusCode NTupleSvc::readRecord( NTuple::Tuple* n_tuple )
         }
         return status;
       }
-      status = IDataProviderSvc::NO_DATA_LOADER;
+      status = Status::NO_DATA_LOADER;
     } catch ( ... ) {
-      status = INVALID_OBJECT;
+      status = Status::INVALID_OBJECT;
     }
   }
   return status;
@@ -638,7 +638,7 @@ StatusCode NTupleSvc::readRecord( const std::string& fullPath )
 {
   NTuple::Tuple* pObj = nullptr;
   StatusCode status   = findObject( fullPath, *pp_cast<DataObject>( &pObj ) ); // Check if object is  present
-  return status.isSuccess() ? readRecord( pObj ) : INVALID_OBJ_PATH;
+  return status.isSuccess() ? readRecord( pObj ) : Status::INVALID_OBJ_PATH;
 }
 
 /// Read single record from N tuple.
@@ -646,5 +646,5 @@ StatusCode NTupleSvc::readRecord( DataObject* pParent, const std::string& relPat
 {
   NTuple::Tuple* pObj = nullptr;
   StatusCode status   = findObject( pParent, relPath, *pp_cast<DataObject>( &pObj ) ); // Check if object is  present
-  return status.isSuccess() ? readRecord( pObj ) : INVALID_OBJ_PATH;
+  return status.isSuccess() ? readRecord( pObj ) : Status::INVALID_OBJ_PATH;
 }

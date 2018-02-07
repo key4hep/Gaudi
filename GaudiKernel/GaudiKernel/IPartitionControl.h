@@ -172,6 +172,9 @@ public:
   virtual StatusCode activePartition( std::string& name, IInterface*& pPartition ) const = 0;
 
   // Return codes:
-  enum { PARTITION_NOT_PRESENT = 2, PARTITION_EXISTS = 4, NO_ACTIVE_PARTITION = 6 };
+  enum class Status : StatusCode::code_t { PARTITION_NOT_PRESENT = 2, PARTITION_EXISTS = 4, NO_ACTIVE_PARTITION = 6 };
 };
+
+STATUSCODE_ENUM_DECL( IPartitionControl::Status )
+
 #endif // GAUDIKERNEL_IPARTITIONCONTROL_H

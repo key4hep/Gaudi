@@ -238,7 +238,7 @@ StatusCode GaudiCommon<PBASE>::
     this->debug() << endmsg;
   }
   while ( !m_managedTools.empty() ) {
-    sc = releaseTool( m_managedTools.back() ) && sc;
+    sc = ( releaseTool( m_managedTools.back() ) && sc ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 
   // release all located services
@@ -248,7 +248,7 @@ StatusCode GaudiCommon<PBASE>::
     this->debug() << endmsg;
   }
   while ( !m_services.empty() ) {
-    sc = releaseSvc( m_services.front() ) && sc;
+    sc = ( releaseSvc( m_services.front() ) && sc ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 
   // release the CounterSummarySvc manually
@@ -273,7 +273,7 @@ StatusCode GaudiCommon<PBASE>::
   m_statEntityList.clear();
 
   // finalize base class
-  return sc && PBASE::finalize();
+  return ( sc && PBASE::finalize() ? StatusCode::SUCCESS : StatusCode::FAILURE );
 }
 //=============================================================================
 

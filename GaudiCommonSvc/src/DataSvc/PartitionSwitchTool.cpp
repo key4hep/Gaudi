@@ -57,49 +57,49 @@ public:
   /// Create a partition object. The name identifies the partition uniquely
   STATUS create( CSTR nam, CSTR typ ) override
   {
-    STATUS sc = m_actor ? m_actor->create( nam, typ ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->create( nam, typ ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot create partition: " + nam + " of type " + typ );
   }
   /// Create a partition object. The name identifies the partition uniquely
   STATUS create( CSTR nam, CSTR typ, IInterface*& pPartition ) override
   {
-    STATUS sc = m_actor ? m_actor->create( nam, typ, pPartition ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->create( nam, typ, pPartition ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot create partition: " + nam + " of type " + typ );
   }
   /// Drop a partition object. The name identifies the partition uniquely
   STATUS drop( CSTR nam ) override
   {
-    STATUS sc = m_actor ? m_actor->drop( nam ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->drop( nam ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot drop partition: " + nam );
   }
   /// Drop a partition object. The name identifies the partition uniquely
   STATUS drop( IInterface* pPartition ) override
   {
-    STATUS sc = m_actor ? m_actor->drop( pPartition ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->drop( pPartition ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot drop partition by Interface." );
   }
   /// Activate a partition object. The name identifies the partition uniquely.
   STATUS activate( CSTR nam ) override
   {
-    STATUS sc = m_actor ? m_actor->activate( nam ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->activate( nam ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot activate partition: " + nam );
   }
   /// Activate a partition object.
   STATUS activate( IInterface* pPartition ) override
   {
-    STATUS sc = m_actor ? m_actor->activate( pPartition ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->activate( pPartition ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot activate partition by Interface." );
   }
   /// Access a partition object. The name identifies the partition uniquely.
   STATUS get( CSTR nam, IInterface*& pPartition ) const override
   {
-    STATUS sc = m_actor ? m_actor->get( nam, pPartition ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->get( nam, pPartition ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot get partition " + nam );
   }
   /// Access the active partition object.
   STATUS activePartition( std::string& nam, IInterface*& pPartition ) const override
   {
-    STATUS sc = m_actor ? m_actor->activePartition( nam, pPartition ) : NO_INTERFACE;
+    STATUS sc = m_actor ? m_actor->activePartition( nam, pPartition ) : IInterface::Status::NO_INTERFACE;
     CHECK( sc, "Cannot determine active partition." );
   }
 };
