@@ -158,6 +158,9 @@ gaudi_add_unit_test(test_reverse  tests/src/test_reverse.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
 
+gaudi_add_compile_test(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx
+                       ERRORS "FAIL01;FAIL02;FAIL03;FAIL04")  
+
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
 

@@ -2337,7 +2337,6 @@ function(gaudi_add_unit_test executable)
   endif()
 endfunction()
 
-
 #-------------------------------------------------------------------------------
 # gaudi_add_test(<name>
 #                [FRAMEWORK options1 options2 ...|QMTEST|COMMAND cmd args ...]
@@ -2505,6 +2504,44 @@ function(gaudi_add_test name)
     set_property(TEST ${test_name} PROPERTY TIMEOUT ${ARG_TIMEOUT})
   endif()
 
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+# gaudi_add_compile_test(<name>
+#                        source1 source2 ...
+#                        [LINK_LIBRARIES library1 library2 ...]
+#                        [INCLUDE_DIRS dir1 package2 ...]
+#                        [ERRORS error1 error2 ...]
+#                        [LABELS label1 label2 ...])
+#
+# Declare a compilation test (typically to test for compilation failure):
+#  ERRORS - List of errors (regex allowed) that are all required in the output
+#           in order for the test to succeed(!)
+#---------------------------------------------------------------------------------------------------
+function(gaudi_add_compile_test executable)
+  CMAKE_PARSE_ARGUMENTS(ARG ""
+                            ""
+                            "ERRORS;LABELS" ${ARGN})
+
+  # We do not want the install target coming with gaudi_add_executable
+  gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS})
+  add_executable(${executable} ${srcs})
+   
+  # Avoid building this target by default
+  set_target_properties(${executable} PROPERTIES EXCLUDE_FROM_ALL TRUE
+                                                 EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+
+  # Concatenate errors into multiline regex
+  if(ARG_ERRORS)
+    string(REPLACE ";" ".*[\\n\\r]*.*" regex "${ARG_ERRORS}")
+  else()
+    set(regex ".*")
+  endif()
+
+  gaudi_add_test(${executable}
+                 COMMAND ${CMAKE_COMMAND} --build . --target ${executable}
+                 LABELS ${ARG_LABELS}
+                 PASSREGEX ${regex})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
