@@ -832,7 +832,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
   // To have just one big message
   std::ostringstream outputMS;
 
-  outputMS << "Dumping scheduler state (inhale, exhale..)\n"
+  outputMS << "Dumping scheduler state\n"
            << "=========================================================================================\n"
            << "++++++++++++++++++++++++++++++++++++ SCHEDULER STATE ++++++++++++++++++++++++++++++++++++\n"
            << "=========================================================================================\n\n";
