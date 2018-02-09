@@ -11,7 +11,7 @@
 // Forward declarations
 class SmartDataObjectPtr;
 class IDataProviderSvc;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 class DataObject;
 
 /** @class SmartDataObjectPtr SmartDataObjectPtr.h GaudiKernel/SmartDataObjectPtr.h

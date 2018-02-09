@@ -582,11 +582,11 @@ class iDataSvc(iService):
     def leaves(self, node=None):
         if not node:
             node = self.retrieveObject('')
-        ll = gbl.std.vector('IRegistry*')()
         if type(node) is str:
             obj = self.retrieveObject(node)
         else:
             obj = node
+        ll = gbl.std.vector('DataSvcHelpers::RegistryEntry *')()
         if self._idm.objectLeaves(node, ll).isSuccess():
             return ll
 
