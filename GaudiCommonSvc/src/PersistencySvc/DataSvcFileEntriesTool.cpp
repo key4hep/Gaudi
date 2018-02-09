@@ -7,7 +7,7 @@
 class IIncidentSvc;
 struct IDataManagerSvc;
 class IDataProviderSvc;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 /**
  * Tool to scan a transient store branch that collects all the objects that belong
  * to the same source (file).

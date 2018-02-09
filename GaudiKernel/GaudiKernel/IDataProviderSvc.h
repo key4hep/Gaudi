@@ -11,7 +11,7 @@
 // Forward declarations
 class DataObject;
 class IOpaqueAddress;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 class DataStoreItem;
 
 /** @class IDataProviderSvc IDataProviderSvc.h GaudiKernel/IDataProviderSvc.h

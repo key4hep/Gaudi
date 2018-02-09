@@ -69,7 +69,7 @@ protected:
   /// Items to be pre-loaded
   LoadItems m_preLoads;
   /// Pointer to root entry
-  DataSvcHelpers::RegistryEntry* m_root = nullptr;
+  std::unique_ptr<DataSvcHelpers::RegistryEntry> m_root;
   /// Map with object paths to be inhibited from loading
   DataSvcHelpers::InhibitMap* m_inhibitMap = nullptr;
 
@@ -310,15 +310,14 @@ public:
   /// Standard Destructor
   ~DataSvc() override;
 
-private:
-  /// Fake copy constructor (never implemented).
+  /// copy constructor disabled
   DataSvc( const DataSvc& ) = delete;
-  /// Fake assignment operator (never implemented).
+  /// assignment operator disabled
   DataSvc& operator=( const DataSvc& ) = delete;
 
 protected:
   /// Check if root path is valid
-  bool checkRoot() { return 0 != m_root; }
+  bool checkRoot() { return LIKELY( m_root != nullptr ); }
 
   /** Retrieve customizable data loader according to registry entry to be
    *  retrieved
@@ -347,11 +346,6 @@ protected:
     *
     * @return Object corresponding to the specified leaf
     */
-  DataObject* handleDataFault( IRegistry* pReg, boost::string_ref path = "" );
-
-private:
-  StatusCode i_retrieveEntry( DataSvcHelpers::RegistryEntry* parentObj, boost::string_ref path,
-                              DataSvcHelpers::RegistryEntry*& pEntry );
-  DataObject* i_handleDataFault( IRegistry* pReg, boost::string_ref path = boost::string_ref{} );
+  DataObject* handleDataFault( IRegistry* pReg, boost::string_ref path = {} );
 };
 #endif // GAUDIKERNEL_DATASVC_H
