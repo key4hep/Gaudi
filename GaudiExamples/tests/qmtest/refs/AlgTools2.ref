@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /scratch/fwinkl/Gaudi/src/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/ToolRetrieveError/gaudi/gsrc/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /scratch/fwinkl/Gaudi/src/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/ToolRetrieveError/gaudi/gsrc/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /scratch/fwinkl/Gaudi/src/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO # =======> /bld2/leggett/work/ToolRetrieveError/gaudi/gsrc/GaudiExamples/options/AlgTools2.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["MyGaudiAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (13,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.EvtMax = 10
@@ -24,24 +24,25 @@ JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (48,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (49,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO Job options successfully read in from /bld2/leggett/work/ToolRetrieveError/gaudi/gsrc/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
-                                          running on pc-tbed-pub-13.cern.ch on Mon Aug 14 15:59:47 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r1)
+                                          running on zeus on Mon Jan 29 11:30:04 2018
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 48
+MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 49
 MyAlg               DEBUG Property ['Name': Value] =  'UndefinedToolHandle':
 MyAlg               DEBUG Property ['Name': Value] =  'LegacyToolHandle':MyTool/LegacyToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
 MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
 MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
+MyAlg               DEBUG Property ['Name': Value] =  'WrongIfaceTool':MyTool/WrongIfaceTool
 MyAlg               DEBUG Property ['Name': Value] =  'InvalidToolHandle':
 MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing/UnusedToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
@@ -154,6 +155,13 @@ MyAlg                INFO /Event/Rec/Tracks
 MyAlg                INFO /Event/Rec/Hits
 MyAlg                INFO /Rec/RAW
 MyAlg                INFO /Event/MyAnalysis/Tracks
+MyAlg.WrongIfac...  DEBUG Property update for OutputLevel : new value = 2
+MyAlg.WrongIfac...   INFO intialize() has been called
+MyAlg.WrongIfac...   INFO Int    = 100
+MyAlg.WrongIfac...   INFO Double = 100
+MyAlg.WrongIfac...   INFO String = hundred
+MyAlg.WrongIfac...   INFO Bool   = 1
+MyAlg                INFO unable to retrieve MyTool/WrongIfaceTool (expected) with exception: unable to dcast AlgTool MyTool/WrongIfaceTool to interface IMyOtherTool
 MyAlg                INFO ....initialization done
 MyAlg               DEBUG input handles: 3
 MyAlg               DEBUG output handles: 1
@@ -177,6 +185,7 @@ ToolSvc.Generic...   INFO String = hundred
 ToolSvc.Generic...   INFO Bool   = 1
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
 MyAlg               DEBUG ToolHandle TestToolFailing/UnusedToolHandle not used
+MyAlg               DEBUG ToolHandle MyTool/WrongIfaceTool not used
 MyAlg.LegacyToo...  DEBUG Property update for OutputLevel : new value = 2
 MyAlg.LegacyToo...   INFO intialize() has been called
 MyAlg.LegacyToo...   INFO Int    = 100
@@ -572,6 +581,7 @@ ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is release
 ToolSvc.ToolA       DEBUG Services to release :
 MyAlg.LegacyToo...   INFO finalize() has been called
 ToolSvc.Generic...   INFO finalize() has been called
+MyAlg.WrongIfac...   INFO finalize() has been called
 MyAlg.PrivToolH...   INFO finalize() has been called
 ToolSvc.ConstGe...   INFO finalize() has been called
 ToolSvc.PubTool...   INFO finalize() has been called
@@ -582,6 +592,7 @@ MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 MyAlg.LegacyToo...   INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
+MyAlg.WrongIfac...   INFO destructor has been called
 MyAlg.PrivToolH...   INFO destructor has been called
 ToolSvc.ConstGe...   INFO destructor has been called
 ToolSvc.PubTool...   INFO destructor has been called

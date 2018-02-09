@@ -53,6 +53,8 @@ private:
   ToolHandle<IMyTool> m_undefinedToolHandle{this};
   ToolHandle<IMyTool> m_invalidToolHandle{this, "InvalidToolHandle", "TestToolFailing"};
 
+  ToolHandle<IMyOtherTool> m_wrongIfaceTool{this, "WrongIfaceTool", "MyTool/WrongIfaceTool"};
+
   PublicToolHandle<const IMyTool> m_myConstToolHandle{"MyTool/ConstGenericToolHandle"};
 
   PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle;

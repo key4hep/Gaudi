@@ -250,8 +250,17 @@ public:
   StatusCode retrieve( T*& algTool ) const override
   {
     IAlgTool* iface = nullptr;
-    algTool         = i_retrieve( iface ) ? dynamic_cast<T*>( iface ) : nullptr;
-    return algTool ? StatusCode::SUCCESS : StatusCode::FAILURE;
+    if ( i_retrieve( iface ).isFailure() ) {
+      return StatusCode::FAILURE;
+    }
+
+    algTool = dynamic_cast<T*>( iface );
+    if ( algTool == nullptr ) {
+      throw GaudiException( "unable to dcast AlgTool " + typeAndName() + " to interface " +
+                                System::typeinfoName( typeid( T ) ),
+                            typeAndName() + " retrieve", StatusCode::FAILURE );
+    }
+    return StatusCode::SUCCESS;
   }
 
   /** Do the real release of the AlgTool. */
