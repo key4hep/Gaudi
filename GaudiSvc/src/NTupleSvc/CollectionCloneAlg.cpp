@@ -25,7 +25,7 @@ namespace
   static long upper( const INTupleItem* item )
   {
     const NTuple::_Data<T>* it = dynamic_cast<const NTuple::_Data<T>*>( item );
-    return long( it->range().upper() );
+    return it->range().upper();
   }
 
   template <class TYP>
@@ -40,7 +40,7 @@ namespace
     std::string idxName;
     long dim[4], idxLen = 0;
     long dim1 = 1, dim2 = 1;
-    INTupleItem* it = 0;
+    INTupleItem* it = nullptr;
     for ( int i = 0; i < ndim; i++ ) dim[i] = source->dim( i );
     /// Type information of the item
     if ( hasIdx ) {
@@ -180,67 +180,61 @@ public:
   StatusCode execute() override
   {
     StatusCode status = connect();
-    if ( status.isSuccess() ) {
-      status = mergeInputTuples();
-    }
-    return status;
+    return status.isSuccess() ? mergeInputTuples() : status;
   }
 
   /// Book the N-tuple according to the specification
   virtual StatusCode book( const NTuple::Tuple* nt )
   {
     MsgStream log( msgSvc(), name() );
-    const INTuple::ItemContainer& items = nt->items();
-    StatusCode status                   = StatusCode::SUCCESS;
-    INTuple::ItemContainer::const_iterator i;
+    StatusCode status    = StatusCode::SUCCESS;
     NTuple::Tuple* tuple = m_dataSvc->book( m_outName, nt->clID(), nt->title() );
-    for ( i = items.begin(); i != items.end(); ++i ) {
-      long type = ( *i )->type();
-      switch ( type ) {
+    for ( const auto& i : nt->items() ) {
+      switch ( i->type() ) {
       case DataTypeInfo::UCHAR:
-        status = createItem( log, tuple, *i, (unsigned char)0 );
+        status = createItem<unsigned char>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::USHORT:
-        status = createItem( log, tuple, *i, (unsigned short)0 );
+        status = createItem<unsigned short>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::UINT:
-        status = createItem( log, tuple, *i, (unsigned int)0 );
+        status = createItem<unsigned int>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::ULONG:
-        status = createItem( log, tuple, *i, (unsigned long)0 );
+        status = createItem<unsigned long>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::CHAR:
-        status = createItem( log, tuple, *i, char( 0 ) );
+        status = createItem<char>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::SHORT:
-        status = createItem( log, tuple, *i, short( 0 ) );
+        status = createItem<short>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::INT:
-        status = createItem( log, tuple, *i, int( 0 ) );
+        status = createItem<int>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::LONG:
-        status = createItem( log, tuple, *i, long( 0 ) );
+        status = createItem<long>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::BOOL:
-        status = createItem( log, tuple, *i, false );
+        status = createItem( log, tuple, i, false );
         break;
       case DataTypeInfo::FLOAT:
-        status = createItem( log, tuple, *i, float( 0.0 ) );
+        status = createItem<float>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::DOUBLE:
-        status = createItem( log, tuple, *i, double( 0.0 ) );
+        status = createItem<double>( log, tuple, i, 0 );
         break;
       case DataTypeInfo::OBJECT_ADDR:
-        status = createItem( log, tuple, *i, (IOpaqueAddress*)0 );
+        status = createItem<IOpaqueAddress*>( log, tuple, i, nullptr );
         break;
       case DataTypeInfo::POINTER:
-        status = createItem( log, tuple, *i, (void*)0 );
+        status = createItem<void*>( log, tuple, i, nullptr );
         break;
       case DataTypeInfo::STRING:
-      //        status = createItem(log, tuple, *i, (std::string*)0);
+      //        status = createItem(log, tuple, i, (std::string*)0);
       //        break;
       case DataTypeInfo::NTCHAR:
-      //        status = createItem(log, tuple, *i, (char*)0);
+      //        status = createItem(log, tuple, i, (char*)0);
       //        break;
       case DataTypeInfo::UNKNOWN:
       default:
@@ -255,14 +249,13 @@ public:
   virtual StatusCode checkInput( const NTuple::Tuple* clone, const NTuple::Tuple* src )
   {
     MsgStream log( msgSvc(), name() );
-    if ( 0 != clone && 0 != src ) {
+    if ( clone && src ) {
       const INTuple::ItemContainer& clone_items = clone->items();
       const std::string clone_id                = clone->registry()->identifier();
       const std::string src_id                  = src->registry()->identifier();
 
-      INTuple::ItemContainer::const_iterator i;
       log << MSG::ERROR;
-      for ( i = clone_items.begin(); i != clone_items.end(); ++i ) {
+      for ( auto i = clone_items.begin(); i != clone_items.end(); ++i ) {
         const INTupleItem* itm     = *i;
         const std::string& nam     = itm->name();
         const INTupleItem* src_itm = src->find( nam );
@@ -379,7 +372,7 @@ public:
               } break;
               case DataTypeInfo::OBJECT_ADDR: {
                 IOpaqueAddress* ppA1  = &addrVector[k];
-                IOpaqueAddress** ppA2 = (IOpaqueAddress**)out_itm->buffer();
+                IOpaqueAddress** ppA2 = (IOpaqueAddress**)( out_itm->buffer() );
                 *ppA2                 = ppA1;
                 size                  = 0;
               } break;
@@ -389,7 +382,7 @@ public:
                 break;
               }
               if ( size > 0 ) {
-                ::memcpy( (void*)out_itm->buffer(), src_itm->buffer(), size * src_itm->length() );
+                ::memcpy( const_cast<void*>( out_itm->buffer() ), src_itm->buffer(), size * src_itm->length() );
               }
             }
             status = m_dataSvc->writeRecord( out.ptr() );

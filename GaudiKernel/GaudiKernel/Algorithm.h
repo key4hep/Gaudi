@@ -231,14 +231,14 @@ public:
   template <class T>
   StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const
   {
-    return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
+    return service_i( name, createIf, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
   }
 
   /// Access a service by name and type, creating it if it doesn't already exist.
   template <class T>
   StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const
   {
-    return service_i( svcType, svcName, T::interfaceID(), (void**)&psvc );
+    return service_i( svcType, svcName, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
   }
 
   /// Return a pointer to the service identified by name (or "type/name")
@@ -437,7 +437,7 @@ public:
   const EventContext& getContext() const override { return m_event_context; }
 
 public:
-  virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
+  void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
   void commitHandles() override;
 

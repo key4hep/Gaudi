@@ -90,14 +90,14 @@ public:
   template <class T>
   StatusCode service( const std::string& name, T*& psvc, bool createIf = false ) const
   {
-    return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
+    return service_i( name, createIf, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
   }
 
   /// Access a service by name, type creating it if it doesn't already exist.
   template <class T>
   StatusCode service( const std::string& type, const std::string& name, T*& psvc ) const
   {
-    return service_i( type, name, T::interfaceID(), (void**)&psvc );
+    return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
   }
 
   /// Return a pointer to the service identified by name (or "type/name")

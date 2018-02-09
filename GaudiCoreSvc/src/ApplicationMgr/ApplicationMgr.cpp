@@ -114,7 +114,7 @@ StatusCode ApplicationMgr::queryInterface( const InterfaceID& iid, void** ppvi )
     return m_classManager->queryInterface( iid, ppvi );
   }
   if ( IMessageSvc::interfaceID().versionMatch( iid ) ) {
-    *ppvi = reinterpret_cast<void*>( m_messageSvc.get() );
+    *ppvi = m_messageSvc.get();
     if ( m_messageSvc ) m_messageSvc->addRef();
     // Note that 0 can be a valid IMessageSvc pointer value (when used for
     // MsgStream).
