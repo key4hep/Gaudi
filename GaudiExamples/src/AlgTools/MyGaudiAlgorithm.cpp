@@ -49,6 +49,19 @@ StatusCode MyGaudiAlgorithm::initialize()
 
   info() << m_selectedTracks.objKey() << endmsg;
 
+  // m_wrongIfaceTool is being retrieved via the wrong interface.
+  // we expect the retrieve() to throw an exception.
+  try {
+    if ( m_wrongIfaceTool.retrieve().isFailure() ) {
+      error() << "unable to retrieve " << m_wrongIfaceTool.typeAndName() << " (unexpected)" << endmsg;
+      m_wrongIfaceTool.disable();
+    }
+  } catch ( GaudiException& ex ) {
+    info() << "unable to retrieve " << m_wrongIfaceTool.typeAndName() << " (expected) with exception: " << ex.what()
+           << endmsg;
+    m_wrongIfaceTool.disable();
+  }
+
   info() << "....initialization done" << endmsg;
 
   return sc;
