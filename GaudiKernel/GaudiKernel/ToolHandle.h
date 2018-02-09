@@ -23,6 +23,7 @@ class AlgTool;
 class Service;
 
 using DisableTool = Gaudi::tagged_bool<class DisableTool_tag>;
+using EnableTool  = Gaudi::tagged_bool<class EnableTool_tag>;
 
 /** General info and helper functions for toolhandles and arrays */
 class ToolHandleInfo
@@ -80,6 +81,7 @@ public:
 
   virtual StatusCode retrieve() const           = 0;
   virtual StatusCode retrieve( DisableTool sd ) = 0;
+  virtual StatusCode retrieve( EnableTool sd )  = 0;
 
   const IAlgTool* get() const { return getAsIAlgTool(); }
 
@@ -232,6 +234,16 @@ public:
   StatusCode retrieve( DisableTool sd ) override
   {
     if ( isEnabled() && sd == DisableTool{false} ) {
+      return GaudiHandle<T>::retrieve();
+    } else {
+      disable();
+      return StatusCode::SUCCESS;
+    }
+  }
+
+  StatusCode retrieve( EnableTool sd ) override
+  {
+    if ( isEnabled() && sd == EnableTool{true} ) {
       return GaudiHandle<T>::retrieve();
     } else {
       disable();
