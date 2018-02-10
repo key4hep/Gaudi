@@ -14,7 +14,7 @@
 class IOpaqueAddress;
 class StreamBuffer;
 class LinkManager;
-#include "GaudiKernel/IRegistry.h"
+class IRegistry;
 
 // Definition of the CLID for this class
 static const CLID CLID_DataObject = 1;
