@@ -558,7 +558,12 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
 
   try {
 
-    if ( UNLIKELY( m_doTimeline ) ) timeline.start = Clock::now();
+    if ( UNLIKELY( m_doTimeline ) ) {
+      timeline.start = Clock::now();
+      // make the partially filled event (no end timepoint yet) accessible to other components ASAP
+      // (useful, e.g., in scheduler's in-failure and in-stall dumps)
+      timelineSvc()->registerTimelineEvent( timeline );
+    }
 
     status = execute();
 
@@ -594,10 +599,7 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
     status = exceptionSvc()->handle( *this );
   }
 
-  if ( UNLIKELY( m_doTimeline ) ) {
-    timeline.end = Clock::now();
-    timelineSvc()->registerTimelineEvent( timeline );
-  }
+  if ( UNLIKELY( m_doTimeline ) ) timeline.end = Clock::now();
 
   if ( status.isFailure() ) {
     // Increment the error count

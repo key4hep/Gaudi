@@ -22,9 +22,6 @@ StatusCode IOBoundAlgTask::execute()
   bool eventfailed = false;
   Gaudi::Hive::setCurrentContext( m_evtCtx );
 
-  // TODO reproduce the commented out functionality in a different service
-  // m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
-
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr( m_serviceLocator );
 
@@ -66,9 +63,6 @@ StatusCode IOBoundAlgTask::execute()
   // We need to stop execution when this happens so that execute run can
   // then receive the FAILURE
   m_aess->updateEventStatus( eventfailed, *m_evtCtx );
-
-  // TODO reproduce the commented out functionality in a different service
-  // m_schedSvc->delAlg(this_algo);
 
   Gaudi::Hive::setCurrentContextEvt( -1 );
 

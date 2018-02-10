@@ -29,7 +29,6 @@
 #include "tbb/task.h"
 
 class IAlgorithm;
-class Algorithm;
 
 typedef AlgsExecutionStates::State State;
 typedef std::function<StatusCode()> action;
@@ -269,46 +268,6 @@ private:
   size_t m_maxEventsInFlight{0};
   size_t m_maxAlgosInFlight{1};
   bool m_first = true;
-
-  class SchedulerState
-  {
-
-  public:
-    SchedulerState( Algorithm* a, EventContext* e, pthread_t t ) : m_a( a ), m_e( *e ), m_t( t ) {}
-
-    Algorithm* alg() const { return m_a; }
-    EventContext ctx() const { return m_e; }
-    pthread_t thread() const { return m_t; }
-
-    friend std::ostream& operator<<( std::ostream& os, const SchedulerState& ss )
-    {
-      os << ss.ctx() << "  a: " << ss.alg()->name() << " [" << std::hex << ss.alg() << std::dec << "]  t: 0x"
-         << std::hex << ss.thread() << std::dec;
-      return os;
-    }
-
-    bool operator==( const SchedulerState& ss ) const { return ( m_a == ss.alg() ); }
-
-    bool operator==( Algorithm* a ) const { return ( m_a == a ); }
-
-    bool operator<( const SchedulerState& rhs ) const { return ( m_a < rhs.alg() ); }
-
-  private:
-    Algorithm* m_a;
-    EventContext m_e;
-    pthread_t m_t;
-  };
-
-  static std::list<SchedulerState> m_sState;
-  static std::mutex m_ssMut;
-
-public:
-  void addAlg( Algorithm*, EventContext*, pthread_t );
-  bool delAlg( Algorithm* );
-  void dumpState() override;
-
-private:
-  void dumpState( std::ostringstream& );
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

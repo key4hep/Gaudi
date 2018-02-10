@@ -83,16 +83,12 @@ private:
   boost::filesystem::path m_dumpDirName{
       boost::filesystem::unique_path( boost::filesystem::path( "precedence.analysis.%%%%" ) )};
   Gaudi::Property<bool> m_dumpPrecTrace{this, "DumpPrecedenceTrace", false,
-                                        "Dump task precedence traces for each event."
-                                        "The service must be in DEBUG mode for this switch "
-                                        "to have effect."};
+                                        "Dump task precedence traces for each event."};
   Gaudi::Property<std::string> m_dumpPrecTraceFile{
       this, "PrecedenceTraceFile", "", "Override default name of the GRAPHML trace file. NOTE: if more than "
                                        "1 event is processed, the setting forces creation of a single file "
                                        "with cumulative precedence trace."};
-  Gaudi::Property<bool> m_dumpPrecRules{this, "DumpPrecedenceRules", false, "Dump task precedence rules. The service "
-                                                                            "must be in DEBUG mode for this switch "
-                                                                            "to have effect."};
+  Gaudi::Property<bool> m_dumpPrecRules{this, "DumpPrecedenceRules", false, "Dump task precedence rules."};
   Gaudi::Property<std::string> m_dumpPrecRulesFile{this, "PrecedenceRulesFile", "",
                                                    "Override default name of the GRAPHML precedence rules file."};
 };

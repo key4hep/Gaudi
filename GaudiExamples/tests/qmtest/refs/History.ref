@@ -110,9 +110,8 @@ AlgExecStateSvc   VERBOSE reset(0)[m
 AlgExecStateSvc     DEBUG resizing state containers to : 1[m
 AlgExecStateSvc     DEBUG adding alg History to 1 slots[m
 AlgExecStateSvc   VERBOSE dumping state:
-Event: Invalid
-Algs: 1
- - Slot 0
+  [slot: 0, incident: Invalid]:
+
   + History  e: n
 [m
 AlgExecStateSvc   VERBOSE reset(0)[m

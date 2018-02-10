@@ -19,7 +19,7 @@ public:
   StatusCode finalize() override;
 
   void registerTimelineEvent( const TimelineEvent& ) override;
-  void getTimelineEvent( TimelineEvent& ) const override;
+  bool getTimelineEvent( TimelineEvent& ) const override;
 
   bool isEnabled() const override { return m_isEnabled; }
 

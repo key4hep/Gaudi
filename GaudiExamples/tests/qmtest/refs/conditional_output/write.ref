@@ -269,9 +269,8 @@ AlgExecStateSvc     DEBUG adding alg DataCreator to 1 slots
 AlgExecStateSvc     DEBUG adding alg OddEvents to 1 slots
 AlgExecStateSvc     DEBUG adding alg EvenEvents to 1 slots
 AlgExecStateSvc   VERBOSE dumping state:
-Event: Invalid
-Algs: 4
- - Slot 0
+  [slot: 0, incident: Invalid]:
+
   +    OddEvents  e: n
   + OutputStream  e: n
   +   EvenEvents  e: n

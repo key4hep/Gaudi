@@ -25,9 +25,6 @@
 // DP waiting for the TBB service
 #include "tbb/task_scheduler_init.h"
 
-std::mutex AvalancheSchedulerSvc::m_ssMut;
-std::list<AvalancheSchedulerSvc::SchedulerState> AvalancheSchedulerSvc::m_sState;
-
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY( AvalancheSchedulerSvc )
 
@@ -591,10 +588,6 @@ StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
 
   fatal() << "*** Event " << eventContext->evt() << " on slot " << slotIdx << " failed! ***" << endmsg;
 
-  std::ostringstream ost;
-  m_algExecStateSvc->dump( ost, *eventContext );
-  info() << "Dumping Algorithm Execution States for slot " << slotIdx << ":" << std::endl << ost.str() << endmsg;
-
   dumpSchedulerState( msgLevel( MSG::VERBOSE ) ? -1 : slotIdx );
 
   // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
@@ -837,45 +830,102 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 {
 
   // To have just one big message
-  std::ostringstream outputMessageStream;
+  std::ostringstream outputMS;
 
-  if ( 0 > iSlot )
-    outputMessageStream << "Dumping scheduler state for all slots:" << std::endl;
-  else
-    outputMessageStream << "Dumping scheduler state for slot " << iSlot << ":" << std::endl;
+  outputMS << "Dumping scheduler state\n"
+           << "=========================================================================================\n"
+           << "++++++++++++++++++++++++++++++++++++ SCHEDULER STATE ++++++++++++++++++++++++++++++++++++\n"
+           << "=========================================================================================\n\n";
 
-  outputMessageStream << "============================== Execution Task States ============================="
-                      << std::endl;
-  dumpState( outputMessageStream );
+  //===========================================================================
 
-  outputMessageStream << std::endl
-                      << "============================== Control Flow and FSM States  ====================="
-                      << std::endl;
+  outputMS << "------------------ Last schedule: Task/Event/Slot/Thread/State Mapping "
+           << "------------------\n\n";
 
-  int slotCount = -1;
-  for ( auto& thisSlot : m_eventSlots ) {
-    slotCount++;
-    if ( thisSlot.complete ) continue;
+  // Figure if TimelineSvc is available (used below to detect threads IDs)
+  auto timelineSvc = serviceLocator()->service<ITimelineSvc>( "TimelineSvc", false );
+  if ( !timelineSvc.isValid() || !timelineSvc->isEnabled() ) {
+    outputMS << "WARNING Enable TimelineSvc in record mode (RecordTimeline = True) to trace the mapping\n";
+  } else {
 
-    outputMessageStream << "-----------  slot: " << thisSlot.eventContext->slot()
-                        << "  event: " << thisSlot.eventContext->evt() << " -----------" << std::endl;
+    // Figure optimal printout layout
+    size_t indt( 0 );
+    for ( auto& slot : m_eventSlots )
+      for ( auto it = slot.algsStates.begin( AlgsExecutionStates::State::SCHEDULED );
+            it != slot.algsStates.end( AlgsExecutionStates::State::SCHEDULED ); ++it )
+        if ( index2algname( (uint)*it ).length() > indt ) indt = index2algname( (uint)*it ).length();
 
-    if ( 0 > iSlot or iSlot == slotCount ) {
+    // Figure the last running schedule across all slots
+    for ( auto& slot : m_eventSlots ) {
+      for ( auto it = slot.algsStates.begin( AlgsExecutionStates::State::SCHEDULED );
+            it != slot.algsStates.end( AlgsExecutionStates::State::SCHEDULED ); ++it ) {
 
-      // Snapshot of the Control Flow and FSM states
-      outputMessageStream << m_precSvc->printState( thisSlot ) << std::endl;
+        const std::string algoName{index2algname( (uint)*it )};
 
-      // Mention sub slots
-      if ( thisSlot.allSubSlots.size() ) {
-        outputMessageStream << std::endl << "Number of sub-slots:" << thisSlot.allSubSlots.size() << std::endl;
-        outputMessageStream << "Sub-slot algorithms ready:" << thisSlot.subSlotAlgsReady.size() << std::endl;
+        outputMS << "  task: " << std::setw( indt ) << algoName << " evt/slot: " << slot.eventContext->evt() << "/"
+                 << slot.eventContext->slot();
+
+        // Try to get POSIX threads IDs the currently running tasks are scheduled to
+        if ( timelineSvc.isValid() ) {
+          TimelineEvent te{};
+          te.algorithm = algoName;
+          te.slot      = slot.eventContext->slot();
+          te.event     = slot.eventContext->evt();
+
+          if ( timelineSvc->getTimelineEvent( te ) )
+            outputMS << " thread.id: 0x" << std::hex << te.thread << std::dec;
+          else
+            outputMS << " thread.id: [unknown]"; // this means a task has just
+                                                 // been signed off as SCHEDULED,
+                                                 // but has not been assigned to a thread yet
+                                                 // (i.e., not running yet)
+        }
+        outputMS << " state: [" << m_algExecStateSvc->algExecState( algoName, *( slot.eventContext ) ) << "]\n";
       }
     }
   }
 
-  outputMessageStream << "=================================== END ======================================" << std::endl;
+  //===========================================================================
 
-  info() << outputMessageStream.str() << endmsg;
+  outputMS << "\n---------------------------- Task/CF/FSM Mapping "
+           << ( 0 > iSlot ? "[all slots] --" : "[target slot] " ) << "--------------------------\n\n";
+
+  int slotCount = -1;
+  for ( auto& slot : m_eventSlots ) {
+    slotCount++;
+    if ( slot.complete ) continue;
+
+    outputMS << "[ slot: "
+             << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]" )
+             << "  event: "
+             << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->evt() ) : "[ctx invalid]" )
+             << " ]:\n\n";
+
+    if ( 0 > iSlot or iSlot == slotCount ) {
+
+      // Snapshot of the Control Flow and FSM states
+      outputMS << m_precSvc->printState( slot ) << "\n";
+
+      // Mention sub slots
+      if ( slot.allSubSlots.size() ) {
+        outputMS << "\nNumber of sub-slots:" << slot.allSubSlots.size() << "\n";
+        outputMS << "Sub-slot algorithms ready:" << slot.subSlotAlgsReady.size() << "\n";
+      }
+    }
+  }
+
+  //===========================================================================
+
+  if ( 0 <= iSlot ) {
+    outputMS << "\n------------------------------ Algorithm Execution States -----------------------------\n\n";
+    m_algExecStateSvc->dump( outputMS, *( m_eventSlots[iSlot].eventContext ) );
+  }
+
+  outputMS << "\n=========================================================================================\n"
+           << "++++++++++++++++++++++++++++++++++++++ END OF DUMP ++++++++++++++++++++++++++++++++++++++\n"
+           << "=========================================================================================\n\n";
+
+  info() << outputMS.str() << endmsg;
 }
 
 //---------------------------------------------------------------------------
@@ -1082,55 +1132,6 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   m_actionsQueue.push( [this, iAlgo, eventContext]() { return this->updateStates( -1, iAlgo, eventContext ); } );
 
   return sc;
-}
-
-//===========================================================================
-void AvalancheSchedulerSvc::addAlg( Algorithm* a, EventContext* e, pthread_t t )
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-  m_sState.push_back( SchedulerState( a, e, t ) );
-}
-
-//===========================================================================
-bool AvalancheSchedulerSvc::delAlg( Algorithm* a )
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-
-  for ( std::list<SchedulerState>::iterator itr = m_sState.begin(); itr != m_sState.end(); ++itr ) {
-    if ( *itr == a ) {
-      m_sState.erase( itr );
-      return true;
-    }
-  }
-
-  error() << "could not find Alg " << a->name() << " in Scheduler!" << endmsg;
-  return false;
-}
-
-//===========================================================================
-void AvalancheSchedulerSvc::dumpState( std::ostringstream& ost )
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-
-  for ( auto it : m_sState ) {
-    ost << "  " << it << std::endl;
-  }
-}
-
-//===========================================================================
-void AvalancheSchedulerSvc::dumpState()
-{
-
-  std::lock_guard<std::mutex> lock( m_ssMut );
-
-  std::ostringstream ost;
-  ost << "dumping Executing Threads: [" << m_sState.size() << "]" << std::endl;
-  dumpState( ost );
-
-  info() << ost.str() << endmsg;
 }
 
 // Method to inform the scheduler about event views
