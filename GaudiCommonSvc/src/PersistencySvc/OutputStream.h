@@ -15,7 +15,7 @@
 
 // forward declarations
 class IIncidentSvc;
-#include "GaudiKernel/IRegistry.h"
+class IRegistry;
 class IConversionSvc;
 struct IDataManagerSvc;
 class OutputStreamAgent;

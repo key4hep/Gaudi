@@ -135,7 +135,7 @@ void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr )
   if ( !data.empty() && pAddr ) {
     string fid = data;
     debug() << "Request to load record for file " << fid << endmsg;
-    StatusCode sc = registerAddress( m_root.get(), fid, pAddr );
+    StatusCode sc = registerAddress( m_root, fid, pAddr );
     if ( !sc.isSuccess() ) {
       warning() << "Failed to register record for:" << fid << endmsg;
       pAddr->release();
@@ -151,4 +151,7 @@ void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr )
 }
 
 /// Standard Constructor
-RecordDataSvc::RecordDataSvc( const string& name, ISvcLocator* svc ) : extends( name, svc ) { m_rootName = "/Records"; }
+RecordDataSvc::RecordDataSvc( const string& name, ISvcLocator* svc ) : base_class( name, svc )
+{
+  m_rootName = "/Records";
+}
