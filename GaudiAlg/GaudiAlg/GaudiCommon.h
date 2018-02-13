@@ -6,7 +6,10 @@
 // from STL
 // ============================================================================
 #include <algorithm>
+#include <functional>
+#include <list>
 #include <map>
+#include <mutex>
 #include <string>
 #include <vector>
 // ============================================================================
@@ -28,17 +31,6 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
-// ============================================================================
-// TBB
-// ============================================================================
-#if defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
-#endif
-#include "tbb/concurrent_unordered_map.h"
-#if defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
-#endif
 
 #ifdef __CLING__
 #define WARN_UNUSED
@@ -129,7 +121,8 @@ protected: // definitions
 protected: // few actual data types
   // ==========================================================================
   /// the actual type of general counters
-  typedef tbb::concurrent_unordered_map<std::string, StatEntity> Statistics;
+  typedef std::list<StatEntity> StatisticsOwn;
+  typedef std::map<std::string, std::reference_wrapper<StatEntity>> Statistics;
   /// the actual type error/warning counter
   typedef std::map<std::string, unsigned int> Counter;
   /// storage for active tools
@@ -493,7 +486,7 @@ public:
 public:
   // ==========================================================================
   /// accessor to all counters
-  inline const Statistics& counters() const { return m_counters; }
+  inline const Statistics counters() const { return m_counters; }
   /** accessor to certain counter by name
    *
    *  @code
@@ -512,7 +505,26 @@ public:
    *  @param tag counter name
    *  @return the counter itself
    */
-  inline StatEntity& counter( const std::string& tag ) const { return m_counters[tag]; }
+  [[deprecated( "see LHCBPS-1758" )]] inline StatEntity& counter( const std::string& tag ) const
+  {
+    return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag );
+  }
+  inline StatEntity& counter( const std::string& tag )
+  {
+    std::lock_guard<std::mutex> lock( m_countersMutex );
+    // Return referenced StatEntity if it already exists, else create it
+    auto p = m_counters.find( tag );
+    if ( p == end( m_counters ) ) {
+      m_countersOwn.emplace_back();
+      p = m_counters.emplace( tag, m_countersOwn.back() ).first;
+    }
+    return p->second;
+  }
+  inline void registerCounter( const std::string& tag, StatEntity& r )
+  {
+    std::lock_guard<std::mutex> lock( m_countersMutex );
+    m_counters.emplace( tag, r );
+  }
   // ==========================================================================
 public:
   /// Insert the actual C++ type of the algorithm/tool in the messages ?
@@ -762,7 +774,10 @@ private:
   /// Counter of exceptions
   mutable Counter m_exceptions;
   /// General counters
-  mutable Statistics m_counters;
+  StatisticsOwn m_countersOwn;
+  Statistics m_counters;
+  /// The counters mutex
+  std::mutex m_countersMutex;
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;

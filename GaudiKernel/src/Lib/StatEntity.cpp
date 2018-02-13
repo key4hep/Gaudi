@@ -187,7 +187,7 @@ double StatEntity::se::efficiencyErr() const
 // ============================================================================
 // increment with other entity
 // ============================================================================
-StatEntity& StatEntity::operator+=( const StatEntity& other )
+const StatEntity& StatEntity::operator+=( const StatEntity& other ) const
 {
   std::lock_guard<std::mutex> guard( m_mutex );
   m_se += other.m_se;
@@ -196,7 +196,7 @@ StatEntity& StatEntity::operator+=( const StatEntity& other )
 // ============================================================================
 // increment a flag
 // ============================================================================
-unsigned long StatEntity::add( const double flag )
+unsigned long StatEntity::add( const double flag ) const
 {
   std::lock_guard<std::mutex> guard( m_mutex );
   return m_se.add( flag );
@@ -204,7 +204,7 @@ unsigned long StatEntity::add( const double flag )
 // ============================================================================
 // reset all quantities
 // ============================================================================
-void StatEntity::reset()
+void StatEntity::reset() const
 {
   std::lock_guard<std::mutex> guard( m_mutex );
   m_se = {};

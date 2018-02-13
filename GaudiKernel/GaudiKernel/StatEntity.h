@@ -68,6 +68,12 @@ public:
   // ==========================================================================
   /// the default constructor
   StatEntity() = default;
+  /// the constructor with automatic registration in the owner's counter map
+  template <class OWNER>
+  StatEntity( OWNER* o, const std::string& tag ) : StatEntity()
+  {
+    o->registerCounter( tag, *this );
+  }
   /* The full constructor from all important values:
    * @attention it need to be coherent with
    *            the actual structure of the class
@@ -204,7 +210,7 @@ public:
    *
    *  @param f counter increment
    */
-  StatEntity& operator+=( const double f )
+  const StatEntity& operator+=( const double f ) const
   {
     addFlag( f );
     return *this;
@@ -226,7 +232,7 @@ public:
    *
    *  @endcode
    */
-  StatEntity& operator++() { return ( *this ) += 1; }
+  const StatEntity& operator++() const { return ( *this ) += 1; }
   /** Post-increment operator for the flag.
    *  Actually it is the same as pre-increment.
    *  Could be used for easy manipulation with StatEntity object:
@@ -245,7 +251,7 @@ public:
    *
    *  @endcode
    */
-  StatEntity& operator++( int ) { return ++( *this ); }
+  const StatEntity& operator++(int)const { return ++( *this ); }
   /** General decrement operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
    *
@@ -265,7 +271,7 @@ public:
    *
    *  @param f counter increment
    */
-  StatEntity& operator-=( const double f )
+  const StatEntity& operator-=( const double f ) const
   {
     addFlag( -f );
     return *this;
@@ -287,7 +293,7 @@ public:
    *
    *  @endcode
    */
-  StatEntity& operator--() { return ( *this ) -= 1; }
+  const StatEntity& operator--() const { return ( *this ) -= 1; }
   /** Post-decrement operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
    *
@@ -305,7 +311,7 @@ public:
    *
    *  @endcode
    */
-  StatEntity& operator--( int ) { return --( *this ); }
+  const StatEntity& operator--(int)const { return --( *this ); }
   /** Assignment from the flag
    *  The action: reset and the general increment
    *  Such case could be useful for statistical monitoring
@@ -323,7 +329,7 @@ public:
    *  @param f new value of the counter
    *  @return self-reference
    */
-  StatEntity& operator=( const double f )
+  const StatEntity& operator=( const double f ) const
   {
     // reset the statistics
     reset(); ///< reset the statistics
@@ -345,7 +351,7 @@ public:
    *  @param other counter to be added
    *  @return self-reference
    */
-  StatEntity& operator+=( const StatEntity& other );
+  const StatEntity& operator+=( const StatEntity& other ) const;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -355,9 +361,9 @@ public:
    *  @param Flag value to be added
    *  @return number of entries
    */
-  unsigned long add( const double Flag );
+  unsigned long add( const double Flag ) const;
   /// reset the counters
-  void reset();
+  void reset() const;
   /// DR specify number of entry before reset
   void setnEntriesBeforeReset( unsigned long nEntriesBeforeReset );
   /// representation as string
@@ -410,7 +416,7 @@ public: // some legacy methods, to be removed ...
    *  @param Flag value to be added
    *  @return number of entries
    */
-  inline unsigned long addFlag( const double Flag ) { return add( Flag ); }
+  inline unsigned long addFlag( const double Flag ) const { return add( Flag ); }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -443,7 +449,7 @@ public:
   // ============================================================================
 private:
   // ==========================================================================
-  struct se {
+  mutable struct se {
     /// number of calls
     unsigned long nEntries = 0;
     /// accumulated flag
@@ -480,7 +486,7 @@ private:
     };
   } m_se = {};
   // Mutex to protect calls of add/reset/operator++, i.e. all _writes_ to (but not reads from!) m_se;
-  std::mutex m_mutex;
+  mutable std::mutex m_mutex;
   // ==========================================================================
 };
 namespace Gaudi
