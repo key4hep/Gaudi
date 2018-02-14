@@ -154,6 +154,9 @@ gaudi_add_unit_test(test_SystemTypeinfoName tests/src/test_SystemTypeinfoName.cp
 gaudi_add_unit_test(test_SystemCmdLineArgs tests/src/test_SystemCmdLineArgs.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_reverse  tests/src/test_reverse.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
