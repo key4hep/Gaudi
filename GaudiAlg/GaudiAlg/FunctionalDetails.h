@@ -117,7 +117,7 @@ namespace Gaudi
       template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
       Out1* put( DataObjectHandle<Out1>& out_handle, Out2&& out )
       {
-        return out_handle.put( new Out1( std::forward<Out2>( out ) ) );
+        return out_handle.put( std::make_unique<Out1>( std::forward<Out2>( out ) ) );
       }
 
       template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
@@ -173,13 +173,13 @@ namespace Gaudi
 
       constexpr struct deref_t {
         template <typename In, typename = std::enable_if_t<!std::is_pointer<In>::value>>
-        In& operator()( In& in ) const
+        const In& operator()( const In& in ) const
         {
           return in;
         }
 
         template <typename In>
-        In& operator()( In* in ) const
+        const In& operator()( const In* in ) const
         {
           assert( in != nullptr );
           return *in;
@@ -303,7 +303,7 @@ namespace Gaudi
         const Container& operator[]( size_type i ) const { return *m_containers[i]; }
         const Container& at( size_type i ) const
         {
-          if ( i >= size() ) throw std::out_of_range{"vector_of_const_::at"};
+          if ( UNLIKELY( i >= size() ) ) throw std::out_of_range{"vector_of_const_::at"};
           return *m_containers[i];
         }
         bool is_null( size_type i ) const { return !m_containers[i]; }
@@ -312,76 +312,38 @@ namespace Gaudi
       /////////////////////////////////////////
       namespace detail2
       { // utilities for detected_or_t{,_} usage
-
         template <typename Tr>
-        using BaseClass_ = typename Tr::BaseClass;
+        using BaseClass_t = typename Tr::BaseClass;
         template <typename Tr, typename T>
-        using defaultHandle_ =
-            std::conditional_t<std::is_base_of<DataObject, T>::value, DataObjectHandle<T>, AnyDataHandle<T>>;
+        using OutputHandle_t = typename Tr::template OutputHandle<T>;
         template <typename Tr, typename T>
-        using OutputHandle_ = typename Tr::template OutputHandle<T>;
-        template <typename Tr, typename T>
-        using InputHandle_ = typename Tr::template InputHandle<T>;
+        using InputHandle_t = typename Tr::template InputHandle<T>;
       }
 
       // check whether Traits::BaseClass is a valid type,
       // if so, define BaseClass_t<Traits> as being Traits::BaseClass
       // else   define                     as being GaudiAlgorithm
       template <typename Tr>
-      using BaseClass_t = Gaudi::cpp17::detected_or_t<GaudiAlgorithm, detail2::BaseClass_, Tr>;
+      using BaseClass_t = Gaudi::cpp17::detected_or_t<GaudiAlgorithm, detail2::BaseClass_t, Tr>;
 
       // check whether Traits::{Input,Output}Handle<T> is a valid type,
       // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
-      // else   define                                  as being DataObjectHandle<T> if T derives from DataObject, else
-      //                                                as being AnyDataHandle<T>
+      // else   define                                  as being DataObject{Read,,Write}Handle<T>
       template <typename Tr, typename T>
-      using OutputHandle_t = Gaudi::cpp17::detected_or_t_<detail2::defaultHandle_, detail2::OutputHandle_, Tr, T>;
+      using OutputHandle_t = Gaudi::cpp17::detected_or_t<DataObjectWriteHandle<T>, detail2::OutputHandle_t, Tr, T>;
       template <typename Tr, typename T>
-      using InputHandle_t = Gaudi::cpp17::detected_or_t_<detail2::defaultHandle_, detail2::InputHandle_, Tr, T>;
+      using InputHandle_t = Gaudi::cpp17::detected_or_t<DataObjectReadHandle<T>, detail2::InputHandle_t, Tr, T>;
 
       /////////
 
-      namespace details2
-      {
-        template <typename Tuple, typename KeyValues, std::size_t... I>
-        Tuple make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m,
-                                            std::index_sequence<I...> )
-        {
-          return std::make_tuple( std::tuple_element_t<I, Tuple>{std::get<I>( initvalue ).second, m, o}... );
-        }
-        template <typename KeyValues, typename Properties, std::size_t... I>
-        void declare_tuple_of_properties_helper( Algorithm& owner, const KeyValues& inputs, Properties& props,
-                                                 std::index_sequence<I...> )
-        {
-          (void)std::initializer_list<int>{
-              ( owner.declareProperty( std::get<I>( inputs ).first, std::get<I>( props ) ), 0 )...};
-        }
-      }
-
-      template <typename Tuple, typename KeyValues>
-      Tuple make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode )
-      {
-        return details2::make_tuple_of_handles_helper<Tuple>(
-            owner, initvalue, mode, std::make_index_sequence<std::tuple_size<Tuple>::value>{} );
-      }
-
-      template <typename KeyValues, typename Properties>
-      void declare_tuple_of_properties( Algorithm& owner, const KeyValues& inputs, Properties& props )
-      {
-        constexpr auto N = std::tuple_size<KeyValues>::value;
-        static_assert( N == std::tuple_size<Properties>::value, "Inconsistent lengths" );
-        details2::declare_tuple_of_properties_helper( owner, inputs, props, std::make_index_sequence<N>{} );
-      }
-
       template <typename Handles>
-      Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<std::string>& init,
-                                      Gaudi::DataHandle::Mode mode )
+      Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<std::string>& init )
       {
         Handles handles;
         handles.reserve( init.size() );
         std::transform( init.begin(), init.end(), std::back_inserter( handles ),
                         [&]( const std::string& loc ) -> typename Handles::value_type {
-                          return {loc, mode, owner};
+                          return {loc, owner};
                         } );
         return handles;
       }
@@ -397,6 +359,17 @@ namespace Gaudi
         static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
                        "BaseClass must inherit from Algorithm" );
 
+        template <typename IArgs, typename OArgs, std::size_t... I, std::size_t... J>
+        DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const IArgs& inputs,
+                         std::index_sequence<I...>, const OArgs& outputs, std::index_sequence<J...> )
+            : BaseClass_t<Traits_>( name, pSvcLocator )
+            , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
+            , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... )
+        {
+          // make sure this algorithm is seen as reentrant by Gaudi
+          this->setProperty( "Cardinality", 0 );
+        }
+
       public:
         using KeyValue                     = std::pair<std::string, std::string>;
         constexpr static std::size_t N_in  = sizeof...( In );
@@ -405,14 +378,9 @@ namespace Gaudi
         // generic constructor:  N -> M
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs,
                          const std::array<KeyValue, N_out>& outputs )
-            : BaseClass_t<Traits_>( name, pSvcLocator )
-            , m_inputs( make_tuple_of_handles<decltype( m_inputs )>( this, inputs, Gaudi::DataHandle::Reader ) )
-            , m_outputs( make_tuple_of_handles<decltype( m_outputs )>( this, outputs, Gaudi::DataHandle::Writer ) )
+            : DataHandleMixin( name, pSvcLocator, inputs, std::index_sequence_for<In...>{}, outputs,
+                               std::index_sequence_for<Out...>{} )
         {
-          declare_tuple_of_properties( *this, inputs, m_inputs );
-          declare_tuple_of_properties( *this, outputs, m_outputs );
-          // make sure this algorithm is seen as reentrant by Gaudi
-          BaseClass_t<Traits_>::setProperty( "Cardinality", 0 );
         }
 
         // special cases: forward to the generic case...
@@ -439,14 +407,14 @@ namespace Gaudi
         {
           return std::get<N>( m_inputs ).objKey();
         }
-        unsigned int inputLocationSize() const { return std::tuple_size<decltype( m_inputs )>::value; }
+        constexpr unsigned int inputLocationSize() const { return N_in; }
 
         template <std::size_t N = 0>
         const std::string& outputLocation() const
         {
           return std::get<N>( m_outputs ).objKey();
         }
-        unsigned int outputLocationSize() const { return std::tuple_size<decltype( m_outputs )>::value; }
+        constexpr unsigned int outputLocationSize() const { return N_out; }
 
       protected:
         std::tuple<details::InputHandle_t<Traits_, In>...> m_inputs;
@@ -459,18 +427,24 @@ namespace Gaudi
         static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
                        "BaseClass must inherit from Algorithm" );
 
+        template <typename IArgs, std::size_t... I>
+        DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const IArgs& inputs,
+                         std::index_sequence<I...> )
+            : BaseClass_t<Traits_>( name, pSvcLocator )
+            , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
+        {
+          // make sure this algorithm is seen as reentrant by Gaudi
+          this->setProperty( "Cardinality", 0 );
+        }
+
       public:
         using KeyValue                    = std::pair<std::string, std::string>;
         constexpr static std::size_t N_in = sizeof...( In );
 
         // generic constructor:  N -> 0
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs )
-            : BaseClass_t<Traits_>( name, pSvcLocator )
-            , m_inputs( make_tuple_of_handles<decltype( m_inputs )>( this, inputs, Gaudi::DataHandle::Reader ) )
+            : DataHandleMixin( name, pSvcLocator, inputs, std::index_sequence_for<In...>{} )
         {
-          declare_tuple_of_properties( *this, inputs, m_inputs );
-          // make sure this algorithm is seen as reentrant by Gaudi
-          BaseClass_t<Traits_>::setProperty( "Cardinality", 0 );
         }
 
         // special cases: forward to the generic case...
@@ -485,7 +459,7 @@ namespace Gaudi
         {
           return std::get<N>( m_inputs ).objKey();
         }
-        unsigned int inputLocationSize() const { return std::tuple_size<decltype( m_inputs )>::value; }
+        constexpr unsigned int inputLocationSize() const { return N_in; }
 
       protected:
         std::tuple<details::InputHandle_t<Traits_, In>...> m_inputs;
@@ -497,18 +471,24 @@ namespace Gaudi
         static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
                        "BaseClass must inherit from Algorithm" );
 
+        template <typename OArgs, std::size_t... J>
+        DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const OArgs& outputs,
+                         std::index_sequence<J...> )
+            : BaseClass_t<Traits_>( name, pSvcLocator )
+            , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... )
+        {
+          // make sure this algorithm is seen as reentrant by Gaudi
+          this->setProperty( "Cardinality", 0 );
+        }
+
       public:
         using KeyValue                     = std::pair<std::string, std::string>;
         constexpr static std::size_t N_out = sizeof...( Out );
 
         // generic constructor:  0 -> N
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_out>& outputs )
-            : BaseClass_t<Traits_>( name, pSvcLocator )
-            , m_outputs( make_tuple_of_handles<decltype( m_outputs )>( this, outputs, Gaudi::DataHandle::Writer ) )
+            : DataHandleMixin( name, pSvcLocator, outputs, std::index_sequence_for<Out...>{} )
         {
-          declare_tuple_of_properties( *this, outputs, m_outputs );
-          // make sure this algorithm is seen as reentrant by Gaudi
-          BaseClass_t<Traits_>::setProperty( "Cardinality", 0 );
         }
 
         // 0 -> 1
@@ -522,7 +502,7 @@ namespace Gaudi
         {
           return std::get<N>( m_outputs ).objKey();
         }
-        unsigned int outputLocationSize() const { return std::tuple_size<decltype( m_outputs )>::value; }
+        constexpr unsigned int outputLocationSize() const { return N_out; }
 
       protected:
         std::tuple<details::OutputHandle_t<Traits_, Out>...> m_outputs;

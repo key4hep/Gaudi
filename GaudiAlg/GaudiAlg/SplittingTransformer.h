@@ -48,7 +48,16 @@ namespace Gaudi
       unsigned int outputLocationSize() const { return m_outputLocations.size(); }
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final { return invoke( std::index_sequence_for<In...>{} ); }
+      StatusCode execute() override final
+      {
+        try {
+          invoke( std::index_sequence_for<In...>{} );
+          return StatusCode::SUCCESS;
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
+      }
 
       // TODO/FIXME: how does the callee know in which order to produce the outputs?
       //             (note: 'missing' items can be specified by making Out an boost::optional<Out>,
@@ -57,23 +66,17 @@ namespace Gaudi
 
     private:
       template <std::size_t... I>
-      StatusCode invoke( std::index_sequence<I...> )
+      void invoke( std::index_sequence<I...> )
       {
-        try {
-          // TODO:FIXME: how does operator() know the number and order of expected outputs?
-          using details::as_const;
-          auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
-          if ( out.size() != m_outputs.size() ) {
-            throw GaudiException( "Error during transform: expected " + std::to_string( m_outputs.size() ) +
-                                      " containers, got " + std::to_string( out.size() ) + " instead",
-                                  this->name(), StatusCode::FAILURE );
-          }
-          for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
-        } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
-          return e.code();
+        // TODO:FIXME: how does operator() know the number and order of expected outputs?
+        using details::as_const;
+        auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
+        if ( out.size() != m_outputs.size() ) {
+          throw GaudiException( "Error during transform: expected " + std::to_string( m_outputs.size() ) +
+                                    " containers, got " + std::to_string( out.size() ) + " instead",
+                                this->name(), StatusCode::FAILURE );
         }
-        return StatusCode::SUCCESS;
+        for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
       }
       template <typename T>
       using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
@@ -89,8 +92,7 @@ namespace Gaudi
     {
       auto p = this->declareProperty( outputs.first, m_outputLocations );
       p->declareUpdateHandler( [=]( Gaudi::Details::PropertyBase& ) {
-        this->m_outputs = details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations,
-                                                                                        Gaudi::DataHandle::Writer );
+        this->m_outputs = details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
         if ( details::is_optional<Out>::value ) { // handle constructor does not (yet) allow to set optional flag... so
                                                   // do it explicitly here...
           std::for_each( this->m_outputs.begin(), this->m_outputs.end(), []( auto& h ) { h.setOptional( true ); } );

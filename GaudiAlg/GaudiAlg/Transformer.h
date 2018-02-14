@@ -30,25 +30,26 @@ namespace Gaudi
       using details::DataHandleMixin<std::tuple<Out>, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final { return invoke( std::index_sequence_for<In...>{} ); }
+      StatusCode execute() override final
+      {
+        try {
+          invoke( std::index_sequence_for<In...>{} );
+          return StatusCode::SUCCESS;
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
+      }
 
       // instead they MUST implement this operator
       virtual Out operator()( const In&... ) const = 0;
 
     private:
       template <std::size_t... I>
-      StatusCode invoke( std::index_sequence<I...> )
+      void invoke( std::index_sequence<I...> )
       {
-        using details::as_const;
-        using details::put;
-        try {
-          put( std::get<0>( this->m_outputs ),
-               as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... ) );
-        } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
-          return e.code();
-        }
-        return StatusCode::SUCCESS;
+        details::put( std::get<0>( this->m_outputs ),
+                      details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... ) );
       }
     };
 
@@ -68,7 +69,13 @@ namespace Gaudi
       // derived classes can NOT implement execute
       StatusCode execute() override final
       {
-        return invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
+        try {
+          invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
+          return StatusCode::SUCCESS;
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
       }
 
       // instead they MUST implement this operator
@@ -76,19 +83,11 @@ namespace Gaudi
 
     private:
       template <std::size_t... I, std::size_t... O>
-      StatusCode invoke( std::index_sequence<I...>, std::index_sequence<O...> )
+      void invoke( std::index_sequence<I...>, std::index_sequence<O...> )
       {
-        using details::as_const;
-        using details::put;
-        try {
-          auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
-          (void)std::initializer_list<int>{
-              ( put( std::get<O>( this->m_outputs ), std::move( std::get<O>( out ) ) ), 0 )...};
-        } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
-          return e.code();
-        }
-        return StatusCode::SUCCESS;
+        auto out = details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... );
+        (void)std::initializer_list<int>{
+            ( details::put( std::get<O>( this->m_outputs ), std::get<O>( std::move( out ) ) ), 0 )...};
       }
     };
 
@@ -108,7 +107,13 @@ namespace Gaudi
       // derived classes can NOT implement execute
       StatusCode execute() override final
       {
-        return invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
+        try {
+          invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
+          return StatusCode::SUCCESS;
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
       }
 
       // instead they MUST implement this operator
@@ -116,20 +121,12 @@ namespace Gaudi
 
     private:
       template <std::size_t... I, std::size_t... O>
-      StatusCode invoke( std::index_sequence<I...>, std::index_sequence<O...> )
+      void invoke( std::index_sequence<I...>, std::index_sequence<O...> )
       {
-        using details::as_const;
-        using details::put;
-        try {
-          auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
-          this->setFilterPassed( std::get<0>( out ) );
-          (void)std::initializer_list<int>{
-              ( put( std::get<O>( this->m_outputs ), std::move( std::get<O + 1>( out ) ) ), 0 )...};
-        } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
-          return e.code();
-        }
-        return StatusCode::SUCCESS;
+        auto out = details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... );
+        this->setFilterPassed( std::get<0>( out ) );
+        (void)std::initializer_list<int>{
+            ( details::put( std::get<O>( this->m_outputs ), std::get<O + 1>( std::move( out ) ) ), 0 )...};
       }
     };
   }

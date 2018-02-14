@@ -20,22 +20,25 @@ namespace Gaudi
       using details::DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final { return invoke( std::index_sequence_for<In...>{} ); }
+      StatusCode execute() override final
+      {
+        try {
+          invoke( std::index_sequence_for<In...>{} );
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
+        return StatusCode::SUCCESS;
+      }
 
       // ... instead, they must implement the following operator
       virtual void operator()( const In&... ) const = 0;
 
     private:
       template <std::size_t... I>
-      StatusCode invoke( std::index_sequence<I...> ) const
+      void invoke( std::index_sequence<I...> ) const
       {
-        try {
-          ( *this )( details::as_const( *std::get<I>( this->m_inputs ).get() )... );
-        } catch ( GaudiException& e ) {
-          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
-          return e.code();
-        }
-        return StatusCode::SUCCESS;
+        ( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... );
       }
     };
   }

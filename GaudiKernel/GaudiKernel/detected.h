@@ -33,10 +33,6 @@ namespace Gaudi
     // Op<Args...> if that is a valid type, otherwise Default.
     template <typename Default, template <typename...> class Op, typename... Args>
     using detected_or_t = typename details::detector<Default, void, Op, Args...>::type;
-
-    // Op<Args...> if that is a valid type, otherwise Default<Args...>.
-    template <template <typename...> class Default, template <typename...> class Op, typename Tr, typename T>
-    using detected_or_t_ = detected_or_t<Default<Tr, T>, Op, Tr, T>;
   }
 }
 

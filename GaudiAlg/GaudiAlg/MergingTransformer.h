@@ -56,8 +56,7 @@ namespace Gaudi
       //             vector<handle> property ... as soon as declareProperty can deal with that.
       auto p = this->declareProperty( inputs.first, m_inputLocations );
       p->declareUpdateHandler( [=]( Gaudi::Details::PropertyBase& ) {
-        this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations,
-                                                                                      Gaudi::DataHandle::Reader );
+        this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
         if ( std::is_pointer<In>::value ) { // handle constructor does not (yet) allow to set optional flag... so do it
                                             // explicitly here...
           std::for_each( this->m_inputs.begin(), this->m_inputs.end(), []( auto& h ) { h.setOptional( true ); } );
