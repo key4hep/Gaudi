@@ -199,7 +199,7 @@ include(CMakeParseArguments)
 include(CMakeFunctionalUtils)
 include(BinaryTagUtils)
 
-find_package(PythonInterp)
+find_package(PythonInterp 2.7)
 
 #-------------------------------------------------------------------------------
 # gaudi_project(project version
