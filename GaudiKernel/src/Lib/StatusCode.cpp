@@ -8,12 +8,34 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 #include <exception>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdlib.h>
 
+// statics
 bool StatusCode::s_checking( false );
+
+namespace
+{
+  /// Default StatusCode category
+  struct DefaultCategory : public StatusCode::Category {
+
+    const char* name() const override { return "Gaudi"; }
+
+    std::string message( StatusCode::code_t code ) const override
+    {
+      switch ( static_cast<StatusCode::ErrorCode>( code ) ) {
+      case StatusCode::ErrorCode::SUCCESS:
+        return "SUCCESS";
+      case StatusCode::ErrorCode::FAILURE:
+        return "FAILURE";
+      case StatusCode::ErrorCode::RECOVERABLE:
+        return "RECOVERABLE";
+      default:
+        return "UNKNOWN(" + std::to_string( code ) + ")";
+      }
+    }
+  };
+}
+
+STATUSCODE_ENUM_IMPL( StatusCode::ErrorCode, DefaultCategory )
 
 void StatusCode::enableChecking() { s_checking = true; }
 

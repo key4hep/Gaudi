@@ -15,6 +15,7 @@ class ICnvManager;
 class IAlgManager;
 class ISvcManager;
 class IObjManager;
+class IMessageSvc;
 
 //
 // ClassName:   DLLClassManager

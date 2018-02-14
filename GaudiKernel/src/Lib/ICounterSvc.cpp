@@ -9,6 +9,32 @@
 // ============================================================================
 #include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/StatEntity.h"
+
+namespace
+{
+  struct ICounterSvcCategory : StatusCode::Category {
+    const char* name() const override { return "ICounterSvc"; }
+
+    bool isRecoverable( StatusCode::code_t ) const override { return false; }
+
+    std::string message( StatusCode::code_t code ) const override
+    {
+      switch ( static_cast<ICounterSvc::Status>( code ) ) {
+      case ICounterSvc::Status::COUNTER_NOT_PRESENT:
+        return "COUNTER_NOT_PRESENT";
+      case ICounterSvc::Status::COUNTER_EXISTS:
+        return "COUNTER_EXISTS";
+      case ICounterSvc::Status::COUNTER_REMOVED:
+        return "COUNTER_REMOVED";
+      default:
+        return StatusCode::default_category().message( code );
+      }
+    }
+  };
+}
+
+STATUSCODE_ENUM_IMPL( ICounterSvc::Status, ICounterSvcCategory )
+
 // ============================================================================
 /** @file
  *  Implementation file with helper methods for interface ICounterSvc

@@ -116,10 +116,10 @@ template <class TYPE>
 inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* obj )
 {
   if ( invalid() ) {
-    return InvalidTuple;
+    return ErrorCodes::InvalidTuple;
   } // RETURN
   if ( !evtColType() ) {
-    return InvalidOperation;
+    return ErrorCodes::InvalidOperation;
   } // RETURN
 
   // static block: The type description & the flag
@@ -127,14 +127,14 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
   static TClass* s_type = nullptr; // STATIC
   // check the status
   if ( s_fail ) {
-    return InvalidItem;
+    return ErrorCodes::InvalidItem;
   } // RETURN
   else if ( !s_type ) {
     s_type = TClass::GetClass( typeid( TYPE ) );
     if ( !s_type ) {
       s_fail = true;
       return Error( " put('" + name + "'," + System::typeinfoName( typeid( TYPE ) ) + ") :Invalid ROOT Type",
-                    InvalidItem ); // RETURN
+                    ErrorCodes::InvalidItem ); // RETURN
     }
   }
   // the local storage of items
@@ -142,7 +142,7 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
   // get the variable by name:
   auto item = s_map.getItem( name, this );
   if ( !item ) {
-    return Error( " put('" + name + "'): invalid item detected", InvalidItem );
+    return Error( " put('" + name + "'): invalid item detected", ErrorCodes::InvalidItem );
   }
   // assign the item!
   ( *item ) = const_cast<TYPE*>( obj ); // THATS ALL!!

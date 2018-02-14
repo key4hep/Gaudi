@@ -328,7 +328,9 @@ public:
   virtual StatusCode queryInterface( const InterfaceID& ti, void** pp ) = 0;
 
   /// Return status
-  enum Status {
+  enum class Status : StatusCode::code_t {
+    /// Failure
+    FAILURE = 0,
     /// Normal successful completion
     SUCCESS = 1,
     /// Requested interface is not available
@@ -342,6 +344,8 @@ public:
   /// Virtual destructor
   virtual ~IInterface() = default;
 };
+
+STATUSCODE_ENUM_DECL( IInterface::Status )
 
 namespace Gaudi
 {

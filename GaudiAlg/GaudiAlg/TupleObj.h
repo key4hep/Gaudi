@@ -93,7 +93,7 @@ namespace Tuples
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2004-01-23
    */
-  enum ErrorCodes {
+  enum class ErrorCodes : StatusCode::code_t {
     InvalidTuple = 100,
     InvalidColumn,
     InvalidOperation,
@@ -101,6 +101,12 @@ namespace Tuples
     InvalidItem,
     TruncateValue = 200
   };
+}
+
+STATUSCODE_ENUM_DECL( Tuples::ErrorCodes )
+
+namespace Tuples
+{
   // ==========================================================================
   /** @class TupleObj TupleObj.h GaudiAlg/TupleObj.h
    *
@@ -1010,8 +1016,8 @@ namespace Tuples
     StatusCode farray( const std::string& name, const FUNCTION& function, ITERATOR first, ITERATOR last,
                        const std::string& length, size_t maxv )
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // adjust the length
       if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
@@ -1021,14 +1027,14 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) return InvalidColumn;
+      if ( !len ) return ErrorCodes::InvalidColumn;
 
       // adjust the length
       *len = std::distance( first, last );
 
       // get the array itself
       FArray* var = fArray( name, len );
-      if ( !var ) return InvalidColumn;
+      if ( !var ) return ErrorCodes::InvalidColumn;
 
       // fill the array
       std::transform( first, last, std::begin( *var ), std::cref( function ) );
@@ -1067,8 +1073,8 @@ namespace Tuples
     StatusCode farray_impl( FunIterator first_item, FunIterator last_item, DataIterator first, DataIterator last,
                             const std::string& length, size_t maxv )
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // adjust the length
       if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
@@ -1082,7 +1088,7 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) return InvalidColumn;
+      if ( !len ) return ErrorCodes::InvalidColumn;
 
       // adjust the length
       *len = std::distance( first, last );
@@ -1093,7 +1099,7 @@ namespace Tuples
       std::transform( first_item, last_item, std::back_inserter( vars ),
                       [&]( const auto& item ) { return this->fArray( item.first, len ); } );
       if ( std::any_of( vars.begin(), vars.end(), []( const FArray* f ) { return !f; } ) ) {
-        return InvalidColumn;
+        return ErrorCodes::InvalidColumn;
       }
 
       // fill the array
@@ -1318,8 +1324,8 @@ namespace Tuples
     StatusCode fmatrix( const std::string& name, const MATRIX& data, size_t rows, const MIndex& cols,
                         const std::string& length, size_t maxv )
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // adjust the length
       if ( rows >= maxv ) {
@@ -1329,14 +1335,14 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) return InvalidColumn;
+      if ( !len ) return ErrorCodes::InvalidColumn;
 
       // adjust the length item
       *len = rows;
 
       // get the array itself
       FMatrix* var = fMatrix( name, len, cols );
-      if ( !var ) return InvalidColumn;
+      if ( !var ) return ErrorCodes::InvalidColumn;
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < cols; ++iCol ) {
@@ -1388,8 +1394,8 @@ namespace Tuples
     StatusCode fmatrix( const std::string& name, DATA first, DATA last, const MIndex& cols, const std::string& length,
                         size_t maxv )
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // adjust the length
       if ( first + maxv < last ) {
@@ -1399,14 +1405,14 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) return InvalidColumn;
+      if ( !len ) return ErrorCodes::InvalidColumn;
 
       // adjust the length item
       *len = last - first;
 
       // get the array itself
       FMatrix* var = fMatrix( name, len, cols );
-      if ( !var ) return InvalidColumn;
+      if ( !var ) return ErrorCodes::InvalidColumn;
 
       /// fill the matrix
       size_t iRow = 0;
@@ -1504,8 +1510,8 @@ namespace Tuples
     StatusCode fmatrix( const std::string& name, FUN funF, FUN funL, DATA first, DATA last, const std::string& length,
                         size_t maxv )
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // adjust the length
       if ( std::distance( first, last ) > static_cast<std::ptrdiff_t>( maxv ) ) {
@@ -1515,7 +1521,8 @@ namespace Tuples
 
       // get the length item
       Int* len = ints( length, 0, maxv );
-      if ( !len ) return InvalidColumn;
+
+      if ( !len ) return ErrorCodes::InvalidColumn;
 
       // adjust the length item
       *len = std::distance( first, last );
@@ -1523,7 +1530,7 @@ namespace Tuples
       // get the array itself
       auto cols    = std::distance( funF, funL );
       FMatrix* var = fMatrix( name, len, cols );
-      if ( !var ) return InvalidColumn;
+      if ( !var ) return ErrorCodes::InvalidColumn;
 
       /// fill the matrix
       size_t iRow = 0;
@@ -1567,15 +1574,15 @@ namespace Tuples
     StatusCode array( const std::string& name, DATA first, DATA last )
 
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // get the length (fixed!)
       auto length = std::distance( first, last );
 
       // get the array itself
       FArray* var = fArray( name, length );
-      if ( !var ) return InvalidColumn;
+      if ( !var ) return ErrorCodes::InvalidColumn;
 
       /// fill the array
       std::copy( first, last, std::begin( *var ) );
@@ -1723,12 +1730,12 @@ namespace Tuples
     template <class MATRIX>
     StatusCode matrix( const std::string& name, const MATRIX& data, const MIndex& rows, const MIndex& cols )
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // get the matrix itself
       FMatrix* var = fMatrix( name, rows, cols );
-      if ( !var ) return InvalidColumn;
+      if ( !var ) return ErrorCodes::InvalidColumn;
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < cols; ++iCol ) {
@@ -1825,12 +1832,12 @@ namespace Tuples
     template <class TYPE, unsigned int D1, unsigned int D2, class REP>
     StatusCode matrix( const std::string& name, const ROOT::Math::SMatrix<TYPE, D1, D2, REP>& mtrx )
     {
-      if ( invalid() ) return InvalidTuple;
-      if ( rowWise() ) return InvalidOperation;
+      if ( invalid() ) return ErrorCodes::InvalidTuple;
+      if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
       // get the matrix itself
       FMatrix* var = fMatrix( name, (MIndex)D1, (MIndex)D2 );
-      if ( !var ) return InvalidColumn;
+      if ( !var ) return ErrorCodes::InvalidColumn;
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < D2; ++iCol ) {
@@ -2107,6 +2114,7 @@ namespace Tuples
   };
   // ==========================================================================
 } // end of namespace Tuples
+
 // ============================================================================
 // GaudiAlg
 // ============================================================================

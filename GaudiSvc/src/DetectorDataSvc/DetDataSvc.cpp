@@ -213,7 +213,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate )
   // Check that object to update exists
   if ( !toUpdate ) {
     error() << "There is no DataObject to update" << endmsg;
-    return INVALID_OBJECT;
+    return Status::INVALID_OBJECT;
   }
 
   // Retrieve IValidity interface of object to update
@@ -243,7 +243,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate )
   StatusCode status = TsDataSvc::updateObject( toUpdate );
   if ( !status.isSuccess() ) {
     error() << "Could not update DataObject" << endmsg;
-    if ( status == NO_DATA_LOADER ) error() << "There is no data loader" << endmsg;
+    if ( status == Status::NO_DATA_LOADER ) error() << "There is no data loader" << endmsg;
     return status;
   }
 

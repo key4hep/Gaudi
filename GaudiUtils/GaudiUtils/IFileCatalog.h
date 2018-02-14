@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+class IMessageSvc;
+
 /*
  *   Gaudi namespace declaration
  */

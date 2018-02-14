@@ -223,12 +223,15 @@ public:
   /// Default Printout for counters
   virtual StatusCode defaultPrintout( MsgStream& log, const Counter* pCounter ) const = 0;
   // Return codes:
-  enum {
+  enum class Status : StatusCode::code_t {
     COUNTER_NOT_PRESENT = 2, // Error
     COUNTER_EXISTS      = 4, // Error ?
     COUNTER_REMOVED     = 3  // Type of success. Low bit set
   };
 };
+
+STATUSCODE_ENUM_DECL( ICounterSvc::Status )
+
 // ============================================================================
 /// output operator for the counter object
 // ============================================================================

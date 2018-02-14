@@ -122,14 +122,14 @@ namespace Gaudi
               msgSvc() << "Add Value[" << b->GetName() << "]:" << p << endmsg;
               ( this->*pmf )( v, p );
             } else {
-              sc = RootDataConnection::ROOT_READ_ERROR;
+              sc = RootDataConnection::Status::ROOT_READ_ERROR;
             }
           }
           return sc;
         }
       }
       msgSvc() << MSG::ERROR << "Failed to read '" << nam << "' table." << endmsg;
-      return RootDataConnection::ROOT_READ_ERROR;
+      return RootDataConnection::Status::ROOT_READ_ERROR;
     }
     /// Analyze the Sections table entries
     bool get( const string& dsc, pair<string, ContainerSection>& e )

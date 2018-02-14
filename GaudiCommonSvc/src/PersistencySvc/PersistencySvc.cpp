@@ -65,9 +65,9 @@ StatusCode PersistencySvc::makeCall( int typ, IOpaqueAddress*& pAddress, DataObj
       svc = m_cnvDefault;
       break;
     default:
-      if ( !pAddress ) return INVALID_ADDRESS;
+      if ( !pAddress ) return Status::INVALID_ADDRESS;
       svc = service( pAddress->svcType() );
-      if ( !svc ) return BAD_STORAGE_TYPE;
+      if ( !svc ) return Status::BAD_STORAGE_TYPE;
       break;
     }
 
@@ -202,16 +202,16 @@ StatusCode PersistencySvc::addConverter( const CLID& /* clid */ ) { return Statu
 /// Add converter object to conversion service.
 StatusCode PersistencySvc::addConverter( IConverter* pConverter )
 {
-  if ( !pConverter ) return NO_CONVERTER;
+  if ( !pConverter ) return Status::NO_CONVERTER;
   IConversionSvc* svc = service( pConverter->repSvcType() );
-  return svc ? svc->addConverter( pConverter ) : BAD_STORAGE_TYPE;
+  return svc ? svc->addConverter( pConverter ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Remove converter object from conversion service (if present).
 StatusCode PersistencySvc::removeConverter( const CLID& clid )
 {
   // Remove converter type from all services
-  StatusCode status = NO_CONVERTER, iret = StatusCode::SUCCESS;
+  StatusCode status = Status::NO_CONVERTER, iret = StatusCode::SUCCESS;
   for ( auto& i : m_cnvServices ) {
     iret                           = i.second.conversionSvc()->removeConverter( clid );
     if ( iret.isSuccess() ) status = iret;
@@ -258,7 +258,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service( long type )
 /// Add data service
 StatusCode PersistencySvc::addCnvService( IConversionSvc* servc )
 {
-  if ( !servc ) return BAD_STORAGE_TYPE;
+  if ( !servc ) return Status::BAD_STORAGE_TYPE;
   long type                           = servc->repSvcType();
   long def_typ                        = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
   auto it                             = m_cnvServices.find( type );
@@ -291,7 +291,7 @@ StatusCode PersistencySvc::addCnvService( IConversionSvc* servc )
 StatusCode PersistencySvc::removeCnvService( long svctype )
 {
   auto it = m_cnvServices.find( svctype );
-  if ( it == m_cnvServices.end() ) return BAD_STORAGE_TYPE;
+  if ( it == m_cnvServices.end() ) return Status::BAD_STORAGE_TYPE;
   it->second.service()->release();
   it->second.addrCreator()->release();
   m_cnvServices.erase( it );
@@ -326,7 +326,7 @@ StatusCode PersistencySvc::createAddress( long svc_type, const CLID& clid, const
 {
   refpAddress          = nullptr;
   IAddressCreator* svc = addressCreator( svc_type );
-  return svc ? svc->createAddress( svc_type, clid, pars, ipars, refpAddress ) : BAD_STORAGE_TYPE;
+  return svc ? svc->createAddress( svc_type, clid, pars, ipars, refpAddress ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Convert an address to string form
@@ -342,7 +342,7 @@ StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::
     clid     = pAddress->clID();
   }
   IAddressCreator* svc = addressCreator( svc_type );
-  StatusCode status    = BAD_STORAGE_TYPE; // Preset error
+  StatusCode status    = Status::BAD_STORAGE_TYPE; // Preset error
   refAddress.clear();
 
   if ( svc ) {
@@ -368,7 +368,7 @@ StatusCode PersistencySvc::createAddress( long /* svc_type */, const CLID& /* cl
   std::string address_trailer;
   decodeAddrHdr( refAddress, new_svc_type, new_clid, address_trailer );
   IAddressCreator* svc = addressCreator( new_svc_type );
-  return svc ? svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress ) : BAD_STORAGE_TYPE;
+  return svc ? svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Retrieve string from storage type and clid

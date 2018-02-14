@@ -145,16 +145,44 @@ namespace
                       ExtraArgs&&... ea )
   {
     if ( parent->invalid() ) {
-      return Tuples::InvalidTuple;
+      return Tuples::ErrorCodes::InvalidTuple;
     }
     auto item = find_or_create( parent, name, container, std::forward<ExtraArgs>( ea )... );
     if ( !item ) {
-      return Tuples::InvalidColumn;
+      return Tuples::ErrorCodes::InvalidColumn;
     }
     *item = std::forward<UT>( value );
     return StatusCode::SUCCESS;
   }
+
+  struct TuplesCategory : StatusCode::Category {
+    const char* name() const override { return "Tuples"; }
+
+    bool isRecoverable( StatusCode::code_t ) const override { return false; }
+
+    std::string message( StatusCode::code_t code ) const override
+    {
+      switch ( static_cast<Tuples::ErrorCodes>( code ) ) {
+      case Tuples::ErrorCodes::InvalidTuple:
+        return "InvalidTuple";
+      case Tuples::ErrorCodes::InvalidColumn:
+        return "InvalidColumn";
+      case Tuples::ErrorCodes::InvalidOperation:
+        return "InvalidOperation";
+      case Tuples::ErrorCodes::InvalidObject:
+        return "InvalidObject";
+      case Tuples::ErrorCodes::InvalidItem:
+        return "InvalidItem";
+      case Tuples::ErrorCodes::TruncateValue:
+        return "TruncateValue";
+      default:
+        return StatusCode::default_category().message( code );
+      }
+    }
+  };
 }
+
+STATUSCODE_ENUM_IMPL( Tuples::ErrorCodes, TuplesCategory )
 
 namespace Tuples
 {
@@ -237,7 +265,7 @@ void Tuples::TupleObj::release()
 StatusCode Tuples::TupleObj::write()
 {
   if ( invalid() ) {
-    return InvalidTuple;
+    return ErrorCodes::InvalidTuple;
   }
   return tuple()->write();
 }
@@ -270,7 +298,7 @@ StatusCode Tuples::TupleObj::fill( const char* format... )
 {
   // check the underlying tuple
   if ( invalid() ) {
-    return InvalidTuple;
+    return ErrorCodes::InvalidTuple;
   }
   // decode format string into tokens
   auto tokens = tokenize( format, " ,;" );
@@ -298,10 +326,10 @@ StatusCode Tuples::TupleObj::fill( const char* format... )
 StatusCode Tuples::TupleObj::column( const std::string& name, IOpaqueAddress* address )
 {
   if ( !evtColType() ) {
-    return InvalidOperation;
+    return ErrorCodes::InvalidOperation;
   }
   if ( !address ) {
-    return Error( "column('" + name + "') IOpaqueAddress* is NULL!", InvalidObject );
+    return Error( "column('" + name + "') IOpaqueAddress* is NULL!", ErrorCodes::InvalidObject );
   }
   return column_( this, m_addresses, name, address );
 }

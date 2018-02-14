@@ -3,6 +3,7 @@
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"

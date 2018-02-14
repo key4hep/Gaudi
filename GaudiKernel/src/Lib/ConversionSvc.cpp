@@ -29,8 +29,8 @@ namespace
 StatusCode ConversionSvc::makeCall( int typ, bool ignore_add, bool ignore_obj, bool update, IOpaqueAddress*& pAddress,
                                     DataObject*& pObject )
 {
-  if ( !pAddress && !ignore_add ) return INVALID_ADDRESS;
-  if ( !pObject && !ignore_obj ) return INVALID_OBJECT;
+  if ( !pAddress && !ignore_add ) return Status::INVALID_ADDRESS;
+  if ( !pObject && !ignore_obj ) return Status::INVALID_OBJECT;
   const CLID& obj_class =
       ( pObject && !ignore_obj ) ? pObject->clID() : ( pAddress && !ignore_add ) ? pAddress->clID() : CLID_NULL;
   IConverter* cnv = converter( obj_class );
@@ -84,7 +84,7 @@ StatusCode ConversionSvc::makeCall( int typ, bool ignore_add, bool ignore_obj, b
     msgStream() << System::typeinfoName( typeid( *pObject ) );
   }
   msgStream() << "  CLID= " << obj_class << endmsg;
-  return NO_CONVERTER;
+  return Status::NO_CONVERTER;
 }
 
 void ConversionSvc::loadConverter( DataObject* ) {}
@@ -221,7 +221,7 @@ StatusCode ConversionSvc::addConverter( const CLID& clid )
     }
     pConverter->release();
   }
-  return NO_CONVERTER;
+  return Status::NO_CONVERTER;
 }
 
 /// Add converter object to conversion service.
@@ -233,7 +233,7 @@ StatusCode ConversionSvc::addConverter( IConverter* pConverter )
     m_workers.emplace_back( clid, pConverter );
     return StatusCode::SUCCESS;
   }
-  return NO_CONVERTER;
+  return Status::NO_CONVERTER;
 }
 
 /// Remove converter object from conversion service (if present).
@@ -242,7 +242,7 @@ StatusCode ConversionSvc::removeConverter( const CLID& clid )
 
   auto i = std::partition( std::begin( m_workers ), std::end( m_workers ),
                            [f = CnvTest( clid )]( const WorkerEntry& we ) { return !f( we ); } );
-  if ( i == std::end( m_workers ) ) return NO_CONVERTER;
+  if ( i == std::end( m_workers ) ) return Status::NO_CONVERTER;
   std::for_each( i, std::end( m_workers ), []( WorkerEntry& w ) { w.converter()->finalize().ignore(); } );
   m_workers.erase( i, std::end( m_workers ) );
   return StatusCode::SUCCESS;
@@ -282,7 +282,7 @@ IConverter* ConversionSvc::createConverter( long typ, const CLID& clid, const IC
 /// Configure the freshly created converter
 StatusCode ConversionSvc::configureConverter( long /* typ */, const CLID& /* clid */, IConverter* pConverter )
 {
-  if ( !pConverter ) return NO_CONVERTER;
+  if ( !pConverter ) return Status::NO_CONVERTER;
   pConverter->setConversionSvc( this ).ignore();
   pConverter->setAddressCreator( m_addressCreator ).ignore();
   pConverter->setDataProvider( m_dataSvc ).ignore();
@@ -292,13 +292,13 @@ StatusCode ConversionSvc::configureConverter( long /* typ */, const CLID& /* cli
 /// Initialize new converter
 StatusCode ConversionSvc::initializeConverter( long /* typ */, const CLID& /* clid */, IConverter* pConverter )
 {
-  return pConverter ? pConverter->initialize() : NO_CONVERTER;
+  return pConverter ? pConverter->initialize() : Status::NO_CONVERTER;
 }
 
 /// Activate the freshly created converter
 StatusCode ConversionSvc::activateConverter( long /* typ */, const CLID& /* clid */, IConverter* pConverter )
 {
-  return pConverter ? StatusCode::SUCCESS : StatusCode( NO_CONVERTER );
+  return pConverter ? StatusCode::SUCCESS : StatusCode( Status::NO_CONVERTER );
 }
 
 /// Retrieve the class type of objects the converter produces.
