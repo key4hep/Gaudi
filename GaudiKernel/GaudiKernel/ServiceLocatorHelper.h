@@ -68,9 +68,6 @@ public:
   }
 
 private:
-  std::string threadName() const;
-  std::string threadedName( const std::string& name ) const;
-  bool isInThread() const;
   ISvcLocator* serviceLocator() const { return &m_svcLoc; }
   MsgStream& log() const { return m_msgLog; }
   const std::string& requesterName() const { return m_requesterName; }

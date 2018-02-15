@@ -5,7 +5,6 @@
 #include "GaudiAlg/GaudiSequencer.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/ThreadGaudi.h"
 
 // C++
 #include <functional>

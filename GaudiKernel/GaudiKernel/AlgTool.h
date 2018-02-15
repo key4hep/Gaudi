@@ -314,8 +314,6 @@ private:
   Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
   Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
 
-  std::string m_threadID; ///< Thread Id for Alg Tool
-
   // tools used by tool
   mutable std::vector<IAlgTool*> m_tools;
   mutable std::vector<BaseToolHandle*> m_toolHandles;

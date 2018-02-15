@@ -1,7 +1,10 @@
+#ifndef GaudiKernel_EXPORTS // defined when compiling GaudiKernel
+#warning deprecated header (will be removed in Gaudi v30r3)
+#endif
 #ifndef GAUDI_KERNEL_THREADLIBGAUDI_H
 #define GAUDI_KERNEL_THREADLIBGAUDI_H
 
-#include "GaudiKernel/System.h" /* ThreadHandle" */
+#include "GaudiKernel/System.h" /* ThreadHandle */
 #include <map>
 #include <memory>
 #include <string>

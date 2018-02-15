@@ -9,7 +9,6 @@
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/TypeNameString.h"
 
@@ -486,7 +485,7 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()
       for ( const auto& it : m_topAlgNames.value() ) {
         Gaudi::Utils::TypeNameString item{it};
         // Got the type and name. Now creating the algorithm, avoiding duplicate creation.
-        std::string item_name   = item.name() + getGaudiThreadIDfromName( name() );
+        std::string item_name   = item.name();
         const bool CREATE       = false;
         SmartIF<IAlgorithm> alg = algMan->algorithm( item_name, CREATE );
         if ( alg ) {

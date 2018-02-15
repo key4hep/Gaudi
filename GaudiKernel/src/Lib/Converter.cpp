@@ -8,7 +8,6 @@
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
-#include "GaudiKernel/ThreadGaudi.h"
 
 /// Retrieve the class type of objects the converter produces.
 const CLID& Converter::objType() const { return m_classType; }

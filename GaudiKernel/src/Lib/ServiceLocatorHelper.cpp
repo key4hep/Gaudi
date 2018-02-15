@@ -1,17 +1,8 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
+
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ThreadGaudi.h"
-
-std::string ServiceLocatorHelper::threadName() const { return getGaudiThreadIDfromName( requesterName() ); }
-
-std::string ServiceLocatorHelper::threadedName( const std::string& name ) const
-{
-  return ( isInThread() ? name + threadName() : name );
-}
-
-bool ServiceLocatorHelper::isInThread() const { return isGaudiThreaded( requesterName() ); }
 
 StatusCode ServiceLocatorHelper::locateService( const std::string& name, const InterfaceID& iid, void** ppSvc,
                                                 bool quiet ) const
@@ -49,13 +40,7 @@ StatusCode ServiceLocatorHelper::createService( const std::string& type, const s
 
 SmartIF<IService> ServiceLocatorHelper::service( const std::string& name, const bool quiet, const bool createIf ) const
 {
-  SmartIF<IService> theSvc;
-  if ( isInThread() ) {
-    // first we look for  a thread-specific version of the service
-    theSvc = serviceLocator()->service( name + threadName(), createIf );
-  }
-  // if not, try to find the common, single-threaded version of the service
-  if ( !theSvc ) theSvc = serviceLocator()->service( name, createIf );
+  SmartIF<IService> theSvc = serviceLocator()->service( name, createIf );
 
   if ( theSvc ) {
     if ( !quiet ) {
@@ -65,9 +50,7 @@ SmartIF<IService> ServiceLocatorHelper::service( const std::string& name, const 
   } else {
     // if not return an error
     if ( !quiet ) {
-      log() << MSG::ERROR << "ServiceLocatorHelper::service: can not locate service " << name;
-      if ( isInThread() ) log() << MSG::ERROR << " or " << name + threadName();
-      log() << MSG::ERROR << endmsg;
+      log() << MSG::ERROR << "ServiceLocatorHelper::service: can not locate service " << name << endmsg;
     }
   }
   return theSvc;
