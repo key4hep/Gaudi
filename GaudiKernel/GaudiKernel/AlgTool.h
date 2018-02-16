@@ -46,7 +46,13 @@ class ToolHandleInfo;
  */
 class GAUDI_API AlgTool
     : public DataHandleHolderBase<
-          PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
+          PropertyHolder<
+          CommonMessaging<
+          implements<Gaudi::experimental::IDataHandleHolderReqs,
+                     IAlgTool,
+                     IDataHandleHolder,
+                     IProperty,
+                     IStateful>>>>
 {
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;
@@ -110,7 +116,9 @@ public:
   /** accessor to event service  service
    *  @return pointer to detector service
    */
-  IDataProviderSvc* evtSvc() const;
+  IDataProviderSvc* evtSvc() const { return eventSvc().get(); }
+  /// Added for interface compatibility with Algorithm
+  SmartIF<IDataProviderSvc>& eventSvc() const final override;
 
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;

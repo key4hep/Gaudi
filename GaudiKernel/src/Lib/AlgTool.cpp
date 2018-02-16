@@ -89,7 +89,7 @@ SmartIF<ISvcLocator>& AlgTool::serviceLocator() const
 // ============================================================================
 // accessor to event service  service
 // ============================================================================
-IDataProviderSvc* AlgTool::evtSvc() const
+SmartIF<IDataProviderSvc>& AlgTool::eventSvc() const
 {
   if ( !m_evtSvc ) {
     m_evtSvc = service( "EventDataSvc", true );
@@ -97,7 +97,7 @@ IDataProviderSvc* AlgTool::evtSvc() const
       throw GaudiException( "Service [EventDataSvc] not found", name(), StatusCode::FAILURE );
     }
   }
-  return m_evtSvc.get();
+  return m_evtSvc;
 }
 //------------------------------------------------------------------------------
 IToolSvc* AlgTool::toolSvc() const
