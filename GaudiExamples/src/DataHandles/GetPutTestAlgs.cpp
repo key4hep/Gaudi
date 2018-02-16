@@ -59,15 +59,13 @@ const size_t TEST_NON_MOVABLE_VALUE = 0xbadbeef;
 // === TEST ALGORITHMS ===
 
 /// This algorithm tests supported whiteboard writing scenarios
-class WriteHandleTestAlg : public Gaudi::experimental::Algorithm
+class WriteHandleTestAlg : public Algorithm
 {
-  using Super = Gaudi::experimental::Algorithm;
 public:
-  // NOTE: Cannot use "using Gaudi::experimental::Algorithm::Algorithm;"
-  //       due to a GCC 6 bug
+  // NOTE: Cannot use "using Algorithm::Algorithm;" due to a GCC 6 bug
   template<typename... Args>
   WriteHandleTestAlg( Args&&... args )
-    : Super( std::forward<Args>(args)... )
+    : Algorithm( std::forward<Args>(args)... )
   {}
 
   StatusCode execute() override
@@ -139,16 +137,15 @@ DECLARE_COMPONENT( WriteHandleTestAlg )
 
 
 /// This algorithm tests supported whiteboard reading scenarios
-class ReadHandleTestAlg : public Gaudi::experimental::Algorithm
+class ReadHandleTestAlg : public Algorithm
 {
-  using Super = Gaudi::experimental::Algorithm;
 public:
-  // NOTE: Cannot use "using Gaudi::experimental::Algorithm::Algorithm;"
-  //       due to a GCC 6 bug
+  // NOTE: Cannot use "using Algorithm::Algorithm;" due to a GCC 6 bug
   template<typename... Args>
   ReadHandleTestAlg( Args&&... args )
-    : Super( std::forward<Args>(args)... )
+    : Algorithm( std::forward<Args>(args)... )
   {}
+
 
   StatusCode execute() override
   {

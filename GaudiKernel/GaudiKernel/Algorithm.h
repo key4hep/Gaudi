@@ -76,7 +76,7 @@ class AlgorithmManager;
  *  @date   1998
  */
 class GAUDI_API Algorithm
-    : public DataHandleHolderBase<
+    : public Gaudi::experimental::DataHandleHolder<
              PropertyHolder<
              CommonMessaging<
              implements<Gaudi::experimental::IDataHandleHolderReqs,
@@ -628,17 +628,5 @@ private:
   Algorithm& operator=( const Algorithm& rhs ) = delete;
 };
 
-
-/// Work-in-progress rewrite of the DataHandle infrastructure
-namespace Gaudi
-{
-  namespace experimental
-  {
-    /// In order not to disturb the existing Algorithm implementation too much,
-    /// we temporarily build on top of it. Later, handles should be integrated
-    /// into it more cleanly.
-    using Algorithm = DataHandleHolder<::Algorithm>;
-  }
-}
 
 #endif // GAUDIKERNEL_ALGORITHM_H

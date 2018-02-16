@@ -68,7 +68,7 @@ namespace Gaudi
     /// one possible implementation...
     ///
     struct GAUDI_API IDataHandleHolderReqs
-      : virtual public extend_interfaces<IProperty, IStateful>
+      : virtual public extend_interfaces<IProperty>
     {
       DeclareInterfaceID( IDataHandleHolderReqs, 1, 0 );
 

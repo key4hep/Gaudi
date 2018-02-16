@@ -63,16 +63,13 @@ template<typename Inputs, typename Outputs> class DataHandleFlowAlg;
 //
 template<int... inputIDs,
          int... outputIDs>
-class DataHandleFlowAlg<IDs<inputIDs...>, IDs<outputIDs...>>
-  : public Gaudi::experimental::Algorithm
+class DataHandleFlowAlg<IDs<inputIDs...>, IDs<outputIDs...>> : public Algorithm
 {
-  using Super = Gaudi::experimental::Algorithm;
 public:
-  // NOTE: Cannot use "using Gaudi::experimental::Algorithm::Algorithm;"
-  //       due to a GCC 6 bug
+  // NOTE: Cannot use "using Algorithm::Algorithm;" due to a GCC 6 bug
   template<typename... Args>
   DataHandleFlowAlg( Args&&... args )
-    : Super( std::forward<Args>(args)... )
+    : Algorithm( std::forward<Args>(args)... )
   {}
 
   /// Run the algorithm, checking the data flow graph and I/O values

@@ -45,7 +45,7 @@ class ToolHandleInfo;
  *  @author Pere Mato
  */
 class GAUDI_API AlgTool
-    : public DataHandleHolderBase<
+    : public Gaudi::experimental::DataHandleHolder<
           PropertyHolder<
           CommonMessaging<
           implements<Gaudi::experimental::IDataHandleHolderReqs,

@@ -72,7 +72,7 @@ public:
 protected:
   /// initializes all handles - called by the sysInitialize method
   /// of any descendant of this
-  void initDataHandleHolder()
+  void initLegacyDataHandleHolder()
   {
     for ( auto h : m_handles ) h->init();
   }
@@ -94,41 +94,24 @@ namespace Gaudi
   namespace experimental
   {
     /// Implementation of new-style data handle holders (Tools, Algorithms...)
+    ///
+    /// TODO: Replace DataHandleHolderBase<BASE> with just BASE and delete the
+    ///       legacy DataHandleHolderBase once migration to the new DataHandle
+    ///       mechanism is complete.
+    ///
     template<typename BASE>
-    class GAUDI_API DataHandleHolder : public extends<BASE, IDataHandleHolder>
+    class GAUDI_API DataHandleHolder : public extends<DataHandleHolderBase<BASE>, IDataHandleHolder>
     {
+      using Super = extends<DataHandleHolderBase<BASE>, IDataHandleHolder>;
       static_assert(std::is_base_of<IDataHandleHolderReqs, BASE>::value,
                     "Base class must implement IDataHandleHolderReqs");
-      using Super = extends<BASE, IDataHandleHolder>;
 
       public:
-        // NOTE: Cannot use "using extends<Base, IDataHandleHolder>::extends;"
-        //       due to a GCC 6 bug
+        // NOTE: Cannot use "using Super::Super;" due to a GCC 6 bug
         template<typename... Args>
         DataHandleHolder( Args&&... args )
           : Super( std::forward<Args>(args)... )
         {}
-
-        // === INTERFACE FOR GAUDI STATE MACHINE ===
-
-        /// Defer handle initialization until the base class is ready
-        ///
-        /// FIXME: This ugly hack prevents daughter classes from using the
-        ///        initialize() hook, which prevents making DataHandleHolder a
-        ///        true part of the Algorithm or AlgTool implementation.
-        ///
-        ///        The proper long-term fix is to somehow integrate this handle
-        ///        initialization into the sysInitialize() method of Algorithms
-        ///        and AlgTools, which is a more intrusive change than I'm
-        ///        willing to perform at this stage of development.
-        ///
-        StatusCode initialize() final override {
-          auto sc = BASE::initialize();
-          if(sc.isFailure()) return sc;
-          initializeHandles(m_eventInputHandles);
-          initializeHandles(m_eventOutputHandles);
-          return sc;
-        }
 
         // === INTERFACE FOR DATA HANDLES ===
 
@@ -154,6 +137,15 @@ namespace Gaudi
           return getKeys(m_eventOutputHandles);
         }
 
+
+      protected:
+        /// DataHandle initialization will only be finalized once the underlying
+        /// Algorithm or AlgTool has went through sysInitialize.
+        void initDataHandleHolder() {
+          Super::initLegacyDataHandleHolder();
+          initializeHandles(m_eventInputHandles);
+          initializeHandles(m_eventOutputHandles);
+        }
 
       private:
         /// Data handles associated with input and output event data
