@@ -598,7 +598,11 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
     status = exceptionSvc()->handle( *this );
   }
 
-  if ( UNLIKELY( m_doTimeline ) ) timeline.end = Clock::now();
+  if ( UNLIKELY( m_doTimeline ) ) {
+    timeline.end = Clock::now();
+    // finalize already registered event with algorithm completion time point
+    timelineSvc()->registerTimelineEvent( timeline );
+  }
 
   if ( status.isFailure() ) {
     // Increment the error count
