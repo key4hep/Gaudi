@@ -59,8 +59,22 @@ StatusCode TimelineSvc::finalize()
 
 void TimelineSvc::registerTimelineEvent( const TimelineEvent& e )
 {
+  // if event exists refresh/augment its fields
+  bool eventExists = false;
+  for ( auto& candidate : m_events ) {
+    if ( candidate.algorithm == e.algorithm && candidate.event == e.event ) {
+      candidate.start  = e.start;
+      candidate.end    = e.end;
+      candidate.slot   = e.slot;
+      candidate.thread = e.thread;
 
-  m_events.push_back( e );
+      eventExists = true;
+      break;
+    }
+  }
+
+  // register new event if not found in the previous step
+  if ( !eventExists ) m_events.push_back( e );
 
   if ( m_partial ) {
     std::ofstream out( m_timelineFile + ".part", std::ofstream::app | std::ofstream::out );
