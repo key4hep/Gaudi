@@ -401,8 +401,37 @@ macro(gaudi_project project version)
   # (python scripts are located as such but run through python)
   set(binary_paths ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
-  find_program(env_cmd xenv HINTS ${binary_paths})
-  set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
+  find_program(env_cmd NAMES xenv)
+  if(NOT env_cmd)
+    if(NOT EXISTS ${CMAKE_BINARY_DIR}/contrib/xenv)
+      execute_process(COMMAND git clone https://gitlab.cern.ch/gaudi/xenv.git ${CMAKE_BINARY_DIR}/contrib/xenv)
+    endif()
+    # I'd like to generate the script with executable permission, but I only
+    # found this workaround: https://stackoverflow.com/a/45515418
+    # - write a temporary file
+    file(WRITE "${CMAKE_BINARY_DIR}/xenv"
+"#!/usr/bin/env python
+from os.path import join, dirname, pardir
+import sys
+sys.path.append(join(dirname(__file__), pardir, 'python'))
+from xenv import main
+main()")
+    # - copy it to the right place with right permissions
+    file(COPY "${CMAKE_BINARY_DIR}/xenv" DESTINATION "${CMAKE_BINARY_DIR}/bin"
+         FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                          GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    # - remove the temporary
+    file(REMOVE "${CMAKE_BINARY_DIR}/xenv")
+    # we have to copy the Python package to the bin directory to be able to run xenv
+    # without setting PYTHONPATH
+    file(COPY ${CMAKE_BINARY_DIR}/contrib/xenv/xenv DESTINATION "${CMAKE_BINARY_DIR}/python")
+
+    set(env_cmd "${CMAKE_BINARY_DIR}/bin/xenv" CACHE FILEPATH "Path to xenv command" FORCE)
+
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/xenv DESTINATION scripts)
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/contrib/xenv/xenv DESTINATION python
+            FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
+  endif()
 
   find_program(default_merge_cmd quick-merge HINTS ${binary_paths})
   set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd})
@@ -465,9 +494,6 @@ macro(gaudi_project project version)
                            PATTERN "*.cmake.in"
                            PATTERN "*.py"
                            PATTERN ".svn" EXCLUDE)
-  install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
-  install(DIRECTORY cmake/EnvConfig DESTINATION scripts
-          FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   if (CMAKE_EXPORT_COMPILE_COMMANDS)
     install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION . OPTIONAL)
