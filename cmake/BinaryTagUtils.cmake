@@ -151,7 +151,10 @@ function(check_compiler)
   endif()
 endfunction()
 
-set(_GET_HOST_BINARY_TAG_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/get_host_binary_tag.py" CACHE INTERNAL "")
+find_program(HOST_BINARY_TAG_COMMAND
+             NAMES host-binary-tag get_host_binary_tag.py
+             HINTS "${CMAKE_CURRENT_LIST_DIR}")
+mark_as_advanced(HOST_BINARY_TAG_COMMAND)
 #.rst
 # .. command:: get_host_binary_tag
 #
@@ -171,14 +174,11 @@ function(get_host_binary_tag variable)
   else()
     set(type opt)
   endif()
+  if(NOT HOST_BINARY_TAG_COMMAND)
+    message(FATAL_ERROR "No host-binary-tag command, cannot get host binary tag")
+  endif()
   if(NOT HOST_BINARY_TAG)
-    if(NOT PYTHON_EXECUTABLE)
-      find_package(PythonInterp 2.7 QUIET)
-      if(NOT PYTHONINTERP_FOUND)
-        message(FATAL_ERROR "Python interpreter required to get host binary tag")
-      endif()
-    endif()
-    execute_process(COMMAND ${PYTHON_EXECUTABLE} "${_GET_HOST_BINARY_TAG_SCRIPT}"
+    execute_process(COMMAND "${HOST_BINARY_TAG_COMMAND}"
                     OUTPUT_VARIABLE HOST_BINARY_TAG
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(HOST_BINARY_TAG ${HOST_BINARY_TAG} CACHE STRING "BINARY_TAG of the host")
