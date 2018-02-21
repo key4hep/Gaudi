@@ -86,8 +86,12 @@ namespace Gaudi
       void invoke( std::index_sequence<I...>, std::index_sequence<O...> )
       {
         auto out = details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... );
+#if __cplusplus < 201703L
         (void)std::initializer_list<int>{
             ( details::put( std::get<O>( this->m_outputs ), std::get<O>( std::move( out ) ) ), 0 )...};
+#else
+        ( details::put( std::get<O>( this->m_outputs ), std::get<O>( std::move( out ) ) ), ... );
+#endif
       }
     };
 
