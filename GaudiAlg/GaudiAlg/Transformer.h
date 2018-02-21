@@ -82,8 +82,12 @@ namespace Gaudi
         using details::put;
         try {
           auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
+#if __cplusplus < 201703L
           (void)std::initializer_list<int>{
               ( put( std::get<O>( this->m_outputs ), std::move( std::get<O>( out ) ) ), 0 )...};
+#else
+          ( put( std::get<O>( this->m_outputs ), std::move( std::get<O>( out ) ) ), ... );
+#endif
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
