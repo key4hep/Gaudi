@@ -64,16 +64,7 @@ namespace concurrency
     if ( visitor.visitEnter( *this ) ) {
       // try to aggregate a decision
       bool result = visitor.visit( *this );
-
-      // if a decision was made for this node, propagate the result upwards
-      if ( result ) {
-        for ( auto parent : m_parents ) {
-          parent->accept( visitor );
-        }
-        return false;
-      }
-
-      return true; // visitor was accepted to try to aggregate the node's decision
+      return !result;
     }
 
     return false; // visitor was rejected (since the decision node has an aggregated decision already)
