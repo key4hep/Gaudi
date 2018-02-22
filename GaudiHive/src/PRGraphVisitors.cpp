@@ -4,6 +4,8 @@
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/ICondSvc.h"
 
+#include <queue>
+
 namespace concurrency
 {
 
@@ -144,6 +146,36 @@ namespace concurrency
   //---------------------------------------------------------------------------
   bool Supervisor::visitEnter( DecisionNode& node ) const
   {
+    // Protect against graph traversal escaping from sub-slots
+    if ( m_slot->parentSlot ) {
+      // Examine the ancestry of this node, looking for sub-slot entry point
+      bool canFindExit = false;
+      std::queue<DecisionNode*> allAncestors;
+      allAncestors.push( &node );
+      while ( allAncestors.size() ) {
+
+        DecisionNode* thisAncestor = allAncestors.front();
+        allAncestors.pop();
+
+        if ( thisAncestor->getNodeName() == m_slot->entryPoint ) {
+
+          // This ancestor is the sub-slot exit
+          canFindExit = true;
+          break;
+
+        } else {
+
+          // Go further up the node ancestry
+          for ( auto& evenOlder : thisAncestor->m_parents ) {
+
+            allAncestors.push( evenOlder );
+          }
+        }
+      }
+
+      // If the sub-slot entry point is not in this node's ancestry, don't visit the node
+      if ( !canFindExit ) return false;
+    }
 
     if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) return false;
     return true;
@@ -158,8 +190,12 @@ namespace concurrency
     bool foundPositiveChild    = false;
     int decision               = -1;
 
-    // If currently in a sub-slot, leave it if you've got to the exit
-    if ( m_slot->parentSlot && m_slot->entryPoint == node.getNodeName() ) m_slot = m_slot->parentSlot;
+    // Leave a sub-slot if this is the exit node
+    EventSlot* oldSlot = nullptr;
+    if ( m_slot->parentSlot && m_slot->entryPoint == node.getNodeName() ) {
+      oldSlot = m_slot;
+      m_slot  = m_slot->parentSlot;
+    }
 
     // If children are in sub-slots, loop over all
     auto searchResult = m_slot->subSlotsByNode.find( node.getNodeName() );
@@ -251,6 +287,13 @@ namespace concurrency
 
     if ( decision != -1 ) {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
+
+      // if a decision was made for this node, propagate the result upwards
+      for ( auto parent : node.m_parents ) {
+        parent->accept( *this );
+      }
+
+      if ( oldSlot ) m_slot = oldSlot;
       return true;
     }
 
@@ -279,6 +322,7 @@ namespace concurrency
       }
     }
 
+    if ( oldSlot ) m_slot = oldSlot;
     return false;
   }
 
@@ -513,11 +557,23 @@ namespace concurrency
 
       if ( childDecision == 1 && node.m_modeOR && node.m_modePromptDecision ) {
         m_slot->controlFlowState[node.getNodeIndex()] = 1;
+
+        // if a decision was made for this node, propagate the result upwards
+        for ( auto parent : node.m_parents ) {
+          parent->accept( *this );
+        }
         return true;
       }
     }
 
-    if ( allChildDecisionsResolved ) m_slot->controlFlowState[node.getNodeIndex()] = 1;
+    if ( allChildDecisionsResolved ) {
+      m_slot->controlFlowState[node.getNodeIndex()] = 1;
+
+      // if a decision was made for this node, propagate the result upwards
+      for ( auto parent : node.m_parents ) {
+        parent->accept( *this );
+      }
+    }
 
     return allChildDecisionsResolved;
   }
