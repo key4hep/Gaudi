@@ -549,19 +549,10 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
                                      // check if we want to audit the initialize
                                      ( m_auditorExecute ) ? auditorSvc().get() : nullptr, IAuditor::Execute, status );
 
-  TimelineEvent timeline;
-  timeline.algorithm = this->name();
-  timeline.thread    = pthread_self();
-  timeline.slot      = ctx.slot();
-  timeline.event     = ctx.evt();
-
   try {
-
+    ITimelineSvc::TimelineRecorder timelineRecoder;
     if ( UNLIKELY( m_doTimeline ) ) {
-      timeline.start = Clock::now();
-      // make the partially filled event (no end timepoint yet) accessible to other components ASAP
-      // (useful, e.g., in scheduler's in-failure and in-stall dumps)
-      timelineSvc()->registerTimelineEvent( timeline );
+      timelineRecoder = timelineSvc()->getRecorder( name(), ctx );
     }
 
     status = execute();
@@ -596,12 +587,6 @@ StatusCode Algorithm::sysExecute( const EventContext& ctx )
     // Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
 
     status = exceptionSvc()->handle( *this );
-  }
-
-  if ( UNLIKELY( m_doTimeline ) ) {
-    timeline.end = Clock::now();
-    // finalize already registered event with algorithm completion time point
-    timelineSvc()->registerTimelineEvent( timeline );
   }
 
   if ( status.isFailure() ) {
