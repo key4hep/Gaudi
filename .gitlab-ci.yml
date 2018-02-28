@@ -3,6 +3,11 @@ stages:
   - test
   - deploy
 
+image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
+
+variables:
+  NO_LBLOGIN: 1
+
 before_script:
   - export BINARY_TAG=x86_64-centos7-gcc7-opt
   - export LCG_hostos=x86_64-centos7
@@ -14,7 +19,6 @@ before_script:
   - export CCACHE_CPP2=1
 
 build:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: build
@@ -33,13 +37,12 @@ build:
     expire_in: 1 week
 
 coding-conventions:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: test
   script:
     - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
-    - pip install autopep8
+    - sudo pip install autopep8
     - make BUILDDIR=build apply-formatting
     - git diff > apply-formatting.patch
     - git diff --stat --exit-code
@@ -50,7 +53,6 @@ coding-conventions:
     expire_in: 1 day
 
 doxygen:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: test
@@ -70,7 +72,6 @@ doxygen:
     expire_in: 1 day
 
 test:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: test
