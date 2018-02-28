@@ -41,19 +41,27 @@ option(CMAKE_EXPORT_COMPILE_COMMANDS "Generate compile_commands.json file" ON)
 # It handles versions strings like "vXrY[pZ[aN]]" and "1.2.3.4"
 set(GAUDI_VERSION_REGEX "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+)(([a-z.])([0-9]+))?)?")
 
+# Reset the accumulators GAUDI_RULE_LAUNCH_* in case this is executed multiple times
+foreach(_rule COMPILE LINK CUSTOM)
+  set(GAUDI_RULE_LAUNCH_${_rule})
+  set(GAUDI_RULE_LAUNCH_${_rule}_ENV)  # holds env to be prepended to command
+endforeach()
+
+# Hooks for modifying the launch rules
 if (GAUDI_BUILD_PREFIX_CMD)
-  set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${GAUDI_BUILD_PREFIX_CMD}")
+  set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
 endif()
 
 find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
+find_program(icecc_cmd icecc)
 set(_clang_format_names)
 foreach(_clang_version 5.0 4.0 3.9 3.8 3.7)
   list(APPEND _clang_format_names lcg-clang-format-${_clang_version} clang-format-${_clang_version})
 endforeach()
 list(APPEND _clang_format_names clang-format)
 find_program(clang_format_cmd NAMES ${_clang_format_names})
-mark_as_advanced(ccache_cmd distcc_cmd clang_format_cmd)
+mark_as_advanced(ccache_cmd distcc_cmd icecc_cmd clang_format_cmd)
 
 if(ccache_cmd)
   option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
@@ -63,16 +71,29 @@ if(ccache_cmd)
   endif()
 endif()
 
+set(_distributed_compiler)
 if(distcc_cmd)
   option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
   if(CMAKE_USE_DISTCC)
-    if(CMAKE_USE_CCACHE)
-      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} CCACHE_PREFIX=${distcc_cmd} ${ccache_cmd}")
-      message(STATUS "Enabling distcc builds in ccache")
-    else()
-      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${distcc_cmd}")
-      message(STATUS "Using distcc for building")
+    set(_distributed_compiler distcc)
+  endif()
+endif()
+if(icecc_cmd)
+  option(CMAKE_USE_ICECC "Use icecc to speed up compilation." OFF)
+  if(CMAKE_USE_ICECC)
+    if(_distributed_compiler)
+        message(FATAL_ERROR "Cannot use multiple distributed compilers at the same time")
     endif()
+    set(_distributed_compiler icecc)
+  endif()
+endif()
+if(_distributed_compiler)
+  if(CMAKE_USE_CCACHE)
+    set(GAUDI_RULE_LAUNCH_COMPILE_ENV "${GAUDI_RULE_LAUNCH_COMPILE_ENV} CCACHE_PREFIX=${_distributed_compiler}")
+    message(STATUS "Enabling ${_distributed_compiler} builds in ccache")
+  else()
+    set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${_distributed_compiler}")
+    message(STATUS "Using ${_distributed_compiler} for building")
   endif()
 endif()
 
@@ -107,13 +128,16 @@ if(GAUDI_USE_CTEST_LAUNCHERS)
   endif()
 
   set(GAUDI_RULE_LAUNCH_COMPILE
-    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_compile_options} -- ${GAUDI_RULE_LAUNCH_COMPILE}")
+    "\"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_compile_options} -- ${GAUDI_RULE_LAUNCH_COMPILE}")
+  set(GAUDI_RULE_LAUNCH_COMPILE_ENV "${GAUDI_RULE_LAUNCH_COMPILE_ENV} CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs")
 
   set(GAUDI_RULE_LAUNCH_LINK
-    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_link_options} -- ${GAUDI_RULE_LAUNCH_LINK}")
+    "\"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_link_options} -- ${GAUDI_RULE_LAUNCH_LINK}")
+  set(GAUDI_RULE_LAUNCH_LINK_ENV "${GAUDI_RULE_LAUNCH_LINK_ENV} CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs")
 
   set(GAUDI_RULE_LAUNCH_CUSTOM
-    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_custom_options} -- ${GAUDI_RULE_LAUNCH_CUSTOM}")
+    "\"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_custom_options} -- ${GAUDI_RULE_LAUNCH_CUSTOM}")
+  set(GAUDI_RULE_LAUNCH_CUSTOM_ENV "${GAUDI_RULE_LAUNCH_CUSTOM_ENV} CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs")
 
   if("${CMAKE_GENERATOR}" MATCHES "Make")
     set(GAUDI_RULE_LAUNCH_LINK "env ${GAUDI_RULE_LAUNCH_LINK}")
@@ -124,8 +148,9 @@ endif()
 foreach(_rule COMPILE LINK CUSTOM)
   if(GAUDI_RULE_LAUNCH_${_rule})
     string(STRIP "${GAUDI_RULE_LAUNCH_${_rule}}" GAUDI_RULE_LAUNCH_${_rule})
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_${_rule} "${GAUDI_RULE_LAUNCH_${_rule}}")
-    message(STATUS "Prefix ${_rule} commands with '${GAUDI_RULE_LAUNCH_${_rule}}'")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_${_rule}
+      "${GAUDI_RULE_LAUNCH_${_rule}_ENV} ${GAUDI_RULE_LAUNCH_${_rule}}")
+    message(STATUS "Prefix ${_rule} commands with '${GAUDI_RULE_LAUNCH_${_rule}_ENV} ${GAUDI_RULE_LAUNCH_${_rule}}'")
   endif()
 endforeach()
 
