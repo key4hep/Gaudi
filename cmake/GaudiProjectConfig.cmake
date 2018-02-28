@@ -548,6 +548,10 @@ main()")
     # find the real path to the compiler
     set(compiler_bin_path)
     get_filename_component(cxx_basename "${CMAKE_CXX_COMPILER}" NAME)
+    if(cxx_basename MATCHES "lcg-([^-]*)-.*")
+      # the correct path to the compiler may not contain the lcg-abc-X.Y.Z link
+      set(cxx_basename "${CMAKE_MATCH_1}")
+    endif()
     foreach(_ldir ${std_library_path})
       while(NOT _ldir STREQUAL "/")
         get_filename_component(_ldir "${_ldir}" PATH)
