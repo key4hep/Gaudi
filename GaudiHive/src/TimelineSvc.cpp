@@ -50,35 +50,6 @@ StatusCode TimelineSvc::finalize()
   return StatusCode::SUCCESS;
 }
 
-void TimelineSvc::registerTimelineEvent( const TimelineEvent& e )
-{
-  // if event exists refresh/augment its fields
-  bool eventExists = false;
-  for ( auto& candidate : m_events ) {
-    if ( candidate.algorithm == e.algorithm && candidate.event == e.event ) {
-      candidate.start  = e.start;
-      candidate.end    = e.end;
-      candidate.slot   = e.slot;
-      candidate.thread = e.thread;
-
-      eventExists = true;
-      break;
-    }
-  }
-
-  // register new event if not found in the previous step
-  if ( !eventExists ) m_events.push_back( e );
-
-  if ( m_partial ) {
-    std::ofstream out( m_timelineFile + ".part", std::ofstream::app | std::ofstream::out );
-    out << std::chrono::duration_cast<std::chrono::nanoseconds>( e.start.time_since_epoch() ).count() << " "
-        << std::chrono::duration_cast<std::chrono::nanoseconds>( e.end.time_since_epoch() ).count() << " "
-        << e.algorithm << " " << e.thread << " " << e.slot << " " << e.event << std::endl;
-
-    out.close();
-  }
-}
-
 ITimelineSvc::TimelineRecorder TimelineSvc::getRecorder( std::string alg, const EventContext& ctx )
 {
   TimelineRecorder recorder{*m_events.emplace_back(), std::move( alg ), ctx};

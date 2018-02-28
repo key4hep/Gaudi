@@ -18,7 +18,6 @@ public:
   StatusCode reinitialize() override;
   StatusCode finalize() override;
 
-  void registerTimelineEvent( const TimelineEvent& ) override;
   TimelineRecorder getRecorder( std::string alg, const EventContext& ctx ) override;
   bool getTimelineEvent( TimelineEvent& ) const override;
 

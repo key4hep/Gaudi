@@ -58,7 +58,6 @@ public:
     TimelineEvent* m_record = nullptr;
   };
 
-  virtual void registerTimelineEvent( const TimelineEvent& ) = 0;
   virtual TimelineRecorder getRecorder( std::string alg, const EventContext& ctx ) = 0;
   // Augment a partially pre-filled TimelineEvent object with matching info
   virtual bool getTimelineEvent( TimelineEvent& ) const = 0;
