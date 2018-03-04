@@ -74,7 +74,7 @@ public:
                number_type time_stamp_ns_offset = 0, number_type lumi_block = UNDEFNUM,
                number_type bunch_crossing_id = 0 );
   // Use default copy constructor.
-  virtual ~EventIDBase();
+  virtual ~EventIDBase() = default;
   //@}
 
   /// run number - 32 bit unsigned
@@ -133,18 +133,18 @@ public:
   void set_bunch_crossing_id( number_type bcid ) { m_bunch_crossing_id = bcid; }
 
   /// Comparison operators
-  friend bool operator<( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator>( const EventIDBase& lhs, const EventIDBase& rhs );
   friend bool operator==( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator!=( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator<=( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator>=( const EventIDBase& lhs, const EventIDBase& rhs );
+  friend bool operator<( const EventIDBase& lhs, const EventIDBase& rhs );
+  friend bool operator>( const EventIDBase& lhs, const EventIDBase& rhs ) { return rhs < lhs; }
+  friend bool operator!=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs == rhs ); }
+  friend bool operator<=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs > rhs ); }
+  friend bool operator>=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs < rhs ); }
 
-  bool isRunEvent() const;
-  bool isTimeStamp() const;
-  bool isLumiEvent() const;
-  bool isRunLumi() const;
-  bool isValid() const;
+  bool isRunEvent() const { return m_type & RunEvent; }
+  bool isTimeStamp() const { return m_type & TimeStamp; }
+  bool isLumiEvent() const { return m_type & LumiEvent; }
+  bool isRunLumi() const { return m_type & RunLumi; }
+  bool isValid() const { return m_type != Invalid; }
 
   /// Extraction operators
   friend std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs );
@@ -178,10 +178,10 @@ private:
 
   unsigned m_type{Invalid};
 
-  void setRE() { m_type = m_type | RunEvent; }
-  void setTS() { m_type = m_type | TimeStamp; }
-  void setLE() { m_type = m_type | LumiEvent; }
-  void setRL() { m_type = m_type | RunLumi; }
+  void setRE() { m_type |= RunEvent; }
+  void setTS() { m_type |= TimeStamp; }
+  void setLE() { m_type |= LumiEvent; }
+  void setRL() { m_type |= RunLumi; }
 
   /// run number
   number_type m_run_number{UNDEFNUM};
@@ -223,10 +223,6 @@ inline bool operator==( const EventIDBase& lhs, const EventIDBase& rhs )
   return ( lhs.m_run_number == rhs.m_run_number && lhs.m_event_number == rhs.m_event_number &&
            lhs.m_lumi_block == rhs.m_lumi_block );
 }
-inline bool operator>( const EventIDBase& lhs, const EventIDBase& rhs ) { return rhs < lhs; }
-inline bool operator!=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs == rhs ); }
-inline bool operator<=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs > rhs ); }
-inline bool operator>=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs < rhs ); }
 
 inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs )
 {
