@@ -8,16 +8,13 @@ namespace details
 
 #if __cplusplus > 201402L
 
-  // C++17 version: https://godbolt.org/g/2vAZQt
+  // C++17 version: https://godbolt.org/g/YdcvGg
   template <typename... lambda_ts>
   struct composer_t : lambda_ts... {
-    template <typename... T>
-    composer_t( T&&... t ) : lambda_ts( std::forward<T>( t ) )...
-    {
-    }
-
     using lambda_ts::operator()...;
   };
+  template <typename... lambda_ts>
+  composer_t( lambda_ts... )->composer_t<lambda_ts...>;
 
 #else
 
@@ -54,8 +51,13 @@ namespace details
 }
 
 template <typename... lambda_ts>
-details::composer_t<std::decay_t<lambda_ts>...> compose( lambda_ts&&... lambdas )
+auto compose( lambda_ts&&... lambdas )
 {
-  return {std::forward<lambda_ts>( lambdas )...};
+#if __cplusplus > 201402L
+  return details::composer_t{std::forward<lambda_ts>( lambdas )...};
+#else
+  return details::composer_t<std::decay_t<lambda_ts>...>{std::forward<lambda_ts>( lambdas )...};
+#endif
 }
+
 #endif
