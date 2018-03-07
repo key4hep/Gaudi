@@ -793,28 +793,18 @@ namespace Tuples
      *
      *  @author Gerhard Raven
      */
-  private:
-    template <typename Tuple, typename Value, std::size_t... I>
-    StatusCode columns_helper( const Value& value, const Tuple& tup, std::index_sequence<I...> )
-    {
-      auto scs = std::initializer_list<StatusCode>{
-          this->column( std::get<I>( tup ).first, Gaudi::invoke( std::get<I>( tup ).second, value ) )...};
-      auto is_ok = []( const StatusCode& sc ) -> bool { return sc.isSuccess(); };
-      auto i     = std::find_if_not( begin( scs ), end( scs ), is_ok );
-      if ( i != end( scs ) ) {
-        // avoid unchecked StatusCodes...
-        std::for_each( std::next( i ), end( scs ), is_ok );
-        return *i;
-      }
-      return StatusCode::SUCCESS;
-    }
 
-  public:
     template <typename Value, typename... Args>
     StatusCode columns( Value&& value, Args&&... args )
     {
-      return columns_helper( std::forward<Value>( value ), std::forward_as_tuple( std::forward<Args>( args )... ),
-                             std::index_sequence_for<Args...>{} );
+      if ( sizeof...( Args ) == 0 ) return StatusCode::SUCCESS;
+      std::initializer_list<StatusCode> scs{
+          this->column( std::get<0>( args ), Gaudi::invoke( std::get<1>( args ), value ) )...};
+      return std::accumulate( std::next( begin( scs ) ), end( scs ), *begin( scs ),
+                              []( StatusCode sc, const StatusCode& i ) {
+                                i.ignore();                     // make sure there are no unchecked StatusCodes...
+                                return sc.isFailure() ? sc : i; // latch to the first non-success case
+                              } );
     }
     // ========================================================================
   public:
