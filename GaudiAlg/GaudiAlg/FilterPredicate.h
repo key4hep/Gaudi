@@ -3,6 +3,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/apply.h"
 #include <type_traits>
 #include <utility>
 
@@ -25,7 +26,9 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          invoke( std::index_sequence_for<In...>{} );
+          this->setFilterPassed( Gaudi::apply(
+              [&]( auto&... handles ) { return details::as_const( *this )( details::deref( handles.get() )... ); },
+              this->m_inputs ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -35,15 +38,6 @@ namespace Gaudi
 
       // ... instead, they must implement the following operator
       virtual bool operator()( const In&... ) const = 0;
-
-    private:
-      // note: invoke is not const, as setFilterPassed is not (yet!) const
-      template <std::size_t... I>
-      void invoke( std::index_sequence<I...> )
-      {
-        auto pass = details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... );
-        this->setFilterPassed( pass );
-      }
     };
   }
 }
