@@ -158,18 +158,18 @@ StatusCode Algorithm::sysInitialize()
   }
 
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
-    debug() << "input handles: " << inputHandles().size() << endmsg;
-    debug() << "output handles: " << outputHandles().size() << endmsg;
+    debug() << "input handles: " << eventInputKeys().size() << endmsg;
+    debug() << "output handles: " << eventOutputKeys().size() << endmsg;
   }
 
   // check for explicit circular data dependencies in declared handles
   DataObjIDColl out;
-  for ( auto& h : outputHandles() ) {
-    if ( !h->objKey().empty() ) out.emplace( h->fullKey() );
+  for ( const auto& id: eventOutputKeys() ) {
+    if ( !id.empty() ) out.emplace( id );
   }
-  for ( auto& h : inputHandles() ) {
-    if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
-      error() << "Explicit circular data dependency detected for id " << h->fullKey() << endmsg;
+  for ( const auto& id: eventInputKeys() ) {
+    if ( out.find( id ) != out.end() ) {
+      error() << "Explicit circular data dependency detected for id " << id << endmsg;
       sc = StatusCode::FAILURE;
     }
   }

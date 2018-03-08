@@ -129,12 +129,16 @@ namespace Gaudi
 
         /// Tell which event store keys the algorithm will be reading from
         DataObjIDColl eventInputKeys() const final override {
-          return getKeys(m_eventInputHandles);
+          auto inputKeys = getHandleKeys(m_eventInputHandles);
+          addLegacyKeys(inputKeys, Super::inputHandles());
+          return inputKeys;
         }
 
         /// Tell which event store keys the algorithm will be writing to
         DataObjIDColl eventOutputKeys() const final override {
-          return getKeys(m_eventOutputHandles);
+          auto outputKeys = getHandleKeys(m_eventOutputHandles);
+          addLegacyKeys(outputKeys, Super::outputHandles());
+          return outputKeys;
         }
 
 
@@ -154,13 +158,22 @@ namespace Gaudi
         HandleList m_eventOutputHandles;
 
         /// Query the keys associated with a set of handles
-        static DataObjIDColl getKeys(const HandleList& handles) {
+        static DataObjIDColl getHandleKeys(const HandleList& handles) {
           DataObjIDColl result;
           result.reserve(handles.size());
           for(auto handlePtr: handles) {
-            result.insert(handlePtr->targetID());
+            result.emplace(handlePtr->targetID());
           }
           return result;
+        }
+
+        /// Add to these keys some from legacy DataHandles
+        static void addLegacyKeys(DataObjIDColl& keys,
+                                  std::vector<Gaudi::DataHandle*>&& handles) {
+          keys.reserve(handles.size());
+          for(auto handlePtr: handles) {
+            keys.emplace(handlePtr->fullKey());
+          }
         }
 
         /// Initialize a set of handles
