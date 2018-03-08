@@ -439,7 +439,9 @@ public:
 public:
   void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
+#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
   void commitHandles() override;
+#endif
 
 public:
   void registerTool( IAlgTool* tool ) const;

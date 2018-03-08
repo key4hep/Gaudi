@@ -22,7 +22,9 @@ public:
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const = 0;
 
+#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
   virtual void commitHandles() = 0;
+#endif
 
   virtual const DataObjIDColl& inputDataObjs() const  = 0;
   virtual const DataObjIDColl& outputDataObjs() const = 0;

@@ -104,6 +104,9 @@ option(G22_NEW_SVCLOCATOR
 option(GAUDI_V22
        "enable some API extensions"
        OFF)
+option(GAUDI_V30_DATAHANDLE_COMMIT
+       "enable deprecated DataHandle::commit() hook and associated code"
+       OFF)
 
 if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0")
   option(GAUDI_SUGGEST_OVERRIDE "enable warnings for missing override keyword" ON)

@@ -957,6 +957,7 @@ SmartIF<IService> Algorithm::service( const std::string& name, const bool create
 }
 
 //-----------------------------------------------------------------------------
+#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
 void Algorithm::commitHandles()
 {
   //-----------------------------------------------------------------------------
@@ -977,6 +978,7 @@ void Algorithm::commitHandles()
     a->commitHandles();
   }
 }
+#endif
 
 void Algorithm::registerTool( IAlgTool* tool ) const
 {

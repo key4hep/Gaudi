@@ -516,6 +516,7 @@ void AlgTool::acceptDHVisitor( IDataHandleVisitor* vis ) const
 }
 
 //-----------------------------------------------------------------------------
+#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
 void AlgTool::commitHandles()
 {
   //-----------------------------------------------------------------------------
@@ -527,3 +528,4 @@ void AlgTool::commitHandles()
     if ( at ) at->commitHandles();
   }
 }
+#endif
