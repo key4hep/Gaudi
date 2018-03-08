@@ -415,6 +415,20 @@ StatusCode THistSvc::regTree( const std::string& id, std::unique_ptr<TTree> tree
   return sc;
 }
 
+StatusCode THistSvc::regTree( const std::string& id, TTree* tree_ptr )
+{
+  std::unique_ptr<TTree> tree( tree_ptr );
+  StatusCode sc = regHist_i( std::move( tree ), id, false );
+  TTree* tr     = nullptr;
+  if ( getTree( id, tr ).isSuccess() && sc.isSuccess() ) {
+    if ( m_autoSave != 0 ) {
+      tr->SetAutoSave( m_autoSave );
+    }
+    tr->SetAutoFlush( m_autoFlush );
+  }
+  return sc;
+}
+
 StatusCode THistSvc::getTree( const std::string& id, TTree*& tree ) const
 {
   tree = getHist_i<TTree>( id );
@@ -433,6 +447,23 @@ StatusCode THistSvc::regGraph( const std::string& id )
 
 StatusCode THistSvc::regGraph( const std::string& id, std::unique_ptr<TGraph> graph )
 {
+  if ( strcmp( graph->GetName(), "Graph" ) == 0 ) {
+    std::string id2( id );
+    std::string::size_type i = id2.rfind( "/" );
+    if ( i != std::string::npos ) {
+      id2.erase( 0, i + 1 );
+    }
+
+    info() << "setting name of TGraph id: \"" << id << "\" to \"" << id2 << "\" since it is unset" << endmsg;
+    graph->SetName( id2.c_str() );
+  }
+
+  return regHist_i( std::move( graph ), id, false );
+}
+
+StatusCode THistSvc::regGraph( const std::string& id, TGraph* graph_ptr )
+{
+  std::unique_ptr<TGraph> graph( graph_ptr );
   if ( strcmp( graph->GetName(), "Graph" ) == 0 ) {
     std::string id2( id );
     std::string::size_type i = id2.rfind( "/" );

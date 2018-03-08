@@ -59,6 +59,9 @@ public:
   virtual StatusCode regTree( const std::string& name ) = 0;
   /// Register an existing TTree with a given name and moved unique_ptr
   virtual StatusCode regTree( const std::string& name, std::unique_ptr<TTree> ) = 0;
+  /// @deprecated {Just kept for compatibiltiy to current ATLAS code. Pleas use std::unique_ptrs instead!}
+  /// Register a new TTree with a given name and a raw pointer
+  virtual StatusCode regTree( const std::string& name, TTree* ) = 0;
   /// Return TTree with given name
   virtual StatusCode getTree( const std::string& name, TTree*& ) const = 0;
 
@@ -71,6 +74,9 @@ public:
   virtual StatusCode regGraph( const std::string& name ) = 0;
   /// Register an existing TGraph with a given name and moved unique_ptr
   virtual StatusCode regGraph( const std::string& name, std::unique_ptr<TGraph> ) = 0;
+  /// @deprecated {Just kept for compatibiltiy to current ATLAS code. Pleas use std::unique_ptrs instead!}
+  /// Register a new TGraph with a given name and a raw pointer
+  virtual StatusCode regGraph( const std::string& name, TGraph* ) = 0;
   /// Return TGraph with given name
   virtual StatusCode getGraph( const std::string& name, TGraph*& ) const = 0;
 

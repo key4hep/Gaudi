@@ -51,13 +51,9 @@ public:
   /// @param [in] hist      transfers ownership of the histogram to the THistSvc
   /// @param [out] hist_ptr for compatibility: return raw pointer to managed object to support common usage in Athena
   StatusCode regHist( const std::string& name, std::unique_ptr<TH1> hist, TH1* hist_ptr ) override;
-/// @deprecated {Just for compatibility purposes. Ownership should be clearly managed.}
-/// Register an existing ROOT histogram TH*X with name and pointer
-#ifdef ATLAS
-  [[deprecated( "Use regHist( name, std::move(hist) ) with std::unique_ptr<TH1> hist" )]]
-#endif
-      StatusCode
-      regHist( const std::string& name, TH1* ) override;
+  /// @deprecated {Just for compatibility purposes. Ownership should be clearly managed.}
+  /// Register an existing ROOT histogram TH*X with name and pointer
+  StatusCode regHist( const std::string& name, TH1* ) override;
 
   /// Return histogram with given name as TH1*, THistSvcMT still owns object.
   StatusCode getHist( const std::string& name, TH1*&, size_t index = 0 ) const override;
@@ -75,6 +71,9 @@ public:
   StatusCode regTree( const std::string& name ) override;
   /// Register an existing TTree with a given name and moved unique_ptr
   StatusCode regTree( const std::string& name, std::unique_ptr<TTree> ) override;
+  /// @deprecated {Just kept for compatibiltiy to current ATLAS code. Pleas use std::unique_ptrs instead!}
+  /// Register a new TTree with a given name and a raw pointer
+  StatusCode regTree( const std::string& name, TTree* ) override;
   /// Return TTree with given name
   StatusCode getTree( const std::string& name, TTree*& ) const override;
 
@@ -87,6 +86,9 @@ public:
   StatusCode regGraph( const std::string& name ) override;
   /// Register an existing TGraph with a given name and moved unique_ptr
   StatusCode regGraph( const std::string& name, std::unique_ptr<TGraph> ) override;
+  /// @deprecated {Just kept for compatibiltiy to current ATLAS code. Pleas use std::unique_ptrs instead!}
+  /// Register a new TGraph with a given name and a raw pointer
+  virtual StatusCode regGraph( const std::string& name, TGraph* ) override;
   /// Return TGraph with given name
   StatusCode getGraph( const std::string& name, TGraph*& ) const override;
 
