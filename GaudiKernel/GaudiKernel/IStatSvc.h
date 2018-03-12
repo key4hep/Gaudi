@@ -48,7 +48,7 @@ public:
    *  @param t stat   tag(name)
    *  @return pointer to stat   entity
    */
-  virtual const StatEntity* stat( const StatTag& t ) const = 0;
+  virtual StatEntity* stat( const StatTag& t ) = 0;
 };
 // ============================================================================
 // The END

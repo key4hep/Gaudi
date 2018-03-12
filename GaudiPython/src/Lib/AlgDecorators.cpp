@@ -83,10 +83,9 @@ size_t GaudiPython::AlgDecorator::_counters_a_( const GaudiAlgorithm* alg, std::
     return 0;
   } // RETURN
   //
-  std::map<std::string, StatEntity&> ordered_counters{begin( alg->counters() ), end( alg->counters() )};
-  for ( const auto& cnt : ordered_counters ) {
+  for ( auto& cnt : alg->counters() ) {
     names.push_back( cnt.first );
-    out.push_back( &( cnt.second ) );
+    out.push_back( &( cnt.second.get() ) );
   }
   return out.size();
 }
@@ -102,10 +101,9 @@ size_t GaudiPython::AlgDecorator::_counters_t_( const GaudiTool* alg, std::vecto
     return 0;
   } // RETURN
   //
-  std::map<std::string, StatEntity&> ordered_counters{begin( alg->counters() ), end( alg->counters() )};
-  for ( const auto& cnt : ordered_counters ) {
+  for ( auto& cnt : alg->counters() ) {
     names.push_back( cnt.first );
-    out.push_back( &( cnt.second ) );
+    out.push_back( &( cnt.second.get() ) );
   }
   return out.size();
 }
@@ -132,28 +130,28 @@ size_t GaudiPython::AlgDecorator::_counters_t_( const IAlgTool* alg, std::vector
 // ============================================================================
 // get the counter by name
 // ============================================================================
-const StatEntity* GaudiPython::AlgDecorator::_counter_a_( const GaudiAlgorithm* cmp, const std::string& name )
+StatEntity* GaudiPython::AlgDecorator::_counter_a_( const GaudiAlgorithm* cmp, const std::string& name )
 {
   return cmp ? &( cmp->counter( name ) ) : nullptr; // RETURN
 }
 // ============================================================================
 // get the counter by name
 // ============================================================================
-const StatEntity* GaudiPython::AlgDecorator::_counter_t_( const GaudiTool* cmp, const std::string& name )
+StatEntity* GaudiPython::AlgDecorator::_counter_t_( const GaudiTool* cmp, const std::string& name )
 {
   return cmp ? &( cmp->counter( name ) ) : nullptr; // RETURN
 }
 // ============================================================================
 // get the counter by name
 // ============================================================================
-const StatEntity* GaudiPython::AlgDecorator::_counter_a_( const IAlgorithm* cmp, const std::string& name )
+StatEntity* GaudiPython::AlgDecorator::_counter_a_( const IAlgorithm* cmp, const std::string& name )
 {
   return cmp ? _counter_a_( dynamic_cast<const GaudiAlgorithm*>( cmp ), name ) : nullptr;
 }
 // ============================================================================
 // get the counter by name
 // ============================================================================
-const StatEntity* GaudiPython::AlgDecorator::_counter_t_( const IAlgTool* cmp, const std::string& name )
+StatEntity* GaudiPython::AlgDecorator::_counter_t_( const IAlgTool* cmp, const std::string& name )
 {
   return cmp ? _counter_t_( dynamic_cast<const GaudiTool*>( cmp ), name ) : nullptr;
 }

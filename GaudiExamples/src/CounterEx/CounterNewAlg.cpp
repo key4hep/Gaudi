@@ -61,15 +61,15 @@ public:
 
 private:
   // counters
-  StatEntity m_assign_counter{this, "assign"};
-  StatEntity m_eff_counter{this, "eff"};
-  StatEntity m_executed_counter{this, "executed"};
-  StatEntity m_G_counter{this, "G"};
-  StatEntity m_g2_counter{this, "g2"};
-  StatEntity m_gauss_counter{this, "gauss"};
-  StatEntity m_Gneg_counter{this, "Gneg"};
-  StatEntity m_Gpos_counter{this, "Gpos"};
-  StatEntity m_NG_counter{this, "NG"};
+  mutable StatEntity m_assign_counter{this, "assign"};
+  mutable StatEntity m_eff_counter{this, "eff"};
+  mutable StatEntity m_executed_counter{this, "executed"};
+  mutable StatEntity m_G_counter{this, "G"};
+  mutable StatEntity m_g2_counter{this, "g2"};
+  mutable StatEntity m_gauss_counter{this, "gauss"};
+  mutable StatEntity m_Gneg_counter{this, "Gneg"};
+  mutable StatEntity m_Gpos_counter{this, "Gpos"};
+  mutable StatEntity m_NG_counter{this, "NG"};
 };
 // ============================================================================
 
@@ -95,8 +95,8 @@ int CounterNewAlg::operator()() const
 
   ( 0 < value ) ? ++m_Gpos_counter : ++m_Gneg_counter;
 
-  const StatEntity& stat1 = m_NG_counter;
-  const StatEntity& stat2 = m_G_counter;
+  StatEntity& stat1 = m_NG_counter;
+  StatEntity& stat2 = m_G_counter;
 
   const int num = (int)poisson();
   for ( int i = 0; i < num; ++i ) {
@@ -111,8 +111,8 @@ int CounterNewAlg::operator()() const
   m_eff_counter += ( 0 < value );
 
   // print the statistics every 1000 events
-  const StatEntity& executed = m_executed_counter;
-  const int print            = (int)executed.flag();
+  StatEntity& executed = m_executed_counter;
+  const int   print    = (int)executed.flag();
   if ( 0 == print % 1000 ) {
     info() << " Event number " << print << endmsg;
     printStat();

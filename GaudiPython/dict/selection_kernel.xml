@@ -24,7 +24,7 @@
 
 
   <class name    = "std::vector<IAlgTool*>"          />
-  <class name    = "std::vector<const StatEntity*>"  />
+  <class name    = "std::vector<StatEntity*>"        />
   <class name    = "std::vector<GaudiAlg::ID>"       />
   <class name    = "std::vector<AIDA::IHistogram1D*>"/>
   <class name    = "std::vector<AIDA::IHistogram2D*>"/>

@@ -123,8 +123,6 @@ StatusCode ChronoStatSvc::initialize()
     }
   }
 
-  info() << " Number of skipped events for MemStat" << m_numberOfSkippedEventsForMemStat.value() << endmsg;
-
   if ( m_chronoTableFlag && !m_printUserTime && !m_printSystemTime && !m_printEllapsedTime ) {
     m_printUserTime = true;
   }
@@ -365,7 +363,6 @@ void ChronoStatSvc::stat( const IChronoStatSvc::StatTag& statTag, const IChronoS
     // new stat entity
     StatEntity& theSe = m_statEntities[statTag];
     theStat           = &theSe;
-    theStat->setnEntriesBeforeReset( m_numberOfSkippedEventsForMemStat );
   } else {
     // existing stat entity
     theStat = &theIter->second;
@@ -400,7 +397,7 @@ const ChronoEntity* ChronoStatSvc::chrono( const IChronoStatSvc::ChronoTag& t ) 
  *  @return pointer to stat   entity
  */
 // ============================================================================
-const StatEntity* ChronoStatSvc::stat( const IChronoStatSvc::StatTag& t ) const
+StatEntity* ChronoStatSvc::stat( const IChronoStatSvc::StatTag& t )
 {
   auto it = m_statEntities.find( t );
   return m_statEntities.end() != it ? &( it->second ) : nullptr;
@@ -528,10 +525,11 @@ void ChronoStatSvc::printStats()
       } /// CONTINUE
       ///
       if ( m_statCoutFlag ) {
-        std::cout << Gaudi::Utils::formatAsTableRow( *tag, *entity, m_useEffFormat, m_format1, m_format2 ) << std::endl;
+        entity->print( std::cout, true, *tag, m_useEffFormat, "%|-15.15s|%|17t|" );
       } else {
-        log << m_statPrintLevel << Gaudi::Utils::formatAsTableRow( *tag, *entity, m_useEffFormat, m_format1, m_format2 )
-            << endmsg;
+        std::ostringstream ost;
+        entity->print( ost, true, *tag, m_useEffFormat, "%|-15.15s|%|17t|" );
+        log << m_statPrintLevel << ost.str() << endmsg;
       }
     }
     tmpCont.clear();

@@ -221,8 +221,7 @@ StatusCode GaudiCommon<PBASE>::
     Gaudi::Utils::RegEx::matchList statList{m_statEntityList.value()};
     Gaudi::Utils::RegEx::matchList counterList{m_counterList.value()};
 
-    std::map<std::string, StatEntity&> ordered_counters{begin( this->m_counters ), end( this->m_counters )};
-    for ( const auto& i : ordered_counters ) {
+    for ( const auto& i : m_countersOwn ) {
       if ( statList.Or( i.first ) )
         m_counterSummarySvc->addCounter( this->name(), i.first, i.second, Gaudi::CounterSummary::SaveStatEntity );
       else if ( counterList.Or( i.first ) )
@@ -528,13 +527,13 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
   msg << "Number of counters : " << m_counters.size();
   //
   if ( !m_counters.empty() ) {
-    msg << std::endl << m_header.value();
+    msg << "\n" << m_header.value();
   }
   //
-  std::map<std::string, StatEntity&> ordered_counters{begin( m_counters ), end( m_counters )};
-  for ( const auto& entry : ordered_counters ) {
-    msg << std::endl
-        << Gaudi::Utils::formatAsTableRow( entry.first, entry.second, m_useEffFormat, m_format1, m_format2 );
+  for ( const auto& entry : m_counters ) {
+    std::ostringstream ost;
+    entry.second.get().print( ost, entry.first );
+    msg << "\n |" << ost.str();
   }
   //
   msg << endmsg;

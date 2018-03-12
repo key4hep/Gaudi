@@ -121,8 +121,8 @@ protected: // definitions
 protected: // few actual data types
   // ==========================================================================
   /// the actual type of general counters
-  typedef std::list<StatEntity> StatisticsOwn;
-  typedef std::map<std::string, std::reference_wrapper<StatEntity>> Statistics;
+  typedef std::map<std::string, StatEntity>                                                    StatisticsOwn;
+  typedef std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>> Statistics;
   /// the actual type error/warning counter
   typedef std::map<std::string, unsigned int> Counter;
   /// storage for active tools
@@ -483,6 +483,9 @@ public:
   void Exception( const std::string& msg = "no message",
                   const StatusCode   sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
 
+private:
+  /// accessor to all owned counters
+  inline StatisticsOwn countersOwn() const { return m_countersOwn; }
 public:
   // ==========================================================================
   /// accessor to all counters
@@ -505,7 +508,8 @@ public:
    *  @param tag counter name
    *  @return the counter itself
    */
-  [[deprecated( "see LHCBPS-1758" )]] inline StatEntity& counter( const std::string& tag ) const
+  //[[deprecated( "see LHCBPS-1758" )]]
+  inline StatEntity& counter( const std::string& tag ) const
   {
     return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag );
   }
@@ -515,12 +519,12 @@ public:
     // Return referenced StatEntity if it already exists, else create it
     auto p = m_counters.find( tag );
     if ( p == end( m_counters ) ) {
-      m_countersOwn.emplace_back();
-      p = m_counters.emplace( tag, m_countersOwn.back() ).first;
+      auto& counter = m_countersOwn[tag];
+      p             = m_counters.emplace( tag, counter ).first;
     }
-    return p->second;
+    return m_countersOwn[tag];
   }
-  inline void registerCounter( const std::string& tag, StatEntity& r )
+  inline void registerCounter( const std::string& tag, Gaudi::Accumulators::PrintableCounter& r )
   {
     std::lock_guard<std::mutex> lock( m_countersMutex );
     m_counters.emplace( tag, r );
@@ -775,7 +779,7 @@ private:
   mutable Counter m_exceptions;
   /// General counters
   StatisticsOwn m_countersOwn;
-  Statistics m_counters;
+  Statistics    m_counters;
   /// The counters mutex
   std::mutex m_countersMutex;
   // ==========================================================================

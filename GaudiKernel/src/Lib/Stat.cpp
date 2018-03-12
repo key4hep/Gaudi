@@ -43,15 +43,14 @@ Stat::Stat( IStatSvc* svc, const std::string& tag ) : m_tag( tag ), m_group(), m
 {
   if ( m_stat ) {
     // get from the service
-    const StatEntity* tmp = m_stat->stat( tag );
+    StatEntity* tmp = m_stat->stat( tag );
     if ( !tmp ) {
       // create if needed
       m_stat->stat( tag, 0 );
-      tmp             = m_stat->stat( tag );
-      StatEntity* aux = const_cast<StatEntity*>( tmp );
-      aux->reset();
+      tmp = m_stat->stat( tag );
+      tmp->reset();
     }
-    m_entity = const_cast<StatEntity*>( tmp );
+    m_entity = tmp;
   }
 }
 // ============================================================================
@@ -77,7 +76,7 @@ Stat::Stat( IStatSvc* svc, const std::string& tag, const double flag ) : m_tag( 
   if ( m_stat ) {
     m_stat->stat( tag, flag );
     // get from the service
-    m_entity = const_cast<StatEntity*>( m_stat->stat( tag ) );
+    m_entity = m_stat->stat( tag );
   }
 }
 
