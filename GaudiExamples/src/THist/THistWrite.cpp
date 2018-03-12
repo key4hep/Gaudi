@@ -87,6 +87,14 @@ StatusCode THistWrite::initialize()
     error() << "Couldn't use TempHist6 afterwards. getName = " << h6->GetName() << endmsg;
   }
 
+  TH1D* h7 = new TH1D( "TempHist7", "Temporary Tree 7", 100, 0., 100. );
+  if ( m_ths->regHist( "TempHist7", h7 ).isFailure() ) {
+    error() << "Couldn't register TempHist6" << endmsg;
+  }
+  if ( strcmp( h7->GetName(), "TempHist7" ) ) {
+    error() << "Couldn't use TempHist7 afterwards. getName = " << h7->GetName() << endmsg;
+  }
+
   // Profile in "/"
   std::unique_ptr<TH1> tp = std::make_unique<TProfile>( "profile", "profile", 100, -50., -50. );
   if ( m_ths->regHist( "/rec/prof", std::move( tp ) ).isFailure() ) {
@@ -268,6 +276,14 @@ StatusCode THistWrite::finalize()
 //------------------------------------------------------------------------------
 {
   info() << "Finalizing..." << endmsg;
+
+  TH1* h7 = nullptr;
+  if ( m_ths->getHist( "TempHist7", h7 ).isFailure() ) {
+    error() << "Couldn't retrieve TempHist7" << endmsg;
+  }
+  if ( m_ths->deReg( h7 ).isFailure() ) {
+    error() << "Failed to deregister histogram TempHist7" << endmsg;
+  }
 
   return StatusCode::SUCCESS;
 }

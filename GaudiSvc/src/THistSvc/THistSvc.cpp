@@ -604,43 +604,48 @@ StatusCode THistSvc::deReg( TObject* obj )
       return StatusCode::FAILURE;
     }
 
-    delete obj_itr->first;
-    m_tobjs.erase( obj_itr );
-    vhid->erase( vhid->begin() + obj_itr->second.second );
+    if ( vhid->size() == 1 ) {
+      // We are the last object, so we have to delete vhid properly
+      debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg;
 
-    if ( vhid->size() != 0 ) {
-      // vector of THistIT is still not empty (i.e. other instances with same name registered)
-      return StatusCode::SUCCESS;
+      std::string root, rem;
+      parseString( hid.id, root, rem );
+
+      auto mitr   = m_ids.equal_range( rem );
+      auto id_itr = std::find_if( mitr.first, mitr.second,
+                                  [&]( idMap_t::const_reference i ) { return i.second->at( 0 ).obj == obj; } );
+      if ( id_itr == mitr.second ) {
+        error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id
+                << "\": not in idMap" << endmsg;
+        return StatusCode::FAILURE;
+      }
+
+      auto hlist_itr = std::find( m_hlist.begin(), m_hlist.end(), vhid );
+      if ( hlist_itr == m_hlist.end() ) {
+        error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id
+                << "\": not in hlist" << endmsg;
+        return StatusCode::FAILURE;
+      }
+
+      delete obj_itr->first;
+      m_tobjs.erase( obj_itr );
+      vhid->erase( vhid->begin() + obj_itr->second.second );
+
+      m_uids.erase( uid_itr );
+      m_ids.erase( id_itr );
+      m_hlist.erase( hlist_itr );
+
+      delete vhid;
+
+    } else if ( vhid->size() > 1 ) {
+      delete obj_itr->first;
+      m_tobjs.erase( obj_itr );
+      vhid->erase( vhid->begin() + obj_itr->second.second );
+
+      // vector of THistID is still not empty (i.e. other instances with same name registered)
+    } else {
+      error() << "Deregistration failed unexpectedly. (bug in THistSvc?)" << endmsg;
     }
-
-    // In this case we have to delete vhid properly!
-    debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg;
-
-    std::string id, root, rem;
-    parseString( hid.id, root, rem );
-
-    auto mitr   = m_ids.equal_range( rem );
-    auto id_itr = std::find_if( mitr.first, mitr.second,
-                                [&]( idMap_t::const_reference i ) { return i.second->at( 0 ).obj == obj; } );
-    if ( id_itr == mitr.second ) {
-      error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id
-              << "\": not in idMap" << endmsg;
-      return StatusCode::FAILURE;
-    }
-
-    auto hlist_itr = std::find( m_hlist.begin(), m_hlist.end(), vhid );
-    if ( hlist_itr == m_hlist.end() ) {
-      error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id
-              << "\": not in hlist" << endmsg;
-      return StatusCode::FAILURE;
-    }
-
-    m_uids.erase( uid_itr );
-    m_ids.erase( id_itr );
-    m_hlist.erase( hlist_itr );
-
-    delete vhid;
-
     return StatusCode::SUCCESS;
   } else {
     error() << "Cannot unregister TObject \"" << obj->GetName() << "\": not known to THistSvc" << endmsg;

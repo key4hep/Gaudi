@@ -68,6 +68,10 @@ THistSvc            DEBUG regHist_i obj: 0x2d9a400  id: TempHist6  s: 0[m
 THistSvc            DEBUG Historgram with id "TempHist6" is temporary[m
 THistSvc            DEBUG Registering TH1D title: "Temporary Tree 6"  id: "/temp/TempHist6"  dir: root:/  file: none[m
 THistSvc            DEBUG regHist_i  THistID: id: /temp/TempHist6 t: 1 s: 0 M: 47762608 m: 0 o: 0x2d9a400 TH1D[m
+THistSvc            DEBUG regHist_i obj: 0x203a910  id: TempHist7  s: 0[m
+THistSvc            DEBUG Historgram with id "TempHist7" is temporary[m
+THistSvc            DEBUG Registering TH1D title: "Temporary Tree 7"  id: "/temp/TempHist7"  dir: root:/  file: none[m
+THistSvc            DEBUG regHist_i  THistID: id: /temp/TempHist7 t: 1 s: 0 M: 32781792 m: 0 o: 0x203a910 TH1D[m
 THistSvc            DEBUG regHist_i obj: 0x2d9b130  id: /rec/prof  s: 0[m
 THistSvc            DEBUG Registering TProfile title: "profile"  id: "/rec/prof"  dir: tuple3.rt:/  file: tuple3.rt[m
 THistSvc            DEBUG regHist_i  THistID: id: /rec/prof t: 0 s: 0 M: 2 m: 0 o: 0x2d9b130 TProfile[m
@@ -213,6 +217,7 @@ THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
 THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 4732[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 THistWrite           INFO Finalizing...[m
+THistSvc            DEBUG vhid for /temp/TempHist7 is empty. deleting[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG dumping THistSvc contents
 m_hlist:  size: 13
