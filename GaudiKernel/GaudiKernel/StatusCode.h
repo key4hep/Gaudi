@@ -89,7 +89,7 @@ public:
   constexpr const static auto RECOVERABLE = ErrorCode::RECOVERABLE;
 
   /// Default constructor
-  constexpr StatusCode() = default;
+  StatusCode() = default;
 
   /// Constructor from enum type (allowing implicit conversion)
   template <typename T, typename = typename std::enable_if<is_StatusCode_enum<T>::value>::type>
