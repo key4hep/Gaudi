@@ -743,9 +743,9 @@ function(gaudi_install type)
             file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${python_package_name})
             file(WRITE ${CMAKE_BINARY_DIR}/python/${python_package_name}/__init__.py
 "import os, sys
-__path__ = [d for d in [os.path.join(d, '${python_package_name}') for d in sys.path if d]
-            if (d.startswith('${CMAKE_CURRENT_BINARY_DIR}') or
-                d.startswith('${CMAKE_CURRENT_SOURCE_DIR}')) and
+__path__ = [d for d in [os.path.join(os.path.realpath(d), '${python_package_name}') for d in sys.path if d]
+            if (d.startswith(os.path.realpath('${CMAKE_CURRENT_BINARY_DIR}')) or
+                d.startswith(os.path.realpath('${CMAKE_CURRENT_SOURCE_DIR}'))) and
             (os.path.exists(d) or 'python.zip' in d)]
 fname = '${CMAKE_CURRENT_SOURCE_DIR}/python/${python_package_name}/__init__.py'
 if os.path.exists(fname):
