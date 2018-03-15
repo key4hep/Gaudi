@@ -249,25 +249,33 @@ inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs )
     return os;
   }
 
-  os << "[" << rhs.m_run_number;
+  const char* separator = "";
+  os << "[";
+  if ( rhs.m_run_number != EventIDBase::UNDEFNUM ) {
+    os << rhs.m_run_number;
+    separator = ",";
+  }
 
   if ( rhs.m_event_number != EventIDBase::UNDEFEVT ) {
-    os << "," << rhs.m_event_number;
+    os << separator << rhs.m_event_number;
+    separator = ",";
   }
 
   if ( rhs.isTimeStamp() ) {
-    os << ",t:" << rhs.m_time_stamp;
+    os << separator << "t:" << rhs.m_time_stamp;
     if ( rhs.m_time_stamp_ns_offset != 0 ) {
       os << "." << std::setfill( '0' ) << std::setw( 9 ) << rhs.m_time_stamp_ns_offset;
     }
+    separator = ",";
   }
 
   if ( rhs.isLumiEvent() || rhs.isRunLumi() ) {
-    os << ",l:" << rhs.m_lumi_block;
+    os << separator << "l:" << rhs.m_lumi_block;
+    separator = ",";
   }
 
   if ( rhs.m_bunch_crossing_id != 0 ) {
-    os << ",b:" << rhs.m_bunch_crossing_id;
+    os << separator << "b:" << rhs.m_bunch_crossing_id;
   }
   os << "]";
   return os;
