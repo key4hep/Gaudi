@@ -150,10 +150,28 @@ public:
   }
 
   /// Check/uncheck StatusCode
-  void setChecked( bool checked = true ) const { m_checked = checked; }
+  const StatusCode& setChecked( bool checked = true ) const
+  {
+    m_checked = checked;
+    return *this;
+  }
+  StatusCode& setChecked( bool checked = true )
+  {
+    m_checked = checked;
+    return *this;
+  }
 
   /// Ignore/check StatusCode
-  void ignore() const { setChecked( true ); }
+  const StatusCode& ignore() const
+  {
+    setChecked( true );
+    return *this;
+  }
+  StatusCode& ignore()
+  {
+    setChecked( true );
+    return *this;
+  }
 
   /// Has the StatusCode been checked?
   bool checked() const { return m_checked; }
