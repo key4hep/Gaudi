@@ -102,6 +102,7 @@ namespace Gaudi
         }
       }
 
+#if __cplusplus < 201703L
       // implementation of C++17 std::as_const, see http://en.cppreference.com/w/cpp/utility/as_const
       template <typename T>
       constexpr std::add_const_t<T>& as_const( T& t ) noexcept
@@ -111,7 +112,9 @@ namespace Gaudi
 
       template <typename T>
       void as_const( T&& t ) = delete;
-
+#else
+      using std::as_const;
+#endif
       /////////////////////////////////////////
 
       template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
