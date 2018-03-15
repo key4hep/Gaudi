@@ -36,7 +36,7 @@ public:
   static bool execFailed() { return m_execFailed; }
 
 private:
-  ToolHandleArray<IThreadInitTool>& m_tools;
+  ToolHandleArray<IThreadInitTool> m_tools;
 
   boost::barrier* m_barrier;
   SmartIF<ISvcLocator> m_serviceLocator;
