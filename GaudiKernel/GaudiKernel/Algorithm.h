@@ -446,6 +446,12 @@ public:
   void deregisterTool( IAlgTool* tool ) const;
 
   template <class T>
+  StatusCode declareTool( ToolHandle<T>& handle, bool createIf = true )
+  {
+    return this->declareTool( handle, handle.typeAndName(), createIf );
+  }
+
+  template <class T>
   StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true )
   {
 
