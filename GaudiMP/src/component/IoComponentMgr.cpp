@@ -208,7 +208,7 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
   //  1. files read from eos, i.e. starting with "root:"
   //  2. files read over http, i.e. starting either with 'http:' or with 'https:'
   const std::string& tmp_name = ( pfn.empty() ? fname : pfn );
-  static const std::array<std::string, 4> prefixes = {"root:", "http:", "https:", "dcap:"};
+  static const std::array<std::string, 6> prefixes = {"root:", "http:", "https:", "dcap:", "dav:", "davs:"};
   bool special_case = std::any_of( begin( prefixes ), end( prefixes ), [&]( const std::string& pf ) {
     return boost::algorithm::starts_with( tmp_name, pf );
   } );
