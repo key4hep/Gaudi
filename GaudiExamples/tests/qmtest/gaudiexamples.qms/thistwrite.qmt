@@ -6,6 +6,9 @@
   <argument name="validator"><text>
 preprocessor = normalizeExamples + \
     RegexpReplacer(when = "^THistSvc",
+    orig = r"(stream: (rec|upd)  name: tuple[0-9].rt  size: )([0-9]*)",
+        repl = r"\1###") + \
+    RegexpReplacer(when = "^THistSvc",
         orig = r"(.+M: )([0-9]+)(.*)",
         repl = r"\1########\3") + \
     RegexpReplacer(when = "- id: ",
@@ -14,7 +17,8 @@ preprocessor = normalizeExamples + \
     RegexpReplacer(when = "^ - 0x########.*id: ",
         orig = r"(.+id: )(\/.*\/.*)( t: )([0,1])( s: )([0,1])( M: )([0-9]+)(.*o: 0x######## )(.*)",
         repl = r"\1\2\3\4\5\6\7########\9\10") + \
-    SortGroupOfLines(r"^ -")
+    SortGroupOfLines(r"^ -") + \
+    SortGroupOfLines(r"^THistSvc\s+DEBUG finalize")
 
 validateWithReference(preproc = preprocessor)
 </text></argument>

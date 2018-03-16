@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /home/merrenst/git/Gaudi/GaudiExamples/options/THistRead.opts
+JobOptionsSvc        INFO # =======> /home/merrenst/athena_thistsvc_migration/Gaudi/GaudiExamples/options/THistRead.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["THistRead"]
 JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
@@ -12,11 +12,11 @@ JobOptionsSvc        INFO # (25,1): THistSvc.Input += ["read2 DATAFILE='tuple3.r
 JobOptionsSvc        INFO # (27,1): THistSvc.PrintAll = 1
 JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtMax = 20
 JobOptionsSvc        INFO # (33,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /home/merrenst/git/Gaudi/GaudiExamples/options/THistRead.opts
+JobOptionsSvc        INFO Job options successfully read in from /home/merrenst/athena_thistsvc_migration/Gaudi/GaudiExamples/options/THistRead.opts
 ApplicationMgr    SUCCESS 
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
-                                          running on hpadpmt on Wed Oct  4 10:00:39 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r1)
+                                          running on hpadpmt on Thu Feb  1 09:38:17 2018
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declared service DetDataSvc/DetectorDataSvc[m
@@ -41,33 +41,33 @@ THistSvc             INFO registered file [tuple2.rt]... [ok][m
 THistSvc             INFO registered file [tuple3.rt]... [ok][m
 THistSvc            DEBUG regHist_i obj: 0  id: /read1/xxx/1Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH1F  "1Dgauss" from file tuple2.rt[m
-TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
+TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19982
 THistSvc            DEBUG Registering TH1F title: "1D Gaussian"  id: "/read1/xxx/1Dgauss"  dir: tuple2.rt:/xxx  file: tuple2.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bf0b60 TH1F[m
+THistSvc            DEBUG regHist_i  THistID: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x3015360 TH1F[m
 THistRead            INFO 1Dgauss: 20000[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/2Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH2F  "2Dgauss" from file tuple3.rt[m
-TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
+TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19974
 THistSvc            DEBUG Registering TH2F title: "2D Gaussian"  id: "/read2/2Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bfe830 TH2F[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x30344a0 TH2F[m
 THistRead            INFO 2Dgauss: 20000[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/3Dgauss  s: 0[m
 THistSvc            DEBUG Read in TH3F  "3Dgauss" from file tuple3.rt[m
-TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19944
+TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19947
 THistSvc            DEBUG Registering TH3F title: "3D Gaussian"  id: "/read2/3Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bfd2f0 TH3F[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x3032fa0 TH3F[m
 THistRead            INFO 3Dgauss: 20000[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/profile  s: 0[m
 THistSvc            DEBUG Read in TProfile  "profile" from file tuple3.rt[m
 TH1.Print Name  = profile, Entries= 0, Total sum= 0
 THistSvc            DEBUG Registering TProfile title: "profile"  id: "/read2/profile"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x2c17c60 TProfile[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x304dbc0 TProfile[m
 THistRead            INFO profile: 0[m
 THistSvc            DEBUG regHist_i obj: 0  id: /read2/trees/stuff/treename  s: 0[m
 THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14027 bytes  File  Size =       2338 *
+*Entries :     1000 : Total =           14027 bytes  File  Size =       2335 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *
@@ -83,7 +83,7 @@ THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
 *Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
 *............................................................................*
 THistSvc            DEBUG Registering TTree title: "tree title"  id: "/read2/trees/stuff/treename"  dir: tuple3.rt:/trees/stuff  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x2c43040 TTree[m
+THistSvc            DEBUG regHist_i  THistID: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x3078740 TTree[m
 THistRead            INFO treename: 1000[m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
@@ -114,50 +114,50 @@ ApplicationMgr       INFO Application Manager Stopped successfully[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG dumping THistSvc contents
 m_hlist:  size: 5
- - id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bf0b60 TH1F :: [0x2bd17d0] 1 {[0x2bf0b60]}
- - id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bfe830 TH2F :: [0x2c30b40] 1 {[0x2bfe830]}
- - id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bfd2f0 TH3F :: [0x2bfcc90] 1 {[0x2bfd2f0]}
- - id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x2c17c60 TProfile :: [0x2c17c20] 1 {[0x2c17c60]}
- - id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x2c43040 TTree :: [0x3eb3120] 1 {[0x2c43040]}
+ - id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x3015360 TH1F :: [0x2fe0260] 1 {[0x3015360]}
+ - id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x30344a0 TH2F :: [0x2f38120] 1 {[0x30344a0]}
+ - id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x3032fa0 TH3F :: [0x304d190] 1 {[0x3032fa0]}
+ - id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x304dbc0 TProfile :: [0x3032920] 1 {[0x304dbc0]}
+ - id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x3078740 TTree :: [0x23ef7d0] 1 {[0x3078740]}
 
 m_uids: 5
- - /read2/trees/stuff/treename  [0x3eb3120]
- - /read1/xxx/1Dgauss  [0x2bd17d0]
- - /read2/2Dgauss  [0x2c30b40]
- - /read2/3Dgauss  [0x2bfcc90]
- - /read2/profile  [0x2c17c20]
+ - /read2/trees/stuff/treename  [0x23ef7d0]
+ - /read1/xxx/1Dgauss  [0x2fe0260]
+ - /read2/2Dgauss  [0x2f38120]
+ - /read2/3Dgauss  [0x304d190]
+ - /read2/profile  [0x3032920]
 
 m_ids: 5
- - trees/stuff/treename  [0x3eb3120]
- - xxx/1Dgauss  [0x2bd17d0]
- - profile  [0x2c17c20]
- - 3Dgauss  [0x2bfcc90]
- - 2Dgauss  [0x2c30b40]
+ - trees/stuff/treename  [0x23ef7d0]
+ - xxx/1Dgauss  [0x2fe0260]
+ - profile  [0x3032920]
+ - 3Dgauss  [0x304d190]
+ - 2Dgauss  [0x2f38120]
 
 m_tobjs: 5
- - 0x2c43040 -> id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x2c43040 TTree
- - 0x2bf0b60 -> id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bf0b60 TH1F
- - 0x2c17c60 -> id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x2c17c60 TProfile
- - 0x2bfe830 -> id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bfe830 TH2F
- - 0x2bfd2f0 -> id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x2bfd2f0 TH3F
+ - 0x3078740 -> id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x3078740 TTree
+ - 0x3015360 -> id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x3015360 TH1F
+ - 0x3032fa0 -> id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x3032fa0 TH3F
+ - 0x304dbc0 -> id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x304dbc0 TProfile
+ - 0x30344a0 -> id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x30344a0 TH2F
 [m
 THistSvc            DEBUG THistSvc::finalize[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT [m
-THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"[m
-THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple3.rt"[m
+THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT [m
+THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT: "tuple2.rt"[m
+THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT: "tuple3.rt"[m
 THistSvc             INFO Listing contents of ROOT files: [m
 THistSvc             INFO ==> File: tuple2.rt  stream: read1[m
 TFile: name=tuple2.rt, title=, option=READ
-TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
+TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19982
           Title = 1D Gaussian
           NbinsX= 100, xmin= -50, xmax=50
 THistSvc             INFO ==> File: tuple3.rt  stream: read2[m
 TFile: name=tuple3.rt, title=, option=READ
-TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
+TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19974
           Title = 2D Gaussian
           NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50
-TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19944
+TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19947
           Title = 3D Gaussian
           NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50, NbinsZ= 100, zmin= -50, zmax=50
 TH1.Print Name  = profile, Entries= 0, Total sum= 0
@@ -165,7 +165,7 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
           NbinsX= 100, xmin= -50, xmax=-50
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14027 bytes  File  Size =       2338 *
+*Entries :     1000 : Total =           14027 bytes  File  Size =       2335 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *
