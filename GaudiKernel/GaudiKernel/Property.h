@@ -596,12 +596,12 @@ namespace Gaudi
       return value().end();
     }
     template <class ARG>
-    inline decltype(auto) operator[]( const ARG& arg ) const
+    inline decltype( auto ) operator[]( const ARG& arg ) const
     {
       return value()[arg];
     }
     template <class ARG>
-    inline decltype(auto) operator[]( const ARG& arg )
+    inline decltype( auto ) operator[]( const ARG& arg )
     {
       return value()[arg];
     }
