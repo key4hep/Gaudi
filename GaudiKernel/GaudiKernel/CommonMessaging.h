@@ -159,7 +159,7 @@ private:
   void create_msgStream() const override final { m_msgStream.reset( new MsgStream( msgSvc(), this->name() ) ); }
 
   /// Initialise the messaging objects
-  void initMessaging() const 
+  void initMessaging() const
   {
     if ( !m_msgsvc ) {
       // Get default implementation of the message service.
@@ -175,7 +175,9 @@ protected:
   /// Set up local caches
   MSG::Level setUpMessaging() const
   {
-    if ( UNLIKELY( !m_commonMessagingReady ) ) { initMessaging(); }
+    if ( UNLIKELY( !m_commonMessagingReady ) ) {
+      initMessaging();
+    }
     return m_level;
   }
   /// Reinitialize internal states.
