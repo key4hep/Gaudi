@@ -35,7 +35,7 @@ StatusCode PythonConfig::evaluateConfig( const std::string& filename, const std:
 
     // Now fire off the translation
     handle<> ignored( ( PyRun_String( command.c_str(), Py_file_input, main_namespace.ptr(), main_namespace.ptr() ) ) );
-  } catch ( error_already_set ) {
+  } catch ( const error_already_set& ) {
     std::cout << "Error in python script:" << std::endl;
     PyErr_Print();
     return StatusCode::FAILURE;
