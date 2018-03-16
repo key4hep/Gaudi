@@ -53,6 +53,7 @@
 // ============================================================================
 class Algorithm; // GaudiKernel
 class AlgTool;   // GaudiKernel
+class ISvcLocator;
 namespace Gaudi
 {
   namespace Utils
