@@ -144,13 +144,9 @@ namespace
   StatusCode column_( Tuples::TupleObj* parent, Container& container, const std::string& name, UT&& value,
                       ExtraArgs&&... ea )
   {
-    if ( parent->invalid() ) {
-      return Tuples::ErrorCodes::InvalidTuple;
-    }
+    if ( parent->invalid() ) return Tuples::ErrorCodes::InvalidTuple;
     auto item = find_or_create( parent, name, container, std::forward<ExtraArgs>( ea )... );
-    if ( !item ) {
-      return Tuples::ErrorCodes::InvalidColumn;
-    }
+    if ( !item ) return Tuples::ErrorCodes::InvalidColumn;
     *item = std::forward<UT>( value );
     return StatusCode::SUCCESS;
   }
@@ -246,27 +242,11 @@ Tuples::TupleObj::~TupleObj()
   Tuples::Local::s_InstanceCounter.decrement( m_name );
 }
 // ============================================================================
-// release the reference to TupleObj
-// if reference counter becomes zero,
-// object will be automatically deleted
-// ============================================================================
-void Tuples::TupleObj::release()
-{
-  // decrease the reference counter
-  if ( refCount() > 0 ) {
-    --m_refCount;
-  }
-  // check references -- delete if needed
-  if ( 0 == refCount() ) delete this;
-}
-// ============================================================================
 // write a record to NTuple
 // ============================================================================
 StatusCode Tuples::TupleObj::write()
 {
-  if ( invalid() ) {
-    return ErrorCodes::InvalidTuple;
-  }
+  if ( invalid() ) return ErrorCodes::InvalidTuple;
   return tuple()->write();
 }
 // ============================================================================
@@ -297,9 +277,7 @@ namespace
 StatusCode Tuples::TupleObj::fill( const char* format... )
 {
   // check the underlying tuple
-  if ( invalid() ) {
-    return ErrorCodes::InvalidTuple;
-  }
+  if ( invalid() ) return ErrorCodes::InvalidTuple;
   // decode format string into tokens
   auto tokens = tokenize( format, " ,;" );
   /// decode arguments
@@ -310,9 +288,7 @@ StatusCode Tuples::TupleObj::fill( const char* format... )
   for ( auto token = tokens.cbegin(); tokens.cend() != token && status.isSuccess(); ++token ) {
     double val = va_arg( valist, double );
     status     = column( *token, val );
-    if ( status.isFailure() ) {
-      Error( "fill(): Can not add column '" + *token + "' " );
-    }
+    if ( status.isFailure() ) Error( "fill(): Can not add column '" + *token + "' " );
   }
   // mandatory !!!
   va_end( valist );
@@ -325,12 +301,8 @@ StatusCode Tuples::TupleObj::fill( const char* format... )
 // ============================================================================
 StatusCode Tuples::TupleObj::column( const std::string& name, IOpaqueAddress* address )
 {
-  if ( !evtColType() ) {
-    return ErrorCodes::InvalidOperation;
-  }
-  if ( !address ) {
-    return Error( "column('" + name + "') IOpaqueAddress* is NULL!", ErrorCodes::InvalidObject );
-  }
+  if ( !evtColType() ) return ErrorCodes::InvalidOperation;
+  if ( !address ) return Error( "column('" + name + "') IOpaqueAddress* is NULL!", ErrorCodes::InvalidObject );
   return column_( this, m_addresses, name, address );
 }
 
@@ -484,9 +456,7 @@ Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( const std::string& name, Tup
 {
   // existing array ?
   auto found = m_farrays.find( name );
-  if ( m_farrays.end() != found ) {
-    return found->second.get();
-  }
+  if ( m_farrays.end() != found ) return found->second.get();
   return create_( this, m_farrays, name,
                   [&]( const std::string& n, FArray& i ) { return this->tuple()->addIndexedItem( n, *length, i ); } );
 }
@@ -497,9 +467,7 @@ Tuples::TupleObj::FArray* Tuples::TupleObj::fArray( const std::string& name, con
 {
   // existing array ?
   auto found = m_arraysf.find( name );
-  if ( m_arraysf.end() != found ) {
-    return found->second.get();
-  }
+  if ( m_arraysf.end() != found ) return found->second.get();
   return create_( this, m_arraysf, name,
                   [&]( const std::string& n, FArray& i ) { return this->tuple()->addItem( n, rows, i ); } );
 }
@@ -511,9 +479,7 @@ Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( const std::string& name, T
 {
   // existing array ?
   auto found = m_fmatrices.find( name );
-  if ( m_fmatrices.end() != found ) {
-    return found->second.get();
-  }
+  if ( m_fmatrices.end() != found ) return found->second.get();
   return create_( this, m_fmatrices, name, [&]( const std::string& n, FMatrix& i ) {
     return this->tuple()->addIndexedItem( n, *length, cols, i );
   } );
@@ -526,9 +492,7 @@ Tuples::TupleObj::FMatrix* Tuples::TupleObj::fMatrix( const std::string& name, c
 {
   // existing array ?
   auto found = m_matricesf.find( name );
-  if ( m_matricesf.end() != found ) {
-    return found->second.get();
-  }
+  if ( m_matricesf.end() != found ) return found->second.get();
   return create_( this, m_matricesf, name,
                   [&]( const std::string& n, FMatrix& i ) { return this->tuple()->addItem( n, rows, cols, i ); } );
 }

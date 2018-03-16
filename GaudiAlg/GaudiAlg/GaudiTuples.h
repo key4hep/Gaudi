@@ -13,6 +13,10 @@
 // Include files
 // ============================================================================
 #include "boost/algorithm/string/replace.hpp"
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -46,10 +50,6 @@ public:
   typedef Tuples::Tuple Tuple;
   /// the actual type of N-tuple ID
   typedef GaudiAlg::TupleID TupleID;
-  /// the actual type of (title) -> (tuple) mappping
-  typedef GaudiAlg::TupleMapTitle TupleMapTitle;
-  /// the actual type of    (Numeric ID) -> (tuple) mappping
-  typedef GaudiAlg::TupleMapID TupleMapID;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -244,23 +244,10 @@ public:
    */
   long printEvtCols() const;
   // ==========================================================================
-public:
-  // ==========================================================================
   /// check the existence AND validity of the N-Tuple with the given ID
   bool nTupleExists( const TupleID& ID ) const;
   /// check the existence AND validity of the Event Tag Collection with the given ID
   bool evtColExists( const TupleID& ID ) const;
-  // ==========================================================================
-protected:
-  // ==========================================================================
-  /// access to the all ntuples by title
-  const TupleMapTitle& nTupleMapTitle() const { return m_nTupleMapTitle; }
-  /// access to the all evet tag collections by title
-  const TupleMapTitle& evtColMapTitle() const { return m_evtColMapTitle; }
-  /// access to the all ntuples by numeric ID
-  const TupleMapID& nTupleMapID() const { return m_nTupleMapID; }
-  /// access to the all evet tag collections by numeric ID
-  const TupleMapID& evtColMapID() const { return m_evtColMapID; }
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -271,7 +258,8 @@ protected:
    *  @param clid  unique classID for ntuple
    *  @return pointer to newly created TupleObj
    */
-  virtual Tuples::TupleObj* createNTuple( const std::string& name, NTuple::Tuple* tuple, const CLID& clid ) const;
+  virtual std::unique_ptr<Tuples::TupleObj> createNTuple( const std::string& name, NTuple::Tuple* tuple,
+                                                          const CLID& clid ) const;
   /** create TupleObj for event tag collection
    *  @attention The method should never used directly by users
    *  @param name  name/title
@@ -279,7 +267,8 @@ protected:
    *  @param clid  unique classID for ntuple
    *  @return pointer to newly created TupelObj
    */
-  virtual Tuples::TupleObj* createEvtCol( const std::string& name, NTuple::Tuple* tuple, const CLID& clid ) const;
+  virtual std::unique_ptr<Tuples::TupleObj> createEvtCol( const std::string& name, NTuple::Tuple* tuple,
+                                                          const CLID& clid ) const;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -363,16 +352,48 @@ private:
   Gaudi::Property<std::string> m_evtColDir{this, "EvtColDir",
                                            boost::algorithm::replace_all_copy( this->name(), ":", "_" ),
                                            "Subdirectory for Event Tag Collections"};
+  struct nTupleMapItem final {
+    std::string title;
+    TupleID id;
+    std::shared_ptr<Tuples::TupleObj> tuple;
+  };
+  struct title_t {
+  };
+  struct id_t {
+  };
+  struct order_t {
+  };
+  template <typename... Ts>
+  using indexed_by = boost::multi_index::indexed_by<Ts...>;
+  template <typename... Ts>
+  using hashed_unique = boost::multi_index::hashed_unique<Ts...>;
+  template <typename... Ts>
+  using ordered_unique = boost::multi_index::ordered_unique<Ts...>;
+  template <typename Obj, typename Type, Type Obj::*Member>
+  using member = boost::multi_index::member<Obj, Type, Member>;
+  template <typename T>
+  using tag       = boost::multi_index::tag<T>;
+  using nTupleMap = boost::multi_index_container<
+      nTupleMapItem, indexed_by<hashed_unique<tag<title_t>, member<nTupleMapItem, std::string, &nTupleMapItem::title>>,
+                                hashed_unique<tag<id_t>, member<nTupleMapItem, TupleID, &nTupleMapItem::id>>,
+                                ordered_unique<tag<order_t>, member<nTupleMapItem, TupleID, &nTupleMapItem::id>>>>;
+
   // ==========================================================================
-  /// the actual storage of ntuples by title
-  mutable TupleMapTitle m_nTupleMapTitle;
-  /// the actual storage of ntuples by ID
-  mutable TupleMapID m_nTupleMapID;
+  /// the actual storage of ntuples by title and ID
+  mutable nTupleMap m_nTupleMap;
+
+  decltype( auto ) nTupleByID() const { return m_nTupleMap.template get<id_t>(); }
+  decltype( auto ) nTupleByTitle() const { return m_nTupleMap.template get<title_t>(); }
+  decltype( auto ) nTupleOrdered() const { return m_nTupleMap.template get<order_t>(); }
+
   // ==========================================================================
-  /// the actual storage of event collections by title
-  mutable TupleMapTitle m_evtColMapTitle;
-  /// the actual storage of event collections by ID
-  mutable TupleMapID m_evtColMapID;
+  /// the actual storage of event collections by title and ID
+  mutable nTupleMap m_evtColMap;
+
+  decltype( auto ) evtColByID() const { return m_evtColMap.template get<id_t>(); }
+  decltype( auto ) evtColByTitle() const { return m_evtColMap.template get<title_t>(); }
+  decltype( auto ) evtColOrdered() const { return m_evtColMap.template get<order_t>(); }
+
   // ==========================================================================
 };
 // ============================================================================
