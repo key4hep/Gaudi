@@ -5,8 +5,16 @@
 <argument name="reference"><text>refs/Timeline.ref</text></argument>
 <argument name="validator"><text>
 # Default validation, but validating the timeline file rather that the output
+
+def replacer(inp):
+    # since time and time difference will be different each time we test
+    # let's at least check that the numbers we expect to get are all non zero
+    def zeroIsErr(x):
+        return '-' if int(x) > 0 else 'err'
+    return zeroIsErr(inp.group(1)) + ' ' + zeroIsErr(inp.group(2)) + ' ' + inp.group(3) + ' ' + zeroIsErr(inp.group(4))
+
 preproc = (normalizeExamples +
-           RegexpReplacer(r'^[0-9]+ [0-9]+ ([^ ]+) [0-9]+', r'- - \1 -'))
+           RegexpReplacer(r'^([0-9]+) ([0-9]+) ([^ ]+) ([0-9]+)', replacer))
 validateWithReference(stdout=open('myTimeline.csv').read(), stderr='', preproc=preproc)
 </text></argument>
 </extension>
