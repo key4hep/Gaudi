@@ -181,6 +181,9 @@ endif()
 option(GAUDI_STRICT_VERSION_CHECK
        "Require that the version of used projects is exactly the what specified"
        OFF)
+option(GAUDI_TEST_PUBLIC_HEADERS_BUILD
+       "Execute a test build of all public headers in the global target 'all'"
+       OFF)
 
 # FIXME: workaroud to use LCG_releases_base also when we have an old toolchain
 #        that does not define it
@@ -2106,7 +2109,9 @@ function(gaudi_add_library library)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} DESTINATION lib OPTIONAL)
   gaudi_export(LIBRARY ${library})
-  gaudi_install_headers(${ARG_PUBLIC_HEADERS})
+  if(NOT ARG_NO_PUBLIC_HEADERS)
+    gaudi_install_headers(${ARG_PUBLIC_HEADERS})
+  endif()
 endfunction()
 
 # Backward compatibility macro
@@ -2576,6 +2581,7 @@ endfunction()
 # To be used in case the header files do not have a library.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_install_headers)
+  gaudi_get_package_name(package)
   set(has_local_headers FALSE)
   foreach(hdr_dir ${ARGN})
     install(DIRECTORY ${hdr_dir}
@@ -2591,6 +2597,45 @@ function(gaudi_install_headers)
               PATTERN ".svn" EXCLUDE)
     if(NOT IS_ABSOLUTE ${hdr_dir})
       set(has_local_headers TRUE)
+    endif()
+    #message(STATUS "looking for headers in ${hdr_dir}")
+    file(GLOB_RECURSE hdrs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${hdr_dir}/*.h ${hdr_dir}/*.hxx ${hdr_dir}/*.hpp)
+    if(hdrs)
+      string(REPLACE "/" "_" library "${package}/${hdr_dir}")
+      # add special dummy library to test build of public headers
+      set(srcs)
+      foreach(hdr ${hdrs})
+        set(src ${CMAKE_CURRENT_BINARY_DIR}/${package}_test_public_headers/${hdr}.cpp)
+        get_filename_component(src_dir "${src}" DIRECTORY)
+        file(MAKE_DIRECTORY ${src_dir})
+        file(WRITE ${src} "#include \"${hdr}\" // IWYU pragma: keep\n")
+        set(srcs ${srcs} ${src})
+      endforeach()
+      # avoid creating the target twice if gaudi_install_headers gets called twice
+      # (can happen if both gaudi_install_headers and gaudi_add_library get called)
+      # and warn user about the duplication
+      if(NOT TARGET ${library}_headers)
+        add_custom_target(${library}_headers SOURCES ${hdrs})
+        add_library(test_public_headers_build_${library} STATIC EXCLUDE_FROM_ALL ${srcs})
+        # some headers are special and we need to do something special to compile
+        # them as if they were source files
+        set_target_properties(test_public_headers_build_${library}
+            PROPERTIES COMPILE_DEFINITIONS GAUDI_TEST_PUBLIC_HEADERS_BUILD)
+        if(NOT TARGET test_public_headers_build)
+          if(GAUDI_TEST_PUBLIC_HEADERS_BUILD)
+            # if build of tests is enabled we also build all headers in "all" target
+            add_custom_target(test_public_headers_build ALL)
+          else()
+            add_custom_target(test_public_headers_build)
+          endif()
+        endif()
+      else()
+        message(WARNING "Calling gaudi_install_headers more than once for ${package}")
+        message(WARNING "Are you calling gaudi_install_headers AND gaudi_add_library?")
+        message(WARNING "gaudi_add_library already installs headers.")
+      endif()
+      gaudi_add_genheader_dependencies(test_public_headers_build_${library})
+      add_dependencies(test_public_headers_build test_public_headers_build_${library})
     endif()
   endforeach()
   # flag the current directory as one that installs headers

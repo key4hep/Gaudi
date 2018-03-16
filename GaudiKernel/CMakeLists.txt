@@ -100,8 +100,6 @@ gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
 
 # These are a compile-time tests:
 if( CPPUNIT_FOUND )
-   gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
-      LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
       LINK_LIBRARIES GaudiKernel)
 endif()

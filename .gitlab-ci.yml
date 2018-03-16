@@ -32,6 +32,24 @@ build:
       - .ccache
     expire_in: 1 week
 
+test_headers:
+  image: lhcbdev/centos7-build:latest
+  tags:
+    - cvmfs
+  stage: test
+  script:
+    - curl -o artifacts.zip --location ${CI_PROJECT_URL}/builds/artifacts/master/download?job=test_headers
+    - unzip -q artifacts.zip '.ccache/*' || true
+    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -z
+    - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
+    - make BUILDDIR=build test_public_headers_build
+    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -s
+  artifacts:
+    paths:
+      - build
+      - .ccache
+    expire_in: 1 week
+
 coding-conventions:
   image: lhcbdev/centos7-build:latest
   tags:
