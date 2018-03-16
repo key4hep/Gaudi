@@ -19,7 +19,7 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_NAMESPACE_CONVERTER_FACTORY( RootHistCnv, RFileCnv )
+DECLARE_CONVERTER( RootHistCnv::RFileCnv )
 
 // Standard constructor
 RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc ) : RDirectoryCnv( svc, classID() ) {}

@@ -28,7 +28,6 @@ public:
   /// Run the service by taking full control. [IRunable::run()]
   StatusCode run() override;
 
-protected:
   /// Destructor.
   ~PythonScriptingSvc() override;
 

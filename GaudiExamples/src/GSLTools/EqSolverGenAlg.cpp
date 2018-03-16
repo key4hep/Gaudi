@@ -18,7 +18,7 @@
 using namespace Genfun;
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( EqSolverGenAlg )
+DECLARE_COMPONENT( EqSolverGenAlg )
 
 typedef Genfun::AbsFunction GenFunc;
 

@@ -20,7 +20,6 @@
 class TBBMessageSvc : public MessageSvc
 {
 public:
-  /// Standard constructor
   using MessageSvc::MessageSvc;
 
   using MessageSvc::reportMessage;

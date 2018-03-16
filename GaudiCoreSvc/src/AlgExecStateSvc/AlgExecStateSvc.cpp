@@ -5,9 +5,7 @@
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 
-#include "GaudiKernel/SvcFactory.h"
-
-DECLARE_SERVICE_FACTORY( AlgExecStateSvc )
+DECLARE_COMPONENT( AlgExecStateSvc )
 
 //=============================================================================
 

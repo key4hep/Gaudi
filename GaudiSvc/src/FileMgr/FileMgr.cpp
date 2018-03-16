@@ -9,7 +9,7 @@
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-DECLARE_SERVICE_FACTORY( FileMgr )
+DECLARE_COMPONENT( FileMgr )
 
 using namespace std;
 using namespace Io;

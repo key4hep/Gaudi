@@ -4,7 +4,7 @@
 
 #include <atomic>
 
-DECLARE_ALGORITHM_FACTORY( HiveTestAlgorithm )
+DECLARE_COMPONENT( HiveTestAlgorithm )
 
 using namespace std;
 

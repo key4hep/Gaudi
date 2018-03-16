@@ -13,7 +13,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY( FileMgrTest )
+DECLARE_COMPONENT( FileMgrTest )
 
 ///////////////////////////////////////////////////////////////////////////
 

@@ -7,7 +7,7 @@
 // Author :                   Charles Leggett
 //
 //------------------------------------------------------------------------------
-DECLARE_NAMESPACE_CONVERTER_FACTORY( RootHistCnv, DirectoryCnv )
+DECLARE_CONVERTER( RootHistCnv::DirectoryCnv )
 //------------------------------------------------------------------------------
 StatusCode RootHistCnv::DirectoryCnv::createObj( IOpaqueAddress* /* pAddress */, DataObject*& refpObject )
 {

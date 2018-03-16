@@ -582,4 +582,4 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_NAMESPACE_CONVERTER_FACTORY( RootHistCnv, RCWNTupleCnv )
+DECLARE_CONVERTER( RootHistCnv::RCWNTupleCnv )

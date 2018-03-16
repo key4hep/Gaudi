@@ -1,6 +1,3 @@
-// Include files
-
-// local
 #include "ContextEventCounter.h"
 
 // ----------------------------------------------------------------------------
@@ -8,8 +5,8 @@
 //
 // 27/10/2013: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_ALGORITHM_FACTORY( ContextEventCounterPtr )
-DECLARE_ALGORITHM_FACTORY( ContextEventCounterData )
+DECLARE_COMPONENT( ContextEventCounterPtr )
+DECLARE_COMPONENT( ContextEventCounterData )
 
 // ============================================================================
 // Main execution

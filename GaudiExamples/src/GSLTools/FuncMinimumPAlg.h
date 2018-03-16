@@ -24,16 +24,12 @@ class FuncMinimumPAlg : public Algorithm
 {
 
 public:
-  /// Standard constructor
-  FuncMinimumPAlg( const std::string& name, ISvcLocator* pSvcLocator );
-
-  ~FuncMinimumPAlg() override; ///< Destructor
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
   StatusCode finalize() override;   ///< Algorithm finalization
 
-protected:
 private:
   IFuncMinimum* m_privateTool;
   IFuncMinimum* m_publicTool;
