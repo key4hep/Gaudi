@@ -728,7 +728,7 @@ main()")
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${pypack})
         file(WRITE ${CMAKE_BINARY_DIR}/python/${pypack}/__init__.py "
 import os, sys
-__path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
+__path__ = [d for d in [os.path.join(os.path.realpath(d), '${pypack}') for d in sys.path if d]
             if (d.startswith('${CMAKE_BINARY_DIR}') or
                 d.startswith('${CMAKE_SOURCE_DIR}')) and
                (os.path.exists(d) or 'python.zip' in d)]
