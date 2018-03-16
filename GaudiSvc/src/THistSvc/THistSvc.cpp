@@ -627,7 +627,6 @@ StatusCode THistSvc::deReg( TObject* obj )
         return StatusCode::FAILURE;
       }
 
-      delete obj_itr->first;
       m_tobjs.erase( obj_itr );
       vhid->erase( vhid->begin() + obj_itr->second.second );
 
@@ -638,7 +637,6 @@ StatusCode THistSvc::deReg( TObject* obj )
       delete vhid;
 
     } else if ( vhid->size() > 1 ) {
-      delete obj_itr->first;
       m_tobjs.erase( obj_itr );
       vhid->erase( vhid->begin() + obj_itr->second.second );
 

@@ -119,9 +119,9 @@ public:
   /// @name Functions that work on any TObject in the THistSvcMT
   /// @{
 
-  /// Deregister object with given name and delete it
+  /// Deregister object with given name and give up ownership (without deletion!)
   StatusCode deReg( const std::string& name ) override;
-  /// Deregister obejct identified by TObject* and delete it
+  /// Deregister obejct identified by TObject* and give up ownership (without deletion!)
   StatusCode deReg( TObject* obj ) override;
 
   /// Merge all clones for object with a given id
