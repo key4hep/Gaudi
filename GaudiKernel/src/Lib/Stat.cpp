@@ -7,7 +7,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/IStatSvc.h"
 #include "GaudiKernel/Stat.h"
 #include "GaudiKernel/StatEntity.h"
@@ -79,27 +78,6 @@ Stat::Stat( IStatSvc* svc, const std::string& tag, const double flag ) : m_tag( 
     m_stat->stat( tag, flag );
     // get from the service
     m_entity = const_cast<StatEntity*>( m_stat->stat( tag ) );
-  }
-}
-// ============================================================================
-/*  constructor from ICounterSvc, group and name
- *  @see ICounterSvc::get
- *  @see ICounterSvc::create
- *  @param svc pointer to  Counter Service
- *  @param group group name
- *  @param name  counter name
- */
-// ============================================================================
-Stat::Stat( ICounterSvc* svc, const std::string& group, const std::string& name )
-    : m_tag( name ), m_group( group ), m_counter( svc )
-{
-  if ( m_counter ) {
-    // get from the service
-    m_entity = m_counter->get( group, name );
-    // create if needed:
-    if ( !m_entity ) {
-      m_counter->create( group, name, 0, m_entity );
-    }
   }
 }
 

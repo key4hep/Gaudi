@@ -9,7 +9,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/IStatSvc.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/StatEntity.h"
@@ -17,11 +16,11 @@
 /** @class Stat  Stat.h GaudiKernel/Stat.h
  *
  *  Small wrapper class for easy manipulation with generic counters
- *   and IStatSvc&ICounterSvc interface
+ *   and IStatSvc interface
  *
  *  It acts as "smart pointer" fro StatEntity objects, and allows
  *  manipulation with StatEntity objects, owned by
- *  GaudiCommon<TYPE> base class and/or IStatSvc/ICounterSvc
+ *  GaudiCommon<TYPE> base class and/or IStatSvc
  *
  *   @code
  *
@@ -63,7 +62,7 @@ public:
    *   @param group (optional) group of the object, for printout
    */
   Stat( StatEntity* entity = 0, const std::string& name = "", const std::string& group = "" )
-      : m_entity( entity ), m_tag( name ), m_group( group ), m_counter( 0 )
+      : m_entity( entity ), m_tag( name ), m_group( group )
   {
   }
   /**  constructor from StatEntity, name and group :
@@ -81,7 +80,7 @@ public:
    *   @param group (optional) group of the object, for printout
    */
   Stat( StatEntity& entity, const std::string& name = "", const std::string& group = "" )
-      : m_entity( &entity ), m_tag( name ), m_group( group ), m_counter( 0 )
+      : m_entity( &entity ), m_tag( name ), m_group( group )
   {
   }
   /**  constructor from IStatSvc, tag and value
@@ -121,24 +120,6 @@ public:
    *   @param flag    "flag"(additive quantity) to be used
    */
   Stat( IStatSvc* svc, const std::string& tag, const double flag );
-  /** constructor from ICounterSvc, group and name
-   *
-   *  @code
-   *
-   *   ICounterSvc* svc = ... ;
-   *
-   *   // get/create the counter from Counter Service
-   *   Stat stat( svc , "ECAL" , "TotalEnergy" ) ;
-   *
-   *  @endcode
-   *
-   *  @see ICounterSvc::get
-   *  @see ICounterSvc::create
-   *  @param svc pointer to  Counter Service
-   *  @param group group name
-   *  @param name  counter name
-   */
-  Stat( ICounterSvc* svc, const std::string& group, const std::string& name );
   /// copy constructor
   Stat( const Stat& ) = default;
   /// Assignement operator
@@ -275,11 +256,11 @@ public:
    */
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
   // ==========================================================================
-  /// alternative access to underlying counter (for ICounterSvc::CounterObj)
+  /// alternative access to underlying counter
   StatEntity* counter() const { return m_entity; }
   /// counter name
   const std::string& name() const { return m_tag; }
-  /// counter group (for ICounterSvc)
+  /// counter group
   const std::string& group() const { return m_group; }
   // ==========================================================================
 private:
@@ -287,12 +268,10 @@ private:
   StatEntity* m_entity = nullptr; ///< underlying counter
   // unique stat tag(name)
   std::string m_tag; ///< unique stat tag(name)
-  // group (for ICounterSvc)
+  // group
   std::string m_group;
   // Stat  service
   SmartIF<IStatSvc> m_stat; ///< Stat  service
-  // Counter Svc
-  SmartIF<ICounterSvc> m_counter; ///< Counter Service
 };
 // ============================================================================
 /// external operator for addition of Stat and a number
