@@ -30,8 +30,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
 gaudi_project(Gaudi v30r1)
 
 # These tests do not really fit in a subdirectory.
-gaudi_add_test(cmake.EnvConfigTests
-               COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
 gaudi_add_test(cmake.CMakeModules
                COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
 gaudi_add_test(cmake.QMTDeps

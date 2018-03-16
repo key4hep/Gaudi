@@ -3,18 +3,23 @@ stages:
   - test
   - deploy
 
+image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
+
+variables:
+  NO_LBLOGIN: 1
+
 before_script:
   - export BINARY_TAG=x86_64-centos7-gcc7-opt
   - export LCG_hostos=x86_64-centos7
   - export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.8.1/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.7.1/x86_64-slc6:/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/${BINARY_TAG}/bin:${PATH}
   - export LCG_release_area=/cvmfs/sft.cern.ch/lcg/releases
   - export PATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/scripts:${PATH}
+  - export PYTHONPATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/python:${PYTHONPATH}
   - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2017/vtune_amplifier_xe
   - export CCACHE_DIR=${PWD}/.ccache
   - export CCACHE_CPP2=1
 
 build:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: build
@@ -33,7 +38,6 @@ build:
     expire_in: 1 week
 
 test_headers:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: test
@@ -51,13 +55,12 @@ test_headers:
     expire_in: 1 week
 
 coding-conventions:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: test
   script:
     - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
-    - pip install autopep8
+    - sudo pip install autopep8
     - make BUILDDIR=build apply-formatting
     - git diff > apply-formatting.patch
     - git diff --stat --exit-code
@@ -68,7 +71,6 @@ coding-conventions:
     expire_in: 1 day
 
 doxygen:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: test
@@ -88,7 +90,6 @@ doxygen:
     expire_in: 1 day
 
 test:
-  image: lhcbdev/centos7-build:latest
   tags:
     - cvmfs
   stage: test
