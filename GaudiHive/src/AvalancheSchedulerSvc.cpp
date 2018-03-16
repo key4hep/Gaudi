@@ -162,7 +162,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
   std::ostringstream ostdd;
   ostdd << "Data Dependencies for Algorithms:";
 
-  std::unordered_map<std::string, DataObjIDColl> algosDependenciesMap;
+  std::map<std::string, DataObjIDColl> algosDependenciesMap;
   for ( IAlgorithm* ialgoPtr : algos ) {
     Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
     if ( nullptr == algoPtr ) {
