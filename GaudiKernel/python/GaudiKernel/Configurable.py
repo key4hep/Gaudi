@@ -127,7 +127,8 @@ class Configurable(object):
         '_name',                # the (unqualified) component name
         '_inSetDefaults',       # currently setting default values
         '_initok',              # used to enforce base class init
-        '_setupok'              # for debugging purposes (temporary)
+        '_setupok',             # for debugging purposes (temporary)
+        '_unpickling',          # flag for actions done during unpickling
     )
 
     allConfigurables = {}      # just names would do, but currently refs to the actual
@@ -327,6 +328,9 @@ class Configurable(object):
         # for debugging purposes (temporary)
         self._setupok = False
 
+        # used to prevent spurious deprecation warnings when unpickling
+        self._unpickling = False
+
     # pickle support
     def __getstate__(self):
         dict = {}
@@ -346,9 +350,18 @@ class Configurable(object):
 
     def __setstate__(self, dict):
         self._initok = True
-        for n, v in dict.items():
-            setattr(self, n, v)
-        return
+        from contextlib import contextmanager
+
+        @contextmanager
+        def unpickling():
+            try:
+                self._unpickling = True
+                yield
+            finally:
+                self._unpickling = False
+        with unpickling():
+            for n, v in dict.items():
+                setattr(self, n, v)
 
     # to allow a few basic sanity checks, as well as nice syntax
     def __len__(self):
