@@ -47,6 +47,7 @@ incompatible change.
     *   Fix deduction of property return values ([mr !634][])
     *   AvalancheSchedulerSvc: Fix undefined output ordering ([mr !635][])
     *   Fix warnings seen when compiling with gcc8 ([mr !638][])
+    *   Prevent property deprecation warnings when unpickling options ([mr !641][])
 *   [Build System][]
     *   Fixed typo in CMake option name ([mr !578][])
     *   Fix distcc support and add icecream ([mr !585][])
@@ -174,6 +175,7 @@ The full list of changes can also be found on [Gitlab][].
 [mr !636]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/636
 [mr !638]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/638
 [mr !639]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/639
+[mr !641]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/641
 
 [Bug Fix]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?label_name%5B%5D=bug+fix&scope=all&state=merged&milestone_title=v30r2
 [Build System]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?label_name%5B%5D=build+system&scope=all&state=merged&milestone_title=v30r2
