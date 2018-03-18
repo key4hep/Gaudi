@@ -58,6 +58,7 @@ incompatible change.
     *   Add thread friendly `THistSvc` ([mr !455][])
     *   Make `Gaudi::Property<T>` work even if `T` is only copy-constructible ([mr !470][])
     *   Version of [!508][] closer to the original [!474][] version ([mr !509][])
+    *   Implement EventIDBase ordering in a generic way by specifying projections ([mr !510][])
     *   Add category support to `StatusCode` ([mr !514][])
     *   Use tool type as default name for auto registered ToolHandles ([mr !535][])
     *   Deprecate Algorithm begin/end run methods ([mr !542][])
@@ -116,6 +117,7 @@ The full list of changes can also be found on [Gitlab][].
 [mr !455]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/455
 [mr !470]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/470
 [mr !509]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/509
+[mr !510]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/510
 [mr !514]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/514
 [mr !526]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/526
 [mr !534]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/534
