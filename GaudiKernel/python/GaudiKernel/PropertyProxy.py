@@ -105,7 +105,7 @@ class PropertyProxy(object):
 
     def __set__(self, obj, value):
      # check if deprecated
-        if self.deprecated:
+        if self.deprecated and not obj._unpickling:
             log.warning('Property %s is deprecated: %s',
                         self.fullPropertyName(obj), self.__doc__)
 
