@@ -1,6 +1,6 @@
 ---
 version: v30r2
-date: 2018-03-16
+date: 2018-03-19
 supported_builds: [CMake]
 ---
 Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
@@ -54,7 +54,6 @@ incompatible change.
     *   Require Python 2.7 until Python 3 migration is complete ([mr !606][])
     *   Externalize shared python tools ([mr !612][])
     *   Remove restrictions on names of installed headers ([mr !615][])
-    *   GaudiProjectConfig: Fix generated `__init__.py` files to handle symlinks ([mr !636][])
 *   [C++ Framework][]
     *   Add thread friendly `THistSvc` ([mr !455][])
     *   Make `Gaudi::Property<T>` work even if `T` is only copy-constructible ([mr !470][])
@@ -174,7 +173,6 @@ The full list of changes can also be found on [Gitlab][].
 [mr !633]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/633
 [mr !634]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/634
 [mr !635]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/635
-[mr !636]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/636
 [mr !638]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/638
 [mr !639]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/639
 [mr !641]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/641
