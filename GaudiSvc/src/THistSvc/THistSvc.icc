@@ -293,7 +293,7 @@ LockedHandle<T> THistSvc::regShared_i( const std::string& id, std::unique_ptr<T>
       T* phist = dynamic_cast<T*>( hid->obj );
       if ( phist == 0 ) {
         error() << "regSharedHist: unable to dcast retrieved shared hist \"" << id << "\" of type "
-                << hid->obj->IsA()->GetName() << " to requested type " << phist->IsA()->GetName() << endmsg;
+                << hid->obj->IsA()->GetName() << " to requested type " << System::typeinfoName( typeid( T ) ) << endmsg;
       } else {
         lh.set( phist, hid->mutex );
         delete hist.release();
