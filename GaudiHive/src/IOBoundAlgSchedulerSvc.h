@@ -46,7 +46,7 @@ private:
   StatusCode deactivate();
 
   /// Flag to track if the scheduler is active or not
-  bool m_isActive;
+  bool m_isActive = false;
 
   /// The thread in which the activate function runs
   std::thread m_thread;
