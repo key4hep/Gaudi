@@ -227,26 +227,9 @@ namespace precedence
 
     std::string operator()( const AlgoProps& props ) const
     { // Returns algorithm's FSM state
-      using State = AlgsExecutionStates::State;
-      State state = m_slot.algsStates[props.m_algoIndex];
-      switch ( state ) {
-      case State::INITIAL:
-        return "INITIAL";
-      case State::CONTROLREADY:
-        return "CONTROLREADY";
-      case State::DATAREADY:
-        return "DATAREADY";
-      case State::SCHEDULED:
-        return "SCHEDULED";
-      case State::EVTACCEPTED:
-        return "EVTACCEPTED";
-      case State::EVTREJECTED:
-        return "EVTREJECTED";
-      case State::ERROR:
-        return "ERROR";
-      default:
-        return "UNKNOWN";
-      }
+      std::ostringstream oss;
+      oss << m_slot.algsStates[props.m_algoIndex];
+      return oss.str();
     }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
