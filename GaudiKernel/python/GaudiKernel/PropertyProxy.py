@@ -393,6 +393,9 @@ class DataObjectHandleBasePropertyProxy(PropertyProxy):
             return DataObjectHandleBase(value)
         elif isinstance(value, DataObjectHandleBase):
             return DataObjectHandleBase(value.__str__())
+        else:
+            raise ValueError("received an instance of %s, but %s expected" %
+                             (type(value), 'str or DataObjectHandleBase'))
 
 
 def PropertyProxyFactory(descr, doc, default):
