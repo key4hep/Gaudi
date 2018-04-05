@@ -125,15 +125,17 @@ namespace Gaudi
 
         /// Tell which event store keys the algorithm will be reading from
         DataObjIDColl eventInputKeys() const final override {
-          auto inputKeys = getHandleKeys(m_eventInputHandles);
-          addLegacyKeys(inputKeys, Super::inputHandles());
+          DataObjIDColl inputKeys;
+          extractKeys(inputKeys, m_eventInputHandles);
+          extractKeys(inputKeys, Super::inputHandles());
           return inputKeys;
         }
 
         /// Tell which event store keys the algorithm will be writing to
         DataObjIDColl eventOutputKeys() const final override {
-          auto outputKeys = getHandleKeys(m_eventOutputHandles);
-          addLegacyKeys(outputKeys, Super::outputHandles());
+          DataObjIDColl outputKeys;
+          extractKeys(outputKeys, m_eventOutputHandles);
+          extractKeys(outputKeys, Super::outputHandles());
           return outputKeys;
         }
 
@@ -153,29 +155,42 @@ namespace Gaudi
         HandleList m_eventInputHandles;
         HandleList m_eventOutputHandles;
 
-        /// Query the keys associated with a set of handles
-        static DataObjIDColl getHandleKeys(const HandleList& handles) {
-          DataObjIDColl result;
-          result.reserve(handles.size());
-          for(auto handlePtr: handles) {
-            result.emplace(handlePtr->targetID());
-          }
-          return result;
-        }
-
-        /// Add to these keys some from legacy DataHandles
-        static void addLegacyKeys(DataObjIDColl& keys,
-                                  std::vector<Gaudi::DataHandle*>&& handles) {
-          keys.reserve(handles.size());
-          for(auto handlePtr: handles) {
-            keys.emplace(handlePtr->fullKey());
-          }
-        }
-
         /// Initialize a set of handles
         void initializeHandles(HandleList& handles) {
           for(auto handlePtr: handles) {
             handlePtr->initialize(*this);
+          }
+        }
+
+        /// Access the key of a DataHandle
+        static const DataObjID& accessKey(const DataHandle* handlePtr) {
+          return handlePtr->targetID();
+        }
+
+        /// Access the key of a DataObjID (identity function)
+        static const DataObjID& accessKey(const DataObjID& key) {
+          return key;
+        }
+
+        /// Access the key of a legacy (non-reentrant) DataHandle
+        static const DataObjID& accessKey(const Gaudi::DataHandle* handlePtr) {
+          return handlePtr->fullKey();
+        }
+
+        /// Extract non-empty DataObjID keys from a collection of key holders
+        ///
+        /// Given an output key collection and a collection of objects that
+        /// have an associated DataObjID key which can be accessed via an
+        /// overload of accessKey(), extract the keys, filter out empty ones,
+        /// and store the rest in the output collection.
+        ///
+        template<typename KeyHolderColl>
+        static void extractKeys(DataObjIDColl& output,
+                                const KeyHolderColl& keyHolders) {
+          output.reserve(keyHolders.size());
+          for(const auto& holder: keyHolders) {
+            const DataObjID& key = accessKey(holder);
+            if( !key.empty() ) { output.insert(key); }
           }
         }
     };
