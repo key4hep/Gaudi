@@ -113,8 +113,6 @@ namespace Gaudi
           : Super( std::forward<Args>(args)... )
         {}
 
-        // === INTERFACE FOR DATA HANDLES ===
-
         /// Register a data handle as an event data input of the algorithm
         void registerEventInput(DataHandle& handle) final override {
           m_eventInputHandles.push_back(&handle);
@@ -124,8 +122,6 @@ namespace Gaudi
         void registerEventOutput(DataHandle& handle) final override {
           m_eventOutputHandles.push_back(&handle);
         }
-
-        // === INTERFACE FOR THE SCHEDULER ===
 
         /// Tell which event store keys the algorithm will be reading from
         DataObjIDColl eventInputKeys() const final override {
