@@ -238,8 +238,8 @@ public:
 protected:
   std::vector<IAlgTool*>& tools();
 
-  /// Hook for for derived classes to provide a custom visitor for data handles.
-  std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
+  /// Hook for for derived classes to alter the DataObjID of dependencies
+  DataObjIDMapping m_updateDependencies;
 
 private:
   // place IAlgTools defined via ToolHandles in m_tools

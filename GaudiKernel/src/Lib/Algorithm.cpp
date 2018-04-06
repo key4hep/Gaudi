@@ -176,7 +176,7 @@ StatusCode Algorithm::sysInitialize()
 
   if ( !sc ) return sc;
 
-  if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
+  if ( m_updateDependencies ) updateEventKeys(m_updateDependencies);
 
   // visit all sub-algs and tools, build full set. First initialize ToolHandles if needed
   try {

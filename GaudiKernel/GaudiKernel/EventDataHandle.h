@@ -110,7 +110,7 @@ namespace Gaudi
         decltype(auto) get(const EventContext& /* ctx */) const {
           // TODO: Introduce and use an EventContext-aware whiteboard interface
           DataObject* ptr = nullptr;
-          auto sc = m_whiteBoard->retrieveObject(targetID().key(), ptr);
+          auto sc = m_whiteBoard->retrieveObject(targetKey().key(), ptr);
           if(sc.isFailure()) {
             throw std::runtime_error("Failed to read input from whiteboard");
           }
@@ -166,7 +166,7 @@ namespace Gaudi
                      std::unique_ptr<DataObject>&& ptr) const
         {
           // TODO: Introduce and use an EventContext-aware whiteboard interface
-          auto sc = m_whiteBoard->registerObject(targetID().key(),
+          auto sc = m_whiteBoard->registerObject(targetKey().key(),
                                                  ptr.release());
           if(sc.isFailure()) {
             throw std::runtime_error("Failed to write output into whiteboard");

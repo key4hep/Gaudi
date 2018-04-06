@@ -188,7 +188,7 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     m_state = m_targetState;
-    if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
+    if ( m_updateDependencies ) updateEventKeys(m_updateDependencies);
 
     // check for explicit circular data dependencies in declared handles
     DataObjIDColl out;

@@ -70,19 +70,19 @@ namespace Gaudi
       public:
         /// Initialize by providing access to the metadata singleton
         DataHandleConfigurable(const IDataHandleMetadata& metadata,
-                               DataObjID defaultID)
+                               DataObjID defaultKey)
           : m_metadata(metadata)
-          , m_id(std::move(defaultID))
+          , m_key(std::move(defaultKey))
         {}
 
         /// Propagate metadata of the underlying DataHandle type
         const IDataHandleMetadata& metadata() const { return m_metadata; }
 
         /// Tell what the currently configured target is
-        const DataObjID& targetID() const { return m_id; }
+        const DataObjID& targetKey() const { return m_key; }
 
         /// Change the target of the data handle
-        void setTargetID(const DataObjID& id) { m_id = id; }
+        void setTargetKey(const DataObjID& key) { m_key = key; }
 
         /// Boilerplate for Gaudi::Property compatibility
         friend std::ostream& operator<<(std::ostream& str,
@@ -90,7 +90,7 @@ namespace Gaudi
 
       private:
         std::reference_wrapper<const IDataHandleMetadata> m_metadata;
-        DataObjID m_id;
+        DataObjID m_key;
     };
   }
 

@@ -50,6 +50,8 @@
 // Boost
 // ============================================================================
 #include "boost/format.hpp"
+#include <boost/none.hpp>
+#include <boost/optional.hpp>
 #include "boost/tokenizer.hpp"
 // ============================================================================
 // Disable warning on windows
@@ -148,44 +150,31 @@ StatusCode GaudiCommon<PBASE>::
   auto                     rootName = dataMgrSvc->rootName();
   if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
 
-  auto fixLocation = [this, rootName]( const std::string& location ) -> std::string {
+  auto fixLocation = [this, rootName]( const DataObjID& id ) -> boost::optional<DataObjID> {
+    // Compute the updated location
+    const std::string& location = id.key();
     auto tokens = boost::tokenizer<boost::char_separator<char>>{location, boost::char_separator<char>{":"}};
-    auto result =
+    auto fixedLocation =
         std::accumulate( tokens.begin(), tokens.end(), std::string{}, [&]( std::string s, const std::string& tok ) {
           std::string r = fullTESLocation( tok, UseRootInTES );
           // check whether we have an absolute path if yes use it - else prepend DataManager Root
           if ( r[0] != '/' ) r = rootName + r;
           return s.empty() ? r : s + ':' + r;
         } );
-    if ( result != location && this->msgLevel( MSG::DEBUG ) )
-      this->debug() << "Changing " << location << " to " << result << endmsg;
+
+    // If no change occured, signal it to the caller with an empty optional
+    if ( fixedLocation == location ) return boost::none;
+
+    // Else compute and return an updated DataObjID
+    if ( this->msgLevel( MSG::DEBUG ) ) {
+      this->debug() << "Changing " << location << " to " << fixedLocation << endmsg;
+    }
+    DataObjID result = id;
+    result.updateKey(fixedLocation);
     return result;
   };
 
-  class DHHFixer : public IDataHandleVisitor
-  {
-  public:
-    DHHFixer( std::function<std::string( const std::string& )> f ) : m_f( std::move( f ) ) {}
-    void visit( const IDataHandleHolder* idhh ) override
-    {
-      if ( !idhh ) return;
-
-      std::string r;
-      for ( auto h : idhh->inputHandles() ) {
-        r = m_f( h->objKey() );
-        if ( r != h->objKey() ) h->updateKey( r );
-      }
-      for ( auto h : idhh->outputHandles() ) {
-        r = m_f( h->objKey() );
-        if ( r != h->objKey() ) h->updateKey( r );
-      }
-    }
-
-  private:
-    std::function<std::string( const std::string& )> m_f;
-  };
-
-  this->m_updateDataHandles = std::make_unique<DHHFixer>( fixLocation );
+  this->m_updateDependencies = fixLocation;
 
   return sc;
 }

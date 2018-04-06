@@ -18,7 +18,7 @@ namespace Gaudi
       StatusCode sc = parse( id, s );
 
       if(sc.isSuccess()) {
-        v.setTargetID(std::move(id));
+        v.setTargetKey(std::move(id));
       }
       return sc;
     }
@@ -31,7 +31,7 @@ namespace Gaudi
       // FIXME: Aiming for perfect compatibility with old DataObjID-based
       //        solution for now, customize the repr once this is working
 
-      return toStream( v.targetID(), o );
+      return toStream( v.targetKey(), o );
     }
   }
 } //> ns Gaudi
@@ -41,6 +41,6 @@ std::ostream& operator<<(std::ostream& str, const DataHandleConfigurable& dhc)
 {
   // FIXME: Aiming for perfect compatibility with old DataObjID-based solution
   //        for now, customize the repr once this is working
-  str << dhc.targetID();
+  str << dhc.targetKey();
   return str;
 }

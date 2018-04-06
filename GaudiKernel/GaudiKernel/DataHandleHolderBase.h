@@ -5,6 +5,9 @@
 #include <type_traits>
 #include <unordered_set>
 #include <vector>
+
+#include <boost/optional.hpp>
+
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/GaudiException.h"
@@ -78,12 +81,11 @@ protected:
   }
 
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
+  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}};
+  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}};
 
 private:
   std::unordered_set<Gaudi::DataHandle*> m_handles;
-
-  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}};
-  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}};
 };
 
 
@@ -149,6 +151,33 @@ namespace Gaudi
           initializeHandles(m_eventOutputHandles);
         }
 
+        /// DataObjID mapping function, with optimized identity mapping case
+        ///
+        /// This construct is used when updating the DataObjIDs associated with
+        /// data dependencies, which is needed for some legacy workarounds.
+        ///
+        /// The mapping function shall return boost::none when no change is
+        /// required, and the modified DataObjID otherwise. This design
+        /// optimizes the "no change" case, which is expected to be the norm.
+        ///
+        using DataObjIDMapping = std::function<boost::optional<DataObjID>(const DataObjID&)>;
+
+        /// Update the key of each registered event data dependency, using a
+        /// user-defined mapping from the old to the new key.
+        void updateEventKeys(const DataObjIDMapping& keyMap) {
+          auto legacyInputHandles = Super::inputHandles();
+          auto legacyOutputHandles = Super::outputHandles();
+          updateKeys(legacyInputHandles, keyMap);
+          updateKeys(legacyOutputHandles, keyMap);
+          updateKeys(m_eventInputHandles, keyMap);
+          updateKeys(m_eventOutputHandles, keyMap);
+          updateKeys(Super::m_inputDataObjs, keyMap);
+          updateKeys(Super::m_outputDataObjs, keyMap);
+          updateKeys(Super::m_extInputDataObjs.value(), keyMap);
+          updateKeys(Super::m_extOutputDataObjs.value(), keyMap);
+        }
+
+
       private:
         /// Data handles associated with input and output event data
         using HandleList = std::vector<DataHandle*>;
@@ -164,7 +193,7 @@ namespace Gaudi
 
         /// Access the key of a DataHandle
         static const DataObjID& accessKey(const DataHandle* handlePtr) {
-          return handlePtr->targetID();
+          return handlePtr->targetKey();
         }
 
         /// Access the key of a DataObjID (identity function)
@@ -192,6 +221,49 @@ namespace Gaudi
             const DataObjID& key = accessKey(holder);
             if( !key.empty() ) { output.insert(key); }
           }
+        }
+
+        /// Update the key of a DataHandle
+        static void updateKey(DataHandle* target, DataObjID&& key) {
+          target->setTargetKey(std::move(key));
+        }
+
+        /// Update the key of a DataObjID
+        static void updateKey(DataObjID& target, DataObjID&& key) {
+          target = std::move(key);
+        }
+
+        /// Update the key of a legacy (non-reentrant) DataHandle
+        static void updateKey(Gaudi::DataHandle* target, DataObjID&& key) {
+          target->setKey(std::move(key));
+        }
+
+        /// Update the DataObjID keys of a collection of key holders
+        ///
+        /// Access the key from each key holder using accessKey, pass it
+        /// through a user-defined transform, and if the result is different
+        /// from the original key update the key using updateKey.
+        ///
+        template<typename KeyHolderColl>
+        static void updateKeys(KeyHolderColl& keyHolders,
+                               const DataObjIDMapping& keyMap) {
+          for(auto& holder: keyHolders) {
+            const DataObjID& oldKey = accessKey(holder);
+            auto mappedKey = keyMap(oldKey);
+            if( mappedKey ) { updateKey(holder, *std::move(mappedKey)); }
+          }
+        }
+
+        /// Specialization of the above algorithm for DataObjIDColls, where
+        /// updating the keys in place is not possible.
+        static void updateKeys(DataObjIDColl& keys,
+                               const DataObjIDMapping& keyMap) {
+          DataObjIDColl result;
+          result.reserve(keys.size());
+          for(const auto& key: keys) {
+            result.emplace(keyMap(key).value_or(key));
+          }
+          keys = std::move(result);
         }
     };
   }

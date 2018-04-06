@@ -115,7 +115,10 @@ namespace Gaudi
         ///
         /// FIXME: For aliased writes, how would that work with the Scheduler?
         ///
-        const DataObjID& targetID() const { return m_property.targetID(); }
+        const DataObjID& targetKey() const { return m_property.targetKey(); }
+
+        /// Change the ID of the target data
+        void setTargetKey(const DataObjID& id) { m_property.setTargetKey(id); }
 
         /// Initialize the data handle
         ///

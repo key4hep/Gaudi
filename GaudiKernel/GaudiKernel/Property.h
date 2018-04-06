@@ -696,9 +696,14 @@ namespace Gaudi
     }
     /// Helpers for DataHandles and derived classes
     template <class T = const ValueType>
-    decltype( auto ) targetID() const
+    decltype( auto ) targetKey() const
     {
-      return value().targetID();
+      return value().targetKey();
+    }
+    template <class ARG, class T = ValueType>
+    decltype( std::declval<T>().setTargetKey( std::declval<ARG>() ) ) setTargetKey( const ARG& arg )
+    {
+      return value().setTargetKey( arg );
     }
     template <class T = const ValueType>
     decltype( auto ) key() const

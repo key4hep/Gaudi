@@ -82,7 +82,7 @@ public:
     info() << "Checking input keys" << endmsg;
     DataObjIDColl expectedInputKeys;
     for(const auto& inputHandle: m_readers) {
-      expectedInputKeys.emplace(inputHandle.targetID());
+      expectedInputKeys.emplace(inputHandle.targetKey());
     }
     if(eventInputKeys() != expectedInputKeys) {
       throw std::runtime_error("Unexpected input keys");
@@ -92,7 +92,7 @@ public:
     info() << "Checking output keys" << endmsg;
     DataObjIDColl expectedOutputKeys;
     for(const auto& outputHandle: m_writers) {
-      expectedOutputKeys.emplace(outputHandle.targetID());
+      expectedOutputKeys.emplace(outputHandle.targetKey());
     }
     if(eventOutputKeys() != expectedOutputKeys) {
       throw std::runtime_error("Unexpected output keys");
