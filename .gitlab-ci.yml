@@ -71,7 +71,11 @@ coding-conventions:
     - echo "" >> apply-formatting.patch
     - echo "" >> apply-formatting.patch
     - git diff >> apply-formatting.patch
-    - git diff --stat --exit-code
+    - git diff --stat --exit-code || (
+      echo -e "\n=======================================\n You can fix formatting with:\n\n"
+      "  curl ${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/apply-formatting.patch | git am"
+      "\n\n=======================================" ; false
+      )
   artifacts:
     paths:
       - apply-formatting.patch
