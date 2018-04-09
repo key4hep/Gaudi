@@ -1,17 +1,24 @@
 #ifndef GAUDISVC_THISTSVC_ICC
 #define GAUDISVC_THISTSVC_ICC
 
+#include <map>
+#include <string>
+
+#include "TFile.h"
+#include "TObject.h"
+
 #ifndef GAUDIKERNEL_MSGSTREAM_H
 #include "GaudiKernel/MsgStream.h"
 #endif
 
 #include "GaudiKernel/System.h"
 
-#include <map>
-#include <string>
-
-#include "TFile.h"
-#include "TObject.h"
+template <typename T>
+StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist, const std::string& id, bool shared )
+{
+  THistID* hid = nullptr ;
+  return regHist_i( std::move(hist), id, shared, hid );
+}
 
 template <typename T>
 StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::string& id, bool shared, THistID*& phid )
@@ -162,15 +169,6 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
 }
 
 template <typename T>
-StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist, const std::string& id, bool shared )
-{
-  THistID* hid;
-  return regHist_i( std::move(hist), id, shared, hid );
-}
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-template <typename T>
 T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) const
 {
   // id starts with "/": unique
@@ -178,7 +176,7 @@ T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) c
   GlobalDirectoryRestore restore( m_svcMut );
 
   T* hist = nullptr;
-  const THistID* hid;
+  const THistID* hid = nullptr;
   size_t num = findHistID( id, hid, ind );
   if ( num == 0 ) {
     // no matches found
@@ -213,8 +211,6 @@ T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) c
   return hist;
 }
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
 template <typename T>
 T* THistSvc::readHist_i( const std::string& id ) const
 {
@@ -224,7 +220,7 @@ T* THistSvc::readHist_i( const std::string& id ) const
   removeDoubleSlash( idr );
 
   std::string stream, rem, dir, fdir, bdir, fdir2;
-  TFile* file;
+  TFile* file = nullptr;
 
   if ( !findStream( idr, stream, rem, file ) ) {
     return nullptr;
@@ -238,9 +234,9 @@ T* THistSvc::readHist_i( const std::string& id ) const
   file->cd( "/" );
 
   fdir  = idr;
-  bdir  = dirname( fdir );
+  bdir  = stripDirectoryName( fdir );
   fdir2 = fdir;
-  while ( ( dir = dirname( fdir ) ) != "" ) {
+  while ( ( dir = stripDirectoryName( fdir ) ) != "" ) {
     if ( !gDirectory->GetKey( dir.c_str() ) ) {
       error() << "Directory \"" << fdir2 << "\" doesnt exist in " << file->GetName() << endmsg;
       return nullptr;
@@ -272,16 +268,14 @@ T* THistSvc::readHist_i( const std::string& id ) const
   return hist;
 }
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
 template <typename T>
-LockedHandle<T> THistSvc::regSharedObj_i( const std::string& id, std::unique_ptr<T> hist )
+LockedHandle<T> THistSvc::regShared_i( const std::string& id, std::unique_ptr<T> hist )
 {
   LockedHandle<T> lh( nullptr, nullptr );
-  const THistID* hid;
+  const THistID* hid = nullptr;
   if ( findHistID( id, hid ) == 0 ) {
     T* phist = hist.get();
-    THistID* phid;
+    THistID* phid = nullptr;
     if ( regHist_i( std::move(hist), id, true, phid ).isSuccess() ) {
       lh.set( phist, phid->mutex );
 
@@ -299,7 +293,7 @@ LockedHandle<T> THistSvc::regSharedObj_i( const std::string& id, std::unique_ptr
       T* phist = dynamic_cast<T*>( hid->obj );
       if ( phist == 0 ) {
         error() << "regSharedHist: unable to dcast retrieved shared hist \"" << id << "\" of type "
-                << hid->obj->IsA()->GetName() << " to requested type " << phist->IsA()->GetName() << endmsg;
+                << hid->obj->IsA()->GetName() << " to requested type " << System::typeinfoName( typeid( T ) ) << endmsg;
       } else {
         lh.set( phist, hid->mutex );
         delete hist.release();
@@ -309,14 +303,12 @@ LockedHandle<T> THistSvc::regSharedObj_i( const std::string& id, std::unique_ptr
   return lh;
 }
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
 template <typename T>
-LockedHandle<T> THistSvc::getSharedObj_i( const std::string& name ) const
+LockedHandle<T> THistSvc::getShared_i( const std::string& name ) const
 {
   GlobalDirectoryRestore restore( m_svcMut );
 
-  const THistID* hid;
+  const THistID* hid = nullptr;
   size_t i = findHistID( name, hid );
 
   LockedHandle<T> hist( nullptr, nullptr );
@@ -339,4 +331,4 @@ LockedHandle<T> THistSvc::getSharedObj_i( const std::string& name ) const
   return hist;
 }
 
-#endif
+#endif // GAUDISVC_THISTSVC_ICC

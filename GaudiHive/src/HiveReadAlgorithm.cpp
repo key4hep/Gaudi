@@ -5,16 +5,19 @@
 class GAUDI_API HiveReadAlgorithm : public GaudiAlgorithm
 {
 public:
-  HiveReadAlgorithm( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
-  ~HiveReadAlgorithm() override {}
+  using GaudiAlgorithm::GaudiAlgorithm;
   StatusCode initialize() override;
   StatusCode execute() override;
-  StatusCode finalize() override { return StatusCode::SUCCESS; }
 };
 
-DECLARE_ALGORITHM_FACTORY( HiveReadAlgorithm )
+DECLARE_COMPONENT( HiveReadAlgorithm )
 
-StatusCode HiveReadAlgorithm::initialize() { return evtSvc()->addPreLoadItem( DataStoreItem( "/Event", 99 ) ); }
+StatusCode HiveReadAlgorithm::initialize()
+{
+  StatusCode sc = GaudiAlgorithm::initialize();
+  if ( !sc ) return sc;
+  return evtSvc()->addPreLoadItem( DataStoreItem( "/Event", 99 ) );
+}
 
 StatusCode HiveReadAlgorithm::execute()
 {

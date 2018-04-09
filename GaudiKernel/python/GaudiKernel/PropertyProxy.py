@@ -69,8 +69,11 @@ class PropertyProxy(object):
     def __init__(self, descr, docString=None, default=None):
         self.history = {}
         self.descr = descr
+        self.deprecated = False
         if docString:
             self.__doc__ = docString
+            if '[[deprecated]]' in docString:
+                self.deprecated = True
         if default is not None:
             self.default = default
 
@@ -101,6 +104,11 @@ class PropertyProxy(object):
                 raise
 
     def __set__(self, obj, value):
+     # check if deprecated
+        if self.deprecated and not obj._unpickling:
+            log.warning('Property %s is deprecated: %s',
+                        self.fullPropertyName(obj), self.__doc__)
+
      # check value/property compatibility if possible
         proptype, allowcompat = None, False
         if hasattr(self, 'default'):

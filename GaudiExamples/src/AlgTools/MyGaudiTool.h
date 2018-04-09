@@ -28,7 +28,6 @@ public:
   StatusCode initialize() override;
   StatusCode finalize() override;
 
-protected:
   /// Standard destructor
   ~MyGaudiTool() override;
 

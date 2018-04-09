@@ -1,8 +1,8 @@
 #ifndef DETECTED_H
 #define DETECTED_H
 // implementation of Library Fundamentals TS V2 detected idiom,
-// based on http://en.cppreference.com/w/cpp/experimental/is_detected
-// and the libstdc++ source, specificially libstdc++-v3/include/std/type_traits
+// taken from http://en.cppreference.com/w/cpp/experimental/is_detected
+// and http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4436.pdf
 
 namespace Gaudi
 {
@@ -20,15 +20,23 @@ namespace Gaudi
       /// Implementation of the detection idiom (negative case).
       template <typename Default, typename AlwaysVoid, template <typename...> class Op, typename... Args>
       struct detector {
-        using type = Default;
+        constexpr static bool value = false;
+        using type                  = Default;
       };
 
       /// Implementation of the detection idiom (positive case).
       template <typename Default, template <typename...> class Op, typename... Args>
       struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
-        using type = Op<Args...>;
+        constexpr static bool value = true;
+        using type                  = Op<Args...>;
       };
     }
+
+    template <template <class...> class Op, class... Args>
+    using is_detected = details::detector<void, void, Op, Args...>;
+
+    template <template <class...> class Op, class... Args>
+    using detected_t = typename is_detected<Op, Args...>::type;
 
     // Op<Args...> if that is a valid type, otherwise Default.
     template <typename Default, template <typename...> class Op, typename... Args>

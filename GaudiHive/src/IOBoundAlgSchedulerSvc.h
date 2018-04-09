@@ -22,14 +22,10 @@
  *  @author  Illya Shapoval
  *  @version 1.0
  */
-class IOBoundAlgSchedulerSvc : public extends1<Service, IAccelerator>
+class IOBoundAlgSchedulerSvc : public extends<Service, IAccelerator>
 {
 public:
-  /// Constructor
-  IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svc );
-
-  /// Destructor
-  ~IOBoundAlgSchedulerSvc() override;
+  using extends::extends;
 
   /// Initialise
   StatusCode initialize() override;
@@ -50,7 +46,7 @@ private:
   StatusCode deactivate();
 
   /// Flag to track if the scheduler is active or not
-  bool m_isActive;
+  bool m_isActive = false;
 
   /// The thread in which the activate function runs
   std::thread m_thread;

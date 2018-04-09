@@ -49,7 +49,6 @@
   <class name="IConversionSvc"/>
   <class name="IConverter"/>
   <class name="ICounterSummarySvc"/>
-  <class name="ICounterSvc"/>
   <class name="IDataManagerSvc"/>
   <class name="IDataProviderSvc"/>
   <class name="IDataSelector"/>

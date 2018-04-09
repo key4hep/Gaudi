@@ -34,7 +34,7 @@ namespace
   } maybe_stol{};
 }
 
-DECLARE_NAMESPACE_CONVERTER_FACTORY( RootHistCnv, RDirectoryCnv )
+DECLARE_CONVERTER( RootHistCnv::RDirectoryCnv )
 
 //-----------------------------------------------------------------------------
 StatusCode RootHistCnv::RDirectoryCnv::createObj( IOpaqueAddress* /* pAddress */, DataObject*& refpObject )

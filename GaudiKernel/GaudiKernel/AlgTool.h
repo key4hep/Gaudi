@@ -130,7 +130,7 @@ public:
   template <class T>
   StatusCode service( const std::string& name, T*& svc, bool createIf = true ) const
   {
-    return service_i( name, createIf, T::interfaceID(), reinterpret_cast<void**>( &svc ) );
+    return service_i( name, createIf, T::interfaceID(), (void**)&svc );
   }
 
   /** Access a service by name, type creating it if it doesn't already exist.
@@ -334,27 +334,5 @@ private:
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
 };
-
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-struct ToolFactory {
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... args )
-  {
-    return new T( std::forward<Args>( args )... );
-  }
-};
-
-// Macros to declare component factories
-#define DECLARE_TOOL_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, ToolFactory<x>, AlgTool::Factory )
-#define DECLARE_NAMESPACE_TOOL_FACTORY( n, x ) DECLARE_TOOL_FACTORY( n::x )
-
-#else
-
-// Macros to declare component factories
-#define DECLARE_TOOL_FACTORY( x ) DECLARE_COMPONENT( x )
-#define DECLARE_NAMESPACE_TOOL_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
-
-#endif
 
 #endif // GAUDIKERNEL_ALGTOOL_H

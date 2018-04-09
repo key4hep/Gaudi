@@ -1,8 +1,3 @@
-// Include files
-
-// From Gaudi
-#include "GaudiKernel/SvcFactory.h"
-// local
 #include "TBBMessageSvc.h"
 
 // ----------------------------------------------------------------------------
@@ -10,7 +5,7 @@
 //
 // 22/06/2012: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_SERVICE_FACTORY( TBBMessageSvc )
+DECLARE_COMPONENT( TBBMessageSvc )
 
 void TBBMessageSvc::reportMessage( const Message& msg, int outputLevel )
 {

@@ -53,7 +53,7 @@ namespace System
         result = bf::system_complete( file ).string();
         return true;
       }
-    } catch ( bf::filesystem_error /*err*/ ) {
+    } catch ( const bf::filesystem_error& /*err*/ ) {
     }
 
     // assume that "." is always part of the search path, so check locally first
@@ -65,7 +65,7 @@ namespace System
         result = bf::system_complete( file ).string();
         return true;
       }
-    } catch ( bf::filesystem_error /*err*/ ) {
+    } catch ( const bf::filesystem_error& /*err*/ ) {
     }
 
     // iterate through search list
@@ -81,7 +81,7 @@ namespace System
           result = bf::system_complete( fp ).string();
           return true;
         }
-      } catch ( bf::filesystem_error /*err*/ ) {
+      } catch ( const bf::filesystem_error& /*err*/ ) {
       }
 
       // if recursive searching requested, drill down
@@ -103,7 +103,7 @@ namespace System
               return true;
             }
           }
-        } catch ( bf::filesystem_error /*err*/ ) {
+        } catch ( const bf::filesystem_error& /*err*/ ) {
         }
       }
     }
@@ -190,7 +190,7 @@ namespace System
           return ( UnknownDirectory );
         }
       }
-    } catch ( bf::filesystem_error /*err*/ ) {
+    } catch ( const bf::filesystem_error& /*err*/ ) {
       return ( UnknownDirectory );
     }
 

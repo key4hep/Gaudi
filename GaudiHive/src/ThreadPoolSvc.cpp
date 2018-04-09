@@ -1,7 +1,6 @@
 #include "ThreadPoolSvc.h"
 
 #include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "ThreadInitTask.h"
 
 #include "tbb/task.h"
@@ -12,7 +11,7 @@
 
 using namespace tbb;
 
-DECLARE_SERVICE_FACTORY( ThreadPoolSvc )
+DECLARE_COMPONENT( ThreadPoolSvc )
 
 //=============================================================================
 

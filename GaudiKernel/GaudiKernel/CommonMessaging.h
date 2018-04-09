@@ -13,6 +13,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/detected.h"
 #include <boost/thread/tss.hpp>
 
 #include <memory>
@@ -24,12 +25,11 @@
 
 #define generate_( method, ret, args )                                                                                 \
                                                                                                                        \
-  template <typename T, typename SFINAE = void>                                                                        \
-  struct has_##method : std::false_type {                                                                              \
-  };                                                                                                                   \
   template <typename T>                                                                                                \
-  struct has_##method<T, is_valid_t<decltype( std::declval<const T&>().method args )>> : std::true_type {              \
-  };                                                                                                                   \
+  using _has_##method = decltype( std::declval<const T&>().method args );                                              \
+                                                                                                                       \
+  template <typename T>                                                                                                \
+  using has_##method = Gaudi::cpp17::is_detected<_has_##method, T>;                                                    \
                                                                                                                        \
   template <typename Base>                                                                                             \
   struct add_##method : public Base {                                                                                  \
@@ -40,14 +40,9 @@
 
 namespace implementation_detail
 {
-  template <typename>
-  struct void_t {
-    using type = void;
-  };
-  template <typename T>
-  using is_valid_t = typename void_t<T>::type;
+  generate_( name, const std::string&, () )
 
-  generate_( name, const std::string&, () ) generate_( serviceLocator, SmartIF<ISvcLocator>&, () )
+      generate_( serviceLocator, SmartIF<ISvcLocator>&, () )
 }
 #undef generate_
 
@@ -125,11 +120,10 @@ private:
   friend class CommonMessaging;
 
   mutable bool m_commonMessagingReady = false;
+  mutable MSG::Level m_level          = MSG::NIL;
 
   /// The predefined message stream
   mutable boost::thread_specific_ptr<MsgStream> m_msgStream;
-
-  mutable MSG::Level m_level = MSG::NIL;
 
   /// Pointer to the message service;
   mutable SmartIF<IMessageSvc> m_msgsvc;
@@ -145,10 +139,17 @@ public:
   using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
 
   /// get the cached level (originally extracted from the embedded MsgStream)
-  inline MSG::Level msgLevel() const { return setUpMessaging(); }
+  inline MSG::Level msgLevel() const
+  {
+    if ( LIKELY( m_commonMessagingReady ) ) return m_level;
+    return setUpMessaging();
+  }
 
   /// Backward compatibility function for getting the output level
-  inline MSG::Level outputLevel() const __attribute__( ( deprecated ) ) { return msgLevel(); }
+  [[deprecated( "please use msgLevel() instead of outputLevel()" )]] inline MSG::Level outputLevel() const
+  {
+    return msgLevel();
+  }
 
   /// get the output level from the embedded MsgStream
   inline bool msgLevel( MSG::Level lvl ) const { return UNLIKELY( msgLevel() <= lvl ); }
@@ -157,19 +158,25 @@ private:
   // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
   void create_msgStream() const override final { m_msgStream.reset( new MsgStream( msgSvc(), this->name() ) ); }
 
+  /// Initialise the messaging objects
+  void initMessaging() const
+  {
+    if ( !m_msgsvc ) {
+      // Get default implementation of the message service.
+      m_msgsvc = this->serviceLocator();
+    }
+    create_msgStream();
+    m_level = MSG::Level( m_msgStream.get() ? m_msgStream->level() : MSG::NIL );
+    // if we could not get a MessageSvc, we should try again the initial set up
+    m_commonMessagingReady = m_msgsvc;
+  }
+
 protected:
   /// Set up local caches
   MSG::Level setUpMessaging() const
   {
-    if ( !m_commonMessagingReady ) {
-      if ( !m_msgsvc ) {
-        // Get default implementation of the message service.
-        m_msgsvc = this->serviceLocator();
-      }
-      create_msgStream();
-      m_level = MSG::Level( m_msgStream.get() ? m_msgStream->level() : MSG::NIL );
-      // if we could not get a MessageSvc, we should try again the initial set up
-      m_commonMessagingReady = m_msgsvc;
+    if ( UNLIKELY( !m_commonMessagingReady ) ) {
+      initMessaging();
     }
     return m_level;
   }
@@ -185,9 +192,7 @@ protected:
   {
     setUpMessaging();
     if ( level != MSG::NIL && level != m_level ) {
-      if ( msgSvc() ) {
-        msgSvc()->setOutputLevel( this->name(), level );
-      }
+      if ( msgSvc() ) msgSvc()->setOutputLevel( this->name(), level );
       if ( m_msgStream.get() ) m_msgStream->setLevel( level );
       if ( UNLIKELY( MSG::Level( level ) <= MSG::DEBUG ) )
         debug() << "Property update for OutputLevel : new value = " << level << endmsg;

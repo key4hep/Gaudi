@@ -36,6 +36,6 @@ namespace Gaudi
   typedef ROOT::Math::Cylindrical3D<float> RhoPhiZ3DF;      ///< Cylindrical 3D point (float)
   typedef ROOT::Math::CylindricalEta3D<double> RhoEtaPhi3D; ///< Cylindrical Eta 3D point (double)
   typedef ROOT::Math::CylindricalEta3D<float> RhoEtaPhi3DF; ///< Cylindrical Eta 3D point (float)
-};
+}
 
 #endif // KERNEL_COORD3DTYPES_H

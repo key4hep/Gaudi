@@ -347,6 +347,31 @@ void XMLFileCatalog::registerFID( CSTR fid ) const
   throw runtime_error( "XMLFileCatalog> Cannot register LFN for invalid FID:" + fid );
 }
 // ----------------------------------------------------------------------------
+void XMLFileCatalog::renamePFN( CSTR pfn, CSTR new_pfn ) const
+{
+  DOMNode* node = getDoc( true )->getElementById( XMLStr( pfn ) );
+  if ( node && node->getNodeType() == DOMNode::ELEMENT_NODE ) {
+    ( (DOMElement*)node )->setAttribute( Attr_name, XMLStr( new_pfn ) );
+    m_update = true;
+  }
+}
+// ----------------------------------------------------------------------------
+void XMLFileCatalog::deletePFN( CSTR pfn ) const
+{
+  DOMNode* node = getDoc( true )->getElementById( XMLStr( pfn ) );
+  if ( node ) {
+    DOMNode* pcoll_node = node->getParentNode();
+    pcoll_node->removeChild( node );
+    m_update = true;
+    for ( XMLCollection pcoll( pcoll_node, true ); pcoll; ++pcoll ) {
+      return; // there are other PFN entries left, so we are done
+    }
+    // delete empty file entry
+    DOMNode* file_node = pcoll_node->getParentNode();
+    file_node->getParentNode()->removeChild( file_node );
+  }
+}
+// ----------------------------------------------------------------------------
 std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) const
 {
   if ( readOnly() ) {

@@ -3,6 +3,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/apply.h"
 #include <utility>
 
 namespace Gaudi
@@ -23,7 +24,20 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          invoke( std::index_sequence_for<Out...>{} );
+          Gaudi::apply(
+              [&]( auto&... ohandle ) {
+                Gaudi::apply(
+                    [&ohandle...]( auto&&... data ) {
+#if __cplusplus < 201703L
+                      (void)std::initializer_list<int>{
+                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
+#else
+                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+#endif
+                    },
+                    details::as_const( *this )() );
+              },
+              this->m_outputs );
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
@@ -33,14 +47,6 @@ namespace Gaudi
 
       // ... instead, they must implement the following operator
       virtual std::tuple<Out...> operator()() const = 0;
-
-    private:
-      template <std::size_t... O>
-      void invoke( std::index_sequence<O...> )
-      {
-        std::initializer_list<int>{
-            ( details::put( std::get<O>( this->m_outputs ), std::get<O>( details::as_const( *this )() ) ), 0 )...};
-      }
     };
 
     template <typename Out, typename Traits_>
@@ -51,10 +57,8 @@ namespace Gaudi
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final
       {
-        using details::as_const;
-        using details::put;
         try {
-          put( std::get<0>( this->m_outputs ), as_const( *this )() );
+          details::put( std::get<0>( this->m_outputs ), details::as_const( *this )() );
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();

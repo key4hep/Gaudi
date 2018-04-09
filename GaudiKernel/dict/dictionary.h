@@ -43,7 +43,6 @@
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IConverter.h"
 #include "GaudiKernel/ICounterSummarySvc.h"
-#include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataSelector.h"

@@ -80,6 +80,10 @@ namespace Gaudi
     virtual void registerLFN( const std::string& fid, const std::string& lfn ) const = 0;
     /// Create a Node for a FileID and DOM Node
     virtual void registerFID( const std::string& fid ) const = 0;
+    /// rename a PFN
+    virtual void renamePFN( const std::string& pfn, const std::string& new_pfn ) const = 0;
+    /// remove a PFN
+    virtual void deletePFN( const std::string& pfn ) const = 0;
     /// Dump all MetaData of the catalog for a given file ID
     virtual void getMetaData( const std::string& fid, Attributes& attr ) const = 0;
     /// Access metadata item

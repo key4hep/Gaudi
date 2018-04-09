@@ -595,13 +595,13 @@ namespace Gaudi
     {
       return value().end();
     }
-    template <class ARG, class T = const ValueType>
-    inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg ) const
+    template <class ARG>
+    inline decltype( auto ) operator[]( const ARG& arg ) const
     {
       return value()[arg];
     }
-    template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg )
+    template <class ARG>
+    inline decltype( auto ) operator[]( const ARG& arg )
     {
       return value()[arg];
     }

@@ -2,7 +2,6 @@
 #define SCALAR_TRANSFORMER_H
 
 #include "GaudiAlg/Transformer.h"
-#include <utility>
 
 namespace Gaudi
 {
@@ -19,14 +18,6 @@ namespace Gaudi
       /// Access the scalar operator
       const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>( *this ); }
 
-    private:
-      /// Call the scalar operator with the objects obtained from the given tuple
-      template <typename Tuple, typename Scalar, std::size_t... I>
-      inline decltype( auto ) getScalar( const Tuple& t, const Scalar& s, std::index_sequence<I...> ) const
-      {
-        return s( details::deref( std::get<I>( t ) )... );
-      }
-
     public:
       using Transformer<Out( const In&... ), Traits_>::Transformer;
 
@@ -37,10 +28,12 @@ namespace Gaudi
         Out out;
         out.reserve( inrange.size() );
         auto& scalar = scalarOp();
-        for ( const auto&& i : inrange ) {
-          details::insert( out, getScalar( i, scalar, std::index_sequence_for<In...>{} ) );
+        for ( const auto&& tuple : inrange ) {
+          /// Call the scalar operator with the objects obtained from the given tuple as arguments
+          details::insert(
+              out, Gaudi::apply( [&]( const auto&... i ) { return scalar( details::deref( i )... ); }, tuple ) );
         }
-        details::applyPostProcessing( scalar, out ); // awaiting a post-processor call
+        details::applyPostProcessing( scalar, out );
         return out;
       }
     };
@@ -56,31 +49,6 @@ namespace Gaudi
       /// Access the scalar operator
       const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>( *this ); }
 
-    private:
-      /// Reserve the given size in all output containers
-      template <typename Tuple, std::size_t... I>
-      inline void reserve( Tuple& t, const std::size_t resSize, std::index_sequence<I...> ) const
-      {
-        std::initializer_list<long unsigned int>{( std::get<I>( t ).reserve( resSize ), I )...};
-      }
-
-      /// Call the scalar operator with the objects obtained from the given tuple
-      template <typename Tuple, typename Scalar, std::size_t... I>
-      inline decltype( auto ) getScalar( const Tuple& t, const Scalar& s, std::index_sequence<I...> ) const
-      {
-        return s( details::deref( std::get<I>( t ) )... );
-      }
-
-      /// Insert the returned tuple of objects into the correct containers
-      template <typename InTuple, typename OutTuple, std::size_t... I>
-      void insert( InTuple&& in, OutTuple& out, std::index_sequence<I...> ) const
-      {
-        if ( in ) {
-          std::initializer_list<long unsigned int>{
-              ( details::insert( std::get<I>( out ), std::move( std::get<I>( *in ) ) ), I )...};
-        }
-      }
-
     public:
       using MultiTransformer<std::tuple<Out...>( const In&... ), Traits_>::MultiTransformer;
 
@@ -89,10 +57,36 @@ namespace Gaudi
       {
         const auto inrange = details::zip::const_range( in... );
         std::tuple<Out...> out;
-        reserve( out, inrange.size(), std::index_sequence_for<Out...>{} );
+        Gaudi::apply(
+            [sz = inrange.size()]( auto&&... o ) {
+#if __cplusplus < 201703L
+              (void)std::initializer_list<int>{( o.reserve( sz ), 0 )...};
+#else
+              ( o.reserve( sz ), ... );
+#endif
+            },
+            out );
         auto& scalar = scalarOp();
-        for ( const auto&& i : inrange ) {
-          insert( getScalar( i, scalar, std::index_sequence_for<In...>{} ), out, std::index_sequence_for<Out...>{} );
+        for ( const auto&& tuple : inrange ) {
+          Gaudi::apply(
+              [&scalar, &tuple]( auto&... out ) {
+                /// Call the scalar operator with the objects obtained from the given tuple
+                auto data = Gaudi::apply(
+                    [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); }, tuple );
+                if ( data ) {
+                  Gaudi::apply(
+                      [&out...]( auto&&... data ) {
+#if __cplusplus < 201703L
+                        (void)std::initializer_list<int>{
+                            ( details::insert( out, std::forward<decltype( data )>( data ) ), 0 )...};
+#else
+                        ( details::insert( out, std::forward<decltype( data )>( data ) ), ... );
+#endif
+                      },
+                      std::move( *data ) );
+                }
+              },
+              out );
         }
         details::applyPostProcessing( scalar, out ); // awaiting a post-processor call
         return out;

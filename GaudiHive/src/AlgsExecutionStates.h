@@ -38,8 +38,6 @@ public:
     ERROR        = 6
   };
 
-  static std::map<State, std::string> stateNames;
-
   AlgsExecutionStates( unsigned int algsNumber, SmartIF<IMessageSvc> MS )
       : m_states( algsNumber, INITIAL ), m_MS( std::move( MS ) ){};
 
@@ -111,10 +109,36 @@ public:
   Iterator end( State kind ) { return {kind, m_states, m_states.end()}; }
 };
 
-/// Streaming of State values (required by C++11 scoped enums).
+/// Streaming of State values
 inline std::ostream& operator<<( std::ostream& s, AlgsExecutionStates::State x )
 {
-  return s << static_cast<std::underlying_type_t<AlgsExecutionStates::State>>( x );
+  using State = AlgsExecutionStates::State;
+  switch ( x ) {
+  case State::INITIAL:
+    s << "INITIAL";
+    break;
+  case State::CONTROLREADY:
+    s << "CONTROLREADY";
+    break;
+  case State::DATAREADY:
+    s << "DATAREADY";
+    break;
+  case State::SCHEDULED:
+    s << "SCHEDULED";
+    break;
+  case State::EVTACCEPTED:
+    s << "EVTACCEPTED";
+    break;
+  case State::EVTREJECTED:
+    s << "EVTREJECTED";
+    break;
+  case State::ERROR:
+    s << "ERROR";
+    break;
+  default:
+    s << "UNKNOWN";
+  }
+  return s;
 }
 
 #endif // GAUDIHIVE_ALGSEXECUTIONSTATES_H

@@ -106,10 +106,4 @@ namespace Gaudi
   }
 }
 
-namespace Gaudi
-{
-  namespace Examples
-  {
-    DECLARE_COMPONENT( OpenCLAlg )
-  }
-}
+DECLARE_COMPONENT( Gaudi::Examples::OpenCLAlg )

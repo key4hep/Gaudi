@@ -11,6 +11,7 @@
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/ConversionSvc.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiUtils/IIODataManager.h"
 
 // C++ include files
 #include <set>
@@ -35,7 +36,6 @@ namespace Gaudi
 {
 
   // Forward declarations
-  class IIODataManager;
   class IDataConnection;
   class RootDataConnection;
   class RootConnectionSetup;

@@ -7,7 +7,7 @@
 
 #include "WriteHandleAlg.h"
 
-DECLARE_ALGORITHM_FACTORY( WriteHandleAlg )
+DECLARE_COMPONENT( WriteHandleAlg )
 
 StatusCode WriteHandleAlg::execute() // the execution of the algorithm
 {

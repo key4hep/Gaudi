@@ -78,7 +78,7 @@ namespace Gaudi
         info() << "Converting " << input1 << " from " << inputLocation<0>() << " and " << input2 << " from "
                << inputLocation<1>() << endmsg;
         info() << "Storing results into " << outputLocation<0>() << " and " << outputLocation<1>() << endmsg;
-        return {input1, input2};
+        return std::tuple<float, float>{input1, input2};
       }
     };
 

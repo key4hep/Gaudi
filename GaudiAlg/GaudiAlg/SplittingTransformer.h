@@ -7,6 +7,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/apply.h"
 
 namespace Gaudi
 {
@@ -51,7 +52,16 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          invoke( std::index_sequence_for<In...>{} );
+          // TODO:FIXME: how does operator() know the number and order of expected outputs?
+          using details::as_const;
+          auto out = Gaudi::apply(
+              [&]( auto&... ihandle ) { return as_const( *this )( as_const( *ihandle.get() )... ); }, this->m_inputs );
+          if ( out.size() != m_outputs.size() ) {
+            throw GaudiException( "Error during transform: expected " + std::to_string( m_outputs.size() ) +
+                                      " containers, got " + std::to_string( out.size() ) + " instead",
+                                  this->name(), StatusCode::FAILURE );
+          }
+          for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -65,19 +75,6 @@ namespace Gaudi
       virtual vector_of_<Out> operator()( const In&... ) const = 0;
 
     private:
-      template <std::size_t... I>
-      void invoke( std::index_sequence<I...> )
-      {
-        // TODO:FIXME: how does operator() know the number and order of expected outputs?
-        using details::as_const;
-        auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
-        if ( out.size() != m_outputs.size() ) {
-          throw GaudiException( "Error during transform: expected " + std::to_string( m_outputs.size() ) +
-                                    " containers, got " + std::to_string( out.size() ) + " instead",
-                                this->name(), StatusCode::FAILURE );
-        }
-        for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
-      }
       template <typename T>
       using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
       std::vector<std::string> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the actual handles!

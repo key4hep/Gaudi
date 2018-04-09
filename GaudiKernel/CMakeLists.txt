@@ -100,8 +100,6 @@ gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
 
 # These are a compile-time tests:
 if( CPPUNIT_FOUND )
-   gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
-      LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
       LINK_LIBRARIES GaudiKernel)
 endif()
@@ -148,15 +146,27 @@ gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
 gaudi_add_unit_test(test_StatusCode tests/src/test_StatusCode.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_EventIDBase tests/src/test_EventIDBase.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 gaudi_add_unit_test(test_SystemTypeinfoName tests/src/test_SystemTypeinfoName.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
 gaudi_add_unit_test(test_SystemCmdLineArgs tests/src/test_SystemCmdLineArgs.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_apply  tests/src/test_apply.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+gaudi_add_unit_test(test_compose  tests/src/test_compose.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 gaudi_add_unit_test(test_reverse  tests/src/test_reverse.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+
+gaudi_add_compile_test(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx
+                       ERRORS "FAIL01;FAIL02;FAIL03;FAIL04")  
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)

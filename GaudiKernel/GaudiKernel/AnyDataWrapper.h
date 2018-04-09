@@ -5,9 +5,11 @@
 #include "GaudiKernel/DataObject.h"
 #include "boost/optional.hpp"
 #include <cstddef>
+#include <iterator>
 
 namespace details
 {
+#if __cplusplus < 201703L
   template <typename C>
   constexpr auto size( const C& c ) noexcept( noexcept( c.size() ) ) -> decltype( c.size() )
   {
@@ -19,6 +21,9 @@ namespace details
   {
     return N;
   }
+#else
+  using std::size;
+#endif
 
   template <typename T, typename... Args>
   constexpr auto size( const T&, Args&&... ) noexcept

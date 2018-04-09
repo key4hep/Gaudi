@@ -231,7 +231,7 @@ public:
   template <class T>
   StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const
   {
-    return service_i( name, createIf, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
+    return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
   }
 
   /// Access a service by name and type, creating it if it doesn't already exist.
@@ -620,34 +620,5 @@ private:
   /// Private assignment operator: NO ASSIGNMENT ALLOWED
   Algorithm& operator=( const Algorithm& rhs ) = delete;
 };
-
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-class AlgFactory
-{
-public:
-#ifndef __REFLEX__
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... args )
-  {
-    return new T( std::forward<Args>( args )... );
-  }
-#endif
-};
-
-// Macros to declare component factories
-#define DECLARE_ALGORITHM_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, AlgFactory<x>, Algorithm::Factory )
-#define DECLARE_NAMED_ALGORITHM_FACTORY( x, n )                                                                        \
-  DECLARE_FACTORY_WITH_CREATOR_AND_ID( x, AlgFactory<x>, #n, Algorithm::Factory )
-#define DECLARE_NAMESPACE_ALGORITHM_FACTORY( n, x ) DECLARE_ALGORITHM_FACTORY( n::x )
-
-#else
-
-// Macros to declare component factories
-#define DECLARE_ALGORITHM_FACTORY( x ) DECLARE_COMPONENT( x )
-#define DECLARE_NAMED_ALGORITHM_FACTORY( x, n ) DECLARE_COMPONENT_WITH_ID( x, #n )
-#define DECLARE_NAMESPACE_ALGORITHM_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
-
-#endif
 
 #endif // GAUDIKERNEL_ALGORITHM_H

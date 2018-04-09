@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /home/merrenst/git/Gaudi/GaudiExamples/options/THistWrite.opts
+JobOptionsSvc        INFO # =======> /home/merrenst/athena_thistsvc_migration/Gaudi/GaudiExamples/options/THistWrite.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["THistWrite"]
 JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
@@ -12,11 +12,11 @@ JobOptionsSvc        INFO # (26,1): THistSvc.Output += ["rec DATAFILE='tuple3.rt
 JobOptionsSvc        INFO # (28,1): THistSvc.PrintAll = 1
 JobOptionsSvc        INFO # (33,1): ApplicationMgr.EvtMax = 20
 JobOptionsSvc        INFO # (34,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /home/merrenst/git/Gaudi/GaudiExamples/options/THistWrite.opts
+JobOptionsSvc        INFO Job options successfully read in from /home/merrenst/athena_thistsvc_migration/Gaudi/GaudiExamples/options/THistWrite.opts
 ApplicationMgr    SUCCESS 
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
-                                          running on hpadpmt on Wed Oct  4 10:00:38 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r1)
+                                          running on hpadpmt on Thu Feb  1 09:38:16 2018
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declared service DetDataSvc/DetectorDataSvc[m
@@ -38,34 +38,55 @@ THistSvc            DEBUG Opening TFile "tuple2.rt"  stream: "upd"  mode: "A" co
 THistSvc            DEBUG Opening TFile "tuple3.rt"  stream: "rec"  mode: "R" comp level: 1[m
 THistSvc             INFO registered file [tuple3.rt]... [ok][m
 THistSvc             INFO registered file [tuple2.rt]... [ok][m
-THistSvc            DEBUG regHist_i obj: 0x21ff690  id: TempHist1  s: 0[m
+THistSvc            DEBUG regHist_i obj: 0x31cb2c0  id: TempHist1  s: 0[m
 THistSvc            DEBUG Historgram with id "TempHist1" is temporary[m
 THistSvc            DEBUG Registering TH1F title: "Temporary Tree 1"  id: "/temp/TempHist1"  dir: root:/  file: none[m
-THistSvc            DEBUG regHist_i  THistID: id: /temp/TempHist1 t: 1 s: 0 M: 35564512 m: 0 o: 0x21ff690 TH1F[m
-THistSvc            DEBUG regHist_i obj: 0x21fff40  id: other/TempHist1a  s: 0[m
+THistSvc            DEBUG regHist_i  THistID: id: /temp/TempHist1 t: 1 s: 0 M: 52216688 m: 0 o: 0x31cb2c0 TH1F[m
+THistSvc            DEBUG regHist_i obj: 0x31d26f0  id: other/TempHist1a  s: 0[m
 THistSvc            DEBUG Historgram with id "other/TempHist1a" is temporary[m
 THistSvc            DEBUG Registering TH1F title: "Temporary Tree 1a"  id: "/temp/other/TempHist1a"  dir: root:/other  file: none[m
-THistSvc            DEBUG regHist_i  THistID: id: /temp/other/TempHist1a t: 1 s: 0 M: 35564512 m: 0 o: 0x21fff40 TH1F[m
-THistSvc            DEBUG regHist_i obj: 0x22019b0  id: /new/Tree2  s: 0[m
+THistSvc            DEBUG regHist_i  THistID: id: /temp/other/TempHist1a t: 1 s: 0 M: 52216688 m: 0 o: 0x31d26f0 TH1F[m
+THistSvc            DEBUG regHist_i obj: 0x31d4190  id: /new/Tree2  s: 0[m
 [93;1mTHistSvc          WARNING no stream "new" associated with id: "/new/Tree2"[m
 THistSvc            DEBUG Historgram with id "/new/Tree2" is temporary[m
 THistSvc            DEBUG Registering TH1F title: "Tree 2"  id: "/new/Tree2"  dir: root:/  file: none[m
-THistSvc            DEBUG regHist_i  THistID: id: /new/Tree2 t: 1 s: 0 M: 35564512 m: 0 o: 0x22019b0 TH1F[m
-THistSvc            DEBUG regHist_i obj: 0x2201f40  id: /upd/xxx/gauss1d  s: 0[m
+THistSvc            DEBUG regHist_i  THistID: id: /new/Tree2 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d4190 TH1F[m
+THistSvc            DEBUG regHist_i obj: 0x31d4720  id: /upd/xxx/gauss1d  s: 0[m
 THistSvc            DEBUG Registering TH1F title: "1D Gaussian"  id: "/upd/xxx/gauss1d"  dir: tuple2.rt:/xxx  file: tuple2.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /upd/xxx/gauss1d t: 0 s: 0 M: 3 m: 0 o: 0x2201f40 TH1F[m
-THistSvc            DEBUG regHist_i obj: 0x2205070  id: /rec/gauss2d  s: 0[m
+THistSvc            DEBUG regHist_i  THistID: id: /upd/xxx/gauss1d t: 0 s: 0 M: 3 m: 0 o: 0x31d4720 TH1F[m
+THistSvc            DEBUG regHist_i obj: 0x31d76b0  id: /rec/gauss2d  s: 0[m
 THistSvc            DEBUG Registering TH2F title: "2D Gaussian"  id: "/rec/gauss2d"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /rec/gauss2d t: 0 s: 0 M: 2 m: 0 o: 0x2205070 TH2F[m
-THistSvc            DEBUG regHist_i obj: 0x2205c40  id: /rec/gauss3d  s: 0[m
+THistSvc            DEBUG regHist_i  THistID: id: /rec/gauss2d t: 0 s: 0 M: 2 m: 0 o: 0x31d76b0 TH2F[m
+THistSvc            DEBUG regHist_i obj: 0x31d8210  id: /rec/gauss3d  s: 0[m
 THistSvc            DEBUG Registering TH3F title: "3D Gaussian"  id: "/rec/gauss3d"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /rec/gauss3d t: 0 s: 0 M: 2 m: 0 o: 0x2205c40 TH3F[m
-THistSvc            DEBUG regHist_i obj: 0x2206740  id: /rec/prof  s: 0[m
+THistSvc            DEBUG regHist_i  THistID: id: /rec/gauss3d t: 0 s: 0 M: 2 m: 0 o: 0x31d8210 TH3F[m
+THistSvc            DEBUG regHist_i obj: 0x31d8e20  id: TempHist5  s: 0[m
+THistSvc            DEBUG Historgram with id "TempHist5" is temporary[m
+THistSvc            DEBUG Registering TH1F title: "Temporary Tree 5"  id: "/temp/TempHist5"  dir: root:/  file: none[m
+THistSvc            DEBUG regHist_i  THistID: id: /temp/TempHist5 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d8e20 TH1F[m
+THistSvc            DEBUG regHist_i obj: 0x31d9a70  id: TempHist6  s: 0[m
+THistSvc            DEBUG Historgram with id "TempHist6" is temporary[m
+THistSvc            DEBUG Registering TH1D title: "Temporary Tree 6"  id: "/temp/TempHist6"  dir: root:/  file: none[m
+THistSvc            DEBUG regHist_i  THistID: id: /temp/TempHist6 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d9a70 TH1D[m
+THistSvc            DEBUG regHist_i obj: 0x1aeb690  id: TempHist7  s: 0[m
+THistSvc            DEBUG Historgram with id "TempHist7" is temporary[m
+THistSvc            DEBUG Registering TH1D title: "Temporary Tree 7"  id: "/temp/TempHist7"  dir: root:/  file: none[m
+THistSvc            DEBUG regHist_i  THistID: id: /temp/TempHist7 t: 1 s: 0 M: 27169504 m: 0 o: 0x1aeb690 TH1D[m
+THistSvc            DEBUG regHist_i obj: 0x31da3c0  id: /rec/prof  s: 0[m
 THistSvc            DEBUG Registering TProfile title: "profile"  id: "/rec/prof"  dir: tuple3.rt:/  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /rec/prof t: 0 s: 0 M: 2 m: 0 o: 0x2206740 TProfile[m
-THistSvc            DEBUG regHist_i obj: 0x22443d0  id: /rec/trees/stuff/tree1  s: 0[m
+THistSvc            DEBUG regHist_i  THistID: id: /rec/prof t: 0 s: 0 M: 2 m: 0 o: 0x31da3c0 TProfile[m
+THistSvc            DEBUG regHist_i obj: 0x321a710  id: /rec/trees/stuff/tree1  s: 0[m
 THistSvc            DEBUG Registering TTree title: "tree title"  id: "/rec/trees/stuff/tree1"  dir: tuple3.rt:/trees/stuff  file: tuple3.rt[m
-THistSvc            DEBUG regHist_i  THistID: id: /rec/trees/stuff/tree1 t: 0 s: 0 M: 2 m: 0 o: 0x22443d0 TTree[m
+THistSvc            DEBUG regHist_i  THistID: id: /rec/trees/stuff/tree1 t: 0 s: 0 M: 2 m: 0 o: 0x321a710 TTree[m
+THistSvc            DEBUG regHist_i obj: 0x3289e50  id: /upd/xxx/gauss1d_shared  s: 1[m
+THistSvc            DEBUG Registering shared TH1F title: "1D Gaussian"  id: "/upd/xxx/gauss1d_shared"  dir: tuple2.rt:/xxx  file: tuple2.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG regHist_i obj: 0x328a780  id: /rec/gauss2d_shared  s: 1[m
+THistSvc            DEBUG Registering shared TH2F title: "2D Gaussian"  id: "/rec/gauss2d_shared"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG regHist_i obj: 0x32950f0  id: /rec/gauss3d_shared  s: 1[m
+THistSvc            DEBUG Registering shared TH3F title: "3D Gaussian"  id: "/rec/gauss3d_shared"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistSvc            DEBUG regHist_i  THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
@@ -74,82 +95,163 @@ ApplicationMgr       INFO Application Manager Started successfully[m
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine[m
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3[m
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F[m
+THistSvc            DEBUG getSharedHist: found THistID: id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F[m
 THistSvc            DEBUG updateFiles()[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 THistWrite           INFO Finalizing...[m
+THistSvc            DEBUG vhid for /temp/TempHist7 is empty. deleting[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG dumping THistSvc contents
-m_hlist:  size: 8
- - id: /temp/TempHist1 t: 1 s: 0 M: 35564512 m: 0 o: 0x21ff690 TH1F :: [0x21c0b80] 1 {[0x21ff690]}
- - id: /temp/other/TempHist1a t: 1 s: 0 M: 35564512 m: 0 o: 0x21fff40 TH1F :: [0x1e38d40] 1 {[0x21fff40]}
- - id: /new/Tree2 t: 1 s: 0 M: 35564512 m: 0 o: 0x22019b0 TH1F :: [0x2158490] 1 {[0x22019b0]}
- - id: /upd/xxx/gauss1d t: 0 s: 0 M: 3 m: 0 o: 0x2201f40 TH1F :: [0x2157670] 1 {[0x2201f40]}
- - id: /rec/gauss2d t: 0 s: 0 M: 2 m: 0 o: 0x2205070 TH2F :: [0x21de400] 1 {[0x2205070]}
- - id: /rec/gauss3d t: 0 s: 0 M: 2 m: 0 o: 0x2205c40 TH3F :: [0x21e69a0] 1 {[0x2205c40]}
- - id: /rec/prof t: 0 s: 0 M: 2 m: 0 o: 0x2206740 TProfile :: [0x20e38a0] 1 {[0x2206740]}
- - id: /rec/trees/stuff/tree1 t: 0 s: 0 M: 2 m: 0 o: 0x22443d0 TTree :: [0x211ea70] 1 {[0x22443d0]}
+m_hlist:  size: 13
+ - id: /temp/TempHist1 t: 1 s: 0 M: 52216688 m: 0 o: 0x31cb2c0 TH1F :: [0x30fed90] 1 {[0x31cb2c0]}
+ - id: /temp/other/TempHist1a t: 1 s: 0 M: 52216688 m: 0 o: 0x31d26f0 TH1F :: [0x30763d0] 1 {[0x31d26f0]}
+ - id: /new/Tree2 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d4190 TH1F :: [0x30072f0] 1 {[0x31d4190]}
+ - id: /upd/xxx/gauss1d t: 0 s: 0 M: 3 m: 0 o: 0x31d4720 TH1F :: [0x31c8d80] 1 {[0x31d4720]}
+ - id: /rec/gauss2d t: 0 s: 0 M: 2 m: 0 o: 0x31d76b0 TH2F :: [0x30fe2b0] 1 {[0x31d76b0]}
+ - id: /rec/gauss3d t: 0 s: 0 M: 2 m: 0 o: 0x31d8210 TH3F :: [0x3106740] 1 {[0x31d8210]}
+ - id: /temp/TempHist5 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d8e20 TH1F :: [0x30901a0] 1 {[0x31d8e20]}
+ - id: /temp/TempHist6 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d9a70 TH1D :: [0x31cf810] 1 {[0x31d9a70]}
+ - id: /rec/prof t: 0 s: 0 M: 2 m: 0 o: 0x31da3c0 TProfile :: [0x2fff990] 1 {[0x31da3c0]}
+ - id: /rec/trees/stuff/tree1 t: 0 s: 0 M: 2 m: 0 o: 0x321a710 TTree :: [0x30c9e60] 1 {[0x321a710]}
+ - id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F :: [0x305d6e0] 1 {[0x3289e50]}
+ - id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F :: [0x3283e70] 1 {[0x328a780]}
+ - id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F :: [0x3108c60] 1 {[0x32950f0]}
 
-m_uids: 8
- - /rec/gauss3d  [0x21e69a0]
- - /rec/gauss2d  [0x21de400]
- - /temp/TempHist1  [0x21c0b80]
- - /temp/other/TempHist1a  [0x1e38d40]
- - /rec/trees/stuff/tree1  [0x211ea70]
- - /rec/prof  [0x20e38a0]
- - /new/Tree2  [0x2158490]
- - /upd/xxx/gauss1d  [0x2157670]
+m_uids: 13
+ - /rec/gauss2d_shared  [0x3283e70]
+ - /upd/xxx/gauss1d_shared  [0x305d6e0]
+ - /rec/gauss3d_shared  [0x3108c60]
+ - /upd/xxx/gauss1d  [0x31c8d80]
+ - /rec/prof  [0x2fff990]
+ - /temp/TempHist5  [0x30901a0]
+ - /rec/trees/stuff/tree1  [0x30c9e60]
+ - /temp/other/TempHist1a  [0x30763d0]
+ - /temp/TempHist1  [0x30fed90]
+ - /new/Tree2  [0x30072f0]
+ - /rec/gauss2d  [0x30fe2b0]
+ - /rec/gauss3d  [0x3106740]
+ - /temp/TempHist6  [0x31cf810]
 
-m_ids: 8
- - trees/stuff/tree1  [0x211ea70]
- - prof  [0x20e38a0]
- - gauss3d  [0x21e69a0]
- - gauss2d  [0x21de400]
- - xxx/gauss1d  [0x2157670]
- - TempHist1  [0x21c0b80]
- - other/TempHist1a  [0x1e38d40]
- - Tree2  [0x2158490]
+m_ids: 13
+ - gauss3d_shared  [0x3108c60]
+ - gauss2d_shared  [0x3283e70]
+ - Tree2  [0x30072f0]
+ - xxx/gauss1d  [0x31c8d80]
+ - xxx/gauss1d_shared  [0x305d6e0]
+ - TempHist1  [0x30fed90]
+ - other/TempHist1a  [0x30763d0]
+ - gauss2d  [0x30fe2b0]
+ - gauss3d  [0x3106740]
+ - TempHist5  [0x30901a0]
+ - TempHist6  [0x31cf810]
+ - prof  [0x2fff990]
+ - trees/stuff/tree1  [0x30c9e60]
 
-m_tobjs: 8
- - 0x22443d0 -> id: /rec/trees/stuff/tree1 t: 0 s: 0 M: 2 m: 0 o: 0x22443d0 TTree
- - 0x2206740 -> id: /rec/prof t: 0 s: 0 M: 2 m: 0 o: 0x2206740 TProfile
- - 0x2205c40 -> id: /rec/gauss3d t: 0 s: 0 M: 2 m: 0 o: 0x2205c40 TH3F
- - 0x2205070 -> id: /rec/gauss2d t: 0 s: 0 M: 2 m: 0 o: 0x2205070 TH2F
- - 0x21ff690 -> id: /temp/TempHist1 t: 1 s: 0 M: 35564512 m: 0 o: 0x21ff690 TH1F
- - 0x21fff40 -> id: /temp/other/TempHist1a t: 1 s: 0 M: 35564512 m: 0 o: 0x21fff40 TH1F
- - 0x22019b0 -> id: /new/Tree2 t: 1 s: 0 M: 35564512 m: 0 o: 0x22019b0 TH1F
- - 0x2201f40 -> id: /upd/xxx/gauss1d t: 0 s: 0 M: 3 m: 0 o: 0x2201f40 TH1F
+m_tobjs: 13
+ - 0x32950f0 -> id: /rec/gauss3d_shared t: 0 s: 1 M: 2 m: 0x3295550 o: 0x32950f0 TH3F
+ - 0x3289e50 -> id: /upd/xxx/gauss1d_shared t: 0 s: 1 M: 3 m: 0x3220300 o: 0x3289e50 TH1F
+ - 0x31d26f0 -> id: /temp/other/TempHist1a t: 1 s: 0 M: 52216688 m: 0 o: 0x31d26f0 TH1F
+ - 0x31cb2c0 -> id: /temp/TempHist1 t: 1 s: 0 M: 52216688 m: 0 o: 0x31cb2c0 TH1F
+ - 0x321a710 -> id: /rec/trees/stuff/tree1 t: 0 s: 0 M: 2 m: 0 o: 0x321a710 TTree
+ - 0x31d76b0 -> id: /rec/gauss2d t: 0 s: 0 M: 2 m: 0 o: 0x31d76b0 TH2F
+ - 0x31d9a70 -> id: /temp/TempHist6 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d9a70 TH1D
+ - 0x31d4190 -> id: /new/Tree2 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d4190 TH1F
+ - 0x328a780 -> id: /rec/gauss2d_shared t: 0 s: 1 M: 2 m: 0x3294ec0 o: 0x328a780 TH2F
+ - 0x31d4720 -> id: /upd/xxx/gauss1d t: 0 s: 0 M: 3 m: 0 o: 0x31d4720 TH1F
+ - 0x31d8210 -> id: /rec/gauss3d t: 0 s: 0 M: 2 m: 0 o: 0x31d8210 TH3F
+ - 0x31da3c0 -> id: /rec/prof t: 0 s: 0 M: 2 m: 0 o: 0x31da3c0 TProfile
+ - 0x31d8e20 -> id: /temp/TempHist5 t: 1 s: 0 M: 52216688 m: 0 o: 0x31d8e20 TH1F
 [m
 THistSvc            DEBUG THistSvc::finalize[m
 THistSvc            DEBUG updateFiles()[m
-THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT [m
-THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"[m
-THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple3.rt"[m
+THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT [m
+THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT: "tuple2.rt"[m
+THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT: "tuple3.rt"[m
 THistSvc             INFO Listing contents of ROOT files: [m
 THistSvc             INFO ==> File: tuple3.rt  stream: rec[m
 TFile: name=tuple3.rt, title=, option=CREATE
-TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
+TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19974
           Title = 2D Gaussian
           NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50
-TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19944
+TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19947
           Title = 3D Gaussian
           NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50, NbinsZ= 100, zmin= -50, zmax=50
 TH1.Print Name  = profile, Entries= 0, Total sum= 0
@@ -157,7 +259,7 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
           NbinsX= 100, xmin= -50, xmax=-50
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14051 bytes  File  Size =       2338 *
+*Entries :     1000 : Total =           14051 bytes  File  Size =       2335 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *
@@ -172,9 +274,18 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
 *Entries :     1000 : Total  Size=       4565 bytes  File Size  =        160 *
 *Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
 *............................................................................*
+TH1.Print Name  = 2Dgauss_shared, Entries= 20000, Total sum= 19957
+          Title = 2D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50
+TH1.Print Name  = 3Dgauss_shared, Entries= 20000, Total sum= 19949
+          Title = 3D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50, NbinsZ= 100, zmin= -50, zmax=50
 THistSvc             INFO ==> File: tuple2.rt  stream: upd[m
 TFile: name=tuple2.rt, title=, option=UPDATE
-TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
+TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19982
+          Title = 1D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50
+TH1.Print Name  = 1Dgauss_shared, Entries= 20000, Total sum= 19984
           Title = 1D Gaussian
           NbinsX= 100, xmin= -50, xmax=50
 ApplicationMgr       INFO Application Manager Finalized successfully[m

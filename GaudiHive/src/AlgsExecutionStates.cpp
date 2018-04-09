@@ -10,11 +10,6 @@ namespace
   }
 }
 
-// A simple map to easily translate a state to its name
-std::map<AlgsExecutionStates::State, std::string> AlgsExecutionStates::stateNames = {
-    {INITIAL, "INITIAL"},         {CONTROLREADY, "CONTROLREADY"}, {DATAREADY, "DATAREADY"}, {SCHEDULED, "SCHEDULED"},
-    {EVTACCEPTED, "EVTACCEPTED"}, {EVTREJECTED, "EVTREJECTED"},   {ERROR, "ERROR"}};
-
 StatusCode AlgsExecutionStates::updateState( unsigned int iAlgo, State newState )
 {
   if ( iAlgo >= m_states.size() ) {
@@ -31,8 +26,8 @@ StatusCode AlgsExecutionStates::updateState( unsigned int iAlgo, State newState 
     m_states[iAlgo] = newState;
     return StatusCode::SUCCESS;
   default:
-    log() << MSG::ERROR << "[AlgIndex " << iAlgo << "] Transition from " << stateNames.at( m_states[iAlgo] ) << " to "
-          << stateNames.at( newState ) << " is not allowed" << endmsg;
+    log() << MSG::ERROR << "[AlgIndex " << iAlgo << "] Transition from " << m_states[iAlgo] << " to " << newState
+          << " is not allowed" << endmsg;
     m_states[iAlgo] = ERROR;
     return StatusCode::FAILURE;
   }

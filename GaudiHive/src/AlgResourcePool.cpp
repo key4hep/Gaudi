@@ -1,10 +1,6 @@
-// Include Files
-
-// Framework
 #include "AlgResourcePool.h"
 #include "GaudiAlg/GaudiSequencer.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/SvcFactory.h"
 
 // C++
 #include <functional>
@@ -13,7 +9,7 @@
 // DP TODO: Manage smartifs and not pointers to algos
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY( AlgResourcePool )
+DECLARE_COMPONENT( AlgResourcePool )
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define DEBUG_MSG ON_DEBUG debug()

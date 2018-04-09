@@ -116,6 +116,10 @@ namespace Gaudi
     void registerLFN( CSTR fid, CSTR lfn ) const override;
     /// Create a FileID and DOM Node
     void registerFID( CSTR fid ) const override { writeCatalog()->registerFID( fid ); }
+    /// rename a PFN
+    void renamePFN( CSTR pfn, CSTR newpfn ) const override { writeCatalog()->renamePFN( pfn, newpfn ); }
+    /// remove a PFN
+    void deletePFN( CSTR pfn ) const override { writeCatalog()->deletePFN( pfn ); }
     /// Dump all MetaData of the catalog for a given file ID
     void getMetaData( CSTR fid, Attributes& attr ) const override
     {

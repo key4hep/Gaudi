@@ -13,10 +13,41 @@
  *
  */
 
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <stdint.h>
 #include <tuple>
+
+#include "GaudiKernel/compose.h"
+namespace details
+{
+  template <typename lambda>
+  struct arg_helper : public arg_helper<decltype( &lambda::operator() )> {
+  };
+  template <typename T, typename Ret, typename Arg>
+  struct arg_helper<Ret ( T::* )( Arg ) const> {
+    using type = Arg;
+  };
+
+  // given a unary lambda whose argument is of type Arg_t,
+  // argument_t<lambda> will be equal to Arg_t
+  template <typename lambda>
+  using argument_t = typename arg_helper<lambda>::type;
+
+  template <typename Fun>
+  auto add_deref( Fun f )
+  {
+    return compose( f, [=]( auto*... p ) { return f( *p... ); } );
+  }
+
+  template <typename Proj, typename Cmp = std::greater<>>
+  auto make_cmp( Proj p, Cmp cmp = {} )
+  {
+    static_assert( std::is_reference<argument_t<Proj>>::value, "must be a reference" );
+    static_assert( std::is_const<std::remove_reference_t<argument_t<Proj>>>::value, "must be const" );
+    return [=]( argument_t<Proj> lhs, argument_t<Proj> rhs ) { return cmp( p( lhs ), p( rhs ) ); };
+  }
+}
 
 /**
  * @class EventIDBase
@@ -43,7 +74,7 @@ public:
                number_type time_stamp_ns_offset = 0, number_type lumi_block = UNDEFNUM,
                number_type bunch_crossing_id = 0 );
   // Use default copy constructor.
-  virtual ~EventIDBase();
+  virtual ~EventIDBase() = default;
   //@}
 
   /// run number - 32 bit unsigned
@@ -102,76 +133,44 @@ public:
   void set_bunch_crossing_id( number_type bcid ) { m_bunch_crossing_id = bcid; }
 
   /// Comparison operators
-  friend bool operator<( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator>( const EventIDBase& lhs, const EventIDBase& rhs );
   friend bool operator==( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator!=( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator<=( const EventIDBase& lhs, const EventIDBase& rhs );
-  friend bool operator>=( const EventIDBase& lhs, const EventIDBase& rhs );
+  friend bool operator<( const EventIDBase& lhs, const EventIDBase& rhs );
+  friend bool operator>( const EventIDBase& lhs, const EventIDBase& rhs ) { return rhs < lhs; }
+  friend bool operator!=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs == rhs ); }
+  friend bool operator<=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs > rhs ); }
+  friend bool operator>=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs < rhs ); }
 
-  bool isRunEvent() const;
-  bool isTimeStamp() const;
-  bool isLumiEvent() const;
-  bool isRunLumi() const;
-  bool isValid() const;
+  bool isRunEvent() const { return m_type & RunEvent; }
+  bool isTimeStamp() const { return m_type & TimeStamp; }
+  bool isLumiEvent() const { return m_type & LumiEvent; }
+  bool isRunLumi() const { return m_type & RunLumi; }
+  bool isValid() const { return m_type != Invalid; }
 
   /// Extraction operators
   friend std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs );
 
-  class SortByTimeStamp
+  static auto SortByTimeStamp()
   {
-  public:
-    bool operator()( const EventIDBase& t1, const EventIDBase& t2 ) const
-    {
-      if ( t1.time_stamp() == t2.time_stamp() ) {
-        return t1.time_stamp_ns_offset() > t2.time_stamp_ns_offset();
-      } else {
-        return t1.time_stamp() > t2.time_stamp();
-      }
-    }
-    bool operator()( const EventIDBase* t1, const EventIDBase* t2 ) const { return ( SortByTimeStamp()( *t1, *t2 ) ); }
+    return details::add_deref( details::make_cmp(
+        []( const EventIDBase& e ) { return std::tie( e.m_time_stamp, e.m_time_stamp_ns_offset ); } ) );
   };
 
-  class SortByRunEvent
+  static auto SortByRunEvent()
   {
-  public:
-    bool operator()( const EventIDBase& t1, const EventIDBase& t2 ) const
-    {
-      if ( t1.run_number() == t2.run_number() ) {
-        return t1.event_number() > t2.event_number();
-      } else {
-        return t1.run_number() > t2.run_number();
-      }
-    }
-    bool operator()( const EventIDBase* t1, const EventIDBase* t2 ) const { return ( SortByRunEvent()( *t1, *t2 ) ); }
+    return details::add_deref(
+        details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_event_number ); } ) );
   };
 
-  class SortByLumiEvent
+  static auto SortByLumiEvent()
   {
-  public:
-    bool operator()( const EventIDBase& t1, const EventIDBase& t2 ) const
-    {
-      if ( t1.lumi_block() == t2.lumi_block() ) {
-        return t1.event_number() > t2.event_number();
-      } else {
-        return t1.lumi_block() > t2.lumi_block();
-      }
-    }
-    bool operator()( const EventIDBase* t1, const EventIDBase* t2 ) const { return ( SortByLumiEvent()( *t1, *t2 ) ); }
+    return details::add_deref(
+        details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_lumi_block, e.m_event_number ); } ) );
   };
 
-  class SortByRunLumi
+  static auto SortByRunLumi()
   {
-  public:
-    bool operator()( const EventIDBase& t1, const EventIDBase& t2 ) const
-    {
-      if ( t1.run_number() == t2.run_number() ) {
-        return t1.lumi_block() > t2.lumi_block();
-      } else {
-        return t1.run_number() > t2.run_number();
-      }
-    }
-    bool operator()( const EventIDBase* t1, const EventIDBase* t2 ) const { return ( SortByRunLumi()( *t1, *t2 ) ); }
+    return details::add_deref(
+        details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_lumi_block ); } ) );
   };
 
 private:
@@ -179,10 +178,10 @@ private:
 
   unsigned m_type{Invalid};
 
-  void setRE() { m_type = m_type | RunEvent; }
-  void setTS() { m_type = m_type | TimeStamp; }
-  void setLE() { m_type = m_type | LumiEvent; }
-  void setRL() { m_type = m_type | RunLumi; }
+  void setRE() { m_type |= RunEvent; }
+  void setTS() { m_type |= TimeStamp; }
+  void setLE() { m_type |= LumiEvent; }
+  void setRL() { m_type |= RunLumi; }
 
   /// run number
   number_type m_run_number{UNDEFNUM};
@@ -211,24 +210,10 @@ inline bool operator<( const EventIDBase& lhs, const EventIDBase& rhs )
   // this assumes that both EventIDBase have the same set of values defined.
 
   if ( lhs.isTimeStamp() && rhs.isTimeStamp() ) {
-    return ( lhs.m_time_stamp < rhs.m_time_stamp );
+    return lhs.m_time_stamp < rhs.m_time_stamp;
   } else {
-    return ( std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ) <
-             std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number ) );
-  }
-}
-
-inline bool operator>( const EventIDBase& lhs, const EventIDBase& rhs )
-{
-  // first try ordering by timestamp if both are non-zero
-  // then try ordering by run/lumi/event
-  // this assumes that both EventIDBase have the same set of values defined.
-
-  if ( lhs.isTimeStamp() && rhs.isTimeStamp() ) {
-    return ( lhs.m_time_stamp > rhs.m_time_stamp );
-  } else {
-    return ( std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ) >
-             std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number ) );
+    return std::tie( lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number ) <
+           std::tie( rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number );
   }
 }
 
@@ -238,36 +223,38 @@ inline bool operator==( const EventIDBase& lhs, const EventIDBase& rhs )
   return ( lhs.m_run_number == rhs.m_run_number && lhs.m_event_number == rhs.m_event_number &&
            lhs.m_lumi_block == rhs.m_lumi_block );
 }
-inline bool operator!=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs == rhs ); }
-inline bool operator<=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs > rhs ); }
-inline bool operator>=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs < rhs ); }
 
 inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs )
 {
-  if ( rhs.m_type == EventIDBase::Invalid ) {
-    os << "[INVALID]";
-    return os;
+  if ( rhs.m_type == EventIDBase::Invalid ) return os << "[INVALID]";
+
+  const char* separator = "";
+  os << "[";
+  if ( rhs.m_run_number != EventIDBase::UNDEFNUM ) {
+    os << rhs.m_run_number;
+    separator = ",";
   }
 
-  os << "[" << rhs.m_run_number;
-
   if ( rhs.m_event_number != EventIDBase::UNDEFEVT ) {
-    os << "," << rhs.m_event_number;
+    os << separator << rhs.m_event_number;
+    separator = ",";
   }
 
   if ( rhs.isTimeStamp() ) {
-    os << ",t:" << rhs.m_time_stamp;
+    os << separator << "t:" << rhs.m_time_stamp;
     if ( rhs.m_time_stamp_ns_offset != 0 ) {
       os << "." << std::setfill( '0' ) << std::setw( 9 ) << rhs.m_time_stamp_ns_offset;
     }
+    separator = ",";
   }
 
   if ( rhs.isLumiEvent() || rhs.isRunLumi() ) {
-    os << ",l:" << rhs.m_lumi_block;
+    os << separator << "l:" << rhs.m_lumi_block;
+    separator = ",";
   }
 
   if ( rhs.m_bunch_crossing_id != 0 ) {
-    os << ",b:" << rhs.m_bunch_crossing_id;
+    os << separator << "b:" << rhs.m_bunch_crossing_id;
   }
   os << "]";
   return os;

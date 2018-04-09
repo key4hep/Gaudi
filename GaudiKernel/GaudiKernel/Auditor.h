@@ -143,30 +143,4 @@ private:
   bool m_isFinalized   = false; ///< Auditor has been finalized flag
 };
 
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-class AudFactory
-{
-public:
-#ifndef __REFLEX__
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... args )
-  {
-    return new T( std::forward<Args>( args )... );
-  }
-#endif
-};
-
-// Macros to declare component factories
-#define DECLARE_AUDITOR_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, AudFactory<x>, Auditor::Factory )
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY( n, x ) DECLARE_AUDITOR_FACTORY( n::x )
-
-#else
-
-// macros to declare factories
-#define DECLARE_AUDITOR_FACTORY( x ) DECLARE_COMPONENT( x )
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
-
-#endif
-
 #endif // GAUDIKERNEL_AUDITOR_H

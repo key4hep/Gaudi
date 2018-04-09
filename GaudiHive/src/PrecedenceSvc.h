@@ -23,10 +23,7 @@ class PrecedenceSvc : public extends<Service, IPrecedenceSvc>
 
 public:
   /// Constructor
-  PrecedenceSvc( const std::string& name, ISvcLocator* svc );
-
-  /// Destructor
-  ~PrecedenceSvc() = default;
+  PrecedenceSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {}
 
   /// Initialize
   StatusCode initialize() override;
