@@ -130,7 +130,7 @@ public:
   template <class T>
   StatusCode service( const std::string& name, T*& svc, bool createIf = true ) const
   {
-    return service_i( name, createIf, T::interfaceID(), reinterpret_cast<void**>( &svc ) );
+    return service_i( name, createIf, T::interfaceID(), (void**)&svc );
   }
 
   /** Access a service by name, type creating it if it doesn't already exist.
