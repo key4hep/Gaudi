@@ -694,8 +694,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
           partial_sc = promoteToAsyncScheduled( buffer.top(), iSlot, thisSlotPtr->eventContext );
 
         ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
-            << "Could not apply transition from "
-            << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY] << " for algorithm "
+            << "Could not apply transition from " << AlgsExecutionStates::State::DATAREADY << " for algorithm "
             << index2algname( buffer.top() ) << " on processing slot " << iSlot << endmsg;
 
         buffer.pop();
@@ -715,8 +714,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
           partial_sc = promoteToAsyncScheduled( algIndex, iSlot, thisSlotPtr->eventContext );
 
         ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
-            << "Could not apply transition from "
-            << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY] << " for algorithm "
+            << "Could not apply transition from " << AlgsExecutionStates::State::DATAREADY << " for algorithm "
             << index2algname( algIndex ) << " on processing slot " << iSlot << endmsg;
       }
     }
@@ -1073,8 +1071,8 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
     sc                              = thisSlot.allSubSlots[subSlotIndex].algsStates.updateState( iAlgo, state );
   }
 
-  ON_VERBOSE if ( sc.isSuccess() ) verbose() << "Promoting " << algo->name() << " on slot " << si << " to "
-                                             << AlgsExecutionStates::stateNames[state] << endmsg;
+  ON_VERBOSE if ( sc.isSuccess() ) verbose() << "Promoting " << algo->name() << " on slot " << si << " to " << state
+                                             << endmsg;
 
   ON_DEBUG debug() << "Algorithm " << algo->name() << " executed in slot " << si << ". Algorithms scheduled are "
                    << m_algosInFlight << endmsg;
@@ -1123,7 +1121,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   }
 
   ON_VERBOSE if ( sc.isSuccess() ) verbose() << "[Asynchronous] Promoting " << algo->name() << " on slot " << si
-                                             << " to " << AlgsExecutionStates::stateNames[state] << endmsg;
+                                             << " to " << state << endmsg;
 
   ON_DEBUG debug() << "[Asynchronous] Algorithm " << algo->name() << " executed in slot " << si
                    << ". Algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
