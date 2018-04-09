@@ -180,12 +180,12 @@ namespace Gaudi
 
       private:
         /// Data handles associated with input and output event data
-        using HandleList = std::vector<DataHandle*>;
-        HandleList m_eventInputHandles;
-        HandleList m_eventOutputHandles;
+        using DataHandleList = std::vector<DataHandle*>;
+        DataHandleList m_eventInputHandles;
+        DataHandleList m_eventOutputHandles;
 
         /// Initialize a set of handles
-        void initializeHandles(HandleList& handles) {
+        void initializeHandles(DataHandleList& handles) {
           for(auto handlePtr: handles) {
             handlePtr->initialize(*this);
           }
