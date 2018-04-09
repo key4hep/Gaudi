@@ -61,7 +61,7 @@ coding-conventions:
   stage: test
   script:
     - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
-    - sudo pip install autopep8
+    - sudo pip install autopep8==1.3.5
     - make BUILDDIR=${BUILDDIR} apply-formatting
     - git diff > apply-formatting.patch
     - git diff --stat --exit-code
