@@ -86,7 +86,7 @@ namespace concurrency
     output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
            << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
            << ")"
-           << ", in state: " << AlgsExecutionStates::stateNames[states[m_algoIndex]] << std::endl;
+           << ", in state: " << states[m_algoIndex] << std::endl;
   }
 
   //---------------------------------------------------------------------------
