@@ -4,6 +4,7 @@
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/apply.h"
 #include <type_traits>
 #include <utility>
 
@@ -33,7 +34,12 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          invoke( std::index_sequence_for<In...>{} );
+          Gaudi::apply(
+              [&]( const auto&... i ) {
+                details::put( std::get<0>( this->m_outputs ),
+                              details::as_const( *this )( details::deref( i.get() )... ) );
+              },
+              this->m_inputs );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -43,14 +49,6 @@ namespace Gaudi
 
       // instead they MUST implement this operator
       virtual Out operator()( const In&... ) const = 0;
-
-    private:
-      template <std::size_t... I>
-      void invoke( std::index_sequence<I...> )
-      {
-        details::put( std::get<0>( this->m_outputs ),
-                      details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... ) );
-      }
     };
 
     //
@@ -70,7 +68,24 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
+          Gaudi::apply(
+              [&]( auto&... ohandle ) {
+                Gaudi::apply(
+                    [&ohandle...]( auto&&... data ) {
+#if __cplusplus < 201703L
+                      (void)std::initializer_list<int>{
+                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
+#else
+                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+#endif
+                    },
+                    Gaudi::apply(
+                        [&]( auto&... ihandle ) {
+                          return details::as_const( *this )( details::deref( ihandle.get() )... );
+                        },
+                        this->m_inputs ) );
+              },
+              this->m_outputs );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -80,19 +95,6 @@ namespace Gaudi
 
       // instead they MUST implement this operator
       virtual std::tuple<Out...> operator()( const In&... ) const = 0;
-
-    private:
-      template <std::size_t... I, std::size_t... O>
-      void invoke( std::index_sequence<I...>, std::index_sequence<O...> )
-      {
-        auto out = details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... );
-#if __cplusplus < 201703L
-        (void)std::initializer_list<int>{
-            ( details::put( std::get<O>( this->m_outputs ), std::get<O>( std::move( out ) ) ), 0 )...};
-#else
-        ( details::put( std::get<O>( this->m_outputs ), std::get<O>( std::move( out ) ) ), ... );
-#endif
-      }
     };
 
     //
@@ -112,7 +114,25 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
+          Gaudi::apply(
+              [&]( auto&... ohandle ) {
+                Gaudi::apply(
+                    [&ohandle..., this]( bool passed, auto&&... data ) {
+                      this->setFilterPassed( passed );
+#if __cplusplus < 201703L
+                      (void)std::initializer_list<int>{
+                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
+#else
+                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+#endif
+                    },
+                    Gaudi::apply(
+                        [&]( auto&... ihandle ) {
+                          return details::as_const( *this )( details::deref( ihandle.get() )... );
+                        },
+                        this->m_inputs ) );
+              },
+              this->m_outputs );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -122,16 +142,6 @@ namespace Gaudi
 
       // instead they MUST implement this operator
       virtual std::tuple<bool, Out...> operator()( const In&... ) const = 0;
-
-    private:
-      template <std::size_t... I, std::size_t... O>
-      void invoke( std::index_sequence<I...>, std::index_sequence<O...> )
-      {
-        auto out = details::as_const( *this )( details::deref( std::get<I>( this->m_inputs ).get() )... );
-        this->setFilterPassed( std::get<0>( out ) );
-        (void)std::initializer_list<int>{
-            ( details::put( std::get<O>( this->m_outputs ), std::get<O + 1>( std::move( out ) ) ), 0 )...};
-      }
     };
   }
 }
