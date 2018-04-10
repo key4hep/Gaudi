@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fully deprecate `DeclareFactoryEntries.h` ([mr !648][])
 
 ### Changed
+- Implemented a new property for IoComponentMgr to hold search patterns for
+  direct I/O input file names ([mr !646][])
 - Allow retrieval of const services, lost with [mr !526][] ([mr !647][])
 - Add renamePFN and deletePFN methods to FileCatalog ([mr !645][])
 - Do string conversion in stream operator for `AlgsExecutionStates::State`
@@ -26,6 +28,7 @@ Details about old versions of the project can be found in the
 
 [mr !648]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/648
 [mr !647]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/647
+[mr !646]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/646
 [mr !645]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/645
 [mr !643]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/643
 [mr !622]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/622
