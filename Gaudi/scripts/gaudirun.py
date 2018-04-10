@@ -119,7 +119,7 @@ def getArgsFromQmt(qmtfile):
     return args
 
 
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 if __name__ == "__main__":
     # ensure that we (and the subprocesses) use the C standard localization
     if os.environ.get('LC_ALL') != 'C':

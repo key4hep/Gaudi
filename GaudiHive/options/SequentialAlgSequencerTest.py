@@ -12,7 +12,7 @@ evtslots = 5
 evtMax = 20
 cardinality = 5
 algosInFlight = 10
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # The configuration of the whiteboard ------------------------------------------
 # It is useful to call it EventDataSvc to replace the usual data service with
@@ -21,7 +21,7 @@ algosInFlight = 10
 whiteboard = HiveWhiteBoard("EventDataSvc",
                             EventSlots=evtslots)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Event Loop Manager -----------------------------------------------------------
 # It's called slim since it has less functionalities overall than the good-old
@@ -29,7 +29,7 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Avalanche Scheduler ----------------------------------------------------------
 # We just decide how many algorithms in flight we want to have and how many
@@ -39,13 +39,13 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
                                   OutputLevel=DEBUG)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Algo Resource Pool -----------------------------------------------------------
 # Nothing special here, we just set the debug level.
 AlgResourcePool(OutputLevel=DEBUG)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Set up of the crunchers, daily business --------------------------------------
 

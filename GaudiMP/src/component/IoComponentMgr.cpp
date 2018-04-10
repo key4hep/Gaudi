@@ -204,14 +204,11 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
     }
   }
 
-  // We need to take into account that boost::filesystem::absolute() does not work in following cases:
-  //  1. files read from eos, i.e. starting with "root:"
-  //  2. files read over http, i.e. starting either with 'http:' or with 'https:'
+  // We need to take into account that boost::filesystem::absolute() does not work with direct I/O inputs
   const std::string& tmp_name = ( pfn.empty() ? fname : pfn );
-  static const std::array<std::string, 6> prefixes = {"root:", "http:", "https:", "dcap:", "dav:", "davs:"};
-  bool special_case = std::any_of( begin( prefixes ), end( prefixes ), [&]( const std::string& pf ) {
-    return boost::algorithm::starts_with( tmp_name, pf );
-  } );
+  bool special_case =
+      std::any_of( begin( m_directio_patterns.value() ), end( m_directio_patterns.value() ),
+                   [&]( const std::string& pf ) { return boost::algorithm::contains( tmp_name, pf ); } );
   IoComponentEntry ioc( fname, ( special_case ? tmp_name : boost::filesystem::absolute( tmp_name ).string() ), iomode );
   m_cdict.insert( pair<IIoComponent*, IoComponentEntry>( iocomponent, ioc ) );
 

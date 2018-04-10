@@ -241,7 +241,7 @@ class BaseTest(object):
                          'Output Reference File': 'reference',
                          'Error Reference File': 'error_reference',
                          'Causes': 'causes',
-                         #'Validator Result': 'result.annotations',
+                         # 'Validator Result': 'result.annotations',
                          'Unsupported Platforms': 'unsupported_platforms',
                          'Stack Trace': 'stack_trace'}
         resultDict = [(key, getattr(self, attr))
