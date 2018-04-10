@@ -23,14 +23,13 @@
 
 //---------------------------------------------------------------------------
 
+class IDataHandleHolder;
+
 /// Work-in-progress rewrite of the DataHandle infrastructure
 namespace Gaudi
 {
   namespace experimental
   {
-    class IDataHandleHolder;
-
-
     /// Base class to all DataHandles interacting with the transient event store
     class EventDataHandle : public DataHandle {
       public:

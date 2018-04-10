@@ -76,11 +76,10 @@ class AlgorithmManager;
  *  @date   1998
  */
 class GAUDI_API Algorithm
-    : public Gaudi::experimental::DataHandleHolder<
+    : public DataHandleHolderBase<
              PropertyHolder<
              CommonMessaging<
-             implements<Gaudi::experimental::IDataHandleHolderReqs,
-                        IAlgorithm,
+             implements<IAlgorithm,
                         IDataHandleHolder,
                         IProperty,
                         IStateful>>>>

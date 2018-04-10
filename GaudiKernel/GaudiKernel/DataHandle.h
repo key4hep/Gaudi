@@ -79,8 +79,6 @@ namespace Gaudi
   /// Work-in-progress rewrite of the DataHandle infrastructure
   namespace experimental
   {
-    class IDataHandleHolder;
-
     /// Base class to all new-style data handles
     class DataHandle {
       public:
