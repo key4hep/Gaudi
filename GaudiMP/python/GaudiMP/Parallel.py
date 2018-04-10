@@ -24,21 +24,21 @@ def _prefunction(f, task, item):
 
 
 def _ppfunction(args):
-    #--- Unpack arguments
+    # --- Unpack arguments
     task, item = args
     stat = Statistics()
-    #--- Initialize the remote side (at least once)
+    # --- Initialize the remote side (at least once)
     if not task.__class__._initializeDone:
         for k, v in task.environ.items():
             if k not in excluded_varnames:
                 os.environ[k] = v
         task.initializeRemote()
         task.__class__._initializeDone = True
-    #--- Reset the task output
+    # --- Reset the task output
     task._resetOutput()
-    #--- Call processing
+    # --- Call processing
     task.process(item)
-    #--- Collect statistics
+    # --- Collect statistics
     stat.stop()
     return (copy.deepcopy(task.output), stat)
 
@@ -84,7 +84,7 @@ class Task(object):
     def _mergeResults(self, result):
         if type(result) is not type(self.output):
             raise TypeError("output type is not same as obtained result")
-        #--No iteratable---
+        # --No iteratable---
         if not hasattr(result, '__iter__'):
             if hasattr(self.output, 'Add'):
                 self.output.Add(result)
@@ -94,7 +94,7 @@ class Task(object):
                 self.output = self.output + result
             else:
                 raise TypeError('result cannot be added')
-        #--Dictionary---
+        # --Dictionary---
         elif type(result) is dict:
             if self.output.keys() <= result.keys():
                 minkeys = self.output.keys()
@@ -112,7 +112,7 @@ class Task(object):
                         raise TypeError('result cannot be added')
                 else:
                     self.output[key] = result[key]
-        #--Anything else (list)
+        # --Anything else (list)
         else:
             for i in range(min(len(self.output), len(result))):
                 if hasattr(self.output[i], 'Add'):

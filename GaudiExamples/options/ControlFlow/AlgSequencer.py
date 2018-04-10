@@ -1,6 +1,6 @@
 ###############################################################
 # Job options file
-#==============================================================
+# ==============================================================
 
 from Gaudi.Configuration import *
 from Configurables import ParentAlg, StopperAlg, Prescaler, HelloWorld, TimingAuditor
@@ -11,9 +11,9 @@ from GaudiConfig.ControlFlow import seq
 from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 # Testing Sequencers
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 p1 = Prescaler('Prescaler1', PercentPass=50., OutputLevel=WARNING)
 p2 = Prescaler('Prescaler2', PercentPass=10., OutputLevel=WARNING)
 h = HelloWorld(OutputLevel=DEBUG)
@@ -27,9 +27,9 @@ top = s1 >> s2
 #s2  = Sequencer('Sequence2', Members = [p2, h, c2] )
 #top = Sequencer('TopSequence', Members = [s1, s2], StopOverride = True )
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 # Testing the new GaudiSequencer
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 sand = HelloWorld('AND') & EventCounter('ANDCounter')
 sor = HelloWorld('OR') | EventCounter('ORCounter')
 # sand = GaudiSequencer( 'ANDSequence',
@@ -46,7 +46,7 @@ print '# --- Configured Control Flow Expression:'
 print '#', all
 print '# ---'
 EventLoopMgr(PrintControlFlowExpression=True)
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 ApplicationMgr(TopAlg=[all],
                EvtMax=10,     # events to be processed (default is 10)
                EvtSel='NONE',  # do not use any event input
