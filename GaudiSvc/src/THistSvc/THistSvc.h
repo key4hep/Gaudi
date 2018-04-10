@@ -254,7 +254,7 @@ private:
 
   std::map<std::string, std::pair<TFile*, Mode>> m_files; // stream->file
   typedef std::multimap<std::string, std::string> streamMap;
-  streamMap m_fileStreams;                                // fileName->streams
+  streamMap m_fileStreams; // fileName->streams
 
   // stream->filename of shared files
   std::map<std::string, std::string> m_sharedFiles;

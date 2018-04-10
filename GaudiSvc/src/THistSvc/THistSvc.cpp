@@ -1294,7 +1294,7 @@ void THistSvc::updateFiles()
   if ( msgLevel( MSG::DEBUG ) ) debug() << "updateFiles()" << endmsg;
 
   for ( auto uitr = m_uids.begin(); uitr != m_uids.end(); ++uitr ) {
-    for ( auto& hid : *(uitr->second) ) {
+    for ( auto& hid : *( uitr->second ) ) {
 #ifndef NDEBUG
       if ( msgLevel( MSG::VERBOSE ) )
         verbose() << " update: " << uitr->first << " " << hid.id << " " << hid.mode << endmsg;
@@ -1304,8 +1304,8 @@ void THistSvc::updateFiles()
       if ( !to ) {
         warning() << uitr->first << ": TObject == 0" << endmsg;
       } else if ( hid.temp || hid.mode == READ ) {
-  // do nothing - no need to check how big the file is since we
-  // are just reading it.
+// do nothing - no need to check how big the file is since we
+// are just reading it.
 #ifndef NDEBUG
         if ( msgLevel( MSG::VERBOSE ) ) verbose() << "     skipping" << endmsg;
 #endif
@@ -1326,7 +1326,7 @@ void THistSvc::updateFiles()
           }
 
           for ( auto uitr2 = uitr; uitr2 != m_uids.end(); ++uitr2 ) {
-            for ( auto& hid2 : *(uitr2->second) ) {
+            for ( auto& hid2 : *( uitr2->second ) ) {
               if ( hid2.file == oldFile ) {
                 hid2.file = newFile;
               }
@@ -1339,8 +1339,8 @@ void THistSvc::updateFiles()
 
 #ifndef NDEBUG
           if ( msgLevel( MSG::DEBUG ) ) {
-            debug() << "migrating uid: " << hid.id << "   stream: " << streamName
-                    << "   oldFile: " << oldFileName << "   newFile: " << newFileName << endmsg;
+            debug() << "migrating uid: " << hid.id << "   stream: " << streamName << "   oldFile: " << oldFileName
+                    << "   newFile: " << newFileName << endmsg;
           }
 #endif
 
