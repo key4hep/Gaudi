@@ -32,15 +32,6 @@ class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder>
 public:
   using extends<BASE, IDataHandleHolder>::extends;
 
-  std::vector<Gaudi::DataHandle*> inputHandles() const override
-  {
-    return handles( m_handles, Gaudi::DataHandle::Reader );
-  }
-  std::vector<Gaudi::DataHandle*> outputHandles() const override
-  {
-    return handles( m_handles, Gaudi::DataHandle::Writer );
-  }
-
   virtual const DataObjIDColl& extraInputDeps() const override { return m_extInputDataObjs; }
   virtual const DataObjIDColl& extraOutputDeps() const override { return m_extOutputDataObjs; }
 
@@ -73,6 +64,17 @@ public:
   }
 
 protected:
+  // Access the legacy input and output handles
+  // TODO: Remove this during DataHandleHolderBase / DataHandleHolder merge
+  std::vector<Gaudi::DataHandle*> inputHandles() const
+  {
+    return handles( m_handles, Gaudi::DataHandle::Reader );
+  }
+  std::vector<Gaudi::DataHandle*> outputHandles() const
+  {
+    return handles( m_handles, Gaudi::DataHandle::Writer );
+  }
+
   /// initializes all handles - called by the sysInitialize method
   /// of any descendant of this
   void initLegacyDataHandleHolder()
