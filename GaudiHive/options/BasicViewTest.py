@@ -25,7 +25,7 @@ evtMax = 10
 cardinality = 1
 threads = 1
 viewsPerEvt = 2
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # The configuration of the whiteboard ------------------------------------------
 # It is useful to call it EventDataSvc to replace the usual data service with
@@ -33,7 +33,7 @@ viewsPerEvt = 2
 
 whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Event Loop Manager -----------------------------------------------------------
 # It's called slim since it has less functionalities overall than the good-old
@@ -42,7 +42,7 @@ whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 slimeventloopmgr = HiveSlimEventLoopMgr(
     SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # ForwardScheduler -------------------------------------------------------------
 # We just decide how many algorithms in flight we want to have and how many
@@ -51,13 +51,13 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=INFO)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Algo Resource Pool -----------------------------------------------------------
 # Nothing special here, we just set the debug level.
 AlgResourcePool(OutputLevel=INFO)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Set up of the crunchers, daily business --------------------------------------
 
@@ -99,4 +99,4 @@ ApplicationMgr(EvtMax=evtMax,
                TopAlg=[createViewSeq],
                MessageSvcType="InertMessageSvc")
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------

@@ -228,7 +228,7 @@ class gaudimain(object):
         return "\n".join(out)
 
     def _writepickle(self, filename):
-        #--- Lets take the first file input file as the name of the pickle file
+        # --- Lets take the first file input file as the name of the pickle file
         import pickle
         output = open(filename, 'wb')
         # Dump only the the configurables that make sense to dump (not User ones)
@@ -379,7 +379,7 @@ class gaudimain(object):
         self.log.debug('gaudiPythonInit: done')
 
     def runSerial(self, attach_debugger):
-        #--- Instantiate the ApplicationMgr------------------------------
+        # --- Instantiate the ApplicationMgr------------------------------
         if (self.mainLoop or
                 os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
             self.gaudiPythonInit()

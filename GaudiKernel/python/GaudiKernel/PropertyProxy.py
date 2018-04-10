@@ -16,7 +16,7 @@ import logging
 log = logging.getLogger('PropertyProxy')
 
 # dictionary with configurable class : python module entries
-#-->PM#from AthenaCommon import ConfigurableDb
+# -->PM#from AthenaCommon import ConfigurableDb
 
 
 def derives_from(derived, base):

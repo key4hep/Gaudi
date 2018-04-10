@@ -1,7 +1,7 @@
 #!/usr/bin/env gaudirun.py
 ###############################################################
 # Job options file
-#==============================================================
+# ==============================================================
 from Gaudi.Configuration import *
 from Configurables import MyDataAlgorithm, DataCreator
 
