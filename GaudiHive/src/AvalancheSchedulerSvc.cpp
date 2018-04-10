@@ -263,7 +263,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
         for ( auto& id : unmetDep ) {
           ON_DEBUG debug() << "adding OUTPUT dep \"" << id << "\" to " << dataLoaderAlg->type() << "/"
                            << dataLoaderAlg->name() << endmsg;
-          dataAlg->addDependency( id, Gaudi::DataHandle::Writer );
+          dataAlg->addDynamicEventOutput( id );
         }
 
       } else {

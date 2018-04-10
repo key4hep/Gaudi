@@ -18,8 +18,6 @@ class GAUDI_API IDataHandleHolder : virtual public INamedInterface
 {
 public:
 
-  virtual void addDependency( const DataObjID&, const Gaudi::DataHandle::Mode& ) = 0;
-
   DeclareInterfaceID( IDataHandleHolder, 1, 0 );
 
   virtual void declare( Gaudi::DataHandle& )  = 0;
@@ -76,6 +74,16 @@ namespace Gaudi
 
       /// Register a data handle as an event data output of the algorithm
       virtual void registerEventOutput(DataHandle& handle) = 0;
+
+      /// Add an event data output dynamically at run time
+      ///
+      /// DataHandles are the preferred way to declare statically known data
+      /// dependencies. However, there are cases in which an Algorithm's data
+      /// outputs are only known at run time, typically when data is loaded on
+      /// demand from a file or database. In this case, this method should be
+      /// used to declare those dynamic data dependencies.
+      ///
+      virtual void addDynamicEventOutput(const DataObjID& key) = 0;
 
       /// Tell which event data keys the algorithm will be reading from
       virtual const DataObjIDColl& eventInputKeys() const = 0;

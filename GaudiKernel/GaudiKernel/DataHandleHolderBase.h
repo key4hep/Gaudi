@@ -51,12 +51,6 @@ public:
     m_handles.erase( &handle );
   }
 
-  void addDependency( const DataObjID& id, const Gaudi::DataHandle::Mode& mode ) override
-  {
-    if ( mode & Gaudi::DataHandle::Reader ) m_inputDataObjs.emplace( id );
-    if ( mode & Gaudi::DataHandle::Writer ) m_outputDataObjs.emplace( id );
-  }
-
 protected:
   // Access the legacy input and output handles
   // TODO: Remove this during DataHandleHolderBase / DataHandleHolder merge
@@ -119,6 +113,11 @@ namespace Gaudi
         /// Register a data handle as an event data output of the algorithm
         void registerEventOutput(DataHandle& handle) final override {
           m_eventOutputHandles.push_back(&handle);
+        }
+
+        /// Add an event data output dynamically at run time
+        void addDynamicEventOutput(const DataObjID& key) final override {
+          Super::m_outputDataObjs.insert(key);
         }
 
         /// Tell which event store keys the algorithm will be reading from

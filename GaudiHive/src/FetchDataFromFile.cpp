@@ -18,7 +18,7 @@ namespace Gaudi
         if ( sc ) {
           // this is a hack to reuse the automatic dependencies declaration
           for ( auto k : m_dataKeys ) {
-            addDependency( k, Gaudi::DataHandle::Writer );
+            addDynamicEventOutput( k );
           }
         }
         return sc;
