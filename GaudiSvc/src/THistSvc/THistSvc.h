@@ -234,13 +234,6 @@ private:
   /// registered by the setupOutputFile callback method
   std::set<std::string> m_alreadyConnectedOutFiles;
 
-  typedef std::map<std::string, THistID> uidXMap;
-  typedef std::multimap<std::string, THistID> idXMap;
-  typedef std::multimap<std::string, std::string> streamMap;
-
-  uidXMap m_uidsX;
-  idXMap m_idsX;
-
   // containers for fast lookups
   // same uid for all elements in vec
   typedef std::vector<THistID> vhid_t;
@@ -260,6 +253,7 @@ private:
   objMap_t m_tobjs;
 
   std::map<std::string, std::pair<TFile*, Mode>> m_files; // stream->file
+  typedef std::multimap<std::string, std::string> streamMap;
   streamMap m_fileStreams;                                // fileName->streams
 
   // stream->filename of shared files
