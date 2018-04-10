@@ -17,8 +17,6 @@ class IDataProviderSvc;
 class GAUDI_API IDataHandleHolder : virtual public INamedInterface
 {
 public:
-  virtual const DataObjIDColl& extraInputDeps() const  = 0;
-  virtual const DataObjIDColl& extraOutputDeps() const = 0;
 
   virtual const DataObjIDColl& inputDataObjs() const  = 0;
   virtual const DataObjIDColl& outputDataObjs() const = 0;

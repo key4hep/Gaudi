@@ -32,9 +32,6 @@ class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder>
 public:
   using extends<BASE, IDataHandleHolder>::extends;
 
-  virtual const DataObjIDColl& extraInputDeps() const override { return m_extInputDataObjs; }
-  virtual const DataObjIDColl& extraOutputDeps() const override { return m_extOutputDataObjs; }
-
   void declare( Gaudi::DataHandle& handle ) override
   {
     if ( !handle.owner() ) handle.setOwner( this );
