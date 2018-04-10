@@ -956,30 +956,6 @@ SmartIF<IService> Algorithm::service( const std::string& name, const bool create
   return helper.service( name, quiet, createIf );
 }
 
-//-----------------------------------------------------------------------------
-#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
-void Algorithm::commitHandles()
-{
-  //-----------------------------------------------------------------------------
-
-  for ( auto h : outputHandles() ) {
-    if ( h->commit().isFailure() ) {
-      throw GaudiException( "Failed to commit output handle [" + h->fullKey().fullKey() + "]", this->name(),
-                            StatusCode::FAILURE );
-    }
-  }
-
-  for ( auto t : m_tools ) {
-    AlgTool* at = dynamic_cast<AlgTool*>( t );
-    if ( at != 0 ) at->commitHandles();
-  }
-
-  for ( auto& a : m_subAlgms ) {
-    a->commitHandles();
-  }
-}
-#endif
-
 void Algorithm::registerTool( IAlgTool* tool ) const
 {
   if ( msgLevel( MSG::DEBUG ) ) {

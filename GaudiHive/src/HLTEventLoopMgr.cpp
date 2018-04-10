@@ -548,11 +548,6 @@ tbb::task* HLTEventLoopMgr::HLTExecutionTask::execute()
       eventfailed = true;
     }
 
-#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
-    // Commit all DataHandles
-    this_algo->commitHandles();
-#endif
-
     // DP it is important to propagate the failure of an event.
     // We need to stop execution when this happens so that execute run can
     // then receive the FAILURE

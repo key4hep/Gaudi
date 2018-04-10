@@ -514,18 +514,3 @@ void AlgTool::acceptDHVisitor( IDataHandleVisitor* vis ) const
 
   for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
 }
-
-//-----------------------------------------------------------------------------
-#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
-void AlgTool::commitHandles()
-{
-  //-----------------------------------------------------------------------------
-
-  for ( auto h : outputHandles() ) h->commit();
-
-  for ( auto t : m_tools ) {
-    AlgTool* at = dynamic_cast<AlgTool*>( t );
-    if ( at ) at->commitHandles();
-  }
-}
-#endif

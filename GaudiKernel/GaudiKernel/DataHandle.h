@@ -51,14 +51,6 @@ namespace Gaudi
 
     virtual void reset( bool ){};
 
-#if defined( GAUDI_V30_DATAHANDLE_COMMIT )
-    /// This hook, is called after Algorithm::execute() by GaudiHive's algorithm
-    /// execution tasks. It was meant to allow automatically publishing data
-    /// objects to the whiteboard at the end of algorithm execution. However,
-    /// it is not used anymore, and scheduled for removal.
-    virtual StatusCode commit() { return StatusCode::SUCCESS; }
-#endif
-
     virtual std::string pythonRepr() const;
     virtual bool init() { return true; }
 
