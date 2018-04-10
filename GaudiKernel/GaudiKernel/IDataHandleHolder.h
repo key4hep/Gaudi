@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-class IDataHandleVisitor;
 class IDataProviderSvc;
 
 class GAUDI_API IDataHandleHolder : virtual public INamedInterface
@@ -24,8 +23,6 @@ public:
   virtual const DataObjIDColl& extraInputDeps() const  = 0;
   virtual const DataObjIDColl& extraOutputDeps() const = 0;
 
-  virtual void acceptDHVisitor( IDataHandleVisitor* ) const = 0;
-
   virtual const DataObjIDColl& inputDataObjs() const  = 0;
   virtual const DataObjIDColl& outputDataObjs() const = 0;
 
@@ -35,13 +32,6 @@ public:
 
   virtual void declare( Gaudi::DataHandle& )  = 0;
   virtual void renounce( Gaudi::DataHandle& ) = 0;
-};
-
-class IDataHandleVisitor
-{
-public:
-  virtual ~IDataHandleVisitor()                  = default;
-  virtual void visit( const IDataHandleHolder* ) = 0;
 };
 
 
@@ -96,10 +86,10 @@ namespace Gaudi
       virtual void registerEventOutput(DataHandle& handle) = 0;
 
       /// Tell which event data keys the algorithm will be reading from
-      virtual DataObjIDColl eventInputKeys() const = 0;
+      virtual const DataObjIDColl& eventInputKeys() const = 0;
 
       /// Tell which event data keys the algorithm will be writing to
-      virtual DataObjIDColl eventOutputKeys() const = 0;
+      virtual const DataObjIDColl& eventOutputKeys() const = 0;
     };
   }
 }

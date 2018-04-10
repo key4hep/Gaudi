@@ -23,7 +23,6 @@
 
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/Chrono.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/MsgStream.h"
@@ -145,6 +144,7 @@ StatusCode Algorithm::sysInitialize()
     Stat stat( chronoSvc(), "*UNKNOWN Exception*" );
     sc = StatusCode::FAILURE;
   }
+  if ( !sc ) return sc;
 
   algExecStateSvc()->addAlg( this );
 
@@ -157,53 +157,52 @@ StatusCode Algorithm::sysInitialize()
     return sc;
   }
 
+  // Perform any scheduled dependency update
+  if ( m_updateDependencies ) updateEventKeys(m_updateDependencies);
+
+  // Collect all explicit dependencies in a single place
+  collectExplicitDeps();
+
+  // Print a summary of the Algorithm's inputs and outputs
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
     debug() << "input handles: " << eventInputKeys().size() << endmsg;
     debug() << "output handles: " << eventOutputKeys().size() << endmsg;
   }
 
-  // check for explicit circular data dependencies in declared handles
-  DataObjIDColl out;
-  for ( const auto& id: eventOutputKeys() ) {
-    if ( !id.empty() ) out.emplace( id );
-  }
-  for ( const auto& id: eventInputKeys() ) {
-    if ( out.find( id ) != out.end() ) {
-      error() << "Explicit circular data dependency detected for id " << id << endmsg;
-      sc = StatusCode::FAILURE;
-    }
-  }
-
+  // Check for explicit circular data dependencies
+  sc = handleCircularDeps([this](const DataObjID& key) -> CircularDepAction {
+    error() << "Explicit circular data dependency detected for id " << key << endmsg;
+    return CircularDepAction::Abort;
+  });
   if ( !sc ) return sc;
 
-  if ( m_updateDependencies ) updateEventKeys(m_updateDependencies);
-
-  // visit all sub-algs and tools, build full set. First initialize ToolHandles if needed
+  // Initialize ToolHandles if needed
   try {
     if ( !m_toolHandlesInit ) initToolHandles();
   } catch ( const GaudiException& Exception ) {
     error() << "Failing initializing ToolHandles : " << Exception << endmsg;
     return StatusCode::FAILURE;
   }
-  DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
-  acceptDHVisitor( &avis );
 
-  // check for implicit circular data deps from child Algs/AlgTools
-  for ( auto& h : m_outputDataObjs ) {
-    auto i = m_inputDataObjs.find( h );
-    if ( i != m_inputDataObjs.end() ) {
-      if ( m_filterCircDeps ) {
-        warning() << "Implicit circular data dependency detected for id " << h << endmsg;
-        m_inputDataObjs.erase( i );
-      } else {
-        error() << "Implicit circular data dependency detected for id " << h << endmsg;
-        sc = StatusCode::FAILURE;
-      }
+  // Add tool dependencies to our dependency list
+  for ( auto tool : tools() ) addImplicitDeps( dynamic_cast<AlgTool*>( tool ) );
+
+  // Add sub-Algorithm dependencies to our dependency list
+  for ( auto alg : *subAlgorithms() ) addImplicitDeps( alg );
+
+  // Check for implicit circular data deps from child Algs/AlgTools
+  sc = handleCircularDeps([this](const DataObjID& key) -> CircularDepAction {
+    if ( m_filterCircDeps ) {
+      warning() << "Implicit circular data dependency detected for id " << key << endmsg;
+      return CircularDepAction::Ignore;
+    } else {
+      error() << "Implicit circular data dependency detected for id " << key << endmsg;
+      return CircularDepAction::Abort;
     }
-  }
-
+  });
   if ( !sc ) return sc;
 
+  // Display the final data dependencies
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
     // sort out DataObjects by path so that logging is reproducable
     // we define a little helper creating an ordered set from a non ordered one
@@ -216,34 +215,22 @@ StatusCode Algorithm::sysInitialize()
     for ( auto h : orderset( m_inputDataObjs ) ) {
       debug() << "\n  + INPUT  " << h;
     }
-    for ( auto id : orderset( avis.ignoredInpKeys() ) ) {
+    for ( auto id : orderset( ignoredEventInputs() ) ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
     for ( auto h : orderset( m_outputDataObjs ) ) {
       debug() << "\n  + OUTPUT " << h;
     }
-    for ( auto id : orderset( avis.ignoredOutKeys() ) ) {
+    for ( auto id : orderset( ignoredEventOutputs() ) ) {
       debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
   }
 
-  // initialize handles
+  // Initialize the inner DataHandles
   initDataHandleHolder();
 
   return sc;
-}
-
-void Algorithm::acceptDHVisitor( IDataHandleVisitor* vis ) const
-{
-
-  vis->visit( this );
-
-  // loop through tools
-  for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
-
-  // loop through sub-algs
-  for ( auto alg : *subAlgorithms() ) vis->visit( alg );
 }
 
 // IAlgorithm implementation

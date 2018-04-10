@@ -7,7 +7,6 @@
 
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Auditor.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/Service.h"
@@ -188,27 +187,24 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     m_state = m_targetState;
+
+    // Perfor any scheduled dependency update
     if ( m_updateDependencies ) updateEventKeys(m_updateDependencies);
 
-    // check for explicit circular data dependencies in declared handles
-    DataObjIDColl out;
-    for ( const auto& id: eventOutputKeys() ) {
-      if ( !id.empty() ) out.emplace( id );
-    }
-    for ( const auto& id: eventInputKeys() ) {
-      if ( out.find( id ) != out.end() ) {
-        error() << "Explicit circular data dependency detected for id " << id << endmsg;
-        sc = StatusCode::FAILURE;
-      }
-    }
+    // Collect all explicit dependencies in a single place
+    collectExplicitDeps();
 
+    // Check for explicit circular data dependencies
+    sc = handleCircularDeps([this](const DataObjID& key) -> CircularDepAction {
+      error() << "Explicit circular data dependency detected for id " << key << endmsg;
+      return CircularDepAction::Abort;
+    });
     if ( !sc ) return sc;
 
-    // visit all sub-tools, build full set
-    DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
-    acceptDHVisitor( &avis );
+    // Add tool dependencies to our dependency list
+    for ( auto tool : tools() ) addImplicitDeps( dynamic_cast<AlgTool*>( tool ) );
 
-    // initialize handles
+    // Initialize the inner DataHandles
     initDataHandleHolder(); // this should 'freeze' the handle configuration.
 
     return sc;
@@ -499,13 +495,4 @@ IAuditorSvc* AlgTool::auditorSvc() const
     }
   }
   return m_pAuditorSvc.get();
-}
-
-//-----------------------------------------------------------------------------
-void AlgTool::acceptDHVisitor( IDataHandleVisitor* vis ) const
-{
-  //-----------------------------------------------------------------------------
-  vis->visit( this );
-
-  for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
 }

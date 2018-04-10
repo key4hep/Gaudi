@@ -6,7 +6,6 @@
 // Framework includes
 #include "GaudiKernel/Algorithm.h" // can be removed ASA dynamic casts to Algorithm are removed
 #include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"

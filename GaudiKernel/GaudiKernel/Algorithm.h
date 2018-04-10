@@ -442,9 +442,6 @@ public:
   const EventContext& getContext() const override { return m_event_context; }
 
 public:
-  void acceptDHVisitor( IDataHandleVisitor* ) const override;
-
-public:
   void registerTool( IAlgTool* tool ) const;
   void deregisterTool( IAlgTool* tool ) const;
 

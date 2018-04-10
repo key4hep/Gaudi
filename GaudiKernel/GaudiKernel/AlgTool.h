@@ -213,9 +213,6 @@ public:
   }
 
 public:
-  void acceptDHVisitor( IDataHandleVisitor* ) const override;
-
-public:
   void registerTool( IAlgTool* tool ) const
   {
     if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "Registering tool " << tool->name() << endmsg;
