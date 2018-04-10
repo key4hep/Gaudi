@@ -159,17 +159,17 @@ namespace concurrency
 
     const std::string& algoName = algo->name();
 
-    m_algoNameToAlgoInputsMap[algoName]  = algo->inputDataObjs();
-    m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
+    m_algoNameToAlgoInputsMap[algoName]  = algo->eventInputKeys();
+    m_algoNameToAlgoOutputsMap[algoName] = algo->eventOutputKeys();
 
     ON_VERBOSE
     {
       verbose() << "    Inputs of " << algoName << ": ";
-      for ( auto tag : algo->inputDataObjs() ) verbose() << tag << " | ";
+      for ( auto tag : algo->eventInputKeys() ) verbose() << tag << " | ";
       verbose() << endmsg;
 
       verbose() << "    Outputs of " << algoName << ": ";
-      for ( auto tag : algo->outputDataObjs() ) verbose() << tag << " | ";
+      for ( auto tag : algo->eventOutputKeys() ) verbose() << tag << " | ";
       verbose() << endmsg;
     }
   }

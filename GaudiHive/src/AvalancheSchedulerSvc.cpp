@@ -150,7 +150,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
     if ( !algoPtr ) {
       fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
     }
-    for ( auto id : algoPtr->outputDataObjs() ) {
+    for ( auto id : algoPtr->eventOutputKeys() ) {
       auto r = globalOutp.insert( id );
       if ( !r.second ) {
         warning() << "multiple algorithms declare " << id << " as output! could be a single instance in multiple paths "
@@ -175,8 +175,8 @@ StatusCode AvalancheSchedulerSvc::initialize()
     ostdd << "\n  " << algoPtr->name();
 
     DataObjIDColl algoDependencies;
-    if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
-      for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->inputDataObjs() ) ) {
+    if ( !algoPtr->eventInputKeys().empty() || !algoPtr->eventOutputKeys().empty() ) {
+      for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->eventInputKeys() ) ) {
         DataObjID id = *idp;
         ostdd << "\n    o INPUT  " << id;
         if ( id.key().find( ":" ) != std::string::npos ) {
@@ -197,7 +197,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
         algoDependencies.insert( id );
         globalInp.insert( id );
       }
-      for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->outputDataObjs() ) ) {
+      for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->eventOutputKeys() ) ) {
         ostdd << "\n    o OUTPUT " << *id;
         if ( id->key().find( ":" ) != std::string::npos ) {
           error() << " in Alg " << algoPtr->name() << " alternatives are NOT allowed for outputs! id: " << *id

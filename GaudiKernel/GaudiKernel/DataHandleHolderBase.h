@@ -51,9 +51,6 @@ public:
     m_handles.erase( &handle );
   }
 
-  const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
-  const DataObjIDColl& outputDataObjs() const override { return m_outputDataObjs; }
-
   void addDependency( const DataObjID& id, const Gaudi::DataHandle::Mode& mode ) override
   {
     if ( mode & Gaudi::DataHandle::Reader ) m_inputDataObjs.emplace( id );

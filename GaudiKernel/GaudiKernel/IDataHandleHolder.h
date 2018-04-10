@@ -18,9 +18,6 @@ class GAUDI_API IDataHandleHolder : virtual public INamedInterface
 {
 public:
 
-  virtual const DataObjIDColl& inputDataObjs() const  = 0;
-  virtual const DataObjIDColl& outputDataObjs() const = 0;
-
   virtual void addDependency( const DataObjID&, const Gaudi::DataHandle::Mode& ) = 0;
 
   DeclareInterfaceID( IDataHandleHolder, 1, 0 );

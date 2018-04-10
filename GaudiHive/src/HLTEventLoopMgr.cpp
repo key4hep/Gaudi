@@ -231,7 +231,7 @@ StatusCode HLTEventLoopMgr::initialize()
     if ( dot ) {
       *dot << "digraph G {\n";
       for ( auto* a : m_algos ) {
-        bool is_consumer = a->outputDataObjs().empty();
+        bool is_consumer = a->eventOutputKeys().empty();
         *dot << '\"' << a->name() << "\" [shape=box" << ( is_consumer ? ",style=filled" : "" ) << "];\n";
       }
     }
@@ -239,7 +239,7 @@ StatusCode HLTEventLoopMgr::initialize()
     // figure out all outputs
     std::map<DataObjID, Algorithm*> producers;
     for ( Algorithm* algoPtr : m_algos ) {
-      for ( auto id : algoPtr->outputDataObjs() ) {
+      for ( auto id : algoPtr->eventOutputKeys() ) {
         auto r        = globalOutp.insert( id );
         producers[id] = algoPtr;
         if ( !r.second ) {
@@ -261,8 +261,8 @@ StatusCode HLTEventLoopMgr::initialize()
       info() << "\n  " << algoPtr->name();
 
       DataObjIDColl algoDependencies;
-      if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
-        for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->inputDataObjs() ) ) {
+      if ( !algoPtr->eventInputKeys().empty() || !algoPtr->eventOutputKeys().empty() ) {
+        for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->eventInputKeys() ) ) {
           DataObjID id = *idp;
           info() << "\n    o INPUT  " << id;
           if ( id.key().find( ":" ) != std::string::npos ) {
@@ -283,7 +283,7 @@ StatusCode HLTEventLoopMgr::initialize()
           if ( dot ) *dot << DataObjIDDotRepr{id} << " -> \"" << algoPtr->name() << "\";\n";
           globalInp.insert( id );
         }
-        for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->outputDataObjs() ) ) {
+        for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->eventOutputKeys() ) ) {
           info() << "\n    o OUTPUT " << *id;
           if ( id->key().find( ":" ) != std::string::npos ) {
             error() << " in Alg " << algoPtr->name() << " alternatives are NOT allowed for outputs! id: " << *id

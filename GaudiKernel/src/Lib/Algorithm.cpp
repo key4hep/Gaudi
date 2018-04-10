@@ -212,13 +212,13 @@ StatusCode Algorithm::sysInitialize()
     };
     // Logging
     debug() << "Data Deps for " << name();
-    for ( auto h : orderset( m_inputDataObjs ) ) {
+    for ( auto h : orderset( eventInputKeys() ) ) {
       debug() << "\n  + INPUT  " << h;
     }
     for ( auto id : orderset( ignoredEventInputs() ) ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for ( auto h : orderset( m_outputDataObjs ) ) {
+    for ( auto h : orderset( eventOutputKeys() ) ) {
       debug() << "\n  + OUTPUT " << h;
     }
     for ( auto id : orderset( ignoredEventOutputs() ) ) {
