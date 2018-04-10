@@ -87,7 +87,6 @@ public:
    */
   StatusCode io_update( IIoComponent* iocomponent, const std::string& work_dir ) override;
 
-  // VT. new method
   /** @brief: Update all @c IIoComponents with a new work directory
    */
   StatusCode io_update_all( const std::string& work_dir ) override;
@@ -115,28 +114,22 @@ public:
 private:
   struct IoComponentEntry {
     std::string m_oldfname;
-    std::string m_oldabspath; // VT. store absolute path
+    std::string m_oldabspath;
     std::string m_newfname;
     IIoComponentMgr::IoMode::Type m_iomode;
 
     IoComponentEntry()
-        : m_oldfname( "" )
-        , m_oldabspath( "" )
-        , m_newfname( "" )
-        , // VT. changes
-        m_iomode( IIoComponentMgr::IoMode::INVALID )
+        : m_oldfname( "" ), m_oldabspath( "" ), m_newfname( "" ), m_iomode( IIoComponentMgr::IoMode::INVALID )
     {
     }
-    IoComponentEntry( const std::string& f, const std::string& p, // VT. changes
-                      const IIoComponentMgr::IoMode::Type& t )
+    IoComponentEntry( const std::string& f, const std::string& p, const IIoComponentMgr::IoMode::Type& t )
         : m_oldfname( f ), m_oldabspath( p ), m_newfname( "" ), m_iomode( t )
     {
-    } // VT. changes
+    }
     IoComponentEntry( const IoComponentEntry& rhs )
         : m_oldfname( rhs.m_oldfname )
         , m_oldabspath( rhs.m_oldabspath )
-        , // VT. changes
-        m_newfname( rhs.m_newfname )
+        , m_newfname( rhs.m_newfname )
         , m_iomode( rhs.m_iomode )
     {
     }
@@ -176,6 +169,14 @@ private:
 
   /// location of the python dictionary
   std::string m_dict_location;
+
+  /// search patterns for special file names (direct I/O protocols)
+  Gaudi::Property<std::vector<std::string>> m_directio_patterns{this,
+                                                                "DirectIOPatterns",
+                                                                {
+                                                                    "://",
+                                                                },
+                                                                "Search patterns for direct I/O input names"};
 
   bool findComp( IIoComponent*, const std::string&, iodITR& ) const;
   bool findComp( IIoComponent*, std::pair<iodITR, iodITR>& ) const;
