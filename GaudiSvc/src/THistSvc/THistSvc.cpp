@@ -1219,35 +1219,35 @@ StatusCode THistSvc::io_reinit()
     }
 
     // loop over all uids and migrate them to the new file
-    // XXX FIXME: this double loop sucks...
-    for ( auto& uid : m_uidsX ) {
-      THistID& hid = uid.second;
-      if ( hid.file != f ) continue;
-      TDirectory* olddir = this->changeDir( hid );
-      hid.file           = newfile;
-      // side-effect: create needed directories...
-      TDirectory* newdir = this->changeDir( hid );
-      TClass* cl         = hid.obj->IsA();
+    for ( auto& uid : m_uids ) {
+      for ( auto& hid : *uid.second ) {
+        if ( hid.file != f ) continue;
+        TDirectory* olddir = this->changeDir( hid );
+        hid.file           = newfile;
+        // side-effect: create needed directories...
+        TDirectory* newdir = this->changeDir( hid );
+        TClass* cl         = hid.obj->IsA();
 
-      // migrate the objects to the new file.
-      // thanks to the object model of ROOT, it is super easy.
-      if ( cl->InheritsFrom( "TTree" ) ) {
-        dynamic_cast<TTree*>( hid.obj )->SetDirectory( newdir );
-        dynamic_cast<TTree*>( hid.obj )->Reset();
-      } else if ( cl->InheritsFrom( "TH1" ) ) {
-        dynamic_cast<TH1*>( hid.obj )->SetDirectory( newdir );
-        dynamic_cast<TH1*>( hid.obj )->Reset();
-      } else if ( cl->InheritsFrom( "TGraph" ) ) {
-        olddir->Remove( hid.obj );
-        newdir->Append( hid.obj );
-      } else {
-        error() << "id: \"" << hid.id << "\" is not a inheriting from a class "
-                << "we know how to handle (received [" << cl->GetName() << "], "
-                << "expected [TTree, TH1 or TGraph]) !" << endmsg << "attaching to current dir [" << newdir->GetPath()
-                << "] "
-                << "nonetheless..." << endmsg;
-        olddir->Remove( hid.obj );
-        newdir->Append( hid.obj );
+        // migrate the objects to the new file.
+        // thanks to the object model of ROOT, it is super easy.
+        if ( cl->InheritsFrom( "TTree" ) ) {
+          dynamic_cast<TTree*>( hid.obj )->SetDirectory( newdir );
+          dynamic_cast<TTree*>( hid.obj )->Reset();
+        } else if ( cl->InheritsFrom( "TH1" ) ) {
+          dynamic_cast<TH1*>( hid.obj )->SetDirectory( newdir );
+          dynamic_cast<TH1*>( hid.obj )->Reset();
+        } else if ( cl->InheritsFrom( "TGraph" ) ) {
+          olddir->Remove( hid.obj );
+          newdir->Append( hid.obj );
+        } else {
+          error() << "id: \"" << hid.id << "\" is not a inheriting from a class "
+                  << "we know how to handle (received [" << cl->GetName() << "], "
+                  << "expected [TTree, TH1 or TGraph]) !" << endmsg << "attaching to current dir [" << newdir->GetPath()
+                  << "] "
+                  << "nonetheless..." << endmsg;
+          olddir->Remove( hid.obj );
+          newdir->Append( hid.obj );
+        }
       }
     }
     f->ReOpen( "READ" );
@@ -1293,69 +1293,73 @@ void THistSvc::updateFiles()
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "updateFiles()" << endmsg;
 
-  for ( auto uitr = m_uidsX.begin(); uitr != m_uidsX.end(); ++uitr ) {
+  for ( auto uitr = m_uids.begin(); uitr != m_uids.end(); ++uitr ) {
+    for ( auto& hid : *(uitr->second) ) {
 #ifndef NDEBUG
-    if ( msgLevel( MSG::VERBOSE ) )
-      verbose() << " update: " << uitr->first << " " << uitr->second.id << " " << uitr->second.mode << endmsg;
+      if ( msgLevel( MSG::VERBOSE ) )
+        verbose() << " update: " << uitr->first << " " << hid.id << " " << hid.mode << endmsg;
 #endif
-    TObject* to    = uitr->second.obj;
-    TFile* oldFile = uitr->second.file;
-    if ( !to ) {
-      warning() << uitr->first << ": TObject == 0" << endmsg;
-    } else if ( uitr->second.temp || uitr->second.mode == READ ) {
-// do nothing - no need to check how big the file is since we
-// are just reading it.
+      TObject* to    = hid.obj;
+      TFile* oldFile = hid.file;
+      if ( !to ) {
+        warning() << uitr->first << ": TObject == 0" << endmsg;
+      } else if ( hid.temp || hid.mode == READ ) {
+  // do nothing - no need to check how big the file is since we
+  // are just reading it.
 #ifndef NDEBUG
-      if ( msgLevel( MSG::VERBOSE ) ) verbose() << "     skipping" << endmsg;
+        if ( msgLevel( MSG::VERBOSE ) ) verbose() << "     skipping" << endmsg;
 #endif
-    } else if ( to->IsA()->InheritsFrom( "TTree" ) ) {
-      TTree* tr      = dynamic_cast<TTree*>( to );
-      TFile* newFile = tr->GetCurrentFile();
+      } else if ( to->IsA()->InheritsFrom( "TTree" ) ) {
+        TTree* tr      = dynamic_cast<TTree*>( to );
+        TFile* newFile = tr->GetCurrentFile();
 
-      if ( oldFile != newFile ) {
-        std::string newFileName = newFile->GetName();
-        std::string oldFileName, streamName, rem;
-        TFile* dummy = nullptr;
-        findStream( uitr->second.id, streamName, rem, dummy );
+        if ( oldFile != newFile ) {
+          std::string newFileName = newFile->GetName();
+          std::string oldFileName, streamName, rem;
+          TFile* dummy = nullptr;
+          findStream( hid.id, streamName, rem, dummy );
 
-        for ( auto& itr : m_files ) {
-          if ( itr.second.first == oldFile ) {
-            itr.second.first = newFile;
-          }
-        }
-
-        for ( auto uitr2 = uitr; uitr2 != m_uidsX.end(); ++uitr2 ) {
-          if ( uitr2->second.file == oldFile ) {
-            uitr2->second.file = newFile;
-          }
-        }
-
-        auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
-                                  [&]( streamMap::const_reference s ) { return s.second == streamName; } );
-        if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
-
-#ifndef NDEBUG
-        if ( msgLevel( MSG::DEBUG ) ) {
-          debug() << "migrating uid: " << uitr->second.id << "   stream: " << streamName
-                  << "   oldFile: " << oldFileName << "   newFile: " << newFileName << endmsg;
-        }
-#endif
-
-        if ( !oldFileName.empty() ) {
-          auto i = m_fileStreams.lower_bound( oldFileName );
-          while ( i != std::end( m_fileStreams ) && i->first == oldFileName ) {
-#ifndef NDEBUG
-            if ( msgLevel( MSG::DEBUG ) ) {
-              debug() << "changing filename \"" << i->first << "\" to \"" << newFileName << "\" for stream \""
-                      << i->second << "\"" << endmsg;
+          for ( auto& itr : m_files ) {
+            if ( itr.second.first == oldFile ) {
+              itr.second.first = newFile;
             }
-#endif
-            std::string nm = std::move( i->second );
-            i              = m_fileStreams.erase( i );
-            m_fileStreams.emplace( newFileName, std::move( nm ) );
           }
-        } else {
-          error() << "Problems updating fileStreams with new file name" << endmsg;
+
+          for ( auto uitr2 = uitr; uitr2 != m_uids.end(); ++uitr2 ) {
+            for ( auto& hid2 : *(uitr2->second) ) {
+              if ( hid2.file == oldFile ) {
+                hid2.file = newFile;
+              }
+            }
+          }
+
+          auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
+                                    [&]( streamMap::const_reference s ) { return s.second == streamName; } );
+          if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
+
+#ifndef NDEBUG
+          if ( msgLevel( MSG::DEBUG ) ) {
+            debug() << "migrating uid: " << hid.id << "   stream: " << streamName
+                    << "   oldFile: " << oldFileName << "   newFile: " << newFileName << endmsg;
+          }
+#endif
+
+          if ( !oldFileName.empty() ) {
+            auto i = m_fileStreams.lower_bound( oldFileName );
+            while ( i != std::end( m_fileStreams ) && i->first == oldFileName ) {
+#ifndef NDEBUG
+              if ( msgLevel( MSG::DEBUG ) ) {
+                debug() << "changing filename \"" << i->first << "\" to \"" << newFileName << "\" for stream \""
+                        << i->second << "\"" << endmsg;
+              }
+#endif
+              std::string nm = std::move( i->second );
+              i              = m_fileStreams.erase( i );
+              m_fileStreams.emplace( newFileName, std::move( nm ) );
+            }
+          } else {
+            error() << "Problems updating fileStreams with new file name" << endmsg;
+          }
         }
       }
     }
