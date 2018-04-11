@@ -14,8 +14,8 @@
 tbb::task* AlgoExecutionTask::execute()
 {
 
-  IAlgorithm* ialg     = m_algorithm.get();
-  Algorithm* this_algo = dynamic_cast<Algorithm*>( ialg );
+  IAlgorithm* ialg      = m_algorithm.get();
+  Algorithm*  this_algo = dynamic_cast<Algorithm*>( ialg );
   if ( !this_algo ) {
     throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE );
   }
@@ -27,7 +27,7 @@ tbb::task* AlgoExecutionTask::execute()
   const SmartIF<IProperty> appmgr( m_serviceLocator );
 
   SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
-  MsgStream log( messageSvc, "AlgoExecutionTask" );
+  MsgStream            log( messageSvc, "AlgoExecutionTask" );
 
   // select the appropriate store
   this_algo->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
