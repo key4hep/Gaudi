@@ -19,7 +19,7 @@ if not hasattr(gbl, 'ostream'):
 if not hasattr(gbl, 'stringstream'):
     gbl.gROOT.ProcessLine("#include <sstream>")
 
-#--- Adding extra functionality to C++ raw classes------------------------------------
+# --- Adding extra functionality to C++ raw classes------------------------------------
 
 
 def _printHisto1D(h):
@@ -125,7 +125,7 @@ gbl.IUpdateManagerSvc.update = lambda self, obj: gbl.IUpdateManagerSvc.PythonHel
 gbl.IUpdateManagerSvc.invalidate = lambda self, obj: gbl.IUpdateManagerSvc.PythonHelper.invalidate(
     self, obj)
 
-#---Globals--------------------------------------------------------------------
+# ---Globals--------------------------------------------------------------------
 if not hasattr(gbl.StatusCode, 'SUCCESS'):
     # emulate enums
     gbl.StatusCode.SUCCESS = 1
@@ -142,7 +142,7 @@ if hasattr(gbl.Gaudi.StringKey, '__cpp_ne__'):
     setattr(gbl.Gaudi.StringKey, '__ne__', _ne)
 
 
-#---Enabling Pickle support----------------------------------------------------
+# ---Enabling Pickle support----------------------------------------------------
 if gbl.gROOT.GetVersionInt() <= 51800:
     import libPyROOT
     gbl.GaudiPython.PyROOTPickle.Initialize(libPyROOT, libPyROOT.ObjectProxy)

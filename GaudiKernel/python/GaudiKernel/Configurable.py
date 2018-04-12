@@ -192,7 +192,7 @@ class Configurable(object):
             conf = cls.configurables[name]
             if name != argname:      # special case: user derived <-> real ... make same
                 cls.configurables[conf.getType()] = conf
-            #---PM: Initialize additional properties
+            # ---PM: Initialize additional properties
             for n, v in kwargs.items():
                 if n != "name":  # it should not be confused with a normal property
                     setattr(conf, n, v)
@@ -253,7 +253,7 @@ class Configurable(object):
                 #  in the future:
                 #  return None             # will bomb on use (or go unharmed on non-use)
                 #  for now, allow use through allConfigurables lookup
-                #---PM: Initialize additional properties
+                # ---PM: Initialize additional properties
                 for n, v in kwargs.items():
                     setattr(conf, n, v)
                 return conf
@@ -271,8 +271,8 @@ class Configurable(object):
 
         # update generics super-cache, if needed
         cls.allConfigurables[name] = conf
-        #-->PM#if hasattr( cls, 'getType' ) and name.find('/') < 0:
-        #-->PM#   cls.allConfigurables[ cls.getType() + '/' + name ] = conf
+        # -->PM#if hasattr( cls, 'getType' ) and name.find('/') < 0:
+        # -->PM#   cls.allConfigurables[ cls.getType() + '/' + name ] = conf
 
         return conf
 

@@ -3,9 +3,12 @@
 
 // Include files
 #include "GaudiKernel/DataStoreItem.h"
+#include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Service.h"
+#include "GaudiKernel/SmartIF.h"
 
 // External libraries
 #include "tbb/recursive_mutex.h"
@@ -18,8 +21,6 @@ namespace
 }
 
 // Forward declarations
-// Incident service
-class IIncidentSvc;
 // Generic address
 class IOpaqueAddress;
 // Generic interface to data object class
@@ -63,11 +64,11 @@ public:
 
 protected:
   /// Pointer to data loader service
-  IConversionSvc* m_dataLoader = nullptr;
+  SmartIF<IConversionSvc> m_dataLoader = nullptr;
   /// Pointer to incident service
-  IIncidentSvc* m_incidentSvc = nullptr;
+  SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
-  Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
+  Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<std::vector<std::string>> m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
@@ -83,7 +84,7 @@ protected:
   /// Items to be pre-loaded
   LoadItems m_preLoads;
   /// Pointer to root entry
-  DataSvcHelpers::RegistryEntry* m_root = nullptr;
+  std::unique_ptr<DataSvcHelpers::RegistryEntry> m_root;
   /// Map with object paths to be inhibited from loading
   DataSvcHelpers::InhibitMap* m_inhibitMap = nullptr;
 
@@ -332,7 +333,7 @@ private:
 
 protected:
   /// Check if root path is valid
-  bool checkRoot() { return 0 != m_root; }
+  bool checkRoot() { return LIKELY( m_root != nullptr ); }
 
   /** Retrieve customizable data loader according to registry entry to be
    *  retrieved
