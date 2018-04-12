@@ -18,7 +18,7 @@ class IOpaqueAddress;
   *
   *  @author M.Frank
   */
-class GAUDI_API LinkManager
+class GAUDI_API LinkManager final
 {
 
 public:
@@ -61,7 +61,7 @@ public:
     void setObject( const DataObject* pObject ) { m_pObject = const_cast<DataObject*>( pObject ); }
     /// Const access to data object
     const DataObject* object() const { return m_pObject; }
-    DataObject* object() { return m_pObject; }
+    DataObject*       object() { return m_pObject; }
     /// Access to path of object
     const std::string& path() const { return m_path; }
     /// Link identifier
@@ -82,21 +82,20 @@ private:
   //           4) revoke friendship.
   //         Now we're at stage 1...
   friend class MergeEventAlg;
-  ///@ TODO: replace by std::vector<std::unique_ptr<Link>> once
-  ///        ROOT does 'automatic' schema conversion from T* to
-  ///        std::unique_ptr<T>...
-  ///        Or, even better, just std::vector<Link>, given that
+  ///@ TODO: replace by std::vector<Link> given that
   ///        Link is barely larger than a pointer (40 vs. 8 bytes)
   ///        -- but that requires more invasive schema evolution.
   ///
   /// The vector containing all links which are non-tree like
-  mutable std::vector<Link*> m_linkVector;
+  mutable std::vector<std::unique_ptr<Link>> m_linkVector;
 
 public:
   /// Standard Constructor
   LinkManager() = default;
   /// Standard Destructor
-  virtual ~LinkManager();
+  //// -- this _must_ be virtual, as the 'old' data has a vtbl pointer, and
+  ///     we have to maintain the memory layout... even if this class is 'final'
+  virtual ~LinkManager() = default;
   /// Static instantiation
   static LinkManager* newInstance();
   /// Assign new instantiator

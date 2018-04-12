@@ -21,7 +21,7 @@ class TClass;
 class TBranch;
 
 class MsgStream;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 class DataObject;
 class IIncidentSvc;
 
@@ -195,28 +195,28 @@ namespace Gaudi
     class Tool
     {
     protected:
-      typedef RootDataConnection::StringVec StringVec;
-      typedef RootDataConnection::ParamMap ParamMap;
-      typedef RootDataConnection::Sections Sections;
-      typedef RootDataConnection::MergeSections MergeSections;
-      typedef RootDataConnection::LinkSections LinkSections;
-      typedef RootDataConnection::ContainerSection ContainerSection;
+      typedef RootDataConnection::StringVec         StringVec;
+      typedef RootDataConnection::ParamMap          ParamMap;
+      typedef RootDataConnection::Sections          Sections;
+      typedef RootDataConnection::MergeSections     MergeSections;
+      typedef RootDataConnection::LinkSections      LinkSections;
+      typedef RootDataConnection::ContainerSection  ContainerSection;
       typedef RootDataConnection::ContainerSections ContainerSections;
 
       /// Pointer to containing data connection object
       RootDataConnection* c;
 
     public:
-      TTree* refs() const { return c->m_refs; }
-      StringVec& dbs() const { return c->m_dbs; }
-      StringVec& conts() const { return c->m_conts; }
-      StringVec& links() const { return c->m_links; }
-      ParamMap& params() const { return c->m_params; }
-      MsgStream& msgSvc() const { return c->msgSvc(); }
+      TTree*             refs() const { return c->m_refs; }
+      StringVec&         dbs() const { return c->m_dbs; }
+      StringVec&         conts() const { return c->m_conts; }
+      StringVec&         links() const { return c->m_links; }
+      ParamMap&          params() const { return c->m_params; }
+      MsgStream&         msgSvc() const { return c->msgSvc(); }
       const std::string& name() const { return c->m_name; }
-      Sections& sections() const { return c->m_sections; }
-      LinkSections& linkSections() const { return c->m_linkSects; }
-      MergeSections& mergeSections() const { return c->m_mergeSects; }
+      Sections&          sections() const { return c->m_sections; }
+      LinkSections&      linkSections() const { return c->m_linkSects; }
+      MergeSections&     mergeSections() const { return c->m_mergeSects; }
 
       /// Default destructor
       virtual ~Tool() = default;

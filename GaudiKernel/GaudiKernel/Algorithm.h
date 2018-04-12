@@ -159,7 +159,7 @@ public:
    *  whereas "ApproxTrackFit" and "BestTrackFit" may be two instantiations
    *  of the class configured to find tracks with different fit criteria.
    */
-  const std::string& name() const override;
+  const std::string&      name() const override;
   const Gaudi::StringKey& nameKey() const override;
 
   /** The type of the algorithm object.
@@ -258,19 +258,19 @@ public:
   /** The standard Chrono & Stat service,
    *  Return a pointer to the service if present
    */
-  SmartIF<IChronoStatSvc>& chronoSvc() const;
+  SmartIF<IChronoStatSvc>&                                             chronoSvc() const;
   [[deprecated( "use chronoSvc() instead" )]] SmartIF<IChronoStatSvc>& chronoStatService() const { return chronoSvc(); }
 
   /** The standard detector data service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
-  SmartIF<IDataProviderSvc>& detSvc() const;
+  SmartIF<IDataProviderSvc>&                                          detSvc() const;
   [[deprecated( "use detSvc() instead" )]] SmartIF<IDataProviderSvc>& detDataService() const { return detSvc(); }
 
   /** The standard detector data persistency conversion service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
-  SmartIF<IConversionSvc>& detCnvSvc() const;
+  SmartIF<IConversionSvc>&                                             detCnvSvc() const;
   [[deprecated( "use detCnvSvc() instead" )]] SmartIF<IConversionSvc>& detDataCnvService() const { return detCnvSvc(); }
 
   /** The standard event data service.
@@ -278,13 +278,13 @@ public:
    */
   SmartIF<IDataProviderSvc>& eventSvc() const;
   /// shortcut for  method eventSvc
-  SmartIF<IDataProviderSvc>& evtSvc() const { return eventSvc(); }
+  SmartIF<IDataProviderSvc>&                                            evtSvc() const { return eventSvc(); }
   [[deprecated( "use eventSvc() instead" )]] SmartIF<IDataProviderSvc>& eventDataService() const { return eventSvc(); }
 
   /** The standard event data persistency conversion service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
-  SmartIF<IConversionSvc>& eventCnvSvc() const;
+  SmartIF<IConversionSvc>&                                               eventCnvSvc() const;
   [[deprecated( "use eventCnvSvc() instead" )]] SmartIF<IConversionSvc>& eventDataCnvService() const
   {
     return eventCnvSvc();
@@ -293,13 +293,13 @@ public:
   /** The standard histogram service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
-  SmartIF<IHistogramSvc>& histoSvc() const;
+  SmartIF<IHistogramSvc>&                                            histoSvc() const;
   [[deprecated( "use histoSvc() instead" )]] SmartIF<IHistogramSvc>& histogramDataService() const { return histoSvc(); }
 
   /** The standard N tuple service.
    *  Returns a pointer to the N tuple service if present.
    */
-  SmartIF<INTupleSvc>& ntupleSvc() const;
+  SmartIF<INTupleSvc>&                                             ntupleSvc() const;
   [[deprecated( "use ntupleSvc() instead" )]] SmartIF<INTupleSvc>& ntupleService() const { return ntupleSvc(); }
 
   /** The standard RandomGen service,
@@ -520,40 +520,40 @@ private:
   unsigned int maxErrors() const { return m_errorMax; }
 
 private:
-  Gaudi::StringKey m_name; ///< Algorithm's name for identification
-  std::string m_type;      ///< Algorithm's type
-  std::string m_version;   ///< Algorithm's version
-  unsigned int m_index;    ///< Algorithm's index
-  EventContext m_event_context;
+  Gaudi::StringKey        m_name;    ///< Algorithm's name for identification
+  std::string             m_type;    ///< Algorithm's type
+  std::string             m_version; ///< Algorithm's version
+  unsigned int            m_index;   ///< Algorithm's index
+  EventContext            m_event_context;
   std::vector<Algorithm*> m_subAlgms; ///< Sub algorithms
 
   // tools used by algorithm
-  mutable std::vector<IAlgTool*> m_tools;
-  mutable std::vector<BaseToolHandle*> m_toolHandles;
+  mutable std::vector<IAlgTool*>             m_tools;
+  mutable std::vector<BaseToolHandle*>       m_toolHandles;
   mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
 
 private:
   template <typename IFace>
   SmartIF<IFace>& get_svc_( SmartIF<IFace>& p, const char* service_name ) const;
 
-  mutable SmartIF<IMessageSvc> m_MS;            ///< Message service
-  mutable SmartIF<IDataProviderSvc> m_EDS;      ///< Event data service
-  mutable SmartIF<IHiveWhiteBoard> m_WB;        ///< Event data service (whiteboard)
-  mutable SmartIF<IConversionSvc> m_ECS;        ///< Event conversion service
-  mutable SmartIF<IDataProviderSvc> m_DDS;      ///< Detector data service
-  mutable SmartIF<IConversionSvc> m_DCS;        ///< Detector conversion service
-  mutable SmartIF<IHistogramSvc> m_HDS;         ///< Histogram data service
-  mutable SmartIF<INTupleSvc> m_NTS;            ///< N tuple service
-  mutable SmartIF<IChronoStatSvc> m_CSS;        ///< Chrono & Stat Service
-  mutable SmartIF<IRndmGenSvc> m_RGS;           ///< Random Number Generator Service
-  mutable SmartIF<IExceptionSvc> m_EXS;         ///< Exception Handler Service
-  mutable SmartIF<IAuditorSvc> m_pAuditorSvc;   ///< Auditor Service
-  mutable SmartIF<IToolSvc> m_ptoolSvc;         ///< ToolSvc Service
-  mutable SmartIF<IMonitorSvc> m_pMonitorSvc;   ///< Online Monitoring Service
-  mutable SmartIF<IAlgContextSvc> m_contextSvc; ///< Algorithm Context Service
+  mutable SmartIF<IMessageSvc>      m_MS;          ///< Message service
+  mutable SmartIF<IDataProviderSvc> m_EDS;         ///< Event data service
+  mutable SmartIF<IHiveWhiteBoard>  m_WB;          ///< Event data service (whiteboard)
+  mutable SmartIF<IConversionSvc>   m_ECS;         ///< Event conversion service
+  mutable SmartIF<IDataProviderSvc> m_DDS;         ///< Detector data service
+  mutable SmartIF<IConversionSvc>   m_DCS;         ///< Detector conversion service
+  mutable SmartIF<IHistogramSvc>    m_HDS;         ///< Histogram data service
+  mutable SmartIF<INTupleSvc>       m_NTS;         ///< N tuple service
+  mutable SmartIF<IChronoStatSvc>   m_CSS;         ///< Chrono & Stat Service
+  mutable SmartIF<IRndmGenSvc>      m_RGS;         ///< Random Number Generator Service
+  mutable SmartIF<IExceptionSvc>    m_EXS;         ///< Exception Handler Service
+  mutable SmartIF<IAuditorSvc>      m_pAuditorSvc; ///< Auditor Service
+  mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< ToolSvc Service
+  mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
+  mutable SmartIF<IAlgContextSvc>   m_contextSvc;  ///< Algorithm Context Service
 
-  mutable SmartIF<ITimelineSvc> m_timelineSvc; ///< Timeline Service
-  mutable SmartIF<IAlgExecStateSvc> m_aess;    ///< Alg execution state mgr
+  mutable SmartIF<ITimelineSvc>     m_timelineSvc; ///< Timeline Service
+  mutable SmartIF<IAlgExecStateSvc> m_aess;        ///< Alg execution state mgr
 
   SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
 
@@ -563,7 +563,7 @@ protected:
 
 private:
   // Properties
-  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int>  m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
 
   Gaudi::Property<unsigned int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
@@ -607,7 +607,7 @@ private:
 
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
-  bool m_isFinalized;                                                         ///< Algorithm has been finalized flag
+  bool                       m_isFinalized;                                   ///< Algorithm has been finalized flag
 
   /// implementation of service method
   StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;

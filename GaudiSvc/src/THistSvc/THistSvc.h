@@ -163,7 +163,7 @@ public:
 
 private:
   typedef std::recursive_mutex THistSvcMutex_t;
-  typedef std::mutex histMut_t;
+  typedef std::mutex           histMut_t;
 
   /// Helper class that manages ROOts global directory and file
   class GlobalDirectoryRestore
@@ -173,9 +173,9 @@ private:
     ~GlobalDirectoryRestore();
 
   private:
-    TDirectory* m_gDirectory;
-    TFile* m_gFile;
-    int m_gErrorIgnoreLevel;
+    TDirectory*                      m_gDirectory;
+    TFile*                           m_gFile;
+    int                              m_gErrorIgnoreLevel;
     std::lock_guard<THistSvcMutex_t> m_lock;
   };
 
@@ -185,12 +185,12 @@ private:
   /// Helper struct that bundles the histogram ID with a mutex, TFile and TObject*
   struct THistID {
     std::string id{""};
-    bool temp{true};
-    TObject* obj{nullptr};
-    TFile* file{nullptr};
-    Mode mode{INVALID};
-    histMut_t* mutex{nullptr};
-    bool shared{false};
+    bool        temp{true};
+    TObject*    obj{nullptr};
+    TFile*      file{nullptr};
+    Mode        mode{INVALID};
+    histMut_t*  mutex{nullptr};
+    bool        shared{false};
 
     THistID()                     = default;
     THistID( const THistID& rhs ) = default;
@@ -234,13 +234,6 @@ private:
   /// registered by the setupOutputFile callback method
   std::set<std::string> m_alreadyConnectedOutFiles;
 
-  typedef std::map<std::string, THistID> uidXMap;
-  typedef std::multimap<std::string, THistID> idXMap;
-  typedef std::multimap<std::string, std::string> streamMap;
-
-  uidXMap m_uidsX;
-  idXMap m_idsX;
-
   // containers for fast lookups
   // same uid for all elements in vec
   typedef std::vector<THistID> vhid_t;
@@ -252,15 +245,16 @@ private:
   typedef std::unordered_multimap<std::string, vhid_t*> idMap_t;
   typedef std::unordered_map<TObject*, std::pair<vhid_t*, size_t>> objMap_t;
 
-  hlist_t m_hlist;
+  hlist_t  m_hlist;
   uidMap_t m_uids;
-  idMap_t m_ids;
+  idMap_t  m_ids;
 
   // Container holding all TObjects and vhid*s
   objMap_t m_tobjs;
 
   std::map<std::string, std::pair<TFile*, Mode>> m_files; // stream->file
-  streamMap m_fileStreams;                                // fileName->streams
+  typedef std::multimap<std::string, std::string> streamMap;
+  streamMap m_fileStreams; // fileName->streams
 
   // stream->filename of shared files
   std::map<std::string, std::string> m_sharedFiles;
@@ -294,9 +288,9 @@ private:
   TTree* readTree( const std::string& name ) const;
 
   /// Handle case where TTree grows beyond TTree::fgMaxTreeSize
-  void updateFiles();
-  StatusCode writeObjectsToFile();
-  StatusCode connect( const std::string& );
+  void        updateFiles();
+  StatusCode  writeObjectsToFile();
+  StatusCode  connect( const std::string& );
   TDirectory* changeDir( const THistSvc::THistID& hid ) const;
   std::string stripDirectoryName( std::string& dir ) const;
   void removeDoubleSlash( std::string& ) const;
@@ -334,19 +328,19 @@ private:
   /// @name Gaudi properties
   /// @{
 
-  Gaudi::Property<int> m_autoSave{this, "AutoSave", 0};
-  Gaudi::Property<int> m_autoFlush{this, "AutoFlush", 0};
+  Gaudi::Property<int>  m_autoSave{this, "AutoSave", 0};
+  Gaudi::Property<int>  m_autoFlush{this, "AutoFlush", 0};
   Gaudi::Property<bool> m_print{this, "PrintAll", false};
-  Gaudi::Property<int> m_maxFileSize{this, "MaxFileSize", 10240, "maximum file size in MB. if exceeded,"
+  Gaudi::Property<int>  m_maxFileSize{this, "MaxFileSize", 10240, "maximum file size in MB. if exceeded,"
                                                                  " will cause an abort. -1 to never check."};
-  Gaudi::Property<int> m_compressionLevel{this, "CompressionLevel", 1};
+  Gaudi::Property<int>                      m_compressionLevel{this, "CompressionLevel", 1};
   Gaudi::Property<std::vector<std::string>> m_outputfile{this, "Output", {}};
   Gaudi::Property<std::vector<std::string>> m_inputfile{this, "Input", {}};
 
   /// @}
 
-  IIncidentSvc* p_incSvc = nullptr;
-  IFileMgr* p_fileMgr    = nullptr;
+  IIncidentSvc* p_incSvc  = nullptr;
+  IFileMgr*     p_fileMgr = nullptr;
 
   bool m_signaledStop = false;
   bool m_delayConnect = false;

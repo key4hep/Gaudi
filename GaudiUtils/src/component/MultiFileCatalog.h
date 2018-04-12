@@ -25,9 +25,9 @@ namespace Gaudi
     typedef Service::Factory Factory;
 
   protected:
-    typedef const std::string& CSTR;
+    typedef const std::string&         CSTR;
     typedef std::vector<IFileCatalog*> Catalogs;
-    typedef std::vector<std::string> CatalogNames;
+    typedef std::vector<std::string>   CatalogNames;
 
     template <class A1, class F>
     std::string _find( A1& arg1, F pmf ) const
