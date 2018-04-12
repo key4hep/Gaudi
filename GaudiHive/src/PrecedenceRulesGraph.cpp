@@ -136,9 +136,9 @@ namespace concurrency
     // Detach condition algorithms from the CF realm
     if ( m_conditionsRealmEnabled ) {
       SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
-      auto& condAlgs = condSvc->condAlgs();
+      auto&             condAlgs = condSvc->condAlgs();
       for ( const auto algo : condAlgs ) {
-        auto itA = m_algoNameToAlgoNodeMap.find( algo->name() );
+        auto                        itA = m_algoNameToAlgoNodeMap.find( algo->name() );
         concurrency::AlgorithmNode* algoNode;
         if ( itA != m_algoNameToAlgoNodeMap.end() ) {
           algoNode = itA->second;
@@ -248,8 +248,8 @@ namespace concurrency
     StatusCode sc = StatusCode::SUCCESS;
 
     // Create new, or fetch existent, AlgorithmNode
-    auto& algoName = algo->name();
-    auto itA       = m_algoNameToAlgoNodeMap.find( algoName );
+    auto&                       algoName = algo->name();
+    auto                        itA      = m_algoNameToAlgoNodeMap.find( algoName );
     concurrency::AlgorithmNode* algoNode;
     if ( itA != m_algoNameToAlgoNodeMap.end() ) {
       algoNode = itA->second;
@@ -271,7 +271,7 @@ namespace concurrency
     // Attach AlgorithmNode to its CF decision hub
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      auto parentNode = itP->second;
+      auto       parentNode = itP->second;
       ON_VERBOSE verbose() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '" << parentName << "'"
                            << endmsg;
 
@@ -298,7 +298,7 @@ namespace concurrency
 
     StatusCode sc;
 
-    auto itD = m_dataPathToDataNodeMap.find( dataPath );
+    auto                   itD = m_dataPathToDataNodeMap.find( dataPath );
     concurrency::DataNode* dataNode;
     if ( itD != m_dataPathToDataNodeMap.end() ) {
       dataNode = itD->second;
@@ -349,11 +349,11 @@ namespace concurrency
 
     auto& decisionHubName = decisionHubAlgo->name();
 
-    auto itP = m_decisionNameToDecisionHubMap.find( parentName );
+    auto                       itP = m_decisionNameToDecisionHubMap.find( parentName );
     concurrency::DecisionNode* parentNode;
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      parentNode = itP->second;
-      auto itA   = m_decisionNameToDecisionHubMap.find( decisionHubName );
+      parentNode                     = itP->second;
+      auto                       itA = m_decisionNameToDecisionHubMap.find( decisionHubName );
       concurrency::DecisionNode* decisionHubNode;
       if ( itA != m_decisionNameToDecisionHubMap.end() ) {
         decisionHubNode = itA->second;
@@ -462,7 +462,7 @@ namespace concurrency
   void PrecedenceRulesGraph::dumpControlFlow( std::ostringstream& ost, ControlFlowNode* node, const int& indent ) const
   {
     ost << std::string( indent * 2, ' ' );
-    DecisionNode* dn  = dynamic_cast<DecisionNode*>( node );
+    DecisionNode*  dn = dynamic_cast<DecisionNode*>( node );
     AlgorithmNode* an = dynamic_cast<AlgorithmNode*>( node );
     if ( dn != 0 ) {
       if ( node != m_headNode ) {
@@ -492,7 +492,7 @@ namespace concurrency
   std::string PrecedenceRulesGraph::dumpDataFlow() const
   {
 
-    const char idt[] = "      ";
+    const char         idt[] = "      ";
     std::ostringstream ost;
 
     ost << "\n" << idt << "====================================\n";

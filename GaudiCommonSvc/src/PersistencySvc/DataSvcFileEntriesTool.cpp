@@ -7,7 +7,7 @@
 class IIncidentSvc;
 struct IDataManagerSvc;
 class IDataProviderSvc;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 /**
  * Tool to scan a transient store branch that collects all the objects that belong
  * to the same source (file).
@@ -50,7 +50,7 @@ public:
 private:
   Gaudi::Property<std::string> m_dataSvcName{this, "DataService", "EventDataSvc", "Name of the data service to use"};
   Gaudi::Property<std::string> m_rootNode{this, "Root", "", "Path to the element from which to start the scan"};
-  Gaudi::Property<bool> m_scanOnBeginEvent{
+  Gaudi::Property<bool>        m_scanOnBeginEvent{
       this, "ScanOnBeginEvent", false,
       "If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)"};
   Gaudi::Property<bool> m_ignoreOriginChange{
@@ -167,7 +167,7 @@ const IDataStoreLeaves::LeavesList& DataSvcFileEntriesTool::leaves() const
 IRegistry* DataSvcFileEntriesTool::i_getRootNode()
 {
   DataObject* obj = nullptr;
-  StatusCode sc   = m_dataSvc->retrieveObject( m_rootNode.value(), obj );
+  StatusCode  sc  = m_dataSvc->retrieveObject( m_rootNode.value(), obj );
   if ( sc.isFailure() ) {
     throw GaudiException( "Cannot get " + m_rootNode + " from " + m_dataSvcName, name(), StatusCode::FAILURE );
   }
@@ -194,7 +194,7 @@ void DataSvcFileEntriesTool::i_collectLeaves( IRegistry* reg )
                             name(), StatusCode::FAILURE );
 
     std::vector<IRegistry*> lfs; // leaves of the current object
-    StatusCode sc = m_dataMgrSvc->objectLeaves( reg, lfs );
+    StatusCode              sc = m_dataMgrSvc->objectLeaves( reg, lfs );
     if ( sc.isSuccess() ) {
       for ( const auto& i : lfs ) {
         // Continue if the leaf has the same database as the parent

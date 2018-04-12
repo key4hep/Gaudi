@@ -66,7 +66,7 @@ public:
   }
 
 private:
-  std::vector<State> m_states;
+  std::vector<State>   m_states;
   SmartIF<IMessageSvc> m_MS;
 
   MsgStream log() { return {m_MS, "AlgsExecutionStates"}; }
@@ -100,8 +100,8 @@ public:
     uint operator*() { return std::distance( m_v->begin(), m_pos ); }
 
   private:
-    State m_s;
-    const std::vector<State>* m_v;
+    State                              m_s;
+    const std::vector<State>*          m_v;
     std::vector<State>::const_iterator m_pos;
   };
 

@@ -11,7 +11,7 @@
 
 // Forward declarations
 class IMessageSvc;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 
 /** @class Converter Converter.h GaudiKernel/Converter.h
 
@@ -144,8 +144,8 @@ public:
 
 private:
   friend std::ostream& operator<<( std::ostream&, const ConverterID& );
-  long m_stype;
-  CLID m_clid;
+  long                 m_stype;
+  CLID                 m_clid;
 };
 
 inline std::ostream& operator<<( std::ostream& s, const ConverterID& id )
