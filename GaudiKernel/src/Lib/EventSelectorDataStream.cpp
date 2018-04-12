@@ -61,7 +61,7 @@ const Gaudi::Property<std::string>* EventSelectorDataStream::property( const std
 // Parse input criteria
 StatusCode EventSelectorDataStream::initialize()
 {
-  bool isData = true;
+  bool        isData = true;
   std::string auth, dbtyp, collsvc, item, crit, sel, svc, stmt;
   std::string cnt = "/Event";
   std::string db  = "<Unknown>";

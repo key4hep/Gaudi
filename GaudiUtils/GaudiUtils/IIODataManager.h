@@ -94,9 +94,9 @@ namespace Gaudi
     DeclareInterfaceID( IIODataManager, 2, 0 );
 
     /// Connection type definition
-    typedef IDataConnection Connection;
+    typedef IDataConnection          Connection;
     typedef std::vector<Connection*> Connections;
-    typedef Connection::IoType IoType;
+    typedef Connection::IoType       IoType;
     enum FileType { UNKNOWN = 1, PFN, LFN, FID };
 
     /// Open data stream in read mode

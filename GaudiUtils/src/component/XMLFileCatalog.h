@@ -97,13 +97,13 @@ namespace Gaudi
     xercesc::DOMNode* element( CSTR fid, bool print_err = true ) const;
     xercesc::DOMNode* child( xercesc::DOMNode* par, CSTR tag, CSTR attr = "", CSTR val = "" ) const;
     std::pair<xercesc::DOMElement*, xercesc::DOMElement*> i_registerFID( CSTR fid ) const;
-    bool m_rdOnly;
-    mutable bool m_update;
-    xercesc::DOMDocument* m_doc;
+    bool                                      m_rdOnly;
+    mutable bool                              m_update;
+    xercesc::DOMDocument*                     m_doc;
     std::unique_ptr<xercesc::XercesDOMParser> m_parser;
-    std::unique_ptr<xercesc::ErrorHandler> m_errHdlr;
-    std::string m_file;
-    IMessageSvc* m_msgSvc;
+    std::unique_ptr<xercesc::ErrorHandler>    m_errHdlr;
+    std::string                               m_file;
+    IMessageSvc*                              m_msgSvc;
   };
   /// Create file identifier using UUID mechanism
   std::string createGuidAsString();

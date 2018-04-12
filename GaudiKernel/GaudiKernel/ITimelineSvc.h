@@ -8,12 +8,12 @@
 
 #include <chrono>
 typedef std::chrono::high_resolution_clock Clock;
-typedef Clock::time_point time_point;
+typedef Clock::time_point                  time_point;
 
 struct TimelineEvent {
   pthread_t thread;
-  uint slot;
-  uint event;
+  uint      slot;
+  uint      event;
 
   std::string algorithm;
 

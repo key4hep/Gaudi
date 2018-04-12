@@ -167,7 +167,7 @@ StatusCode AlgorithmManager::stop()
 StatusCode AlgorithmManager::finalize()
 {
   StatusCode rc;
-  auto it = m_algs.begin();
+  auto       it = m_algs.begin();
   while ( it != m_algs.end() ) { // finalize and remove from the list the managed algorithms
     if ( it->managed ) {
       rc = it->algorithm->sysFinalize();

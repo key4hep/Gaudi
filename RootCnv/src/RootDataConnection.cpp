@@ -63,7 +63,7 @@ static bool match_wild( const char* str, const char* pat )
   //
   static const std::array<char, 256> table = init_table();
   const char *s, *p;
-  bool star = false;
+  bool        star = false;
 loopStart:
   for ( s = str, p = pat; *s; ++s, ++p ) {
     switch ( *p ) {
@@ -96,10 +96,10 @@ starCheck:
 long RootConnectionSetup::setCompression( const std::string& compression )
 {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-  int res = 0, level = ROOT::CompressionSettings( ROOT::kLZMA, 6 );
+  int  res = 0, level = ROOT::CompressionSettings( ROOT::kLZMA, 6 );
   auto idx = compression.find( ':' );
   if ( idx != string::npos ) {
-    string alg                           = compression.substr( 0, idx );
+    string                      alg      = compression.substr( 0, idx );
     ROOT::ECompressionAlgorithm alg_code = ROOT::kUseGlobalSetting;
     if ( strcasecmp( alg.c_str(), "ZLIB" ) == 0 )
       alg_code = ROOT::kZLIB;
@@ -237,8 +237,8 @@ StatusCode RootDataConnection::connectRead()
 #endif
   }
   if ( !sc.isSuccess() ) return sc;
-  bool need_fid = m_fid == m_pfn;
-  string fid    = m_fid;
+  bool   need_fid = m_fid == m_pfn;
+  string fid      = m_fid;
   m_mergeFIDs.clear();
   for ( auto& elem : m_params ) {
     if ( elem.first == "FID" ) {
@@ -370,8 +370,8 @@ TTree* RootDataConnection::getSection( CSTR section, bool create )
         // t->SetAutoFlush(100);
       }
       if ( section == m_setup->loadSection && cacheSize > -2 ) {
-        MsgStream& msg   = msgSvc();
-        int learnEntries = m_setup->learnEntries;
+        MsgStream& msg          = msgSvc();
+        int        learnEntries = m_setup->learnEntries;
         t->SetCacheSize( cacheSize );
         t->SetCacheLearnEntries( learnEntries );
         msg << MSG::DEBUG;
@@ -392,8 +392,8 @@ TTree* RootDataConnection::getSection( CSTR section, bool create )
             t->AddBranchToCache( "*", kTRUE );
           } else {
             for ( TIter it( t->GetListOfBranches() ); it.Next(); ) {
-              const char* n = ( (TNamed*)( *it ) )->GetName();
-              bool add = false, veto = false;
+              const char* n   = ( (TNamed*)( *it ) )->GetName();
+              bool        add = false, veto = false;
               for ( const auto& i : cB ) {
                 if ( !match_wild( n, ( i ).c_str() ) ) continue;
                 add = true;
@@ -427,7 +427,7 @@ TBranch* RootDataConnection::getBranch( CSTR section, CSTR branch_name, TClass* 
   string n = branch_name;
   std::replace_if( std::begin( n ), std::end( n ), []( const char c ) { return !isalnum( c ); }, '_' );
   n += ".";
-  TTree* t   = getSection( section, true );
+  TTree*   t = getSection( section, true );
   TBranch* b = t->GetBranch( n.c_str() );
   if ( !b && cl && m_file->IsWritable() ) {
     b = t->Branch( n.c_str(), cl->GetName(), (void*)( ptr ? &ptr : nullptr ), buff_siz, split_lvl );
@@ -531,8 +531,8 @@ int RootDataConnection::loadObj( CSTR section, CSTR cnt, unsigned long entry, Da
           }
 #endif
         } else if ( nb == 0 && pObj->clID() == CLID_DataObject ) {
-          TFile* f = b->GetFile();
-          int vsn  = f->GetVersion();
+          TFile* f   = b->GetFile();
+          int    vsn = f->GetVersion();
           if ( vsn < 52400 ) {
             // For Gaudi v21r5 (ROOT 5.24.00b) DataObject::m_version was not written!
             // Still this call be well be successful.
@@ -581,8 +581,8 @@ RootDataConnection::getMergeSection( const string& container, int entry ) const
   // string container = cont[0]=='/' ? cont.substr(1,idx==string::npos?idx:idx-1) : cont;
   auto i = m_mergeSects.find( container );
   if ( i != m_mergeSects.end() ) {
-    size_t cnt                 = 0;
-    const ContainerSections& s = ( *i ).second;
+    size_t                   cnt = 0;
+    const ContainerSections& s   = ( *i ).second;
     for ( auto j = s.cbegin(); j != s.cend(); ++j, ++cnt ) {
       const ContainerSection& c = *j;
       if ( entry >= c.start && entry < ( c.start + c.length ) ) {

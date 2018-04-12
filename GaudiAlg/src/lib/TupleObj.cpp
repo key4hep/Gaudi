@@ -251,8 +251,8 @@ namespace
   std::vector<std::string> tokenize( const std::string& value, const std::string& separators = " " )
   {
     std::vector<std::string> tokens;
-    auto it1 = value.begin();
-    auto it2 = value.begin();
+    auto                     it1 = value.begin();
+    auto                     it2 = value.begin();
     while ( value.end() != it1 && value.end() != it2 ) {
       it2 = std::find_first_of( it1, value.end(), separators.begin(), separators.end() );
       if ( it2 != it1 ) {

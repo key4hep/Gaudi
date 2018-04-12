@@ -353,7 +353,7 @@ namespace GaudiUtils
      */
     result_type insert( const value_type& value )
     {
-      bool found       = true;
+      bool      found  = true;
       _iterator result = lower_bound( value.first );
       if ( end() == result || compare( value.first, result->first ) ) {
         result = m_vct.insert( result, value );
@@ -612,7 +612,7 @@ namespace GaudiUtils
     const mapped_type& operator()( const key_type& key ) const
     {
       static const mapped_type s_default = mapped_type();
-      iterator res                       = find( key );
+      iterator                 res       = find( key );
       if ( end() == res ) {
         return s_default;
       }

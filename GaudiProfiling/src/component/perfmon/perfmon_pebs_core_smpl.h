@@ -96,13 +96,13 @@ typedef struct {
  * 	actual_buffer = (unsigned long)(hdr+1)+hdr->hdr_start_offs
  */
 typedef struct {
-  uint64_t overflows;    /* #overflows for buffer */
-  size_t buf_size;       /* bytes in the buffer */
-  size_t start_offs;     /* actual buffer start offset */
-  uint32_t version;      /* smpl format version */
-  uint32_t reserved1;    /* for future use */
-  uint64_t reserved2[5]; /* for future use */
-  pfm_ds_area_core_t ds; /* DS management Area */
+  uint64_t           overflows;    /* #overflows for buffer */
+  size_t             buf_size;     /* bytes in the buffer */
+  size_t             start_offs;   /* actual buffer start offset */
+  uint32_t           version;      /* smpl format version */
+  uint32_t           reserved1;    /* for future use */
+  uint64_t           reserved2[5]; /* for future use */
+  pfm_ds_area_core_t ds;           /* DS management Area */
 } pfm_pebs_core_smpl_hdr_t;
 
 /*

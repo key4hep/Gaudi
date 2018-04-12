@@ -25,9 +25,9 @@ class MTMessageSvc : public extends<Service, IMessageSvc>
 {
 public:
   typedef std::pair<std::string, std::ostream*> NamedStream;
-  typedef std::multimap<int, NamedStream> StreamMap;
-  typedef std::multimap<StatusCode, Message> MessageMap;
-  typedef std::map<std::string, int> ThresholdMap;
+  typedef std::multimap<int, NamedStream>       StreamMap;
+  typedef std::multimap<StatusCode, Message>    MessageMap;
+  typedef std::map<std::string, int>            ThresholdMap;
 
   // Default constructor.
   MTMessageSvc( const std::string& name, ISvcLocator* svcloc );
@@ -119,10 +119,10 @@ private:
                                                                                           {this, "setAlways"}}};
 
   std::ostream* m_defaultStream = &std::cout; ///< Pointer to the output stream.
-  Message m_defaultMessage;                   ///< Default Message
-  StreamMap m_streamMap;                      ///< Stream map
-  MessageMap m_messageMap;                    ///< Message map
-  ThresholdMap m_thresholdMap;                ///< Output level threshold map
+  Message       m_defaultMessage;             ///< Default Message
+  StreamMap     m_streamMap;                  ///< Stream map
+  MessageMap    m_messageMap;                 ///< Message map
+  ThresholdMap  m_thresholdMap;               ///< Output level threshold map
 };
 
 #endif

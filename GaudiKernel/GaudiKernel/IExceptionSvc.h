@@ -28,10 +28,10 @@ public:
   DeclareInterfaceID( IExceptionSvc, 3, 0 );
   /// Handle caught GaudiExceptions
   virtual StatusCode handle( const INamedInterface& o,
-                             const GaudiException& e ) const = 0; ///< Handle caught exceptions
+                             const GaudiException&  e ) const = 0; ///< Handle caught exceptions
   /// Handle caught std::exceptions
   virtual StatusCode handle( const INamedInterface& o,
-                             const std::exception& e ) const = 0; ///< Handle caught exceptions
+                             const std::exception&  e ) const = 0; ///< Handle caught exceptions
   /// Handle caught (unknown)exceptions
   virtual StatusCode handle( const INamedInterface& o ) const = 0; ///< Handle caught exceptions
   /// Handle errors

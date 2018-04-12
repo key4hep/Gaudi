@@ -349,9 +349,9 @@ private:
   Gaudi::Property<bool> m_splitNTupleDir{this, "NTupleSplitDir", false,
                                          "split long directory names into short pieces (suitable for HBOOK)"};
   Gaudi::Property<TupleID::NumericID> m_nTupleOffSet{this, "NTupleOffSet", 0, "offset for numerical N-tuple ID"};
-  Gaudi::Property<std::string> m_nTupleLUN{this, "NTupleLUN", "FILE1", "Logical File Unit for N-tuples"};
-  Gaudi::Property<std::string> m_nTupleTopDir{this, "NTupleTopDir", "", "top-level directory for N-Tuples"};
-  Gaudi::Property<std::string> m_nTupleDir{
+  Gaudi::Property<std::string>        m_nTupleLUN{this, "NTupleLUN", "FILE1", "Logical File Unit for N-tuples"};
+  Gaudi::Property<std::string>        m_nTupleTopDir{this, "NTupleTopDir", "", "top-level directory for N-Tuples"};
+  Gaudi::Property<std::string>        m_nTupleDir{
       this, "NTupleDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ), "subdirectory for N-Tuples"};
 
   Gaudi::Property<bool> m_produceEvtCols{this, "EvtColsProduce", false,

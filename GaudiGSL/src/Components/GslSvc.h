@@ -133,9 +133,9 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<std::string> m_errorPolicy{this, "ErrorPolicy", "GSL", ""};
+  Gaudi::Property<std::string>              m_errorPolicy{this, "ErrorPolicy", "GSL", ""};
   Gaudi::Property<std::vector<std::string>> m_handlersTypeNames{this, "Handlers", {}, ""};
-  Gaudi::Property<std::vector<int>> m_ignore{this, "IgnoreCodes", {}, "codes to be ignored"};
+  Gaudi::Property<std::vector<int>>         m_ignore{this, "IgnoreCodes", {}, "codes to be ignored"};
 
   std::vector<IGslErrorHandler*> m_handlers;
 };

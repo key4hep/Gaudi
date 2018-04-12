@@ -96,14 +96,14 @@ namespace GaudiUtils
 
     typedef typename map_type::size_type size_type;
 
-    typedef typename map_type::iterator iterator;
+    typedef typename map_type::iterator       iterator;
     typedef typename map_type::const_iterator const_iterator;
     // typedef typename map_type::reverse_iterator reverse_iterator;
     // typedef typename map_type::const_reverse_iterator const_reverse_iterator;
     // ========================================================================
   protected:
     // ========================================================================
-    map_type m_map;
+    map_type                 m_map;
     static const result_type s_null_value;
     // ========================================================================
   public:
@@ -198,7 +198,7 @@ namespace GaudiUtils
 
     inline size_type size() const { return m_map.size(); }
     inline size_type max_size() const { return m_map.max_size(); }
-    inline bool empty() const { return size() == 0; }
+    inline bool      empty() const { return size() == 0; }
     inline void swap( map_type& other ) { m_map.swap( other ); }
 
     // ---- extra functionalities

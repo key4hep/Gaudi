@@ -382,8 +382,8 @@ namespace Gaudi
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic2D<INTERFACE, IMPLEMENTATION>::write( const char* file_name ) const
   {
-    TFile* f     = TFile::Open( file_name, "RECREATE" );
-    Int_t nbytes = m_rep->Write();
+    TFile* f      = TFile::Open( file_name, "RECREATE" );
+    Int_t  nbytes = m_rep->Write();
     f->Close();
     return nbytes;
   }

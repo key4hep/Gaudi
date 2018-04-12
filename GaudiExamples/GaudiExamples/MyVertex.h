@@ -47,7 +47,7 @@ namespace Gaudi
       /// Standard Destructor
       ~MyVertex() override;
       /// Retrieve pointer to class definition structure
-      const CLID& clID() const override { return classID(); }
+      const CLID&        clID() const override { return classID(); }
       static const CLID& classID() { return CLID_MyVertex; }
       /// Accessors: Retrieve x-component of the track momentum
       float x() const { return m_x; }

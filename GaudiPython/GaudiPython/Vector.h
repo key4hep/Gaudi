@@ -17,8 +17,8 @@ namespace GaudiPython
 {
   /// useful type definition for  implicit loos
   typedef std::vector<double> Vector;
-  typedef Vector Row;
-  typedef std::vector<Row> Matrix;
+  typedef Vector              Row;
+  typedef std::vector<Row>    Matrix;
 
   /** @struct _identity
    *  It is here due to 'missing'(?) std::identity

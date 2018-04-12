@@ -194,11 +194,11 @@ typedef struct {
 
 typedef struct {
   pfmlib_amd64_counter_t pfp_amd64_counters[PMU_AMD64_MAX_COUNTERS]; /* extended counter features */
-  uint32_t flags;                                                    /* use flags */
-  uint32_t reserved1;                                                /* for future use */
-  ibs_param_t ibsfetch;                                              /* IBS fetch control */
-  ibs_param_t ibsop;                                                 /* IBS execution control */
-  uint64_t reserved2;                                                /* for future use */
+  uint32_t               flags;                                      /* use flags */
+  uint32_t               reserved1;                                  /* for future use */
+  ibs_param_t            ibsfetch;                                   /* IBS fetch control */
+  ibs_param_t            ibsop;                                      /* IBS execution control */
+  uint64_t               reserved2;                                  /* for future use */
 } pfmlib_amd64_input_param_t;
 
 /* A bit mask, meaning multiple usage types may be defined */

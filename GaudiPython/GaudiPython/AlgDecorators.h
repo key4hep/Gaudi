@@ -49,8 +49,8 @@ namespace GaudiPython
     // ========================================================================
     /// the actual type of vector of counters
     typedef std::vector<const StatEntity*> Counters;
-    typedef std::vector<IAlgTool*> Tools;
-    typedef std::vector<IService*> Services;
+    typedef std::vector<IAlgTool*>         Tools;
+    typedef std::vector<IService*>         Services;
     // ========================================================================
     // the general functional methods
     // ========================================================================

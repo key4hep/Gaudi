@@ -34,7 +34,7 @@ namespace Gaudi
       Out operator()( const In&... in ) const override final
       {
         const auto inrange = details::zip::const_range( in... );
-        Out out;
+        Out        out;
         out.reserve( inrange.size() );
         auto& scalar = scalarOp();
         for ( const auto&& i : inrange ) {
@@ -87,7 +87,7 @@ namespace Gaudi
       /// The main operator
       std::tuple<Out...> operator()( const In&... in ) const final
       {
-        const auto inrange = details::zip::const_range( in... );
+        const auto         inrange = details::zip::const_range( in... );
         std::tuple<Out...> out;
         reserve( out, inrange.size(), std::index_sequence_for<Out...>{} );
         auto& scalar = scalarOp();

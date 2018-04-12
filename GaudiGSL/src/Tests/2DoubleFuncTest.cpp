@@ -25,7 +25,7 @@
 int main()
 {
   const GaudiMath::Function& mypow = GaudiMath::adapter( pow );
-  Genfun::Argument arg( 2 );
+  Genfun::Argument           arg( 2 );
   for ( double x = 0; x < 10; ++x ) {
     for ( double y = 0; y < 10; ++y ) {
       arg[0] = x;

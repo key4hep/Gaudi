@@ -87,18 +87,18 @@ private:
 
   private:
     TDirectory* m_gd;
-    TFile* m_gf;
-    int m_ge;
+    TFile*      m_gf;
+    int         m_ge;
   };
 
   enum Mode { READ, WRITE, UPDATE, APPEND, SHARE, INVALID };
 
   struct THistID {
     std::string id;
-    bool temp;
-    TObject* obj;
-    TFile* file;
-    Mode mode;
+    bool        temp;
+    TObject*    obj;
+    TFile*      file;
+    Mode        mode;
 
     THistID() : id( "" ), temp( true ), obj( 0 ), file( 0 ), mode( INVALID ) {}
     THistID( const THistID& rhs ) : id( rhs.id ), temp( rhs.temp ), obj( rhs.obj ), file( rhs.file ), mode( rhs.mode )
@@ -127,9 +127,9 @@ private:
   StatusCode readHist( const std::string& name, TH3*& ) const;
   StatusCode readTree( const std::string& name, TTree*& ) const;
 
-  void updateFiles();
-  StatusCode write();
-  StatusCode connect( const std::string& );
+  void        updateFiles();
+  StatusCode  write();
+  StatusCode  connect( const std::string& );
   TDirectory* changeDir( const THistSvc::THistID& hid ) const;
   std::string dirname( std::string& dir ) const;
   void removeDoubleSlash( std::string& ) const;
@@ -151,12 +151,12 @@ private:
 
   void MergeRootFile( TDirectory* target, TDirectory* source );
 
-  Gaudi::Property<int> m_autoSave{this, "AutoSave", 0};
-  Gaudi::Property<int> m_autoFlush{this, "AutoFlush", 0};
+  Gaudi::Property<int>  m_autoSave{this, "AutoSave", 0};
+  Gaudi::Property<int>  m_autoFlush{this, "AutoFlush", 0};
   Gaudi::Property<bool> m_print{this, "PrintAll", false};
-  Gaudi::Property<int> m_maxFileSize{this, "MaxFileSize", 10240,
+  Gaudi::Property<int>  m_maxFileSize{this, "MaxFileSize", 10240,
                                      "maximum file size in MB. if exceeded, will cause an abort. -1 to never check."};
-  Gaudi::Property<int> m_compressionLevel{this, "CompressionLevel", 1};
+  Gaudi::Property<int>                      m_compressionLevel{this, "CompressionLevel", 1};
   Gaudi::Property<std::vector<std::string>> m_outputfile{this, "Output", {}};
   Gaudi::Property<std::vector<std::string>> m_inputfile{this, "Input", {}};
 
@@ -170,13 +170,13 @@ private:
   /// registered by the setupOutputFile callback method
   std::set<std::string> m_alreadyConnectedOutFiles;
 
-  typedef std::map<std::string, THistID> uidMap;
-  typedef std::multimap<std::string, THistID> idMap;
-  typedef std::map<TObject*, THistID> objMap;
+  typedef std::map<std::string, THistID>          uidMap;
+  typedef std::multimap<std::string, THistID>     idMap;
+  typedef std::map<TObject*, THistID>             objMap;
   typedef std::multimap<std::string, std::string> streamMap;
 
   uidMap m_uids;
-  idMap m_ids;
+  idMap  m_ids;
   objMap m_tobjs;
 
   std::map<std::string, std::pair<TFile*, Mode>> m_files; // stream->file
@@ -189,8 +189,8 @@ private:
 
   mutable std::string m_curstream;
 
-  IIncidentSvc* p_incSvc = nullptr;
-  IFileMgr* p_fileMgr    = nullptr;
+  IIncidentSvc* p_incSvc  = nullptr;
+  IFileMgr*     p_fileMgr = nullptr;
 
   StatusCode rootOpenAction( FILEMGR_CALLBACK_ARGS );
   StatusCode rootOpenErrAction( FILEMGR_CALLBACK_ARGS );

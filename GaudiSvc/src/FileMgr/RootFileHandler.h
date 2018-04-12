@@ -30,10 +30,10 @@ public:
 
 private:
   MsgStream m_log;
-  int m_level;
+  int       m_level;
 
   std::string m_userProxy, m_certDir;
-  bool m_ssl_setup = false;
+  bool        m_ssl_setup = false;
 };
 
 #endif

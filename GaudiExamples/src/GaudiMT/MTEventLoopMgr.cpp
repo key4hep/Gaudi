@@ -128,7 +128,7 @@ StatusCode MTEventLoopMgr::reinitialize()
   setProperty( m_appMgrProperty->getProperty( "EvtSel" ) );
   if ( m_evtsel != "NONE" || m_evtsel.empty() ) {
     IEvtSelector* theEvtSel;
-    IService* theSvc;
+    IService*     theSvc;
     sc = service( "EventSelector", theEvtSel );
     sc = service( "EventSelector", theSvc );
     if ( sc.isSuccess() && ( theEvtSel != m_evtSelector ) ) {
@@ -183,7 +183,7 @@ StatusCode MTEventLoopMgr::finalize()
         IDataSelector::iterator i;
         for ( i = objects->begin(); i != objects->end(); i++ ) {
           IOpaqueAddress* pAddr = nullptr;
-          StatusCode iret       = m_histoPersSvc->createRep( *i, pAddr );
+          StatusCode      iret  = m_histoPersSvc->createRep( *i, pAddr );
           if ( iret.isSuccess() ) {
             ( *i )->registry()->setAddress( pAddr );
           } else {
@@ -228,7 +228,7 @@ StatusCode MTEventLoopMgr::finalize()
 StatusCode MTEventLoopMgr::nextEvent( int maxevt )
 {
   DataObject* pObject = nullptr;
-  StatusCode sc;
+  StatusCode  sc;
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop

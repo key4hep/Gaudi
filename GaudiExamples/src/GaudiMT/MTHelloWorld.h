@@ -11,7 +11,7 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<int> m_myInt{this, "MyInt", 0};
+  Gaudi::Property<int>  m_myInt{this, "MyInt", 0};
   Gaudi::Property<bool> m_myBool
   {
     this, "MyBool", 0;

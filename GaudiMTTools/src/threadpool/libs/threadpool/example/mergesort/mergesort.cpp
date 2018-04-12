@@ -104,8 +104,8 @@ public:
 
 protected:
   boost::shared_array<T> m_data;
-  unsigned int m_position;
-  unsigned int m_length;
+  unsigned int           m_position;
+  unsigned int           m_length;
 };
 
 //

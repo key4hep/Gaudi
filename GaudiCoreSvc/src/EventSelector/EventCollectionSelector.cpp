@@ -28,12 +28,12 @@ public:
   typedef std::list<std::string> ListName;
 
 private:
-  GenericAddress* m_pAddressBuffer           = nullptr;
-  const EventCollectionSelector* m_pSelector = nullptr;
-  ListName m_files;
-  std::string m_criteria;
-  ListName::const_iterator m_fileIterator;
-  std::string m_currentInput;
+  GenericAddress*                m_pAddressBuffer = nullptr;
+  const EventCollectionSelector* m_pSelector      = nullptr;
+  ListName                       m_files;
+  std::string                    m_criteria;
+  ListName::const_iterator       m_fileIterator;
+  std::string                    m_currentInput;
 
 public:
   /// Standard constructor
@@ -42,10 +42,10 @@ public:
   ~EventCollectionContext() override;
   const std::string& currentInput() const { return m_currentInput; }
   void setCurrentInput( const std::string& v ) { m_currentInput = v; }
-  ListName& files() { return m_files; }
-  void* identifier() const override { return (void*)m_pSelector; }
+  ListName&                                files() { return m_files; }
+  void*                                    identifier() const override { return (void*)m_pSelector; }
   void setCriteria( const std::string& crit ) { m_criteria = crit; }
-  ListName::const_iterator fileIterator() { return m_fileIterator; }
+  ListName::const_iterator             fileIterator() { return m_fileIterator; }
   void setFileIterator( ListName::const_iterator new_iter ) { m_fileIterator = new_iter; }
 };
 
@@ -83,7 +83,7 @@ StatusCode EventCollectionSelector::initialize()
 // Connect collection to selector
 StatusCode EventCollectionSelector::connectDataSource( const std::string& db, const std::string& /* typ */ ) const
 {
-  StatusCode status = StatusCode::FAILURE;
+  StatusCode              status = StatusCode::FAILURE;
   SmartIF<IDataSourceMgr> svc( m_tupleSvc );
   if ( svc && !db.empty() ) {
     std::string ident = name() + ' ';
@@ -105,8 +105,8 @@ StatusCode EventCollectionSelector::connectDataSource( const std::string& db, co
 StatusCode EventCollectionSelector::connectTuple( const std::string& nam, const std::string& itName,
                                                   NTuple::Tuple*& tup, NTuple::Item<IOpaqueAddress*>*& item ) const
 {
-  std::string top   = "/NTUPLES/" + name() + '/' + nam;
-  StatusCode status = m_tupleSvc->retrieveObject( top, (DataObject*&)tup );
+  std::string top    = "/NTUPLES/" + name() + '/' + nam;
+  StatusCode  status = m_tupleSvc->retrieveObject( top, (DataObject*&)tup );
   if ( status.isSuccess() ) {
     item   = new NTuple::Item<IOpaqueAddress*>();
     status = tup->item( itName, *item );
@@ -148,7 +148,7 @@ StatusCode EventCollectionSelector::getNextRecord( NTuple::Tuple* tuple ) const
       status = m_tupleSvc->readRecord( tuple );
       if ( status.isSuccess() ) {
         ISelectStatement* statement = tuple->selector();
-        bool use_it                 = ( statement ) ? ( *statement )( tuple ) : true;
+        bool              use_it    = ( statement ) ? ( *statement )( tuple ) : true;
         if ( use_it ) {
           return status;
         }
@@ -174,7 +174,7 @@ StatusCode EventCollectionSelector::getPreviousRecord( NTuple::Tuple* tuple ) co
             status = m_tupleSvc->readRecord( tuple );
             if ( status.isSuccess() ) {
               ISelectStatement* statement = tuple->selector();
-              bool use_it                 = ( statement ) ? ( *statement )( tuple ) : true;
+              bool              use_it    = ( statement ) ? ( *statement )( tuple ) : true;
               if ( use_it ) {
                 return status;
               }
@@ -223,7 +223,7 @@ StatusCode EventCollectionSelector::createContext( Context*& refpCtxt ) const
 {
   refpCtxt = nullptr;
   std::unique_ptr<MyContextType> ctxt( new MyContextType() );
-  StatusCode status = connectCollection( ctxt.get() );
+  StatusCode                     status = connectCollection( ctxt.get() );
   if ( !status.isSuccess() ) {
     error() << "Unable to connect Collection file \"" << m_database << "\"" << endmsg;
     return status;

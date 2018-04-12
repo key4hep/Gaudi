@@ -36,23 +36,23 @@ class ObjectList : public ObjectContainerBase
 {
 
 public:
-  typedef TYPE contained_type;
+  typedef TYPE                                  contained_type;
   typedef typename std::list<TYPE*>::value_type value_type;
 
-  typedef typename std::list<TYPE*>::reference reference;
+  typedef typename std::list<TYPE*>::reference       reference;
   typedef typename std::list<TYPE*>::const_reference const_reference;
 
-  typedef typename std::list<TYPE*>::iterator iterator;
+  typedef typename std::list<TYPE*>::iterator       iterator;
   typedef typename std::list<TYPE*>::const_iterator const_iterator;
 
-  typedef typename std::list<TYPE*>::reverse_iterator reverse_iterator;
+  typedef typename std::list<TYPE*>::reverse_iterator       reverse_iterator;
   typedef typename std::list<TYPE*>::const_reverse_iterator const_reverse_iterator;
 
 #ifdef _WIN32
-  typedef typename std::vector<TYPE*>::_Tptr pointer;
+  typedef typename std::vector<TYPE*>::_Tptr  pointer;
   typedef typename std::vector<TYPE*>::_Ctptr const_pointer;
 #else
-  typedef typename std::vector<TYPE*>::pointer pointer;
+  typedef typename std::vector<TYPE*>::pointer       pointer;
   typedef typename std::vector<TYPE*>::const_pointer const_pointer;
 #endif
 
@@ -67,7 +67,7 @@ public:
   ~ObjectList() override { clear(); }
 
   /// Retrieve pointer to class definition structure
-  const CLID& clID() const override { return ObjectList<TYPE>::classID(); }
+  const CLID&        clID() const override { return ObjectList<TYPE>::classID(); }
   static const CLID& classID()
   {
     static CLID clid = TYPE::classID() + CLID_ObjectList;
@@ -186,7 +186,7 @@ public:
   }
 
   /// Insert "value" before "position"
-  typename ObjectList<TYPE>::iterator insert( typename ObjectList<TYPE>::iterator position,
+  typename ObjectList<TYPE>::iterator insert( typename ObjectList<TYPE>::iterator        position,
                                               typename ObjectList<TYPE>::const_reference value )
   {
     value->setParent( this );

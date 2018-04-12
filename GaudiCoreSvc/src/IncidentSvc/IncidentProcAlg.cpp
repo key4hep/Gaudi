@@ -8,7 +8,7 @@ DECLARE_COMPONENT( IncidentProcAlg )
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 namespace
@@ -40,8 +40,8 @@ StatusCode IncidentProcAlg::initialize()
 StatusCode IncidentProcAlg::execute()
 {
   const EventContext& context = Gaudi::Hive::currentContext();
-  auto incPack                = m_incSvc->getIncidents( &context );
-  MsgStream log( msgSvc(), name() );
+  auto                incPack = m_incSvc->getIncidents( &context );
+  MsgStream           log( msgSvc(), name() );
   log << MSG::DEBUG << " Number of Incidents to process = " << incPack.incidents.size()
       << " Context= " << Gaudi::Hive::currentContext() << endmsg;
   while ( incPack.incidents.size() ) {

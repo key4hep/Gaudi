@@ -1,6 +1,6 @@
 ###############################################################
 # Job options file
-#==============================================================
+# ==============================================================
 
 from Gaudi.Configuration import *
 from Configurables import ParentAlg,\
@@ -16,9 +16,9 @@ from Configurables import ParentAlg,\
 from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 # Testing Sequencers
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 p1 = Prescaler('Prescaler1', PercentPass=50., OutputLevel=INFO)
 p2 = Prescaler('Prescaler2', PercentPass=10., OutputLevel=INFO)
 h = HelloWorld(OutputLevel=INFO)
@@ -28,9 +28,9 @@ s1 = Sequencer('Sequence1', Members=[p1, h, c1])
 s2 = Sequencer('Sequence2', Members=[p2, h, c2])
 top = Sequencer('TopSequence', Members=[s1, s2], StopOverride=True)
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 # Testing the new GaudiSequencer
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 sand = GaudiSequencer('ANDSequence',
                       Members=[HelloWorld('ANDHelloWorld'),
                                EventCounter('ANDCounter')],
@@ -41,19 +41,19 @@ sor = GaudiSequencer('ORSequence',
                      MeasureTime=1,
                      ModeOR=1)
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 
 topAlgList = [ParentAlg(), StopperAlg(StopCount=20), top, sand, sor]
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 # Resource Pool
 AlgResourcePool(OutputLevel=INFO)
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 # Event Loop Manager
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 # Scheduler
 # configured to be sequential: 1 evt in flight, no deps, 1 algo in flight
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight=1,
@@ -61,12 +61,12 @@ scheduler = ForwardSchedulerSvc(MaxEventsInFlight=1,
                                 OutputLevel=WARNING,
                                 AlgosDependencies=[])
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 # WhiteBoard
 whiteboard = HiveWhiteBoard("EventDataSvc",
                             EventSlots=1)
 
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 
 ApplicationMgr(TopAlg=topAlgList,
                EvtMax=1,

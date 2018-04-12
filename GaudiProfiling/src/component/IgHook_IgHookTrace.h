@@ -21,7 +21,7 @@ public:
   void* allocate( size_t bytes );
 
 private:
-  void* m_pool;
+  void*  m_pool;
   size_t m_left;
 };
 
@@ -44,8 +44,8 @@ public:
     // implicit assignment operator
     // implicit destructor
 
-    Counter* counter( void );
-    CounterValue* next( void );
+    Counter*           counter( void );
+    CounterValue*      next( void );
     unsigned long long count( void );
 
     unsigned long long value( void );
@@ -59,8 +59,8 @@ public:
     unsigned long long max( CounterValue& x );
 
   private:
-    Counter* m_counter;
-    CounterValue* m_next;
+    Counter*           m_counter;
+    CounterValue*      m_next;
     unsigned long long m_value;
     unsigned long long m_count;
   };
@@ -91,11 +91,11 @@ public:
 
 private:
   IgHookTraceAlloc* m_alloc;
-  IgHookTrace* m_parent;
-  IgHookTrace* m_next;
-  IgHookTrace* m_children;
-  void* m_address;
-  CounterValue* m_counters;
+  IgHookTrace*      m_parent;
+  IgHookTrace*      m_next;
+  IgHookTrace*      m_children;
+  void*             m_address;
+  CounterValue*     m_counters;
 };
 
 //<<<<<< INLINE PUBLIC FUNCTIONS                                        >>>>>>

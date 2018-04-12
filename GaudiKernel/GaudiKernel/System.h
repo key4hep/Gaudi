@@ -131,7 +131,7 @@ namespace System
   inline DESTPTR FuncPtrCast( SRCPTR ptr )
   {
     union {
-      SRCPTR src;
+      SRCPTR  src;
       DESTPTR dst;
     } p2p;
     p2p.src = ptr;

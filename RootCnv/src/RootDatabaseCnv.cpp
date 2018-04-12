@@ -32,20 +32,20 @@ StatusCode RootDatabaseCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpO
 {
   StatusCode status = StatusCode::FAILURE;
   if ( pAddr ) {
-    RootDataConnection* con    = nullptr;
-    IRegistry* pReg            = pAddr->registry();
-    const unsigned long* ipars = pAddr->ipar();
-    const string* spars        = pAddr->par();
-    char mode                  = char( ipars[1] );
-    string fname               = spars[0];
-    string oname               = pReg->name();
-    bool recrea                = mode == 'R';
-    bool create                = mode == 'N';
-    bool update                = mode == 'U';
-    bool read                  = mode == 'O';
-    const CLID& clid           = objType();
-    status                     = StatusCode::SUCCESS;
-    string cntName             = containerName( pReg );
+    RootDataConnection*  con    = nullptr;
+    IRegistry*           pReg   = pAddr->registry();
+    const unsigned long* ipars  = pAddr->ipar();
+    const string*        spars  = pAddr->par();
+    char                 mode   = char( ipars[1] );
+    string               fname  = spars[0];
+    string               oname  = pReg->name();
+    bool                 recrea = mode == 'R';
+    bool                 create = mode == 'N';
+    bool                 update = mode == 'U';
+    bool                 read   = mode == 'O';
+    const CLID&          clid   = objType();
+    status                      = StatusCode::SUCCESS;
+    string cntName              = containerName( pReg );
     if ( create ) {
       m_dbMgr->connectDatabase( fname, IDataConnection::CREATE, &con ).ignore();
       status = saveDescription( fname, cntName, "File containing statistics results.", "", clid );

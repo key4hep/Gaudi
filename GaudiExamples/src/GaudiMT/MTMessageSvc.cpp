@@ -54,7 +54,7 @@ StatusCode MTMessageSvc::finalize() { return StatusCode::SUCCESS; }
 
 void MTMessageSvc::reportMessage( const Message& msg )
 {
-  int key                         = msg.getType();
+  int                       key   = msg.getType();
   StreamMap::const_iterator first = m_streamMap.lower_bound( key );
   if ( first != m_streamMap.end() ) {
     StreamMap::const_iterator last = m_streamMap.upper_bound( key );

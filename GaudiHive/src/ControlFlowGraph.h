@@ -51,7 +51,7 @@ namespace concurrency
       /// Translation between state id and name
       std::string stateToString( const int& stateId ) const;
       unsigned int m_nodeIndex;
-      std::string m_nodeName;
+      std::string  m_nodeName;
     };
 
     class DecisionNode : public ControlFlowNode
@@ -135,7 +135,7 @@ namespace concurrency
     };
 
     typedef std::unordered_map<std::string, AlgorithmNode*> AlgoNodesMap;
-    typedef std::unordered_map<std::string, DecisionNode*> DecisionHubsMap;
+    typedef std::unordered_map<std::string, DecisionNode*>  DecisionHubsMap;
 
     struct IControlFlowGraph {
       virtual ~IControlFlowGraph() = default;
@@ -200,7 +200,7 @@ namespace concurrency
       unsigned int m_algoCounter{0};
       /// Service locator (needed to access the MessageSvc)
       mutable SmartIF<ISvcLocator> m_svcLocator;
-      const std::string m_name;
+      const std::string            m_name;
     };
 
   } // namespace recursive_CF

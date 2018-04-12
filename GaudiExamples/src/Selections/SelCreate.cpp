@@ -86,8 +86,8 @@ namespace Gaudi
        *  @param name the algorithm instance name
        *  @param pSvc pointer to Service Locator
        */
-      SelCreate( const std::string& name, //    the algorithm instance name
-                 ISvcLocator* pSvc )      // pointer to the Service Locator
+      SelCreate( const std::string& name,  //    the algorithm instance name
+                 ISvcLocator*       pSvc ) // pointer to the Service Locator
           : GaudiAlgorithm( name, pSvc )
       {
       }

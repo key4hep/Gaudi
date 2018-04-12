@@ -30,9 +30,9 @@ class EventIDBase
 {
 public:
   typedef unsigned int number_type;
-  typedef uint64_t event_number_t;
+  typedef uint64_t     event_number_t;
 
-  static const number_type UNDEFNUM;
+  static const number_type    UNDEFNUM;
   static const event_number_t UNDEFEVT;
 
 public:

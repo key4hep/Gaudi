@@ -252,7 +252,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
 void Message::decodeFormat( const std::string& format ) const
 {
   if ( !format.empty() ) {
-    const char FORMAT_TYPE         = format[format.length() - 1];
+    const char        FORMAT_TYPE  = format[format.length() - 1];
     const std::string FORMAT_PARAM = format.substr( 0, format.length() - 1 );
 
     // Now test the format.

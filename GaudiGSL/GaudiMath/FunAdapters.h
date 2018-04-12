@@ -125,7 +125,7 @@ namespace Genfun
       AdapterIFunction& operator=( const AdapterIFunction& ) = delete;
 
     private:
-      const AIDA::IFunction* m_fun;
+      const AIDA::IFunction*      m_fun;
       mutable std::vector<double> m_arg;
     };
     /// mandatory macro from CLHEP/GenericFunctions

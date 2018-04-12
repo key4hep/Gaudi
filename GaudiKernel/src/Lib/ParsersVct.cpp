@@ -11,7 +11,7 @@ namespace
   // ==========================================================================
   typedef std::map<std::string, double> MAP;
 
-  template <unsigned int N>
+  template <unsigned int     N>
   inline MAP::const_iterator find( const MAP& m, const std::string ( &keys )[N] )
   {
     for ( unsigned int i = 0; i < N; ++i ) {
@@ -62,7 +62,7 @@ namespace Gaudi
     {
 
       Gaudi::XYZPoint point;
-      StatusCode sc = parse( point, input );
+      StatusCode      sc = parse( point, input );
       if ( sc.isFailure() ) {
         return sc;
       } // RETURN

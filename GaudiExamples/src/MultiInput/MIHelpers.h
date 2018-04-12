@@ -21,9 +21,9 @@ namespace Gaudi
       typedef std::tuple<long, CLID, std::string, std::string, unsigned long, unsigned long> RootAddressArgs;
       inline std::istream& operator>>( std::istream& i, RootAddressArgs& addr )
       {
-        long s{0};
-        CLID c{0};
-        std::string p1, p2;
+        long          s{0};
+        CLID          c{0};
+        std::string   p1, p2;
         unsigned long ip1{0}, ip2{0};
         i >> s >> c >> p1 >> p2 >> ip1 >> ip2;
         addr = RootAddressArgs{s, c, p1, p2, ip1, ip2};
@@ -31,9 +31,9 @@ namespace Gaudi
       }
       inline Gaudi::RootAddress* make_address( RootAddressArgs args )
       {
-        long s{0};
-        CLID c{0};
-        std::string p1, p2;
+        long          s{0};
+        CLID          c{0};
+        std::string   p1, p2;
         unsigned long ip1{0}, ip2{0};
         std::tie( s, c, p1, p2, ip1, ip2 ) = args;
         return new Gaudi::RootAddress( s, c, p1, p2, ip1, ip2 );

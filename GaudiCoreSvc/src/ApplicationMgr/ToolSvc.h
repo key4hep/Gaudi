@@ -101,7 +101,7 @@ private: // data
   std::vector<IToolSvc::Observer*> m_observers;
 
   typedef std::recursive_mutex CallMutex;
-  mutable CallMutex m_mut;
+  mutable CallMutex            m_mut;
 };
 
 #endif

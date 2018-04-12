@@ -37,11 +37,11 @@ private: // data
 
   std::vector<std::string> m_environ;
 
-  PropertyList m_props;
+  PropertyList     m_props;
   PropertyPairList m_ppl;
 
   std::vector<std::string> m_CVSid;
-  time_t m_start_time;
+  time_t                   m_start_time;
 
 public: // functions
   // Constructor.
@@ -53,24 +53,24 @@ public: // functions
   virtual ~JobHistory();
 
   // Class IDs
-  const CLID& clID() const override { return classID(); }
+  const CLID&        clID() const override { return classID(); }
   static const CLID& classID();
 
   // add a global property
   void addProperty( const std::string&, const Gaudi::Details::PropertyBase* );
 
   // Return the job history data.
-  std::string release_version() const { return m_release_version; }
-  std::string os() const { return m_osname; }
-  std::string hostname() const { return m_hostname; }
-  std::string os_version() const { return m_os_version; }
-  std::string machine() const { return m_machine; }
-  std::string dir() const { return m_dir; }
-  std::string cmtconfig() const { return m_cmtconfig; }
+  std::string              release_version() const { return m_release_version; }
+  std::string              os() const { return m_osname; }
+  std::string              hostname() const { return m_hostname; }
+  std::string              os_version() const { return m_os_version; }
+  std::string              machine() const { return m_machine; }
+  std::string              dir() const { return m_dir; }
+  std::string              cmtconfig() const { return m_cmtconfig; }
   std::vector<std::string> environment() const { return m_environ; }
-  const PropertyList& properties() const override { return m_props; }
-  const PropertyPairList& propertyPairs() const { return m_ppl; }
-  time_t start_time() const { return m_start_time; }
+  const PropertyList&      properties() const override { return m_props; }
+  const PropertyPairList&  propertyPairs() const { return m_ppl; }
+  time_t                   start_time() const { return m_start_time; }
 
   void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
 

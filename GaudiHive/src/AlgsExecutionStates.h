@@ -72,7 +72,7 @@ public:
   }
 
 private:
-  std::vector<State> m_states;
+  std::vector<State>   m_states;
   SmartIF<IMessageSvc> m_MS;
 
 public:
@@ -118,8 +118,8 @@ public:
 
   private:
     std::vector<State>::const_iterator pos_;
-    State s_;
-    const std::vector<State>* v_;
+    State                              s_;
+    const std::vector<State>*          v_;
   };
 
   Iterator begin( State kind ) { return ( Iterator( Iterator::POS::BEGIN, kind, m_states ) ); }

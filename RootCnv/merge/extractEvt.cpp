@@ -18,7 +18,7 @@ int main( int argc, char** argv )
 {
   string input;
   string output;
-  int evt_num = -1;
+  int    evt_num = -1;
   for ( int i = 1; i < argc; ++i ) {
     if ( *argv[i] == '-' ) {
       switch (::toupper( *( argv[i] + 1 ) ) ) {

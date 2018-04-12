@@ -26,7 +26,7 @@ public:
   DeclareInterfaceID( IPartPropSvc, 2, 0 );
 
   virtual HepPDT::ParticleDataTable* PDT() = 0;
-  virtual void setUnknownParticleHandler( HepPDT::ProcessUnknownID*, const std::string& ) = 0;
+  virtual void                       setUnknownParticleHandler( HepPDT::ProcessUnknownID*, const std::string& ) = 0;
 };
 
 #endif

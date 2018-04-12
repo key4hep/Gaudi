@@ -168,8 +168,8 @@ private:
   static const char EVTNUM = 'e';
   static const char THREAD = 'X';
 
-  size_t m_ecSlot;
-  long int m_ecEvt;
+  size_t    m_ecSlot;
+  long int  m_ecEvt;
   pthread_t m_ecThrd;
 };
 

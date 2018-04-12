@@ -24,8 +24,8 @@ namespace
   class populate_JobOptionsSvc_t
   {
     std::vector<std::unique_ptr<Gaudi::Details::PropertyBase>> m_props;
-    IJobOptionsSvc* m_jos;
-    std::string m_name;
+    IJobOptionsSvc*                                            m_jos;
+    std::string                                                m_name;
 
     template <typename T>
     void process( T&& t )
@@ -258,11 +258,11 @@ StatusCode GaudiSequencer::decodeNames()
   auto appMgr = service<IAlgManager>( "ApplicationMgr" );
   for ( const auto& item : m_names.value() ) {
     const Gaudi::Utils::TypeNameString typeName( item );
-    const std::string& theName = typeName.name();
-    const std::string& theType = typeName.type();
+    const std::string&                 theName = typeName.name();
+    const std::string&                 theType = typeName.type();
 
     //== Check wether the specified algorithm already exists. If not, create it
-    StatusCode result          = StatusCode::SUCCESS;
+    StatusCode          result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm( typeName, false ); // do not create it now
     if ( !myIAlg ) {
       // ensure some magic properties are set while we create the subalgorithm so
@@ -324,7 +324,7 @@ StatusCode GaudiSequencer::decodeNames()
   if ( m_modeOR ) msg << "OR ";
   msg << "Member list: ";
   ostream_joiner( msg, m_entries, ", ", []( const AlgorithmEntry& e ) {
-    Algorithm* alg  = e.algorithm();
+    Algorithm*  alg = e.algorithm();
     std::string typ = System::typeinfoName( typeid( *alg ) );
     return ( alg->name() == typ ) ? alg->name() : ( typ + "/" + alg->name() );
   } );
@@ -378,10 +378,10 @@ std::ostream& GaudiSequencer::toControlFlowExpression( std::ostream& os ) const
   // if we have only one element, we do not need a name
   if ( m_entries.size() > 1 ) os << "seq(";
 
-  const auto op    = m_modeOR ? " | " : " & ";
-  const auto first = begin( m_entries );
-  const auto last  = end( m_entries );
-  auto iterator    = first;
+  const auto op       = m_modeOR ? " | " : " & ";
+  const auto first    = begin( m_entries );
+  const auto last     = end( m_entries );
+  auto       iterator = first;
   while ( iterator != last ) {
     if ( iterator != first ) os << op;
     if ( iterator->reverse() ) os << "~";

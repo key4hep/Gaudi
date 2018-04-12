@@ -33,7 +33,7 @@ public:
 
   StatusCode removeProperty( const std::string& client, const std::string& name );
   const PropertiesT* getProperties( const std::string& client ) const;
-  std::vector<std::string> getClients() const;
+  std::vector<std::string>            getClients() const;
   const Gaudi::Details::PropertyBase* getProperty( const std::string& client, const std::string& name ) const;
 
 public:

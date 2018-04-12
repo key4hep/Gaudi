@@ -41,9 +41,9 @@ public:
 
   virtual bool match( BaseObjectMemberFunction* ) const = 0;
 
-  virtual DataObject* castToDataObject() const           = 0;
+  virtual DataObject*      castToDataObject() const      = 0;
   virtual ValidDataObject* castToValidDataObject() const = 0;
-  virtual void* castToVoid() const                       = 0;
+  virtual void*            castToVoid() const            = 0;
 };
 
 /** @class ObjectMemberFunction
@@ -155,7 +155,7 @@ private:
     using dest_type = ActualType;
     PtrSetter( dest_type*& dest ) : m_storage( &dest ) { *m_storage = nullptr; }
     void set( DataObject* obj ) override { *m_storage = dynamic_cast<dest_type*>( obj ); }
-    bool isNull() override { return *m_storage == nullptr; }
+    bool                  isNull() override { return *m_storage == nullptr; }
 
   private:
     /// pointer to the pointer to fill provided by the user.
@@ -188,7 +188,7 @@ public:
   template <class CallerClass, class CondType>
   inline void registerCondition( CallerClass* instance, const std::string& condition,
                                  typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf,
-                                 CondType*& condPtrDest )
+                                 CondType*&                                                     condPtrDest )
   {
     i_registerCondition( condition, new ObjectMemberFunction<CallerClass>( instance, mf ),
                          new PtrSetter<CondType>( condPtrDest ) );

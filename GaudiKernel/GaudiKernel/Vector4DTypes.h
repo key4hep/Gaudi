@@ -27,10 +27,10 @@ namespace Gaudi
 
   // NB : Please remember to give a simple doxygen comment for each typedef
 
-  typedef ROOT::Math::PxPyPzEVector XYZTVector;        ///< Cartesian 4 Vector
-  typedef ROOT::Math::PxPyPzEVector LorentzVector;     ///< Cartesian 4 Vector
-  typedef ROOT::Math::XYZTVectorF XYZTVectorF;         ///< Cartesian 4 Vector (float)
-  typedef ROOT::Math::XYZTVectorF LorentzVectorF;      ///< Cartesian 4 Vector (float)
+  typedef ROOT::Math::PxPyPzEVector   XYZTVector;      ///< Cartesian 4 Vector
+  typedef ROOT::Math::PxPyPzEVector   LorentzVector;   ///< Cartesian 4 Vector
+  typedef ROOT::Math::XYZTVectorF     XYZTVectorF;     ///< Cartesian 4 Vector (float)
+  typedef ROOT::Math::XYZTVectorF     LorentzVectorF;  ///< Cartesian 4 Vector (float)
   typedef ROOT::Math::PtEtaPhiEVector PtEtaPhiEVector; ///< Polar 4 Vector
 }
 #endif // EVENT_VECTOR4DTYPES_H

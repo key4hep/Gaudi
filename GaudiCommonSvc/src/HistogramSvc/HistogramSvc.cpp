@@ -63,7 +63,7 @@ namespace
   {
     for ( auto it = m.begin(); m.end() != it; ++it ) {
       if ( 0 == it->first.find( lead ) ) {
-        string addr            = string( it->first, lead.size() );
+        string            addr = string( it->first, lead.size() );
         Gaudi::Histo1DDef hdef = it->second;
         m.erase( it );                       // remove
         m[addr] = hdef;                      // insert
@@ -170,11 +170,11 @@ DataObject* HistogramSvc::createPath( const string& newPath )
     tmpPath.erase( tmpPath.rfind( SEPARATOR ), 1 );
   }
   DataObject* pObject = nullptr;
-  StatusCode sc       = DataSvc::findObject( tmpPath, pObject );
+  StatusCode  sc      = DataSvc::findObject( tmpPath, pObject );
   if ( sc.isSuccess() ) {
     return pObject;
   }
-  int sep = tmpPath.rfind( SEPARATOR );
+  int    sep = tmpPath.rfind( SEPARATOR );
   string rest( tmpPath, sep + 1, tmpPath.length() - sep );
   string subPath( tmpPath, 0, sep );
   if ( 0 != sep ) {
@@ -193,7 +193,7 @@ DataObject* HistogramSvc::createDirectory( const string& parentDir, const string
   std::unique_ptr<DataObject> directory{new DataObject()};
   if ( directory ) {
     DataObject* pnode;
-    StatusCode status = DataSvc::retrieveObject( parentDir, pnode );
+    StatusCode  status = DataSvc::retrieveObject( parentDir, pnode );
     if ( status.isSuccess() ) {
       status = DataSvc::registerObject( pnode, subDir, directory.get() );
       if ( !status.isSuccess() ) {
@@ -218,13 +218,13 @@ HistogramSvc::~HistogramSvc()
 //------------------------------------------------------------------------------
 StatusCode HistogramSvc::connectInput( const string& ident )
 {
-  using Parser      = Gaudi::Utils::AttribStringParser;
-  DataObject* pO    = nullptr;
-  StatusCode status = this->findObject( m_rootName, pO );
+  using Parser       = Gaudi::Utils::AttribStringParser;
+  DataObject* pO     = nullptr;
+  StatusCode  status = this->findObject( m_rootName, pO );
   if ( status.isSuccess() ) {
     string::size_type loc = ident.find( " " );
-    string filename, auth, svc = "", typ = "";
-    string logname = ident.substr( 0, loc );
+    string            filename, auth, svc = "", typ = "";
+    string            logname = ident.substr( 0, loc );
     for ( auto attrib : Parser( ident.substr( loc + 1 ) ) ) {
       switch (::toupper( attrib.tag[0] ) ) {
       case 'F': // FILE='<file name>'
@@ -360,8 +360,8 @@ AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const string& rel, con
   if ( m_defs1D.empty() ) {
     return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) );
   }
-  string hn   = histoAddr( pPar, rel );
-  auto ifound = m_defs1D.find( hn );
+  string hn     = histoAddr( pPar, rel );
+  auto   ifound = m_defs1D.find( hn );
   if ( m_defs1D.end() == ifound ) {
     return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) );
   }

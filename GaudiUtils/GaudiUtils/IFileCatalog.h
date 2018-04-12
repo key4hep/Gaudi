@@ -35,8 +35,8 @@ namespace Gaudi
 
     /// Public type definitions
     typedef std::pair<std::string, std::string> NamedItem;
-    typedef std::vector<NamedItem> Attributes;
-    typedef std::vector<NamedItem> Files;
+    typedef std::vector<NamedItem>   Attributes;
+    typedef std::vector<NamedItem>   Files;
     typedef std::vector<std::string> Strings;
 
     /** Catalog interface                                               */

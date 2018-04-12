@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( string_conversion )
     BOOST_CHECK( p3.toString() == "True" );
   }
   {
-    Gaudi::Property<int> dst{0};
+    Gaudi::Property<int>         dst{0};
     Gaudi::Property<std::string> src{"321"};
     BOOST_CHECK( dst.value() == 0 );
     BOOST_CHECK( dst.assign( src ) );
@@ -124,8 +124,8 @@ BOOST_AUTO_TEST_CASE( string_conversion )
   }
   {
     // string property as from options
-    Gaudi::Property<std::string> opt{"\"NONE\""};
-    std::string dst;
+    Gaudi::Property<std::string>  opt{"\"NONE\""};
+    std::string                   dst;
     Gaudi::Property<std::string&> p{"test", dst};
     BOOST_CHECK( opt.load( p ) );
     BOOST_CHECK( p.value() == "NONE" );
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE( copy_constructor )
     BOOST_CHECK( dest.ownerTypeName() == "unknown owner type" );
   }
   {
-    std::string data{"value"};
+    std::string                   data{"value"};
     Gaudi::Property<std::string&> orig{"name", data, "doc"};
     Gaudi::Property<std::string&> dest( orig );
     BOOST_CHECK( dest.name() == "name" );

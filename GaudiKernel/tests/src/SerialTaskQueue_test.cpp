@@ -76,7 +76,7 @@ namespace GaudiKernelTest
 
     private:
       std::vector<int>& m_results;
-      int m_value;
+      int               m_value;
     };
 
     class Enqueuer
@@ -87,8 +87,8 @@ namespace GaudiKernelTest
 
     private:
       Gaudi::SerialTaskQueue& queue;
-      std::vector<int>& results;
-      int n;
+      std::vector<int>&       results;
+      int                     n;
     };
 
     SerialTaskQueueTest() {}

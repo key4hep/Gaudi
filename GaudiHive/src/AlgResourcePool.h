@@ -59,17 +59,17 @@ public:
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
-  typedef std::list<SmartIF<IAlgorithm>> ListAlg;
-  typedef boost::dynamic_bitset<> state_type;
+  typedef std::list<SmartIF<IAlgorithm>>             ListAlg;
+  typedef boost::dynamic_bitset<>                    state_type;
 
   std::mutex m_resource_mutex;
 
   state_type m_available_resources{0};
   std::map<size_t, concurrentQueueIAlgPtr*> m_algqueue_map;
-  std::map<size_t, state_type> m_resource_requirements;
-  std::map<size_t, size_t> m_n_of_allowed_instances;
-  std::map<size_t, unsigned int> m_n_of_created_instances;
-  std::map<std::string, unsigned int> m_resource_indices;
+  std::map<size_t, state_type>              m_resource_requirements;
+  std::map<size_t, size_t>                  m_n_of_allowed_instances;
+  std::map<size_t, unsigned int>            m_n_of_created_instances;
+  std::map<std::string, unsigned int>       m_resource_indices;
 
   /// Decode the top alg list
   StatusCode decodeTopAlgs();
@@ -78,7 +78,7 @@ private:
   StatusCode flattenSequencer( Algorithm* sequencer, ListAlg& alglist, const std::string& parentName,
                                unsigned int recursionDepth = 0 );
 
-  Gaudi::Property<bool> m_lazyCreation{this, "CreateLazily", false, ""};
+  Gaudi::Property<bool>                     m_lazyCreation{this, "CreateLazily", false, ""};
   Gaudi::Property<std::vector<std::string>> m_topAlgNames{
       this, "TopAlg", {}, "names of the algorithms to be passed to the algorithm manager"};
   Gaudi::Property<bool> m_overrideUnClonable{this, "OverrideUnClonable", false,

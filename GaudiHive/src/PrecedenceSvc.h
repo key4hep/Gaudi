@@ -53,8 +53,8 @@ public:
   bool isBlocking( const std::string& name ) const override { return m_PRGraph.getAlgorithmNode( name )->isIOBound(); }
 
   /// Dump precedence rules
-  void dumpControlFlow() const override;
-  void dumpDataFlow() const override;
+  void              dumpControlFlow() const override;
+  void              dumpDataFlow() const override;
   const std::string printState( EventSlot& ) const override;
 
   /// Dump precedence rules (available only in DEBUG mode, and must be enabled

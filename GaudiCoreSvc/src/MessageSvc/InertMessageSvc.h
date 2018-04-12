@@ -55,7 +55,7 @@ private:
 
   typedef std::function<void()> messageAction;
   /// This is done since the copy of the lambda storage is too expensive
-  typedef std::shared_ptr<messageAction> messageActionPtr;
+  typedef std::shared_ptr<messageAction>          messageActionPtr;
   tbb::concurrent_bounded_queue<messageActionPtr> m_messageActionsQueue;
 
   std::thread m_thread;

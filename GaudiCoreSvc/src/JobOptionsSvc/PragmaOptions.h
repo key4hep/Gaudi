@@ -44,9 +44,9 @@ namespace Gaudi
       bool HasDumpFile() { return !m_dump_file.empty(); }
 
     private:
-      bool m_is_print         = true;
-      bool m_is_print_options = false;
-      bool m_is_print_tree    = false;
+      bool        m_is_print         = true;
+      bool        m_is_print_options = false;
+      bool        m_is_print_tree    = false;
       std::string m_dump_file;
     };
     // ===========================================================================

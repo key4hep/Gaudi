@@ -107,7 +107,7 @@ StatusCode CounterAlg::execute()
 
   // print the statistics every 1000 events
   const StatEntity& executed = counter( "executed" );
-  const int print            = (int)executed.flag();
+  const int         print    = (int)executed.flag();
   if ( 0 == print % 1000 ) {
     info() << " Event number " << print << endmsg;
     printStat();

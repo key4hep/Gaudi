@@ -60,7 +60,7 @@ std::map<std::string, std::string> MetaDataSvc::getMetaDataMap() { return m_meta
 StatusCode MetaDataSvc::collectData()
 {
   std::string temp;
-  bool first{false};
+  bool        first{false};
 
   auto appMgr = service<IProperty>( "ApplicationMgr" );
   if ( appMgr.isValid() ) {
@@ -121,9 +121,9 @@ StatusCode MetaDataSvc::collectData()
    * ALGORITHMS
    * */
   SmartIF<IAlgManager> algMan( serviceLocator() );
-  auto allAlgs = algMan->getAlgorithms();
-  temp         = "";
-  first        = true;
+  auto                 allAlgs = algMan->getAlgorithms();
+  temp                         = "";
+  first                        = true;
   for ( auto alg : allAlgs ) {
     if ( !first )
       temp += ", ";

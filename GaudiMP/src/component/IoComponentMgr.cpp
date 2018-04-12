@@ -21,7 +21,7 @@
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 DECLARE_COMPONENT( IoComponentMgr )
@@ -91,8 +91,8 @@ bool IoComponentMgr::io_hasitem( IIoComponent* iocomponent ) const
   if ( 0 == iocomponent ) {
     return false;
   }
-  const std::string& ioname       = iocomponent->name();
-  IoRegistry_t::const_iterator io = m_ioregistry.find( ioname );
+  const std::string&           ioname = iocomponent->name();
+  IoRegistry_t::const_iterator io     = m_ioregistry.find( ioname );
   return io != m_ioregistry.end();
 }
 
@@ -205,8 +205,8 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
 
   // We need to take into account that boost::filesystem::absolute() does not
   // work for files read from eos, i.e. starting with "root:"
-  std::string tmp_name = pfn.empty() ? fname : pfn;
-  bool from_eos        = tmp_name.find( "root:" ) == 0;
+  std::string      tmp_name = pfn.empty() ? fname : pfn;
+  bool             from_eos = tmp_name.find( "root:" ) == 0;
   IoComponentEntry ioc( fname, ( from_eos ? tmp_name : boost::filesystem::absolute( tmp_name ).string() ), iomode );
   m_cdict.insert( pair<IIoComponent*, IoComponentEntry>( iocomponent, ioc ) );
 
@@ -224,7 +224,7 @@ StatusCode IoComponentMgr::io_retrieve( IIoComponent* iocomponent, std::string& 
     return StatusCode::FAILURE;
   }
 
-  std::string ofname        = fname;
+  std::string        ofname = fname;
   const std::string& ioname = iocomponent->name();
 
   DEBMSG << "--> io_retrieve(" << ioname << "," << fname << ")" << endmsg;
@@ -465,7 +465,7 @@ void IoComponentMgr::handle( const Incident& i )
     if ( findComp( fi->source(), pit ) ) {
       DEBMSG << "  found component: " << endmsg;
       while ( pit.first != pit.second ) {
-        IIoComponent* c    = pit.first->first;
+        IIoComponent*    c = pit.first->first;
         IoComponentEntry e = pit.first->second;
         DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
 
@@ -484,7 +484,7 @@ void IoComponentMgr::handle( const Incident& i )
     if ( findComp( fi->source(), pit ) ) {
       DEBMSG << "  found component: " << endmsg;
       while ( pit.first != pit.second ) {
-        IIoComponent* c    = pit.first->first;
+        IIoComponent*    c = pit.first->first;
         IoComponentEntry e = pit.first->second;
         DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
 

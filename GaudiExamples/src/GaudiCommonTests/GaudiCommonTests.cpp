@@ -83,10 +83,10 @@ StatusCode GaudiCommonTests::execute()
     MyTrackVector* Tracks2 = get<MyTrackVector>( loc2, IgnoreRootInTES );
     MyTrackVector* Tracks3 = get<MyTrackVector>( loc3, UseRootInTES );
     MyTrackVector* Tracks4 = get<MyTrackVector>( loc4, IgnoreRootInTES );
-    DataObject* Root1      = get<DataObject>( loc5, UseRootInTES );
-    DataObject* Root2      = get<DataObject>( loc5, IgnoreRootInTES );
-    DataObject* Root3      = get<DataObject>( loc6, UseRootInTES );
-    DataObject* Root4      = get<DataObject>( loc6, IgnoreRootInTES );
+    DataObject*    Root1   = get<DataObject>( loc5, UseRootInTES );
+    DataObject*    Root2   = get<DataObject>( loc5, IgnoreRootInTES );
+    DataObject*    Root3   = get<DataObject>( loc6, UseRootInTES );
+    DataObject*    Root4   = get<DataObject>( loc6, IgnoreRootInTES );
     // should never happen ... Errors should be caught above
     if ( !Tracks1 || !Tracks2 || !Tracks3 || !Tracks4 || !Root1 || !Root2 || !Root3 || !Root4 )
       return Error( "Problem getting data" );

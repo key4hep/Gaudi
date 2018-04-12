@@ -34,8 +34,8 @@ namespace Gaudi
       /** Standard constructor
        *
        */
-      ArrayProperties( const std::string& name, // algorithm instance name
-                       ISvcLocator* pSvc )      //         service locator
+      ArrayProperties( const std::string& name,  // algorithm instance name
+                       ISvcLocator*       pSvc ) //         service locator
           : GaudiAlgorithm( name, pSvc )
       {
         //

@@ -23,17 +23,17 @@ namespace GaudiMath
 {
   typedef Genfun::AbsFunction Function;
 
-  typedef Genfun::GaudiMathImplementation::Constant Constant;
-  typedef Genfun::GaudiMathImplementation::NumericalDerivative Derivative;
-  typedef Genfun::GaudiMathImplementation::SimpleFunction SimpleFun;
+  typedef Genfun::GaudiMathImplementation::Constant                    Constant;
+  typedef Genfun::GaudiMathImplementation::NumericalDerivative         Derivative;
+  typedef Genfun::GaudiMathImplementation::SimpleFunction              SimpleFun;
   typedef Genfun::GaudiMathImplementation::NumericalIndefiniteIntegral IndIntegral;
-  typedef Genfun::GaudiMathImplementation::NumericalDefiniteIntegral DefIntegral;
+  typedef Genfun::GaudiMathImplementation::NumericalDefiniteIntegral   DefIntegral;
 
-  typedef Genfun::GaudiMathImplementation::SplineBase SimpleSpline;
-  typedef Genfun::GaudiMathImplementation::GSLSpline Spline;
-  typedef Genfun::GaudiMathImplementation::GSLSplineDeriv SplineDeriv;
+  typedef Genfun::GaudiMathImplementation::SplineBase      SimpleSpline;
+  typedef Genfun::GaudiMathImplementation::GSLSpline       Spline;
+  typedef Genfun::GaudiMathImplementation::GSLSplineDeriv  SplineDeriv;
   typedef Genfun::GaudiMathImplementation::GSLSplineDeriv2 SplineDeriv2;
-  typedef Genfun::GaudiMathImplementation::GSLSplineInteg SplineInteg;
+  typedef Genfun::GaudiMathImplementation::GSLSplineInteg  SplineInteg;
 
 } // end of namespace
 

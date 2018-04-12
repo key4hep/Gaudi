@@ -1,6 +1,6 @@
 ###############################################################
 # Job options file
-#==============================================================
+# ==============================================================
 from Gaudi.Configuration import *
 from Configurables import MyAlgorithm, MyGaudiAlgorithm, ToolSvc, AlgResourcePool, HiveSlimEventLoopMgr, HiveWhiteBoard
 

@@ -123,7 +123,7 @@ protected:
 
 private:
   /// get the property by name form the proposed list
-  Gaudi::Details::PropertyBase* property( const std::string& name,
+  Gaudi::Details::PropertyBase* property( const std::string&                                name,
                                           const std::vector<Gaudi::Details::PropertyBase*>& props ) const;
 
   /// Throw an exception if the name is already present in the

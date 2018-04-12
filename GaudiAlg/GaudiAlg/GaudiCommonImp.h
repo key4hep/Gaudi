@@ -22,7 +22,7 @@
 // ============================================================================
 template <class PBASE>
 inline const std::string GaudiCommon<PBASE>::fullTESLocation( const std::string& location,
-                                                              const bool useRootInTES ) const
+                                                              const bool         useRootInTES ) const
 {
   // The logic is:
   // if no R.I.T., give back location
@@ -112,8 +112,8 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const std::strin
   if ( name.empty() ) return tool<TOOL>( type, parent, create );
   Assert( this->toolSvc(), "tool():: IToolSvc* points to NULL!" );
   // get the tool from Tool Service
-  TOOL* Tool          = nullptr;
-  const StatusCode sc = this->toolSvc()->retrieveTool( type, name, Tool, parent, create );
+  TOOL*            Tool = nullptr;
+  const StatusCode sc   = this->toolSvc()->retrieveTool( type, name, Tool, parent, create );
   if ( sc.isFailure() ) {
     Exception( "tool():: Could not retrieve Tool '" + type + "'/'" + name + "'", sc );
   }
@@ -136,8 +136,8 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type, const IInterface
   // check the environment
   Assert( PBASE::toolSvc(), "IToolSvc* points to NULL!" );
   // retrieve the tool from Tool Service
-  TOOL* Tool          = nullptr;
-  const StatusCode sc = this->toolSvc()->retrieveTool( type, Tool, parent, create );
+  TOOL*            Tool = nullptr;
+  const StatusCode sc   = this->toolSvc()->retrieveTool( type, Tool, parent, create );
   if ( sc.isFailure() ) {
     Exception( "tool():: Could not retrieve Tool '" + type + "'", sc );
   }

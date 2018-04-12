@@ -66,7 +66,7 @@ protected:
   Gaudi::Property<std::string> m_addrColName{this, "AddressColumn", "Address",
                                              "name of the address column of the tag collection"};
   Gaudi::Property<std::string> m_collSvcName{this, "TagCollectionSvc", "NTupleSvc", "name of the collection service"};
-  Gaudi::Property<bool> m_objectsFirst{this, "ObjectsFirst", true,
+  Gaudi::Property<bool>        m_objectsFirst{this, "ObjectsFirst", true,
                                        "flag to indicate that the objects should be written first"};
   Gaudi::Property<std::string> m_tagName{this, "Collection", "", "name of the tag collection in the transient store"};
 

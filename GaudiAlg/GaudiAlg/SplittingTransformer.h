@@ -45,7 +45,7 @@ namespace Gaudi
 
       // accessor to output Locations
       const std::string& outputLocation( unsigned int n ) const { return m_outputLocations[n]; }
-      unsigned int outputLocationSize() const { return m_outputLocations.size(); }
+      unsigned int                                    outputLocationSize() const { return m_outputLocations.size(); }
 
       // derived classes can NOT implement execute
       StatusCode execute() override final { return invoke( std::index_sequence_for<In...>{} ); }

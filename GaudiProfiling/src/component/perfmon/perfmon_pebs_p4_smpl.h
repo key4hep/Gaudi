@@ -90,8 +90,8 @@ extern "C" {
  */
 typedef struct {
   uint64_t cnt_reset;   /* counter reset value */
-  size_t buf_size;      /* size of the buffer in bytes */
-  size_t intr_thres;    /* index of interrupt threshold entry */
+  size_t   buf_size;    /* size of the buffer in bytes */
+  size_t   intr_thres;  /* index of interrupt threshold entry */
   uint64_t reserved[6]; /* for future use */
 } pfm_pebs_p4_smpl_arg_t;
 
@@ -107,7 +107,7 @@ typedef struct {
   unsigned long pebs_index;
   unsigned long pebs_abs_max;
   unsigned long pebs_intr_thres;
-  uint64_t pebs_cnt_reset;
+  uint64_t      pebs_cnt_reset;
 } pfm_ds_area_p4_t;
 
 /*
@@ -121,13 +121,13 @@ typedef struct {
  * 	actual_buffer = (unsigned long)(hdr+1)+hdr->hdr_start_offs
  */
 typedef struct {
-  uint64_t overflows;    /* #overflows for buffer */
-  size_t buf_size;       /* bytes in the buffer */
-  size_t start_offs;     /* actual buffer start offset */
-  uint32_t version;      /* smpl format version */
-  uint32_t reserved1;    /* for future use */
-  uint64_t reserved2[5]; /* for future use */
-  pfm_ds_area_p4_t ds;   /* DS management Area */
+  uint64_t         overflows;    /* #overflows for buffer */
+  size_t           buf_size;     /* bytes in the buffer */
+  size_t           start_offs;   /* actual buffer start offset */
+  uint32_t         version;      /* smpl format version */
+  uint32_t         reserved1;    /* for future use */
+  uint64_t         reserved2[5]; /* for future use */
+  pfm_ds_area_p4_t ds;           /* DS management Area */
 } pfm_pebs_p4_smpl_hdr_t;
 
 /*

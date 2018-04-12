@@ -135,7 +135,7 @@ namespace Gaudi
 
       std::string demangle( const std::string& id )
       {
-        int status;
+        int  status;
         auto realname = std::unique_ptr<char, decltype( free )*>(
             abi::__cxa_demangle( id.c_str(), nullptr, nullptr, &status ), free );
         if ( !realname ) return id;
@@ -166,18 +166,18 @@ namespace Gaudi
         m_initialized = true;
 #if defined( _WIN32 )
         const char* envVar = "PATH";
-        const char sep     = ';';
+        const char  sep    = ';';
 #elif defined( __APPLE__ )
         const char* envVar = "DYLD_LIBRARY_PATH";
-        const char sep     = ':';
+        const char  sep    = ':';
 #else
         const char* envVar = "LD_LIBRARY_PATH";
-        const char sep     = ':';
+        const char  sep    = ':';
 #endif
         char* search_path = ::getenv( envVar );
         if ( search_path ) {
           logger().debug( std::string( "searching factories in " ) + envVar );
-          std::string path( search_path );
+          std::string            path( search_path );
           std::string::size_type pos    = 0;
           std::string::size_type newpos = 0;
           while ( pos != std::string::npos ) {
@@ -210,9 +210,9 @@ namespace Gaudi
                   // read the file
                   logger().debug( std::string( "  reading " ) + name );
                   std::ifstream factories{fullPath};
-                  std::string line;
-                  int factoriesCount = 0;
-                  int lineCount      = 0;
+                  std::string   line;
+                  int           factoriesCount = 0;
+                  int           lineCount      = 0;
                   while ( !factories.eof() ) {
                     ++lineCount;
                     std::getline( factories, line );
@@ -256,7 +256,7 @@ namespace Gaudi
       {
         REG_SCOPE_LOCK
         FactoryMap& facts = factories();
-        auto entry        = facts.find( id );
+        auto        entry = facts.find( id );
         if ( entry == facts.end() ) {
           // this factory was not known yet
           entry = facts.emplace( id, FactoryInfo( "unknown", factory, type, rtype, className, props ) ).first;
@@ -279,7 +279,7 @@ namespace Gaudi
       {
         REG_SCOPE_LOCK
         const FactoryMap& facts = factories();
-        auto f                  = facts.find( id );
+        auto              f     = facts.find( id );
         if ( f != facts.end() ) {
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
           const Properties& props = f->second.properties;
@@ -308,8 +308,8 @@ namespace Gaudi
       {
         REG_SCOPE_LOCK
         static const FactoryInfo unknown( "unknown" );
-        const FactoryMap& facts = factories();
-        auto f                  = facts.find( id );
+        const FactoryMap&        facts = factories();
+        auto                     f     = facts.find( id );
         return ( f != facts.end() ) ? f->second : unknown;
       }
 
@@ -317,7 +317,7 @@ namespace Gaudi
       {
         REG_SCOPE_LOCK
         FactoryMap& facts                               = factories();
-        auto f                                          = facts.find( id );
+        auto        f                                   = facts.find( id );
         if ( f != facts.end() ) f->second.properties[k] = v;
         return *this;
       }
@@ -342,7 +342,7 @@ namespace Gaudi
       }
 
       static std::unique_ptr<Logger> s_logger( new Logger );
-      Logger& logger() { return *s_logger; }
+      Logger&                        logger() { return *s_logger; }
       void setLogger( Logger* logger ) { s_logger.reset( logger ); }
 
     } // namespace Details

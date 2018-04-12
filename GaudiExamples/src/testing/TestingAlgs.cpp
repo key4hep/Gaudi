@@ -53,7 +53,7 @@ namespace GaudiTesting
 
   private:
     Gaudi::Property<int> m_sleep{this, "SleepTime", 10, "Seconds to sleep during the execute"};
-    int m_counter = 0;
+    int                  m_counter = 0;
   };
 
   /**
@@ -206,7 +206,7 @@ namespace GaudiTesting
     Gaudi::Property<std::vector<std::string>> m_paths{
         this, "Paths", {}, "List of paths in the transient store to load"};
     Gaudi::Property<std::string> m_dataSvc{this, "DataSvc", "EventDataSvc", "Name of the data service to use"};
-    SmartIF<IDataProviderSvc> m_dataProvider;
+    SmartIF<IDataProviderSvc>    m_dataProvider;
   };
 
   /**
@@ -235,7 +235,7 @@ namespace GaudiTesting
       for ( auto& p : m_paths ) {
         info() << "Getting '" << p << "'" << endmsg;
         DataObject* obj;
-        StatusCode sc = m_dataProvider->retrieveObject( p, obj );
+        StatusCode  sc = m_dataProvider->retrieveObject( p, obj );
         if ( sc.isFailure() ) {
           warning() << "Cannot retrieve object '" << p << "'" << endmsg;
           missing = true;
@@ -255,7 +255,7 @@ namespace GaudiTesting
     Gaudi::Property<std::vector<std::string>> m_paths{
         this, "Paths", {}, "List of paths in the transient store to load"};
     Gaudi::Property<std::string> m_dataSvc{this, "DataSvc", "EventDataSvc", "Name of the data service to use"};
-    Gaudi::Property<bool> m_ignoreMissing{this, "IgnoreMissing", false,
+    Gaudi::Property<bool>        m_ignoreMissing{this, "IgnoreMissing", false,
                                           "if True,  missing objects will not beconsidered an error"};
     SmartIF<IDataProviderSvc> m_dataProvider;
   };
@@ -334,8 +334,8 @@ namespace GaudiTesting
 
   protected:
     Gaudi::Property<int> m_frequency{this, "Frequency", 1, "How often to print the memory usage (number of events)"};
-    int m_counter = 0;
-    void print()
+    int                  m_counter = 0;
+    void                 print()
     {
       info() << "vmem: " << System::virtualMemory() << " kB" << endmsg;
       info() << "rss:  " << System::mappedMemory() << " kB" << endmsg;

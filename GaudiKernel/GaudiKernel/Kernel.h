@@ -15,7 +15,7 @@
 // Large integer definition depends of the platform
 #ifdef _WIN32
 #ifndef NO_LONGLONG_TYPEDEF
-typedef __int64 longlong;
+typedef __int64          longlong;
 typedef unsigned __int64 ulonglong;
 #endif
 
@@ -34,7 +34,7 @@ typedef unsigned __int64 ulonglong;
 #endif
 #elif defined( __linux ) || defined( __APPLE__ )
 #ifndef NO_LONGLONG_TYPEDEF
-typedef long long int longlong;
+typedef long long int          longlong;
 typedef unsigned long long int ulonglong;
 #endif
 
@@ -57,10 +57,10 @@ struct __longlong {
 public:
   long __data[2];
 };
-typedef __longlong longlong;
-typedef __longlong ulonglong;
-static const __longlong LONGLONG_MAX   = {0x7FFFFFFF, 0xFFFFFFFF};
-static const __longlong LONGLONG_MIN   = {0x80000000, 0x00000000};
+typedef __longlong       longlong;
+typedef __longlong       ulonglong;
+static const __longlong  LONGLONG_MAX  = {0x7FFFFFFF, 0xFFFFFFFF};
+static const __longlong  LONGLONG_MIN  = {0x80000000, 0x00000000};
 static const __ulonglong ULONGLONG_MAX = {0xFFFFFFFF, 0xFFFFFFFF};
 static const __ulonglong ULONGLONG_MIN = {0x00000000, 0x00000000};
 #endif // linux

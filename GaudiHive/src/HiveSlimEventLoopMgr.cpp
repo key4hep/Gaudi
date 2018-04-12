@@ -35,7 +35,7 @@ DECLARE_SERVICE_FACTORY( HiveSlimEventLoopMgr )
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
@@ -170,9 +170,9 @@ StatusCode HiveSlimEventLoopMgr::reinitialize()
   // Check to see whether a new Event Selector has been specified
   setProperty( m_appMgrProperty->getProperty( "EvtSel" ) );
   if ( m_evtsel != "NONE" || m_evtsel.length() == 0 ) {
-    SmartIF<IService> theSvc( serviceLocator()->service( "EventSelector" ) );
+    SmartIF<IService>     theSvc( serviceLocator()->service( "EventSelector" ) );
     SmartIF<IEvtSelector> theEvtSel( theSvc );
-    StatusCode sc;
+    StatusCode            sc;
     if ( theEvtSel.isValid() && ( theEvtSel.get() != m_evtSelector.get() ) ) {
       // Setup Event Selector
       if ( m_evtSelector.get() && m_evtContext ) {
@@ -259,7 +259,7 @@ StatusCode HiveSlimEventLoopMgr::finalize()
         IDataSelector::iterator i;
         for ( i = objects->begin(); i != objects->end(); i++ ) {
           IOpaqueAddress* pAddr = 0;
-          StatusCode iret       = m_histoPersSvc->createRep( *i, pAddr );
+          StatusCode      iret  = m_histoPersSvc->createRep( *i, pAddr );
           if ( iret.isSuccess() ) {
             ( *i )->registry()->setAddress( pAddr );
           } else {
@@ -377,7 +377,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
 StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
 {
   StatusCode sc;
-  bool eventfailed = false;
+  bool       eventfailed = false;
 
   if ( maxevt > 0 ) { // finite number of events to process
     const unsigned int umaxevt = static_cast<unsigned int>( maxevt );
@@ -432,7 +432,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
 
   // Calculate runtime
   typedef std::chrono::high_resolution_clock Clock;
-  typedef Clock::time_point time_point;
+  typedef Clock::time_point                  time_point;
 
   // Reset the application return code.
   Gaudi::setAppReturnCode( m_appMgrProperty, Gaudi::ReturnCode::Success, true ).ignore();
@@ -448,7 +448,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
 
   constexpr double oneOver1204 = 1. / 1024.;
 
-  uint iteration        = 0;
+  uint       iteration  = 0;
   time_point start_time = Clock::now();
   while ( !loop_ended and ( maxevt < 0 or ( finishedEvts + skippedEvts ) < maxevt ) ) {
     debug() << "work loop iteration " << iteration++ << endmsg;

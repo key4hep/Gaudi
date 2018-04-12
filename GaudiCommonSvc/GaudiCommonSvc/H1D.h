@@ -46,7 +46,7 @@ namespace Gaudi
     /// Create new histogram from any AIDA based histogram
     void copyFromAida( const AIDA::IHistogram1D& h );
     /// Retrieve reference to class defininition identifier
-    const CLID& clID() const override { return classID(); }
+    const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_H1D; }
     /** Serialization mechanism, Serialize the object for reading.
      * @param s the StreamBuffer containing the data to be read

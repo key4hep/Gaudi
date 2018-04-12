@@ -212,8 +212,8 @@ namespace
       return StatusCode::FAILURE;
     } // RETURN
     //
-    const AIDA::IAxis& axis = aida->axis();
-    const int nbins         = axis.bins();
+    const AIDA::IAxis& axis  = aida->axis();
+    const int          nbins = axis.bins();
     //
     // underflow bin
     hist.under = Histo::Bin( aida->binHeight( AIDA::IAxis::UNDERFLOW_BIN ),
@@ -245,8 +245,8 @@ namespace
       return StatusCode::FAILURE;
     } // RETURN
     //
-    const AIDA::IAxis& axis = aida->axis();
-    const int nbins         = axis.bins();
+    const AIDA::IAxis& axis  = aida->axis();
+    const int          nbins = axis.bins();
     //
     // underflow bin
     hist.under =
@@ -352,7 +352,7 @@ namespace
     std::pair<double, int> r = decompose( v );
     //
     const double f = std::ceil( 20 * r.first ) / 2; // + 1 ;
-    const int l    = r.second - 1;
+    const int    l = r.second - 1;
     return 0 < l ? f * _pow( 10, l ) : f / _pow( 10, -l );
   }
   // ==========================================================================
@@ -371,7 +371,7 @@ namespace
     // decompose the double value into decimal significand and mantissa
     std::pair<double, int> r = decompose( v );
     const double f = std::floor( 20 * r.first ) / 2; // - 1 ;
-    const int l    = r.second - 1;
+    const int    l = r.second - 1;
     return 0 < l ? f * _pow( 10, l ) : f / _pow( 10, -l );
   }
   // ==========================================================================
@@ -595,7 +595,7 @@ namespace
       }
       //
       for ( auto ibin = histo.bins.cbegin(); histo.bins.cend() != ibin; ++ibin ) {
-        int ib          = ibin - histo.bins.cbegin();
+        int        ib   = ibin - histo.bins.cbegin();
         const bool xlab = ( iNull == ib % xSkip );
         if ( xlab && yLine < xlabels[ib].size() ) {
           line += xlabels[ib][yLine];
@@ -643,7 +643,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IHistogram1D* histo,
   if ( !histo ) {
     return stream;
   } // RETURN
-  Histo hist;
+  Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
   if ( sc.isFailure() ) {
     return stream;
@@ -726,7 +726,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IProfile1D* histo, s
   if ( !histo ) {
     return stream;
   } // RETURN
-  Histo hist;
+  Histo      hist;
   StatusCode sc = _getHisto( histo, hist, spread );
   if ( sc.isFailure() ) {
     return stream;
@@ -804,7 +804,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TH1* histo, std::ostream& 
   if ( !histo ) {
     return stream;
   } // RETURN
-  Histo hist;
+  Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
   if ( sc.isFailure() ) {
     return stream;
@@ -849,7 +849,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TProfile* histo, std::ostr
   if ( !histo ) {
     return stream;
   } // RETURN
-  Histo hist;
+  Histo      hist;
   StatusCode sc = _getHisto( histo, hist, true );
   if ( sc.isFailure() ) {
     return stream;

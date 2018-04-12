@@ -169,7 +169,7 @@ StatusCode FileMgrTest::execute()
 #ifndef __APPLE__
   info() << "writing to " << p_fileMgr->fname( (void*)fp_2 ) << endmsg;
 
-  std::ofstream ofs;
+  std::ofstream                  ofs;
   __gnu_cxx::stdio_filebuf<char> fb( fp_2, std::ios::out );
 
   ofs.std::ios::rdbuf( &fb );
@@ -177,7 +177,7 @@ StatusCode FileMgrTest::execute()
 
   info() << "appending to " << p_fileMgr->fname( (void*)fp_3 ) << endmsg;
 
-  std::ofstream ofs2;
+  std::ofstream                  ofs2;
   __gnu_cxx::stdio_filebuf<char> fb2( fp_3, std::ios::out );
 
   ofs2.std::ios::rdbuf( &fb2 );
@@ -192,9 +192,9 @@ StatusCode FileMgrTest::execute()
 StatusCode FileMgrTest::finalize()
 {
 
-  std::vector<std::string> v;
+  std::vector<std::string>                 v;
   std::vector<std::string>::const_iterator itr;
-  int i = p_fileMgr->getFiles( v );
+  int                                      i = p_fileMgr->getFiles( v );
 
   auto& log = info();
   log << "listing all open files [" << i << "]" << std::endl;
@@ -210,7 +210,7 @@ StatusCode FileMgrTest::finalize()
   }
   log << endmsg;
 
-  std::vector<const Io::FileAttr*> v2;
+  std::vector<const Io::FileAttr*>                 v2;
   std::vector<const Io::FileAttr*>::const_iterator it2;
   i = p_fileMgr->getFiles( Io::POSIX, v2, false );
   log << "listing all POSIX files ever opened [" << i << "]" << std::endl;

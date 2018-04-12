@@ -103,8 +103,8 @@ void JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const
     ost << "Properties: [" << endl;
     ;
     for ( const auto& ipprop : propertyPairs() ) {
-      const std::string& client = ipprop.first;
-      const PropertyBase* prop  = ipprop.second;
+      const std::string&  client = ipprop.first;
+      const PropertyBase* prop   = ipprop.second;
       ost << client << ":  ";
       prop->fillStream( ost );
       ost << endl;

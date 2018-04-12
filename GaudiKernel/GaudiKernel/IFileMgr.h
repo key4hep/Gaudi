@@ -69,10 +69,10 @@ namespace Io
 
     std::string bits() const
     {
-      std::string s;
-      int f( _f );
-      const int SHIFT     = 8 * sizeof( int ) - 1;
-      const unsigned MASK = 1 << SHIFT;
+      std::string    s;
+      int            f( _f );
+      const int      SHIFT = 8 * sizeof( int ) - 1;
+      const unsigned MASK  = 1 << SHIFT;
 
       for ( int i = 1; i <= SHIFT + 1; ++i ) {
         s += ( f & MASK ? '1' : '0' );
@@ -118,8 +118,8 @@ namespace Io
                                                        {"APPEND", Io::APPEND},
                                                        {"INVALID", Io::INVALID}}};
 
-    IoFlags fl( Io::INVALID );
-    size_t j( 0 ), k( 0 );
+    IoFlags     fl( Io::INVALID );
+    size_t      j( 0 ), k( 0 );
     std::string fs;
     while ( ( k = f.find( "|", j ) ) != std::string::npos ) {
       fs = f.substr( j, k - j );
@@ -185,15 +185,15 @@ namespace Io
         , m_isOpen( o )
         , m_shared( s ){};
 
-    Fd fd() const { return m_fd; }
+    Fd                 fd() const { return m_fd; }
     const std::string& name() const { return m_name; }
     const std::string& desc() const { return m_desc; }
-    IoTech tech() const { return m_tech; }
-    IoFlags flags() const { return m_flags; }
-    IoFlags iflags() const { return m_iflags; }
-    void* fptr() const { return m_fptr; }
-    bool isOpen() const { return m_isOpen; }
-    bool isShared() const { return m_shared; }
+    IoTech             tech() const { return m_tech; }
+    IoFlags            flags() const { return m_flags; }
+    IoFlags            iflags() const { return m_iflags; }
+    void*              fptr() const { return m_fptr; }
+    bool               isOpen() const { return m_isOpen; }
+    bool               isShared() const { return m_shared; }
 
     void fd( Fd f ) { m_fd = f; }
     void name( const std::string& n ) { m_name = n; }
@@ -229,15 +229,15 @@ namespace Io
     }
 
   private:
-    Fd m_fd = -1;
+    Fd          m_fd = -1;
     std::string m_name;
     std::string m_desc;
-    IoTech m_tech    = UNKNOWN;
-    IoFlags m_flags  = INVALID;
-    IoFlags m_iflags = INVALID;
-    void* m_fptr     = nullptr;
-    bool m_isOpen    = false;
-    bool m_shared    = false;
+    IoTech      m_tech   = UNKNOWN;
+    IoFlags     m_flags  = INVALID;
+    IoFlags     m_iflags = INVALID;
+    void*       m_fptr   = nullptr;
+    bool        m_isOpen = false;
+    bool        m_shared = false;
   };
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -252,18 +252,18 @@ namespace Io
 
   typedef std::function<Io::open_t( const std::string&, Io::IoFlags, const std::string&, Io::Fd&, void*& )> bfcn_open_t;
   typedef std::function<Io::close_t( Io::Fd )> bfcn_close_t;
-  typedef std::function<Io::close_t( void* )> bfcn_closeP_t;
+  typedef std::function<Io::close_t( void* )>  bfcn_closeP_t;
   typedef std::function<Io::reopen_t( Io::Fd, Io::IoFlags )> bfcn_reopen_t;
-  typedef std::function<Io::reopen_t( void*, Io::IoFlags )> bfcn_reopenP_t;
+  typedef std::function<Io::reopen_t( void*, Io::IoFlags )>  bfcn_reopenP_t;
 
   // file handler functions: open, close, reopen
   struct FileHdlr final {
     IoTech tech = UNKNOWN;
 
-    bfcn_open_t b_open_fcn;
-    bfcn_close_t b_close_fcn;
-    bfcn_closeP_t b_closeP_fcn;
-    bfcn_reopen_t b_reopen_fcn;
+    bfcn_open_t    b_open_fcn;
+    bfcn_close_t   b_close_fcn;
+    bfcn_closeP_t  b_closeP_fcn;
+    bfcn_reopen_t  b_reopen_fcn;
     bfcn_reopenP_t b_reopenP_fcn;
 
     FileHdlr() = default;

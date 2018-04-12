@@ -328,8 +328,8 @@ StatusCode ApplicationMgr::configure()
   for ( auto& var : m_environment ) {
     const std::string& name  = var.first;
     const std::string& value = var.second;
-    std::string old          = System::getEnv( name.c_str() );
-    const MSG::Level lvl     = ( !old.empty() && ( old != "UNKNOWN" ) ) ? MSG::WARNING : MSG::DEBUG;
+    std::string        old   = System::getEnv( name.c_str() );
+    const MSG::Level   lvl   = ( !old.empty() && ( old != "UNKNOWN" ) ) ? MSG::WARNING : MSG::DEBUG;
     if ( UNLIKELY( m_outputLevel <= lvl ) ) log << lvl << "Setting " << name << " = " << value << endmsg;
     System::setEnv( name, value );
   }
@@ -494,7 +494,7 @@ StatusCode ApplicationMgr::initialize()
 StatusCode ApplicationMgr::start()
 {
 
-  MsgStream log( m_messageSvc, name() );
+  MsgStream  log( m_messageSvc, name() );
   StatusCode sc;
 
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
@@ -546,7 +546,7 @@ StatusCode ApplicationMgr::nextEvent( int maxevt )
 StatusCode ApplicationMgr::stop()
 {
 
-  MsgStream log( m_messageSvc, name() );
+  MsgStream  log( m_messageSvc, name() );
   StatusCode sc;
 
   if ( m_state == Gaudi::StateMachine::INITIALIZED ) {
@@ -913,7 +913,7 @@ StatusCode ApplicationMgr::restart()
 void ApplicationMgr::SIGoHandler( Gaudi::Details::PropertyBase& )
 {
 
-  MsgStream log( m_messageSvc, name() );
+  MsgStream  log( m_messageSvc, name() );
   StatusCode sc;
 
   // Re-initialize everything
@@ -961,10 +961,10 @@ void ApplicationMgr::createSvcNameListHandler( Gaudi::Details::PropertyBase& /* 
 //============================================================================
 StatusCode ApplicationMgr::decodeCreateSvcNameList()
 {
-  StatusCode result    = StatusCode::SUCCESS;
+  StatusCode  result   = StatusCode::SUCCESS;
   const auto& theNames = m_createSvcNameList.value();
-  auto it              = theNames.begin();
-  auto et              = theNames.end();
+  auto        it       = theNames.begin();
+  auto        et       = theNames.end();
   while ( result.isSuccess() && it != et ) {
     Gaudi::Utils::TypeNameString item( *it++ );
     if ( ( result = svcManager()->addService( item, ServiceManager::DEFAULT_SVC_PRIORITY ) ).isFailure() ) {
@@ -1039,7 +1039,7 @@ void ApplicationMgr::multiThreadSvcNameListHandler( Gaudi::Details::PropertyBase
 //============================================================================
 StatusCode ApplicationMgr::decodeMultiThreadSvcNameList()
 {
-  StatusCode result    = StatusCode::SUCCESS;
+  StatusCode  result   = StatusCode::SUCCESS;
   const auto& theNames = m_multiThreadSvcNameList.value();
   for ( int iCopy = 0; iCopy < m_noOfEvtThreads; ++iCopy ) {
     for ( const auto& it : theNames ) {
@@ -1068,7 +1068,7 @@ StatusCode ApplicationMgr::decodeMultiThreadSvcNameList()
 StatusCode ApplicationMgr::declareMultiSvcType( const std::string& name, const std::string& type )
 {
   StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( m_messageSvc, m_name );
+  MsgStream  log( m_messageSvc, m_name );
   if ( 0 == m_noOfEvtThreads ) {
     result = svcManager()->declareSvcType( name, type );
     if ( result.isFailure() ) {
@@ -1098,7 +1098,7 @@ StatusCode ApplicationMgr::addMultiSvc( const Gaudi::Utils::TypeNameString& type
 {
   using Gaudi::Utils::TypeNameString;
   StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( m_messageSvc, m_name );
+  MsgStream  log( m_messageSvc, m_name );
   if ( 0 == m_noOfEvtThreads ) {
     result = svcManager()->addService( typeName, prio );
     // result = svcManager()->addService(name, type, prio); // CHECKME???
@@ -1111,7 +1111,7 @@ StatusCode ApplicationMgr::addMultiSvc( const Gaudi::Utils::TypeNameString& type
   } else {
     for ( int iCopy = 0; iCopy < m_noOfEvtThreads; ++iCopy ) {
       const std::string& type = typeName.type();
-      std::string thrName( typeName.name() + getGaudiThreadIDfromID( iCopy ) );
+      std::string        thrName( typeName.name() + getGaudiThreadIDfromID( iCopy ) );
       result = svcManager()->addService( TypeNameString( thrName, type ), prio );
       if ( result.isFailure() ) {
         log << MSG::ERROR << "addMultiSvc: Cannot add service " << type << "/" << thrName << endmsg;
@@ -1140,7 +1140,7 @@ void ApplicationMgr::dllNameListHandler( Gaudi::Details::PropertyBase& /* thePro
 StatusCode ApplicationMgr::decodeDllNameList()
 {
 
-  MsgStream log( m_messageSvc, m_name );
+  MsgStream  log( m_messageSvc, m_name );
   StatusCode result = StatusCode::SUCCESS;
 
   // Clean up multiple entries from DLL list

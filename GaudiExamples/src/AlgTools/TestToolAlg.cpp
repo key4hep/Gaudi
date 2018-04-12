@@ -28,9 +28,9 @@ StatusCode TestToolAlg::initialize()
   // setup tool registry
   // IAlgTool * mytool;
   for ( const auto& i : m_tools ) {
-    std::string name = i;
-    std::string type = i;
-    const int slash  = i.find_first_of( "/" );
+    std::string name  = i;
+    std::string type  = i;
+    const int   slash = i.find_first_of( "/" );
     if ( slash > 0 ) {
       type = i.substr( 0, slash );
       name = i.substr( slash + 1 );

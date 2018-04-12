@@ -57,7 +57,7 @@ namespace Gaudi
 }
 
 static SmartIF<ISvcLocator> s_svclocInstance;
-static SmartIF<IAppMgrUI> s_appmgrInstance;
+static SmartIF<IAppMgrUI>   s_appmgrInstance;
 
 //------------------------------------------------------------------------------
 IAppMgrUI* Gaudi::createApplicationMgr( const std::string& dllname, const std::string& factname )
@@ -151,8 +151,8 @@ IInterface* Gaudi::createInstance( const std::string& name, const std::string& f
   IAlgorithm* ia = Algorithm::Factory::create( factname, name, nullptr );
   if ( ia ) return ia;
 
-  void* libHandle   = nullptr;
-  StatusCode status = System::loadDynamicLib( dllname, &libHandle );
+  void*      libHandle = nullptr;
+  StatusCode status    = System::loadDynamicLib( dllname, &libHandle );
   if ( status.isSuccess() ) {
     ii = ObjFactory::create( factname, nullptr );
     if ( ii ) return ii;
@@ -187,8 +187,8 @@ IAppMgrUI* Gaudi::createApplicationMgr()
 //=======================================================================
 
 static std::list<IService*> s_bootServices;
-static SmartIF<IService> s_bootService;
-static SmartIF<IInterface> s_bootInterface;
+static SmartIF<IService>    s_bootService;
+static SmartIF<IInterface>  s_bootInterface;
 
 using Gaudi::BootSvcLocator;
 

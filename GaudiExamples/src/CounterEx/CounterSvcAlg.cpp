@@ -96,7 +96,7 @@ namespace GaudiExamples
   private:
     ICounterSvc::Counter* m_evtCount = nullptr;
     ICounterSvc::Counter* m_total    = nullptr;
-    SmartIF<ICounterSvc> m_cntSvc    = nullptr;
+    SmartIF<ICounterSvc>  m_cntSvc   = nullptr;
 
     Gaudi::Property<std::string> m_counterBaseName{this, "CounterBaseName", "CounterTest"};
   };

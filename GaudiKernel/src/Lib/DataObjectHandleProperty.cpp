@@ -14,7 +14,7 @@ namespace Gaudi
     StatusCode parse( DataObjectHandleBase& v, const std::string& s )
     {
       std::string prop;
-      auto sc = Gaudi::Parsers::parse( prop, s );
+      auto        sc = Gaudi::Parsers::parse( prop, s );
       if ( sc ) v.setKey( DataObjID( s ) );
       return sc;
     }

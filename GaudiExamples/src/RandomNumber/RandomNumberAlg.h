@@ -22,11 +22,11 @@ protected:
   /// Pointer to N-tuple
   NTuple::Tuple* m_ntuple;
   /// N-tuple items
-  NTuple::Item<int> m_int;
+  NTuple::Item<int>      m_int;
   NTuple::Item<uint32_t> m_deter;
-  NTuple::Item<float> m_gauss;
-  NTuple::Item<float> m_exponential;
-  NTuple::Item<float> m_poisson;
+  NTuple::Item<float>    m_gauss;
+  NTuple::Item<float>    m_exponential;
+  NTuple::Item<float>    m_poisson;
 
 public:
   /// Constructor: A constructor of this form must be provided.

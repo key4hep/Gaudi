@@ -10,7 +10,7 @@ int main( int /* argc */, char** /* argv */ )
 {
   size_t kB     = size_t( 1024 );
   size_t nBytes = kB * kB * kB * size_t( 1 );
-  void* p       = ::malloc( nBytes );
+  void*  p      = ::malloc( nBytes );
   if ( !p ) {
     cout << "Failed to allocate " << nBytes << " bytes of memory." << endl;
     return 1;

@@ -311,7 +311,7 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type get( const std::string& location,
-                                                                const bool useRootInTES = true ) const
+                                                                const bool         useRootInTES = true ) const
   {
     return GaudiCommon<Algorithm>::get<TYPE>( evtSvc(), location, useRootInTES );
   }
@@ -350,7 +350,7 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( const std::string& location,
-                                                                        const bool useRootInTES = true ) const
+                                                                        const bool         useRootInTES = true ) const
   {
     return GaudiCommon<Algorithm>::getIfExists<TYPE>( evtSvc(), location, useRootInTES );
   }
@@ -402,7 +402,7 @@ public:
    *  @retval NULL If the detector object does not exist.
    */
   template <class TYPE>
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc* svc,
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc*  svc,
                                                                            const std::string& location ) const
   {
     return GaudiCommon<Algorithm>::getIfExists<TYPE>( svc, location, false );
@@ -626,7 +626,7 @@ public:
    */
   template <class TYPE, class TYPE2>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( const std::string& location,
-                                                                        const bool useRootInTES = true ) const
+                                                                        const bool         useRootInTES = true ) const
   {
     return GaudiCommon<Algorithm>::getOrCreate<TYPE, TYPE2>( evtSvc(), location, useRootInTES );
   }

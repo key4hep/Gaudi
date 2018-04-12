@@ -134,23 +134,23 @@ StatusCode GaudiParallelizer::decodeNames()
   bool addedRootInTES = false; //= Have we added the rootInTES ?
 
   //= Get the Application manager, to see if algorithm exist
-  auto appMgr                                = service<IAlgManager>( "ApplicationMgr" );
-  const std::vector<std::string>& nameVector = m_names.value();
+  auto                                     appMgr     = service<IAlgManager>( "ApplicationMgr" );
+  const std::vector<std::string>&          nameVector = m_names.value();
   std::vector<std::string>::const_iterator it;
   for ( it = nameVector.begin(); nameVector.end() != it; it++ ) {
     const Gaudi::Utils::TypeNameString typeName( *it );
-    const std::string& theName = typeName.name();
-    const std::string& theType = typeName.type();
+    const std::string&                 theName = typeName.name();
+    const std::string&                 theType = typeName.type();
 
     //== Check whether the specified algorithm already exists. If not, create it
-    StatusCode result          = StatusCode::SUCCESS;
+    StatusCode          result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm( typeName, false ); // do not create it now
     if ( !myIAlg.isValid() ) {
       //== Set the Context if not in the jobOptions list
       if ( !context().empty() || !rootInTES().empty() ) {
-        bool foundContext     = false;
-        bool foundRootInTES   = false;
-        const auto properties = jos->getProperties( theName );
+        bool       foundContext   = false;
+        bool       foundRootInTES = false;
+        const auto properties     = jos->getProperties( theName );
         if ( properties ) {
           // Iterate over the list to set the options
           for ( const auto& p : *properties ) {
@@ -240,8 +240,8 @@ StatusCode GaudiParallelizer::decodeNames()
   msg << "Member list: ";
   using GaudiUtils::details::ostream_joiner;
   ostream_joiner( msg, m_entries, ", ", []( MsgStream& msg, const AlgorithmEntry& entry ) -> MsgStream& {
-    Algorithm* myAlg = entry.algorithm();
-    auto myAlgType   = System::typeinfoName( typeid( *myAlg ) );
+    Algorithm* myAlg     = entry.algorithm();
+    auto       myAlgType = System::typeinfoName( typeid( *myAlg ) );
     if ( myAlg->name() != myAlgType ) {
       msg << myAlgType << "/";
     }

@@ -159,7 +159,7 @@ StatusCode THistSvc::initialize()
       bool all_good = true;
       // register input/output files...
       for ( const auto& reg : m_files ) {
-        const std::string& fname = reg.second.first->GetName();
+        const std::string&                  fname = reg.second.first->GetName();
         const IIoComponentMgr::IoMode::Type iomode =
             ( reg.second.second == THistSvc::READ ? IIoComponentMgr::IoMode::READ : IIoComponentMgr::IoMode::WRITE );
         if ( !iomgr->io_register( this, iomode, fname ).isSuccess() ) {
@@ -292,7 +292,7 @@ StatusCode THistSvc::finalize()
 
       // Merge File
       void* vf = nullptr;
-      int r    = p_fileMgr->open( Io::ROOT, name(), m_sharedFiles[itr.first], Io::WRITE | Io::APPEND, vf, "HIST" );
+      int   r  = p_fileMgr->open( Io::ROOT, name(), m_sharedFiles[itr.first], Io::WRITE | Io::APPEND, vf, "HIST" );
 
       if ( r ) {
         error() << "unable to open Final Output File: \"" << m_sharedFiles[itr.first] << "\" for merging" << endmsg;
@@ -898,7 +898,7 @@ StatusCode THistSvc::regGraph( const std::string& id, TGraph* hist )
 {
   if ( strcmp( hist->GetName(), "Graph" ) == 0 ) {
 
-    std::string id2( id );
+    std::string       id2( id );
     string::size_type i = id2.rfind( "/" );
     if ( i != string::npos ) {
       id2.erase( 0, i + 1 );
@@ -1120,8 +1120,8 @@ void THistSvc::updateFiles()
     if ( msgLevel( MSG::VERBOSE ) )
       verbose() << " update: " << uitr->first << " " << uitr->second.id << " " << uitr->second.mode << endmsg;
 #endif
-    TObject* to    = uitr->second.obj;
-    TFile* oldFile = uitr->second.file;
+    TObject* to      = uitr->second.obj;
+    TFile*   oldFile = uitr->second.file;
     if ( !to ) {
       warning() << uitr->first << ": TObject == 0" << endmsg;
     } else if ( uitr->second.temp || uitr->second.mode == READ ) {
@@ -1138,7 +1138,7 @@ void THistSvc::updateFiles()
       if ( oldFile != newFile ) {
         std::string newFileName = newFile->GetName();
         std::string oldFileName, streamName, rem;
-        TFile* dummy = nullptr;
+        TFile*      dummy = nullptr;
         findStream( uitr->second.id, streamName, rem, dummy );
 
         for ( auto& itr : m_files ) {
@@ -1217,13 +1217,13 @@ StatusCode THistSvc::write()
 StatusCode THistSvc::connect( const std::string& ident )
 {
 
-  auto loc      = ident.find( " " );
+  auto   loc    = ident.find( " " );
   string stream = ident.substr( 0, loc );
-  char typ( 0 );
+  char   typ( 0 );
   typedef std::pair<std::string, std::string> Prop;
   std::vector<Prop> props;
-  string filename, db_typ( "ROOT" );
-  int cl( 1 );
+  string            filename, db_typ( "ROOT" );
+  int               cl( 1 );
 
   if ( loc != string::npos ) {
     using Parser = Gaudi::Utils::AttribStringParser;
@@ -1320,8 +1320,8 @@ StatusCode THistSvc::connect( const std::string& ident )
     return StatusCode::FAILURE;
   }
 
-  void* vf = nullptr;
-  TFile* f = nullptr;
+  void*  vf = nullptr;
+  TFile* f  = nullptr;
 
   if ( newMode == THistSvc::READ ) {
     // old file
@@ -1366,9 +1366,9 @@ StatusCode THistSvc::connect( const std::string& ident )
     // For SHARE files, all data will be stored in a temp file and will be merged into the target file
     // in write() when finalize(), this help to solve some confliction. e.g. with storegate
 
-    static int ishared  = 0;
-    string realfilename = filename;
-    filename            = "tmp_THistSvc_" + std::to_string( ishared++ ) + ".root";
+    static int ishared      = 0;
+    string     realfilename = filename;
+    filename                = "tmp_THistSvc_" + std::to_string( ishared++ ) + ".root";
 
     if ( msgLevel( MSG::DEBUG ) )
       debug() << "Creating temp file \"" << filename << "\" and realfilename=" << realfilename << endmsg;
@@ -1494,8 +1494,8 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source )
 
   // loop over all keys in this directory
   TList* lkeys = current_sourcedir->GetListOfKeys();
-  int nkeys    = lkeys->GetEntries();
-  TKey* key;
+  int    nkeys = lkeys->GetEntries();
+  TKey*  key;
   for ( int jj = 0; jj < nkeys; jj++ ) {
     key                     = (TKey*)lkeys->At( jj );
     string pathnameinsource = current_sourcedir->GetPath() + string( "/" ) + key->GetName();
@@ -1518,8 +1518,8 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source )
 
       } else if ( obj->IsA()->InheritsFrom( "TTree" ) ) {
         if ( msgLevel( MSG::DEBUG ) ) debug() << "Found TTree " << obj->GetName() << endmsg;
-        TTree* mytree = dynamic_cast<TTree*>( obj );
-        int nentries  = (int)mytree->GetEntries();
+        TTree* mytree   = dynamic_cast<TTree*>( obj );
+        int    nentries = (int)mytree->GetEntries();
         mytree->SetBranchStatus( "*", 1 );
 
         if ( msgLevel( MSG::DEBUG ) ) debug() << "Dumping TTree " << nentries << " entries" << endmsg;
@@ -1620,11 +1620,11 @@ void THistSvc::copyFileLayout( TDirectory* dst, TDirectory* src )
 
   // loop over all keys in this directory
   TList* key_list = cur_src_dir->GetListOfKeys();
-  int n           = key_list->GetEntries();
+  int    n        = key_list->GetEntries();
   for ( int j = 0; j < n; ++j ) {
-    TKey* k                        = (TKey*)key_list->At( j );
+    TKey*             k            = (TKey*)key_list->At( j );
     const std::string src_pathname = cur_src_dir->GetPath() + std::string( "/" ) + k->GetName();
-    TObject* o                     = src->Get( src_pathname.c_str() );
+    TObject*          o            = src->Get( src_pathname.c_str() );
 
     if ( o && o->IsA()->InheritsFrom( "TDirectory" ) ) {
       if ( msgLevel( MSG::VERBOSE ) ) verbose() << " subdir [" << o->GetName() << "]..." << endmsg;
@@ -1660,7 +1660,7 @@ StatusCode THistSvc::io_reinit()
   gErrorIgnoreLevel = kFatal;
 
   for ( auto& ifile : m_files ) {
-    TFile* f          = ifile.second.first;
+    TFile*      f     = ifile.second.first;
     std::string fname = f->GetName();
     if ( msgLevel( MSG::DEBUG ) )
       debug() << "file [" << fname << "] mode: [" << f->GetOption() << "] r:" << f->GetFileBytesRead()
@@ -1681,9 +1681,9 @@ StatusCode THistSvc::io_reinit()
     // create a new TFile
     // TFile *newfile = TFile::Open (fname.c_str(), f->GetOption());
 
-    void* vf;
+    void*     vf;
     Option_t* opts = f->GetOption();
-    int r          = p_fileMgr->open( Io::ROOT, name(), fname, Io::WRITE, vf, "HIST" );
+    int       r    = p_fileMgr->open( Io::ROOT, name(), fname, Io::WRITE, vf, "HIST" );
     if ( r != 0 ) {
       error() << "unable to open file \"" << fname << "\" for writing" << endmsg;
       return StatusCode::FAILURE;
@@ -1705,7 +1705,7 @@ StatusCode THistSvc::io_reinit()
       hid.file           = newfile;
       // side-effect: create needed directories...
       TDirectory* newdir = this->changeDir( hid );
-      TClass* cl         = hid.obj->IsA();
+      TClass*     cl     = hid.obj->IsA();
 
       // migrate the objects to the new file.
       // thanks to the object model of ROOT, it is super easy.

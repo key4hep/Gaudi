@@ -177,11 +177,11 @@ StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
 
   if ( Cause::source::Task == cause.m_source ) {
     ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '" << cause.m_sourceName << "'" << endmsg;
-    auto visitor = concurrency::DecisionUpdater( slot, cause, ifTrace );
+    auto       visitor = concurrency::DecisionUpdater( slot, cause, ifTrace );
     m_PRGraph.getAlgorithmNode( cause.m_sourceName )->accept( visitor );
   } else {
     ON_VERBOSE verbose() << "Triggering top-down traversal at the root node" << endmsg;
-    auto visitor = concurrency::Supervisor( slot, cause, ifTrace );
+    auto       visitor = concurrency::Supervisor( slot, cause, ifTrace );
     m_PRGraph.getHeadNode()->accept( visitor );
   }
 
@@ -200,13 +200,13 @@ StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
 StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const
 {
 
-  Cause cs     = {Cause::source::Root, "RootDecisionHub"};
-  auto visitor = concurrency::RunSimulator( slot, cs );
+  Cause cs      = {Cause::source::Root, "RootDecisionHub"};
+  auto  visitor = concurrency::RunSimulator( slot, cs );
 
   auto& nodeDecisions = slot.controlFlowState;
 
   std::vector<int> prevNodeDecisions;
-  int cntr = 0;
+  int              cntr = 0;
   std::vector<int> counters;
 
   while ( !CFRulesResolved( slot ) ) {

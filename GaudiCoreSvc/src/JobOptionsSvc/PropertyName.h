@@ -33,16 +33,16 @@ namespace Gaudi
       }
       const std::string& client() const { return client_; }
       const std::string& property() const { return property_; }
-      const Position& position() const { return position_; }
-      std::string FullName() const;
-      std::string ToString() const;
-      bool HasClient() const { return !client_.empty(); }
-      bool HasPosition() const { return position_.Exists(); }
+      const Position&    position() const { return position_; }
+      std::string        FullName() const;
+      std::string        ToString() const;
+      bool               HasClient() const { return !client_.empty(); }
+      bool               HasPosition() const { return position_.Exists(); }
 
     private:
       std::string client_;
       std::string property_;
-      Position position_;
+      Position    position_;
     };
     // ============================================================================
   } /* Gaudi */

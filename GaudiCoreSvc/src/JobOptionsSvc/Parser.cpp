@@ -31,7 +31,7 @@ namespace
   // ============================================================================
   void GetLastLineAndColumn( std::ifstream& ifs, int& line, int& column )
   {
-    int n = 0;
+    int         n = 0;
     std::string str;
     while ( !ifs.eof() ) {
       getline( ifs, str );
@@ -63,7 +63,7 @@ namespace
     Iterator position_begin( fwd_begin, fwd_end, stream_name );
     Iterator position_end;
 
-    Grammar gr;
+    Grammar                      gr;
     gp::SkipperGrammar<Iterator> skipper;
 
     root->value = stream_name;

@@ -34,7 +34,7 @@ public:
   struct AlgorithmItem final {
     AlgorithmItem( IAlgorithm* s, bool managed = false ) : algorithm( s ), managed( managed ) {}
     SmartIF<IAlgorithm> algorithm;
-    bool managed;
+    bool                managed;
     inline bool operator==( const std::string& name ) const { return algorithm->name() == name; }
     inline bool operator==( const IAlgorithm* ptr ) const { return algorithm.get() == ptr; }
   };
@@ -83,7 +83,7 @@ public:
 
   SmartIF<IAlgorithm>& algorithm( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) override;
 
-  AlgTypeAliasesMap& typeAliases() { return m_algTypeAliases; }
+  AlgTypeAliasesMap&       typeAliases() { return m_algTypeAliases; }
   const AlgTypeAliasesMap& typeAliases() const { return m_algTypeAliases; }
 
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).

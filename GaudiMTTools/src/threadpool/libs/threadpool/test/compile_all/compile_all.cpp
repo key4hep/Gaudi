@@ -58,7 +58,7 @@ int task_4()
 
 void task_with_parameter( int value ) { print( "  task_with_parameter(" + to_string( value ) + ")\n" ); }
 
-int loops = 0;
+int  loops = 0;
 bool looped_task()
 {
   print( "  looped_task()\n" );
@@ -111,9 +111,9 @@ void prio_pool_test()
 
 void future_test()
 {
-  fifo_pool tp( 5 );
+  fifo_pool   tp( 5 );
   future<int> fut = schedule( tp, &task_4 );
-  int res         = fut();
+  int         res = fut();
 }
 
 int main( int, char* const[] )

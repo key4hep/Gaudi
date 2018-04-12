@@ -9,7 +9,7 @@ int main()
 {
   const size_t N          = 1000000;
   const size_t NPropNames = 50;
-  const auto page_sz      = sysconf( _SC_PAGESIZE );
+  const auto   page_sz    = sysconf( _SC_PAGESIZE );
 
   std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 

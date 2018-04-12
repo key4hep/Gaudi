@@ -93,7 +93,7 @@ public:
   // ==========================================================================
   // Typedefs
   typedef std::vector<std::string> Setup;
-  typedef TClass* ClassH;
+  typedef TClass*                  ClassH;
   // ==========================================================================
   /** @struct Protection
    *  Helper class of the DataOnDemandSvc
@@ -113,10 +113,10 @@ public:
   struct Node {
     // ========================================================================
     /// the actual class
-    ClassH clazz; // the actual class
-    std::string name;
-    unsigned long num = 0;
-    bool executing    = false;
+    ClassH        clazz; // the actual class
+    std::string   name;
+    unsigned long num       = 0;
+    bool          executing = false;
     /// trivial object? DataObject?
     bool dataObject = false; // trivial object? DataObject?
     // =======================================================================
@@ -136,13 +136,13 @@ public:
   // ==========================================================================
   /// @struct Leaf
   struct Leaf {
-    IAlgorithm* algorithm = nullptr;
-    std::string name;
-    std::string type;
-    unsigned long num     = 0;
-    bool executing        = false;
-    Leaf()                = default;
-    Leaf( const Leaf& l ) = default;
+    IAlgorithm*   algorithm = nullptr;
+    std::string   name;
+    std::string   type;
+    unsigned long num       = 0;
+    bool          executing = false;
+    Leaf()                  = default;
+    Leaf( const Leaf& l )   = default;
     Leaf( std::string t, std::string n ) : name( std::move( n ) ), type( std::move( t ) ) {}
   };
   // ==========================================================================
@@ -163,8 +163,8 @@ public:
    *  @param   svc    [IN]    Pointer to service locator
    *  @return Reference to DataOnDemandSvc object.
    */
-  DataOnDemandSvc( const std::string& name, //       Service instance name
-                   ISvcLocator* svc );      //  Pointer to service locator
+  DataOnDemandSvc( const std::string& name,  //       Service instance name
+                   ISvcLocator*       svc ); //  Pointer to service locator
   /// Standard destructor.
   ~DataOnDemandSvc() override = default; // Standard destructor
   // ==========================================================================
@@ -231,19 +231,19 @@ private:
   bool m_updateRequired = true;
   // ==========================================================================
   ChronoEntity m_total;
-  ulonglong m_statAlg  = 0;
-  ulonglong m_statNode = 0;
-  ulonglong m_stat     = 0;
+  ulonglong    m_statAlg  = 0;
+  ulonglong    m_statNode = 0;
+  ulonglong    m_stat     = 0;
   // ==========================================================================
   ChronoEntity m_timer_nodes;
   ChronoEntity m_timer_algs;
   ChronoEntity m_timer_all;
-  bool m_locked_nodes = false;
-  bool m_locked_algs  = false;
-  bool m_locked_all   = false;
+  bool         m_locked_nodes = false;
+  bool         m_locked_algs  = false;
+  bool         m_locked_all   = false;
   // ==========================================================================
   std::vector<IDODNodeMapper*> m_nodeMappers;
-  std::vector<IDODAlgMapper*> m_algMappers;
+  std::vector<IDODAlgMapper*>  m_algMappers;
   // ==========================================================================
   // Properties
   Gaudi::Property<std::string> m_trapType{this, "IncidentName", "DataFault", "the type of handled Incident"};

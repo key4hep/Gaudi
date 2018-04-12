@@ -180,7 +180,7 @@ namespace Tuples
 
     private:
       const OBJECT* m_obj = nullptr;
-      FUNCTION m_fun;
+      FUNCTION      m_fun;
     };
 
     /** Templated helper functions allow to avoid heavy semantics of

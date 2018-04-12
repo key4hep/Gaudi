@@ -63,7 +63,7 @@ public: // functions
   virtual ~AlgorithmHistory();
 
   // Class IDs
-  const CLID& clID() const override { return classID(); }
+  const CLID&        clID() const override { return classID(); }
   static const CLID& classID();
 
   // Return the algorithm type.

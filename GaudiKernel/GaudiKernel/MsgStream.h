@@ -28,7 +28,7 @@ private:
    *  streams
    */
   typedef std::ios_base::fmtflags FLAG_TYPE;
-  typedef std::ios_base::iostate STATE_TYPE;
+  typedef std::ios_base::iostate  STATE_TYPE;
 
 protected:
   /// Pointer to message service if buffer has send
@@ -169,16 +169,16 @@ public:
   long flags() const { return isActive() ? m_stream.flags() : 0; }
   long flags( FLAG_TYPE v ) { return isActive() ? m_stream.flags( v ) : 0; }
   long setf( FLAG_TYPE v ) { return isActive() ? m_stream.setf( v ) : 0; }
-  int width() const { return isActive() ? m_stream.width() : 0; }
+  int                  width() const { return isActive() ? m_stream.width() : 0; }
   int width( int v ) { return isActive() ? m_stream.width( v ) : 0; }
-  char fill() const { return isActive() ? m_stream.fill() : (char)-1; }
+  char           fill() const { return isActive() ? m_stream.fill() : (char)-1; }
   char fill( char v ) { return isActive() ? m_stream.fill( v ) : (char)-1; }
-  int precision() const { return isActive() ? m_stream.precision() : 0; }
+  int             precision() const { return isActive() ? m_stream.precision() : 0; }
   int precision( int v ) { return isActive() ? m_stream.precision( v ) : 0; }
-  int rdstate() const { return isActive() ? m_stream.rdstate() : std::ios_base::failbit; }
-  int good() const { return isActive() ? m_stream.good() : 0; }
-  int eof() const { return isActive() ? m_stream.eof() : 0; }
-  int bad() const { return isActive() ? m_stream.bad() : 0; }
+  int                rdstate() const { return isActive() ? m_stream.rdstate() : std::ios_base::failbit; }
+  int                good() const { return isActive() ? m_stream.good() : 0; }
+  int                eof() const { return isActive() ? m_stream.eof() : 0; }
+  int                bad() const { return isActive() ? m_stream.bad() : 0; }
   long setf( FLAG_TYPE _f, FLAG_TYPE _m ) { return isActive() ? m_stream.setf( _f, _m ) : 0; }
   void unsetf( FLAG_TYPE _l )
   {

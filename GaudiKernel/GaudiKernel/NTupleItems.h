@@ -48,7 +48,7 @@ namespace NTuple
     _DataImp( const _DataImp& ) = delete;
 
   protected:
-    typedef const std::string& CSTR;
+    typedef const std::string&    CSTR;
     typedef const std::type_info& CTYPE;
     /// Entire buffer length
     long m_length;

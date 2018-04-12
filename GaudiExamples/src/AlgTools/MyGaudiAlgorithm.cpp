@@ -90,7 +90,7 @@ StatusCode MyGaudiAlgorithm::execute()
 
   // copy construct some handles
   ToolHandle<const IMyTool> h1( m_myPubToolHandle );
-  ToolHandle<IMyTool> h2( m_myPrivToolHandle );
+  ToolHandle<IMyTool>       h2( m_myPrivToolHandle );
   ToolHandle<const IMyTool> h3( m_myConstToolHandle );
   h1->doIt();
   h2->doIt();

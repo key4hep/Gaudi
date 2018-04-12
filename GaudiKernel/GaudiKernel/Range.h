@@ -68,7 +68,7 @@ namespace Gaudi
     template <class CONTAINER>
     struct container {
       typedef typename details::_container<CONTAINER, details::_has_typename_container_<CONTAINER>::value>::Container
-          Container;
+                                                 Container;
       typedef typename CONTAINER::const_iterator Iterator;
     };
     // =========================================================================
@@ -126,8 +126,8 @@ namespace Gaudi
   public:
     //
     typedef typename iter_traits::value_type value_type;
-    typedef typename iter_traits::reference reference;
-    typedef typename iter_traits::reference const_reference;
+    typedef typename iter_traits::reference  reference;
+    typedef typename iter_traits::reference  const_reference;
     //
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<iterator> const_reverse_iterator;

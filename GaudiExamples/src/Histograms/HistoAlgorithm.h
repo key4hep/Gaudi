@@ -35,8 +35,8 @@ private:
   IHistogram2D* m_h2DVar;
   IHistogram3D* m_h3D;
   IHistogram3D* m_h3DVar;
-  IProfile1D* m_p1D;
-  IProfile2D* m_p2D;
+  IProfile1D*   m_p1D;
+  IProfile2D*   m_p2D;
 };
 
 #endif // HISTOGRAMS_HISTOALGORITHM_H

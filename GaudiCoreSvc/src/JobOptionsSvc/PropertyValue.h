@@ -39,21 +39,21 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
       const Position& position() const { return position_; }
       // ----------------------------------------------------------------------------
-      std::string& String() { return boost::get<std::string>( value_ ); }
+      std::string&       String() { return boost::get<std::string>( value_ ); }
       const std::string& String() const { return boost::get<std::string>( value_ ); }
 
-      VectorOfStrings& Vector() { return boost::get<VectorOfStrings>( value_ ); }
+      VectorOfStrings&       Vector() { return boost::get<VectorOfStrings>( value_ ); }
       const VectorOfStrings& Vector() const { return boost::get<VectorOfStrings>( value_ ); }
 
-      MapOfStrings& Map() { return boost::get<MapOfStrings>( value_ ); }
+      MapOfStrings&       Map() { return boost::get<MapOfStrings>( value_ ); }
       const MapOfStrings& Map() const { return boost::get<MapOfStrings>( value_ ); }
       // ----------------------------------------------------------------------------
       std::string ToString() const;
-      bool HasPosition() const { return position_.Exists(); }
-      bool IsSimple() const;
-      bool IsVector() const;
-      bool IsMap() const;
-      bool IsReference() const { return is_reference_; };
+      bool        HasPosition() const { return position_.Exists(); }
+      bool        IsSimple() const;
+      bool        IsVector() const;
+      bool        IsMap() const;
+      bool        IsReference() const { return is_reference_; };
       // ----------------------------------------------------------------------------
       // Operators:
       // ----------------------------------------------------------------------------
@@ -64,9 +64,9 @@ namespace Gaudi
       const PropertyValue operator-( const PropertyValue& right );
       // bool operator == (const PropertyValue& right) const;
     private:
-      Value value_;
+      Value    value_;
       Position position_;
-      bool is_reference_;
+      bool     is_reference_;
       // ----------------------------------------------------------------------------
     }; //  class PropertyValue
     // ============================================================================
@@ -74,7 +74,7 @@ namespace Gaudi
     {
     public:
       PropertyValueException( const std::string& message ) : std::runtime_error( message ) {}
-      static PropertyValueException WrongLValue()
+      static PropertyValueException              WrongLValue()
       {
         return PropertyValueException( "Cannot apply +=/-= operation to left value." );
       }

@@ -117,7 +117,7 @@ public:
   std::istringstream& output( void ) { return *iss; }
 
 private:
-  FILE* pipe;
+  FILE*               pipe;
   std::istringstream* iss;
 };
 
@@ -198,12 +198,12 @@ public:
 private:
   struct CacheItem {
     CacheItem( Offset offset, const std::string& name ) : OFFSET( offset ), NAME( name ){};
-    Offset OFFSET;
+    Offset      OFFSET;
     std::string NAME;
   };
 
   typedef std::vector<CacheItem> SymbolCache;
-  SymbolCache m_symbolCache;
+  SymbolCache                    m_symbolCache;
 
   struct CacheItemComparator {
     bool operator()( const CacheItem& a, const int& b ) const { return a.OFFSET < b; }
@@ -213,11 +213,11 @@ private:
   void createOffsetMap( void )
   {
     std::string commandLine = "objdump -p " + NAME;
-    PipeReader objdump( commandLine.c_str() );
+    PipeReader  objdump( commandLine.c_str() );
     std::string oldname;
     std::string suffix;
-    int vmbase   = 0;
-    bool matched = false;
+    int         vmbase  = 0;
+    bool        matched = false;
     while ( objdump.output() ) {
       // Checks the following regexp
       //
@@ -235,8 +235,8 @@ private:
       if ( !skipString( "LOAD", lineptr, &lineptr ) ) continue;
       if ( !skipWhitespaces( lineptr, &lineptr ) ) continue;
       if ( !skipString( "off", lineptr, &lineptr ) ) continue;
-      char* endptr    = 0;
-      int initialBase = strtol( lineptr, &endptr, 16 );
+      char* endptr      = 0;
+      int   initialBase = strtol( lineptr, &endptr, 16 );
       if ( lineptr == endptr ) continue;
       lineptr = endptr;
       if ( !skipWhitespaces( lineptr, &lineptr ) ) continue;
@@ -254,16 +254,16 @@ private:
       exit( 1 );
     }
     std::string commandLine2 = "nm -t d -n " + NAME;
-    PipeReader nm( commandLine2.c_str() );
+    PipeReader  nm( commandLine2.c_str() );
     while ( nm.output() ) {
       std::string line;
       std::getline( nm.output(), line );
       if ( !nm.output() ) break;
       if ( line.empty() ) continue;
       // If line does not match "^(\\d+)[ ]\\S[ ](\S+)$", exit.
-      const char* begin = line.c_str();
-      char* endptr      = 0;
-      int address       = strtol( begin, &endptr, 10 );
+      const char* begin   = line.c_str();
+      char*       endptr  = 0;
+      int         address = strtol( begin, &endptr, 10 );
       if ( endptr == begin ) continue;
       if ( *endptr++ != ' ' ) continue;
       if ( isspace( *endptr++ ) ) continue;
@@ -287,7 +287,7 @@ private:
 };
 
 static std::map<std::string, unsigned int> modules_tot_samples;
-static std::map<std::string, FileInfo> libsInfo;
+static std::map<std::string, FileInfo>     libsInfo;
 static int nehalem;
 
 static std::map<std::string, std::map<std::string, double>> C_modules;
@@ -805,9 +805,9 @@ class S_module
 private:
   std::map<std::string, unsigned int> samples;
   unsigned int total_num_samples;
-  std::string module_name;
-  std::string arch;
-  std::string event;
+  std::string  module_name;
+  std::string  arch;
+  std::string  event;
   unsigned int cmask;
   unsigned int inv;
   unsigned int sp;
@@ -842,8 +842,8 @@ public:
   unsigned int get_smpl_period() { return sp; }
   unsigned int get_inv_mask() { return inv; }
   unsigned int get_c_mask() { return cmask; }
-  std::string get_arch() { return arch; }
-  std::string get_event() { return event; }
+  std::string  get_arch() { return arch; }
+  std::string  get_event() { return event; }
   void add_sample( const char* index, unsigned int value )
   {
     samples[index] += value;
@@ -865,7 +865,7 @@ public:
     samples.erase( max_pos );
     return true;
   }
-  std::string get_module_name() { return module_name; }
+  std::string  get_module_name() { return module_name; }
   unsigned int get_total_num_samples() { return total_num_samples; }
 };
 
@@ -1042,7 +1042,7 @@ const char* func_name( const char* demangled_symbol )
   }
   char* end_of_demangled_name = const_cast<char*>( strrchr( demangled_symbol, ')' ) );
   if ( end_of_demangled_name != NULL ) {
-    int pars = 1;
+    int  pars = 1;
     char c;
     while ( pars > 0 && end_of_demangled_name != demangled_symbol ) {
       c = *( --end_of_demangled_name );
@@ -1185,7 +1185,7 @@ void put_S_module( S_module* cur_module, const char* dir )
     char index[MAX_SAMPLE_INDEX_LENGTH];
     bzero( index, MAX_SAMPLE_INDEX_LENGTH );
     unsigned int value;
-    bool res = cur_module->get_max( index, &value );
+    bool         res = cur_module->get_max( index, &value );
     if ( !res ) break;
     char* sym_end = strchr( index, '%' );
     if ( sym_end == NULL ) // error
@@ -1239,19 +1239,19 @@ void put_S_module( S_module* cur_module, const char* dir )
 // returns 0 on success
 int read_S_file( const char* dir, const char* filename )
 {
-  char line[MAX_LINE_LENGTH];
-  char event[MAX_EVENT_NAME_LENGTH];
-  char arch[MAX_ARCH_NAME_LENGTH];
+  char         line[MAX_LINE_LENGTH];
+  char         event[MAX_EVENT_NAME_LENGTH];
+  char         arch[MAX_ARCH_NAME_LENGTH];
   unsigned int cmask;
   unsigned int inv;
   unsigned int sp;
-  char cur_module_name[MAX_MODULE_NAME_LENGTH];
+  char         cur_module_name[MAX_MODULE_NAME_LENGTH];
   bzero( line, MAX_LINE_LENGTH );
   bzero( event, MAX_EVENT_NAME_LENGTH );
   bzero( cur_module_name, MAX_MODULE_NAME_LENGTH );
   bzero( arch, MAX_ARCH_NAME_LENGTH );
 
-  S_module* cur_module    = new S_module();
+  S_module*    cur_module = new S_module();
   unsigned int module_num = 0;
 
   char path_name[MAX_FILENAME_LENGTH];
@@ -1295,10 +1295,10 @@ int read_S_file( const char* dir, const char* filename )
       else // symbol, libName, libOffset, value
       {
         unsigned int value = 0, libOffset = 0;
-        char symbol[MAX_SYM_LENGTH];
-        char libName[MAX_LIB_LENGTH];
-        char final_sym[MAX_SYM_MOD_LENGTH];
-        char final_lib[MAX_LIB_MOD_LENGTH];
+        char         symbol[MAX_SYM_LENGTH];
+        char         libName[MAX_LIB_LENGTH];
+        char         final_sym[MAX_SYM_MOD_LENGTH];
+        char         final_lib[MAX_LIB_MOD_LENGTH];
         bzero( symbol, MAX_SYM_LENGTH );
         bzero( libName, MAX_LIB_LENGTH );
         bzero( final_sym, MAX_SYM_MOD_LENGTH );
@@ -1316,7 +1316,7 @@ int read_S_file( const char* dir, const char* filename )
           }
           const char* temp_sym = libsInfo[realPathName].symbolByOffset( libOffset );
           if ( temp_sym != NULL && strlen( temp_sym ) > 0 ) {
-            int status;
+            int   status;
             char* demangled_symbol = abi::__cxa_demangle( temp_sym, NULL, NULL, &status );
             if ( status == 0 ) {
               strcpy( final_sym, demangled_symbol );
@@ -1444,16 +1444,16 @@ int read_C_file( const char* dir, const char* filename )
   bzero( cmask_str, MAX_CMASK_STR_LENGTH );
   bzero( inv_str, MAX_INV_STR_LENGTH );
   bzero( sp_str, MAX_SP_STR_LENGTH );
-  int number_of_modules = 0;
-  long cur_sum          = 0;
-  int no_of_values      = 0;
+  int  number_of_modules = 0;
+  long cur_sum           = 0;
+  int  no_of_values      = 0;
   char path_name[MAX_FILENAME_LENGTH];
   bzero( path_name, MAX_FILENAME_LENGTH );
   strcpy( path_name, dir );
   strcat( path_name, "/" );
   strcat( path_name, filename );
-  FILE* fp = fopen( path_name, "r" );
-  int stat = fscanf( fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str );
+  FILE* fp   = fopen( path_name, "r" );
+  int   stat = fscanf( fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str );
   if ( stat != 5 ) {
     std::cerr << "ERROR: failed to parse " << path_name << std::endl;
     exit( 1 );
@@ -1687,9 +1687,9 @@ int main( int argc, char* argv[] )
     }
   }
 
-  DIR* dp;
+  DIR*           dp;
   struct dirent* dirp;
-  int num_of_modules = 0;
+  int            num_of_modules = 0;
   if ( ( dp = opendir( argv[1] ) ) == NULL ) {
     printf( "Error(%d) opening %s\n", errno, argv[1] );
     return errno;

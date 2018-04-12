@@ -49,8 +49,8 @@ namespace
   double fun_gsl( const gsl_vector* v, void* params )
   {
     FuncMinimum::FuncMinimumMisc* local = static_cast<FuncMinimum::FuncMinimumMisc*>( params );
-    const FuncMinimum::GenFunc& eq      = *( local->equation() );
-    Argument& arg                       = local->argument();
+    const FuncMinimum::GenFunc&   eq    = *( local->equation() );
+    Argument&                     arg   = local->argument();
 
     for ( unsigned int i = 0; i < v->size; ++i ) {
       arg[i] = gsl_vector_get( v, i );
@@ -63,8 +63,8 @@ namespace
   void dfun_gsl( const gsl_vector* v, void* params, gsl_vector* df )
   {
     FuncMinimum::FuncMinimumMisc* local = static_cast<FuncMinimum::FuncMinimumMisc*>( params );
-    const FuncMinimum::Gradient& grad   = local->gradient();
-    Argument& arg                       = local->argument();
+    const FuncMinimum::Gradient&  grad  = local->gradient();
+    Argument&                     arg   = local->argument();
 
     for ( unsigned int i = 0; i < v->size; ++i ) {
       arg[i] = gsl_vector_get( v, i );
@@ -106,9 +106,9 @@ StatusCode FuncMinimum::minimum( const IFuncMinimum::GenFunc& func, IFuncMinimum
   function.n      = vect.vector.size;
   function.params = (void*)&local;
 
-  size_t iter                             = 0;
-  int status                              = 0;
-  const gsl_multimin_fdfminimizer_type* T = m_type;
+  size_t                                iter   = 0;
+  int                                   status = 0;
+  const gsl_multimin_fdfminimizer_type* T      = m_type;
 
   gsl_multimin_fdfminimizer* s;
 

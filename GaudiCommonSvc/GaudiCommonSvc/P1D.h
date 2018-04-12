@@ -35,7 +35,7 @@ namespace Gaudi
     bool fill( double x, double y, double weight = 1. ) override;
     virtual bool setBinContents( int i, int entries, double height, double error, double spread, double centre );
     /// Retrieve reference to class defininition identifier
-    const CLID& clID() const override { return classID(); }
+    const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_ProfileH; }
   }; // end class IProfile1D
 } // end namespace Gaudi

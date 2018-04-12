@@ -1,7 +1,7 @@
 from Gaudi.Configuration import *
 from Configurables import GaudiExamplesCommonConf, CPUCruncher, HiveSlimEventLoopMgr, HiveWhiteBoard, ForwardSchedulerSvc
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Metaconfig
 
 NUMBEROFEVENTS = 23
@@ -21,7 +21,7 @@ Scale = SCALE
 Verbosity = VERBOSITY
 
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 
 def load_brunel_scenario(filename):

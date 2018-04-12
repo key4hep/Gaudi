@@ -30,7 +30,7 @@ private:
   struct StatCodeDat final {
     std::string fnc;
     std::string lib;
-    int count;
+    int         count;
   };
 
   void parseFilter( const std::string& str, std::string& fnc, std::string& lib );
@@ -38,9 +38,9 @@ private:
   void filterLib( const std::string& );
 
   Gaudi::Property<std::vector<std::string>> m_pFilter{this, "Filter"};
-  Gaudi::Property<bool> m_abort{this, "AbortOnError", false};
-  Gaudi::Property<bool> m_suppress{this, "SuppressCheck", false};
-  Gaudi::Property<bool> m_dict{this, "IgnoreDicts", true};
+  Gaudi::Property<bool>                     m_abort{this, "AbortOnError", false};
+  Gaudi::Property<bool>                     m_suppress{this, "SuppressCheck", false};
+  Gaudi::Property<bool>                     m_dict{this, "IgnoreDicts", true};
 
   std::map<std::string, StatCodeDat> m_dat;
   std::set<std::string> m_filterfnc, m_filterlib;

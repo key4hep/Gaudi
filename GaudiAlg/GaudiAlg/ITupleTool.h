@@ -34,7 +34,7 @@ public:
   DeclareInterfaceID( ITupleTool, 2, 0 );
 
   typedef Tuples::TupleID TupleID;
-  typedef Tuples::Tuple Tuple;
+  typedef Tuples::Tuple   Tuple;
 
   /** get N-tuple object ( book on-demand ) with unique identifier
    *

@@ -65,17 +65,17 @@ StatusCode RootDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pOb
 StatusCode RootDirectoryCnv::updateObjRefs( IOpaqueAddress* pAddr, DataObject* pObject )
 {
   typedef vector<RootNTupleDescriptor*> REFS;
-  REFS refs;
-  StatusCode status = StatusCode( StatusCode::FAILURE, true );
+  REFS                                  refs;
+  StatusCode                            status = StatusCode( StatusCode::FAILURE, true );
   if ( pAddr ) {
     IRegistry* pReg = pAddr->registry();
     if ( pReg ) {
       typedef vector<IRegistry*> Leaves;
-      string ident            = pReg->identifier();
-      string fname            = fileName( pReg );
-      string cntName          = containerName( pReg );
-      RootDataConnection* con = nullptr;
-      Leaves leaves;
+      string                     ident   = pReg->identifier();
+      string                     fname   = fileName( pReg );
+      string                     cntName = containerName( pReg );
+      RootDataConnection*        con     = nullptr;
+      Leaves                     leaves;
       status = m_dbMgr->connectDatabase( fname, IDataConnection::READ, &con );
       if ( status.isSuccess() ) {
         TBranch* b = con->getBranch( "##Descriptors", "GaudiStatisticsDescription" );
@@ -112,7 +112,7 @@ StatusCode RootDirectoryCnv::updateObjRefs( IOpaqueAddress* pAddr, DataObject* p
                 IOpaqueAddress* pA = nullptr;
                 if ( ref->clid == CLID_StatisticsDirectory || ref->clid == CLID_StatisticsFile ||
                      ref->clid == CLID_RowWiseTuple || ref->clid == CLID_ColumnWiseTuple ) {
-                  string spar[]        = {fname, ref->container};
+                  string        spar[] = {fname, ref->container};
                   unsigned long ipar[] = {~0x0UL, ~0x0UL};
                   status               = m_dbMgr->createAddress( repSvcType(), ref->clid, spar, ipar, pA );
                 }

@@ -24,7 +24,7 @@ public:
   HistoryObj()          = default;
   virtual ~HistoryObj() = default;
 
-  const CLID& clID() const override { return classID(); }
+  const CLID&        clID() const override { return classID(); }
   static const CLID& classID();
   static std::string convert_string( const std::string& );
 

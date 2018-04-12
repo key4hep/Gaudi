@@ -64,7 +64,7 @@ namespace GaudiKernelTest
 
       // Test move of a vector
       {
-        auto adw = AnyDataWrapper<V>( {1, 2, 3, 4} );
+        auto  adw = AnyDataWrapper<V>( {1, 2, 3, 4} );
         VSize s4( 4 );
         CPPUNIT_ASSERT_EQUAL( s4, ( adw.getData() ).size() );
       }

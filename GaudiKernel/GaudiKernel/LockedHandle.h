@@ -58,7 +58,7 @@ public:
     operator T&() { return *m_ptr; }
 
   private:
-    T* m_ptr{nullptr};
+    T*         m_ptr{nullptr};
     MutexType* m_mutex{nullptr};
   };
 
@@ -77,7 +77,7 @@ public:
     operator const T&() const { return *m_ptr; }
 
   private:
-    const T* m_ptr;
+    const T*   m_ptr;
     MutexType* m_mutex;
   };
 
@@ -96,7 +96,7 @@ public:
   operator bool() const { return m_ptr; }
 
 private:
-  T* m_ptr;
+  T*                 m_ptr;
   mutable MutexType* m_mutex;
 };
 

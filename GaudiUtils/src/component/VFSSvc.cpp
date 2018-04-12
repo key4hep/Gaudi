@@ -76,7 +76,7 @@ std::unique_ptr<std::istream> VFSSvc::open( const std::string& url )
   }
 
   const std::string url_prefix( url, 0, pos );
-  const auto handlers = m_urlHandlers.find( url_prefix );
+  const auto        handlers = m_urlHandlers.find( url_prefix );
   if ( handlers == m_urlHandlers.end() ) {
     // if we do not have a handler for the URL prefix,
     // use the fall back one

@@ -44,7 +44,7 @@ protected:
   void loadRecords( IRegistry* pReg );
 
 protected:
-  Gaudi::Property<bool> m_autoLoad{this, "AutoLoad", true, "autoload of records"};
+  Gaudi::Property<bool>        m_autoLoad{this, "AutoLoad", true, "autoload of records"};
   Gaudi::Property<std::string> m_incidentName{this, "IncidentName", "",
                                               "name of incident to be fired if new record arrives"};
   Gaudi::Property<std::string> m_saveIncidentName{this, "SaveIncident", "SAVE_RECORD", "name of the 'save' incident"};

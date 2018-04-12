@@ -15,7 +15,7 @@ LoopAlg::LoopAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorith
 StatusCode LoopAlg::initialize()
 //------------------------------------------------------------------------------
 {
-  IService* pService = nullptr;
+  IService*  pService = nullptr;
   const bool CREATENOW( true );
   return service( "ServiceB", pService, CREATENOW );
 }

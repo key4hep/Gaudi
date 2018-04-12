@@ -28,9 +28,9 @@ namespace HepRndm
   protected:
     mutable Gaudi::Property<std::vector<long>> m_seeds{this, "Seeds", {}, "seed table"};
 
-    Gaudi::Property<int> m_col{this, "Column", 0};
-    Gaudi::Property<int> m_row{this, "Row", 1};
-    Gaudi::Property<int> m_lux{this, "Luxury", 3};
+    Gaudi::Property<int>  m_col{this, "Column", 0};
+    Gaudi::Property<int>  m_row{this, "Row", 1};
+    Gaudi::Property<int>  m_lux{this, "Luxury", 3};
     Gaudi::Property<bool> m_useTable{this, "UseTable", false};
     Gaudi::Property<bool> m_setSingleton{this, "SetSingleton", false};
 

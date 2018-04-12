@@ -295,7 +295,7 @@ SmartIF<ISvcLocator>& Service::serviceLocator() const { return m_svcLocator; }
 StatusCode Service::setProperties()
 {
   const bool CREATEIF( true );
-  auto jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", CREATEIF );
+  auto       jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", CREATEIF );
   if ( !jos ) {
     throw GaudiException( "Service [JobOptionsSvc] not found", name(), StatusCode::FAILURE );
   }
@@ -331,7 +331,7 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
 
   // Initialize the default value from ApplicationMgr AuditAlgorithms
   Gaudi::Property<bool> audit( false );
-  auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
+  auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
   if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) {
     audit.assign( appMgr->getProperty( "AuditServices" ) );
   }

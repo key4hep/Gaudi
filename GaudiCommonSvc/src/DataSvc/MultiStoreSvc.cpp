@@ -40,17 +40,17 @@
 class MultiStoreSvc;
 
 typedef const std::string CSTR;
-typedef IDataStoreAgent AGENT;
-typedef DataObject OBJECT;
-typedef IOpaqueAddress ADDRESS;
-typedef StatusCode STATUS;
+typedef IDataStoreAgent   AGENT;
+typedef DataObject        OBJECT;
+typedef IOpaqueAddress    ADDRESS;
+typedef StatusCode        STATUS;
 
 namespace
 {
   struct Partition final {
     SmartIF<IDataProviderSvc> dataProvider;
-    SmartIF<IDataManagerSvc> dataManager;
-    std::string name;
+    SmartIF<IDataManagerSvc>  dataManager;
+    std::string               name;
   };
 }
 
@@ -71,11 +71,11 @@ protected:
   typedef std::vector<std::string> PartitionDefs;
   typedef std::map<std::string, Partition> Partitions;
 
-  Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110, "CLID of root entry"};
-  Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
+  Gaudi::Property<CLID>          m_rootCLID{this, "RootCLID", 110, "CLID of root entry"};
+  Gaudi::Property<std::string>   m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<PartitionDefs> m_partitionDefs{this, "Partitions", {}, "datastore partition definitions"};
-  Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc", "data loader name"};
-  Gaudi::Property<std::string> m_defaultPartition{this, "DefaultPartition", "Default", "default partition name"};
+  Gaudi::Property<std::string>   m_loader{this, "DataLoader", "EventPersistencySvc", "data loader name"};
+  Gaudi::Property<std::string>   m_defaultPartition{this, "DefaultPartition", "Default", "default partition name"};
 
   /// Pointer to data loader service
   SmartIF<IConversionSvc> m_dataLoader;
@@ -84,11 +84,11 @@ protected:
   /// Root type (address or object)
   enum { no_type = 0, address_type = 1, object_type = 2 };
   struct tagROOT {
-    int type = no_type;
+    int         type = no_type;
     std::string path;
     union {
       ADDRESS* address;
-      OBJECT* object;
+      OBJECT*  object;
     } root;
     tagROOT() { root.address = nullptr; }
   } m_root;

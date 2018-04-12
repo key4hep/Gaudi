@@ -8,7 +8,7 @@ ServiceA::ServiceA( const std::string& nam, ISvcLocator* svcLoc ) : Service( nam
 StatusCode ServiceA::initialize()
 {
   Service::initialize().ignore();
-  IService* pService( 0 );
+  IService*  pService( 0 );
   const bool CREATENOW( true );
   return service( "ServiceB", pService, CREATENOW );
 }

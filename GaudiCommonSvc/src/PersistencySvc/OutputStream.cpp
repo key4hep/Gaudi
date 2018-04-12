@@ -189,7 +189,7 @@ StatusCode OutputStream::writeObjects()
         }
         for ( auto& j : *sel ) {
           try {
-            IRegistry* pReg                 = j->registry();
+            IRegistry*       pReg           = j->registry();
             const StatusCode iret           = m_pConversionSvc->fillRepRefs( pReg->address(), j );
             if ( !iret.isSuccess() ) status = iret;
           } catch ( const std::exception& excpt ) {
@@ -266,7 +266,7 @@ StatusCode OutputStream::collectObjects()
 
   // Collect objects dependent on particular algorithms
   for ( const auto& iAlgItems : m_algDependentItems ) {
-    Algorithm* alg     = iAlgItems.first;
+    Algorithm*   alg   = iAlgItems.first;
     const Items& items = iAlgItems.second;
     if ( alg->isExecuted() && alg->filterPassed() ) {
       ON_DEBUG
@@ -289,7 +289,7 @@ StatusCode OutputStream::collectObjects()
 
   if ( status.isSuccess() ) {
     // Remove duplicates from the list of objects, preserving the order in the list
-    std::set<DataObject*> unique;
+    std::set<DataObject*>    unique;
     std::vector<DataObject*> tmp; // temporary vector with the reduced list
     tmp.reserve( m_objects.size() );
     for ( auto& o : m_objects ) {
@@ -318,8 +318,8 @@ void OutputStream::clearItems( Items& itms )
 // Find single item identified by its path (exact match)
 DataStoreItem* OutputStream::findItem( const std::string& path )
 {
-  auto matchPath = [&]( const DataStoreItem* i ) { return i->path() == path; };
-  auto i         = std::find_if( m_itemList.begin(), m_itemList.end(), matchPath );
+  auto matchPath                               = [&]( const DataStoreItem* i ) { return i->path() == path; };
+  auto                                       i = std::find_if( m_itemList.begin(), m_itemList.end(), matchPath );
   if ( i == m_itemList.end() ) {
     i = std::find_if( m_optItemList.begin(), m_optItemList.end(), matchPath );
     if ( i == m_optItemList.end() ) return nullptr;
@@ -330,8 +330,8 @@ DataStoreItem* OutputStream::findItem( const std::string& path )
 // Add item to output streamer list
 void OutputStream::addItem( Items& itms, const std::string& descriptor )
 {
-  int level            = 0;
-  auto sep             = descriptor.rfind( "#" );
+  int         level    = 0;
+  auto        sep      = descriptor.rfind( "#" );
   std::string obj_path = descriptor.substr( 0, sep );
   if ( sep != std::string::npos ) {
     std::string slevel = descriptor.substr( sep + 1 );
@@ -408,8 +408,8 @@ StatusCode OutputStream::connectConversionSvc()
   // If this is not desired, then a specialized OutputStream must overwrite
   // this value.
   if ( !dbType.empty() || !svc.empty() ) {
-    std::string typ = !dbType.empty() ? dbType : svc;
-    auto ipers      = serviceLocator()->service<IPersistencySvc>( m_persName );
+    std::string typ   = !dbType.empty() ? dbType : svc;
+    auto        ipers = serviceLocator()->service<IPersistencySvc>( m_persName );
     if ( !ipers ) {
       fatal() << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
       return StatusCode::FAILURE;
@@ -504,7 +504,7 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
 }
 
 StatusCode OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
-                                           std::vector<Algorithm*>& theAlgs )
+                                           std::vector<Algorithm*>&                   theAlgs )
 {
   // Reset the list of Algorithms
   theAlgs.clear();

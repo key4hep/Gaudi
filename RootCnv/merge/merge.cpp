@@ -23,9 +23,9 @@ static void err_handler( Int_t level, Bool_t abort_bool, const char* location, c
 
 int main( int argc, char** argv )
 {
-  bool dbg = false, fixup = true;
+  bool           dbg = false, fixup = true;
   vector<string> input;
-  string output;
+  string         output;
   for ( int i = 1; i < argc; ++i ) {
     if ( *argv[i] == '-' ) {
       switch (::toupper( *( argv[i] + 1 ) ) ) {
@@ -58,8 +58,8 @@ int main( int argc, char** argv )
   gROOT->SetBatch( kTRUE );
   s_err = SetErrorHandler( err_handler );
   for ( size_t i = 0; i < input.size(); ++i ) {
-    const string& in = input[i];
-    bool do_fixup    = fixup && ( ( i + 1 ) == input.size() );
+    const string& in       = input[i];
+    bool          do_fixup = fixup && ( ( i + 1 ) == input.size() );
     //::printf("+++ Target:%s\n+++ Source file:%s Fixup:%s Dbg:%s %d %d\n",
     //         output.c_str(),in.c_str(),do_fixup ? "YES" : "NO",dbg ? "YES" : "NO",i,input.size());
     int result = merge( output.c_str(), in.c_str(), do_fixup, dbg );
