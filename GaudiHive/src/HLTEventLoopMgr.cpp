@@ -265,7 +265,7 @@ StatusCode HLTEventLoopMgr::initialize()
   m_algname_vect.resize( algsNumber );
   for ( IAlgorithm* algo : m_algos ) {
     const std::string& name    = algo->name();
-    auto index                 = precSvc->getRules()->getAlgorithmNode( name )->getAlgoIndex();
+    auto               index   = precSvc->getRules()->getAlgorithmNode( name )->getAlgoIndex();
     m_algname_index_map[name]  = index;
     m_algname_vect.at( index ) = name;
     debug() << "  . " << algo->name() << endmsg;
@@ -286,7 +286,7 @@ StatusCode HLTEventLoopMgr::finalize()
       // skip /stat entry!
       sc = std::accumulate( begin( objects ), end( objects ), sc, [&]( StatusCode s, const auto& i ) {
         IOpaqueAddress* pAddr = nullptr;
-        StatusCode iret       = m_histoPersSvc->createRep( i, pAddr );
+        StatusCode      iret  = m_histoPersSvc->createRep( i, pAddr );
         if ( iret.isSuccess() ) i->registry()->setAddress( pAddr );
         return s.isFailure() ? s : iret;
       } );
@@ -439,7 +439,7 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
 StatusCode HLTEventLoopMgr::declareEventRootAddress()
 {
   IOpaqueAddress* pAddr = nullptr;
-  StatusCode sc         = m_evtSelector->next( *m_evtSelContext );
+  StatusCode      sc    = m_evtSelector->next( *m_evtSelContext );
   if ( sc.isSuccess() ) {
     // Create root address and assign address to data service
     sc = m_evtSelector->createAddress( *m_evtSelContext, pAddr );
@@ -547,9 +547,6 @@ tbb::task* HLTEventLoopMgr::HLTExecutionTask::execute()
       log() << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ialg->name() << endmsg;
       eventfailed = true;
     }
-
-    // Commit all DataHandles
-    this_algo->commitHandles();
 
     // DP it is important to propagate the failure of an event.
     // We need to stop execution when this happens so that execute run can

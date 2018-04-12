@@ -209,8 +209,6 @@ public:
 public:
   void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
-  void commitHandles() override;
-
 public:
   void registerTool( IAlgTool* tool ) const
   {

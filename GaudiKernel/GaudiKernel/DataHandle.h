@@ -39,7 +39,7 @@ namespace Gaudi
     virtual ~DataHandle() = default;
 
     virtual void setOwner( IDataHandleHolder* o ) { m_owner = o; }
-    virtual IDataHandleHolder* owner() const { return m_owner; }
+    virtual IDataHandleHolder*                owner() const { return m_owner; }
 
     virtual Mode mode() const { return m_mode; }
 
@@ -47,13 +47,12 @@ namespace Gaudi
     virtual void updateKey( const std::string& key ) const { m_key.updateKey( key ); }
 
     virtual const std::string& objKey() const { return m_key.key(); }
-    virtual const DataObjID& fullKey() const { return m_key; }
+    virtual const DataObjID&   fullKey() const { return m_key; }
 
     virtual void reset( bool ){};
-    virtual StatusCode commit() { return StatusCode::SUCCESS; }
 
     virtual std::string pythonRepr() const;
-    virtual bool init() { return true; }
+    virtual bool        init() { return true; }
 
     // is this a ConditionHandle?
     virtual bool isCondition() const { return m_isCond; }
@@ -65,7 +64,7 @@ namespace Gaudi
      * change in case the object had alternative names, and it should not
      * be visible to the end user, for which the Handle is still the same
      */
-    mutable DataObjID m_key    = {"NONE"};
+    mutable DataObjID  m_key   = {"NONE"};
     IDataHandleHolder* m_owner = nullptr;
 
   private:
