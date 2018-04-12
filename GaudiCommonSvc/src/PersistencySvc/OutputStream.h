@@ -15,7 +15,7 @@
 
 // forward declarations
 class IIncidentSvc;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 class IConversionSvc;
 struct IDataManagerSvc;
 class OutputStreamAgent;
@@ -30,8 +30,8 @@ class OutputStream : public Algorithm
 {
 public:
   typedef std::vector<DataStoreItem*> Items;
-  typedef std::vector<std::string> ItemNames;
-  typedef std::map<Algorithm*, Items> AlgDependentItems;
+  typedef std::vector<std::string>    ItemNames;
+  typedef std::map<Algorithm*, Items>      AlgDependentItems;
   typedef std::map<std::string, ItemNames> AlgDependentItemNames;
 
 protected:

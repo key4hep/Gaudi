@@ -6,7 +6,7 @@
 #include "GaudiKernel/Kernel.h"
 
 // Forward declarations
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 
 /** @class GenericAddress GenericAddress.h GaudiKernel/GenericAddress.h
 

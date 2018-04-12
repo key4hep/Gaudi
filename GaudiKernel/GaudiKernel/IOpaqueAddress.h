@@ -9,7 +9,7 @@
 #include "GaudiKernel/Kernel.h"
 
 // forward declarations
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 
 /** @class IOpaqueAddress IOpaqueAddress.h GaudiKernel/IOpaqueAddress.h
 

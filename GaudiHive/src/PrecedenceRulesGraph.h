@@ -46,10 +46,10 @@ namespace precedence
     {
     }
     std::string m_name;
-    int m_index{-1};
-    int m_rank{-1};
-    int m_runtime{-1}; // ns
-    int m_eccentricity{-1};
+    int         m_index{-1};
+    int         m_rank{-1};
+    int         m_runtime{-1}; // ns
+    int         m_eccentricity{-1};
   };
 
   using PrecTrace       = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoTraceProps>;
@@ -70,9 +70,9 @@ namespace precedence
     }
 
     std::string m_name{""};
-    int m_nodeIndex{-1};
-    int m_algoIndex{-1};
-    int m_rank{-1};
+    int         m_nodeIndex{-1};
+    int         m_algoIndex{-1};
+    int         m_rank{-1};
     /// Algorithm representative behind the AlgorithmNode
     Algorithm* m_algorithm{nullptr};
 
@@ -99,7 +99,7 @@ namespace precedence
     }
 
     std::string m_name;
-    uint m_nodeIndex;
+    uint        m_nodeIndex;
 
     /// Whether all daughters will be evaluated concurrently or sequentially
     bool m_modeConcurrent;
@@ -203,7 +203,7 @@ namespace precedence
         : m_slot( slot ), m_conditionsEnabled( conditionsEnabled )
     {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream log{msgSvc, "EntityState.Getter"};
+      MsgStream            log{msgSvc, "EntityState.Getter"};
 
       // Figure if we can discover the data object states
       m_whiteboard = svcLocator->service<IHiveWhiteBoard>( "EventDataSvc", false );
@@ -258,15 +258,15 @@ namespace precedence
     EventSlot m_slot;
 
     SmartIF<IHiveWhiteBoard> m_whiteboard;
-    SmartIF<ICondSvc> m_condSvc;
-    bool m_conditionsEnabled{false};
+    SmartIF<ICondSvc>        m_condSvc;
+    bool                     m_conditionsEnabled{false};
   };
 
   struct StartTime : static_visitor<std::string> {
     StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
     {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream log{msgSvc, "StartTime.Getter"};
+      MsgStream            log{msgSvc, "StartTime.Getter"};
 
       // Figure if we can discover the algorithm timings
       m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
@@ -300,7 +300,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot m_slot;
+    EventSlot             m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
@@ -308,7 +308,7 @@ namespace precedence
     EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
     {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream log{msgSvc, "EndTime.Getter"};
+      MsgStream            log{msgSvc, "EndTime.Getter"};
 
       // Figure if we can discover the algorithm timings
       m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
@@ -341,7 +341,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot m_slot;
+    EventSlot             m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
@@ -349,7 +349,7 @@ namespace precedence
     Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
     {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
-      MsgStream log{msgSvc, "Duration.Getter"};
+      MsgStream            log{msgSvc, "Duration.Getter"};
 
       // Figure if we can discover the algorithm timings
       m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
@@ -381,7 +381,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot m_slot;
+    EventSlot             m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
@@ -409,7 +409,7 @@ namespace precedence
 struct Cause {
   enum class source { Root, Task };
 
-  source m_source;
+  source      m_source;
   std::string m_sourceName;
 };
 
@@ -455,7 +455,7 @@ namespace concurrency
     /// Translation between state id and name
     std::string stateToString( const int& stateId ) const;
     unsigned int m_nodeIndex;
-    std::string m_nodeName;
+    std::string  m_nodeName;
   };
 
   class DecisionNode : public ControlFlowNode
@@ -634,7 +634,7 @@ namespace concurrency
     PrecedenceRulesGraph* m_graph;
 
   private:
-    DataObjID m_data_object_path;
+    DataObjID                   m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
   };
@@ -744,7 +744,7 @@ namespace concurrency
     }
 
     /// BGL-based facilities
-    void enableAnalysis() { m_enableAnalysis = true; };
+    void         enableAnalysis() { m_enableAnalysis = true; };
     PRVertexDesc node( const std::string& ) const;
 
     /// Print out all data origins and destinations, as reflected in the EF graph
@@ -770,7 +770,7 @@ namespace concurrency
     /// Index: map of data path to DataNode
     DataNodesMap m_dataPathToDataNodeMap;
     /// Indexes: maps of algorithm's name to algorithm's inputs/outputs
-    AlgoInputsMap m_algoNameToAlgoInputsMap;
+    AlgoInputsMap  m_algoNameToAlgoInputsMap;
     AlgoOutputsMap m_algoNameToAlgoOutputsMap;
 
     /// Total number of nodes in the graph
@@ -780,7 +780,7 @@ namespace concurrency
 
     /// Service locator (needed to access the MessageSvc)
     mutable SmartIF<ISvcLocator> m_svcLocator;
-    const std::string m_name;
+    const std::string            m_name;
 
     const std::chrono::system_clock::time_point m_initTime;
 

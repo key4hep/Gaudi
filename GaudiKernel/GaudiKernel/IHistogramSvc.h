@@ -3,6 +3,7 @@
 
 // Include files
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IService.h"
 #include <iostream>
 #include <string>

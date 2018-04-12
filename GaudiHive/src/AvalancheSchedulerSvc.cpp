@@ -132,8 +132,8 @@ StatusCode AvalancheSchedulerSvc::initialize()
   Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( m_maxEventsInFlight );
 
   // Get the list of algorithms
-  const std::list<IAlgorithm*>& algos = m_algResourcePool->getFlatAlgList();
-  const unsigned int algsNumber       = algos.size();
+  const std::list<IAlgorithm*>& algos      = m_algResourcePool->getFlatAlgList();
+  const unsigned int            algsNumber = algos.size();
   info() << "Found " << algsNumber << " algorithms" << endmsg;
 
   /* Dependencies
@@ -292,7 +292,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
   m_algname_vect.resize( algsNumber );
   for ( IAlgorithm* algo : algos ) {
     const std::string& name    = algo->name();
-    auto index                 = precSvc->getRules()->getAlgorithmNode( name )->getAlgoIndex();
+    auto               index   = precSvc->getRules()->getAlgorithmNode( name )->getAlgoIndex();
     m_algname_index_map[name]  = index;
     m_algname_vect.at( index ) = name;
   }
@@ -371,7 +371,7 @@ void AvalancheSchedulerSvc::activate()
   }
 
   // Wait for actions pushed into the queue by finishing tasks.
-  action thisAction;
+  action     thisAction;
   StatusCode sc( StatusCode::SUCCESS );
 
   m_isActive = ACTIVE;
@@ -467,7 +467,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
   auto action = [this, eventContext]() -> StatusCode {
     // Event processing slot forced to be the same as the wb slot
     const unsigned int thisSlotNum = eventContext->slot();
-    EventSlot& thisSlot            = m_eventSlots[thisSlotNum];
+    EventSlot&         thisSlot    = m_eventSlots[thisSlotNum];
     if ( !thisSlot.complete ) {
       fatal() << "The slot " << thisSlotNum << " is supposed to be a finished event but it's not" << endmsg;
       return StatusCode::FAILURE;
@@ -649,7 +649,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
     int iSlot = thisSlotPtr->eventContext->slot();
 
     // Cache the states of the algos to improve readability and performance
-    auto& thisSlot                      = m_eventSlots[iSlot];
+    auto&                thisSlot       = m_eventSlots[iSlot];
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     // Perform the I->CR->DR transitions
@@ -934,8 +934,8 @@ StatusCode AvalancheSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si
   if ( m_algosInFlight == m_maxAlgosInFlight ) return StatusCode::FAILURE;
 
   const std::string& algName( index2algname( iAlgo ) );
-  IAlgorithm* ialgoPtr = nullptr;
-  StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
+  IAlgorithm*        ialgoPtr = nullptr;
+  StatusCode         sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
 
@@ -997,8 +997,8 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
   // bool IOBound = m_precSvc->isBlocking(algName);
 
   const std::string& algName( index2algname( iAlgo ) );
-  IAlgorithm* ialgoPtr = nullptr;
-  StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
+  IAlgorithm*        ialgoPtr = nullptr;
+  StatusCode         sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
 
@@ -1138,8 +1138,8 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( EventContext const* sourceC
                                                      EventContext* viewContext )
 {
   // Find the top-level slot, to attach the sub-slot to
-  int const topSlotIndex = sourceContext->slot();
-  EventSlot& topSlot     = m_eventSlots[topSlotIndex];
+  int const  topSlotIndex = sourceContext->slot();
+  EventSlot& topSlot      = m_eventSlots[topSlotIndex];
 
   //  Prevent view nesting - this doesn't work because EventContext is copied when passed to algorithm
   /*if ( sourceContext != topSlot.eventContext )
