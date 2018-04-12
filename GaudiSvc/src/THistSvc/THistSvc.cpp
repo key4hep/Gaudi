@@ -152,7 +152,7 @@ StatusCode THistSvc::initialize()
       bool all_good = true;
       // register input/output files...
       for ( const auto& reg : m_files ) {
-        const std::string& fname = reg.second.first->GetName();
+        const std::string&                  fname = reg.second.first->GetName();
         const IIoComponentMgr::IoMode::Type iomode =
             ( reg.second.second == THistSvc::READ ? IIoComponentMgr::IoMode::READ : IIoComponentMgr::IoMode::WRITE );
         if ( !iomgr->io_register( this, iomode, fname ).isSuccess() ) {
@@ -280,7 +280,7 @@ StatusCode THistSvc::finalize()
     if ( itr.second.second == SHARE ) {
       // Merge File
       void* vfile = nullptr;
-      int returncode =
+      int   returncode =
           p_fileMgr->open( Io::ROOT, name(), m_sharedFiles[itr.first], Io::WRITE | Io::APPEND, vfile, "HIST" );
 
       if ( returncode ) {
@@ -405,7 +405,7 @@ StatusCode THistSvc::regTree( const std::string& id )
 StatusCode THistSvc::regTree( const std::string& id, std::unique_ptr<TTree> tree )
 {
   StatusCode sc = regHist_i( std::move( tree ), id, false );
-  TTree* tr     = nullptr;
+  TTree*     tr = nullptr;
   if ( getTree( id, tr ).isSuccess() && sc.isSuccess() ) {
     if ( m_autoSave != 0 ) {
       tr->SetAutoSave( m_autoSave );
@@ -418,8 +418,8 @@ StatusCode THistSvc::regTree( const std::string& id, std::unique_ptr<TTree> tree
 StatusCode THistSvc::regTree( const std::string& id, TTree* tree_ptr )
 {
   std::unique_ptr<TTree> tree( tree_ptr );
-  StatusCode sc = regHist_i( std::move( tree ), id, false );
-  TTree* tr     = nullptr;
+  StatusCode             sc = regHist_i( std::move( tree ), id, false );
+  TTree*                 tr = nullptr;
   if ( getTree( id, tr ).isSuccess() && sc.isSuccess() ) {
     if ( m_autoSave != 0 ) {
       tr->SetAutoSave( m_autoSave );
@@ -448,7 +448,7 @@ StatusCode THistSvc::regGraph( const std::string& id )
 StatusCode THistSvc::regGraph( const std::string& id, std::unique_ptr<TGraph> graph )
 {
   if ( strcmp( graph->GetName(), "Graph" ) == 0 ) {
-    std::string id2( id );
+    std::string            id2( id );
     std::string::size_type i = id2.rfind( "/" );
     if ( i != std::string::npos ) {
       id2.erase( 0, i + 1 );
@@ -465,7 +465,7 @@ StatusCode THistSvc::regGraph( const std::string& id, TGraph* graph_ptr )
 {
   std::unique_ptr<TGraph> graph( graph_ptr );
   if ( strcmp( graph->GetName(), "Graph" ) == 0 ) {
-    std::string id2( id );
+    std::string            id2( id );
     std::string::size_type i = id2.rfind( "/" );
     if ( i != std::string::npos ) {
       id2.erase( 0, i + 1 );
@@ -1179,7 +1179,7 @@ StatusCode THistSvc::io_reinit()
   gErrorIgnoreLevel = kFatal;
 
   for ( auto& ifile : m_files ) {
-    TFile* f          = ifile.second.first;
+    TFile*      f     = ifile.second.first;
     std::string fname = f->GetName();
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "file [" << fname << "] mode: [" << f->GetOption() << "] r:" << f->GetFileBytesRead()
@@ -1203,9 +1203,9 @@ StatusCode THistSvc::io_reinit()
       }
     }
 
-    void* vf       = nullptr;
+    void*     vf   = nullptr;
     Option_t* opts = f->GetOption();
-    int r          = p_fileMgr->open( Io::ROOT, name(), fname, Io::WRITE, vf, "HIST" );
+    int       r    = p_fileMgr->open( Io::ROOT, name(), fname, Io::WRITE, vf, "HIST" );
     if ( r != 0 ) {
       error() << "unable to open file \"" << fname << "\" for writing" << endmsg;
       return StatusCode::FAILURE;
@@ -1219,35 +1219,35 @@ StatusCode THistSvc::io_reinit()
     }
 
     // loop over all uids and migrate them to the new file
-    // XXX FIXME: this double loop sucks...
-    for ( auto& uid : m_uidsX ) {
-      THistID& hid = uid.second;
-      if ( hid.file != f ) continue;
-      TDirectory* olddir = this->changeDir( hid );
-      hid.file           = newfile;
-      // side-effect: create needed directories...
-      TDirectory* newdir = this->changeDir( hid );
-      TClass* cl         = hid.obj->IsA();
+    for ( auto& uid : m_uids ) {
+      for ( auto& hid : *uid.second ) {
+        if ( hid.file != f ) continue;
+        TDirectory* olddir = this->changeDir( hid );
+        hid.file           = newfile;
+        // side-effect: create needed directories...
+        TDirectory* newdir = this->changeDir( hid );
+        TClass*     cl     = hid.obj->IsA();
 
-      // migrate the objects to the new file.
-      // thanks to the object model of ROOT, it is super easy.
-      if ( cl->InheritsFrom( "TTree" ) ) {
-        dynamic_cast<TTree*>( hid.obj )->SetDirectory( newdir );
-        dynamic_cast<TTree*>( hid.obj )->Reset();
-      } else if ( cl->InheritsFrom( "TH1" ) ) {
-        dynamic_cast<TH1*>( hid.obj )->SetDirectory( newdir );
-        dynamic_cast<TH1*>( hid.obj )->Reset();
-      } else if ( cl->InheritsFrom( "TGraph" ) ) {
-        olddir->Remove( hid.obj );
-        newdir->Append( hid.obj );
-      } else {
-        error() << "id: \"" << hid.id << "\" is not a inheriting from a class "
-                << "we know how to handle (received [" << cl->GetName() << "], "
-                << "expected [TTree, TH1 or TGraph]) !" << endmsg << "attaching to current dir [" << newdir->GetPath()
-                << "] "
-                << "nonetheless..." << endmsg;
-        olddir->Remove( hid.obj );
-        newdir->Append( hid.obj );
+        // migrate the objects to the new file.
+        // thanks to the object model of ROOT, it is super easy.
+        if ( cl->InheritsFrom( "TTree" ) ) {
+          dynamic_cast<TTree*>( hid.obj )->SetDirectory( newdir );
+          dynamic_cast<TTree*>( hid.obj )->Reset();
+        } else if ( cl->InheritsFrom( "TH1" ) ) {
+          dynamic_cast<TH1*>( hid.obj )->SetDirectory( newdir );
+          dynamic_cast<TH1*>( hid.obj )->Reset();
+        } else if ( cl->InheritsFrom( "TGraph" ) ) {
+          olddir->Remove( hid.obj );
+          newdir->Append( hid.obj );
+        } else {
+          error() << "id: \"" << hid.id << "\" is not a inheriting from a class "
+                  << "we know how to handle (received [" << cl->GetName() << "], "
+                  << "expected [TTree, TH1 or TGraph]) !" << endmsg << "attaching to current dir [" << newdir->GetPath()
+                  << "] "
+                  << "nonetheless..." << endmsg;
+          olddir->Remove( hid.obj );
+          newdir->Append( hid.obj );
+        }
       }
     }
     f->ReOpen( "READ" );
@@ -1293,69 +1293,73 @@ void THistSvc::updateFiles()
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "updateFiles()" << endmsg;
 
-  for ( auto uitr = m_uidsX.begin(); uitr != m_uidsX.end(); ++uitr ) {
+  for ( auto uitr = m_uids.begin(); uitr != m_uids.end(); ++uitr ) {
+    for ( auto& hid : *( uitr->second ) ) {
 #ifndef NDEBUG
-    if ( msgLevel( MSG::VERBOSE ) )
-      verbose() << " update: " << uitr->first << " " << uitr->second.id << " " << uitr->second.mode << endmsg;
+      if ( msgLevel( MSG::VERBOSE ) )
+        verbose() << " update: " << uitr->first << " " << hid.id << " " << hid.mode << endmsg;
 #endif
-    TObject* to    = uitr->second.obj;
-    TFile* oldFile = uitr->second.file;
-    if ( !to ) {
-      warning() << uitr->first << ": TObject == 0" << endmsg;
-    } else if ( uitr->second.temp || uitr->second.mode == READ ) {
+      TObject* to      = hid.obj;
+      TFile*   oldFile = hid.file;
+      if ( !to ) {
+        warning() << uitr->first << ": TObject == 0" << endmsg;
+      } else if ( hid.temp || hid.mode == READ ) {
 // do nothing - no need to check how big the file is since we
 // are just reading it.
 #ifndef NDEBUG
-      if ( msgLevel( MSG::VERBOSE ) ) verbose() << "     skipping" << endmsg;
+        if ( msgLevel( MSG::VERBOSE ) ) verbose() << "     skipping" << endmsg;
 #endif
-    } else if ( to->IsA()->InheritsFrom( "TTree" ) ) {
-      TTree* tr      = dynamic_cast<TTree*>( to );
-      TFile* newFile = tr->GetCurrentFile();
+      } else if ( to->IsA()->InheritsFrom( "TTree" ) ) {
+        TTree* tr      = dynamic_cast<TTree*>( to );
+        TFile* newFile = tr->GetCurrentFile();
 
-      if ( oldFile != newFile ) {
-        std::string newFileName = newFile->GetName();
-        std::string oldFileName, streamName, rem;
-        TFile* dummy = nullptr;
-        findStream( uitr->second.id, streamName, rem, dummy );
+        if ( oldFile != newFile ) {
+          std::string newFileName = newFile->GetName();
+          std::string oldFileName, streamName, rem;
+          TFile*      dummy = nullptr;
+          findStream( hid.id, streamName, rem, dummy );
 
-        for ( auto& itr : m_files ) {
-          if ( itr.second.first == oldFile ) {
-            itr.second.first = newFile;
-          }
-        }
-
-        for ( auto uitr2 = uitr; uitr2 != m_uidsX.end(); ++uitr2 ) {
-          if ( uitr2->second.file == oldFile ) {
-            uitr2->second.file = newFile;
-          }
-        }
-
-        auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
-                                  [&]( streamMap::const_reference s ) { return s.second == streamName; } );
-        if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
-
-#ifndef NDEBUG
-        if ( msgLevel( MSG::DEBUG ) ) {
-          debug() << "migrating uid: " << uitr->second.id << "   stream: " << streamName
-                  << "   oldFile: " << oldFileName << "   newFile: " << newFileName << endmsg;
-        }
-#endif
-
-        if ( !oldFileName.empty() ) {
-          auto i = m_fileStreams.lower_bound( oldFileName );
-          while ( i != std::end( m_fileStreams ) && i->first == oldFileName ) {
-#ifndef NDEBUG
-            if ( msgLevel( MSG::DEBUG ) ) {
-              debug() << "changing filename \"" << i->first << "\" to \"" << newFileName << "\" for stream \""
-                      << i->second << "\"" << endmsg;
+          for ( auto& itr : m_files ) {
+            if ( itr.second.first == oldFile ) {
+              itr.second.first = newFile;
             }
-#endif
-            std::string nm = std::move( i->second );
-            i              = m_fileStreams.erase( i );
-            m_fileStreams.emplace( newFileName, std::move( nm ) );
           }
-        } else {
-          error() << "Problems updating fileStreams with new file name" << endmsg;
+
+          for ( auto uitr2 = uitr; uitr2 != m_uids.end(); ++uitr2 ) {
+            for ( auto& hid2 : *( uitr2->second ) ) {
+              if ( hid2.file == oldFile ) {
+                hid2.file = newFile;
+              }
+            }
+          }
+
+          auto sitr = std::find_if( std::begin( m_fileStreams ), std::end( m_fileStreams ),
+                                    [&]( streamMap::const_reference s ) { return s.second == streamName; } );
+          if ( sitr != std::end( m_fileStreams ) ) oldFileName = sitr->first;
+
+#ifndef NDEBUG
+          if ( msgLevel( MSG::DEBUG ) ) {
+            debug() << "migrating uid: " << hid.id << "   stream: " << streamName << "   oldFile: " << oldFileName
+                    << "   newFile: " << newFileName << endmsg;
+          }
+#endif
+
+          if ( !oldFileName.empty() ) {
+            auto i = m_fileStreams.lower_bound( oldFileName );
+            while ( i != std::end( m_fileStreams ) && i->first == oldFileName ) {
+#ifndef NDEBUG
+              if ( msgLevel( MSG::DEBUG ) ) {
+                debug() << "changing filename \"" << i->first << "\" to \"" << newFileName << "\" for stream \""
+                        << i->second << "\"" << endmsg;
+              }
+#endif
+              std::string nm = std::move( i->second );
+              i              = m_fileStreams.erase( i );
+              m_fileStreams.emplace( newFileName, std::move( nm ) );
+            }
+          } else {
+            error() << "Problems updating fileStreams with new file name" << endmsg;
+          }
         }
       }
     }
@@ -1390,13 +1394,13 @@ StatusCode THistSvc::writeObjectsToFile()
 
 StatusCode THistSvc::connect( const std::string& ident )
 {
-  auto loc           = ident.find( " " );
+  auto        loc    = ident.find( " " );
   std::string stream = ident.substr( 0, loc );
-  char typ( 0 );
+  char        typ( 0 );
   typedef std::pair<std::string, std::string> Prop;
   std::vector<Prop> props;
-  std::string filename, db_typ( "ROOT" );
-  int cl( 1 );
+  std::string       filename, db_typ( "ROOT" );
+  int               cl( 1 );
 
   if ( loc != std::string::npos ) {
     using Parser = Gaudi::Utils::AttribStringParser;
@@ -1493,8 +1497,8 @@ StatusCode THistSvc::connect( const std::string& ident )
     return StatusCode::FAILURE;
   }
 
-  void* vf = nullptr;
-  TFile* f = nullptr;
+  void*  vf = nullptr;
+  TFile* f  = nullptr;
 
   if ( newMode == THistSvc::READ ) {
     // old file
@@ -1536,7 +1540,7 @@ StatusCode THistSvc::connect( const std::string& ident )
     // For SHARE files, all data will be stored in a temp file and will be
     // merged into the target file in writeObjectsToFile() when finalize(),
     // this help to solve some confliction. e.g. with storegate
-    static int ishared       = 0;
+    static int  ishared      = 0;
     std::string realfilename = filename;
     filename                 = "tmp_THistSvc_" + std::to_string( ishared++ ) + ".root";
 
@@ -1579,8 +1583,8 @@ StatusCode THistSvc::connect( const std::string& ident )
 
 TDirectory* THistSvc::changeDir( const THistSvc::THistID& hid ) const
 {
-  std::string uid = hid.id;
-  TFile* file     = hid.file;
+  std::string uid  = hid.id;
+  TFile*      file = hid.file;
   std::string stream, fdir, bdir, dir, id;
 
   if ( file ) {
@@ -1639,8 +1643,8 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source )
 
   // loop over all keys in this directory
   TList* lkeys = current_sourcedir->GetListOfKeys();
-  int nkeys    = lkeys->GetEntries();
-  TKey* key    = nullptr;
+  int    nkeys = lkeys->GetEntries();
+  TKey*  key   = nullptr;
   for ( int jj = 0; jj < nkeys; jj++ ) {
     key                          = (TKey*)lkeys->At( jj );
     std::string pathnameinsource = current_sourcedir->GetPath() + std::string( "/" ) + key->GetName();
@@ -1666,8 +1670,8 @@ void THistSvc::MergeRootFile( TDirectory* target, TDirectory* source )
         if ( msgLevel( MSG::DEBUG ) ) {
           debug() << "Found TTree " << obj->GetName() << endmsg;
         }
-        TTree* mytree = dynamic_cast<TTree*>( obj );
-        int nentries  = (int)mytree->GetEntries();
+        TTree* mytree   = dynamic_cast<TTree*>( obj );
+        int    nentries = (int)mytree->GetEntries();
         mytree->SetBranchStatus( "*", 1 );
 
         if ( msgLevel( MSG::DEBUG ) ) {
@@ -1816,11 +1820,11 @@ void THistSvc::copyFileLayout( TDirectory* destination, TDirectory* source )
 
   // loop over all keys in this directory
   TList* key_list = current_source_dir->GetListOfKeys();
-  int n           = key_list->GetEntries();
+  int    n        = key_list->GetEntries();
   for ( int j = 0; j < n; ++j ) {
-    TKey* k                           = (TKey*)key_list->At( j );
+    TKey*             k               = (TKey*)key_list->At( j );
     const std::string source_pathname = current_source_dir->GetPath() + std::string( "/" ) + k->GetName();
-    TObject* o                        = source->Get( source_pathname.c_str() );
+    TObject*          o               = source->Get( source_pathname.c_str() );
 
     if ( o && o->IsA()->InheritsFrom( "TDirectory" ) ) {
       if ( msgLevel( MSG::VERBOSE ) ) {
