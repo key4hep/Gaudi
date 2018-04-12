@@ -119,8 +119,8 @@ private:
   template <typename Base>
   friend class CommonMessaging;
 
-  mutable bool m_commonMessagingReady = false;
-  mutable MSG::Level m_level          = MSG::NIL;
+  mutable bool       m_commonMessagingReady = false;
+  mutable MSG::Level m_level                = MSG::NIL;
 
   /// The predefined message stream
   mutable boost::thread_specific_ptr<MsgStream> m_msgStream;

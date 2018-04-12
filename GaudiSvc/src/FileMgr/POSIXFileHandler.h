@@ -28,7 +28,7 @@ public:
 
 private:
   MsgStream m_log;
-  int m_level;
+  int       m_level;
 };
 
 #endif

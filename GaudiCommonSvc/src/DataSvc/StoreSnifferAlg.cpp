@@ -33,14 +33,14 @@ public:
   SmartIF<IDataManagerSvc> m_mgr;
 
   struct LeafInfo final {
-    int count;
-    int id;
+    int  count;
+    int  id;
     CLID clid;
   };
   typedef map<string, LeafInfo> SniffInfo;
   typedef map<string, map<int, int>> Correlations;
 
-  SniffInfo m_info, m_curr;
+  SniffInfo    m_info, m_curr;
   Correlations m_corr, m_links;
 
   size_t explore( IRegistry* pObj )
@@ -49,13 +49,13 @@ public:
       auto mgr = eventSvc().as<IDataManagerSvc>();
       if ( mgr ) {
         vector<IRegistry*> leaves;
-        StatusCode sc = m_mgr->objectLeaves( pObj, leaves );
+        StatusCode         sc = m_mgr->objectLeaves( pObj, leaves );
         if ( sc.isSuccess() ) {
           for ( auto& pReg : leaves ) {
             /// We are only interested in leaves with an object
             if ( !pReg->address() || !pReg->object() ) continue;
             const string& id = pReg->identifier();
-            auto j           = m_info.find( id );
+            auto          j  = m_info.find( id );
             if ( j == m_info.end() ) {
               m_info[id]      = LeafInfo();
               j               = m_info.find( id );
@@ -148,7 +148,7 @@ public:
         }
         for ( const auto& l : m_curr ) {
           const auto& id                = l.second.id;
-          auto k                        = c->second.find( id );
+          auto        k                 = c->second.find( id );
           if ( k == c->second.end() ) k = c->second.emplace( id, 0 ).first;
           ++( k->second );
         }
@@ -163,12 +163,12 @@ public:
         LinkManager* m = obj->linkMgr();
         for ( long l = 0; l < m->size(); ++l ) {
           auto* lnk = m->link( l );
-          auto il   = m_curr.find( lnk->path() );
+          auto  il  = m_curr.find( lnk->path() );
           // cout << "Link:" << lnk->path() << " " << (char*)(il != m_curr.end() ? "Found" : "Not there") << endl;
           if ( il == m_curr.end() ) continue;
           if ( !lnk->object() ) continue;
           const auto& id                = il->second.id;
-          auto k                        = c->second.find( id );
+          auto        k                 = c->second.find( id );
           if ( k == c->second.end() ) k = c->second.emplace( id, 0 ).first;
           ++( k->second );
         }

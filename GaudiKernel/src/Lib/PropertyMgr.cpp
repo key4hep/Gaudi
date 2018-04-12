@@ -58,7 +58,7 @@ PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProp
 {
   if ( !rsvc ) return nullptr;
   const std::string& nam = rname.empty() ? name : rname;
-  PropertyBase* p        = property( nam, rsvc->getProperties() );
+  PropertyBase*      p   = property( nam, rsvc->getProperties() );
   m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
   return p;
 }
@@ -150,7 +150,7 @@ StatusCode PropertyMgr::setProperty( const PropertyBase& p )
 StatusCode PropertyMgr::setProperty( const std::string& i )
 {
   std::string name, value;
-  StatusCode sc = Gaudi::Parsers::parse( name, value, i );
+  StatusCode  sc = Gaudi::Parsers::parse( name, value, i );
   return sc.isFailure() ? sc : setProperty( name, value );
 }
 // =====================================================================
@@ -231,7 +231,7 @@ void PropertyMgr::assertUniqueName( const std::string& name ) const
   if ( LIKELY( !hasProperty( name ) ) ) return;
   auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
   if ( !msgSvc ) std::cerr << "error: cannot get MessageSvc!" << std::endl;
-  auto owner = SmartIF<INamedInterface>( m_pOuter );
+  auto      owner = SmartIF<INamedInterface>( m_pOuter );
   MsgStream log( msgSvc, owner ? owner->name() : "PropertyMgr" );
   log << MSG::WARNING << "duplicated property name '" << name << "', see https://its.cern.ch/jira/browse/GAUDI-1023"
       << endmsg;

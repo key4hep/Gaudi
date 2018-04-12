@@ -66,7 +66,7 @@ namespace Gaudi
       }
       //-----------------------------------------------------------------------------
       qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
-      qi::rule<Iterator, char()> begin_quote;
+      qi::rule<Iterator, char()>       begin_quote;
       qi::rule<Iterator, void( char )> quote;
       //-----------------------------------------------------------------------------
     };
@@ -85,7 +85,7 @@ namespace Gaudi
         inner = qi::alpha >> *( qi::alnum | qi::char_( '_' ) );
       }
       // ----------------------------------------------------------------------------
-      qi::rule<Iterator, Node(), Skipper> ident;
+      qi::rule<Iterator, Node(), Skipper>        ident;
       qi::rule<Iterator, std::string(), Skipper> str;
       qi::rule<Iterator, std::string()> inner;
       ph::function<NodeOperations> op;
@@ -188,13 +188,13 @@ namespace Gaudi
           simple_value, pair, units, print_options, pragma, pragma_print, pragma_tree, pragma_dump_file;
       qi::rule<Iterator, Node(), qi::locals<std::string>> shell;
       qi::rule<Iterator, Node(), qi::locals<Iterator>, Skipper> statement, value;
-      qi::rule<Iterator, Node(), qi::locals<char>, Skipper> vector_value;
+      qi::rule<Iterator, Node(), qi::locals<char>, Skipper>     vector_value;
       qi::rule<Iterator, Node(), qi::locals<Node, Node>, Skipper> condition;
-      qi::rule<Iterator, char()> begin_vector;
-      qi::rule<Iterator, void( char )> end_vector;
-      StringGrammar<Iterator, Skipper> gstring;
-      BoolGrammar<Iterator, Skipper> gbool;
-      RealGrammar<Iterator, Skipper> greal;
+      qi::rule<Iterator, char()>           begin_vector;
+      qi::rule<Iterator, void( char )>     end_vector;
+      StringGrammar<Iterator, Skipper>     gstring;
+      BoolGrammar<Iterator, Skipper>       gbool;
+      RealGrammar<Iterator, Skipper>       greal;
       IdentifierGrammar<Iterator, Skipper> gidentifier;
       ph::function<NodeOperations> op;
     };

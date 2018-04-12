@@ -60,7 +60,7 @@ BOOL CLibSymbolInfo::DumpSymbols( LPTSTR lpszLibPathName, ostream& pFile )
 //=============================================================================
 BOOL CLibSymbolInfo::Dump( LPTSTR lpszLibPathName, ostream& pFile )
 {
-  string sBuff;
+  string             sBuff;
   MEMORY_MAPPED_FILE libFile( lpszLibPathName );
 
   // Ensure that the file mapping worked

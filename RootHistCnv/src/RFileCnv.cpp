@@ -29,8 +29,8 @@ StatusCode RootHistCnv::RFileCnv::initialize()
 {
   // Set compression level property ...
   ISvcLocator* svcLoc     = Gaudi::svcLocator();
-  auto jobSvc             = svcLoc->service<IJobOptionsSvc>( "JobOptionsSvc" );
-  auto prop               = jobSvc->getClientProperty( "RFileCnv", "GlobalCompression" );
+  auto         jobSvc     = svcLoc->service<IJobOptionsSvc>( "JobOptionsSvc" );
+  auto         prop       = jobSvc->getClientProperty( "RFileCnv", "GlobalCompression" );
   if ( prop ) m_compLevel = prop->toString();
 
   // initialise base class
@@ -42,9 +42,9 @@ StatusCode RootHistCnv::RFileCnv::initialize()
 StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress, DataObject*& refpObject )
 //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), "RFileCnv" );
-  unsigned long* ipar = (unsigned long*)pAddress->ipar();
-  char mode[2]        = {char( ipar[1] ), 0};
+  MsgStream      log( msgSvc(), "RFileCnv" );
+  unsigned long* ipar    = (unsigned long*)pAddress->ipar();
+  char           mode[2] = {char( ipar[1] ), 0};
 
   std::string fname  = pAddress->par()[0]; // Container name
   std::string ooname = pAddress->par()[1]; // Object name
@@ -146,7 +146,7 @@ StatusCode RootHistCnv::RFileCnv::createRep( DataObject* pObject, IOpaqueAddress
 StatusCode RootHistCnv::RFileCnv::updateRep( IOpaqueAddress* pAddress, DataObject* pObject )
 //-----------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), "RFileCnv" );
+  MsgStream   log( msgSvc(), "RFileCnv" );
   std::string ooname = pAddress->par()[1];
 
   NTuple::File* pFile = dynamic_cast<NTuple::File*>( pObject );

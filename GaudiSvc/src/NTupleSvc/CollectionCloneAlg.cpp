@@ -32,15 +32,15 @@ namespace
   static StatusCode createItem( MsgStream& log, INTuple* tuple, INTupleItem* src, const TYP& null )
   {
     NTuple::_Data<TYP>* source = dynamic_cast<NTuple::_Data<TYP>*>( src );
-    TYP low                    = source->range().lower();
-    TYP high                   = source->range().upper();
-    long hasIdx                = source->hasIndex();
-    long ndim                  = source->ndim();
-    const std::string& name    = source->name();
-    std::string idxName;
-    long dim[4], idxLen = 0;
-    long dim1 = 1, dim2 = 1;
-    INTupleItem* it = nullptr;
+    TYP                 low    = source->range().lower();
+    TYP                 high   = source->range().upper();
+    long                hasIdx = source->hasIndex();
+    long                ndim   = source->ndim();
+    const std::string&  name   = source->name();
+    std::string         idxName;
+    long                dim[4], idxLen = 0;
+    long                dim1 = 1, dim2 = 1;
+    INTupleItem*        it = nullptr;
     for ( int i = 0; i < ndim; i++ ) dim[i] = source->dim( i );
     /// Type information of the item
     if ( hasIdx ) {
@@ -111,7 +111,7 @@ class CollectionCloneAlg : public Algorithm
 
   Gaudi::Property<std::string> m_tupleSvc{this, "EvtTupleSvc", "EvtTupleSvc", "name of the data provider service"};
   Gaudi::Property<std::vector<std::string>> m_inputs{this, "Input", {}, "input specifications"};
-  Gaudi::Property<std::string> m_output{this, "Output", {}, "output specification"};
+  Gaudi::Property<std::string>              m_output{this, "Output", {}, "output specification"};
 
   /// Reference to data provider service
   SmartIF<INTupleSvc> m_dataSvc;
@@ -186,9 +186,9 @@ public:
   /// Book the N-tuple according to the specification
   virtual StatusCode book( const NTuple::Tuple* nt )
   {
-    MsgStream log( msgSvc(), name() );
-    StatusCode status    = StatusCode::SUCCESS;
-    NTuple::Tuple* tuple = m_dataSvc->book( m_outName, nt->clID(), nt->title() );
+    MsgStream      log( msgSvc(), name() );
+    StatusCode     status = StatusCode::SUCCESS;
+    NTuple::Tuple* tuple  = m_dataSvc->book( m_outName, nt->clID(), nt->title() );
     for ( const auto& i : nt->items() ) {
       switch ( i->type() ) {
       case DataTypeInfo::UCHAR:
@@ -251,8 +251,8 @@ public:
     MsgStream log( msgSvc(), name() );
     if ( clone && src ) {
       const INTuple::ItemContainer& clone_items = clone->items();
-      const std::string clone_id                = clone->registry()->identifier();
-      const std::string src_id                  = src->registry()->identifier();
+      const std::string             clone_id    = clone->registry()->identifier();
+      const std::string             src_id      = src->registry()->identifier();
 
       log << MSG::ERROR;
       for ( auto i = clone_items.begin(); i != clone_items.end(); ++i ) {
@@ -305,10 +305,10 @@ public:
     NTuplePtr out( m_dataSvc.get(), m_outName );
     if ( 0 != out ) {
       const INTuple::ItemContainer& clone_items = out->items();
-      std::vector<GenericAddress> addrVector( clone_items.size() );
-      StatusCode status = StatusCode::SUCCESS;
-      NTuplePtr nt( m_dataSvc.get(), input );
-      size_t k = 0, nentry = 0;
+      std::vector<GenericAddress>   addrVector( clone_items.size() );
+      StatusCode                    status = StatusCode::SUCCESS;
+      NTuplePtr                     nt( m_dataSvc.get(), input );
+      size_t                        k = 0, nentry = 0;
       if ( 0 != nt ) {
         const INTuple::ItemContainer& source_items = nt->items();
         for ( k = 0; k < source_items.size(); ++k ) {
@@ -324,7 +324,7 @@ public:
             for ( k = 0, i = source_items.begin(); i != source_items.end(); ++i, ++k ) {
               const INTupleItem* src_itm = *i;
               const INTupleItem* out_itm = out->find( src_itm->name() );
-              size_t size                = 0;
+              size_t             size    = 0;
               switch ( ( *i )->type() ) {
               case DataTypeInfo::UCHAR:
                 size = sizeof( unsigned char );
@@ -371,7 +371,7 @@ public:
                 size                       = 0;
               } break;
               case DataTypeInfo::OBJECT_ADDR: {
-                IOpaqueAddress* ppA1  = &addrVector[k];
+                IOpaqueAddress*  ppA1 = &addrVector[k];
                 IOpaqueAddress** ppA2 = (IOpaqueAddress**)( out_itm->buffer() );
                 *ppA2                 = ppA1;
                 size                  = 0;

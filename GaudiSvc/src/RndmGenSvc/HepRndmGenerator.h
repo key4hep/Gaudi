@@ -32,7 +32,7 @@ namespace HepRndm
 
   protected:
     CLHEP::HepRandomEngine* m_hepEngine = nullptr;
-    TYPE* m_specs                       = nullptr;
+    TYPE*                   m_specs     = nullptr;
 
   public:
     Generator( IInterface* engine ) : RndmGen( engine ) {}

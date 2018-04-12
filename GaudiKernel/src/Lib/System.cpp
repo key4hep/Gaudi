@@ -65,8 +65,8 @@ static const std::array<const char*, 1> SHLIB_SUFFIXES = {".dll"};
 #include "dl.h"
 struct HMODULE {
   shl_descriptor dsc;
-  long numSym;
-  shl_symbol* sym;
+  long           numSym;
+  shl_symbol*    sym;
 };
 #endif // HPUX or not...
 
@@ -97,10 +97,10 @@ static unsigned long doLoad( const std::string& name, System::ImageHandle* handl
 #else
   const char* path = name.c_str();
 #if defined( __linux ) || defined( __APPLE__ )
-  void* mh         = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
+  void*       mh   = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
   *handle          = mh;
 #elif __hpux
-  shl_t mh     = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
+  shl_t    mh  = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
   HMODULE* mod = new HMODULE;
   if ( 0 != mh ) {
     if ( 0 != ::shl_gethandle_r( mh, &mod->dsc ) ) {
@@ -130,8 +130,8 @@ static unsigned long loadWithoutEnvironment( const std::string& name, System::Im
 
   // Check if the specified name has a shared library suffix already. If it
   // does, don't bother the name any more.
-  std::string dllName = name;
-  bool hasShlibSuffix = false;
+  std::string dllName        = name;
+  bool        hasShlibSuffix = false;
   for ( const char* suffix : SHLIB_SUFFIXES ) {
     const size_t len = strlen( suffix );
     if ( dllName.compare( dllName.length() - len, len, suffix ) == 0 ) {
@@ -177,8 +177,8 @@ unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* hand
       // platform.
       for ( const char* suffix : SHLIB_SUFFIXES ) {
         // Add the suffix if necessary.
-        std::string libName = dllName;
-        const size_t len    = strlen( suffix );
+        std::string  libName = dllName;
+        const size_t len     = strlen( suffix );
         if ( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) {
           libName += suffix;
         }
@@ -481,7 +481,7 @@ bool System::backTrace( std::string& btrace, const int depth, const int offset )
     std::string fnc, lib;
 
     std::vector<void*> addresses( totalDepth, nullptr );
-    int count = System::backTrace( addresses.data(), totalDepth );
+    int                count = System::backTrace( addresses.data(), totalDepth );
     for ( int i = totalOffset; i < count; ++i ) {
       void* addr = nullptr;
 
@@ -513,7 +513,7 @@ bool System::getStackLevel( void* addresses __attribute__( ( unused ) ), void*& 
     addr = info.dli_saddr;
 
     if ( symbol ) {
-      int stat = -1;
+      int  stat = -1;
       auto dmg =
           std::unique_ptr<char, decltype( free )*>( abi::__cxa_demangle( symbol, nullptr, nullptr, &stat ), std::free );
       fnc = ( stat == 0 ) ? dmg.get() : symbol;

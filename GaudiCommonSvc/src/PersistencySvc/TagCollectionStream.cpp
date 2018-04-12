@@ -61,7 +61,7 @@ StatusCode TagCollectionStream::initialize()
     }
     m_output = std::move( tmp );
     {
-      auto& tag                  = m_tagName.value();
+      auto&                  tag = m_tagName.value();
       std::string::size_type idx = ( tag[0] == SEPARATOR ) ? tag.find( SEPARATOR, 1 ) : 0;
       log_node                   = tag.substr( idx, tag.find( SEPARATOR, idx + 1 ) );
     }
@@ -148,7 +148,7 @@ StatusCode TagCollectionStream::writeObjects()
                 << endmsg;
         return StatusCode::FAILURE;
       }
-      std::string* par    = (std::string*)m_addr->par();
+      std::string*   par  = (std::string*)m_addr->par();
       unsigned long* ipar = (unsigned long*)m_addr->ipar();
       m_addr->setClID( pA->clID() );
       m_addr->setSvcType( pA->svcType() );

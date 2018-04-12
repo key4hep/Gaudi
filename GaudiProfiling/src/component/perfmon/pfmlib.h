@@ -82,36 +82,36 @@ typedef struct {
  * event definition for pfmlib_input_param_t
  */
 typedef struct {
-  unsigned int event;                                  /* event descriptor */
-  unsigned int plm;                                    /* event privilege level mask */
-  unsigned long flags;                                 /* per-event flag */
-  unsigned int unit_masks[PFMLIB_MAX_MASKS_PER_EVENT]; /* unit-mask identifiers */
-  unsigned int num_masks;                              /* number of masks specified in 'unit_masks' */
-  unsigned long reserved[2];                           /* for future use */
+  unsigned int  event;                                  /* event descriptor */
+  unsigned int  plm;                                    /* event privilege level mask */
+  unsigned long flags;                                  /* per-event flag */
+  unsigned int  unit_masks[PFMLIB_MAX_MASKS_PER_EVENT]; /* unit-mask identifiers */
+  unsigned int  num_masks;                              /* number of masks specified in 'unit_masks' */
+  unsigned long reserved[2];                            /* for future use */
 } pfmlib_event_t;
 
 /*
  * generic register definition
  */
 typedef struct {
-  unsigned long long reg_value; /* register value */
-  unsigned long long reg_addr;  /* hardware register addr or index */
-  unsigned int reg_num;         /* logical register index (perfmon2) */
-  unsigned int reg_reserved1;   /* for future use */
-  unsigned long reg_alt_addr;   /* alternate hw register addr of index */
+  unsigned long long reg_value;     /* register value */
+  unsigned long long reg_addr;      /* hardware register addr or index */
+  unsigned int       reg_num;       /* logical register index (perfmon2) */
+  unsigned int       reg_reserved1; /* for future use */
+  unsigned long      reg_alt_addr;  /* alternate hw register addr of index */
 } pfmlib_reg_t;
 
 /*
  * library generic input parameters for pfm_dispatch_event()
  */
 typedef struct {
-  unsigned int pfp_event_count;               /* how many events specified (input) */
-  unsigned int pfp_dfl_plm;                   /* default priv level : used when event.plm==0 */
-  unsigned int pfp_flags;                     /* set of flags for all events used when event.flags==0*/
-  unsigned int reserved1;                     /* for future use */
-  pfmlib_event_t pfp_events[PFMLIB_MAX_PMCS]; /* event descriptions */
-  pfmlib_regmask_t pfp_unavail_pmcs;          /* bitmask of unavailable PMC registers */
-  unsigned long reserved[6];                  /* for future use */
+  unsigned int     pfp_event_count;             /* how many events specified (input) */
+  unsigned int     pfp_dfl_plm;                 /* default priv level : used when event.plm==0 */
+  unsigned int     pfp_flags;                   /* set of flags for all events used when event.flags==0*/
+  unsigned int     reserved1;                   /* for future use */
+  pfmlib_event_t   pfp_events[PFMLIB_MAX_PMCS]; /* event descriptions */
+  pfmlib_regmask_t pfp_unavail_pmcs;            /* bitmask of unavailable PMC registers */
+  unsigned long    reserved[6];                 /* for future use */
 } pfmlib_input_param_t;
 
 /*
@@ -123,11 +123,11 @@ typedef struct {
  * library generic output parameters for pfm_dispatch_event()
  */
 typedef struct {
-  unsigned int pfp_pmc_count;             /* number of entries in pfp_pmcs */
-  unsigned int pfp_pmd_count;             /* number of entries in pfp_pmds */
-  pfmlib_reg_t pfp_pmcs[PFMLIB_MAX_PMCS]; /* PMC registers number and values */
-  pfmlib_reg_t pfp_pmds[PFMLIB_MAX_PMDS]; /* PMD registers numbers */
-  unsigned long reserved[7];              /* for future use */
+  unsigned int  pfp_pmc_count;             /* number of entries in pfp_pmcs */
+  unsigned int  pfp_pmd_count;             /* number of entries in pfp_pmds */
+  pfmlib_reg_t  pfp_pmcs[PFMLIB_MAX_PMCS]; /* PMC registers number and values */
+  pfmlib_reg_t  pfp_pmds[PFMLIB_MAX_PMDS]; /* PMD registers numbers */
+  unsigned long reserved[7];               /* for future use */
 } pfmlib_output_param_t;
 
 /*

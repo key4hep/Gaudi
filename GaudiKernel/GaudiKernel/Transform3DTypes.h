@@ -44,15 +44,15 @@ namespace Gaudi
 
   // NB : Please remember to give a simple doxygen comment for each tyedef
 
-  typedef ROOT::Math::Rotation3D Rotation3D;    ///< 3D rotation
-  typedef ROOT::Math::EulerAngles EulerAngles;  ///< 3D Euler Angles
-  typedef ROOT::Math::Quaternion Quaternion;    ///< 3D Quaternion
-  typedef ROOT::Math::AxisAngle AxisAngle;      ///< 3D Axis Angle
-  typedef ROOT::Math::RotationX RotationX;      ///< Rotation about X axis
-  typedef ROOT::Math::RotationY RotationY;      ///< Rotation about Y axis
-  typedef ROOT::Math::RotationZ RotationZ;      ///< Rotation about Z axis
-  typedef ROOT::Math::Transform3D Transform3D;  ///< General 3D transformation (rotation+translation)
-  typedef ROOT::Math::XYZVector TranslationXYZ; ///< 3D translation
+  typedef ROOT::Math::Rotation3D  Rotation3D;     ///< 3D rotation
+  typedef ROOT::Math::EulerAngles EulerAngles;    ///< 3D Euler Angles
+  typedef ROOT::Math::Quaternion  Quaternion;     ///< 3D Quaternion
+  typedef ROOT::Math::AxisAngle   AxisAngle;      ///< 3D Axis Angle
+  typedef ROOT::Math::RotationX   RotationX;      ///< Rotation about X axis
+  typedef ROOT::Math::RotationY   RotationY;      ///< Rotation about Y axis
+  typedef ROOT::Math::RotationZ   RotationZ;      ///< Rotation about Z axis
+  typedef ROOT::Math::Transform3D Transform3D;    ///< General 3D transformation (rotation+translation)
+  typedef ROOT::Math::XYZVector   TranslationXYZ; ///< 3D translation
 }
 
 #endif // EVENT_TRANSFORM3DTYPES_H

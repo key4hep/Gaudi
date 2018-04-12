@@ -12,13 +12,13 @@
 
 namespace GaudiMath
 {
-  typedef Genfun::GaudiMathImplementation::AdapterIFunction AIDAFunction;
+  typedef Genfun::GaudiMathImplementation::AdapterIFunction       AIDAFunction;
   typedef Genfun::GaudiMathImplementation::Adapter2DoubleFunction Function2D;
   typedef Genfun::GaudiMathImplementation::Adapter3DoubleFunction Function3D;
-  typedef Genfun::GaudiMathImplementation::SimpleFunction SimpleFunction;
+  typedef Genfun::GaudiMathImplementation::SimpleFunction         SimpleFunction;
 
-  typedef Genfun::GaudiMathImplementation::GSLFunctionWithMode GSLFunctionWithMode;
-  typedef Genfun::GaudiMathImplementation::GSLFunctionWithError GSLFunctionWithError;
+  typedef Genfun::GaudiMathImplementation::GSLFunctionWithMode         GSLFunctionWithMode;
+  typedef Genfun::GaudiMathImplementation::GSLFunctionWithError        GSLFunctionWithError;
   typedef Genfun::GaudiMathImplementation::GSLFunctionWithModeAndError GSLFunctionWithModeAndError;
 
   GAUDI_API AIDAFunction adapter( const AIDA::IFunction& function );
@@ -30,7 +30,7 @@ namespace GaudiMath
   GAUDI_API GSLFunctionWithMode adapter( GSLFunctionWithMode::Function function, const gsl_mode_t& mode );
   GAUDI_API GSLFunctionWithError adapter( GSLFunctionWithError::Function function );
   GAUDI_API GSLFunctionWithModeAndError adapter( GSLFunctionWithModeAndError::Function function,
-                                                 const gsl_mode_t& mode );
+                                                 const gsl_mode_t&                     mode );
 
 } // end of namespace GaudiMath
 

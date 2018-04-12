@@ -23,25 +23,25 @@
 class PfmCodeAnalyser
 {
 private:
-  int used_counters_number;
-  int nehalem;
-  pfmlib_input_param_t inp;
-  pfmlib_output_param_t outp;
-  pfarg_ctx_t ctx;
-  pfarg_pmd_t pd[NUM_PMDS];
-  pfarg_pmc_t pc[NUM_PMCS];
-  pfarg_load_t load_arg;
-  int fd;
-  char event_str[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS][MAX_EVT_NAME_LEN];
-  bool inv[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
-  unsigned int cmask[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+  int                       used_counters_number;
+  int                       nehalem;
+  pfmlib_input_param_t      inp;
+  pfmlib_output_param_t     outp;
+  pfarg_ctx_t               ctx;
+  pfarg_pmd_t               pd[NUM_PMDS];
+  pfarg_pmc_t               pc[NUM_PMCS];
+  pfarg_load_t              load_arg;
+  int                       fd;
+  char                      event_str[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS][MAX_EVT_NAME_LEN];
+  bool                      inv[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+  unsigned int              cmask[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
   pfmlib_core_input_param_t params;
-  pfmlib_nhm_input_param_t nhm_params;
-  int ret;
-  unsigned i;
-  unsigned long sum[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
-  unsigned count;
-  unsigned overhead_avg[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+  pfmlib_nhm_input_param_t  nhm_params;
+  int                       ret;
+  unsigned                  i;
+  unsigned long             sum[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+  unsigned                  count;
+  unsigned                  overhead_avg[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
 
 private:
   PfmCodeAnalyser( const char* event0, unsigned int cmask_v0, bool inv_v0, const char* event1, unsigned int cmask_v1,

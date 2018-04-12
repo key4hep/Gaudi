@@ -33,13 +33,13 @@ public:
   /// the actual container type
   typedef std::vector<const TYPE*> ConstVector;
   /// various types (to make STL happy)
-  typedef typename ConstVector::value_type value_type;
-  typedef typename ConstVector::size_type size_type;
-  typedef typename ConstVector::reference reference;
-  typedef typename ConstVector::const_reference const_reference;
-  typedef typename ConstVector::iterator iterator;
-  typedef typename ConstVector::const_iterator const_iterator;
-  typedef typename ConstVector::reverse_iterator reverse_iterator;
+  typedef typename ConstVector::value_type             value_type;
+  typedef typename ConstVector::size_type              size_type;
+  typedef typename ConstVector::reference              reference;
+  typedef typename ConstVector::const_reference        const_reference;
+  typedef typename ConstVector::iterator               iterator;
+  typedef typename ConstVector::const_iterator         const_iterator;
+  typedef typename ConstVector::reverse_iterator       reverse_iterator;
   typedef typename ConstVector::const_reverse_iterator const_reverse_iterator;
   // ==========================================================================
 public:
@@ -267,12 +267,12 @@ public:
   // ==========================================================================
 public:
   // ==========================================================================
-  iterator begin() { return m_data.begin(); }
-  iterator end() { return m_data.end(); }
-  const_iterator begin() const { return m_data.begin(); }
-  const_iterator end() const { return m_data.end(); }
-  reverse_iterator rbegin() { return m_data.rbegin(); }
-  reverse_iterator rend() { return m_data.rend(); }
+  iterator               begin() { return m_data.begin(); }
+  iterator               end() { return m_data.end(); }
+  const_iterator         begin() const { return m_data.begin(); }
+  const_iterator         end() const { return m_data.end(); }
+  reverse_iterator       rbegin() { return m_data.rbegin(); }
+  reverse_iterator       rend() { return m_data.rend(); }
   const_reverse_iterator rbegin() const { return m_data.rbegin(); }
   const_reverse_iterator rend() const { return m_data.rend(); }
   // ==========================================================================

@@ -26,8 +26,8 @@ public:
   /**
    ** Constructor(s)
    **/
-  Sequencer( const std::string& name, // The path object's name
-             ISvcLocator* svcloc      // A pointer to a service location service
+  Sequencer( const std::string& name,  // The path object's name
+             ISvcLocator*       svcloc // A pointer to a service location service
              );
 
   /*****************************
@@ -116,9 +116,9 @@ public:
    ** directly via the new operator is preferred since then the framework
    ** may take care of all of the necessary book-keeping.
    **/
-  StatusCode createAndAppend( const std::string& type, // The concrete algorithm class of the algorithm
-                              const std::string& name, // The name to be given to the algorithm
-                              Algorithm*& pAlgorithm   // Set to point to the newly created algorithm object
+  StatusCode createAndAppend( const std::string& type,      // The concrete algorithm class of the algorithm
+                              const std::string& name,      // The name to be given to the algorithm
+                              Algorithm*&        pAlgorithm // Set to point to the newly created algorithm object
                               );
 
   /**
@@ -150,7 +150,7 @@ public:
    ** by the first element, which is the filter algorithm.
    **/
   const std::vector<Algorithm*>& branchAlgorithms() const;
-  std::vector<Algorithm*>& branchAlgorithms();
+  std::vector<Algorithm*>&       branchAlgorithms();
 
   /// Decode Member Name list
   StatusCode decodeMemberNames();
@@ -173,9 +173,9 @@ protected:
    ** directly via the new operator is preferred since then the framework
    ** may take care of all of the necessary book-keeping.
    **/
-  StatusCode createAndAppend( const std::string& type, // The concrete algorithm class of the algorithm
-                              const std::string& name, // The name to be given to the algorithm
-                              Algorithm*& pAlgorithm,  // Set to point to the newly created algorithm object
+  StatusCode createAndAppend( const std::string&       type,       // The concrete algorithm class of the algorithm
+                              const std::string&       name,       // The name to be given to the algorithm
+                              Algorithm*&              pAlgorithm, // Set to point to the newly created algorithm object
                               std::vector<Algorithm*>& theAlgs );
 
   /**
@@ -218,9 +218,9 @@ private:
   Gaudi::Property<std::vector<std::string>> m_branchNames{this, "BranchMembers", {}, "branch member names"};
   Gaudi::Property<bool> m_stopOverride{this, "StopOverride", false, "stop on filter failure override"};
 
-  std::vector<bool> m_isInverted;       // Member logic inverted list
-  std::vector<Algorithm*> m_branchAlgs; // Branch algorithms
-  std::vector<bool> m_isBranchInverted; // Branch Member logic inverted list
+  std::vector<bool>       m_isInverted;       // Member logic inverted list
+  std::vector<Algorithm*> m_branchAlgs;       // Branch algorithms
+  std::vector<bool>       m_isBranchInverted; // Branch Member logic inverted list
 
   bool m_branchFilterPassed = false; // Branch filter passed flag
 };

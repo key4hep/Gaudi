@@ -262,7 +262,7 @@ typedef struct {
 
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
-    volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
+    volatile OrigFn*      _zzq_orig = &( _zzq_rlval );                                                                 \
     volatile unsigned int __addr;                                                                                      \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE /* %EAX = guest_NRADDR */                                         \
                       "xchgl %%ecx,%%ecx"                                                                              \
@@ -307,7 +307,7 @@ static __inline uintptr_t valgrind_do_client_request_expr( uintptr_t _zzq_defaul
                                                            uintptr_t _zzq_arg3, uintptr_t _zzq_arg4,
                                                            uintptr_t _zzq_arg5 )
 {
-  volatile uintptr_t _zzq_args[6];
+  volatile uintptr_t    _zzq_args[6];
   volatile unsigned int _zzq_result;
   _zzq_args[0] = ( uintptr_t )( _zzq_request );
   _zzq_args[1] = ( uintptr_t )( _zzq_arg1 );
@@ -326,7 +326,7 @@ static __inline uintptr_t valgrind_do_client_request_expr( uintptr_t _zzq_defaul
 
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                                                                                                      \
   {                                                                                                                                                                                                \
-    volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                                                                                                  \
+    volatile OrigFn*      _zzq_orig = &( _zzq_rlval );                                                                                                                                             \
     volatile unsigned int __addr;                                                                                                                                                                  \
     __asm { __SPECIAL_INSTRUCTION_PREAMBLE /* %EAX = guest_NRADDR */                             \
             __asm xchg ecx,ecx                                    \
@@ -382,7 +382,7 @@ typedef struct {
 
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
-    volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
+    volatile OrigFn*                _zzq_orig = &( _zzq_rlval );                                                       \
     volatile unsigned long long int __addr;                                                                            \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE /* %RAX = guest_NRADDR */                                         \
                       "xchgq %%rcx,%%rcx"                                                                              \
@@ -420,8 +420,8 @@ typedef struct {
                                          _zzq_arg5 )                                                                   \
                                                                                                                        \
   __extension__( {                                                                                                     \
-    unsigned int _zzq_args[6];                                                                                         \
-    unsigned int _zzq_result;                                                                                          \
+    unsigned int  _zzq_args[6];                                                                                        \
+    unsigned int  _zzq_result;                                                                                         \
     unsigned int* _zzq_ptr;                                                                                            \
     _zzq_args[0] = (unsigned int)( _zzq_request );                                                                     \
     _zzq_args[1] = (unsigned int)( _zzq_arg1 );                                                                        \
@@ -444,7 +444,7 @@ typedef struct {
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
     volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
-    unsigned int __addr;                                                                                               \
+    unsigned int     __addr;                                                                                           \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE /* %R3 = guest_NRADDR */                                          \
                       "or 2,2,2\n\t"                                                                                   \
                       "mr %0,3"                                                                                        \
@@ -483,8 +483,8 @@ typedef struct {
                                          _zzq_arg5 )                                                                   \
                                                                                                                        \
   __extension__( {                                                                                                     \
-    unsigned long long int _zzq_args[6];                                                                               \
-    unsigned long long int _zzq_result;                                                                                \
+    unsigned long long int  _zzq_args[6];                                                                              \
+    unsigned long long int  _zzq_result;                                                                               \
     unsigned long long int* _zzq_ptr;                                                                                  \
     _zzq_args[0] = (unsigned long long int)( _zzq_request );                                                           \
     _zzq_args[1] = (unsigned long long int)( _zzq_arg1 );                                                              \
@@ -506,7 +506,7 @@ typedef struct {
 
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
-    volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
+    volatile OrigFn*       _zzq_orig = &( _zzq_rlval );                                                                \
     unsigned long long int __addr;                                                                                     \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE /* %R3 = guest_NRADDR */                                          \
                       "or 2,2,2\n\t"                                                                                   \
@@ -574,7 +574,7 @@ typedef struct {
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
     volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
-    unsigned int __addr;                                                                                               \
+    unsigned int     __addr;                                                                                           \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE /* R3 = guest_NRADDR */                                           \
                       "orr r11, r11, r11\n\t"                                                                          \
                       "mov %0, r3"                                                                                     \
@@ -642,7 +642,7 @@ typedef struct {
 
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
-    volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
+    volatile OrigFn*                _zzq_orig = &( _zzq_rlval );                                                       \
     volatile unsigned long long int __addr;                                                                            \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE __GET_NR_CONTEXT_CODE "lgr %0, 3\n\t"                             \
                       : "=a"( __addr )                                                                                 \
@@ -704,7 +704,7 @@ typedef struct {
 
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
-    volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
+    volatile OrigFn*      _zzq_orig = &( _zzq_rlval );                                                                 \
     volatile unsigned int __addr;                                                                                      \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE /* %t9 = guest_NRADDR */                                          \
                       "or $14, $14, $14\n\t"                                                                           \
@@ -767,7 +767,7 @@ typedef struct {
 
 #define VALGRIND_GET_NR_CONTEXT( _zzq_rlval )                                                                          \
   {                                                                                                                    \
-    volatile OrigFn* _zzq_orig = &( _zzq_rlval );                                                                      \
+    volatile OrigFn*                _zzq_orig = &( _zzq_rlval );                                                       \
     volatile unsigned long long int __addr;                                                                            \
     __asm__ volatile( __SPECIAL_INSTRUCTION_PREAMBLE /* $11 = guest_NRADDR */                                          \
                       "or $14, $14, $14\n\t"                                                                           \
@@ -921,7 +921,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[1];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -935,7 +935,7 @@ typedef struct {
 
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[2];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -952,7 +952,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -971,7 +971,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[4];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -992,7 +992,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[5];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1014,7 +1014,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[6];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1039,7 +1039,7 @@ typedef struct {
 
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[7];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1066,7 +1066,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[8];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1095,7 +1095,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[9];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1125,7 +1125,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[10];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1158,7 +1158,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[11];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -1193,7 +1193,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[12];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -1230,7 +1230,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[13];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -1383,7 +1383,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[1];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1398,7 +1398,7 @@ typedef struct {
 
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[2];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1415,7 +1415,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1434,7 +1434,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[4];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1455,7 +1455,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[5];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1478,7 +1478,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[6];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1503,7 +1503,7 @@ typedef struct {
 
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[7];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1530,7 +1530,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[8];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1559,7 +1559,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[9];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1590,7 +1590,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[10];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1623,7 +1623,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[11];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -1658,7 +1658,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[12];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -1695,7 +1695,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[13];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -1781,7 +1781,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[1];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1796,7 +1796,7 @@ typedef struct {
 
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[2];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1813,7 +1813,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1832,7 +1832,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[4];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1853,7 +1853,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[5];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1876,7 +1876,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[6];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1901,7 +1901,7 @@ typedef struct {
 
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[7];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1928,7 +1928,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[8];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1957,7 +1957,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[9];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -1988,7 +1988,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[10];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2023,7 +2023,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[11];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -2061,7 +2061,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[12];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -2102,7 +2102,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[13];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -2172,7 +2172,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 0];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2194,7 +2194,7 @@ typedef struct {
 
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 1];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2218,7 +2218,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 2];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2244,7 +2244,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 3];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2272,7 +2272,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 4];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2302,7 +2302,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 5];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2334,7 +2334,7 @@ typedef struct {
 
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 6];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2368,7 +2368,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 7];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2404,7 +2404,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 8];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2442,7 +2442,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 9];                                                                             \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2484,7 +2484,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 10];                                                                            \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2529,7 +2529,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 11];                                                                            \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2577,7 +2577,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3 + 12];                                                                            \
     volatile unsigned long _res;                                                                                       \
     /* _argvec[0] holds current r2 across the call */                                                                  \
@@ -2660,7 +2660,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[1];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2674,7 +2674,7 @@ typedef struct {
 
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[2];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2690,7 +2690,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2708,7 +2708,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[4];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2728,7 +2728,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[5];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2750,7 +2750,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[6];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2776,7 +2776,7 @@ typedef struct {
 
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[7];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2803,7 +2803,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[8];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2833,7 +2833,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[9];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2864,7 +2864,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[10];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -2898,7 +2898,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[11];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -2934,7 +2934,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[12];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -2973,7 +2973,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[13];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -3060,7 +3060,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[1];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3077,7 +3077,7 @@ typedef struct {
 /* The call abi has the arguments in r2-r6 and stack */
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[2];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3094,7 +3094,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3113,7 +3113,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[4];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3134,7 +3134,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[5];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3157,7 +3157,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[6];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3182,7 +3182,7 @@ typedef struct {
 
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[7];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3209,7 +3209,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[8];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3238,7 +3238,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[9];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3269,7 +3269,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[10];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3302,7 +3302,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[11];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -3337,7 +3337,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[12];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -3374,7 +3374,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[13];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -3426,7 +3426,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[1];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3448,7 +3448,7 @@ typedef struct {
 
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[2];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3472,7 +3472,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3498,7 +3498,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[4];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3526,7 +3526,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[5];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3556,7 +3556,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[6];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3588,7 +3588,7 @@ typedef struct {
   } while ( 0 )
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[7];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3625,7 +3625,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[8];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3664,7 +3664,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[9];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3706,7 +3706,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[10];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3751,7 +3751,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[11];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -3799,7 +3799,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[12];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -3850,7 +3850,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[13];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -3917,7 +3917,7 @@ typedef struct {
 
 #define CALL_FN_W_v( lval, orig )                                                                                      \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[1];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3931,7 +3931,7 @@ typedef struct {
 
 #define CALL_FN_W_W( lval, orig, arg1 )                                                                                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[2];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3947,7 +3947,7 @@ typedef struct {
 
 #define CALL_FN_W_WW( lval, orig, arg1, arg2 )                                                                         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[3];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3965,7 +3965,7 @@ typedef struct {
 
 #define CALL_FN_W_WWW( lval, orig, arg1, arg2, arg3 )                                                                  \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[4];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -3985,7 +3985,7 @@ typedef struct {
 
 #define CALL_FN_W_WWWW( lval, orig, arg1, arg2, arg3, arg4 )                                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[5];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -4007,7 +4007,7 @@ typedef struct {
 
 #define CALL_FN_W_5W( lval, orig, arg1, arg2, arg3, arg4, arg5 )                                                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[6];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -4031,7 +4031,7 @@ typedef struct {
 
 #define CALL_FN_W_6W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6 )                                                 \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[7];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -4057,7 +4057,7 @@ typedef struct {
 
 #define CALL_FN_W_7W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7 )                                           \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[8];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -4085,7 +4085,7 @@ typedef struct {
 
 #define CALL_FN_W_8W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 )                                     \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[9];                                                                                 \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -4115,7 +4115,7 @@ typedef struct {
 
 #define CALL_FN_W_9W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 )                               \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[10];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0] = (unsigned long)_orig.nraddr;                                                                          \
@@ -4150,7 +4150,7 @@ typedef struct {
 
 #define CALL_FN_W_10W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 )                       \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[11];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -4188,7 +4188,7 @@ typedef struct {
 
 #define CALL_FN_W_11W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 )                \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[12];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -4229,7 +4229,7 @@ typedef struct {
 
 #define CALL_FN_W_12W( lval, orig, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 )         \
   do {                                                                                                                 \
-    volatile OrigFn _orig = ( orig );                                                                                  \
+    volatile OrigFn        _orig = ( orig );                                                                           \
     volatile unsigned long _argvec[13];                                                                                \
     volatile unsigned long _res;                                                                                       \
     _argvec[0]  = (unsigned long)_orig.nraddr;                                                                         \
@@ -4410,7 +4410,7 @@ static int
 #else
   unsigned long _qzz_res;
 #endif
-  va_list vargs;
+  va_list   vargs;
   va_start( vargs, format );
 #if defined( _MSC_VER ) || defined( __MINGW64__ )
   _qzz_res = VALGRIND_DO_CLIENT_REQUEST_EXPR( 0, VG_USERREQ__PRINTF_VALIST_BY_REF, (uintptr_t)format, (uintptr_t)&vargs,
@@ -4442,7 +4442,7 @@ static int
 #else
   unsigned long _qzz_res;
 #endif
-  va_list vargs;
+  va_list   vargs;
   va_start( vargs, format );
 #if defined( _MSC_VER ) || defined( __MINGW64__ )
   _qzz_res = VALGRIND_DO_CLIENT_REQUEST_EXPR( 0, VG_USERREQ__PRINTF_BACKTRACE_VALIST_BY_REF, (uintptr_t)format,

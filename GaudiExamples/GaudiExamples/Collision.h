@@ -25,11 +25,11 @@ namespace Gaudi
       Collision( int num ) : DataObject(), m_collision( num ) {}
 
       /// Retrieve reference to class definition structure
-      const CLID& clID() const override { return classID(); }
+      const CLID&        clID() const override { return classID(); }
       static const CLID& classID() { return CLID_Collision; }
 
       void setCollision( int num ) { m_collision = num; }
-      int collision() const { return m_collision; }
+      int                    collision() const { return m_collision; }
       //  std::vector<double, CLHEP::HepGenMatrix::Alloc<double,25> >& matrix() {
       //    return m_matrix;
       //  }

@@ -34,9 +34,9 @@ namespace
 {
   struct Partition final {
     SmartIF<IDataProviderSvc> dataProvider;
-    SmartIF<IDataManagerSvc> dataManager;
-    DataObjIDColl newDataObjects;
-    int eventNumber = -1;
+    SmartIF<IDataManagerSvc>  dataManager;
+    DataObjIDColl             newDataObjects;
+    int                       eventNumber = -1;
 
     // allow acces 'by type' -- used in fwd
     template <typename T>
@@ -60,7 +60,7 @@ namespace
             typename WriteLock = ReadLock>
   class Synced
   {
-    T m_obj;
+    T             m_obj;
     mutable Mutex m_mtx;
 
   public:
@@ -151,10 +151,10 @@ namespace
 class HiveWhiteBoard : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard>
 {
 protected:
-  Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
+  Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc", ""};
-  Gaudi::Property<size_t> m_slots{this, "EventSlots", 1, "number of event slots"};
+  Gaudi::Property<size_t>      m_slots{this, "EventSlots", 1, "number of event slots"};
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
@@ -295,7 +295,7 @@ public:
    * The optional data provider is not considered. On the other hand, the data
    * provider is specified to be the whiteboard.
    */
-  StatusCode setDataLoader( IConversionSvc* pDataLoader,
+  StatusCode setDataLoader( IConversionSvc*   pDataLoader,
                             IDataProviderSvc* dpsvc __attribute__( ( unused ) ) = nullptr ) override
   {
     if ( pDataLoader ) pDataLoader->addRef();
@@ -340,7 +340,7 @@ public:
   {
     return s_current->with_lock( []( Partition& p ) {
       StatusCode sc = p.dataProvider->preLoad();
-      DataAgent da( p.newDataObjects );
+      DataAgent  da( p.newDataObjects );
       p.dataManager->traverseTree( &da );
       return sc;
     } );

@@ -84,7 +84,7 @@ typedef enum {
 
 typedef struct {
   pfm_i386_p6_cnt_mask_t cnt_mask; /* threshold (cnt_mask)  */
-  unsigned int flags;              /* counter specific flag */
+  unsigned int           flags;    /* counter specific flag */
 } pfmlib_i386_p6_counter_t;
 
 #define PFM_I386_P6_SEL_INV 0x1  /* inverse */
@@ -95,7 +95,7 @@ typedef struct {
  */
 typedef struct {
   pfmlib_i386_p6_counter_t pfp_i386_p6_counters[PMU_I386_P6_NUM_COUNTERS]; /* extended counter features */
-  uint64_t reserved[4];                                                    /* for future use */
+  uint64_t                 reserved[4];                                    /* for future use */
 } pfmlib_i386_p6_input_param_t;
 
 typedef struct {

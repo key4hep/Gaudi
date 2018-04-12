@@ -48,15 +48,15 @@ TagCollectionSvc::TagCollectionSvc( const std::string& name, ISvcLocator* svc ) 
 /// Add file to list I/O list
 StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& logname )
 {
-  DataObject* pO    = nullptr;
-  StatusCode status = findObject( m_rootName.value(), pO );
+  DataObject* pO     = nullptr;
+  StatusCode  status = findObject( m_rootName.value(), pO );
   if ( status.isSuccess() ) {
     status = Status::INVALID_ROOT;
     if ( pO->registry() ) {
-      char typ = 0;
+      char              typ = 0;
       std::vector<Prop> props;
-      long loc = ident.find( " " );
-      std::string filename, svc = "DbCnvSvc";
+      long              loc = ident.find( " " );
+      std::string       filename, svc = "DbCnvSvc";
       logname      = ident.substr( 0, loc );
       using Parser = Gaudi::Utils::AttribStringParser;
       // we assume that there is always a " "

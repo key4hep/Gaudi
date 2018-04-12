@@ -36,7 +36,7 @@ namespace Gaudi
       Event();
 
       /// Retrieve reference to class definition structure
-      const CLID& clID() const override { return classID(); }
+      const CLID&        clID() const override { return classID(); }
       static const CLID& classID() { return CLID_Event; }
 
       /// Retrieve event number

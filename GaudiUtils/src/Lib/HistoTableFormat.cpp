@@ -219,8 +219,8 @@ std::string Gaudi::Utils::Histos::path( const AIDA::IBaseHistogram* aida )
   if ( 0 == registry ) {
     return "";
   } // RETURN
-  std::string _path        = registry->identifier();
-  std::string::size_type n = _path.find( "/stat/" );
+  std::string            _path = registry->identifier();
+  std::string::size_type n     = _path.find( "/stat/" );
   if ( 0 == n ) {
     return std::string( _path, 6 );
   }             // RETURN

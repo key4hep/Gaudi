@@ -18,7 +18,7 @@
 #include "GaudiKernel/ContainedObject.h"
 #include "GaudiKernel/DataObject.h"
 
-typedef const std::string& CSTR;
+typedef const std::string&    CSTR;
 typedef const std::type_info& CTYPE;
 
 /// Create instance

@@ -18,7 +18,7 @@
 class TupleTool : public GaudiTupleTool, virtual public ITupleTool
 {
 public:
-  typedef Tuples::Tuple Tuple;
+  typedef Tuples::Tuple     Tuple;
   typedef GaudiAlg::TupleID TupleID;
 
   /** Standard constructor

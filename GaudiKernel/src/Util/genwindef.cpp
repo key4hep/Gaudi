@@ -33,7 +33,7 @@ int main( int argc, char** argv )
   string outfile( "exports.def" );
   string library( "UnknownLib" );
   string objfiles;
-  bool debug( false );
+  bool   debug( false );
 
   int arg;
   if ( argc < 3 ) windef::usage();
@@ -59,7 +59,7 @@ int main( int argc, char** argv )
   }
 
   CLibSymbolInfo libsymbols;
-  ofstream out( outfile );
+  ofstream       out( outfile );
   if ( out.fail() ) {
     cerr << "windef: Error opening file " << outfile << endl;
     return 1;

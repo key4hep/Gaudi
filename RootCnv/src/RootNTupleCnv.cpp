@@ -56,11 +56,11 @@ static inline istream& operator>>(istream& is, string& /*pObj*/)
 template <class TYP>
 static StatusCode createItem( TTree* tree, INTuple* tuple, istream& is, const string& name, bool add, const TYP& null )
 {
-  string idxName;
-  long len, ndim, dim[4], hasIdx, idxLow, idxLen;
-  long dim1 = 1, dim2 = 1;
+  string       idxName;
+  long         len, ndim, dim[4], hasIdx, idxLow, idxLen;
+  long         dim1 = 1, dim2 = 1;
   INTupleItem* it = nullptr;
-  char c;
+  char         c;
   is >> len >> c >> ndim >> c >> hasIdx >> c;
   if ( hasIdx ) {
     getline( is, idxName, ';' ) >> idxLow >> c >> idxLen >> c;
@@ -108,7 +108,7 @@ static inline void putRange( ostream& os, NTuple::_Data<T>* it )
 static inline string _tr( string s )
 {
   string local = std::move( s );
-  auto p       = std::begin( local );
+  auto   p     = std::begin( local );
   if ( local.compare( 0, 7, "<local>" ) == 0 ) p += 7;
   std::replace_if( p, std::end( local ), []( const char& c ) { return !isalnum( c ); }, '_' );
   return local;
@@ -117,19 +117,19 @@ static inline string _tr( string s )
 // Converter overrides: Update the references of an updated transient object.
 StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObject )
 {
-  StatusCode status       = S_FAIL;
-  RootDataConnection* con = nullptr;
-  IRegistry* pRegistry    = pAddr->registry();
-  RootAddress* rpA        = dynamic_cast<RootAddress*>( pAddr );
-  string path             = fileName( pRegistry );
-  string cntName          = containerName( pRegistry );
-  string* par             = const_cast<string*>( pAddr->par() );
-  status                  = m_dbMgr->connectDatabase( path, IDataConnection::READ, &con );
+  StatusCode          status    = S_FAIL;
+  RootDataConnection* con       = nullptr;
+  IRegistry*          pRegistry = pAddr->registry();
+  RootAddress*        rpA       = dynamic_cast<RootAddress*>( pAddr );
+  string              path      = fileName( pRegistry );
+  string              cntName   = containerName( pRegistry );
+  string*             par       = const_cast<string*>( pAddr->par() );
+  status                        = m_dbMgr->connectDatabase( path, IDataConnection::READ, &con );
   if ( status.isSuccess() ) {
-    string par_val, par_guid;
+    string   par_val, par_guid;
     TBranch* b = con->getBranch( "##Descriptors", "GaudiStatisticsDescription" );
     if ( b ) {
-      RootNTupleDescriptor* ptr;
+      RootNTupleDescriptor*                 ptr;
       std::unique_ptr<RootNTupleDescriptor> dsc( ptr = new RootNTupleDescriptor() );
       b->SetAddress( &ptr );
       for ( Long64_t i = 0, nent = b->GetEntries(); i < nent; ++i ) {
@@ -150,12 +150,12 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
     if ( !par_val.empty() ) {
       auto ntupleSvc = dataProvider().as<INTupleSvc>();
       if ( ntupleSvc ) {
-        char c;
-        CLID clid;
-        int siz, typ;
-        string title;
+        char           c;
+        CLID           clid;
+        int            siz, typ;
+        string         title;
         NTuple::Tuple* nt = nullptr;
-        istringstream is( par_val );
+        istringstream  is( par_val );
         getline( is, title, ';' ) >> clid >> c >> siz >> c;
         status = ntupleSvc->create( clid, title, nt );
         for ( int j = 0; j < siz && status.isSuccess(); j++ ) {
@@ -243,8 +243,8 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
 // Update the transient object: NTuples end here when reading records
 StatusCode RootNTupleCnv::updateObj( IOpaqueAddress* pAddr, DataObject* pObj )
 {
-  INTuple* tupl    = dynamic_cast<INTuple*>( pObj );
-  RootAddress* rpA = dynamic_cast<RootAddress*>( pAddr );
+  INTuple*     tupl = dynamic_cast<INTuple*>( pObj );
+  RootAddress* rpA  = dynamic_cast<RootAddress*>( pAddr );
   if ( !tupl || !rpA ) return makeError( "updateObj> Invalid Tuple reference." );
   RootDataConnection* con = reinterpret_cast<RootDataConnection*>( rpA->ipar()[0] );
   if ( !con ) return makeError( "updateObj> Failed to access data source!" );
@@ -264,15 +264,15 @@ StatusCode RootNTupleCnv::updateObj( IOpaqueAddress* pAddr, DataObject* pObj )
 StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con )
 {
   typedef INTuple::ItemContainer Cont;
-  const string* par   = rpA->par();
-  unsigned long* ipar = const_cast<unsigned long*>( rpA->ipar() );
+  const string*                  par  = rpA->par();
+  unsigned long*                 ipar = const_cast<unsigned long*>( rpA->ipar() );
   ++ipar[1];
   if ( Long64_t( ipar[1] ) <= tree->GetEntries() ) {
-    GenericAddress* pA = nullptr;
-    Cont& it           = tupl->items();
-    size_t k, n = it.size();
+    GenericAddress*  pA = nullptr;
+    Cont&            it = tupl->items();
+    size_t           k, n = it.size();
     vector<RootRef*> paddr( n );
-    vector<RootRef> addr( n );
+    vector<RootRef>  addr( n );
     for ( k = 0; k < n; ++k ) {
       Cont::value_type j = it[k];
       switch ( j->type() ) {
@@ -285,8 +285,8 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
       }
     }
 
-    ULong64_t last        = tree->GetEntries();
-    ISelectStatement* sel = tupl->selector();
+    ULong64_t         last = tree->GetEntries();
+    ISelectStatement* sel  = tupl->selector();
     if ( sel ) {
       string criteria = ( sel && ( sel->type() & ISelectStatement::STRING ) ) ? sel->criteria() : string( "" );
       if ( !( criteria.length() == 0 || criteria == "*" ) ) {
@@ -308,8 +308,8 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
     if ( ipar[1] < last ) {
       unsigned long entry = ipar[1];
       if ( tree->GetEntry( entry ) > 1 ) {
-        RootRef* r   = nullptr;
-        string* spar = nullptr;
+        RootRef* r    = nullptr;
+        string*  spar = nullptr;
         for ( k = 0; k < n; ++k ) {
           Cont::value_type j = it[k];
           switch ( j->type() ) {
@@ -370,29 +370,29 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
     pAddr = pRegistry->address();
     if ( pAddr ) return S_OK;
 
-    RootDataConnection* con = nullptr;
-    string path             = fileName( pRegistry );
-    string cntName          = containerName( pRegistry );
-    string secName          = cntName.c_str();
-    const INTuple* nt       = dynamic_cast<const INTuple*>( pObj );
-    StatusCode status       = m_dbMgr->connectDatabase( path, IDataConnection::UPDATE, &con );
+    RootDataConnection* con     = nullptr;
+    string              path    = fileName( pRegistry );
+    string              cntName = containerName( pRegistry );
+    string              secName = cntName.c_str();
+    const INTuple*      nt      = dynamic_cast<const INTuple*>( pObj );
+    StatusCode          status  = m_dbMgr->connectDatabase( path, IDataConnection::UPDATE, &con );
     if ( !status.isSuccess() ) {
       return makeError( "Failed to access Tuple file:" + path );
     }
     TTree* tree = con->getSection( _tr( secName ), true );
     if ( nullptr != nt ) {
       const INTuple::ItemContainer& items = nt->items();
-      ostringstream os;
-      size_t item_no;
-      string desc;
+      ostringstream                 os;
+      size_t                        item_no;
+      string                        desc;
       os << nt->title() << ';' << pObj->clID() << ';' << items.size() << ';';
       map<string, TBranch*> branches;
       TBranch* b = nullptr;
       for ( item_no = 0; item_no < items.size(); ++item_no ) {
         INTupleItem* it = items[item_no];
         if ( it->hasIndex() ) {
-          INTupleItem* itm = it->indexItem();
-          const string& n  = itm->name();
+          INTupleItem*  itm = it->indexItem();
+          const string& n   = itm->name();
           switch ( itm->type() ) {
           case DataTypeInfo::UCHAR:
             desc = n + "/b";
@@ -433,8 +433,8 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
         }
       }
       for ( item_no = 0; item_no < items.size(); ++item_no ) {
-        INTupleItem* it = items[item_no];
-        const string& n = it->name();
+        INTupleItem*  it = items[item_no];
+        const string& n  = it->name();
         os << '{' << n << ';' << it->type() << ';' << it->length() << ';' << it->ndim() << ';' << it->hasIndex() << ';';
         if ( it->hasIndex() ) {
           os << it->index() << ';';
@@ -547,7 +547,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
         os << '}';
         if ( branches.find( n ) == branches.end() ) {
           string tmp;
-          char text[32];
+          char   text[32];
           switch ( it->ndim() ) {
           case 0:
             desc = n + desc;
@@ -585,7 +585,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
       if ( status.isSuccess() ) {
         status = m_dbMgr->commitOutput( path, true );
         if ( status.isSuccess() ) {
-          string spar[]        = {path, cntName};
+          string        spar[] = {path, cntName};
           unsigned long ipar[] = {(unsigned long)con, ~0x0u};
           status               = m_dbMgr->createAddress( repSvcType(), pObj->clID(), spar, ipar, pAddr );
           if ( status.isSuccess() ) {
@@ -608,23 +608,23 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
 StatusCode RootNTupleCnv::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
 {
   typedef INTuple::ItemContainer Cont;
-  INTuple* tupl    = dynamic_cast<INTuple*>( pObj );
-  IRegistry* pReg  = pObj->registry();
-  RootAddress* rpA = dynamic_cast<RootAddress*>( pAddr );
+  INTuple*                       tupl = dynamic_cast<INTuple*>( pObj );
+  IRegistry*                     pReg = pObj->registry();
+  RootAddress*                   rpA  = dynamic_cast<RootAddress*>( pAddr );
   if ( tupl && pReg && rpA ) {
-    string cntName          = containerName( pReg );
-    unsigned long* ipar     = const_cast<unsigned long*>( pAddr->ipar() );
-    RootDataConnection* con = reinterpret_cast<RootDataConnection*>( rpA->ipar()[0] );
+    string              cntName = containerName( pReg );
+    unsigned long*      ipar    = const_cast<unsigned long*>( pAddr->ipar() );
+    RootDataConnection* con     = reinterpret_cast<RootDataConnection*>( rpA->ipar()[0] );
     if ( con ) {
       TTree* tree = rpA->section;
       if ( tree ) {
-        Cont& it = tupl->items();
-        size_t k, n = it.size();
+        Cont&            it = tupl->items();
+        size_t           k, n = it.size();
         vector<RootRef*> paddr( n );
-        vector<RootRef> addr( n );
+        vector<RootRef>  addr( n );
         for ( k = 0; k < n; ++k ) {
-          IOpaqueAddress* pA = nullptr;
-          Cont::value_type j = it[k];
+          IOpaqueAddress*  pA = nullptr;
+          Cont::value_type j  = it[k];
           switch ( j->type() ) {
           case DataTypeInfo::OBJECT_ADDR:
             pA       = ( *(IOpaqueAddress**)j->buffer() );
@@ -707,15 +707,15 @@ inline int load<string>( int blob, IOBuffer& s, void* ptr )
 StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con )
 {
   typedef INTuple::ItemContainer Cont;
-  const string* par   = rpA->par();
-  unsigned long* ipar = const_cast<unsigned long*>( rpA->ipar() );
+  const string*                  par  = rpA->par();
+  unsigned long*                 ipar = const_cast<unsigned long*>( rpA->ipar() );
   ++ipar[1];
   if ( Long64_t( ipar[1] ) <= tree->GetEntries() ) {
-    Cont& it = tupl->items();
-    size_t k, n = it.size();
+    Cont&                    it = tupl->items();
+    size_t                   k, n = it.size();
     vector<PoolDbTokenWrap*> paddr( n );
-    vector<PoolDbTokenWrap> addr( n );
-    vector<int> blob_items( n, 0 );
+    vector<PoolDbTokenWrap>  addr( n );
+    vector<int>              blob_items( n, 0 );
     for ( k = 0; k < n; ++k ) {
       Cont::value_type j = it[k];
       switch ( j->type() ) {
@@ -728,8 +728,8 @@ StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTr
         break;
       }
     }
-    ULong64_t last        = (ULong64_t)tree->GetEntries();
-    ISelectStatement* sel = tupl->selector();
+    ULong64_t         last = (ULong64_t)tree->GetEntries();
+    ISelectStatement* sel  = tupl->selector();
     if ( sel ) {
       string criteria = ( sel && ( sel->type() & ISelectStatement::STRING ) ) ? sel->criteria() : string( "" );
       if ( !( criteria.length() == 0 || criteria == "*" ) ) {
@@ -750,18 +750,18 @@ StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTr
       }
     }
     if ( ipar[1] < last ) {
-      IOBuffer blob;
+      IOBuffer      blob;
       UCharDbArray* pblob = &blob.d;
       tree->GetBranch( "BlobData" )->SetAddress( &pblob );
       if ( tree->GetEntry( ipar[1] ) > 1 ) {
         int sc = 0;
         blob.start();
         for ( k = 0; k < n; ++k ) {
-          Cont::value_type j = it[k];
-          char* buf          = (char*)j->buffer();
+          Cont::value_type j   = it[k];
+          char*            buf = (char*)j->buffer();
           switch ( j->type() ) {
           case DataTypeInfo::OBJECT_ADDR: {
-            RootRef r          = con->tool()->poolRef( addr[k].token.m_oid.first );
+            RootRef         r  = con->tool()->poolRef( addr[k].token.m_oid.first );
             GenericAddress* pA = ( *(GenericAddress**)buf );
             if ( pA ) { // Fill only if item is connected!
               string* spar = (string*)pA->par();

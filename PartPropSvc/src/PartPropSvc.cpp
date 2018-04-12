@@ -32,18 +32,18 @@ StatusCode PartPropSvc::initialize()
   std::string key = m_pdtFiles.value();
 
   typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-  boost::char_separator<char> sep( ", " );
-  boost::char_separator<char> sep_eq( "=" );
+  boost::char_separator<char>                           sep( ", " );
+  boost::char_separator<char>                           sep_eq( "=" );
 
   tokenizer tokens( key, sep );
   for ( auto it = tokens.begin(); it != tokens.end(); ++it ) {
 
     tokenizer tok2( *it, sep_eq );
-    int nToks( distance( tok2.begin(), tok2.end() ) );
+    int       nToks( distance( tok2.begin(), tok2.end() ) );
 
-    auto it2                = tok2.begin();
+    auto              it2   = tok2.begin();
     const std::string fname = *it2;
-    std::string fmt;
+    std::string       fmt;
     if ( nToks == 1 ) {
       info() << "No table format type specified for \"" << fname << "\". Assuming PDG" << endmsg;
       fmt = "PDG";

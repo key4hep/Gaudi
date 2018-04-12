@@ -240,13 +240,13 @@ public:
   };
 
 private:
-  const Category* m_cat{&default_category()};               ///< The status code category
-  code_t m_code{static_cast<code_t>( ErrorCode::SUCCESS )}; ///< The status code value
-  mutable bool m_checked{false};                            ///< If the StatusCode has been checked
-  static bool s_checking;                                   ///< Global flag to control if StatusCode need to be checked
+  const Category* m_cat{&default_category()};                        ///< The status code category
+  code_t          m_code{static_cast<code_t>( ErrorCode::SUCCESS )}; ///< The status code value
+  mutable bool    m_checked{false};                                  ///< If the StatusCode has been checked
+  static bool     s_checking; ///< Global flag to control if StatusCode need to be checked
 
   ErrorCode default_value() const; ///< Project onto the default StatusCode values
-  void check();                    ///< Do StatusCode check
+  void      check();               ///< Do StatusCode check
 };
 
 /*

@@ -119,9 +119,9 @@ void MsgStream::resetColor()
 
 std::string format( const char* fmt, ... )
 {
-  const int buffsize = 2048;
+  const int   buffsize = 2048;
   static char buffer[buffsize];
-  va_list arguments;
+  va_list     arguments;
   va_start( arguments, fmt );
   if ( vsnprintf( buffer, buffsize, fmt, arguments ) >= buffsize )
     throw GaudiException( "Insufficient buffer size (" + std::to_string( buffsize ) + ") when formatting message",

@@ -30,7 +30,7 @@ namespace Gaudi
       using Range     = Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>;
       using Selection = Gaudi::Examples::MyTrack::Selection;
 
-      DataObjectReadHandle<Range> m_input{this, "Input", "", "TES location of input container"};
+      DataObjectReadHandle<Range>      m_input{this, "Input", "", "TES location of input container"};
       DataObjectWriteHandle<Selection> m_output{this, "Output", this->name(), "TES location of output container"};
       // ======================================================================
     public:

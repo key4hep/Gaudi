@@ -48,7 +48,7 @@ public:
                   const AlgTool* tool, const PropertyList& props, const JobHistory* job );
 
   // Class IDs
-  const CLID& clID() const override { return classID(); }
+  const CLID&        clID() const override { return classID(); }
   static const CLID& classID();
 
   // Return the algtool type.

@@ -48,7 +48,7 @@ private:
   Gaudi::Property<std::string> m_pdtFiles{this, "InputFile", "PDGTABLE.MeV"};
 
   HepPDT::ProcessUnknownID* m_upid = nullptr;
-  std::string m_upid_name;
+  std::string               m_upid_name;
 
   boost::optional<HepPDT::ParticleDataTable> m_pdt;
 

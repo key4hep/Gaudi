@@ -13,9 +13,9 @@
 
 extern "C" GAUDI_API int GaudiMain( int argc, char** argv )
 {
-  IInterface* iface = Gaudi::createApplicationMgr();
+  IInterface*        iface = Gaudi::createApplicationMgr();
   SmartIF<IAppMgrUI> appMgr( iface );
-  auto propMgr = appMgr.as<IProperty>();
+  auto               propMgr = appMgr.as<IProperty>();
 
   if ( !appMgr || !propMgr ) {
     std::cout << "Fatal error while creating the ApplicationMgr " << std::endl;
@@ -35,7 +35,7 @@ extern "C" GAUDI_API int GaudiMain( int argc, char** argv )
   }
 
   // Run the application manager and process events
-  StatusCode sc = appMgr->run();
+  StatusCode           sc = appMgr->run();
   Gaudi::Property<int> returnCode( "ReturnCode", 0 );
   propMgr->getProperty( &returnCode ).ignore();
   // Release Application Manager

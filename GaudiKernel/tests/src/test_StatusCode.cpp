@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE( boolean_logic )
 {
   StatusCode s = StatusCode::SUCCESS;
   StatusCode f = StatusCode::FAILURE;
-  bool b       = false;
+  bool       b = false;
   b &= s;
   BOOST_CHECK( b == false );
   b |= s;
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE( checking )
   {
     StatusCode sc1( StatusCode::SUCCESS );
     StatusCode sc2( StatusCode::FAILURE );
-    bool b = sc1 && sc2;
+    bool       b = sc1 && sc2;
     BOOST_CHECK( b == false );
     BOOST_CHECK( sc1.checked() == true );
     BOOST_CHECK( sc2.checked() == true );
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE( checking )
   {
     StatusCode sc1( StatusCode::SUCCESS );
     StatusCode sc2( StatusCode::FAILURE );
-    bool b = sc1 || sc2;
+    bool       b = sc1 || sc2;
     BOOST_CHECK( b == true );
     BOOST_CHECK( sc1.checked() == true );
     BOOST_CHECK( sc2.checked() == false );
@@ -327,14 +327,14 @@ BOOST_AUTO_TEST_CASE( checking )
   // AND assignment checks rhs
   {
     StatusCode sc;
-    bool b = false;
+    bool       b = false;
     b &= sc;
     BOOST_CHECK( sc.checked() == true );
   }
   // OR assignment checks rhs
   {
     StatusCode sc;
-    bool b = true;
+    bool       b = true;
     b |= sc;
     BOOST_CHECK( sc.checked() == true );
   }

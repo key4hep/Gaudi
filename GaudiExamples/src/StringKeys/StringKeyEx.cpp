@@ -45,7 +45,7 @@ namespace Gaudi
       typedef Gaudi::StringKey Key;
       typedef std::vector<Key> Keys;
       // ======================================================================
-      Gaudi::Property<Key> m_key{this, "Key", {}, "The string key"};
+      Gaudi::Property<Key>  m_key{this, "Key", {}, "The string key"};
       Gaudi::Property<Keys> m_keys{this, "Keys", {}, "The vector of keys"};
       // ======================================================================
     };
@@ -64,14 +64,14 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
   //
 
   // prepare some maps
-  typedef std::map<std::string, int> MAP1;
-  typedef GaudiUtils::Map<std::string, int> MAP2;
-  typedef GaudiUtils::HashMap<std::string, int> MAP3;
+  typedef std::map<std::string, int>              MAP1;
+  typedef GaudiUtils::Map<std::string, int>       MAP2;
+  typedef GaudiUtils::HashMap<std::string, int>   MAP3;
   typedef GaudiUtils::VectorMap<std::string, int> MAP4;
 
-  typedef std::map<Key, int> MAP01;
-  typedef GaudiUtils::Map<Key, int> MAP02;
-  typedef GaudiUtils::HashMap<Key, int> MAP03;
+  typedef std::map<Key, int>              MAP01;
+  typedef GaudiUtils::Map<Key, int>       MAP02;
+  typedef GaudiUtils::HashMap<Key, int>   MAP03;
   typedef GaudiUtils::VectorMap<Key, int> MAP04;
 
   MAP1 map1;

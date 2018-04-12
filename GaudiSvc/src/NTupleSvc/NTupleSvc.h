@@ -29,7 +29,7 @@ protected:
     Connection( const Connection& c ) : service( c.service ) {}
   };
   typedef std::vector<std::string> DBaseEntries;
-  typedef std::map<std::string, Connection> Connections;
+  typedef std::map<std::string, Connection>   Connections;
   typedef std::pair<std::string, std::string> Prop;
 
 public:

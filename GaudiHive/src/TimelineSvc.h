@@ -27,9 +27,9 @@ private:
   void outputTimeline();
 
   Gaudi::Property<std::string> m_timelineFile{this, "TimelineFile", "timeline.csv", ""};
-  Gaudi::Property<bool> m_isEnabled{this, "RecordTimeline", false, "Enable recording of the timeline events"};
-  Gaudi::Property<bool> m_dumpTimeline{this, "DumpTimeline", false, "Enable dumping of the timeline events"};
-  Gaudi::Property<bool> m_partial{this, "Partial", false, ""};
+  Gaudi::Property<bool>        m_isEnabled{this, "RecordTimeline", false, "Enable recording of the timeline events"};
+  Gaudi::Property<bool>        m_dumpTimeline{this, "DumpTimeline", false, "Enable dumping of the timeline events"};
+  Gaudi::Property<bool>        m_partial{this, "Partial", false, ""};
 
   tbb::concurrent_vector<TimelineEvent> m_events;
 };

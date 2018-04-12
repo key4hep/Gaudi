@@ -26,12 +26,12 @@ private:
   bool m_initialized;
   /// These data members are used in the execution of this algorithm
   /// They are set in the initialisation phase by the job options service
-  Gaudi::Property<int> m_int;
-  Gaudi::Property<double> m_double;
+  Gaudi::Property<int>         m_int;
+  Gaudi::Property<double>      m_double;
   Gaudi::Property<std::string> m_string;
-  int t_int;
-  double t_double;
-  std::string t_string;
+  int                          t_int;
+  double                       t_double;
+  std::string                  t_string;
 };
 
 #endif // GAUDIEXAMPLE_HELLOWORLD_H

@@ -30,14 +30,14 @@ protected:
   public:
     virtual ~IValue() = default;
     virtual void release() { delete this; }
-    void* ptr() { return m_P; }
-    const void* ptr() const { return m_P; }
+    void*        ptr() { return m_P; }
+    const void*  ptr() const { return m_P; }
     virtual long size() const                    = 0;
     virtual void construct( void* buffer ) const = 0;
   };
 
   struct Tag {
-    long first;
+    long                  first;
     const std::type_info& second;
     Tag( long f, const std::type_info& s ) : first( f ), second( s ) {}
   };

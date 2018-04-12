@@ -28,14 +28,14 @@ namespace Gaudi
 
   // NB : Please remember to give a simple doxygen comment for each typedef
 
-  typedef ROOT::Math::Cartesian3D<double> Cartesian3D;      ///< Cartesian 3D point (double)
-  typedef ROOT::Math::Cartesian3D<float> Cartesian3DF;      ///< Cartesian 3D point (float)
-  typedef ROOT::Math::Polar3D<double> Polar3D;              ///< Polar 3D point (double)
-  typedef ROOT::Math::Polar3D<float> Polar3DF;              ///< Polar 3D point (float)
-  typedef ROOT::Math::Cylindrical3D<double> RhoPhiZ3D;      ///< Cylindrical 3D point (double)
-  typedef ROOT::Math::Cylindrical3D<float> RhoPhiZ3DF;      ///< Cylindrical 3D point (float)
-  typedef ROOT::Math::CylindricalEta3D<double> RhoEtaPhi3D; ///< Cylindrical Eta 3D point (double)
-  typedef ROOT::Math::CylindricalEta3D<float> RhoEtaPhi3DF; ///< Cylindrical Eta 3D point (float)
+  typedef ROOT::Math::Cartesian3D<double>      Cartesian3D;  ///< Cartesian 3D point (double)
+  typedef ROOT::Math::Cartesian3D<float>       Cartesian3DF; ///< Cartesian 3D point (float)
+  typedef ROOT::Math::Polar3D<double>          Polar3D;      ///< Polar 3D point (double)
+  typedef ROOT::Math::Polar3D<float>           Polar3DF;     ///< Polar 3D point (float)
+  typedef ROOT::Math::Cylindrical3D<double>    RhoPhiZ3D;    ///< Cylindrical 3D point (double)
+  typedef ROOT::Math::Cylindrical3D<float>     RhoPhiZ3DF;   ///< Cylindrical 3D point (float)
+  typedef ROOT::Math::CylindricalEta3D<double> RhoEtaPhi3D;  ///< Cylindrical Eta 3D point (double)
+  typedef ROOT::Math::CylindricalEta3D<float>  RhoEtaPhi3DF; ///< Cylindrical Eta 3D point (float)
 }
 
 #endif // KERNEL_COORD3DTYPES_H

@@ -54,7 +54,7 @@ ITimelineSvc::TimelineRecorder TimelineSvc::getRecorder( std::string alg, const 
 {
   TimelineRecorder recorder{*m_events.emplace_back(), std::move( alg ), ctx};
   if ( m_partial ) {
-    auto& e = m_events.back();
+    auto&         e = m_events.back();
     std::ofstream out( m_timelineFile + ".part", std::ofstream::app | std::ofstream::out );
     out << std::chrono::duration_cast<std::chrono::nanoseconds>( e.start.time_since_epoch() ).count() << " "
         << std::chrono::duration_cast<std::chrono::nanoseconds>( e.end.time_since_epoch() ).count() << " "

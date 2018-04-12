@@ -11,7 +11,7 @@
 
 #include <limits>
 
-const EventIDBase::number_type EventIDBase::UNDEFNUM    = std::numeric_limits<EventIDBase::number_type>::max();
+const EventIDBase::number_type    EventIDBase::UNDEFNUM = std::numeric_limits<EventIDBase::number_type>::max();
 const EventIDBase::event_number_t EventIDBase::UNDEFEVT = std::numeric_limits<EventIDBase::event_number_t>::max();
 
 EventIDBase::EventIDBase( number_type run_number, event_number_t event_number, number_type time_stamp,

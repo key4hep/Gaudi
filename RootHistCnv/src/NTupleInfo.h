@@ -17,15 +17,15 @@ public:
   char block[32];
 
   //  struct _var   {
-  char name[512][64];
-  long dim[512];
-  long theDim[512][5];
-  long hasIndex[512];
-  char index[512][64];
-  char type[512];
-  long size[512];
-  long hasRange[512];
-  long irange[512][2];
+  char   name[512][64];
+  long   dim[512];
+  long   theDim[512][5];
+  long   hasIndex[512];
+  char   index[512][64];
+  char   type[512];
+  long   size[512];
+  long   hasRange[512];
+  long   irange[512][2];
   double frange[512][2];
   template <class TYPE>
   void getBounds( long i, TYPE& min, TYPE& max, TYPE& null ) const

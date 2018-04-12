@@ -96,7 +96,7 @@ bool SmartRefBase::isEqualEx( const ContainedObject* pObj, const SmartRefBase& c
 const std::string& SmartRefBase::path() const
 {
   static std::string s_empty_string{};
-  DataObject* source               = nullptr;
+  DataObject*        source        = nullptr;
   if ( !m_data && m_contd ) m_data = m_contd->parent();
   source                           = const_cast<DataObject*>( m_data );
   if ( m_hintID != StreamBuffer::INVALID && source ) {

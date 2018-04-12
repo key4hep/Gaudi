@@ -44,12 +44,12 @@ namespace
       return *this;
     }
     //
-    bool ok() const { return edges.empty() ? low < high && 0 < nbins : 2 < edges.size(); }
+    bool         ok() const { return edges.empty() ? low < high && 0 < nbins : 2 < edges.size(); }
     unsigned int nBins() const { return edges.empty() ? nbins : edges.size() - 1; }
     //
-    double low;
-    double high;
-    unsigned int nbins;
+    double              low;
+    double              high;
+    unsigned int        nbins;
     std::vector<double> edges;
   };
   // ==========================================================================
@@ -123,8 +123,8 @@ namespace
     //
     std::string m_name;
     std::string m_title;
-    Edges m_edges;
-    Bins m_bins;
+    Edges       m_edges;
+    Bins        m_bins;
   };
   // ==========================================================================
   /** @struct H2
@@ -186,9 +186,9 @@ namespace
     //
     std::string m_name;
     std::string m_title;
-    Edges m_xedges;
-    Edges m_yedges;
-    Bins m_bins;
+    Edges       m_xedges;
+    Edges       m_yedges;
+    Bins        m_bins;
   };
   // ==========================================================================
 } // end of anonymous namespace

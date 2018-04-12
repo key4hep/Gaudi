@@ -112,12 +112,12 @@ StatusCode ReadAlg::execute()
       }
       log << endmsg;
     }
-    SmartDataPtr<MyTrackVector> myTracks( eventSvc(), "/Event/MyTracks" );
+    SmartDataPtr<MyTrackVector>  myTracks( eventSvc(), "/Event/MyTracks" );
     SmartDataPtr<MyVertexVector> myVtx( eventSvc(), "/Event/Collision_0/MyVertices" );
     if ( myTracks != 0 ) {
-      IOpaqueAddress* pAddr    = myTracks->registry()->address();
+      IOpaqueAddress*    pAddr = myTracks->registry()->address();
       static std::string fname = "";
-      int count                = 0;
+      int                count = 0;
       if ( pAddr ) {
         std::string new_fname = pAddr->par()[0];
         if ( fname != new_fname ) {

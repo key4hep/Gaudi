@@ -17,10 +17,10 @@ namespace System
   */
   typedef struct _PEB* PPEB;
   struct PROCESS_BASIC_INFORMATION {
-    long ExitStatus;
-    PPEB PebBaseAddress;
+    long          ExitStatus;
+    PPEB          PebBaseAddress;
     unsigned long AffinityMask;
-    long BasePriority;
+    long          BasePriority;
     unsigned long UniqueProcessId;
     unsigned long InheritedFromUniqueProcessId;
   };
@@ -36,7 +36,7 @@ namespace System
     unsigned long MinimumWorkingSetSize;
     unsigned long MaximumWorkingSetSize;
     unsigned long PagefileLimit;
-    longlong TimeLimit;
+    longlong      TimeLimit;
   };
 
   /** Process I/O Counters
@@ -111,12 +111,12 @@ namespace System
     class ProcessHandle
     {
       void* m_handle;
-      bool m_needRelease;
+      bool  m_needRelease;
 
     public:
       ProcessHandle( long pid );
       virtual ~ProcessHandle();
-      long item() { return m_needRelease ? 1 : 0; }
+      long  item() { return m_needRelease ? 1 : 0; }
       void* handle() { return m_handle; }
     };
 

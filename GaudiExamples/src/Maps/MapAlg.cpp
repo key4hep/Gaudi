@@ -41,7 +41,7 @@
 class MapAlg : public GaudiAlgorithm
 {
 public:
-  typedef int Key;
+  typedef int    Key;
   typedef double Value;
 
 public:
@@ -78,10 +78,10 @@ private:
   void print2( Key key );
 
 private:
-  typedef std::map<Key, Value> Map1;
+  typedef std::map<Key, Value>              Map1;
   typedef GaudiUtils::VectorMap<Key, Value> Map2;
-  typedef GaudiUtils::Map<Key, Value> Map3;
-  typedef GaudiUtils::HashMap<Key, Value> Map4;
+  typedef GaudiUtils::Map<Key, Value>       Map3;
+  typedef GaudiUtils::HashMap<Key, Value>   Map4;
 
   Map1 m_map1;
   Map2 m_map2;
@@ -103,7 +103,7 @@ StatusCode MapAlg::execute()
   Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
   Rndm::Numbers gauss2( randSvc(), Rndm::Gauss( 0.0, 10.0 ) );
 
-  const Key key      = Key( gauss2() );
+  const Key   key    = Key( gauss2() );
   const Value value1 = Value( int( 100 * gauss() ) ) / 100.0;
 
   always() << " Inserting key " << toString( key ) << " 1st: "

@@ -113,9 +113,9 @@ public:
   ///////////////////////////////////////////////////////////////////
 private:
   struct IoComponentEntry {
-    std::string m_oldfname;
-    std::string m_oldabspath;
-    std::string m_newfname;
+    std::string                   m_oldfname;
+    std::string                   m_oldabspath;
+    std::string                   m_newfname;
     IIoComponentMgr::IoMode::Type m_iomode;
 
     IoComponentEntry()

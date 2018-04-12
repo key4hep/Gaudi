@@ -225,7 +225,7 @@ namespace Gaudi
     /// List of interfaces
     using iids = typename Gaudi::interface_list_append<typename interface_type::ext_iids, InterfaceId>::type;
 
-    static inline std::string name() { return System::typeinfoName( typeid( INTERFACE ) ); }
+    static inline std::string      name() { return System::typeinfoName( typeid( INTERFACE ) ); }
     static constexpr unsigned long majorVersion() { return majVers; }
     static constexpr unsigned long minorVersion() { return minVers; }
 

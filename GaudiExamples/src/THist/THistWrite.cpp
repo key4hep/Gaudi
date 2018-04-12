@@ -109,14 +109,14 @@ StatusCode THistWrite::initialize()
 
   // Update to stream "upd", dir "/xxx"
   std::unique_ptr<TH1F> h3s = std::make_unique<TH1F>( "1Dgauss_shared", "1D Gaussian", 100, -50., 50. );
-  LockedHandle<TH1> lh1( nullptr, nullptr );
+  LockedHandle<TH1>     lh1( nullptr, nullptr );
   if ( m_ths->regShared( "/upd/xxx/gauss1d_shared", std::move( h3s ), lh1 ).isFailure() ) {
     error() << "Couldn't register gauss1d_shared" << endmsg;
   }
 
   // Recreate 2D tree in "/"
   std::unique_ptr<TH2F> h3sa = std::make_unique<TH2F>( "2Dgauss_shared", "2D Gaussian", 100, -50., 50., 100, -50, 50 );
-  LockedHandle<TH2> lh2( nullptr, nullptr );
+  LockedHandle<TH2>     lh2( nullptr, nullptr );
   if ( m_ths->regShared( "/rec/gauss2d_shared", std::move( h3sa ), lh2 ).isFailure() ) {
     error() << "Couldn't register gauss2d_shared" << endmsg;
   }

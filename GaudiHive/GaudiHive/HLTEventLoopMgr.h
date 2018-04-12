@@ -28,7 +28,7 @@ class HLTEventLoopMgr : public extends<Service, IEventProcessor>
   struct HLTExecutionTask : public tbb::task {
 
     HLTExecutionTask( std::vector<IAlgorithm*>& algorithms, std::unique_ptr<EventContext> ctx, ISvcLocator* svcLocator,
-                      IAlgExecStateSvc* aem,
+                      IAlgExecStateSvc*                                    aem,
                       std::function<void( std::unique_ptr<EventContext> )> promote2ExecutedClosure )
         : m_algorithms( algorithms )
         , m_evtCtx( std::move( ctx ) )
@@ -43,10 +43,10 @@ class HLTEventLoopMgr : public extends<Service, IEventProcessor>
       return MsgStream( messageSvc, "HLTExecutionTask" );
     }
 
-    std::vector<IAlgorithm*>& m_algorithms;
-    std::unique_ptr<EventContext> m_evtCtx;
-    IAlgExecStateSvc* m_aess;
-    SmartIF<ISvcLocator> m_serviceLocator;
+    std::vector<IAlgorithm*>&                            m_algorithms;
+    std::unique_ptr<EventContext>                        m_evtCtx;
+    IAlgExecStateSvc*                                    m_aess;
+    SmartIF<ISvcLocator>                                 m_serviceLocator;
     std::function<void( std::unique_ptr<EventContext> )> m_promote2ExecutedClosure;
   };
 

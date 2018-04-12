@@ -25,7 +25,7 @@ HistoAlgorithm::HistoAlgorithm( const std::string& name, ISvcLocator* pSvcLocato
 StatusCode HistoAlgorithm::initialize()
 //------------------------------------------------------------------------------
 {
-  int i;
+  int                 i;
   std::vector<double> edges;
   for ( i = 0; i <= 10; i++ ) edges.push_back( double( i ) * double( i ) );
   // Getting existing histograms

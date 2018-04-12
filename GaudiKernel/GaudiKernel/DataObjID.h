@@ -68,13 +68,13 @@ private:
   void setClid();
   void setClassName();
 
-  CLID m_clid{0};
+  CLID        m_clid{0};
   std::size_t m_hash{0};
 
   std::string m_key{"INVALID"};
   std::string m_className;
 
-  static IClassIDSvc* p_clidSvc;
+  static IClassIDSvc*   p_clidSvc;
   static std::once_flag m_ip;
 };
 

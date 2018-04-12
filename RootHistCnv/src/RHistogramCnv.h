@@ -42,12 +42,12 @@ namespace RootHistCnv
     {
       refpObj           = DataObjFactory::create( objType() );
       RootObjAddress* r = dynamic_cast<RootObjAddress*>( pAddr );
-      Q* h              = dynamic_cast<Q*>( refpObj );
+      Q*              h = dynamic_cast<Q*>( refpObj );
       if ( r && h ) {
         // Need to flip representation .... clumsy for the time being, because
         // THXY constructor has no "generic" copy constructor
         auto p = std::make_unique<T>();
-        S* s   = dynamic_cast<S*>( r->tObj() );
+        S*   s = dynamic_cast<S*>( r->tObj() );
         if ( s && p.get() ) {
           TTH<S>* casted = (TTH<S>*)s;
           TArray* a      = dynamic_cast<TArray*>( s );
@@ -72,7 +72,7 @@ namespace RootHistCnv
       if ( 0 != h ) {
         T* r = dynamic_cast<T*>( h->representation() );
         if ( r ) {
-          T* c      = new T();
+          T*      c = new T();
           TArray* a = dynamic_cast<TArray*>( r );
           ( (TTH<S>*)r )->CopyH( *c );
           if ( 0 != a ) {

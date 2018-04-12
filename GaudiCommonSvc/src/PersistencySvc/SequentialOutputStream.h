@@ -25,7 +25,7 @@ public:
 
 private:
   Gaudi::Property<unsigned int> m_eventsPerFile{this, "EventsPerFile", std::numeric_limits<unsigned int>::max()};
-  Gaudi::Property<bool> m_numericFilename{this, "NumericFilename", false};
+  Gaudi::Property<bool>         m_numericFilename{this, "NumericFilename", false};
   Gaudi::Property<unsigned int> m_nNumbersAdded{this, "NumbersAdded", 6};
 
   // Data members

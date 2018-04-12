@@ -78,7 +78,7 @@ namespace
 }
 
 template <Gaudi::StateMachine::Transition TR>
-StatusCode ReplayOutputStream::i_outStreamTransition()
+StatusCode                                ReplayOutputStream::i_outStreamTransition()
 {
   OutStreamTransition<TR> trans( msg() );
   std::for_each( m_outputStreams.begin(), m_outputStreams.end(), trans );

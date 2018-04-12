@@ -110,7 +110,7 @@ namespace Gaudi
 
     private:
       SmartIF<IAlgContextSvc> m_svc;
-      SmartIF<IAlgorithm> m_alg;
+      SmartIF<IAlgorithm>     m_alg;
     };
   } // end of namespace Gaudi::Utils
 } // end of namespace Gaudi

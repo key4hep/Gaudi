@@ -9,8 +9,8 @@
 #include <thread>
 
 std::vector<unsigned int> CPUCruncher::m_niters_vect;
-std::vector<double> CPUCruncher::m_times_vect;
-CPUCruncher::CHM CPUCruncher::m_name_ncopies_map;
+std::vector<double>       CPUCruncher::m_times_vect;
+CPUCruncher::CHM          CPUCruncher::m_name_ncopies_map;
 
 DECLARE_COMPONENT( CPUCruncher )
 
@@ -23,7 +23,7 @@ DECLARE_COMPONENT( CPUCruncher )
 //------------------------------------------------------------------------------
 
 CPUCruncher::CPUCruncher( const std::string& name, // the algorithm instance name
-                          ISvcLocator* pSvc )
+                          ISvcLocator*       pSvc )
     : GaudiAlgorithm( name, pSvc )
 {
 
@@ -98,13 +98,13 @@ void CPUCruncher::calibrate()
   info() << "Starting calibration..." << endmsg;
   for ( unsigned int i = 1; i < m_niters_vect.size(); ++i ) {
     unsigned long niters = m_niters_vect[i];
-    unsigned int trials  = 30;
+    unsigned int  trials = 30;
     do {
       auto start_cali = tbb::tick_count::now();
       findPrimes( niters );
-      auto stop_cali  = tbb::tick_count::now();
-      double deltat   = ( stop_cali - start_cali ).seconds();
-      m_times_vect[i] = deltat;
+      auto   stop_cali = tbb::tick_count::now();
+      double deltat    = ( stop_cali - start_cali ).seconds();
+      m_times_vect[i]  = deltat;
       DEBUG_MSG << "Calibration: # iters = " << niters << " => " << deltat << endmsg;
       trials--;
     } while ( trials > 0 and m_times_vect[i] < m_times_vect[i - 1] ); // make sure that they are monotonic
@@ -116,8 +116,8 @@ unsigned long CPUCruncher::getNCaliIters( double runtime )
 {
 
   unsigned int smaller_i = 0;
-  double time            = 0.;
-  bool found             = false;
+  double       time      = 0.;
+  bool         found     = false;
   // We know that the first entry is 0, so we start to iterate from 1
   for ( unsigned int i = 1; i < m_times_vect.size(); i++ ) {
     time = m_times_vect[i];
@@ -152,9 +152,9 @@ void CPUCruncher::findPrimes( const unsigned long int n_iterations )
   bool is_prime;
 
   // Let's prepare the material for the allocations
-  unsigned int primes_size = 1;
-  unsigned long* primes    = new unsigned long[primes_size];
-  primes[0]                = 2;
+  unsigned int   primes_size = 1;
+  unsigned long* primes      = new unsigned long[primes_size];
+  primes[0]                  = 2;
 
   unsigned long i = 2;
 
@@ -171,8 +171,8 @@ void CPUCruncher::findPrimes( const unsigned long int n_iterations )
 
     if ( is_prime ) {
       // copy the array of primes (INEFFICIENT ON PURPOSE!)
-      unsigned int new_primes_size = 1 + primes_size;
-      unsigned long* new_primes    = new unsigned long[new_primes_size];
+      unsigned int   new_primes_size = 1 + primes_size;
+      unsigned long* new_primes      = new unsigned long[new_primes_size];
 
       for ( unsigned int prime_index = 0; prime_index < primes_size; prime_index++ ) {
         new_primes[prime_index] = primes[prime_index];
@@ -270,10 +270,10 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   // Prepare to sleep (even if we won't enter the following if clause for sleeping).
   // This is needed to distribute evenly among all algorithms the overhead (around sleeping) which is harmful when
   // trying to achieve uniform distribution of algorithm timings.
-  const double dreamtime = m_avg_runtime * m_sleepFraction;
+  const double                        dreamtime = m_avg_runtime * m_sleepFraction;
   const std::chrono::duration<double> dreamtime_duration( dreamtime );
-  tbb::tick_count startSleeptbb;
-  tbb::tick_count endSleeptbb;
+  tbb::tick_count                     startSleeptbb;
+  tbb::tick_count                     endSleeptbb;
 
   // Start to measure the total time here, together with the dreaming process straight ahead
   tbb::tick_count starttbb = tbb::tick_count::now();

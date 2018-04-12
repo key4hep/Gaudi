@@ -15,8 +15,8 @@ struct TimelineEvent final {
   using time_point = Clock::time_point;
 
   pthread_t thread;
-  size_t slot;
-  size_t event;
+  size_t    slot;
+  size_t    event;
 
   std::string algorithm;
 

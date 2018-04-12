@@ -95,7 +95,7 @@ public:
   /// Access counter
   long numEvent() const { return m_count; }
   /// Access counter within stream
-  long numStreamEvent() const { return m_strCount; }
+  long  numStreamEvent() const { return m_strCount; }
   void* identifier() const override { return (void*)m_pSelector; }
 };
 #endif // GAUDISVC_EVENTSELECTOR_EVENTITERATOR_H

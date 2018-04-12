@@ -49,7 +49,7 @@ public:
       : AnyDataWrapperBase( std::move( other ) ), m_data( std::move( other.m_data ) ){};
 
   const T& getData() const { return m_data; }
-  T& getData() { return m_data; }
+  T&       getData() { return m_data; }
 
   boost::optional<std::size_t> size() const override
   {

@@ -31,8 +31,8 @@ namespace concurrency
     bool visit( ConditionNode& ) override;
 
     EventSlot* m_slot;
-    Cause m_cause;
-    bool m_trace;
+    Cause      m_cause;
+    bool       m_trace;
   };
 
   class DecisionUpdater : public IGraphVisitor
@@ -47,8 +47,8 @@ namespace concurrency
     bool visit( AlgorithmNode& ) override;
 
     EventSlot* m_slot;
-    Cause m_cause;
-    bool m_trace;
+    Cause      m_cause;
+    bool       m_trace;
   };
 
   class Supervisor : public IGraphVisitor
@@ -70,8 +70,8 @@ namespace concurrency
     bool visit( AlgorithmNode& ) override;
 
     EventSlot* m_slot;
-    Cause m_cause;
-    bool m_trace;
+    Cause      m_cause;
+    bool       m_trace;
   };
 
   class RankerByProductConsumption : public IGraphVisitor
@@ -152,8 +152,8 @@ namespace concurrency
     void reset() override { m_nodesSucceeded = 0; };
 
     EventSlot* m_slot;
-    Cause m_cause;
-    int m_nodesSucceeded{0};
+    Cause      m_cause;
+    int        m_nodesSucceeded{0};
   };
 }
 

@@ -41,16 +41,16 @@
 class MultiStoreSvc;
 
 typedef const std::string CSTR;
-typedef IDataStoreAgent AGENT;
-typedef DataObject OBJECT;
-typedef IOpaqueAddress ADDRESS;
+typedef IDataStoreAgent   AGENT;
+typedef DataObject        OBJECT;
+typedef IOpaqueAddress    ADDRESS;
 
 namespace
 {
   struct Partition final {
     SmartIF<IDataProviderSvc> dataProvider;
-    SmartIF<IDataManagerSvc> dataManager;
-    std::string name;
+    SmartIF<IDataManagerSvc>  dataManager;
+    std::string               name;
 
     template <typename T>
     T* get();
@@ -104,11 +104,11 @@ protected:
   typedef std::vector<std::string> PartitionDefs;
   typedef std::map<std::string, Partition> Partitions;
 
-  Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110, "CLID of root entry"};
-  Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
+  Gaudi::Property<CLID>          m_rootCLID{this, "RootCLID", 110, "CLID of root entry"};
+  Gaudi::Property<std::string>   m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<PartitionDefs> m_partitionDefs{this, "Partitions", {}, "datastore partition definitions"};
-  Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc", "data loader name"};
-  Gaudi::Property<std::string> m_defaultPartition{this, "DefaultPartition", "Default", "default partition name"};
+  Gaudi::Property<std::string>   m_loader{this, "DataLoader", "EventPersistencySvc", "data loader name"};
+  Gaudi::Property<std::string>   m_defaultPartition{this, "DefaultPartition", "Default", "default partition name"};
 
   /// Pointer to data loader service
   SmartIF<IConversionSvc> m_dataLoader;
@@ -680,7 +680,7 @@ public:
                               if ( !address ) return StatusCode::FAILURE;
                               ADDRESS* pAdd = nullptr;
                               ADDRESS* p    = address;
-                              auto sc =
+                              auto     sc =
                                   m_addrCreator->createAddress( p->svcType(), p->clID(), p->par(), p->ipar(), pAdd );
                               return sc.isSuccess() ? i.second.dataManager->setRoot( m_root.path, pAdd ) : sc;
                             },

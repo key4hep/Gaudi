@@ -41,11 +41,11 @@ namespace Gaudi
         t = (TTree*)c->file()->Get( _treeName( cnt ).c_str() );
       }
       if ( t ) {
-        TBranch* b1    = t->GetBranch( "Links" );
-        TBranch* b2    = t->GetBranch( "Refs" );
+        TBranch*   b1  = t->GetBranch( "Links" );
+        TBranch*   b2  = t->GetBranch( "Refs" );
         MsgStream& msg = msgSvc();
         if ( b1 && b2 ) {
-          LinkManager lm, *plm         = &lm;
+          LinkManager       lm, *plm   = &lm;
           PoolDbLinkManager mgr, *pmgr = &mgr;
           b1->SetAutoDelete( kFALSE );
           b2->SetAutoDelete( kFALSE );
@@ -59,8 +59,8 @@ namespace Gaudi
             msg << MSG::VERBOSE;
             for ( size_t j = 0; j < ref_size; ++j ) {
               const pair<int, int>& oid = mgr.references()[j]->m_oid;
-              string loc = mgr.links()[j].substr( 1 );
-              RootRef& r = refs.refs[j];
+              string   loc = mgr.links()[j].substr( 1 );
+              RootRef& r   = refs.refs[j];
               if ( oid.first >= 0 ) {
                 r       = m_poolLinks[oid.first];
                 r.entry = oid.second;
@@ -71,8 +71,8 @@ namespace Gaudi
               }
             }
             for ( int i = 0, n = lm.size(); i < n; ++i ) {
-              LinkManager::Link* lnk = lm.link( i );
-              int link_id            = c->makeLink( lnk->path() );
+              LinkManager::Link* lnk     = lm.link( i );
+              int                link_id = c->makeLink( lnk->path() );
               msg << "Add Link:" << lnk->path() << endl;
               refs.links.push_back( link_id );
             }
@@ -113,7 +113,7 @@ namespace Gaudi
     /// Internal helper to read reference tables ##Params and ##Links
     StatusCode readRefs() override
     {
-      int i;
+      int  i;
       char text[2048];
       msgSvc() << MSG::VERBOSE;
 
@@ -149,7 +149,7 @@ namespace Gaudi
       for ( i = 0, b->SetAddress( text ); i < b->GetEntries(); ++i ) {
         b->GetEvent( i );
         std::string db, container;
-        int clid = 1, technology = 0, ipar[2] = {-1, -1};
+        int         clid = 1, technology = 0, ipar[2] = {-1, -1};
         for ( char* p1 = (char*)text; p1; p1 = ::strchr( ++p1, '[' ) ) {
           char* p2 = ::strchr( p1, '=' );
           char* p3 = ::strchr( p1, ']' );

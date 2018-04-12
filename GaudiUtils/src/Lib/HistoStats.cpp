@@ -69,13 +69,13 @@ double Gaudi::Utils::HistoStats::moment( const AIDA::IHistogram1D* histo, const 
   const auto& axis = histo->axis();
   // number of bins
   const auto nBins = axis.bins();
-  double result{0}, weight{0};
+  double     result{0}, weight{0};
   // loop over all bins
   for ( int i = 0; i < nBins; ++i ) {
     const auto lE = axis.binLowerEdge( i );
     const auto uE = axis.binUpperEdge( i );
     //
-    const auto yBin   = histo->binHeight( i ); // bin weight
+    const auto   yBin = histo->binHeight( i ); // bin weight
     const double xBin = 0.5 * ( lE + uE );     // bin center
     //
     weight += yBin;
@@ -531,8 +531,8 @@ long Gaudi::Utils::HistoStats::nEntries( const AIDA::IHistogram1D* histo, const 
  */
 // ============================================================================
 long Gaudi::Utils::HistoStats::nEntries( const AIDA::IHistogram1D* histo,
-                                         const int imin,  //     minimal bin number (included)
-                                         const int imax ) // maximal bin number (not included)
+                                         const int                 imin,  //     minimal bin number (included)
+                                         const int                 imax ) // maximal bin number (not included)
 {
   if ( !histo ) {
     return s_long_bad;
@@ -607,8 +607,8 @@ double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IHistogram1D* histo, 
  */
 // ============================================================================
 double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IHistogram1D* histo,
-                                               const int imin,  //     minimal bin number (included)
-                                               const int imax ) // maximal bin number (not included)
+                                               const int                 imin,  //     minimal bin number (included)
+                                               const int                 imax ) // maximal bin number (not included)
 {
   if ( !histo ) {
     return s_bad;
@@ -669,8 +669,8 @@ double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IHistogram1D* hist
  */
 // ============================================================================
 double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IHistogram1D* histo,
-                                                  const int imin,  //     minimal bin number (included)
-                                                  const int imax ) // maximal bin number (not included)
+                                                  const int                 imin,  //     minimal bin number (included)
+                                                  const int                 imax ) // maximal bin number (not included)
 {
   if ( !histo ) {
     return s_bad;

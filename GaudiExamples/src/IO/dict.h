@@ -20,16 +20,16 @@
 // template KeyedObject<long>;
 // template std::vector<KeyedObject<long int>* >;
 struct POOLIOTestDict__Instantiations {
-  ObjectVector<Gaudi::Examples::MyTrack> i1;
-  ObjectVector<Gaudi::Examples::MyVertex> i2;
-  std::vector<Gaudi::Examples::MyTrack*> i3;
-  std::vector<Gaudi::Examples::MyVertex*> i4;
-  std::vector<SmartRef<Gaudi::Examples::MyTrack>> i5;
+  ObjectVector<Gaudi::Examples::MyTrack>           i1;
+  ObjectVector<Gaudi::Examples::MyVertex>          i2;
+  std::vector<Gaudi::Examples::MyTrack*>           i3;
+  std::vector<Gaudi::Examples::MyVertex*>          i4;
+  std::vector<SmartRef<Gaudi::Examples::MyTrack>>  i5;
   std::vector<SmartRef<Gaudi::Examples::MyVertex>> i6;
-  KeyedContainer<Gaudi::Examples::MyTrack> i7;
-  KeyedContainer<Gaudi::Examples::MyVertex> i8;
-  KeyedObject<int> i9;
-  std::vector<KeyedObject<int>*> i10;
+  KeyedContainer<Gaudi::Examples::MyTrack>         i7;
+  KeyedContainer<Gaudi::Examples::MyVertex>        i8;
+  KeyedObject<int>                                 i9;
+  std::vector<KeyedObject<int>*>                   i10;
   // KeyedObject<long> i11;
   // std::vector<KeyedObject<long int>* > i12;
 };

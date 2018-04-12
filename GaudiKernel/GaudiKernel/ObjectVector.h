@@ -37,22 +37,22 @@ class ObjectVector : public ObjectContainerBase
 {
 
 public:
-  typedef TYPE contained_type;
+  typedef TYPE                                    contained_type;
   typedef typename std::vector<TYPE*>::value_type value_type;
 
-  typedef typename std::vector<TYPE*>::reference reference;
+  typedef typename std::vector<TYPE*>::reference       reference;
   typedef typename std::vector<TYPE*>::const_reference const_reference;
 
-  typedef typename std::vector<TYPE*>::iterator iterator;
+  typedef typename std::vector<TYPE*>::iterator       iterator;
   typedef typename std::vector<TYPE*>::const_iterator const_iterator;
 
-  typedef typename std::vector<TYPE*>::reverse_iterator reverse_iterator;
+  typedef typename std::vector<TYPE*>::reverse_iterator       reverse_iterator;
   typedef typename std::vector<TYPE*>::const_reverse_iterator const_reverse_iterator;
 #ifdef _WIN32
-  typedef typename std::vector<TYPE*>::_Tptr pointer;
+  typedef typename std::vector<TYPE*>::_Tptr  pointer;
   typedef typename std::vector<TYPE*>::_Ctptr const_pointer;
 #else
-  typedef typename std::vector<TYPE*>::pointer pointer;
+  typedef typename std::vector<TYPE*>::pointer       pointer;
   typedef typename std::vector<TYPE*>::const_pointer const_pointer;
 #endif
 
@@ -208,7 +208,7 @@ public:
   }
 
   /// Insert "value" before "position"
-  typename ObjectVector<TYPE>::iterator insert( typename ObjectVector<TYPE>::iterator position,
+  typename ObjectVector<TYPE>::iterator insert( typename ObjectVector<TYPE>::iterator        position,
                                                 typename ObjectVector<TYPE>::const_reference value )
   {
     value->setParent( this );

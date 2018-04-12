@@ -51,7 +51,7 @@ namespace DsoUtils
       MEMORY_BASIC_INFORMATION mbi;
       if ( VirtualQuery( addr, &mbi, sizeof( mbi ) ) ) {
         HMODULE h_module = (HMODULE)mbi.AllocationBase;
-        char mod[1024];
+        char    mod[1024];
         if ( GetModuleFileName( h_module, mod, sizeof( mod ) ) ) {
           const char* pos = strrchr( mod, '\\' );
           if ( pos )
@@ -85,7 +85,7 @@ namespace DsoUtils
     }
 
     std::string::size_type pos = dsoname.find_last_of( sep );
-    std::string curname;
+    std::string            curname;
     if ( std::string::npos == pos ) {
       curname = dsoname;
     } else {

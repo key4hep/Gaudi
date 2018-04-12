@@ -156,28 +156,28 @@ namespace System
     ProcessTime( TimeValueType k, TimeValueType u, TimeValueType e ) : i_kernel( k ), i_user( u ), i_elapsed( e ) {}
 
     /// Retrieve the kernel time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType kernelTime() const
     {
       return adjustTime<T>( i_kernel );
     }
 
     /// Retrieve the user time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType userTime() const
     {
       return adjustTime<T>( i_user );
     }
 
     /// Retrieve the elapsed time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType elapsedTime() const
     {
       return adjustTime<T>( i_elapsed );
     }
 
     /// Retrieve the CPU (user+kernel) time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType cpuTime() const
     {
       return adjustTime<T>( i_user + i_kernel );
@@ -266,7 +266,7 @@ namespace System
 
   // This is frequently used and thus we inline it if possible
   template <TimeType T>
-  inline longlong currentTime()
+  inline longlong    currentTime()
   {
 #ifdef _WIN32
     longlong current = 0;

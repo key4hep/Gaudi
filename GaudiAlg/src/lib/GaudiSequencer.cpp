@@ -34,8 +34,8 @@ namespace
   class populate_JobOptionsSvc_t
   {
     std::vector<std::string> m_props;
-    IJobOptionsSvc* m_jos;
-    std::string m_name;
+    IJobOptionsSvc*          m_jos;
+    std::string              m_name;
 
     template <typename Properties, typename Key, typename Value>
     void addPropertyToCatalogue( const Properties* props, const std::tuple<Key, Value>& arg )
@@ -197,11 +197,11 @@ StatusCode GaudiSequencer::decodeNames()
   auto appMgr = service<IAlgManager>( "ApplicationMgr" );
   for ( const auto& item : m_names.value() ) {
     const Gaudi::Utils::TypeNameString typeName( item );
-    const std::string& theName = typeName.name();
-    const std::string& theType = typeName.type();
+    const std::string&                 theName = typeName.name();
+    const std::string&                 theType = typeName.type();
 
     //== Check wether the specified algorithm already exists. If not, create it
-    StatusCode result          = StatusCode::SUCCESS;
+    StatusCode          result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm( typeName, false ); // do not create it now
     if ( !myIAlg ) {
       // ensure some magic properties are set while we create the subalgorithm so
@@ -260,7 +260,7 @@ StatusCode GaudiSequencer::decodeNames()
   msg << "Member list: ";
   GaudiUtils::details::ostream_joiner( msg, m_entries, ", ",
                                        []( auto& os, const AlgorithmEntry& e ) -> decltype( auto ) {
-                                         Algorithm* alg  = e.algorithm();
+                                         Algorithm*  alg = e.algorithm();
                                          std::string typ = System::typeinfoName( typeid( *alg ) );
                                          os << typ;
                                          if ( alg->name() != typ ) os << "/" << alg->name();

@@ -62,7 +62,7 @@ int main( int argc, char** argv )
   }
   // end of options handling
 
-  IInterface* iface = Gaudi::createApplicationMgr();
+  IInterface*        iface = Gaudi::createApplicationMgr();
   SmartIF<IProperty> propMgr( iface );
   SmartIF<IAppMgrUI> appUI( iface );
   propMgr->setProperty( "JobOptionsType", "PYTHON" );

@@ -73,20 +73,20 @@
 #define cpuid( func, ax, bx, cx, dx )                                                                                  \
   __asm__ __volatile__( "cpuid" : "=a"( ax ), "=b"( bx ), "=c"( cx ), "=d"( dx ) : "a"( func ) );
 
-static pfarg_pmd_t pd_smpl[NUM_PMDS];
-static uint64_t collected_samples, collected_partial;
-static int ctx_fd;
+static pfarg_pmd_t         pd_smpl[NUM_PMDS];
+static uint64_t            collected_samples, collected_partial;
+static int                 ctx_fd;
 static pfm_dfl_smpl_hdr_t* hdr;
-static uint64_t ovfl_count;
-static size_t entry_size;
-static unsigned int num_smpl_pmds;
+static uint64_t            ovfl_count;
+static size_t              entry_size;
+static unsigned int        num_smpl_pmds;
 static std::vector<std::map<std::string, std::map<unsigned long, unsigned int>>> samples(
     MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules each containing numbers of samples of their addresses
 static std::vector<std::map<std::string, std::vector<unsigned long int>>>
-    results( MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules and their result values across multiple events
+                results( MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules and their result values across multiple events
 static uint64_t last_overflow;
 static uint64_t last_count;
-static int sp[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+static int      sp[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
 
 static std::stack<std::pair<INamedInterface*, std::vector<unsigned long int>>> alg_stack;
 /*END: perfmon*/
@@ -99,7 +99,7 @@ namespace
   {
     union {
       void* object;
-      T function;
+      T     function;
     } caster;
     caster.object = p;
     return caster.function;
@@ -138,7 +138,7 @@ namespace
     pfm_set_options_t pfm_set_options;
     typedef pfm_err_t ( *pfm_get_num_counters_t )( unsigned int* );
     pfm_get_num_counters_t pfm_get_num_counters;
-    static PFMon& instance() { return s_instance; }
+    static PFMon&          instance() { return s_instance; }
 
   private:
     // static void failure() { throw 1; }
@@ -216,7 +216,7 @@ private:
 public:
   StatusCode initialize() override;
   StatusCode finalize() override;
-  int is_nehalem()
+  int        is_nehalem()
   {
 #ifdef __ICC
 // Disable ICC remark #593: variable "x" was set but never used
@@ -355,41 +355,41 @@ private:
 
 private:
   typedef GaudiUtils::VectorMap<const INamedInterface*, int> Map;
-  Map m_map;
-  int m_indent;   // indentation level
+  Map  m_map;
+  int  m_indent;  // indentation level
   bool m_inEvent; // "In event" flag
 
 private:
   int is_nehalem_ret;
 
-  pfmlib_input_param_t inp;
-  pfmlib_output_param_t outp;
-  pfarg_ctx_t ctx;
-  pfarg_pmd_t pd[NUM_PMDS];
-  pfarg_pmc_t pc[NUM_PMCS];
-  pfarg_load_t load_arg;
-  int fd;
-  unsigned int i;
-  int ret;
-  void startpm();
-  void pausepm();
-  void stoppm();
-  void finalizepm();
-  std::string event_str[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
-  std::string prefix;
-  std::string family;
-  char event_cstr[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS][MAX_EVENT_NAME_LENGTH];
-  char prefix_cstr[MAX_PREFIX_NAME_LENGTH];
-  unsigned int ph_ev_count;
-  bool inv[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
-  unsigned int cmask[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
-  unsigned int start_at_event;
+  pfmlib_input_param_t      inp;
+  pfmlib_output_param_t     outp;
+  pfarg_ctx_t               ctx;
+  pfarg_pmd_t               pd[NUM_PMDS];
+  pfarg_pmc_t               pc[NUM_PMCS];
+  pfarg_load_t              load_arg;
+  int                       fd;
+  unsigned int              i;
+  int                       ret;
+  void                      startpm();
+  void                      pausepm();
+  void                      stoppm();
+  void                      finalizepm();
+  std::string               event_str[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+  std::string               prefix;
+  std::string               family;
+  char                      event_cstr[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS][MAX_EVENT_NAME_LENGTH];
+  char                      prefix_cstr[MAX_PREFIX_NAME_LENGTH];
+  unsigned int              ph_ev_count;
+  bool                      inv[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+  unsigned int              cmask[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
+  unsigned int              start_at_event;
   pfmlib_core_input_param_t params;
-  pfmlib_nhm_input_param_t nhm_params;
-  int used_counters_number;
-  bool nehalem;
-  bool westmere;
-  bool core;
+  pfmlib_nhm_input_param_t  nhm_params;
+  int                       used_counters_number;
+  bool                      nehalem;
+  bool                      westmere;
+  bool                      core;
 
   bool sampling;
   int detect_unavail_pmu_regs( int fd, pfmlib_regmask_t* r_pmcs, pfmlib_regmask_t* r_pmds );
@@ -410,21 +410,21 @@ private:
   static void process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_size );
   static void sigio_handler( int, struct siginfo*, struct sigcontext* ); // dlopen ==>
   // void sigio_handler(int, struct siginfo *, struct sigcontext *);
-  void start_smpl();
-  void stop_smpl();
-  void finalize_smpl();
+  void               start_smpl();
+  void               stop_smpl();
+  void               finalize_smpl();
   pfm_dfl_smpl_arg_t buf_arg;
-  pfarg_load_t load_args;
-  void* buf_addr;
-  unsigned num_counters;
-  unsigned int max_pmd;
-  pfmlib_options_t pfmlib_options;
+  pfarg_load_t       load_args;
+  void*              buf_addr;
+  unsigned           num_counters;
+  unsigned int       max_pmd;
+  pfmlib_options_t   pfmlib_options;
 
   int level;
 
-  bool first_alg;
+  bool        first_alg;
   std::string first_alg_name;
-  bool event_count_reached;
+  bool        event_count_reached;
 };
 
 void PerfMonAuditor::startpm()
@@ -613,8 +613,8 @@ void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_siz
 {
   ////////
   pfm_dfl_smpl_entry_t* ent;
-  size_t pos, count;
-  uint64_t entry;
+  size_t                pos, count;
+  uint64_t              entry;
   if ( hdr->hdr_overflows == last_overflow && hdr->hdr_count == last_count ) {
     printf( "skipping identical set of samples...\n" );
     return;
@@ -648,10 +648,10 @@ void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_siz
 // signal handler used to catch sampling buffer overflows. When they occur it calls the process_smpl_buf() function
 void PerfMonAuditor::sigio_handler( int /*n*/, struct siginfo* /*info*/, struct sigcontext* /*sc*/ )
 {
-  PFMon& pfm = PFMon::instance();
+  PFMon&      pfm = PFMon::instance();
   pfarg_msg_t msg;
-  int fd = ctx_fd;
-  int r;
+  int         fd = ctx_fd;
+  int         r;
   if ( fd != ctx_fd ) {
     // error() << "ERROR: handler does not get valid file descriptor. Aborting..." << endmsg;
   }
@@ -874,9 +874,9 @@ void PerfMonAuditor::finalize_smpl()
           bzero( sym_name, SYM_NAME_MAX_LENGTH );
           const char* libName;
           const char* symbolName;
-          int libOffset  = 0;
-          int offset     = 0;
-          void* sym_addr = IgHookTrace::tosymbol( (void*)( jt->first ) );
+          int         libOffset = 0;
+          int         offset    = 0;
+          void*       sym_addr  = IgHookTrace::tosymbol( (void*)( jt->first ) );
           if ( sym_addr != NULL ) {
             bool success = IgHookTrace::symbol( sym_addr, symbolName, libName, offset, libOffset );
             if ( success ) {

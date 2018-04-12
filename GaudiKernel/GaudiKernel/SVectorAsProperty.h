@@ -44,7 +44,7 @@ namespace Gaudi
     StatusCode parse( ROOT::Math::SVector<SCALAR, N>& result, const std::string& input )
     {
       std::vector<double> tmp;
-      StatusCode sc = parse( tmp, input );
+      StatusCode          sc = parse( tmp, input );
       if ( sc.isFailure() ) {
         return sc;
       } // RETURN

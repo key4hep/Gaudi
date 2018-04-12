@@ -61,9 +61,9 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-    inline std::ostream& toStream( ITERATOR first,             // begin of the sequence
-                                   ITERATOR last,              //   end of the sequence
-                                   std::ostream& s,            //            the stream
+    inline std::ostream& toStream( ITERATOR           first,   // begin of the sequence
+                                   ITERATOR           last,    //   end of the sequence
+                                   std::ostream&      s,       //            the stream
                                    const std::string& open,    //               opening
                                    const std::string& close,   //               closing
                                    const std::string& delim ); //             delimiter
@@ -300,9 +300,9 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-    inline std::ostream& toStream( ITERATOR first,            // begin of the sequence
-                                   ITERATOR last,             //   end of the sequence
-                                   std::ostream& s,           //            the stream
+    inline std::ostream& toStream( ITERATOR           first,  // begin of the sequence
+                                   ITERATOR           last,   //   end of the sequence
+                                   std::ostream&      s,      //            the stream
                                    const std::string& open,   //               opening
                                    const std::string& close,  //               closing
                                    const std::string& delim ) //             delimiter

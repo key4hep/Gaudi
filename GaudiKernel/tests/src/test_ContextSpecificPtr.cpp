@@ -179,9 +179,9 @@ public:
 BOOST_AUTO_TEST_CASE( ctx_threaded )
 {
   ThreadingTest test;
-  Runner runner( test );
-  std::thread t1( runner, (ContextIdType)1 );
-  std::thread t2( runner, (ContextIdType)2 );
+  Runner        runner( test );
+  std::thread   t1( runner, (ContextIdType)1 );
+  std::thread   t2( runner, (ContextIdType)2 );
   t1.join();
   t2.join();
 

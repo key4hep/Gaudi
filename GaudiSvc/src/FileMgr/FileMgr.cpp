@@ -87,7 +87,7 @@ StatusCode FileMgr::initialize()
     msgSvc()->setOutputLevel( "RootFileHandler", m_outputLevel.value() );
     m_rfh.emplace( msgSvc(), m_ssl_proxy, m_ssl_cert );
 
-    auto& rfh = m_rfh.value(); // used in the lambdas to avoid capturing 'this'
+    auto&        rfh = m_rfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlr(
         Io::ROOT, [&rfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
                           void*& ptr ) -> Io::open_t { return rfh.openRootFile( n, f, desc, fd, ptr ); },
@@ -106,7 +106,7 @@ StatusCode FileMgr::initialize()
     msgSvc()->setOutputLevel( "POSIXFileHandler", m_outputLevel.value() );
     m_pfh.emplace( msgSvc() );
 
-    auto& pfh = m_pfh.value(); // used in the lambdas to avoid capturing 'this'
+    auto&        pfh = m_pfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlp(
         Io::POSIX, [&pfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
                            void*& ptr ) -> Io::open_t { return pfh.openPOSIXFile( n, f, desc, fd, ptr ); },
@@ -294,7 +294,7 @@ open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::
   verbose() << "open(" << tech << "," << caller << ",\"" << fname << "\",\"" << desc << "\"," << flags
             << ( shared ? ",shared" : ",unshared" ) << ")" << endmsg;
 
-  open_t r = -1;
+  open_t   r = -1;
   FileHdlr fh;
   if ( getHandler( tech, fh ).isFailure() ) return r;
 
@@ -628,8 +628,8 @@ reopen_t FileMgr::reopen( Fd fd, const IoFlags& flags, const std::string& caller
     return r;
   }
 
-  FileAttr* fa = itr->second;
-  IoTech tech  = fa->tech();
+  FileAttr* fa   = itr->second;
+  IoTech    tech = fa->tech();
 
   FileHdlr fh;
 
@@ -695,8 +695,8 @@ reopen_t FileMgr::reopen( void* vp, const IoFlags& flags, const std::string& cal
   }
 
   FileAttr* fa = itr->second;
-  FileHdlr fh;
-  IoTech tech = fa->tech();
+  FileHdlr  fh;
+  IoTech    tech = fa->tech();
 
   if ( getHandler( tech, fh ).isFailure() ) {
     return r;
@@ -1068,7 +1068,7 @@ StatusCode FileMgr::getHandler( const std::string& fname, Io::FileHdlr& hdlr ) c
     return StatusCode::FAILURE;
   }
 
-  auto itr    = fitr.first;
+  auto   itr  = fitr.first;
   IoTech tech = itr->second->tech();
 
   ++itr;
@@ -1123,7 +1123,7 @@ void FileMgr::listActions() const
   info() << "listing registered actions" << endl;
 
   for ( const auto& iit : m_actions ) {
-    Io::IoTech t       = iit.first;
+    Io::IoTech       t = iit.first;
     const actionMap& m = iit.second;
 
     if ( !m.empty() ) {

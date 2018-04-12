@@ -395,7 +395,7 @@ StatusCode DataOnDemandSvc::setup()
 StatusCode DataOnDemandSvc::setupNodeHandlers()
 {
   std::string nam, typ, tag;
-  StatusCode sc = StatusCode::SUCCESS;
+  StatusCode  sc = StatusCode::SUCCESS;
   // Setup for node leafs, where simply a constructor is called...
   for ( auto node : m_nodeMapping ) {
     using Parser = Gaudi::Utils::AttribStringParser;
@@ -520,9 +520,9 @@ namespace
   /// type/name given a path and a list of mapping tools.
   class Finder
   {
-    const ToolGetter getter;
+    const ToolGetter                    getter;
     const std::vector<IDODNodeMapper*>& nodes;
-    const std::vector<IDODAlgMapper*>& algs;
+    const std::vector<IDODAlgMapper*>&  algs;
     /// Looping algorithm.
     template <class R, class C>
     R find( const C& l ) const
@@ -714,7 +714,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
   }
 
   typedef std::pair<std::string, std::string> Pair;
-  std::map<std::string, Pair> _m;
+  std::map<std::string, Pair>                 _m;
   for ( auto& alg : m_algs ) {
     auto check = _m.find( alg.first );
     if ( _m.end() != check ) {
@@ -790,7 +790,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
   //
 
   const std::string _f = " | %%1$-%1%.%1%s | %%2$-%2%.%2%s | %%3$%3%.%3%s |";
-  boost::format _ff( _f );
+  boost::format     _ff( _f );
   _ff % n1 % n2 % n3;
 
   const std::string _format = _ff.str();
@@ -807,7 +807,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
   fmt1 % "Address" % "Creator" % ( mode ? "S" : "#" );
   //
   const std::string header = fmt1.str();
-  std::string line         = std::string( header.size(), '-' );
+  std::string       line   = std::string( header.size(), '-' );
   line[0]                  = ' ';
 
   msg << '\n' << line << '\n' << header << '\n' << line;

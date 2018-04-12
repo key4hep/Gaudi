@@ -63,22 +63,22 @@ private:
 
   Gaudi::Property<std::vector<std::pair<double, double>>> m_2{this, "VectorOfPairsDD"};
   Gaudi::Property<std::vector<std::vector<std::string>>> m_3{this, "VectorOfVectorsString"};
-  Gaudi::Property<std::vector<std::vector<double>>> m_4{this, "VectorOfVectorsDouble"};
+  Gaudi::Property<std::vector<std::vector<double>>>      m_4{this, "VectorOfVectorsDouble"};
 
-  Gaudi::Property<std::map<int, double>> m_5{this, "MapIntDouble"};
-  Gaudi::Property<std::map<std::string, std::string>> m_6{this, "MapStringString"};
-  Gaudi::Property<std::map<std::string, int>> m_7{this, "MapStringInt"};
-  Gaudi::Property<std::map<std::string, double>> m_8{this, "MapStringDouble"};
+  Gaudi::Property<std::map<int, double>>                           m_5{this, "MapIntDouble"};
+  Gaudi::Property<std::map<std::string, std::string>>              m_6{this, "MapStringString"};
+  Gaudi::Property<std::map<std::string, int>>                      m_7{this, "MapStringInt"};
+  Gaudi::Property<std::map<std::string, double>>                   m_8{this, "MapStringDouble"};
   Gaudi::Property<std::map<std::string, std::vector<std::string>>> m_9{this, "MapStringVectorOfStrings"};
 
-  Gaudi::Property<std::pair<int, int>> m_10{this, "PairII"};
+  Gaudi::Property<std::pair<int, int>>                        m_10{this, "PairII"};
   Gaudi::Property<std::map<std::string, std::vector<double>>> m_11{this, "MapStringVectorOfDoubles"};
-  Gaudi::Property<std::map<std::string, std::vector<int>>> m_12{this, "MapStringVectorOfInts"};
+  Gaudi::Property<std::map<std::string, std::vector<int>>>    m_12{this, "MapStringVectorOfInts"};
 
-  Gaudi::Property<std::map<int, int>> m_13{this, "MapIntInt"};
+  Gaudi::Property<std::map<int, int>>               m_13{this, "MapIntInt"};
   Gaudi::Property<std::vector<std::pair<int, int>>> m_14{this, "VectorOfPairsII"};
 
-  Gaudi::Property<std::map<int, std::string>> m_15{this, "MapIntString"};
+  Gaudi::Property<std::map<int, std::string>>          m_15{this, "MapIntString"};
   Gaudi::Property<std::map<unsigned int, std::string>> m_16{this, "MapUIntString"};
 
   Gaudi::Property<std::map<std::string, std::string>> m_20{this, "EmptyMap"};
@@ -101,7 +101,7 @@ namespace
   inline SimplePropertyRef<TYPE> _prop( TYPE& value )
   {
     // construct a readable name
-    std::string name            = System::typeinfoName( typeid( value ) );
+    std::string            name = System::typeinfoName( typeid( value ) );
     std::string::size_type ipos = name.find( "std::" );
     while ( std::string::npos != ipos ) {
       name.erase( ipos, 5 );
@@ -125,7 +125,7 @@ namespace
     ipos = name.find( ",allocator<" );
     while ( std::string::npos != ipos ) {
       std::string::size_type ip2 = ipos + 11;
-      int ip3                    = 1;
+      int                    ip3 = 1;
       for ( ; ip2 < name.size(); ++ip2 ) {
         if ( '<' == name[ip2] ) {
           ip3 += 1;
@@ -144,7 +144,7 @@ namespace
       ipos = name.find( ",less<" );
       while ( std::string::npos != ipos ) {
         std::string::size_type ip2 = ipos + 6;
-        int ip3                    = 1;
+        int                    ip3 = 1;
         for ( ; ip2 < name.size(); ++ip2 ) {
           if ( '<' == name[ip2] ) {
             ip3 += 1;
@@ -200,14 +200,14 @@ StatusCode ExtendedProperties::execute()
   always() << " \t" << m_24 << endmsg;
 
   // some properties could be created from other (convertible) types:
-  Gaudi::Property<short> m1( "a", 0 );
+  Gaudi::Property<short>  m1( "a", 0 );
   Gaudi::Property<double> m2( "b", m1 );
 
   // some properties could be assigned from other (convertible) types
   Gaudi::Property<int> m3( "c", 0 );
   m3 = m1;
 
-  float i = 10;
+  float                   i = 10;
   Gaudi::Property<float&> m4( "d", i );
 
   m4 = 12;

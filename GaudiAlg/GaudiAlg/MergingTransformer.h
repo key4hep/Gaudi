@@ -41,15 +41,15 @@ namespace Gaudi
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
       using InputHandle_t = details::InputHandle_t<Traits_, typename std::remove_pointer<T>::type>;
-      std::vector<std::string> m_inputLocations; // TODO/FIXME: remove this duplication...
-      std::vector<InputHandle_t<In>> m_inputs;   //   and make the handles properties instead...
+      std::vector<std::string>       m_inputLocations; // TODO/FIXME: remove this duplication...
+      std::vector<InputHandle_t<In>> m_inputs;         //   and make the handles properties instead...
     };
 
     template <typename Out, typename In, typename Traits_>
     MergingTransformer<Out( const vector_of_const_<In>& ), Traits_>::MergingTransformer( const std::string& name,
-                                                                                         ISvcLocator* pSvcLocator,
+                                                                                         ISvcLocator*     pSvcLocator,
                                                                                          const KeyValues& inputs,
-                                                                                         const KeyValue& output )
+                                                                                         const KeyValue&  output )
         : base_class( name, pSvcLocator, output ), m_inputLocations( inputs.second )
     {
       // TODO/FIXME: replace vector of string property + call-back with a

@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fully deprecate `DeclareFactoryEntries.h` ([mr !648][])
 
 ### Changed
+- Applied new formatting (see [mr !651][], [mr !448][])
 - Remove `DataHandle::commit()` ([mr !625][])
 - Modernize Registry usage in (Ts)DataSvc ([mr !604][], [issue #5][])
 - Improve Gitlab-CI configuration ([mr !651][], [mr !448][])

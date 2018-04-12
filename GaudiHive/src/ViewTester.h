@@ -26,8 +26,8 @@ namespace Test
     /// the finalization of the algorithm
     StatusCode finalize() override;
 
-    ViewTester( const std::string& name, // the algorithm instance name
-                ISvcLocator* pSvc );     // the Service Locator
+    ViewTester( const std::string& name,   // the algorithm instance name
+                ISvcLocator*       pSvc ); // the Service Locator
 
     /// virtual & protected desctrustor
     virtual ~ViewTester(); // virtual & protected desctrustor
@@ -40,8 +40,8 @@ namespace Test
     /// the assignement operator is disabled
     ViewTester& operator=( const ViewTester& ); // no assignement
 
-    Gaudi::Property<std::vector<std::string>> m_inpKeys{this, "inpKeys", {}, ""};
-    Gaudi::Property<std::vector<std::string>> m_outKeys{this, "outKeys", {}, ""};
+    Gaudi::Property<std::vector<std::string>>  m_inpKeys{this, "inpKeys", {}, ""};
+    Gaudi::Property<std::vector<std::string>>  m_outKeys{this, "outKeys", {}, ""};
     std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
     std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
 
@@ -49,6 +49,6 @@ namespace Test
     Gaudi::Property<std::string> m_baseViewName{this, "baseViewName", "view",
                                                 "Views to be named this, plus a numerical index"};
     Gaudi::Property<unsigned int> m_viewNumber{this, "viewNumber", 0, "How many views to make"};
-    Gaudi::Property<std::string> m_viewNodeName{this, "viewNodeName", "viewNode", "Name of node to attach views to"};
+    Gaudi::Property<std::string>  m_viewNodeName{this, "viewNodeName", "viewNode", "Name of node to attach views to"};
   };
 }

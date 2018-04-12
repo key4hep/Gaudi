@@ -1515,8 +1515,8 @@ namespace Tuples
       *len = std::distance( first, last );
 
       // get the array itself
-      auto cols    = std::distance( funF, funL );
-      FMatrix* var = fMatrix( name, len, cols );
+      auto     cols = std::distance( funF, funL );
+      FMatrix* var  = fMatrix( name, len, cols );
       if ( !var ) return ErrorCodes::InvalidColumn;
 
       /// fill the matrix

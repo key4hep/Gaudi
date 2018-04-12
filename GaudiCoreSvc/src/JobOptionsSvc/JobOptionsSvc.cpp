@@ -46,7 +46,7 @@ StatusCode JobOptionsSvc::initialize()
 }
 
 // ============================================================================
-StatusCode JobOptionsSvc::addPropertyToCatalogue( const std::string& client,
+StatusCode JobOptionsSvc::addPropertyToCatalogue( const std::string&                  client,
                                                   const Gaudi::Details::PropertyBase& property )
 {
   auto p = std::make_unique<Gaudi::Property<std::string>>( property.name(), "" );
@@ -118,12 +118,12 @@ StatusCode JobOptionsSvc::readOptions( const std::string& file, const std::strin
   if ( msgLevel( MSG::DEBUG ) )
     debug() << "Reading options from the file "
             << "'" << file << "'" << endmsg;
-  gp::Messages messages( msgStream() );
-  gp::Catalog catalog;
-  gp::Units units;
+  gp::Messages      messages( msgStream() );
+  gp::Catalog       catalog;
+  gp::Units         units;
   gp::PragmaOptions pragma;
-  gp::Node ast;
-  StatusCode sc = gp::ReadOptions( file, path, &messages, &catalog, &units, &pragma, &ast ) ? StatusCode::SUCCESS
+  gp::Node          ast;
+  StatusCode        sc = gp::ReadOptions( file, path, &messages, &catalog, &units, &pragma, &ast ) ? StatusCode::SUCCESS
                                                                                             : StatusCode::FAILURE;
 
   // --------------------------------------------------------------------------

@@ -39,8 +39,8 @@ public:
   {
   }
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  ServiceLocatorHelper( ISvcLocator& svcLoc,
-                        const MsgStream& log, // use requester msg level
+  ServiceLocatorHelper( ISvcLocator&       svcLoc,
+                        const MsgStream&   log, // use requester msg level
                         const std::string& requesterName )
       : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( requesterName )
   {
@@ -68,11 +68,11 @@ public:
   }
 
 private:
-  ISvcLocator* serviceLocator() const { return &m_svcLoc; }
-  MsgStream& log() const { return m_msgLog; }
+  ISvcLocator*       serviceLocator() const { return &m_svcLoc; }
+  MsgStream&         log() const { return m_msgLog; }
   const std::string& requesterName() const { return m_requesterName; }
-  ISvcLocator& m_svcLoc;
-  mutable MsgStream m_msgLog;
-  std::string m_requesterName;
+  ISvcLocator&       m_svcLoc;
+  mutable MsgStream  m_msgLog;
+  std::string        m_requesterName;
 };
 #endif

@@ -43,7 +43,7 @@ namespace RootHistCnv
     RFileCnv( ISvcLocator* svc );
 
   protected:
-    TFile* rfile;            ///< Pointer to ROOT file
+    TFile*      rfile;       ///< Pointer to ROOT file
     std::string m_compLevel; ///< Compression setting, property RFileCnv.GlobalCompression
   };
 } // namespace RootHistCnv

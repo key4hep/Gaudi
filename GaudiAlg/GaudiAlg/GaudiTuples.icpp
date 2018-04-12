@@ -113,8 +113,8 @@ template <class PBASE>
 Tuples::Tuple GaudiTuples<PBASE>::nTuple( const std::string& title, const CLID& clid ) const
 {
   // look up in the table
-  auto& m    = nTupleByTitle();
-  auto tuple = m.find( title );
+  auto& m     = nTupleByTitle();
+  auto  tuple = m.find( title );
   if ( tuple != m.end() ) return Tuple( tuple->tuple ); // RETURN
   // Create the tuple ID
   TupleID ID;
@@ -151,8 +151,8 @@ template <class PBASE>
 Tuples::Tuple GaudiTuples<PBASE>::evtCol( const std::string& title, const CLID& clid ) const
 {
   // look up in the table
-  auto& m    = evtColByTitle();
-  auto tuple = m.find( title );
+  auto& m     = evtColByTitle();
+  auto  tuple = m.find( title );
   if ( tuple != m.end() ) return Tuple( tuple->tuple ); // RETURN
   // Create the tuple ID
   TupleID ID;
@@ -195,8 +195,8 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple( const TupleID& ID, const std::string& 
   }
 
   // look up in the table
-  auto& m    = nTupleByID();
-  auto tuple = m.find( ID );
+  auto& m     = nTupleByID();
+  auto  tuple = m.find( ID );
   if ( tuple != m.end() ) return Tuple( tuple->tuple ); // RETURN
 
   // convert ID to the string
@@ -246,7 +246,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol( const TupleID& ID, const std::string& 
 
   // look up in the table
   auto& tuple = evtColByID();
-  auto i      = tuple.find( ID );
+  auto  i     = tuple.find( ID );
   if ( i != tuple.end() ) return Tuple( i->tuple ); // RETURN
 
   // convert ID to the string

@@ -66,8 +66,8 @@ void EvtCollectionStream::clearItems() { m_itemList.clear(); }
 // Add item to output streamer list
 void EvtCollectionStream::addItem( const std::string& descriptor )
 {
-  auto sep             = descriptor.rfind( "#" );
-  int level            = 0;
+  auto        sep      = descriptor.rfind( "#" );
+  int         level    = 0;
   std::string obj_path = descriptor.substr( 0, sep );
   if ( sep != std::string::npos ) {
     std::string slevel = descriptor.substr( sep + 1 );

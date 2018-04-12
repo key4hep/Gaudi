@@ -39,9 +39,9 @@ class IncidentSvc : public extends<Service, IIncidentSvc>
 public:
   struct Listener final {
     IIncidentListener* iListener;
-    long priority;
-    bool rethrow;
-    bool singleShot;
+    long               priority;
+    bool               rethrow;
+    bool               singleShot;
 
     Listener( IIncidentListener* il, long pri, bool thr = false, bool single = false )
         : iListener( il ), priority( pri ), rethrow( thr ), singleShot( single )
@@ -97,7 +97,7 @@ private:
 
   /// timer & it's lock
   mutable ChronoEntity m_timer;
-  mutable bool m_timerLock = false;
+  mutable bool         m_timerLock = false;
   // ==========================================================================
   // When TBB supports unique_ptrs in concurrent queue typedef should be changed
   // typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;

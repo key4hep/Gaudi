@@ -36,7 +36,7 @@ StatusCode IncidentAsyncTestAlg::initialize()
 //=============================================================================
 StatusCode IncidentAsyncTestAlg::execute()
 {
-  uint64_t data = 0;
+  uint64_t  data = 0;
   MsgStream logstream( msgSvc(), name() );
   for ( auto& inputHandle : m_inputObjHandles ) {
     if ( !inputHandle->isValid() ) continue;

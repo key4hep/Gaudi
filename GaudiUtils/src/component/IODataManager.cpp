@@ -46,7 +46,7 @@ StatusCode IODataManager::initialize()
 {
   // Initialize base class
   StatusCode status = Service::initialize();
-  MsgStream log( msgSvc(), name() );
+  MsgStream  log( msgSvc(), name() );
   if ( !status.isSuccess() ) {
     log << MSG::ERROR << "Error initializing base class Service!" << endmsg;
     return status;
@@ -134,7 +134,7 @@ StatusCode IODataManager::disconnect( Connection* con )
   if ( con ) {
     std::string dataset = con->name();
     std::string dsn     = dataset;
-    StatusCode sc       = con->disconnect();
+    StatusCode  sc      = con->disconnect();
     if (::strncasecmp( dsn.c_str(), "FID:", 4 ) == 0 )
       dsn = dataset.substr( 4 );
     else if (::strncasecmp( dsn.c_str(), "LFN:", 4 ) == 0 )
@@ -146,7 +146,7 @@ StatusCode IODataManager::disconnect( Connection* con )
     if ( j != m_fidMap.end() ) {
       std::string fid       = j->second;
       std::string gfal_name = "gfal:guid:" + fid;
-      auto i                = m_connectionMap.find( fid );
+      auto        i         = m_connectionMap.find( fid );
       m_fidMap.erase( j );
       if ( ( j = m_fidMap.find( fid ) ) != m_fidMap.end() ) m_fidMap.erase( j );
       if ( ( j = m_fidMap.find( gfal_name ) ) != m_fidMap.end() ) m_fidMap.erase( j );
@@ -236,7 +236,7 @@ StatusCode IODataManager::establishConnection( Connection* con )
 StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR technology, bool keep_open,
                                          Connection* connection )
 {
-  MsgStream log( msgSvc(), name() );
+  MsgStream   log( msgSvc(), name() );
   std::string dsn = dataset;
   try {
     StatusCode sc( StatusCode::SUCCESS, true );
@@ -278,8 +278,8 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
         }
         // keep track of the current return code before we start iterating over
         // replicas
-        auto appmgr        = serviceLocator()->as<IProperty>();
-        int origReturnCode = Gaudi::getAppReturnCode( appmgr );
+        auto appmgr         = serviceLocator()->as<IProperty>();
+        int  origReturnCode = Gaudi::getAppReturnCode( appmgr );
         for ( auto i = files.cbegin(); i != files.cend(); ++i ) {
           std::string pfn = i->first;
           if ( i != files.cbegin() ) {
@@ -304,7 +304,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
       return StatusCode::FAILURE;
     }
     std::string fid;
-    auto j = m_fidMap.find( dsn );
+    auto        j = m_fidMap.find( dsn );
     if ( j == m_fidMap.end() ) {
       IFileCatalog::Files files;
       switch ( typ ) {

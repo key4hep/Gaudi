@@ -109,7 +109,7 @@ StatusCode TupleAlg3::execute()
 
     Tuple tuple = nTuple( "Vectors-3D", "Tuple with Vectors in 3D " );
 
-    typedef ROOT::Math::XYZPoint P3;
+    typedef ROOT::Math::XYZPoint  P3;
     typedef ROOT::Math::XYZVector V3;
 
     P3 p1;
@@ -135,8 +135,8 @@ StatusCode TupleAlg3::execute()
 
     Tuple tuple = nTuple( "Math-vectors", "Tuple with Math Vectors" );
 
-    ROOT::Math::SVector<float, 4> v1;
-    ROOT::Math::SVector<double, 25> v2;
+    ROOT::Math::SVector<float, 4>        v1;
+    ROOT::Math::SVector<double, 25>      v2;
     ROOT::Math::SVector<long double, 50> v3;
 
     std::generate( v1.begin(), v1.end(), gauss );
@@ -178,10 +178,10 @@ StatusCode TupleAlg3::execute()
 
     Tuple tuple = nTuple( "VectorMaps", "Tuple with VectorMaps/'ExtraInfo'" );
 
-    typedef GaudiUtils::VectorMap<int, double> VM1;
+    typedef GaudiUtils::VectorMap<int, double>       VM1;
     typedef GaudiUtils::VectorMap<char, long double> VM2;
-    typedef GaudiUtils::VectorMap<int, float> VM3;
-    typedef GaudiUtils::VectorMap<long, double> VM4;
+    typedef GaudiUtils::VectorMap<int, float>        VM3;
+    typedef GaudiUtils::VectorMap<long, double>      VM4;
 
     VM1 vm1;
     VM2 vm2;

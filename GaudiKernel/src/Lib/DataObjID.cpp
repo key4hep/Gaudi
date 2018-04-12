@@ -41,7 +41,7 @@ namespace Gaudi
       }
       typename Grammar_<Iterator, std::string, Skipper>::Grammar gaudi_style;
       typename Grammar_<Iterator, std::pair<unsigned int, std::string>, Skipper>::Grammar atlas1_style;
-      typename Grammar_<Iterator, std::pair<std::string, std::string>, Skipper>::Grammar atlas2_style;
+      typename Grammar_<Iterator, std::pair<std::string, std::string>, Skipper>::Grammar  atlas2_style;
       qi::rule<Iterator, DataObjID(), Skipper> result;
       ph::function<Operations> op;
     };
@@ -51,7 +51,7 @@ namespace Gaudi
 
 StatusCode parse( DataObjID& dest, const std::string& src ) { return Gaudi::Parsers::parse_( dest, quote( src ) ); }
 
-IClassIDSvc* DataObjID::p_clidSvc( nullptr );
+IClassIDSvc*   DataObjID::p_clidSvc( nullptr );
 std::once_flag DataObjID::m_ip;
 namespace
 {

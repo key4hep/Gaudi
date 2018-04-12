@@ -70,7 +70,7 @@ const std::string& DataObject::name() const { return m_pRegistry ? m_pRegistry->
 /// Provide empty placeholder for internal object reconfiguration callback
 StatusCode DataObject::update() { return StatusCode::SUCCESS; }
 
-static DataObject* s_objPtr   = nullptr;
+static DataObject*  s_objPtr  = nullptr;
 static DataObject** s_currObj = &s_objPtr;
 
 static std::vector<DataObject**>& objectStack()

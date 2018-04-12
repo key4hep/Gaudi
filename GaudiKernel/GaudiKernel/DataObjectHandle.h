@@ -237,7 +237,7 @@ public:
 
 private:
   const AnyDataWrapper<T>* _get() const;
-  mutable bool m_goodType = false;
+  mutable bool             m_goodType = false;
 };
 
 //---------------------------------------------------------------------------
@@ -260,8 +260,8 @@ template <typename T>
 const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj )
 {
   assert( m_init );
-  auto objectp  = std::make_unique<AnyDataWrapper<T>>( std::move( obj ) );
-  StatusCode rc = m_EDS->registerObject( objKey(), objectp.get() );
+  auto       objectp = std::make_unique<AnyDataWrapper<T>>( std::move( obj ) );
+  StatusCode rc      = m_EDS->registerObject( objKey(), objectp.get() );
   if ( rc.isFailure() ) {
     throw GaudiException( "Error in put of " + objKey(), "DataObjectHandle<T>::put", StatusCode::FAILURE );
   }

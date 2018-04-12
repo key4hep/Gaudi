@@ -382,14 +382,14 @@ namespace Gaudi
       std::istringstream input( item );
       // get the name
       std::string p_name;
-      int p_geant;
-      int p_jetset;
-      double p_charge;
-      double p_mass;
-      double p_ltime;
+      int         p_geant;
+      int         p_jetset;
+      double      p_charge;
+      double      p_mass;
+      double      p_ltime;
       std::string p_evtgen;
-      int p_pythia;
-      double p_maxwid;
+      int         p_pythia;
+      double      p_maxwid;
       if ( input >> p_name >> p_geant >> p_jetset >> p_charge >> p_mass >> p_ltime >> p_evtgen >> p_pythia >>
            p_maxwid ) {
         always() << " Add/Modify the particle: "

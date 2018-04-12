@@ -75,7 +75,7 @@ void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) c
   ost << "  [slot: " << slotID << ", incident: " << m_eventStatus.at( slotID ) << "]:\n\n";
 
   auto& algState = m_algStates.at( slotID );
-  auto ml        = std::accumulate( begin( algState ), end( algState ), size_t{0},
+  auto  ml       = std::accumulate( begin( algState ), end( algState ), size_t{0},
                              []( size_t m, const auto& as ) { return std::max( m, as.first.str().length() ); } );
 
   for ( auto& e : algState ) ost << "  + " << std::setw( ml ) << e.first.str() << "  " << e.second << '\n';
@@ -121,7 +121,7 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
   checkInit();
 
   auto& algState = m_algStates.at( ctx.slot() );
-  auto itr       = algState.find( algName );
+  auto  itr      = algState.find( algName );
   if ( UNLIKELY( itr == algState.end() ) ) {
     throw GaudiException{"cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE};
   }
@@ -142,7 +142,7 @@ AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContex
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
 
   auto& algState = m_algStates.at( ctx.slot() );
-  auto itr       = algState.find( iAlg->nameKey() );
+  auto  itr      = algState.find( iAlg->nameKey() );
 
   if ( UNLIKELY( itr == algState.end() ) ) {
     throw GaudiException{std::string{"cannot find Alg "} + iAlg->name() + " in AlgStateMap", name(),

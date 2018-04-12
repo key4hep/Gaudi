@@ -16,7 +16,7 @@ using System::getEnv;
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 // Instantiation of a static factory class used by clients to create
@@ -83,9 +83,9 @@ StatusCode DetDataSvc::setupDetectorDescription()
       return StatusCode::FAILURE;
     } else {
       // Create address
-      unsigned long iargs[]    = {0, 0};
-      const std::string args[] = {m_detDbLocation, m_detDbRootName};
-      StatusCode sc            = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
+      unsigned long     iargs[] = {0, 0};
+      const std::string args[]  = {m_detDbLocation, m_detDbRootName};
+      StatusCode        sc      = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
       if ( sc.isSuccess() ) {
         sc = i_setRoot( m_rootName, rootAddr );
         if ( sc.isFailure() ) {
@@ -152,10 +152,10 @@ StatusCode DetDataSvc::clearStore()
 
   if ( m_usePersistency ) {
     // Create root address
-    unsigned long iargs[]    = {0, 0};
-    const std::string args[] = {m_detDbLocation, m_detDbRootName};
-    IOpaqueAddress* rootAddr;
-    StatusCode sc = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
+    unsigned long     iargs[] = {0, 0};
+    const std::string args[]  = {m_detDbLocation, m_detDbRootName};
+    IOpaqueAddress*   rootAddr;
+    StatusCode        sc = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
     // Set detector data store root
     if ( sc.isSuccess() ) {
       sc = i_setRoot( m_rootName, rootAddr );

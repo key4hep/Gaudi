@@ -51,9 +51,9 @@ StatusCode RootStatCnv::finalize()
 // Retrieve the name of the container a given object is placed into
 const string RootStatCnv::containerName( IRegistry* pReg ) const
 {
-  const string& path = pReg->identifier();
-  long loc           = path.find( '/', 1 );
-  string local       = "<local>";
+  const string& path  = pReg->identifier();
+  long          loc   = path.find( '/', 1 );
+  string        local = "<local>";
   // local = "";
   if ( loc > 0 ) {
     loc = path.find( '/', ++loc );
@@ -69,7 +69,7 @@ const string RootStatCnv::containerName( IRegistry* pReg ) const
 // Retrieve the name of the file a given object is placed into
 const string RootStatCnv::fileName( IRegistry* pReg ) const
 {
-  string path      = topLevel( pReg );
+  string      path = topLevel( pReg );
   DataObject* pObj = nullptr;
   dataProvider()->retrieveObject( path, pObj );
   if ( pObj ) {
@@ -116,12 +116,12 @@ StatusCode RootStatCnv::makeError( const std::string& msg, bool throw_exc ) cons
 StatusCode RootStatCnv::saveDescription( const string& path, const string& ident, const string& desc, const string& opt,
                                          const CLID& clid )
 {
-  RootDataConnection* con = nullptr;
-  StatusCode status       = m_dbMgr->connectDatabase( path, IDataConnection::UPDATE, &con );
+  RootDataConnection* con    = nullptr;
+  StatusCode          status = m_dbMgr->connectDatabase( path, IDataConnection::UPDATE, &con );
   if ( status.isSuccess() ) {
     TClass* cl = gROOT->GetClass( "Gaudi::RootNTupleDescriptor", kTRUE );
     if ( cl ) {
-      RootNTupleDescriptor* ptr;
+      RootNTupleDescriptor*                 ptr;
       std::unique_ptr<RootNTupleDescriptor> dsc( ptr = new RootNTupleDescriptor() );
       TBranch* b = con->getBranch( "##Descriptors", "GaudiStatisticsDescription", cl, ptr, 512, 0 );
       if ( b ) {

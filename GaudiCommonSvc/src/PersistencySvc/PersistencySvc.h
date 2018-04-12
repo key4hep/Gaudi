@@ -52,9 +52,9 @@ class PersistencySvc : public extends<Service, IConversionSvc, IPersistencySvc, 
 protected:
   class ServiceEntry final
   {
-    long m_serviceType;
-    mutable SmartIF<IService> m_service;
-    mutable SmartIF<IConversionSvc> m_cnvService;
+    long                             m_serviceType;
+    mutable SmartIF<IService>        m_service;
+    mutable SmartIF<IConversionSvc>  m_cnvService;
     mutable SmartIF<IAddressCreator> m_addrCreator;
 
   public:
@@ -74,10 +74,10 @@ protected:
     }
     ServiceEntry( const ServiceEntry& ) = default;
 
-    SmartIF<IService>& service() const { return m_service; }
-    SmartIF<IConversionSvc>& conversionSvc() const { return m_cnvService; }
+    SmartIF<IService>&        service() const { return m_service; }
+    SmartIF<IConversionSvc>&  conversionSvc() const { return m_cnvService; }
     SmartIF<IAddressCreator>& addrCreator() const { return m_addrCreator; }
-    long svcType() const { return m_serviceType; }
+    long                      svcType() const { return m_serviceType; }
   };
   typedef std::map<long, ServiceEntry> Services;
   /*

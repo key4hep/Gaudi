@@ -72,7 +72,7 @@ private:
   /// Helper function to call the transition on the contained OutputStreams.
   /// Returns StatusCode::FAILURE if any of the OutputStreams returned a failure.
   template <Gaudi::StateMachine::Transition TR>
-  StatusCode i_outStreamTransition();
+  StatusCode                                i_outStreamTransition();
 
   Gaudi::Property<std::vector<std::string>> m_outputStreamNames{
       this, "OutputStreams", {}, "OutputStream instances that can be called."};
@@ -80,7 +80,7 @@ private:
   /// Internal storage for the OutputStreams to call.
   OutStreamsMapType m_outputStreams;
 
-  SmartIF<IAlgManager> m_algMgr;
+  SmartIF<IAlgManager>     m_algMgr;
   SmartIF<IDataManagerSvc> m_evtMgr;
 };
 

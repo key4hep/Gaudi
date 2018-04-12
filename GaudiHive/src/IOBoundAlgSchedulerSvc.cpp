@@ -67,7 +67,7 @@ void IOBoundAlgSchedulerSvc::activate()
   m_isActive = true;
 
   // Wait for actions pushed into the queue by finishing tasks.
-  action thisAction;
+  action     thisAction;
   StatusCode sc( StatusCode::SUCCESS );
 
   // Continue to wait if the scheduler is running or there is something to do

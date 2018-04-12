@@ -29,8 +29,8 @@ class AlgExecState
 public:
   enum State { None = 0, Executing = 1, Done = 2 };
 
-  bool filterPassed() const { return m_filterPassed; }
-  State state() const { return m_state; }
+  bool              filterPassed() const { return m_filterPassed; }
+  State             state() const { return m_state; }
   const StatusCode& execStatus() const { return m_execStatus; }
 
   void setFilterPassed( bool f = true ) { m_filterPassed = f; }
@@ -41,11 +41,11 @@ public:
     m_execStatus = sc;
   }
   void setExecStatus( const StatusCode& sc = StatusCode::SUCCESS ) { m_execStatus = sc; }
-  void reset() { *this = AlgExecState{}; }
+  void                                  reset() { *this = AlgExecState{}; }
 
 private:
-  bool m_filterPassed{true};
-  State m_state{State::None};
+  bool       m_filterPassed{true};
+  State      m_state{State::None};
   StatusCode m_execStatus{StatusCode( StatusCode::FAILURE, true )};
 };
 

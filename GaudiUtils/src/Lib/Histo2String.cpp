@@ -46,13 +46,13 @@ namespace
     stream << "'title' : ";
     Gaudi::Utils::toStream( std::string( histo.GetTitle() ), stream ) << " , ";
     //
-    const TAxis* axis        = histo.GetXaxis();
+    const TAxis*       axis  = histo.GetXaxis();
     const unsigned int nBins = axis->GetNbins();
     //
     stream << std::endl << "'X' : { ";
     if ( axis->IsVariableBinSize() ) {
-      const TArrayD* xbins     = axis->GetXbins();
-      const unsigned int xsize = xbins->GetSize();
+      const TArrayD*      xbins = axis->GetXbins();
+      const unsigned int  xsize = xbins->GetSize();
       std::vector<double> edges;
       for ( unsigned int iBin = 0; iBin < xsize; ++iBin ) {
         edges.push_back( xbins->At( iBin ) );
@@ -95,12 +95,12 @@ namespace
     Gaudi::Utils::toStream( std::string( histo.GetTitle() ), stream ) << " , ";
     //
     const TAxis* xaxis = histo.GetXaxis();
-    const int xBins    = xaxis->GetNbins();
+    const int    xBins = xaxis->GetNbins();
     //
     stream << std::endl << "'X' : { ";
     if ( xaxis->IsVariableBinSize() ) {
-      const TArrayD* xbins     = xaxis->GetXbins();
-      const unsigned int xsize = xbins->GetSize();
+      const TArrayD*      xbins = xaxis->GetXbins();
+      const unsigned int  xsize = xbins->GetSize();
       std::vector<double> edges;
       for ( unsigned int iBin = 0; iBin < xsize; ++iBin ) {
         edges.push_back( xbins->At( iBin ) );
@@ -118,12 +118,12 @@ namespace
     }
     //
     const TAxis* yaxis = histo.GetYaxis();
-    const int yBins    = yaxis->GetNbins();
+    const int    yBins = yaxis->GetNbins();
     //
     stream << std::endl << "'Y' : { ";
     if ( yaxis->IsVariableBinSize() ) {
-      const TArrayD* ybins     = yaxis->GetXbins();
-      const unsigned int ysize = ybins->GetSize();
+      const TArrayD*      ybins = yaxis->GetXbins();
+      const unsigned int  ysize = ybins->GetSize();
       std::vector<double> edges;
       for ( unsigned int iBin = 0; iBin < ysize; ++iBin ) {
         edges.push_back( ybins->At( iBin ) );

@@ -2785,8 +2785,8 @@ private:
                                              "Top level histogram directory (take care that it ends with '/')"};
   Gaudi::Property<std::string> m_histoDir{
       this, "HistoDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ), "Histogram Directory"};
-  Gaudi::Property<bool> m_fullDetail{this, "FullDetail", false};
-  Gaudi::Property<bool> m_declareMoniHists{this, "MonitorHistograms", true};
+  Gaudi::Property<bool>        m_fullDetail{this, "FullDetail", false};
+  Gaudi::Property<bool>        m_declareMoniHists{this, "MonitorHistograms", true};
   Gaudi::Property<std::string> m_histo1DTableFormat{this, "FormatFor1DHistoTable",
                                                     Gaudi::Utils::Histos::Formats::format(),
                                                     "Format string for printout of 1D histograms"};

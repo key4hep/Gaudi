@@ -42,7 +42,7 @@ public:
   STATUS initialize() override
   {
     SmartIF<IAlgTool> tool( m_actor );
-    STATUS sc = toolSvc()->retrieveTool( m_toolType, m_actor, this );
+    STATUS            sc = toolSvc()->retrieveTool( m_toolType, m_actor, this );
     if ( sc.isFailure() ) {
       error() << "Unable to load PartitionSwitchTool " << m_toolType << endmsg;
       return sc;

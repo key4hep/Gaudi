@@ -44,7 +44,7 @@ namespace Gaudi
       }
       // ----------------------------------------------------------------------------
       const PropertyName& property_name() const { return property_name_; }
-      PropertyValue& property_value() { return property_value_; }
+      PropertyValue&      property_value() { return property_value_; }
       // ----------------------------------------------------------------------------
       Property& operator+=( const PropertyValue& value )
       {
@@ -58,24 +58,24 @@ namespace Gaudi
       }
       // ----------------------------------------------------------------------------
       const Position& DefinedPosition() const;
-      bool HasDefinedPosition() const { return DefinedPosition().Exists(); }
+      bool            HasDefinedPosition() const { return DefinedPosition().Exists(); }
       // ----------------------------------------------------------------------------
       const Position& ValuePosition() const;
-      bool HasValuePosition() const { return ValuePosition().Exists(); }
+      bool            HasValuePosition() const { return ValuePosition().Exists(); }
       // ----------------------------------------------------------------------------
       const std::string& ClientName() const;
       const std::string& NameInClient() const;
-      std::string FullName() const;
-      std::string ValueAsString() const;
-      std::string ToString() const;
-      bool IsSimple() const;
-      bool IsVector() const;
-      bool IsMap() const;
-      bool IsReference() const { return property_value_.IsReference(); }
+      std::string        FullName() const;
+      std::string        ValueAsString() const;
+      std::string        ToString() const;
+      bool               IsSimple() const;
+      bool               IsVector() const;
+      bool               IsMap() const;
+      bool               IsReference() const { return property_value_.IsReference(); }
       // ----------------------------------------------------------------------------
     private:
       // ----------------------------------------------------------------------------
-      PropertyName property_name_;
+      PropertyName  property_name_;
       PropertyValue property_value_;
     };
     // ============================================================================

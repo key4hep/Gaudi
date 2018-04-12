@@ -58,7 +58,7 @@ public:
 
 protected:
   const IInterface* m_parent = nullptr;
-  bool m_createIf{true};
+  bool              m_createIf{true};
 };
 
 /** @class BaseToolHandle ToolHandle.h GaudiKernel/ToolHandle.h

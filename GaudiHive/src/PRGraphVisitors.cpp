@@ -115,9 +115,9 @@ namespace concurrency
   bool DecisionUpdater::visit( AlgorithmNode& node )
   {
 
-    auto& states       = m_slot->algsStates;
-    const State& state = states[node.getAlgoIndex()];
-    int decision       = -1;
+    auto&        states   = m_slot->algsStates;
+    const State& state    = states[node.getAlgoIndex()];
+    int          decision = -1;
 
     if ( true == node.isOptimist() )
       decision = 1;
@@ -149,7 +149,7 @@ namespace concurrency
     // Protect against graph traversal escaping from sub-slots
     if ( m_slot->parentSlot ) {
       // Examine the ancestry of this node, looking for sub-slot entry point
-      bool canFindExit = false;
+      bool                      canFindExit = false;
       std::queue<DecisionNode*> allAncestors;
       allAncestors.push( &node );
       while ( allAncestors.size() ) {
@@ -188,7 +188,7 @@ namespace concurrency
     bool foundNonResolvedChild = false;
     bool foundNegativeChild    = false;
     bool foundPositiveChild    = false;
-    int decision               = -1;
+    int  decision              = -1;
 
     // Leave a sub-slot if this is the exit node
     EventSlot* oldSlot = nullptr;
@@ -403,8 +403,8 @@ namespace concurrency
     std::pair<itV, itV> vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
-      precedence::AlgoTraceVertex v = *vp.first;
-      auto index                    = get( &AlgoTraceProps::m_name, execPlan );
+      precedence::AlgoTraceVertex v     = *vp.first;
+      auto                        index = get( &AlgoTraceProps::m_name, execPlan );
       if ( index[v] == node.getNodeName() ) {
         runThroughAdjacents( v, execPlan );
         float rank = m_nodesSucceeded;
@@ -453,11 +453,11 @@ namespace concurrency
     std::pair<itV, itV> vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
-      precedence::AlgoTraceVertex v = *vp.first;
-      auto index                    = get( &AlgoTraceProps::m_name, execPlan );
+      precedence::AlgoTraceVertex v     = *vp.first;
+      auto                        index = get( &AlgoTraceProps::m_name, execPlan );
       if ( index[v] == node.getNodeName() ) {
-        auto index_runtime = get( &AlgoTraceProps::m_runtime, execPlan );
-        float rank         = index_runtime[v];
+        auto  index_runtime = get( &AlgoTraceProps::m_runtime, execPlan );
+        float rank          = index_runtime[v];
         node.setRank( rank );
         // std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
       }
@@ -486,11 +486,11 @@ namespace concurrency
     std::pair<itV, itV> vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
-      precedence::AlgoTraceVertex v = *vp.first;
-      auto index                    = get( &precedence::AlgoTraceProps::m_name, execPlan );
+      precedence::AlgoTraceVertex v     = *vp.first;
+      auto                        index = get( &precedence::AlgoTraceProps::m_name, execPlan );
       if ( index[v] == node.getNodeName() ) {
-        auto index_eccentricity = get( &precedence::AlgoTraceProps::m_eccentricity, execPlan );
-        float rank              = index_eccentricity[v];
+        auto  index_eccentricity = get( &precedence::AlgoTraceProps::m_eccentricity, execPlan );
+        float rank               = index_eccentricity[v];
         node.setRank( rank );
         // std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
       }
@@ -590,8 +590,8 @@ namespace concurrency
   bool RunSimulator::visit( AlgorithmNode& node )
   {
 
-    auto& states  = m_slot->algsStates;
-    int& decision = m_slot->controlFlowState[node.getNodeIndex()];
+    auto& states   = m_slot->algsStates;
+    int&  decision = m_slot->controlFlowState[node.getNodeIndex()];
 
     auto dataPromoter = DataReadyPromoter( *m_slot, m_cause );
 

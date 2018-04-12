@@ -60,7 +60,7 @@ namespace
 }
 
 struct DHH {
-  CLID id;
+  CLID        id;
   std::string key;
 
   DHH( const CLID& i, std::string k ) : id( i ), key( std::move( k ) ) {}
@@ -539,9 +539,9 @@ StatusCode HistorySvc::registerSvc( const IService& svc )
     return StatusCode( StatusCode::SUCCESS, true );
   }
 
-  JobHistory* job      = getJobHistory();
+  JobHistory*     job  = getJobHistory();
   const IService* psvc = &svc;
-  auto itr             = m_svcmap.find( psvc );
+  auto            itr  = m_svcmap.find( psvc );
   if ( itr == m_svcmap.end() ) {
 
     ON_DEBUG
@@ -567,7 +567,7 @@ ServiceHistory* HistorySvc::getServiceHistory( const IService& svc ) const
 {
 
   const IService* psvc = &svc;
-  auto itr             = m_svcmap.find( psvc );
+  auto            itr  = m_svcmap.find( psvc );
   if ( itr != m_svcmap.end() ) return itr->second;
 
   warning() << "Service " << svc.name() << " not registered" << endmsg;
@@ -684,7 +684,7 @@ AlgToolHistory* HistorySvc::getAlgToolHistory( const IAlgTool& alg ) const
 {
 
   const AlgTool* palg = dynamic_cast<const AlgTool*>( &alg );
-  auto itr            = m_algtoolmap.find( palg );
+  auto           itr  = m_algtoolmap.find( palg );
   if ( itr == m_algtoolmap.end() ) {
     warning() << "AlgTool " << alg.name() << " not registered" << endmsg;
     return nullptr;
@@ -744,8 +744,8 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
   std::string client_currently_open = "start";
   for ( auto& item : m_jobHistory->propertyPairs() ) {
     // client is the name of the component of the current property
-    const std::string& client               = item.first;
-    const Gaudi::Details::PropertyBase* prp = item.second;
+    const std::string&                  client = item.first;
+    const Gaudi::Details::PropertyBase* prp    = item.second;
 
     if ( m_outputFileTypeXML ) {
 
@@ -805,12 +805,12 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
 void HistorySvc::dumpState( const INamedInterface* in, std::ofstream& ofs ) const
 {
 
-  HistoryObj* hist       = nullptr;
+  HistoryObj*      hist  = nullptr;
   IVersHistoryObj* vhist = nullptr;
 
-  const IService* is  = nullptr;
+  const IService*  is = nullptr;
   const Algorithm* ia = nullptr;
-  const IAlgTool* it  = nullptr;
+  const IAlgTool*  it = nullptr;
   if ( ( is = dynamic_cast<const IService*>( in ) ) != nullptr ) {
     ON_VERBOSE
     verbose() << in->name() << " is Service" << endmsg;

@@ -80,8 +80,8 @@ StatusCode GslSvc::initialize()
       return StatusCode::FAILURE;
     }
     for ( const auto& it : m_handlersTypeNames ) {
-      auto pos             = it.find( '/' );
-      IGslErrorHandler* eh = nullptr;
+      auto              pos = it.find( '/' );
+      IGslErrorHandler* eh  = nullptr;
       if ( pos != std::string::npos ) {
         sc = toolsvc->retrieveTool( it.substr( 0, pos ), it.substr( pos + 1 ), eh, this );
       } else {

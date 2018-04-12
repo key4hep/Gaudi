@@ -14,7 +14,7 @@ using namespace Test;
 //------------------------------------------------------------------------------
 
 ViewTester::ViewTester( const std::string& name, // the algorithm instance name
-                        ISvcLocator* pSvc )
+                        ISvcLocator*       pSvc )
     : GaudiAlgorithm( name, pSvc )
 {
 }
@@ -81,7 +81,7 @@ StatusCode ViewTester::execute() // the execution of the algorithm
       for ( unsigned int viewIndex = 0; viewIndex < m_viewNumber; ++viewIndex ) {
         // Make event context for the view
         EventContext* viewContext = new EventContext( getContext().evt(), getContext().slot() );
-        std::string viewName      = m_baseViewName + std::to_string( viewIndex );
+        std::string   viewName    = m_baseViewName + std::to_string( viewIndex );
         viewContext->setExtension<std::string>( viewName );
 
         StatusCode sc = scheduler->scheduleEventView( &getContext(), m_viewNodeName, viewContext );

@@ -104,7 +104,7 @@ StatusCode Aida2Root::finalize()
     for ( auto& path : m_1Ds ) {
       /// retrieve the historam by full path:
       AIDA::IHistogram1D* aida = 0;
-      StatusCode sc            = histoSvc()->retrieveObject( path, aida );
+      StatusCode          sc   = histoSvc()->retrieveObject( path, aida );
       if ( sc.isFailure() || 0 == aida ) {
         return Error( "Unable to retrieve 1D-histogram '" + ( path ) + "'" );
       }
@@ -138,7 +138,7 @@ StatusCode Aida2Root::finalize()
     for ( auto& path : m_2Ds ) {
       /// retrieve the historam by full path:
       AIDA::IHistogram2D* aida = 0;
-      StatusCode sc            = histoSvc()->retrieveObject( path, aida );
+      StatusCode          sc   = histoSvc()->retrieveObject( path, aida );
       if ( sc.isFailure() || 0 == aida ) {
         return Error( "Unable to retrieve 2D-histogram '" + ( path ) + "'" );
       }
@@ -157,7 +157,7 @@ StatusCode Aida2Root::finalize()
     for ( auto& path : m_3Ds ) {
       /// retrieve the historam by full path:
       AIDA::IHistogram3D* aida = 0;
-      StatusCode sc            = histoSvc()->retrieveObject( path, aida );
+      StatusCode          sc   = histoSvc()->retrieveObject( path, aida );
       if ( sc.isFailure() || 0 == aida ) {
         return Error( "Unable to retrieve 3D-histogram '" + ( path ) + "'" );
       }
@@ -176,7 +176,7 @@ StatusCode Aida2Root::finalize()
     for ( auto& path : m_1Ps ) {
       /// retrieve the historam by full path:
       AIDA::IProfile1D* aida = 0;
-      StatusCode sc          = histoSvc()->retrieveObject( path, aida );
+      StatusCode        sc   = histoSvc()->retrieveObject( path, aida );
       if ( sc.isFailure() || 0 == aida ) {
         return Error( "Unable to retrieve 1D-profile '" + ( path ) + "'" );
       }
@@ -195,7 +195,7 @@ StatusCode Aida2Root::finalize()
     for ( auto& path : m_2Ps ) {
       /// retrieve the historam by full path:
       AIDA::IProfile2D* aida = 0;
-      StatusCode sc          = histoSvc()->retrieveObject( path, aida );
+      StatusCode        sc   = histoSvc()->retrieveObject( path, aida );
       if ( sc.isFailure() || 0 == aida ) {
         Error( "Unable to retrieve 2D-profile '" + ( path ) + "'" ).ignore();
       }

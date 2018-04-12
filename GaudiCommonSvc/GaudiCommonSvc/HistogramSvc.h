@@ -60,8 +60,8 @@ private:
   void not_implemented() const { error() << "Sorry, not yet implemented..." << endmsg; }
 
 protected:
-  typedef AIDA::IHistogram3D H3D;
-  typedef AIDA::IProfile2D P2D;
+  typedef AIDA::IHistogram3D   H3D;
+  typedef AIDA::IProfile2D     P2D;
   typedef AIDA::IBaseHistogram Base;
 
   struct Helper {
@@ -71,7 +71,7 @@ protected:
     StatusCode retrieve( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::retrieveObject( a1, pObject );
+      StatusCode  sc      = m_svc->DataSvc::retrieveObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -79,7 +79,7 @@ protected:
     StatusCode retrieve( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::retrieveObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->DataSvc::retrieveObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -87,7 +87,7 @@ protected:
     StatusCode find( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::findObject( a1, pObject );
+      StatusCode  sc      = m_svc->DataSvc::findObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -95,14 +95,14 @@ protected:
     StatusCode find( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::findObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->DataSvc::findObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, void ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2, scale );
@@ -113,7 +113,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2, scale );
@@ -124,7 +124,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, void ( T1::*pmf )( const T2* ) )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2 );
@@ -135,7 +135,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2* ) )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2 );
@@ -1098,7 +1098,7 @@ public:
 
 private:
   Gaudi::Property<DBaseEntries> m_input{this, "Input", {}, "input streams"};
-  Gaudi::Property<Histo1DMap> m_defs1D{this, "Predefined1DHistos", {}, "histograms with predefined parameters"};
+  Gaudi::Property<Histo1DMap>   m_defs1D{this, "Predefined1DHistos", {}, "histograms with predefined parameters"};
 
   // modified histograms:
   std::set<std::string> m_mods1D;

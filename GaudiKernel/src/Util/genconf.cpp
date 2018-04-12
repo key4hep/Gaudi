@@ -84,7 +84,7 @@ class IConverter;
 
 // useful typedefs
 typedef std::vector<std::string> Strings_t;
-typedef std::vector<fs::path> LibPathNames_t;
+typedef std::vector<fs::path>    LibPathNames_t;
 
 namespace
 {
@@ -124,7 +124,7 @@ namespace
   {
     static const string in( "<>&*,: ()." );
     static const string out( "__rp__s___" );
-    auto r = boost::algorithm::replace_all_copy( name, ", ", "," );
+    auto                r = boost::algorithm::replace_all_copy( name, ", ", "," );
     for ( auto& c : r ) {
       auto rep                     = in.find( c );
       if ( rep != string::npos ) c = out[rep];
@@ -249,9 +249,9 @@ int main( int argc, char** argv )
                     ? boost::log::trivial::info
                     : boost::log::trivial::warning );
 
-  fs::path pwd = fs::initial_path();
-  fs::path out;
-  Strings_t libs;
+  fs::path    pwd = fs::initial_path();
+  fs::path    out;
+  Strings_t   libs;
   std::string pkgName;
   std::string userModule;
 
@@ -379,7 +379,7 @@ int main( int argc, char** argv )
     for ( const auto& lLib : vm["load-library"].as<Strings_t>() ) {
       // load done through Gaudi helper class
       System::ImageHandle tmp; // we ignore the library handle
-      unsigned long err = System::loadDynamicLib( lLib, &tmp );
+      unsigned long       err = System::loadDynamicLib( lLib, &tmp );
       if ( err != 1 ) LOG_WARNING << "failed to load: " << lLib;
     }
   }
@@ -443,8 +443,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
   const auto endLib = libs.end();
 
-  static const std::string gaudiSvc = "GaudiCoreSvc";
-  const bool isGaudiSvc             = ( std::find( libs.begin(), endLib, gaudiSvc ) != endLib );
+  static const std::string gaudiSvc   = "GaudiCoreSvc";
+  const bool               isGaudiSvc = ( std::find( libs.begin(), endLib, gaudiSvc ) != endLib );
 
   //--- Instantiate ApplicationMgr --------------------------------------------
   if ( !isGaudiSvc && createAppMgr() ) {
@@ -458,8 +458,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
   auto bkgNames = registry.loadedFactoryNames();
 
-  ISvcLocator* svcLoc  = Gaudi::svcLocator();
-  IInterface* dummySvc = new Service( "DummySvc", svcLoc );
+  ISvcLocator* svcLoc   = Gaudi::svcLocator();
+  IInterface*  dummySvc = new Service( "DummySvc", svcLoc );
   dummySvc->addRef();
 
   bool allGood = true;
@@ -477,7 +477,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
     //--- Load component library ----------------------------------------------
     System::ImageHandle handle;
-    unsigned long err = System::loadDynamicLib( iLib, &handle );
+    unsigned long       err = System::loadDynamicLib( iLib, &handle );
     if ( err != 1 ) {
       LOG_ERROR << System::getLastErrorString();
       allGood = false;
@@ -492,8 +492,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
 
-      const Registry::FactoryInfo info = registry.getInfo( factoryName );
-      const std::string& rtype         = info.rtype;
+      const Registry::FactoryInfo info  = registry.getInfo( factoryName );
+      const std::string&          rtype = info.rtype;
 
       // do not generate configurables for the Reflex-compatible aliases
       if ( info.properties.find( "ReflexName" ) != info.properties.end() ) continue;
@@ -548,7 +548,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       LOG_INFO << " - component: " << info.className << " ("
                << ( info.className != name ? ( name + ": " ) : std::string() ) << type << ")";
 
-      string cname = "DefaultName";
+      string             cname = "DefaultName";
       SmartIF<IProperty> prop;
       try {
         switch ( type ) {
@@ -621,7 +621,7 @@ void configGenerator::genImport( std::ostream& s, const boost::format& frmt, std
 {
 
   std::string::size_type pos = 0, nxtpos = 0;
-  std::string mod;
+  std::string            mod;
 
   while ( std::string::npos != pos ) {
     // find end of module name
@@ -744,8 +744,8 @@ bool configGenerator::genComponent( const std::string& libName, const std::strin
 void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, string& ptype )
 //-----------------------------------------------------------------------------
 {
-  const std::string cvalue = p->toString();
-  const std::type_index ti = std::type_index( *p->type_info() );
+  const std::string     cvalue = p->toString();
+  const std::type_index ti     = std::type_index( *p->type_info() );
   if ( ti == typeIndex<bool>() ) {
     pvalue = ( cvalue == "0" || cvalue == "False" || cvalue == "false" ) ? "False" : "True";
     ptype  = "bool";
@@ -771,22 +771,22 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     pvalue = "'" + cvalue + "'";
     ptype  = "str";
   } else if ( ti == typeIndex<GaudiHandleBase>() ) {
-    const GaudiHandleProperty& hdl = dynamic_cast<const GaudiHandleProperty&>( *p );
-    const GaudiHandleBase& base    = hdl.value();
+    const GaudiHandleProperty& hdl  = dynamic_cast<const GaudiHandleProperty&>( *p );
+    const GaudiHandleBase&     base = hdl.value();
 
     pvalue               = base.pythonRepr();
     ptype                = "GaudiHandle";
     m_importGaudiHandles = true;
   } else if ( ti == typeIndex<GaudiHandleArrayBase>() ) {
-    const GaudiHandleArrayProperty& hdl = dynamic_cast<const GaudiHandleArrayProperty&>( *p );
-    const GaudiHandleArrayBase& base    = hdl.value();
+    const GaudiHandleArrayProperty& hdl  = dynamic_cast<const GaudiHandleArrayProperty&>( *p );
+    const GaudiHandleArrayBase&     base = hdl.value();
 
     pvalue               = base.pythonRepr();
     ptype                = "GaudiHandleArray";
     m_importGaudiHandles = true;
   } else if ( ti == typeIndex<DataObjectHandleBase>() ) {
-    const DataObjectHandleProperty& hdl = dynamic_cast<const DataObjectHandleProperty&>( *p );
-    const DataObjectHandleBase& base    = hdl.value();
+    const DataObjectHandleProperty& hdl  = dynamic_cast<const DataObjectHandleProperty&>( *p );
+    const DataObjectHandleBase&     base = hdl.value();
 
     pvalue                    = base.pythonRepr();
     ptype                     = "DataObjectHandleBase";
@@ -804,9 +804,9 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
 int createAppMgr()
 //-----------------------------------------------------------------------------
 {
-  IInterface* iface = Gaudi::createApplicationMgr();
+  IInterface*        iface = Gaudi::createApplicationMgr();
   SmartIF<IAppMgrUI> appUI( iface );
-  auto propMgr = appUI.as<IProperty>();
+  auto               propMgr = appUI.as<IProperty>();
   if ( !propMgr || !appUI ) return EXIT_FAILURE;
 
   propMgr->setProperty( "JobOptionsType", "NONE" ); // No job options

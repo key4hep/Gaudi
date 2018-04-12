@@ -99,12 +99,12 @@ namespace GaudiUtils
     //       It is anyhow NOT recommended to use this class as
     //       alternative allocator for STL containers !
 
-    typedef Type value_type;
-    typedef size_t size_type;
-    typedef ptrdiff_t difference_type;
-    typedef Type* pointer;
+    typedef Type        value_type;
+    typedef size_t      size_type;
+    typedef ptrdiff_t   difference_type;
+    typedef Type*       pointer;
     typedef const Type* const_pointer;
-    typedef Type& reference;
+    typedef Type&       reference;
     typedef const Type& const_reference;
 
     /// Copy constructor

@@ -67,9 +67,9 @@ namespace Gaudi
     TimeSpan( ValueType secs, int nsecs );
     TimeSpan( int days, int hours, int mins, int secs, int nsecs );
 
-    int days() const;
-    int hours() const;
-    int minutes() const;
+    int       days() const;
+    int       hours() const;
+    int       minutes() const;
     ValueType seconds() const;
 
     int lastHours() const;

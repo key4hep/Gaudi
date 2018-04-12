@@ -52,12 +52,12 @@ public:
   StatusCode getHandler( const IoTech&, FileHdlr& ) const override;
   StatusCode getHandler( const std::string&, FileHdlr& ) const override;
 
-  int getFileAttr( const std::string&, std::vector<const FileAttr*>& ) const override;
+  int        getFileAttr( const std::string&, std::vector<const FileAttr*>& ) const override;
   StatusCode getFileAttr( const Fd, const FileAttr*& ) const override;
   StatusCode getFileAttr( void*, const FileAttr*& ) const override;
 
-  void listHandlers() const override;
-  void listFiles() const override;
+  void         listHandlers() const override;
+  void         listFiles() const override;
   virtual void listActions() const;     // does not override...
   virtual void listSuppression() const; // does not override...
 
@@ -113,9 +113,9 @@ public:
 
 private:
   Gaudi::Property<std::string> m_logfile{this, "LogFile"};
-  Gaudi::Property<bool> m_printSummary{this, "PrintSummary", false};
-  Gaudi::Property<bool> m_loadRootHandler{this, "LoadROOTHandler", true};
-  Gaudi::Property<bool> m_loadPosixHandler{this, "LoadPOSIXHandler", true};
+  Gaudi::Property<bool>        m_printSummary{this, "PrintSummary", false};
+  Gaudi::Property<bool>        m_loadRootHandler{this, "LoadROOTHandler", true};
+  Gaudi::Property<bool>        m_loadPosixHandler{this, "LoadPOSIXHandler", true};
 
   Gaudi::Property<std::string> m_ssl_proxy{this, "TSSL_UserProxy", "X509"};
   Gaudi::Property<std::string> m_ssl_cert{this, "TSSL_CertDir", "X509"};
@@ -124,7 +124,7 @@ private:
                            const IoFlags&, Fd&, void*&,
                            const bool shared ); // does not override...
 
-  typedef std::pair<Io::bfcn_action_t, std::string> bfcn_desc_t;
+  typedef std::pair<Io::bfcn_action_t, std::string>    bfcn_desc_t;
   typedef std::map<Io::Action, std::list<bfcn_desc_t>> actionMap;
   StatusCode execAction( Io::FileAttr*, const std::string&, const Io::Action& ) const;
   StatusCode execActs( Io::FileAttr*, const std::string&, const Io::Action&, const actionMap& m ) const;
@@ -136,7 +136,7 @@ private:
 
   fileMap m_files;
   std::map<IoTech, FileHdlr> m_handlers;
-  std::map<Fd, FileAttr*> m_descriptors;
+  std::map<Fd, FileAttr*>    m_descriptors;
   std::vector<std::unique_ptr<FileAttr>> m_attr;
 
   std::vector<FileAttr*> m_oldFiles;
@@ -147,9 +147,9 @@ private:
   supMap m_supMap;
 
   std::string m_lastErrS;
-  int m_lastErr;
+  int         m_lastErr;
 
-  boost::optional<RootFileHandler> m_rfh;
+  boost::optional<RootFileHandler>  m_rfh;
   boost::optional<POSIXFileHandler> m_pfh;
 };
 

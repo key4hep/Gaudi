@@ -30,7 +30,7 @@
 
 class IAlgorithm;
 
-typedef AlgsExecutionStates::State State;
+typedef AlgsExecutionStates::State  State;
 typedef std::function<StatusCode()> action;
 
 //---------------------------------------------------------------------------
@@ -140,8 +140,8 @@ private:
   Gaudi::Property<int> m_threadPoolSize{
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
+  Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  Gaudi::Property<std::string>  m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
                                                           "Maximum number of simultaneous I/O-bound algorithms"};
   Gaudi::Property<bool> m_simulateExecution{
@@ -265,9 +265,9 @@ private:
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  size_t m_maxEventsInFlight{0};
-  size_t m_maxAlgosInFlight{1};
-  bool m_first = true;
+  size_t                  m_maxEventsInFlight{0};
+  size_t                  m_maxAlgosInFlight{1};
+  bool                    m_first = true;
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

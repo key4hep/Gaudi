@@ -37,7 +37,7 @@ namespace RootHistCnv
     StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override;
     /// Inquire storage type
     static long storageType() { return ROOT_StorageType; }
-    long repSvcType() const override { return i_repSvcType(); }
+    long        repSvcType() const override { return i_repSvcType(); }
 
     StatusCode error( const std::string& msg );
     StatusCode regTFile( const std::string, const TFile* );

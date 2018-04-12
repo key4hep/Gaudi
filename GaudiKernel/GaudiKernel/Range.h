@@ -106,8 +106,8 @@ namespace Gaudi
   public:
     //
     typedef typename iter_traits::value_type value_type;
-    typedef typename iter_traits::reference reference;
-    typedef typename iter_traits::reference const_reference;
+    typedef typename iter_traits::reference  reference;
+    typedef typename iter_traits::reference  const_reference;
     //
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<iterator> const_reverse_iterator;

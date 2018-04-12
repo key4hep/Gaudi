@@ -52,10 +52,10 @@ void StatusCode::check()
     auto scs = Gaudi::svcLocator()->service<IStatusCodeSvc>( "StatusCodeSvc" );
 
     const size_t depth = 21;
-    void* addresses[depth];
+    void*        addresses[depth];
 
     std::string lib, fnc;
-    void* addr = nullptr;
+    void*       addr = nullptr;
     /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
     if ( System::backTrace( addresses, depth ) ) {
 

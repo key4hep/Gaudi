@@ -20,7 +20,7 @@ namespace Gaudi
 
   private:
     /// Storage.
-    StorageType m_value;
+    StorageType  m_value;
     VerifierType m_verifier;
     HandlersType m_handlers;
     /// helper typedefs for SFINAE
@@ -102,7 +102,7 @@ namespace Gaudi
     /// Backward compatibility \deprecated will be removed in v29r0
     /// @{
     const ValueType& value() const { return *this; }
-    ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
+    ValueType&       value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
     bool setValue( const ValueType& v )
     {
       *this = v;
@@ -120,7 +120,7 @@ namespace Gaudi
     /// @{
     /// They are instantiated only if they are implemented in the wrapped class.
     inline size_t size() const { return N; }
-    inline bool empty() const { return false; }
+    inline bool   empty() const { return false; }
     template <class T = const ValueType>
     inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key ) const
     {

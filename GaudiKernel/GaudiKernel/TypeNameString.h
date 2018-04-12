@@ -12,7 +12,7 @@ namespace Gaudi
     class TypeNameString
     {
       std::string m_type, m_name;
-      bool m_haveType;
+      bool        m_haveType;
 
     public:
       TypeNameString( const char tn[] ) : TypeNameString( std::string{tn} ) {}
@@ -42,7 +42,7 @@ namespace Gaudi
 
       const std::string& type() const { return m_type; }
       const std::string& name() const { return m_name; }
-      bool haveType() const { return m_haveType; }
+      bool               haveType() const { return m_haveType; }
     };
 
     /// Output stream operator for TypeNameString instances.

@@ -36,7 +36,7 @@ namespace Gaudi
         StatusCode sc = GaudiAlgorithm::initialize();
 
         // Choose platform according to the macro DEVICE_PREFERENCE
-        cl_device_id* devices;
+        cl_device_id*  devices;
         cl_platform_id platform = NULL;
         clChoosePlatform( devices, platform );
 

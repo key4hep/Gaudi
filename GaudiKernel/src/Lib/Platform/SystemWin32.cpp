@@ -25,7 +25,7 @@ namespace System
       // If we would use strtok, options like -g="My world" at
       // the command line level would result on NT in TWO options
       // instead in one as in UNIX.
-      char exe[1024];
+      char  exe[1024];
       char *next, *tmp1, *tmp2;
       for ( LPTSTR cmd = ::GetCommandLine(); *cmd; cmd = next ) {
         ::memset( exe, 0, sizeof( exe ) );
@@ -68,7 +68,7 @@ namespace System
       }
       if ( off > 0 ) {
         std::string tmp = class_name + off;
-        long loc        = 0;
+        long        loc = 0;
         while ( ( loc = tmp.find( "class " ) ) > 0 ) {
           tmp.erase( loc, 6 );
         }
@@ -96,8 +96,8 @@ namespace System
     {
 
       static const size_t STRING_SIZE = 512;
-      char hname[STRING_SIZE];
-      size_t strlen = STRING_SIZE;
+      char                hname[STRING_SIZE];
+      size_t              strlen = STRING_SIZE;
       if ( !::GetComputerName( hname, &strlen ) ) {
         return "UNKNOWN";
       }
@@ -133,8 +133,8 @@ namespace System
     {
 
       static const size_t STRING_SIZE = 512;
-      char uname[STRING_SIZE];
-      size_t strlen = STRING_SIZE;
+      char                uname[STRING_SIZE];
+      size_t              strlen = STRING_SIZE;
       if ( !::GetUserName( uname, &strlen ) ) {
         return "UNKNOWN";
       }

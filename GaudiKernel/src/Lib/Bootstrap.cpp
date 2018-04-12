@@ -55,7 +55,7 @@ namespace Gaudi
 }
 
 static SmartIF<ISvcLocator> s_svclocInstance;
-static SmartIF<IAppMgrUI> s_appmgrInstance;
+static SmartIF<IAppMgrUI>   s_appmgrInstance;
 
 //------------------------------------------------------------------------------
 IAppMgrUI* Gaudi::createApplicationMgr( const std::string& dllname, const std::string& factname )
@@ -184,8 +184,8 @@ IAppMgrUI* Gaudi::createApplicationMgr()
 //=======================================================================
 
 static std::list<IService*> s_bootServices;
-static SmartIF<IService> s_bootService;
-static SmartIF<IInterface> s_bootInterface;
+static SmartIF<IService>    s_bootService;
+static SmartIF<IInterface>  s_bootInterface;
 
 using Gaudi::BootSvcLocator;
 

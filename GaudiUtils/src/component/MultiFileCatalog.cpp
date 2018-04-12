@@ -110,10 +110,10 @@ void MultiFileCatalog::addCatalog( CSTR con )
   if ( !con.empty() ) {
     if ( !findCatalog( con, false ) ) {
       static const string xml_typ = "Gaudi::XMLFileCatalog";
-      auto id0                    = con.find( "_" );
-      string typ                  = con.substr( 0, id0 );
-      string url                  = con.substr( id0 + 1 );
-      IInterface* cat             = nullptr;
+      auto                id0     = con.find( "_" );
+      string              typ     = con.substr( 0, id0 );
+      string              url     = con.substr( id0 + 1 );
+      IInterface*         cat     = nullptr;
       if ( strncasecmp( "xml", typ.c_str(), 3 ) == 0 ) {
         cat = IFileCatalog::Factory::create( xml_typ, url, msgSvc().get() );
       } else {

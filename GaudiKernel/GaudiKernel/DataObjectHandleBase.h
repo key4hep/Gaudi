@@ -74,7 +74,7 @@ protected:
 
 protected:
   SmartIF<IDataProviderSvc> m_EDS;
-  SmartIF<IMessageSvc> m_MS;
+  SmartIF<IMessageSvc>      m_MS;
 
   bool m_init       = false;
   bool m_optional   = false;

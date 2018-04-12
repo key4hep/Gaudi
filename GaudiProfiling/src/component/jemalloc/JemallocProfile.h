@@ -33,7 +33,7 @@ private:
       "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
   Gaudi::Property<int> m_dumpPeriod{this, "DumpPeriod", 100, "Period for dumping head to a file. Default=100"};
 
-  bool m_profiling  = false; // whether we are profiling...
-  int m_eventNumber = 0;     // Current event number
+  bool m_profiling   = false; // whether we are profiling...
+  int  m_eventNumber = 0;     // Current event number
 };
 #endif // JEMALLOC_PROFILE_H

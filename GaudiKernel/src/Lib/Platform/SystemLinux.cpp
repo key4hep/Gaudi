@@ -50,7 +50,7 @@ namespace System
     {
 
       // Demangle the name:
-      int status;
+      int  status;
       auto realname = std::unique_ptr<char, decltype( free )*>(
           abi::__cxa_demangle( class_name, nullptr, nullptr, &status ), std::free );
       if ( !realname ) return class_name;

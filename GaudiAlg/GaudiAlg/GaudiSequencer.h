@@ -47,14 +47,14 @@ private:
     void setReverse( bool flag ) { m_reverse = flag; }
 
     Algorithm* algorithm() const { return m_algorithm; }
-    bool reverse() const { return m_reverse; }
+    bool       reverse() const { return m_reverse; }
     void setTimer( int nb ) { m_timer = nb; }
-    int timer() const { return m_timer; }
+    int                timer() const { return m_timer; }
 
   private:
     Algorithm* m_algorithm = nullptr; ///< Algorithm pointer
-    bool m_reverse         = false;   ///< Indicates that the flag has to be inverted
-    int m_timer            = 0;       ///< Timer number for this algorithm
+    bool       m_reverse   = false;   ///< Indicates that the flag has to be inverted
+    int        m_timer     = 0;       ///< Timer number for this algorithm
   };
 
   /** Decode a vector of string. */
@@ -67,17 +67,17 @@ private:
   GaudiSequencer( const GaudiSequencer& a ) = delete;
   GaudiSequencer& operator=( const GaudiSequencer& a ) = delete;
 
-  Gaudi::Property<std::vector<std::string>> m_names = {this, "Members", {}, "list of algorithms"};
-  Gaudi::Property<bool> m_sequential                = {this, "Sequential", false, "execute members one at a time"};
-  Gaudi::Property<bool> m_modeOR                    = {this, "ModeOR", false, "use OR logic instead of AND"};
-  Gaudi::Property<bool> m_ignoreFilter              = {this, "IgnoreFilterPassed", false, "always continue"};
-  Gaudi::Property<bool> m_measureTime               = {this, "MeasureTime", false, "measure time"};
+  Gaudi::Property<std::vector<std::string>> m_names      = {this, "Members", {}, "list of algorithms"};
+  Gaudi::Property<bool>                     m_sequential = {this, "Sequential", false, "execute members one at a time"};
+  Gaudi::Property<bool>                     m_modeOR     = {this, "ModeOR", false, "use OR logic instead of AND"};
+  Gaudi::Property<bool>                     m_ignoreFilter = {this, "IgnoreFilterPassed", false, "always continue"};
+  Gaudi::Property<bool>                     m_measureTime  = {this, "MeasureTime", false, "measure time"};
   Gaudi::Property<bool> m_returnOK     = {this, "ReturnOK", false, "forces the sequencer to return a good status"};
   Gaudi::Property<bool> m_shortCircuit = {this, "ShortCircuit", true, "stop processing as soon as possible"};
   Gaudi::Property<bool> m_invert       = {this, "Invert", false, "invert the logic result of the sequencer"};
 
-  std::vector<AlgorithmEntry> m_entries;      ///< List of algorithms to process.
-  ISequencerTimerTool* m_timerTool = nullptr; ///< Pointer to the timer tool
-  int m_timer;                                ///< Timer number for the sequencer
+  std::vector<AlgorithmEntry> m_entries;             ///< List of algorithms to process.
+  ISequencerTimerTool*        m_timerTool = nullptr; ///< Pointer to the timer tool
+  int                         m_timer;               ///< Timer number for the sequencer
 };
 #endif // GAUDISEQUENCER_H

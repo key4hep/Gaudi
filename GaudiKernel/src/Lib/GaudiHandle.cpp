@@ -85,10 +85,10 @@ std::string GaudiHandleArrayBase::pythonPropertyClassName() const { return compo
 
 std::string GaudiHandleArrayBase::pythonRepr() const
 {
-  std::string repr = pythonPropertyClassName() + "([";
-  auto theList     = typesAndNames();
-  auto first       = theList.begin();
-  auto last        = theList.end();
+  std::string repr    = pythonPropertyClassName() + "([";
+  auto        theList = typesAndNames();
+  auto        first   = theList.begin();
+  auto        last    = theList.end();
   if ( first != last ) {
     repr += "'" + *first + "'";
     ++first;

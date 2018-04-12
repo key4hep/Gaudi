@@ -34,7 +34,7 @@ DECLARE_COMPONENT( HiveSlimEventLoopMgr )
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
@@ -167,8 +167,8 @@ StatusCode HiveSlimEventLoopMgr::reinitialize()
   // Check to see whether a new Event Selector has been specified
   setProperty( m_appMgrProperty->getProperty( "EvtSel" ) );
   if ( m_evtsel != "NONE" || m_evtsel.empty() ) {
-    auto theSvc    = serviceLocator()->service( "EventSelector" );
-    auto theEvtSel = theSvc.as<IEvtSelector>();
+    auto       theSvc    = serviceLocator()->service( "EventSelector" );
+    auto       theEvtSel = theSvc.as<IEvtSelector>();
     StatusCode sc;
     if ( theEvtSel && ( theEvtSel.get() != m_evtSelector.get() ) ) {
       // Setup Event Selector
@@ -254,7 +254,7 @@ StatusCode HiveSlimEventLoopMgr::finalize()
       // skip /stat entry!
       sc = std::accumulate( begin( objects ), end( objects ), sc, [&]( StatusCode s, const auto& i ) {
         IOpaqueAddress* pAddr = nullptr;
-        StatusCode iret       = m_histoPersSvc->createRep( i, pAddr );
+        StatusCode      iret  = m_histoPersSvc->createRep( i, pAddr );
         if ( iret.isSuccess() ) i->registry()->setAddress( pAddr );
         return s.isFailure() ? s : iret;
       } );
@@ -364,7 +364,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
 StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
 {
   StatusCode sc;
-  bool eventfailed = false;
+  bool       eventfailed = false;
 
   if ( maxevt > 0 ) { // finite number of events to process
     const unsigned int umaxevt = static_cast<unsigned int>( maxevt );

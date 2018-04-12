@@ -71,7 +71,7 @@ typedef union {
 
 typedef struct {
   unsigned long cnt_mask; /* threshold (cnt_mask)  */
-  unsigned int flags;     /* counter specific flag */
+  unsigned int  flags;    /* counter specific flag */
 } pfmlib_gen_ia32_counter_t;
 
 #define PFM_GEN_IA32_SEL_INV 0x1    /* inverse */
@@ -83,7 +83,7 @@ typedef struct {
  */
 typedef struct {
   pfmlib_gen_ia32_counter_t pfp_gen_ia32_counters[PMU_GEN_IA32_MAX_COUNTERS];
-  uint64_t reserved[4]; /* for future use */
+  uint64_t                  reserved[4]; /* for future use */
 } pfmlib_gen_ia32_input_param_t;
 
 typedef struct {

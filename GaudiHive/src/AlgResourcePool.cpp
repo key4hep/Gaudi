@@ -39,7 +39,7 @@ StatusCode AlgResourcePool::initialize()
   if ( m_topAlgNames.value().empty() ) {
     info() << "TopAlg list empty. Recovering the one of Application Manager" << endmsg;
     const Gaudi::Utils::TypeNameString appMgrName( "ApplicationMgr/ApplicationMgr" );
-    SmartIF<IProperty> appMgrProps( serviceLocator()->service( appMgrName ) );
+    SmartIF<IProperty>                 appMgrProps( serviceLocator()->service( appMgrName ) );
     m_topAlgNames.assign( appMgrProps->getProperty( "TopAlg" ) );
   }
 
@@ -76,8 +76,8 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
 {
 
   std::hash<std::string> hash_function;
-  size_t algo_id      = hash_function( name );
-  auto itQueueIAlgPtr = m_algqueue_map.find( algo_id );
+  size_t                 algo_id        = hash_function( name );
+  auto                   itQueueIAlgPtr = m_algqueue_map.find( algo_id );
 
   if ( itQueueIAlgPtr == m_algqueue_map.end() ) {
     error() << "Algorithm " << name << " requested, but not recognised" << endmsg;
@@ -135,7 +135,7 @@ StatusCode AlgResourcePool::releaseAlgorithm( const std::string& name, IAlgorith
 {
 
   std::hash<std::string> hash_function;
-  size_t algo_id = hash_function( name );
+  size_t                 algo_id = hash_function( name );
 
   // release resources used by the algorithm
   m_resource_mutex.lock();
@@ -235,9 +235,9 @@ StatusCode AlgResourcePool::decodeTopAlgs()
     IAlgorithm* algo( nullptr );
 
     Gaudi::Utils::TypeNameString item( name );
-    const std::string& item_name = item.name();
-    const std::string& item_type = item.type();
-    SmartIF<IAlgorithm> algoSmartIF( algMan->algorithm( item_name, false ) );
+    const std::string&           item_name = item.name();
+    const std::string&           item_type = item.type();
+    SmartIF<IAlgorithm>          algoSmartIF( algMan->algorithm( item_name, false ) );
 
     if ( !algoSmartIF.isValid() ) {
       createAlg( item_type, item_name, algo );
@@ -274,7 +274,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()
   // Unrolled ---
 
   // Now let's manage the clones
-  unsigned int resource_counter( 0 );
+  unsigned int           resource_counter( 0 );
   std::hash<std::string> hash_function;
   for ( auto& ialgoSmartIF : m_flatUniqueAlgList ) {
 
@@ -286,9 +286,9 @@ StatusCode AlgResourcePool::decodeTopAlgs()
     if ( !algo ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
     const std::string& item_type = algo->type();
 
-    size_t algo_id                = hash_function( item_name );
-    concurrentQueueIAlgPtr* queue = new concurrentQueueIAlgPtr();
-    m_algqueue_map[algo_id]       = queue;
+    size_t                  algo_id = hash_function( item_name );
+    concurrentQueueIAlgPtr* queue   = new concurrentQueueIAlgPtr();
+    m_algqueue_map[algo_id]         = queue;
 
     // DP TODO Do it properly with SmartIFs, also in the queues
     IAlgorithm* ialgo( ialgoSmartIF.get() );

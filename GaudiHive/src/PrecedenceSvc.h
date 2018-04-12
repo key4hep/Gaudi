@@ -50,8 +50,8 @@ public:
   bool isBlocking( const std::string& name ) const override { return m_PRGraph.getAlgorithmNode( name )->isIOBound(); }
 
   /// Dump precedence rules
-  void dumpControlFlow() const override;
-  void dumpDataFlow() const override;
+  void              dumpControlFlow() const override;
+  void              dumpDataFlow() const override;
   const std::string printState( EventSlot& ) const override;
 
   /// Dump precedence rules (available only in DEBUG mode, and must be enabled
@@ -85,7 +85,7 @@ private:
       this, "PrecedenceTraceFile", "", "Override default name of the GRAPHML trace file. NOTE: if more than "
                                        "1 event is processed, the setting forces creation of a single file "
                                        "with cumulative precedence trace."};
-  Gaudi::Property<bool> m_dumpPrecRules{this, "DumpPrecedenceRules", false, "Dump task precedence rules."};
+  Gaudi::Property<bool>        m_dumpPrecRules{this, "DumpPrecedenceRules", false, "Dump task precedence rules."};
   Gaudi::Property<std::string> m_dumpPrecRulesFile{this, "PrecedenceRulesFile", "",
                                                    "Override default name of the GRAPHML precedence rules file."};
 };

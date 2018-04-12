@@ -54,8 +54,8 @@ namespace Genfun
       /// the main method
       double operator()( double x ) const override;
       double operator()( const Argument& x ) const override;
-      bool hasAnalyticDerivative() const override { return true; }
-      unsigned int dimensionality() const override { return 1; }
+      bool               hasAnalyticDerivative() const override { return true; }
+      unsigned int       dimensionality() const override { return 1; }
       Genfun::Derivative partial( unsigned int i ) const override;
 
       /// get the function itself
@@ -72,7 +72,7 @@ namespace Genfun
       GSLFunctionWithError& operator=( const GSLFunctionWithError& );
 
     private:
-      Function m_function;
+      Function                       m_function;
       std::unique_ptr<gsl_sf_result> m_result;
     };
     /// mandatory macro from CLHEP/GenericFunctions
@@ -95,8 +95,8 @@ namespace Genfun
       /// the main method
       double operator()( double x ) const override;
       double operator()( const Argument& x ) const override;
-      bool hasAnalyticDerivative() const override { return true; }
-      unsigned int dimensionality() const override { return 1; }
+      bool               hasAnalyticDerivative() const override { return true; }
+      unsigned int       dimensionality() const override { return 1; }
       Genfun::Derivative partial( unsigned int i ) const override;
       /// get the function itself
       Function function() const;
@@ -110,7 +110,7 @@ namespace Genfun
       GSLFunctionWithMode& operator=( const GSLFunctionWithError& );
 
     private:
-      Function m_function;
+      Function                    m_function;
       std::unique_ptr<gsl_mode_t> m_mode;
     };
     /// mandatory macro from CLHEP/GenericFunctions
@@ -133,8 +133,8 @@ namespace Genfun
       /// the main method
       double operator()( double x ) const override;
       double operator()( const Argument& x ) const override;
-      bool hasAnalyticDerivative() const override { return true; }
-      unsigned int dimensionality() const override { return 1; }
+      bool               hasAnalyticDerivative() const override { return true; }
+      unsigned int       dimensionality() const override { return 1; }
       Genfun::Derivative partial( unsigned int i ) const override;
       /// get the function itself
       Function function() const;
@@ -152,8 +152,8 @@ namespace Genfun
       GSLFunctionWithModeAndError& operator=( const GSLFunctionWithModeAndError& );
 
     private:
-      Function m_function;
-      std::unique_ptr<gsl_mode_t> m_mode;
+      Function                       m_function;
+      std::unique_ptr<gsl_mode_t>    m_mode;
       std::unique_ptr<gsl_sf_result> m_result;
     };
     /// mandatory macro from CLHEP/GenericFunctions

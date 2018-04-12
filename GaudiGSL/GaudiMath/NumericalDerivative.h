@@ -133,13 +133,13 @@ namespace Genfun
 
     private:
       std::unique_ptr<const AbsFunction> m_function;
-      size_t m_index;
-      size_t m_DIM;
-      Type m_type;
+      size_t                             m_index;
+      size_t                             m_DIM;
+      Type                               m_type;
       //
       mutable Argument m_argument;
-      mutable double m_result;
-      mutable double m_error;
+      mutable double   m_result;
+      mutable double   m_error;
     };
     /// From CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( NumericalDerivative )

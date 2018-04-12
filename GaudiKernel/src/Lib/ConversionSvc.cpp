@@ -143,7 +143,7 @@ StatusCode ConversionSvc::updateRepRefs( IOpaqueAddress* pAddress, DataObject* p
 IConverter* ConversionSvc::converter( const CLID& clid )
 {
   IConverter* cnv                 = nullptr;
-  auto i                          = std::find_if( m_workers.begin(), m_workers.end(), CnvTest( clid ) );
+  auto        i                   = std::find_if( m_workers.begin(), m_workers.end(), CnvTest( clid ) );
   if ( i != m_workers.end() ) cnv = i->converter();
   if ( !cnv ) {
     StatusCode status = addConverter( clid );
@@ -200,7 +200,7 @@ SmartIF<IConversionSvc>& ConversionSvc::conversionSvc() const { return m_cnvSvc;
 StatusCode ConversionSvc::addConverter( const CLID& clid )
 {
   // First look for the more specific converter
-  long typ               = repSvcType();
+  long        typ        = repSvcType();
   IConverter* pConverter = createConverter( typ, clid, nullptr );
   if ( pConverter ) {
     StatusCode status = configureConverter( typ, clid, pConverter );
@@ -209,7 +209,7 @@ StatusCode ConversionSvc::addConverter( const CLID& clid )
       if ( status.isSuccess() ) {
         status = activateConverter( typ, clid, pConverter );
         if ( status.isSuccess() ) {
-          long conv_typ         = pConverter->repSvcType();
+          long        conv_typ  = pConverter->repSvcType();
           const CLID& conv_clid = pConverter->objType();
           typ                   = ( typ < 0xFF ) ? typ : typ & 0xFFFFFF00;
           conv_typ              = ( conv_typ < 0xFF ) ? conv_typ : conv_typ & 0xFFFFFF00;

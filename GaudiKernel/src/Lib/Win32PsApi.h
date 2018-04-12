@@ -17,7 +17,7 @@
 #ifdef _WIN32
 typedef struct _MODULEINFO {
   LPVOID lpBaseOfDll;
-  DWORD SizeOfImage;
+  DWORD  SizeOfImage;
   LPVOID EntryPoint;
 } MODULEINFO, *LPMODULEINFO;
 typedef struct _PSAPI_WS_WATCH_INFORMATION {

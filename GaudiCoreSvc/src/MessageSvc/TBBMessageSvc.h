@@ -44,7 +44,7 @@ private:
     MessageTaskCommon( TBBMessageSvc& svc ) : m_svc( svc ), m_sender( std::this_thread::get_id() ) {}
 
   protected:
-    TBBMessageSvc& m_svc;
+    TBBMessageSvc&  m_svc;
     std::thread::id m_sender;
   };
 
@@ -60,7 +60,7 @@ private:
 
   private:
     Message m_msg;
-    int m_level;
+    int     m_level;
   };
 
   /// Specialized class to report a message with implicit output level.
@@ -89,7 +89,7 @@ private:
     void run() override { m_svc.i_reportMessage( m_sc, m_source ); }
 
   private:
-    StatusCode m_sc;
+    StatusCode  m_sc;
     std::string m_source;
   };
 

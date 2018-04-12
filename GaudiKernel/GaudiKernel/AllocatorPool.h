@@ -90,9 +90,9 @@ namespace GaudiUtils
     {
     public:
       explicit PoolChunk( unsigned int sz ) : size( sz ), mem{new char[size]} {}
-      const unsigned int size;
-      std::unique_ptr<char[]> mem;
-      PoolChunk* next = nullptr;
+      const unsigned int               size;
+      std::unique_ptr<char[]>          mem;
+      PoolChunk*                       next = nullptr;
     };
 
     /// Make pool larger
@@ -101,9 +101,9 @@ namespace GaudiUtils
   private:
     const unsigned int esize;
     const unsigned int csize;
-    PoolChunk* chunks = nullptr;
-    PoolLink* head    = nullptr;
-    int nchunks       = 0;
+    PoolChunk*         chunks  = nullptr;
+    PoolLink*          head    = nullptr;
+    int                nchunks = 0;
   };
 
 } // end of namespace GaudiUtils

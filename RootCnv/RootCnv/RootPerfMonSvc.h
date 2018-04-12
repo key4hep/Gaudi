@@ -59,9 +59,9 @@ namespace Gaudi
     // Reference to all connected output files
     std::set<std::string> m_outputs;
     // The newest observed values
-    Int_t m_eventType;
+    Int_t   m_eventType;
     ULong_t m_utime, m_stime, m_vsize;
-    Long_t m_eventNumber, m_rss, m_time;
+    Long_t  m_eventNumber, m_rss, m_time;
 
     // Types of records
     enum EventType { EVENT = 1, FSR = 2 };

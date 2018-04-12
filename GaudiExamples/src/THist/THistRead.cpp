@@ -35,7 +35,7 @@ StatusCode THistRead::initialize()
 
   // stream read1, 1D in "/xxx"
   StatusCode sc1a = m_ths->regHist( "/read1/xxx/1Dgauss" );
-  TH1* h1( nullptr );
+  TH1*       h1( nullptr );
   StatusCode sc1b = m_ths->getHist( "/read1/xxx/1Dgauss", h1 );
   if ( sc1a.isFailure() || sc1b.isFailure() || h1 == nullptr ) {
     error() << "Couldn't read gauss1d" << endmsg;
@@ -45,7 +45,7 @@ StatusCode THistRead::initialize()
 
   // stream read2, 2D tree in "/"
   StatusCode sc2a = m_ths->regHist( "/read2/2Dgauss" );
-  TH2* h2( nullptr );
+  TH2*       h2( nullptr );
   StatusCode sc2b = m_ths->getHist( "/read2/2Dgauss", h2 );
   if ( sc2a.isFailure() || sc2b.isFailure() || h2 == nullptr ) {
     error() << "Couldn't read 2Dgauss" << endmsg;
@@ -55,7 +55,7 @@ StatusCode THistRead::initialize()
 
   // 3D tree in "/"
   StatusCode sc3a = m_ths->regHist( "/read2/3Dgauss" );
-  TH3* h3( nullptr );
+  TH3*       h3( nullptr );
   StatusCode sc3b = m_ths->getHist( "/read2/3Dgauss", h3 );
   if ( sc3a.isFailure() || sc3b.isFailure() || h3 == nullptr ) {
     error() << "Couldn't read 3Dgauss" << endmsg;
@@ -65,7 +65,7 @@ StatusCode THistRead::initialize()
 
   // Profile in "/"
   StatusCode sc4a = m_ths->regHist( "/read2/profile" );
-  TH1* tp( nullptr );
+  TH1*       tp( nullptr );
   StatusCode sc4b = m_ths->getHist( "/read2/profile", tp );
   if ( sc4a.isFailure() || sc4b.isFailure() || tp == nullptr ) {
     error() << "Couldn't read profile" << endmsg;
@@ -75,7 +75,7 @@ StatusCode THistRead::initialize()
 
   // Tree with branches in "/trees/stuff"
   StatusCode sc5a = m_ths->regTree( "/read2/trees/stuff/treename" );
-  TTree* tr( nullptr );
+  TTree*     tr( nullptr );
   StatusCode sc5b = m_ths->getTree( "/read2/trees/stuff/treename", tr );
   if ( sc5a.isFailure() || sc5b.isFailure() || tr == nullptr ) {
     error() << "Couldn't read tree" << endmsg;

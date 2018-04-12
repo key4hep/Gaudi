@@ -149,11 +149,11 @@ public:
   const char* what() const throw() override { return message().c_str(); }
 
 protected:
-  mutable std::string m_message;                      /// error message
-  mutable std::string m_tag;                          /// exception tag
-  mutable StatusCode m_code;                          /// status code for exception
+  mutable std::string                     m_message;  /// error message
+  mutable std::string                     m_tag;      /// exception tag
+  mutable StatusCode                      m_code;     /// status code for exception
   mutable std::unique_ptr<GaudiException> m_previous; /// "previous" element in the linked list
-  static bool s_proc;
+  static bool                             s_proc;
 };
 
 /// overloaded printout to std::ostream

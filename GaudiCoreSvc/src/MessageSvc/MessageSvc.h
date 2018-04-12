@@ -31,9 +31,9 @@ class MessageSvc : public extends<Service, IMessageSvc, IInactiveMessageCounter>
 {
 public:
   typedef std::pair<std::string, std::ostream*> NamedStream;
-  typedef std::multimap<int, NamedStream> StreamMap;
-  typedef std::multimap<StatusCode, Message> MessageMap;
-  typedef std::map<std::string, int> ThresholdMap;
+  typedef std::multimap<int, NamedStream>       StreamMap;
+  typedef std::multimap<StatusCode, Message>    MessageMap;
+  typedef std::map<std::string, int>            ThresholdMap;
 
   // Default constructor.
   MessageSvc( const std::string& name, ISvcLocator* svcloc );
@@ -129,9 +129,9 @@ protected:
   virtual void i_reportMessage( const StatusCode& code, const std::string& source );
 
 private:
-  Gaudi::Property<std::string> m_defaultFormat{this, "Format", Message::getDefaultFormat(), ""};
-  Gaudi::Property<std::string> m_defaultTimeFormat{this, "timeFormat", Message::getDefaultTimeFormat(), ""};
-  Gaudi::Property<bool> m_stats{this, "showStats", false, ""};
+  Gaudi::Property<std::string>  m_defaultFormat{this, "Format", Message::getDefaultFormat(), ""};
+  Gaudi::Property<std::string>  m_defaultTimeFormat{this, "timeFormat", Message::getDefaultTimeFormat(), ""};
+  Gaudi::Property<bool>         m_stats{this, "showStats", false, ""};
   Gaudi::Property<unsigned int> m_statLevel{this, "statLevel", 0, ""};
 
   std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_thresholdProp{{{/*ignored*/},
@@ -176,10 +176,10 @@ private:
       this, "loggedStreams", {}, "MessageStream sources we want to dump into a logfile"};
 
   std::ostream* m_defaultStream = &std::cout; ///< Pointer to the output stream.
-  Message m_defaultMessage;                   ///< Default Message
-  StreamMap m_streamMap;                      ///< Stream map
-  MessageMap m_messageMap;                    ///< Message map
-  ThresholdMap m_thresholdMap;                ///< Output level threshold map
+  Message       m_defaultMessage;             ///< Default Message
+  StreamMap     m_streamMap;                  ///< Stream map
+  MessageMap    m_messageMap;                 ///< Message map
+  ThresholdMap  m_thresholdMap;               ///< Output level threshold map
 
   std::string m_logColorCodes[MSG::NUM_LEVELS];
 

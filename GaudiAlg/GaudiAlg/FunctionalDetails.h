@@ -300,8 +300,8 @@ namespace Gaudi
           details2::push_back( m_containers, std::forward<T>( container ),
                                std::integral_constant<bool, is_optional>{} );
         } // note: does not copy its argument, so we're not really a container...
-        iterator begin() const { return m_containers.begin(); }
-        iterator end() const { return m_containers.end(); }
+        iterator  begin() const { return m_containers.begin(); }
+        iterator  end() const { return m_containers.end(); }
         size_type size() const { return m_containers.size(); }
         const Container& operator[]( size_type i ) const { return *m_containers[i]; }
         const Container& at( size_type i ) const
@@ -406,21 +406,21 @@ namespace Gaudi
         }
 
         template <std::size_t N = 0>
-        const std::string& inputLocation() const
+        const std::string&    inputLocation() const
         {
           return std::get<N>( m_inputs ).objKey();
         }
         constexpr unsigned int inputLocationSize() const { return N_in; }
 
         template <std::size_t N = 0>
-        const std::string& outputLocation() const
+        const std::string&    outputLocation() const
         {
           return std::get<N>( m_outputs ).objKey();
         }
         constexpr unsigned int outputLocationSize() const { return N_out; }
 
       protected:
-        std::tuple<details::InputHandle_t<Traits_, In>...> m_inputs;
+        std::tuple<details::InputHandle_t<Traits_, In>...>   m_inputs;
         std::tuple<details::OutputHandle_t<Traits_, Out>...> m_outputs;
       };
 
@@ -458,7 +458,7 @@ namespace Gaudi
         }
 
         template <std::size_t N = 0>
-        const std::string& inputLocation() const
+        const std::string&    inputLocation() const
         {
           return std::get<N>( m_inputs ).objKey();
         }
@@ -501,7 +501,7 @@ namespace Gaudi
         }
 
         template <std::size_t N = 0>
-        const std::string& outputLocation() const
+        const std::string&    outputLocation() const
         {
           return std::get<N>( m_outputs ).objKey();
         }

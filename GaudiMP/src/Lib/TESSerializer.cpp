@@ -73,7 +73,7 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer )
   //          Cannot be declared inside the method, as repeated calls
   //          can cause confusion and buffer wiping.
   //
-  StatusCode status;
+  StatusCode  status;
   DataObject* obj;
 
   // Clear current selection
@@ -111,11 +111,11 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer )
   buffer.WriteInt( m_objects.size() );
 
   for ( Objects::iterator i = m_objects.begin(); i != m_objects.end(); ++i ) {
-    DataObject* pObj = ( *i ); /* define pointer !pObj! to a data object */
-    DataObjectPush p( pObj );  /* add the data object to the list... */
+    DataObject*    pObj = ( *i ); /* define pointer !pObj! to a data object */
+    DataObjectPush p( pObj );     /* add the data object to the list... */
 
     // We build a map so gROOT has to access the whole class database as little as possible
-    TClass* cl;                                  /* announce a TClass */
+    TClass*          cl;                         /* announce a TClass */
     const type_info& objClass = typeid( *pObj ); /* get the type of the data object */
     // cout << "TES Object : " << pObj->registry()->identifier() << endl;
     string objClassName = System::typeinfoName( objClass ); /* and then get the descriptive string from System */
@@ -151,8 +151,8 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer )
     cl->Streamer( pObj, buffer );
 
     /* take care of links */
-    LinkManager* linkMgr = pObj->linkMgr();
-    int numLinks         = linkMgr->size();
+    LinkManager* linkMgr  = pObj->linkMgr();
+    int          numLinks = linkMgr->size();
     buffer.WriteInt( numLinks );
     // now write each link
     for ( int it = 0; it != numLinks; it++ ) {
@@ -165,9 +165,9 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer )
     IOpaqueAddress* iop = pObj->registry()->address();
     if ( iop ) {
       buffer.WriteInt( 1 );
-      const string* par = iop->par();
-      long svcType      = iop->svcType();
-      long clid         = iop->clID();
+      const string* par     = iop->par();
+      long          svcType = iop->svcType();
+      long          clid    = iop->clID();
       buffer.WriteLong( svcType );
       buffer.WriteLong( clid );
       buffer.WriteString( par->c_str() );
@@ -230,13 +230,13 @@ void GaudiMP::TESSerializer::loadBuffer( TBufferFile& buffer )
     }
 
     /// The next is equivalent to ReadObjectAny(cl) except of the 'magic!!'
-    DataObject* obj = (DataObject*)cl->New();
+    DataObject*    obj = (DataObject*)cl->New();
     DataObjectPush push( obj ); // This is magic!
     cl->Streamer( obj, buffer );
 
     // now restore links
     if ( obj ) {
-      int nlink           = 0;
+      int          nlink  = 0;
       LinkManager* lnkMgr = obj->linkMgr();
       buffer.ReadInt( nlink );
 
@@ -283,7 +283,7 @@ void GaudiMP::TESSerializer::loadBuffer( TBufferFile& buffer )
     // flag will be 0 or 1 to indicate OpaqueAddress Info
     if ( flag == 1 ) {
       // will need an IOpaqueAddress and its ref
-      IOpaqueAddress* iop;
+      IOpaqueAddress*  iop;
       IOpaqueAddress*& iopref = iop;
       // Read svcType, clID and par from buffer
       long svcType;
@@ -298,9 +298,9 @@ void GaudiMP::TESSerializer::loadBuffer( TBufferFile& buffer )
       const string opaque( cp );
       // create Generic address
       // already have svcType, clID, par1.. just make dummy variables for par2, and ipar1 and 2
-      const string& p2 = "";
-      unsigned long ip1( 0 );
-      unsigned long ip2( 0 );
+      const string&  p2 = "";
+      unsigned long  ip1( 0 );
+      unsigned long  ip2( 0 );
       GenericAddress gadd( svcType, classid, opaque, p2, ip1, ip2 );
 
       // now create the address
