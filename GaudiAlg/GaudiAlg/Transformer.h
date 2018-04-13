@@ -69,7 +69,14 @@ namespace Gaudi
       {
         try {
           Gaudi::apply(
-              [&]( auto&... ohandle ) {
+              [this]( auto&... ohandle ) {
+
+#if defined( __clang__ ) && ( __clang_major__ < 6 )
+// clang-5 gives a spurious warning about not using the captured `ohandle`
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-lambda-capture"
+#endif
+
                 Gaudi::apply(
                     [&ohandle...]( auto&&... data ) {
 #if __cplusplus < 201703L
@@ -80,10 +87,15 @@ namespace Gaudi
 #endif
                     },
                     Gaudi::apply(
-                        [&]( auto&... ihandle ) {
+                        [this]( auto&... ihandle ) {
                           return details::as_const( *this )( details::deref( ihandle.get() )... );
                         },
                         this->m_inputs ) );
+
+#if defined( __clang__ ) && ( __clang_major__ < 6 )
+#pragma clang diagnostic pop
+#endif
+
               },
               this->m_outputs );
           return StatusCode::SUCCESS;
