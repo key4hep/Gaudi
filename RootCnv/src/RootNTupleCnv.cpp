@@ -631,7 +631,7 @@ StatusCode RootNTupleCnv::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
             paddr[k] = &addr[k];
             addr[k].reset();
             if ( pA ) {
-              con->makeRef( pA->registry(), addr[k] );
+              con->makeRef( *pA->registry(), addr[k] );
               addr[k].entry = pA->ipar()[1];
             }
             tree->SetBranchAddress( j->name().c_str(), &paddr[k] );

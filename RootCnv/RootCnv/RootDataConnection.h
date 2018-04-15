@@ -6,6 +6,7 @@
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiUtils/IIODataManager.h"
+#include "boost/utility/string_ref.hpp"
 #include <map>
 #include <set>
 #include <string>
@@ -68,7 +69,7 @@ namespace Gaudi
     RootConnectionSetup() = default;
 
     /// Set the global compression level
-    static StatusCode setCompression( const std::string& compression );
+    static StatusCode setCompression( boost::string_ref compression );
     /// Access to global compression level
     static int compression();
 
@@ -133,11 +134,11 @@ namespace Gaudi
     /// Type definition for the parameter map
     typedef std::vector<std::pair<std::string, std::string>> ParamMap;
     /// Definition of tree sections
-    typedef std::map<std::string, TTree*> Sections;
+    typedef std::map<std::string, TTree*, std::less<>> Sections;
     /// Definition of container sections to handle merged files
     typedef std::vector<ContainerSection> ContainerSections;
     /// Definition of database section to handle merged files
-    typedef std::map<std::string, ContainerSections> MergeSections;
+    typedef std::map<std::string, ContainerSections, std::less<>> MergeSections;
     /// Link sections definition
     typedef std::vector<RootRef> LinkSections;
     /// Client set
@@ -221,7 +222,7 @@ namespace Gaudi
       /// Default destructor
       virtual ~Tool() = default;
       /// Access data branch by name: Get existing branch in read only mode
-      virtual TBranch* getBranch( const std::string& section, const std::string& n ) = 0;
+      virtual TBranch* getBranch( boost::string_ref section, boost::string_ref n ) = 0;
       /// Internal overload to facilitate the access to POOL files
       virtual RootRef poolRef( size_t /* which */ ) const { return RootRef(); }
 
@@ -230,7 +231,7 @@ namespace Gaudi
       /// Save references section when closing data file
       virtual StatusCode saveRefs() = 0;
       /// Load references object
-      virtual int loadRefs( const std::string& section, const std::string& cnt, unsigned long entry,
+      virtual int loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry,
                             RootObjectRefs& refs ) = 0;
     };
     std::unique_ptr<Tool> m_tool;
@@ -241,7 +242,7 @@ namespace Gaudi
 
   public:
     /// Standard constructor
-    RootDataConnection( const IInterface* own, const std::string& nam, std::shared_ptr<RootConnectionSetup> setup );
+    RootDataConnection( const IInterface* own, boost::string_ref nam, std::shared_ptr<RootConnectionSetup> setup );
 
     /// Direct access to TFile structure
     TFile* file() const { return m_file.get(); }
@@ -264,27 +265,27 @@ namespace Gaudi
     bool lookupClient( const IInterface* client ) const;
 
     /// Error handler when bad write statements occur
-    void badWriteError( const std::string& msg ) const;
+    void badWriteError( boost::string_ref msg ) const;
 
     /// Access link section for single container and entry
-    std::pair<const RootRef*, const ContainerSection*> getMergeSection( const std::string& container, int entry ) const;
+    std::pair<const RootRef*, const ContainerSection*> getMergeSection( boost::string_ref container, int entry ) const;
 
     /// Enable TTreePerStats
-    void enableStatistics( const std::string& section );
+    void enableStatistics( boost::string_ref section );
     /// Save TTree access statistics if required
-    void saveStatistics( const std::string& statisticsFile );
+    void saveStatistics( boost::string_ref statisticsFile );
 
     /// Load object
-    int loadObj( const std::string& section, const std::string& cnt, unsigned long entry, DataObject*& pObj );
+    int loadObj( boost::string_ref section, boost::string_ref cnt, unsigned long entry, DataObject*& pObj );
 
     /// Load references object
-    int loadRefs( const std::string& section, const std::string& cnt, unsigned long entry, RootObjectRefs& refs );
+    int loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry, RootObjectRefs& refs );
 
     /// Save object of a given class to section and container
-    std::pair<int, unsigned long> saveObj( const std::string& section, const std::string& cnt, TClass* cl,
+    std::pair<int, unsigned long> saveObj( boost::string_ref section, boost::string_ref cnt, TClass* cl,
                                            DataObject* pObj, int buff_siz, int split_lvl, bool fill_missing = false );
     /// Save object of a given class to section and container
-    std::pair<int, unsigned long> save( const std::string& section, const std::string& cnt, TClass* cl, void* pObj,
+    std::pair<int, unsigned long> save( boost::string_ref section, boost::string_ref cnt, TClass* cl, void* pObj,
                                         int buff_siz, int split_lvl, bool fill_missing = false );
 
     /// Open data stream in read mode
@@ -301,25 +302,25 @@ namespace Gaudi
     long long int seek( long long int, int ) override { return -1; }
 
     /// Access TTree section from section name. The section is created if required.
-    TTree* getSection( const std::string& sect, bool create = false );
+    TTree* getSection( boost::string_ref sect, bool create = false );
 
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch( const std::string& section, const std::string& branch_name )
+    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name )
     {
       return m_tool->getBranch( section, branch_name );
     }
     /// Access data branch by name: Get existing branch in write mode
-    TBranch* getBranch( const std::string& section, const std::string& branch_name, TClass* cl, void* ptr, int buff_siz,
+    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name, TClass* cl, void* ptr, int buff_siz,
                         int split_lvl );
 
     /// Create reference object from registry entry
-    void makeRef( IRegistry* pA, RootRef& ref );
+    void makeRef( const IRegistry& pA, RootRef& ref );
     /// Create reference object from values
-    void makeRef( const std::string& name, long clid, int tech, const std::string& db, const std::string& cnt,
-                  int entry, RootRef& ref );
+    void makeRef( boost::string_ref name, long clid, int tech, boost::string_ref db, boost::string_ref cnt, int entry,
+                  RootRef& ref );
 
     /// Convert path string to path index
-    int makeLink( const std::string& p );
+    int makeLink( boost::string_ref p );
 
     /// Access database/file name from saved index
     const std::string& getDb( int which ) const;
