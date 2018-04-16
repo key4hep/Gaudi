@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Applied new formatting (see [mr !651][], [mr !448][])
+- Remove unreferenced code ([mr !658][])
 - Remove `DataHandle::commit()` ([mr !625][])
 - Modernize Registry usage in (Ts)DataSvc ([mr !604][], [issue #5][])
 - Improve Gitlab-CI configuration ([mr !651][], [mr !448][])
@@ -34,6 +35,7 @@ Details about old versions of the project can be found in the
 [ReleaseNotes](ReleaseNotes) folder and in the `release.notes` files in
 [GaudiRelease/doc](GaudiRelease/doc).
 
+[mr !658]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/658
 [mr !652]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/652
 [mr !651]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/651
 [mr !650]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/650
