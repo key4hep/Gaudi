@@ -184,6 +184,7 @@ public:
     m_cont.setup((void*)sptr,(void**)rptr);
   }
   KeyedContainer(KeyedContainer&& other):
+      ObjectContainerBase(std::move(other)),
       m_cont(std::move(other.m_cont)),
       m_sequential(std::move(other.m_sequential))
   {
