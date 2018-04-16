@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Use `apply` in `Gaudi::Functional` ([mr !622][])
 
 ### Fixed
+- Avoid (false positive) clang warning ([mr !656][])
 - Handle incompatible values for DataObjectHandleBase props ([mr !650][])
 - Fixed bug in THistSvc introduced with [mr !594][] ([mr !652][])
 
@@ -36,6 +37,7 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 [mr !658]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/658
+[mr !656]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/656
 [mr !652]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/652
 [mr !651]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/651
 [mr !650]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/650
