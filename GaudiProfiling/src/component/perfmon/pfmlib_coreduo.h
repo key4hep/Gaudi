@@ -60,7 +60,7 @@ typedef union {
 
 typedef struct {
   unsigned long cnt_mask; /* threshold (cnt_mask)  */
-  unsigned int flags;     /* counter specific flag */
+  unsigned int  flags;    /* counter specific flag */
 } pfm_coreduo_counter_t;
 
 #define PFM_COREDUO_SEL_INV 0x1  /* inverse */
@@ -71,7 +71,7 @@ typedef struct {
  */
 typedef struct {
   pfm_coreduo_counter_t pfp_coreduo_counters[PMU_COREDUO_NUM_COUNTERS];
-  uint64_t reserved[4]; /* for future use */
+  uint64_t              reserved[4]; /* for future use */
 } pfmlib_coreduo_input_param_t;
 
 #ifdef __cplusplus /* extern C */

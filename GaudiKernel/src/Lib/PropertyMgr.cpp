@@ -60,7 +60,7 @@ PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProp
     return nullptr;
   }
   const std::string& nam = rname.empty() ? name : rname;
-  PropertyBase* p        = property( nam, rsvc->getProperties() );
+  PropertyBase*      p   = property( nam, rsvc->getProperties() );
   m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
   return p;
 }
@@ -161,7 +161,7 @@ StatusCode PropertyMgr::setProperty( const std::string& i )
 {
   std::string name;
   std::string value;
-  StatusCode sc = Gaudi::Parsers::parse( name, value, i );
+  StatusCode  sc = Gaudi::Parsers::parse( name, value, i );
   if ( sc.isFailure() ) {
     return sc;
   }

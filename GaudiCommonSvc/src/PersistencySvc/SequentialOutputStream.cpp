@@ -53,10 +53,10 @@ void SequentialOutputStream::makeFilename()
   if ( m_events % m_eventsPerFile != 0 ) return;
 
   bf::path outputPath( m_outputName );
-  string filename  = outputPath.filename().string();
-  bf::path dir     = outputPath.parent_path();
-  string stem      = outputPath.stem().string();
-  string extension = outputPath.extension().string();
+  string   filename  = outputPath.filename().string();
+  bf::path dir       = outputPath.parent_path();
+  string   stem      = outputPath.stem().string();
+  string   extension = outputPath.extension().string();
 
   if ( !dir.empty() ) {
     if ( !bf::exists( dir ) ) {
@@ -75,7 +75,7 @@ void SequentialOutputStream::makeFilename()
         throw GaudiException( msg, "error", StatusCode::FAILURE );
       }
     }
-    string iFile        = std::to_string( m_iFile );
+    string       iFile  = std::to_string( m_iFile );
     unsigned int length = 0;
 
     if ( stem.length() > iFile.length() ) {

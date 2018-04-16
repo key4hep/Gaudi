@@ -329,7 +329,7 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type get( const std::string& location,
-                                                                const bool useRootInTES = true ) const
+                                                                const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::get<TYPE>( evtSvc(), location, useRootInTES );
   }
@@ -368,7 +368,7 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( const std::string& location,
-                                                                        const bool useRootInTES = true ) const
+                                                                        const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE>( evtSvc(), location, useRootInTES );
   }
@@ -420,7 +420,7 @@ public:
    *  @retval NULL If the detector object does not exist.
    */
   template <class TYPE>
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc* svc,
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc*  svc,
                                                                            const std::string& location ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE>( svc, location, false );
@@ -638,7 +638,7 @@ public:
    */
   template <class TYPE, class TYPE2>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( const std::string& location,
-                                                                        const bool useRootInTES = true ) const
+                                                                        const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE, TYPE2>( evtSvc(), location, useRootInTES );
   }
@@ -755,8 +755,8 @@ private:
   /// Returns the current active algorithm name via the context service
   inline std::string getCurrentAlgName() const
   {
-    const IAlgContextSvc* asvc = this->contextSvc();
-    const IAlgorithm* current  = ( asvc ? asvc->currentAlg() : NULL );
+    const IAlgContextSvc* asvc    = this->contextSvc();
+    const IAlgorithm*     current = ( asvc ? asvc->currentAlg() : NULL );
     return ( current ? " [" + current->name() + "]" : "" );
   }
   // ==========================================================================

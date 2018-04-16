@@ -153,8 +153,8 @@ public:
     if ( !rsvc ) {
       return nullptr;
     }
-    const std::string& nam          = rname.empty() ? name : rname;
-    Gaudi::Details::PropertyBase* p = property( nam, rsvc->getProperties() );
+    const std::string&            nam = rname.empty() ? name : rname;
+    Gaudi::Details::PropertyBase* p   = property( nam, rsvc->getProperties() );
     m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
     return p;
   }
@@ -224,7 +224,7 @@ public:
   {
     std::string name;
     std::string value;
-    StatusCode sc = Gaudi::Parsers::parse( name, value, s );
+    StatusCode  sc = Gaudi::Parsers::parse( name, value, s );
     if ( sc.isFailure() ) {
       return sc;
     }
@@ -363,7 +363,7 @@ protected:
 
 private:
   /// get the property by name form the proposed list
-  Gaudi::Details::PropertyBase* property( const std::string& name,
+  Gaudi::Details::PropertyBase* property( const std::string&                                name,
                                           const std::vector<Gaudi::Details::PropertyBase*>& props ) const
   {
     auto it = std::find_if( props.begin(), props.end(), [&name]( Gaudi::Details::PropertyBase* p ) {

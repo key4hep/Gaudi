@@ -90,7 +90,7 @@ namespace Gaudi
       {
         union {
           void* src;
-          F dst;
+          F     dst;
         } p2p;
         p2p.src = getCreator( id, typeid( F ).name() );
         return p2p.dst;
@@ -130,11 +130,11 @@ namespace Gaudi
           }
 
           std::string library;
-          void* ptr;
+          void*       ptr;
           std::string type;
           std::string rtype;
           std::string className;
-          Properties properties;
+          Properties  properties;
 
           FactoryInfo& addProperty( const KeyType& k, std::string v )
           {
@@ -155,7 +155,7 @@ namespace Gaudi
         {
           union {
             typename F::FuncType src;
-            void* dst;
+            void*                dst;
           } p2p;
           p2p.src = ptr;
           std::ostringstream o;
@@ -261,8 +261,8 @@ namespace Gaudi
     class _INTERNAL_FACTORY_REGISTER_CNAME( type, serial )                                                             \
     {                                                                                                                  \
     public:                                                                                                            \
-      typedef factory s_t;                                                                                             \
-      typedef typecreator f_t;                                                                                         \
+      typedef factory      s_t;                                                                                        \
+      typedef typecreator  f_t;                                                                                        \
       static s_t::FuncType creator() { return &f_t::create<s_t>; }                                                     \
       _INTERNAL_FACTORY_REGISTER_CNAME( type, serial )()                                                               \
       {                                                                                                                \

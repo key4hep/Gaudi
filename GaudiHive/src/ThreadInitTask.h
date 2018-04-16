@@ -38,9 +38,9 @@ public:
 private:
   ToolHandleArray<IThreadInitTool>& m_tools;
 
-  boost::barrier* m_barrier;
+  boost::barrier*      m_barrier;
   SmartIF<ISvcLocator> m_serviceLocator;
-  bool m_terminate;
+  bool                 m_terminate;
 
   static std::atomic<bool> m_execFailed;
 };

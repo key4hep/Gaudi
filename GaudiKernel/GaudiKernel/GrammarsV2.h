@@ -55,7 +55,7 @@ namespace Gaudi
     // Grammars
     //==============================================================================
     typedef std::string::const_iterator DefaultIterator;
-    typedef enc::space_type DefaultSkipper;
+    typedef enc::space_type             DefaultSkipper;
     //==============================================================================
     template <typename Iterator, typename T, typename Skipper, class Enable = void>
     struct Grammar_ {
@@ -100,7 +100,7 @@ namespace Gaudi
       }
       //------------------------------------------------------------------------------
       qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
-      qi::rule<Iterator, char()> begin_quote;
+      qi::rule<Iterator, char()>       begin_quote;
       qi::rule<Iterator, void( char )> quote;
       //------------------------------------------------------------------------------
     };
@@ -187,9 +187,9 @@ namespace Gaudi
     struct TupleInnerGrammar
         : qi::grammar<Iterator, TupleT(), qi::locals<typename tuple_get_first_type<TupleT>::type>, Skipper> {
       //---------------------------------------------------------------------------
-      typedef TupleT ResultT;
+      typedef TupleT                                         ResultT;
       typedef typename tuple_remove_first_type<TupleT>::type TailT;
-      typedef typename tuple_get_first_type<TupleT>::type HeadT;
+      typedef typename tuple_get_first_type<TupleT>::type    HeadT;
       //---------------------------------------------------------------------------
       struct Operations {
         template <typename A, typename B = boost::fusion::unused_type, typename C = boost::fusion::unused_type,
@@ -259,10 +259,10 @@ namespace Gaudi
         tup = begin[qi::_a = qi::_1] >> grTuple[qi::_val = qi::_1] >> end( qi::_a );
       }
 
-      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, char()>       begin;
       qi::rule<Iterator, void( char )> end;
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> tup;
-      TupleInnerGrammar<Iterator, TupleT, N, Skipper> grTuple;
+      TupleInnerGrammar<Iterator, TupleT, N, Skipper>          grTuple;
     };
 
     // -----------------------------------------------------------------------------
@@ -288,7 +288,7 @@ namespace Gaudi
       }
       // ----------------------------------------------------------------------------
       typename Grammar_<Iterator, typename VectorT::value_type, Skipper>::Grammar elementGrammar;
-      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, char()>       begin;
       qi::rule<Iterator, void( char )> end;
 
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> vec;
@@ -321,8 +321,8 @@ namespace Gaudi
     template <typename Iterator, typename PairT, typename Skipper>
     struct PairGrammar : qi::grammar<Iterator, PairT(), qi::locals<char>, Skipper> {
       //------------------------------------------------------------------------------
-      typedef PairT ResultT;
-      typedef typename PairT::first_type first_type;
+      typedef PairT                       ResultT;
+      typedef typename PairT::first_type  first_type;
       typedef typename PairT::second_type second_type;
       //------------------------------------------------------------------------------
       PairGrammar() : PairGrammar::base_type( pair ) { init( "," ); }
@@ -341,9 +341,9 @@ namespace Gaudi
         pair_in                                           = key >> qi::lit( delimeter ) >> value;
       }
       // ----------------------------------------------------------------------------
-      typename Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar key;
+      typename Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar  key;
       typename Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar value;
-      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, char()>       begin;
       qi::rule<Iterator, void( char )> end;
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> pair;
       qi::rule<Iterator, ResultT(), Skipper> pair_in;
@@ -361,8 +361,8 @@ namespace Gaudi
     template <typename Iterator, typename MapT, typename Skipper>
     struct MapGrammar : qi::grammar<Iterator, MapT(), Skipper> {
       //------------------------------------------------------------------------------
-      typedef MapT ResultT;
-      typedef typename MapT::key_type KeyT;
+      typedef MapT                       ResultT;
+      typedef typename MapT::key_type    KeyT;
       typedef typename MapT::mapped_type MappedT;
       typedef std::pair<KeyT, MappedT> PairT;
 
@@ -398,11 +398,11 @@ namespace Gaudi
         map  = ( ( '[' >> list >> ']' ) | ( '{' >> list >> '}' ) )[op( qi::_val, qi::_1 )];
       }
       // ----------------------------------------------------------------------------
-      typename Grammar_<Iterator, typename MapT::key_type, Skipper>::Grammar key;
+      typename Grammar_<Iterator, typename MapT::key_type, Skipper>::Grammar    key;
       typename Grammar_<Iterator, typename MapT::mapped_type, Skipper>::Grammar value;
-      qi::rule<Iterator, PairT(), Skipper> pair;
-      qi::rule<Iterator, VectorPairT(), Skipper> list;
-      qi::rule<Iterator, ResultT(), Skipper> map;
+      qi::rule<Iterator, PairT(), Skipper>                                      pair;
+      qi::rule<Iterator, VectorPairT(), Skipper>                                list;
+      qi::rule<Iterator, ResultT(), Skipper>                                    map;
       ph::function<Operations> op;
       // ----------------------------------------------------------------------------
     };
@@ -425,7 +425,7 @@ namespace Gaudi
     // ============================================================================
     template <typename Iterator, typename PointT, typename Skipper>
     struct Pnt3DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
-      typedef PointT ResultT;
+      typedef PointT                  ResultT;
       typedef typename PointT::Scalar Scalar;
       // ----------------------------------------------------------------------------
       struct Operations {
@@ -461,7 +461,7 @@ namespace Gaudi
                -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'z' )];
       }
       // ----------------------------------------------------------------------------
-      qi::rule<Iterator, ResultT(), Skipper> point, list;
+      qi::rule<Iterator, ResultT(), Skipper>                point, list;
       typename Grammar_<Iterator, Scalar, Skipper>::Grammar scalar;
       ph::function<Operations> op;
       // ----------------------------------------------------------------------------
@@ -483,7 +483,7 @@ namespace Gaudi
     // ============================================================================
     template <typename Iterator, typename PointT, typename Skipper>
     struct Pnt4DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
-      typedef PointT ResultT;
+      typedef PointT                  ResultT;
       typedef typename PointT::Scalar ScalarT;
       //-----------------------------------------------------------------------------
       struct Operations {
@@ -534,8 +534,8 @@ namespace Gaudi
                  -( enc::no_case[qi::lit( "z" ) | qi::lit( "pz" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'z' )];
       }
       // ----------------------------------------------------------------------------
-      qi::rule<Iterator, ResultT(), Skipper> point3d, point4d, list3d, list4d;
-      qi::rule<Iterator, ScalarT(), Skipper> e;
+      qi::rule<Iterator, ResultT(), Skipper>                 point3d, point4d, list3d, list4d;
+      qi::rule<Iterator, ScalarT(), Skipper>                 e;
       typename Grammar_<Iterator, ScalarT, Skipper>::Grammar scalar;
       ph::function<Operations> op;
       // ----------------------------------------------------------------------------
@@ -591,7 +591,7 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> hist;
       qi::rule<Iterator, ResultT(), Skipper> val1, val2, val3;
-      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, char()>       begin;
       qi::rule<Iterator, void( char )> end;
       StringGrammar<Iterator, Skipper> title;
       ph::function<Operations> op;

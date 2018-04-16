@@ -128,7 +128,7 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
   } // RETURN
 
   // static block: The type description & the flag
-  static bool s_fail    = false;   // STATIC
+  static bool    s_fail = false;   // STATIC
   static TClass* s_type = nullptr; // STATIC
   // check the status
   if ( s_fail ) {

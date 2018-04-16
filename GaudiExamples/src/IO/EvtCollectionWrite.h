@@ -37,14 +37,14 @@ class EvtCollectionWrite : public Algorithm
 
   Gaudi::Property<int> m_nMCcut{this, "NumMcTracks", 50, ""};
 
-  NTuple::Item<int> m_ntrkColl;
-  NTuple::Item<float> m_eneColl;
+  NTuple::Item<int>                       m_ntrkColl;
+  NTuple::Item<float>                     m_eneColl;
   NTuple::Item<Gaudi::Examples::MyTrack*> m_trackItem;
-  NTuple::Array<float> m_trkMom;
-  NTuple::Array<float> m_trkMomFixed;
-  NTuple::Item<IOpaqueAddress*> m_evtAddrColl;
-  NTuple::Item<IOpaqueAddress*> m_evtAddrCollEx;
-  INTupleSvc* m_evtTupleSvc = nullptr;
+  NTuple::Array<float>                    m_trkMom;
+  NTuple::Array<float>                    m_trkMomFixed;
+  NTuple::Item<IOpaqueAddress*>           m_evtAddrColl;
+  NTuple::Item<IOpaqueAddress*>           m_evtAddrCollEx;
+  INTupleSvc*                             m_evtTupleSvc = nullptr;
 
 public:
   /// Constructor: A constructor of this form must be provided.

@@ -41,9 +41,9 @@ StatusCode RndmGenSvc::initialize()
     status = setProperties();
     if ( status.isSuccess() ) { // Check if the Engine service exists:
       // FIXME: (MCl) why RndmGenSvc cannot create the engine service in a standard way?
-      const bool CREATE    = false;
+      const bool  CREATE   = false;
       std::string machName = name() + ".Engine";
-      auto engine          = serviceLocator()->service<IRndmEngine>( machName, CREATE );
+      auto        engine   = serviceLocator()->service<IRndmEngine>( machName, CREATE );
       if ( !engine && mgr ) {
         using Gaudi::Utils::TypeNameString;
         engine = mgr->createService( TypeNameString( machName, m_engineName ) );

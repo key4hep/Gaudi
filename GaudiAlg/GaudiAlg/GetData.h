@@ -160,7 +160,7 @@ namespace Gaudi
       // ======================================================================
       /// the actual return type
       typedef Gaudi::Range_<std::vector<const TYPE*>> Type;
-      typedef typename _GetType<Type>::return_type return_type;
+      typedef typename _GetType<Type>::return_type    return_type;
       // ======================================================================
     public:
       // ======================================================================
@@ -181,7 +181,7 @@ namespace Gaudi
         if ( object ) {
           /// 2. try to get the selection
           typedef typename TYPE::Selection Selection_;
-          const Selection_* sel = dynamic_cast<Selection_*>( object );
+          const Selection_*                sel = dynamic_cast<Selection_*>( object );
           if ( sel ) {
             if ( common.msgLevel( MSG::DEBUG ) ) {
               common.debug() << "The object of type '" << System::typeinfoName( typeid( *object ) )
@@ -191,7 +191,7 @@ namespace Gaudi
           }
           /// 3. try to get the container
           typedef typename TYPE::Container Container_;
-          const Container_* cnt = dynamic_cast<Container_*>( object );
+          const Container_*                cnt = dynamic_cast<Container_*>( object );
           if ( cnt ) {
             if ( common.msgLevel( MSG::DEBUG ) ) {
               common.debug() << "The object of type '" << System::typeinfoName( typeid( *object ) )
@@ -252,7 +252,7 @@ namespace Gaudi
       // ======================================================================
       /// the actual return type
       typedef Gaudi::NamedRange_<std::vector<const TYPE*>> Type;
-      typedef typename _GetType<Type>::return_type return_type;
+      typedef typename _GetType<Type>::return_type         return_type;
       // ======================================================================
     public:
       // ======================================================================
@@ -279,7 +279,7 @@ namespace Gaudi
           return return_type();
         }
         static const std::string s_empty = "";
-        const IRegistry* reg             = cnt->registry();
+        const IRegistry*         reg     = cnt->registry();
         return return_type( m_range.make_range( cnt ), reg ? reg->identifier() : s_empty );
       }
       // create the range from the selection
@@ -289,7 +289,7 @@ namespace Gaudi
           return return_type();
         }
         static const std::string s_empty = "";
-        const IRegistry* reg             = cnt->registry();
+        const IRegistry*         reg     = cnt->registry();
         return return_type( m_range.make_range( cnt ), reg ? reg->identifier() : s_empty );
       }
       // ======================================================================
@@ -516,7 +516,7 @@ namespace Gaudi
     private:
       // ======================================================================
       typedef Gaudi::NamedRange_<std::vector<const TYPE*>> Range;
-      typedef Gaudi::Range_<std::vector<const TYPE*>> Range_;
+      typedef Gaudi::Range_<std::vector<const TYPE*>>      Range_;
       typedef GetOrCreateData<Range_, TYPE2> Helper;
       /// the actual data getter
       typedef GetData<Range> Getter; //  the actual data getter

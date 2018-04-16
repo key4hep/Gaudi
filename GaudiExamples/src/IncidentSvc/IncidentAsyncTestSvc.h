@@ -33,12 +33,12 @@ public:
   virtual void getData( uint64_t* data, EventContext* ctx = 0 ) const final override;
 
 private:
-  Gaudi::Property<uint64_t> m_fileOffset{this, "FileOffset", 100000000};
-  Gaudi::Property<uint64_t> m_eventMultiplier{this, "EventMultiplier", 1000};
+  Gaudi::Property<uint64_t>                 m_fileOffset{this, "FileOffset", 100000000};
+  Gaudi::Property<uint64_t>                 m_eventMultiplier{this, "EventMultiplier", 1000};
   Gaudi::Property<std::vector<std::string>> m_incidentNames{this, "IncidentNames"};
-  Gaudi::Property<long> m_prio{this, "Priority", 0};
-  SmartIF<IMessageSvc> m_msgSvc;
-  SmartIF<IIncidentSvc> m_incSvc;
+  Gaudi::Property<long>                     m_prio{this, "Priority", 0};
+  SmartIF<IMessageSvc>                      m_msgSvc;
+  SmartIF<IIncidentSvc>                     m_incSvc;
   tbb::concurrent_unordered_map<EventContext, uint64_t, EventContextHash, EventContextHash> m_ctxData;
   std::mutex m_eraseMutex;
 };

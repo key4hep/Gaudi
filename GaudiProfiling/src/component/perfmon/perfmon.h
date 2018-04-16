@@ -203,7 +203,7 @@ extern os_err_t pfm_attach( int fd, int flags, int target );
 #include "perfmon_v2.h"
 
 typedef union {
-  uint32_t type;
+  uint32_t         type;
   pfarg_ovfl_msg_t pfm_ovfl_msg;
 } pfarg_msg_t;
 

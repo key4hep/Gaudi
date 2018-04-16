@@ -92,8 +92,8 @@ namespace Gaudi
       accumulate( Mapper f, typename std::result_of<Mapper( const T* )>::type init, BinaryOperation op ) const
       {
         typedef typename std::result_of<Mapper( const T* )>::type R;
-        typedef typename StorageType::value_type V;
-        std::lock_guard<std::mutex> lock( m_ptrs_lock );
+        typedef typename StorageType::value_type                  V;
+        std::lock_guard<std::mutex>                               lock( m_ptrs_lock );
         return std::accumulate( m_ptrs.begin(), m_ptrs.end(), init, [&f, &op]( const R& partial, const V& p ) -> R {
           return op( partial, f( p.second ) );
         } );

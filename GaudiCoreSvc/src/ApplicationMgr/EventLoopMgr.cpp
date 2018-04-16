@@ -21,7 +21,7 @@ DECLARE_COMPONENT( EventLoopMgr )
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ StatusCode EventLoopMgr::finalize()
       if ( objects->size() > 0 ) {
         for ( auto& i : *objects ) {
           IOpaqueAddress* pAddr = nullptr;
-          StatusCode iret       = m_histoPersSvc->createRep( i, pAddr );
+          StatusCode      iret  = m_histoPersSvc->createRep( i, pAddr );
           if ( iret.isSuccess() ) {
             i->registry()->setAddress( pAddr );
           } else {
@@ -280,13 +280,13 @@ StatusCode EventLoopMgr::nextEvent( int maxevt )
   // DP Monitoring
   // Calculate runtime
   typedef std::chrono::high_resolution_clock Clock;
-  typedef Clock::time_point time_point;
+  typedef Clock::time_point                  time_point;
 
   const float oneOver1024 = 1.f / 1024.f;
 
-  static int total_nevt = 0;
-  DataObject* pObject   = nullptr;
-  StatusCode sc( StatusCode::SUCCESS, true );
+  static int  total_nevt = 0;
+  DataObject* pObject    = nullptr;
+  StatusCode  sc( StatusCode::SUCCESS, true );
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop

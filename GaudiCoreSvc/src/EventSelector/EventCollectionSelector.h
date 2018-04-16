@@ -45,10 +45,10 @@ public:
   class MyContextType : public IEvtSelector::Context
   {
   public:
-    std::string criteria;
-    NTuple::Tuple* tuple;
+    std::string                    criteria;
+    NTuple::Tuple*                 tuple;
     NTuple::Item<IOpaqueAddress*>* item;
-    IOpaqueAddress* addressBuffer;
+    IOpaqueAddress*                addressBuffer;
     MyContextType( NTuple::Tuple* t, NTuple::Item<IOpaqueAddress*>* i )
     {
       addressBuffer = new GenericAddress();
@@ -77,7 +77,7 @@ public:
 
 protected:
   /// Reference to Tuple service
-  mutable SmartIF<INTupleSvc> m_tupleSvc;
+  mutable SmartIF<INTupleSvc>      m_tupleSvc;
   mutable SmartIF<IAddressCreator> m_pAddrCreator;
 
   // Properties

@@ -25,7 +25,7 @@ namespace GaudiSvcTest
   {
     ICounterSvc::Counter* m_evtCount;
     ICounterSvc::Counter* m_total;
-    ICounterSvc* m_cntSvc;
+    ICounterSvc*          m_cntSvc;
 
   public:
     /// Constructor: A constructor of this form must be provided.

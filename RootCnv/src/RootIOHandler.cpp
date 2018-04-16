@@ -27,8 +27,8 @@ using namespace std;
 namespace GaudiRoot
 {
   static const DataObject* last_link_object = nullptr;
-  static int last_link_hint                 = -1;
-  void resetLastLink()
+  static int               last_link_hint   = -1;
+  void                     resetLastLink()
   {
     last_link_object = nullptr;
     last_link_hint   = -1;
@@ -45,9 +45,9 @@ namespace GaudiRoot
   }
 
   union RefAccessor {
-    void* Ptr;
-    SmartRefBase* Base;
-    SmartRef<DataObject>* ObjectRef;
+    void*                      Ptr;
+    SmartRefBase*              Base;
+    SmartRef<DataObject>*      ObjectRef;
     SmartRef<ContainedObject>* ContainedRef;
     RefAccessor( void* obj ) { Ptr = obj; }
   };
@@ -93,8 +93,8 @@ namespace GaudiRoot
   void IOHandler<SmartRefBase>::get( TBuffer& b, void* obj )
   {
     RefAccessor r( obj );
-    UInt_t start, count;
-    Version_t version = b.ReadVersion( &start, &count, m_root );
+    UInt_t      start, count;
+    Version_t   version = b.ReadVersion( &start, &count, m_root );
     m_root->ReadBuffer( b, obj, version, start, count );
     switch ( r.Base->objectType() ) {
     case SmartRefBase::DATAOBJECT:
@@ -112,10 +112,10 @@ namespace GaudiRoot
   template <>
   void IOHandler<SmartRefBase>::put( TBuffer& b, void* obj )
   {
-    RefAccessor r( obj );
+    RefAccessor      r( obj );
     ContainedObject* p;
-    DataObject *curr, *pDO;
-    int hint, link;
+    DataObject *     curr, *pDO;
+    int              hint, link;
 
     curr = Gaudi::getCurrentDataObject();
     pDO  = r.ObjectRef->data();
@@ -153,7 +153,7 @@ namespace GaudiRoot
         return;
       } else if ( pDO ) {
         LinkManager* mgr = curr->linkMgr();
-        IRegistry* reg   = pDO->registry();
+        IRegistry*   reg = pDO->registry();
         if ( reg && mgr ) {
           hint             = mgr->addLink( reg->identifier(), pDO );
           last_link_hint   = hint;
@@ -170,7 +170,7 @@ namespace GaudiRoot
   template <>
   void IOHandler<ContainedObject>::get( TBuffer& b, void* obj )
   {
-    UInt_t start, count;
+    UInt_t    start, count;
     Version_t version = b.ReadVersion( &start, &count, m_root );
     m_root->ReadBuffer( b, obj, version, start, count );
     ContainedObject* p = (ContainedObject*)obj;
@@ -186,7 +186,7 @@ namespace GaudiRoot
   template <>
   void IOHandler<pool::Token>::get( TBuffer& b, void* obj )
   {
-    UInt_t start, count;
+    UInt_t       start, count;
     pool::Token* t = (pool::Token*)obj;
     b.ReadVersion( &start, &count, m_root );
     b.ReadFastArray( &t->m_oid.first, 2 );
@@ -202,8 +202,8 @@ namespace GaudiRoot
   template <class T>
   static bool makeStreamer( MsgStream& log )
   {
-    string cl_name = System::typeinfoName( typeid( T ) );
-    TClass* c      = gROOT->GetClass( cl_name.c_str() );
+    string  cl_name = System::typeinfoName( typeid( T ) );
+    TClass* c       = gROOT->GetClass( cl_name.c_str() );
     if ( c ) {
       c->AdoptStreamer( new IOHandler<T>( c ) );
       log << MSG::DEBUG << "Installed IOHandler for class " << cl_name << endmsg;

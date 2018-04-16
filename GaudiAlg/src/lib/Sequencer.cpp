@@ -88,7 +88,7 @@ StatusCode Sequencer::reinitialize()
 StatusCode Sequencer::execute()
 {
   StatusCode result = StatusCode::SUCCESS;
-  ON_DEBUG debug() << name() << " Sequencer::execute( )" << endmsg;
+  ON_DEBUG   debug() << name() << " Sequencer::execute( )" << endmsg;
 
   // Bypass the loop if this sequencer is disabled or has already been executed
   if ( isEnabled() && !isExecuted() ) {
@@ -352,7 +352,7 @@ StatusCode Sequencer::createAndAppend( const std::string& type, const std::strin
   if ( !theAlgMgr ) return StatusCode::FAILURE;
 
   IAlgorithm* tmp;
-  StatusCode result = theAlgMgr->createAlgorithm( type, algName, tmp );
+  StatusCode  result = theAlgMgr->createAlgorithm( type, algName, tmp );
   if ( result.isSuccess() ) {
     try {
       pAlgorithm = dynamic_cast<Algorithm*>( tmp );
@@ -370,7 +370,7 @@ StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& th
                                    std::vector<Algorithm*>& theAlgs, std::vector<bool>& theLogic )
 {
   StatusCode result;
-  auto theAlgMgr = serviceLocator()->service<IAlgManager>( "ApplicationMgr" );
+  auto       theAlgMgr = serviceLocator()->service<IAlgManager>( "ApplicationMgr" );
   if ( theAlgMgr ) {
     // Clear the existing list of algorithms
     theAlgs.clear();
@@ -386,8 +386,8 @@ StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& th
       // Where <name> is the algorithm instance name, and <type> is the
       // algorithm class type (being a subclass of Algorithm).
       const Gaudi::Utils::TypeNameString typeName( n );
-      std::string theName = typeName.name();
-      std::string theType = typeName.type();
+      std::string                        theName = typeName.name();
+      std::string                        theType = typeName.type();
 
       // Parse the name for a syntax of the form:
       //
@@ -395,8 +395,8 @@ StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& th
       //
       // Where <name> is the algorithm instance name and ":invert"
       // indicates that the filter passed logic is inverted.
-      bool isInverted               = false;
-      std::string::size_type invert = theName.find_first_of( ":" );
+      bool                   isInverted = false;
+      std::string::size_type invert     = theName.find_first_of( ":" );
       // Skip all occurrences of "::" (allow namespaces)
       while ( std::string::npos != invert && invert < ( theName.size() - 1 ) && theName[invert + 1] == ':' )
         invert = theName.find_first_of( ":", invert + 2 );
@@ -411,9 +411,9 @@ StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& th
       }
       // Check whether the supplied name corresponds to an existing
       // Algorithm object.
-      SmartIF<IAlgorithm>& theIAlg = theAlgMgr->algorithm( theName, false );
-      Algorithm* theAlgorithm      = nullptr;
-      StatusCode status            = StatusCode::SUCCESS;
+      SmartIF<IAlgorithm>& theIAlg      = theAlgMgr->algorithm( theName, false );
+      Algorithm*           theAlgorithm = nullptr;
+      StatusCode           status       = StatusCode::SUCCESS;
       if ( theIAlg ) {
         try {
           theAlgorithm = dynamic_cast<Algorithm*>( theIAlg.get() );
@@ -544,7 +544,7 @@ std::ostream& Sequencer::toControlFlowExpression( std::ostream& os ) const
   os << "seq(";
   const auto algs_count = theAlgs.size();
   const auto op         = isStopOverride() ? " >> " : " & ";
-  size_t i              = 0;
+  size_t     i          = 0;
   while ( i < algs_count ) {
     if ( i ) os << op;
     if ( m_isInverted[i] ) os << "~";

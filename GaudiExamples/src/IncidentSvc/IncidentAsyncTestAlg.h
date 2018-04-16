@@ -23,10 +23,10 @@ public:
   static std::string& incident();
 
 private:
-  Gaudi::Property<std::string> m_serviceName{this, "ServiceName", "IncTestSvc"};
-  Gaudi::Property<std::vector<std::string>> m_inpKeys{this, "inpKeys"};
-  Gaudi::Property<std::vector<std::string>> m_outKeys{this, "outKeys"};
-  SmartIF<IIncidentAsyncTestSvc> m_service;
+  Gaudi::Property<std::string>                               m_serviceName{this, "ServiceName", "IncTestSvc"};
+  Gaudi::Property<std::vector<std::string>>                  m_inpKeys{this, "inpKeys"};
+  Gaudi::Property<std::vector<std::string>>                  m_outKeys{this, "outKeys"};
+  SmartIF<IIncidentAsyncTestSvc>                             m_service;
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputObjHandles;
   std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputObjHandles;
 };

@@ -31,7 +31,7 @@ std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string&
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const AIDA::IHistogram1D& hist )
 {
   TH1D* h = getRepresentation<AIDA::IHistogram1D, TH1D>( hist );
-  auto n  = ( h ? new Histogram1D( new TH1D( *h ) ) : nullptr );
+  auto  n = ( h ? new Histogram1D( new TH1D( *h ) ) : nullptr );
   return {n, n};
 }
 namespace Gaudi
@@ -224,7 +224,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
 {
   // DataObject::serialize(s);
   std::string title;
-  int size;
+  int         size;
   s >> size;
   for ( int j = 0; j < size; j++ ) {
     std::string key, value;
@@ -235,7 +235,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
     }
   }
   double lowerEdge, upperEdge, binHeight, binError;
-  int isFixedBinning, bins;
+  int    isFixedBinning, bins;
   s >> isFixedBinning >> bins;
 
   if ( isFixedBinning ) {
@@ -275,8 +275,8 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s ) const
     s << annotation().value( i );
   }
   const AIDA::IAxis& axis( this->axis() );
-  const int isFixedBinning = axis.isFixedBinning();
-  const int bins           = axis.bins();
+  const int          isFixedBinning = axis.isFixedBinning();
+  const int          bins           = axis.bins();
   s << isFixedBinning << bins;
   if ( isFixedBinning ) {
     s << axis.lowerEdge();

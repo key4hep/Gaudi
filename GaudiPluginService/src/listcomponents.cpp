@@ -46,7 +46,7 @@ void usage( std::string argv0 )
 
 int main( int argc, char* argv[] )
 {
-  Gaudi::PluginService::Details::Registry& reg = Gaudi::PluginService::Details::Registry::instance();
+  Gaudi::PluginService::Details::Registry&                 reg = Gaudi::PluginService::Details::Registry::instance();
   typedef Gaudi::PluginService::Details::Registry::KeyType key_type;
 
   // cache to keep track of the loaded factories
@@ -56,7 +56,7 @@ int main( int argc, char* argv[] )
 
   // Parse command line
   std::list<char*> libs;
-  std::string output_opt( "-" );
+  std::string      output_opt( "-" );
   {
     std::string argv0( argv[0] );
     {

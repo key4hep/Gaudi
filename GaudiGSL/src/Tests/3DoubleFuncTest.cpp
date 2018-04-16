@@ -27,7 +27,7 @@ double sum( double x, double y, double z ) { return 3 * x * x - 5 * y * y + 3 * 
 int main()
 {
   const GaudiMath::Function& mysum = GaudiMath::adapter( sum );
-  Genfun::Argument arg( 3 );
+  Genfun::Argument           arg( 3 );
 
   std::string format( "x=%6.5f y=%6.5f z=%6.5f mysum=%+.10f" );
   format += " sum=%+.10f sum-mysum=%+.10f \n";

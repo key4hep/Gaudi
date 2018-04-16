@@ -18,7 +18,7 @@ public:
   void algoFinished();
   void algoStarts( unsigned int& index );
   bool hasStarted( unsigned int& index ) const;
-  bool hasFinished() const { return ( m_algosFinished == m_numberOfAlgos ); }
+  bool              hasFinished() const { return ( m_algosFinished == m_numberOfAlgos ); }
   const state_type& state() const { return m_eventState; }
   void update_state( unsigned int& product_index );
 

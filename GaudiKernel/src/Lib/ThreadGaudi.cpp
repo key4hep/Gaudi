@@ -31,7 +31,7 @@ std::string getGaudiThreadIDfromName( const std::string& name )
   // find parent if name of an AlgTool
   std::string parent_name = name;
   std::string tool_name   = "";
-  size_t pp               = name.find( "." );
+  size_t      pp          = name.find( "." );
   if ( ( pp > 0 ) && ( pp <= name.length() ) ) {
     parent_name = name.substr( 0, name.find( "." ) - 1 );
     tool_name   = name.substr( name.find( "." ) );
@@ -56,7 +56,7 @@ std::string getGaudiThreadGenericName( const std::string& name )
   // find parent if name of an AlgTool
   std::string parent_name = name;
   std::string tool_name   = "";
-  size_t pp               = name.find( "." );
+  size_t      pp          = name.find( "." );
   if ( ( pp > 0 ) && ( pp <= name.length() ) ) {
     parent_name = name.substr( 0, name.find( "." ) - 1 );
     tool_name   = name.substr( name.find( "." ) );
@@ -107,8 +107,8 @@ ThreadGaudi::ThreadMap* ThreadGaudi::getThreadMap() { return ThreadGaudi::instan
 
 const std::string& ThreadGaudi::getThreadID()
 {
-  ThreadMap* p_threadMap     = getThreadMap();
-  System::ThreadHandle s_pid = System::threadSelf();
+  ThreadMap*           p_threadMap = getThreadMap();
+  System::ThreadHandle s_pid       = System::threadSelf();
   if ( p_threadMap->find( s_pid ) != p_threadMap->end() ) {
     return ( *p_threadMap->find( s_pid ) ).second;
   } else {

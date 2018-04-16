@@ -36,7 +36,7 @@ public:
   // ============================================================================
   /// some useful typedefs
   typedef std::map<IChronoStatSvc::ChronoTag, ChronoEntity> ChronoMap;
-  typedef std::map<IChronoStatSvc::StatTag, StatEntity> StatMap;
+  typedef std::map<IChronoStatSvc::StatTag, StatEntity>     StatMap;
   // ============================================================================
 public:
   // ============================================================================
@@ -61,7 +61,7 @@ public:
    *  @see IChronoStatSvc
    */
   virtual IChronoStatSvc::ChronoTime chronoDelta( const IChronoStatSvc::ChronoTag& chronoTag,
-                                                  IChronoStatSvc::ChronoType theType ) override;
+                                                  IChronoStatSvc::ChronoType       theType ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoPrint
    *  @see IChronoStatSvc
@@ -144,7 +144,7 @@ private:
                                           "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_chronoCoutFlag{this, "ChronoDestinationCout", false,
                                          "define the destination of the table to be printed"};
-  Gaudi::Property<int> m_intChronoPrintLevel{this, "ChronoPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<int>  m_intChronoPrintLevel{this, "ChronoPrintLevel", MSG::INFO, "print level"};
   Gaudi::Property<bool> m_chronoOrderFlag{this, "ChronoTableToBeOrdered", true, "should the printout be ordered"};
   Gaudi::Property<bool> m_printUserTime{this, "PrintUserTime", true};
   Gaudi::Property<bool> m_printSystemTime{this, "PrintSystemTime", false};
@@ -153,7 +153,7 @@ private:
                                         "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_statCoutFlag{this, "StatDestinationCout", false,
                                        "define the destination of the table to be printed"};
-  Gaudi::Property<int> m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<int>  m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO, "print level"};
   Gaudi::Property<bool> m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
 
   Gaudi::Property<long> m_numberOfSkippedEventsForMemStat{
@@ -181,7 +181,7 @@ private:
   Gaudi::Property<std::string> m_perEventFile{this, "PerEventFile", "", "File name for per-event deltas"};
 
   typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>> TimeMap;
-  TimeMap m_perEvtTime;
+  TimeMap       m_perEvtTime;
   std::ofstream m_ofd;
 
   // ============================================================================

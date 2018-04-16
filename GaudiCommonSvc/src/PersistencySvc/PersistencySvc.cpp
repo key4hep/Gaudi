@@ -35,7 +35,7 @@
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLvel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 // Instantiation of a static factory class used by clients to create
@@ -226,7 +226,7 @@ IConverter* PersistencySvc::converter( const CLID& /*clid*/ ) { return nullptr; 
 SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam )
 {
   Gaudi::Utils::TypeNameString tn( nam );
-  auto it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
+  auto                         it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
                           [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
 
@@ -341,8 +341,8 @@ StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::
     svc_type = pAddress->svcType();
     clid     = pAddress->clID();
   }
-  IAddressCreator* svc = addressCreator( svc_type );
-  StatusCode status    = BAD_STORAGE_TYPE; // Preset error
+  IAddressCreator* svc    = addressCreator( svc_type );
+  StatusCode       status = BAD_STORAGE_TYPE; // Preset error
   refAddress.clear();
 
   if ( svc ) {
@@ -363,8 +363,8 @@ StatusCode PersistencySvc::createAddress( long /* svc_type */, const CLID& /* cl
   // Assumption is that the Persistency service decodes that header
   // and requests the conversion service referred to by the service
   // type to decode the rest
-  long new_svc_type = 0;
-  CLID new_clid     = 0;
+  long        new_svc_type = 0;
+  CLID        new_clid     = 0;
   std::string address_trailer;
   decodeAddrHdr( refAddress, new_svc_type, new_clid, address_trailer );
   IAddressCreator* svc = addressCreator( new_svc_type );
@@ -377,7 +377,7 @@ void PersistencySvc::encodeAddrHdr( long service_type, const CLID& clid, std::st
   // For address header, use xml-style format of
   // <addrhdr service_type="xxx" clid="yyy" />
   std::stringstream stream;
-  int svctyp = service_type; // must put int into stream, not char
+  int               svctyp = service_type; // must put int into stream, not char
   stream << "<address_header service_type=\"" << svctyp << "\" clid=\"" << clid << "\" /> ";
   address = stream.str();
 }
@@ -448,7 +448,7 @@ StatusCode PersistencySvc::getService( long service_type, IConversionSvc*& refpS
 StatusCode PersistencySvc::getService( const std::string& service_type, IConversionSvc*& refpSvc )
 {
   const char* imp = service_type.c_str();
-  long len        = service_type.length();
+  long        len = service_type.length();
   if (::strncasecmp( imp, "SICB", len ) == 0 )
     return getService( SICB_StorageType, refpSvc );
   else if (::strncasecmp( imp, "ZEBRA", len ) == 0 )

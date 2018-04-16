@@ -60,10 +60,10 @@ namespace Gaudi
         kPropertyRef,
         number_of_node_types
       };
-      NodeType type = kRoot;
-      std::string value;
+      NodeType          type = kRoot;
+      std::string       value;
       std::vector<Node> children;
-      Position position;
+      Position          position;
 
       Node() = default;
       std::string name() const;

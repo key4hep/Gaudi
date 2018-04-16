@@ -29,7 +29,7 @@
 #include "tbb/concurrent_queue.h"
 #include "tbb/task.h"
 
-typedef AlgsExecutionStates::State State;
+typedef AlgsExecutionStates::State  State;
 typedef std::function<StatusCode()> action;
 
 //---------------------------------------------------------------------------
@@ -135,8 +135,8 @@ private:
   Gaudi::Property<int> m_threadPoolSize{
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
+  Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  Gaudi::Property<std::string>  m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
                                                           "Maximum number of simultaneous I/O-bound algorithms"};
   Gaudi::Property<bool> m_simulateExecution{
@@ -262,7 +262,7 @@ private:
   // helper task to enqueue the scheduler's actions (closures)
   struct enqueueSchedulerActionTask : public tbb::task {
 
-    std::function<StatusCode()> m_closure;
+    std::function<StatusCode()>    m_closure;
     SmartIF<AvalancheSchedulerSvc> m_scheduler;
 
     enqueueSchedulerActionTask( AvalancheSchedulerSvc* scheduler, std::function<StatusCode()> _closure )
@@ -281,9 +281,9 @@ private:
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  size_t m_maxEventsInFlight{0};
-  size_t m_maxAlgosInFlight{1};
-  bool m_first = true;
+  size_t                  m_maxEventsInFlight{0};
+  size_t                  m_maxAlgosInFlight{1};
+  bool                    m_first = true;
 
   class SchedulerState
   {
@@ -291,9 +291,9 @@ private:
   public:
     SchedulerState( Algorithm* a, EventContext* e, pthread_t t ) : m_a( a ), m_e( *e ), m_t( t ) {}
 
-    Algorithm* alg() const { return m_a; }
+    Algorithm*   alg() const { return m_a; }
     EventContext ctx() const { return m_e; }
-    pthread_t thread() const { return m_t; }
+    pthread_t    thread() const { return m_t; }
 
     friend std::ostream& operator<<( std::ostream& os, const SchedulerState& ss )
     {
@@ -309,13 +309,13 @@ private:
     bool operator<( const SchedulerState& rhs ) const { return ( m_a < rhs.alg() ); }
 
   private:
-    Algorithm* m_a;
+    Algorithm*   m_a;
     EventContext m_e;
-    pthread_t m_t;
+    pthread_t    m_t;
   };
 
   static std::list<SchedulerState> m_sState;
-  static std::mutex m_ssMut;
+  static std::mutex                m_ssMut;
 
 public:
   void addAlg( Algorithm*, EventContext*, pthread_t );

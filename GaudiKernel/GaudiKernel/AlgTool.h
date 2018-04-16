@@ -67,14 +67,14 @@ public:
   const IInterface* parent() const override;
 
   // State machine implementation
-  StatusCode configure() override { return StatusCode::SUCCESS; }
-  StatusCode initialize() override;
-  StatusCode start() override;
-  StatusCode stop() override;
-  StatusCode finalize() override;
-  StatusCode terminate() override { return StatusCode::SUCCESS; }
-  StatusCode reinitialize() override;
-  StatusCode restart() override;
+  StatusCode                 configure() override { return StatusCode::SUCCESS; }
+  StatusCode                 initialize() override;
+  StatusCode                 start() override;
+  StatusCode                 stop() override;
+  StatusCode                 finalize() override;
+  StatusCode                 terminate() override { return StatusCode::SUCCESS; }
+  StatusCode                 reinitialize() override;
+  StatusCode                 restart() override;
   Gaudi::StateMachine::State FSMState() const override { return m_state; }
   Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
 
@@ -289,15 +289,15 @@ public:
 private:
   typedef std::list<std::pair<InterfaceID, void*>> InterfaceList;
 
-  std::string m_type;                   ///< AlgTool type (concrete class name)
+  std::string       m_type;             ///< AlgTool type (concrete class name)
   const std::string m_name;             ///< AlgTool full name
   const IInterface* m_parent = nullptr; ///< AlgTool parent
 
-  mutable SmartIF<ISvcLocator> m_svcLocator;  ///< Pointer to Service Locator service
-  mutable SmartIF<IDataProviderSvc> m_evtSvc; ///< Event data service
-  mutable SmartIF<IToolSvc> m_ptoolSvc;       ///< Tool service
-  mutable SmartIF<IMonitorSvc> m_pMonitorSvc; ///< Online Monitoring Service
-  mutable SmartIF<IAuditorSvc> m_pAuditorSvc; ///< Auditor Service
+  mutable SmartIF<ISvcLocator>      m_svcLocator;  ///< Pointer to Service Locator service
+  mutable SmartIF<IDataProviderSvc> m_evtSvc;      ///< Event data service
+  mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< Tool service
+  mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
+  mutable SmartIF<IAuditorSvc>      m_pAuditorSvc; ///< Auditor Service
 
   InterfaceList m_interfaceList; ///< Interface list
 
@@ -318,8 +318,8 @@ private:
   std::string m_threadID; ///< Thread Id for Alg Tool
 
   // tools used by tool
-  mutable std::vector<IAlgTool*> m_tools;
-  mutable std::vector<BaseToolHandle*> m_toolHandles;
+  mutable std::vector<IAlgTool*>             m_tools;
+  mutable std::vector<BaseToolHandle*>       m_toolHandles;
   mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
 

@@ -35,7 +35,7 @@ namespace Gaudi
       return true;
     }
     /// Retrieve reference to class defininition identifier
-    const CLID& clID() const override { return classID(); }
+    const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_ProfileH2; }
   };
 }

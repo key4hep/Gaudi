@@ -23,9 +23,9 @@ const int MAX_THREADS( 1023 ); // to check command line parameter
  * Defines a global locking mechanism so we can see when all worker threads
  * are finished.
  */
-int worker_done;
+int             worker_done;
 pthread_mutex_t mutex;
-pthread_cond_t condition;
+pthread_cond_t  condition;
 
 pthread_mutex_t coutmutex;
 
@@ -60,7 +60,7 @@ void* work( void* counter )
   // Get the EventLoopMgr name from the Application Manager
   std::string nameEventLoopMgr = "EventLoopMgr";
 
-  std::string value;
+  std::string        value;
   SmartIF<IProperty> propMgr( m_pesaAppMgr );
   if ( !propMgr ) {
     COUTTHREAD( " Fatal error while retrieving Gaudi PropertyHolder " )
@@ -84,8 +84,8 @@ void* work( void* counter )
   nameEventLoopMgr = nameEventLoopMgr + threadStrID;
 
   COUTTHREAD( "---> Thread : " << id_thread << " - Name for EventLoopManager : " + nameEventLoopMgr )
-  StatusCode sc;
-  IEventProcessor* m_processingMgr = 0;
+  StatusCode           sc;
+  IEventProcessor*     m_processingMgr = 0;
   SmartIF<ISvcLocator> svcLoc( m_pesaAppMgr );
   if ( svcLoc ) {
     sc = svcLoc->service( nameEventLoopMgr, m_processingMgr );
@@ -166,9 +166,9 @@ int main( int argc, char** argv )
   }
   dllMgr.reset();
 
-  StatusCode sc;
+  StatusCode  sc;
   std::string v_nt;
-  int nt;
+  int         nt;
   sc = propMgr->getProperty( "NoOfThreads", v_nt );
   if ( sc.isFailure() ) {
     std::cout << "Cannot get get number of worker threads" << std::endl;
@@ -204,7 +204,7 @@ int main( int argc, char** argv )
   worker_done = nt; // Initialized counter
 
   pthread_t thread[nt];
-  int tID[nt];
+  int       tID[nt];
 
   for ( int i = 0; i < nt; ++i ) {
     /**

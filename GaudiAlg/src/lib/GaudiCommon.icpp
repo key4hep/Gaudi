@@ -149,7 +149,7 @@ StatusCode GaudiCommon<PBASE>::
 
   // get root of DataManager
   SmartIF<IDataManagerSvc> dataMgrSvc( PBASE::evtSvc() );
-  auto rootName = dataMgrSvc->rootName();
+  auto                     rootName = dataMgrSvc->rootName();
   if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
 
   auto fixLocation = [this, rootName]( const std::string& location ) -> std::string {
@@ -575,7 +575,7 @@ long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const
 {
 
   // print ALL properties
-  MsgStream& msg         = this->msgStream( level );
+  MsgStream&  msg        = this->msgStream( level );
   const auto& properties = this->getProperties();
   msg << "List of ALL properties of " << System::typeinfoName( typeid( *this ) ) << "/" << this->name()
       << "  #properties = " << properties.size() << endmsg;

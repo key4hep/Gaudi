@@ -136,7 +136,7 @@ private:
 
   mutable SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
 
-  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int>  m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the auditor be used or not"};
 
   bool m_isInitialized = false; ///< Auditor has been initialized flag

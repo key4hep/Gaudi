@@ -495,7 +495,7 @@ namespace Gaudi
     {
       typedef std::vector<T> _Vct;
       // create the temporary vector
-      _Vct tmp;
+      _Vct       tmp;
       StatusCode sc = parse( tmp, input );
       if ( sc.isFailure() ) {
         return sc;
@@ -523,7 +523,7 @@ namespace Gaudi
       std::fill_n( result, N, ' ' );
       // create the temporary string
       std::string tmp;
-      StatusCode sc = parse( tmp, input );
+      StatusCode  sc = parse( tmp, input );
       if ( sc.isFailure() ) {
         return sc;
       } //  RETURN

@@ -30,7 +30,7 @@ StatusCode JemallocProfile::initialize()
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
   bool active = true;
-  int res     = mallctl( "prof.active", NULL, NULL, &active, sizeof( active ) );
+  int  res    = mallctl( "prof.active", NULL, NULL, &active, sizeof( active ) );
   if ( res != 0 ) {
     return StatusCode::FAILURE;
   }

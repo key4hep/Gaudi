@@ -115,34 +115,34 @@
 #include <stdint.h>
 #elif defined( _MSC_VER )
 // Older Microsoft compilers have their own definitions
-typedef signed __int8 int8_t;
-typedef unsigned __int8 uint8_t;
-typedef signed __int16 int16_t;
+typedef signed __int8    int8_t;
+typedef unsigned __int8  uint8_t;
+typedef signed __int16   int16_t;
 typedef unsigned __int16 uint16_t;
-typedef signed __int32 int32_t;
+typedef signed __int32   int32_t;
 typedef unsigned __int32 uint32_t;
-typedef signed __int64 int64_t;
+typedef signed __int64   int64_t;
 typedef unsigned __int64 uint64_t;
 #ifndef _INTPTR_T_DEFINED
 #define _INTPTR_T_DEFINED
 #ifdef __x86_64__
-typedef int64_t intptr_t;
+typedef int64_t          intptr_t;
 #else
 typedef int32_t intptr_t;
 #endif
 #endif
 #else
 // This works with most compilers
-typedef signed char int8_t;
-typedef unsigned char uint8_t;
-typedef signed short int int16_t;
+typedef signed char        int8_t;
+typedef unsigned char      uint8_t;
+typedef signed short int   int16_t;
 typedef unsigned short int uint16_t;
-typedef signed int int32_t;
-typedef unsigned int uint32_t;
-typedef long long int64_t;
+typedef signed int         int32_t;
+typedef unsigned int       uint32_t;
+typedef long long          int64_t;
 typedef unsigned long long uint64_t;
 #ifdef __x86_64__
-typedef int64_t intptr_t;
+typedef int64_t            intptr_t;
 #else
 typedef int32_t intptr_t;
 #endif
@@ -159,11 +159,11 @@ typedef int32_t intptr_t;
 namespace VCL_NAMESPACE
 {
 #endif
-  int instrset_detect( void ); // tells which instruction sets are supported
-  bool hasFMA3( void );        // true if FMA3 instructions supported
-  bool hasFMA4( void );        // true if FMA4 instructions supported
-  bool hasXOP( void );         // true if XOP  instructions supported
-  bool hasAVX512ER( void );    // true if AVX512ER instructions supported
+  int  instrset_detect( void ); // tells which instruction sets are supported
+  bool hasFMA3( void );         // true if FMA3 instructions supported
+  bool hasFMA4( void );         // true if FMA4 instructions supported
+  bool hasXOP( void );          // true if XOP  instructions supported
+  bool hasAVX512ER( void );     // true if AVX512ER instructions supported
 #ifdef VCL_NAMESPACE
 }
 #endif

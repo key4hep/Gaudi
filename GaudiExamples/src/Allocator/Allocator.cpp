@@ -84,7 +84,7 @@ namespace
 
     // create an vector of pointers (FIXED length!)
     typedef std::vector<TYPE*> Vct;
-    Vct vct = Vct( number, (TYPE*)0 );
+    Vct                        vct = Vct( number, (TYPE*)0 );
 
     // sturt the loop over repetition
     for ( size_t irep = 0; irep < repeat; ++irep ) {

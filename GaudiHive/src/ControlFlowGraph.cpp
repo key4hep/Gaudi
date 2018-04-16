@@ -58,7 +58,7 @@ namespace concurrency
     {
       // check whether we already had a result earlier
       //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
-      int decision           = ( ( m_allPass && m_modePromptDecision ) ? 1 : -1 );
+      int  decision          = ( ( m_allPass && m_modePromptDecision ) ? 1 : -1 );
       bool hasUndecidedChild = false;
       for ( auto daughter : m_children ) {
         if ( m_modePromptDecision && ( -1 != decision || hasUndecidedChild ) ) {
@@ -151,11 +151,11 @@ namespace concurrency
 
       auto& algoName = algo->name();
 
-      auto itP = m_decisionNameToDecisionHubMap.find( parentName );
+      auto                                     itP = m_decisionNameToDecisionHubMap.find( parentName );
       concurrency::recursive_CF::DecisionNode* parentNode;
       if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-        parentNode = itP->second;
-        auto itA   = m_algoNameToAlgoNodeMap.find( algoName );
+        parentNode                                    = itP->second;
+        auto                                      itA = m_algoNameToAlgoNodeMap.find( algoName );
         concurrency::recursive_CF::AlgorithmNode* algoNode;
         if ( itA != m_algoNameToAlgoNodeMap.end() ) {
           algoNode = itA->second;
@@ -187,11 +187,11 @@ namespace concurrency
 
       auto& decisionHubName = decisionHubAlgo->name();
 
-      auto itP = m_decisionNameToDecisionHubMap.find( parentName );
+      auto                                     itP = m_decisionNameToDecisionHubMap.find( parentName );
       concurrency::recursive_CF::DecisionNode* parentNode;
       if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-        parentNode = itP->second;
-        auto itA   = m_decisionNameToDecisionHubMap.find( decisionHubName );
+        parentNode                                   = itP->second;
+        auto                                     itA = m_decisionNameToDecisionHubMap.find( decisionHubName );
         concurrency::recursive_CF::DecisionNode* decisionHubNode;
         if ( itA != m_decisionNameToDecisionHubMap.end() ) {
           decisionHubNode = itA->second;
@@ -247,7 +247,7 @@ namespace concurrency
     void ControlFlowGraph::dumpControlFlow( std::ostringstream& ost, ControlFlowNode* node, const int& indent ) const
     {
       ost << std::string( indent * 2, ' ' );
-      DecisionNode* dn  = dynamic_cast<DecisionNode*>( node );
+      DecisionNode*  dn = dynamic_cast<DecisionNode*>( node );
       AlgorithmNode* an = dynamic_cast<AlgorithmNode*>( node );
       if ( dn != 0 ) {
         if ( node != m_headNode ) {

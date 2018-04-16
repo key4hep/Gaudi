@@ -283,8 +283,8 @@ namespace Tuples
     const ITEM& value() const { return m_value; }
 
   private:
-    std::string m_name; ///< The column name
-    ITEM m_value;       ///< The column value
+    std::string m_name;  ///< The column name
+    ITEM        m_value; ///< The column value
   };
 
   /** helper function to create 'on-the-fly' the

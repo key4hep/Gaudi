@@ -19,8 +19,8 @@ public:
 
   /// IMyAudTool interface
   const std::string& message() const override;
-  void doErr() override;
-  void doFatal() override;
+  void               doErr() override;
+  void               doFatal() override;
   /// Overriding initialize and finalize
   StatusCode initialize() override;
   StatusCode finalize() override;

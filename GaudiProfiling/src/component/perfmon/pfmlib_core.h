@@ -62,7 +62,7 @@ typedef union {
 
 typedef struct {
   unsigned long cnt_mask; /* threshold (cnt_mask)  */
-  unsigned int flags;     /* counter specific flag */
+  unsigned int  flags;    /* counter specific flag */
 } pfmlib_core_counter_t;
 
 #define PFM_CORE_SEL_INV 0x1  /* inverse */
@@ -77,8 +77,8 @@ typedef struct {
 
 typedef struct {
   pfmlib_core_counter_t pfp_core_counters[PMU_CORE_NUM_COUNTERS];
-  pfmlib_core_pebs_t pfp_core_pebs;
-  uint64_t reserved[4]; /* for future use */
+  pfmlib_core_pebs_t    pfp_core_pebs;
+  uint64_t              reserved[4]; /* for future use */
 } pfmlib_core_input_param_t;
 
 typedef struct {

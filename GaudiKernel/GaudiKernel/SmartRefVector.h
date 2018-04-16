@@ -58,9 +58,9 @@ protected:
   /// That's the type of crap I am hosting
   typedef SmartRef<TYPE> _Entry;
   /// Object types: typedef myself as Base
-  typedef std::vector<_Entry> _Base;
+  typedef std::vector<_Entry>                          _Base;
   typedef typename std::vector<_Entry>::const_iterator _BaseConstIter;
-  typedef typename std::vector<_Entry>::value_type _BaseValueType;
+  typedef typename std::vector<_Entry>::value_type     _BaseValueType;
 
   /// Object data: Pointer to the identifiable object the link originates
   mutable const DataObject* m_data;

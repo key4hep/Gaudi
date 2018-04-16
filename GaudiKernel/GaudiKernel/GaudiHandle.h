@@ -354,7 +354,7 @@ protected:
   }
 
 public:
-  typedef std::vector<GaudiHandleBase*> BaseHandleArray;
+  typedef std::vector<GaudiHandleBase*>       BaseHandleArray;
   typedef std::vector<const GaudiHandleBase*> ConstBaseHandleArray;
 
   /** Set the array of handles from list of "type/name" strings in
@@ -416,14 +416,14 @@ public:
   //
   // public nested types
   //
-  typedef std::vector<T> HandleVector;
-  typedef typename HandleVector::value_type value_type;
-  typedef typename HandleVector::size_type size_type;
-  typedef typename HandleVector::reference reference;
-  typedef typename HandleVector::const_reference const_reference;
-  typedef typename HandleVector::iterator iterator;
-  typedef typename HandleVector::const_iterator const_iterator;
-  typedef typename HandleVector::reverse_iterator reverse_iterator;
+  typedef std::vector<T>                                HandleVector;
+  typedef typename HandleVector::value_type             value_type;
+  typedef typename HandleVector::size_type              size_type;
+  typedef typename HandleVector::reference              reference;
+  typedef typename HandleVector::const_reference        const_reference;
+  typedef typename HandleVector::iterator               iterator;
+  typedef typename HandleVector::const_iterator         const_iterator;
+  typedef typename HandleVector::reverse_iterator       reverse_iterator;
   typedef typename HandleVector::const_reverse_iterator const_reverse_iterator;
 
 protected:
@@ -463,7 +463,7 @@ public:
   GaudiHandleArrayBase::BaseHandleArray getBaseArray() override
   {
     GaudiHandleArrayBase::BaseHandleArray baseArray;
-    iterator it = begin(), itEnd = end();
+    iterator                              it = begin(), itEnd = end();
     for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
@@ -471,7 +471,7 @@ public:
   GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override
   {
     GaudiHandleArrayBase::ConstBaseHandleArray baseArray;
-    const_iterator it = begin(), itEnd = end();
+    const_iterator                             it = begin(), itEnd = end();
     for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
@@ -560,7 +560,7 @@ private:
   // Private data members
   //
   HandleVector m_handleArray;
-  bool m_retrieved{false};
+  bool         m_retrieved{false};
 };
 
 // Easy printing out of Handles and HandleArrays

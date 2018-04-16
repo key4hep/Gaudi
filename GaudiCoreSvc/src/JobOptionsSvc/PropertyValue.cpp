@@ -44,7 +44,7 @@ gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right )
     if ( !right.IsMap() ) {
       throw PropertyValueException::WrongRValue();
     }
-    MapOfStrings& map        = boost::get<MapOfStrings>( value_ );
+    MapOfStrings&       map  = boost::get<MapOfStrings>( value_ );
     const MapOfStrings& rmap = boost::get<MapOfStrings>( right.value_ );
     for ( const auto& item : rmap ) {
       map.insert( item );

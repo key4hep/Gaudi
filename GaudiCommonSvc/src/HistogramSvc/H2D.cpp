@@ -48,7 +48,7 @@ std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( TH2D* rep )
 
 std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist )
 {
-  TH2D* h        = getRepresentation<AIDA::IHistogram2D, TH2D>( hist );
+  TH2D*        h = getRepresentation<AIDA::IHistogram2D, TH2D>( hist );
   Histogram2D* n = h ? new Histogram2D( new TH2D( *h ) ) : nullptr;
   return {n, n};
 }
@@ -56,7 +56,7 @@ std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r  = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionX( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
@@ -66,7 +66,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, c
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r  = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionY( "_py", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
@@ -76,7 +76,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, c
 std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam, const IHistogram2D& hist, int first,
                                                          int last )
 {
-  TH2* r  = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionY( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
@@ -86,7 +86,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam,
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r      = Gaudi::getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*      r = Gaudi::getRepresentation<IHistogram2D, TH2>( hist );
   TProfile* t = r ? r->ProfileX( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Profile1D* p = ( t ? new Profile1D( t ) : nullptr );
@@ -96,7 +96,7 @@ std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, c
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DY( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r      = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*      r = getRepresentation<IHistogram2D, TH2>( hist );
   TProfile* t = r ? r->ProfileY( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Profile1D* p = ( t ? new Profile1D( t ) : nullptr );

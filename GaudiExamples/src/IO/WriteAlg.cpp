@@ -110,13 +110,13 @@ StatusCode WriteAlg::execute()
   evt->addCollision( coll2 );
 
   // Create the collection of tracks and register them in the event store
-  int n                   = (int)( rndmflat() * 100. );
+  int            n        = (int)( rndmflat() * 100. );
   MyTrackVector* myTracks = new MyTrackVector();
   for ( int i = 0; i < n; i++ ) {
     // Create new track
-    double c       = rndmgauss();
-    double b       = rndmgauss();
-    double a       = rndmgauss();
+    double   c     = rndmgauss();
+    double   b     = rndmgauss();
+    double   a     = rndmgauss();
     MyTrack* track = new MyTrack( float( a ), float( b ), float( c ) );
     // the following line has been replace by the previous one since
     // the order of evaluation of the rndgauss() call is unspecified
@@ -130,13 +130,13 @@ StatusCode WriteAlg::execute()
   }
 
   // Create vertex container
-  int m                      = (int)( rndmflat() * 100. ) + 1;
+  int             m          = (int)( rndmflat() * 100. ) + 1;
   MyVertexVector* myVertices = new MyVertexVector();
   for ( int j = 0; j < m; j++ ) {
     // Create new track
-    double c      = rndmgauss();
-    double b      = rndmgauss();
-    double a      = rndmgauss();
+    double    c   = rndmgauss();
+    double    b   = rndmgauss();
+    double    a   = rndmgauss();
     MyVertex* vtx = new MyVertex( float( a ) / 100.0F, float( b ) / 100.0F, float( c ) / 100.0F );
     // the following line has been replace by the previous one since
     // the order of evaluation of the rndgauss() call is unspecified
@@ -155,7 +155,7 @@ StatusCode WriteAlg::execute()
   }
   // Now connect vertices and tracks
   for ( MyTrackVector::iterator k = myTracks->begin(); k != myTracks->end(); ++k ) {
-    int org          = (int)( rndmflat() * float( m ) );
+    int       org    = (int)( rndmflat() * float( m ) );
     MyVertex* orgVtx = *( myVertices->begin() + org );
     ( *k )->setOriginVertex( orgVtx );
     int dec1 = (int)( rndmflat() * float( m ) );

@@ -31,7 +31,7 @@ private:
   inline std::string i_id( CustomEventTypeRef evt, const std::string& caller ) { return caller + ":" + evt; }
 
   SmartIF<IChronoStatSvc>& chronoSvc() { return m_chronoSvc; }
-  SmartIF<IChronoStatSvc> m_chronoSvc;
+  SmartIF<IChronoStatSvc>  m_chronoSvc;
 };
 
 #endif

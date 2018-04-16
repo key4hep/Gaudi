@@ -24,8 +24,8 @@ public:
 
   // Typedefs for container type
   typedef std::vector<ParticleProperty*> VectPP;
-  typedef VectPP::const_iterator const_iterator;
-  typedef VectPP::iterator iterator;
+  typedef VectPP::const_iterator         const_iterator;
+  typedef VectPP::iterator               iterator;
 
   /** Create a new particle property
       @param  particle  String name of the particle

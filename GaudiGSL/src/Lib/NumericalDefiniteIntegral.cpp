@@ -101,7 +101,7 @@ namespace Genfun
      */
     NumericalDefiniteIntegral::NumericalDefiniteIntegral( const AbsFunction& function, const size_t index,
                                                           const double a, const double b,
-                                                          const GaudiMath::Integration::Type type,
+                                                          const GaudiMath::Integration::Type        type,
                                                           const GaudiMath::Integration::KronrodRule rule,
                                                           const double epsabs, const double epsrel, const size_t size )
         : m_function( function.clone() )

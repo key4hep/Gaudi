@@ -160,7 +160,7 @@ StatusCode GaudiPython::TupleDecorator::farray( const Tuples::Tuple& tuple, cons
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::fmatrix( const Tuples::Tuple& tuple, const std::string& name,
-                                                 const GaudiPython::Matrix& data,
+                                                 const GaudiPython::Matrix&     data,
                                                  const Tuples::TupleObj::MIndex cols, // fixed !!!
                                                  const std::string& length, const size_t maxv )
 {
@@ -174,7 +174,7 @@ StatusCode GaudiPython::TupleDecorator::fmatrix( const Tuples::Tuple& tuple, con
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::fmatrix( const Tuples::Tuple& tuple, const std::string& name,
-                                                 const GaudiUtils::VectorMap<int, double>& info,
+                                                 const GaudiUtils::VectorMap<int, double>&      info,
                                                  const std::string& length, const size_t maxv )
 {
   if ( !tuple.valid() ) {
@@ -275,7 +275,7 @@ StatusCode GaudiPython::TupleDecorator::array( const Tuples::Tuple& tuple, const
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::matrix( const Tuples::Tuple& tuple, const std::string& name,
-                                                const GaudiPython::Matrix& data,
+                                                const GaudiPython::Matrix&     data,
                                                 const Tuples::TupleObj::MIndex cols ) // fixed !!!
 {
   if ( !tuple.valid() ) {
@@ -621,7 +621,7 @@ StatusCode GaudiPython::TupleDecorator::matrix( const Tuples::Tuple& tuple, cons
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::fmatrix( const Tuples::Tuple& tuple, const std::string& name,
-                                                 const CLHEP::HepGenMatrix& data,
+                                                 const CLHEP::HepGenMatrix&     data,
                                                  const Tuples::TupleObj::MIndex cols, // fixed !!!
                                                  const std::string& length, const size_t maxv )
 {

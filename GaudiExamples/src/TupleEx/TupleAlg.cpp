@@ -170,7 +170,7 @@ StatusCode TupleAlg::execute()
 
   { // fill using iterator/sequence protocol
     const size_t nCol = 50;
-    float array[nCol];
+    float        array[nCol];
     for ( size_t i = 0; i < nCol; ++i ) {
       array[i] = (float)flat();
     }
@@ -181,8 +181,8 @@ StatusCode TupleAlg::execute()
 
   {
     typedef std::vector<double> Array;
-    const size_t nCol = 62;
-    Array array( nCol );
+    const size_t                nCol = 62;
+    Array                       array( nCol );
     for ( size_t i = 0; i < array.size(); ++i ) {
       array[i] = expo();
     }
@@ -193,7 +193,7 @@ StatusCode TupleAlg::execute()
 
   { // fill with the explicit usage of sequence length
     const size_t nCol = 42;
-    double array[nCol];
+    double       array[nCol];
     for ( size_t i = 0; i < nCol; ++i ) {
       array[i] = gauss();
     }
@@ -203,7 +203,7 @@ StatusCode TupleAlg::execute()
   }
 
   { // fill with the explicit usage of sequence length
-    const size_t nCol = 42;
+    const size_t     nCol = 42;
     CLHEP::HepVector array( nCol );
     for ( size_t i = 0; i < nCol; ++i ) {
       array[i] = gauss();
@@ -240,7 +240,7 @@ StatusCode TupleAlg::execute()
   {
     // fill with simple "pseudo-matrix"
     typedef std::vector<double> Row;
-    typedef std::vector<Row> Mtrx;
+    typedef std::vector<Row>    Mtrx;
 
     const size_t nRow = 26;
     const size_t nCol = 4;
@@ -258,8 +258,8 @@ StatusCode TupleAlg::execute()
 
   {
     // fill with simple CLHEP matrix
-    const size_t nRow = 13;
-    const size_t nCol = 3;
+    const size_t     nRow = 13;
+    const size_t     nCol = 3;
     CLHEP::HepMatrix mtrx( nRow, nCol );
     for ( int iCol = 0; iCol < mtrx.num_col(); ++iCol ) {
       for ( int iRow = 0; iRow < mtrx.num_row(); ++iRow ) {
@@ -278,14 +278,14 @@ StatusCode TupleAlg::execute()
   Tuple tuple5 = nTuple( 5, "Variable-size arrays/vectors" );
 
   {
-    const size_t num = (size_t)poisson();
+    const size_t        num = (size_t)poisson();
     std::vector<double> array;
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with the content of vector
     tuple5->farray( "arr", array.begin(), array.end(), "Len1", 100 );
   }
   {
-    const size_t num = (size_t)poisson();
+    const size_t        num = (size_t)poisson();
     std::vector<double> array;
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with functions of vector
@@ -300,10 +300,10 @@ StatusCode TupleAlg::execute()
   Tuple tuple6 = nTuple( "six", "Variable-size matrices" );
 
   { // fill with the matrix
-    const size_t num = (size_t)poisson();
+    const size_t                num = (size_t)poisson();
     typedef std::vector<double> Row;
-    typedef std::vector<Row> Mtrx;
-    const size_t nCol = 15;
+    typedef std::vector<Row>    Mtrx;
+    const size_t                nCol = 15;
 
     Mtrx mtrx( num, Row( nCol ) );
 
@@ -317,10 +317,10 @@ StatusCode TupleAlg::execute()
   };
 
   { // fill with the matrix
-    const size_t num = (size_t)poisson();
+    const size_t                num = (size_t)poisson();
     typedef std::vector<double> Row;
-    typedef std::vector<Row> Mtrx;
-    const size_t nCol = 15;
+    typedef std::vector<Row>    Mtrx;
+    const size_t                nCol = 15;
 
     Mtrx mtrx( num, Row( nCol ) );
 
@@ -341,7 +341,7 @@ StatusCode TupleAlg::execute()
     const size_t num = (size_t)poisson();
 
     typedef std::vector<double> Array;
-    Array array( num );
+    Array                       array( num );
     std::generate( array.begin(), array.end(), flat );
 
     typedef double ( *fun )( double );

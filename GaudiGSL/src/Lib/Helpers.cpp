@@ -34,8 +34,8 @@ namespace Genfun
       GSL_Helper* aux = (GSL_Helper*)params;
       // decode parameters
       const Genfun::AbsFunction& function = aux->m_function;
-      const size_t index                  = aux->m_index;
-      Genfun::Argument& argument          = aux->m_argument;
+      const size_t               index    = aux->m_index;
+      Genfun::Argument&          argument = aux->m_argument;
       // save the current value of argument
       const double x_prev = argument[index];
       // modify the argument

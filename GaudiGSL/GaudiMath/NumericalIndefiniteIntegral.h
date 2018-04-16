@@ -161,8 +161,8 @@ namespace Genfun
        */
       NumericalIndefiniteIntegral(
           const AbsFunction& function, const size_t index, const double a,
-          const GaudiMath::Integration::Limit limit      = GaudiMath::Integration::VariableHighLimit,
-          const GaudiMath::Integration::Type type        = GaudiMath::Integration::Adaptive,
+          const GaudiMath::Integration::Limit       limit = GaudiMath::Integration::VariableHighLimit,
+          const GaudiMath::Integration::Type        type  = GaudiMath::Integration::Adaptive,
           const GaudiMath::Integration::KronrodRule rule = GaudiMath::Integration::Default, const double epsabs = 1e-10,
           const double epsrel = 1.e-7, const size_t size = 1000 );
 
@@ -341,14 +341,14 @@ namespace Genfun
 
     private:
       std::unique_ptr<const AbsFunction> m_function;
-      size_t m_DIM;
-      size_t m_index;
+      size_t                             m_DIM;
+      size_t                             m_index;
 
       double m_a;
 
-      GaudiMath::Integration::Limit m_limit;
-      GaudiMath::Integration::Type m_type;
-      GaudiMath::Integration::Category m_category;
+      GaudiMath::Integration::Limit       m_limit;
+      GaudiMath::Integration::Type        m_type;
+      GaudiMath::Integration::Category    m_category;
       GaudiMath::Integration::KronrodRule m_rule;
 
       Points m_points;

@@ -47,7 +47,7 @@ static PsApiFunctions _psApi;
 #include <string.h>
 #endif
 
-static System::ImageHandle ModuleHandle = nullptr;
+static System::ImageHandle      ModuleHandle = nullptr;
 static std::vector<std::string> s_linkedModules;
 
 /// Retrieve base name of module
@@ -107,7 +107,7 @@ System::ModuleType System::moduleType()
   static ModuleType type = UNKNOWN;
   if ( type == UNKNOWN ) {
     const std::string& module = moduleNameFull();
-    int loc                   = module.rfind( '.' ) + 1;
+    int                loc    = module.rfind( '.' ) + 1;
     if ( loc == 0 )
       type = EXECUTABLE;
     else if ( module[loc] == 'e' || module[loc] == 'E' )
@@ -131,7 +131,7 @@ void* System::processHandle()
 #ifdef _WIN32
   static HANDLE hP = ::OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid );
 #else
-  static void* hP = (void*)pid;
+  static void*       hP = (void*)pid;
 #endif
   return hP;
 }
@@ -144,7 +144,7 @@ System::ImageHandle System::moduleHandle()
     if ( processHandle() ) {
 #ifdef _WIN32
       static HINSTANCE handle = 0;
-      DWORD cbNeeded;
+      DWORD            cbNeeded;
       if ( 0 == handle && _psApi ) {
         if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {
         }
@@ -175,7 +175,7 @@ System::ImageHandle System::exeHandle()
 #ifdef _WIN32
   if ( processHandle() ) {
     static HINSTANCE handle = 0;
-    DWORD cbNeeded;
+    DWORD            cbNeeded;
     if ( 0 == handle && _psApi ) {
       if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {
       }
@@ -234,8 +234,8 @@ const std::vector<std::string> System::linkedModules()
 {
   if ( s_linkedModules.size() == 0 ) {
 #ifdef _WIN32
-    char name[255]; // Maximum file name length on NT 4.0
-    DWORD cbNeeded;
+    char      name[255]; // Maximum file name length on NT 4.0
+    DWORD     cbNeeded;
     HINSTANCE handle[1024];
     if ( _psApi ) {
       if ( _psApi.EnumProcessModules( processHandle(), handle, sizeof( handle ), &cbNeeded ) ) {

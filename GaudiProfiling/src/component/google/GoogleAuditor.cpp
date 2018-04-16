@@ -259,7 +259,7 @@ namespace Google
         this, "DisableFor", {}, "List of component names to disable the auditing for"};
     Gaudi::Property<std::vector<std::string>> m_list{
         this, "EnableFor", {}, "Any component in this list will be audited. If empty,  all will be done."};
-    Gaudi::Property<int> m_freq{this, "ProfileFreq", -1, "The frequence to audit events. -1 means all events"};
+    Gaudi::Property<int>  m_freq{this, "ProfileFreq", -1, "The frequence to audit events. -1 means all events"};
     Gaudi::Property<bool> m_fullEventAudit{
         this, "DoFullEventProfile", false,
         "If true, instead of individually auditing components,  the full event (or events) will be audited in one go"};
@@ -270,12 +270,12 @@ namespace Google
     Gaudi::Property<bool> m_skipSequencers{this, "SkipSequencers", true,
                                            "If true,  auditing will be skipped for Sequencer objects."};
 
-    bool m_audit               = true; ///< Internal flag to say if auditing is enabled or not for the current event
+    bool               m_audit = true; ///< Internal flag to say if auditing is enabled or not for the current event
     unsigned long long m_nEvts = 0;    ///< Number of events processed.
     unsigned long long m_sampleEventCount =
-        0;                      ///< Internal count of the number of events currently processed during an audit
-    bool m_inFullAudit = false; ///< Internal flag to indicate if we are current in a full event audit
-    std::string m_startedBy;    ///< Name of the component we are currently auditing
+        0;                             ///< Internal count of the number of events currently processed during an audit
+    bool        m_inFullAudit = false; ///< Internal flag to indicate if we are current in a full event audit
+    std::string m_startedBy;           ///< Name of the component we are currently auditing
   };
 
   /** @class HeapProfiler GoogleAuditor.cpp
@@ -384,7 +384,7 @@ namespace Google
     bool alreadyRunning() override { return m_enabled && m_checker; }
 
   private:
-    bool m_enabled = true;
+    bool                             m_enabled = true;
     std::unique_ptr<HeapLeakChecker> m_checker;
   };
 

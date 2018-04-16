@@ -41,7 +41,7 @@ namespace
   typedef const string& CSTR;
   inline string _toString( const XMLCh* toTranscode )
   {
-    char* buff = XMLString::transcode( toTranscode );
+    char*  buff = XMLString::transcode( toTranscode );
     string tmp( buff == 0 ? "" : buff );
     XMLString::release( &buff );
     return tmp;
@@ -91,7 +91,7 @@ namespace
     DOMElement* operator->() const { return m_node; }
     string attr( const XMLTag& tag ) const { return _toString( m_node->getAttribute( tag ) ); }
     string attr( CSTR tag ) const { return attr( XMLTag( tag ) ); }
-    string tag() const { return _toString( m_node->getTagName() ); }
+    string            tag() const { return _toString( m_node->getTagName() ); }
     void operator++()
     {
       while ( m_node ) {
@@ -120,8 +120,8 @@ namespace
   struct DTDRedirect : public EntityResolver {
     InputSource* resolveEntity( const XMLCh* const /* pubId */, const XMLCh* const /* sysId */ ) override
     {
-      static const char* dtdID = "redirectinmem.dtd";
-      static const char* dtd   = "\
+      static const char*  dtdID = "redirectinmem.dtd";
+      static const char*  dtd   = "\
         <!ELEMENT POOLFILECATALOG (META*,File*)>\
         <!ELEMENT META EMPTY>\
         <!ELEMENT File (physical,logical,metadata*)>\
@@ -140,7 +140,7 @@ namespace
         <!ATTLIST metadata att_name  CDATA #REQUIRED>\
         <!ATTLIST metadata att_value CDATA #REQUIRED>\
         ";
-      static const size_t len  = strlen( dtd );
+      static const size_t len   = strlen( dtd );
       return new MemBufInputSource( (const XMLByte*)dtd, len, dtdID, false );
     }
     ~DTDRedirect() override = default;
@@ -156,7 +156,7 @@ namespace
          m.find( "for attribute 'name' is invalid Name or NMTOKEN value" ) != string::npos ||
          m.find( "for attribute 'ID' is invalid Name or NMTOKEN value" ) != string::npos )
       return;
-    string sys( _toString( e.getSystemId() ) );
+    string    sys( _toString( e.getSystemId() ) );
     MsgStream log( m_msg, "XMLCatalog" );
     log << MSG::ERROR << "Error at file \"" << sys << "\", line " << e.getLineNumber() << ", column "
         << e.getColumnNumber() << endmsg << "Message: " << m << endmsg;
@@ -164,8 +164,8 @@ namespace
   void ErrHandler::fatalError( const SAXParseException& e )
   {
     MsgStream log( m_msg, "XMLCatalog" );
-    string m( _toString( e.getMessage() ) );
-    string sys( _toString( e.getSystemId() ) );
+    string    m( _toString( e.getMessage() ) );
+    string    sys( _toString( e.getSystemId() ) );
     log << MSG::ERROR << "Fatal Error at file \"" << sys << "\", line " << e.getLineNumber() << ", column "
         << e.getColumnNumber() << endmsg << "Message: " << m << endmsg;
     throw runtime_error( "Standard pool exception : Fatal Error on the DOM Parser" );
@@ -227,7 +227,7 @@ void XMLFileCatalog::init()
       m_parser->parse( xmlFile.c_str() );
     } else {
       const std::string& s = EmptyCatalog;
-      MemBufInputSource src( (const XMLByte*)s.c_str(), s.length(), "MemCatalog" );
+      MemBufInputSource  src( (const XMLByte*)s.c_str(), s.length(), "MemCatalog" );
       m_parser->parse( src );
     }
     m_doc = m_parser->getDocument();
@@ -243,9 +243,9 @@ void XMLFileCatalog::init()
 string XMLFileCatalog::lookupFID( const std::string& fid ) const
 {
   std::string result;
-  DOMNode* e = element( fid, false );
-  e          = e ? e->getParentNode() : 0; // Mode up to <logical>
-  e          = e ? e->getParentNode() : 0; // Mode up to <File>
+  DOMNode*    e = element( fid, false );
+  e             = e ? e->getParentNode() : 0; // Mode up to <logical>
+  e             = e ? e->getParentNode() : 0; // Mode up to <File>
   if ( e ) {
     if ( e->getAttributes() ) { // Need to check this. The node may be no DOMElement
       char* nam         = XMLString::transcode( ( (DOMElement*)e )->getAttribute( Attr_ID ) );
@@ -299,7 +299,7 @@ DOMNode* XMLFileCatalog::child( DOMNode* par, CSTR tag, CSTR attr, CSTR val ) co
 void XMLFileCatalog::setMetaData( CSTR fid, CSTR attr, CSTR val ) const
 {
   if ( !readOnly() ) {
-    DOMNode* node    = element( fid );
+    DOMNode*    node = element( fid );
     DOMElement* mnod = (DOMElement*)child( node, MetaNode, Attr_metaName, attr );
     if ( !mnod ) {
       mnod = getDoc( true )->createElement( MetaNode );
@@ -322,7 +322,7 @@ string XMLFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const
 void XMLFileCatalog::dropMetaData( CSTR fid, CSTR attr ) const
 {
   vector<DOMNode*> gbc;
-  DOMNode* fn = getDoc( true )->getElementById( XMLStr( fid ) );
+  DOMNode*         fn = getDoc( true )->getElementById( XMLStr( fid ) );
   for ( XMLCollection c{child( fn, MetaNode )}; c; ++c )
     if ( attr[0] == '*' || !c.attr( attr ).empty() ) gbc.push_back( c );
   for ( const auto& i : gbc ) fn->removeChild( i );
@@ -362,7 +362,7 @@ std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) co
   }
 
   /// It creates a new node File with name = fid in the XML file catalog
-  DOMElement *file = (DOMElement *)element( fid, false ), *phyelem = 0, *logelem = 0;
+  DOMElement * file = (DOMElement *)element( fid, false ), *phyelem = 0, *logelem = 0;
   DOMDocument* doc = getDoc( true );
   if ( !file ) {
     DOMNode* fde = doc->getElementsByTagName( XMLStr( "*" ) )->item( 0 );
@@ -455,9 +455,9 @@ void XMLFileCatalog::commit()
 {
   try {
     if ( dirty() && !readOnly() ) {
-      string xmlfile = getfile( true );
-      XMLStr ii( "LS" );
-      DOMImplementation* imp = DOMImplementationRegistry::getDOMImplementation( ii );
+      string                           xmlfile = getfile( true );
+      XMLStr                           ii( "LS" );
+      DOMImplementation*               imp = DOMImplementationRegistry::getDOMImplementation( ii );
       std::unique_ptr<XMLFormatTarget> tar{new LocalFileFormatTarget( xmlfile.c_str() )};
 #if _XERCES_VERSION <= 30000
       DOMWriter* wr = imp->createDOMWriter();
@@ -499,7 +499,7 @@ string XMLFileCatalog::getfile( bool create )
   } else if ( protocol == "file" ) {
     m_rdOnly = false;
     struct stat buff;
-    int exist = ::stat( path.c_str(), &buff ) != -1;
+    int         exist = ::stat( path.c_str(), &buff ) != -1;
     if ( create && !exist ) {
       MsgStream log( m_msgSvc, "XMLCatalog" );
       log << MSG::INFO << "File '" << path << "' does not exist. New file created." << endmsg;

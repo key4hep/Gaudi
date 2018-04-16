@@ -45,8 +45,8 @@ class Component1 : public Base
     class _INTERNAL_FACTORY_REGISTER_CNAME( type, serial )                                                             \
     {                                                                                                                  \
     public:                                                                                                            \
-      typedef factory s_t;                                                                                             \
-      typedef typecreator f_t;                                                                                         \
+      typedef factory      s_t;                                                                                        \
+      typedef typecreator  f_t;                                                                                        \
       static s_t::FuncType creator() { return &f_t::create<s_t>; }                                                     \
       _INTERNAL_FACTORY_REGISTER_CNAME( type, serial )()                                                               \
       {                                                                                                                \
@@ -69,7 +69,7 @@ class Component2 : public Base2
 {
 public:
   Component2( std::string _s, int _i ) : i( _i ), s( std::move( _s ) ) {}
-  int i;
+  int         i;
   std::string s;
 };
 DECLARE_COMPONENT( Component2 )
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE( ids )
 BOOST_AUTO_TEST_CASE( properties )
 {
   using Gaudi::PluginService::Details::Registry;
-  Registry& reg              = Registry::instance();
+  Registry&            reg   = Registry::instance();
   Registry::Properties props = reg.getInfo( "Component1" ).properties;
 
   BOOST_CHECK( props["name"] == "Component1" );

@@ -47,7 +47,7 @@ namespace
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ StatusCode MinimalEventLoopMgr::initialize()
   if ( m_printCFExp && !m_topAlgList.empty() ) {
     info() << "Control Flow Expression:" << endmsg;
     std::stringstream expr;
-    auto& first = m_topAlgList.front();
+    auto&             first = m_topAlgList.front();
     for ( auto& ialg : m_topAlgList ) {
       if ( ialg != first ) expr << " >> ";
       ialg->toControlFlowExpression( expr );
@@ -338,7 +338,7 @@ StatusCode MinimalEventLoopMgr::nextEvent( int /* maxevt */ )
 StatusCode MinimalEventLoopMgr::executeRun( int maxevt )
 {
   StatusCode sc;
-  bool eventfailed = false;
+  bool       eventfailed = false;
 
   // Call the beginRun() method of all top algorithms
   for ( auto& ita : m_topAlgList ) {
@@ -386,7 +386,7 @@ namespace
 
   private:
     SmartIF<IProperty> m_appmgr;
-    int m_retcode;
+    int                m_retcode;
   };
 }
 //--------------------------------------------------------------------------------------------
@@ -411,7 +411,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   const auto appmgr = serviceLocator()->as<IProperty>();
   // Call the execute() method of all top algorithms
   for ( auto& ita : m_topAlgList ) {
-    StatusCode sc( StatusCode::FAILURE );
+    StatusCode    sc( StatusCode::FAILURE );
     AlgExecState& algState = m_aess->algExecState( ita, context );
     try {
       if ( UNLIKELY( m_abortEvent ) ) {
@@ -517,15 +517,15 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()
       for ( const auto& it : m_topAlgNames.value() ) {
         Gaudi::Utils::TypeNameString item{it};
         // Got the type and name. Now creating the algorithm, avoiding duplicate creation.
-        std::string item_name   = item.name() + getGaudiThreadIDfromName( name() );
-        const bool CREATE       = false;
-        SmartIF<IAlgorithm> alg = algMan->algorithm( item_name, CREATE );
+        std::string         item_name = item.name() + getGaudiThreadIDfromName( name() );
+        const bool          CREATE    = false;
+        SmartIF<IAlgorithm> alg       = algMan->algorithm( item_name, CREATE );
         if ( alg ) {
           DEBMSG << "Top Algorithm " << item_name << " already exists" << endmsg;
         } else {
           DEBMSG << "Creating Top Algorithm " << item.type() << " with name " << item_name << endmsg;
           IAlgorithm* ialg = nullptr;
-          StatusCode sc1   = algMan->createAlgorithm( item.type(), item_name, ialg );
+          StatusCode  sc1  = algMan->createAlgorithm( item.type(), item_name, ialg );
           if ( !sc1.isSuccess() ) {
             error() << "Unable to create Top Algorithm " << item.type() << " with name " << item_name << endmsg;
             return sc1;
@@ -565,14 +565,14 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams()
       m_outStreamList.clear();
       for ( const auto& it : m_outStreamNames.value() ) {
         Gaudi::Utils::TypeNameString item( it, m_outStreamType );
-        const bool CREATE      = false;
-        SmartIF<IAlgorithm> os = algMan->algorithm( item, CREATE );
+        const bool                   CREATE = false;
+        SmartIF<IAlgorithm>          os     = algMan->algorithm( item, CREATE );
         if ( os ) {
           DEBMSG << "Output Stream " << item.name() << " already exists" << endmsg;
         } else {
           DEBMSG << "Creating Output Stream " << it << endmsg;
           IAlgorithm* ios = nullptr;
-          StatusCode sc1  = algMan->createAlgorithm( item.type(), item.name(), ios );
+          StatusCode  sc1 = algMan->createAlgorithm( item.type(), item.name(), ios );
           if ( !sc1.isSuccess() ) {
             error() << "Unable to create Output Stream " << it << endmsg;
             return sc1;

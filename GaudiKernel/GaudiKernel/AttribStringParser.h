@@ -72,7 +72,7 @@ namespace Gaudi
       private:
         /// Wrapped boost::sregex_iterator instance.
         boost::sregex_iterator m_it;
-        bool m_expandVars = false;
+        bool                   m_expandVars = false;
         /// Cached Attrib instance.
         Attrib m_attrib;
         /// Helper method used to update the cached Attrib instance when
@@ -85,13 +85,13 @@ namespace Gaudi
             m_attrib = Attrib{( *m_it )[1], ( *m_it )[2]};
             if ( m_expandVars && m_attrib.value.find( "${" ) != std::string::npos ) {
               static const boost::regex varexp{"\\$\\{([^}]+)\\}"};
-              auto i = 1;
+              auto                      i = 1;
               while ( i ) {
                 i              = 0;
                 m_attrib.value = boost::regex_replace( m_attrib.value, varexp,
                                                        [&i]( const boost::smatch& m ) -> std::string {
-                                                         const std::string name = m[1];
-                                                         const char* cname      = name.c_str();
+                                                         const std::string name  = m[1];
+                                                         const char*       cname = name.c_str();
                                                          if ( System::isEnvSet( cname ) ) {
                                                            ++i;
                                                            return System::getEnv( cname );
@@ -117,7 +117,7 @@ namespace Gaudi
 
     private:
       std::string m_data;
-      bool m_expandVars;
+      bool        m_expandVars;
 
       boost::sregex_iterator parse() const
       {

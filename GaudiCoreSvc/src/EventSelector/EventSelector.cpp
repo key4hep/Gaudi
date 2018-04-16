@@ -44,7 +44,7 @@ void EventSelector::printEvtInfo( const EvtSelectorContext* iter ) const
 // IEvtSelector::first()
 StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& iter ) const
 {
-  StatusCode status                                                      = StatusCode::SUCCESS;
+  StatusCode                 status                                      = StatusCode::SUCCESS;
   IDataStreamTool::size_type iter_id                                     = ( m_reconfigure ) ? 0 : iter.ID() + 1;
   if ( m_reconfigure ) const_cast<EventSelector*>( this )->m_reconfigure = false;
   if ( shutDown ) {
@@ -120,9 +120,9 @@ StatusCode EventSelector::lastOfPreviousStream( bool shutDown, EvtSelectorContex
     }
   }
 
-  IDataStreamTool::size_type iter_id = iter.ID() - 1;
-  const EventSelectorDataStream* s   = nullptr;
-  status                             = m_streamtool->getPreviousStream( s, iter_id );
+  IDataStreamTool::size_type     iter_id = iter.ID() - 1;
+  const EventSelectorDataStream* s       = nullptr;
+  status                                 = m_streamtool->getPreviousStream( s, iter_id );
 
   if ( status.isSuccess() ) {
 
@@ -187,9 +187,9 @@ StatusCode EventSelector::next( Context& refCtxt, int /* jump */ ) const
   EvtSelectorContext* pIt = dynamic_cast<EvtSelectorContext*>( &refCtxt );
   if ( pIt ) {
     if ( pIt->ID() != -1 ) {
-      const EventSelectorDataStream* s = m_streamtool->getStream( pIt->ID() );
-      Context* it                      = pIt->context();
-      IEvtSelector* sel                = s->selector();
+      const EventSelectorDataStream* s   = m_streamtool->getStream( pIt->ID() );
+      Context*                       it  = pIt->context();
+      IEvtSelector*                  sel = s->selector();
       if ( it && sel ) {                  // First exploit the current stream
         StatusCode sc = sel->next( *it ); // This stream is empty: advance to the next stream
         if ( !sc.isSuccess() ) {
@@ -228,9 +228,9 @@ StatusCode EventSelector::previous( Context& refCtxt, int jump ) const
   if ( pIt && jump > 0 ) {
     StatusCode sc = StatusCode::SUCCESS;
     for ( int i = 0; i < jump && sc.isSuccess(); ++i ) {
-      const EventSelectorDataStream* s = m_streamtool->getStream( pIt->ID() );
-      Context* it                      = pIt->context();
-      IEvtSelector* sel                = s->selector();
+      const EventSelectorDataStream* s   = m_streamtool->getStream( pIt->ID() );
+      Context*                       it  = pIt->context();
+      IEvtSelector*                  sel = s->selector();
       if ( it && sel ) {           // First exploit the current stream
                                    // This stream is empty: advance to the next stream
         sc = sel->previous( *it ); // This stream is empty: advance to the next stream
@@ -286,15 +286,15 @@ StatusCode EventSelector::rewind( Context& refCtxt ) const
 StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const
 {
   const EvtSelectorContext* cpIt = dynamic_cast<const EvtSelectorContext*>( &refCtxt );
-  EvtSelectorContext* pIt        = const_cast<EvtSelectorContext*>( cpIt );
+  EvtSelectorContext*       pIt  = const_cast<EvtSelectorContext*>( cpIt );
   refpAddr                       = nullptr;
   if ( pIt ) {
-    const EventSelectorDataStream* s = m_streamtool->getStream( pIt->ID() );
-    Context* it                      = pIt->context();
-    IEvtSelector* sel                = s->selector();
+    const EventSelectorDataStream* s   = m_streamtool->getStream( pIt->ID() );
+    Context*                       it  = pIt->context();
+    IEvtSelector*                  sel = s->selector();
     if ( it && sel ) {
       IOpaqueAddress* pAddr          = nullptr;
-      StatusCode sc                  = sel->createAddress( *it, pAddr );
+      StatusCode      sc             = sel->createAddress( *it, pAddr );
       if ( sc.isSuccess() ) refpAddr = pAddr;
       pIt->set( it, pAddr );
       return sc;
@@ -306,12 +306,12 @@ StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*
 // Release existing event iteration context
 StatusCode EventSelector::releaseContext( Context*& refCtxt ) const
 {
-  const EvtSelectorContext* cpIt = dynamic_cast<const EvtSelectorContext*>( refCtxt );
+  const EvtSelectorContext*           cpIt = dynamic_cast<const EvtSelectorContext*>( refCtxt );
   std::unique_ptr<EvtSelectorContext> pIt{const_cast<EvtSelectorContext*>( cpIt )};
   if ( pIt && pIt->ID() >= 0 && pIt->ID() < (long)m_streamtool->size() ) {
-    const EventSelectorDataStream* s = m_streamtool->getStream( pIt->ID() );
-    Context* it                      = pIt->context();
-    IEvtSelector* sel                = s->selector();
+    const EventSelectorDataStream* s   = m_streamtool->getStream( pIt->ID() );
+    Context*                       it  = pIt->context();
+    IEvtSelector*                  sel = s->selector();
     if ( it && sel ) {
       StatusCode sc = sel->releaseContext( it );
       if ( sc.isSuccess() ) {
@@ -354,7 +354,7 @@ StatusCode EventSelector::initialize()
   // a pointer to a tool which gets finalized and released by the ToolSvc
   // during ToolSvc::finalize, and we don't want dangling pointers...
   SmartIF<ISvcManager> mgr( serviceLocator() );
-  auto prio = mgr->getPriority( "ToolSvc" );
+  auto                 prio = mgr->getPriority( "ToolSvc" );
   mgr->setPriority( name(), prio + 1 ).ignore();
 
   status = m_toolSvc->retrieveTool( m_streamManager, m_streamtool, this );

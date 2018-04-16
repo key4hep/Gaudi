@@ -74,10 +74,10 @@ namespace Gaudi
   public:
     // typedefs for container type
     typedef ParticleProperty* mapped_type;
-    typedef std::map<int, mapped_type> MapID;
+    typedef std::map<int, mapped_type>         MapID;
     typedef std::map<std::string, mapped_type> MapName;
-    typedef std::map<int, mapped_type> MapStdHepID;
-    typedef std::map<int, mapped_type> MapPythiaID;
+    typedef std::map<int, mapped_type>         MapStdHepID;
+    typedef std::map<int, mapped_type>         MapPythiaID;
     using IParticlePropertySvc::VectPP;
     using IParticlePropertySvc::const_iterator;
     using IParticlePropertySvc::iterator;
@@ -167,15 +167,15 @@ namespace Gaudi
     Gaudi::Property<std::vector<std::string>> m_particles{
         this, "Particles", {}, "properties to be redefined explicitly"};
 
-    VectPP m_vectpp;           ///< Vector of all particle properties
-    MapID m_idmap;             ///< Map for geant IDs
-    MapName m_namemap;         ///< Map for particle names
+    VectPP      m_vectpp;      ///< Vector of all particle properties
+    MapID       m_idmap;       ///< Map for geant IDs
+    MapName     m_namemap;     ///< Map for particle names
     MapStdHepID m_stdhepidmap; ///< Map for StdHep Ids
     MapPythiaID m_pythiaidmap; ///< Map for Pythia Ids
 
     // local storage of ALL properties
     std::set<std::unique_ptr<ParticleProperty>> m_owned;
-    std::set<std::string> m_replaced;
+    std::set<std::string>                       m_replaced;
 
     SmartIF<IFileAccess> m_fileAccess;
   };

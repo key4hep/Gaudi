@@ -64,7 +64,7 @@ typedef union {
 
 typedef struct {
   unsigned long cnt_mask; /* threshold (cnt_mask)  */
-  unsigned int flags;     /* counter specific flags */
+  unsigned int  flags;    /* counter specific flags */
 } pfmlib_intel_atom_counter_t;
 
 #define PFM_INTEL_ATOM_SEL_INV 0x1    /* inverse */
@@ -76,8 +76,8 @@ typedef struct {
  */
 typedef struct {
   pfmlib_intel_atom_counter_t pfp_intel_atom_counters[PMU_INTEL_ATOM_NUM_COUNTERS];
-  unsigned int pfp_intel_atom_pebs_used; /* set to 1 to use PEBS */
-  uint64_t reserved[4];                  /* for future use */
+  unsigned int                pfp_intel_atom_pebs_used; /* set to 1 to use PEBS */
+  uint64_t                    reserved[4];              /* for future use */
 } pfmlib_intel_atom_input_param_t;
 
 #ifdef __cplusplus /* extern C */

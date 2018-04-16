@@ -11,7 +11,7 @@ namespace Containers
 {
   struct hashmap {
     typedef GaudiUtils::HashMap<long, void*> map_type;
-    map_type m;
+    map_type           m;
     std::vector<void*> v;
     bool insert( void* obj, long key )
     {
@@ -23,7 +23,7 @@ namespace Containers
   };
   struct map {
     typedef std::map<long, void*> map_type;
-    map_type m;
+    map_type           m;
     std::vector<void*> v;
     bool insert( void* obj, long key )
     {
@@ -62,7 +62,7 @@ namespace Containers
   template <class CONT>
   class find
   {
-    const void* m_obj;
+    const void*                       m_obj;
     typedef typename CONT::value_type v_type;
 
   public:
@@ -130,7 +130,7 @@ void Containers::KeyedObjectManager<T>::onDirty() const
 {
   m_direct = 1;
   auto& s  = *m_setup.s;
-  long i   = 0;
+  long  i  = 0;
   for ( auto p : s.v ) s.insert( p, i++ );
   s.v.clear();
 }
@@ -212,13 +212,13 @@ template <class T>
 void* Containers::KeyedObjectManager<T>::erase( long key, const void* obj )
 {
   typedef typename T::map_type MTYP;
-  typedef find<MTYP> FND;
+  typedef find<MTYP>           FND;
   if ( 1 == m_direct ) {
     auto& m = m_setup.s->m;
-    auto i  = ( obj ? std::find_if( m.begin(), m.end(), FND( obj ) ) : m_setup.s->m.find( key ) );
+    auto  i = ( obj ? std::find_if( m.begin(), m.end(), FND( obj ) ) : m_setup.s->m.find( key ) );
     if ( i != m_setup.s->m.end() ) {
       void* o = i->second;
-      auto j  = std::find( m_seq->begin(), m_seq->end(), o );
+      auto  j = std::find( m_seq->begin(), m_seq->end(), o );
       if ( j != m_seq->end() ) {
         m_seq->erase( j );
         m_setup.s->m.erase( i );
@@ -284,7 +284,7 @@ template <class T>
 long Containers::KeyedObjectManager<T>::erase( seq_type::iterator beg, seq_type::iterator end )
 {
   typedef typename T::map_type MTYP;
-  typedef find<MTYP> FND;
+  typedef find<MTYP>           FND;
   if ( 0 == m_direct ) {
     onDirty();
     return erase( beg, end );
@@ -486,7 +486,7 @@ namespace Containers
           containerIsInconsistent();
         }
         void* o = *i;
-        auto j  = std::find( m_seq->begin(), m_seq->end(), o );
+        auto  j = std::find( m_seq->begin(), m_seq->end(), o );
         if ( j == m_seq->end() ) {
           containerIsInconsistent();
         }
@@ -513,7 +513,7 @@ namespace Containers
       onDirty();
       return erase( beg, end );
     } else {
-      long cnt = 0, nobj = end - beg;
+      long     cnt = 0, nobj = end - beg;
       id_type& idx = m_setup.s->m_idx;
       for ( auto& elem : idx ) {
         auto j = m_setup.s->v.begin() + ( elem );

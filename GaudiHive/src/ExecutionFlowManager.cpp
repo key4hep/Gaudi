@@ -15,7 +15,7 @@ namespace concurrency
     }
 
     void ExecutionFlowManager::updateEventState( AlgsExecutionStates& algo_states,
-                                                 std::vector<int>& node_decisions ) const
+                                                 std::vector<int>&    node_decisions ) const
     {
       m_CFGraph->updateEventState( algo_states, node_decisions );
     }

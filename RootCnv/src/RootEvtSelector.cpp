@@ -121,7 +121,7 @@ StatusCode RootEvtSelector::initialize()
   if ( !ipers ) {
     return error( "Unable to locate IPersistencySvc interface of " + m_persName );
   }
-  IConversionSvc* cnvSvc = nullptr;
+  IConversionSvc*              cnvSvc = nullptr;
   Gaudi::Utils::TypeNameString itm( m_cnvSvcName );
   status = ipers->getService( itm.name(), cnvSvc );
   if ( !status.isSuccess() ) {
@@ -180,8 +180,8 @@ StatusCode RootEvtSelector::next( Context& ctxt ) const
       pCtxt->setEntry( -1 );
       if ( fileit != pCtxt->files().end() ) {
         RootDataConnection* con = nullptr;
-        string in               = *fileit;
-        StatusCode sc           = m_dbMgr->connectDatabase( in, IDataConnection::READ, &con );
+        string              in  = *fileit;
+        StatusCode          sc  = m_dbMgr->connectDatabase( in, IDataConnection::READ, &con );
         if ( sc.isSuccess() ) {
           string section = m_rootName[0] == '/' ? m_rootName.substr( 1 ) : m_rootName;
           b              = con->getBranch( section, m_rootName );
@@ -197,7 +197,7 @@ StatusCode RootEvtSelector::next( Context& ctxt ) const
       }
       return StatusCode::FAILURE;
     }
-    long ent      = pCtxt->entry();
+    long     ent  = pCtxt->entry();
     Long64_t nent = b->GetEntries();
     if ( nent > ( ent + 1 ) ) {
       pCtxt->setEntry( ++ent );
@@ -277,7 +277,7 @@ StatusCode RootEvtSelector::createAddress( const Context& ctxt, IOpaqueAddress*&
     if ( ent >= 0 ) {
       auto fileit = pctxt->fileIterator();
       if ( fileit != pctxt->files().end() ) {
-        const string par[2]         = {pctxt->fid(), m_rootName};
+        const string        par[2]  = {pctxt->fid(), m_rootName};
         const unsigned long ipar[2] = {0, (unsigned long)ent};
         return m_dbMgr->createAddress( m_dbMgr->repSvcType(), m_rootCLID, &par[0], &ipar[0], pAddr );
       }
@@ -302,9 +302,9 @@ StatusCode RootEvtSelector::releaseContext( Context*& ctxt ) const
 // the state of the context in a way to point to the new list.
 StatusCode RootEvtSelector::resetCriteria( const string& criteria, Context& context ) const
 {
-  MsgStream log( msgSvc(), name() );
+  MsgStream               log( msgSvc(), name() );
   RootEvtSelectorContext* ctxt = dynamic_cast<RootEvtSelectorContext*>( &context );
-  string db, typ, item, sel, stmt, aut, addr;
+  string                  db, typ, item, sel, stmt, aut, addr;
   if ( ctxt ) {
     if ( criteria.compare( 0, 5, "FILE " ) == 0 ) {
       // The format for the criteria is:
@@ -341,7 +341,7 @@ StatusCode RootEvtSelector::resetCriteria( const string& criteria, Context& cont
     //        FILE  filename1, filename2 ...
     //        JOBID number1-number2, number3, ...
     RootEvtSelectorContext::Files files;
-    string rest = db;
+    string                        rest = db;
     files.clear();
     while ( true ) {
       int ipos = rest.find_first_not_of( " ," );

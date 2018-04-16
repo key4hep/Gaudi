@@ -20,17 +20,17 @@ namespace Gaudi
     StatusCode parse( DataObjID& v, const std::string& s )
     {
       // default values
-      StatusCode sc( StatusCode::FAILURE );
+      StatusCode  sc( StatusCode::FAILURE );
       std::string prop;
       sc = Gaudi::Parsers::parse( prop, s );
 
       if ( sc.isSuccess() ) {
         // split the string in 1 or 2 words:
         typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-        boost::char_separator<char> sep( "(), " );
-        tokenizer tokens( prop, sep );
-        int nToks( distance( tokens.begin(), tokens.end() ) );
-        auto it = tokens.begin();
+        boost::char_separator<char>                           sep( "(), " );
+        tokenizer                                             tokens( prop, sep );
+        int                                                   nToks( distance( tokens.begin(), tokens.end() ) );
+        auto                                                  it = tokens.begin();
 
         if ( nToks == 1 ) {
           // Gaudi style /path/to/object
@@ -40,9 +40,9 @@ namespace Gaudi
 
         } else if ( nToks == 2 ) {
           // ATLAS style (clid, 'key') or ('ClassName', 'key')
-          CLID c( 0 );
+          CLID        c( 0 );
           std::string cn( *it );
-          DataObjID id;
+          DataObjID   id;
 
           try {
             c = std::stoi( *it );
@@ -76,7 +76,7 @@ namespace Gaudi
     StatusCode parse( DataObjIDColl& v, const std::string& s )
     {
       // default values
-      StatusCode sc( StatusCode::FAILURE );
+      StatusCode  sc( StatusCode::FAILURE );
       std::string prop;
       sc = Gaudi::Parsers::parse( prop, s );
 
@@ -95,11 +95,11 @@ namespace Gaudi
 
         // split the string in 1 or 2 words:
         typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-        boost::char_separator<char> sep( "[](), " );
-        tokenizer tokens( prop, sep );
-        auto it = tokens.begin();
+        boost::char_separator<char>                           sep( "[](), " );
+        tokenizer                                             tokens( prop, sep );
+        auto                                                  it = tokens.begin();
 
-        CLID c( 0 );
+        CLID        c( 0 );
         std::string cn;
 
         while ( it != tokens.end() ) {

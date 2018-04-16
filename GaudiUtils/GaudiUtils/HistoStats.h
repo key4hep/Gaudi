@@ -134,8 +134,8 @@ namespace Gaudi
        *  @param number of entries
        */
       static long nEntries( const AIDA::IHistogram1D* histo,
-                            const int imin,   //     minimal bin number (included)
-                            const int imax ); // maximal bin number (not included)
+                            const int                 imin,   //     minimal bin number (included)
+                            const int                 imax ); // maximal bin number (not included)
       // ======================================================================
       /** get the fraction of entries in histogram up to
        *  the certain bin (not-included)

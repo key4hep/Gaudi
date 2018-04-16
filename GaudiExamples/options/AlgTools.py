@@ -1,6 +1,6 @@
 ###############################################################
 # Job options file
-#==============================================================
+# ==============================================================
 from Gaudi.Configuration import *
 from Configurables import MyAlgorithm, MyTool, MyGaudiAlgorithm
 
@@ -55,9 +55,9 @@ ApplicationMgr(EvtMax=10,
                EvtSel='NONE',
                HistogramPersistency='NONE',
                TopAlg=[myalg, mygalg])
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 # Test circular tool dependencies  (by Chris Jones)
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 from Configurables import TestToolAlg, TestTool
 
 tA = TestTool('ToolA', Tools=['TestTool/ToolB'], OutputLevel=DEBUG)

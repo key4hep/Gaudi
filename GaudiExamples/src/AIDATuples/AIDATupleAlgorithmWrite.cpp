@@ -58,10 +58,10 @@ StatusCode AIDATupleAlgorithmWrite::execute()
   info() << "Executing..." << endmsg;
 
   DRand48Engine randomEngine;
-  RandGauss rBeamEnergy( randomEngine, 90, 5 );
-  RandGauss rTracksSpread( randomEngine, 0, 2 );
-  RandGauss rMomentum( randomEngine, 0, 3 );
-  RandGauss rMass( randomEngine, 1, 0.1 );
+  RandGauss     rBeamEnergy( randomEngine, 90, 5 );
+  RandGauss     rTracksSpread( randomEngine, 0, 2 );
+  RandGauss     rMomentum( randomEngine, 0, 3 );
+  RandGauss     rMass( randomEngine, 1, 0.1 );
 
   int i_px   = tuple->findColumn( "px" );
   int i_py   = tuple->findColumn( "py" );

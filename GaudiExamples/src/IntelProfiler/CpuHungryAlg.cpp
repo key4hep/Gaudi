@@ -28,7 +28,7 @@ private:
 
 private:
   Gaudi::Property<long> m_loops{this, "Loops", 1000000, ""};
-  int m_nevent = 0;
+  int                   m_nevent = 0;
 };
 
 // Register algorithm

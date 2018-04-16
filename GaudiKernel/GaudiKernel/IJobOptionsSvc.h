@@ -30,7 +30,7 @@ public:
   virtual StatusCode setMyProperties( const std::string& client, IProperty* me ) = 0;
 
   /// Add a property into the JobOptions catalog
-  virtual StatusCode addPropertyToCatalogue( const std::string& client,
+  virtual StatusCode addPropertyToCatalogue( const std::string&                  client,
                                              const Gaudi::Details::PropertyBase& property ) = 0;
   /// Remove a property from the JobOptions catalog
   virtual StatusCode removePropertyFromCatalogue( const std::string& client, const std::string& name ) = 0;

@@ -59,11 +59,11 @@ StatusCode EvtCollectionWrite::initialize()
 // Event callback
 StatusCode EvtCollectionWrite::execute()
 {
-  auto& log = msgStream();
+  auto&                    log = msgStream();
   SmartDataPtr<DataObject> evtRoot( eventSvc(), "/Event" );
-  SmartDataPtr<Event> evt( eventSvc(), "/Event/Header" );
+  SmartDataPtr<Event>      evt( eventSvc(), "/Event/Header" );
   if ( evt ) {
-    int evt_num = evt->event();
+    int                         evt_num = evt->event();
     SmartDataPtr<MyTrackVector> trkCont( eventSvc(), "/Event/MyTracks" );
     if ( trkCont != 0 ) {
       // Force an object update since now the original tracks should be

@@ -457,7 +457,7 @@ public:
    *  @param sc     StatusCode
    */
   void Exception( const std::string& msg = "no message",
-                  const StatusCode sc    = StatusCode( StatusCode::FAILURE, true ) ) const;
+                  const StatusCode   sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
 
 public:
   // ==========================================================================

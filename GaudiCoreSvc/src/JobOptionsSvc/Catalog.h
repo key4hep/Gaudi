@@ -32,15 +32,15 @@ namespace Gaudi
     {
     public:
       typedef boost::ptr_set<Property, Property::LessThen> PropertySet;
-      typedef std::map<std::string, PropertySet> CatalogSet;
+      typedef std::map<std::string, PropertySet>           CatalogSet;
 
-      typedef CatalogSet::value_type value_type;
-      typedef CatalogSet::iterator iterator;
+      typedef CatalogSet::value_type     value_type;
+      typedef CatalogSet::iterator       iterator;
       typedef CatalogSet::const_iterator const_iterator;
 
-      iterator begin() { return catalog_.begin(); }
+      iterator       begin() { return catalog_.begin(); }
       const_iterator begin() const { return catalog_.begin(); }
-      iterator end() { return catalog_.end(); }
+      iterator       end() { return catalog_.end(); }
       const_iterator end() const { return catalog_.end(); }
 
       std::vector<std::string> ClientNames() const;

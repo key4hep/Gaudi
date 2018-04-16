@@ -468,8 +468,8 @@ namespace Gaudi
           return {-1, false}; // silently ignore empty strings
         }
         const SigMap& sigmap( SigMap::instance() );
-        std::string signal = sig;
-        bool propagate     = false;
+        std::string   signal    = sig;
+        bool          propagate = false;
         // Check if the signal must be propagated
         if ( signal[signal.size() - 1] == '+' ) {
           debug() << "Must be propagated to previously registered signal handlers" << endmsg;

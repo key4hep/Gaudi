@@ -45,16 +45,16 @@ public:
   const std::string& name() const override;
 
   // State machine implementation
-  StatusCode configure() override { return StatusCode::SUCCESS; }
-  StatusCode initialize() override;
-  StatusCode start() override;
-  StatusCode stop() override;
-  StatusCode finalize() override;
-  StatusCode terminate() override { return StatusCode::SUCCESS; }
+  StatusCode                 configure() override { return StatusCode::SUCCESS; }
+  StatusCode                 initialize() override;
+  StatusCode                 start() override;
+  StatusCode                 stop() override;
+  StatusCode                 finalize() override;
+  StatusCode                 terminate() override { return StatusCode::SUCCESS; }
   Gaudi::StateMachine::State FSMState() const override { return m_state; }
   Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
-  StatusCode reinitialize() override;
-  StatusCode restart() override;
+  StatusCode                 reinitialize() override;
+  StatusCode                 restart() override;
 
   /** Initialize Service                          */
   StatusCode sysInitialize() override;
@@ -85,7 +85,7 @@ public:
   StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const
   {
     ISvcLocator& svcLoc = *serviceLocator();
-    auto ptr            = ServiceLocatorHelper( svcLoc, *this )
+    auto         ptr    = ServiceLocatorHelper( svcLoc, *this )
                    .service<T>( name, !createIf, // quiet
                                 createIf );
     if ( ptr ) {
@@ -165,22 +165,22 @@ protected:
   int outputLevel() const { return m_outputLevel.value(); }
 
 private:
-  void sysInitialize_imp();
-  StatusCode m_initSC;
+  void           sysInitialize_imp();
+  StatusCode     m_initSC;
   std::once_flag m_initFlag;
 
   /** Service Name  */
   std::string m_name;
   /** Service Locator reference                  */
   mutable SmartIF<ISvcLocator> m_svcLocator;
-  SmartIF<ISvcManager> m_svcManager;
+  SmartIF<ISvcManager>         m_svcManager;
 
   void setServiceManager( ISvcManager* ism ) override;
 
 protected:
   // Properties
 
-  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int>  m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
   Gaudi::Property<bool> m_auditInit{this, "AuditServices", false, "[[deprecated]] unused"};
   Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
   Gaudi::Property<bool> m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};

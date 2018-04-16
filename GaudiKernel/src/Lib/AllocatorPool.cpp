@@ -116,8 +116,8 @@ void GaudiUtils::AllocatorPool::Grow()
   ++nchunks;
 
   const int nelem = csize / esize;
-  char* start     = n->mem.get();
-  char* last      = &start[( nelem - 1 ) * esize];
+  char*     start = n->mem.get();
+  char*     last  = &start[( nelem - 1 ) * esize];
   for ( char* p = start; p < last; p += esize ) {
     reinterpret_cast<PoolLink*>( p )->next = reinterpret_cast<PoolLink*>( p + esize );
   }

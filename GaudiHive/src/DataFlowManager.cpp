@@ -26,8 +26,8 @@ DataFlowManager::DataFlowManager( algosDependenciesCollection algosDependencies 
     m_algosRequirements.resize( algosDependencies.size(), dependency_bitset( nProducts ) );
 
     // Fill the requirements
-    unsigned int algoIndex = 0;
-    long int productIndex  = 0;
+    unsigned int algoIndex    = 0;
+    long int     productIndex = 0;
     for ( auto& thisAlgoDependencies : algosDependencies ) {
       // Make a local alias for better readability
       auto& dependency_bits = m_algosRequirements[algoIndex];

@@ -47,7 +47,7 @@ namespace
   {
     // 1) use XML-parser
     std::unique_ptr<TObject> obj{TBufferXML::ConvertFromXML( input.c_str() )};
-    TYPE* histo = ( obj ? dynamic_cast<TYPE*>( obj.get() ) : nullptr );
+    TYPE*                    histo = ( obj ? dynamic_cast<TYPE*>( obj.get() ) : nullptr );
     // slightly tricky: in case the dynamic cast succeeds, transfer owership
     // by invoking 'release' on obj, and 'at the same time' pass 'histo' into
     // the constructor of unique_ptr -- but if the cast fails, do NOT transfer

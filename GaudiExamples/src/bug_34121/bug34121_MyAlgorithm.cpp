@@ -23,7 +23,7 @@ namespace bug_34121
 
   private:
     Gaudi::Property<std::string> m_toolName{this, "Tool", "bug_34121::Tool", "Type of the tool to use"};
-    IMyTool* m_tool = nullptr;
+    IMyTool*                     m_tool = nullptr;
   };
 
   //------------------------------------------------------------------------------

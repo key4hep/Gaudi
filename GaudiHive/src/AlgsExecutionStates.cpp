@@ -8,7 +8,7 @@ std::map<AlgsExecutionStates::State, std::string> AlgsExecutionStates::stateName
 StatusCode AlgsExecutionStates::updateState( unsigned int iAlgo, State newState )
 {
 
-  MsgStream log( m_MS, "AlgExecutionStates" );
+  MsgStream          log( m_MS, "AlgExecutionStates" );
   const unsigned int states_size = m_states.size();
 
   if ( iAlgo >= states_size ) {

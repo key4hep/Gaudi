@@ -109,7 +109,7 @@ StatusCode PythonScriptingSvc::run()
 //----------------------------------------------------------------------------------
 {
   if ( !m_startupScript.empty() ) {
-    std::ifstream file{m_startupScript};
+    std::ifstream     file{m_startupScript};
     std::stringstream stream;
     if ( file ) {
       std::string buffer;

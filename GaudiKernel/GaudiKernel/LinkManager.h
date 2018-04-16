@@ -61,7 +61,7 @@ public:
     void setObject( const DataObject* pObject ) { m_pObject = const_cast<DataObject*>( pObject ); }
     /// Const access to data object
     const DataObject* object() const { return m_pObject; }
-    DataObject* object() { return m_pObject; }
+    DataObject*       object() { return m_pObject; }
     /// Access to path of object
     const std::string& path() const { return m_path; }
     /// Link identifier

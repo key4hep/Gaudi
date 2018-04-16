@@ -61,7 +61,7 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css )
   // Merge Chronomaps
   for ( auto& item : css.m_chronoEntities ) {
     const IChronoStatSvc::ChronoTag& key = item.first;
-    const ChronoEntity& val              = item.second;
+    const ChronoEntity&              val = item.second;
     if ( m_chronoEntities.count( key ) )
       m_chronoEntities[key] += val;
     else
@@ -71,7 +71,7 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css )
   // Merge StatMaps
   for ( auto& item : css.m_statEntities ) {
     const IChronoStatSvc::StatTag& key = item.first;
-    const StatEntity& val              = item.second;
+    const StatEntity&              val = item.second;
     if ( m_statEntities.count( key ) )
       m_statEntities[key] += val;
     else
@@ -167,7 +167,7 @@ StatusCode ChronoStatSvc::finalize()
   /// Is the final chrono table to be printed?
   if ( m_chronoTableFlag && !m_chronoEntities.empty() && ( m_printUserTime || m_printSystemTime ) ) {
     /// decoration
-    MsgStream log( msgSvc(), "*****Chrono*****" );
+    MsgStream         log( msgSvc(), "*****Chrono*****" );
     const std::string stars( ( m_chronoCoutFlag ) ? 126 : 100, '*' );
     if ( m_chronoCoutFlag ) {
       std::cout << stars << std::endl;
@@ -328,7 +328,7 @@ const ChronoEntity* ChronoStatSvc::chronoStop( const IChronoStatSvc::ChronoTag& 
 // Implementation of IChronoStatSvc::chronoDelta
 // ============================================================================
 IChronoStatSvc::ChronoTime ChronoStatSvc::chronoDelta( const IChronoStatSvc::ChronoTag& chronoTag,
-                                                       IChronoStatSvc::ChronoType theType )
+                                                       IChronoStatSvc::ChronoType       theType )
 {
   return m_chronoEntities[chronoTag].delta( theType );
 }
@@ -503,7 +503,7 @@ void ChronoStatSvc::printStats()
     // prepare container for printing
     typedef std::pair<const StatEntity*, const StatTag*> SPair;
     typedef std::vector<SPair> SCont;
-    SCont tmpCont;
+    SCont                      tmpCont;
     std::transform( std::begin( m_statEntities ), std::end( m_statEntities ), std::back_inserter( tmpCont ),
                     []( StatMap::const_reference i ) { return std::make_pair( &i.second, &i.first ); } );
     // sort it

@@ -53,7 +53,7 @@ namespace AIDA
 
       std::string m_key;
       std::string m_value;
-      bool m_sticky;
+      bool        m_sticky;
     };
 
     /// The vector of the annotation items

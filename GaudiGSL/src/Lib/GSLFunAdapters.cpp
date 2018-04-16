@@ -98,7 +98,7 @@ namespace Genfun
     const gsl_mode_t& GSLFunctionWithMode::mode() const { return *m_mode; }
 
     GSLFunctionWithModeAndError::GSLFunctionWithModeAndError( GSLFunctionWithModeAndError::Function function,
-                                                              const gsl_mode_t& mod )
+                                                              const gsl_mode_t&                     mod )
         : AbsFunction()
         , m_function( function )
         , m_mode( std::make_unique<gsl_mode_t>( mod ) )

@@ -57,7 +57,7 @@ public:
 
   ~DataHistory() override = default;
 
-  const CLID& clID() const override { return DataHistory::classID(); }
+  const CLID&        clID() const override { return DataHistory::classID(); }
   static const CLID& classID();
 
   std::string dataKey() const { return m_dataKey; }
@@ -68,10 +68,10 @@ public:
   void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
 
 private:
-  CLID m_dataClassID;
-  std::string m_dataKey;
+  CLID              m_dataClassID;
+  std::string       m_dataKey;
   AlgorithmHistory* m_algHist;
-  std::string m_dummy = "none";
+  std::string       m_dummy = "none";
 };
 
 GAUDI_API std::ostream& operator<<( std::ostream& lhs, const DataHistory& rhs );

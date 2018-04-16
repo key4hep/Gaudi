@@ -25,9 +25,9 @@ public:
   void handle( const Incident& incident ) override;
 
 private:
-  std::string m_name;
-  long m_shots;
-  SmartIF<IMessageSvc> m_msgSvc;
+  std::string           m_name;
+  long                  m_shots;
+  SmartIF<IMessageSvc>  m_msgSvc;
   SmartIF<IIncidentSvc> m_incSvc;
 };
 

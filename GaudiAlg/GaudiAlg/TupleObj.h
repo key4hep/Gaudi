@@ -793,8 +793,8 @@ namespace Tuples
     {
       auto scs = std::initializer_list<StatusCode>{
           this->column( std::get<I>( tup ).first, Gaudi::invoke( std::get<I>( tup ).second, value ) )...};
-      auto is_ok = []( const StatusCode& sc ) -> bool { return sc; };
-      auto i     = std::find_if_not( begin( scs ), end( scs ), is_ok );
+      auto is_ok                           = []( const StatusCode& sc ) -> bool { return sc; };
+      auto                               i = std::find_if_not( begin( scs ), end( scs ), is_ok );
       if ( i != end( scs ) ) {
         // avoid unchecked StatusCodes...
         std::for_each( std::next( i ), end( scs ), is_ok );
@@ -1553,8 +1553,8 @@ namespace Tuples
       *len = std::distance( first, last );
 
       // get the array itself
-      auto cols    = std::distance( funF, funL );
-      FMatrix* var = fMatrix( name, len, cols );
+      auto     cols = std::distance( funF, funL );
+      FMatrix* var  = fMatrix( name, len, cols );
       if ( !var ) {
         return InvalidColumn;
       }

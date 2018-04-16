@@ -19,8 +19,8 @@ namespace Gaudi
 {
   namespace Hive
   {
-    ContextIdType currentContextId() { return s_curCtx().slot(); }
-    ContextIdType currentContextEvt() { return s_curCtx().evt(); }
+    ContextIdType       currentContextId() { return s_curCtx().slot(); }
+    ContextIdType       currentContextEvt() { return s_curCtx().evt(); }
     const EventContext& currentContext() { return s_curCtx(); }
 
     void setCurrentContextEvt( long int evtN ) { s_curCtx().setEvt( evtN ); }

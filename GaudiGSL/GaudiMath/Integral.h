@@ -20,7 +20,7 @@ namespace GaudiMath
 {
 
   GAUDI_API double Integral( const Genfun::AbsFunction& function, const double a, const double b,
-                             const GaudiMath::Integration::Type type        = GaudiMath::Integration::Adaptive,
+                             const GaudiMath::Integration::Type        type = GaudiMath::Integration::Adaptive,
                              const GaudiMath::Integration::KronrodRule rule = GaudiMath::Integration::Default,
                              const double epsabs = 1.e-10, const double epsrel = 1.e-7, const size_t size = 1000 );
 
@@ -35,7 +35,7 @@ namespace GaudiMath
   GAUDI_API double Integral( const Genfun::AbsFunction& function, const GaudiMath::Integration::Inf a, const double b,
                              const double epsabs = 1e-9, const double epsrel = 1.e-6, const size_t size = 1000 );
 
-  GAUDI_API double Integral( const Genfun::AbsFunction& function,
+  GAUDI_API double Integral( const Genfun::AbsFunction&        function,
                              const GaudiMath::Integration::Inf a = GaudiMath::Integration::Infinity,
                              const GaudiMath::Integration::Inf b = GaudiMath::Integration::Infinity,
                              const double epsabs = 1e-9, const double epsrel = 1.e-6, const size_t size = 1000 );

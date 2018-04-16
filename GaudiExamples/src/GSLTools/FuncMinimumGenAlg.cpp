@@ -59,7 +59,7 @@ public:
   ~Func() override {}
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return 10 + 4 * x[0] * x[0] + 27 * x[1] * x[1] + 25 * x[1]; }
-  unsigned int dimensionality() const override { return 2; }
+  unsigned int                       dimensionality() const override { return 2; }
 };
 FUNCTION_OBJECT_IMP( Func )
 

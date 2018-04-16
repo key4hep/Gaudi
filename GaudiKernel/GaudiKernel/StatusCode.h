@@ -151,8 +151,8 @@ public:
 
 protected:
   /// The status code.
-  unsigned long d_code   = SUCCESS; ///< The status code
-  mutable bool m_checked = false;   ///< If the Status code has been checked
+  unsigned long d_code    = SUCCESS; ///< The status code
+  mutable bool  m_checked = false;   ///< If the Status code has been checked
 
   static bool s_checking; ///< Global flag to control if StatusCode need to be checked
 

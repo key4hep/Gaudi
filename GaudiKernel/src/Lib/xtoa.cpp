@@ -38,10 +38,10 @@
 
 static void __cdecl xtoa( unsigned long val, char* buf, unsigned radix, int is_neg )
 {
-  char* p;         /* pointer to traverse string */
-  char* firstdig;  /* pointer to first digit */
-  char temp;       /* temp char */
-  unsigned digval; /* value of digit */
+  char*    p;        /* pointer to traverse string */
+  char*    firstdig; /* pointer to first digit */
+  char     temp;     /* temp char */
+  unsigned digval;   /* value of digit */
 
   p = buf;
 

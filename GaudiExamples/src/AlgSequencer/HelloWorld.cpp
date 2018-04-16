@@ -24,8 +24,8 @@ StatusCode HelloWorld::initialize()
 
   info() << "initializing...." << endmsg;
 
-  Gaudi::Property<int> m_int;
-  Gaudi::Property<double> m_double;
+  Gaudi::Property<int>         m_int;
+  Gaudi::Property<double>      m_double;
   Gaudi::Property<std::string> m_string;
 
   declareInfo( "int_value", t_int, "description" );

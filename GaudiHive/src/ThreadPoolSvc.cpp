@@ -193,7 +193,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
   else {
     if ( msgLevel( MSG::DEBUG ) ) debug() << "launching ThreadInitTask " << taskType << "in this thread." << endmsg;
     boost::barrier* noBarrier = nullptr;
-    ThreadInitTask theTask( m_threadInitTools, noBarrier, serviceLocator(), terminate );
+    ThreadInitTask  theTask( m_threadInitTools, noBarrier, serviceLocator(), terminate );
     theTask.execute();
   }
 

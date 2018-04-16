@@ -159,11 +159,11 @@ public:
 
 private:
   typedef GaudiUtils::HashMap<std::string, Counter*> NameMap;
-  typedef GaudiUtils::HashMap<std::string, NameMap> CountMap;
+  typedef GaudiUtils::HashMap<std::string, NameMap>  CountMap;
   // the actual map of counters
   CountMap m_counts; ///< the actual map of counters
 
-  Gaudi::Property<bool> m_print{this, "PrintStat", true, "print statistics"};
+  Gaudi::Property<bool>        m_print{this, "PrintStat", true, "print statistics"};
   Gaudi::Property<std::string> m_header{this, "StatTableHeader",
                                         "       Counter :: Group         |     #     |    sum     | "
                                         "mean/eff^* | rms/err^*  |     min     |     max     |",
@@ -204,7 +204,7 @@ CounterSvc::Counter* CounterSvc::get( const std::string& grp, const std::string&
 ICounterSvc::Counters CounterSvc::get( const std::string& group ) const
 {
   ICounterSvc::Counters result;
-  auto i = m_counts.find( group );
+  auto                  i = m_counts.find( group );
   if ( i != m_counts.end() ) {
     std::transform( i->second.begin(), i->second.end(), std::back_inserter( result ),
                     [&]( const NameMap::value_type& j ) {
@@ -254,7 +254,7 @@ StatusCode CounterSvc::create( const std::string& grp, const std::string& nam, l
 // ===========================================================================
 CounterSvc::CountObject CounterSvc::create( const std::string& group, const std::string& name, longlong initial_value )
 {
-  Counter* p    = nullptr;
+  Counter*   p  = nullptr;
   StatusCode sc = create( group, name, initial_value, p );
   if ( sc.isSuccess() && p ) {
     return CountObject( p, group, name );
@@ -321,7 +321,7 @@ namespace
   {
   private:
     CounterSvc::Printout* printer;
-    MsgStream* log;
+    MsgStream*            log;
 
   public:
     conditionalPrint( CounterSvc::Printout& _p, MsgStream& _l ) : printer( &_p ), log( &_l ) {}

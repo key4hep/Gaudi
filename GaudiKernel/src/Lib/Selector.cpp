@@ -22,8 +22,8 @@ StatusCode NTuple::Selector::initialize( NTuple::Tuple* /* nt */ ) { return Stat
 /// Overloaded callback from SelectStatement
 bool NTuple::Selector::operator()( void* nt )
 {
-  DataObject* p = static_cast<DataObject*>( nt );
-  bool result   = false;
+  DataObject* p      = static_cast<DataObject*>( nt );
+  bool        result = false;
   try {
     NTuple::Tuple* tuple = dynamic_cast<NTuple::Tuple*>( p );
     if ( tuple ) {

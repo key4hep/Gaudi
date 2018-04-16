@@ -37,7 +37,7 @@ namespace RootHistCnv
 
     TDirectory* gDir = gDirectory;
 
-    int i  = 1;
+    int  i = 1;
     auto p = full.find( ":", 0 );
     if ( p != std::string::npos ) {
       auto fil = full.substr( 0, p );

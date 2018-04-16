@@ -42,7 +42,7 @@ namespace
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 // ============================================================================
@@ -90,7 +90,7 @@ StatusCode IncidentSvc::finalize()
 void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, long prio, bool rethrow,
                                bool singleShot )
 {
-  static const std::string all{"ALL"};
+  static const std::string               all{"ALL"};
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
   const std::string& ltype = ( !type.empty() ? type : all );
@@ -258,7 +258,7 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident )
 
 void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::string& type ) const
 {
-  static const std::string ALL{"ALL"};
+  static const std::string               ALL{"ALL"};
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
   const std::string& ltype = ( !type.empty() ? type : ALL );

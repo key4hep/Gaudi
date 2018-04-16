@@ -84,10 +84,10 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
 
   // Loop over the items
 
-  std::string block_name, var_name;
-  long lowerRange, upperRange;
-  long size = 0;
-  long cursize, oldsize = 0;
+  std::string              block_name, var_name;
+  long                     lowerRange, upperRange;
+  long                     size = 0;
+  long                     cursize, oldsize = 0;
   std::vector<std::string> item_fullname;
   //    std::vector<long> item_size,item_size2;
   std::vector<long> item_buf_pos, item_buf_len, item_buf_end;
@@ -216,8 +216,8 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
       //        log << MSG::VERBOSE << "\"" << item_fullname[i_item]
       //  	  << "\" is range limited " << item_range_lower[i_item] << "  "
       //  	  << item_range_upper[i_item] << endmsg;
-      TLeafI* index = nullptr;
-      TObject* tobj = br->GetListOfLeaves()->FindObject( item_fullname[i_item].c_str() );
+      TLeafI*  index = nullptr;
+      TObject* tobj  = br->GetListOfLeaves()->FindObject( item_fullname[i_item].c_str() );
       if ( tobj->IsA()->InheritsFrom( "TLeafI" ) ) {
         index = dynamic_cast<TLeafI*>( tobj );
 
@@ -396,7 +396,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
 
   // loop over all branches (==leaves)
   TObjArray* lbr = tree->GetListOfBranches();
-  TIter bitr( lbr );
+  TIter      bitr( lbr );
   while ( TObject* tobjb = bitr() ) {
 
     TBranch* br = (TBranch*)tobjb;
@@ -414,9 +414,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
     TIter litr( lf );
     while ( TObject* tobj = litr() ) {
 
-      bool hasRange  = false;
-      int indexRange = 0;
-      int itemSize;
+      bool hasRange   = false;
+      int  indexRange = 0;
+      int  itemSize;
       item = nullptr;
 
       //      TLeaf* tl = (TLeaf*)tobj;
@@ -433,7 +433,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
         log << MSG::DEBUG << "loading NTuple item " << itemName;
       }
 
-      int arraySize;
+      int    arraySize;
       TLeaf* indexLeaf = tl->GetLeafCounter( arraySize );
 
       if ( arraySize == 0 ) {
@@ -547,8 +547,8 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
 
   int ts = 0;
   for ( const auto& iitr : itemList ) {
-    TLeaf* leaf = iitr.first;
-    int isize   = iitr.second;
+    TLeaf* leaf  = iitr.first;
+    int    isize = iitr.second;
 
     log << MSG::VERBOSE << "setting TBranch " << leaf->GetBranch()->GetName() << " buffer at " << (void*)bufpos
         << endmsg;

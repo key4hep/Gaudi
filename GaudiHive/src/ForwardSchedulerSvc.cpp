@@ -27,7 +27,7 @@
 // DP waiting for the TBB service
 #include "tbb/task_scheduler_init.h"
 
-std::mutex ForwardSchedulerSvc::m_ssMut;
+std::mutex                                     ForwardSchedulerSvc::m_ssMut;
 std::list<ForwardSchedulerSvc::SchedulerState> ForwardSchedulerSvc::m_sState;
 
 // Instantiation of a static factory class used by clients to create instances of this service
@@ -118,8 +118,8 @@ StatusCode ForwardSchedulerSvc::initialize()
   }
 
   // Get the list of algorithms
-  const std::list<IAlgorithm*>& algos = m_algResourcePool->getFlatAlgList();
-  const unsigned int algsNumber       = algos.size();
+  const std::list<IAlgorithm*>& algos      = m_algResourcePool->getFlatAlgList();
+  const unsigned int            algsNumber = algos.size();
   info() << "Found " << algsNumber << " algorithms" << endmsg;
 
   /* Dependencies
@@ -201,7 +201,7 @@ StatusCode ForwardSchedulerSvc::initialize()
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve( algsNumber );
   unsigned int index = 0;
-  IAlgorithm* dataLoaderAlg( nullptr );
+  IAlgorithm*  dataLoaderAlg( nullptr );
   for ( IAlgorithm* algo : algos ) {
     const std::string& name   = algo->name();
     m_algname_index_map[name] = index;
@@ -351,7 +351,7 @@ void ForwardSchedulerSvc::activate()
   }
 
   // Wait for actions pushed into the queue by finishing tasks.
-  action thisAction;
+  action     thisAction;
   StatusCode sc( StatusCode::SUCCESS );
 
   m_isActive = ACTIVE;
@@ -444,7 +444,7 @@ StatusCode ForwardSchedulerSvc::pushNewEvent( EventContext* eventContext )
   auto action = [this, eventContext]() -> StatusCode {
     // Event processing slot forced to be the same as the wb slot
     const unsigned int thisSlotNum = eventContext->slot();
-    EventSlot& thisSlot            = m_eventSlots[thisSlotNum];
+    EventSlot&         thisSlot    = m_eventSlots[thisSlotNum];
     if ( !thisSlot.complete ) {
       fatal() << "The slot " << thisSlotNum << " is supposed to be a finished event but it's not" << endmsg;
       return StatusCode::FAILURE;
@@ -628,7 +628,7 @@ StatusCode ForwardSchedulerSvc::updateStates( int si )
     int iSlot = thisSlotPtr->eventContext->slot();
 
     // Cache the states of the algos to improve readability and performance
-    auto& thisSlot                      = m_eventSlots[iSlot];
+    auto&                thisSlot       = m_eventSlots[iSlot];
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     // Take care of the control ready update
@@ -783,7 +783,7 @@ void ForwardSchedulerSvc::dumpSchedulerState( int iSlot )
         outputMessageStream << " o " << index2algname( algoIdx ) << " ["
                             << AlgsExecutionStates::stateNames[thisSlot.algsStates[algoIdx]] << "]  Data deps: ";
         DataObjIDColl deps( thisSlot.dataFlowMgr.dataDependencies( algoIdx ) );
-        const int depsSize = deps.size();
+        const int     depsSize = deps.size();
         if ( depsSize == 0 ) outputMessageStream << " none";
 
         DataObjIDColl missing;
@@ -863,8 +863,8 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si )
   if ( m_algosInFlight == m_maxAlgosInFlight ) return StatusCode::FAILURE;
 
   const std::string& algName( index2algname( iAlgo ) );
-  IAlgorithm* ialgoPtr = nullptr;
-  StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
+  IAlgorithm*        ialgoPtr = nullptr;
+  StatusCode         sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
     EventContext* eventContext( m_eventSlots[si].eventContext );

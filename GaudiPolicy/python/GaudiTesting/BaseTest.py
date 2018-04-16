@@ -241,7 +241,7 @@ class BaseTest(object):
                          'Output Reference File': 'reference',
                          'Error Reference File': 'error_reference',
                          'Causes': 'causes',
-                         #'Validator Result': 'result.annotations',
+                         # 'Validator Result': 'result.annotations',
                          'Unsupported Platforms': 'unsupported_platforms',
                          'Stack Trace': 'stack_trace'}
         resultDict = [(key, getattr(self, attr))
@@ -835,7 +835,7 @@ class SortGroupOfLines(FilePreprocessor):
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
 for w, o, r in [
-    #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
+    # ("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
     ("TIMER.TIMER", r"\s+[+-]?[0-9]+[0-9.]*", " 0"),  # Normalize time output
     ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
     ("^#.*file", r"file '.*[/\\]([^/\\]*)$", r"file '\1"),

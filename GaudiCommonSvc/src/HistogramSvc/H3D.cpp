@@ -57,7 +57,7 @@ std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string&
 
 std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const AIDA::IHistogram3D& hist )
 {
-  TH3D* h        = getRepresentation<AIDA::IHistogram3D, TH3D>( hist );
+  TH3D*        h = getRepresentation<AIDA::IHistogram3D, TH3D>( hist );
   Histogram3D* n = h ? new Histogram3D( new TH3D( *h ) ) : nullptr;
   return {n, n};
 }

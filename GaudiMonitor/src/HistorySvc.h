@@ -43,24 +43,24 @@ public:
 
   virtual StatusCode captureState();
 
-  StatusCode registerJob() override;
-  StatusCode listProperties() const override;
+  StatusCode  registerJob() override;
+  StatusCode  listProperties() const override;
   JobHistory* getJobHistory() const override;
 
-  StatusCode registerSvc( const IService& ) override;
-  StatusCode listProperties( const IService& ) const override;
+  StatusCode      registerSvc( const IService& ) override;
+  StatusCode      listProperties( const IService& ) const override;
   ServiceHistory* getServiceHistory( const IService& ) const override;
-  void getServiceHistory( std::set<ServiceHistory*>& ) const override;
+  void            getServiceHistory( std::set<ServiceHistory*>& ) const override;
 
-  StatusCode registerAlg( const Algorithm& ) override;
-  StatusCode listProperties( const Algorithm& ) const override;
+  StatusCode        registerAlg( const Algorithm& ) override;
+  StatusCode        listProperties( const Algorithm& ) const override;
   AlgorithmHistory* getAlgHistory( const Algorithm& ) const override;
-  void getAlgHistory( std::set<AlgorithmHistory*>& ) const override;
+  void              getAlgHistory( std::set<AlgorithmHistory*>& ) const override;
 
-  StatusCode registerAlgTool( const IAlgTool& ) override;
-  StatusCode listProperties( const IAlgTool& ) const override;
+  StatusCode      registerAlgTool( const IAlgTool& ) override;
+  StatusCode      listProperties( const IAlgTool& ) const override;
   AlgToolHistory* getAlgToolHistory( const IAlgTool& ) const override;
-  void getAlgToolHistory( std::set<AlgToolHistory*>& ) const override;
+  void            getAlgToolHistory( std::set<AlgToolHistory*>& ) const override;
 
   DataHistory* createDataHistoryObj( const CLID& id, const std::string& key, const std::string& store ) override;
   virtual StatusCode registerDataHistory( const CLID& id, const std::string& key, const std::string& store );
@@ -82,11 +82,11 @@ private:
   typedef IVersHistoryObj::PropertyList PropertyList;
 
   typedef std::multimap<DHH, DataHistory*> DataHistMap;
-  typedef DataHistMap::iterator DHMitr;
+  typedef DataHistMap::iterator       DHMitr;
   typedef DataHistMap::const_iterator DHMCitr;
 
-  Gaudi::Property<bool> m_dump{this, "Dump", false};
-  Gaudi::Property<bool> m_activate{this, "Activate", true};
+  Gaudi::Property<bool>        m_dump{this, "Dump", false};
+  Gaudi::Property<bool>        m_activate{this, "Activate", true};
   Gaudi::Property<std::string> m_outputFile{this, "OutputFile"};
 
   void clearState();
@@ -98,7 +98,7 @@ private:
   std::map<const Algorithm*, AlgorithmHistory*> m_algmap;
 
   std::set<const IAlgTool*> m_ialgtools;
-  std::map<const AlgTool*, AlgToolHistory*> m_algtoolmap;
+  std::map<const AlgTool*, AlgToolHistory*>  m_algtoolmap;
   std::map<const IService*, ServiceHistory*> m_svcmap;
 
   std::multimap<DHH, DataHistory*> m_datMap;
@@ -117,7 +117,7 @@ private:
 
   IAlgorithm* getCurrentIAlg() const;
 
-  IIncidentSvc* m_incidentSvc = nullptr;
+  IIncidentSvc*     m_incidentSvc = nullptr;
   SmartIF<IToolSvc> m_toolSvc;
 
   bool m_outputFileTypeXML = false;

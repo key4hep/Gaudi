@@ -19,9 +19,9 @@ public:
   tbb::task* execute() override;
 
 private:
-  SmartIF<IAlgorithm> m_algorithm;
-  EventContext* m_evtCtx;
-  IAlgExecStateSvc* m_aess;
+  SmartIF<IAlgorithm>  m_algorithm;
+  EventContext*        m_evtCtx;
+  IAlgExecStateSvc*    m_aess;
   SmartIF<ISvcLocator> m_serviceLocator;
 };
 

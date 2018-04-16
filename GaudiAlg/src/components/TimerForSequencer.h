@@ -66,11 +66,11 @@ public:
   static std::string header( std::string::size_type size );
 
 private:
-  std::string m_name;
+  std::string  m_name;
   unsigned int m_size;
-  double m_factor;
-  uint64_t m_startClock = 0ULL;
-  uint64_t m_startCpu   = 0ULL;
+  double       m_factor;
+  uint64_t     m_startClock = 0ULL;
+  uint64_t     m_startCpu   = 0ULL;
 
   uint64_t m_num      = 0ULL;
   uint64_t m_lastTime = 0ULL;

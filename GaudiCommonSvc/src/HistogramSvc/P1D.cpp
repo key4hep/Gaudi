@@ -36,7 +36,7 @@ std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const std::string
 std::pair<DataObject*, AIDA::IProfile1D*> Gaudi::createProf1D( const AIDA::IProfile1D& hist )
 {
   TProfile* h = getRepresentation<AIDA::IProfile1D, TProfile>( hist );
-  auto n      = ( h ? new Profile1D( new TProfile( *h ) ) : nullptr );
+  auto      n = ( h ? new Profile1D( new TProfile( *h ) ) : nullptr );
   return {n, n};
 }
 

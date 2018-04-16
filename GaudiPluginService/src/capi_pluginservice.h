@@ -41,13 +41,13 @@ typedef struct {
 
 typedef struct {
   cgaudi_pluginsvc_t registry;
-  const char* id;
+  const char*        id;
 } cgaudi_factory_t;
 
 typedef struct {
   cgaudi_pluginsvc_t registry;
-  const char* id;
-  const char* key;
+  const char*        id;
+  const char*        key;
 } cgaudi_property_t;
 
 CGAUDI_API

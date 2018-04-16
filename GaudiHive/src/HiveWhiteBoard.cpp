@@ -41,10 +41,10 @@ namespace
   struct Partition {
 
     SmartIF<IDataProviderSvc> dataProvider;
-    SmartIF<IDataManagerSvc> dataManager;
-    wbMutex storeMutex;
-    DataObjIDColl newDataObjects;
-    int eventNumber;
+    SmartIF<IDataManagerSvc>  dataManager;
+    wbMutex                   storeMutex;
+    DataObjIDColl             newDataObjects;
+    int                       eventNumber;
     Partition() : dataProvider( 0 ), dataManager( 0 ), eventNumber( -1 ) {}
     Partition( IDataProviderSvc* dp, IDataManagerSvc* dm ) : dataProvider( dp ), dataManager( dm ), eventNumber( -1 ) {}
     Partition( const Partition& entry )
@@ -97,10 +97,10 @@ class HiveWhiteBoard : public extends<Service, IDataProviderSvc, IDataManagerSvc
 protected:
   typedef std::vector<Partition> Partitions;
 
-  Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
+  Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<std::string> m_loader{this, "DataLoader", "EventPersistencySvc", ""};
-  Gaudi::Property<int> m_slots{this, "EventSlots", 1, "number of event slots"};
+  Gaudi::Property<int>         m_slots{this, "EventSlots", 1, "number of event slots"};
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
@@ -215,7 +215,7 @@ public:
    * The optional data provider is not considered. On the other hand, the data
    * provider is specified to be the whiteboard.
    */
-  StatusCode setDataLoader( IConversionSvc* pDataLoader,
+  StatusCode setDataLoader( IConversionSvc*   pDataLoader,
                             IDataProviderSvc* dpsvc __attribute__( ( unused ) ) = nullptr ) override
   {
     if ( 0 != pDataLoader ) pDataLoader->addRef();
@@ -265,7 +265,7 @@ public:
     wbMutex::scoped_lock lock;
     lock.acquire( s_current->storeMutex );
     StatusCode sc = s_current->dataProvider->preLoad();
-    DataAgent da( s_current->newDataObjects );
+    DataAgent  da( s_current->newDataObjects );
     s_current->dataManager->traverseTree( &da );
     return sc;
   }

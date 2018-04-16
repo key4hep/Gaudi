@@ -127,7 +127,7 @@ def make_plot(runtimes, cloneFlag):
     canvas.Print(plotname)
 
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 runtimes = getRuntimes()
 
 make_plot(runtimes, True)

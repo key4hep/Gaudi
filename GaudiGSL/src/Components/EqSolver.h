@@ -47,10 +47,10 @@ public:
     ~EqSolverMisc();
 
   public:
-    inline const Arg& argument() const { return m_argum; }
-    inline Arg& argument() { return m_argum; }
+    inline const Arg&       argument() const { return m_argum; }
+    inline Arg&             argument() { return m_argum; }
     inline const Equations* equations() const { return m_eqs; }
-    inline const Jacobi& jacobi() const { return m_jac; }
+    inline const Jacobi&    jacobi() const { return m_jac; }
 
   private:
     // default constructor is disabled
@@ -61,9 +61,9 @@ public:
     EqSolverMisc& operator=( const EqSolverMisc& ) = delete;
 
   private:
-    Arg m_argum;
+    Arg              m_argum;
     const Equations* m_eqs;
-    Jacobi m_jac;
+    Jacobi           m_jac;
   };
 
   /// Inherited constructor

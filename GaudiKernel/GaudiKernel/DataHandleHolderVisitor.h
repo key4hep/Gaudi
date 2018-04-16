@@ -17,7 +17,7 @@ public:
 
 private:
   DataObjIDColl &m_ido, &m_odo;
-  DataObjIDColl m_ign_i, m_ign_o;
+  DataObjIDColl  m_ign_i, m_ign_o;
 };
 
 #endif

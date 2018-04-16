@@ -55,18 +55,18 @@ private:
   // one vector entry per event slot
   //  typedef std::map<Gaudi::StringKey, AlgExecState> AlgStateMap_t;
   typedef std::vector<AlgStateMap_t> AlgStates_t;
-  AlgStates_t m_algStates;
+  AlgStates_t                        m_algStates;
 
   std::vector<EventStatus::Status> m_eventStatus;
-  std::vector<Gaudi::StringKey> m_preInitAlgs;
+  std::vector<Gaudi::StringKey>    m_preInitAlgs;
 
   typedef std::map<Gaudi::StringKey, std::atomic<unsigned int>> AlgErrorMap_t;
   AlgErrorMap_t m_errorCount;
 
-  void init();
-  void checkInit() const;
+  void           init();
+  void           checkInit() const;
   std::once_flag m_initFlag;
-  bool m_isInit;
+  bool           m_isInit;
 
   std::mutex m_mut;
 };

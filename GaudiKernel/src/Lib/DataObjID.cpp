@@ -4,7 +4,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include <functional>
 
-IClassIDSvc* DataObjID::p_clidSvc( nullptr );
+IClassIDSvc*   DataObjID::p_clidSvc( nullptr );
 std::once_flag DataObjID::m_ip;
 
 void DataObjID::hashGen()

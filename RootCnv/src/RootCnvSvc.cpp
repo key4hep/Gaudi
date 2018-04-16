@@ -45,7 +45,7 @@ namespace GaudiRoot
 namespace
 {
   static map<string, TClass*> s_classesNames;
-  static map<CLID, TClass*> s_classesClids;
+  static map<CLID, TClass*>   s_classesClids;
 }
 #define MBYTE ( 1024 * 1024 )
 #define kBYTE 1024
@@ -78,7 +78,7 @@ StatusCode RootCnvSvc::error( CSTR msg )
 // Initialize the Db data persistency service
 StatusCode RootCnvSvc::initialize()
 {
-  string cname;
+  string     cname;
   StatusCode status = ConversionSvc::initialize();
   if ( !status.isSuccess() ) {
     return error( "Failed to initialize ConversionSvc base class." );
@@ -211,12 +211,12 @@ StatusCode RootCnvSvc::connectOutput( CSTR dsn, CSTR openMode )
 StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnection** con )
 {
   try {
-    IDataConnection* c = m_ioMgr->connection( dataset );
-    bool fire_incident = false;
-    *con               = nullptr;
+    IDataConnection* c             = m_ioMgr->connection( dataset );
+    bool             fire_incident = false;
+    *con                           = nullptr;
     if ( !c ) {
       std::unique_ptr<RootDataConnection> connection( new RootDataConnection( this, dataset, m_setup ) );
-      StatusCode sc = ( mode != IDataConnection::READ )
+      StatusCode                          sc = ( mode != IDataConnection::READ )
                           ? m_ioMgr->connectWrite( connection.get(), IDataConnection::IoType( mode ), "ROOT" )
                           : m_ioMgr->connectRead( false, connection.get() );
       c = sc.isSuccess() ? m_ioMgr->connection( dataset ) : nullptr;
@@ -249,12 +249,12 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
     }
     if ( *con ) {
       if ( fire_incident ) {
-        IOpaqueAddress* pAddr = nullptr;
-        string fid            = pc->fid();
-        string section        = m_recordName[0] == '/' ? m_recordName.value().substr( 1 ) : m_recordName.value();
-        TBranch* b            = pc->getBranch( section, m_recordName );
+        IOpaqueAddress* pAddr   = nullptr;
+        string          fid     = pc->fid();
+        string          section = m_recordName[0] == '/' ? m_recordName.value().substr( 1 ) : m_recordName.value();
+        TBranch*        b       = pc->getBranch( section, m_recordName );
         if ( b ) {
-          const string par[2]   = {fid, m_recordName};
+          const string  par[2]  = {fid, m_recordName};
           unsigned long ipar[2] = {(unsigned long)( *con ), (unsigned long)b->GetEntries() - 1};
           for ( int i = 0; i < b->GetEntries(); ++i ) {
             ipar[1]                             = i;
@@ -312,14 +312,14 @@ StatusCode RootCnvSvc::connectOutput( CSTR db_name ) { return connectOutput( db_
 StatusCode RootCnvSvc::commitOutput( CSTR dsn, bool /* doCommit */ )
 {
   if ( m_current ) {
-    size_t len     = m_currSection.find( '/', 1 );
-    string section = m_currSection.substr( 1, len == string::npos ? string::npos : len - 1 );
-    TBranch* b     = m_current->getBranch( section, m_currSection );
+    size_t   len     = m_currSection.find( '/', 1 );
+    string   section = m_currSection.substr( 1, len == string::npos ? string::npos : len - 1 );
+    TBranch* b       = m_current->getBranch( section, m_currSection );
     if ( b ) {
-      Long64_t evt = b->GetEntries();
-      TTree* t     = b->GetTree();
-      TObjArray* a = t->GetListOfBranches();
-      Int_t nb     = a->GetEntriesFast();
+      Long64_t   evt = b->GetEntries();
+      TTree*     t   = b->GetTree();
+      TObjArray* a   = t->GetListOfBranches();
+      Int_t      nb  = a->GetEntriesFast();
       /// fill NULL pointers to all branches, which have less entries than the section branch
       for ( Int_t i = 0; i < nb; ++i ) {
         TBranch* br_ptr = (TBranch*)a->UncheckedAt( i );
@@ -387,9 +387,9 @@ StatusCode RootCnvSvc::createNullRep( const std::string& path )
 // Insert null marker for not existent transient object
 StatusCode RootCnvSvc::createNullRef( const std::string& path )
 {
-  RootObjectRefs* refs = nullptr;
-  size_t len           = path.find( '/', 1 );
-  string section       = path.substr( 1, len == string::npos ? string::npos : len - 1 );
+  RootObjectRefs* refs    = nullptr;
+  size_t          len     = path.find( '/', 1 );
+  string          section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
   pair<int, unsigned long> ret = m_current->save( section, path + "#R", nullptr, refs, m_bufferSize, m_splitLevel );
   if ( log().level() <= MSG::VERBOSE )
     log() << MSG::VERBOSE << "Writing object:" << path << " " << ret.first << " " << hex << ret.second << dec
@@ -402,12 +402,12 @@ StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr
 {
   refpAddr = nullptr;
   if ( !pObj ) return error( "createRep> Current Database is invalid!" );
-  CLID clid     = pObj->clID();
-  IRegistry* pR = pObj->registry();
-  string p[2]   = {m_current->fid(), pR->identifier()};
-  TClass* cl    = ( clid == CLID_DataObject ) ? m_classDO : getClass( pObj );
-  size_t len    = p[1].find( '/', 1 );
-  string sect   = p[1].substr( 1, len == string::npos ? string::npos : len - 1 );
+  CLID       clid = pObj->clID();
+  IRegistry* pR   = pObj->registry();
+  string     p[2] = {m_current->fid(), pR->identifier()};
+  TClass*    cl   = ( clid == CLID_DataObject ) ? m_classDO : getClass( pObj );
+  size_t     len  = p[1].find( '/', 1 );
+  string     sect = p[1].substr( 1, len == string::npos ? string::npos : len - 1 );
   pair<int, unsigned long> ret = m_current->saveObj( sect, p[1], cl, pObj, m_bufferSize, m_splitLevel, true );
   if ( ret.first > 1 || ( clid == CLID_DataObject && ret.first == 1 ) ) {
     unsigned long ip[2]                        = {0, ret.second};
@@ -422,18 +422,18 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
 {
   if ( pObj ) {
     typedef vector<IRegistry*> Leaves;
-    Leaves leaves;
-    RootObjectRefs refs;
-    IRegistry* pR = pObj->registry();
-    auto dataMgr  = SmartIF<IDataManagerSvc>{pR->dataSvc()};
+    Leaves                     leaves;
+    RootObjectRefs             refs;
+    IRegistry*                 pR      = pObj->registry();
+    auto                       dataMgr = SmartIF<IDataManagerSvc>{pR->dataSvc()};
     if ( dataMgr ) {
       StatusCode status = dataMgr->objectLeaves( pObj, leaves );
       if ( status.isSuccess() ) {
-        RootRef ref;
-        const string& id    = pR->identifier();
-        size_t len          = id.find( '/', 1 );
-        string sect         = id.substr( 1, len == string::npos ? string::npos : len - 1 );
-        LinkManager* pLinks = pObj->linkMgr();
+        RootRef       ref;
+        const string& id     = pR->identifier();
+        size_t        len    = id.find( '/', 1 );
+        string        sect   = id.substr( 1, len == string::npos ? string::npos : len - 1 );
+        LinkManager*  pLinks = pObj->linkMgr();
         for ( auto& i : leaves ) {
           if ( i->address() ) {
             m_current->makeRef( i, ref );
@@ -442,8 +442,8 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
           }
         }
         for ( int i = 0, n = pLinks->size(); i < n; ++i ) {
-          LinkManager::Link* lnk = pLinks->link( i );
-          int link_id            = m_current->makeLink( lnk->path() );
+          LinkManager::Link* lnk     = pLinks->link( i );
+          int                link_id = m_current->makeLink( lnk->path() );
           refs.links.push_back( link_id );
         }
         pair<int, unsigned long> ret =
@@ -465,15 +465,15 @@ StatusCode RootCnvSvc::i__createObj( IOpaqueAddress* pA, DataObject*& refpObj )
 {
   refpObj = nullptr;
   if ( !pA ) return S_FAIL;
-  RootDataConnection* con = nullptr;
-  const string* par       = pA->par();
-  unsigned long* ipar     = const_cast<unsigned long*>( pA->ipar() );
-  StatusCode sc           = connectDatabase( par[0], IDataConnection::READ, &con );
+  RootDataConnection* con  = nullptr;
+  const string*       par  = pA->par();
+  unsigned long*      ipar = const_cast<unsigned long*>( pA->ipar() );
+  StatusCode          sc   = connectDatabase( par[0], IDataConnection::READ, &con );
   if ( sc.isSuccess() ) {
-    ipar[0]          = (unsigned long)con;
-    DataObject* pObj = nullptr;
-    size_t len       = par[1].find( '/', 1 );
-    string section   = par[1].substr( 1, len == string::npos ? string::npos : len - 1 );
+    ipar[0]             = (unsigned long)con;
+    DataObject* pObj    = nullptr;
+    size_t      len     = par[1].find( '/', 1 );
+    string      section = par[1].substr( 1, len == string::npos ? string::npos : len - 1 );
 
     int nb = con->loadObj( section, par[1], ipar[1], pObj );
     if ( nb > 1 || ( nb == 1 && pObj->clID() == CLID_DataObject ) ) {
@@ -496,19 +496,19 @@ StatusCode RootCnvSvc::i__fillObjRefs( IOpaqueAddress* pA, DataObject* pObj )
   if ( !pA || !pObj ) return error( "read> Cannot read object -- no valid object address present " );
 
   const unsigned long* ipar = pA->ipar();
-  RootDataConnection* con   = (RootDataConnection*)ipar[0];
+  RootDataConnection*  con  = (RootDataConnection*)ipar[0];
   if ( con ) {
     RootObjectRefs refs;
-    const string* par = pA->par();
-    size_t len        = par[1].find( '/', 1 );
-    string section    = par[1].substr( 1, len == string::npos ? string::npos : len - 1 );
-    int nb            = con->loadRefs( section, par[1], ipar[1], refs );
+    const string*  par     = pA->par();
+    size_t         len     = par[1].find( '/', 1 );
+    string         section = par[1].substr( 1, len == string::npos ? string::npos : len - 1 );
+    int            nb      = con->loadRefs( section, par[1], ipar[1], refs );
     if ( nb >= 1 ) {
-      string npar[3];
+      string        npar[3];
       unsigned long nipar[2];
-      IRegistry* pR    = pObj->registry();
-      auto dataMgr     = SmartIF<IDataManagerSvc>{pR->dataSvc()};
-      LinkManager* mgr = pObj->linkMgr();
+      IRegistry*    pR      = pObj->registry();
+      auto          dataMgr = SmartIF<IDataManagerSvc>{pR->dataSvc()};
+      LinkManager*  mgr     = pObj->linkMgr();
       for ( const auto& i : refs.links ) mgr->addLink( con->getLink( i ), nullptr );
       for ( auto& r : refs.refs ) {
         npar[0]             = con->getDb( r.dbase );
@@ -517,7 +517,7 @@ StatusCode RootCnvSvc::i__fillObjRefs( IOpaqueAddress* pA, DataObject* pObj )
         nipar[0]            = 0;
         nipar[1]            = r.entry;
         IOpaqueAddress* nPA = nullptr;
-        StatusCode sc       = addressCreator()->createAddress( r.svc, r.clid, npar, nipar, nPA );
+        StatusCode      sc  = addressCreator()->createAddress( r.svc, r.clid, npar, nipar, nPA );
         if ( sc.isSuccess() ) {
           if ( log().level() <= MSG::VERBOSE )
             log() << MSG::VERBOSE << dataMgr.as<IService>()->name() << " -> Register:" << pA->registry()->identifier()

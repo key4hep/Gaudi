@@ -140,7 +140,7 @@ long DataSvcHelpers::RegistryEntry::remove( IRegistry* obj )
 {
   try {
     RegistryEntry* pEntry = dynamic_cast<RegistryEntry*>( obj );
-    auto i                = std::remove( std::begin( m_store ), std::end( m_store ), pEntry );
+    auto           i      = std::remove( std::begin( m_store ), std::end( m_store ), pEntry );
     if ( i != std::end( m_store ) ) {
       pEntry->release();
       m_store.erase( i, std::end( m_store ) );

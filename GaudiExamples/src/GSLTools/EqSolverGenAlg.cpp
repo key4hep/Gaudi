@@ -50,7 +50,7 @@ public:
 
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return x[0] - 1; };
-  unsigned int dimensionality() const override { return 3; }
+  unsigned int                       dimensionality() const override { return 3; }
   ~Func1() override {}
 };
 FUNCTION_OBJECT_IMP( Func1 )
@@ -66,7 +66,7 @@ public:
 
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return x[1] - 1; };
-  unsigned int dimensionality() const override { return 3; }
+  unsigned int                       dimensionality() const override { return 3; }
   ~Func2() override {}
 };
 FUNCTION_OBJECT_IMP( Func2 )
@@ -82,7 +82,7 @@ public:
 
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return x[2] - 1; };
-  unsigned int dimensionality() const override { return 3; }
+  unsigned int                       dimensionality() const override { return 3; }
   ~Func3() override {}
 };
 FUNCTION_OBJECT_IMP( Func3 )

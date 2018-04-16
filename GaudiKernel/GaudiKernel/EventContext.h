@@ -27,7 +27,7 @@ public:
   typedef size_t ContextID_t;
   typedef size_t ContextEvt_t;
 
-  static const ContextID_t INVALID_CONTEXT_ID   = std::numeric_limits<ContextID_t>::max();
+  static const ContextID_t  INVALID_CONTEXT_ID  = std::numeric_limits<ContextID_t>::max();
   static const ContextEvt_t INVALID_CONTEXT_EVT = std::numeric_limits<ContextEvt_t>::max();
 
   EventContext(){};
@@ -36,9 +36,9 @@ public:
     m_valid = ( e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID ) ? false : true;
   }
 
-  ContextEvt_t evt() const { return m_evt_num; }
-  ContextID_t slot() const { return m_evt_slot; }
-  bool valid() const { return m_valid; }
+  ContextEvt_t       evt() const { return m_evt_num; }
+  ContextID_t        slot() const { return m_evt_slot; }
+  bool               valid() const { return m_valid; }
   const EventIDBase& eventID() const { return m_eid; }
 
   void set( const ContextEvt_t& e = 0, const ContextID_t& s = INVALID_CONTEXT_ID )
@@ -93,8 +93,8 @@ public:
 
 private:
   ContextEvt_t m_evt_num{INVALID_CONTEXT_EVT};
-  ContextID_t m_evt_slot{INVALID_CONTEXT_ID};
-  bool m_valid{false};
+  ContextID_t  m_evt_slot{INVALID_CONTEXT_ID};
+  bool         m_valid{false};
 
   boost::any m_extension;
 

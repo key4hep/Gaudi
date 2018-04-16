@@ -30,7 +30,7 @@ namespace Gaudi
             this, "AddressesFile", {}, "File containing the address details of the extra data."};
         /// Address details for the data to be added to the main event.
         std::vector<RootAddressArgs> m_addresses;
-        size_t m_count = 0;
+        size_t                       m_count = 0;
       };
     }
   }

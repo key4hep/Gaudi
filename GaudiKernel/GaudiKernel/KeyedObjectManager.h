@@ -54,7 +54,7 @@ namespace Containers
     mutable long m_keyCtxt;
     union {
       /// Buffer space to hold keyed container
-      char buffer[128];
+      char   buffer[128];
       SETUP* s;
     } m_setup;
 

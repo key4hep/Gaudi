@@ -43,7 +43,7 @@ private:
 
   ToolHandle<IMyTool> m_legacyToolHandle;
 
-  ToolHandle<IMyTool> m_myPrivToolHandle{this, "PrivToolHandle", "MyTool"};
+  ToolHandle<IMyTool>       m_myPrivToolHandle{this, "PrivToolHandle", "MyTool"};
   PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool"};
 
   PublicToolHandle<IAlgTool> m_myGenericToolHandle{this, "GenericToolHandle", "MyTool"};
@@ -54,7 +54,7 @@ private:
 
   PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle;
   PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
-  PublicToolHandle<IMyTool> m_myCopiedToolHandle;
+  PublicToolHandle<IMyTool>       m_myCopiedToolHandle;
 
   ToolHandleArray<IMyTool> m_tha;
 

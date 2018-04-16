@@ -176,7 +176,7 @@ double StatEntity::se::efficiencyErr() const
     n1 = 1;
   } ///< @attention treat properly the bins with eff=0
   const long double n3 = nEntries;
-  long double n2       = n3 - accumulatedFlag;
+  long double       n2 = n3 - accumulatedFlag;
   // treat properly the bins with eff=100%
   if ( 1 > fabsl( n2 ) ) {
     n2 = 1;

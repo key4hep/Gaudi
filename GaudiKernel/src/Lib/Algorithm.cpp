@@ -54,7 +54,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const s
   // Auditor monitoring properties
   // Initialize the default value from ApplicationMgr AuditAlgorithms
   Gaudi::Property<bool> audit( false );
-  auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
+  auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
   if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
     audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );
   }
@@ -791,20 +791,20 @@ SmartIF<IFace>& Algorithm::get_svc_( SmartIF<IFace>& p, const char* service_name
 }
 
 SmartIF<IAlgExecStateSvc>& Algorithm::algExecStateSvc() const { return get_svc_( m_aess, "AlgExecStateSvc" ); }
-SmartIF<IAuditorSvc>& Algorithm::auditorSvc() const { return get_svc_( m_pAuditorSvc, "AuditorSvc" ); }
-SmartIF<IChronoStatSvc>& Algorithm::chronoSvc() const { return get_svc_( m_CSS, "ChronoStatSvc" ); }
+SmartIF<IAuditorSvc>&      Algorithm::auditorSvc() const { return get_svc_( m_pAuditorSvc, "AuditorSvc" ); }
+SmartIF<IChronoStatSvc>&   Algorithm::chronoSvc() const { return get_svc_( m_CSS, "ChronoStatSvc" ); }
 SmartIF<IDataProviderSvc>& Algorithm::detSvc() const { return get_svc_( m_DDS, "DetectorDataSvc" ); }
-SmartIF<IConversionSvc>& Algorithm::detCnvSvc() const { return get_svc_( m_DCS, "DetectorPersistencySvc" ); }
+SmartIF<IConversionSvc>&   Algorithm::detCnvSvc() const { return get_svc_( m_DCS, "DetectorPersistencySvc" ); }
 SmartIF<IDataProviderSvc>& Algorithm::eventSvc() const { return get_svc_( m_EDS, "EventDataSvc" ); }
-SmartIF<IConversionSvc>& Algorithm::eventCnvSvc() const { return get_svc_( m_ECS, "EventPersistencySvc" ); }
-SmartIF<IHistogramSvc>& Algorithm::histoSvc() const { return get_svc_( m_HDS, "HistogramDataSvc" ); }
-SmartIF<INTupleSvc>& Algorithm::ntupleSvc() const { return get_svc_( m_NTS, "NTupleSvc" ); }
-SmartIF<IRndmGenSvc>& Algorithm::randSvc() const { return get_svc_( m_RGS, "RndmGenSvc" ); }
-SmartIF<IToolSvc>& Algorithm::toolSvc() const { return get_svc_( m_ptoolSvc, "ToolSvc" ); }
-SmartIF<IExceptionSvc>& Algorithm::exceptionSvc() const { return get_svc_( m_EXS, "ExceptionSvc" ); }
-SmartIF<IAlgContextSvc>& Algorithm::contextSvc() const { return get_svc_( m_contextSvc, "AlgContextSvc" ); }
-SmartIF<ITimelineSvc>& Algorithm::timelineSvc() const { return get_svc_( m_timelineSvc, "TimelineSvc" ); }
-SmartIF<IHiveWhiteBoard>& Algorithm::whiteboard() const { return get_svc_( m_WB, "EventDataSvc" ); }
+SmartIF<IConversionSvc>&   Algorithm::eventCnvSvc() const { return get_svc_( m_ECS, "EventPersistencySvc" ); }
+SmartIF<IHistogramSvc>&    Algorithm::histoSvc() const { return get_svc_( m_HDS, "HistogramDataSvc" ); }
+SmartIF<INTupleSvc>&       Algorithm::ntupleSvc() const { return get_svc_( m_NTS, "NTupleSvc" ); }
+SmartIF<IRndmGenSvc>&      Algorithm::randSvc() const { return get_svc_( m_RGS, "RndmGenSvc" ); }
+SmartIF<IToolSvc>&         Algorithm::toolSvc() const { return get_svc_( m_ptoolSvc, "ToolSvc" ); }
+SmartIF<IExceptionSvc>&    Algorithm::exceptionSvc() const { return get_svc_( m_EXS, "ExceptionSvc" ); }
+SmartIF<IAlgContextSvc>&   Algorithm::contextSvc() const { return get_svc_( m_contextSvc, "AlgContextSvc" ); }
+SmartIF<ITimelineSvc>&     Algorithm::timelineSvc() const { return get_svc_( m_timelineSvc, "TimelineSvc" ); }
+SmartIF<IHiveWhiteBoard>&  Algorithm::whiteboard() const { return get_svc_( m_WB, "EventDataSvc" ); }
 
 SmartIF<ISvcLocator>& Algorithm::serviceLocator() const { return *const_cast<SmartIF<ISvcLocator>*>( &m_pSvcLocator ); }
 
@@ -842,7 +842,7 @@ StatusCode Algorithm::createSubAlgorithm( const std::string& type, const std::st
 
   // Maybe modify the AppMgr interface to return Algorithm* ??
   IAlgorithm* tmp;
-  StatusCode sc = am->createAlgorithm( type, name + getGaudiThreadIDfromName( Algorithm::name() ), tmp );
+  StatusCode  sc = am->createAlgorithm( type, name + getGaudiThreadIDfromName( Algorithm::name() ), tmp );
   if ( sc.isFailure() ) return StatusCode::FAILURE;
 
   try {

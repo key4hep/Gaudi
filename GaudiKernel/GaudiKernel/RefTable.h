@@ -200,7 +200,7 @@ public:
   {
     EntryType* entry = i_reference( from );
     if ( 0 == entry ) {
-      bool result         = insertMapElement( from, EntryType() );
+      bool       result   = insertMapElement( from, EntryType() );
       EntryType* newEntry = i_reference( from );
       if ( !( 0 == newEntry ) ) {
         newEntry->push_back( SmartRef<TO>( to ) );
@@ -216,7 +216,7 @@ public:
   {
     EntryType* entry = i_reference( from );
     if ( 0 == entry ) {
-      bool result         = insertMapElement( from, EntryType() );
+      bool       result   = insertMapElement( from, EntryType() );
       EntryType* newEntry = i_reference( from );
       if ( !( 0 == newEntry ) ) {
         newEntry->push_back( to );
@@ -236,14 +236,14 @@ public:
   EntryType& reference( const FROM* from )
   {
     static EntryType empty;
-    EntryType* e = i_reference( from );
+    EntryType*       e = i_reference( from );
     return e ? *e : empty;
   }
   /// Find Reference from it's source entry (CONST)
   const EntryType& reference( const FROM* from ) const
   {
     static const EntryType empty;
-    EntryType* e = i_reference( from );
+    EntryType*             e = i_reference( from );
     return e ? *e : empty;
   }
   /// Check if two entries are Referenced to each other

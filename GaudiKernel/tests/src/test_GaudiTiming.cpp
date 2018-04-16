@@ -103,7 +103,7 @@ namespace GaudiKernelTest
       // This should result in non-zero user and kernel times
       t0      = System::getProcessTime();
       float x = 1.5;
-      long m  = 0;
+      long  m = 0;
       for ( int i = 0; i < 10000; i++ ) {
         x *= sin( x ) / atan( x ) * tanh( x ) * sqrt( x );
         m += System::virtualMemory();
@@ -147,9 +147,9 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT( c1 < c2 );
 
       // Performance
-      ChronoEntity c3;
+      ChronoEntity        c3;
       System::ProcessTime t0 = System::getProcessTime();
-      int N                  = 1e6;
+      int                 N  = 1e6;
       for ( int i = 0; i < N; i++ ) {
         c3.start();
         c3.stop();

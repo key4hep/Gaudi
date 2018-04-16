@@ -135,8 +135,8 @@ namespace Genfun
     private:
       std::vector<double> m_x;
       std::vector<double> m_y;
-      mutable std::unique_ptr<gsl_spline, details::gsl_deleter> m_spline;      //! transient
-      mutable std::unique_ptr<gsl_interp_accel, details::gsl_deleter> m_accel; //! transient
+      mutable std::unique_ptr<gsl_spline, details::gsl_deleter>       m_spline; //! transient
+      mutable std::unique_ptr<gsl_interp_accel, details::gsl_deleter> m_accel;  //! transient
       GaudiMath::Interpolation::Type m_type;
     };
 
@@ -658,7 +658,7 @@ namespace Genfun
     private:
       // the actual spline function
       SplineBase m_spline;
-      double m_low;
+      double     m_low;
     };
     // mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLSplineInteg )

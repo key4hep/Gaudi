@@ -41,6 +41,6 @@ public:
 private:
   SmartIF<ISvcLocator> m_svclocator; // Service locator reference
   SmartIF<IMessageSvc> m_msgsvc;     // Message Service reference
-  SmartIF<IInterface> m_pOuter;      // Interface hub reference (ApplicationMgr)
+  SmartIF<IInterface>  m_pOuter;     // Interface hub reference (ApplicationMgr)
 };
 #endif // GAUDI_DLLCLASSMANAGER_H

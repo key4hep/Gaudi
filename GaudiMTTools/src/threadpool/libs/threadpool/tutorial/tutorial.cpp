@@ -62,7 +62,7 @@ void task_3() { print( "  task_3()\n" ); }
 
 void task_with_parameter( int value ) { print( "  task_with_parameter(" + to_string( value ) + ")\n" ); }
 
-int loops = 0;
+int  loops = 0;
 bool looped_task()
 {
   print( "  looped_task()\n" );

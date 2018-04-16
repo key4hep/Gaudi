@@ -63,7 +63,7 @@ private:
 private:
   Gaudi::Property<std::vector<std::string>> m_included{this, "IncludeAlgorithms", {}, "Names of included algorithms."};
   Gaudi::Property<std::vector<std::string>> m_excluded{this, "ExcludeAlgorithms", {}, "Names of excluded algorithms."};
-  Gaudi::Property<int> m_nStartFromEvent{
+  Gaudi::Property<int>                      m_nStartFromEvent{
       this, "StartFromEventN", 1, "After what event we stop profiling. If 0 than we also profile finalization stage."};
   Gaudi::Property<int> m_nStopAtEvent{
       this, "StopAtEventN", 0,
@@ -115,7 +115,7 @@ private:
   bool isExcluded( const std::string& name ) const;
   bool isRunning() const;
 
-  int stackLevel() const;
+  int         stackLevel() const;
   std::string stackIndent( bool newLevel = false ) const;
   std::string taskTypeName( const std::string& component_name ) const;
 };
@@ -129,9 +129,9 @@ void IntelProfilerAuditor::start()
 void IntelProfilerAuditor::start_profiling_component( const std::string& name )
 {
   if ( !m_isStarted ) return;
-  std::string typeName           = taskTypeName( name );
-  __itt_event taskId             = 0;
-  TaskTypes::const_iterator iter = m_tasktypes.find( typeName );
+  std::string               typeName = taskTypeName( name );
+  __itt_event               taskId   = 0;
+  TaskTypes::const_iterator iter     = m_tasktypes.find( typeName );
   if ( iter != m_tasktypes.end() ) {
     taskId = iter->second;
   }
@@ -142,7 +142,7 @@ void IntelProfilerAuditor::start_profiling_component( const std::string& name )
     m_tasktypes.insert( TaskTypes::value_type( typeName, taskId ) );
   }
 
-  stack_entity state   = stack_entity( name, true, taskId );
+  stack_entity  state  = stack_entity( name, true, taskId );
   stack_entity* parent = !m_stack.empty() ? &m_stack.back() : NULL;
 
   if ( parent != NULL ) {
@@ -236,8 +236,8 @@ StatusCode IntelProfilerAuditor::initialize()
 {
   info() << "Initialised" << endmsg;
 
-  IIncidentSvc* inSvc = NULL;
-  const StatusCode sc = serviceLocator()->service( "IncidentSvc", inSvc );
+  IIncidentSvc*    inSvc = NULL;
+  const StatusCode sc    = serviceLocator()->service( "IncidentSvc", inSvc );
   if ( sc.isFailure() ) return sc;
   // Useful to start profiling only after some event, we don't need profile
   // initialization stage. For that we need to count events with BeginEvent
@@ -351,8 +351,8 @@ void IntelProfilerAuditor::after( StandardEventType type, INamedInterface* i, co
   }
 
   // Name of the current component
-  const std::string& name = i->name();
-  stack_entity state      = m_stack.back();
+  const std::string& name  = i->name();
+  stack_entity       state = m_stack.back();
   // Remove component from stack.
   m_stack.pop_back();
 

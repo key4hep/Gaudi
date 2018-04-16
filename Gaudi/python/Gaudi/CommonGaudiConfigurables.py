@@ -15,7 +15,7 @@ packages = ['GaudiCoreSvc', 'GaudiCommonSvc', 'GaudiSvc', 'GaudiAlg',
             'GaudiAud', 'GaudiPoolDb', 'RootHistCnv', 'GaudiUtils',
             'RootCnv']
 
-#--Loop open all listed packages and populate __all__ with the names and
+# --Loop open all listed packages and populate __all__ with the names and
 #  the local scope with the Configurable classes
 for package in packages:
     try:
@@ -30,7 +30,7 @@ for package in packages:
         # ignore the configurables from missing packages.
         pass
 
-#--Fix some of the name idiosyncrasies in Gaudi
+# --Fix some of the name idiosyncrasies in Gaudi
 aliases = {
     'EventDataSvc':             'EvtDataSvc',
     'DetectorDataSvc':          'DetDataSvc',

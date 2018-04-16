@@ -13,7 +13,7 @@ tbb::task* ThreadInitTask::execute()
 {
 
   SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
-  MsgStream log( messageSvc, "ThreadInitTask" );
+  MsgStream            log( messageSvc, "ThreadInitTask" );
 
   const auto debug = log.level() <= MSG::DEBUG;
 
