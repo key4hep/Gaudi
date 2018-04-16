@@ -189,7 +189,9 @@ public:
     m_cont.setup( (void*)sptr, (void**)rptr );
   }
   KeyedContainer( KeyedContainer&& other )
-      : m_cont( std::move( other.m_cont ) ), m_sequential( std::move( other.m_sequential ) )
+      : ObjectContainerBase( std::move( other ) )
+      , m_cont( std::move( other.m_cont ) )
+      , m_sequential( std::move( other.m_sequential ) )
   {
     m_cont.setup( (void*)&m_sequential, (void**)&m_random );
     std::for_each( begin(), end(), [this]( ContainedObject* obj ) { obj->setParent( this ); } );
