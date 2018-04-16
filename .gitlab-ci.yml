@@ -60,22 +60,6 @@ build-gcc62:
       - .ccache
     expire_in: 1 week
 
-test_headers:
-  tags:
-    - cvmfs
-  stage: test
-  script:
-    - curl -o artifacts.zip --location ${CI_PROJECT_URL}/-/jobs/artifacts/master/download?job=${CI_JOB_NAME}
-    - unzip -q artifacts.zip '.ccache/*' || true
-    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -z
-    - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
-    - make BUILDDIR=${BUILDDIR} test_public_headers_build
-    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -s
-  artifacts:
-    paths:
-      - .ccache
-    expire_in: 1 week
-
 coding-conventions:
   tags:
     - cvmfs
