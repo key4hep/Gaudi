@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Use `apply` in `Gaudi::Functional` ([mr !622][])
 
 ### Fixed
+- Fixed the list of files used for formatting check in Gitlab-CI ([mr !664][])
 - Avoid (false positive) clang warning ([mr !656][])
 - Handle incompatible values for DataObjectHandleBase props ([mr !650][])
 - Fixed bug in THistSvc introduced with [mr !594][] ([mr !652][])
@@ -48,6 +49,7 @@ Details about old versions of the project can be found in the
 [ReleaseNotes](ReleaseNotes) folder and in the `release.notes` files in
 [GaudiRelease/doc](GaudiRelease/doc).
 
+[mr !664]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/664
 [mr !662]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/662
 [mr !658]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/658
 [mr !656]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/656
