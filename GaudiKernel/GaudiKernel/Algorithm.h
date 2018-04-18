@@ -607,6 +607,10 @@ private:
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
   bool                       m_isFinalized;                                   ///< Algorithm has been finalized flag
 
+  /// temporary flags to check if derived class's begin/endRun methods called
+  bool m_beginRunCalled;
+  bool m_endRunCalled;
+
   /// implementation of service method
   StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
   StatusCode service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
