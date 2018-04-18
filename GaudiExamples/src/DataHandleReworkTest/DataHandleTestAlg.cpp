@@ -65,7 +65,12 @@ private:
 class DataHandleTestAlg : public ExtendedAlg
 {
 public:
-  using ExtendedAlg::ExtendedAlg;
+  // NOTE: Cannot use "using ExtendedAlg::ExtendedAlg;" due to a GCC 6 bug
+  template<typename... Args>
+  DataHandleTestAlg( Args&&... args )
+    : ExtendedAlg( std::forward<Args>(args)... )
+  {}
+
   StatusCode execute() override;
 
 private:
