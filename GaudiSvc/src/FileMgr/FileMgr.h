@@ -143,8 +143,7 @@ private:
 
   std::map<IoTech, actionMap> m_actions;
 
-  typedef std::map<std::string, int> supMap;
-  supMap m_supMap;
+  std::map<std::string, Io::Action_bitmap> m_supMap;
 
   std::string m_lastErrS;
   int         m_lastErr;

@@ -10,6 +10,7 @@
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/IService.h"
 
+#include <bitset>
 #include <fcntl.h>
 #include <functional>
 #include <map>
@@ -282,6 +283,7 @@ namespace Io
   //
 
   enum Action { OPEN = 0, CLOSE, REOPEN, OPEN_ERR, CLOSE_ERR, REOPEN_ERR, INVALID_ACTION };
+  using Action_bitmap = std::bitset<INVALID_ACTION + 1>;
 
   inline std::ostream& operator<<( std::ostream& s, const Action& t )
   {
