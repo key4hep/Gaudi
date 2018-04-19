@@ -64,8 +64,14 @@ template<int... inputIDs,
 class DataHandleFlowAlg<IDs<inputIDs...>, IDs<outputIDs...>>
   : public Gaudi::experimental::Algorithm
 {
+  using Super = Gaudi::experimental::Algorithm;
 public:
-  using Gaudi::experimental::Algorithm::Algorithm;
+  // NOTE: Cannot use "using Gaudi::experimental::Algorithm::Algorithm;"
+  //       due to a GCC 6 bug
+  template<typename... Args>
+  DataHandleFlowAlg( Args&&... args )
+    : Super( std::forward<Args>(args)... )
+  {}
 
   /// Run the algorithm, checking the data flow graph and I/O values
   StatusCode execute() override
