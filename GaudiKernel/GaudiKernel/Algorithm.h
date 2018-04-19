@@ -77,12 +77,7 @@ class AlgorithmManager;
  */
 class GAUDI_API Algorithm
     : public DataHandleHolderBase<
-             PropertyHolder<
-             CommonMessaging<
-             implements<IAlgorithm,
-                        IDataHandleHolder,
-                        IProperty,
-                        IStateful>>>>
+          PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgorithm*( const std::string&, ISvcLocator* )>;
@@ -623,6 +618,5 @@ private:
   /// Private assignment operator: NO ASSIGNMENT ALLOWED
   Algorithm& operator=( const Algorithm& rhs ) = delete;
 };
-
 
 #endif // GAUDIKERNEL_ALGORITHM_H

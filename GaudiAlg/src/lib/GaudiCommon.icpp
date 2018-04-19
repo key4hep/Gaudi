@@ -50,9 +50,9 @@
 // Boost
 // ============================================================================
 #include "boost/format.hpp"
+#include "boost/tokenizer.hpp"
 #include <boost/none.hpp>
 #include <boost/optional.hpp>
-#include "boost/tokenizer.hpp"
 // ============================================================================
 // Disable warning on windows
 #ifdef _WIN32
@@ -170,7 +170,7 @@ StatusCode GaudiCommon<PBASE>::
       this->debug() << "Changing " << location << " to " << fixedLocation << endmsg;
     }
     DataObjID result = id;
-    result.updateKey(fixedLocation);
+    result.updateKey( fixedLocation );
     return result;
   };
 

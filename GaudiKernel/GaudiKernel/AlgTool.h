@@ -46,12 +46,7 @@ class ToolHandleInfo;
  */
 class GAUDI_API AlgTool
     : public DataHandleHolderBase<
-          PropertyHolder<
-          CommonMessaging<
-          implements<IAlgTool,
-                     IDataHandleHolder,
-                     IProperty,
-                     IStateful>>>>
+          PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;

@@ -18,7 +18,6 @@ namespace Gaudi
   }
 }
 
-
 /// Entity which holds DataHandles and can track the associated data
 /// dependencies for the Scheduler
 ///
@@ -35,9 +34,7 @@ namespace Gaudi
 /// provide access to the event store. This requirement is encoded in code to
 /// the extent which C++ will cleanly allow.
 ///
-struct GAUDI_API IDataHandleHolder
-  : virtual public extend_interfaces<INamedInterface, IProperty>
-{
+struct GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInterface, IProperty> {
   DeclareInterfaceID( IDataHandleHolder, 1, 0 );
 
   /// Provide access to the whiteboard after initialization
@@ -59,7 +56,7 @@ struct GAUDI_API IDataHandleHolder
   virtual const DataObjIDColl& eventOutputKeys() const = 0;
 
   /// Declare ownership of a legacy DataHandle
-  virtual void declare( Gaudi::DataHandle& )  = 0;
+  virtual void declare( Gaudi::DataHandle& ) = 0;
 
   /// Discard ownership of a legacy DataHandle
   virtual void renounce( Gaudi::DataHandle& ) = 0;

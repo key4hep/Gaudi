@@ -1,11 +1,11 @@
 #ifndef GAUDIKERNEL_DATAHANDLE
 #define GAUDIKERNEL_DATAHANDLE 1
 
-#include <string>
-#include <type_traits>
 #include "GaudiKernel/DataHandleConfigurable.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/Property.h"
+#include <string>
+#include <type_traits>
 
 //---------------------------------------------------------------------------
 
@@ -80,73 +80,66 @@ namespace Gaudi
   namespace experimental
   {
     /// Base class to all new-style data handles
-    class DataHandle {
-      public:
-        // DataHandles are used for the purpose of accounting component data
-        // dependencies, and should thus never be copied.
-        DataHandle(const DataHandle&) = delete;
-        DataHandle& operator=(const DataHandle&) = delete;
+    class DataHandle
+    {
+    public:
+      // DataHandles are used for the purpose of accounting component data
+      // dependencies, and should thus never be copied.
+      DataHandle( const DataHandle& ) = delete;
+      DataHandle& operator=( const DataHandle& ) = delete;
 
-        // DataHandles pass a pointer to themselves to the host Algorithm during
-        // registration, which happens at construction time. They should thus
-        // not be moved, as that would invalidate said pointer.
-        //
-        // The only reason why we don't delete the DataHandle move constructor
-        // as well is that it would also forbid some safe and useful forms of
-        // in-place construction.
-        //
-        DataHandle(DataHandle&&) = default;
-        DataHandle& operator=(DataHandle&&) = delete;
+      // DataHandles pass a pointer to themselves to the host Algorithm during
+      // registration, which happens at construction time. They should thus
+      // not be moved, as that would invalidate said pointer.
+      //
+      // The only reason why we don't delete the DataHandle move constructor
+      // as well is that it would also forbid some safe and useful forms of
+      // in-place construction.
+      //
+      DataHandle( DataHandle&& ) = default;
+      DataHandle& operator=( DataHandle&& ) = delete;
 
-        /// (Configurable) ID of the data being accessed via this handle
-        ///
-        /// The current proposal is to only support one ID per handle. If
-        /// experiments need to read from multiple whiteboard keys (LHCb
-        /// alternate paths) or to write an object that's accessible via
-        /// multiple whiteboard keys (ATLAS), they would need to implement the
-        /// underlying support on their own.
-        ///
-        /// For LHCb alternate paths, this can be handled at the DataLoader
-        /// level (try linking from alternate paths if original one is empty),
-        /// or via good old DataOnDemand for the sequential case. See
-        /// https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/422 .
-        ///
-        /// FIXME: For aliased writes, how would that work with the Scheduler?
-        ///
-        const DataObjID& targetKey() const { return m_property.targetKey(); }
+      /// (Configurable) ID of the data being accessed via this handle
+      ///
+      /// The current proposal is to only support one ID per handle. If
+      /// experiments need to read from multiple whiteboard keys (LHCb
+      /// alternate paths) or to write an object that's accessible via
+      /// multiple whiteboard keys (ATLAS), they would need to implement the
+      /// underlying support on their own.
+      ///
+      /// For LHCb alternate paths, this can be handled at the DataLoader
+      /// level (try linking from alternate paths if original one is empty),
+      /// or via good old DataOnDemand for the sequential case. See
+      /// https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/422 .
+      ///
+      /// FIXME: For aliased writes, how would that work with the Scheduler?
+      ///
+      const DataObjID& targetKey() const { return m_property.targetKey(); }
 
-        /// Change the ID of the target data
-        void setTargetKey(const DataObjID& id) { m_property.setTargetKey(id); }
+      /// Change the ID of the target data
+      void setTargetKey( const DataObjID& id ) { m_property.setTargetKey( id ); }
 
-        /// Initialize the data handle
-        ///
-        /// This must be done by the owner once it has sysInitialized itself.
-        /// It is the stage at which the handle performs deferred framework
-        /// operations such as acquiring access to the data stores.
-        ///
-        virtual void initialize(const IDataHandleHolder& owner) = 0;
+      /// Initialize the data handle
+      ///
+      /// This must be done by the owner once it has sysInitialized itself.
+      /// It is the stage at which the handle performs deferred framework
+      /// operations such as acquiring access to the data stores.
+      ///
+      virtual void initialize( const IDataHandleHolder& owner ) = 0;
 
-      protected:
+    protected:
+      /// Handles are constructed like a Gaudi property (and effectively
+      /// behave as one, which sets the associated data object identifier)
+      template <typename Owner, std::enable_if_t<std::is_base_of<IDataHandleHolder, Owner>::value>* = nullptr>
+      DataHandle( Owner& owner, const std::string& propertyName, DataObjID&& defaultID, const std::string& docString,
+                  const IDataHandleMetadata& metadata )
+          : m_property{&owner, propertyName, {metadata, std::move( defaultID )}, docString}
+      {
+      }
 
-        /// Handles are constructed like a Gaudi property (and effectively
-        /// behave as one, which sets the associated data object identifier)
-        template<typename Owner,
-                 std::enable_if_t<std::is_base_of<IDataHandleHolder,
-                                                  Owner>::value>* = nullptr>
-        DataHandle(Owner& owner,
-                   const std::string& propertyName,
-                   DataObjID&& defaultID,
-                   const std::string& docString,
-                   const IDataHandleMetadata& metadata)
-          : m_property{&owner,
-                       propertyName,
-                       {metadata, std::move(defaultID)},
-                       docString}
-        {}
-
-      private:
-        /// Configurable property associated with a DataHandle
-        Gaudi::Property<DataHandleConfigurable> m_property;
+    private:
+      /// Configurable property associated with a DataHandle
+      Gaudi::Property<DataHandleConfigurable> m_property;
     };
   }
 }

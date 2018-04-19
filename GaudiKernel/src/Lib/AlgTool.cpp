@@ -189,16 +189,16 @@ StatusCode AlgTool::sysInitialize()
     m_state = m_targetState;
 
     // Perfor any scheduled dependency update
-    if ( m_updateDependencies ) updateEventKeys(m_updateDependencies);
+    if ( m_updateDependencies ) updateEventKeys( m_updateDependencies );
 
     // Collect all explicit dependencies in a single place
     collectExplicitDeps();
 
     // Check for explicit circular data dependencies
-    sc = handleCircularDeps([this](const DataObjID& key) -> CircularDepAction {
+    sc = handleCircularDeps( [this]( const DataObjID& key ) -> CircularDepAction {
       error() << "Explicit circular data dependency detected for id " << key << endmsg;
       return CircularDepAction::Abort;
-    });
+    } );
     if ( !sc ) return sc;
 
     // Add tool dependencies to our dependency list

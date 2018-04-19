@@ -2,7 +2,6 @@
 
 #include "GaudiKernel/Parsers.h"
 
-
 using DataHandleConfigurable = Gaudi::experimental::DataHandleConfigurable;
 
 namespace Gaudi
@@ -14,11 +13,11 @@ namespace Gaudi
       // FIXME: Aiming for perfect compatibility with old DataObjID-based
       //        solution for now, customize the repr once this is working
 
-      DataObjID id;
+      DataObjID  id;
       StatusCode sc = parse( id, s );
 
-      if(sc.isSuccess()) {
-        v.setTargetKey(std::move(id));
+      if ( sc.isSuccess() ) {
+        v.setTargetKey( std::move( id ) );
       }
       return sc;
     }
@@ -36,8 +35,7 @@ namespace Gaudi
   }
 } //> ns Gaudi
 
-
-std::ostream& operator<<(std::ostream& str, const DataHandleConfigurable& dhc)
+std::ostream& operator<<( std::ostream& str, const DataHandleConfigurable& dhc )
 {
   // FIXME: Aiming for perfect compatibility with old DataObjID-based solution
   //        for now, customize the repr once this is working

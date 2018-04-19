@@ -6,7 +6,6 @@
 
 #include "GaudiKernel/DataObjID.h"
 
-
 /// Work-in-progress rewrite of the DataHandle infrastructure
 namespace Gaudi
 {
@@ -59,54 +58,47 @@ namespace Gaudi
       //       subclass-specific and needed in the base class constructor.
     };
 
-
     /// Configurable entity associated with a DataHandle property
     ///
     /// This class combines access to the aforementioned metadata with a
     /// configurable target DataObjID. It is what the Property machinery will
     /// eventually interact with.
     ///
-    class DataHandleConfigurable {
-      public:
-        /// Initialize by providing access to the metadata singleton
-        DataHandleConfigurable(const IDataHandleMetadata& metadata,
-                               DataObjID defaultKey)
-          : m_metadata(metadata)
-          , m_key(std::move(defaultKey))
-        {}
+    class DataHandleConfigurable
+    {
+    public:
+      /// Initialize by providing access to the metadata singleton
+      DataHandleConfigurable( const IDataHandleMetadata& metadata, DataObjID defaultKey )
+          : m_metadata( metadata ), m_key( std::move( defaultKey ) )
+      {
+      }
 
-        /// Propagate metadata of the underlying DataHandle type
-        const IDataHandleMetadata& metadata() const { return m_metadata; }
+      /// Propagate metadata of the underlying DataHandle type
+      const IDataHandleMetadata& metadata() const { return m_metadata; }
 
-        /// Tell what the currently configured target is
-        const DataObjID& targetKey() const { return m_key; }
+      /// Tell what the currently configured target is
+      const DataObjID& targetKey() const { return m_key; }
 
-        /// Change the target of the data handle
-        void setTargetKey(const DataObjID& key) { m_key = key; }
+      /// Change the target of the data handle
+      void setTargetKey( const DataObjID& key ) { m_key = key; }
 
-        /// Boilerplate for Gaudi::Property compatibility
-        friend std::ostream& operator<<(std::ostream& str,
-                                        const DataHandleConfigurable& d);
+      /// Boilerplate for Gaudi::Property compatibility
+      friend std::ostream& operator<<( std::ostream& str, const DataHandleConfigurable& d );
 
-      private:
-        std::reference_wrapper<const IDataHandleMetadata> m_metadata;
-        DataObjID m_key;
+    private:
+      std::reference_wrapper<const IDataHandleMetadata> m_metadata;
+      DataObjID                                         m_key;
     };
   }
-
 
   // More boilerplate for Gaudi::Property compatibility
   namespace Parsers
   {
-    GAUDI_API StatusCode parse(Gaudi::experimental::DataHandleConfigurable&,
-                               const std::string&);
+    GAUDI_API StatusCode parse( Gaudi::experimental::DataHandleConfigurable&, const std::string& );
   }
   namespace Utils
   {
-    GAUDI_API std::ostream& toStream(
-      const Gaudi::experimental::DataHandleConfigurable&,
-      std::ostream&
-    );
+    GAUDI_API std::ostream& toStream( const Gaudi::experimental::DataHandleConfigurable&, std::ostream& );
   }
 }
 

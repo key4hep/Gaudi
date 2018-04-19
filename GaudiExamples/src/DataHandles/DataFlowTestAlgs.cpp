@@ -1,10 +1,10 @@
+#include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/DataObjID.h"
+#include "GaudiKernel/EventDataHandle.h"
 #include <array>
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/EventDataHandle.h"
-#include "GaudiKernel/Algorithm.h"
 
 // ============================================================================
 /** @file
@@ -52,25 +52,26 @@
 // Let's start with what C++ does provides today, namely std::integer_sequence.
 // That name is too long for humans to type repeatedly, so let's shorten it.
 //
-template <int... ids> using IDs = std::integer_sequence<int, ids...>;
+template <int... ids>
+using IDs = std::integer_sequence<int, ids...>;
 //
 // Can we now make sure that algorithms get instantiated using syntax like
 // "using AlgE = DataflowTestAlg<IDs<2>, IDs<3, 6>>"? Yes, we can. But due to
 // more unfortunate C++ limitations, we will also need to use specialization
 // for this purpose instead of a pure template declaration.
 //
-template<typename Inputs, typename Outputs> class DataHandleFlowAlg;
+template <typename Inputs, typename Outputs>
+class DataHandleFlowAlg;
 //
-template<int... inputIDs,
-         int... outputIDs>
+template <int... inputIDs, int... outputIDs>
 class DataHandleFlowAlg<IDs<inputIDs...>, IDs<outputIDs...>> : public Algorithm
 {
 public:
   // NOTE: Cannot use "using Algorithm::Algorithm;" due to a GCC 6 bug
-  template<typename... Args>
-  DataHandleFlowAlg( Args&&... args )
-    : Algorithm( std::forward<Args>(args)... )
-  {}
+  template <typename... Args>
+  DataHandleFlowAlg( Args&&... args ) : Algorithm( std::forward<Args>( args )... )
+  {
+  }
 
   /// Run the algorithm, checking the data flow graph and I/O values
   StatusCode execute() override
@@ -81,37 +82,37 @@ public:
     // Check that inputs were declared correctly
     info() << "Checking input keys" << endmsg;
     DataObjIDColl expectedInputKeys;
-    for(const auto& inputHandle: m_readers) {
-      expectedInputKeys.emplace(inputHandle.targetKey());
+    for ( const auto& inputHandle : m_readers ) {
+      expectedInputKeys.emplace( inputHandle.targetKey() );
     }
-    if(eventInputKeys() != expectedInputKeys) {
-      throw std::runtime_error("Unexpected input keys");
+    if ( eventInputKeys() != expectedInputKeys ) {
+      throw std::runtime_error( "Unexpected input keys" );
     }
 
     // Check that outputs were declared correctly
     info() << "Checking output keys" << endmsg;
     DataObjIDColl expectedOutputKeys;
-    for(const auto& outputHandle: m_writers) {
-      expectedOutputKeys.emplace(outputHandle.targetKey());
+    for ( const auto& outputHandle : m_writers ) {
+      expectedOutputKeys.emplace( outputHandle.targetKey() );
     }
-    if(eventOutputKeys() != expectedOutputKeys) {
-      throw std::runtime_error("Unexpected output keys");
+    if ( eventOutputKeys() != expectedOutputKeys ) {
+      throw std::runtime_error( "Unexpected output keys" );
     }
 
     // Check that we receive the expected input values
     info() << "Checking input values" << endmsg;
-    for(size_t i = 0; i < N_inputs; ++i) {
-      if(m_readers[i].get(eventContext) != m_inputValues[i]) {
-        throw std::runtime_error("Unexpected input #" + std::to_string(i));
+    for ( size_t i = 0; i < N_inputs; ++i ) {
+      if ( m_readers[i].get( eventContext ) != m_inputValues[i] ) {
+        throw std::runtime_error( "Unexpected input #" + std::to_string( i ) );
       }
     }
 
     // Send our output values
     info() << "Sending output values" << endmsg;
-    for(size_t i = 0; i < N_outputs; ++i) {
+    for ( size_t i = 0; i < N_outputs; ++i ) {
       const auto& output = m_outputValues[i];
-      if(m_writers[i].put(eventContext, output) != output) {
-        throw std::runtime_error("Unexpected output #" + std::to_string(i));
+      if ( m_writers[i].put( eventContext, output ) != output ) {
+        throw std::runtime_error( "Unexpected output #" + std::to_string( i ) );
       }
     }
 
@@ -120,34 +121,23 @@ public:
 
 private:
   // Count our inputs and outputs
-  static constexpr size_t N_inputs = sizeof...(inputIDs);
-  static constexpr size_t N_outputs = sizeof...(outputIDs);
+  static constexpr size_t N_inputs  = sizeof...( inputIDs );
+  static constexpr size_t N_outputs = sizeof...( outputIDs );
 
   // Record our input and output IDs for future use as input and output values
-  std::array<int, N_inputs> m_inputValues{inputIDs...};
+  std::array<int, N_inputs>  m_inputValues{inputIDs...};
   std::array<int, N_outputs> m_outputValues{outputIDs...};
 
   // Declare our inputs using ReadHandles
   using IntReadHandle = Gaudi::experimental::EventReadHandle<int>;
-  std::array<IntReadHandle, N_inputs> m_readers{
-    IntReadHandle{
-      this,
-      "Input" + std::to_string(inputIDs),
-      DataObjID( "/Event/Int" + std::to_string(inputIDs) )
-    }...
-  };
+  std::array<IntReadHandle, N_inputs> m_readers{IntReadHandle{
+      this, "Input" + std::to_string( inputIDs ), DataObjID( "/Event/Int" + std::to_string( inputIDs ) )}...};
 
   // Declare our outputs using WriteHandles
   using IntWriteHandle = Gaudi::experimental::EventWriteHandle<int>;
-  std::array<IntWriteHandle, N_outputs> m_writers{
-    IntWriteHandle{
-      this,
-      "Output" + std::to_string(outputIDs),
-      DataObjID( "/Event/Int" + std::to_string(outputIDs) )
-    }...
-  };
+  std::array<IntWriteHandle, N_outputs> m_writers{IntWriteHandle{
+      this, "Output" + std::to_string( outputIDs ), DataObjID( "/Event/Int" + std::to_string( outputIDs ) )}...};
 };
-
 
 // clang-format off
 
@@ -163,9 +153,8 @@ using DataHandleFlowAlgH = DataHandleFlowAlg< IDs<1, 4>, IDs<2, 5> >;
 
 // clang-format on
 
-
 // Now, make the algorithms accessible via Python
-# define DECLARE_COMPONENT_ALIAS( Alg ) DECLARE_COMPONENT_WITH_ID( Alg, #Alg )
+#define DECLARE_COMPONENT_ALIAS( Alg ) DECLARE_COMPONENT_WITH_ID( Alg, #Alg )
 DECLARE_COMPONENT_ALIAS( DataHandleFlowAlgA )
 DECLARE_COMPONENT_ALIAS( DataHandleFlowAlgB )
 DECLARE_COMPONENT_ALIAS( DataHandleFlowAlgC )

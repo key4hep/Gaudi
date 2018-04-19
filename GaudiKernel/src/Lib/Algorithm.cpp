@@ -158,7 +158,7 @@ StatusCode Algorithm::sysInitialize()
   }
 
   // Perform any scheduled dependency update
-  if ( m_updateDependencies ) updateEventKeys(m_updateDependencies);
+  if ( m_updateDependencies ) updateEventKeys( m_updateDependencies );
 
   // Collect all explicit dependencies in a single place
   collectExplicitDeps();
@@ -170,10 +170,10 @@ StatusCode Algorithm::sysInitialize()
   }
 
   // Check for explicit circular data dependencies
-  sc = handleCircularDeps([this](const DataObjID& key) -> CircularDepAction {
+  sc = handleCircularDeps( [this]( const DataObjID& key ) -> CircularDepAction {
     error() << "Explicit circular data dependency detected for id " << key << endmsg;
     return CircularDepAction::Abort;
-  });
+  } );
   if ( !sc ) return sc;
 
   // Initialize ToolHandles if needed
@@ -191,7 +191,7 @@ StatusCode Algorithm::sysInitialize()
   for ( auto alg : *subAlgorithms() ) addImplicitDeps( alg );
 
   // Check for implicit circular data deps from child Algs/AlgTools
-  sc = handleCircularDeps([this](const DataObjID& key) -> CircularDepAction {
+  sc = handleCircularDeps( [this]( const DataObjID& key ) -> CircularDepAction {
     if ( m_filterCircDeps ) {
       warning() << "Implicit circular data dependency detected for id " << key << endmsg;
       return CircularDepAction::Ignore;
@@ -199,7 +199,7 @@ StatusCode Algorithm::sysInitialize()
       error() << "Implicit circular data dependency detected for id " << key << endmsg;
       return CircularDepAction::Abort;
     }
-  });
+  } );
   if ( !sc ) return sc;
 
   // Display the final data dependencies
