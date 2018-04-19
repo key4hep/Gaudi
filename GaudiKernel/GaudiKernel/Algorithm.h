@@ -17,7 +17,8 @@
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/DataObjID.h" // must be include before Property.h, which is included in PropertyHolder.h
+#include "GaudiKernel/DataHandle.h" // must be include before Property.h, which is included in PropertyHolder.h
+#include "GaudiKernel/DataObjID.h"  // same thing
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IChronoStatSvc.h"
@@ -37,7 +38,6 @@
 #include <Gaudi/PluginService.h>
 
 // For concurrency
-#include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataHandleHolderBase.h"
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
