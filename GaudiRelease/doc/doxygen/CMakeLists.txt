@@ -1,6 +1,19 @@
+cmake_minimum_required(VERSION 2.8.12)
+
+if(std_library_path)
+  # FindDoxygen.cmake needs to call the doxygen command at configuration time
+  set(ENV{LD_LIBRARY_PATH} "${std_library_path}:$ENV{LD_LIBRARY_PATH}")
+endif()
+
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
+  # make sure we have the right environment (for heptools installation)
+  if(DOXYGEN_DOT_EXECUTABLE)
+    get_filename_component(graphviz_bin "${DOXYGEN_DOT_EXECUTABLE}" DIRECTORY)
+    set(graphviz_env -p PATH=${graphviz_bin} -p LD_LIBRARY_PATH=${graphviz_bin}/../lib)
+  endif()
+
   # directories used in the include search path during compilation
   set(DOXYGEN_INCLUDE_DIRS)
   foreach(package ${packages})
@@ -40,7 +53,7 @@ Release notes of the packages:
 
   # run Doxygen to generate the documentation
   add_custom_target(run-doxygen
-                    COMMAND ${env_cmd} --xml ${env_xml}
+                    COMMAND ${env_cmd} --xml ${env_xml} ${graphviz_env}
                             ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
                     COMMENT "Running Doxygen...")
 
@@ -65,7 +78,7 @@ Release notes of the packages:
     add_dependencies(run-doxygen install-MathJax)
     set(MATHJAX_RELPATH "../mathjax")
   else()
-    set(MATHJAX_RELPATH "http://cdn.mathjax.org/mathjax/latest")
+    set(MATHJAX_RELPATH "https://cdn.mathjax.org/mathjax/latest")
   endif()
 
   option(DOXYGEN_WITH_CPPREFERENCE_LINKS
@@ -90,6 +103,25 @@ Release notes of the packages:
   string(REGEX REPLACE "_python.*" "" Boost_version "${Boost_config_version}")
   string(REGEX REPLACE "\\." "_" Boost_url_version "${Boost_version}")
   string(REGEX REPLACE "\\..*" "" XercesC_major_version "${XercesC_config_version}")
+
+  # define the project version to show in the mainpage
+  if(DEFINED ENV{CI_COMMIT_REF_NAME})
+    string(SUBSTRING "$ENV{CI_COMMIT_SHA}" 0 8 CI_COMMIT_SHA)
+    set(DOC_PROJECT_VERSION "$ENV{CI_COMMIT_REF_NAME} (${CI_COMMIT_SHA})")
+  elseif(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+    execute_process(COMMAND git describe --tags
+                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+                    OUTPUT_VARIABLE GIT_DESCRIBE_VERSION
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND git rev-parse HEAD
+                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+                    OUTPUT_VARIABLE GIT_COMMIT_SHA
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(SUBSTRING "${GIT_COMMIT_SHA}" 0 8 GIT_COMMIT_SHA)
+    set(DOC_PROJECT_VERSION "${GIT_DESCRIBE_VERSION} (${GIT_COMMIT_SHA})")
+  else()
+    set(DOC_PROJECT_VERSION "${CMAKE_PROJECT_VERSION}")
+  endif()
 
   # copy the template files
   foreach(template Doxyfile mainpage.md externaldocs.md)
