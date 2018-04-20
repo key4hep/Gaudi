@@ -598,9 +598,6 @@ private:
 
   std::mutex m_lock; ///< for re-entrant Algs
 
-  bool m_filterPassed = true;  ///< Filter passed flag
-  bool m_isExecuted   = false; ///< Algorithm is executed flag
-
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
 
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
