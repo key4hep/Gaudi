@@ -20,6 +20,8 @@ IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
 IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
 FloatDataConsumer    INFO executing FloatDataConsumer: 7
+Gaudi::Examples...   INFO executing ContextConsumer, got INVALID
+Gaudi::Examples...   INFO executing ContextIntConsumer, got context = INVALID, int = 7
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -28,6 +30,8 @@ IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
 IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
 FloatDataConsumer    INFO executing FloatDataConsumer: 7
+Gaudi::Examples...   INFO executing ContextConsumer, got INVALID
+Gaudi::Examples...   INFO executing ContextIntConsumer, got context = INVALID, int = 7
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ApplicationMgr       INFO Application Manager Finalized successfully

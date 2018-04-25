@@ -9,9 +9,10 @@
 // TODO: fwd declare instead?
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/AnyDataHandle.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/ThreadLocalContext.h"
+#include "GaudiKernel/apply.h"
 #include "GaudiKernel/detected.h"
 
 // Boost
@@ -112,19 +113,32 @@ namespace Gaudi
 
       template <typename T>
       void as_const( T&& t ) = delete;
+
+      template <class...>
+      struct disjunction : std::false_type {
+      };
+      template <class B1>
+      struct disjunction<B1> : B1 {
+      };
+      template <class B1, class... Bn>
+      struct disjunction<B1, Bn...> : std::conditional_t<bool( B1::value ), B1, disjunction<Bn...>> {
+      };
+
 #else
       using std::as_const;
+      using std::disjunction;
 #endif
       /////////////////////////////////////////
 
-      template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
+      template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value &&
+                                                                          std::is_base_of<DataObject, Out1>::value>>
       Out1* put( DataObjectHandle<Out1>& out_handle, Out2&& out )
       {
         return out_handle.put( std::make_unique<Out1>( std::forward<Out2>( out ) ) );
       }
 
       template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
-      void put( AnyDataHandle<Out1>& out_handle, Out2&& out )
+      void put( DataObjectHandle<AnyDataWrapper<Out1>>& out_handle, Out2&& out )
       {
         out_handle.put( std::forward<Out2>( out ) );
       }
@@ -352,6 +366,43 @@ namespace Gaudi
       }
 
       ///////////////////////
+      // given a pack, return a corresponding tuple
+      template <typename... In>
+      struct filter_evtcontext_t {
+        using type = std::tuple<In...>;
+
+        static_assert( !details::disjunction<std::is_same<EventContext, In>...>::value,
+                       "EventContext can only appear as first argument" );
+
+        template <typename Algorithm, typename Handles>
+        static auto apply( const Algorithm& algo, Handles& handles )
+        {
+          return Gaudi::apply( [&]( const auto&... handle ) { return algo( details::deref( handle.get() )... ); },
+                               handles );
+        }
+      };
+
+      // except when it starts with EventContext, then drop it
+      template <typename... In>
+      struct filter_evtcontext_t<EventContext, In...> {
+        using type = std::tuple<In...>;
+
+        static_assert( !details::disjunction<std::is_same<EventContext, In>...>::value,
+                       "EventContext can only appear as first argument" );
+
+        template <typename Algorithm, typename Handles>
+        static auto apply( const Algorithm& algo, Handles& handles )
+        {
+          return Gaudi::apply(
+              [&]( const auto&... handle ) {
+                return algo( Gaudi::Hive::currentContext(), details::deref( handle.get() )... );
+              },
+              handles );
+        }
+      };
+
+      template <typename... In>
+      using filter_evtcontext = typename filter_evtcontext_t<In...>::type;
 
       template <typename OutputSpec, typename InputSpec, typename Traits_>
       class DataHandleMixin;
@@ -422,6 +473,23 @@ namespace Gaudi
       protected:
         std::tuple<details::InputHandle_t<Traits_, In>...>   m_inputs;
         std::tuple<details::OutputHandle_t<Traits_, Out>...> m_outputs;
+      };
+
+      template <typename Traits_>
+      class DataHandleMixin<void, std::tuple<>, Traits_> : public BaseClass_t<Traits_>
+      {
+        static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
+                       "BaseClass must inherit from Algorithm" );
+
+      public:
+        DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator ) : BaseClass_t<Traits_>( name, pSvcLocator )
+        {
+          // make sure this algorithm is seen as reentrant by Gaudi
+          this->setProperty( "Cardinality", 0 );
+        }
+
+      protected:
+        std::tuple<> m_inputs;
       };
 
       template <typename... In, typename Traits_>
