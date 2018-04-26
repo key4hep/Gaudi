@@ -247,39 +247,47 @@ namespace concurrency
 
     StatusCode sc = StatusCode::SUCCESS;
 
-    // Create new, or fetch existent, AlgorithmNode
-    auto&                       algoName = algo->name();
-    auto                        itA      = m_algoNameToAlgoNodeMap.find( algoName );
+    /// Create new, or fetch existent, AlgorithmNode
+
+    auto& algoName = algo->name();
+
     concurrency::AlgorithmNode* algoNode;
+
+    auto itA = m_algoNameToAlgoNodeMap.find( algoName );
     if ( itA != m_algoNameToAlgoNodeMap.end() ) {
       algoNode = itA->second;
     } else {
       algoNode = new concurrency::AlgorithmNode( *this, algo, m_nodeCounter, m_algoCounter, inverted, allPass );
-      // Mirror the action above in the BGL-based graph
-      if ( m_enableAnalysis ) {
-        auto source =
-            boost::add_vertex( AlgoProps( algo, m_nodeCounter, m_algoCounter, inverted, allPass ), m_PRGraph );
-        boost::add_edge( source, node( parentName ), m_PRGraph );
-      }
+      m_algoNameToAlgoNodeMap[algoName] = algoNode;
+
+      // Mirror AlgorithmNode in the BGL-based graph
+      if ( m_enableAnalysis )
+        boost::add_vertex( AlgoProps( algo, m_nodeCounter, m_algoCounter, inverted, allPass ), m_PRGraph );
+
       ++m_nodeCounter;
       ++m_algoCounter;
-      m_algoNameToAlgoNodeMap[algoName] = algoNode;
-      ON_VERBOSE verbose() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
+
+      ON_VERBOSE verbose() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
+
       registerIODataObjects( algo );
     }
 
-    // Attach AlgorithmNode to its CF decision hub
+    /// Attach AlgorithmNode to its parent DecisionNode
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      auto       parentNode = itP->second;
-      ON_VERBOSE verbose() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '" << parentName << "'"
-                           << endmsg;
+      auto parentNode = itP->second;
 
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
+
+      // Mirror algorithm to CF parent relationship in the BGL-based graph
+      if ( m_enableAnalysis ) boost::add_edge( node( algo->name() ), node( parentName ), m_PRGraph );
+
+      ON_VERBOSE verbose() << "Attached AlgorithmNode '" << algo->name() << "' to parent DecisionNode '" << parentName
+                           << "'" << endmsg;
     } else {
       sc = StatusCode::FAILURE;
-      error() << "Requested DecisionNode '" << parentName << "' was not found" << endmsg;
+      error() << "Parent DecisionNode '" << parentName << "' was not found" << endmsg;
     }
 
     return sc;
@@ -306,19 +314,19 @@ namespace concurrency
     } else {
       if ( !m_conditionsRealmEnabled ) {
         dataNode = new concurrency::DataNode( *this, dataPath );
-        ON_VERBOSE verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+        ON_VERBOSE verbose() << "  DataNode " << dataPath << " added @ " << dataNode << endmsg;
         // Mirror the action above in the BGL-based graph
         if ( m_enableAnalysis ) boost::add_vertex( DataProps( dataPath ), m_PRGraph );
       } else {
         SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
         if ( condSvc->isRegistered( dataPath ) ) {
           dataNode = new concurrency::ConditionNode( *this, dataPath, condSvc );
-          ON_VERBOSE verbose() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
+          ON_VERBOSE verbose() << "  ConditionNode " << dataPath << " added @ " << dataNode << endmsg;
           // Mirror the action above in the BGL-based graph
           if ( m_enableAnalysis ) boost::add_vertex( CondDataProps( dataPath ), m_PRGraph );
         } else {
           dataNode = new concurrency::DataNode( *this, dataPath );
-          ON_VERBOSE verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+          ON_VERBOSE verbose() << "  DataNode " << dataPath << " added @ " << dataNode << endmsg;
           // Mirror the action above in the BGL-based graph
           if ( m_enableAnalysis ) boost::add_vertex( DataProps( dataPath ), m_PRGraph );
         }
@@ -347,39 +355,47 @@ namespace concurrency
 
     StatusCode sc = StatusCode::SUCCESS;
 
+    /// Create new, or fetch existent, DecisionNode
+
     auto& decisionHubName = decisionHubAlgo->name();
 
-    auto                       itP = m_decisionNameToDecisionHubMap.find( parentName );
-    concurrency::DecisionNode* parentNode;
-    if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      parentNode                     = itP->second;
-      auto                       itA = m_decisionNameToDecisionHubMap.find( decisionHubName );
-      concurrency::DecisionNode* decisionHubNode;
-      if ( itA != m_decisionNameToDecisionHubMap.end() ) {
-        decisionHubNode = itA->second;
-      } else {
-        decisionHubNode = new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent,
-                                                         modePromptDecision, modeOR, allPass, isInverted );
-        m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
+    concurrency::DecisionNode* decisionHubNode;
 
-        // Mirror the action above in the BGL-based graph
-        if ( m_enableAnalysis ) {
-          auto source = boost::add_vertex( DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent,
-                                                             modePromptDecision, modeOR, allPass, isInverted ),
-                                           m_PRGraph );
-          boost::add_edge( source, node( parentName ), m_PRGraph );
-        }
+    auto itA = m_decisionNameToDecisionHubMap.find( decisionHubName );
+    if ( itA != m_decisionNameToDecisionHubMap.end() ) {
+      decisionHubNode = itA->second;
+    } else {
+      decisionHubNode = new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent,
+                                                       modePromptDecision, modeOR, allPass, isInverted );
+      m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
 
-        ++m_nodeCounter;
-
-        ON_VERBOSE verbose() << "Decision hub node " << decisionHubName << " added @ " << decisionHubNode << endmsg;
+      // Mirror DecisionNode in the BGL-based graph
+      if ( m_enableAnalysis ) {
+        boost::add_vertex( DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR,
+                                             allPass, isInverted ),
+                           m_PRGraph );
       }
 
+      ++m_nodeCounter;
+
+      ON_VERBOSE verbose() << "DecisionNode '" << decisionHubName << "' added @ " << decisionHubNode << endmsg;
+    }
+
+    /// Attach DecisionNode to its parent DecisionNode
+    auto itP = m_decisionNameToDecisionHubMap.find( parentName );
+    if ( itP != m_decisionNameToDecisionHubMap.end() ) {
+      auto parentNode = itP->second;
       parentNode->addDaughterNode( decisionHubNode );
       decisionHubNode->addParentNode( parentNode );
+
+      // Mirror DecisionNode-to-DecisionNode relationship in the BGL-based graph
+      if ( m_enableAnalysis ) boost::add_edge( node( decisionHubName ), node( parentName ), m_PRGraph );
+
+      ON_VERBOSE verbose() << "Attached DecisionNode '" << decisionHubName << "' to parent DecisionNode '" << parentName
+                           << "'" << endmsg;
     } else {
       sc = StatusCode::FAILURE;
-      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered." << endmsg;
+      error() << "Parent DecisionNode '" << parentName << "' was not found" << endmsg;
     }
 
     return sc;
