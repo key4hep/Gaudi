@@ -195,3 +195,5 @@ gaudi_add_test(WriteAndReadHandleWhiteBoard
 gaudi_add_test(nose
                COMMAND nosetests -v
                ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
+
+gaudi_add_executable(countersUnitTest src/CounterEx/CountersUnitTest.cpp)

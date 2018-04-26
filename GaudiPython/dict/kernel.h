@@ -136,10 +136,10 @@ namespace GaudiPython
     std::list<IAlgorithm*> i01;
     std::list<IService*>   i02;
 
-    std::vector<IService*>         i05_1;
-    std::vector<IAlgTool*>         i05_2;
-    std::vector<const StatEntity*> i05_3;
-    std::vector<GaudiAlg::ID>      i05_4;
+    std::vector<IService*>    i05_1;
+    std::vector<IAlgTool*>    i05_2;
+    std::vector<StatEntity*>  i05_3;
+    std::vector<GaudiAlg::ID> i05_4;
 #ifdef AIDA_FOUND
     std::vector<AIDA::IHistogram1D*> i05_5;
     std::vector<AIDA::IHistogram2D*> i05_6;

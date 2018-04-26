@@ -145,7 +145,9 @@ std::string GaudiAlg::Print2DProf::toString( const AIDA::IProfile2D* aida, const
 // ============================================================================
 std::string GaudiAlg::PrintStat::print( const StatEntity& stat, const std::string& tag )
 {
-  return Gaudi::Utils::formatAsTableRow( tag, stat );
+  std::ostringstream ost;
+  stat.print( ost, true, tag );
+  return ost.str();
 }
 // ============================================================================
 std::string GaudiAlg::PrintTuple::print( const INTuple* tuple, const GaudiAlg::TupleID& ID )

@@ -210,7 +210,7 @@ StatusCode GaudiCommon<PBASE>::
   StatusCode sc = StatusCode::SUCCESS;
 
   // print the general information about statistical counters
-  if ( this->msgLevel( MSG::DEBUG ) || ( statPrint() && !counters().empty() ) ) {
+  if ( this->msgLevel( MSG::DEBUG ) || ( statPrint() && !m_counters.empty() ) ) {
     // print general statistical counters
     printStat( statPrint() ? MSG::ALWAYS : MSG::DEBUG );
   }
@@ -221,8 +221,7 @@ StatusCode GaudiCommon<PBASE>::
     Gaudi::Utils::RegEx::matchList statList{m_statEntityList.value()};
     Gaudi::Utils::RegEx::matchList counterList{m_counterList.value()};
 
-    std::map<std::string, StatEntity> ordered_counters{begin( this->counters() ), end( this->counters() )};
-    for ( const auto& i : ordered_counters ) {
+    for ( const auto& i : m_countersOwn ) {
       if ( statList.Or( i.first ) )
         m_counterSummarySvc->addCounter( this->name(), i.first, i.second, Gaudi::CounterSummary::SaveStatEntity );
       else if ( counterList.Or( i.first ) )
@@ -264,7 +263,8 @@ StatusCode GaudiCommon<PBASE>::
   }
 
   // clear *ALL* counters explicitly
-  m_counters.clear();
+  m_counters.clear();    // delete pointers first
+  m_countersOwn.clear(); // then delete any owned counters
   m_exceptions.clear();
   m_infos.clear();
   m_warnings.clear();
@@ -519,26 +519,26 @@ template <class PBASE>
 long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
 {
   // print statistics
-  if ( counters().empty() ) {
+  if ( m_counters.empty() ) {
     return 0;
   }
   MsgStream& msg = this->msgStream( level );
   //
-  msg << "Number of counters : " << counters().size();
+  msg << "Number of counters : " << m_counters.size();
   //
-  if ( !counters().empty() ) {
-    msg << std::endl << m_header.value();
+  if ( !m_counters.empty() ) {
+    msg << "\n" << m_header.value();
   }
   //
-  std::map<std::string, StatEntity> ordered_counters{begin( counters() ), end( counters() )};
-  for ( const auto& entry : ordered_counters ) {
-    msg << std::endl
-        << Gaudi::Utils::formatAsTableRow( entry.first, entry.second, m_useEffFormat, m_format1, m_format2 );
+  for ( const auto& entry : m_counters ) {
+    std::ostringstream ost;
+    entry.second.get().print( ost, entry.first );
+    msg << "\n |" << ost.str();
   }
   //
   msg << endmsg;
   //
-  return counters().size();
+  return m_counters.size();
 }
 // ============================================================================
 

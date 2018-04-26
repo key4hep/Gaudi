@@ -214,7 +214,6 @@ SimpleHistos        DEBUG Booked 1D Histogram : ID='test1' Path=SimpleHistos Tit
 SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please be patient !
 Histos2           WARNING Gaudi::Examples::HistoProps:: Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID
 HistogramDataSvc    DEBUG  Redefine the parameters for the histogram 'Histos2/2' to be ('TEST2',-100,200,100)
-ChronoStatSvc        INFO  Number of skipped events for MemStat-1
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS List of booked 1D histograms in directory         "SimpleHistos" :-
