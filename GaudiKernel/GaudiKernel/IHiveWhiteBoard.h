@@ -48,18 +48,6 @@ public:
    */
   virtual size_t getNumberOfStores() const = 0;
 
-  /** explicitly notify the presence of new object in the store
-   *
-   * @param  products     [IN]     Location of new objects
-   */
-  virtual void addNewDataObjects( DataObjIDColl& products ) = 0;
-
-  /** Get the latest new data objects registered in store.
-   *
-   * @return  collection of new data object locations
-   */
-  virtual DataObjIDColl getNewDataObjects() = 0;
-
   /** Check if a data object exists in store.
    *  TODO: remove the method ASA a cross-experiment
    *        event data store interface emerges

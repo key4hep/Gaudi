@@ -71,7 +71,7 @@ protected:
     StatusCode retrieve( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::retrieveObject( a1, pObject );
+      StatusCode  sc      = m_svc->retrieveObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -79,7 +79,7 @@ protected:
     StatusCode retrieve( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::retrieveObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->retrieveObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -87,7 +87,7 @@ protected:
     StatusCode find( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::findObject( a1, pObject );
+      StatusCode  sc      = m_svc->findObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -95,7 +95,7 @@ protected:
     StatusCode find( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::findObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->findObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -625,15 +625,10 @@ public:
   // ==========================================================================
   // Register histogram with the data store
   // ==========================================================================
+  using DataSvc::registerObject;
   StatusCode registerObject( const std::string& parent, const std::string& rel, Base* obj ) override;
 
-  StatusCode registerObject( const std::string& parent, int item, Base* obj ) override;
-
   StatusCode registerObject( Base* pPar, const std::string& rel, Base* obj ) override;
-
-  StatusCode registerObject( DataObject* pPar, int item, Base* obj ) override;
-
-  StatusCode registerObject( Base* pPar, int item, Base* obj ) override;
 
   StatusCode registerObject( const std::string& full, Base* obj ) override;
 

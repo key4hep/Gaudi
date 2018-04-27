@@ -36,7 +36,6 @@ namespace
   struct Partition final {
     SmartIF<IDataProviderSvc> dataProvider;
     SmartIF<IDataManagerSvc>  dataManager;
-    DataObjIDColl             newDataObjects;
     int                       eventNumber = -1;
 
     // allow acces 'by type' -- used in fwd
@@ -66,13 +65,13 @@ namespace
 
   public:
     template <typename F>
-    auto with_lock( F&& f ) -> decltype( auto )
+    decltype( auto ) with_lock( F&& f )
     {
       WriteLock lock{m_mtx};
       return f( m_obj );
     }
     template <typename F>
-    auto with_lock( F&& f ) const -> decltype( auto )
+    decltype( auto ) with_lock( F&& f ) const
     {
       ReadLock lock{m_mtx};
       return f( m_obj );
@@ -186,11 +185,6 @@ public:
     return fwd( [&]( IDataManagerSvc& p ) { return p.registerAddress( path, pAddr ); } );
   }
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( DataObject* parent, boost::string_ref path, IOpaqueAddress* pAddr ) override
-  {
-    return fwd( [&]( IDataManagerSvc& p ) { return p.registerAddress( parent, path, pAddr ); } );
-  }
-  /// IDataManagerSvc: Register object address with the data store.
   StatusCode registerAddress( IRegistry* parent, boost::string_ref path, IOpaqueAddress* pAdd ) override
   {
     return fwd( [&]( IDataManagerSvc& p ) { return p.registerAddress( parent, path, pAdd ); } );
@@ -199,11 +193,6 @@ public:
   StatusCode unregisterAddress( boost::string_ref path ) override
   {
     return fwd( [&]( IDataManagerSvc& p ) { return p.unregisterAddress( path ); } );
-  }
-  /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( DataObject* pParent, boost::string_ref path ) override
-  {
-    return fwd( [&]( IDataManagerSvc& p ) { return p.unregisterAddress( pParent, path ); } );
   }
   /// IDataManagerSvc: Unregister object address from the data store.
   StatusCode unregisterAddress( IRegistry* pParent, boost::string_ref path ) override
@@ -298,20 +287,8 @@ public:
     for_( m_partitions, [&]( Partition& p ) { p.dataProvider->addPreLoadItem( item ); } );
     return StatusCode::SUCCESS;
   }
-  /// Add an item to the preload list
-  StatusCode addPreLoadItem( std::string item ) override
-  {
-    for_( m_partitions, [&]( Partition& p ) { p.dataProvider->addPreLoadItem( item ); } );
-    return StatusCode::SUCCESS;
-  }
   /// Remove an item from the preload list
   StatusCode removePreLoadItem( const DataStoreItem& item ) override
-  {
-    for_( m_partitions, [&]( Partition& p ) { p.dataProvider->removePreLoadItem( item ); } );
-    return StatusCode::SUCCESS;
-  }
-  /// Add an item to the preload list
-  StatusCode removePreLoadItem( std::string item ) override
   {
     for_( m_partitions, [&]( Partition& p ) { p.dataProvider->removePreLoadItem( item ); } );
     return StatusCode::SUCCESS;
@@ -325,26 +302,7 @@ public:
   /// load all preload items of the list
   StatusCode preLoad() override
   {
-    return s_current->with_lock( []( Partition& p ) {
-      StatusCode sc = p.dataProvider->preLoad();
-      p.dataManager->traverseTree( [&p]( IRegistry* pReg, int ) {
-        if ( !pReg->object() ) return false;
-        p.newDataObjects.insert( DataObjID( pReg->identifier() ) );
-        return true;
-      } );
-      return sc;
-    } );
-  }
-  /// Register object with the data store.  (The most common one is the only monitored one for the time being....)
-  StatusCode registerObject( boost::string_ref path, DataObject* pObj ) override
-  {
-    return s_current->with_lock( [&]( Partition& p ) {
-      StatusCode sc = p.dataProvider->registerObject( path, pObj );
-      if ( sc.isSuccess() ) {
-        p.newDataObjects.insert( DataObjID( std::string{path.data(), path.size()} ) );
-      }
-      return sc;
-    } );
+    return fwd( [&]( IDataProviderSvc& p ) { return p.preLoad(); } );
   }
   /// Register object with the data store.
   StatusCode registerObject( boost::string_ref parent, boost::string_ref obj, DataObject* pObj ) override
@@ -352,17 +310,7 @@ public:
     return fwd( [&]( IDataProviderSvc& p ) { return p.registerObject( parent, obj, pObj ); } );
   }
   /// Register object with the data store.
-  StatusCode registerObject( boost::string_ref parent, int item, DataObject* pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.registerObject( parent, item, pObj ); } );
-  }
-  /// Register object with the data store.
   StatusCode registerObject( DataObject* parent, boost::string_ref obj, DataObject* pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.registerObject( parent, obj, pObj ); } );
-  }
-  /// Register object with the data store.
-  StatusCode registerObject( DataObject* parent, int obj, DataObject* pObj ) override
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.registerObject( parent, obj, pObj ); } );
   }
@@ -370,16 +318,6 @@ public:
   StatusCode unregisterObject( boost::string_ref path ) override
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( path ); } );
-  }
-  /// Unregister object from the data store.
-  StatusCode unregisterObject( boost::string_ref parent, boost::string_ref obj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( parent, obj ); } );
-  }
-  /// Unregister object from the data store.
-  StatusCode unregisterObject( boost::string_ref parent, int obj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( parent, obj ); } );
   }
   /// Unregister object from the data store.
   StatusCode unregisterObject( DataObject* pObj ) override
@@ -391,40 +329,10 @@ public:
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( pObj, path ); } );
   }
-  /// Unregister object from the data store.
-  StatusCode unregisterObject( DataObject* pObj, int item ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( pObj, item ); } );
-  }
   /// Retrieve object from data store.
   StatusCode retrieveObject( IRegistry* parent, boost::string_ref path, DataObject*& pObj ) override
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, path, pObj ); } );
-  }
-  /// Retrieve object identified by its full path from the data store.
-  StatusCode retrieveObject( boost::string_ref path, DataObject*& pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( path, pObj ); } );
-  }
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( boost::string_ref parent, boost::string_ref path, DataObject*& pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, path, pObj ); } );
-  }
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( boost::string_ref parent, int item, DataObject*& pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, item, pObj ); } );
-  }
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( DataObject* parent, boost::string_ref path, DataObject*& pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, path, pObj ); } );
-  }
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( DataObject* parent, int item, DataObject*& pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, item, pObj ); } );
   }
   /// Find object identified by its full path in the data store.
   StatusCode findObject( boost::string_ref path, DataObject*& pObj ) override
@@ -436,38 +344,8 @@ public:
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, path, pObj ); } );
   }
-  /// Find object in the data store.
-  StatusCode findObject( boost::string_ref parent, boost::string_ref path, DataObject*& pObj ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, path, pObj ); } );
-  }
-  /// Find object in the data store.
-  StatusCode findObject( boost::string_ref parent, int item, DataObject*& pObject ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.findObject( parent, item, pObject ); } );
-  }
-  /// Find object in the data store.
-  StatusCode findObject( DataObject* parent, boost::string_ref path, DataObject*& pObject ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.findObject( parent, path, pObject ); } );
-  }
-  /// Find object in the data store.
-  StatusCode findObject( DataObject* parent, int item, DataObject*& pObject ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.findObject( parent, item, pObject ); } );
-  }
   /// Add a link to another object.
   StatusCode linkObject( IRegistry* from, boost::string_ref objPath, DataObject* to ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.linkObject( from, objPath, to ); } );
-  }
-  /// Add a link to another object.
-  StatusCode linkObject( boost::string_ref from, boost::string_ref objPath, DataObject* to ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.linkObject( from, objPath, to ); } );
-  }
-  /// Add a link to another object.
-  StatusCode linkObject( DataObject* from, boost::string_ref objPath, DataObject* to ) override
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.linkObject( from, objPath, to ); } );
   }
@@ -478,11 +356,6 @@ public:
   }
   /// Remove a link to another object.
   StatusCode unlinkObject( IRegistry* from, boost::string_ref objPath ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.unlinkObject( from, objPath ); } );
-  }
-  /// Remove a link to another object.
-  StatusCode unlinkObject( boost::string_ref from, boost::string_ref objPath ) override
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unlinkObject( from, objPath ); } );
   }
@@ -502,24 +375,9 @@ public:
     return fwd( [&]( IDataProviderSvc& p ) { return p.updateObject( pDirectory ); } );
   }
   /// Update object.
-  StatusCode updateObject( boost::string_ref path ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.updateObject( path ); } );
-  }
-  /// Update object.
   StatusCode updateObject( DataObject* pObj ) override
   {
     return fwd( [&]( IDataProviderSvc& p ) { return p.updateObject( pObj ); } );
-  }
-  /// Update object.
-  StatusCode updateObject( boost::string_ref parent, boost::string_ref updatePath ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.updateObject( parent, updatePath ); } );
-  }
-  /// Update object.
-  StatusCode updateObject( DataObject* parent, boost::string_ref updatePath ) override
-  {
-    return fwd( [&]( IDataProviderSvc& p ) { return p.updateObject( parent, updatePath ); } );
   }
 
   //
@@ -553,18 +411,6 @@ public:
 
   /// Get the number of event slots (copies of DataSvc objects).
   size_t getNumberOfStores() const override { return m_slots; }
-
-  /// Get the list of new DataObjects in the current store.
-  DataObjIDColl getNewDataObjects() override
-  {
-    return s_current->with_lock( [&]( Partition& p ) { return std::exchange( p.newDataObjects, {} ); } );
-  }
-
-  /// add to the list of new DataObjects in the current store.
-  void addNewDataObjects( DataObjIDColl& products ) override
-  {
-    s_current->with_lock( [&]( Partition& p ) { p.newDataObjects.insert( begin( products ), end( products ) ); } );
-  }
 
   /// check if a data object exists in the current store
   bool exists( const DataObjID& id ) override

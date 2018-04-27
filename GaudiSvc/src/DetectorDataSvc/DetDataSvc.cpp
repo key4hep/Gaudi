@@ -87,7 +87,7 @@ StatusCode DetDataSvc::setupDetectorDescription()
       const std::string args[]  = {m_detDbLocation, m_detDbRootName};
       StatusCode        sc      = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
       if ( sc.isSuccess() ) {
-        sc = i_setRoot( m_rootName, rootAddr );
+        sc = i_setRoot( rootAddr );
         if ( sc.isFailure() ) {
           error() << "Unable to set detector data store root" << endmsg;
           return sc;
@@ -158,7 +158,7 @@ StatusCode DetDataSvc::clearStore()
     StatusCode        sc = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
     // Set detector data store root
     if ( sc.isSuccess() ) {
-      sc = i_setRoot( m_rootName, rootAddr );
+      sc = i_setRoot( rootAddr );
       if ( sc.isFailure() ) {
         error() << "Unable to set detector data store root" << endmsg;
       }
@@ -173,10 +173,11 @@ StatusCode DetDataSvc::clearStore()
 /// Standard Constructor
 DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
 {
-  m_detDbRootName.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { m_rootName = "/" + m_detDbRootName; } );
-  m_rootName = "/" + m_detDbRootName;
-  m_rootCLID = CLID_Catalog;
+  m_detDbRootName
+      .declareUpdateHandler(
+          [this]( Gaudi::Details::PropertyBase& ) { setProperty( "RootName", "/" + m_detDbRootName ); } )
+      .useUpdateHandler();
+  setProperty( "RootCLID", CLID_Catalog );
 }
 
 /// Set the new event time

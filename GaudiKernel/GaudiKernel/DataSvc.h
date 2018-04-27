@@ -7,6 +7,7 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/RegistryEntry.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/SmartIF.h"
 
@@ -27,8 +28,6 @@ namespace DataSvcHelpers
 {
   // Map of objects where loading is inhibited
   class InhibitMap;
-  // Generic registry entry
-  class RegistryEntry;
 }
 
 /**
@@ -43,18 +42,18 @@ namespace DataSvcHelpers
 */
 class GAUDI_API DataSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc>
 {
-public:
-  /// Define set of load items
-  typedef std::vector<DataStoreItem> LoadItems;
 
-protected:
   /// Pointer to data loader service
   SmartIF<IConversionSvc> m_dataLoader = nullptr;
+
+protected:
   /// Pointer to incident service
   SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
   Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
+
+private:
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<std::vector<std::string>> m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
 
@@ -67,9 +66,13 @@ protected:
   Gaudi::Property<std::string> m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
 
   /// Items to be pre-loaded
-  LoadItems m_preLoads;
+  std::vector<DataStoreItem> m_preLoads;
+
+protected:
   /// Pointer to root entry
-  DataSvcHelpers::RegistryEntry* m_root = nullptr;
+  std::unique_ptr<DataSvcHelpers::RegistryEntry> m_root;
+
+private:
   /// Map with object paths to be inhibited from loading
   DataSvcHelpers::InhibitMap* m_inhibitMap = nullptr;
 
@@ -83,17 +86,15 @@ public:
   /// IDataManagerSvc: Register object address with the data store.
   StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) override;
 
-  /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
+  using IDataManagerSvc::registerAddress;
 
   /// IDataManagerSvc: Register object address with the data store.
   StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
 
-  /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( boost::string_ref fullPath ) override;
+  using IDataManagerSvc::unregisterAddress;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath ) override;
+  StatusCode unregisterAddress( boost::string_ref fullPath ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
   StatusCode unregisterAddress( IRegistry* pParent, boost::string_ref objPath ) override;
@@ -163,14 +164,8 @@ public:
   /// Add an item to the preload list
   StatusCode addPreLoadItem( const DataStoreItem& item ) override;
 
-  /// Add an item to the preload list
-  StatusCode addPreLoadItem( std::string itemPath ) override;
-
   /// Remove an item from the preload list
   StatusCode removePreLoadItem( const DataStoreItem& item ) override;
-
-  /// Add an item to the preload list
-  StatusCode removePreLoadItem( std::string itemPath ) override;
 
   /// Clear the preload list
   StatusCode resetPreLoad() override;
@@ -187,29 +182,16 @@ public:
   /// load all preload items of the list
   StatusCode preLoad() override;
 
-  /// Register object with the data store.
-  StatusCode registerObject( boost::string_ref fullPath, DataObject* pObject ) override;
+  using IDataProviderSvc::registerObject;
 
   /// Register object with the data store.
   StatusCode registerObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject( boost::string_ref parentPath, int item, DataObject* pObject ) override;
-
-  /// Register object with the data store.
   StatusCode registerObject( DataObject* parentObj, boost::string_ref objPath, DataObject* pObject ) override;
-
-  /// Register object with the data store.
-  StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject ) override;
 
   /// Unregister object from the data store.
   StatusCode unregisterObject( boost::string_ref fullPath ) override;
-
-  /// Unregister object from the data store.
-  StatusCode unregisterObject( boost::string_ref parentPath, boost::string_ref objectPath ) override;
-
-  /// Unregister object from the data store.
-  StatusCode unregisterObject( boost::string_ref parentPath, int item ) override;
 
   /// Unregister object from the data store.
   StatusCode unregisterObject( DataObject* pObject ) override;
@@ -217,26 +199,12 @@ public:
   /// Unregister object from the data store.
   StatusCode unregisterObject( DataObject* pObject, boost::string_ref objectPath ) override;
 
-  /// Unregister object from the data store.
-  StatusCode unregisterObject( DataObject* pObject, int item ) override;
+  using IDataProviderSvc::retrieveObject;
 
   /// Retrieve object from data store.
   StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
 
-  /// Retrieve object identified by its full path from the data store.
-  StatusCode retrieveObject( boost::string_ref fullPath, DataObject*& pObject ) override;
-
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject*& pObject ) override;
-
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( boost::string_ref parentPath, int item, DataObject*& pObject ) override;
-
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( DataObject* parentObj, boost::string_ref objPath, DataObject*& pObject ) override;
-
-  /// Retrieve object from data store.
-  StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject ) override;
+  using IDataProviderSvc::findObject;
 
   /// Find object identified by its full path in the data store.
   StatusCode findObject( boost::string_ref fullPath, DataObject*& pObject ) override;
@@ -244,35 +212,18 @@ public:
   /// Find object identified by its full path in the data store.
   StatusCode findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
 
-  /// Find object in the data store.
-  StatusCode findObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject*& pObject ) override;
-
-  /// Find object in the data store.
-  StatusCode findObject( boost::string_ref parentPath, int item, DataObject*& pObject ) override;
-
-  /// Find object in the data store.
-  StatusCode findObject( DataObject* parentObj, boost::string_ref objPath, DataObject*& pObject ) override;
-
-  /// Find object in the data store.
-  StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject ) override;
+  using IDataProviderSvc::linkObject;
 
   /// Add a link to another object.
   StatusCode linkObject( IRegistry* from, boost::string_ref objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject( boost::string_ref fromPath, boost::string_ref objPath, DataObject* to ) override;
-
-  /// Add a link to another object.
-  StatusCode linkObject( DataObject* from, boost::string_ref objPath, DataObject* to ) override;
-
-  /// Add a link to another object.
   StatusCode linkObject( boost::string_ref fullPath, DataObject* to ) override;
+
+  using IDataProviderSvc::unlinkObject;
 
   /// Remove a link to another object.
   StatusCode unlinkObject( IRegistry* from, boost::string_ref objPath ) override;
-
-  /// Remove a link to another object.
-  StatusCode unlinkObject( boost::string_ref fromPath, boost::string_ref objPath ) override;
 
   /// Remove a link to another object.
   StatusCode unlinkObject( DataObject* fromObj, boost::string_ref objPath ) override;
@@ -284,16 +235,7 @@ public:
   StatusCode updateObject( IRegistry* pDirectory ) override;
 
   /// Update object.
-  StatusCode updateObject( boost::string_ref updatePath ) override;
-
-  /// Update object.
   StatusCode updateObject( DataObject* toUpdate ) override;
-
-  /// Update object.
-  StatusCode updateObject( boost::string_ref parentPath, boost::string_ref updatePath ) override;
-
-  /// Update object.
-  StatusCode updateObject( DataObject* pParent, boost::string_ref updatePath ) override;
 
   /// Service initialization
   StatusCode initialize() override;
@@ -307,11 +249,7 @@ public:
   /// inherit contructor
   using extends::extends;
 
-  /// Standard Destructor
-  ~DataSvc() override;
-
-private:
-  /// Fake copy constructor (never implemented).
+  /// copy constructor disabled
   DataSvc( const DataSvc& ) = delete;
   /// Fake assignment operator (never implemented).
   DataSvc& operator=( const DataSvc& ) = delete;
