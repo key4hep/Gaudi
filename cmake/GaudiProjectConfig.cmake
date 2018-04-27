@@ -404,6 +404,9 @@ macro(gaudi_project project version)
   find_program(env_cmd NAMES xenv)
   if(NOT env_cmd)
     if(NOT EXISTS ${CMAKE_BINARY_DIR}/contrib/xenv)
+      # Avoid interference from user environment
+      unset(ENV{GIT_DIR})
+      unset(ENV{GIT_WORK_TREE})
       execute_process(COMMAND git clone https://gitlab.cern.ch/gaudi/xenv.git ${CMAKE_BINARY_DIR}/contrib/xenv)
     endif()
     # I'd like to generate the script with executable permission, but I only
