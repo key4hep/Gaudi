@@ -906,8 +906,15 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 
       // Mention sub slots
       if ( slot.allSubSlots.size() ) {
-        outputMS << "\nNumber of sub-slots:" << slot.allSubSlots.size() << "\n";
-        outputMS << "Sub-slot algorithms ready:" << slot.subSlotAlgsReady.size() << "\n";
+        outputMS << "\nNumber of sub-slots: " << slot.allSubSlots.size() << "\n";
+        outputMS << "Sub-slot algorithms ready: " << slot.subSlotAlgsReady.size() << "\n\n";
+
+        for ( auto& ss : slot.allSubSlots ) {
+          outputMS << "[ sub-slot: " << ( ss.eventContext->valid() ? ss.entryPoint : "[ctx invalid]" ) << "  event: "
+                   << ( ss.eventContext->valid() ? std::to_string( ss.eventContext->evt() ) : "[ctx invalid]" )
+                   << " ]:\n\n";
+          outputMS << m_precSvc->printState( ss ) << "\n";
+        }
       }
     }
   }
