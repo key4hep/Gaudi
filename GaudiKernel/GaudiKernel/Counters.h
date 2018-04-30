@@ -780,10 +780,12 @@ namespace Gaudi
  * backward compatible StatEntity class. Should not be used.
  * Only here for backward compatibility
  */
-struct StatEntity : Gaudi::Accumulators::PrintableCounter,
-                    Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
-                                                        Gaudi::Accumulators::StatAccumulator,
-                                                        Gaudi::Accumulators::BinomialAccumulator> {
+class StatEntity : public Gaudi::Accumulators::PrintableCounter,
+                   public Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
+                                                              Gaudi::Accumulators::StatAccumulator,
+                                                              Gaudi::Accumulators::BinomialAccumulator>
+{
+public:
   using AccParent = Gaudi::Accumulators::AccumulatorSet<double, Gaudi::Accumulators::atomicity::full,
                                                         Gaudi::Accumulators::StatAccumulator,
                                                         Gaudi::Accumulators::BinomialAccumulator>;
