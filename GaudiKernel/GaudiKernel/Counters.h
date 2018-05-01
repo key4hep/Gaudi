@@ -803,7 +803,9 @@ public:
               const double maxFlag )
       : StatEntity()
   {
-    reset( {{{{entries, flag}, flag2}, minFlag, maxFlag}, {0, 0}} );
+    reset( std::make_tuple(
+        std::make_tuple( std::make_tuple( std::make_tuple( entries, flag ), flag2 ), minFlag, maxFlag ),
+        std::make_tuple( 0, 0 ) ) );
   }
   void reset() { AccParent::reset(); }
   void operator=( double by )
