@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Use `apply` in `Gaudi::Functional` ([mr !622][])
 
 ### Fixed
+- Unset `GIT_DIR`/`GIT_WORK_TREE` before cloning `xenv` ([mr !669][])
 - Add test and fix of version propagation in KeyedContainer move ([mr !663][], [issue #27][])
 - Fixed the list of files used for formatting check in Gitlab-CI ([mr !664][])
 - Avoid (false positive) clang warning ([mr !656][])
@@ -31,6 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed bug in THistSvc introduced with [mr !594][] ([mr !652][])
 
 ### Added
+- Implementation of new counters classes ([mr !629][], [mr !676][], [mr !677][])
 - [Change log](CHANGELOG.md) ([mr !649][])
 
 
@@ -50,6 +52,9 @@ Details about old versions of the project can be found in the
 [ReleaseNotes](ReleaseNotes) folder and in the `release.notes` files in
 [GaudiRelease/doc](GaudiRelease/doc).
 
+[mr !677]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/677
+[mr !676]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/676
+[mr !669]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/669
 [mr !664]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/664
 [mr !663]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/663
 [mr !662]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/662
@@ -66,6 +71,7 @@ Details about old versions of the project can be found in the
 [mr !646]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/646
 [mr !645]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/645
 [mr !643]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/643
+[mr !629]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/629
 [mr !625]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/625
 [mr !622]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/622
 [mr !604]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/604
