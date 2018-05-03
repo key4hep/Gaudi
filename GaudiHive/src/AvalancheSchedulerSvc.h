@@ -243,8 +243,8 @@ private:
                                      EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToFinished( unsigned int iAlgo, int si );
 
-  /// Check if the scheduling is in a stall
-  StatusCode isStalled( int si );
+  /// Check if intra-event scheduling is in a stall
+  bool isStalled( const EventSlot& ) const;
 
   /// Dump the state of the scheduler
   void dumpSchedulerState( int iSlot );

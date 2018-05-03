@@ -769,8 +769,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
 
       thisSlot.eventContext = nullptr;
     } else {
-      StatusCode eventStalledSC = isStalled( iSlot );
-      if ( eventStalledSC.isFailure() ) {
+      if ( isStalled( thisSlot ) ) {
         m_algExecStateSvc->setEventStatus( EventStatus::AlgStall, *thisSlot.eventContext );
         eventFailed( thisSlot.eventContext ).ignore();
       }
@@ -790,23 +789,21 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
  * no algorithm is in flight and no algorithm has all of its dependencies
  * satisfied.
 */
-StatusCode AvalancheSchedulerSvc::isStalled( int iSlot )
+bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const
 {
-  // Get the slot
-  EventSlot& thisSlot = m_eventSlots[iSlot];
 
   if ( m_actionsQueue.empty() && m_algosInFlight == 0 && m_IOBoundAlgosInFlight == 0 &&
-       !thisSlot.algsStates.containsAny( {AState::DATAREADY, AState::SCHEDULED} ) &&
-       !subSlotAlgsInStates( thisSlot, {AState::DATAREADY, AState::SCHEDULED} ) ) {
+       !slot.algsStates.containsAny( {AState::DATAREADY, AState::SCHEDULED} ) &&
+       !subSlotAlgsInStates( slot, {AState::DATAREADY, AState::SCHEDULED} ) ) {
 
-    info() << "About to declare a stall" << endmsg;
+    info() << "About to declare a stall in slot " << slot.eventContext->slot() << endmsg;
     fatal() << "*** Stall detected! ***\n" << endmsg;
 
     // throw GaudiException ("Stall detected",name(),StatusCode::FAILURE);
 
-    return StatusCode::FAILURE;
+    return true;
   }
-  return StatusCode::SUCCESS;
+  return false;
 }
 
 //---------------------------------------------------------------------------
