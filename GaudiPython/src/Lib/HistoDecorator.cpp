@@ -102,8 +102,7 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
                                                          const std::string& title, const double low, const double high,
                                                          const unsigned long bins )
 {
-  return algo.plot( GaudiPython::_identity<GaudiPython::Vector::value_type>(), data.begin(), data.end(), title, low,
-                    high, bins );
+  return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), title, low, high, bins );
 }
 // ============================================================================
 /*  "plot"(book&fill) a sequence of data from the vector (implicit loop)
@@ -121,8 +120,7 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
                                                          const GaudiAlg::HistoID& ID, const std::string& title,
                                                          const double low, const double high, const unsigned long bins )
 {
-  return algo.plot( GaudiPython::_identity<GaudiPython::Vector::value_type>(), data.begin(), data.end(), ID, title, low,
-                    high, bins );
+  return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), ID, title, low, high, bins );
 }
 // ============================================================================
 /*  "plot"(book&fill) a sequence of data from the vector (implicit loop)
@@ -140,8 +138,7 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
                                                          const long ID, const std::string& title, const double low,
                                                          const double high, const unsigned long bins )
 {
-  return algo.plot( GaudiPython::_identity<GaudiPython::Vector::value_type>(), data.begin(), data.end(), ID, title, low,
-                    high, bins );
+  return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), ID, title, low, high, bins );
 }
 // ============================================================================
 /*  "plot"(book&fill) a sequence of data from the vector (implicit loop)
@@ -159,8 +156,7 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
                                                          const std::string& ID, const std::string& title,
                                                          const double low, const double high, const unsigned long bins )
 {
-  return algo.plot( GaudiPython::_identity<GaudiPython::Vector::value_type>(), data.begin(), data.end(), ID, title, low,
-                    high, bins );
+  return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), ID, title, low, high, bins );
 }
 // ============================================================================
 /*  fill the 2D histogram (book on demand)
