@@ -3,7 +3,7 @@
 
 // std includes
 #include <algorithm>
-#include <chrono>
+#include <memory>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -406,7 +406,7 @@ namespace precedence
 
 } // namespace prules
 
-struct Cause {
+struct Cause final {
   enum class source { Root, Task };
 
   source      m_source;
@@ -436,7 +436,7 @@ namespace concurrency
     {
     }
     /// Destructor
-    virtual ~ControlFlowNode() {}
+    virtual ~ControlFlowNode() = default;
 
     /// Visitor entry point
     virtual bool accept( IGraphVisitor& visitor ) = 0;
@@ -452,13 +452,11 @@ namespace concurrency
     PrecedenceRulesGraph* m_graph;
 
   protected:
-    /// Translation between state id and name
-    std::string stateToString( const int& stateId ) const;
     unsigned int m_nodeIndex;
     std::string  m_nodeName;
   };
 
-  class DecisionNode : public ControlFlowNode
+  class DecisionNode final : public ControlFlowNode
   {
   public:
     /// Constructor
@@ -471,12 +469,8 @@ namespace concurrency
         , m_modeOR( modeOR )
         , m_allPass( allPass )
         , m_inverted( isInverted )
-        , m_children()
     {
     }
-
-    /// Destructor
-    ~DecisionNode() override;
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -511,7 +505,7 @@ namespace concurrency
   // ==========================================================================
   class DataNode;
 
-  class AlgorithmNode : public ControlFlowNode
+  class AlgorithmNode final : public ControlFlowNode
   {
   public:
     /// Constructor
@@ -523,10 +517,7 @@ namespace concurrency
         , m_algoName( algoPtr->name() )
         , m_inverted( inverted )
         , m_allPass( allPass )
-        , m_rank( -1 )
         , m_isIOBound( algoPtr->isIOBound() ){};
-    /// Destructor
-    ~AlgorithmNode();
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -585,7 +576,7 @@ namespace concurrency
     /// Whether the selection result is relevant or always "pass"
     bool m_allPass;
     /// Algorithm rank of any kind
-    float m_rank;
+    float m_rank = -1;
     /// If an algorithm is blocking
     bool m_isIOBound;
 
@@ -610,8 +601,7 @@ namespace concurrency
     /// Entry point for a visitor
     virtual bool accept( IGraphVisitor& visitor )
     {
-      if ( visitor.visitEnter( *this ) ) return visitor.visit( *this );
-      return true;
+      return visitor.visitEnter( *this ) ? visitor.visit( *this ) : true;
     }
     /// Add relationship to producer AlgorithmNode
     void addProducerNode( AlgorithmNode* node )
@@ -639,7 +629,7 @@ namespace concurrency
     std::vector<AlgorithmNode*> m_consumers;
   };
 
-  class ConditionNode : public DataNode
+  class ConditionNode final : public DataNode
   {
   public:
     /// Constructor
@@ -653,8 +643,7 @@ namespace concurrency
     /// using DataNode::accept; ?
     bool accept( IGraphVisitor& visitor ) override
     {
-      if ( visitor.visitEnter( *this ) ) return visitor.visit( *this );
-      return true;
+      return visitor.visitEnter( *this ) ? visitor.visit( *this ) : true;
     }
 
   public:
@@ -663,12 +652,6 @@ namespace concurrency
   };
 
   // ==========================================================================
-  using AlgoNodesMap    = std::unordered_map<std::string, AlgorithmNode*>;
-  using DecisionHubsMap = std::unordered_map<std::string, DecisionNode*>;
-  using DataNodesMap    = std::unordered_map<DataObjID, DataNode*, DataObjID_Hasher>;
-
-  using AlgoInputsMap  = std::unordered_map<std::string, DataObjIDColl>;
-  using AlgoOutputsMap = std::unordered_map<std::string, DataObjIDColl>;
 
   struct IPrecedenceRulesGraph {
     virtual ~IPrecedenceRulesGraph() = default;
@@ -678,21 +661,10 @@ namespace concurrency
   {
   public:
     /// Constructor
-    PrecedenceRulesGraph( const std::string& name, SmartIF<ISvcLocator> svc )
-        : m_headNode( 0 )
-        , m_nodeCounter( 0 )
-        , m_algoCounter( 0 )
-        , m_svcLocator( svc )
-        , m_name( name )
-        , m_initTime( std::chrono::system_clock::now() )
+    PrecedenceRulesGraph( const std::string& name, SmartIF<ISvcLocator> svc ) : m_svcLocator( svc ), m_name( name )
     {
       // make sure that CommonMessaging is initialized
       setUpMessaging();
-    }
-    /// Destructor
-    ~PrecedenceRulesGraph() override
-    {
-      if ( m_headNode != 0 ) delete m_headNode;
     }
 
     /// Initialize graph
@@ -704,7 +676,7 @@ namespace concurrency
     /// Add DataNode that represents DataObject
     StatusCode addDataNode( const DataObjID& dataPath );
     /// Get DataNode by DataObject path using graph index
-    DataNode* getDataNode( const DataObjID& dataPath ) const;
+    DataNode* getDataNode( const DataObjID& dataPath ) const { return m_dataPathToDataNodeMap.at( dataPath ).get(); }
     /// Register algorithm in the Data Dependency index
     void registerIODataObjects( const Algorithm* algo );
     /// Build data dependency realm WITH data object nodes participating
@@ -718,7 +690,10 @@ namespace concurrency
     /// Add algorithm node
     StatusCode addAlgorithmNode( Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass );
     /// Get the AlgorithmNode from by algorithm name using graph index
-    AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const;
+    AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const
+    {
+      return m_algoNameToAlgoNodeMap.at( algoName ).get();
+    }
     /// Add a node, which aggregates decisions of direct daughter nodes
     StatusCode addDecisionHubNode( Algorithm* daughterAlgo, const std::string& parentName, concurrency::Concurrent,
                                    concurrency::PromptDecision, concurrency::ModeOr, concurrency::AllPass,
@@ -734,8 +709,6 @@ namespace concurrency
     /// Retrieve pointer to service locator
     SmartIF<ISvcLocator>& serviceLocator() const override { return m_svcLocator; }
     ///
-    const std::chrono::system_clock::time_point getInitTime() const { return m_initTime; }
-
     /// Print a string representing the control flow state
     void printState( std::stringstream& output, AlgsExecutionStates& states, const std::vector<int>& node_decisions,
                      const unsigned int& recursionLevel ) const
@@ -762,27 +735,25 @@ namespace concurrency
 
   private:
     /// the head node of the control flow graph
-    DecisionNode* m_headNode;
+    DecisionNode* m_headNode = nullptr;
     /// Index: map of algorithm's name to AlgorithmNode
-    AlgoNodesMap m_algoNameToAlgoNodeMap;
+    std::unordered_map<std::string, std::unique_ptr<AlgorithmNode>> m_algoNameToAlgoNodeMap;
     /// Index: map of decision's name to DecisionHub
-    DecisionHubsMap m_decisionNameToDecisionHubMap;
+    std::unordered_map<std::string, std::unique_ptr<DecisionNode>> m_decisionNameToDecisionHubMap;
     /// Index: map of data path to DataNode
-    DataNodesMap m_dataPathToDataNodeMap;
+    std::unordered_map<DataObjID, std::unique_ptr<DataNode>, DataObjID_Hasher> m_dataPathToDataNodeMap;
     /// Indexes: maps of algorithm's name to algorithm's inputs/outputs
-    AlgoInputsMap  m_algoNameToAlgoInputsMap;
-    AlgoOutputsMap m_algoNameToAlgoOutputsMap;
+    std::unordered_map<std::string, DataObjIDColl> m_algoNameToAlgoInputsMap;
+    std::unordered_map<std::string, DataObjIDColl> m_algoNameToAlgoOutputsMap;
 
     /// Total number of nodes in the graph
-    unsigned int m_nodeCounter;
+    unsigned int m_nodeCounter = 0;
     /// Total number of algorithm nodes in the graph
-    unsigned int m_algoCounter;
+    unsigned int m_algoCounter = 0;
 
     /// Service locator (needed to access the MessageSvc)
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string            m_name;
-
-    const std::chrono::system_clock::time_point m_initTime;
 
     /// facilities for algorithm precedence tracing
     precedence::PrecTrace m_precTrace;
