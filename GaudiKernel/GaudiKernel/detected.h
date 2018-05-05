@@ -4,6 +4,8 @@
 // taken from http://en.cppreference.com/w/cpp/experimental/is_detected
 // and http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4436.pdf
 
+#include <type_traits>
+
 namespace Gaudi
 {
   namespace cpp17
@@ -22,6 +24,7 @@ namespace Gaudi
       struct detector {
         constexpr static bool value = false;
         using type                  = Default;
+        using value_t               = std::false_type;
       };
 
       /// Implementation of the detection idiom (positive case).
@@ -29,6 +32,7 @@ namespace Gaudi
       struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
         constexpr static bool value = true;
         using type                  = Op<Args...>;
+        using value_t               = std::true_type;
       };
     }
 
