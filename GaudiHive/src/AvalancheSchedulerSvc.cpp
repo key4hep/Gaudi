@@ -310,6 +310,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
   m_eventSlots.assign( m_maxEventsInFlight,
                        EventSlot( algsNumber, precSvc->getRules()->getControlFlowNodeCounter(), messageSvc ) );
   std::for_each( m_eventSlots.begin(), m_eventSlots.end(), []( EventSlot& slot ) { slot.complete = true; } );
+  m_actionsCounts.assign( m_maxEventsInFlight, 0 );
 
   if ( m_threadPoolSize > 1 ) {
     m_maxAlgosInFlight = (size_t)m_threadPoolSize;
@@ -415,10 +416,21 @@ StatusCode AvalancheSchedulerSvc::deactivate()
 {
 
   if ( m_isActive == ACTIVE ) {
+
+    // Set the number of slots available to an error code
+    m_freeSlots.store( 0 );
+
+    // Empty queue
+    action thisAction;
+    while ( m_actionsQueue.try_pop( thisAction ) ) {
+    };
+
     // Drain the scheduler
-    m_actionsQueue.push( [this]() { return this->drain(); } );
+    // m_actionsQueue.push( [this]() { return this->drain(); } );
+
     // This would be the last action
     m_actionsQueue.push( [this]() -> StatusCode {
+      ON_VERBOSE verbose() << "Deactivating scheduler" << endmsg;
       m_isActive = INACTIVE;
       return StatusCode::SUCCESS;
     } );
@@ -492,6 +504,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
       result = StatusCode::FAILURE;
     }
 
+    --m_actionsCounts[thisSlotNum];
     if ( this->updateStates( thisSlotNum ).isFailure() ) {
       error() << "Failed to call AvalancheSchedulerSvc::updateStates for slot " << thisSlotNum << endmsg;
       result = StatusCode::FAILURE;
@@ -506,6 +519,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
     verbose() << "Pushing the action to update the scheduler for slot " << eventContext->slot() << endmsg;
     verbose() << "Free slots available " << m_freeSlots.load() << endmsg;
   }
+  ++m_actionsCounts[eventContext->slot()];
   m_actionsQueue.push( action );
 
   return StatusCode::SUCCESS;
@@ -559,7 +573,7 @@ StatusCode AvalancheSchedulerSvc::popFinishedEvent( EventContext*& eventContext 
     //      << " active: " << m_isActive << endmsg;
     m_finishedEvents.pop( eventContext );
     m_freeSlots++;
-    ON_DEBUG debug() << "Popped slot " << eventContext->slot() << "(event " << eventContext->evt() << ")" << endmsg;
+    ON_DEBUG debug() << "Popped slot " << eventContext->slot() << " (event " << eventContext->evt() << ")" << endmsg;
     return StatusCode::SUCCESS;
   }
 }
@@ -588,9 +602,6 @@ StatusCode AvalancheSchedulerSvc::tryPopFinishedEvent( EventContext*& eventConte
 StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
 {
 
-  // Set the number of slots available to an error code
-  m_freeSlots.store( 0 );
-
   const uint slotIdx = eventContext->slot();
 
   fatal() << "*** Event " << eventContext->evt() << " on slot " << slotIdx << " failed! ***" << endmsg;
@@ -599,12 +610,6 @@ StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
 
   // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
   m_precSvc->dumpPrecedenceRules( m_eventSlots[slotIdx] );
-
-  // Empty queue and deactivate the service
-  action thisAction;
-  while ( m_actionsQueue.try_pop( thisAction ) ) {
-  };
-  deactivate();
 
   // Push into the finished events queue the failed context
   EventContext* thisEvtContext;
@@ -792,14 +797,11 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
 bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const
 {
 
-  if ( m_actionsQueue.empty() && m_algosInFlight == 0 && m_IOBoundAlgosInFlight == 0 &&
+  if ( m_actionsCounts[slot.eventContext->slot()] == 0 &&
        !slot.algsStates.containsAny( {AState::DATAREADY, AState::SCHEDULED} ) &&
        !subSlotAlgsInStates( slot, {AState::DATAREADY, AState::SCHEDULED} ) ) {
-
     info() << "About to declare a stall in slot " << slot.eventContext->slot() << endmsg;
     fatal() << "*** Stall detected! ***\n" << endmsg;
-
-    // throw GaudiException ("Stall detected",name(),StatusCode::FAILURE);
 
     return true;
   }
@@ -1071,7 +1073,11 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
                    << m_algosInFlight << endmsg;
 
   // Schedule an update of the status of the algorithms
-  m_actionsQueue.push( [this, iAlgo, eventContext]() { return this->updateStates( -1, iAlgo, eventContext ); } );
+  ++m_actionsCounts[si];
+  m_actionsQueue.push( [this, si, iAlgo, eventContext]() {
+    if ( this->m_actionsCounts[si] != 0 ) --this->m_actionsCounts[si];
+    return this->updateStates( -1, iAlgo, eventContext );
+  } );
 
   return sc;
 }
@@ -1120,7 +1126,11 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
                    << ". Algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
 
   // Schedule an update of the status of the algorithms
-  m_actionsQueue.push( [this, iAlgo, eventContext]() { return this->updateStates( -1, iAlgo, eventContext ); } );
+  ++m_actionsCounts[si];
+  m_actionsQueue.push( [this, si, iAlgo, eventContext]() {
+    if ( this->m_actionsCounts[si] != 0 ) --this->m_actionsCounts[si];
+    return this->updateStates( -1, iAlgo, eventContext );
+  } );
 
   return sc;
 }

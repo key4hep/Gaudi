@@ -3,7 +3,7 @@
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
                            AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher,TimelineSvc,PrecedenceSvc)
+                           CPUCruncher)
 
 
 evtslots = 1
@@ -30,7 +30,8 @@ a1 = CPUCruncher("A1")
 # This leads to data flow stall
 a1.InvertDecision = True
 
-a2 = CPUCruncher("A2") # this algorithm is not run due to early exit from the group it belongs to
+# this algorithm is not run due to early exit from the group it belongs to
+a2 = CPUCruncher("A2")
 a2.outKeys = ['/Event/a2']
 
 a3 = CPUCruncher("A3")
@@ -38,10 +39,10 @@ a3.inpKeys = ['/Event/a2']
 
 # Assemble control flow graph
 branch = GaudiSequencer("EarlyExitBranch", ModeOR=False,
-                         ShortCircuit=True, Sequential=True)
+                        ShortCircuit=True, Sequential=True)
 branch.Members = [a1, a2]
 
-for algo in [a1,a2,a3]:
+for algo in [a1, a2, a3]:
     algo.shortCalib = True
     algo.Cardinality = cardinality
     algo.avgRuntime = .1
@@ -52,6 +53,6 @@ ApplicationMgr(EvtMax=evtMax,
                EvtSel='NONE',
                ExtSvc=[whiteboard],
                EventLoop=slimeventloopmgr,
-               TopAlg=[branch,a3],
+               TopAlg=[branch, a3],
                MessageSvcType="InertMessageSvc",
                OutputLevel=INFO)
