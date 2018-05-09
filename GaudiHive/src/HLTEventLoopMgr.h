@@ -24,6 +24,32 @@ class IDataProviderSvc;
 class HLTEventLoopMgr : public extends<Service, IEventProcessor>
 {
 
+  struct HLTExecutionTask final : tbb::task {
+
+    HLTExecutionTask( std::vector<Algorithm*>& algorithms, std::unique_ptr<EventContext> ctx, ISvcLocator* svcLocator,
+                      IAlgExecStateSvc* aem, HLTEventLoopMgr* parent )
+        : m_algorithms( algorithms )
+        , m_evtCtx( std::move( ctx ) )
+        , m_aess( aem )
+        , m_serviceLocator( svcLocator )
+        , m_parent( parent )
+    {
+    }
+    tbb::task* execute() override;
+
+    MsgStream log()
+    {
+      SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
+      return MsgStream( messageSvc, "HLTExecutionTask" );
+    }
+
+    std::vector<Algorithm*>&      m_algorithms;
+    std::unique_ptr<EventContext> m_evtCtx;
+    IAlgExecStateSvc*             m_aess;
+    SmartIF<ISvcLocator>          m_serviceLocator;
+    HLTEventLoopMgr*              m_parent;
+  };
+
 public:
   /// Standard Constructor
   using extends::extends;
@@ -50,8 +76,7 @@ private:
   /// Method to check if an event failed and take appropriate actions
   StatusCode eventFailed( EventContext* eventContext ) const;
   /// Algorithm promotion
-  struct HLTExecutionTask;
-  friend HLTExecutionTask; // must be able to call `promoteToExecuted`...
+  friend HLTExecutionTask;
   void promoteToExecuted( std::unique_ptr<EventContext> eventContext ) const;
 
 private:
