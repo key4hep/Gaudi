@@ -9,7 +9,7 @@
 namespace concurrency
 {
 
-  typedef AlgsExecutionStates::State State;
+  using State = AlgsExecutionStates::State;
 
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visitEnter( AlgorithmNode& node ) const

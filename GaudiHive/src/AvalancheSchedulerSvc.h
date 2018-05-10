@@ -30,9 +30,6 @@
 
 class IAlgorithm;
 
-typedef AlgsExecutionStates::State  State;
-typedef std::function<StatusCode()> action;
-
 //---------------------------------------------------------------------------
 
 /**@class AvalancheSchedulerSvc AvalancheSchedulerSvc.h
@@ -135,6 +132,9 @@ public:
                                         EventContext* viewContext ) override;
 
 private:
+  using AState = AlgsExecutionStates::State;
+  using action = std::function<StatusCode()>;
+
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
   Gaudi::Property<int> m_threadPoolSize{
