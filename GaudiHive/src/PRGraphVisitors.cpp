@@ -8,7 +8,6 @@
 
 namespace concurrency
 {
-
   using AState = AlgsExecutionStates::State;
 
   //--------------------------------------------------------------------------
