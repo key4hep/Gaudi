@@ -1,5 +1,7 @@
 #include "AlgsExecutionStates.h"
 
+#include <cstdint>
+
 namespace
 {
   constexpr auto transition( AlgsExecutionStates::State first, AlgsExecutionStates::State second )
