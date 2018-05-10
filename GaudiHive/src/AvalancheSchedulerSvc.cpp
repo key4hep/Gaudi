@@ -394,7 +394,7 @@ void AvalancheSchedulerSvc::activate()
 
   // Continue to wait if the scheduler is running or there is something to do
   ON_DEBUG debug() << "Start checking the actionsQueue" << endmsg;
-  while ( m_isActive == ACTIVE or m_actionsQueue.size() != 0 ) {
+  while ( m_isActive == ACTIVE || m_actionsQueue.size() != 0 ) {
     m_actionsQueue.pop( thisAction );
     sc = thisAction();
     ON_VERBOSE
@@ -545,8 +545,8 @@ StatusCode AvalancheSchedulerSvc::drain()
   unsigned int slotNum = 0;
 
   for ( auto& thisSlot : m_eventSlots ) {
-    if ( not thisSlot.algsStates.composedOf( {AlgsExecutionStates::EVTACCEPTED, AlgsExecutionStates::EVTREJECTED} ) and
-         not thisSlot.complete ) {
+    if ( !thisSlot.algsStates.composedOf( {AlgsExecutionStates::EVTACCEPTED, AlgsExecutionStates::EVTREJECTED} ) &&
+         !thisSlot.complete ) {
       updateStates( slotNum );
     }
     slotNum++;
@@ -561,7 +561,7 @@ StatusCode AvalancheSchedulerSvc::drain()
 StatusCode AvalancheSchedulerSvc::popFinishedEvent( EventContext*& eventContext )
 {
   // ON_DEBUG debug() << "popFinishedEvent: queue size: " << m_finishedEvents.size() << endmsg;
-  if ( m_freeSlots.load() == (int)m_maxEventsInFlight or m_isActive == INACTIVE ) {
+  if ( m_freeSlots.load() == (int)m_maxEventsInFlight || m_isActive == INACTIVE ) {
     // ON_DEBUG debug() << "freeslots: " << m_freeSlots << "/" << m_maxEventsInFlight
     //      << " active: " << m_isActive << endmsg;
     return StatusCode::FAILURE;
@@ -917,7 +917,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
              << ( slot.eventContext->valid() ? std::to_string( slot.eventContext->evt() ) : "[ctx invalid]" )
              << " ]:\n\n";
 
-    if ( 0 > iSlot or iSlot == slotCount ) {
+    if ( 0 > iSlot || iSlot == slotCount ) {
 
       // Snapshot of the Control Flow and FSM states
       outputMS << m_precSvc->printState( slot ) << "\n";
