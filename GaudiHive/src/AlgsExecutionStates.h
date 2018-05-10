@@ -6,10 +6,11 @@
 #include "GaudiKernel/Service.h"
 
 // C++ include files
+#include <algorithm>
 #include <cstdint>
 #include <functional>
+#include <initializer_list>
 #include <iterator>
-#include <map>
 #include <string>
 #include <vector>
 
@@ -41,19 +42,21 @@ public:
   AlgsExecutionStates( unsigned int algsNumber, SmartIF<IMessageSvc> MS )
       : m_states( algsNumber, INITIAL ), m_MS( std::move( MS ) ){};
 
-  StatusCode updateState( unsigned int iAlgo, State newState );
+  StatusCode set( unsigned int iAlgo, State newState );
 
   void reset() { std::fill( m_states.begin(), m_states.end(), INITIAL ); };
 
-  bool algsPresent( State state ) const
+  bool contains( State state ) const { return std::find( m_states.begin(), m_states.end(), state ) != m_states.end(); }
+
+  bool containsAny( std::initializer_list<State> l ) const
   {
-    return std::find( m_states.begin(), m_states.end(), state ) != m_states.end();
+    return std::find_first_of( m_states.begin(), m_states.end(), l.begin(), l.end() ) != m_states.end();
   }
 
-  bool allAlgsExecuted()
+  bool composedOf( std::initializer_list<State> l ) const
   {
     return std::all_of( m_states.begin(), m_states.end(),
-                        []( State s ) { return s == EVTACCEPTED || s == EVTREJECTED; } );
+                        [l]( State s ) { return std::find( l.begin(), l.end(), s ) != l.end(); } );
   };
 
   const State& operator[]( unsigned int i ) const { return m_states.at( i ); };

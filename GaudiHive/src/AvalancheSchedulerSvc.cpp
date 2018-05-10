@@ -52,7 +52,7 @@ namespace
   {
     for ( const EventSlot& ss : slot.allSubSlots ) {
       for ( auto state : testStates ) {
-        if ( ss.algsStates.algsPresent( state ) ) {
+        if ( ss.algsStates.contains( state ) ) {
 
           // There are sub-slot algs in this state
           return true;
@@ -426,7 +426,7 @@ StatusCode AvalancheSchedulerSvc::deactivate()
 
   if ( m_isActive == ACTIVE ) {
     // Drain the scheduler
-    m_actionsQueue.push( [this]() { return this->m_drain(); } );
+    m_actionsQueue.push( [this]() { return this->drain(); } );
     // This would be the last action
     m_actionsQueue.push( [this]() -> StatusCode {
       m_isActive = INACTIVE;
@@ -539,12 +539,14 @@ unsigned int AvalancheSchedulerSvc::freeSlots() { return std::max( m_freeSlots.l
 /**
  * Update the states for all slots until nothing is left to do.
 */
-StatusCode AvalancheSchedulerSvc::m_drain()
+StatusCode AvalancheSchedulerSvc::drain()
 {
 
   unsigned int slotNum = 0;
+
   for ( auto& thisSlot : m_eventSlots ) {
-    if ( not thisSlot.algsStates.allAlgsExecuted() and not thisSlot.complete ) {
+    if ( not thisSlot.algsStates.composedOf( {AlgsExecutionStates::EVTACCEPTED, AlgsExecutionStates::EVTREJECTED} ) and
+         not thisSlot.complete ) {
       updateStates( slotNum );
     }
     slotNum++;
@@ -775,9 +777,8 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
 
     // Not complete because this would mean that the slot is already free!
     if ( !thisSlot.complete && m_precSvc->CFRulesResolved( thisSlot ) &&
-         !thisSlot.algsStates.algsPresent( AlgsExecutionStates::CONTROLREADY ) &&
-         !thisSlot.algsStates.algsPresent( AlgsExecutionStates::DATAREADY ) &&
-         !thisSlot.algsStates.algsPresent( AlgsExecutionStates::SCHEDULED ) &&
+         !thisSlot.algsStates.containsAny(
+             {AlgsExecutionStates::CONTROLREADY, AlgsExecutionStates::DATAREADY, AlgsExecutionStates::SCHEDULED} ) &&
          !subSlotAlgsInStates( thisSlot, {AlgsExecutionStates::CONTROLREADY, AlgsExecutionStates::DATAREADY,
                                           AlgsExecutionStates::SCHEDULED} ) ) {
 
@@ -822,7 +823,7 @@ StatusCode AvalancheSchedulerSvc::isStalled( int iSlot )
   EventSlot& thisSlot = m_eventSlots[iSlot];
 
   if ( m_actionsQueue.empty() && m_algosInFlight == 0 && m_IOBoundAlgosInFlight == 0 &&
-       ( !thisSlot.algsStates.algsPresent( AlgsExecutionStates::DATAREADY ) ) &&
+       !thisSlot.algsStates.contains( AlgsExecutionStates::DATAREADY ) &&
        !subSlotAlgsInStates( thisSlot, {AlgsExecutionStates::DATAREADY, AlgsExecutionStates::SCHEDULED} ) ) {
 
     info() << "About to declare a stall" << endmsg;
@@ -994,11 +995,11 @@ StatusCode AvalancheSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si
     EventSlot& thisSlot = m_eventSlots[si];
     if ( eventContext == thisSlot.eventContext ) {
       // Event level (standard behaviour)
-      updateSc = thisSlot.algsStates.updateState( iAlgo, AlgsExecutionStates::SCHEDULED );
+      updateSc = thisSlot.algsStates.set( iAlgo, AlgsExecutionStates::SCHEDULED );
     } else {
       // Sub-slot
       unsigned int const subSlotIndex = thisSlot.contextToSlot.at( eventContext );
-      updateSc = thisSlot.allSubSlots[subSlotIndex].algsStates.updateState( iAlgo, AlgsExecutionStates::SCHEDULED );
+      updateSc = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, AlgsExecutionStates::SCHEDULED );
     }
 
     ON_VERBOSE dumpSchedulerState( -1 );
@@ -1043,11 +1044,11 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
     EventSlot& thisSlot = m_eventSlots[si];
     if ( eventContext == thisSlot.eventContext ) {
       // Event level (standard behaviour)
-      updateSc = thisSlot.algsStates.updateState( iAlgo, AlgsExecutionStates::SCHEDULED );
+      updateSc = thisSlot.algsStates.set( iAlgo, AlgsExecutionStates::SCHEDULED );
     } else {
       // Sub-slot
       unsigned int const subSlotIndex = thisSlot.contextToSlot.at( eventContext );
-      updateSc = thisSlot.allSubSlots[subSlotIndex].algsStates.updateState( iAlgo, AlgsExecutionStates::SCHEDULED );
+      updateSc = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, AlgsExecutionStates::SCHEDULED );
     }
 
     ON_VERBOSE if ( updateSc.isSuccess() ) verbose() << "[Asynchronous] Promoting " << algName
@@ -1090,11 +1091,11 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
   // Update states in the appropriate slot
   if ( eventContext == thisSlot.eventContext ) {
     // Event level (standard behaviour)
-    sc = thisSlot.algsStates.updateState( iAlgo, state );
+    sc = thisSlot.algsStates.set( iAlgo, state );
   } else {
     // Sub-slot
     unsigned int const subSlotIndex = thisSlot.contextToSlot.at( eventContext );
-    sc                              = thisSlot.allSubSlots[subSlotIndex].algsStates.updateState( iAlgo, state );
+    sc                              = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, state );
   }
 
   ON_VERBOSE if ( sc.isSuccess() ) verbose() << "Promoting " << algo->name() << " on slot " << si << " to " << state
@@ -1139,11 +1140,11 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   // Update states in the appropriate slot
   if ( eventContext == thisSlot.eventContext ) {
     // Event level (standard behaviour)
-    sc = thisSlot.algsStates.updateState( iAlgo, state );
+    sc = thisSlot.algsStates.set( iAlgo, state );
   } else {
     // Sub-slot
     unsigned int const subSlotIndex = thisSlot.contextToSlot.at( eventContext );
-    sc                              = thisSlot.allSubSlots[subSlotIndex].algsStates.updateState( iAlgo, state );
+    sc                              = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, state );
   }
 
   ON_VERBOSE if ( sc.isSuccess() ) verbose() << "[Asynchronous] Promoting " << algo->name() << " on slot " << si

@@ -10,7 +10,7 @@ namespace
   }
 }
 
-StatusCode AlgsExecutionStates::updateState( unsigned int iAlgo, State newState )
+StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState )
 {
   if ( iAlgo >= m_states.size() ) {
     log() << MSG::ERROR << "Index out of bound (" << iAlgo << " / " << m_states.size() << ")" << endmsg;

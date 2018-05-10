@@ -254,7 +254,7 @@ private:
   SmartIF<IAlgResourcePool> m_algResourcePool;
 
   /// Drain the actions present in the queue
-  StatusCode m_drain();
+  StatusCode drain();
 
   // Actions management -----------------------------------------------------
 

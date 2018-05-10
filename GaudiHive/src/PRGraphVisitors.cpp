@@ -36,7 +36,7 @@ namespace concurrency
     }
 
     if ( result ) {
-      m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
+      m_slot->algsStates.set( node.getAlgoIndex(), State::DATAREADY ).ignore();
 
       // Inform parent slot if there is one
       if ( m_slot->parentSlot ) {
@@ -344,7 +344,7 @@ namespace concurrency
     auto& state  = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
-    if ( State::INITIAL == state ) states.updateState( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
+    if ( State::INITIAL == state ) states.set( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
@@ -596,18 +596,18 @@ namespace concurrency
     auto dataPromoter = DataReadyPromoter( *m_slot, m_cause );
 
     if ( State::INITIAL == states[node.getAlgoIndex()] ) {
-      states.updateState( node.getAlgoIndex(), State::CONTROLREADY );
+      states.set( node.getAlgoIndex(), State::CONTROLREADY );
       if ( dataPromoter.visit( node ) ) {
-        states.updateState( node.getAlgoIndex(), State::SCHEDULED );
-        states.updateState( node.getAlgoIndex(), State::EVTACCEPTED );
+        states.set( node.getAlgoIndex(), State::SCHEDULED );
+        states.set( node.getAlgoIndex(), State::EVTACCEPTED );
         decision = 1;
         ++m_nodesSucceeded;
         // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
         return true;
       }
     } else if ( State::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit( node ) ) {
-      states.updateState( node.getAlgoIndex(), State::SCHEDULED );
-      states.updateState( node.getAlgoIndex(), State::EVTACCEPTED );
+      states.set( node.getAlgoIndex(), State::SCHEDULED );
+      states.set( node.getAlgoIndex(), State::EVTACCEPTED );
       decision = 1;
       ++m_nodesSucceeded;
       // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
