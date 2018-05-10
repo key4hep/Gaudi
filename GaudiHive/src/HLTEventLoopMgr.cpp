@@ -64,6 +64,81 @@ namespace
   }
 }
 
+struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
+
+  std::vector<Algorithm*>&      m_algorithms;
+  std::unique_ptr<EventContext> m_evtCtx;
+  IAlgExecStateSvc*             m_aess;
+  SmartIF<ISvcLocator>          m_serviceLocator;
+  HLTEventLoopMgr*              m_parent;
+
+  HLTExecutionTask( std::vector<Algorithm*>& algorithms, std::unique_ptr<EventContext> ctx, ISvcLocator* svcLocator,
+                    IAlgExecStateSvc* aem, HLTEventLoopMgr* parent )
+      : m_algorithms( algorithms )
+      , m_evtCtx( std::move( ctx ) )
+      , m_aess( aem )
+      , m_serviceLocator( svcLocator )
+      , m_parent( parent )
+  {
+  }
+
+  MsgStream log()
+  {
+    SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
+    return MsgStream( messageSvc, "HLTExecutionTask" );
+  }
+
+  tbb::task* execute() override
+  {
+    bool eventfailed = false;
+    Gaudi::Hive::setCurrentContext( m_evtCtx.get() );
+
+    const SmartIF<IProperty> appmgr( m_serviceLocator );
+
+    for ( Algorithm* ialg : m_algorithms ) {
+
+      // select the appropriate store
+      ialg->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
+
+      StatusCode sc( StatusCode::FAILURE );
+      try {
+        RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
+        m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Executing );
+        sc = ialg->sysExecute( *m_evtCtx );
+        if ( UNLIKELY( !sc.isSuccess() ) ) {
+          log() << MSG::WARNING << "Execution of algorithm " << ialg->name() << " failed" << endmsg;
+          eventfailed = true;
+        }
+        rcg.ignore(); // disarm the guard
+      } catch ( const GaudiException& Exception ) {
+        log() << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by "
+              << ialg->name() << endmsg << MSG::ERROR << Exception << endmsg;
+        eventfailed = true;
+      } catch ( const std::exception& Exception ) {
+        log() << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << ialg->name() << endmsg
+              << MSG::ERROR << Exception.what() << endmsg;
+        eventfailed = true;
+      } catch ( ... ) {
+        log() << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ialg->name() << endmsg;
+        eventfailed = true;
+      }
+
+      // DP it is important to propagate the failure of an event.
+      // We need to stop execution when this happens so that execute run can
+      // then receive the FAILURE
+      m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Done, sc );
+      m_aess->updateEventStatus( eventfailed, *m_evtCtx );
+
+      // in case the algorithm was a filter and the filter did not pass, stop here
+      if ( !ialg->filterPassed() ) break;
+    }
+    // update scheduler state
+    m_parent->promoteToExecuted( std::move( m_evtCtx ) );
+    Gaudi::Hive::setCurrentContextEvt( -1 );
+
+    return nullptr;
+  }
+};
 
 StatusCode HLTEventLoopMgr::initialize()
 {
@@ -336,6 +411,10 @@ StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
       HLTExecutionTask( m_algos, std::move( evtContext ), serviceLocator(), m_algExecStateSvc, this );
   tbb::task::enqueue( *task );
 
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "All algorithms were submitted on event " << evtContext->evt() << " in slot " << evtContext->slot()
+            << endmsg; // FIXME: use after std::move..
+
   createdEvts++;
   return StatusCode::SUCCESS;
 }
@@ -487,55 +566,4 @@ void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventCont
   if ( !sc.isSuccess() ) error() << "Whiteboard slot " << eventContext->slot() << " could not be properly cleared";
   m_finishedEvt++;
   m_createEventCond.notify_all();
-}
-
-tbb::task* HLTEventLoopMgr::HLTExecutionTask::execute()
-{
-  bool eventfailed = false;
-  Gaudi::Hive::setCurrentContext( m_evtCtx.get() );
-
-  const SmartIF<IProperty> appmgr( m_serviceLocator );
-
-  for ( Algorithm* ialg : m_algorithms ) {
-
-    // select the appropriate store
-    ialg->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
-
-    StatusCode sc( StatusCode::FAILURE );
-    try {
-      RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-      m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Executing );
-      sc = ialg->sysExecute( *m_evtCtx );
-      if ( UNLIKELY( !sc.isSuccess() ) ) {
-        log() << MSG::WARNING << "Execution of algorithm " << ialg->name() << " failed" << endmsg;
-        eventfailed = true;
-      }
-      rcg.ignore(); // disarm the guard
-    } catch ( const GaudiException& Exception ) {
-      log() << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ialg->name()
-            << endmsg << MSG::ERROR << Exception << endmsg;
-      eventfailed = true;
-    } catch ( const std::exception& Exception ) {
-      log() << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << ialg->name() << endmsg
-            << MSG::ERROR << Exception.what() << endmsg;
-      eventfailed = true;
-    } catch ( ... ) {
-      log() << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ialg->name() << endmsg;
-      eventfailed = true;
-    }
-
-    // DP it is important to propagate the failure of an event.
-    // We need to stop execution when this happens so that execute run can
-    // then receive the FAILURE
-    m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Done, sc );
-    m_aess->updateEventStatus( eventfailed, *m_evtCtx );
-
-    // in case the algorithm was a filter and the filter did not pass, stop here
-    if ( !ialg->filterPassed() ) break;
-  }
-  // update scheduler state
-  m_parent->promoteToExecuted( std::move( m_evtCtx ) );
-  Gaudi::Hive::setCurrentContextEvt( -1 );
-
-  return nullptr;
 }
