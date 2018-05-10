@@ -70,10 +70,10 @@ struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
   std::unique_ptr<EventContext> m_evtCtx;
   IAlgExecStateSvc*             m_aess;
   SmartIF<ISvcLocator>          m_serviceLocator;
-  HLTEventLoopMgr*              m_parent;
+  const HLTEventLoopMgr*        m_parent;
 
   HLTExecutionTask( std::vector<Algorithm*>& algorithms, std::unique_ptr<EventContext> ctx, ISvcLocator* svcLocator,
-                    IAlgExecStateSvc* aem, HLTEventLoopMgr* parent )
+                    IAlgExecStateSvc* aem, const HLTEventLoopMgr* parent )
       : m_algorithms( algorithms )
       , m_evtCtx( std::move( ctx ) )
       , m_aess( aem )
@@ -564,6 +564,6 @@ void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventCont
   if ( !sc.isSuccess() ) warning() << "Clear of Event data store failed" << endmsg;
   sc = m_whiteboard->freeStore( si );
   if ( !sc.isSuccess() ) error() << "Whiteboard slot " << eventContext->slot() << " could not be properly cleared";
-  m_finishedEvt++;
+  ++m_finishedEvt;
   m_createEventCond.notify_all();
 }
