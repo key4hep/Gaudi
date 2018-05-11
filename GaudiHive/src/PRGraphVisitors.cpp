@@ -37,11 +37,6 @@ namespace concurrency
     if ( result ) {
       m_slot->algsStates.set( node.getAlgoIndex(), AState::DATAREADY ).ignore();
 
-      // Inform parent slot if there is one
-      if ( m_slot->parentSlot ) {
-        m_slot->parentSlot->subSlotAlgsReady.push_back( std::make_pair( m_slot->eventContext, node.getAlgoIndex() ) );
-      }
-
       if ( m_trace ) {
         auto sourceNode = ( m_cause.m_source == Cause::source::Task )
                               ? node.m_graph->getAlgorithmNode( m_cause.m_sourceName )

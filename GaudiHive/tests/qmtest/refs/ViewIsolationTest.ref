@@ -88,150 +88,150 @@ A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 A1                   INFO Running in whole event context
 A1                   INFO Attached viewOne0 to node viewNodeOne
 A1                   INFO Attached viewOne1 to node viewNodeOne
 A2                   INFO Running in view viewOne0
-A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne0
+A2                   INFO Running in view viewOne1
 A3                   INFO Running in view viewOne1
 A4                   INFO Running in whole event context
 A4                   INFO Attached viewTwo0 to node viewNodeTwo
 A4                   INFO Attached viewTwo1 to node viewNodeTwo
 A2                   INFO Running in view viewTwo0
-A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo0
+A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
 HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 49.5 total time 1668637
