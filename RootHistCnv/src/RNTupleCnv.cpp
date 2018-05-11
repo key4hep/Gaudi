@@ -1,6 +1,5 @@
 // Include files
 #include "RNTupleCnv.h"
-#include "NTupleInfo.h"
 #include "RootObjAddress.h"
 
 #include "GaudiKernel/DataObject.h"
