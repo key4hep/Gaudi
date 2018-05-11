@@ -796,7 +796,7 @@ StatusCode AvalancheSchedulerSvc::isStalled( int iSlot )
   EventSlot& thisSlot = m_eventSlots[iSlot];
 
   if ( m_actionsQueue.empty() && m_algosInFlight == 0 && m_IOBoundAlgosInFlight == 0 &&
-       !thisSlot.algsStates.contains( AState::DATAREADY ) &&
+       !thisSlot.algsStates.containsAny( {AState::DATAREADY, AState::SCHEDULED} ) &&
        !subSlotAlgsInStates( thisSlot, {AState::DATAREADY, AState::SCHEDULED} ) ) {
 
     info() << "About to declare a stall" << endmsg;
