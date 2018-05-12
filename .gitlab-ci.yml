@@ -23,7 +23,7 @@ before_script:
   - export CCACHE_DIR=${PWD}/.ccache
   # special environment required for LCG binutils
   - export PATH=${LCG_contrib}/bintuils/2.28/${LCG_hostos}/bin:${PATH}
-  - export LD_LIBRARY_PATH=${LCG_contrib}/bintuils/2.28/${LCG_hostos}/lib:${PATH}
+  - export LD_LIBRARY_PATH=${LCG_contrib}/bintuils/2.28/${LCG_hostos}/lib:${LD_LIBRARY_PATH}
 
 build:
   tags:
