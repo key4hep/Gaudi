@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Use `apply` in `Gaudi::Functional` ([mr !622][])
 
 ### Fixed
+- Fix environment for Gitlab-CI
 - Unset `GIT_DIR`/`GIT_WORK_TREE` before cloning `xenv` ([mr !669][])
 - Add test and fix of version propagation in KeyedContainer move ([mr !663][], [issue #27][])
 - Fixed the list of files used for formatting check in Gitlab-CI ([mr !664][])
