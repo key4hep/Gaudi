@@ -756,9 +756,10 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
     }
 
     // Not complete because this would mean that the slot is already free!
-    if ( !thisSlot.complete && m_precSvc->CFRulesResolved( thisSlot ) &&
+    if ( m_precSvc->CFRulesResolved( thisSlot ) &&
          !thisSlot.algsStates.containsAny( {AState::CONTROLREADY, AState::DATAREADY, AState::SCHEDULED} ) &&
-         !subSlotAlgsInStates( thisSlot, {AState::CONTROLREADY, AState::DATAREADY, AState::SCHEDULED} ) ) {
+         !subSlotAlgsInStates( thisSlot, {AState::CONTROLREADY, AState::DATAREADY, AState::SCHEDULED} ) &&
+         !thisSlot.complete ) {
 
       thisSlot.complete = true;
       // if the event did not fail, add it to the finished events
@@ -773,11 +774,10 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
       ON_DEBUG debug() << m_precSvc->printState( thisSlot ) << endmsg;
 
       thisSlot.eventContext = nullptr;
-    } else {
-      if ( isStalled( thisSlot ) ) {
-        m_algExecStateSvc->setEventStatus( EventStatus::AlgStall, *thisSlot.eventContext );
-        eventFailed( thisSlot.eventContext ).ignore();
-      }
+
+    } else if ( isStalled( thisSlot ) ) {
+      m_algExecStateSvc->setEventStatus( EventStatus::AlgStall, *thisSlot.eventContext );
+      eventFailed( thisSlot.eventContext ).ignore();
     }
   } // end loop on slots
 
@@ -800,8 +800,8 @@ bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const
   if ( m_actionsCounts[slot.eventContext->slot()] == 0 &&
        !slot.algsStates.containsAny( {AState::DATAREADY, AState::SCHEDULED} ) &&
        !subSlotAlgsInStates( slot, {AState::DATAREADY, AState::SCHEDULED} ) ) {
-    info() << "About to declare a stall in slot " << slot.eventContext->slot() << endmsg;
-    fatal() << "*** Stall detected! ***\n" << endmsg;
+
+    fatal() << "*** Stall detected in slot " << slot.eventContext->slot() << "! ***\n" << endmsg;
 
     return true;
   }
