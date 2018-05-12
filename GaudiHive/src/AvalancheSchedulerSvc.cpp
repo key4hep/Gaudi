@@ -55,8 +55,7 @@ namespace
   }
 }
 
-//===========================================================================
-// Infrastructure methods
+//---------------------------------------------------------------------------
 
 /**
  * Here, among some "bureaucracy" operations, the scheduler is activated,
@@ -356,6 +355,7 @@ StatusCode AvalancheSchedulerSvc::finalize()
   return sc;
 }
 //---------------------------------------------------------------------------
+
 /**
  * Activate the scheduler. From this moment on the queue of actions is
  * checked. The checking will stop when the m_isActive flag is false and the
@@ -439,9 +439,8 @@ StatusCode AvalancheSchedulerSvc::deactivate()
   return StatusCode::SUCCESS;
 }
 
-//===========================================================================
+//---------------------------------------------------------------------------
 
-//===========================================================================
 // Utils and shortcuts
 
 inline const std::string& AvalancheSchedulerSvc::index2algname( unsigned int index ) { return m_algname_vect[index]; }
@@ -454,7 +453,8 @@ inline unsigned int AvalancheSchedulerSvc::algname2index( const std::string& alg
   return index;
 }
 
-//===========================================================================
+//---------------------------------------------------------------------------
+
 // EventSlot management
 /**
  * Add event to the scheduler. There are two cases possible:
@@ -526,6 +526,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
 }
 
 //---------------------------------------------------------------------------
+
 StatusCode AvalancheSchedulerSvc::pushNewEvents( std::vector<EventContext*>& eventContexts )
 {
   StatusCode sc;
@@ -537,11 +538,12 @@ StatusCode AvalancheSchedulerSvc::pushNewEvents( std::vector<EventContext*>& eve
 }
 
 //---------------------------------------------------------------------------
+
 unsigned int AvalancheSchedulerSvc::freeSlots() { return std::max( m_freeSlots.load(), 0 ); }
 
 //---------------------------------------------------------------------------
 /**
- * Update the states for all slots until nothing is left to do.
+ * Update the states for all slots
 */
 StatusCode AvalancheSchedulerSvc::drain()
 {
@@ -593,37 +595,7 @@ StatusCode AvalancheSchedulerSvc::tryPopFinishedEvent( EventContext*& eventConte
   return StatusCode::FAILURE;
 }
 
-//---------------------------------------------------------------------------
-/**
- * It can be possible that an event fails. In this case this method is called.
- * It dumps the state of the scheduler, drains the actions (without executing
- * them) and events in the queues and returns a failure.
-*/
-StatusCode AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
-{
-
-  const uint slotIdx = eventContext->slot();
-
-  fatal() << "*** Event " << eventContext->evt() << " on slot " << slotIdx << " failed! ***" << endmsg;
-
-  dumpSchedulerState( msgLevel( MSG::VERBOSE ) ? -1 : slotIdx );
-
-  // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
-  m_precSvc->dumpPrecedenceRules( m_eventSlots[slotIdx] );
-
-  // Push into the finished events queue the failed context
-  EventContext* thisEvtContext;
-  while ( m_finishedEvents.try_pop( thisEvtContext ) ) {
-    m_finishedEvents.push( thisEvtContext );
-  };
-  m_finishedEvents.push( eventContext );
-
-  return StatusCode::FAILURE;
-}
-
-//===========================================================================
-
-//===========================================================================
+//--------------------------------------------------------------------------
 // States Management
 
 /**
@@ -777,7 +749,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
 
     } else if ( isStalled( thisSlot ) ) {
       m_algExecStateSvc->setEventStatus( EventStatus::AlgStall, *thisSlot.eventContext );
-      eventFailed( thisSlot.eventContext ).ignore();
+      eventFailed( thisSlot.eventContext );
     }
   } // end loop on slots
 
@@ -790,8 +762,8 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
 
 /**
  * Check if we are in present of a stall condition for a particular slot.
- * This is the case when no actions are present in the actionsQueue,
- * no algorithm is in flight and no algorithm has all of its dependencies
+ * This is the case when a slot has no actions queued in the actionsQueue,
+ * has no scheduled algorithms and has no algorithms with all of its dependencies
  * satisfied.
 */
 bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const
@@ -806,6 +778,28 @@ bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const
     return true;
   }
   return false;
+}
+
+//---------------------------------------------------------------------------
+
+/**
+ * It can be possible that an event fails. In this case this method is called.
+ * It dumps the state of the scheduler and marks the event as finished.
+*/
+void AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
+{
+
+  const uint slotIdx = eventContext->slot();
+
+  fatal() << "*** Event " << eventContext->evt() << " on slot " << slotIdx << " failed! ***" << endmsg;
+
+  dumpSchedulerState( msgLevel( MSG::VERBOSE ) ? -1 : slotIdx );
+
+  // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
+  m_precSvc->dumpPrecedenceRules( m_eventSlots[slotIdx] );
+
+  // Push into the finished events queue the failed context
+  m_finishedEvents.push( eventContext );
 }
 
 //---------------------------------------------------------------------------
@@ -1030,6 +1024,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
 }
 
 //---------------------------------------------------------------------------
+
 /**
  * The call to this method is triggered only from within the AlgoExecutionTask.
 */
@@ -1037,7 +1032,7 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
                                                      EventContext* eventContext )
 {
   // Check if the execution failed
-  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext ).ignore();
+  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext );
 
   Gaudi::Hive::setCurrentContext( eventContext );
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
@@ -1083,6 +1078,7 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
 }
 
 //---------------------------------------------------------------------------
+
 /**
  * The call to this method is triggered only from within the IOBoundAlgTask.
 */
@@ -1090,7 +1086,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
                                                           EventContext* eventContext )
 {
   // Check if the execution failed
-  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext ).ignore();
+  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext );
 
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
 
@@ -1135,8 +1131,10 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   return sc;
 }
 
+//---------------------------------------------------------------------------
+
 // Method to inform the scheduler about event views
-//===========================================================================
+
 StatusCode AvalancheSchedulerSvc::scheduleEventView( EventContext const* sourceContext, std::string const& nodeName,
                                                      EventContext* viewContext )
 {
