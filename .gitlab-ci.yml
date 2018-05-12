@@ -74,7 +74,7 @@ test_headers:
     - ${LCG_release_area}/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -z
     - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
     - make BUILDDIR=${BUILDDIR} test_public_headers_build
-    - ${LCG_release_area}/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -s
+    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -s
   artifacts:
     paths:
       - .ccache
