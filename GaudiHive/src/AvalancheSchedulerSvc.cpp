@@ -425,9 +425,6 @@ StatusCode AvalancheSchedulerSvc::deactivate()
     while ( m_actionsQueue.try_pop( thisAction ) ) {
     };
 
-    // Drain the scheduler
-    // m_actionsQueue.push( [this]() { return this->drain(); } );
-
     // This would be the last action
     m_actionsQueue.push( [this]() -> StatusCode {
       ON_VERBOSE verbose() << "Deactivating scheduler" << endmsg;
@@ -539,24 +536,6 @@ StatusCode AvalancheSchedulerSvc::pushNewEvents( std::vector<EventContext*>& eve
 //---------------------------------------------------------------------------
 
 unsigned int AvalancheSchedulerSvc::freeSlots() { return std::max( m_freeSlots.load(), 0 ); }
-
-//---------------------------------------------------------------------------
-/**
- * Update the states for all slots
-*/
-StatusCode AvalancheSchedulerSvc::drain()
-{
-
-  unsigned int slotNum = 0;
-
-  for ( auto& thisSlot : m_eventSlots ) {
-    if ( !thisSlot.complete && !thisSlot.algsStates.containsOnly( {AState::EVTACCEPTED, AState::EVTREJECTED} ) ) {
-      updateStates( slotNum );
-    }
-    slotNum++;
-  }
-  return StatusCode::SUCCESS;
-}
 
 //---------------------------------------------------------------------------
 /**

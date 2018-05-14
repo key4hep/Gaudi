@@ -245,9 +245,6 @@ private:
   /// Method to execute if an event failed
   void eventFailed( EventContext* eventContext );
 
-  /// Update states in all slots
-  StatusCode drain();
-
   /// Dump the state of the scheduler
   void dumpSchedulerState( int iSlot );
 
