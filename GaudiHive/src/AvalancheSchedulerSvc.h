@@ -260,7 +260,8 @@ private:
 
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
-  /// Bookkeep the number of actions in flight per slot
+  /// Bookkeeping of the number of actions in flight per slot
+  // (accessed/modified from the control thread only)
   std::vector<unsigned int> m_actionsCounts;
 
   // ------------------------------------------------------------------------

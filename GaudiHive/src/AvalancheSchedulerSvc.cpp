@@ -504,7 +504,6 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
       result = StatusCode::FAILURE;
     }
 
-    --m_actionsCounts[thisSlotNum];
     if ( this->updateStates( thisSlotNum ).isFailure() ) {
       error() << "Failed to call AvalancheSchedulerSvc::updateStates for slot " << thisSlotNum << endmsg;
       result = StatusCode::FAILURE;
@@ -519,7 +518,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
     verbose() << "Pushing the action to update the scheduler for slot " << eventContext->slot() << endmsg;
     verbose() << "Free slots available " << m_freeSlots.load() << endmsg;
   }
-  ++m_actionsCounts[eventContext->slot()];
+
   m_actionsQueue.push( action );
 
   return StatusCode::SUCCESS;
@@ -1070,7 +1069,7 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
   // Schedule an update of the status of the algorithms
   ++m_actionsCounts[si];
   m_actionsQueue.push( [this, si, iAlgo, eventContext]() {
-    if ( this->m_actionsCounts[si] != 0 ) --this->m_actionsCounts[si];
+    --this->m_actionsCounts[si]; // no bound check needed as decrements/increments are balanced in the current setup
     return this->updateStates( -1, iAlgo, eventContext );
   } );
 
@@ -1124,7 +1123,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   // Schedule an update of the status of the algorithms
   ++m_actionsCounts[si];
   m_actionsQueue.push( [this, si, iAlgo, eventContext]() {
-    if ( this->m_actionsCounts[si] != 0 ) --this->m_actionsCounts[si];
+    --this->m_actionsCounts[si]; // no bound check needed as decrements/increments are balanced in the current setup
     return this->updateStates( -1, iAlgo, eventContext );
   } );
 
