@@ -1,5 +1,12 @@
 #!/usr/bin/env gaudirun.py
 
+"""
+The options file models an intra-event stall in algorithm scheduling. 
+An early exit from a group of algorithms called 'EarlyExitBranch' is performed due to 
+an inverted CF decision sot that A2 is not run. This results in an unmet DF dependency 
+for a downstream algorithm A3, leading to the stall.
+"""
+
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
                            AvalancheSchedulerSvc, AlgResourcePool,
