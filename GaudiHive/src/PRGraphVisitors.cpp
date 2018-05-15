@@ -9,13 +9,13 @@
 namespace concurrency
 {
 
-  using State = AlgsExecutionStates::State;
+  using AState = AlgsExecutionStates::State;
 
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visitEnter( AlgorithmNode& node ) const
   {
 
-    if ( State::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()] ) return false;
+    if ( AState::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()] ) return false;
 
     return true;
   }
@@ -36,7 +36,7 @@ namespace concurrency
     }
 
     if ( result ) {
-      m_slot->algsStates.set( node.getAlgoIndex(), State::DATAREADY ).ignore();
+      m_slot->algsStates.set( node.getAlgoIndex(), AState::DATAREADY ).ignore();
 
       // Inform parent slot if there is one
       if ( m_slot->parentSlot ) {
@@ -67,7 +67,7 @@ namespace concurrency
     auto const& producers = node.getProducers();
     for ( auto algoNode : producers ) {
       const auto& state = m_slot->algsStates[algoNode->getAlgoIndex()];
-      if ( State::EVTACCEPTED == state || State::EVTREJECTED == state ) {
+      if ( AState::EVTACCEPTED == state || AState::EVTREJECTED == state ) {
         return true; // skip checking other producers if one was found to be executed
       }
     }
@@ -76,7 +76,7 @@ namespace concurrency
     if ( m_slot->parentSlot ) {
       for ( auto algoNode : producers ) {
         const auto& state = m_slot->parentSlot->algsStates[algoNode->getAlgoIndex()];
-        if ( State::EVTACCEPTED == state || State::EVTREJECTED == state ) {
+        if ( AState::EVTACCEPTED == state || AState::EVTREJECTED == state ) {
           return true; // skip checking other producers if one was found to be executed
         }
       }
@@ -116,14 +116,14 @@ namespace concurrency
   {
 
     auto&        states   = m_slot->algsStates;
-    const State& state    = states[node.getAlgoIndex()];
+    const AState& state    = states[node.getAlgoIndex()];
     int          decision = -1;
 
     if ( true == node.isOptimist() )
       decision = 1;
-    else if ( State::EVTACCEPTED == state )
+    else if ( AState::EVTACCEPTED == state )
       decision = !node.isLiar();
-    else if ( State::EVTREJECTED == state )
+    else if ( AState::EVTREJECTED == state )
       decision = node.isLiar();
 
     if ( -1 != decision ) {
@@ -344,10 +344,10 @@ namespace concurrency
     auto& state  = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
-    if ( State::INITIAL == state ) states.set( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
+    if ( AState::INITIAL == state ) states.set( node.getAlgoIndex(), AState::CONTROLREADY ).ignore();
 
     // Try to promote with CR->DR
-    if ( State::CONTROLREADY == state ) {
+    if ( AState::CONTROLREADY == state ) {
       auto promoter = DataReadyPromoter( *m_slot, m_cause, m_trace );
       result        = promoter.visit( node );
     } else {
@@ -595,19 +595,19 @@ namespace concurrency
 
     auto dataPromoter = DataReadyPromoter( *m_slot, m_cause );
 
-    if ( State::INITIAL == states[node.getAlgoIndex()] ) {
-      states.set( node.getAlgoIndex(), State::CONTROLREADY );
+    if ( AState::INITIAL == states[node.getAlgoIndex()] ) {
+      states.set( node.getAlgoIndex(), AState::CONTROLREADY );
       if ( dataPromoter.visit( node ) ) {
-        states.set( node.getAlgoIndex(), State::SCHEDULED );
-        states.set( node.getAlgoIndex(), State::EVTACCEPTED );
+        states.set( node.getAlgoIndex(), AState::SCHEDULED );
+        states.set( node.getAlgoIndex(), AState::EVTACCEPTED );
         decision = 1;
         ++m_nodesSucceeded;
         // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
         return true;
       }
-    } else if ( State::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit( node ) ) {
-      states.set( node.getAlgoIndex(), State::SCHEDULED );
-      states.set( node.getAlgoIndex(), State::EVTACCEPTED );
+    } else if ( AState::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit( node ) ) {
+      states.set( node.getAlgoIndex(), AState::SCHEDULED );
+      states.set( node.getAlgoIndex(), AState::EVTACCEPTED );
       decision = 1;
       ++m_nodesSucceeded;
       // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;

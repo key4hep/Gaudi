@@ -118,7 +118,7 @@ public:
   // Make multiple events available to the scheduler
   StatusCode pushNewEvents( std::vector<EventContext*>& eventContexts ) override;
 
-  /// Blocks until an event is availble
+  /// Blocks until an event is available
   StatusCode popFinishedEvent( EventContext*& eventContext ) override;
 
   /// Try to fetch an event from the scheduler
@@ -225,10 +225,10 @@ private:
 
   // States management ------------------------------------------------------
 
-  /// Number of algoritms presently in flight
+  /// Number of algorithms presently in flight
   unsigned int m_algosInFlight = 0;
 
-  /// Number of algoritms presently in flight
+  /// Number of algorithms presently in flight
   unsigned int m_IOBoundAlgosInFlight = 0;
 
   /// Loop on algorithm in the slots and promote them to successive states
