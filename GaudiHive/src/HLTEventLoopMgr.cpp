@@ -8,6 +8,7 @@
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IAlgorithm.h"
+#include "GaudiKernel/IDataBroker.h"
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
@@ -194,149 +195,158 @@ StatusCode HLTEventLoopMgr::initialize()
     return StatusCode::FAILURE;
   }
 
-  m_algExecStateSvc = serviceLocator()->service<IAlgExecStateSvc>( "AlgExecStateSvc" );
-  if ( !m_algExecStateSvc ) {
-    fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
-  // Get the list of algorithms
-  IAlgResourcePool* algResourcePool = serviceLocator()->service<IAlgResourcePool>( "AlgResourcePool" );
-  if ( !algResourcePool ) {
-    fatal() << "Error retrieving AlgoResourcePool" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  for ( auto alg : algResourcePool->getFlatAlgList() ) {
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( alg );
-    if ( !algoPtr ) {
-      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+  if ( !m_topAlgs.empty() ) {
+    auto databroker = serviceLocator()->service<IDataBroker>( "HiveDataBrokerSvc" );
+    // the only control flow supported here is to run the 'topAlgs' (and their depedencies) in a 'lazy_and' fashion
+    // as a result, we can just 'flatten' the list, and make sure algorithms appear only once (the latter is not
+    // strictly neccessary, but an optimization)
+    for ( const auto& alg : m_topAlgs.value() ) {
+      auto algs = databroker->algorithmsRequiredFor( alg );
+      std::copy_if( begin( algs ), end( algs ), std::back_inserter( m_algos ), [this]( const Algorithm* a ) {
+        return std::find( begin( this->m_algos ), end( this->m_algos ), a ) == end( this->m_algos );
+      } );
     }
-    m_algos.push_back( algoPtr );
-  }
-  /* Dependencies
-   1) Look for handles in algo, if none
-   2) Assume none are required
-  */
-  DataObjIDColl globalInp, globalOutp;
-
-  boost::optional<std::ofstream> dot{boost::in_place_init_if, !m_dotfile.empty(), m_dotfile.value()};
-  if ( dot ) {
-    *dot << "digraph G {\n";
-    for ( auto* a : m_algos ) {
-      bool is_consumer = a->outputDataObjs().empty();
-      *dot << '\"' << a->name() << "\" [shape=box" << ( is_consumer ? ",style=filled" : "" ) << "];\n";
+  } else {
+    // Get the list of algorithms
+    IAlgResourcePool* algResourcePool = serviceLocator()->service<IAlgResourcePool>( "AlgResourcePool" );
+    if ( !algResourcePool ) {
+      fatal() << "Error retrieving AlgoResourcePool" << endmsg;
+      return StatusCode::FAILURE;
     }
-  }
+    for ( auto alg : algResourcePool->getFlatAlgList() ) {
+      Algorithm* algoPtr = dynamic_cast<Algorithm*>( alg );
+      if ( !algoPtr ) {
+        fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+      }
+      m_algos.push_back( algoPtr );
+    }
+    /* Dependencies
+     1) Look for handles in algo, if none
+     2) Assume none are required
+    */
+    DataObjIDColl globalInp, globalOutp;
 
-  // figure out all outputs
-  std::map<DataObjID, Algorithm*> producers;
-  for ( Algorithm* algoPtr : m_algos ) {
-    for ( auto id : algoPtr->outputDataObjs() ) {
-      auto r        = globalOutp.insert( id );
-      producers[id] = algoPtr;
-      if ( !r.second ) {
-        warning() << "multiple algorithms declare " << id << " as output! could be a single instance in multiple paths "
-                                                             "though, or control flow may guarantee only one runs...!"
-                  << endmsg;
+    boost::optional<std::ofstream> dot{boost::in_place_init_if, !m_dotfile.empty(), m_dotfile.value()};
+
+    if ( dot ) {
+      *dot << "digraph G {\n";
+      for ( auto* a : m_algos ) {
+        bool is_consumer = a->outputDataObjs().empty();
+        *dot << '\"' << a->name() << "\" [shape=box" << ( is_consumer ? ",style=filled" : "" ) << "];\n";
       }
     }
-  }
 
-  // Building and printing Data Dependencies
-  std::vector<DataObjIDColl> algosDependencies;
-  algosDependencies.reserve( m_algos.size() ); // reserve so that pointers into the vector do not get invalidated...
-  std::map<const Algorithm*, DataObjIDColl*> algo2Deps;
-  info() << "Data Dependencies for Algorithms:";
+    // figure out all outputs
+    std::map<DataObjID, Algorithm*> producers;
+    for ( Algorithm* algoPtr : m_algos ) {
+      for ( auto id : algoPtr->outputDataObjs() ) {
+        auto r        = globalOutp.insert( id );
+        producers[id] = algoPtr;
+        if ( !r.second ) {
+          warning() << "multiple algorithms declare " << id
+                    << " as output! could be a single instance in multiple paths "
+                       "though, or control flow may guarantee only one runs...!"
+                    << endmsg;
+        }
+      }
+    }
 
-  for ( Algorithm* algoPtr : m_algos ) {
-    info() << "\n  " << algoPtr->name();
+    // Building and printing Data Dependencies
+    std::vector<DataObjIDColl> algosDependencies;
+    algosDependencies.reserve( m_algos.size() ); // reserve so that pointers into the vector do not get invalidated...
+    std::map<const Algorithm*, DataObjIDColl*> algo2Deps;
+    info() << "Data Dependencies for Algorithms:";
 
-    DataObjIDColl algoDependencies;
-    if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
-      for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->inputDataObjs() ) ) {
-        DataObjID id = *idp;
-        info() << "\n    o INPUT  " << id;
-        if ( id.key().find( ":" ) != std::string::npos ) {
-          info() << " contains alternatives which require resolution...\n";
-          auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
-          auto itok   = std::find_if( tokens.begin(), tokens.end(), [&]( const std::string& t ) {
-            return globalOutp.find( DataObjID{t} ) != globalOutp.end();
-          } );
-          if ( itok != tokens.end() ) {
-            info() << "found matching output for " << *itok << " -- updating scheduler info\n";
-            id.updateKey( *itok );
-          } else {
-            error() << "failed to find alternate in global output list"
-                    << " for id: " << id << " in Alg " << algoPtr->name() << endmsg;
+    for ( Algorithm* algoPtr : m_algos ) {
+      info() << "\n  " << algoPtr->name();
+
+      DataObjIDColl algoDependencies;
+      if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
+        for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->inputDataObjs() ) ) {
+          DataObjID id = *idp;
+          info() << "\n    o INPUT  " << id;
+          if ( id.key().find( ":" ) != std::string::npos ) {
+            info() << " contains alternatives which require resolution...\n";
+            auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
+            auto itok   = std::find_if( tokens.begin(), tokens.end(), [&]( const std::string& t ) {
+              return globalOutp.find( DataObjID{t} ) != globalOutp.end();
+            } );
+            if ( itok != tokens.end() ) {
+              info() << "found matching output for " << *itok << " -- updating scheduler info\n";
+              id.updateKey( *itok );
+            } else {
+              error() << "failed to find alternate in global output list"
+                      << " for id: " << id << " in Alg " << algoPtr->name() << endmsg;
+            }
+          }
+          algoDependencies.insert( id );
+          if ( dot ) *dot << DataObjIDDotRepr{id} << " -> \"" << algoPtr->name() << "\";\n";
+          globalInp.insert( id );
+        }
+        for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->outputDataObjs() ) ) {
+          info() << "\n    o OUTPUT " << *id;
+          if ( id->key().find( ":" ) != std::string::npos ) {
+            error() << " in Alg " << algoPtr->name() << " alternatives are NOT allowed for outputs! id: " << *id
+                    << endmsg;
+          }
+          if ( dot ) *dot << '\"' << algoPtr->name() << "\" -> " << DataObjIDDotRepr{*id} << ";\n";
+        }
+      } else {
+        info() << "\n      none";
+      }
+      algosDependencies.emplace_back( algoDependencies );
+      algo2Deps[algoPtr] = &algosDependencies.back();
+    }
+    if ( dot ) {
+      for ( const auto& t : globalOutp ) {
+        if ( globalInp.find( t ) == globalInp.end() ) *dot << DataObjIDDotRepr{t} << " [style=filled];\n";
+      }
+      *dot << "}\n";
+    }
+    info() << endmsg;
+
+    // Check if we have unmet global input dependencies
+    DataObjIDColl unmetDep;
+    for ( auto o : globalInp ) {
+      if ( globalOutp.find( o ) == globalOutp.end() ) unmetDep.insert( o );
+    }
+    if ( unmetDep.size() > 0 ) {
+      std::ostringstream ost;
+      for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
+        ost << "\n   o " << *o << "    required by Algorithm: ";
+        for ( const auto& i : algo2Deps ) {
+          if ( i.second->find( *o ) != i.second->end() ) {
+            ost << "\n       * " << i.first->name();
           }
         }
-        algoDependencies.insert( id );
-        if ( dot ) *dot << DataObjIDDotRepr{id} << " -> \"" << algoPtr->name() << "\";\n";
-        globalInp.insert( id );
       }
-      for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->outputDataObjs() ) ) {
-        info() << "\n    o OUTPUT " << *id;
-        if ( id->key().find( ":" ) != std::string::npos ) {
-          error() << " in Alg " << algoPtr->name() << " alternatives are NOT allowed for outputs! id: " << *id
-                  << endmsg;
-        }
-        if ( dot ) *dot << '\"' << algoPtr->name() << "\" -> " << DataObjIDDotRepr{*id} << ";\n";
-      }
+      fatal() << "The following unmet INPUT dependencies were found:" << ost.str() << endmsg;
+      return StatusCode::FAILURE;
     } else {
-      info() << "\n      none";
+      info() << "No unmet INPUT data dependencies were found" << endmsg;
     }
-    algosDependencies.emplace_back( algoDependencies );
-    algo2Deps[algoPtr] = &algosDependencies.back();
-  }
-  if ( dot ) {
-    for ( const auto& t : globalOutp ) {
-      if ( globalInp.find( t ) == globalInp.end() ) *dot << DataObjIDDotRepr{t} << " [style=filled];\n";
-    }
-    *dot << "}\n";
-  }
-  info() << endmsg;
 
-  // Check if we have unmet global input dependencies
-  DataObjIDColl unmetDep;
-  for ( auto o : globalInp ) {
-    if ( globalOutp.find( o ) == globalOutp.end() ) unmetDep.insert( o );
-  }
-  if ( unmetDep.size() > 0 ) {
-    std::ostringstream ost;
-    for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
-      ost << "\n   o " << *o << "    required by Algorithm: ";
-      for ( const auto& i : algo2Deps ) {
-        if ( i.second->find( *o ) != i.second->end() ) {
-          ost << "\n       * " << i.first->name();
-        }
-      }
+    // rework the flat algo list to respect data dependencies
+    auto start = m_algos.begin();
+    auto end   = m_algos.end();
+    auto current =
+        std::partition( start, end, [&algo2Deps]( const Algorithm* algo ) { return algo2Deps[algo]->empty(); } );
+
+    // Repeatedly put in front algos for which input are already fullfilled
+    while ( current != end ) {
+      current = std::partition( current, end, [start, current, &producers, &algo2Deps]( const Algorithm* algo ) {
+        return std::none_of( algo2Deps[algo]->begin(), algo2Deps[algo]->end(),
+                             [start, current, &producers]( const DataObjID& id ) {
+                               return std::find( start, current, producers[id] ) == current;
+                             } );
+      } );
     }
-    fatal() << "The following unmet INPUT dependencies were found:" << ost.str() << endmsg;
-    return StatusCode::FAILURE;
-  } else {
-    info() << "No unmet INPUT data dependencies were found" << endmsg;
   }
 
   // Clearly inform about the level of concurrency
   info() << "Concurrency level information:" << endmsg;
   info() << " o Number of events slots: " << m_whiteboard->getNumberOfStores() << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
-
-  // rework the flat algo list to respect data dependencies
-  auto start = m_algos.begin();
-  auto end   = m_algos.end();
-  auto current =
-      std::partition( start, end, [&algo2Deps]( const Algorithm* algo ) { return algo2Deps[algo]->empty(); } );
-
-  // Repeatedly put in front algos for which input are already fullfilled
-  while ( current != end ) {
-    current = std::partition( current, end, [start, current, &producers, &algo2Deps]( const Algorithm* algo ) {
-      return std::none_of( algo2Deps[algo]->begin(), algo2Deps[algo]->end(),
-                           [start, current, &producers]( const DataObjID& id ) {
-                             return std::find( start, current, producers[id] ) == current;
-                           } );
-    } );
-  }
 
   // Fill the containers to convert algo names to index
   debug() << "Order of algo execution :" << endmsg;

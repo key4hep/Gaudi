@@ -61,6 +61,7 @@ private:
   Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
   Gaudi::Property<std::string> m_dotfile{
       this, "DotFile", {}, "Name of file to dump dependency graph; if empty, do not dump"};
+  Gaudi::Property<std::vector<std::string>> m_topAlgs{this, "TopAlg", {}};
 
   /// Reference to the Event Data Service's IDataManagerSvc interface
   IDataManagerSvc* m_evtDataMgrSvc = nullptr;
