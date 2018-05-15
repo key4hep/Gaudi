@@ -339,7 +339,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
             << endmsg;
   }
 
-  createdEvts++;
+  ++createdEvts;
   return StatusCode::SUCCESS;
 }
 
@@ -589,7 +589,7 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler( int& finishedEvts )
 
     delete thisFinishedEvtContext;
 
-    finishedEvts++;
+    ++finishedEvts;
   }
   return finalSC;
 }
