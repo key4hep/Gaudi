@@ -4,24 +4,17 @@
 // Framework include files
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
-
-// Standard includes
-#include <functional>
+#include "GaudiKernel/SmartIF.h"
 
 // External Libraries
-#include "tbb/concurrent_queue.h"
 #include <boost/dynamic_bitset.hpp>
-
-// Forward declarations
-class IIncidentSvc;
-struct IDataManagerSvc;
-class IDataProviderSvc;
 
 class HiveSlimEventLoopMgr : public extends<Service, IEventProcessor>
 {

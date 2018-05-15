@@ -1,29 +1,13 @@
-// FW includes
+// Local includes
+#include "GaudiHive/HiveSlimEventLoopMgr.h"
+#include "HistogramAgent.h"
+
+// Framework includes
 #include "GaudiKernel/AppReturnCode.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IChronoStatSvc.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IEvtSelector.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/Incident.h"
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SmartIF.h"
-
-#include "HistogramAgent.h"
-
-#include "GaudiHive/HiveSlimEventLoopMgr.h"
-
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/EventContext.h"
-
-#include <GaudiKernel/GaudiException.h>
-
-#include <GaudiKernel/IScheduler.h>
+#include "GaudiKernel/Incident.h"
 
 // External libraries
 #include <chrono>
@@ -31,11 +15,11 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( HiveSlimEventLoopMgr )
 
-#define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
-#define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
+#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
+#define DEBUG_MSG ON_DEBUG debug()
 
-#define DEBMSG ON_DEBUG   debug()
-#define VERMSG ON_VERBOSE verbose()
+#define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
+#define VERBOSE_MSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
 // Standard Constructor
@@ -309,12 +293,12 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
   // Check if event number is in blacklist
   if ( LIKELY( m_blackListBS != nullptr ) ) { // we are processing a finite number of events, use bitset blacklist
     if ( m_blackListBS->test( createdEvts ) ) {
-      verbose() << "Event " << createdEvts << " on black list" << endmsg;
+      VERBOSE_MSG << "Event " << createdEvts << " on black list" << endmsg;
       return StatusCode::RECOVERABLE;
     }
   } else if ( std::binary_search( m_eventNumberBlacklist.begin(), m_eventNumberBlacklist.end(), createdEvts ) ) {
 
-    verbose() << "Event " << createdEvts << " on black list" << endmsg;
+    VERBOSE_MSG << "Event " << createdEvts << " on black list" << endmsg;
     return StatusCode::RECOVERABLE;
   }
 
@@ -323,7 +307,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
     return StatusCode::FAILURE;
   }
 
-  verbose() << "Beginning to process event " << createdEvts << endmsg;
+  VERBOSE_MSG << "Beginning to process event " << createdEvts << endmsg;
 
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
   // DP have to find out who shoots this
@@ -342,7 +326,8 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
   m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginEvent, *evtContext ) );
 
   // Now add event to the scheduler
-  verbose() << "Adding event " << evtContext->evt() << ", slot " << evtContext->slot() << " to the scheduler" << endmsg;
+  VERBOSE_MSG << "Adding event " << evtContext->evt() << ", slot " << evtContext->slot() << " to the scheduler"
+              << endmsg;
 
   m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginProcessing, *evtContext ) );
 
@@ -428,7 +413,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
   uint iteration  = 0;
   auto start_time = Clock::now();
   while ( !loop_ended && ( maxevt < 0 || ( finishedEvts + skippedEvts ) < maxevt ) ) {
-    debug() << "work loop iteration " << iteration++ << endmsg;
+    DEBUG_MSG << "work loop iteration " << iteration++ << endmsg;
     // if the created events did not reach maxevt, create an event
     if ( ( newEvtAllowed || createdEvts == 0 ) &&  // Launch the first event alone
          createdEvts >= 0 &&                       // The events are not finished with an unlimited number of events
@@ -439,7 +424,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
       if ( 1 == createdEvts ) // reset counter to count from event 1
         start_time = Clock::now();
 
-      debug() << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
+      DEBUG_MSG << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
       //  DP remove to remove the syscalls...
       //      if (0!=createdEvts){
       //        info()   << "Event Number = " << createdEvts
@@ -474,7 +459,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
       // all the events were created but not all finished or the slots were
       // all busy: the scheduler should finish its job
 
-      debug() << "Draining the scheduler" << endmsg;
+      DEBUG_MSG << "Draining the scheduler" << endmsg;
 
       // Pull out of the scheduler the finished events
       if ( drainScheduler( finishedEvts ).isFailure() ) loop_ended = true;
@@ -564,18 +549,11 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler( int& finishedEvts )
   EventContext* finishedEvtContext( nullptr );
 
   // Here we wait not to loose cpu resources
-  debug() << "Waiting for a context" << endmsg;
+  DEBUG_MSG << "Waiting for a context" << endmsg;
   sc = m_schedulerSvc->popFinishedEvent( finishedEvtContext );
 
   // We got past it: cache the pointer
-  if ( sc.isSuccess() ) {
-    debug() << "Context obtained" << endmsg;
-  } else {
-    // A problem occurred.
-    debug() << "Context not obtained: a problem in the scheduling?" << endmsg;
-    //     return StatusCode::FAILURE;
-  }
-
+  DEBUG_MSG << "Context " << ( sc.isSuccess() ? "obtained" : "not obtained: a problem in the scheduling?" ) << endmsg;
   finishedEvtContexts.push_back( finishedEvtContext );
 
   // Let's see if we can pop other event contexts
@@ -602,8 +580,8 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler( int& finishedEvts )
     m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndProcessing, *thisFinishedEvtContext ) );
     m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndEvent, *thisFinishedEvtContext ) );
 
-    debug() << "Clearing slot " << thisFinishedEvtContext->slot() << " (event " << thisFinishedEvtContext->evt()
-            << ") of the whiteboard" << endmsg;
+    DEBUG_MSG << "Clearing slot " << thisFinishedEvtContext->slot() << " (event " << thisFinishedEvtContext->evt()
+              << ") of the whiteboard" << endmsg;
 
     StatusCode sc = clearWBSlot( thisFinishedEvtContext->slot() );
     if ( !sc.isSuccess() )

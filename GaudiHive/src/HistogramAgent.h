@@ -2,13 +2,14 @@
 #define GAUDIKERNEL_HISTOGRAMAGENT_H
 
 #include "GaudiKernel/ClassID.h"
+#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataSelector.h"
 #include "GaudiKernel/IDataStoreAgent.h"
 #include "GaudiKernel/IRegistry.h"
 
 /** @class HistogramAgent HistogramAgent.h GaudiKernel/HistogramAgent.h
 
-    HistogramAgent base in charge of collecting all the refereces to
+    HistogramAgent base in charge of collecting all the references to
     DataObjects in a transient store that passes some selection criteria. The
     default behaviour is to collect all entries.
 
