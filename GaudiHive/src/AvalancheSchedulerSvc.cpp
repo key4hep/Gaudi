@@ -545,7 +545,7 @@ StatusCode AvalancheSchedulerSvc::drain()
   unsigned int slotNum = 0;
 
   for ( auto& thisSlot : m_eventSlots ) {
-    if ( !thisSlot.complete && !thisSlot.algsStates.composedOf( {AState::EVTACCEPTED, AState::EVTREJECTED} ) ) {
+    if ( !thisSlot.complete && !thisSlot.algsStates.containsOnly( {AState::EVTACCEPTED, AState::EVTREJECTED} ) ) {
       updateStates( slotNum );
     }
     slotNum++;

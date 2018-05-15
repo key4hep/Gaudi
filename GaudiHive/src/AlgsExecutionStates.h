@@ -44,14 +44,17 @@ public:
 
   void reset() { std::fill( m_states.begin(), m_states.end(), INITIAL ); };
 
+  /// check if the collection contains at least one state of requested type
   bool contains( State state ) const { return std::find( m_states.begin(), m_states.end(), state ) != m_states.end(); }
 
+  /// check if the collection contains at least one state of any listed types
   bool containsAny( std::initializer_list<State> l ) const
   {
     return std::find_first_of( m_states.begin(), m_states.end(), l.begin(), l.end() ) != m_states.end();
   }
 
-  bool composedOf( std::initializer_list<State> l ) const
+  /// check if the collection contains only states of listed types
+  bool containsOnly( std::initializer_list<State> l ) const
   {
     return std::all_of( m_states.begin(), m_states.end(),
                         [l]( State s ) { return std::find( l.begin(), l.end(), s ) != l.end(); } );

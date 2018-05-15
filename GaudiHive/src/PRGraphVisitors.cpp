@@ -115,9 +115,9 @@ namespace concurrency
   bool DecisionUpdater::visit( AlgorithmNode& node )
   {
 
-    auto&        states   = m_slot->algsStates;
+    auto&         states   = m_slot->algsStates;
     const AState& state    = states[node.getAlgoIndex()];
-    int          decision = -1;
+    int           decision = -1;
 
     if ( true == node.isOptimist() )
       decision = 1;
