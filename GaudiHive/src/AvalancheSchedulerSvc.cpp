@@ -47,6 +47,22 @@ namespace
     std::sort( v.begin(), v.end(), DataObjIDSorter() );
     return v;
   }
+
+  bool subSlotAlgsInStates( const EventSlot& slot, std::initializer_list<AlgsExecutionStates::State> const& testStates )
+  {
+    for ( const EventSlot& ss : slot.allSubSlots ) {
+      for ( auto state : testStates ) {
+        if ( ss.algsStates.algsPresent( state ) ) {
+
+          // There are sub-slot algs in this state
+          return true;
+        }
+      }
+    }
+
+    // No algs in any of the test states
+    return false;
+  }
 }
 
 //===========================================================================
@@ -759,10 +775,11 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
 
     // Not complete because this would mean that the slot is already free!
     if ( !thisSlot.complete && m_precSvc->CFRulesResolved( thisSlot ) &&
-         thisSlot.subSlotAlgsReady.empty() && // Account for sub-slot algs
          !thisSlot.algsStates.algsPresent( AlgsExecutionStates::CONTROLREADY ) &&
          !thisSlot.algsStates.algsPresent( AlgsExecutionStates::DATAREADY ) &&
-         !thisSlot.algsStates.algsPresent( AlgsExecutionStates::SCHEDULED ) ) {
+         !thisSlot.algsStates.algsPresent( AlgsExecutionStates::SCHEDULED ) &&
+         !subSlotAlgsInStates( thisSlot, {AlgsExecutionStates::CONTROLREADY, AlgsExecutionStates::DATAREADY,
+                                          AlgsExecutionStates::SCHEDULED} ) ) {
 
       thisSlot.complete = true;
       // if the event did not fail, add it to the finished events
@@ -805,8 +822,8 @@ StatusCode AvalancheSchedulerSvc::isStalled( int iSlot )
   EventSlot& thisSlot = m_eventSlots[iSlot];
 
   if ( m_actionsQueue.empty() && m_algosInFlight == 0 && m_IOBoundAlgosInFlight == 0 &&
-       thisSlot.subSlotAlgsReady.empty() && // Account for sub-slot algs
-       ( !thisSlot.algsStates.algsPresent( AlgsExecutionStates::DATAREADY ) ) ) {
+       ( !thisSlot.algsStates.algsPresent( AlgsExecutionStates::DATAREADY ) ) &&
+       !subSlotAlgsInStates( thisSlot, {AlgsExecutionStates::DATAREADY, AlgsExecutionStates::SCHEDULED} ) ) {
 
     info() << "About to declare a stall" << endmsg;
     fatal() << "*** Stall detected! ***\n" << endmsg;
@@ -1153,6 +1170,7 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( EventContext const* sourceC
     unsigned int lastIndex = topSlot.allSubSlots.size();
     topSlot.allSubSlots.push_back( EventSlot( m_eventSlots[topSlotIndex], viewContext ) );
     topSlot.allSubSlots.back().entryPoint = nodeName;
+    topSlot.allSubSlots.back().algsStates.reset();
 
     // Store index of the new slot in lookup structures
     topSlot.contextToSlot[viewContext] = lastIndex;
