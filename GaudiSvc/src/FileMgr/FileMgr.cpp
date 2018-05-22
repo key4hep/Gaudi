@@ -18,9 +18,6 @@ using namespace Io;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 namespace
 {
-
-  bool get_bit( int f, unsigned int b ) { return f & ( 1 << b ); }
-
   static const std::string s_empty = "";
 
   constexpr struct to_name_t {
@@ -137,8 +134,8 @@ StatusCode FileMgr::finalize()
 
   if ( !m_files.empty() ) {
     auto& log = warning();
-    log << "At finalize, the following files remained open:" << endl;
-    for ( const auto& itr : m_files ) log << *( itr.second ) << endl;
+    log << "At finalize, the following files remained open:\n";
+    for ( const auto& itr : m_files ) log << *( itr.second ) << '\n';
     log << endmsg;
   }
 
@@ -152,14 +149,14 @@ StatusCode FileMgr::finalize()
       debug() << "Saving log to \"" << m_logfile.value() << "\"" << endmsg;
       for ( const auto& itr : m_files ) {
         ofs << itr.second->name() << "  " << itr.second->tech() << "  " << itr.second->desc() << "  "
-            << itr.second->iflags() << endl;
+            << itr.second->iflags() << '\n';
       }
 
       set<FileAttr> fs;
       for ( const auto& it2 : m_oldFiles ) fs.insert( *it2 );
       for ( const auto& it3 : fs ) {
         ofs << it3.name() << "  " << it3.tech() << "  " << it3.desc() << "  " << it3.iflags()
-            << ( it3.isShared() ? "  SHARED" : "" ) << endl;
+            << ( it3.isShared() ? "  SHARED" : "" ) << '\n';
       }
       ofs.close();
     }
@@ -389,8 +386,8 @@ open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::
       r = 1;
     } else {
       warning() << "open call for file \"" << fname << "\" returned a pre-existing file with different"
-                << " FileAttributes -" << endl
-                << "old: " << *( itr->second ) << endl
+                << " FileAttributes -\n"
+                << "old: " << *( itr->second ) << '\n'
                 << "new: " << *fa << endmsg;
       r = 2;
     }
@@ -1026,10 +1023,10 @@ void* FileMgr::fptr( const Io::Fd& fd ) const
 void FileMgr::listFiles() const
 {
 
-  info() << "listing registered files [" << ( m_files.size() + m_oldFiles.size() ) << "]:" << endl;
+  info() << "listing registered files [" << ( m_files.size() + m_oldFiles.size() ) << "]:\n";
 
-  for ( auto& itr : m_files ) info() << itr.second << endl;
-  for ( auto& it2 : m_oldFiles ) info() << *it2 << endl;
+  for ( auto& itr : m_files ) info() << itr.second << '\n';
+  for ( auto& it2 : m_oldFiles ) info() << *it2 << '\n';
 
   info() << endmsg;
 }
@@ -1088,9 +1085,9 @@ StatusCode FileMgr::getHandler( const std::string& fname, Io::FileHdlr& hdlr ) c
 void FileMgr::listHandlers() const
 {
 
-  info() << "Listing registered handlers:" << endl;
+  info() << "Listing registered handlers:\n";
 
-  for ( const auto& itr : m_handlers ) info() << "    " << itr.first << endl;
+  for ( const auto& itr : m_handlers ) info() << "    " << itr.first << '\n';
   info() << endmsg;
 }
 
@@ -1120,7 +1117,7 @@ StatusCode FileMgr::regAction( bfcn_action_t bf, const Io::Action& a, const Io::
 void FileMgr::listActions() const
 {
 
-  info() << "listing registered actions" << endl;
+  info() << "listing registered actions\n";
 
   for ( const auto& iit : m_actions ) {
     Io::IoTech       t = iit.first;
@@ -1129,13 +1126,13 @@ void FileMgr::listActions() const
     if ( !m.empty() ) {
       info() << " --- Tech: ";
       if ( t == Io::UNKNOWN ) {
-        info() << "ALL ---" << endl;
+        info() << "ALL ---\n";
       } else {
-        info() << t << " ---" << endl;
+        info() << t << " ---\n";
       }
       for ( const auto& iia : m ) {
         for ( const auto& it2 : iia.second ) {
-          info() << "   " << iia.first << "  " << it2.second << endl;
+          info() << "   " << iia.first << "  " << it2.second << '\n';
         }
       }
     }
@@ -1173,10 +1170,7 @@ StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const
 {
 
   auto mitr = m.find( a );
-
-  if ( mitr == m.end() || mitr->second.empty() ) {
-    return StatusCode::SUCCESS;
-  }
+  if ( mitr == m.end() || mitr->second.empty() ) return StatusCode::SUCCESS;
 
   ON_DEBUG
   debug() << "executing " << mitr->second.size() << " " << a << " actions on " << *fa << " from " << caller << endmsg;
@@ -1185,7 +1179,7 @@ StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const
 
   auto it2 = m_supMap.find( fa->name() );
   if ( it2 != m_supMap.end() ) {
-    if ( get_bit( it2->second, a ) || get_bit( it2->second, Io::INVALID_ACTION ) ) {
+    if ( it2->second[a] || it2->second[Io::INVALID_ACTION] ) {
       ON_DEBUG
       debug() << "     --> suppressing callback action for " << a << endmsg;
       return StatusCode::SUCCESS;
@@ -1210,7 +1204,6 @@ StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const
 
 bool FileMgr::accessMatch( const Io::IoFlags& fold, const Io::IoFlags& fnew, bool /*strict*/ ) const
 {
-
   ON_VERBOSE
   verbose() << "accessMatch  old: " << fold << "  new: " << fnew << endmsg;
 
@@ -1225,40 +1218,26 @@ void FileMgr::suppressAction( const std::string& f ) { return suppressAction( f,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void FileMgr::suppressAction( const std::string& f, const Io::Action& a )
-{
-  auto set_bit = []( int f, unsigned int b ) { return f | ( 1 << b ); };
-
-  auto i = m_supMap.find( f );
-  if ( i == m_supMap.end() ) {
-    m_supMap.emplace( f, set_bit( 0, a ) );
-  } else {
-    i->second = set_bit( i->second, a );
-  }
-}
+void FileMgr::suppressAction( const std::string& f, const Io::Action& a ) { m_supMap[f].set( a ); }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void FileMgr::listSuppression() const
 {
-
   if ( m_supMap.empty() ) return;
 
-  info() << "listing suppressed file actions" << endl;
+  info() << "listing suppressed file actions\n";
 
-  for ( auto it2 = m_supMap.begin(); it2 != m_supMap.end(); ++it2 ) {
-    info() << "  " << it2->first;
-    if ( get_bit( it2->second, Io::INVALID_ACTION ) ) {
-      info() << " ALL" << endl;
+  for ( const auto& sup : m_supMap ) {
+    info() << "  " << sup.first;
+    if ( sup.second[Io::INVALID_ACTION] ) {
+      info() << " ALL\n";
     } else {
-      for ( int i = 0; i < Io::INVALID_ACTION; ++i ) {
-        if ( get_bit( it2->second, i ) ) {
-          info() << " " << (Io::Action)i;
-        }
+      for ( unsigned i = 0; i != sup.second.size(); ++i ) {
+        if ( sup.second[i] ) info() << " " << (Io::Action)i;
       }
-      info() << endl;
+      info() << '\n';
     }
   }
-
   info() << endmsg;
 }
