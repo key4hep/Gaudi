@@ -420,7 +420,7 @@ StatusCode Algorithm::sysBeginRun()
   // Bypass the beginRun if the algorithm is disabled.
   if ( !isEnabled() ) return StatusCode::SUCCESS;
 
-  warning() << "Algorithm::BeginRun is deprecated. Use Start instead" << endmsg;
+  m_beginRunCalled = true;
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
@@ -461,12 +461,21 @@ StatusCode Algorithm::sysBeginRun()
     Stat stat( chronoSvc(), "*UNKNOWN Exception*" );
     sc = StatusCode::FAILURE;
   }
+
+  if ( !isSequence() && m_beginRunCalled ) {
+    warning() << "Algorithm::BeginRun is deprecated. Use Start instead" << endmsg;
+  }
+
   return sc;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-StatusCode             Algorithm::beginRun() { return StatusCode::SUCCESS; }
+StatusCode             Algorithm::beginRun()
+{
+  m_beginRunCalled = false;
+  return StatusCode::SUCCESS;
+}
 #pragma GCC diagnostic pop
 
 // IAlgorithm implementation
@@ -475,6 +484,7 @@ StatusCode Algorithm::sysEndRun()
 
   // Bypass the endRun if the algorithm is disabled.
   if ( !isEnabled() ) return StatusCode::SUCCESS;
+  m_endRunCalled = true;
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
@@ -515,12 +525,21 @@ StatusCode Algorithm::sysEndRun()
     Stat stat( chronoSvc(), "*UNKNOWN Exception*" );
     sc = StatusCode::FAILURE;
   }
+
+  if ( !isSequence() && m_endRunCalled ) {
+    warning() << "Algorithm::EndRun is deprecated. Use Stop instead" << endmsg;
+  }
+
   return sc;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-StatusCode             Algorithm::endRun() { return StatusCode::SUCCESS; }
+StatusCode             Algorithm::endRun()
+{
+  m_endRunCalled = false;
+  return StatusCode::SUCCESS;
+}
 #pragma GCC diagnostic pop
 
 StatusCode Algorithm::sysExecute( const EventContext& ctx )
