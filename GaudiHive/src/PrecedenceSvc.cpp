@@ -181,9 +181,12 @@ StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
   }
 
   if ( UNLIKELY( m_dumpPrecTrace ) )
-    if ( UNLIKELY( CFRulesResolved( slot ) ) ) dumpPrecedenceTrace( slot );
+    if ( UNLIKELY( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) ) )
+      dumpPrecedenceTrace( slot.parentSlot ? *slot.parentSlot : slot );
+
   if ( UNLIKELY( m_dumpPrecRules ) )
-    if ( UNLIKELY( CFRulesResolved( slot ) ) ) dumpPrecedenceRules( slot );
+    if ( UNLIKELY( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) ) )
+      dumpPrecedenceRules( slot.parentSlot ? *slot.parentSlot : slot );
 
   return StatusCode::SUCCESS;
 }
