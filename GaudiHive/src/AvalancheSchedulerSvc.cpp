@@ -48,7 +48,7 @@ namespace
     return v;
   }
 
-  bool subSlotAlgsInStates( const EventSlot& slot, const std::initializer_list<AlgsExecutionStates::State> testStates )
+  bool subSlotAlgsInStates( const EventSlot& slot, std::initializer_list<AlgsExecutionStates::State> testStates )
   {
     return std::any_of( slot.allSubSlots.begin(), slot.allSubSlots.end(),
                         [testStates]( const EventSlot& ss ) { return ss.algsStates.containsAny( testStates ); } );
@@ -728,12 +728,11 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
     for ( auto& subslot : thisSlot.allSubSlots ) {
       auto& subslotStates = subslot.algsStates;
       for ( auto it = subslotStates.begin( AState::DATAREADY ); it != subslotStates.end( AState::DATAREADY ); ++it ) {
-        uint algIndex  = *it;
-        int  subslotID = subslot.eventContext->slot();
-        partial_sc     = promoteToScheduled( algIndex, iSlot, subslot.eventContext );
-        ON_VERBOSE if ( partial_sc.isFailure() ) verbose() << "Could not apply transition from " << AState::DATAREADY
-                                                           << " for algorithm " << index2algname( algIndex )
-                                                           << " on processing subslot " << subslotID << endmsg;
+        uint algIndex{*it};
+        partial_sc = promoteToScheduled( algIndex, iSlot, subslot.eventContext );
+        ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
+            << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << index2algname( algIndex )
+            << " on processing subslot " << subslot.eventContext->slot() << endmsg;
       }
     }
 
