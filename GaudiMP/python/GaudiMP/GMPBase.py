@@ -438,6 +438,7 @@ class GMPComponent(object):
         self.nWorkers, self.sEvent, self.config, self.log = params
         self.subworkers = subworkers
         self.nodeID = nodeID
+	self.msgFormat = self.config['MessageSvc'].Format
 
         # describe the state of the node by the current Event Number
         self.currentEvent = None
@@ -680,7 +681,7 @@ class Reader(GMPComponent):
         self.config['ApplicationMgr'].OutStream = []
         if "HistogramPersistencySvc" in self.config.keys():
             self.config['HistogramPersistencySvc'].OutputFile = ''
-        self.config['MessageSvc'].Format = '[Reader]% F%18W%S%7W%R%T %0W%M'
+        self.config['MessageSvc'].Format = '%-13s '%'[Reader]' + self.msgFormat
         self.evtMax = self.config['ApplicationMgr'].EvtMax
 
     def DumpEvent(self):
@@ -820,7 +821,7 @@ class Subworker(GMPComponent):
         self.initEvent.set()
         startEngine = time.time()
         msg = self.a.service('MessageSvc')
-        msg.Format = '[' + self.log.name + '] % F%18W%S%7W%R%T %0W%M'
+        msg.Format = '%-13s '%('['+self.log.name+']') + self.msgFormat
 
         self.log.name = "Worker-%i" % (self.nodeID)
         self.log.info("Subworker %i starting Engine" % (self.nodeID))
@@ -991,9 +992,8 @@ class Worker(GMPComponent):
         self.config['ApplicationMgr'].OutStream = []
         if "HistogramPersistencySvc" in self.config.keys():
             self.config['HistogramPersistencySvc'].OutputFile = ''
-        formatHead = '[Worker-%i] ' % (self.nodeID)
-        self.config['MessageSvc'].Format = formatHead + \
-            '% F%18W%S%7W%R%T %0W%M'
+        formatHead = '[Worker-%i]'%(self.nodeID)
+        self.config['MessageSvc'].Format = '%-13s '%formatHead + self.msgFormat
 
         for key, lst in self.writerDict.iteritems():
             self.log.info('Writer Type : %s\t : %i' % (key, len(lst)))
@@ -1222,7 +1222,7 @@ class Writer(GMPComponent):
         self.config['ApplicationMgr'].TopAlg = []
         self.config['EventSelector'].Input = []
 
-        self.config['MessageSvc'].Format = '[Writer] % F%18W%S%7W%R%T %0W%M'
+        self.config['MessageSvc'].Format = '%-13s '%'[Writer]' + self.msgFormat
 
         # Now process the output writers
         for key, lst in self.writerDict.iteritems():
