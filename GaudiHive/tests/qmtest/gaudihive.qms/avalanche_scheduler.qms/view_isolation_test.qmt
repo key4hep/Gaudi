@@ -6,6 +6,6 @@
   <text>../../options/ViewIsolationTest.py</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-<argument name="timeout"><integer>20</integer></argument>
+<argument name="timeout"><integer>120</integer></argument>
 <argument name="reference"><text>refs/ViewIsolationTest.ref</text></argument>
 </extension>
