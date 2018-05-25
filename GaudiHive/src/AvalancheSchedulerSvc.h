@@ -267,7 +267,6 @@ private:
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
   size_t                  m_maxEventsInFlight{0};
   size_t                  m_maxAlgosInFlight{1};
-  bool                    m_first = true;
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

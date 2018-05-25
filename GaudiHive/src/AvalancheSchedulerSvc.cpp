@@ -462,10 +462,6 @@ inline unsigned int AvalancheSchedulerSvc::algname2index( const std::string& alg
 StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
 {
 
-  if ( m_first ) {
-    m_first = false;
-  }
-
   if ( !eventContext ) {
     fatal() << "Event context is nullptr" << endmsg;
     return StatusCode::FAILURE;
