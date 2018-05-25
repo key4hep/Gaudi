@@ -477,7 +477,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext )
   }
 
   // no problem as push new event is only called from one thread (event loop manager)
-  m_freeSlots--;
+  --m_freeSlots;
 
   auto action = [this, eventContext]() -> StatusCode {
     // Event processing slot forced to be the same as the wb slot
@@ -552,7 +552,7 @@ StatusCode AvalancheSchedulerSvc::popFinishedEvent( EventContext*& eventContext 
     // ON_DEBUG debug() << "freeslots: " << m_freeSlots << "/" << m_maxEventsInFlight
     //      << " active: " << m_isActive << endmsg;
     m_finishedEvents.pop( eventContext );
-    m_freeSlots++;
+    ++m_freeSlots;
     ON_DEBUG debug() << "Popped slot " << eventContext->slot() << " (event " << eventContext->evt() << ")" << endmsg;
     return StatusCode::SUCCESS;
   }
@@ -567,7 +567,7 @@ StatusCode AvalancheSchedulerSvc::tryPopFinishedEvent( EventContext*& eventConte
   if ( m_finishedEvents.try_pop( eventContext ) ) {
     ON_DEBUG debug() << "Try Pop successful slot " << eventContext->slot() << "(event " << eventContext->evt() << ")"
                      << endmsg;
-    m_freeSlots++;
+    ++m_freeSlots;
     return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;
@@ -598,7 +598,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
   if ( si < 0 ) {
     const int eventsSlotsSize( m_eventSlots.size() );
     eventSlotsPtrs.reserve( eventsSlotsSize );
-    for ( auto slotIt = m_eventSlots.begin(); slotIt != m_eventSlots.end(); slotIt++ ) {
+    for ( auto slotIt = m_eventSlots.begin(); slotIt != m_eventSlots.end(); ++slotIt ) {
       if ( !slotIt->complete ) eventSlotsPtrs.push_back( &( *slotIt ) );
     }
     std::sort( eventSlotsPtrs.begin(), eventSlotsPtrs.end(),
@@ -851,7 +851,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
 
   int slotCount = -1;
   for ( auto& slot : m_eventSlots ) {
-    slotCount++;
+    ++slotCount;
     if ( slot.complete ) continue;
 
     outputMS << "[ slot: "
@@ -1021,7 +1021,7 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
     return StatusCode::FAILURE;
   }
 
-  m_algosInFlight--;
+  --m_algosInFlight;
 
   EventSlot& thisSlot = m_eventSlots[si];
 
@@ -1074,7 +1074,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
     return StatusCode::FAILURE;
   }
 
-  m_IOBoundAlgosInFlight--;
+  --m_IOBoundAlgosInFlight;
 
   EventSlot& thisSlot = m_eventSlots[si];
 
