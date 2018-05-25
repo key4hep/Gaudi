@@ -14,4 +14,8 @@ if(NOT CMAKE_SOURCE_DIR MATCHES "CMakeTmp")
  # it is not needed
  include(${CMAKE_SOURCE_DIR}/cmake/GaudiDefaultToolchain.cmake)
 
+ # FIXME: make sure we do not pick up ninja from LCG (it requires LD_LIBRARY_PATH set)
+ if(CMAKE_PREFIX_PATH AND CMAKE_VERSION VERSION_GREATER "3.6.0")
+  list(FILTER CMAKE_PREFIX_PATH EXCLUDE REGEX "(LCG_|lcg/nightlies).*ninja")
+ endif()
 endif()
