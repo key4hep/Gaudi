@@ -61,6 +61,9 @@ StatusCode IOBoundAlgTask::execute()
   // then receive the FAILURE
   m_aess->updateEventStatus( eventfailed, *m_evtCtx );
 
+  // update scheduler state
+  m_promote2ExecutedClosure();
+
   Gaudi::Hive::setCurrentContextEvt( -1 );
 
   return sc;
