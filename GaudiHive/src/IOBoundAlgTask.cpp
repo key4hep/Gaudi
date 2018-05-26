@@ -8,8 +8,6 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 
-#include <functional>
-
 StatusCode IOBoundAlgTask::execute()
 {
 

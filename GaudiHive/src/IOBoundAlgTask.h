@@ -9,6 +9,8 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SmartIF.h"
 
+#include <functional>
+
 /**@class IOBoundAlgTask IOBoundAlgTask.h GaudiHive/src/IOBoundAlgTask.h
  *
  *  Wrapper around I/O-bound Gaudi-algorithms. It may also cover the accelerator-targeted algorithms.
@@ -31,9 +33,7 @@ public:
   {
   }
 
-  ~IOBoundAlgTask() override {}
-
-  virtual StatusCode execute() override;
+  StatusCode execute() override final;
 
 private:
   SmartIF<IAlgorithm>         m_algorithm;
