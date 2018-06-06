@@ -1,6 +1,7 @@
 #include <GaudiAlg/Consumer.h>
 #include <GaudiAlg/Producer.h>
 #include <GaudiAlg/Transformer.h>
+#include <GaudiKernel/KeyedContainer.h>
 #include <GaudiKernel/MsgStream.h>
 
 namespace Gaudi
@@ -26,6 +27,43 @@ namespace Gaudi
 
     DECLARE_COMPONENT( IntDataProducer )
 
+    struct VectorDataProducer final : Gaudi::Functional::Producer<std::vector<int>(), BaseClass_t> {
+
+      VectorDataProducer( const std::string& name, ISvcLocator* svcLoc )
+          : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyVector" ) )
+      {
+      }
+
+      std::vector<int> operator()() const override
+      {
+        info() << "executing VectorDataProducer, storing [3,3,3,3] into " << outputLocation() << endmsg;
+        return {3, 3, 3, 3};
+      }
+    };
+
+    DECLARE_COMPONENT( VectorDataProducer )
+
+    using int_container = KeyedContainer<KeyedObject<int>, Containers::HashMap>;
+    struct KeyedDataProducer final : Gaudi::Functional::Producer<int_container(), BaseClass_t> {
+
+      KeyedDataProducer( const std::string& name, ISvcLocator* svcLoc )
+          : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyKeyed" ) )
+      {
+      }
+
+      int_container operator()() const override
+      {
+        int_container container;
+        auto          a = new KeyedObject<int>{4};
+        container.add( a );
+        auto b = new KeyedObject<int>{5};
+        container.add( b );
+        info() << "executing KeyedDataProducer, storing [4,5] into " << outputLocation() << endmsg;
+        return container;
+      }
+    };
+
+    DECLARE_COMPONENT( KeyedDataProducer )
     struct IntDataConsumer final : Gaudi::Functional::Consumer<void( const int& ), BaseClass_t> {
 
       IntDataConsumer( const std::string& name, ISvcLocator* svcLoc )
