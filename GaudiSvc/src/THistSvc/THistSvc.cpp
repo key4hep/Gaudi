@@ -195,7 +195,8 @@ StatusCode THistSvc::finalize()
 
 #ifndef NDEBUG
   if ( msgLevel( MSG::DEBUG ) ) {
-    for ( const auto& itr : m_uids ) {
+    const std::map<uidMap_t::key_type, uidMap_t::mapped_type> sorted_uids{begin( m_uids ), end( m_uids )};
+    for ( const auto& itr : sorted_uids ) {
       THistID& thid = itr.second->at( 0 );
       TObject* tobj = thid.obj;
 
