@@ -31,9 +31,7 @@ namespace GaudiPython
    *  @date   2005-08-03
    */
   template <class TYPE>
-  struct Interface /* :
-    public std::unary_function<const IInterface*,TYPE*> */
-  {
+  struct Interface {
     /** the only one important method
      *   @param in  input interface
      *   @return resutl of "cast"
@@ -61,7 +59,7 @@ namespace GaudiPython
   };
 
   template <>
-  struct Interface<IInterface> : public std::unary_function<const IInterface*, IInterface*> {
+  struct Interface<IInterface> {
     typedef IInterface TYPE;
     /** the only one important method
      *   @param in  input interface
