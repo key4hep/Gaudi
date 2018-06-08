@@ -1,5 +1,14 @@
 #ifndef GAUDIKERNEL_APPLY_H
 #define GAUDIKERNEL_APPLY_H
+#include <tuple>
+
+#if __cplusplus > 201402L
+namespace Gaudi
+{
+  using std::apply;
+}
+#else
+
 #include "GaudiKernel/invoke.h"
 namespace Gaudi
 {
@@ -27,4 +36,5 @@ namespace Gaudi
                                std::make_index_sequence<std::tuple_size<std::remove_reference_t<Tuple>>::value>{} );
   }
 }
+#endif
 #endif
