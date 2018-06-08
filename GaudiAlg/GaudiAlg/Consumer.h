@@ -15,16 +15,17 @@ namespace Gaudi
     class Consumer;
 
     template <typename... In, typename Traits_>
-    class Consumer<void( const In&... ), Traits_> : public details::DataHandleMixin<void, std::tuple<In...>, Traits_>
+    class Consumer<void( const In&... ), Traits_>
+        : public details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_>
     {
     public:
-      using details::DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
+      using details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final
       {
         try {
-          Gaudi::apply( [&]( const auto&... i ) { ( *this )( details::deref( i.get() )... ); }, this->m_inputs );
+          details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();

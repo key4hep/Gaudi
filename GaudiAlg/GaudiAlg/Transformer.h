@@ -34,12 +34,8 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          Gaudi::apply(
-              [&]( const auto&... i ) {
-                details::put( std::get<0>( this->m_outputs ),
-                              details::as_const( *this )( details::deref( i.get() )... ) );
-              },
-              this->m_inputs );
+          details::put( std::get<0>( this->m_outputs ),
+                        details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -86,11 +82,7 @@ namespace Gaudi
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
 #endif
                     },
-                    Gaudi::apply(
-                        [this]( auto&... ihandle ) {
-                          return details::as_const( *this )( details::deref( ihandle.get() )... );
-                        },
-                        this->m_inputs ) );
+                    details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
 
 #if defined( __clang__ ) && ( __clang_major__ < 6 )
 #pragma clang diagnostic pop
@@ -138,11 +130,7 @@ namespace Gaudi
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
 #endif
                     },
-                    Gaudi::apply(
-                        [&]( auto&... ihandle ) {
-                          return details::as_const( *this )( details::deref( ihandle.get() )... );
-                        },
-                        this->m_inputs ) );
+                    details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
               },
               this->m_outputs );
           return StatusCode::SUCCESS;

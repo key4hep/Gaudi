@@ -26,9 +26,7 @@ namespace Gaudi
       StatusCode execute() override final
       {
         try {
-          this->setFilterPassed( Gaudi::apply(
-              [&]( auto&... handles ) { return details::as_const( *this )( details::deref( handles.get() )... ); },
-              this->m_inputs ) );
+          this->setFilterPassed( details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;

@@ -54,8 +54,7 @@ namespace Gaudi
         try {
           // TODO:FIXME: how does operator() know the number and order of expected outputs?
           using details::as_const;
-          auto out = Gaudi::apply(
-              [&]( auto&... ihandle ) { return as_const( *this )( as_const( *ihandle.get() )... ); }, this->m_inputs );
+          auto out = details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
           if ( out.size() != m_outputs.size() ) {
             throw GaudiException( "Error during transform: expected " + std::to_string( m_outputs.size() ) +
                                       " containers, got " + std::to_string( out.size() ) + " instead",

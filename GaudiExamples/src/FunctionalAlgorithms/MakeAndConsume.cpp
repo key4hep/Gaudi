@@ -136,5 +136,32 @@ namespace Gaudi
     };
 
     DECLARE_COMPONENT( FloatDataConsumer )
+
+    struct ContextConsumer final : Gaudi::Functional::Consumer<void( const EventContext& )> {
+
+      using Gaudi::Functional::Consumer<void( const EventContext& )>::Consumer;
+
+      void operator()( const EventContext& ctx ) const override
+      {
+        info() << "executing ContextConsumer, got " << ctx << endmsg;
+      }
+    };
+
+    DECLARE_COMPONENT( ContextConsumer )
+
+    struct ContextIntConsumer final : Gaudi::Functional::Consumer<void( const EventContext&, const int& )> {
+
+      ContextIntConsumer( const std::string& name, ISvcLocator* svcLoc )
+          : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ) )
+      {
+      }
+
+      void operator()( const EventContext& ctx, const int& i ) const override
+      {
+        info() << "executing ContextIntConsumer, got context = " << ctx << ", int = " << i << endmsg;
+      }
+    };
+
+    DECLARE_COMPONENT( ContextIntConsumer )
   }
 }
