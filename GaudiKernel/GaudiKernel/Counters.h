@@ -124,7 +124,7 @@
  * @endcode
  */
 
-#include "boost/algorithm/string/case_conv.hpp"
+#include "boost/algorithm/string/predicate.hpp"
 #include "boost/format.hpp"
 #include <atomic>
 #include <cmath>
@@ -135,6 +135,9 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+#include "GaudiKernel/apply.h"
+#include "GaudiKernel/detected.h"
 
 namespace Gaudi
 {
@@ -182,11 +185,9 @@ namespace Gaudi
      * type_traits for checking the presence of fetch_add in std::atomic<T>
      */
     template <typename T, typename = int>
-    struct has_fetch_add : std::false_type {
-    };
+    using has_fetch_add_ = decltype( std::atomic<T>{}.fetch_add( 0 ) );
     template <typename T>
-    struct has_fetch_add<T, decltype( std::atomic<T>{}.fetch_add( 0 ), 0 )> : std::true_type {
-    };
+    using has_fetch_add = typename Gaudi::cpp17::is_detected<has_fetch_add_, T>::value_t;
 
     /**
      * Base type for all functors used as ValuesHandler. The base takes care of storing the value
@@ -251,7 +252,7 @@ namespace Gaudi
         if ( DefaultValue() == b ) return; // avoid atomic operation if b is "0"
         // C++ 17 version
         if
-          constexpr( has_fetch_add<Arithmetic>::value ) { a.fetch_add( b, std::memory_order_relaxed ); }
+          constexpr( has_fetch_add<InternalType>::value ) { a.fetch_add( b, std::memory_order_relaxed ); }
         else {
           auto current = BaseValueHandler<Arithmetic, atomicity::full>::getValue( a );
           while ( !a.compare_exchange_weak( current, current + b ) )
@@ -261,25 +262,24 @@ namespace Gaudi
 #else
       // C++11 version
     private:
-      template <typename T, typename = void>
-      struct AddHelper {
-        void operator()( InternalType& a, T b )
-        {
-          auto current = a.load( std::memory_order_relaxed );
-          while ( !a.compare_exchange_weak( current, current + b ) )
-            ;
-        }
-      };
       template <typename T>
-      struct AddHelper<T, std::enable_if_t<has_fetch_add<T>::value>> {
-        void operator()( InternalType& a, T b ) { a.fetch_add( b, std::memory_order_relaxed ); }
-      };
+      static void add( InternalType& a, T b, std::false_type )
+      {
+        auto current = a.load( std::memory_order_relaxed );
+        while ( !a.compare_exchange_weak( current, current + b ) )
+          ;
+      }
+      template <typename T>
+      static void add( InternalType& a, T b, std::true_type )
+      {
+        a.fetch_add( b, std::memory_order_relaxed );
+      }
 
     public:
       static void merge( InternalType& a, Arithmetic b ) noexcept
       {
         if ( DefaultValue() == b ) return; // avoid atomic operation if b is "0"
-        AddHelper<Arithmetic>()( a, b );
+        add( a, b, has_fetch_add<InternalType>{} );
       }
 #endif
     };
@@ -384,7 +384,7 @@ namespace Gaudi
       }
 
     protected:
-      void reset( const InnerType in ) { m_value = in; }
+      void reset( InnerType in ) { m_value = std::move( in ); }
     private:
       typename ValueHandler::InternalType m_value;
     };
@@ -393,20 +393,18 @@ namespace Gaudi
      * AccumulatorSet is an Accumulator that holds a set of Accumulators templated by same Arithmetic and Atomicity
      * and increase them altogether
      */
-    template <typename Arithmetic, atomicity Atomicity, template <typename Int, atomicity Ato> class... Bases>
+    template <typename Arithmetic, atomicity Atomicity, template <typename, atomicity> class... Bases>
     class AccumulatorSet : public Bases<Arithmetic, Atomicity>...
     {
     public:
-      using InputType  = Arithmetic;
-      using OutputType = std::tuple<typename Bases<Arithmetic, Atomicity>::OutputType...>;
+      using InputType            = Arithmetic;
+      using OutputType           = std::tuple<typename Bases<Arithmetic, Atomicity>::OutputType...>;
+      constexpr AccumulatorSet() = default;
       AccumulatorSet& operator+=( const InputType by )
       {
         (void)std::initializer_list<int>{( Bases<Arithmetic, Atomicity>::operator+=( by ), 0 )...};
         return *this;
       }
-      constexpr AccumulatorSet()                    = default;
-      AccumulatorSet( const AccumulatorSet& other ) = default;
-      AccumulatorSet&     operator=( const AccumulatorSet& ) = default;
       OutputType          value() const { return std::make_tuple( Bases<Arithmetic, Atomicity>::value()... ); }
       void                reset() { (void)std::initializer_list<int>{( Bases<Arithmetic, Atomicity>::reset(), 0 )...}; }
       template <atomicity Ato>
@@ -419,15 +417,11 @@ namespace Gaudi
     protected:
       void reset( const std::tuple<typename Bases<Arithmetic, Atomicity>::OutputType...>& t )
       {
-        internal_reset( t, std::index_sequence_for<typename Bases<Arithmetic, Atomicity>::OutputType...>{} );
-      }
-
-    private:
-      template <std::size_t... Indexes>
-      void internal_reset( const std::tuple<typename Bases<Arithmetic, Atomicity>::OutputType...>& t,
-                           std::index_sequence<Indexes...> )
-      {
-        (void)std::initializer_list<int>{( Bases<Arithmetic, Atomicity>::reset( std::get<Indexes>( t ) ), 0 )...};
+        Gaudi::apply(
+            [this]( const auto&... i ) {
+              (void)std::initializer_list<int>{( this->Bases<Arithmetic, Atomicity>::reset( i ), 0 )...};
+            },
+            t );
       }
     };
 
@@ -795,13 +789,12 @@ public:
   /// the constructor with automatic registration in the owner's counter map
   StatEntity() = default;
   template <class OWNER>
-  StatEntity( OWNER* o, const std::string& tag ) : StatEntity()
+  StatEntity( OWNER* o, const std::string& tag )
   {
     o->registerCounter( tag, *this );
   }
   StatEntity( const unsigned long entries, const double flag, const double flag2, const double minFlag,
               const double maxFlag )
-      : StatEntity()
   {
     reset( std::make_tuple(
         std::make_tuple( std::make_tuple( std::make_tuple( entries, flag ), flag2 ), minFlag, maxFlag ),
@@ -882,10 +875,9 @@ public:
   double      flagMax() const { return max(); }
   static bool effCounter( const std::string& name )
   {
-    const std::string lower = boost::algorithm::to_lower_copy( name );
-    return std::string::npos != lower.find( "eff" ) || std::string::npos != lower.find( "acc" ) ||
-           std::string::npos != lower.find( "filt" ) || std::string::npos != lower.find( "fltr" ) ||
-           std::string::npos != lower.find( "pass" );
+    using boost::algorithm::icontains;
+    return icontains( name, "eff" ) || icontains( name, "acc" ) || icontains( name, "filt" ) ||
+           icontains( name, "fltr" ) || icontains( name, "pass" );
   }
   std::ostream& printFormatted( std::ostream& o, const std::string& format ) const
   {
