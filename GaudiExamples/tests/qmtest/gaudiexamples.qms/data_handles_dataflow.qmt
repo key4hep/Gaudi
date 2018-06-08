@@ -3,29 +3,41 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="options"><text>
 from Gaudi.Configuration import *
-from Configurables import DataHandleFlowAlgA, DataHandleFlowAlgB
-from Configurables import DataHandleFlowAlgC, DataHandleFlowAlgD
-from Configurables import DataHandleFlowAlgE, DataHandleFlowAlgF
-from Configurables import DataHandleFlowAlgG, DataHandleFlowAlgH
+from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
+                           AvalancheSchedulerSvc, AlgResourcePool,
+                           DataHandleFlowAlgA, DataHandleFlowAlgB,
+                           DataHandleFlowAlgC, DataHandleFlowAlgD,
+                           DataHandleFlowAlgE, DataHandleFlowAlgF,
+                           DataHandleFlowAlgG, DataHandleFlowAlgH)
 
-from Configurables import EvtDataSvc
-EvtDataSvc("EventDataSvc").RootCLID = 1
-EvtDataSvc("EventDataSvc").RootName = "/Event"
-EvtDataSvc("EventDataSvc").ForceLeaves = True
+# Example configuration. We only need to check that data dependencies are fed
+# to the Scheduler, so threaded execution is unnecessary unpredictability.
+evtMax = 2
+evtslots = 1
+threads = 1
 
-a = DataHandleFlowAlgA()
-b = DataHandleFlowAlgB()
-c = DataHandleFlowAlgC()
-d = DataHandleFlowAlgD()
-e = DataHandleFlowAlgE()
-f = DataHandleFlowAlgF()
-g = DataHandleFlowAlgG()
-h = DataHandleFlowAlgH()
+# Boring GaudiHive setup
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
+slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc",
+                                        OutputLevel=DEBUG)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads,
+                                  OutputLevel=WARNING)
+AlgResourcePool(OutputLevel=DEBUG)
 
-# FIXME: Use the Scheduler instead of relying on human topological sort
-app = ApplicationMgr(TopAlg = [a, b, h, d, g, e, c, f],
-                     EvtSel = "NONE",
-                     EvtMax = 2)
+# A nontrivial Algorithm data flow graph. Notice that this is _not_ a correct
+# execution order: the Scheduler should figure out a correct order using the
+# data dependency information that the DataHandles provide.
+algs = [DataHandleFlowAlgA(), DataHandleFlowAlgB(), DataHandleFlowAlgC(),
+        DataHandleFlowAlgD(), DataHandleFlowAlgE(), DataHandleFlowAlgF(),
+        DataHandleFlowAlgG(), DataHandleFlowAlgH()]
+
+# Application manager setup
+ApplicationMgr(EvtMax=evtMax,
+               EvtSel='NONE',
+               ExtSvc=[whiteboard],
+               EventLoop=slimeventloopmgr,
+               TopAlg=algs,
+               MessageSvcType="InertMessageSvc")
 </text></argument>
     <argument name="reference"><text>refs/data_handles_dataflow.ref</text></argument>
     <argument name="exit_code"><integer>0</integer></argument>
