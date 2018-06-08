@@ -1,7 +1,5 @@
 #define ROOTHISTCNV_RCWNTUPLECNV_CPP
 
-#define ALLOW_ALL_TYPES
-
 // Include files
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/MsgStream.h"
@@ -9,8 +7,9 @@
 
 // Compiler include files
 #include <cstdio>
+#include <cstring>
 #include <list>
-#include <utility> /* std::pair */
+#include <utility>
 #include <vector>
 
 #include "RCWNTupleCnv.h"
@@ -20,57 +19,118 @@
 #include "TLeafI.h"
 #include "TTree.h"
 
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//     they are intended
-#pragma warning( disable : 1572 )
-#endif
-
-//-----------------------------------------------------------------------------
-template <class T>
-void analyzeItem( std::string typ, const NTuple::_Data<T>* it, std::string& desc, std::string& block_name,
-                  std::string& var_name, long& lowerRange, long& upperRange, long& size )
-//-----------------------------------------------------------------------------
+namespace
 {
-
-  RootHistCnv::parseName( it->name(), block_name, var_name );
-
-  // long item_size = (sizeof(T) < 4) ? 4 : sizeof(T);
-  long item_size = sizeof( T );
-  long dimension = it->length();
-  long ndim      = it->ndim() - 1;
-  desc += var_name;
-  if ( it->hasIndex() || it->length() > 1 ) {
-    desc += '[';
+  template <typename T>
+  size_t saveItem( char* target, const NTuple::_Data<T>& src )
+  {
+    static_assert( std::is_trivially_copyable<T>::value, "T must be trivally copyable" );
+    std::memcpy( target, src.buffer(), sizeof( T ) * src.length() );
+    return sizeof( T ) * src.length();
   }
-  if ( it->hasIndex() ) {
-    std::string ind_blk, ind_var;
-    RootHistCnv::parseName( it->index(), ind_blk, ind_var );
-    if ( ind_blk != block_name ) {
-      std::cerr << "ERROR: Index for CWNT variable " << ind_var << " is in a different block: " << ind_blk << std::endl;
+
+  template <typename T>
+  size_t loadItem( const char* src, NTuple::_Data<T>& target )
+  {
+    static_assert( std::is_trivially_copyable<T>::value, "T must be trivally copyable" );
+    std::memcpy( const_cast<void*>( target.buffer() ), src, sizeof( T ) * target.length() );
+    return sizeof( T ) * target.length();
+  }
+
+  template <typename POD>
+  decltype( auto ) downcast_item( const INTupleItem& i )
+  {
+    return dynamic_cast<const NTuple::_Data<POD>&>( i );
+  }
+  template <typename POD>
+  decltype( auto ) downcast_item( INTupleItem& i )
+  {
+    return dynamic_cast<NTuple::_Data<POD>&>( i );
+  }
+  template <typename POD, typename T>
+  void downcast_item( T&& ) = delete;
+
+  template <typename Item, typename F>
+  decltype( auto ) visit( Item& i, F&& f )
+  {
+    switch ( i.type() ) {
+    case DataTypeInfo::INT:
+      return f( downcast_item<int>( i ) );
+    case DataTypeInfo::CHAR:
+      return f( downcast_item<char>( i ) );
+    case DataTypeInfo::SHORT:
+      return f( downcast_item<short>( i ) );
+    case DataTypeInfo::LONG:
+      return f( downcast_item<long>( i ) );
+    case DataTypeInfo::LONGLONG:
+      return f( downcast_item<long long>( i ) );
+    case DataTypeInfo::UCHAR:
+      return f( downcast_item<unsigned char>( i ) );
+    case DataTypeInfo::USHORT:
+      return f( downcast_item<unsigned short>( i ) );
+    case DataTypeInfo::UINT:
+      return f( downcast_item<unsigned int>( i ) );
+    case DataTypeInfo::ULONG:
+      return f( downcast_item<unsigned long>( i ) );
+    case DataTypeInfo::ULONGLONG:
+      return f( downcast_item<unsigned long long>( i ) );
+    case DataTypeInfo::DOUBLE:
+      return f( downcast_item<double>( i ) );
+    case DataTypeInfo::FLOAT:
+      return f( downcast_item<float>( i ) );
+    case DataTypeInfo::BOOL:
+      return f( downcast_item<bool>( i ) );
     }
-    desc += ind_var;
-  } else if ( it->dim( ndim ) > 1 ) {
-    desc += std::to_string( it->dim( ndim ) );
+    throw std::runtime_error( "RCWNTupleCnv::visit: unknown INTupleItem::type()" );
   }
 
-  for ( int i = ndim - 1; i >= 0; i-- ) {
-    desc += "][";
-    desc += std::to_string( it->dim( i ) );
-  }
-  if ( it->hasIndex() || it->length() > 1 ) {
-    desc += ']';
-  }
+  //-----------------------------------------------------------------------------
+  template <class T>
+  void analyzeItem( std::string typ, const NTuple::_Data<T>* it, std::string& desc, std::string& block_name,
+                    std::string& var_name, long& lowerRange, long& upperRange, long& size )
+  //-----------------------------------------------------------------------------
+  {
 
-  if ( it->range().lower() != it->range().min() && it->range().upper() != it->range().max() ) {
-    lowerRange = it->range().lower();
-    upperRange = it->range().upper();
-  } else {
-    lowerRange = 0;
-    upperRange = -1;
+    RootHistCnv::parseName( it->name(), block_name, var_name );
+
+    // long item_size = (sizeof(T) < 4) ? 4 : sizeof(T);
+    long item_size = sizeof( T );
+    long dimension = it->length();
+    long ndim      = it->ndim() - 1;
+    desc += var_name;
+    if ( it->hasIndex() || it->length() > 1 ) {
+      desc += '[';
+    }
+    if ( it->hasIndex() ) {
+      std::string ind_blk, ind_var;
+      RootHistCnv::parseName( it->index(), ind_blk, ind_var );
+      if ( ind_blk != block_name ) {
+        std::cerr << "ERROR: Index for CWNT variable " << ind_var << " is in a different block: " << ind_blk
+                  << std::endl;
+      }
+      desc += ind_var;
+    } else if ( it->dim( ndim ) > 1 ) {
+      desc += std::to_string( it->dim( ndim ) );
+    }
+
+    for ( int i = ndim - 1; i >= 0; i-- ) {
+      desc += "][";
+      desc += std::to_string( it->dim( i ) );
+    }
+    if ( it->hasIndex() || it->length() > 1 ) {
+      desc += ']';
+    }
+
+    if ( it->range().lower() != it->range().min() && it->range().upper() != it->range().max() ) {
+      lowerRange = it->range().lower();
+      upperRange = it->range().upper();
+    } else {
+      lowerRange = 0;
+      upperRange = -1;
+    }
+    desc += typ;
+    size += item_size * dimension;
   }
-  desc += typ;
-  size += item_size * dimension;
 }
 
 //-----------------------------------------------------------------------------
@@ -97,62 +157,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
   for ( const auto& i : nt->items() ) {
     std::string item;
 
-    switch ( i->type() ) {
-    case DataTypeInfo::INT: // int
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<int>*>( i ), item, block_name, var_name,
-                   lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::CHAR: // char
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<char>*>( i ), item, block_name, var_name,
-                   lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::SHORT: // short
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<short>*>( i ), item, block_name, var_name,
-                   lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::LONG: // long
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<long>*>( i ), item, block_name, var_name,
-                   lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::LONGLONG: // long long
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<long long>*>( i ), item, block_name,
-                   var_name, lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::UCHAR: // unsigned char
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<unsigned char>*>( i ), item, block_name,
-                   var_name, lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::USHORT: // unsigned short
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<unsigned short>*>( i ), item, block_name,
-                   var_name, lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::UINT: // unsigned int
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<unsigned int>*>( i ), item, block_name,
-                   var_name, lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::ULONG: // unsigned long
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<unsigned long>*>( i ), item, block_name,
-                   var_name, lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::ULONGLONG: // unsigned long long
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<unsigned long long>*>( i ), item,
-                   block_name, var_name, lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::DOUBLE: // double
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<double>*>( i ), item, block_name,
-                   var_name, lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::FLOAT: // float
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<float>*>( i ), item, block_name, var_name,
-                   lowerRange, upperRange, size );
-      break;
-    case DataTypeInfo::BOOL: // bool
-      analyzeItem( rootVarType( i->type() ), dynamic_cast<const NTuple::_Data<bool>*>( i ), item, block_name, var_name,
-                   lowerRange, upperRange, size );
-      break;
-    default:
-      break;
-    }
+    visit( *i, [&]( const auto& data ) {
+      analyzeItem( this->rootVarType( data.type() ), &data, item, block_name, var_name, lowerRange, upperRange, size );
+    } );
 
     item_name.emplace_back( block_name, item );
     cursize = size - oldsize;
@@ -247,52 +254,10 @@ StatusCode RootHistCnv::RCWNTupleCnv::writeData( TTree* rtree, INTuple* nt )
 //-----------------------------------------------------------------------------
 {
   // Fill the tree;
-  char* tar = nt->buffer();
-  for ( const auto& i : nt->items() ) {
-    switch ( i->type() ) {
-    case DataTypeInfo::BOOL: // bool
-      tar += saveItem( tar, (bool*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::CHAR: // char
-      tar += saveItem( tar, (char*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::SHORT: // short
-      tar += saveItem( tar, (short*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::INT: // int
-      tar += saveItem( tar, (int*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::LONG: // long
-      tar += saveItem( tar, (long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::LONGLONG: // long long
-      tar += saveItem( tar, (long long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::UCHAR: // unsigned char
-      tar += saveItem( tar, (unsigned char*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::USHORT: // unsigned short
-      tar += saveItem( tar, (unsigned short*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::UINT: // unsigned int
-      tar += saveItem( tar, (unsigned int*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::ULONG: // unsigned long
-      tar += saveItem( tar, (unsigned long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::ULONGLONG: // unsigned long
-      tar += saveItem( tar, (unsigned long long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::FLOAT: // float
-      tar += saveItem( tar, (float*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::DOUBLE: // double
-      tar += saveItem( tar, (double*)i->buffer(), i->length() );
-      break;
-    default:
-      break;
-    }
-  }
+  const auto& items = nt->items();
+  std::accumulate( begin( items ), end( items ), nt->buffer(), []( char* dest, const INTupleItem* i ) {
+    return dest + visit( *i, [dest]( const auto& item ) { return saveItem( dest, item ); } );
+  } );
 
   rtree->Fill();
   nt->reset();
@@ -303,67 +268,22 @@ StatusCode RootHistCnv::RCWNTupleCnv::writeData( TTree* rtree, INTuple* nt )
 StatusCode RootHistCnv::RCWNTupleCnv::readData( TTree* rtree, INTuple* ntup, long ievt )
 //-----------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), "RCWNTupleCnv::readData" );
-
   if ( ievt >= rtree->GetEntries() ) {
+    MsgStream log( msgSvc(), "RCWNTupleCnv::readData" );
     log << MSG::ERROR << "no more entries in tree to read. max: " << rtree->GetEntries() << "  current: " << ievt
         << endmsg;
     return StatusCode::FAILURE;
   }
 
   rtree->GetEvent( ievt );
-
   ievt++;
 
   // copy data from ntup->buffer() to ntup->items()->buffer()
-
-  char* src = ntup->buffer();
-  for ( auto& i : ntup->items() ) {
-
-    switch ( i->type() ) {
-    case DataTypeInfo::BOOL: // bool
-      src += loadItem( src, (bool*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::CHAR: // char
-      src += loadItem( src, (char*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::SHORT: // short
-      src += loadItem( src, (short*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::INT: // short
-      src += loadItem( src, (int*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::LONG: // long
-      src += loadItem( src, (long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::LONGLONG: // long long
-      src += loadItem( src, (long long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::UCHAR: // unsigned char
-      src += loadItem( src, (unsigned char*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::USHORT: // unsigned short
-      src += loadItem( src, (unsigned short*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::UINT: // unsigned short
-      src += loadItem( src, (unsigned int*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::ULONG: // unsigned long
-      src += loadItem( src, (unsigned long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::ULONGLONG: // unsigned long long
-      src += loadItem( src, (unsigned long long*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::FLOAT: // float
-      src += loadItem( src, (float*)i->buffer(), i->length() );
-      break;
-    case DataTypeInfo::DOUBLE: // unsigned short
-      src += loadItem( src, (double*)i->buffer(), i->length() );
-      break;
-    default:
-      break;
-    }
-  }
+  auto& items = ntup->items();
+  std::accumulate( begin( items ), end( items ), const_cast<const char*>( ntup->buffer() ),
+                   []( const char* src, INTupleItem* i ) {
+                     return src + visit( *i, [src]( auto& item ) { return loadItem( src, item ); } );
+                   } );
 
   return StatusCode::SUCCESS;
 }

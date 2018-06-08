@@ -140,10 +140,10 @@ StatusCode RootHistCnv::RNTupleCnv::createRep( DataObject* pObject, IOpaqueAddre
             if ( pParAddr ) {
               TDirectory* pParentDir = (TDirectory*)pParAddr->ipar()[0];
               if ( pParentDir ) {
-                TTree*      pTree = nullptr;
-                std::string dsc   = pReg->name().substr( 1 );
-                gDirectory        = pParentDir;
-                status            = book( dsc, dynamic_cast<INTuple*>( pObject ), pTree );
+                TTree* pTree = nullptr;
+                auto   dsc   = pReg->name().substr( 1 );
+                gDirectory   = pParentDir;
+                status       = book( dsc, dynamic_cast<INTuple*>( pObject ), pTree );
                 if ( !status.isSuccess() ) {
                   return status;
                 }
