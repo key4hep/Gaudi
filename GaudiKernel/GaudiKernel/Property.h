@@ -515,7 +515,7 @@ namespace Gaudi
 
     /// allow addition if possible between the property and the other types
     template <class T>
-    decltype( std::declval<ValueType>() + std::declval<T>() ) operator+( const T& other ) const
+    decltype( auto ) operator+( const T& other ) const
     {
       return m_value + other;
     }
@@ -556,42 +556,42 @@ namespace Gaudi
     /// @{
     /// They are instantiated only if they are implemented in the wrapped class.
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().size() ) size() const
+    inline decltype( auto ) size() const
     {
       return value().size();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().length() ) length() const
+    inline decltype( auto ) length() const
     {
       return value().length();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().empty() ) empty() const
+    inline decltype( auto ) empty() const
     {
       return value().empty();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().clear() ) clear()
+    inline decltype( auto ) clear()
     {
       value().clear();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().begin() ) begin() const
+    inline decltype( auto ) begin() const
     {
       return value().begin();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().end() ) end() const
+    inline decltype( auto ) end() const
     {
       return value().end();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().begin() ) begin()
+    inline decltype( auto ) begin()
     {
       return value().begin();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().end() ) end()
+    inline decltype( auto ) end()
     {
       return value().end();
     }
@@ -606,17 +606,17 @@ namespace Gaudi
       return value()[arg];
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key ) const
+    inline decltype( auto ) find( const typename T::key_type& key ) const
     {
       return value().find( key );
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key )
+    inline decltype( auto ) find( const typename T::key_type& key )
     {
       return value().find( key );
     }
     template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>().erase( ARG{} ) ) erase( ARG arg )
+    inline decltype( auto ) erase( ARG arg )
     {
       return value().erase( arg );
     }
@@ -656,32 +656,32 @@ namespace Gaudi
     }
     /// Helpers for DataHandles and derived classes
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().key() ) key() const
+    inline decltype( auto ) key() const
     {
       return value().key();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().objKey() ) objKey() const
+    inline decltype( auto ) objKey() const
     {
       return value().objKey();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().fullKey() ) fullKey() const
+    inline decltype( auto ) fullKey() const
     {
       return value().fullKey();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().initialize() ) initialize()
+    inline decltype( auto ) initialize()
     {
       return value().initialize();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().makeHandles() ) makeHandles() const
+    inline decltype( auto ) makeHandles() const
     {
       return value().makeHandles();
     }
     template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>().makeHandles( std::declval<ARG>() ) ) makeHandles( const ARG& arg ) const
+    inline decltype( auto ) makeHandles( const ARG& arg ) const
     {
       return value().makeHandles( arg );
     }
@@ -754,7 +754,7 @@ namespace Gaudi
 
   /// implemantation of (value + property)
   template <class T, class TP, class V, class H>
-  decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const Property<TP, V, H>& p )
+  decltype( auto ) operator+( const T& v, const Property<TP, V, H>& p )
   {
     return v + p.value();
   }
