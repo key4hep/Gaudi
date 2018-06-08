@@ -687,6 +687,15 @@ namespace Gaudi
     }
     /// @}
     // ==========================================================================
+
+    // Delegate operator() to the value
+    template <class... Args>
+    inline decltype( std::declval<ValueType>()( std::declval<Args&&>()... ) ) operator()( Args&&... args ) const
+        noexcept( noexcept( std::declval<ValueType>()( std::declval<Args&&>()... ) ) )
+    {
+      return value()( std::forward<Args>( args )... );
+    }
+
   public:
     /// get the value from another property
     bool assign( const Details::PropertyBase& source ) override
