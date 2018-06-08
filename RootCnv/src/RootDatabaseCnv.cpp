@@ -38,7 +38,7 @@ StatusCode RootDatabaseCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpO
     const string*        spars  = pAddr->par();
     char                 mode   = char( ipars[1] );
     string               fname  = spars[0];
-    string               oname  = pReg->name();
+    auto                 oname  = pReg->name();
     bool                 recrea = mode == 'R';
     bool                 create = mode == 'N';
     bool                 update = mode == 'U';

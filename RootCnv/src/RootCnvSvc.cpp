@@ -84,8 +84,8 @@ StatusCode RootCnvSvc::initialize()
   }
   m_log.reset( new MsgStream( msgSvc(), name() ) );
   if ( !m_compression.empty() ) {
-    log() << MSG::INFO << "Setting global ROOT compression to:" << m_compression << endmsg;
-    if ( !( status = RootConnectionSetup::setCompression( m_compression ) ).isSuccess() ) {
+    log() << MSG::INFO << "Setting global ROOT compression to:" << m_compression.value() << endmsg;
+    if ( !( status = RootConnectionSetup::setCompression( m_compression.value() ) ).isSuccess() ) {
       return error( "Unable to interprete ROOT compression encoding:" + m_compression );
     }
   }
@@ -115,7 +115,7 @@ StatusCode RootCnvSvc::finalize()
       auto pc = dynamic_cast<RootDataConnection*>( i );
       if ( pc ) {
         if ( pc->owner() == this && !m_ioPerfStats.empty() ) {
-          pc->saveStatistics( m_ioPerfStats );
+          pc->saveStatistics( m_ioPerfStats.value() );
         }
         if ( pc->lookupClient( this ) ) {
           size_t num_clients = pc->removeClient( this );
@@ -251,7 +251,7 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
         IOpaqueAddress* pAddr   = nullptr;
         string          fid     = pc->fid();
         string          section = m_recordName[0] == '/' ? m_recordName.value().substr( 1 ) : m_recordName.value();
-        TBranch*        b       = pc->getBranch( section, m_recordName );
+        TBranch*        b       = pc->getBranch( section, m_recordName.value() );
         if ( b ) {
           const string  par[2]  = {fid, m_recordName};
           unsigned long ipar[2] = {(unsigned long)( *con ), (unsigned long)b->GetEntries() - 1};
@@ -435,7 +435,7 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
         LinkManager*  pLinks = pObj->linkMgr();
         for ( auto& i : leaves ) {
           if ( i->address() ) {
-            m_current->makeRef( i, ref );
+            m_current->makeRef( *i, ref );
             ref.entry = i->address()->ipar()[1];
             refs.refs.push_back( ref );
           }
