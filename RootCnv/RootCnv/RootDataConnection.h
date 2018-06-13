@@ -22,7 +22,7 @@ class TClass;
 class TBranch;
 
 class MsgStream;
-#include "GaudiKernel/IRegistry.h"
+class IRegistry;
 class DataObject;
 class IIncidentSvc;
 

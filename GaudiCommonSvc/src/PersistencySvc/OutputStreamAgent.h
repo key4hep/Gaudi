@@ -17,7 +17,7 @@
 // Framework includes
 #include "GaudiKernel/IDataStoreAgent.h"
 // Foreward declarations
-#include "GaudiKernel/IRegistry.h"
+class IRegistry;
 class OutputStream;
 
 /** @name The OutputStreamAgent class.
