@@ -59,6 +59,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Remove unreferenced code ([mr !658][])
 
 
+## [v28r2p1][] - 2018-06-15
+Bugfix release
+
+### Fixed
+- Add test and fix of version propagation in KeyedContainer move ([mr !665][], [issue #27][])
+
+### Added
+- Gitlab-CI configuration ([mr !665][], backport from master)
+
+
 ## [v29r4][] - 2018-04-17
 Bugfix release.
 
@@ -96,6 +106,7 @@ Details about old versions of the project can be found in the
 [mr !668]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/668
 [mr !667]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/667
 [mr !666]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/666
+[mr !665]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/665
 [mr !664]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/664
 [mr !663]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/663
 [mr !662]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/662
@@ -127,3 +138,4 @@ Details about old versions of the project can be found in the
 
 [Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r2...master
 [v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r3...v29r4
+[v28r2p1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v28r2...v28r2p1
