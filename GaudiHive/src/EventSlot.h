@@ -39,7 +39,6 @@ public:
     subSlotsByNode.clear();
     entryPoint = "";
     parentSlot = nullptr;
-    subSlotAlgsReady.clear();
     contextToSlot.clear();
     allSubSlots.clear();
   };
@@ -58,8 +57,6 @@ public:
   std::string entryPoint;
   /// Pointer to parent slot (null for top level)
   EventSlot* parentSlot;
-  /// Quick lookup for data-ready algorithms in sub-slots (top level only)
-  std::vector<std::pair<EventContext*, int>> subSlotAlgsReady;
   /// Quick lookup for sub-slots by event context (top level only)
   std::map<EventContext*, unsigned int> contextToSlot;
   /// Actual sub-slot instances

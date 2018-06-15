@@ -48,20 +48,10 @@ namespace
     return v;
   }
 
-  bool subSlotAlgsInStates( const EventSlot& slot, std::initializer_list<AlgsExecutionStates::State> const& testStates )
+  bool subSlotAlgsInStates( const EventSlot& slot, std::initializer_list<AlgsExecutionStates::State> testStates )
   {
-    for ( const EventSlot& ss : slot.allSubSlots ) {
-      for ( auto state : testStates ) {
-        if ( ss.algsStates.contains( state ) ) {
-
-          // There are sub-slot algs in this state
-          return true;
-        }
-      }
-    }
-
-    // No algs in any of the test states
-    return false;
+    return std::any_of( slot.allSubSlots.begin(), slot.allSubSlots.end(),
+                        [testStates]( const EventSlot& ss ) { return ss.algsStates.containsAny( testStates ); } );
   }
 }
 
@@ -735,28 +725,15 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
     }
 
     // Check for algorithms ready in sub-slots
-    if ( thisSlot.subSlotAlgsReady.size() ) {
-      // Any data-ready algorithms that don't get scheduled need to be retried later
-      std::vector<std::pair<EventContext*, int>> failedAlgs;
-      failedAlgs.reserve( thisSlot.subSlotAlgsReady.size() );
-
-      // Loop with iterator so we can use it for a fast append if needed
-      for ( auto contextAlgPair = thisSlot.subSlotAlgsReady.begin(); contextAlgPair != thisSlot.subSlotAlgsReady.end();
-            ++contextAlgPair ) {
-        if ( m_algosInFlight < m_maxAlgosInFlight ) {
-          partial_sc = promoteToScheduled( contextAlgPair->second, iSlot, contextAlgPair->first );
-
-          // Add the alg back into the ready list if scheduling failed
-          if ( partial_sc.isFailure() ) failedAlgs.push_back( *contextAlgPair );
-        } else {
-          // Don't loop through all remaining algs if we're already busy
-          failedAlgs.insert( failedAlgs.end(), contextAlgPair, thisSlot.subSlotAlgsReady.end() );
-          break;
-        }
+    for ( auto& subslot : thisSlot.allSubSlots ) {
+      auto& subslotStates = subslot.algsStates;
+      for ( auto it = subslotStates.begin( AState::DATAREADY ); it != subslotStates.end( AState::DATAREADY ); ++it ) {
+        uint algIndex{*it};
+        partial_sc = promoteToScheduled( algIndex, iSlot, subslot.eventContext );
+        ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
+            << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << index2algname( algIndex )
+            << " on processing subslot " << subslot.eventContext->slot() << endmsg;
       }
-
-      // Update ready list
-      thisSlot.subSlotAlgsReady = failedAlgs;
     }
 
     if ( m_dumpIntraEventDynamics ) {
@@ -919,10 +896,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
       // Mention sub slots
       if ( slot.allSubSlots.size() ) {
         outputMS << "\nNumber of sub-slots: " << slot.allSubSlots.size() << "\n";
-        outputMS << "Sub-slot algorithms ready: " << slot.subSlotAlgsReady.size() << "\n\n";
-
         auto slotID = slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]";
-
         for ( auto& ss : slot.allSubSlots ) {
           outputMS << "[ slot: " << slotID << " sub-slot entry: " << ss.entryPoint << "  event: "
                    << ( ss.eventContext->valid() ? std::to_string( ss.eventContext->evt() ) : "[ctx invalid]" )
