@@ -214,22 +214,19 @@ private:
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
-  /// Method to check if an event failed and take appropriate actions
-  StatusCode eventFailed( EventContext* eventContext );
-
   /// Algorithm execution state manager
   SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
 
   /// A shortcut to service for Conditions handling
   SmartIF<ICondSvc> m_condSvc;
 
-  // States management ------------------------------------------------------
-
   /// Number of algorithms presently in flight
   unsigned int m_algosInFlight = 0;
 
   /// Number of algorithms presently in flight
   unsigned int m_IOBoundAlgosInFlight = 0;
+
+  // States management ------------------------------------------------------
 
   /// Loop on algorithm in the slots and promote them to successive states
   /// (-1 for algo_index means skipping an update of the Control Flow state)
@@ -243,23 +240,26 @@ private:
                                      EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToFinished( unsigned int iAlgo, int si );
 
-  /// Check if the scheduling is in a stall
-  StatusCode isStalled( int si );
+  /// Check if scheduling in a particular slot is in a stall
+  bool isStalled( const EventSlot& ) const;
+  /// Method to execute if an event failed
+  void eventFailed( EventContext* eventContext );
 
   /// Dump the state of the scheduler
   void dumpSchedulerState( int iSlot );
 
   // Algos Management -------------------------------------------------------
+
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool> m_algResourcePool;
-
-  /// Drain the actions present in the queue
-  StatusCode drain();
 
   // Actions management -----------------------------------------------------
 
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
+  /// Bookkeeping of the number of actions in flight per slot
+  // (accessed/modified from the control thread only)
+  std::vector<unsigned int> m_actionsCounts;
 
   // ------------------------------------------------------------------------
 
@@ -267,7 +267,6 @@ private:
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
   size_t                  m_maxEventsInFlight{0};
   size_t                  m_maxAlgosInFlight{1};
-  bool                    m_first = true;
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H
