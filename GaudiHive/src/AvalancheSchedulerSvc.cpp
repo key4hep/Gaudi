@@ -965,10 +965,17 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
 
     ++m_IOBoundAlgosInFlight;
+    auto promote2ExecutedClosure = [this, iAlgo, ialgoPtr, eventContext]() {
+      this->m_actionsQueue.push( [this, iAlgo, ialgoPtr, eventContext]() {
+        return this->AvalancheSchedulerSvc::promoteToAsyncExecuted( iAlgo, eventContext->slot(), ialgoPtr,
+                                                                    eventContext );
+      } );
+      return StatusCode::SUCCESS;
+    };
     // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from
     // tbb::task)? it seems it works..
     IOBoundAlgTask* theTask = new ( tbb::task::allocate_root() )
-        IOBoundAlgTask( ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc );
+        IOBoundAlgTask( ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
     m_IOBoundAlgScheduler->push( *theTask );
 
     ON_DEBUG debug() << "[Asynchronous] Algorithm " << algName << " was submitted on event " << eventContext->evt()
@@ -1061,6 +1068,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   // Check if the execution failed
   if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext );
 
+  Gaudi::Hive::setCurrentContext( eventContext );
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
 
   if ( sc.isFailure() ) {

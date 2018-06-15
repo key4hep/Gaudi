@@ -8,8 +8,6 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 
-#include <functional>
-
 StatusCode IOBoundAlgTask::execute()
 {
 
@@ -60,6 +58,9 @@ StatusCode IOBoundAlgTask::execute()
   // We need to stop execution when this happens so that execute run can
   // then receive the FAILURE
   m_aess->updateEventStatus( eventfailed, *m_evtCtx );
+
+  // update scheduler state
+  m_promote2ExecutedClosure();
 
   Gaudi::Hive::setCurrentContextEvt( -1 );
 
