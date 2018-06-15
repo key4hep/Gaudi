@@ -415,8 +415,6 @@ struct Cause {
 
 namespace concurrency
 {
-
-  using State = AlgsExecutionStates::State;
   class PrecedenceRulesGraph;
 
   using precedence::PRVertexDesc;

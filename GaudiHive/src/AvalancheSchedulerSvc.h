@@ -30,9 +30,6 @@
 
 class IAlgorithm;
 
-typedef AlgsExecutionStates::State  State;
-typedef std::function<StatusCode()> action;
-
 //---------------------------------------------------------------------------
 
 /**@class AvalancheSchedulerSvc AvalancheSchedulerSvc.h
@@ -121,7 +118,7 @@ public:
   // Make multiple events available to the scheduler
   StatusCode pushNewEvents( std::vector<EventContext*>& eventContexts ) override;
 
-  /// Blocks until an event is availble
+  /// Blocks until an event is available
   StatusCode popFinishedEvent( EventContext*& eventContext ) override;
 
   /// Try to fetch an event from the scheduler
@@ -135,6 +132,9 @@ public:
                                         EventContext* viewContext ) override;
 
 private:
+  using AState = AlgsExecutionStates::State;
+  using action = std::function<StatusCode()>;
+
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
   Gaudi::Property<int> m_threadPoolSize{
@@ -225,10 +225,10 @@ private:
 
   // States management ------------------------------------------------------
 
-  /// Number of algoritms presently in flight
+  /// Number of algorithms presently in flight
   unsigned int m_algosInFlight = 0;
 
-  /// Number of algoritms presently in flight
+  /// Number of algorithms presently in flight
   unsigned int m_IOBoundAlgosInFlight = 0;
 
   /// Loop on algorithm in the slots and promote them to successive states
@@ -254,7 +254,7 @@ private:
   SmartIF<IAlgResourcePool> m_algResourcePool;
 
   /// Drain the actions present in the queue
-  StatusCode m_drain();
+  StatusCode drain();
 
   // Actions management -----------------------------------------------------
 
