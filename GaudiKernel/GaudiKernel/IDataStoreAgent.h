@@ -5,7 +5,7 @@
 #include "GaudiKernel/Kernel.h"
 
 // Forward declarations:
-#include "GaudiKernel/IRegistry.h"
+class IRegistry;
 
 /** @class IDataStoreAgent IDataStoreAgent.h GaudiKernel/IDataStoreAgent.h
 
