@@ -18,7 +18,7 @@ class IDataStoreAgent;
 // Opaque addresses
 class IOpaqueAddress;
 // Registry entry definition
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 // Data provider svc
 class IDataProviderSvc;
 

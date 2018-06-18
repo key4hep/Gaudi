@@ -18,7 +18,7 @@ class IOpaqueAddress;
   *
   *  @author M.Frank
   */
-class GAUDI_API LinkManager
+class GAUDI_API LinkManager final
 {
 
 public:
@@ -82,21 +82,20 @@ private:
   //           4) revoke friendship.
   //         Now we're at stage 1...
   friend class MergeEventAlg;
-  ///@ TODO: replace by std::vector<std::unique_ptr<Link>> once
-  ///        ROOT does 'automatic' schema conversion from T* to
-  ///        std::unique_ptr<T>...
-  ///        Or, even better, just std::vector<Link>, given that
+  ///@ TODO: replace by std::vector<Link> given that
   ///        Link is barely larger than a pointer (40 vs. 8 bytes)
   ///        -- but that requires more invasive schema evolution.
   ///
   /// The vector containing all links which are non-tree like
-  mutable std::vector<Link*> m_linkVector;
+  mutable std::vector<std::unique_ptr<Link>> m_linkVector;
 
 public:
   /// Standard Constructor
   LinkManager() = default;
   /// Standard Destructor
-  virtual ~LinkManager();
+  //// -- this _must_ be virtual, as the 'old' data has a vtbl pointer, and
+  ///     we have to maintain the memory layout... even if this class is 'final'
+  virtual ~LinkManager() = default;
   /// Static instantiation
   static LinkManager* newInstance();
   /// Assign new instantiator

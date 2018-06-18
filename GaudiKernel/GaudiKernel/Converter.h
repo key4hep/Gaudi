@@ -11,7 +11,7 @@
 
 // Forward declarations
 class IMessageSvc;
-class IRegistry;
+#include "GaudiKernel/IRegistry.h"
 
 /** @class Converter Converter.h GaudiKernel/Converter.h
 
