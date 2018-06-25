@@ -55,13 +55,19 @@ public:
     m_eventOutputHandles.push_back( &handle );
   }
 
-  /// Add an event data output dynamically at run time
+  /// Add an event data input dynamically at run time
   ///
   /// DataHandles are the preferred way to declare statically known data
   /// dependencies. However, there are cases in which an Algorithm's data
-  /// outputs are only known at run time, typically when data is loaded on
-  /// demand from a file or database. In this case, this method should be
+  /// dependencies are only known at run time, typically when data is loaded
+  /// on demand from a file or database. In this case, this method should be
   /// used to declare those dynamic data dependencies.
+  ///
+  void addDynamicEventInput( const DataObjID& key ) final override { m_eventInputKeys.insert( key ); }
+
+  /// Add an event data output dynamically at run time
+  ///
+  /// See addDynamicEventInput() for more details.
   ///
   void addDynamicEventOutput( const DataObjID& key ) final override { m_eventOutputKeys.insert( key ); }
 

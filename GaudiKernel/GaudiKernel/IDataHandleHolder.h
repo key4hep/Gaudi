@@ -46,6 +46,9 @@ struct GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInte
   /// Register a data handle as an event data output of the algorithm
   virtual void registerEventOutput( Gaudi::experimental::DataHandle& ) = 0;
 
+  /// Add an event data input dynamically at run time
+  virtual void addDynamicEventInput( const DataObjID& ) = 0;
+
   /// Add an event data output dynamically at run time
   virtual void addDynamicEventOutput( const DataObjID& ) = 0;
 
