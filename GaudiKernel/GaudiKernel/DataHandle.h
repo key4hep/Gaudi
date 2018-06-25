@@ -127,19 +127,64 @@ namespace Gaudi
       ///
       virtual void initialize( const IDataHandleHolder& owner ) = 0;
 
+      /// Truth that owner setup has been performed
+      ///
+      /// Subclasses of DataHandle which allow for lazy owner initialization are
+      /// strongly encouraged to check if said initialization has been performed
+      /// at the time where a DataHandle is used.
+      ///
+      bool ownerSetupDone() const { return m_ownerSetupDone; }
+
+      /// Setup the owner of this DataHandle
+      ///
+      /// You should only perform this operation when you used the owner-less
+      /// constructor. And you should only perform it only once. Failures to
+      /// do so will be detected and result in a run-time error.
+      ///
+      template <typename Owner, std::enable_if_t<std::is_base_of<IDataHandleHolder, Owner>::value>* = nullptr>
+      void setOwner( Owner& owner )
+      {
+        if ( m_ownerSetupDone ) {
+          throw std::runtime_error( "Attempted to set DataHandle owner twice" );
+        }
+        m_property.setOwner( &owner );
+        m_ownerSetupDone = true;
+      }
+
     protected:
       /// Handles are constructed like a Gaudi property (and effectively
       /// behave as one, which sets the associated data object identifier)
-      template <typename Owner, std::enable_if_t<std::is_base_of<IDataHandleHolder, Owner>::value>* = nullptr>
-      DataHandle( Owner& owner, const std::string& propertyName, DataObjID&& defaultID, const std::string& docString,
+      template <typename Owner, typename T                                          = DataObjID,
+                std::enable_if_t<std::is_base_of<IDataHandleHolder, Owner>::value>* = nullptr>
+      DataHandle( Owner& owner, const std::string& propertyName, T&& defaultID, const std::string& docString,
                   const IDataHandleMetadata& metadata )
-          : m_property{&owner, propertyName, {metadata, std::move( defaultID )}, docString}
+          : m_property{&owner, propertyName, {metadata, std::forward<T>( defaultID )}, docString}
+          , m_ownerSetupDone{true}
+      {
+      }
+
+      /// The above constructor is easier to use correctly, and therefore
+      /// preferred. But some legacy use cases may require setting a
+      /// DataHandle's owner lazily after construction. In that case, this
+      /// constructor must be used.
+      ///
+      /// If you opt for this lazy construction method, then you _must_ set the
+      /// owner Alg or AlgTool before said owner's initialize() procedure has
+      /// finished. See setOwnerImpl() for more information on this.
+      ///
+      template <typename T = DataObjID>
+      explicit DataHandle( const std::string& propertyName, T&& defaultID, const std::string& docString,
+                           const IDataHandleMetadata& metadata )
+          : m_property{propertyName, {metadata, std::forward<T>( defaultID )}, docString}, m_ownerSetupDone{false}
       {
       }
 
     private:
       /// Configurable property associated with a DataHandle
       Gaudi::Property<DataHandleConfigurable> m_property;
+
+      /// Truth that owner setup has been performed
+      bool m_ownerSetupDone;
     };
   }
 }

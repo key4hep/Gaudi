@@ -419,8 +419,7 @@ namespace Gaudi
               typename = std::enable_if_t<std::is_default_constructible<T>::value>>
     Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
     {
-      owner->declareProperty( *this );
-      setOwnerType<OWNER>();
+      setOwner( owner );
     }
 
     /// Autodeclaring constructor with property name, value and documentation.
@@ -429,8 +428,7 @@ namespace Gaudi
     Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
     {
-      owner->declareProperty( *this );
-      setOwnerType<OWNER>();
+      setOwner( owner );
     }
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
@@ -488,6 +486,14 @@ namespace Gaudi
 
     using Details::PropertyBase::declareReadHandler;
     using Details::PropertyBase::declareUpdateHandler;
+
+    /// Set the owner of this property
+    template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    void setOwner( OWNER* owner )
+    {
+      owner->declareProperty( *this );
+      setOwnerType<OWNER>();
+    }
 
     /// set new callback for reading
     Details::PropertyBase& declareReadHandler( std::function<void( Details::PropertyBase& )> fun ) override
