@@ -707,7 +707,7 @@ namespace Gaudi
       return value().targetKey();
     }
     template <class ARG, class T = ValueType>
-    decltype( std::declval<T>().setTargetKey( std::declval<ARG>() ) ) setTargetKey( const ARG& arg )
+    decltype( auto ) setTargetKey( const ARG& arg )
     {
       return value().setTargetKey( arg );
     }

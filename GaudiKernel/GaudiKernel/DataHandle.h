@@ -80,6 +80,12 @@ namespace Gaudi
   namespace experimental
   {
     /// Base class to all new-style data handles
+    ///
+    /// The purpose of this base class is to act as a middleman between
+    /// user-facing data handle classes (which provide ways to access
+    /// data in various whiteboards) and the framework (which needs to know
+    /// about data dependencies and provide a way to configure them).
+    ///
     class DataHandle
     {
     public:
@@ -95,6 +101,10 @@ namespace Gaudi
       // The only reason why we don't delete the DataHandle move constructor
       // as well is that it would also forbid some safe and useful forms of
       // in-place construction.
+      //
+      // We will be able to plug this memory safety hole, and set this to
+      // "= delete" the way it should be, once Gaudi switches to C++17-only and
+      // guaranteed copy elision can be taken for granted.
       //
       DataHandle( DataHandle&& ) = default;
       DataHandle& operator=( DataHandle&& ) = delete;

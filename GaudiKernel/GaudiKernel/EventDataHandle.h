@@ -30,7 +30,8 @@ namespace Gaudi
 {
   namespace experimental
   {
-    /// Base class to all DataHandles interacting with the transient event store
+    /// Base class to all DataHandles interacting with the transient event
+    /// store. This is mostly internal machinery which clients can ignore.
     class EventDataHandle : public DataHandle
     {
     public:
