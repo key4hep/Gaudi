@@ -50,6 +50,18 @@ def find_files(rootdir, ext):
                 yield os.path.join(dirpath, filename)
 
 
+def parse_xml(path):
+    '''
+    Return the parsed tree, handling exceptions if needed.
+    '''
+    try:
+        return ET.parse(path)
+    except ET.ParseError as e:
+        sys.stderr.write('ERROR: could not parse {}\n{}\n'.format(path, e))
+        sys.stderr.flush()
+        exit(1)
+
+
 def analyze_deps(pkg, rootdir):
     '''
     Collect dependencies from the QMTest tests in a directory and report them
@@ -64,7 +76,8 @@ def analyze_deps(pkg, rootdir):
         name = qmt_filename_to_name(os.path.relpath(path, rootdir))
         name = fix_test_name(name, pkg)
 
-        tree = ET.parse(path)
+        tree = parse_xml(path)
+
         prereqs = [fix_test_name(el.text, pkg)
                    for el in tree.findall(prereq_xpath)]
         if prereqs:
@@ -85,7 +98,7 @@ def analyze_suites(pkg, rootdir):
         name = qmt_filename_to_name(os.path.relpath(path, rootdir))
         name = fix_test_name(name, pkg)
 
-        tree = ET.parse(path)
+        tree = parse_xml(path)
 
         labels[name].extend(fix_test_name(el.text, pkg)
                             for el in tree.findall(tests_xpath))
@@ -119,7 +132,7 @@ def analyze_disabling(pkg, rootdir):
         name = qmt_filename_to_name(os.path.relpath(path, rootdir))
         name = fix_test_name(name, pkg)
 
-        tree = ET.parse(path)
+        tree = parse_xml(path)
         # If at least one regex matches the test is disabled.
         skip_test = [None
                      for el in tree.findall(unsupp_xpath)
