@@ -12,6 +12,7 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
+#include "GaudiKernel/IJobOptionsSvc.h"
 
 #include "MetaDataSvc.h"
 
@@ -90,10 +91,30 @@ StatusCode MetaDataSvc::collectData()
   /*
    * JOB OPTIONS SERVICE
    * */
-  auto joSvc = service<IProperty>( "JobOptionsSvc" );
-  if ( !joSvc.isValid() ) return StatusCode::FAILURE;
-  for ( const auto* prop : joSvc->getProperties() ) {
-    m_metadata["JobOptionsSvc." + prop->name()] = prop->toString();
+  {
+    auto joSvc = service<IProperty>( "JobOptionsSvc" );
+    if ( !joSvc.isValid() ) return StatusCode::FAILURE;
+    for ( const auto* prop : joSvc->getProperties() ) {
+      m_metadata["JobOptionsSvc." + prop->name()] = prop->toString();
+    }
+  }
+
+  // save options for all clients
+  {
+    auto joSvc = service<IJobOptionsSvc>( "JobOptionsSvc" );
+    if ( !joSvc.isValid() ) return StatusCode::FAILURE;
+    for ( const auto c : joSvc->getClients() )
+    {
+      // get options for this client
+      const auto props = joSvc->getProperties(c);
+      if ( props )
+      {
+        for ( const auto prop : *props )
+        {
+          m_metadata[ c + "." + prop->name() ] = prop->toString();
+        }
+      }
+    }
   }
 
   if ( msgLevel( MSG::DEBUG ) ) {
