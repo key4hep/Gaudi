@@ -38,10 +38,10 @@ public:
   /// You should not need to call this method manually, as it is
   /// automatically called by the DataHandle constructor.
   ///
-  void registerEventInput( Gaudi::experimental::DataHandle& handle ) final override
+  void registerInput( Gaudi::experimental::DataHandle& handle ) final override
   {
     assert( !m_explicitDepsCollected );
-    m_eventInputHandles.push_back( &handle );
+    m_inputHandles.push_back( &handle );
   }
 
   /// Register a data handle as an event data output of the algorithm
@@ -49,10 +49,10 @@ public:
   /// You should not need to call this method manually, as it is
   /// automatically called by the DataHandle constructor.
   ///
-  void registerEventOutput( Gaudi::experimental::DataHandle& handle ) final override
+  void registerOutput( Gaudi::experimental::DataHandle& handle ) final override
   {
     assert( !m_explicitDepsCollected );
-    m_eventOutputHandles.push_back( &handle );
+    m_outputHandles.push_back( &handle );
   }
 
   /// Add an event data input dynamically at run time
@@ -63,13 +63,13 @@ public:
   /// on demand from a file or database. In this case, this method should be
   /// used to declare those dynamic data dependencies.
   ///
-  void addDynamicEventInput( const DataObjID& key ) final override { m_eventInputKeys.insert( key ); }
+  void addDynamicInput( const DataObjID& key ) final override { m_inputKeys.insert( key ); }
 
   /// Add an event data output dynamically at run time
   ///
-  /// See addDynamicEventInput() for more details.
+  /// See addDynamicInput() for more details.
   ///
-  void addDynamicEventOutput( const DataObjID& key ) final override { m_eventOutputKeys.insert( key ); }
+  void addDynamicOutput( const DataObjID& key ) final override { m_outputKeys.insert( key ); }
 
   /// Tell which event store keys the algorithm will be reading from
   ///
@@ -77,20 +77,20 @@ public:
   /// been collected, which happens during initialization. But it will be
   /// called frequently, so we only detect this usage error in debug mode.
   ///
-  const DataObjIDColl& eventInputKeys() const final override
+  const DataObjIDColl& inputKeys() const final override
   {
     assert( m_explicitDepsCollected );
-    return m_eventInputKeys;
+    return m_inputKeys;
   }
 
   /// Tell which event store keys the algorithm will be writing to
   ///
-  /// The interface caveats described in eventInputKeys() also apply here.
+  /// The interface caveats described in inputKeys() also apply here.
   ///
-  const DataObjIDColl& eventOutputKeys() const final override
+  const DataObjIDColl& outputKeys() const final override
   {
     assert( m_explicitDepsCollected );
-    return m_eventOutputKeys;
+    return m_outputKeys;
   }
 
   /// Declare ownership of a legacy DataHandle
@@ -150,12 +150,12 @@ protected:
     auto legacyOutputs = legacyOutputHandles();
     updateKeys( legacyInputs, keyMap );
     updateKeys( legacyOutputs, keyMap );
-    updateKeys( m_eventInputKeys, keyMap );
-    updateKeys( m_eventOutputKeys, keyMap );
-    updateKeys( m_eventInputHandles, keyMap );
-    updateKeys( m_eventOutputHandles, keyMap );
-    updateKeys( m_extraEventInputs.value(), keyMap );
-    updateKeys( m_extraEventOutputs.value(), keyMap );
+    updateKeys( m_inputKeys, keyMap );
+    updateKeys( m_outputKeys, keyMap );
+    updateKeys( m_inputHandles, keyMap );
+    updateKeys( m_outputHandles, keyMap );
+    updateKeys( m_extraInputs.value(), keyMap );
+    updateKeys( m_extraOutputs.value(), keyMap );
   }
 
   /// Collect all explicit data dependencies in a single place
@@ -176,14 +176,14 @@ protected:
     }
 
     // Collect all input dependencies in a single place
-    extractEventInputs( m_eventInputHandles );
-    extractEventInputs( legacyInputHandles() );
-    extractEventInputs( m_extraEventInputs.value() );
+    extractInputs( m_inputHandles );
+    extractInputs( legacyInputHandles() );
+    extractInputs( m_extraInputs.value() );
 
     // Collect all output dependencies in a single place
-    extractEventOutputs( m_eventOutputHandles );
-    extractEventOutputs( legacyOutputHandles() );
-    extractEventOutputs( m_extraEventOutputs.value() );
+    extractOutputs( m_outputHandles );
+    extractOutputs( legacyOutputHandles() );
+    extractOutputs( m_extraOutputs.value() );
 
     // Take note that the explicit dependencies have been collected
     m_explicitDepsCollected = true;
@@ -245,9 +245,9 @@ protected:
     // dependency handling may mutate the input dependency list,
     // invalidating any iterator to that list.
     //
-    for ( const auto& outputKey : m_eventOutputKeys ) {
-      auto inputPos = m_eventInputKeys.find( outputKey );
-      if ( inputPos != m_eventInputKeys.end() ) {
+    for ( const auto& outputKey : m_outputKeys ) {
+      auto inputPos = m_inputKeys.find( outputKey );
+      if ( inputPos != m_inputKeys.end() ) {
         // Call the user circular dependency handler on each dependency
         switch ( circularDepHandler( *inputPos ) ) {
         // Abort iteration if asked to do so
@@ -256,7 +256,7 @@ protected:
 
         // Break the circular dependency otherwise
         case CircularDepAction::Ignore:
-          m_eventInputKeys.erase( inputPos );
+          m_inputKeys.erase( inputPos );
         }
       }
     }
@@ -279,28 +279,28 @@ protected:
   void addImplicitDeps( const IDataHandleHolder* child )
   {
     if ( !child ) return;
-    extractEventInputs( child->eventInputKeys() );
-    extractEventOutputs( child->eventOutputKeys() );
+    extractInputs( child->inputKeys() );
+    extractOutputs( child->outputKeys() );
   }
 
   /// Tell which input dependencies have been ignored due to an empty key
   ///
-  /// The interface caveats described in eventInputKeys() also apply here.
+  /// The interface caveats described in inputKeys() also apply here.
   ///
-  const DataObjIDColl& ignoredEventInputs() const
+  const DataObjIDColl& ignoredInputs() const
   {
     assert( m_explicitDepsCollected );
-    return m_ignoredEventInputs;
+    return m_ignoredInputs;
   }
 
   /// Tell which output dependencies have been ignored due to an empty key
   ///
-  /// The interface caveats described in eventInputKeys() also apply here.
+  /// The interface caveats described in inputKeys() also apply here.
   ///
-  const DataObjIDColl& ignoredEventOutputs() const
+  const DataObjIDColl& ignoredOutputs() const
   {
     assert( m_explicitDepsCollected );
-    return m_ignoredEventOutputs;
+    return m_ignoredOutputs;
   }
 
   /// Initialize the DataHandles
@@ -311,25 +311,25 @@ protected:
   void initDataHandleHolder()
   {
     for ( auto h : m_legacyHandles ) h->init();
-    initializeHandles( m_eventInputHandles );
-    initializeHandles( m_eventOutputHandles );
+    initializeHandles( m_inputHandles );
+    initializeHandles( m_outputHandles );
   }
 
 private:
   // Data handles associated with input and output event data
   using DataHandleList = std::vector<Gaudi::experimental::DataHandle*>;
-  DataHandleList m_eventInputHandles, m_eventOutputHandles;
+  DataHandleList m_inputHandles, m_outputHandles;
 
   // Legacy DataHandles
   std::unordered_set<Gaudi::DataHandle*> m_legacyHandles;
 
   // Properties allowing extra input and output dependencies to be
   // declared at configuration time
-  Gaudi::Property<DataObjIDColl> m_extraEventInputs{this, "ExtraInputs", DataObjIDColl{}};
-  Gaudi::Property<DataObjIDColl> m_extraEventOutputs{this, "ExtraOutputs", DataObjIDColl{}};
+  Gaudi::Property<DataObjIDColl> m_extraInputs{this, "ExtraInputs", DataObjIDColl{}};
+  Gaudi::Property<DataObjIDColl> m_extraOutputs{this, "ExtraOutputs", DataObjIDColl{}};
 
   // Location where all event store dependencies will be eventually collected
-  DataObjIDColl m_eventInputKeys, m_eventOutputKeys;
+  DataObjIDColl m_inputKeys, m_outputKeys;
 
   /// Truth that all explicit data dependencies have already been
   /// collected in a single list.
@@ -337,7 +337,7 @@ private:
 
   // Places where we keep track of the inputs and outputs that were
   // ignored because they had an empty key
-  DataObjIDColl m_ignoredEventInputs, m_ignoredEventOutputs;
+  DataObjIDColl m_ignoredInputs, m_ignoredOutputs;
 
   /// Initialize a set of handles
   void initializeHandles( DataHandleList& handles )
@@ -382,16 +382,16 @@ private:
 
   /// Specialization of extractKeys for event data inputs
   template <typename KeyHolderColl>
-  void extractEventInputs( const KeyHolderColl& keyHolders )
+  void extractInputs( const KeyHolderColl& keyHolders )
   {
-    extractKeys( m_eventInputKeys, m_ignoredEventInputs, keyHolders );
+    extractKeys( m_inputKeys, m_ignoredInputs, keyHolders );
   }
 
   /// Specialization of extractKeys for event data outputs
   template <typename KeyHolderColl>
-  void extractEventOutputs( const KeyHolderColl& keyHolders )
+  void extractOutputs( const KeyHolderColl& keyHolders )
   {
-    extractKeys( m_eventOutputKeys, m_ignoredEventOutputs, keyHolders );
+    extractKeys( m_outputKeys, m_ignoredOutputs, keyHolders );
   }
 
   /// Update the key of a DataHandle

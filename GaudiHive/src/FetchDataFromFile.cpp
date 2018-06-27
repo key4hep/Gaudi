@@ -18,7 +18,7 @@ namespace Gaudi
         if ( sc ) {
           // this is a hack to reuse the automatic dependencies declaration
           for ( auto k : m_dataKeys ) {
-            addDynamicEventOutput( k );
+            addDynamicOutput( k );
           }
         }
         return sc;
@@ -27,7 +27,7 @@ namespace Gaudi
       {
         StatusCode sc = Algorithm::start();
         if ( sc ) {
-          for ( const auto& k : eventOutputKeys() ) {
+          for ( const auto& k : outputKeys() ) {
             if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "adding data key " << k << endmsg;
             evtSvc()->addPreLoadItem( k.key() );
           }

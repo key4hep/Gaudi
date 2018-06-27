@@ -41,22 +41,22 @@ struct GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInte
   virtual SmartIF<IDataProviderSvc>& eventSvc() const = 0;
 
   /// Register a data handle as an event data input of the algorithm
-  virtual void registerEventInput( Gaudi::experimental::DataHandle& ) = 0;
+  virtual void registerInput( Gaudi::experimental::DataHandle& ) = 0;
 
   /// Register a data handle as an event data output of the algorithm
-  virtual void registerEventOutput( Gaudi::experimental::DataHandle& ) = 0;
+  virtual void registerOutput( Gaudi::experimental::DataHandle& ) = 0;
 
   /// Add an event data input dynamically at run time
-  virtual void addDynamicEventInput( const DataObjID& ) = 0;
+  virtual void addDynamicInput( const DataObjID& ) = 0;
 
   /// Add an event data output dynamically at run time
-  virtual void addDynamicEventOutput( const DataObjID& ) = 0;
+  virtual void addDynamicOutput( const DataObjID& ) = 0;
 
   /// Tell which event data keys the algorithm will be reading from
-  virtual const DataObjIDColl& eventInputKeys() const = 0;
+  virtual const DataObjIDColl& inputKeys() const = 0;
 
   /// Tell which event data keys the algorithm will be writing to
-  virtual const DataObjIDColl& eventOutputKeys() const = 0;
+  virtual const DataObjIDColl& outputKeys() const = 0;
 
   /// Declare ownership of a legacy DataHandle
   virtual void declare( Gaudi::DataHandle& ) = 0;

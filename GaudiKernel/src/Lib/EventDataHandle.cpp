@@ -10,10 +10,10 @@ namespace Gaudi
     {
       switch ( access ) {
       case AccessMode::Read:
-        owner.registerEventInput( *this );
+        owner.registerInput( *this );
         break;
       case AccessMode::Write:
-        owner.registerEventOutput( *this );
+        owner.registerOutput( *this );
         break;
       default:
         throw std::runtime_error( "Unsupported access mode" );

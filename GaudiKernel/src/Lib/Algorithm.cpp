@@ -165,8 +165,8 @@ StatusCode Algorithm::sysInitialize()
 
   // Print a summary of the Algorithm's inputs and outputs
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
-    debug() << "input handles: " << eventInputKeys().size() << endmsg;
-    debug() << "output handles: " << eventOutputKeys().size() << endmsg;
+    debug() << "input handles: " << inputKeys().size() << endmsg;
+    debug() << "output handles: " << outputKeys().size() << endmsg;
   }
 
   // Check for explicit circular data dependencies
@@ -212,16 +212,16 @@ StatusCode Algorithm::sysInitialize()
     };
     // Logging
     debug() << "Data Deps for " << name();
-    for ( auto h : orderset( eventInputKeys() ) ) {
+    for ( auto h : orderset( inputKeys() ) ) {
       debug() << "\n  + INPUT  " << h;
     }
-    for ( auto id : orderset( ignoredEventInputs() ) ) {
+    for ( auto id : orderset( ignoredInputs() ) ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for ( auto h : orderset( eventOutputKeys() ) ) {
+    for ( auto h : orderset( outputKeys() ) ) {
       debug() << "\n  + OUTPUT " << h;
     }
-    for ( auto id : orderset( ignoredEventOutputs() ) ) {
+    for ( auto id : orderset( ignoredOutputs() ) ) {
       debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;

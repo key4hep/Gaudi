@@ -85,7 +85,7 @@ public:
     for ( const auto& inputHandle : m_readers ) {
       expectedInputKeys.emplace( inputHandle.targetKey() );
     }
-    if ( eventInputKeys() != expectedInputKeys ) {
+    if ( inputKeys() != expectedInputKeys ) {
       throw std::runtime_error( "Unexpected input keys" );
     }
 
@@ -95,7 +95,7 @@ public:
     for ( const auto& outputHandle : m_writers ) {
       expectedOutputKeys.emplace( outputHandle.targetKey() );
     }
-    if ( eventOutputKeys() != expectedOutputKeys ) {
+    if ( outputKeys() != expectedOutputKeys ) {
       throw std::runtime_error( "Unexpected output keys" );
     }
 
