@@ -125,11 +125,10 @@ if( GAUDI_BUILD_TESTS )
   get_filename_component(genconf_cmd_name ${genconf_cmd} NAME)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
   gaudi_add_test(genconf_with_custom_factory
-                 COMMAND ${env_cmd} --xml ${env_xml}
-                           ${genconf_cmd_name}
+                 COMMAND ${genconf_cmd_name}
                              -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
                              -p CustomFactoryTest
-                         -i test_CustomFactory
+                             -i test_CustomFactory
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
 endif()
 
@@ -166,7 +165,7 @@ gaudi_add_unit_test(test_reverse  tests/src/test_reverse.cpp
                     TYPE Boost)
 
 gaudi_add_compile_test(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx
-                       ERRORS "FAIL01;FAIL02;FAIL03;FAIL04")  
+                       ERRORS "FAIL01;FAIL02;FAIL03;FAIL04")
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)

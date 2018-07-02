@@ -6,6 +6,6 @@
   <text>../../options/CFplusViewBug.py</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-<argument name="timeout"><integer>120</integer></argument>
+<argument name="timeout"><integer>600</integer></argument>
 <argument name="reference"><text>refs/CFplusViewBug.ref</text></argument>
 </extension>
