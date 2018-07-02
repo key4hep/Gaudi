@@ -16,7 +16,7 @@ variables:
   TESTS_REPORT: "test_report"
 
 before_script:
-  - export PATH=${LCG_contrib}/CMake/3.8.1/Linux-x86_64/bin:${LCG_contrib}/ninja/1.7.1/x86_64-slc6:${LCG_release_area}/Python/2.7.13-597a5/${BINARY_TAG}/bin:${PATH}
+  - export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.11.0/Linux-x86_64/bin:${LCG_contrib}/ninja/1.7.1/x86_64-slc6:${LCG_release_area}/Python/2.7.13-597a5/${BINARY_TAG}/bin:${PATH}
   - export PATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/scripts:${PATH}
   - export PYTHONPATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/python:${PYTHONPATH}
   - export CMAKE_PREFIX_PATH=${LCG_release_area}:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2017/vtune_amplifier_xe

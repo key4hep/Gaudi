@@ -63,6 +63,8 @@ def formatMeasurementText(txt, escape=False, preformat=True):
     '''
     from xml.sax.saxutils import escape as escape_xml
     from codecs import encode
+    if hasattr(txt, 'decode'):
+        txt = txt.decode(errors='ignore')
     txt = encode(txt, 'utf-8', 'xmlcharrefreplace')
     if escape:
         txt = escape_xml(txt)
