@@ -65,12 +65,6 @@ static const __ulonglong ULONGLONG_MAX = {0xFFFFFFFF, 0xFFFFFFFF};
 static const __ulonglong ULONGLONG_MIN = {0x00000000, 0x00000000};
 #endif // linux
 
-#ifdef _WIN32
-#define TEMPLATE_SPECIALIZATION template <>
-#elif defined( __linux ) || defined( __APPLE__ )
-#define TEMPLATE_SPECIALIZATION
-#endif
-
 // ---------------------------------- Symbol visibility macros (begin)
 // Enabled on in Gaudi v21 mode
 #if !defined( GAUDI_V20_COMPAT ) || defined( G21_HIDE_SYMBOLS )
