@@ -182,11 +182,11 @@ m_tobjs: 5
  - 0x22059a0 -> id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x22059a0 TProfile
 [m
 THistSvc            DEBUG THistSvc::finalize[m
-THistSvc            DEBUG finalize: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x2230a00 TTree[m
 THistSvc            DEBUG finalize: id: /read1/xxx/1Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x21cf200 TH1F[m
 THistSvc            DEBUG finalize: id: /read2/2Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x21ec5e0 TH2F[m
 THistSvc            DEBUG finalize: id: /read2/3Dgauss t: 0 s: 0 M: 0 m: 0 o: 0x21eb0e0 TH3F[m
 THistSvc            DEBUG finalize: id: /read2/profile t: 0 s: 0 M: 0 m: 0 o: 0x22059a0 TProfile[m
+THistSvc            DEBUG finalize: id: /read2/trees/stuff/treename t: 0 s: 0 M: 0 m: 0 o: 0x2230a00 TTree[m
 THistSvc            DEBUG updateFiles()[m
 THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT [m
 THistSvc            DEBUG THistSvc::writeObjectsToFile()::List of Files connected in ROOT: "tuple2.rt"[m
