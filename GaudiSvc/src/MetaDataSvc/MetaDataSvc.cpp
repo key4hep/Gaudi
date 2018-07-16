@@ -60,6 +60,25 @@ std::map<std::string, std::string> MetaDataSvc::getMetaDataMap() const { return 
 
 StatusCode MetaDataSvc::collectData()
 {
+
+  // save options for all clients
+  {
+    auto joSvc = service<IJobOptionsSvc>( "JobOptionsSvc" );
+    if ( !joSvc.isValid() ) return StatusCode::FAILURE;
+    for ( const auto c : joSvc->getClients() )
+    {
+      // get options for this client
+      const auto props = joSvc->getProperties(c);
+      if ( props )
+      {
+        for ( const auto prop : *props )
+        {
+          m_metadata[ c + "." + prop->name() ] = prop->toString();
+        }
+      }
+    }
+  }
+
   for ( const auto* name : {"ApplicationMgr", "MessageSvc", "NTupleSvc"} ) {
     auto svc = service<IProperty>( name );
     if ( !svc.isValid() ) continue;
@@ -96,24 +115,6 @@ StatusCode MetaDataSvc::collectData()
     if ( !joSvc.isValid() ) return StatusCode::FAILURE;
     for ( const auto* prop : joSvc->getProperties() ) {
       m_metadata["JobOptionsSvc." + prop->name()] = prop->toString();
-    }
-  }
-
-  // save options for all clients
-  {
-    auto joSvc = service<IJobOptionsSvc>( "JobOptionsSvc" );
-    if ( !joSvc.isValid() ) return StatusCode::FAILURE;
-    for ( const auto c : joSvc->getClients() )
-    {
-      // get options for this client
-      const auto props = joSvc->getProperties(c);
-      if ( props )
-      {
-        for ( const auto prop : *props )
-        {
-          m_metadata[ c + "." + prop->name() ] = prop->toString();
-        }
-      }
     }
   }
 
