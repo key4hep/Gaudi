@@ -24,9 +24,7 @@ class IRegistry;
 class GAUDI_API Converter : public implements<IConverter>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IConverter*, ISvcLocator*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IConverter*( ISvcLocator* )>;
 
   /// Initialize the converter
   StatusCode initialize() override;

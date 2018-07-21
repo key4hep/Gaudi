@@ -142,20 +142,20 @@ IInterface* Gaudi::createInstance( const std::string& name, const std::string& f
 //------------------------------------------------------------------------------
 {
 
-  IInterface* ii = ObjFactory::create( factname, nullptr );
+  IInterface* ii = ObjFactory::create( factname, nullptr ).release();
   if ( ii ) return ii;
-  IService* is = Service::Factory::create( factname, name, nullptr );
+  IService* is = Service::Factory::create( factname, name, nullptr ).release();
   if ( is ) return is;
-  IAlgorithm* ia = Algorithm::Factory::create( factname, name, nullptr );
+  IAlgorithm* ia = Algorithm::Factory::create( factname, name, nullptr ).release();
   if ( ia ) return ia;
 
   void* libHandle = nullptr;
   if ( System::loadDynamicLib( dllname, &libHandle ) ) {
-    ii = ObjFactory::create( factname, nullptr );
+    ii = ObjFactory::create( factname, nullptr ).release();
     if ( ii ) return ii;
-    is = Service::Factory::create( factname, name, nullptr );
+    is = Service::Factory::create( factname, name, nullptr ).release();
     if ( is ) return is;
-    ia = Algorithm::Factory::create( factname, name, nullptr );
+    ia = Algorithm::Factory::create( factname, name, nullptr ).release();
     if ( ia ) return ia;
   } else {
     // DLL library not loaded. Try in the local module

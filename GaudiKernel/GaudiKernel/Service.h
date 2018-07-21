@@ -36,9 +36,8 @@ class ServiceManager;
 class GAUDI_API Service : public PropertyHolder<CommonMessaging<implements<IService, IProperty, IStateful>>>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IService*, const std::string&, ISvcLocator*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IService*( const std::string&, ISvcLocator* )>;
+
   friend class ServiceManager;
 
   /** Retrieve name of the service               */

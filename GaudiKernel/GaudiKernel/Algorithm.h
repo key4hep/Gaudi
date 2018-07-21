@@ -80,9 +80,8 @@ class GAUDI_API Algorithm
           PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IAlgorithm*, const std::string&, ISvcLocator*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IAlgorithm*( const std::string&, ISvcLocator* )>;
+
   friend AlgorithmManager;
 
   /** Constructor

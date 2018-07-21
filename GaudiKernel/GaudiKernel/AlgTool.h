@@ -49,9 +49,7 @@ class GAUDI_API AlgTool
           PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IAlgTool*, const std::string&, const std::string&, const IInterface*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;
 
   /// Query for a given interface
   StatusCode queryInterface( const InterfaceID& riid, void** ppvUnknown ) override;

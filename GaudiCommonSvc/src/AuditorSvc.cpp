@@ -24,7 +24,7 @@ SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, const std::string& na
   // locate the auditor factory, instantiate a new auditor, initialize it
   StatusCode                   sc;
   Gaudi::Utils::TypeNameString item( name );
-  SmartIF<IAuditor>            aud{Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() )};
+  SmartIF<IAuditor> aud{Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ).release()};
   if ( aud ) {
     if ( m_targetState >= Gaudi::StateMachine::INITIALIZED ) {
       sc = aud->sysInitialize();

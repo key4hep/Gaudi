@@ -420,7 +420,7 @@ public:
         if ( !status.isSuccess() ) {
           return status;
         } else if ( m_selectorName != "" ) {
-          SmartIF<ISelectStatement> stmt( ObjFactory::create( m_selectorName, serviceLocator() ) );
+          SmartIF<ISelectStatement> stmt( ObjFactory::create( m_selectorName, serviceLocator() ).release() );
           if ( stmt ) {
             if ( !m_criteria.empty() ) stmt->setCriteria( m_criteria );
             nt->attachSelector( stmt );

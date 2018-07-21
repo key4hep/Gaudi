@@ -67,8 +67,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "DsoUtils.h"
-
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
@@ -109,6 +107,13 @@ namespace
     Unknown
   };
 
+  const std::map<std::string, component_t> allowedFactories{
+      {typeid( Algorithm::Factory::FactoryType ).name(), component_t::Algorithm},
+      {typeid( Service::Factory::FactoryType ).name(), component_t::Service},
+      {typeid( AlgTool::Factory::FactoryType ).name(), component_t::AlgTool},
+      {typeid( Auditor::Factory::FactoryType ).name(), component_t::Auditor},
+  };
+
   const std::string& toString( component_t type )
   {
     static const std::array<std::string, 11> names = {"Module",    "DefaultName", "Algorithm",      "AlgTool",
@@ -138,6 +143,17 @@ namespace
     return std::type_index{typeid( T )};
   }
   //-----------------------------------------------------------------------------
+  inline std::string libNativeName( const std::string& libName )
+  {
+#if defined( _WIN32 )
+    return libName + ".dll";
+#elif defined( __linux ) || defined( __APPLE__ )
+    return "lib" + libName + ".so";
+#else
+    // variant of the GIGO design pattern
+    return libName;
+#endif
+  }
 }
 
 class configGenerator
@@ -454,7 +470,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
   //--- Iterate over component factories --------------------------------------
   using Gaudi::PluginService::Details::Registry;
-  Registry& registry = Registry::instance();
+  const Registry& registry = Registry::instance();
 
   auto bkgNames = registry.loadedFactoryNames();
 
@@ -484,6 +500,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       continue;
     }
 
+    const auto& factories = registry.factories();
     for ( const auto& factoryName : registry.loadedFactoryNames() ) {
       if ( bkgNames.find( factoryName ) != bkgNames.end() ) {
         if ( Gaudi::PluginService::Details::logger().level() <= 1 ) {
@@ -491,80 +508,63 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         }
         continue;
       }
-
-      const Registry::FactoryInfo info  = registry.getInfo( factoryName );
-      const std::string&          rtype = info.rtype;
+      auto entry = factories.find( factoryName );
+      if ( entry == end( factories ) ) {
+        LOG_ERROR << "inconsistency in component factories list: I cannot find anymore " << factoryName;
+        continue;
+      }
+      const auto& info = entry->second;
+      if ( !info.is_set() ) continue;
 
       // do not generate configurables for the Reflex-compatible aliases
-      if ( info.properties.find( "ReflexName" ) != info.properties.end() ) continue;
+      if ( !info.getprop( "ReflexName" ).empty() ) continue;
 
       // Atlas contributed code (patch #1247)
       // Skip the generation of configurables if the component does not come
       // from the same library we are processing (i.e. we found a symbol that
       // is coming from a library loaded by the linker).
-      if ( !DsoUtils::inDso( info.ptr, DsoUtils::libNativeName( iLib ) ) ) {
+      if ( libNativeName( iLib ) != info.library ) {
         LOG_WARNING << "library [" << iLib << "] exposes factory [" << factoryName << "] which is declared in ["
-                    << DsoUtils::dsoName( info.ptr ) << "] !!";
+                    << info.library << "] !!";
         continue;
       }
 
       component_t type = component_t::Unknown;
-      if ( factoryName == "ApplicationMgr" )
-        type = component_t::ApplicationMgr;
-      else if ( rtype == typeid( IInterface* ).name() )
-        type = component_t::IInterface;
-      else if ( rtype == typeid( IAlgorithm* ).name() )
-        type = component_t::Algorithm;
-      else if ( rtype == typeid( IService* ).name() )
-        type = component_t::Service;
-      else if ( rtype == typeid( IAlgTool* ).name() )
-        type = component_t::AlgTool;
-      else if ( rtype == typeid( IAuditor* ).name() )
-        type = component_t::Auditor;
-      else if ( rtype == typeid( IConverter* ).name() )
-        type = component_t::Converter;
-      else if ( rtype == typeid( DataObject* ).name() )
-        type = component_t::DataObject;
+      {
+        const auto ft = allowedFactories.find( info.factory.type().name() );
+        if ( ft != allowedFactories.end() ) {
+          type = ft->second;
+        } else if ( factoryName == "ApplicationMgr" ) {
+          type = component_t::ApplicationMgr;
+        } else
+          continue;
+      }
+
       // handle possible problems with templated components
       std::string name = boost::trim_copy( factoryName );
 
-      if ( type == component_t::IInterface ) {
-        /// not enough information...
-        /// skip it
-        continue;
-      }
-
-      if ( type == component_t::Converter || type == component_t::DataObject ) {
-        /// no Properties, so don't bother create Configurables...
-        continue;
-      }
-
-      if ( type == component_t::Unknown ) {
-        LOG_WARNING << "Unknown (return) type [" << System::typeinfoName( rtype.c_str() ) << "] !!"
-                    << " Component [" << factoryName << "] is skipped !";
-        continue;
-      }
-
-      LOG_INFO << " - component: " << info.className << " ("
-               << ( info.className != name ? ( name + ": " ) : std::string() ) << type << ")";
+      const auto className = info.getprop( "ClassName" );
+      LOG_INFO << " - component: " << className << " (" << ( className != name ? ( name + ": " ) : std::string() )
+               << type << ")";
 
       string             cname = "DefaultName";
       SmartIF<IProperty> prop;
       try {
         switch ( type ) {
         case component_t::Algorithm:
-          prop = SmartIF<IAlgorithm>( Algorithm::Factory::create( factoryName, cname, svcLoc ) );
+          prop = SmartIF<IAlgorithm>( Algorithm::Factory::create( factoryName, cname, svcLoc ).release() );
           break;
         case component_t::Service:
-          prop = SmartIF<IService>( Service::Factory::create( factoryName, cname, svcLoc ) );
+          prop = SmartIF<IService>( Service::Factory::create( factoryName, cname, svcLoc ).release() );
           break;
         case component_t::AlgTool:
-          prop = SmartIF<IAlgTool>( AlgTool::Factory::create( factoryName, cname, toString( type ), dummySvc ) );
+          prop =
+              SmartIF<IAlgTool>( AlgTool::Factory::create( factoryName, cname, toString( type ), dummySvc ).release() );
           // FIXME: AlgTool base class increase artificially by 1 the refcount.
           prop->release();
           break;
         case component_t::Auditor:
-          prop = SmartIF<IAuditor>( Auditor::Factory::create( factoryName, cname, svcLoc ) );
+          prop = SmartIF<IAuditor>( Auditor::Factory::create( factoryName, cname, svcLoc ).release() );
           break;
         case component_t::ApplicationMgr:
           prop = SmartIF<ISvcLocator>( svcLoc );
@@ -589,7 +589,6 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         prop.reset();
       } else {
         LOG_ERROR << "could not cast IInterface* object to an IProperty* !";
-        LOG_ERROR << "return type from PluginSvc is [" << rtype << "]...";
         LOG_ERROR << "NO Configurable will be generated for [" << name << "] !";
         allGood = false;
       }

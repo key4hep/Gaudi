@@ -6,5 +6,5 @@
   <text>../../options/AtlasMCRecoScenario.py</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-<argument name="timeout"><integer>120</integer></argument>
+<argument name="timeout"><integer>600</integer></argument>
 </extension>

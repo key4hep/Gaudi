@@ -271,10 +271,10 @@ StatusCode ConversionSvc::finalize()
 /// Create new Converter using factory
 IConverter* ConversionSvc::createConverter( long typ, const CLID& clid, const ICnvFactory* /*fac*/ )
 {
-  IConverter* pConverter = Converter::Factory::create( ConverterID( typ, clid ), serviceLocator().get() );
+  IConverter* pConverter = Converter::Factory::create( ConverterID( typ, clid ), serviceLocator().get() ).release();
   if ( !pConverter ) {
     typ        = ( typ < 0xFF ) ? typ : typ & 0xFFFFFF00;
-    pConverter = Converter::Factory::create( ConverterID( typ, clid ), serviceLocator().get() );
+    pConverter = Converter::Factory::create( ConverterID( typ, clid ), serviceLocator().get() ).release();
   }
   return pConverter;
 }

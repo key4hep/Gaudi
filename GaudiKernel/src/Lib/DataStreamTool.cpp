@@ -110,7 +110,7 @@ StatusCode DataStreamTool::initializeStream( EventSelectorDataStream* s )
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector( const std::string& nam, const std::string& typ, IEvtSelector*& sel )
 {
-  auto isvc = make_SmartIF( Service::Factory::create( typ, nam, serviceLocator() ) );
+  auto isvc = make_SmartIF( Service::Factory::create( typ, nam, serviceLocator() ).release() );
   if ( isvc ) {
     auto isel = isvc.as<IEvtSelector>();
     if ( isel ) {

@@ -128,7 +128,7 @@ StatusCode EventCollectionSelector::connectStatement( const std::string& typ, co
   std::string seltyp = typ;
   if ( !seltyp.empty() || !crit.empty() ) {
     if ( !crit.empty() && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
-    SmartIF<ISelectStatement> stmt( ObjFactory::create( seltyp, serviceLocator() ) );
+    SmartIF<ISelectStatement> stmt( ObjFactory::create( seltyp, serviceLocator() ).release() );
     if ( stmt ) {
       if ( !crit.empty() ) stmt->setCriteria( crit );
       tuple->attachSelector( stmt ).ignore();
