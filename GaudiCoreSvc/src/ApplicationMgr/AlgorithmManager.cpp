@@ -60,7 +60,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
       actualalgtype = typeAlias->second;
     }
   }
-  algorithm = Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() );
+  algorithm = Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() ).release();
   if ( !algorithm ) {
     this->error() << "Algorithm of type " << actualalgtype << " is unknown (No factory available)." << endmsg;
 #ifndef _WIN32

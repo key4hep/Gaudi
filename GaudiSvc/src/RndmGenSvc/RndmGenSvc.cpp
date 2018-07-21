@@ -100,7 +100,7 @@ IRndmEngine* RndmGenSvc::engine() { return m_engine.get(); }
 /// Retrieve a valid generator from the service.
 StatusCode RndmGenSvc::generator( const IRndmGen::Param& par, IRndmGen*& refpGen )
 {
-  auto pGen = SmartIF<IRndmGen>( ObjFactory::create( par.type(), m_engine.get() ) );
+  auto pGen = SmartIF<IRndmGen>( ObjFactory::create( par.type(), m_engine.get() ).release() );
   if ( !pGen ) {
     refpGen = nullptr;
     return StatusCode::FAILURE;

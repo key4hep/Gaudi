@@ -82,7 +82,7 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
   auto ip = type.find( "__" );
   if ( ip != std::string::npos ) type.erase( ip, type.length() );
 
-  IService* service = Service::Factory::create( type, name, this );
+  IService* service = Service::Factory::create( type, name, this ).release();
   if ( !service ) {
     fatal() << "No Service factory for " << type << " available." << endmsg;
     return no_service;

@@ -25,11 +25,7 @@ public:
   StatusCode initialize() override;
   StatusCode finalize() override;
 
-protected:
   /// Standard destructor
   ~MyAudTool() override;
-
-private:
-  /// Properties
 };
 #endif // GAUDIEXANMPLES_MYAUDTOOL_H

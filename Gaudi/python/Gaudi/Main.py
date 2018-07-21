@@ -73,7 +73,8 @@ class BootstrapHelper(object):
             return self.lib.py_helper_printAlgsSequences(self.ptr)
 
     def __init__(self):
-        from ctypes import PyDLL, util, c_void_p, c_bool, c_char_p, c_int
+        from ctypes import (PyDLL, util, c_void_p, c_bool, c_char_p, c_int,
+                            RTLD_GLOBAL)
         # Helper class to avoid void* to int conversion
         # (see http://stackoverflow.com/questions/17840144)
 
@@ -87,7 +88,7 @@ class BootstrapHelper(object):
 
         # FIXME: note that we need PyDLL instead of CDLL if the calls to
         #        Python functions are not protected with the GIL.
-        self.lib = gkl = PyDLL(libname)
+        self.lib = gkl = PyDLL(libname, mode=RTLD_GLOBAL)
 
         functions = [('createApplicationMgr', IInterface_p, []),
                      ('getService', IInterface_p, [IInterface_p, c_char_p]),

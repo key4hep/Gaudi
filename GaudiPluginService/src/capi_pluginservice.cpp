@@ -1,10 +1,14 @@
 #include "capi_pluginservice.h"
+
+#define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
+
 #include <algorithm>
 #include <vector>
 
 #include <iostream>
-using namespace Gaudi::PluginService::Details;
+
+using namespace Gaudi::PluginService::v2::Details;
 
 cgaudi_pluginsvc_t cgaudi_pluginsvc_instance()
 {
@@ -34,20 +38,18 @@ const char* cgaudi_factory_get_library( cgaudi_factory_t self )
 
 const char* cgaudi_factory_get_type( cgaudi_factory_t self )
 {
-  Registry& reg = Registry::instance();
-  return reg.getInfo( self.id ).type.c_str();
-}
-
-const char* cgaudi_factory_get_rtype( cgaudi_factory_t self )
-{
-  Registry& reg = Registry::instance();
-  return reg.getInfo( self.id ).rtype.c_str();
+  Registry&          reg = Registry::instance();
+  static std::string cache;
+  cache = demangle( reg.getInfo( self.id ).factory.type() );
+  return cache.c_str();
 }
 
 const char* cgaudi_factory_get_classname( cgaudi_factory_t self )
 {
-  Registry& reg = Registry::instance();
-  return reg.getInfo( self.id ).className.c_str();
+  Registry&          reg = Registry::instance();
+  static std::string cache;
+  cache = reg.getInfo( self.id ).getprop( "ClassName" );
+  return cache.c_str();
 }
 
 int cgaudi_factory_get_property_size( cgaudi_factory_t self )

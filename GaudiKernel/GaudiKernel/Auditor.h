@@ -35,9 +35,7 @@ class Algorithm;
 class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor, IProperty>>>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IAuditor*, const std::string&, ISvcLocator*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IAuditor*( const std::string&, ISvcLocator* )>;
 
   /** Constructor
       @param name    The algorithm object's name

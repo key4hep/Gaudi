@@ -66,9 +66,6 @@ CGAUDI_API
 const char* cgaudi_factory_get_type( cgaudi_factory_t self );
 
 CGAUDI_API
-const char* cgaudi_factory_get_rtype( cgaudi_factory_t self );
-
-CGAUDI_API
 const char* cgaudi_factory_get_classname( cgaudi_factory_t self );
 
 CGAUDI_API

@@ -115,14 +115,14 @@ void MultiFileCatalog::addCatalog( CSTR con )
       string              url     = con.substr( id0 + 1 );
       IInterface*         cat     = nullptr;
       if ( strncasecmp( "xml", typ.c_str(), 3 ) == 0 ) {
-        cat = IFileCatalog::Factory::create( xml_typ, url, msgSvc().get() );
+        cat = IFileCatalog::Factory::create( xml_typ, url, msgSvc().get() ).release();
       } else {
         using Gaudi::PluginService::Details::Registry;
         Registry& registry = Registry::instance();
-        if ( registry.getInfo( typ ).type == typeid( Service::Factory::FuncType ).name() ) {
-          cat = Service::Factory::create( typ, url, serviceLocator().get() );
-        } else if ( registry.getInfo( typ ).type == typeid( IFileCatalog::Factory::FuncType ).name() ) {
-          cat = IFileCatalog::Factory::create( typ, url, msgSvc().get() );
+        if ( registry.getInfo( typ ).factory.type() == typeid( Service::Factory::FactoryType ) ) {
+          cat = Service::Factory::create( typ, url, serviceLocator().get() ).release();
+        } else if ( registry.getInfo( typ ).factory.type() == typeid( IFileCatalog::Factory::FactoryType ) ) {
+          cat = IFileCatalog::Factory::create( typ, url, msgSvc().get() ).release();
         }
       }
       if ( cat ) {

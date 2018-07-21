@@ -417,7 +417,7 @@ namespace
     {
       // remove previous content
       if ( m_tool ) remove( m_tools, m_tool.get() );
-      m_tool.reset( AlgTool::Factory::create( tooltype, tooltype, fullname, parent ) );
+      m_tool = AlgTool::Factory::create( tooltype, tooltype, fullname, parent );
       // set new content
       if ( m_tool ) m_tools.push_back( m_tool.get() );
     }
