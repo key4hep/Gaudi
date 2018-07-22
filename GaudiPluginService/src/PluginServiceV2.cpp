@@ -39,7 +39,7 @@ namespace fs = std::filesystem;
 namespace fs = std::experimental::filesystem;
 #endif
 
-#if __GNUC__ >= 7
+#if __cplusplus >= 201703
 #include <string_view>
 #else
 #include <experimental/string_view>
@@ -58,19 +58,6 @@ namespace
 #define SINGLETON_LOCK std::lock_guard<std::mutex> _guard(::registrySingletonMutex );
 
 #include <algorithm>
-
-namespace
-{
-  inline std::string_view trim( std::string_view s )
-  {
-    const auto isspace = []( const char c ) -> bool { return std::isspace( c ); };
-
-    const auto p0 = std::find_if_not( begin( s ), end( s ), isspace ) - begin( s );
-    const auto p1 = std::find_if_not( rbegin( s ), rend( s ), isspace ) - rbegin( s );
-
-    return s.substr( p0, s.size() - p0 - p1 );
-  }
-}
 
 namespace
 {
@@ -348,7 +335,7 @@ namespace Gaudi
           if ( pos )
             ++pos;
           else
-            pos = info.dli_fname;
+            return info.dli_fname;
           return pos;
 #else
           return "";
