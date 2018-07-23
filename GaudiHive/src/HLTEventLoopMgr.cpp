@@ -18,27 +18,36 @@
 #include "EventSlot.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "HistogramAgent.h"
-#include "PrecedenceSvc.h"
 #include "RetCodeGuard.h"
 
 #include <algorithm>
 #include <chrono>
 #include <condition_variable>
+#include <fstream>
 #include <map>
 #include <sstream>
 
 #include "boost/algorithm/string.hpp"
+#include "boost/optional.hpp"
 #include "boost/thread.hpp"
 #include "boost/tokenizer.hpp"
 #include "tbb/task_scheduler_init.h"
 
-#include "GaudiHive/HLTEventLoopMgr.h"
+#include "HLTEventLoopMgr.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( HLTEventLoopMgr )
 
 namespace
 {
+  struct DataObjIDDotRepr {
+    const DataObjID&     parent;
+    friend std::ostream& operator<<( std::ostream& os, const DataObjIDDotRepr& repr )
+    {
+      return os << '\"' << repr.parent.fullKey() << '\"';
+    }
+  };
+
   struct DataObjIDSorter {
     bool operator()( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); }
   };
@@ -54,6 +63,82 @@ namespace
     return v;
   }
 }
+
+struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
+
+  std::vector<Algorithm*>&      m_algorithms;
+  std::unique_ptr<EventContext> m_evtCtx;
+  IAlgExecStateSvc*             m_aess;
+  SmartIF<ISvcLocator>          m_serviceLocator;
+  const HLTEventLoopMgr*        m_parent;
+
+  HLTExecutionTask( std::vector<Algorithm*>& algorithms, std::unique_ptr<EventContext> ctx, ISvcLocator* svcLocator,
+                    IAlgExecStateSvc* aem, const HLTEventLoopMgr* parent )
+      : m_algorithms( algorithms )
+      , m_evtCtx( std::move( ctx ) )
+      , m_aess( aem )
+      , m_serviceLocator( svcLocator )
+      , m_parent( parent )
+  {
+  }
+
+  MsgStream log()
+  {
+    SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
+    return MsgStream( messageSvc, "HLTExecutionTask" );
+  }
+
+  tbb::task* execute() override
+  {
+    bool eventfailed = false;
+    Gaudi::Hive::setCurrentContext( m_evtCtx.get() );
+
+    const SmartIF<IProperty> appmgr( m_serviceLocator );
+
+    for ( Algorithm* ialg : m_algorithms ) {
+
+      // select the appropriate store
+      ialg->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
+
+      StatusCode sc( StatusCode::FAILURE );
+      try {
+        RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
+        m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Executing );
+        sc = ialg->sysExecute( *m_evtCtx );
+        if ( UNLIKELY( !sc.isSuccess() ) ) {
+          log() << MSG::WARNING << "Execution of algorithm " << ialg->name() << " failed" << endmsg;
+          eventfailed = true;
+        }
+        rcg.ignore(); // disarm the guard
+      } catch ( const GaudiException& Exception ) {
+        log() << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by "
+              << ialg->name() << endmsg << MSG::ERROR << Exception << endmsg;
+        eventfailed = true;
+      } catch ( const std::exception& Exception ) {
+        log() << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << ialg->name() << endmsg
+              << MSG::ERROR << Exception.what() << endmsg;
+        eventfailed = true;
+      } catch ( ... ) {
+        log() << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ialg->name() << endmsg;
+        eventfailed = true;
+      }
+
+      // DP it is important to propagate the failure of an event.
+      // We need to stop execution when this happens so that execute run can
+      // then receive the FAILURE
+      m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Done, sc );
+      m_aess->updateEventStatus( eventfailed, *m_evtCtx );
+
+      // in case the algorithm was a filter and the filter did not pass, stop here
+      if ( !ialg->filterPassed() ) break;
+    }
+    // update scheduler state
+    m_parent->promoteToExecuted( std::move( m_evtCtx ) );
+    Gaudi::Hive::setCurrentContextEvt( -1 );
+
+    return nullptr;
+  }
+};
 
 StatusCode HLTEventLoopMgr::initialize()
 {
@@ -85,7 +170,7 @@ StatusCode HLTEventLoopMgr::initialize()
   if ( m_evtsel != "NONE" || m_evtsel.length() == 0 ) {
     m_evtSelector = serviceLocator()->service<IEvtSelector>( "EventSelector" );
   } else {
-    m_evtSelector = 0;
+    m_evtSelector = nullptr;
     warning() << "Unable to locate service \"EventSelector\" " << endmsg;
     warning() << "No events will be processed from external input." << endmsg;
   }
@@ -109,18 +194,6 @@ StatusCode HLTEventLoopMgr::initialize()
     return StatusCode::FAILURE;
   }
 
-  // Get the precedence service
-  m_precSvc = serviceLocator()->service<IPrecedenceSvc>( "PrecedenceSvc" );
-  if ( !m_precSvc ) {
-    fatal() << "Error retrieving PrecedenceSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  const PrecedenceSvc* precSvc = dynamic_cast<const PrecedenceSvc*>( m_precSvc );
-  if ( !precSvc ) {
-    fatal() << "Unable to dcast PrecedenceSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
   m_algExecStateSvc = serviceLocator()->service<IAlgExecStateSvc>( "AlgExecStateSvc" );
   if ( !m_algExecStateSvc ) {
     fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
@@ -134,23 +207,31 @@ StatusCode HLTEventLoopMgr::initialize()
     return StatusCode::FAILURE;
   }
   for ( auto alg : algResourcePool->getFlatAlgList() ) {
-    m_algos.push_back( alg );
+    Algorithm* algoPtr = dynamic_cast<Algorithm*>( alg );
+    if ( !algoPtr ) {
+      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+    }
+    m_algos.push_back( algoPtr );
   }
-  const unsigned int algsNumber = m_algos.size();
-
   /* Dependencies
    1) Look for handles in algo, if none
    2) Assume none are required
   */
   DataObjIDColl globalInp, globalOutp;
 
-  // figure out all outputs
-  std::map<DataObjID, IAlgorithm*> producers;
-  for ( IAlgorithm* ialgoPtr : m_algos ) {
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
-    if ( !algoPtr ) {
-      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+  boost::optional<std::ofstream> dot{boost::in_place_init_if, !m_dotfile.empty(), m_dotfile.value()};
+
+  if ( dot ) {
+    *dot << "digraph G {\n";
+    for ( auto* a : m_algos ) {
+      bool is_consumer = a->outputDataObjs().empty();
+      *dot << '\"' << a->name() << "\" [shape=box" << ( is_consumer ? ",style=filled" : "" ) << "];\n";
     }
+  }
+
+  // figure out all outputs
+  std::map<DataObjID, Algorithm*> producers;
+  for ( Algorithm* algoPtr : m_algos ) {
     for ( auto id : algoPtr->outputDataObjs() ) {
       auto r        = globalOutp.insert( id );
       producers[id] = algoPtr;
@@ -164,11 +245,11 @@ StatusCode HLTEventLoopMgr::initialize()
 
   // Building and printing Data Dependencies
   std::vector<DataObjIDColl> algosDependencies;
-  std::map<const IAlgorithm*, unsigned int> algo2Index;
+  algosDependencies.reserve( m_algos.size() ); // reserve so that pointers into the vector do not get invalidated...
+  std::map<const Algorithm*, DataObjIDColl*> algo2Deps;
   info() << "Data Dependencies for Algorithms:";
-  int n = 0;
-  for ( IAlgorithm* ialgoPtr : m_algos ) {
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
+
+  for ( Algorithm* algoPtr : m_algos ) {
     info() << "\n  " << algoPtr->name();
 
     DataObjIDColl algoDependencies;
@@ -191,6 +272,7 @@ StatusCode HLTEventLoopMgr::initialize()
           }
         }
         algoDependencies.insert( id );
+        if ( dot ) *dot << DataObjIDDotRepr{id} << " -> \"" << algoPtr->name() << "\";\n";
         globalInp.insert( id );
       }
       for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->outputDataObjs() ) ) {
@@ -199,30 +281,34 @@ StatusCode HLTEventLoopMgr::initialize()
           error() << " in Alg " << algoPtr->name() << " alternatives are NOT allowed for outputs! id: " << *id
                   << endmsg;
         }
+        if ( dot ) *dot << '\"' << algoPtr->name() << "\" -> " << DataObjIDDotRepr{*id} << ";\n";
       }
     } else {
       info() << "\n      none";
     }
     algosDependencies.emplace_back( algoDependencies );
-    algo2Index[ialgoPtr] = n;
-    n++;
+    algo2Deps[algoPtr] = &algosDependencies.back();
+  }
+  if ( dot ) {
+    for ( const auto& t : globalOutp ) {
+      if ( globalInp.find( t ) == globalInp.end() ) *dot << DataObjIDDotRepr{t} << " [style=filled];\n";
+    }
+    *dot << "}\n";
   }
   info() << endmsg;
 
   // Check if we have unmet global input dependencies
   DataObjIDColl unmetDep;
   for ( auto o : globalInp ) {
-    if ( globalOutp.find( o ) == globalOutp.end() ) {
-      unmetDep.insert( o );
-    }
+    if ( globalOutp.find( o ) == globalOutp.end() ) unmetDep.insert( o );
   }
   if ( unmetDep.size() > 0 ) {
     std::ostringstream ost;
     for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
       ost << "\n   o " << *o << "    required by Algorithm: ";
-      for ( size_t i = 0; i < algosDependencies.size(); ++i ) {
-        if ( algosDependencies[i].find( *o ) != algosDependencies[i].end() ) {
-          ost << "\n       * " << m_algname_vect[i];
+      for ( const auto& i : algo2Deps ) {
+        if ( i.second->find( *o ) != i.second->end() ) {
+          ost << "\n       * " << i.first->name();
         }
       }
     }
@@ -232,44 +318,30 @@ StatusCode HLTEventLoopMgr::initialize()
     info() << "No unmet INPUT data dependencies were found" << endmsg;
   }
 
-  // Deal with Event Slots
-  auto messageSvc = serviceLocator()->service<IMessageSvc>( "MessageSvc" );
-  m_eventSlots.assign( m_whiteboard->getNumberOfStores(),
-                       EventSlot( algsNumber, precSvc->getRules()->getControlFlowNodeCounter(), messageSvc ) );
-
   // Clearly inform about the level of concurrency
   info() << "Concurrency level information:" << endmsg;
   info() << " o Number of events slots: " << m_whiteboard->getNumberOfStores() << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
   // rework the flat algo list to respect data dependencies
-  auto start   = m_algos.begin();
-  auto end     = m_algos.end();
-  auto current = std::partition( start, end, [&algosDependencies, &algo2Index]( const IAlgorithm* algo ) {
-    return algosDependencies[algo2Index[algo]].empty();
-  } );
+  auto start = m_algos.begin();
+  auto end   = m_algos.end();
+  auto current =
+      std::partition( start, end, [&algo2Deps]( const Algorithm* algo ) { return algo2Deps[algo]->empty(); } );
 
   // Repeatedly put in front algos for which input are already fullfilled
   while ( current != end ) {
-    current = std::partition(
-        current, end, [start, current, &producers, &algosDependencies, &algo2Index]( const IAlgorithm* algo ) {
-          return std::none_of( algosDependencies[algo2Index[algo]].begin(), algosDependencies[algo2Index[algo]].end(),
-                               [start, current, &producers]( const DataObjID& id ) {
-                                 return std::find( start, current, producers[id] ) == current;
-                               } );
-        } );
+    current = std::partition( current, end, [start, current, &producers, &algo2Deps]( const Algorithm* algo ) {
+      return std::none_of( algo2Deps[algo]->begin(), algo2Deps[algo]->end(),
+                           [start, current, &producers]( const DataObjID& id ) {
+                             return std::find( start, current, producers[id] ) == current;
+                           } );
+    } );
   }
 
   // Fill the containers to convert algo names to index
   debug() << "Order of algo execution :" << endmsg;
-  m_algname_vect.resize( algsNumber );
-  for ( IAlgorithm* algo : m_algos ) {
-    const std::string& name    = algo->name();
-    auto               index   = precSvc->getRules()->getAlgorithmNode( name )->getAlgoIndex();
-    m_algname_index_map[name]  = index;
-    m_algname_vect.at( index ) = name;
-    debug() << "  . " << algo->name() << endmsg;
-  }
+  for ( const Algorithm* algo : m_algos ) debug() << "  . " << algo->name() << endmsg;
 
   return sc;
 }
@@ -312,11 +384,11 @@ StatusCode HLTEventLoopMgr::finalize()
 StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
 {
   // Leave the interface intact and swallow this C trick.
-  int& createdEvts = *( (int*)createdEvts_IntPtr );
+  int& createdEvts = *reinterpret_cast<int*>( createdEvts_IntPtr );
 
-  std::unique_ptr<EventContext> evtContext = std::make_unique<EventContext>();
+  auto evtContext = std::make_unique<EventContext>();
   evtContext->set( createdEvts, m_whiteboard->allocateStore( createdEvts ) );
-  m_algExecStateSvc->reset( *evtContext.get() );
+  m_algExecStateSvc->reset( *evtContext );
 
   StatusCode sc = m_whiteboard->selectStore( evtContext->slot() );
   if ( sc.isFailure() ) {
@@ -332,22 +404,13 @@ StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
   }
 
   // Now add event to the scheduler
-  verbose() << "Adding event " << evtContext->evt() << ", slot " << evtContext->slot() << " to the scheduler" << endmsg;
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Event " << evtContext->evt() << " submitting in slot " << evtContext->slot() << endmsg;
 
   // Event processing slot forced to be the same as the wb slot
-  const unsigned int thisSlotNum = evtContext->slot();
-  m_eventSlots[thisSlotNum].reset( evtContext.get() );
-  // closure to be executed at the end of event
-  auto promote2ExecutedClosure = [this]( std::unique_ptr<EventContext> evtContext ) {
-    this->promoteToExecuted( std::move( evtContext ) );
-  };
-  // tbb task
-  tbb::task* task = new ( tbb::task::allocate_root() ) HLTExecutionTask(
-      m_algos, std::move( evtContext ), serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
+  tbb::task* task = new ( tbb::task::allocate_root() )
+      HLTExecutionTask( m_algos, std::move( evtContext ), serviceLocator(), m_algExecStateSvc, this );
   tbb::task::enqueue( *task );
-
-  if ( msgLevel( MSG::DEBUG ) )
-    debug() << "All algorithms were submitted on event " << evtContext->evt() << " in slot " << thisSlotNum << endmsg;
 
   createdEvts++;
   return StatusCode::SUCCESS;
@@ -419,9 +482,7 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
     // TODO can we adapt the interface of executeEvent for a nicer solution?
     StatusCode sc = StatusCode::RECOVERABLE;
     sc            = executeEvent( &createdEvts );
-    if ( !sc.isSuccess() ) {
-      return StatusCode::FAILURE;
-    } // else we have an success --> exit loop
+    if ( !sc.isSuccess() ) return StatusCode::FAILURE; // else we have an success --> exit loop
     newEvtAllowed = true;
   } // end main loop on finished events
   auto end_time = Clock::now();
@@ -432,7 +493,7 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
   constexpr double oneOver1024 = 1. / 1024.;
   info() << "---> Loop Finished (skipping 1st evt) - "
          << " WSS " << System::mappedMemory( System::MemoryUnit::kByte ) * oneOver1024 << " total time "
-         << std::chrono::duration_cast<std::chrono::nanoseconds>( end_time - start_time ).count() << endmsg;
+         << std::chrono::duration_cast<std::chrono::milliseconds>( end_time - start_time ).count() << " ms" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -467,7 +528,7 @@ StatusCode HLTEventLoopMgr::declareEventRootAddress()
  * It dumps the state of the scheduler, drains the actions (without executing
  * them) and events in the queues and returns a failure.
 */
-StatusCode HLTEventLoopMgr::eventFailed( EventContext* eventContext )
+StatusCode HLTEventLoopMgr::eventFailed( EventContext* eventContext ) const
 {
   fatal() << "*** Event " << eventContext->evt() << " on slot " << eventContext->slot() << " failed! ***" << endmsg;
   std::ostringstream ost;
@@ -476,15 +537,15 @@ StatusCode HLTEventLoopMgr::eventFailed( EventContext* eventContext )
   return StatusCode::FAILURE;
 }
 
-void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventContext )
+void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventContext ) const
 {
   // Check if the execution failed
   if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success )
     eventFailed( eventContext.get() ).ignore();
   int si = eventContext->slot();
 
-  if ( msgLevel( MSG::DEBUG ) )
-    debug() << "Event " << eventContext->evt() << " executed in slot " << si << "." << endmsg;
+  // if ( msgLevel( MSG::DEBUG ) )
+  //  debug() << "Event " << eventContext->evt() << " executed in slot " << si << "." << endmsg;
 
   // Schedule the cleanup of the event
   if ( m_algExecStateSvc->eventStatus( *eventContext ) == EventStatus::Success ) {
@@ -497,71 +558,9 @@ void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventCont
   debug() << "Clearing slot " << si << " (event " << eventContext->evt() << ") of the whiteboard" << endmsg;
 
   StatusCode sc = m_whiteboard->clearStore( si );
-  if ( !sc.isSuccess() ) {
-    warning() << "Clear of Event data store failed" << endmsg;
-  }
-  m_eventSlots[si].eventContext = nullptr;
-  sc                            = m_whiteboard->freeStore( si );
-  if ( !sc.isSuccess() ) {
-    error() << "Whiteboard slot " << eventContext->slot() << " could not be properly cleared";
-  }
-  m_finishedEvt++;
+  if ( !sc.isSuccess() ) warning() << "Clear of Event data store failed" << endmsg;
+  sc = m_whiteboard->freeStore( si );
+  if ( !sc.isSuccess() ) error() << "Whiteboard slot " << eventContext->slot() << " could not be properly cleared";
+  ++m_finishedEvt;
   m_createEventCond.notify_all();
-}
-
-tbb::task* HLTEventLoopMgr::HLTExecutionTask::execute()
-{
-  bool eventfailed = false;
-  Gaudi::Hive::setCurrentContext( m_evtCtx.get() );
-
-  const SmartIF<IProperty> appmgr( m_serviceLocator );
-
-  for ( IAlgorithm* ialg : m_algorithms ) {
-    Algorithm* this_algo = dynamic_cast<Algorithm*>( ialg );
-    if ( !this_algo ) {
-      throw GaudiException( "Cast to Algorithm failed!", "HLTExecutionTask", StatusCode::FAILURE );
-    }
-
-    // select the appropriate store
-    this_algo->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
-
-    StatusCode sc( StatusCode::FAILURE );
-    try {
-      RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-      m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Executing );
-      sc = ialg->sysExecute( *m_evtCtx );
-      if ( UNLIKELY( !sc.isSuccess() ) ) {
-        log() << MSG::WARNING << "Execution of algorithm " << ialg->name() << " failed" << endmsg;
-        eventfailed = true;
-      }
-      rcg.ignore(); // disarm the guard
-    } catch ( const GaudiException& Exception ) {
-      log() << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ialg->name()
-            << endmsg << MSG::ERROR << Exception << endmsg;
-      eventfailed = true;
-    } catch ( const std::exception& Exception ) {
-      log() << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by " << ialg->name() << endmsg
-            << MSG::ERROR << Exception.what() << endmsg;
-      eventfailed = true;
-    } catch ( ... ) {
-      log() << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by " << ialg->name() << endmsg;
-      eventfailed = true;
-    }
-
-    // DP it is important to propagate the failure of an event.
-    // We need to stop execution when this happens so that execute run can
-    // then receive the FAILURE
-    m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Done, sc );
-    m_aess->updateEventStatus( eventfailed, *m_evtCtx );
-
-    // in case the algorithm was a filter and the filter did not pass, stop here
-    if ( !this_algo->filterPassed() ) {
-      break;
-    }
-  }
-  // update scheduler state
-  m_promote2ExecutedClosure( std::move( m_evtCtx ) );
-  Gaudi::Hive::setCurrentContextEvt( -1 );
-
-  return nullptr;
 }
