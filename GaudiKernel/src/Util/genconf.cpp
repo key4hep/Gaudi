@@ -35,6 +35,7 @@
 #include <boost/log/utility/setup/console.hpp>
 
 #include "GaudiKernel/Bootstrap.h"
+#include "GaudiKernel/DataHandleConfigurable.h"
 #include "GaudiKernel/DataObjectHandleBase.h"
 #include "GaudiKernel/DataObjectHandleProperty.h"
 #include "GaudiKernel/GaudiHandle.h"
@@ -172,6 +173,7 @@ class configGenerator
   /// to import GaudiHandles (ie: if one of the components has a XyzHandle<T>)
   bool m_importGaudiHandles      = false;
   bool m_importDataObjectHandles = false;
+  bool m_importDataHandles       = false;
 
   /// buffer of generated configurables informations for the "Db" file
   /// The "Db" file is holding informations about the generated configurables
@@ -488,6 +490,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     // reset state
     m_importGaudiHandles      = false;
     m_importDataObjectHandles = false;
+    m_importDataHandles       = false;
     m_pyBuf.str( "" );
     m_dbBuf.str( "" );
 
@@ -663,6 +666,10 @@ void configGenerator::genHeader( std::ostream& py, std::ostream& db )
     py << "from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase\n";
   }
 
+  if ( m_importDataHandles ) {
+    py << "from GaudiKernel.DataHandle import DataHandle\n";
+  }
+
   genImport( py, boost::format( "from %1%.Configurable import *" ) );
 
   // db file part
@@ -796,6 +803,11 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     p->toStream( v_str );
     pvalue = v_str.str();
     ptype  = "list";
+
+    // To load the Python configuration module associated with DataHandles
+    if ( ti == typeIndex<Gaudi::experimental::DataHandleConfigurable>() ) {
+      m_importDataHandles = true;
+    }
   }
 }
 

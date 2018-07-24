@@ -10,9 +10,6 @@ namespace Gaudi
   {
     StatusCode parse( DataHandleConfigurable& v, const std::string& s )
     {
-      // FIXME: Aiming for perfect compatibility with old DataObjID-based
-      //        solution for now, customize the repr once this is working
-
       DataObjID  id;
       StatusCode sc = parse( id, s );
 
@@ -27,18 +24,25 @@ namespace Gaudi
   {
     std::ostream& toStream( const DataHandleConfigurable& v, std::ostream& o )
     {
-      // FIXME: Aiming for perfect compatibility with old DataObjID-based
-      //        solution for now, customize the repr once this is working
-
-      return toStream( v.targetKey(), o );
+      o << "DataHandle(path=";
+      toStream( v.targetKey(), o );
+      o << ", whiteboard='" << v.metadata().whiteBoard() << '\'';
+      o << ", access=DataHandle.AccessMode.";
+      switch ( v.metadata().access() ) {
+        case Gaudi::experimental::IDataHandleMetadata::AccessMode::Read:
+          o << "Read";
+          break;
+        case Gaudi::experimental::IDataHandleMetadata::AccessMode::Write:
+          o << "Write";
+          break;
+      }
+      o << ')';
+      return o;
     }
   }
 } //> ns Gaudi
 
 std::ostream& operator<<( std::ostream& str, const DataHandleConfigurable& dhc )
 {
-  // FIXME: Aiming for perfect compatibility with old DataObjID-based solution
-  //        for now, customize the repr once this is working
-  str << dhc.targetKey();
-  return str;
+  return Gaudi::Utils::toStream( dhc, str );
 }
