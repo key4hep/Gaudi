@@ -63,7 +63,7 @@ StatusCode CPUCruncher::initialize()
   int i = 0;
   for ( auto k : m_inpKeys ) {
     DEBUG_MSG << "adding input key " << k << endmsg;
-    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ) );
+    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Reader, this ) );
     declareProperty( "dummy_in_" + std::to_string( i ), *( m_inputHandles.back() ) );
     i++;
   }
@@ -71,7 +71,7 @@ StatusCode CPUCruncher::initialize()
   i = 0;
   for ( auto k : m_outKeys ) {
     DEBUG_MSG << "adding output key " << k << endmsg;
-    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ) );
+    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Writer, this ) );
     declareProperty( "dummy_out_" + std::to_string( i ), *( m_outputHandles.back() ) );
     i++;
   }
@@ -201,7 +201,7 @@ void CPUCruncher::declareRuntimeRequestedOutputs()
 {
   //
   for ( const auto& k : outputKeys() ) {
-    auto outputHandle = new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this );
+    auto outputHandle = new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Writer, this );
     VERBOSE_MSG << "found late-attributed output: " << outputHandle->objKey() << endmsg;
     m_outputHandles.push_back( outputHandle );
     declareProperty( "dummy_out_" + outputHandle->objKey(), *( m_outputHandles.back() ) );
