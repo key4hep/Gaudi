@@ -805,7 +805,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     ptype  = "list";
 
     // To load the Python configuration module associated with DataHandles
-    if ( ti == typeIndex<Gaudi::experimental::DataHandleConfigurable>() ) {
+    if ( ti == typeIndex<Gaudi::DataHandleConfigurable>() ) {
       m_importDataHandles = true;
     }
   }

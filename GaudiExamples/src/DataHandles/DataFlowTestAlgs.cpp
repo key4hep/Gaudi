@@ -129,12 +129,12 @@ private:
   std::array<int, N_outputs> m_outputValues{outputIDs...};
 
   // Declare our inputs using ReadHandles
-  using IntReadHandle = Gaudi::experimental::EventReadHandle<int>;
+  using IntReadHandle = Gaudi::EventReadHandle<int>;
   std::array<IntReadHandle, N_inputs> m_readers{IntReadHandle{
       this, "Input" + std::to_string( inputIDs ), DataObjID( "/Event/Int" + std::to_string( inputIDs ) )}...};
 
   // Declare our outputs using WriteHandles
-  using IntWriteHandle = Gaudi::experimental::EventWriteHandle<int>;
+  using IntWriteHandle = Gaudi::EventWriteHandle<int>;
   std::array<IntWriteHandle, N_outputs> m_writers{IntWriteHandle{
       this, "Output" + std::to_string( outputIDs ), DataObjID( "/Event/Int" + std::to_string( outputIDs ) )}...};
 };

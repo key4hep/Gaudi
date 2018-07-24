@@ -29,55 +29,57 @@ class IDataHandleHolder;
 namespace Gaudi
 {
 
-  class DataHandle
+  inline namespace v1
   {
-  public:
-    enum Mode { Reader = 1 << 2, Writer = 1 << 4, Updater = Reader | Writer };
+    class DataHandle
+    {
+    public:
+      enum Mode { Reader = 1 << 2, Writer = 1 << 4, Updater = Reader | Writer };
 
-    DataHandle( const DataObjID& k, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key( k ), m_owner( owner ), m_mode( a ){};
+      DataHandle( const DataObjID& k, Mode a = Reader, IDataHandleHolder* owner = nullptr )
+          : m_key( k ), m_owner( owner ), m_mode( a ){};
 
-    DataHandle( const DataObjID& k, const bool& isCond, Mode a = Reader, IDataHandleHolder* owner = nullptr )
-        : m_key( k ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
+      DataHandle( const DataObjID& k, const bool& isCond, Mode a = Reader, IDataHandleHolder* owner = nullptr )
+          : m_key( k ), m_owner( owner ), m_mode( a ), m_isCond( isCond ){};
 
-    virtual ~DataHandle() = default;
+      virtual ~DataHandle() = default;
 
-    virtual void setOwner( IDataHandleHolder* o ) { m_owner = o; }
-    virtual IDataHandleHolder*                owner() const { return m_owner; }
+      virtual void setOwner( IDataHandleHolder* o ) { m_owner = o; }
+      virtual IDataHandleHolder*                owner() const { return m_owner; }
 
-    virtual Mode mode() const { return m_mode; }
+      virtual Mode mode() const { return m_mode; }
 
-    virtual void setKey( const DataObjID& key ) const { m_key = key; }
-    virtual void updateKey( const std::string& key ) const { m_key.updateKey( key ); }
+      virtual void setKey( const DataObjID& key ) const { m_key = key; }
+      virtual void updateKey( const std::string& key ) const { m_key.updateKey( key ); }
 
-    virtual const std::string& objKey() const { return m_key.key(); }
-    virtual const DataObjID&   fullKey() const { return m_key; }
+      virtual const std::string& objKey() const { return m_key.key(); }
+      virtual const DataObjID&   fullKey() const { return m_key; }
 
-    virtual void reset( bool ){};
+      virtual void reset( bool ){};
 
-    virtual std::string pythonRepr() const;
-    virtual bool        init() { return true; }
+      virtual std::string pythonRepr() const;
+      virtual bool        init() { return true; }
 
-    // is this a ConditionHandle?
-    virtual bool isCondition() const { return m_isCond; }
+      // is this a ConditionHandle?
+      virtual bool isCondition() const { return m_isCond; }
 
-  protected:
-    /**
-     * The key of the object behind this DataHandle
-     * Although it may look strange to have it mutable, this can actually
-     * change in case the object had alternative names, and it should not
-     * be visible to the end user, for which the Handle is still the same
-     */
-    mutable DataObjID  m_key   = {"NONE"};
-    IDataHandleHolder* m_owner = nullptr;
+    protected:
+      /**
+       * The key of the object behind this DataHandle
+       * Although it may look strange to have it mutable, this can actually
+       * change in case the object had alternative names, and it should not
+       * be visible to the end user, for which the Handle is still the same
+       */
+      mutable DataObjID  m_key   = {"NONE"};
+      IDataHandleHolder* m_owner = nullptr;
 
-  private:
-    Mode m_mode   = Reader;
-    bool m_isCond = false;
-  };
+    private:
+      Mode m_mode   = Reader;
+      bool m_isCond = false;
+    };
+  }
 
-  /// Work-in-progress rewrite of the DataHandle infrastructure
-  namespace experimental
+  namespace v2
   {
     /// Base class to all new-style data handles
     ///

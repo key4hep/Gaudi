@@ -2,7 +2,7 @@
 
 #include "GaudiKernel/Parsers.h"
 
-using DataHandleConfigurable = Gaudi::experimental::DataHandleConfigurable;
+using DataHandleConfigurable = Gaudi::DataHandleConfigurable;
 
 namespace Gaudi
 {
@@ -29,10 +29,10 @@ namespace Gaudi
       o << ", whiteboard='" << v.metadata().whiteBoard() << '\'';
       o << ", access=DataHandle.AccessMode.";
       switch ( v.metadata().access() ) {
-        case Gaudi::experimental::IDataHandleMetadata::AccessMode::Read:
+        case Gaudi::IDataHandleMetadata::AccessMode::Read:
           o << "Read";
           break;
-        case Gaudi::experimental::IDataHandleMetadata::AccessMode::Write:
+        case Gaudi::IDataHandleMetadata::AccessMode::Write:
           o << "Write";
           break;
       }

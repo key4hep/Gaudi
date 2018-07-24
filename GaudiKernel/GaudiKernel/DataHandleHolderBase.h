@@ -38,7 +38,7 @@ public:
   /// You should not need to call this method manually, as it is
   /// automatically called by the DataHandle constructor.
   ///
-  void registerInput( Gaudi::experimental::DataHandle& handle ) final override
+  void registerInput( Gaudi::v2::DataHandle& handle ) final override
   {
     assert( !m_explicitDepsCollected );
     m_inputHandles.push_back( &handle );
@@ -49,7 +49,7 @@ public:
   /// You should not need to call this method manually, as it is
   /// automatically called by the DataHandle constructor.
   ///
-  void registerOutput( Gaudi::experimental::DataHandle& handle ) final override
+  void registerOutput( Gaudi::v2::DataHandle& handle ) final override
   {
     assert( !m_explicitDepsCollected );
     m_outputHandles.push_back( &handle );
@@ -94,7 +94,7 @@ public:
   }
 
   /// Declare ownership of a legacy DataHandle
-  void declare( Gaudi::DataHandle& handle ) override
+  void declare( Gaudi::v1::DataHandle& handle ) override
   {
     assert( !m_explicitDepsCollected );
 
@@ -108,7 +108,7 @@ public:
   }
 
   /// Discard ownership of a legacy DataHandle
-  void renounce( Gaudi::DataHandle& handle ) override
+  void renounce( Gaudi::v1::DataHandle& handle ) override
   {
     assert( !m_explicitDepsCollected );
 
@@ -317,11 +317,11 @@ protected:
 
 private:
   // Data handles associated with input and output event data
-  using DataHandleList = std::vector<Gaudi::experimental::DataHandle*>;
+  using DataHandleList = std::vector<Gaudi::v2::DataHandle*>;
   DataHandleList m_inputHandles, m_outputHandles;
 
   // Legacy DataHandles
-  std::unordered_set<Gaudi::DataHandle*> m_legacyHandles;
+  std::unordered_set<Gaudi::v1::DataHandle*> m_legacyHandles;
 
   // Properties allowing extra input and output dependencies to be
   // declared at configuration time
@@ -348,7 +348,7 @@ private:
   }
 
   /// Access the key of a DataHandle
-  static const DataObjID& accessKey( const Gaudi::experimental::DataHandle* handlePtr )
+  static const DataObjID& accessKey( const Gaudi::v2::DataHandle* handlePtr )
   {
     return handlePtr->targetKey();
   }
@@ -357,7 +357,7 @@ private:
   static const DataObjID& accessKey( const DataObjID& key ) { return key; }
 
   /// Access the key of a legacy (non-reentrant) DataHandle
-  static const DataObjID& accessKey( const Gaudi::DataHandle* handlePtr ) { return handlePtr->fullKey(); }
+  static const DataObjID& accessKey( const Gaudi::v1::DataHandle* handlePtr ) { return handlePtr->fullKey(); }
 
   /// Extract non-empty DataObjID keys from a collection of key holders
   ///
@@ -395,7 +395,7 @@ private:
   }
 
   /// Update the key of a DataHandle
-  static void updateKey( Gaudi::experimental::DataHandle* target, DataObjID&& key )
+  static void updateKey( Gaudi::v2::DataHandle* target, DataObjID&& key )
   {
     target->setTargetKey( std::move( key ) );
   }
@@ -404,7 +404,7 @@ private:
   static void updateKey( DataObjID& target, DataObjID&& key ) { target = std::move( key ); }
 
   /// Update the key of a legacy (non-reentrant) DataHandle
-  static void updateKey( Gaudi::DataHandle* target, DataObjID&& key ) { target->setKey( std::move( key ) ); }
+  static void updateKey( Gaudi::v1::DataHandle* target, DataObjID&& key ) { target->setKey( std::move( key ) ); }
 
   /// Update the DataObjID keys of a collection of key holders
   ///
@@ -437,24 +437,24 @@ private:
   }
 
   /// Select the legacy data handles by operating mode (input/output)
-  std::vector<Gaudi::DataHandle*> selectLegacyHandles( Gaudi::DataHandle::Mode mode ) const
+  std::vector<Gaudi::v1::DataHandle*> selectLegacyHandles( Gaudi::v1::DataHandle::Mode mode ) const
   {
-    std::vector<Gaudi::DataHandle*> result;
+    std::vector<Gaudi::v1::DataHandle*> result;
     std::copy_if( std::begin( m_legacyHandles ), std::end( m_legacyHandles ), std::back_inserter( result ),
-                  [&]( const Gaudi::DataHandle* hndl ) -> bool { return hndl->mode() & mode; } );
+                  [&]( const Gaudi::v1::DataHandle* hndl ) -> bool { return hndl->mode() & mode; } );
     return result;
   }
 
   /// Enumerate legacy input handles
-  std::vector<Gaudi::DataHandle*> legacyInputHandles() const
+  std::vector<Gaudi::v1::DataHandle*> legacyInputHandles() const
   {
-    return selectLegacyHandles( Gaudi::DataHandle::Reader );
+    return selectLegacyHandles( Gaudi::v1::DataHandle::Reader );
   }
 
   /// Enumerate legacy output handles
-  std::vector<Gaudi::DataHandle*> legacyOutputHandles() const
+  std::vector<Gaudi::v1::DataHandle*> legacyOutputHandles() const
   {
-    return selectLegacyHandles( Gaudi::DataHandle::Writer );
+    return selectLegacyHandles( Gaudi::v1::DataHandle::Writer );
   }
 };
 

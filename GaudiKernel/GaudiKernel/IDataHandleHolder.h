@@ -12,7 +12,11 @@ class IDataProviderSvc;
 
 namespace Gaudi
 {
-  namespace experimental
+  inline namespace v1
+  {
+    class DataHandle;
+  }
+  namespace v2
   {
     class DataHandle;
   }
@@ -41,10 +45,10 @@ struct GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInte
   virtual SmartIF<IDataProviderSvc>& eventSvc() const = 0;
 
   /// Register a data handle as an event data input of the algorithm
-  virtual void registerInput( Gaudi::experimental::DataHandle& ) = 0;
+  virtual void registerInput( Gaudi::v2::DataHandle& ) = 0;
 
   /// Register a data handle as an event data output of the algorithm
-  virtual void registerOutput( Gaudi::experimental::DataHandle& ) = 0;
+  virtual void registerOutput( Gaudi::v2::DataHandle& ) = 0;
 
   /// Add an event data input dynamically at run time
   virtual void addDynamicInput( const DataObjID& ) = 0;
@@ -59,10 +63,10 @@ struct GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInte
   virtual const DataObjIDColl& outputKeys() const = 0;
 
   /// Declare ownership of a legacy DataHandle
-  virtual void declare( Gaudi::DataHandle& ) = 0;
+  virtual void declare( Gaudi::v1::DataHandle& ) = 0;
 
   /// Discard ownership of a legacy DataHandle
-  virtual void renounce( Gaudi::DataHandle& ) = 0;
+  virtual void renounce( Gaudi::v1::DataHandle& ) = 0;
 };
 
 #endif // !GAUDIKERNEL_IDATAHANDLEHOLDER

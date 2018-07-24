@@ -106,7 +106,7 @@ public:
 
 private:
   template <typename T>
-  using WriteHandle = Gaudi::experimental::EventWriteHandle<T>;
+  using WriteHandle = Gaudi::EventWriteHandle<T>;
 
   /// We can write plain old data, like ints...
   WriteHandle<int> m_intWriter{this, "IntOutput", DataObjID( "/Event/MyInt" ), "Integer output"};
@@ -174,7 +174,7 @@ public:
 
 private:
   template <typename T>
-  using ReadHandle = Gaudi::experimental::EventReadHandle<T>;
+  using ReadHandle = Gaudi::EventReadHandle<T>;
 
   /// We can read plain old data, like ints...
   ReadHandle<int> m_intReader{this, "IntInput", DataObjID( "/Event/MyInt" ), "Integer input"};
