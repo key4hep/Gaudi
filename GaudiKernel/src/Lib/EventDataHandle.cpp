@@ -6,6 +6,10 @@ namespace Gaudi
 {
   namespace experimental
   {
+    EventDataHandle::Metadata
+      EventDataHandle::s_readHandleMetadata( AccessMode::Read ),
+      EventDataHandle::s_writeHandleMetadata( AccessMode::Write );
+
     void EventDataHandle::registerToOwner( IDataHandleHolder& owner, AccessMode access )
     {
       switch ( access ) {

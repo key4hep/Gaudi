@@ -58,6 +58,10 @@ namespace Gaudi
         AccessMode m_access;
       };
 
+      // Metadata singletons shared by all read and write handles
+      static Metadata s_readHandleMetadata;
+      static Metadata s_writeHandleMetadata;
+
       /// Handles are constructed like a Gaudi property (and effectively
       /// behave as one, which sets the associated data object identifier)
       template <typename Owner>
@@ -88,7 +92,7 @@ namespace Gaudi
       template <typename Owner>
       EventReadHandle( Owner* owner, const std::string& propertyName, DataObjID defaultID,
                        const std::string& docString = "" )
-          : EventDataHandle{*owner, propertyName, std::move( defaultID ), docString, {AccessMode::Read}}
+          : EventDataHandle{*owner, propertyName, std::move( defaultID ), docString, s_readHandleMetadata}
       {
       }
 
@@ -117,7 +121,7 @@ namespace Gaudi
       template <typename Owner>
       EventWriteHandle( Owner* owner, const std::string& propertyName, DataObjID defaultID,
                         const std::string& docString = "" )
-          : EventDataHandle{*owner, propertyName, std::move( defaultID ), docString, {AccessMode::Write}}
+          : EventDataHandle{*owner, propertyName, std::move( defaultID ), docString, s_writeHandleMetadata}
       {
       }
 
