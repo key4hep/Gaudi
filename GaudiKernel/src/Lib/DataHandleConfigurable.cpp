@@ -29,12 +29,12 @@ namespace Gaudi
       o << ", whiteboard='" << v.metadata().whiteBoard() << '\'';
       o << ", access=DataHandle.AccessMode.";
       switch ( v.metadata().access() ) {
-        case Gaudi::IDataHandleMetadata::AccessMode::Read:
-          o << "Read";
-          break;
-        case Gaudi::IDataHandleMetadata::AccessMode::Write:
-          o << "Write";
-          break;
+      case Gaudi::IDataHandleMetadata::AccessMode::Read:
+        o << "Read";
+        break;
+      case Gaudi::IDataHandleMetadata::AccessMode::Write:
+        o << "Write";
+        break;
       }
       o << ')';
       return o;

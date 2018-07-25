@@ -4,9 +4,8 @@
 
 namespace Gaudi
 {
-  const EventDataHandle::Metadata
-    EventDataHandle::s_readHandleMetadata( AccessMode::Read ),
-    EventDataHandle::s_writeHandleMetadata( AccessMode::Write );
+  const EventDataHandle::Metadata EventDataHandle::s_readHandleMetadata( AccessMode::Read ),
+      EventDataHandle::s_writeHandleMetadata( AccessMode::Write );
 
   void EventDataHandle::registerToOwner( IDataHandleHolder& owner, AccessMode access )
   {

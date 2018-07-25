@@ -62,8 +62,8 @@ namespace Gaudi
     /// Handles are constructed like a Gaudi property (and effectively
     /// behave as one, which sets the associated data object identifier)
     template <typename Owner>
-    EventDataHandle( Owner& owner, const std::string& propertyName, DataObjID&& defaultID,
-                     const std::string& docString, const Metadata& metadata )
+    EventDataHandle( Owner& owner, const std::string& propertyName, DataObjID&& defaultID, const std::string& docString,
+                     const Metadata& metadata )
         : DataHandle{owner, propertyName, std::move( defaultID ), docString, metadata}
     {
       registerToOwner( owner, metadata.access() );

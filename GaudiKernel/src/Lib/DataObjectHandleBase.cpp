@@ -44,7 +44,8 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::v1::DataHandle::Mode a, IDataHandleHolder* owner )
+DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::v1::DataHandle::Mode a,
+                                            IDataHandleHolder* owner )
     : Gaudi::v1::DataHandle( k, a, owner )
 {
   m_owner->declare( *this );
@@ -52,7 +53,8 @@ DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::v1::DataH
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleBase::DataObjectHandleBase( const std::string& k, Gaudi::v1::DataHandle::Mode a, IDataHandleHolder* owner )
+DataObjectHandleBase::DataObjectHandleBase( const std::string& k, Gaudi::v1::DataHandle::Mode a,
+                                            IDataHandleHolder* owner )
     : DataObjectHandleBase( DataObjID( k ), a, owner )
 {
 }

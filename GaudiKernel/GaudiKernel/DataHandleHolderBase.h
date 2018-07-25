@@ -348,10 +348,7 @@ private:
   }
 
   /// Access the key of a DataHandle
-  static const DataObjID& accessKey( const Gaudi::v2::DataHandle* handlePtr )
-  {
-    return handlePtr->targetKey();
-  }
+  static const DataObjID& accessKey( const Gaudi::v2::DataHandle* handlePtr ) { return handlePtr->targetKey(); }
 
   /// Access the key of a DataObjID (identity function)
   static const DataObjID& accessKey( const DataObjID& key ) { return key; }
@@ -395,10 +392,7 @@ private:
   }
 
   /// Update the key of a DataHandle
-  static void updateKey( Gaudi::v2::DataHandle* target, DataObjID&& key )
-  {
-    target->setTargetKey( std::move( key ) );
-  }
+  static void updateKey( Gaudi::v2::DataHandle* target, DataObjID&& key ) { target->setTargetKey( std::move( key ) ); }
 
   /// Update the key of a DataObjID
   static void updateKey( DataObjID& target, DataObjID&& key ) { target = std::move( key ); }

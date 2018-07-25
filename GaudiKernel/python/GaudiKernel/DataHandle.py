@@ -7,8 +7,11 @@ class DataHandle(object):
 
     # Access mode for DataHandles
     class AccessMode:
-        class Read: pass
-        class Write: pass
+        class Read:
+            pass
+
+        class Write:
+            pass
 
     # The default values allow PropertyProxy's _isCompatible check to pass when
     # a DataHandle is set from a path string.
@@ -41,10 +44,10 @@ class DataHandle(object):
 
     def __repr__(self):
         return "%s(\"path=%s, whiteboard=%s, access=%s\")" % (
-                    self.__class__.__name__,
-                    self.Path,
-                    self._whiteboard,
-                    self._access.__class__.__name__)
+            self.__class__.__name__,
+            self.Path,
+            self._whiteboard,
+            self._access.__class__.__name__)
 
     def toStringProperty(self):
         return self.__str__()
