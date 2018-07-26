@@ -708,7 +708,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
 
       thisSlot.complete = true;
       // if the event did not fail, add it to the finished events
-      // otherwise it is taken care of in the error handling already
+      // otherwise it is taken care of in the error handling
       if ( m_algExecStateSvc->eventStatus( *thisSlot.eventContext ) == EventStatus::Success ) {
         m_finishedEvents.push( thisSlot.eventContext );
         ON_DEBUG debug() << "Event " << thisSlot.eventContext->evt() << " finished (slot "
@@ -746,7 +746,7 @@ bool AvalancheSchedulerSvc::isStalled( const EventSlot& slot ) const
        !slot.algsStates.containsAny( {AState::DATAREADY, AState::SCHEDULED} ) &&
        !subSlotAlgsInStates( slot, {AState::DATAREADY, AState::SCHEDULED} ) ) {
 
-    fatal() << "*** Stall detected in slot " << slot.eventContext->slot() << "! ***\n" << endmsg;
+    error() << "*** Stall detected in slot " << slot.eventContext->slot() << "! ***" << endmsg;
 
     return true;
   }
@@ -764,7 +764,7 @@ void AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
 
   const uint slotIdx = eventContext->slot();
 
-  fatal() << "*** Event " << eventContext->evt() << " on slot " << slotIdx << " failed! ***" << endmsg;
+  error() << "Event " << eventContext->evt() << " on slot " << slotIdx << " failed" << endmsg;
 
   dumpSchedulerState( msgLevel( MSG::VERBOSE ) ? -1 : slotIdx );
 
@@ -772,6 +772,7 @@ void AvalancheSchedulerSvc::eventFailed( EventContext* eventContext )
   m_precSvc->dumpPrecedenceRules( m_eventSlots[slotIdx] );
 
   // Push into the finished events queue the failed context
+  m_eventSlots[slotIdx].complete = true;
   m_finishedEvents.push( eventContext );
 }
 
@@ -1011,9 +1012,6 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
 StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
                                                      EventContext* eventContext )
 {
-  // Check if the execution failed
-  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext );
-
   Gaudi::Hive::setCurrentContext( eventContext );
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
 
@@ -1029,7 +1027,10 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
 
   ON_DEBUG debug() << "Trying to handle execution result of " << algo->name() << " on slot " << si << endmsg;
 
-  AState state = algo->filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED;
+  const AlgExecState& algstate = m_algExecStateSvc->algExecState( algo, *eventContext );
+  AState              state    = algstate.execStatus().isSuccess()
+                     ? ( algstate.filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED )
+                     : AState::ERROR;
 
   // Update states in the appropriate slot
   if ( eventContext == thisSlot.eventContext ) {
@@ -1065,9 +1066,6 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
 StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
                                                           EventContext* eventContext )
 {
-  // Check if the execution failed
-  if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success ) eventFailed( eventContext );
-
   Gaudi::Hive::setCurrentContext( eventContext );
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
 
@@ -1084,7 +1082,10 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
   ON_DEBUG debug() << "[Asynchronous] Trying to handle execution result of " << algo->name() << " on slot " << si
                    << endmsg;
 
-  AState state = algo->filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED;
+  const AlgExecState& algstate = m_algExecStateSvc->algExecState( algo, *eventContext );
+  AState              state    = algstate.execStatus().isSuccess()
+                     ? ( algstate.filterPassed() ? AState::EVTACCEPTED : AState::EVTREJECTED )
+                     : AState::ERROR;
 
   // Update states in the appropriate slot
   if ( eventContext == thisSlot.eventContext ) {

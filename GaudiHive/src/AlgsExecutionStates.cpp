@@ -23,6 +23,7 @@ StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState )
   case transition( INITIAL, CONTROLREADY ):   // Fallthrough
   case transition( CONTROLREADY, DATAREADY ): // Fallthrough
   case transition( DATAREADY, SCHEDULED ):    // Fallthrough
+  case transition( SCHEDULED, ERROR ):        // Fallthrough
   case transition( SCHEDULED, EVTACCEPTED ):  // Fallthrough
   case transition( SCHEDULED, EVTREJECTED ):
     m_states[iAlgo] = newState;
