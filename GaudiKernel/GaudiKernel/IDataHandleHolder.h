@@ -38,7 +38,9 @@ namespace Gaudi
 /// provide access to the event store. This requirement is encoded in code to
 /// the extent which C++ will cleanly allow.
 ///
-struct GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInterface, IProperty> {
+class GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInterface, IProperty>
+{
+public:
   DeclareInterfaceID( IDataHandleHolder, 1, 0 );
 
   /// Provide access to the whiteboard after initialization
