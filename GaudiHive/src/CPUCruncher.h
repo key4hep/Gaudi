@@ -68,7 +68,8 @@ private:
   Gaudi::Property<float>        m_sleepFraction{
       this, "SleepFraction", 0.0f,
       "Fraction of time, between 0 and 1, when an algorithm is actually sleeping instead of crunching"};
-  Gaudi::Property<bool> m_invertCFD{this, "InvertDecision", false, "Invert control flow decision."};
+  Gaudi::Property<bool>         m_invertCFD{this, "InvertDecision", false, "Invert control flow decision."};
+  Gaudi::Property<unsigned int> m_failNEvents{this, "FailNEvents", 0, "Return FAILURE on every Nth event"};
 
   // To calib only once
   static std::vector<unsigned int> m_niters_vect;

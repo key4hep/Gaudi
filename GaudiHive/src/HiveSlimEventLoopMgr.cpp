@@ -570,8 +570,8 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler( int& finishedEvts )
       continue;
     }
     if ( m_algExecStateSvc->eventStatus( *thisFinishedEvtContext ) != EventStatus::Success ) {
-      fatal() << "Failed event detected on " << thisFinishedEvtContext << endmsg;
-      finalSC = StatusCode::FAILURE;
+      ( m_abortOnFailure ? fatal() : error() ) << "Failed event detected on " << thisFinishedEvtContext << endmsg;
+      if ( m_abortOnFailure ) finalSC = StatusCode::FAILURE;
     }
     // shouldn't these incidents move to the forward scheduler?
     // If we want to consume incidents with an algorithm at the end of the graph

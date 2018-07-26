@@ -316,6 +316,11 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   const unsigned long n_iters = getNCaliIters( crunchtime );
   findPrimes( n_iters );
 
+  // Return error on fraction of events if configured
+  if ( m_failNEvents > 0 && context.evt() > 0 && ( context.evt() % m_failNEvents ) == 0 ) {
+    return StatusCode::FAILURE;
+  }
+
   VERBOSE_MSG << "outputs number: " << m_outputHandles.size() << endmsg;
   for ( auto& outputHandle : m_outputHandles ) {
     if ( !outputHandle->isValid() ) continue;

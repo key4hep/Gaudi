@@ -26,6 +26,7 @@ protected:
   Gaudi::Property<std::string> m_schedulerName{this, "SchedulerName", "AvalancheSchedulerSvc",
                                                "Name of the scheduler to be used"};
   Gaudi::Property<std::vector<unsigned int>> m_eventNumberBlacklist{this, "EventNumberBlackList", {}, ""};
+  Gaudi::Property<bool> m_abortOnFailure{this, "AbortOnFailure", true, "Abort job on event failure"};
 
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc> m_evtDataMgrSvc;
