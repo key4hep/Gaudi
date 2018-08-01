@@ -6,6 +6,10 @@ Project Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
+
+## [v30r3][] - 2018-08-01
+Improvements, modernization and fixes.
+
 ### Deprecated
 - Print warning if begin/endRun are used in serial jobs ([mr !666][])
 - Fully deprecate `DeclareFactoryEntries.h` ([mr !648][])
@@ -164,6 +168,7 @@ Details about old versions of the project can be found in the
 [issue #27]: https://gitlab.cern.ch/gaudi/Gaudi/issues/27
 [issue #5]: https://gitlab.cern.ch/gaudi/Gaudi/issues/5
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r2...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r3...master
+[v30r3]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r2...v30r3
 [v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r3...v29r4
 [v28r2p1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v28r2...v28r2p1
