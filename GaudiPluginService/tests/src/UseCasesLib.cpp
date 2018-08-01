@@ -199,7 +199,7 @@ namespace Gaudi
 {
   namespace PluginService
   {
-    namespace v2
+    GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2
     {
       namespace Details
       {

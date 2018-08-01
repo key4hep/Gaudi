@@ -11,7 +11,7 @@
 class IAlgExecStateSvc;
 class IEvtSelector;
 class IHiveWhiteBoard;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class IDataProviderSvc;
 
 /**@class RecoSchedulerSvc RecoSchedulerSvc.h
