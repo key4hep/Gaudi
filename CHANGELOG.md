@@ -11,7 +11,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fully deprecate `DeclareFactoryEntries.h` ([mr !648][])
 
 ### Changed
-- FileMgr: replace integer with bitset ([mr !667][])
+- Implement error detection for Hive scheduler/eventloopmgr ([mr !706][])
+- Modernize memory management in `PrecedenceRulesGraph` ([mr !684][])
+- Simplify `HLTEventLoopMgr` ([mr !686][])
+- Rewrite of `PluginService` in modern C++ ([mr !709][])
+- Sort uids map before printing the content at finalize (in DEBUG) ([mr !702][])
+- Remove `NTUPLEINFO` ([mr !688][])
+- Revert `IRegsitry` modification from [mr !604][] ([mr !704][])
+- Move to event-wise stall detection ([mr !690][])
+- Avoid superfluous visitor-to-scheduler handovers of in-view DR algorithms ([mr !689][])
+- Add set-to-set lookups for faster `AlgsExecutionStates` matching ([mr !687][])
+- `FileMgr`: replace integer with bitset ([mr !667][])
 - Enable top-level 3T dumps for event views ([mr !675][])
 - Add support for multiple CF parents to 3T ([mr !672][])
 - Applied new formatting (see [mr !651][], [mr !448][])
@@ -27,6 +37,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Use `apply` in `Gaudi::Functional` ([mr !622][])
 
 ### Fixed
+- Fixes for clang build ([mr !724][])
+- Fix dependency of generated PCM files ([mr !705][])
+- Fix tests in special configurations ([mr !701][])
+- Fix asynchronous task scheduling ([mr !697][])
 - Make sure we do not use `ninja` from LCG ([mr !695][])
 - Increase timeout for event view tests ([mr !696][])
 - Fix message service format in `GaudiMP` ([mr !694][])
@@ -85,11 +99,25 @@ Details about old versions of the project can be found in the
 [ReleaseNotes](ReleaseNotes) folder and in the `release.notes` files in
 [GaudiRelease/doc](GaudiRelease/doc).
 
+[mr !724]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/724
+[mr !709]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/709
+[mr !706]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/706
+[mr !705]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/705
+[mr !704]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/704
+[mr !702]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/702
+[mr !701]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/701
+[mr !697]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/697
 [mr !696]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/696
 [mr !695]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/695
 [mr !694]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/694
 [mr !692]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/692
 [mr !691]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/691
+[mr !690]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/690
+[mr !689]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/689
+[mr !688]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/688
+[mr !687]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/687
+[mr !686]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/686
+[mr !684]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/684
 [mr !683]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/683
 [mr !682]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/682
 [mr !681]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/681
