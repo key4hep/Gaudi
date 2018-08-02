@@ -628,15 +628,16 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     status = ( status == 0 ) ? 1 : 0;
 #elif defined( _WIN32 )  // Windows 95,98...
 #elif defined( __linux ) // Linux
-    static longlong prc_start          = 0;
-    bool            myself             = pid <= 0 || pid == ::getpid(); // avoid unnecessary calls to getpid if pid<0
+    static long long prc_start         = 0;
+    bool             myself            = pid <= 0 || pid == ::getpid(); // avoid unnecessary calls to getpid if pid<0
     if ( myself && prc_start == 0 ) {                                   // called only once to set prc_start
       linux_proc prc;
       readProcStat( processID( pid ), prc );
       // prc.startup is in ticks since system start, need to offset for absolute time
-      tms             tmsb;
-      static longlong offset = 100 * longlong( time( nullptr ) ) - longlong( times( &tmsb ) );
-      prc_start              = ( prc.starttime + offset ) * TICK_TO_100NSEC;
+      tms              tmsb;
+      static long long offset =
+          100 * static_cast<long long>( time( nullptr ) ) - static_cast<long long>( times( &tmsb ) );
+      prc_start = ( prc.starttime + offset ) * TICK_TO_100NSEC;
     }
 
     if ( myself ) { // myself
@@ -648,8 +649,9 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     } else { // other process
       linux_proc prc;
       readProcStat( processID( pid ), prc );
-      tms             tmsb;
-      static longlong offset = 100 * longlong( time( nullptr ) ) - longlong( times( &tmsb ) );
+      tms              tmsb;
+      static long long offset =
+          100 * static_cast<long long>( time( nullptr ) ) - static_cast<long long>( times( &tmsb ) );
 
       tms t;
       times( &t );
@@ -665,13 +667,13 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
 // FIXME (MCl): Make an alternative function get timing on OSX
 // times() seems to cause a segmentation fault
 #else // no /proc file system: assume sys_start for the first call
-    tms             tmsb;
-    static clock_t  sys_start = times( 0 );
-    static longlong offset    = 100 * longlong( time( 0 ) ) - sys_start;
-    clock_t         now       = times( &tmsb );
-    info->CreateTime          = offset + now;
-    info->UserTime            = tmsb.tms_utime;
-    info->KernelTime          = tmsb.tms_stime;
+    tms              tmsb;
+    static clock_t   sys_start = times( 0 );
+    static long long offset    = 100 * long long( time( 0 ) ) - sys_start;
+    clock_t          now       = times( &tmsb );
+    info->CreateTime           = offset + now;
+    info->UserTime             = tmsb.tms_utime;
+    info->KernelTime           = tmsb.tms_stime;
     info->CreateTime *= TICK_TO_100NSEC;
     info->UserTime *= TICK_TO_100NSEC;
     info->KernelTime *= TICK_TO_100NSEC;

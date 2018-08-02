@@ -26,7 +26,6 @@
 
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/xtoa.h"
 
 #include "GaudiKernel/DataIncident.h"
 #include "GaudiKernel/IIncidentSvc.h"

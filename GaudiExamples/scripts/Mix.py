@@ -11,7 +11,6 @@ https://savannah.cern.ch/task/?13911
 """
 # =============================================================================
 __author__ = "Vanya BELYAEV Ivan.Belyaev@itep.ru"
-__version__ = "CVS tag $Name:$, version $Revision:$"
 __date__ = "2010-04-24"
 # =============================================================================
 
@@ -82,7 +81,6 @@ if '__main__' == __name__:
     print '*' * 120
     print __doc__
     print ' Author  : %s ' % __author__
-    print ' Version : %s ' % __version__
     print ' Date    : %s ' % __date__
     print '*' * 120
 

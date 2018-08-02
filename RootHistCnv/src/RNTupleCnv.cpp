@@ -218,7 +218,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType( int type )
   case DataTypeInfo::LONG:
     return "/I"; // long
   case DataTypeInfo::LONGLONG:
-    return "/L"; // longlong
+    return "/L"; // long long
   case DataTypeInfo::USHORT:
     return "/s"; // ushort
   case DataTypeInfo::UINT:
@@ -226,7 +226,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType( int type )
   case DataTypeInfo::ULONG:
     return "/i"; // ulong
   case DataTypeInfo::ULONGLONG:
-    return "/l"; // ulonglong
+    return "/l"; // unsigned long long
   case DataTypeInfo::FLOAT:
     return "/F"; // float
   case DataTypeInfo::DOUBLE:

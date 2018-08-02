@@ -208,10 +208,10 @@ bool Gaudi::Histogram2D::setRms( double rmsX, double rmsY )
 void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
 {
   // implement here the copy
-  const char* tit = h.title().c_str();
+  const char* title = h.title().c_str();
   if ( h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() )
-    m_rep.reset( new TH2D( tit, tit, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(), h.yAxis().bins(),
-                           h.yAxis().lowerEdge(), h.yAxis().upperEdge() ) );
+    m_rep.reset( new TH2D( title, title, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(),
+                           h.yAxis().bins(), h.yAxis().lowerEdge(), h.yAxis().upperEdge() ) );
   else {
     Edges eX, eY;
     for ( int i = 0; i < h.xAxis().bins(); ++i ) eX.push_back( h.xAxis().binLowerEdge( i ) );
@@ -220,7 +220,7 @@ void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
     for ( int i = 0; i < h.yAxis().bins(); ++i ) eY.push_back( h.yAxis().binLowerEdge( i ) );
     // add also upperedges at the end
     eY.push_back( h.yAxis().upperEdge() );
-    m_rep.reset( new TH2D( tit, tit, eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front() ) );
+    m_rep.reset( new TH2D( title, title, eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front() ) );
   }
   m_xAxis.initialize( m_rep->GetXaxis(), true );
   m_yAxis.initialize( m_rep->GetYaxis(), true );

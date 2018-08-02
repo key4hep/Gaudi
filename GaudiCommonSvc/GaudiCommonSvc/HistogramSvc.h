@@ -894,10 +894,10 @@ public:
     return nullptr;
   }
 
-  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx );
 
-  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, const std::string& /*opt*/ ) override;
 
   AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& title, const Edges& x,
@@ -913,10 +913,10 @@ public:
 
   AIDA::IHistogram1D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram1D& h );
 
-  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy );
 
-  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy,
                                          const std::string& /*opt*/ ) override;
 
@@ -934,10 +934,10 @@ public:
 
   AIDA::IHistogram2D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram2D& h );
 
-  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy, int nz, double lowz, double upz );
 
-  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy, int nz, double lowz, double upz,
                                          const std::string& /*opt*/ ) override;
 
@@ -955,10 +955,10 @@ public:
 
   AIDA::IHistogram3D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram3D& h );
 
-  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      const std::string& opt ) override;
 
-  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      double upper, double lower, const std::string& opt ) override;
 
   AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& title, const Edges& x,
@@ -980,10 +980,10 @@ public:
 
   AIDA::IProfile1D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IProfile1D& h );
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy );
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy, const std::string& /*opt*/ ) override;
 
   AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, const Edges& x, const Edges& y,
@@ -992,10 +992,10 @@ public:
   AIDA::IProfile2D* createProfile2D( const std::string& nameAndTitle, int nx, double lowx, double upx, int ny,
                                      double lowy, double upy ) override;
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy, double upper, double lower );
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy, double upper, double lower,
                                      const std::string& /*opt*/ ) override;
 

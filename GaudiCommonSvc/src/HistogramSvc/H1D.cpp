@@ -172,9 +172,10 @@ bool Gaudi::Histogram1D::fill( double x, double weight )
 void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
 {
   // implement here the copy
-  std::string tit = h.title() + "Copy";
+  std::string title = h.title() + "Copy";
   if ( h.axis().isFixedBinning() ) {
-    m_rep.reset( new TH1D( tit.c_str(), tit.c_str(), h.axis().bins(), h.axis().lowerEdge(), h.axis().upperEdge() ) );
+    m_rep.reset(
+        new TH1D( title.c_str(), title.c_str(), h.axis().bins(), h.axis().lowerEdge(), h.axis().upperEdge() ) );
   } else {
     Edges e;
     for ( int i = 0; i < h.axis().bins(); ++i ) {
@@ -182,7 +183,7 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
     }
     // add also upperedges at the end
     e.push_back( h.axis().upperEdge() );
-    m_rep.reset( new TH1D( tit.c_str(), tit.c_str(), e.size() - 1, &e.front() ) );
+    m_rep.reset( new TH1D( title.c_str(), title.c_str(), e.size() - 1, &e.front() ) );
   }
   m_axis.initialize( m_rep->GetXaxis(), false );
   m_rep->Sumw2();

@@ -462,13 +462,12 @@ namespace Containers
   template <>
   void* KeyedObjectManager<__A>::erase( long key, const void* obj )
   {
-    typedef std::vector<long> id_type;
     if ( 0 == m_direct ) {
       onDirty();
       return erase( key, obj );
     }
     if ( obj ) {
-      id_type& idx = m_setup.s->m_idx;
+      auto& idx = m_setup.s->m_idx;
       for ( auto& elem : idx ) {
         auto j = m_setup.s->v.begin() + ( elem );
         auto k = std::find( m_seq->begin(), m_seq->end(), *j );
@@ -508,7 +507,6 @@ namespace Containers
   template <>
   long KeyedObjectManager<__A>::erase( seq_type::iterator beg, seq_type::iterator end )
   {
-    typedef std::vector<long> id_type;
     if ( beg == m_seq->begin() && end == m_seq->end() ) {
       clear();
       return OBJ_ERASED;
@@ -516,8 +514,8 @@ namespace Containers
       onDirty();
       return erase( beg, end );
     } else {
-      long     cnt = 0, nobj = end - beg;
-      id_type& idx = m_setup.s->m_idx;
+      long  cnt = 0, nobj = end - beg;
+      auto& idx = m_setup.s->m_idx;
       for ( auto& elem : idx ) {
         auto j = m_setup.s->v.begin() + ( elem );
         auto k = std::find( beg, end, *j );

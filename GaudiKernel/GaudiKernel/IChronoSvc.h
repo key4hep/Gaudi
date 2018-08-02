@@ -37,7 +37,6 @@ public:
   /// the actual type of identifier for Chrono objects
   typedef std::string ChronoTag;
   /// Type of the delta-time
-  // typedef    longlong        ChronoTime ;
   typedef double ChronoTime;
   // ==========================================================================
 public:
