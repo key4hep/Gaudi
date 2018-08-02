@@ -3,8 +3,8 @@
 
 // Framework includes
 #include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/TypeNameString.h"
 
 // C++ includes
 #include <string>

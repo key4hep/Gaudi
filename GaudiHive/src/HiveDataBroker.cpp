@@ -81,9 +81,12 @@ StatusCode HiveDataBrokerSvc::initialize()
 
 StatusCode HiveDataBrokerSvc::finalize()
 {
+  ranges::for_each( m_algorithms | ranges::view::transform( &AlgEntry::alg ),
+                    []( Algorithm* alg ) { alg->sysFinalize(); } );
+
   ranges::for_each(
       m_algorithms | ranges::view::remove_if( []( const auto& entry ) { return entry.requestCount != 0; } ) |
-          ranges::view::transform( []( const auto& entry ) { return entry.alg; } ),
+          ranges::view::transform( &AlgEntry::alg ),
       [&]( Algorithm* alg ) { this->warning() << "Unused algorithm: " << AlgorithmRepr{*alg} << endmsg; } );
   m_algorithms.clear();
   return Service::finalize();
