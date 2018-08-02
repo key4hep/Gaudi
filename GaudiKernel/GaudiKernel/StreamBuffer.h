@@ -339,14 +339,14 @@ public:
 #undef IMPLEMENT_STREAMER
 
   ///  Output Streamer
-  StreamBuffer& operator<<( longlong data )
+  StreamBuffer& operator<<( long long data )
   {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( longlong& data )
+  StreamBuffer& operator>>( long long& data )
   {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;

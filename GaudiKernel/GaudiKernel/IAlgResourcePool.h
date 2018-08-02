@@ -1,4 +1,3 @@
-// $Id: IAlgManager.h,v 1.7 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_IALGRESOURCEPOOL_H
 #define GAUDIKERNEL_IALGRESOURCEPOOL_H
 

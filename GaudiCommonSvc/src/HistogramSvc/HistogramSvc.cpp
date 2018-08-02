@@ -1627,17 +1627,17 @@ AIDA::IHistogram2D* HistogramSvc::projectionYZ( const std::string& nameAndTitle,
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name, const std::string& tit, int nx,
+AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name, const std::string& title, int nx,
                                                      double lowx, double upx )
 {
-  return book( name, tit, nx, lowx, upx );
+  return book( name, title, nx, lowx, upx );
 }
 
 // ============================================================================
-AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name, const std::string& tit, int nx,
+AIDA::IHistogram1D* HistogramSvc::createHistogram1D( const std::string& name, const std::string& title, int nx,
                                                      double lowx, double upx, const std::string& /*opt*/ )
 {
-  return book( name, tit, nx, lowx, upx );
+  return book( name, title, nx, lowx, upx );
 }
 
 // ============================================================================
@@ -1680,18 +1680,18 @@ AIDA::IHistogram1D* HistogramSvc::createCopy( DataObject* pPar, const std::strin
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& tit, int nx,
+AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& title, int nx,
                                                      double lowx, double upx, int ny, double lowy, double upy )
 {
-  return book( name, tit, nx, lowx, upx, ny, lowy, upy );
+  return book( name, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& tit, int nx,
+AIDA::IHistogram2D* HistogramSvc::createHistogram2D( const std::string& name, const std::string& title, int nx,
                                                      double lowx, double upx, int ny, double lowy, double upy,
                                                      const std::string& /*opt*/ )
 {
-  return book( name, tit, nx, lowx, upx, ny, lowy, upy );
+  return book( name, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
@@ -1735,19 +1735,19 @@ AIDA::IHistogram2D* HistogramSvc::createCopy( DataObject* pPar, const std::strin
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& tit, int nx,
+AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& title, int nx,
                                                      double lowx, double upx, int ny, double lowy, double upy, int nz,
                                                      double lowz, double upz )
 {
-  return book( name, tit, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
+  return book( name, title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
-AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& tit, int nx,
+AIDA::IHistogram3D* HistogramSvc::createHistogram3D( const std::string& name, const std::string& title, int nx,
                                                      double lowx, double upx, int ny, double lowy, double upy, int nz,
                                                      double lowz, double upz, const std::string& /*opt*/ )
 {
-  return book( name, tit, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
+  return book( name, title, nx, lowx, upx, ny, lowy, upy, nz, lowz, upz );
 }
 
 // ============================================================================
@@ -1791,17 +1791,17 @@ AIDA::IHistogram3D* HistogramSvc::createCopy( DataObject* pPar, const std::strin
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx,
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& title, int nx, double lowx,
                                                  double upx, const std::string& opt )
 {
-  return bookProf( name, tit, nx, lowx, upx, opt );
+  return bookProf( name, title, nx, lowx, upx, opt );
 }
 
 // ============================================================================
-AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx,
+AIDA::IProfile1D* HistogramSvc::createProfile1D( const std::string& name, const std::string& title, int nx, double lowx,
                                                  double upx, double upper, double lower, const std::string& opt )
 {
-  return bookProf( name, tit, nx, lowx, upx, upper, lower, opt );
+  return bookProf( name, title, nx, lowx, upx, upper, lower, opt );
 }
 
 // ============================================================================
@@ -1856,18 +1856,18 @@ AIDA::IProfile1D* HistogramSvc::createCopy( DataObject* pPar, const std::string&
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& title, int nx, double lowx,
                                                  double upx, int ny, double lowy, double upy )
 {
-  return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy );
+  return bookProf( name, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& title, int nx, double lowx,
                                                  double upx, int ny, double lowy, double upy,
                                                  const std::string& /*opt*/ )
 {
-  return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy );
+  return bookProf( name, title, nx, lowx, upx, ny, lowy, upy );
 }
 
 // ============================================================================
@@ -1885,19 +1885,19 @@ AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& nameAndTitle
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& title, int nx, double lowx,
                                                  double upx, int ny, double lowy, double upy, double upper,
                                                  double lower )
 {
-  return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy, upper, lower );
+  return bookProf( name, title, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================
-AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx,
+AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const std::string& title, int nx, double lowx,
                                                  double upx, int ny, double lowy, double upy, double upper,
                                                  double lower, const std::string& /*opt*/ )
 {
-  return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy, upper, lower );
+  return bookProf( name, title, nx, lowx, upx, ny, lowy, upy, upper, lower );
 }
 
 // ============================================================================

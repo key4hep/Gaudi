@@ -2009,10 +2009,10 @@ namespace Tuples
     /// the actual storage of all 'unsigned int' columns
     mutable ColumnStorage<UInt> m_uints;
     // =======================================================================
-    /// the actual storage of all 'longlong' columns
+    /// the actual storage of all 'long long' columns
     mutable ColumnStorage<LongLong> m_longlongs;
     // =======================================================================
-    /// the actual storage of all 'ulonglong' columns
+    /// the actual storage of all 'unsigned long long' columns
     mutable ColumnStorage<ULongLong> m_ulonglongs;
     // =======================================================================
     /// the actual storage of all 'Float'   columns

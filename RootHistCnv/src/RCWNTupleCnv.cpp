@@ -211,9 +211,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
                            item_fullname[i_item].c_str(), buf_pos, itr->second.c_str() );
 
     if ( itr->first != "AUTO_BLK" ) {
-      std::string tit = itr->first;
-      tit             = itr->first + "::" + br->GetTitle();
-      br->SetTitle( tit.c_str() );
+      std::string title = itr->first;
+      title             = itr->first + "::" + br->GetTitle();
+      br->SetTitle( title.c_str() );
     }
 
     log << MSG::DEBUG << "adding TBranch  " << br->GetTitle() << "  at " << (void*)buf_pos << endmsg;

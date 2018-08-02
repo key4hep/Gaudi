@@ -146,7 +146,7 @@ public:
   }
   /// Accept MsgStream activation using MsgStreamer operator
   MsgStream& operator<<( MSG::Level level ) { return report( level ); }
-  MsgStream& operator<<( longlong arg )
+  MsgStream& operator<<( long long arg )
   {
     try {
       // this may throw, and we cannot afford it if the stream is used in a catch block

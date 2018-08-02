@@ -228,10 +228,10 @@ private:
 
   bool m_updateRequired = true;
   // ==========================================================================
-  ChronoEntity m_total;
-  ulonglong    m_statAlg  = 0;
-  ulonglong    m_statNode = 0;
-  ulonglong    m_stat     = 0;
+  ChronoEntity       m_total;
+  unsigned long long m_statAlg  = 0;
+  unsigned long long m_statNode = 0;
+  unsigned long long m_stat     = 0;
   // ==========================================================================
   ChronoEntity m_timer_nodes;
   ChronoEntity m_timer_algs;

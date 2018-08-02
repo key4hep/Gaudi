@@ -249,8 +249,8 @@ BOOST_AUTO_TEST_CASE( checking )
   // Comparison checks
   {
     StatusCode sc( StatusCode::SUCCESS );
-    if ( sc == StatusCode::SUCCESS )
-      ;
+    if ( sc == StatusCode::SUCCESS ) {
+    }
     BOOST_CHECK( sc.checked() == true );
   }
   {
@@ -263,8 +263,8 @@ BOOST_AUTO_TEST_CASE( checking )
   // Cast to bool --> checked
   {
     StatusCode sc;
-    if ( sc )
-      ;
+    if ( sc ) {
+    }
     BOOST_CHECK( sc.checked() == true );
   }
   // Copy constructor checks source

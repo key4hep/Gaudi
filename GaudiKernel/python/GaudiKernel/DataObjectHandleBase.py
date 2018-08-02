@@ -1,4 +1,3 @@
-__version__ = "$Revision: 0.1 $"
 __doc__ = """The python module holding python bindings to DataObjectHandle"""
 
 # s = "/Path/to/Address"
