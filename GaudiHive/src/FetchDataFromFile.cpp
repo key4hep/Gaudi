@@ -7,11 +7,10 @@ namespace Gaudi
     class FetchDataFromFile final : public Algorithm
     {
     public:
-      FetchDataFromFile( const std::string& name, ISvcLocator* pSvcLocator)
-      :Algorithm(name,pSvcLocator)
+      FetchDataFromFile( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
       {
-          // make sure this algorithm is seen as reentrant by Gaudi
-          this->setProperty( "Cardinality", 0 );
+        // make sure this algorithm is seen as reentrant by Gaudi
+        this->setProperty( "Cardinality", 0 );
       }
       StatusCode initialize() override
       {
