@@ -40,7 +40,9 @@ public:
   ///
   void registerInput( Gaudi::v2::DataHandle& handle ) final override
   {
-    assert( !m_explicitDepsCollected );
+    if ( m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot register input after data dependency collection", this->name(), StatusCode::FAILURE );
+    }
     m_inputHandles.push_back( &handle );
   }
 
@@ -51,7 +53,9 @@ public:
   ///
   void registerOutput( Gaudi::v2::DataHandle& handle ) final override
   {
-    assert( !m_explicitDepsCollected );
+    if ( m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot register output after data dependency collection", this->name(), StatusCode::FAILURE );
+    }
     m_outputHandles.push_back( &handle );
   }
 
@@ -74,12 +78,13 @@ public:
   /// Tell which event store keys the algorithm will be reading from
   ///
   /// This function will only yield the full dependency list after it has
-  /// been collected, which happens during initialization. But it will be
-  /// called frequently, so we only detect this usage error in debug mode.
+  /// been collected, which happens during initialization.
   ///
   const DataObjIDColl& inputKeys() const final override
   {
-    assert( m_explicitDepsCollected );
+    if ( !m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot read inputs before data dependency collection", this->name(), StatusCode::FAILURE );
+    }
     return m_inputKeys;
   }
 
@@ -89,14 +94,18 @@ public:
   ///
   const DataObjIDColl& outputKeys() const final override
   {
-    assert( m_explicitDepsCollected );
+    if ( !m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot read outputs before data dependency collection", this->name(), StatusCode::FAILURE );
+    }
     return m_outputKeys;
   }
 
   /// Declare ownership of a legacy DataHandle
   void declare( Gaudi::v1::DataHandle& handle ) override
   {
-    assert( !m_explicitDepsCollected );
+    if ( m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot register legacy handle after data dependency collection", this->name(), StatusCode::FAILURE );
+    }
 
     if ( !handle.owner() ) {
       handle.setOwner( this );
@@ -110,7 +119,9 @@ public:
   /// Discard ownership of a legacy DataHandle
   void renounce( Gaudi::v1::DataHandle& handle ) override
   {
-    assert( !m_explicitDepsCollected );
+    if ( m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot discard legacy handle after data dependency collection", this->name(), StatusCode::FAILURE );
+    }
 
     if ( handle.owner() != this ) {
       throw GaudiException( "Attempt to renounce foreign handle with algorithm!", this->name(), StatusCode::FAILURE );
@@ -289,7 +300,9 @@ protected:
   ///
   const DataObjIDColl& ignoredInputs() const
   {
-    assert( m_explicitDepsCollected );
+    if ( !m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot read ignored inputs before data dependency collection", this->name(), StatusCode::FAILURE );
+    }
     return m_ignoredInputs;
   }
 
@@ -299,7 +312,9 @@ protected:
   ///
   const DataObjIDColl& ignoredOutputs() const
   {
-    assert( m_explicitDepsCollected );
+    if ( !m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot read ignored outputs before data dependency collection", this->name(), StatusCode::FAILURE );
+    }
     return m_ignoredOutputs;
   }
 
