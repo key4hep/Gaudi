@@ -3,8 +3,8 @@ gaudi_subdir(RootHistCnv)
 gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(AIDA)
-find_package(ROOT COMPONENTS RIO Hist Matrix Tree Thread MathCore Net)
-find_package(Boost)
+find_package(ROOT COMPONENTS RIO Hist Matrix Tree Thread MathCore Net REQUIRED)
+find_package(Boost REQUIRED)
 
 # If AIDA is missing, don't build this module:
 if( NOT AIDA_FOUND )

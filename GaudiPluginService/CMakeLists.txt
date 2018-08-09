@@ -33,7 +33,7 @@ gaudi_add_executable(listcomponents src/listcomponents.cpp)
 target_link_libraries(listcomponents GaudiPluginService ${CMAKE_DL_LIBS})
 
 # Hide some Boost compile time warnings
-find_package(Boost)
+find_package(Boost REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 gaudi_add_library(Test_GaudiPluginService_UseCasesLib tests/src/UseCasesLib.cpp

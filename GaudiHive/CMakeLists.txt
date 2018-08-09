@@ -2,9 +2,9 @@ gaudi_subdir(GaudiHive)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg GaudiCommonSvc GaudiCoreSvc)
 
-find_package(Boost COMPONENTS system filesystem graph)
-find_package(ROOT COMPONENTS Hist RIO)
-find_package(TBB)
+find_package(Boost COMPONENTS system filesystem graph REQUIRED)
+find_package(ROOT COMPONENTS Hist RIO REQUIRED)
+find_package(TBB REQUIRED)
 find_package(pyanalysis)
 find_package(pytools)
 

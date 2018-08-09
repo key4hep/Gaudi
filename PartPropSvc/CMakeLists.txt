@@ -2,7 +2,7 @@ gaudi_subdir(PartPropSvc)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
-find_package(Boost COMPONENTS regex)
+find_package(Boost COMPONENTS regex REQUIRED)
 find_package(HepPDT)
 
 # If HepPDT is not available, give up on this subdirectory:

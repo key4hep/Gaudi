@@ -3,8 +3,8 @@ gaudi_subdir(GaudiAlg)
 gaudi_depends_on_subdirs(GaudiUtils GaudiKernel)
 
 find_package(AIDA)
-find_package(Boost COMPONENTS regex)
-find_package(ROOT COMPONENTS RIO)
+find_package(Boost COMPONENTS regex REQUIRED)
+find_package(ROOT COMPONENTS RIO REQUIRED)
 
 # Decide whether to link against AIDA:
 set( aida_lib )

@@ -2,15 +2,15 @@ gaudi_subdir(GaudiUtils)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
-find_package(Boost)
+find_package(Boost REQUIRED)
 find_package(AIDA)
 set (XMLIO_PACKAGE_NAME XMLIO)
 if (${APPLE})
   set (XMLIO_PACKAGE_NAME "")
 endif (${APPLE})
-find_package(ROOT COMPONENTS RIO Hist ${XMLIO_PACKAGE_NAME} Thread Matrix MathCore)
+find_package(ROOT COMPONENTS RIO Hist ${XMLIO_PACKAGE_NAME} Thread Matrix MathCore REQUIRED)
 find_package(XercesC)
-find_package(UUID)
+find_package(UUID REQUIRED)
 find_package(CppUnit)
 
 # Decide whether to link against AIDA:

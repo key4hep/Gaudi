@@ -4,7 +4,7 @@ gaudi_depends_on_subdirs(GaudiPluginService)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
 find_package(ROOT REQUIRED COMPONENTS Core)
-find_package(TBB)
+find_package(TBB REQUIRED)
 find_package(CppUnit)
 
 # Hide some Boost/TBB/CppUnit/ROOT compile time warnings

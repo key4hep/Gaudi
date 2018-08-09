@@ -8,11 +8,11 @@ find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
 find_package(Boost COMPONENTS python REQUIRED)
 find_package(CLHEP)
 find_package(GSL)
-find_package(PythonLibs)
-find_package(RELAX)
-find_package(TBB)
+find_package(PythonLibs REQUIRED)
+find_package(RELAX REQUIRED)
+find_package(TBB REQUIRED)
 # ROOT runtime
-find_package(PNG)
+find_package(PNG REQUIRED)
 
 # Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}

@@ -32,8 +32,8 @@ if( AIDA_FOUND )
 endif()
 
 # Hide some ROOT and Boost compile time warnings
-find_package(Boost)
-find_package(ROOT)
+find_package(Boost REQUIRED)
+find_package(ROOT REQUIRED)
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 if( CLHEP_FOUND )
    include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
