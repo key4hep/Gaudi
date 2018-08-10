@@ -12,7 +12,9 @@
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IDataHandleHolder.h"
+#include "GaudiKernel/IStateful.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/StateMachine.h"
 
 /// Common infrastructure for classes that manage data handles and other
 /// Scheduler-known data dependencies
@@ -119,7 +121,17 @@ public:
   /// Discard ownership of a legacy DataHandle
   void renounce( Gaudi::v1::DataHandle& handle ) override
   {
-    if ( m_explicitDepsCollected ) {
+    // In general, deleting a DataHandle after the data dependencies have been
+    // collected is bogus, because this change will not propagate to the data
+    // dependency list, and to our clients that have queried and potentially
+    // made copies of this list, such as the Scheduler.
+    //
+    // Nevertheless, we must tolerate this operation after an Algorithm or
+    // AlgTool has been finalized, because its inner DataHandles will then be
+    // deleted in a harmless and non-observable fashion, right before
+    // termination of the host Gaudi process.
+    //
+    if ( m_explicitDepsCollected && dynamic_cast<IStateful*>(this)->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
       throw GaudiException( "Cannot discard legacy handle after data dependency collection", this->name(), StatusCode::FAILURE );
     }
 
