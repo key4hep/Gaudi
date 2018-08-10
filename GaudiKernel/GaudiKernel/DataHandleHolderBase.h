@@ -35,7 +35,7 @@ public:
   {
   }
 
-  /// Register a data handle as an event data input of the algorithm
+  /// Register a data handle as an input of this algorithm/tool
   ///
   /// You should not need to call this method manually, as it is
   /// automatically called by the DataHandle constructor.
@@ -48,7 +48,7 @@ public:
     m_inputHandles.push_back( &handle );
   }
 
-  /// Register a data handle as an event data output of the algorithm
+  /// Register a data handle as an output of this algorithm/tool
   ///
   /// You should not need to call this method manually, as it is
   /// automatically called by the DataHandle constructor.
@@ -61,7 +61,7 @@ public:
     m_outputHandles.push_back( &handle );
   }
 
-  /// Add an event data input dynamically at run time
+  /// Add a data input dynamically at run time
   ///
   /// DataHandles are the preferred way to declare statically known data
   /// dependencies. However, there are cases in which an Algorithm's data
@@ -71,13 +71,13 @@ public:
   ///
   void addDynamicInput( const DataObjID& key ) final override { m_inputKeys.insert( key ); }
 
-  /// Add an event data output dynamically at run time
+  /// Add a data output dynamically at run time
   ///
   /// See addDynamicInput() for more details.
   ///
   void addDynamicOutput( const DataObjID& key ) final override { m_outputKeys.insert( key ); }
 
-  /// Tell which event store keys the algorithm will be reading from
+  /// Tell which whiteboard keys the algorithm will be reading from
   ///
   /// This function will only yield the full dependency list after it has
   /// been collected, which happens during initialization.
@@ -90,7 +90,7 @@ public:
     return m_inputKeys;
   }
 
-  /// Tell which event store keys the algorithm will be writing to
+  /// Tell which whiteboard keys the algorithm will be writing to
   ///
   /// The interface caveats described in inputKeys() also apply here.
   ///
@@ -154,7 +154,7 @@ protected:
   ///
   using DataObjIDMapping = std::function<boost::optional<DataObjID>( const DataObjID& )>;
 
-  /// Update the key of each registered event data dependency, using a
+  /// Update the key of each registered data dependency, using a
   /// user-defined mapping from the old to the new key.
   ///
   /// This method must be called at a framework initialization stage
@@ -167,7 +167,7 @@ protected:
   /// modifications will be carried out in two different places, resulting
   /// in worse performance.
   ///
-  void updateEventKeys( const DataObjIDMapping& keyMap )
+  void updateKeys( const DataObjIDMapping& keyMap )
   {
     auto legacyInputs  = legacyInputHandles();
     auto legacyOutputs = legacyOutputHandles();
@@ -183,12 +183,12 @@ protected:
 
   /// Collect all explicit data dependencies in a single place
   ///
-  /// Like updateEventKeys(), this method must be called at a framework
+  /// Like updateKeys(), this method must be called at a framework
   /// initialization stage where the DataObjIDs associated with data
   /// dependencies are set in stone and will not change anymore.
   ///
   /// For optimal performance, it should also be called after any call
-  /// to updateEventKeys (see that method's documentation for more info).
+  /// to updateKeys (see that method's documentation for more info).
   ///
   void collectExplicitDeps()
   {
@@ -343,7 +343,7 @@ protected:
   }
 
 private:
-  // Data handles associated with input and output event data
+  // Data handles associated with input and output data
   using DataHandleList = std::vector<Gaudi::v2::DataHandle*>;
   DataHandleList m_inputHandles, m_outputHandles;
 
@@ -355,7 +355,7 @@ private:
   Gaudi::Property<DataObjIDColl> m_extraInputs{this, "ExtraInputs", DataObjIDColl{}};
   Gaudi::Property<DataObjIDColl> m_extraOutputs{this, "ExtraOutputs", DataObjIDColl{}};
 
-  // Location where all event store dependencies will be eventually collected
+  // Location where all data dependencies will be eventually collected
   DataObjIDColl m_inputKeys, m_outputKeys;
 
   /// Truth that all explicit data dependencies have already been
@@ -404,14 +404,14 @@ private:
     }
   }
 
-  /// Specialization of extractKeys for event data inputs
+  /// Specialization of extractKeys for data inputs
   template <typename KeyHolderColl>
   void extractInputs( const KeyHolderColl& keyHolders )
   {
     extractKeys( m_inputKeys, m_ignoredInputs, keyHolders );
   }
 
-  /// Specialization of extractKeys for event data outputs
+  /// Specialization of extractKeys for data outputs
   template <typename KeyHolderColl>
   void extractOutputs( const KeyHolderColl& keyHolders )
   {

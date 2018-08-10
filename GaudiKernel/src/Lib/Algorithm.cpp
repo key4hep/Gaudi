@@ -158,7 +158,7 @@ StatusCode Algorithm::sysInitialize()
   }
 
   // Perform any scheduled dependency update
-  if ( m_updateDependencies ) updateEventKeys( m_updateDependencies );
+  if ( m_updateDependencies ) updateKeys( m_updateDependencies );
 
   // Collect all explicit dependencies in a single place
   collectExplicitDeps();
