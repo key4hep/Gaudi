@@ -42,8 +42,8 @@ public:
   ///
   void registerInput( Gaudi::v2::DataHandle& handle ) final override
   {
-    if ( m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot register input after data dependency collection", this->name(), StatusCode::FAILURE );
+    if ( m_explicitDepsCollected && isNewInput( handle.targetKey() ) ) {
+      throw GaudiException( "Cannot register new input after data dependency collection", this->name(), StatusCode::FAILURE );
     }
     m_inputHandles.push_back( &handle );
   }
@@ -55,8 +55,8 @@ public:
   ///
   void registerOutput( Gaudi::v2::DataHandle& handle ) final override
   {
-    if ( m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot register output after data dependency collection", this->name(), StatusCode::FAILURE );
+    if ( m_explicitDepsCollected && isNewOutput( handle.targetKey() ) ) {
+      throw GaudiException( "Cannot register new output after data dependency collection", this->name(), StatusCode::FAILURE );
     }
     m_outputHandles.push_back( &handle );
   }
@@ -106,7 +106,11 @@ public:
   void declare( Gaudi::v1::DataHandle& handle ) override
   {
     if ( m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot register legacy handle after data dependency collection", this->name(), StatusCode::FAILURE );
+      if ( handle.mode() == Gaudi::v1::DataHandle::Reader && isNewInput( handle.fullKey() ) ) {
+        throw GaudiException( "Cannot register new legacy input after data dependency collection", this->name(), StatusCode::FAILURE );
+      } else if ( handle.mode() == Gaudi::v1::DataHandle::Writer && isNewOutput( handle.fullKey() ) ) {
+        throw GaudiException( "Cannot register new legacy output after data dependency collection", this->name(), StatusCode::FAILURE );
+      }
     }
 
     if ( !handle.owner() ) {
@@ -365,6 +369,16 @@ private:
   // Places where we keep track of the inputs and outputs that were
   // ignored because they had an empty key
   DataObjIDColl m_ignoredInputs, m_ignoredOutputs;
+
+  /// Check if an input key has not been declared before
+  bool isNewInput( const DataObjID& key ) const {
+    return m_inputKeys.find( key ) == m_inputKeys.end();
+  }
+
+  /// Check if an output key has not been declared before
+  bool isNewOutput( const DataObjID& key ) const {
+    return m_outputKeys.find( key ) == m_outputKeys.end();
+  }
 
   /// Initialize a set of handles
   void initializeHandles( DataHandleList& handles )
