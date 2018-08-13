@@ -202,10 +202,37 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     // Add tool dependencies to our dependency list
-    for ( auto tool : tools() ) addImplicitDeps( dynamic_cast<AlgTool*>( tool ) );
+    for ( auto i_tool : tools() ) {
+      auto tool = dynamic_cast<AlgTool*>( i_tool );
+
+      // Here, there is an edge case to be handled concerning circular
+      // dependencies between tools: in the presence of a circular dependency,
+      // one tool will observe the other in an uninitialized state, before its
+      // data dependencies are ready and finalized.
+      //
+      // To handle this, we need to setup a notification mechanism so that this
+      // tool may complete our dependency list once it is initialized. And we
+      // also need to propagate this information and notification to any tool
+      // depending on us which will be initialized in meantime.
+      //
+      if ( tool->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+        addImplicitDeps( tool );
+        propagateUninitializedTools( tool );
+      } else {
+        addUninitializedTool( tool );
+      }
+    }
 
     // Initialize the inner DataHandles
     initDataHandleHolder(); // this should 'freeze' the handle configuration.
+
+    // Notify all tools waiting for us to be initialized
+    for ( auto tool: m_toolsAwaitingInit ) {
+      tool->addImplicitDeps( this );
+      tool->propagateUninitializedTools( this );
+      tool->m_uninitializedTools.erase( this );
+    }
+    m_toolsAwaitingInit.clear();
 
     return sc;
   } );
@@ -447,6 +474,21 @@ void AlgTool::initToolHandles() const
   }
   m_toolHandlesInit = true;
 }
+
+
+void AlgTool::addUninitializedTool( AlgTool* tool ) {
+  if ( tool == this ) return;
+  m_uninitializedTools.insert( tool );
+  tool->m_toolsAwaitingInit.insert( this );
+}
+
+
+void AlgTool::propagateUninitializedTools( AlgTool* tool ) {
+  for ( auto uninitializedTool: tool->m_uninitializedTools ) {
+    addUninitializedTool( uninitializedTool );
+  }
+}
+
 
 const std::vector<IAlgTool*>& AlgTool::tools() const
 {
