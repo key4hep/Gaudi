@@ -80,12 +80,13 @@ public:
     auto eventContext = getContext();
 
     // Check that inputs were declared correctly
+    using AccessMode = Gaudi::v2::DataHandle::AccessMode;
     info() << "Checking input keys" << endmsg;
     DataObjIDColl expectedInputKeys;
     for ( const auto& inputHandle : m_readers ) {
       expectedInputKeys.emplace( inputHandle.targetKey() );
     }
-    if ( inputKeys() != expectedInputKeys ) {
+    if ( dataDependencies( AccessMode::Read ) != expectedInputKeys ) {
       throw std::runtime_error( "Unexpected input keys" );
     }
 
@@ -95,7 +96,7 @@ public:
     for ( const auto& outputHandle : m_writers ) {
       expectedOutputKeys.emplace( outputHandle.targetKey() );
     }
-    if ( outputKeys() != expectedOutputKeys ) {
+    if ( dataDependencies( AccessMode::Write ) != expectedOutputKeys ) {
       throw std::runtime_error( "Unexpected output keys" );
     }
 

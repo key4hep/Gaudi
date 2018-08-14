@@ -27,6 +27,7 @@ template <typename BASE>
 class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder>
 {
   using Super = extends<BASE, IDataHandleHolder>;
+  using AccessMode = Gaudi::v2::DataHandle::AccessMode;
 
 public:
   /// NOTE: Cannot use "using Super::Super;" due to a GCC 6 bug
@@ -35,82 +36,49 @@ public:
   {
   }
 
-  /// Register a data handle as an input of this algorithm/tool
+  /// Register a data handle of this algorithm/tool
   ///
   /// You should not need to call this method manually, as it is
   /// automatically called by the DataHandle constructor.
   ///
-  void registerInput( Gaudi::v2::DataHandle& handle ) final override
+  void registerDataHandle( Gaudi::v2::DataHandle& handle ) final override
   {
-    if ( m_explicitDepsCollected && isNewInput( handle.targetKey() ) ) {
-      throw GaudiException( "Cannot register new input after data dependency collection", this->name(), StatusCode::FAILURE );
+    if ( m_explicitDepsCollected && isNewDataDependency( handle ) ) {
+      throw GaudiException( "Cannot register a new data handle after data dependency collection", this->name(), StatusCode::FAILURE );
     }
-    m_inputHandles.push_back( &handle );
+    auto index = accessToIndex( handle.access() );
+    m_dataHandles[index].push_back( &handle );
   }
 
-  /// Register a data handle as an output of this algorithm/tool
-  ///
-  /// You should not need to call this method manually, as it is
-  /// automatically called by the DataHandle constructor.
-  ///
-  void registerOutput( Gaudi::v2::DataHandle& handle ) final override
-  {
-    if ( m_explicitDepsCollected && isNewOutput( handle.targetKey() ) ) {
-      throw GaudiException( "Cannot register new output after data dependency collection", this->name(), StatusCode::FAILURE );
-    }
-    m_outputHandles.push_back( &handle );
-  }
-
-  /// Add a data input dynamically at run time
+  /// Add a data dependency, even after initialization
   ///
   /// DataHandles are the preferred way to declare statically known data
   /// dependencies. However, there are cases in which an Algorithm's data
-  /// dependencies are only known at run time, typically when data is loaded
-  /// on demand from a file or database. In this case, this method should be
-  /// used to declare those dynamic data dependencies.
+  /// dependencies are only known at execution time, typically when data is
+  /// loaded on demand from a file or database. In this case, this method should
+  /// be used to declare those dynamic data dependencies.
   ///
-  void addDynamicInput( const DataObjID& key ) final override { m_inputKeys.insert( key ); }
-
-  /// Add a data output dynamically at run time
-  ///
-  /// See addDynamicInput() for more details.
-  ///
-  void addDynamicOutput( const DataObjID& key ) final override { m_outputKeys.insert( key ); }
-
-  /// Tell which whiteboard keys the algorithm will be reading from
-  ///
-  /// This function will only yield the full dependency list after it has
-  /// been collected, which happens during initialization.
-  ///
-  const DataObjIDColl& inputKeys() const final override
-  {
-    if ( !m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot read inputs before data dependency collection", this->name(), StatusCode::FAILURE );
-    }
-    return m_inputKeys;
+  void addDataDependency( const DataObjID& key, AccessMode access ) final override {
+    auto index = accessToIndex( access );
+    m_dataDepKeys[index].insert( key );
   }
 
-  /// Tell which whiteboard keys the algorithm will be writing to
+  /// Tell which whiteboard keys the algorithm will be reading or writing
   ///
-  /// The interface caveats described in inputKeys() also apply here.
+  /// This function will only provide the full dependency list after it has
+  /// been collected, which happens during initialization.
   ///
-  const DataObjIDColl& outputKeys() const final override
+  const DataObjIDColl& dataDependencies( AccessMode access ) const final override
   {
-    if ( !m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot read outputs before data dependency collection", this->name(), StatusCode::FAILURE );
-    }
-    return m_outputKeys;
+    auto index = accessToIndex( access );
+    return allDataDependencies()[index];
   }
 
   /// Declare ownership of a legacy DataHandle
   void declare( Gaudi::v1::DataHandle& handle ) override
   {
-    if ( m_explicitDepsCollected ) {
-      if ( handle.mode() == Gaudi::v1::DataHandle::Reader && isNewInput( handle.fullKey() ) ) {
-        throw GaudiException( "Cannot register new legacy input after data dependency collection", this->name(), StatusCode::FAILURE );
-      } else if ( handle.mode() == Gaudi::v1::DataHandle::Writer && isNewOutput( handle.fullKey() ) ) {
-        throw GaudiException( "Cannot register new legacy output after data dependency collection", this->name(), StatusCode::FAILURE );
-      }
+    if ( m_explicitDepsCollected && isNewDataDependency( handle ) ) {
+      throw GaudiException( "Cannot register a new data handle after data dependency collection", this->name(), StatusCode::FAILURE );
     }
 
     if ( !handle.owner() ) {
@@ -146,6 +114,15 @@ public:
     m_legacyHandles.erase( &handle );
   }
 
+  // Access the internal array of data dependencies. This is only meant for
+  // internal use, but must be public as we access it via IDataHandleHolder.
+  const DataObjIDColl* allDataDependencies() const final override {
+    if ( !m_explicitDepsCollected ) {
+      throw GaudiException( "Cannot read data dependencies before they are collected", this->name(), StatusCode::FAILURE );
+    }
+    return m_dataDepKeys;
+  }
+
 protected:
   /// DataObjID mapping function, with optimized identity mapping case
   ///
@@ -167,34 +144,28 @@ protected:
   /// brought by this update will be overwritten.
   ///
   /// It should also be called before the explicit dependencies are
-  /// collected by collectExplicitDeps(), as otherwise the DataObjIDs
+  /// collected by collectExplicitDependencies(), as otherwise the DataObjIDs
   /// modifications will be carried out in two different places, resulting
   /// in worse performance.
   ///
-  void updateKeys( const DataObjIDMapping& keyMap )
+  void updateDataDependencies( const DataObjIDMapping& keyMap )
   {
-    auto legacyInputs  = legacyInputHandles();
-    auto legacyOutputs = legacyOutputHandles();
-    updateKeys( legacyInputs, keyMap );
-    updateKeys( legacyOutputs, keyMap );
-    updateKeys( m_inputKeys, keyMap );
-    updateKeys( m_outputKeys, keyMap );
-    updateKeys( m_inputHandles, keyMap );
-    updateKeys( m_outputHandles, keyMap );
-    updateKeys( m_extraInputs.value(), keyMap );
-    updateKeys( m_extraOutputs.value(), keyMap );
+    updateDependencies( m_dataHandles, keyMap );
+    updateDependencies( m_legacyHandles, keyMap );
+    updateDependencies( m_dataDepKeys, keyMap );
+    updateDependencies( m_extraDeps, keyMap );
   }
 
   /// Collect all explicit data dependencies in a single place
   ///
-  /// Like updateKeys(), this method must be called at a framework
+  /// Like updateDataDependencies(), this method must be called at a framework
   /// initialization stage where the DataObjIDs associated with data
   /// dependencies are set in stone and will not change anymore.
   ///
   /// For optimal performance, it should also be called after any call
   /// to updateKeys (see that method's documentation for more info).
   ///
-  void collectExplicitDeps()
+  void collectExplicitDataDependencies()
   {
     // Considering this function's interface contract, calling it multiple
     // times is very likely to be the result of a usage error.
@@ -202,15 +173,10 @@ protected:
       throw GaudiException( "Explicit dependencies may only be collected once", this->name(), StatusCode::FAILURE );
     }
 
-    // Collect all input dependencies in a single place
-    extractInputs( m_inputHandles );
-    extractInputs( legacyInputHandles() );
-    extractInputs( m_extraInputs.value() );
-
-    // Collect all output dependencies in a single place
-    extractOutputs( m_outputHandles );
-    extractOutputs( legacyOutputHandles() );
-    extractOutputs( m_extraOutputs.value() );
+    // Collect the centralized lists of inputs and outputs
+    collectDependencies( m_dataHandles );
+    collectDependencies( m_extraDeps );
+    collectDependencies( m_legacyHandles );
 
     // Take note that the explicit dependencies have been collected
     m_explicitDepsCollected = true;
@@ -258,7 +224,7 @@ protected:
   /// This method must be called after explicit dependencies have been
   /// collected, as otherwise it may miss some circular dependencies.
   ///
-  StatusCode handleCircularDeps( CircularDepHandler&& circularDepHandler )
+  StatusCode handleCircularDataDependencies( CircularDepHandler&& circularDepHandler )
   {
     // Make sure that explicit dependencies have been collected beforehand
     if ( !m_explicitDepsCollected ) {
@@ -268,13 +234,15 @@ protected:
     // Go through the output dependencies, looking for circular input
     // dependencies
     //
-    // We must use this inefficient iteration pattern because circular
+    // We must use this inefficient O(N²) iteration pattern because circular
     // dependency handling may mutate the input dependency list,
     // invalidating any iterator to that list.
     //
-    for ( const auto& outputKey : m_outputKeys ) {
-      auto inputPos = m_inputKeys.find( outputKey );
-      if ( inputPos != m_inputKeys.end() ) {
+    const DataObjIDColl& outputKeys = m_dataDepKeys[accessToIndex(AccessMode::Write)];
+    DataObjIDColl& inputKeys = m_dataDepKeys[accessToIndex(AccessMode::Read)];
+    for ( const auto& outputKey : outputKeys ) {
+      auto inputPos = inputKeys.find( outputKey );
+      if ( inputPos != inputKeys.end() ) {
         // Call the user circular dependency handler on each dependency
         switch ( circularDepHandler( *inputPos ) ) {
         // Abort iteration if asked to do so
@@ -283,7 +251,7 @@ protected:
 
         // Break the circular dependency otherwise
         case CircularDepAction::Ignore:
-          m_inputKeys.erase( inputPos );
+          inputKeys.erase( inputPos );
         }
       }
     }
@@ -303,35 +271,22 @@ protected:
   /// Tool/Algorithm have been collected. This includes implicit
   /// dependencies, if applicable.
   ///
-  void addImplicitDeps( const IDataHandleHolder* child )
+  void collectImplicitDataDependencies( const IDataHandleHolder* child )
   {
-    if ( !child ) return;
-    extractInputs( child->inputKeys() );
-    extractOutputs( child->outputKeys() );
+    if ( !child ) return;  // Framework randomly sends nulls to this function...
+    collectDependencies( child->allDataDependencies() );
   }
 
-  /// Tell which input dependencies have been ignored due to an empty key
+  /// Tell which data dependencies have been ignored due to an empty key
   ///
   /// The interface caveats described in inputKeys() also apply here.
   ///
-  const DataObjIDColl& ignoredInputs() const
+  const DataObjIDColl& ignoredDataDependencies( AccessMode access ) const
   {
     if ( !m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot read ignored inputs before data dependency collection", this->name(), StatusCode::FAILURE );
+      throw GaudiException( "Cannot read ignored data dependencies before they are collected", this->name(), StatusCode::FAILURE );
     }
-    return m_ignoredInputs;
-  }
-
-  /// Tell which output dependencies have been ignored due to an empty key
-  ///
-  /// The interface caveats described in inputKeys() also apply here.
-  ///
-  const DataObjIDColl& ignoredOutputs() const
-  {
-    if ( !m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot read ignored outputs before data dependency collection", this->name(), StatusCode::FAILURE );
-    }
-    return m_ignoredOutputs;
+    return m_ignoredDataDeps[accessToIndex(access)];
   }
 
   /// Initialize the DataHandles
@@ -339,28 +294,41 @@ protected:
   /// This operation accesses framework services and must therefore be run
   /// after the host Algorithm or AlgTool has been sysInitialized.
   ///
-  void initDataHandleHolder()
+  void initializeDataHandleHolder()
   {
-    for ( auto h : m_legacyHandles ) h->init();
-    initializeHandles( m_inputHandles );
-    initializeHandles( m_outputHandles );
+    for ( auto handle : m_legacyHandles ) handle->init();
+
+    for ( auto handleArray : m_dataHandles ) {
+      for ( auto handle: handleArray ) {
+        handle->initialize( *this );
+      }
+    }
   }
 
 private:
+  // We need to know the number of DataHandle access modes
+  static constexpr size_t NUM_ACCESS_MODES = static_cast<size_t>(AccessMode::NUM_ACCESS_MODES);
+
   // Data handles associated with input and output data
   using DataHandleList = std::vector<Gaudi::v2::DataHandle*>;
-  DataHandleList m_inputHandles, m_outputHandles;
+  DataHandleList m_dataHandles[NUM_ACCESS_MODES];
 
   // Legacy DataHandles
   std::unordered_set<Gaudi::v1::DataHandle*> m_legacyHandles;
 
   // Properties allowing extra input and output dependencies to be
-  // declared at configuration time
-  Gaudi::Property<DataObjIDColl> m_extraInputs{this, "ExtraInputs", DataObjIDColl{}};
-  Gaudi::Property<DataObjIDColl> m_extraOutputs{this, "ExtraOutputs", DataObjIDColl{}};
+  // declared at configuration time.
+  static_assert( NUM_ACCESS_MODES == 2,
+                 "This part of the code assumes that there are only two DataHandle access modes" );
+  static_assert( static_cast<size_t>( AccessMode::Read ) == 0,
+                 "This part of the code assumes that \"Read\" comes first in the AccessMode enum" );
+  Gaudi::Property<DataObjIDColl> m_extraDeps[NUM_ACCESS_MODES] {
+    { this, "ExtraInputs", DataObjIDColl{} },
+    { this, "ExtraOutputs", DataObjIDColl{} }
+  };
 
   // Location where all data dependencies will be eventually collected
-  DataObjIDColl m_inputKeys, m_outputKeys;
+  DataObjIDColl m_dataDepKeys[NUM_ACCESS_MODES];
 
   /// Truth that all explicit data dependencies have already been
   /// collected in a single list.
@@ -368,24 +336,31 @@ private:
 
   // Places where we keep track of the inputs and outputs that were
   // ignored because they had an empty key
-  DataObjIDColl m_ignoredInputs, m_ignoredOutputs;
+  DataObjIDColl m_ignoredDataDeps[NUM_ACCESS_MODES];
 
-  /// Check if an input key has not been declared before
-  bool isNewInput( const DataObjID& key ) const {
-    return m_inputKeys.find( key ) == m_inputKeys.end();
+  /// Convert a data dependency access mode to its index in our internal storage
+  static size_t accessToIndex( AccessMode access ) {
+    return static_cast<size_t>( access );
   }
 
-  /// Check if an output key has not been declared before
-  bool isNewOutput( const DataObjID& key ) const {
-    return m_outputKeys.find( key ) == m_outputKeys.end();
+  /// Check if a data dependency has not been declared before (new DataHandle version)
+  bool isNewDataDependency( const Gaudi::v2::DataHandle& handle ) const {
+    auto index = accessToIndex( handle.access() );
+    return m_dataDepKeys[index].find( handle.targetKey() ) == m_dataDepKeys[index].end();
   }
 
-  /// Initialize a set of handles
-  void initializeHandles( DataHandleList& handles )
-  {
-    for ( auto handlePtr : handles ) {
-      handlePtr->initialize( *this );
+  /// Check if a data dependency has not been declared before (new DataHandle version)
+  bool isNewDataDependency( const Gaudi::v1::DataHandle& handle ) const {
+    bool result = false;
+    if ( handle.mode() & Gaudi::v1::DataHandle::Reader ) {
+      auto index = accessToIndex( AccessMode::Read );
+      result &= ( m_dataDepKeys[index].find( handle.fullKey() ) == m_dataDepKeys[index].end() );
     }
+    if ( handle.mode() & Gaudi::v1::DataHandle::Writer ) {
+      auto index = accessToIndex( AccessMode::Write );
+      result &= ( m_dataDepKeys[index].find( handle.fullKey() ) == m_dataDepKeys[index].end() );
+    }
+    return result;
   }
 
   /// Access the key of a DataHandle
@@ -396,6 +371,18 @@ private:
 
   /// Access the key of a legacy (non-reentrant) DataHandle
   static const DataObjID& accessKey( const Gaudi::v1::DataHandle* handlePtr ) { return handlePtr->fullKey(); }
+
+  /// Extract the key of a key holder, putting empty keys on an ignore list
+  template <typename KeyHolder>
+  static void extractKey( DataObjIDColl& validOutput, DataObjIDColl& ignoredOutput, const KeyHolder& holder )
+  {
+    const DataObjID& key = accessKey( holder );
+    if ( !key.empty() ) {
+      validOutput.insert( key );
+    } else {
+      ignoredOutput.insert( key );
+    }
+  }
 
   /// Extract non-empty DataObjID keys from a collection of key holders
   ///
@@ -409,27 +396,36 @@ private:
   {
     validOutput.reserve( keyHolders.size() );
     for ( const auto& holder : keyHolders ) {
-      const DataObjID& key = accessKey( holder );
-      if ( !key.empty() ) {
-        validOutput.insert( key );
-      } else {
-        ignoredOutput.insert( key );
-      }
+      extractKey( validOutput, ignoredOutput, holder );
     }
   }
 
-  /// Specialization of extractKeys for data inputs
   template <typename KeyHolderColl>
-  void extractInputs( const KeyHolderColl& keyHolders )
-  {
-    extractKeys( m_inputKeys, m_ignoredInputs, keyHolders );
+  void collectDependencies( const KeyHolderColl keyHolderArray[] ) {
+    for ( size_t i = 0; i < NUM_ACCESS_MODES; ++i ) {
+      extractKeys( m_dataDepKeys[i], m_ignoredDataDeps[i], keyHolderArray[i] );
+    }
   }
 
-  /// Specialization of extractKeys for data outputs
-  template <typename KeyHolderColl>
-  void extractOutputs( const KeyHolderColl& keyHolders )
-  {
-    extractKeys( m_outputKeys, m_ignoredOutputs, keyHolders );
+  /// Specialization of extractDependencies for legacy DataHandles
+  ///
+  /// These need special treatment, among other things because they can be both
+  /// reading from and writing to a given whiteboard location.
+  ///
+  void collectDependencies( const std::unordered_set<Gaudi::v1::DataHandle*> legacyHandles ) {
+    DataObjIDColl& validInputs = m_dataDepKeys[accessToIndex(AccessMode::Read)];
+    DataObjIDColl& validOutputs = m_dataDepKeys[accessToIndex(AccessMode::Write)];
+    DataObjIDColl& ignoredInputs = m_ignoredDataDeps[accessToIndex(AccessMode::Read)];
+    DataObjIDColl& ignoredOutputs = m_ignoredDataDeps[accessToIndex(AccessMode::Write)];
+
+    for ( auto handle : legacyHandles ) {
+      if ( handle->mode() & Gaudi::v1::DataHandle::Reader ) {
+        extractKey( validInputs, ignoredInputs, handle );
+      }
+      if ( handle->mode() & Gaudi::v1::DataHandle::Writer ) {
+        extractKey( validOutputs, ignoredOutputs, handle );
+      }
+    }
   }
 
   /// Update the key of a DataHandle
@@ -448,7 +444,7 @@ private:
   /// from the original key update the key using updateKey.
   ///
   template <typename KeyHolderColl>
-  static void updateKeys( KeyHolderColl& keyHolders, const DataObjIDMapping& keyMap )
+  static void updateDependencies( KeyHolderColl& keyHolders, const DataObjIDMapping& keyMap )
   {
     for ( auto& holder : keyHolders ) {
       const DataObjID& oldKey    = accessKey( holder );
@@ -461,7 +457,7 @@ private:
 
   /// Specialization of the above algorithm for DataObjIDColls, where
   /// updating the keys in place is not possible.
-  static void updateKeys( DataObjIDColl& keys, const DataObjIDMapping& keyMap )
+  static void updateDependencies( DataObjIDColl& keys, const DataObjIDMapping& keyMap )
   {
     DataObjIDColl result;
     result.reserve( keys.size() );
@@ -471,25 +467,18 @@ private:
     keys = std::move( result );
   }
 
-  /// Select the legacy data handles by operating mode (input/output)
-  std::vector<Gaudi::v1::DataHandle*> selectLegacyHandles( Gaudi::v1::DataHandle::Mode mode ) const
+  /// Specialization for properties which accesses the inner collection
+  static void updateDependencies( Gaudi::Property<DataObjIDColl>& keys, const DataObjIDMapping& keyMap )
   {
-    std::vector<Gaudi::v1::DataHandle*> result;
-    std::copy_if( std::begin( m_legacyHandles ), std::end( m_legacyHandles ), std::back_inserter( result ),
-                  [&]( const Gaudi::v1::DataHandle* hndl ) -> bool { return hndl->mode() & mode; } );
-    return result;
+    updateDependencies( keys.value(), keyMap );
   }
 
-  /// Enumerate legacy input handles
-  std::vector<Gaudi::v1::DataHandle*> legacyInputHandles() const
-  {
-    return selectLegacyHandles( Gaudi::v1::DataHandle::Reader );
-  }
-
-  /// Enumerate legacy output handles
-  std::vector<Gaudi::v1::DataHandle*> legacyOutputHandles() const
-  {
-    return selectLegacyHandles( Gaudi::v1::DataHandle::Writer );
+  /// Specialization of the above algorithm for arrays of KeyHolderColls
+  template <typename KeyHolderColl>
+  static void updateDependencies( KeyHolderColl keyHoldersArray[], const DataObjIDMapping& keyMap ) {
+    for ( size_t i = 0; i < NUM_ACCESS_MODES; ++i ) {
+      updateDependencies( keyHoldersArray[i], keyMap );
+    }
   }
 };
 

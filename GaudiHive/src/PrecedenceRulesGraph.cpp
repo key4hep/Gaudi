@@ -159,17 +159,19 @@ namespace concurrency
 
     const std::string& algoName = algo->name();
 
-    m_algoNameToAlgoInputsMap[algoName]  = algo->inputKeys();
-    m_algoNameToAlgoOutputsMap[algoName] = algo->outputKeys();
+    using AccessMode = Gaudi::v2::DataHandle::AccessMode;
+
+    m_algoNameToAlgoInputsMap[algoName]  = algo->dataDependencies( AccessMode::Read );
+    m_algoNameToAlgoOutputsMap[algoName] = algo->dataDependencies( AccessMode::Write );
 
     ON_VERBOSE
     {
       verbose() << "    Inputs of " << algoName << ": ";
-      for ( auto tag : algo->inputKeys() ) verbose() << tag << " | ";
+      for ( auto tag : algo->dataDependencies( AccessMode::Read ) ) verbose() << tag << " | ";
       verbose() << endmsg;
 
       verbose() << "    Outputs of " << algoName << ": ";
-      for ( auto tag : algo->outputKeys() ) verbose() << tag << " | ";
+      for ( auto tag : algo->dataDependencies( AccessMode::Write ) ) verbose() << tag << " | ";
       verbose() << endmsg;
     }
   }

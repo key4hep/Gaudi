@@ -7,18 +7,9 @@ namespace Gaudi
   const EventDataHandle::Metadata EventDataHandle::s_readHandleMetadata( AccessMode::Read ),
       EventDataHandle::s_writeHandleMetadata( AccessMode::Write );
 
-  void EventDataHandle::registerToOwner( IDataHandleHolder& owner, AccessMode access )
+  void EventDataHandle::registerToOwner( IDataHandleHolder& owner )
   {
-    switch ( access ) {
-    case AccessMode::Read:
-      owner.registerInput( *this );
-      break;
-    case AccessMode::Write:
-      owner.registerOutput( *this );
-      break;
-    default:
-      throw std::runtime_error( "Unsupported access mode" );
-    }
+    owner.registerDataHandle( *this );
   }
 
   void EventDataHandle::initialize( const IDataHandleHolder& owner )

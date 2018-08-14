@@ -200,14 +200,14 @@ void CPUCruncher::findPrimes( const unsigned long int n_iterations )
 void CPUCruncher::declareRuntimeRequestedOutputs()
 {
   //
-  for ( const auto& k : outputKeys() ) {
+  for ( const auto& k : dataDependencies( Gaudi::v2::DataHandle::AccessMode::Write ) ) {
     auto outputHandle = new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Writer, this );
     VERBOSE_MSG << "found late-attributed output: " << outputHandle->objKey() << endmsg;
     m_outputHandles.push_back( outputHandle );
     declareProperty( "dummy_out_" + outputHandle->objKey(), *( m_outputHandles.back() ) );
   }
 
-  initDataHandleHolder();
+  initializeDataHandleHolder();
 
   m_declAugmented = true;
 }

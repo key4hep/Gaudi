@@ -712,6 +712,11 @@ namespace Gaudi
       return value().setTargetKey( arg );
     }
     template <class T = const ValueType>
+    decltype( auto ) metadata() const
+    {
+      return value().metadata();
+    }
+    template <class T = const ValueType>
     decltype( auto ) key() const
     {
       return value().key();

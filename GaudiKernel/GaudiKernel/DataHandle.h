@@ -111,6 +111,12 @@ namespace Gaudi
       DataHandle( DataHandle&& ) = default;
       DataHandle& operator=( DataHandle&& ) = delete;
 
+      // Manner in which this DataHandle will be accessing its whiteboard
+      using AccessMode = IDataHandleMetadata::AccessMode;
+      AccessMode access() const {
+        return m_property.metadata().access();
+      }
+
       /// (Configurable) ID of the data being accessed via this handle
       ///
       /// The current proposal is to only support one ID per handle. If

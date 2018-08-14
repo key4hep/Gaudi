@@ -189,13 +189,13 @@ StatusCode AlgTool::sysInitialize()
     m_state = m_targetState;
 
     // Perfor any scheduled dependency update
-    if ( m_updateDependencies ) updateKeys( m_updateDependencies );
+    if ( m_updateDependencies ) updateDataDependencies( m_updateDependencies );
 
     // Collect all explicit dependencies in a single place
-    collectExplicitDeps();
+    collectExplicitDataDependencies();
 
     // Check for explicit circular data dependencies
-    sc = handleCircularDeps( [this]( const DataObjID& key ) -> CircularDepAction {
+    sc = handleCircularDataDependencies( [this]( const DataObjID& key ) -> CircularDepAction {
       error() << "Explicit circular data dependency detected for id " << key << endmsg;
       return CircularDepAction::Abort;
     } );
@@ -216,7 +216,7 @@ StatusCode AlgTool::sysInitialize()
       // depending on us which will be initialized in meantime.
       //
       if ( tool->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
-        addImplicitDeps( tool );
+        collectImplicitDataDependencies( tool );
         propagateUninitializedTools( tool );
       } else {
         addUninitializedTool( tool );
@@ -224,11 +224,11 @@ StatusCode AlgTool::sysInitialize()
     }
 
     // Initialize the inner DataHandles
-    initDataHandleHolder(); // this should 'freeze' the handle configuration.
+    initializeDataHandleHolder(); // this should 'freeze' the handle configuration.
 
     // Notify all tools waiting for us to be initialized
     for ( auto tool: m_toolsAwaitingInit ) {
-      tool->addImplicitDeps( this );
+      tool->collectImplicitDataDependencies( this );
       tool->propagateUninitializedTools( this );
       tool->m_uninitializedTools.erase( this );
     }

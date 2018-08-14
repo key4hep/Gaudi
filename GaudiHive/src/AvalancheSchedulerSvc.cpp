@@ -144,13 +144,15 @@ StatusCode AvalancheSchedulerSvc::initialize()
 
   DataObjIDColl globalInp, globalOutp;
 
+  using AccessMode = Gaudi::v2::DataHandle::AccessMode;
+
   // figure out all outputs
   for ( IAlgorithm* ialgoPtr : algos ) {
     Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
     if ( !algoPtr ) {
       fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
     }
-    for ( auto id : algoPtr->outputKeys() ) {
+    for ( auto id : algoPtr->dataDependencies( AccessMode::Write ) ) {
       auto r = globalOutp.insert( id );
       if ( !r.second ) {
         warning() << "multiple algorithms declare " << id << " as output! could be a single instance in multiple paths "
@@ -175,8 +177,9 @@ StatusCode AvalancheSchedulerSvc::initialize()
     ostdd << "\n  " << algoPtr->name();
 
     DataObjIDColl algoDependencies;
-    if ( !algoPtr->inputKeys().empty() || !algoPtr->outputKeys().empty() ) {
-      for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->inputKeys() ) ) {
+    if ( !algoPtr->dataDependencies( AccessMode::Read ).empty() ||
+         !algoPtr->dataDependencies( AccessMode::Write ).empty() ) {
+      for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->dataDependencies( AccessMode::Read ) ) ) {
         DataObjID id = *idp;
         ostdd << "\n    o INPUT  " << id;
         if ( id.key().find( ":" ) != std::string::npos ) {
@@ -197,7 +200,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
         algoDependencies.insert( id );
         globalInp.insert( id );
       }
-      for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->outputKeys() ) ) {
+      for ( const DataObjID* id : sortedDataObjIDColl( algoPtr->dataDependencies( AccessMode::Write ) ) ) {
         ostdd << "\n    o OUTPUT " << *id;
         if ( id->key().find( ":" ) != std::string::npos ) {
           error() << " in Alg " << algoPtr->name() << " alternatives are NOT allowed for outputs! id: " << *id
@@ -263,7 +266,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
         for ( auto& id : unmetDep ) {
           ON_DEBUG debug() << "adding OUTPUT dep \"" << id << "\" to " << dataLoaderAlg->type() << "/"
                            << dataLoaderAlg->name() << endmsg;
-          dataAlg->addDynamicOutput( id );
+          dataAlg->addDataDependency( id, AccessMode::Write );
         }
 
       } else {

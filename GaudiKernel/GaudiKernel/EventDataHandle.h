@@ -36,7 +36,7 @@ namespace Gaudi
     void initialize( const IDataHandleHolder& owner ) final override;
 
   protected:
-    using AccessMode = IDataHandleMetadata::AccessMode;
+    using AccessMode = DataHandle::AccessMode;
 
     /// DataHandle subclass metadata for event data handles
     class Metadata : public IDataHandleMetadata
@@ -66,7 +66,7 @@ namespace Gaudi
                      const Metadata& metadata )
         : DataHandle{owner, propertyName, std::move( defaultID ), docString, metadata}
     {
-      registerToOwner( owner, metadata.access() );
+      registerToOwner( owner );
     }
 
     /// Pointer to the whiteboard, set during initialize()
@@ -74,7 +74,7 @@ namespace Gaudi
 
   private:
     /// Register ourselves to the owner (algorithm or tool)
-    void registerToOwner( IDataHandleHolder& owner, AccessMode access );
+    void registerToOwner( IDataHandleHolder& owner );
   };
 
   /// Reentrant read handle for event data
@@ -82,7 +82,7 @@ namespace Gaudi
   class EventReadHandle : public EventDataHandle
   {
   protected:
-    using AccessMode = IDataHandleMetadata::AccessMode;
+    using AccessMode = DataHandle::AccessMode;
 
   public:
     /// Create a ReadHandle and set up the associated Gaudi property
@@ -112,7 +112,7 @@ namespace Gaudi
   class EventWriteHandle : public EventDataHandle
   {
   protected:
-    using AccessMode = IDataHandleMetadata::AccessMode;
+    using AccessMode = DataHandle::AccessMode;
 
   public:
     /// Create a WriteHandle and set up the associated Gaudi property

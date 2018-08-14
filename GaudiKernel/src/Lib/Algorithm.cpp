@@ -158,19 +158,20 @@ StatusCode Algorithm::sysInitialize()
   }
 
   // Perform any scheduled dependency update
-  if ( m_updateDependencies ) updateKeys( m_updateDependencies );
+  if ( m_updateDependencies ) updateDataDependencies( m_updateDependencies );
 
   // Collect all explicit dependencies in a single place
-  collectExplicitDeps();
+  collectExplicitDataDependencies();
 
   // Print a summary of the Algorithm's inputs and outputs
+  using AccessMode = Gaudi::v2::DataHandle::AccessMode;
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
-    debug() << "input handles: " << inputKeys().size() << endmsg;
-    debug() << "output handles: " << outputKeys().size() << endmsg;
+    debug() << "input handles: " << dataDependencies( AccessMode::Read ).size() << endmsg;
+    debug() << "output handles: " << dataDependencies( AccessMode::Write ).size() << endmsg;
   }
 
   // Check for explicit circular data dependencies
-  sc = handleCircularDeps( [this]( const DataObjID& key ) -> CircularDepAction {
+  sc = handleCircularDataDependencies( [this]( const DataObjID& key ) -> CircularDepAction {
     error() << "Explicit circular data dependency detected for id " << key << endmsg;
     return CircularDepAction::Abort;
   } );
@@ -185,13 +186,13 @@ StatusCode Algorithm::sysInitialize()
   }
 
   // Add tool dependencies to our dependency list
-  for ( auto tool : tools() ) addImplicitDeps( dynamic_cast<AlgTool*>( tool ) );
+  for ( auto tool : tools() ) collectImplicitDataDependencies( dynamic_cast<AlgTool*>( tool ) );
 
   // Add sub-Algorithm dependencies to our dependency list
-  for ( auto alg : *subAlgorithms() ) addImplicitDeps( alg );
+  for ( auto alg : *subAlgorithms() ) collectImplicitDataDependencies( alg );
 
   // Check for implicit circular data deps from child Algs/AlgTools
-  sc = handleCircularDeps( [this]( const DataObjID& key ) -> CircularDepAction {
+  sc = handleCircularDataDependencies( [this]( const DataObjID& key ) -> CircularDepAction {
     if ( m_filterCircDeps ) {
       warning() << "Implicit circular data dependency detected for id " << key << endmsg;
       return CircularDepAction::Ignore;
@@ -212,23 +213,23 @@ StatusCode Algorithm::sysInitialize()
     };
     // Logging
     debug() << "Data Deps for " << name();
-    for ( auto h : orderset( inputKeys() ) ) {
+    for ( auto h : orderset( dataDependencies( AccessMode::Read ) ) ) {
       debug() << "\n  + INPUT  " << h;
     }
-    for ( auto id : orderset( ignoredInputs() ) ) {
+    for ( auto id : orderset( ignoredDataDependencies( AccessMode::Read ) ) ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for ( auto h : orderset( outputKeys() ) ) {
+    for ( auto h : orderset( dataDependencies( AccessMode::Write ) ) ) {
       debug() << "\n  + OUTPUT " << h;
     }
-    for ( auto id : orderset( ignoredOutputs() ) ) {
+    for ( auto id : orderset( ignoredDataDependencies( AccessMode::Write ) ) ) {
       debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
   }
 
   // Initialize the inner DataHandles
-  initDataHandleHolder();
+  initializeDataHandleHolder();
 
   return sc;
 }

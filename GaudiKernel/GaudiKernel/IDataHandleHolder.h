@@ -40,35 +40,36 @@ namespace Gaudi
 ///
 class GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInterface, IProperty>
 {
+  using AccessMode = Gaudi::v2::DataHandle::AccessMode;
 public:
   DeclareInterfaceID( IDataHandleHolder, 1, 0 );
 
   /// Provide access to the whiteboard after initialization
   virtual SmartIF<IDataProviderSvc>& eventSvc() const = 0;
 
-  /// Register a data handle as an event data input of the algorithm
-  virtual void registerInput( Gaudi::v2::DataHandle& ) = 0;
+  /// Register a data handle of this algorithm/tool
+  virtual void registerDataHandle( Gaudi::v2::DataHandle& ) = 0;
 
-  /// Register a data handle as an event data output of the algorithm
-  virtual void registerOutput( Gaudi::v2::DataHandle& ) = 0;
+  /// Add a data dependency, even after initialization
+  virtual void addDataDependency( const DataObjID&, AccessMode ) = 0;
 
-  /// Add an event data input dynamically at run time
-  virtual void addDynamicInput( const DataObjID& ) = 0;
-
-  /// Add an event data output dynamically at run time
-  virtual void addDynamicOutput( const DataObjID& ) = 0;
-
-  /// Tell which event data keys the algorithm will be reading from
-  virtual const DataObjIDColl& inputKeys() const = 0;
-
-  /// Tell which event data keys the algorithm will be writing to
-  virtual const DataObjIDColl& outputKeys() const = 0;
+  /// Tell which whiteboard keys the algorithm will be reading or writing
+  virtual const DataObjIDColl& dataDependencies( AccessMode ) const = 0;
 
   /// Declare ownership of a legacy DataHandle
   virtual void declare( Gaudi::v1::DataHandle& ) = 0;
 
   /// Discard ownership of a legacy DataHandle
   virtual void renounce( Gaudi::v1::DataHandle& ) = 0;
+
+  // ---------------------------------------------------------------------------
+  // The following interfaces expose implementation details of the
+  // DataHandleHolderBase, and are only meant to be used by said implementation.
+  // Please refrain from using them elsewhere.
+  // ---------------------------------------------------------------------------
+
+  /// Access the internal array of data dependencies
+  virtual const DataObjIDColl* allDataDependencies() const = 0;
 };
 
 #endif // !GAUDIKERNEL_IDATAHANDLEHOLDER

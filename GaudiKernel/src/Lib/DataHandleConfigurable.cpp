@@ -1,5 +1,6 @@
 #include "GaudiKernel/DataHandleConfigurable.h"
 
+#include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/Parsers.h"
 
 using DataHandleConfigurable = Gaudi::DataHandleConfigurable;
@@ -28,13 +29,16 @@ namespace Gaudi
       toStream( v.targetKey(), o );
       o << ", whiteboard='" << v.metadata().whiteBoard() << '\'';
       o << ", access=DataHandle.AccessMode.";
+      using AccessMode = Gaudi::v2::DataHandle::AccessMode;
       switch ( v.metadata().access() ) {
-      case Gaudi::IDataHandleMetadata::AccessMode::Read:
+      case AccessMode::Read:
         o << "Read";
         break;
-      case Gaudi::IDataHandleMetadata::AccessMode::Write:
+      case AccessMode::Write:
         o << "Write";
         break;
+      default:
+        throw std::runtime_error( "Unsupported DataHandle access mode" );
       }
       o << ')';
       return o;
