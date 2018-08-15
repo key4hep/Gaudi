@@ -32,11 +32,13 @@ struct GAUDI_API IDataBroker : extend_interfaces<IInterface> {
   DeclareInterfaceID( IDataBroker, 1, 0 );
 
   /// Get the (ordered!) list of algorithms required to provide a given DataObjIDColl
-  virtual std::vector<Algorithm*> algorithmsRequiredFor( const DataObjIDColl& requested ) const = 0;
+  virtual std::vector<Algorithm*> algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                                         const std::vector<std::string>& stoppers = {} ) const = 0;
 
   /// Get the (ordered!) list of algorithms required to succesfully execute (as far as data dependencies go)
   /// the specified algorithm
-  virtual std::vector<Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg ) const = 0;
+  virtual std::vector<Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg,
+                                                         const std::vector<std::string>&     stoppers = {} ) const = 0;
 };
 
 #endif // GAUDIKERNEL_IDATABROKER

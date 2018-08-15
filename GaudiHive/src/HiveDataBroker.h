@@ -9,8 +9,10 @@ class HiveDataBrokerSvc final : public extends<Service, IDataBroker>
 public:
   using extends::extends;
 
-  std::vector<Algorithm*> algorithmsRequiredFor( const DataObjIDColl& requested ) const override;
-  std::vector<Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg ) const override;
+  std::vector<Algorithm*> algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                                 const std::vector<std::string>& stoppers = {} ) const override;
+  std::vector<Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg,
+                                                 const std::vector<std::string>&     stoppers = {} ) const override;
 
   StatusCode initialize() override;
   StatusCode finalize() override;
