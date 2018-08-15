@@ -26,7 +26,7 @@
 template <typename BASE>
 class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder>
 {
-  using Super = extends<BASE, IDataHandleHolder>;
+  using Super      = extends<BASE, IDataHandleHolder>;
   using AccessMode = Gaudi::v2::DataHandle::AccessMode;
 
 public:
@@ -44,7 +44,8 @@ public:
   void registerDataHandle( Gaudi::v2::DataHandle& handle ) final override
   {
     if ( m_explicitDepsCollected && isNewDataDependency( handle ) ) {
-      throw GaudiException( "Cannot register a new data handle after data dependency collection", this->name(), StatusCode::FAILURE );
+      throw GaudiException( "Cannot register a new data handle after data dependency collection", this->name(),
+                            StatusCode::FAILURE );
     }
     auto index = accessToIndex( handle.access() );
     m_dataHandles[index].push_back( &handle );
@@ -58,7 +59,8 @@ public:
   /// loaded on demand from a file or database. In this case, this method should
   /// be used to declare those dynamic data dependencies.
   ///
-  void addDataDependency( const DataObjID& key, AccessMode access ) final override {
+  void addDataDependency( const DataObjID& key, AccessMode access ) final override
+  {
     auto index = accessToIndex( access );
     m_dataDepKeys[index].insert( key );
   }
@@ -78,7 +80,8 @@ public:
   void declare( Gaudi::v1::DataHandle& handle ) override
   {
     if ( m_explicitDepsCollected && isNewDataDependency( handle ) ) {
-      throw GaudiException( "Cannot register a new data handle after data dependency collection", this->name(), StatusCode::FAILURE );
+      throw GaudiException( "Cannot register a new data handle after data dependency collection", this->name(),
+                            StatusCode::FAILURE );
     }
 
     if ( !handle.owner() ) {
@@ -103,8 +106,9 @@ public:
     // deleted in a harmless and non-observable fashion, right before
     // termination of the host Gaudi process.
     //
-    if ( m_explicitDepsCollected && dynamic_cast<IStateful*>(this)->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
-      throw GaudiException( "Cannot discard legacy handle after data dependency collection", this->name(), StatusCode::FAILURE );
+    if ( m_explicitDepsCollected && dynamic_cast<IStateful*>( this )->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+      throw GaudiException( "Cannot discard legacy handle after data dependency collection", this->name(),
+                            StatusCode::FAILURE );
     }
 
     if ( handle.owner() != this ) {
@@ -116,9 +120,11 @@ public:
 
   // Access the internal array of data dependencies. This is only meant for
   // internal use, but must be public as we access it via IDataHandleHolder.
-  const DataObjIDColl* allDataDependencies() const final override {
+  const DataObjIDColl* allDataDependencies() const final override
+  {
     if ( !m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot read data dependencies before they are collected", this->name(), StatusCode::FAILURE );
+      throw GaudiException( "Cannot read data dependencies before they are collected", this->name(),
+                            StatusCode::FAILURE );
     }
     return m_dataDepKeys;
   }
@@ -238,8 +244,8 @@ protected:
     // dependency handling may mutate the input dependency list,
     // invalidating any iterator to that list.
     //
-    const DataObjIDColl& outputKeys = m_dataDepKeys[accessToIndex(AccessMode::Write)];
-    DataObjIDColl& inputKeys = m_dataDepKeys[accessToIndex(AccessMode::Read)];
+    const DataObjIDColl& outputKeys = m_dataDepKeys[accessToIndex( AccessMode::Write )];
+    DataObjIDColl&       inputKeys  = m_dataDepKeys[accessToIndex( AccessMode::Read )];
     for ( const auto& outputKey : outputKeys ) {
       auto inputPos = inputKeys.find( outputKey );
       if ( inputPos != inputKeys.end() ) {
@@ -273,7 +279,7 @@ protected:
   ///
   void collectImplicitDataDependencies( const IDataHandleHolder* child )
   {
-    if ( !child ) return;  // Framework randomly sends nulls to this function...
+    if ( !child ) return; // Framework randomly sends nulls to this function...
     collectDependencies( child->allDataDependencies() );
   }
 
@@ -284,9 +290,10 @@ protected:
   const DataObjIDColl& ignoredDataDependencies( AccessMode access ) const
   {
     if ( !m_explicitDepsCollected ) {
-      throw GaudiException( "Cannot read ignored data dependencies before they are collected", this->name(), StatusCode::FAILURE );
+      throw GaudiException( "Cannot read ignored data dependencies before they are collected", this->name(),
+                            StatusCode::FAILURE );
     }
-    return m_ignoredDataDeps[accessToIndex(access)];
+    return m_ignoredDataDeps[accessToIndex( access )];
   }
 
   /// Initialize the DataHandles
@@ -299,7 +306,7 @@ protected:
     for ( auto handle : m_legacyHandles ) handle->init();
 
     for ( auto handleArray : m_dataHandles ) {
-      for ( auto handle: handleArray ) {
+      for ( auto handle : handleArray ) {
         handle->initialize( *this );
       }
     }
@@ -307,7 +314,7 @@ protected:
 
 private:
   // We need to know the number of DataHandle access modes
-  static constexpr size_t NUM_ACCESS_MODES = static_cast<size_t>(AccessMode::NUM_ACCESS_MODES);
+  static constexpr size_t NUM_ACCESS_MODES = static_cast<size_t>( AccessMode::NUM_ACCESS_MODES );
 
   // Data handles associated with input and output data
   using DataHandleList = std::vector<Gaudi::v2::DataHandle*>;
@@ -322,10 +329,8 @@ private:
                  "This part of the code assumes that there are only two DataHandle access modes" );
   static_assert( static_cast<size_t>( AccessMode::Read ) == 0,
                  "This part of the code assumes that \"Read\" comes first in the AccessMode enum" );
-  Gaudi::Property<DataObjIDColl> m_extraDeps[NUM_ACCESS_MODES] {
-    { this, "ExtraInputs", DataObjIDColl{} },
-    { this, "ExtraOutputs", DataObjIDColl{} }
-  };
+  Gaudi::Property<DataObjIDColl> m_extraDeps[NUM_ACCESS_MODES]{{this, "ExtraInputs", DataObjIDColl{}},
+                                                               {this, "ExtraOutputs", DataObjIDColl{}}};
 
   // Location where all data dependencies will be eventually collected
   DataObjIDColl m_dataDepKeys[NUM_ACCESS_MODES];
@@ -339,18 +344,18 @@ private:
   DataObjIDColl m_ignoredDataDeps[NUM_ACCESS_MODES];
 
   /// Convert a data dependency access mode to its index in our internal storage
-  static size_t accessToIndex( AccessMode access ) {
-    return static_cast<size_t>( access );
-  }
+  static size_t accessToIndex( AccessMode access ) { return static_cast<size_t>( access ); }
 
   /// Check if a data dependency has not been declared before (new DataHandle version)
-  bool isNewDataDependency( const Gaudi::v2::DataHandle& handle ) const {
+  bool isNewDataDependency( const Gaudi::v2::DataHandle& handle ) const
+  {
     auto index = accessToIndex( handle.access() );
     return m_dataDepKeys[index].find( handle.targetKey() ) == m_dataDepKeys[index].end();
   }
 
   /// Check if a data dependency has not been declared before (new DataHandle version)
-  bool isNewDataDependency( const Gaudi::v1::DataHandle& handle ) const {
+  bool isNewDataDependency( const Gaudi::v1::DataHandle& handle ) const
+  {
     bool result = false;
     if ( handle.mode() & Gaudi::v1::DataHandle::Reader ) {
       auto index = accessToIndex( AccessMode::Read );
@@ -401,7 +406,8 @@ private:
   }
 
   template <typename KeyHolderColl>
-  void collectDependencies( const KeyHolderColl keyHolderArray[] ) {
+  void collectDependencies( const KeyHolderColl keyHolderArray[] )
+  {
     for ( size_t i = 0; i < NUM_ACCESS_MODES; ++i ) {
       extractKeys( m_dataDepKeys[i], m_ignoredDataDeps[i], keyHolderArray[i] );
     }
@@ -412,11 +418,12 @@ private:
   /// These need special treatment, among other things because they can be both
   /// reading from and writing to a given whiteboard location.
   ///
-  void collectDependencies( const std::unordered_set<Gaudi::v1::DataHandle*> legacyHandles ) {
-    DataObjIDColl& validInputs = m_dataDepKeys[accessToIndex(AccessMode::Read)];
-    DataObjIDColl& validOutputs = m_dataDepKeys[accessToIndex(AccessMode::Write)];
-    DataObjIDColl& ignoredInputs = m_ignoredDataDeps[accessToIndex(AccessMode::Read)];
-    DataObjIDColl& ignoredOutputs = m_ignoredDataDeps[accessToIndex(AccessMode::Write)];
+  void collectDependencies( const std::unordered_set<Gaudi::v1::DataHandle*> legacyHandles )
+  {
+    DataObjIDColl& validInputs    = m_dataDepKeys[accessToIndex( AccessMode::Read )];
+    DataObjIDColl& validOutputs   = m_dataDepKeys[accessToIndex( AccessMode::Write )];
+    DataObjIDColl& ignoredInputs  = m_ignoredDataDeps[accessToIndex( AccessMode::Read )];
+    DataObjIDColl& ignoredOutputs = m_ignoredDataDeps[accessToIndex( AccessMode::Write )];
 
     for ( auto handle : legacyHandles ) {
       if ( handle->mode() & Gaudi::v1::DataHandle::Reader ) {
@@ -475,7 +482,8 @@ private:
 
   /// Specialization of the above algorithm for arrays of KeyHolderColls
   template <typename KeyHolderColl>
-  static void updateDependencies( KeyHolderColl keyHoldersArray[], const DataObjIDMapping& keyMap ) {
+  static void updateDependencies( KeyHolderColl keyHoldersArray[], const DataObjIDMapping& keyMap )
+  {
     for ( size_t i = 0; i < NUM_ACCESS_MODES; ++i ) {
       updateDependencies( keyHoldersArray[i], keyMap );
     }

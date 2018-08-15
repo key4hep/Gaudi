@@ -7,6 +7,7 @@ namespace Gaudi
     class FetchDataFromFile final : public Algorithm
     {
       using AccessMode = Gaudi::v2::DataHandle::AccessMode;
+
     public:
       FetchDataFromFile( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
       {

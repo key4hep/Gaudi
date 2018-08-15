@@ -41,6 +41,7 @@ namespace Gaudi
 class GAUDI_API IDataHandleHolder : virtual public extend_interfaces<INamedInterface, IProperty>
 {
   using AccessMode = Gaudi::v2::DataHandle::AccessMode;
+
 public:
   DeclareInterfaceID( IDataHandleHolder, 1, 0 );
 

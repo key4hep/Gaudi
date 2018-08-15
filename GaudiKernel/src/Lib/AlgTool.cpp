@@ -227,7 +227,7 @@ StatusCode AlgTool::sysInitialize()
     initializeDataHandleHolder(); // this should 'freeze' the handle configuration.
 
     // Notify all tools waiting for us to be initialized
-    for ( auto tool: m_toolsAwaitingInit ) {
+    for ( auto tool : m_toolsAwaitingInit ) {
       tool->collectImplicitDataDependencies( this );
       tool->propagateUninitializedTools( this );
       tool->m_uninitializedTools.erase( this );
@@ -475,20 +475,19 @@ void AlgTool::initToolHandles() const
   m_toolHandlesInit = true;
 }
 
-
-void AlgTool::addUninitializedTool( AlgTool* tool ) {
+void AlgTool::addUninitializedTool( AlgTool* tool )
+{
   if ( tool == this ) return;
   m_uninitializedTools.insert( tool );
   tool->m_toolsAwaitingInit.insert( this );
 }
 
-
-void AlgTool::propagateUninitializedTools( AlgTool* tool ) {
-  for ( auto uninitializedTool: tool->m_uninitializedTools ) {
+void AlgTool::propagateUninitializedTools( AlgTool* tool )
+{
+  for ( auto uninitializedTool : tool->m_uninitializedTools ) {
     addUninitializedTool( uninitializedTool );
   }
 }
-
 
 const std::vector<IAlgTool*>& AlgTool::tools() const
 {

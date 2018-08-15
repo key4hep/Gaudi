@@ -46,7 +46,7 @@ namespace Gaudi
     /// * The Read access mode provides the ability to read data from a
     ///   previously written whiteboard location any number of times.
     ///
-    enum struct AccessMode { Read = 0, Write, NUM_ACCESS_MODES };
+    enum struct AccessMode { Read     = 0, Write, NUM_ACCESS_MODES };
     virtual AccessMode access() const = 0;
 
     // TODO: Conversion to and from the Python representation of a

@@ -113,9 +113,7 @@ namespace Gaudi
 
       // Manner in which this DataHandle will be accessing its whiteboard
       using AccessMode = IDataHandleMetadata::AccessMode;
-      AccessMode access() const {
-        return m_property.metadata().access();
-      }
+      AccessMode access() const { return m_property.metadata().access(); }
 
       /// (Configurable) ID of the data being accessed via this handle
       ///

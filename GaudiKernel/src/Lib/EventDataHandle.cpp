@@ -7,10 +7,7 @@ namespace Gaudi
   const EventDataHandle::Metadata EventDataHandle::s_readHandleMetadata( AccessMode::Read ),
       EventDataHandle::s_writeHandleMetadata( AccessMode::Write );
 
-  void EventDataHandle::registerToOwner( IDataHandleHolder& owner )
-  {
-    owner.registerDataHandle( *this );
-  }
+  void EventDataHandle::registerToOwner( IDataHandleHolder& owner ) { owner.registerDataHandle( *this ); }
 
   void EventDataHandle::initialize( const IDataHandleHolder& owner )
   {
