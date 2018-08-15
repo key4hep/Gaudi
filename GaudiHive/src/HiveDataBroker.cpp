@@ -66,12 +66,13 @@ StatusCode HiveDataBrokerSvc::initialize()
                       this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{*alg} << endmsg;
                     } );
   //== Print the list of the created algorithms
-  MsgStream& msg = info();
-  msg << "Available DataProducers: ";
-  GaudiUtils::details::ostream_joiner( msg, m_algorithms, ", ", []( auto& os, const AlgEntry& e ) -> decltype( auto ) {
-    return os << AlgorithmRepr{*e.alg};
-  } );
-  msg << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) {
+    MsgStream& msg = debug();
+    msg << "Available DataProducers: ";
+    GaudiUtils::details::ostream_joiner( msg, m_algorithms, ", ", []( auto& os, const AlgEntry& e ) -> decltype(
+                                                                      auto ) { return os << AlgorithmRepr{*e.alg}; } );
+    msg << endmsg;
+  }
 
   // populate m_dependencies
   m_dependencies = mapProducers( m_algorithms );
@@ -174,12 +175,12 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
     for ( const DataObjID* idp : input ) {
       DataObjID id = *idp;
       if ( id.key().find( ":" ) != std::string::npos ) {
-        info() << " contains alternatives which require resolution...\n";
+        warning() << " contains alternatives which require resolution...\n";
         auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
         auto itok   = std::find_if( tokens.begin(), tokens.end(),
                                   [&]( DataObjID t ) { return producers.find( t ) != producers.end(); } );
         if ( itok != tokens.end() ) {
-          info() << "found matching output for " << *itok << " -- updating info\n";
+          warning() << "found matching output for " << *itok << " -- updating info\n";
           id.updateKey( *itok );
           warning() << "Please update input to not require alternatives, and "
                        "instead properly configure the dataloader"
@@ -203,7 +204,8 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
   return producers;
 }
 
-std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl& requested ) const
+std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                                                  const std::vector<std::string>& stoppers ) const
 {
   std::vector<Algorithm*> result;
 
@@ -212,15 +214,38 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjI
 
   // start with seeding from the initial request
   for ( const auto& req : requested ) {
-    auto i = m_dependencies.find( req );
-    if ( i == m_dependencies.end() ) throw GaudiException( "unknown requested input", __func__, StatusCode::FAILURE );
+    DataObjID id = req;
+    if ( id.key().find( ":" ) != std::string::npos ) {
+      warning() << req.key() << " contains alternatives which require resolution...\n";
+      auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
+      auto itok   = std::find_if( tokens.begin(), tokens.end(),
+                                [&]( DataObjID t ) { return m_dependencies.find( t ) != m_dependencies.end(); } );
+      if ( itok != tokens.end() ) {
+        warning() << "found matching output for " << *itok << " -- updating info\n";
+        id.updateKey( *itok );
+        warning() << "Please update input to not require alternatives, and "
+                     "instead properly configure the dataloader"
+                  << endmsg;
+      } else {
+        error() << "failed to find alternate in global output list"
+                << " for id: " << id << endmsg;
+      }
+    }
+    auto i = m_dependencies.find( id );
+    if ( i == m_dependencies.end() )
+      throw GaudiException( "unknown requested input: " + id.key(), __func__, StatusCode::FAILURE );
     deps.push_back( i->second );
   }
   // insert the (direct) dependencies of 'current' right after 'current', and
   // interate until done...
   for ( auto current = deps.begin(); current != deps.end(); ++current ) {
+    if ( std::any_of( std::begin( stoppers ), std::end( stoppers ),
+                      [current]( auto& stopper ) { return ( *current )->alg->name() == stopper; } ) ) {
+      continue;
+    }
     for ( auto* entry : ( *current )->dependsOn ) {
       if ( std::find( std::next( current ), deps.end(), entry ) != deps.end() ) continue; // already there downstream...
+
       auto dup = std::find( deps.begin(), current, entry );
       // if present upstream, move it downstream. Otherwise, insert
       // downstream...
@@ -232,10 +257,14 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjI
   return {begin( range ), end( range )};
 }
 
-std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& requested ) const
+std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& requested,
+                                                                  const std::vector<std::string>&     stoppers ) const
 {
+  std::vector<Algorithm*> result;
+
   auto alg = std::find_if( begin( m_cfnodes ), end( m_cfnodes ),
                            [&]( const AlgEntry& ae ) { return ae.alg->name() == requested.name(); } );
+
   if ( alg != end( m_cfnodes ) && alg->alg->type() != requested.type() ) {
     error() << "requested " << requested << " but have matching name with different type: " << alg->alg->type()
             << endmsg;
@@ -248,12 +277,16 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::U
   }
   assert( alg != end( m_cfnodes ) );
   assert( alg->alg != nullptr );
-  auto result = algorithmsRequiredFor( alg->alg->inputDataObjs() );
+  if ( std::find_if( std::begin( stoppers ), std::end( stoppers ),
+                     [&requested]( auto& stopper ) { return requested.name() == stopper; } ) == std::end( stoppers ) ) {
+    result = algorithmsRequiredFor( alg->alg->inputDataObjs(), stoppers );
+  }
   result.push_back( alg->alg );
-  info() << " requested " << requested << " returning ";
-  GaudiUtils::details::ostream_joiner( info(), result, ", ", []( auto& os, const Algorithm* a ) -> decltype( auto ) {
-    return os << AlgorithmRepr{*a};
-  } );
-  info() << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << std::endl << "requested " << requested << " returning " << std::endl << "  ";
+    GaudiUtils::details::ostream_joiner( debug(), result, ",\n  ", []( auto& os, const Algorithm* a ) -> decltype(
+                                                                       auto ) { return os << AlgorithmRepr{*a}; } );
+    debug() << std::endl << endmsg;
+  }
   return result;
 }
