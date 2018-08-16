@@ -317,12 +317,31 @@ namespace Gaudi
         iterator  begin() const { return m_containers.begin(); }
         iterator  end() const { return m_containers.end(); }
         size_type size() const { return m_containers.size(); }
-        const Container& operator[]( size_type i ) const { return *m_containers[i]; }
-        const Container& at( size_type i ) const
+
+        template <typename X = Container>
+        std::enable_if_t<!std::is_pointer<X>::value, ref_t> operator[]( size_type i ) const
         {
-          if ( UNLIKELY( i >= size() ) ) throw std::out_of_range{"vector_of_const_::at"};
           return *m_containers[i];
         }
+
+        template <typename X = Container>
+        std::enable_if_t<std::is_pointer<X>::value, ptr_t> operator[]( size_type i ) const
+        {
+          return m_containers[i];
+        }
+
+        template <typename X = Container>
+        std::enable_if_t<!std::is_pointer<X>::value, ref_t> at( size_type i ) const
+        {
+          return *m_containers[i];
+        }
+
+        template <typename X = Container>
+        std::enable_if_t<std::is_pointer<X>::value, ptr_t> at( size_type i ) const
+        {
+          return m_containers[i];
+        }
+
         bool is_null( size_type i ) const { return !m_containers[i]; }
       };
 
