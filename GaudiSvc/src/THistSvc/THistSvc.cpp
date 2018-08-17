@@ -580,7 +580,9 @@ StatusCode THistSvc::deReg( const std::string& id )
   vhid_t* vh = itr->second;
   debug() << "will deregister " << vh->size() << " elements of id \"" << id << "\"" << endmsg;
   StatusCode sc( StatusCode::SUCCESS );
-  while ( vh->size() > 0 ) {
+  // vh will get deleted in deReg once empty, so we cannot query the list size in the loop
+  size_t vh_size = vh->size();
+  while ( vh_size-- ) {
     if ( deReg( vh->back().obj ).isFailure() ) {
       sc = StatusCode::FAILURE;
       error() << "Problems deRegistering " << vh->size() << " element of id \"" << id << "\"" << endmsg;

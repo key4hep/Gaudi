@@ -89,7 +89,7 @@ StatusCode THistWrite::initialize()
 
   TH1D* h7 = new TH1D( "TempHist7", "Temporary Tree 7", 100, 0., 100. );
   if ( m_ths->regHist( "TempHist7", h7 ).isFailure() ) {
-    error() << "Couldn't register TempHist6" << endmsg;
+    error() << "Couldn't register TempHist7" << endmsg;
   }
   if ( strcmp( h7->GetName(), "TempHist7" ) ) {
     error() << "Couldn't use TempHist7 afterwards. getName = " << h7->GetName() << endmsg;
@@ -276,6 +276,10 @@ StatusCode THistWrite::finalize()
 //------------------------------------------------------------------------------
 {
   info() << "Finalizing..." << endmsg;
+
+  if ( m_ths->deReg( "/temp/TempHist6" ).isFailure() ) {
+    error() << "Failed to deregister histogram TempHist6" << endmsg;
+  }
 
   TH1* h7 = nullptr;
   if ( m_ths->getHist( "TempHist7", h7 ).isFailure() ) {
