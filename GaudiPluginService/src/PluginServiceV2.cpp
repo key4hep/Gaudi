@@ -278,8 +278,9 @@ namespace Gaudi
 
           if ( f != facts.end() ) {
             if ( load && !f->second.is_set() ) {
-              if ( !dlopen( f->second.library.c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
-                logger().warning( "cannot load " + f->second.library + " for factory " + id );
+              const std::string library = f->second.library;
+              if ( !dlopen( library.c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
+                logger().warning( "cannot load " + library + " for factory " + id );
                 char* dlmsg = dlerror();
                 if ( dlmsg ) logger().warning( dlmsg );
                 return unknown;
