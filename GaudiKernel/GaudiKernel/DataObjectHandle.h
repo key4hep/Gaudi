@@ -55,7 +55,8 @@ namespace details
       const auto* registry = dataObj->registry();
       throw GaudiException( "The type expected for " + registry->identifier() + " is " +
                                 System::typeinfoName( typeid( Type ) ) +
-                                " and is different from the one of the object in the store.",
+                                " and is different from the one of the object in the store which is " +
+                                System::typeinfoName( typeid( *dataObj ) ) + ".",
                             "Wrong DataObjectType", StatusCode::FAILURE );
     }
     assert( obj == static_cast<Type*>( dataObj ) );
@@ -205,7 +206,9 @@ auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range
   if ( UNLIKELY( !m_converter ) ) {
     m_converter = details::select_range_converter<ValueType>( dataObj );
     if ( !m_converter ) {
-      throw GaudiException( "The type requested for " + objKey() + " cannot be obtained from object in event store",
+      throw GaudiException( "The type requested for " + objKey() + " (" + System::typeinfoName( typeid( ValueType ) ) +
+                                ")" + " cannot be obtained from object in event store" + " (" +
+                                System::typeinfoName( typeid( *dataObj ) ) + ").",
                             "Wrong DataObjectType", StatusCode::FAILURE );
     }
   }
