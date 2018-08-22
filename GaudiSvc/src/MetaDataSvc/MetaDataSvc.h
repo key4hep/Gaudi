@@ -7,6 +7,7 @@
 
 #ifndef GAUDISVC_SRC_METADATASVC_METADATASVC_H_
 #define GAUDISVC_SRC_METADATASVC_METADATASVC_H_
+
 #include "GaudiKernel/IMetaDataSvc.h"
 #include "GaudiKernel/Service.h"
 
