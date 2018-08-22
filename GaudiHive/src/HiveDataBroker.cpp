@@ -1,5 +1,6 @@
 #include "HiveDataBroker.h"
 #include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/System.h"
@@ -49,6 +50,8 @@ namespace
     StatusCode  sc = am.createAlgorithm( type, name, tmp );
     return {sc.isSuccess() ? dynamic_cast<Algorithm*>( tmp ) : nullptr};
   }
+
+  using AccessMode = Gaudi::v2::DataHandle::AccessMode;
 }
 
 StatusCode HiveDataBrokerSvc::initialize()
@@ -188,7 +191,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
   // figure out all outputs
   std::map<DataObjID, AlgEntry*> producers;
   for ( AlgEntry& alg : algorithms ) {
-    const auto& output = alg.alg->outputDataObjs();
+    const auto& output = alg.alg->dataDependencies( AccessMode::Write );
     if ( output.empty() ) {
       error() << AlgorithmRepr{*algorithms.back().alg} << " does not produce any data -- should not appear in list of "
                                                           "producers. Ignoring."
@@ -220,7 +223,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
 
   // resolve dependencies
   for ( auto& algEntry : algorithms ) {
-    auto input = sortedDataObjIDColl( algEntry.alg->inputDataObjs() );
+    auto input = sortedDataObjIDColl( algEntry.alg->dataDependencies( AccessMode::Read ) );
     for ( const DataObjID* idp : input ) {
       DataObjID id = *idp;
       if ( id.key().find( ":" ) != std::string::npos ) {
@@ -328,7 +331,7 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::U
   assert( alg->alg != nullptr );
   if ( std::find_if( std::begin( stoppers ), std::end( stoppers ),
                      [&requested]( auto& stopper ) { return requested.name() == stopper; } ) == std::end( stoppers ) ) {
-    result = algorithmsRequiredFor( alg->alg->inputDataObjs(), stoppers );
+    result = algorithmsRequiredFor( alg->alg->dataDependencies( AccessMode::Read ), stoppers );
   }
   result.push_back( alg->alg );
   if ( msgLevel( MSG::DEBUG ) ) {

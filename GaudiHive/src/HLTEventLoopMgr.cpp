@@ -263,7 +263,8 @@ StatusCode HLTEventLoopMgr::initialize()
       info() << "\n  " << algoPtr->name();
 
       DataObjIDColl algoDependencies;
-      if ( !algoPtr->dataDependencies( AccessMode::Read ).empty() || !algoPtr->dataDependencies( AccessMode::Write ).empty() ) {
+      if ( !algoPtr->dataDependencies( AccessMode::Read ).empty() ||
+           !algoPtr->dataDependencies( AccessMode::Write ).empty() ) {
         for ( const DataObjID* idp : sortedDataObjIDColl( algoPtr->dataDependencies( AccessMode::Read ) ) ) {
           DataObjID id = *idp;
           info() << "\n    o INPUT  " << id;
