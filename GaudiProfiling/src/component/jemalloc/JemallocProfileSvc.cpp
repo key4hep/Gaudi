@@ -67,7 +67,9 @@ StatusCode JemallocProfileSvc::initialize()
 // Finalization of the service.
 StatusCode JemallocProfileSvc::finalize()
 {
-
+  if ( m_profiling ) {
+    stopProfiling();
+  }
   // unregistering from the IncidentSvc
   m_incidentSvc->removeListener( this, IncidentType::BeginEvent );
   m_incidentSvc->removeListener( this, IncidentType::EndEvent );
