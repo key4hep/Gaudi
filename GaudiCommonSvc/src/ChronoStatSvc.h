@@ -160,7 +160,7 @@ private:
 
   Gaudi::Property<std::string> m_header{
       this, "StatTableHeader",
-      "     Counter     |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
+      " |    Counter     |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
       "The header row for the output Stat-table"};
   Gaudi::Property<bool> m_useEffFormat{this, "UseEfficiencyRowFormat", true,
                                        "Use the special format for printout of efficiency counters"};

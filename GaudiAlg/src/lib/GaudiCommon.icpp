@@ -533,7 +533,7 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
   for ( const auto& entry : m_counters ) {
     std::ostringstream ost;
     entry.second.get().print( ost, entry.first );
-    msg << "\n |" << ost.str();
+    msg << "\n" << ost.str();
   }
   //
   msg << endmsg;

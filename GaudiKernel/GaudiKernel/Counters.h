@@ -673,7 +673,7 @@ namespace Gaudi
       {
         std::string fmt( "#=%|-7lu|" );
         if ( tableFormat ) {
-          fmt = "|%|7d| |";
+          fmt = "|%|10d| |";
         }
         o << boost::format{fmt} % this->nEntries();
         return o;
@@ -692,7 +692,7 @@ namespace Gaudi
       {
         std::string fmt;
         if ( tableFormat ) {
-          fmt = "|%|7d| |%|11.7g| |%|#11.5g| |";
+          fmt = "|%|10d| |%|11.7g| |%|#11.5g| |";
         } else {
           fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g|";
         }
@@ -714,7 +714,7 @@ namespace Gaudi
       {
         std::string fmt;
         if ( tableFormat ) {
-          fmt = "|%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |";
+          fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |";
         } else {
           fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g|";
         }
@@ -733,7 +733,7 @@ namespace Gaudi
       {
         std::string fmt;
         if ( tableFormat ) {
-          fmt = "|%|7d| |%|11.7g| |%|#11.5g| |%|#10.5g| |%|#10.5g| |%|#10.5g| |";
+          fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
         } else {
           fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|";
         }
@@ -742,6 +742,9 @@ namespace Gaudi
       }
     };
 
+    /**
+     * A counter dealing with binomial data
+     */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct BinomialCounter : BufferableCounter<bool, Atomicity, BinomialCounter>,
                              BinomialAccumulator<Arithmetic, Atomicity> {
@@ -750,7 +753,7 @@ namespace Gaudi
       {
         std::string fmt;
         if ( tableFormat ) {
-          fmt = "|%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|";
+          fmt = "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%% |";
         } else {
           fmt = "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|";
         }
@@ -761,10 +764,22 @@ namespace Gaudi
       virtual std::ostream& print( std::ostream& o, const std::string& tag ) const override
       {
         // override default print to add a '*' in from of the name
-        o << boost::format{"*| %|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
+        o << boost::format{" |*%|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
         return print( o, true );
       }
     };
+
+    /**
+     * A helper function for accumulating data from a container into a counter
+     * This is internally using buffers so that the original counter is only
+     * updated once.
+     */
+    template <typename Counter, typename Container, typename Fun>
+    void accumulate( Counter& counter, const Container& container, Fun f = Identity{} )
+    {
+      auto b = counter.buffer();
+      for ( const auto& elem : container ) b += f( elem );
+    }
 
   } // namespace Accumulators
 
@@ -899,7 +914,7 @@ public:
           return o << boost::format{fmt} % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
                           ( efficiencyErr() * 100 );
         } else {
-          fmt = "*" + fmtHead + "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
+          fmt = " |*" + fmtHead + "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
           return o << boost::format{fmt} % ( "\"" + name + "\"" ) % BinomialAccParent::nEntries() % sum() %
                           ( efficiency() * 100 ) % ( efficiencyErr() * 100 );
         }
@@ -917,7 +932,7 @@ public:
           return o << boost::format{fmt} % nEntries() % sum() % mean() % standard_deviation() % min() % max();
 
         } else {
-          fmt = " " + fmtHead + "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
+          fmt = " | " + fmtHead + "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
           return o << boost::format{fmt} % ( "\"" + name + "\"" ) % nEntries() % sum() % mean() % standard_deviation() %
                           min() % max();
         }
