@@ -106,7 +106,8 @@ public:
     // deleted in a harmless and non-observable fashion, right before
     // termination of the host Gaudi process.
     //
-    if ( m_explicitDepsCollected && dynamic_cast<IStateful*>( this )->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+    if ( m_explicitDepsCollected &&
+         dynamic_cast<IStateful*>( this )->targetFSMState() >= Gaudi::StateMachine::INITIALIZED ) {
       throw GaudiException( "Cannot discard legacy handle after data dependency collection", this->name(),
                             StatusCode::FAILURE );
     }
