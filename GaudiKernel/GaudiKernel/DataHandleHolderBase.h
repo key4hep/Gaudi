@@ -101,10 +101,8 @@ public:
     // dependency list, and to our clients that have queried and potentially
     // made copies of this list, such as the Scheduler.
     //
-    // Nevertheless, we must tolerate this operation after an Algorithm or
-    // AlgTool has been finalized, because its inner DataHandles will then be
-    // deleted in a harmless and non-observable fashion, right before
-    // termination of the host Gaudi process.
+    // Nevertheless, this operation is safe and should be allowed during
+    // and after Algorithm finalization.
     //
     if ( m_explicitDepsCollected &&
          dynamic_cast<IStateful*>( this )->targetFSMState() >= Gaudi::StateMachine::INITIALIZED ) {
