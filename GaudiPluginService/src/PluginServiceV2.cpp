@@ -31,7 +31,7 @@
 #include <dlfcn.h>
 #endif
 
-#if __GNUC__ >= 8
+#if __GNUC__ >= 8 && __cplusplus >= 201703
 #include <filesystem>
 namespace fs = std::filesystem;
 #else
