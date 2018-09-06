@@ -54,7 +54,7 @@ public:
   boost::optional<std::size_t> size() const override
   {
     // TODO: C++17:  add 'using std::size' and remove the first two implementations in details...
-    using details::size;
+    using ::details::size;
     return size( m_data );
   }
 

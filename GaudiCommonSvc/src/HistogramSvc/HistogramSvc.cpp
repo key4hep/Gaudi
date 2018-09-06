@@ -93,7 +93,7 @@ StatusCode HistogramSvc::registerObject( DataObject* pPar, const string& obj, IB
     if ( !hObj->annotation().addItem( "id", obj ) ) hObj->annotation().setValue( "id", obj );
   }
   // Register the histogram in the histogram data store
-  return DataSvc::registerObject( pPar, obj, detail::cast( hObj ) );
+  return DataSvc::registerObject( pPar, obj, ::detail::cast( hObj ) );
 }
 
 // Helper for 2D projections
@@ -995,7 +995,7 @@ StatusCode HistogramSvc::registerObject( const std::string& parent, int item, Ba
 // ============================================================================
 StatusCode HistogramSvc::registerObject( Base* pPar, const std::string& rel, Base* obj )
 {
-  return registerObject( detail::cast( pPar ), rel, obj );
+  return registerObject(::detail::cast( pPar ), rel, obj );
 }
 
 // ============================================================================
@@ -1007,22 +1007,22 @@ StatusCode HistogramSvc::registerObject( DataObject* pPar, int item, Base* obj )
 // ============================================================================
 StatusCode HistogramSvc::registerObject( Base* pPar, int item, Base* obj )
 {
-  return registerObject( detail::cast( pPar ), item, obj );
+  return registerObject(::detail::cast( pPar ), item, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::unregisterObject( Base* obj ) { return DataSvc::unregisterObject( detail::cast( obj ) ); }
+StatusCode HistogramSvc::unregisterObject( Base* obj ) { return DataSvc::unregisterObject(::detail::cast( obj ) ); }
 
 // ============================================================================
 StatusCode HistogramSvc::unregisterObject( Base* obj, const std::string& objectPath )
 {
-  return DataSvc::unregisterObject( detail::cast( obj ), objectPath );
+  return DataSvc::unregisterObject(::detail::cast( obj ), objectPath );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::unregisterObject( Base* obj, int item )
 {
-  return DataSvc::unregisterObject( detail::cast( obj ), item );
+  return DataSvc::unregisterObject(::detail::cast( obj ), item );
 }
 
 // ============================================================================
@@ -1209,61 +1209,61 @@ StatusCode HistogramSvc::retrieveObject( DataObject* par, int item, AIDA::IHisto
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IProfile1D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IProfile2D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IHistogram1D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IHistogram2D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, int item, AIDA::IHistogram3D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IProfile1D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IProfile2D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IHistogram1D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IHistogram2D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::retrieveObject( Base* par, const std::string& item, AIDA::IHistogram3D*& obj )
 {
-  return Helper( this ).retrieve( detail::cast( par ), item, obj );
+  return Helper( this ).retrieve(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
@@ -1443,61 +1443,61 @@ StatusCode HistogramSvc::findObject( DataObject* par, const std::string& item, A
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, int item, AIDA::IProfile1D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, int item, AIDA::IProfile2D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, int item, AIDA::IHistogram1D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, int item, AIDA::IHistogram2D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, int item, AIDA::IHistogram3D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IProfile1D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IProfile2D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IHistogram1D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IHistogram2D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::findObject( Base* par, const std::string& item, AIDA::IHistogram3D*& obj )
 {
-  return Helper( this ).find( detail::cast( par ), item, obj );
+  return Helper( this ).find(::detail::cast( par ), item, obj );
 }
 
 // ============================================================================
