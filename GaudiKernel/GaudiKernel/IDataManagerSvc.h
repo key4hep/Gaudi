@@ -3,6 +3,7 @@
 
 // Include files
 #include "GaudiKernel/ClassID.h"
+#include "GaudiKernel/IDataStoreAgent.h"
 #include "GaudiKernel/IInterface.h"
 #include "boost/utility/string_ref.hpp"
 #include <string>
@@ -13,8 +14,6 @@
 class DataObject;
 // Interface to persistency service
 class IConversionSvc;
-// Data agent
-class IDataStoreAgent;
 // Opaque addresses
 class IOpaqueAddress;
 // Registry entry definition
@@ -121,6 +120,19 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
   */
   virtual StatusCode traverseSubTree( boost::string_ref sub_path, IDataStoreAgent* pAgent ) = 0;
 
+  /** Analyse by traversing all data objects below the sub tree identified by its full path name.
+      @param      sub_path   [IN] Path to sub-tree node.
+      @param      f          [IN] callable which will be called for each data object
+                                  it should have the signature bool(IRegistry*,int level)
+      @return                     Status code indicating success or failure.
+  */
+  template <typename F, typename = std::enable_if_t<!std::is_convertible<F, IDataStoreAgent*>::value>>
+  StatusCode traverseSubTree( boost::string_ref sub_path, F&& f )
+  {
+    auto agent = makeDataStoreAgent( std::forward<F>( f ) );
+    return traverseSubTree( sub_path, &agent );
+  }
+
   /** Analyse by traversing all data objects below the sub tree
       identified by the object. The object itself is removed as well.
       @param      pObject    [IN] Pointer to object
@@ -129,10 +141,36 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
   */
   virtual StatusCode traverseSubTree( DataObject* pObject, IDataStoreAgent* pAgent ) = 0;
 
+  /** Analyse by traversing all data objects below the sub tree
+      identified by the object. The object itself is removed as well.
+      @param      pObject    [IN] Pointer to object
+      @param      f          [IN] Callable which will be called on each data object
+                                  it should have the signature bool(IRegistry*,int level)
+      @return                     Status code indicating success or failure
+  */
+  template <typename F, typename = std::enable_if_t<!std::is_convertible<F, IDataStoreAgent*>::value>>
+  StatusCode traverseSubTree( DataObject* pObject, F&& f )
+  {
+    auto agent = makeDataStoreAgent( std::forward<F>( f ) );
+    return traverseSubTree( pObject, &agent );
+  }
+
   /** Analyse by traversing all data objects in the data store.
       @return     Status code indicating success or failure
   */
   virtual StatusCode traverseTree( IDataStoreAgent* pAgent ) = 0;
+
+  /** Analyse by traversing all data objects in the data store.
+      @param      f          [IN] callable which will be called for each data object
+                                  it should have the signature bool(IRegistry*,int level)
+      @return     Status code indicating success or failure
+  */
+  template <typename F, typename = std::enable_if_t<!std::is_convertible<F, IDataStoreAgent*>::value>>
+  StatusCode traverseTree( F&& f )
+  {
+    auto agent = makeDataStoreAgent( std::forward<F>( f ) );
+    return traverseTree( &agent );
+  }
 
   /** Initialize data store for new event by giving new event path.
       Implicitly this clears the entire data store.

@@ -17,7 +17,6 @@
 #include "GaudiKernel/strcasecmp.h"
 
 #include "OutputStream.h"
-#include "OutputStreamAgent.h"
 
 #include <set>
 
@@ -27,8 +26,7 @@ DECLARE_COMPONENT( OutputStream )
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 
 // Standard Constructor
-OutputStream::OutputStream( const std::string& name, ISvcLocator* pSvcLocator )
-    : Algorithm( name, pSvcLocator ), m_agent{new OutputStreamAgent( this )}
+OutputStream::OutputStream( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
 {
   // Associate action handlers with the AcceptAlgs, RequireAlgs and VetoAlgs.
   m_acceptNames.declareUpdateHandler( &OutputStream::acceptAlgsHandler, this );
@@ -242,7 +240,7 @@ StatusCode OutputStream::collectObjects()
     m_currentItem   = i;
     StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
     if ( iret.isSuccess() ) {
-      iret                            = m_pDataManager->traverseSubTree( obj, m_agent.get() );
+      iret                            = collectFromSubTree( obj );
       if ( !iret.isSuccess() ) status = iret;
     } else {
       error() << "Cannot write mandatory object(s) (Not found) " << m_currentItem->path() << endmsg;
@@ -252,12 +250,10 @@ StatusCode OutputStream::collectObjects()
 
   // Traverse the tree and collect the requested objects (tolerate missing items here)
   for ( auto& i : m_optItemList ) {
-    DataObject* obj = nullptr;
-    m_currentItem   = i;
-    StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
-    if ( iret.isSuccess() ) {
-      iret = m_pDataManager->traverseSubTree( obj, m_agent.get() );
-    }
+    DataObject* obj              = nullptr;
+    m_currentItem                = i;
+    StatusCode iret              = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
+    if ( iret.isSuccess() ) iret = collectFromSubTree( obj );
     if ( !iret.isSuccess() ) {
       ON_DEBUG
       debug() << "Ignore request to write non-mandatory object(s) " << m_currentItem->path() << endmsg;
@@ -276,7 +272,7 @@ StatusCode OutputStream::collectObjects()
         m_currentItem   = i;
         StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
         if ( iret.isSuccess() ) {
-          iret                            = m_pDataManager->traverseSubTree( obj, m_agent.get() );
+          iret                            = collectFromSubTree( obj );
           if ( !iret.isSuccess() ) status = iret;
         } else {
           error() << "Cannot write mandatory (algorithm dependent) object(s) (Not found) " << m_currentItem->path()
@@ -561,4 +557,10 @@ bool OutputStream::isEventAccepted() const
 bool OutputStream::hasInput() const
 {
   return !( m_itemNames.empty() && m_optItemNames.empty() && m_algDependentItemList.empty() );
+}
+
+StatusCode OutputStream::collectFromSubTree( DataObject* pObj )
+{
+  return m_pDataManager->traverseSubTree( pObj,
+                                          [this]( IRegistry* r, int level ) { return this->collect( r, level ); } );
 }

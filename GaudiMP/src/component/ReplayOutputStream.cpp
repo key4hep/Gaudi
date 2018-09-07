@@ -3,7 +3,6 @@
 // From Gaudi
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataStoreAgent.h"
 // local
 #include "RecordOutputStream.h"
 #include "ReplayOutputStream.h"
@@ -116,20 +115,6 @@ StatusCode ReplayOutputStream::start()
   return i_outStreamTransition<Gaudi::StateMachine::START>();
 }
 
-namespace
-{
-  /// Helper class to collect the names of the subnodes of an entry in the
-  /// Transient Event Store.
-  struct OutputStreamsCollector : public IDataStoreAgent {
-    std::list<std::string> names;
-    bool analyse( IRegistry* pRegistry, int lvl ) override
-    {
-      if ( lvl > 0 ) names.push_back( pRegistry->name() );
-      return true;
-    }
-  };
-}
-
 // ============================================================================
 // Main execution
 // ============================================================================
@@ -137,10 +122,24 @@ StatusCode ReplayOutputStream::execute()
 {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
-  OutputStreamsCollector collector;
-  m_evtMgr->traverseSubTree( RecordOutputStream::locationRoot(), &collector );
+  std::vector<std::string> names;
+  m_evtMgr->traverseSubTree( RecordOutputStream::locationRoot(), [&names]( IRegistry* pReg, int lvl ) {
+    if ( lvl > 0 ) names.push_back( pReg->name() );
+    return true;
+  } );
 
-  std::for_each( collector.names.begin(), collector.names.end(), OutStreamTrigger( this ) );
+  std::for_each( names.begin(), names.end(), [this]( const std::string& name ) {
+    SmartIF<IAlgorithm>& alg = this->m_outputStreams[name];
+    if ( alg ) {
+      if ( !alg->isExecuted() ) {
+        alg->sysExecute( Gaudi::Hive::currentContext() );
+      } else {
+        this->warning() << name << " already executed for the current event" << endmsg;
+      }
+    } else {
+      this->warning() << "invalid OuputStream " << name << endmsg;
+    }
+  } );
 
   return StatusCode::SUCCESS;
 }

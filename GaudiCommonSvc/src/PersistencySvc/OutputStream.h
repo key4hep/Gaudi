@@ -6,7 +6,6 @@
 #include "GaudiKernel/IDataSelector.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Property.h"
-#include "OutputStreamAgent.h"
 
 // STL include files
 #include <memory>
@@ -73,8 +72,6 @@ protected:
 
   /// Output type: NEW(NEW,CREATE,WRITE,RECREATE), UPDATE)
   std::string m_outputType = "UPDATE";
-  /// Keep reference of agent
-  std::unique_ptr<OutputStreamAgent> m_agent;
   /// Keep reference to the data provider service
   SmartIF<IDataProviderSvc> m_pDataProvider;
   /// Keep reference to the data manager service
@@ -157,6 +154,8 @@ private:
   void addItem( Items& itms, const std::string& descriptor );
   /// Return the list of selected objects
   IDataSelector* selectedObjects() { return &m_objects; }
+
+  StatusCode collectFromSubTree( DataObject* );
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_H
