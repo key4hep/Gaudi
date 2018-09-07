@@ -89,20 +89,6 @@ namespace
   {
     std::for_each( begin( c ), end( c ), with_lock( std::forward<Fun>( f ) ) );
   }
-
-  class DataAgent : virtual public IDataStoreAgent
-  {
-    DataObjIDColl& m_dataObjects;
-
-  public:
-    DataAgent( DataObjIDColl& objs ) : m_dataObjects( objs ) {}
-    bool analyse( IRegistry* pReg, int ) override
-    {
-      if ( !pReg->object() ) return false;
-      m_dataObjects.insert( DataObjID( pReg->identifier() ) );
-      return true;
-    }
-  };
 }
 
 TTHREAD_TLS( Synced<Partition>* ) s_current = nullptr;
@@ -340,8 +326,11 @@ public:
   {
     return s_current->with_lock( []( Partition& p ) {
       StatusCode sc = p.dataProvider->preLoad();
-      DataAgent  da( p.newDataObjects );
-      p.dataManager->traverseTree( &da );
+      p.dataManager->traverseTree( [&p]( IRegistry* pReg, int ) {
+        if ( !pReg->object() ) return false;
+        p.newDataObjects.insert( DataObjID( pReg->identifier() ) );
+        return true;
+      } );
       return sc;
     } );
   }
