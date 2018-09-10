@@ -80,6 +80,55 @@ StatusCode HiveDataBrokerSvc::initialize()
   return sc;
 }
 
+StatusCode HiveDataBrokerSvc::start()
+{
+
+  StatusCode ss = Service::start();
+  if ( !ss.isSuccess() ) return ss;
+
+  // sysStart for m_algorithms
+  for ( AlgEntry& algEntry : m_algorithms ) {
+    ss = algEntry.alg->sysStart();
+    if ( ss.isFailure() ) {
+      error() << "Unable to start Algorithm: " << algEntry.alg->name() << endmsg;
+      return ss;
+    }
+  }
+  // sysStart for m_cfnodes
+  for ( AlgEntry& algEntry : m_cfnodes ) {
+    ss = algEntry.alg->sysStart();
+    if ( ss.isFailure() ) {
+      error() << "Unable to start Algorithm: " << algEntry.alg->name() << endmsg;
+      return ss;
+    }
+  }
+  return ss;
+}
+
+StatusCode HiveDataBrokerSvc::stop()
+{
+  StatusCode ss = Service::stop();
+  if ( !ss.isSuccess() ) return ss;
+
+  // sysStart for m_algorithms
+  for ( AlgEntry& algEntry : m_algorithms ) {
+    ss = algEntry.alg->sysStop();
+    if ( ss.isFailure() ) {
+      error() << "Unable to stop Algorithm: " << algEntry.alg->name() << endmsg;
+      return ss;
+    }
+  }
+  // sysStart for m_cfnodes
+  for ( AlgEntry& algEntry : m_cfnodes ) {
+    ss = algEntry.alg->sysStop();
+    if ( ss.isFailure() ) {
+      error() << "Unable to stop Algorithm: " << algEntry.alg->name() << endmsg;
+      return ss;
+    }
+  }
+  return ss;
+}
+
 StatusCode HiveDataBrokerSvc::finalize()
 {
   ranges::for_each( m_algorithms | ranges::view::transform( &AlgEntry::alg ),
