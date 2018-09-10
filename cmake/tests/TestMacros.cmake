@@ -37,7 +37,7 @@ endfunction()
 
 # Compare two lists of filesystem paths element-wise, using the same logic as
 # assert_same_path for each element of the list.
-macro(assert_same_path_list var value)
+function(assert_same_path_list var value)
   # Compare the length of the input path lists
   set(value_list ${value})
   list(LENGTH ${var} len_var)
@@ -59,30 +59,30 @@ macro(assert_same_path_list var value)
       endif()
     endforeach()
   endif()
-endmacro()
+endfunction()
 
 
 # Compare two filesystem paths, taking symlinks into account
-macro(assert_same_path var value)
+function(assert_same_path var value)
   resolve_path(realpath_var "${${var}}")
   resolve_path(realpath_value "${value}")
   if(NOT "${realpath_var}" STREQUAL "${realpath_value}")
     message(FATAL_ERROR "wrong path for ${var}: found '${realpath_var}', expected '${realpath_value}'")
   endif()
-endmacro()
+endfunction()
 
 
 # Check that two strings are equal
-macro(assert_strequal var value)
+function(assert_strequal var value)
   if(NOT "${${var}}" STREQUAL "${value}")
     message(FATAL_ERROR "wrong value for ${var}: found '${${var}}', expected '${value}'")
   endif()
-endmacro()
+endfunction()
 
 
 # Check that a CMake expression is true
-macro(assert)
+function(assert)
   if(NOT (${ARGV}))
     message(FATAL_ERROR "(${ARGV}) is false")
   endif()
-endmacro()
+endfunction()
