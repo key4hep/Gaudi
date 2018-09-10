@@ -2,7 +2,7 @@ gaudi_subdir(GaudiCoreSvc)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
-find_package(Boost COMPONENTS system filesystem regex thread python REQUIRED)
+find_package(Boost COMPONENTS system filesystem regex thread python27 REQUIRED)
 find_package(TBB REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(ROOT REQUIRED)
