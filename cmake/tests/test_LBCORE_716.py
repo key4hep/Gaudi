@@ -5,7 +5,9 @@ import os
 import re
 from subprocess import Popen, PIPE
 
-base_dir = os.path.join(os.path.dirname(__file__), 'data', 'LBCORE-716')
+base_dir = os.path.realpath(os.path.join(os.path.dirname(__file__),
+                                         'data',
+                                         'LBCORE-716'))
 
 xenv_cmd = 'xenv'
 
