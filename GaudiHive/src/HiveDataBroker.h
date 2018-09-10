@@ -15,6 +15,8 @@ public:
                                                  const std::vector<std::string>&     stoppers = {} ) const override;
 
   StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode stop() override;
   StatusCode finalize() override;
 
 private:
