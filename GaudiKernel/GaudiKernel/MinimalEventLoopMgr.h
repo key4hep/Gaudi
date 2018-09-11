@@ -14,8 +14,8 @@
 
 // STL include files
 #include <list>
-#include <vector>
 #include <memory>
+#include <vector>
 
 /** @class MinimalEventLoopMgr
  *  This is the default processing manager of the application manager.
@@ -29,7 +29,6 @@
 class GAUDI_API MinimalEventLoopMgr : public extends<Service, IEventProcessor>
 {
 private:
-
   class AbortEventListener : public implements<IIncidentListener>
   {
   public:
@@ -41,6 +40,7 @@ private:
         abortEventSource = i.source();
       }
     }
+
   public:
     /// Flag signalling that the event being processed has to be aborted
     /// (skip all following top algs).
