@@ -1,14 +1,14 @@
 #!/usr/bin/env gaudirun.py
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, IOBoundAlgSchedulerSvc
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
 
 # metaconfig
 evtslots = 1
-evtMax = 1
+evtMax = 10
 algosInFlight = 4
 
 
@@ -19,19 +19,24 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
                             OutputLevel=INFO)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
-    SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
+    SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
-                                  OutputLevel=DEBUG)
+                                  OutputLevel=INFO,
+                                  PreemptiveIOBoundTasks=True,
+                                  MaxIOBoundAlgosInFlight=50,
+                                  DumpIntraEventDynamics=True)
 
-AlgResourcePool(OutputLevel=DEBUG)
+IOBoundAlgSchedulerSvc(OutputLevel=INFO)
 
-#timeValue = precedence.UniformTimeValue(avgRuntime=0.2)
+#timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
 timeValue = precedence.RealTimeValue(path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json",
                                      defaultTime=0.0)
-ifIObound = precedence.UniformBooleanValue(False)
+#ifIObound = precedence.UniformBooleanValue(False)
+ifIObound = precedence.RndBiasedBooleanValue(
+    pattern={True: 17, False: 152}, seed=1)
 
-sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
+sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.9,
                                         cfgPath="atlas/mcreco/cf.mcreco.TriggerOff.graphml",
                                         dfgPath="atlas/mcreco/df.mcreco.TriggerOff.3rdEvent.graphml",
                                         topSequencer='AthSequencer/AthMasterSeq').get()
@@ -42,4 +47,4 @@ ApplicationMgr(EvtMax=evtMax,
                EventLoop=slimeventloopmgr,
                TopAlg=[sequencer],
                MessageSvcType="InertMessageSvc",
-               OutputLevel=DEBUG)
+               OutputLevel=INFO)
