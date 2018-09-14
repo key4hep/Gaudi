@@ -52,13 +52,15 @@ StatusCode TimelineSvc::finalize()
 
 ITimelineSvc::TimelineRecorder TimelineSvc::getRecorder( std::string alg, const EventContext& ctx )
 {
-  TimelineRecorder recorder{*m_events.emplace_back(), std::move( alg ), ctx};
+  auto&            newTimelineEvent = *m_events.emplace_back();
+  TimelineRecorder recorder{newTimelineEvent, std::move( alg ), ctx};
   if ( m_partial ) {
-    auto&         e = m_events.back();
     std::ofstream out( m_timelineFile + ".part", std::ofstream::app | std::ofstream::out );
-    out << std::chrono::duration_cast<std::chrono::nanoseconds>( e.start.time_since_epoch() ).count() << " "
-        << std::chrono::duration_cast<std::chrono::nanoseconds>( e.end.time_since_epoch() ).count() << " "
-        << e.algorithm << " " << e.thread << " " << e.slot << " " << e.event << std::endl;
+    out << std::chrono::duration_cast<std::chrono::nanoseconds>( newTimelineEvent.start.time_since_epoch() ).count()
+        << " "
+        << std::chrono::duration_cast<std::chrono::nanoseconds>( newTimelineEvent.end.time_since_epoch() ).count()
+        << " " << newTimelineEvent.algorithm << " " << newTimelineEvent.thread << " " << newTimelineEvent.slot << " "
+        << newTimelineEvent.event << std::endl;
 
     out.close();
   }
