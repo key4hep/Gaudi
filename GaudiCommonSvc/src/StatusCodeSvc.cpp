@@ -82,9 +82,10 @@ void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib )
   // that are known to produce spurious reports.
   if ( m_dict ) {
     // ROOT's library names can end with either ".so" or ".so.x.y" with x.y the ROOT version in use
-    if ( lib.compare( lib.length() - 3, 3, ".so" ) == 0 ) {
-      if ( lib.compare( lib.length() - 7, 4, "Dict" ) == 0 || lib.compare( lib.length() - 8, 5, "Cling" ) == 0 ||
-           lib.compare( lib.length() - 7, 4, "Core" ) == 0 ) {
+    const auto len = lib.length();
+    if ( len >= 3 && lib.compare( len - 3, 3, ".so" ) == 0 ) {
+      if ( ( len >= 7 && ( lib.compare( len - 7, 4, "Dict" ) == 0 || lib.compare( len - 7, 4, "Core" ) == 0 ) ) ||
+           ( len >= 8 && lib.compare( len - 8, 5, "Cling" ) == 0 ) ) {
         return;
       }
     } else if ( lib.rfind( "Dict.so" ) != std::string::npos || lib.rfind( "Cling.so" ) != std::string::npos ||
