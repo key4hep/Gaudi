@@ -2,8 +2,8 @@ gaudi_subdir(GaudiMP)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
-find_package(ROOT COMPONENTS Net RIO Thread)
-find_package(PythonLibs)
+find_package(ROOT COMPONENTS Net RIO Thread REQUIRED)
+find_package(PythonLibs REQUIRED)
 find_package(AIDA)
 
 # The list of sources to build into the module:

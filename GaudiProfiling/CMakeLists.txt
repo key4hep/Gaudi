@@ -4,12 +4,12 @@ gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
-find_package(Boost COMPONENTS python)
-find_package(PythonLibs)
+find_package(Boost COMPONENTS python REQUIRED)
+find_package(PythonLibs REQUIRED)
 find_package(unwind)
 find_package(gperftools)
 find_package(IntelAmplifier)
-find_package(ZLIB)
+find_package(ZLIB REQUIRED)
 
 # Hide some Boost/libunwind compile time warnings
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})

@@ -13,7 +13,7 @@ endif()
 
 #---------------------------------------------------------------
 # Load macros and functions for Gaudi-based projects
-find_package(GaudiProject)
+find_package(GaudiProject REQUIRED)
 #---------------------------------------------------------------
 
 # Base Gaudi on "the ATLAS base project" (AtlasExternals by default) when
