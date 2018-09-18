@@ -73,7 +73,7 @@ namespace Gaudi
                 /// Call the scalar operator with the objects obtained from the given tuple
                 auto data = Gaudi::apply(
                     [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); }, tuple );
-                if ( data ) {
+                if ( data.has_value() ) { // this forces that data is an {std,boost}::optional< std::tuple<Out...> >
                   Gaudi::apply(
                       [&out...]( auto&&... data ) {
 #if __cplusplus < 201703L
@@ -83,7 +83,7 @@ namespace Gaudi
                         ( details::insert( out, std::forward<decltype( data )>( data ) ), ... );
 #endif
                       },
-                      std::move( *data ) );
+                      std::move( data ).value() );
                 }
               },
               out );
