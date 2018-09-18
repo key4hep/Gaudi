@@ -30,8 +30,9 @@ namespace Gaudi
         auto& scalar = scalarOp();
         for ( const auto&& tuple : inrange ) {
           /// Call the scalar operator with the objects obtained from the given tuple as arguments
-          details::insert(
-              out, Gaudi::apply( [&]( const auto&... i ) { return scalar( details::deref( i )... ); }, tuple ) );
+          details::invoke_optionally(
+              [&out]( auto&& arg ) { details::insert( out, std::forward<decltype( arg )>( arg ) ); },
+              Gaudi::apply( [&]( const auto&... i ) { return scalar( details::deref( i )... ); }, tuple ) );
         }
         details::applyPostProcessing( scalar, out );
         return out;
@@ -53,7 +54,7 @@ namespace Gaudi
       using MultiTransformer<std::tuple<Out...>( const In&... ), Traits_>::MultiTransformer;
 
       /// The main operator
-      std::tuple<Out...> operator()( const In&... in ) const final
+      std::tuple<Out...> operator()( const In&... in ) const override final
       {
         const auto         inrange = details::zip::const_range( in... );
         std::tuple<Out...> out;
@@ -67,28 +68,32 @@ namespace Gaudi
             },
             out );
         auto& scalar = scalarOp();
-        for ( const auto&& tuple : inrange ) {
+        for ( const auto&& indata : inrange ) {
           Gaudi::apply(
-              [&scalar, &tuple]( auto&... out ) {
-                /// Call the scalar operator with the objects obtained from the given tuple
-                auto data = Gaudi::apply(
-                    [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); }, tuple );
-                if ( data.has_value() ) { // this forces that data is an {std,boost}::optional< std::tuple<Out...> >
-                  Gaudi::apply(
-                      [&out...]( auto&&... data ) {
+              [&scalar, &indata]( auto&... out ) {
+
+                /// Call the scalar operator with the objects obtained from the given indata,
+                /// and invoke insert with it (unless the resulting type is an  optional,
+                /// and the optional is not engaged)
+                details::invoke_optionally(
+                    [&out...]( auto&& outdata ) {
+                      Gaudi::apply(
+                          [&out...]( auto&&... outdata1 ) {
 #if __cplusplus < 201703L
-                        (void)std::initializer_list<int>{
-                            ( details::insert( out, std::forward<decltype( data )>( data ) ), 0 )...};
+                            (void)std::initializer_list<int>{
+                                ( details::insert( out, std::forward<decltype( outdata1 )>( outdata1 ) ), 0 )...};
 #else
-                        ( details::insert( out, std::forward<decltype( data )>( data ) ), ... );
+                            ( details::insert( out, std::forward<decltype( outdata1 )>( outdata1 ) ), ... );
 #endif
-                      },
-                      std::move( data ).value() );
-                }
+                          },
+                          std::forward<decltype( outdata )>( outdata ) );
+                    },
+                    Gaudi::apply( [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); },
+                                  indata ) );
               },
               out );
         }
-        details::applyPostProcessing( scalar, out ); // awaiting a post-processor call
+        details::applyPostProcessing( scalar, out );
         return out;
       }
     };

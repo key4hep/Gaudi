@@ -1,8 +1,9 @@
-#include <GaudiAlg/Consumer.h>
-#include <GaudiAlg/Producer.h>
-#include <GaudiAlg/Transformer.h>
-#include <GaudiKernel/KeyedContainer.h>
-#include <GaudiKernel/MsgStream.h>
+#include "GaudiAlg/Consumer.h"
+#include "GaudiAlg/Producer.h"
+#include "GaudiAlg/ScalarTransformer.h"
+#include "GaudiAlg/Transformer.h"
+#include "GaudiKernel/KeyedContainer.h"
+#include <cmath>
 
 namespace Gaudi
 {
@@ -97,10 +98,8 @@ namespace Gaudi
 
     DECLARE_COMPONENT( IntToFloatData )
 
-    class IntIntToFloatFloatData final
-        : public Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), BaseClass_t>
-    {
-    public:
+    struct IntIntToFloatFloatData final
+        : Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), BaseClass_t> {
       IntIntToFloatFloatData( const std::string& name, ISvcLocator* svcLoc )
           : MultiTransformer( name, svcLoc, {KeyValue( "InputLocation1", {"/Event/MyInt"} ),
                                              KeyValue( "InputLocation2", {"/Event/MyOtherInt"} )},
@@ -163,5 +162,103 @@ namespace Gaudi
     };
 
     DECLARE_COMPONENT( ContextIntConsumer )
+
+    struct FrExpTransformer final
+        : Gaudi::Functional::MultiScalarTransformer<FrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>(
+                                                                          const std::vector<double>& ),
+                                                    BaseClass_t> {
+      FrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
+          : MultiScalarTransformer( name, svcLoc, KeyValue{"InputDoubles", {"/Event/MyVectorOfDoubles"}},
+                                    {KeyValue{"OutputFractions", {"/Event/MyVectorOfFractions"}},
+                                     KeyValue{"OutputIntegers", {"/Event/MyVectorOfIntergers"}}} )
+      {
+      }
+
+      using MultiScalarTransformer::operator();
+
+      std::tuple<double, int> operator()( const double& d ) const
+      {
+        int    i;
+        double frac = std::frexp( d, &i );
+        info() << "Converting " << d << " -> " << frac << ", " << i << endmsg;
+        return {frac, i};
+      }
+    };
+    DECLARE_COMPONENT( FrExpTransformer )
+
+    struct OptFrExpTransformer final
+        : Gaudi::Functional::MultiScalarTransformer<FrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>(
+                                                                          const std::vector<double>& ),
+                                                    BaseClass_t> {
+      OptFrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
+          : MultiScalarTransformer( name, svcLoc, KeyValue{"InputDoubles", {"/Event/MyVectorOfDoubles"}},
+                                    {KeyValue{"OutputFractions", {"/Event/MyVectorOfFractions"}},
+                                     KeyValue{"OutputIntegers", {"/Event/MyVectorOfIntergers"}}} )
+      {
+      }
+
+      using MultiScalarTransformer::operator();
+
+      boost::optional<std::tuple<double, int>> operator()( const double& d ) const
+      {
+        int    i;
+        double frac = std::frexp( d, &i );
+        if ( i == 0 ) {
+          info() << "Skipping " << d << endmsg;
+          return {};
+        }
+        info() << "Converting " << d << " -> " << frac << ", " << i << endmsg;
+        return std::make_tuple( frac, i );
+      }
+    };
+    DECLARE_COMPONENT( OptFrExpTransformer )
+
+    struct LdExpTransformer final
+        : Gaudi::Functional::ScalarTransformer<LdExpTransformer, std::vector<double>( const std::vector<double>&,
+                                                                                      const std::vector<int>& ),
+                                               BaseClass_t> {
+      LdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
+          : ScalarTransformer( name, svcLoc, {KeyValue{"InputFractions", {"/Event/MyVectorOfDoubles"}},
+                                              KeyValue{"InputIntegers", {"/Event/MyVectorOfIntegers"}}},
+                               {KeyValue{"OutputDoubles", {"/Event/MyVectorOfDoubles"}}} )
+      {
+      }
+
+      using ScalarTransformer::operator();
+
+      double operator()( const double& frac, const int& i ) const
+      {
+        double d = std::ldexp( frac, i );
+        info() << "Converting " << i << ", " << frac << " -> " << d << endmsg;
+        return d;
+      }
+    };
+    DECLARE_COMPONENT( LdExpTransformer )
+
+    struct OptLdExpTransformer final
+        : Gaudi::Functional::ScalarTransformer<OptLdExpTransformer, std::vector<double>( const std::vector<double>&,
+                                                                                         const std::vector<int>& ),
+                                               BaseClass_t> {
+      OptLdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
+          : ScalarTransformer( name, svcLoc, {KeyValue{"InputFractions", {"/Event/MyVectorOfDoubles"}},
+                                              KeyValue{"InputIntegers", {"/Event/MyVectorOfIntegers"}}},
+                               {KeyValue{"OutputDoubles", {"/Event/MyVectorOfDoubles"}}} )
+      {
+      }
+
+      using ScalarTransformer::operator();
+
+      boost::optional<double> operator()( const double& frac, const int& i ) const
+      {
+        double d = std::ldexp( frac, i );
+        if ( i > 3 ) {
+          info() << "Skipping " << d << endmsg;
+          return {};
+        }
+        info() << "Converting " << i << ", " << frac << " -> " << d << endmsg;
+        return d;
+      }
+    };
+    DECLARE_COMPONENT( OptLdExpTransformer )
   }
 }
