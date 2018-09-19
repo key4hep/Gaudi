@@ -4,6 +4,7 @@
 //
 //====================================================================
 // Include files
+#include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataSvc.h"
@@ -541,11 +542,12 @@ public:
   /// Set the number of event slots (copies of DataSvc objects).
   StatusCode setNumberOfStores( size_t slots ) override
   {
-    if ( slots != m_slots && FSMState() == Gaudi::StateMachine::INITIALIZED ) {
+    if ( FSMState() == Gaudi::StateMachine::INITIALIZED || FSMState() == Gaudi::StateMachine::RUNNING ) {
       warning() << "Too late to change the number of slots!" << endmsg;
       return StatusCode::FAILURE;
     }
     m_slots = slots;
+    Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( slots );
     return StatusCode::SUCCESS;
   }
 
@@ -652,6 +654,11 @@ public:
     }
     if ( m_slots < (size_t)1 ) {
       error() << "Invalid number of slots (" << m_slots << ")" << endmsg;
+      return StatusCode::FAILURE;
+    }
+
+    if ( !setNumberOfStores( m_slots ).isSuccess() ) {
+      error() << "Cannot set number of slots" << endmsg;
       return StatusCode::FAILURE;
     }
 

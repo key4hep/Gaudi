@@ -133,9 +133,6 @@ StatusCode AvalancheSchedulerSvc::initialize()
   // Set the number of free slots
   m_freeSlots = m_maxEventsInFlight;
 
-  // set global concurrency flags
-  Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( m_maxEventsInFlight );
-
   // Get the list of algorithms
   const std::list<IAlgorithm*>& algos      = m_algResourcePool->getFlatAlgList();
   const unsigned int            algsNumber = algos.size();
