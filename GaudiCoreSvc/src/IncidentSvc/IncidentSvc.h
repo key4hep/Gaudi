@@ -5,6 +5,7 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
+#include <algorithm>
 #include <list>
 #include <map>
 // ============================================================================
@@ -38,10 +39,10 @@ class IncidentSvc : public extends<Service, IIncidentSvc>
 {
 public:
   struct Listener final {
-    IIncidentListener* iListener;
-    long               priority;
-    bool               rethrow;
-    bool               singleShot;
+    IIncidentListener* iListener{nullptr};
+    long               priority{0};
+    bool               rethrow{false};
+    bool               singleShot{false};
 
     Listener( IIncidentListener* il, long pri, bool thr = false, bool single = false )
         : iListener( il ), priority( pri ), rethrow( thr ), singleShot( single )
