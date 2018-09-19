@@ -578,7 +578,8 @@ StatusCode AvalancheSchedulerSvc::tryPopFinishedEvent( EventContext*& eventConte
  * * No algorithms have been signed off by the data flow
  * * No algorithms have been scheduled
 */
-StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, EventContext* inputContext )
+StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, const int sub_slot,
+                                                const int source_slot )
 {
 
   StatusCode global_sc( StatusCode::SUCCESS );
@@ -611,16 +612,14 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, Ev
     if ( algo_index >= 0 ) {
       Cause cs = {Cause::source::Task, index2algname( algo_index )};
 
-      // Pass sub-slots to precedence service if necessary
-      if ( !inputContext || iSlot != (int)inputContext->slot() || inputContext == thisSlot.eventContext ) {
+      // Run in whole-event context if there's no sub-slot index, or the sub-slot has a different parent
+      if ( sub_slot == -1 || iSlot != source_slot ) {
         if ( m_precSvc->iterate( thisSlot, cs ).isFailure() ) {
           error() << "Failed to call IPrecedenceSvc::iterate for slot " << iSlot << endmsg;
           global_sc = StatusCode::FAILURE;
         }
       } else {
-        // An input context that doesn't match the event context for that slot number implies a sub-slot
-        unsigned int const subSlotIndex = thisSlot.contextToSlot.at( inputContext );
-        if ( m_precSvc->iterate( thisSlot.allSubSlots[subSlotIndex], cs ).isFailure() ) {
+        if ( m_precSvc->iterate( thisSlot.allSubSlots[sub_slot], cs ).isFailure() ) {
           error() << "Failed to call IPrecedenceSvc::iterate for sub-slot of " << iSlot << endmsg;
           global_sc = StatusCode::FAILURE;
         }
@@ -1030,13 +1029,14 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
                      : AState::ERROR;
 
   // Update states in the appropriate slot
+  int subSlotIndex = -1;
   if ( eventContext == thisSlot.eventContext ) {
     // Event level (standard behaviour)
     sc = thisSlot.algsStates.set( iAlgo, state );
   } else {
     // Sub-slot
-    unsigned int const subSlotIndex = thisSlot.contextToSlot.at( eventContext );
-    sc                              = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, state );
+    subSlotIndex = static_cast<int>( thisSlot.contextToSlot.at( eventContext ) );
+    sc           = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, state );
   }
 
   ON_VERBOSE if ( sc.isSuccess() ) verbose() << "Promoting " << algo->name() << " on slot " << si << " to " << state
@@ -1047,9 +1047,9 @@ StatusCode AvalancheSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si,
 
   // Schedule an update of the status of the algorithms
   ++m_actionsCounts[si];
-  m_actionsQueue.push( [this, si, iAlgo, eventContext]() {
+  m_actionsQueue.push( [this, si, iAlgo, subSlotIndex]() {
     --this->m_actionsCounts[si]; // no bound check needed as decrements/increments are balanced in the current setup
-    return this->updateStates( -1, iAlgo, eventContext );
+    return this->updateStates( -1, iAlgo, subSlotIndex, si );
   } );
 
   return sc;
@@ -1085,13 +1085,14 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
                      : AState::ERROR;
 
   // Update states in the appropriate slot
+  int subSlotIndex = -1;
   if ( eventContext == thisSlot.eventContext ) {
     // Event level (standard behaviour)
     sc = thisSlot.algsStates.set( iAlgo, state );
   } else {
     // Sub-slot
-    unsigned int const subSlotIndex = thisSlot.contextToSlot.at( eventContext );
-    sc                              = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, state );
+    subSlotIndex = thisSlot.contextToSlot.at( eventContext );
+    sc           = thisSlot.allSubSlots[subSlotIndex].algsStates.set( iAlgo, state );
   }
 
   ON_VERBOSE if ( sc.isSuccess() ) verbose() << "[Asynchronous] Promoting " << algo->name() << " on slot " << si
@@ -1102,9 +1103,9 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
 
   // Schedule an update of the status of the algorithms
   ++m_actionsCounts[si];
-  m_actionsQueue.push( [this, si, iAlgo, eventContext]() {
+  m_actionsQueue.push( [this, si, iAlgo, subSlotIndex]() {
     --this->m_actionsCounts[si]; // no bound check needed as decrements/increments are balanced in the current setup
-    return this->updateStates( -1, iAlgo, eventContext );
+    return this->updateStates( -1, iAlgo, subSlotIndex, si );
   } );
 
   return sc;
