@@ -677,9 +677,10 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, co
       for ( auto it = subslotStates.begin( AState::DATAREADY ); it != subslotStates.end( AState::DATAREADY ); ++it ) {
         uint algIndex{*it};
         partial_sc = promoteToScheduled( algIndex, iSlot, subslot.eventContext );
-        ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
+        // The following verbosity is expensive when the number of sub-slots is high
+        /*ON_VERBOSE if ( partial_sc.isFailure() ) verbose()
             << "Could not apply transition from " << AState::DATAREADY << " for algorithm " << index2algname( algIndex )
-            << " on processing subslot " << subslot.eventContext->slot() << endmsg;
+            << " on processing subslot " << subslot.eventContext->slot() << endmsg;*/
       }
     }
 
@@ -857,9 +858,9 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
       // Snapshot of the Control Flow and FSM states
       outputMS << m_precSvc->printState( slot ) << "\n";
 
-      // Mention sub slots
-      if ( slot.allSubSlots.size() ) {
-        outputMS << "\nNumber of sub-slots: " << slot.allSubSlots.size() << "\n";
+      // Mention sub slots (this is expensive if the number of sub-slots is high)
+      /*if ( !slot.allSubSlots.empty() ) {
+        outputMS << "\nNumber of sub-slots: " << slot.allSubSlots.size() << "\n\n";
         auto slotID = slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]";
         for ( auto& ss : slot.allSubSlots ) {
           outputMS << "[ slot: " << slotID << " sub-slot entry: " << ss.entryPoint << "  event: "
@@ -867,7 +868,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
                    << " ]:\n\n";
           outputMS << m_precSvc->printState( ss ) << "\n";
         }
-      }
+      }*/
     }
   }
 
@@ -1115,34 +1116,33 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, in
 
 // Method to inform the scheduler about event views
 
-StatusCode AvalancheSchedulerSvc::scheduleEventView( EventContext const* sourceContext, std::string const& nodeName,
+StatusCode AvalancheSchedulerSvc::scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
                                                      EventContext* viewContext )
 {
-  // Find the top-level slot, to attach the sub-slot to
-  int const  topSlotIndex = sourceContext->slot();
-  EventSlot& topSlot      = m_eventSlots[topSlotIndex];
 
-  //  Prevent view nesting - this doesn't work because EventContext is copied when passed to algorithm
-  /*if ( sourceContext != topSlot.eventContext )
-  {
-    fatal() << "Attempted to nest EventViews at node " << nodeName << ": this is not supported" << endmsg;
-    return StatusCode::FAILURE;
-  }*/
+  ON_VERBOSE verbose() << "Queuing a view for [" << viewContext << "]" << endmsg;
 
-  if ( viewContext ) {
-    // Make new slot by copying the top slot
-    unsigned int lastIndex = topSlot.allSubSlots.size();
-    topSlot.allSubSlots.push_back( EventSlot( m_eventSlots[topSlotIndex], viewContext ) );
-    topSlot.allSubSlots.back().entryPoint = nodeName;
-    topSlot.allSubSlots.back().algsStates.reset();
+  auto action = [this, sourceContext, viewContext, &nodeName]() -> StatusCode {
 
-    // Store index of the new slot in lookup structures
-    topSlot.contextToSlot[viewContext] = lastIndex;
-    topSlot.subSlotsByNode[nodeName].push_back( lastIndex );
-  } else {
-    // Disable the view node if there are no views
-    topSlot.subSlotsByNode[nodeName] = std::vector<unsigned int>( 0 );
-  }
+    // Attach the sub-slot to the top-level slot
+    EventSlot& topSlot = this->m_eventSlots[sourceContext->slot()];
+
+    //  Prevent view nesting - this doesn't work because EventContext is copied when passed to algorithm
+    /*if ( sourceContext != topSlot.eventContext )
+    {
+      fatal() << "Attempted to nest EventViews at node " << nodeName << ": this is not supported" << endmsg;
+      return StatusCode::FAILURE;
+    }*/
+
+    if ( viewContext )
+      topSlot.addSubSlot( viewContext, nodeName );
+    else
+      topSlot.disableSubSlots( nodeName ); // Disable the view node if there are no views
+
+    return StatusCode::SUCCESS;
+  };
+
+  m_actionsQueue.push( std::move( action ) );
 
   return StatusCode::SUCCESS;
 }

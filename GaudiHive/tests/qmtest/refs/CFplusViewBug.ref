@@ -87,36 +87,36 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 HiveSlimEventLo...   INFO Starting loop on events
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 0
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 0
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 1
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 1
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 2
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 2
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 3
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 3
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 4
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 4
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 5
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 5
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 6
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 6
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 7
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 7
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 8
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 8
 view_make_alg        INFO Running in whole event context
-view_make_alg        INFO Attached view0 to node view_test_node
-view_make_alg        INFO Attached view1 to node view_test_node
-HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 50.2734 total time 17638222770
+view_make_alg        INFO Attached view view0 to node view_test_node for s: 0  e: 9
+view_make_alg        INFO Attached view view1 to node view_test_node for s: 0  e: 9
+HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 32.4648 total time 16659853135
 HiveSlimEventLo...   INFO 0 events were SKIPed
 ApplicationMgr       INFO Application Manager Stopped successfully
 filter_alg           INFO Summary: name= filter_alg	 avg_runtime= 0	 n_clones= 1
@@ -126,7 +126,7 @@ HiveSlimEventLo...   INFO Histograms converted successfully according to request
 AvalancheSchedu...   INFO Joining Scheduler thread
 ToolSvc              INFO Removing all tools created by ToolSvc
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   3.45 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   2.38 times the speed of a 2.8 GHz Xeon.
 ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------

@@ -67,93 +67,93 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 HiveSlimEventLo...   INFO Starting loop on events
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 0
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 0
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 1
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 1
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 2
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 2
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 3
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 3
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 4
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 4
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 5
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 5
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 6
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 6
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 7
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 7
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 8
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 8
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
 A1                   INFO Running in whole event context
-A1                   INFO Attached view0 to node viewNode
-A1                   INFO Attached view1 to node viewNode
+A1                   INFO Attached view view0 to node viewNode for s: 0  e: 9
+A1                   INFO Attached view view1 to node viewNode for s: 0  e: 9
 A2                   INFO Running in view view0
 A3                   INFO Running in view view0
 A2                   INFO Running in view view1
 A3                   INFO Running in view view1
 A4                   INFO Running in whole event context
-HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 49.6914 total time 1033312
+HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 49.4922 total time 2497890
 HiveSlimEventLo...   INFO 0 events were SKIPed
 ApplicationMgr       INFO Application Manager Stopped successfully
 HiveSlimEventLo...   INFO Histograms converted successfully according to request.
 AvalancheSchedu...   INFO Joining Scheduler thread
 ToolSvc              INFO Removing all tools created by ToolSvc
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   3.57 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   2.44 times the speed of a 2.8 GHz Xeon.
 ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
