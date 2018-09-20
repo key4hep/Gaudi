@@ -29,9 +29,6 @@ namespace Test
     ViewTester( const std::string& name,   // the algorithm instance name
                 ISvcLocator*       pSvc ); // the Service Locator
 
-    /// virtual & protected desctrustor
-    virtual ~ViewTester(); // virtual & protected desctrustor
-
   private:
     /// the default constructor is disabled
     ViewTester(); // no default constructor
@@ -40,10 +37,10 @@ namespace Test
     /// the assignement operator is disabled
     ViewTester& operator=( const ViewTester& ); // no assignement
 
-    Gaudi::Property<std::vector<std::string>>  m_inpKeys{this, "inpKeys", {}, ""};
-    Gaudi::Property<std::vector<std::string>>  m_outKeys{this, "outKeys", {}, ""};
-    std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
-    std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
+    Gaudi::Property<std::vector<std::string>>                  m_inpKeys{this, "inpKeys", {}, ""};
+    Gaudi::Property<std::vector<std::string>>                  m_outKeys{this, "outKeys", {}, ""};
+    std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputHandles;
+    std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputHandles;
 
     // View config
     Gaudi::Property<std::string> m_baseViewName{this, "baseViewName", "view",

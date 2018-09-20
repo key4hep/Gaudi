@@ -19,13 +19,6 @@ ViewTester::ViewTester( const std::string& name, // the algorithm instance name
 {
 }
 
-ViewTester::~ViewTester()
-{
-  for ( uint i = 0; i < m_inputHandles.size(); ++i ) delete m_inputHandles[i];
-
-  for ( uint i = 0; i < m_outputHandles.size(); ++i ) delete m_outputHandles[i];
-}
-
 StatusCode ViewTester::initialize()
 {
   auto sc = GaudiAlgorithm::initialize();
@@ -40,7 +33,7 @@ StatusCode ViewTester::initialize()
   int i = 0;
   for ( auto k : m_inpKeys ) {
     DEBUG_MSG << "adding input key " << k << endmsg;
-    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ) );
+    m_inputHandles.emplace_back( std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::DataHandle::Reader, this ) );
     declareProperty( "dummy_in_" + std::to_string( i ), *( m_inputHandles.back() ) );
     i++;
   }
@@ -48,7 +41,8 @@ StatusCode ViewTester::initialize()
   i = 0;
   for ( auto k : m_outKeys ) {
     DEBUG_MSG << "adding output key " << k << endmsg;
-    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ) );
+    m_outputHandles.emplace_back(
+        std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::DataHandle::Writer, this ) );
     declareProperty( "dummy_out_" + std::to_string( i ), *( m_outputHandles.back() ) );
     i++;
   }
@@ -66,34 +60,36 @@ StatusCode ViewTester::execute() // the execution of the algorithm
     return StatusCode::FAILURE;
   }
 
+  const auto& context = getContext();
+
   // Report if currently running in a view
-  std::string const* contextName = getContext().getExtension<std::string>();
-  if ( contextName == nullptr ) {
+  auto contextName = context.getExtension<std::string>();
+  if ( !contextName )
     info() << "Running in whole event context" << endmsg;
-  } else {
+  else
     info() << "Running in view " << *contextName << endmsg;
-  }
 
   // If a node name is specified (and not already in view), do view scheduling
-  if ( m_viewNodeName != "" && contextName == nullptr ) {
+  if ( !m_viewNodeName.empty() && !contextName ) {
     if ( m_viewNumber > 0 ) {
       // Make views
       for ( unsigned int viewIndex = 0; viewIndex < m_viewNumber; ++viewIndex ) {
         // Make event context for the view
-        EventContext* viewContext = new EventContext( getContext().evt(), getContext().slot() );
-        std::string   viewName    = m_baseViewName + std::to_string( viewIndex );
+        auto        viewContext = new EventContext( context.evt(), context.slot() );
+        std::string viewName    = m_baseViewName + std::to_string( viewIndex );
         viewContext->setExtension<std::string>( viewName );
 
-        StatusCode sc = scheduler->scheduleEventView( &getContext(), m_viewNodeName, viewContext );
-        if ( sc.isSuccess() ) {
-          info() << "Attached " << viewName << " to node " << m_viewNodeName.toString() << endmsg;
-        } else {
-          error() << "Unable to attach " << viewName << " to node " << m_viewNodeName.toString() << endmsg;
-        }
+        StatusCode sc = scheduler->scheduleEventView( &context, m_viewNodeName, viewContext );
+        if ( sc.isSuccess() )
+          info() << "Attached view " << viewName << " to node " << m_viewNodeName.toString() << " for " << context
+                 << endmsg;
+        else
+          error() << "Unable to attach view " << viewName << " to node " << m_viewNodeName.toString() << " for "
+                  << context << endmsg;
       }
     } else {
       // Disable the view node if there are no views
-      scheduler->scheduleEventView( &getContext(), m_viewNodeName, 0 );
+      scheduler->scheduleEventView( &getContext(), m_viewNodeName, nullptr );
     }
   }
 
@@ -102,7 +98,7 @@ StatusCode ViewTester::execute() // the execution of the algorithm
     if ( !outputHandle->isValid() ) continue;
 
     VERBOSE_MSG << "put to TS: " << outputHandle->objKey() << endmsg;
-    outputHandle->put( new DataObject() );
+    outputHandle->put( std::move( std::make_unique<DataObject>() ) );
   }
 
   setFilterPassed( true );
