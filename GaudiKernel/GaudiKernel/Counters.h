@@ -2,9 +2,11 @@
 #define GAUDIKERNEL_COUNTERS_H 1
 
 /**
- * This file provides efficient counter implementations for Gaudi.
+ * @namespace Gaudi::Accumulators
  *
- * A number of concepts and templated classes are defined in this file
+ * Efficient counter implementations for Gaudi.
+ *
+ * A number of concepts and templated classes are defined:
  *
  * Concepts
  * --------
@@ -392,6 +394,7 @@ namespace Gaudi
     /**
      * AccumulatorSet is an Accumulator that holds a set of Accumulators templated by same Arithmetic and Atomicity
      * and increase them altogether
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity, template <typename, atomicity> class... Bases>
     class AccumulatorSet : public Bases<Arithmetic, Atomicity>...
@@ -427,6 +430,7 @@ namespace Gaudi
 
     /**
      * MaxAccumulator. A MaxAccumulator is an Accumulator storing the max value of the provided arguments
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct MaxAccumulator
@@ -436,6 +440,7 @@ namespace Gaudi
 
     /**
      * MinAccumulator. A MinAccumulator is an Accumulator storing the min value of the provided arguments
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct MinAccumulator
@@ -445,6 +450,7 @@ namespace Gaudi
 
     /**
      * CountAccumulator. A CountAccumulator is an Accumulator storing the number of provided values
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct CountAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, Constant<1>> {
@@ -453,6 +459,7 @@ namespace Gaudi
 
     /**
      * SumAccumulator. A SumAccumulator is an Accumulator storing the sum of the provided values
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct SumAccumulator : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Identity> {
@@ -461,6 +468,7 @@ namespace Gaudi
 
     /**
      * SquareAccumulator. A SquareAccumulator is an Accumulator storing the sum of squares of the provided values
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct SquareAccumulator : GenericAccumulator<Arithmetic, Arithmetic, Atomicity, Square> {
@@ -475,6 +483,7 @@ namespace Gaudi
     /**
      * TrueAccumulator. A TrueAccumulator is an Accumulator counting the number of True values in the data
      * data
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity>
     struct TrueAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, TrueTo1> {
@@ -489,6 +498,7 @@ namespace Gaudi
     /**
      * FalseAccumulator. A FalseAccumulator is an Accumulator counting the number of False values in the data
      * data
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity>
     struct FalseAccumulator : GenericAccumulator<Arithmetic, unsigned long, Atomicity, FalseTo1> {
@@ -498,6 +508,7 @@ namespace Gaudi
     /**
      * BinomialAccumulator. A BinomialAccumulator is an Accumulator able to compute the efficiency of a process
      * data
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity = atomicity::full>
     struct BinomialAccumulator : AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator> {
@@ -523,6 +534,7 @@ namespace Gaudi
 
     /**
      * AveragingAccumulator. A AveragingAccumulator is an Accumulator able to compute an average
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity = atomicity::full>
     struct AveragingAccumulator : AccumulatorSet<Arithmetic, Atomicity, CountAccumulator, SumAccumulator> {
@@ -535,6 +547,7 @@ namespace Gaudi
 
     /**
      * SigmaAccumulator. A SigmaAccumulator is an Accumulator able to compute an average and variance/rms
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity = atomicity::full>
     struct SigmaAccumulator : AccumulatorSet<Arithmetic, Atomicity, AveragingAccumulator, SquareAccumulator> {
@@ -577,6 +590,7 @@ namespace Gaudi
 
     /**
      * StatAccumulator. A StatAccumulator is an Accumulator able to compute an average, variance/rms and min/max
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity = atomicity::full>
     using StatAccumulator = AccumulatorSet<Arithmetic, Atomicity, SigmaAccumulator, MinAccumulator, MaxAccumulator>;
@@ -585,6 +599,7 @@ namespace Gaudi
      * Buffer is a non atomic Accumulator which, when it goes out-of-scope,
      * updates the underlying thread-safe Accumulator for all previous updates in one go.
      * It is templated by the basic accumulator type and has same interface
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, template <typename Int, atomicity Ato> class ContainedAccumulator>
     class Buffer : public ContainedAccumulator<Arithmetic, atomicity::none>
@@ -606,6 +621,7 @@ namespace Gaudi
 
     /**
      * An empty ancester of all counters that knows how to print themselves
+     * @see Gaudi::Accumulators for detailed documentation
      */
     struct PrintableCounter {
       PrintableCounter() = default;
@@ -644,6 +660,7 @@ namespace Gaudi
     /**
      * An empty ancester of all counters that provides a buffer method that
      * returns a buffer on itself
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity, template <typename Int, atomicity Ato> class Accumulator>
     struct BufferableCounter : PrintableCounter {
@@ -653,6 +670,7 @@ namespace Gaudi
 
     /**
      * A basic counter counting input values
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct Counter : BufferableCounter<Arithmetic, Atomicity, Counter>, CountAccumulator<Arithmetic, Atomicity> {
@@ -682,6 +700,7 @@ namespace Gaudi
 
     /**
      * A counter aiming at computing sum and average
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct AveragingCounter : BufferableCounter<Arithmetic, Atomicity, AveragingCounter>,
@@ -704,6 +723,7 @@ namespace Gaudi
 
     /**
      * A counter aiming at computing average and sum2 / variance / standard deviation
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct SigmaCounter : BufferableCounter<Arithmetic, Atomicity, SigmaCounter>,
@@ -724,6 +744,7 @@ namespace Gaudi
 
     /**
      * A counter aiming at computing average and sum2 / variance / standard deviation
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct StatCounter : BufferableCounter<Arithmetic, Atomicity, StatCounter>, StatAccumulator<Arithmetic, Atomicity> {
@@ -744,6 +765,7 @@ namespace Gaudi
 
     /**
      * A counter dealing with binomial data
+     * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
     struct BinomialCounter : BufferableCounter<bool, Atomicity, BinomialCounter>,
