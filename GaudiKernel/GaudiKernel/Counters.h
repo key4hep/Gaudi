@@ -561,7 +561,7 @@ namespace Gaudi
       {
         auto count = this->nEntries();
         auto sum   = this->sum();
-        return count ? ( this->sum2() - sum * ( sum / count ) ) / ( count - 1 ) : Arithmetic{};
+        return ( count > 1 ) ? ( this->sum2() - sum * ( sum / count ) ) / ( count - 1 ) : Arithmetic{};
       };
       Arithmetic standard_deviation() const
       {
