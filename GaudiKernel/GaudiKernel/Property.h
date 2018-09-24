@@ -12,23 +12,15 @@
 // ============================================================================
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/PropertyFwd.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/TaggedBool.h"
 #include "GaudiKernel/ToStream.h"
+#include <Gaudi/Parsers/CommonParsers.h>
+#include <Gaudi/Parsers/InputData.h>
 
 namespace Gaudi
 {
-  namespace Parsers
-  {
-    /// Helper class to enable ADL for parsers
-    struct InputData : std::string {
-      InputData( const std::string& s ) : std::string{s} {}
-      using std::string::string;
-      using std::string::operator=;
-    };
-  }
   namespace Details
   {
     // ============================================================================

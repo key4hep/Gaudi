@@ -10,7 +10,7 @@
 typedef std::unordered_map<std::string, std::string> MyCustomType;
 
 // Define the parser
-#include "GaudiKernel/ParsersFactory.h"
+#include <Gaudi/Parsers/Factory.h>
 
 namespace Gaudi
 {
@@ -21,7 +21,7 @@ namespace Gaudi
     template <typename Iterator, typename Skipper>
     struct Grammar_<Iterator, MyCustomType, Skipper> {
       // In this case, the type is a mapping type, so it requires the MapGrammar.
-      // For other grammars see GaudiKernel/GrammarsV2.h
+      // For other grammars see Gaudi/Parsers/Grammars.h
       typedef MapGrammar<Iterator, MyCustomType, Skipper> Grammar;
     };
 

@@ -1,7 +1,7 @@
 // Include files
 
 #include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/Parsers.h"
+#include <Gaudi/Parsers/CommonParsers.h>
 // Local implementation of parsers from HashMap
 namespace Gaudi
 {

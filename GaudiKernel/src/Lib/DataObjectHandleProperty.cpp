@@ -1,8 +1,8 @@
 #include "GaudiKernel/DataObjectHandleProperty.h"
 
 #include "GaudiKernel/DataObjectHandleBase.h"
-#include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/System.h"
+#include <Gaudi/Parsers/CommonParsers.h>
 
 #include <sstream>
 

@@ -2,7 +2,7 @@
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IClassIDSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ParsersFactory.h"
+#include <Gaudi/Parsers/Factory.h>
 #include <functional>
 #include <iomanip>
 #include <iostream>
