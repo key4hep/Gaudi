@@ -195,7 +195,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot m_slot;
+    const EventSlot& m_slot;
   };
 
   struct EntityState : static_visitor<std::string> {
@@ -255,7 +255,7 @@ namespace precedence
       return state;
     }
 
-    EventSlot m_slot;
+    const EventSlot& m_slot;
 
     SmartIF<IHiveWhiteBoard> m_whiteboard;
     SmartIF<ICondSvc>        m_condSvc;
@@ -300,7 +300,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot             m_slot;
+    const EventSlot&      m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
@@ -341,7 +341,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot             m_slot;
+    const EventSlot&      m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
@@ -381,7 +381,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot             m_slot;
+    const EventSlot&      m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 

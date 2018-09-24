@@ -75,11 +75,11 @@ StatusCode ViewTester::execute() // the execution of the algorithm
       // Make views
       for ( unsigned int viewIndex = 0; viewIndex < m_viewNumber; ++viewIndex ) {
         // Make event context for the view
-        auto        viewContext = new EventContext( context.evt(), context.slot() );
+        auto        viewContext = std::make_unique<EventContext>( context.evt(), context.slot() );
         std::string viewName    = m_baseViewName + std::to_string( viewIndex );
         viewContext->setExtension<std::string>( viewName );
 
-        StatusCode sc = scheduler->scheduleEventView( &context, m_viewNodeName, viewContext );
+        StatusCode sc = scheduler->scheduleEventView( &context, m_viewNodeName, std::move( viewContext ) );
         if ( sc.isSuccess() )
           info() << "Attached view " << viewName << " to node " << m_viewNodeName.toString() << " for " << context
                  << endmsg;
@@ -89,7 +89,7 @@ StatusCode ViewTester::execute() // the execution of the algorithm
       }
     } else {
       // Disable the view node if there are no views
-      scheduler->scheduleEventView( &getContext(), m_viewNodeName, nullptr );
+      scheduler->scheduleEventView( &context, m_viewNodeName, nullptr );
     }
   }
 

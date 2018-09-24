@@ -129,7 +129,7 @@ public:
 
   /// Method to inform the scheduler about event views
   virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
-                                        EventContext* viewContext ) override;
+                                        std::unique_ptr<EventContext> viewContext ) override;
 
 private:
   using AState = AlgsExecutionStates::State;

@@ -23,7 +23,7 @@
 class IOBoundAlgTask : public IAlgTask
 {
 public:
-  IOBoundAlgTask( IAlgorithm* algorithm, EventContext* ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem,
+  IOBoundAlgTask( IAlgorithm* algorithm, const EventContext& ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem,
                   std::function<StatusCode()> promote2ExecutedClosure )
       : m_algorithm( algorithm )
       , m_evtCtx( ctx )
@@ -37,7 +37,7 @@ public:
 
 private:
   SmartIF<IAlgorithm>         m_algorithm;
-  EventContext*               m_evtCtx;
+  const EventContext&         m_evtCtx;
   IAlgExecStateSvc*           m_aess;
   SmartIF<ISvcLocator>        m_serviceLocator;
   std::function<StatusCode()> m_promote2ExecutedClosure;

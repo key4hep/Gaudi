@@ -27,40 +27,48 @@ public:
   typedef size_t ContextID_t;
   typedef size_t ContextEvt_t;
 
-  static const ContextID_t  INVALID_CONTEXT_ID  = std::numeric_limits<ContextID_t>::max();
-  static const ContextEvt_t INVALID_CONTEXT_EVT = std::numeric_limits<ContextEvt_t>::max();
+  static constexpr ContextID_t  INVALID_CONTEXT_ID  = std::numeric_limits<ContextID_t>::max();
+  static constexpr ContextEvt_t INVALID_CONTEXT_EVT = std::numeric_limits<ContextEvt_t>::max();
 
   EventContext(){};
-  EventContext( const ContextEvt_t& e, const ContextID_t& s = INVALID_CONTEXT_ID ) : m_evt_num( e ), m_evt_slot( s )
+  EventContext( const ContextEvt_t e, const ContextID_t s = INVALID_CONTEXT_ID,
+                const ContextID_t subSlot = INVALID_CONTEXT_ID )
+      : m_evt_num( e ), m_evt_slot( s ), m_sub_slot( subSlot )
   {
     m_valid = ( e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID ) ? false : true;
   }
 
   ContextEvt_t       evt() const { return m_evt_num; }
   ContextID_t        slot() const { return m_evt_slot; }
+  ContextID_t        subSlot() const { return m_sub_slot; }
+  bool               usesSubSlot() const { return m_sub_slot != INVALID_CONTEXT_ID; }
   bool               valid() const { return m_valid; }
   const EventIDBase& eventID() const { return m_eid; }
 
-  void set( const ContextEvt_t& e = 0, const ContextID_t& s = INVALID_CONTEXT_ID )
+  void set( const ContextEvt_t e = 0, const ContextID_t s = INVALID_CONTEXT_ID,
+            const ContextID_t subSlot = INVALID_CONTEXT_ID )
   {
     m_valid    = ( e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID ) ? false : true;
     m_evt_num  = e;
     m_evt_slot = s;
+    m_sub_slot = subSlot;
   }
 
-  void setEvt( const ContextEvt_t& e )
+  void setEvt( const ContextEvt_t e )
   {
     if ( e == INVALID_CONTEXT_EVT ) setValid( false );
     m_evt_num = e;
   }
 
-  void setSlot( const ContextID_t& s )
+  void setSlot( const ContextID_t s )
   {
     if ( s == INVALID_CONTEXT_ID ) setValid( false );
     m_evt_slot = s;
   }
 
-  void setValid( const bool& b = true )
+  void setSubSlot( const ContextID_t subslot ) { m_sub_slot = subslot; }
+
+  void setValid( const bool b = true )
   {
     m_valid = b;
     if ( !m_valid ) {
@@ -94,6 +102,7 @@ public:
 private:
   ContextEvt_t m_evt_num{INVALID_CONTEXT_EVT};
   ContextID_t  m_evt_slot{INVALID_CONTEXT_ID};
+  ContextID_t  m_sub_slot{INVALID_CONTEXT_ID};
   bool         m_valid{false};
 
   boost::any m_extension;
@@ -104,7 +113,10 @@ private:
 inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx )
 {
   if ( ctx.valid() ) {
-    return os << "s: " << ctx.slot() << "  e: " << ctx.evt();
+    if ( ctx.usesSubSlot() )
+      return os << "s: " << ctx.slot() << "  e: " << ctx.evt() << " sub: " << ctx.subSlot();
+    else
+      return os << "s: " << ctx.slot() << "  e: " << ctx.evt();
   } else {
     return os << "INVALID";
   }
