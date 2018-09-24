@@ -3,13 +3,12 @@
 
 // Framework includes
 #include "AlgsExecutionStates.h"
+#include "GaudiKernel/EventContext.h"
 
 #include <string>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
-
-class EventContext;
 
 /// Class representing an event slot
 struct EventSlot {
@@ -17,9 +16,18 @@ struct EventSlot {
   EventSlot( unsigned int numberOfAlgorithms, unsigned int numberOfControlFlowNodes, SmartIF<IMessageSvc> MS )
       : algsStates( numberOfAlgorithms, MS ), controlFlowState( numberOfControlFlowNodes, -1 ){};
 
+  /// Copy constructor
+  EventSlot( const EventSlot& ) = delete;
+  /// Assignment operator
+  EventSlot& operator=( const EventSlot& ) = delete;
+  /// Move constructor
+  EventSlot( EventSlot&& ) = default;
+  /// Move assignment
+  EventSlot& operator=( EventSlot&& ) = default;
+
   /// Construct a (sub)slot, nested to 'original' parent slot, with CF states copied from the parent
-  EventSlot( EventSlot& original, EventContext* theeventContext, const std::string& nodeName )
-      : eventContext( theeventContext )
+  EventSlot( EventSlot& original, std::unique_ptr<EventContext> theeventContext, const std::string& nodeName )
+      : eventContext( std::move( theeventContext ) )
       , algsStates( original.algsStates )
       , controlFlowState( original.controlFlowState )
       , entryPoint( nodeName )
@@ -31,24 +39,20 @@ struct EventSlot {
   /// Reset all resources in order to reuse the slot (thread-unsafe)
   void reset( EventContext* theeventContext )
   {
-    eventContext = theeventContext;
+    eventContext.reset( theeventContext );
     algsStates.reset();
     controlFlowState.assign( controlFlowState.size(), -1 );
     complete = false;
     entryPoint.clear();
     parentSlot = nullptr;
-    contextToSlot.clear();
     subSlotsByNode.clear();
     allSubSlots.clear();
   };
 
   /// Add a subslot to the slot (this constructs a new slot and registers it with the parent one)
-  void addSubSlot( EventContext* viewContext, const std::string& nodeName )
+  void addSubSlot( std::unique_ptr<EventContext> viewContext, const std::string& nodeName )
   {
     unsigned int lastIndex = allSubSlots.size();
-
-    // Store index of the new slot in lookup structures
-    contextToSlot.emplace( viewContext, lastIndex );
 
     auto search = subSlotsByNode.find( nodeName );
     if ( search != subSlotsByNode.end() )
@@ -58,7 +62,8 @@ struct EventSlot {
                               std::forward_as_tuple( 1, lastIndex ) );
 
     // Make new slot and nest it into the top slot
-    allSubSlots.emplace_back( *this, viewContext, nodeName );
+    viewContext->setSubSlot( lastIndex );
+    allSubSlots.emplace_back( *this, std::move( viewContext ), nodeName );
   }
 
   /// Disable event views for a given CF view node by registering an empty container
@@ -69,7 +74,7 @@ struct EventSlot {
   }
 
   /// Cache for the eventContext
-  EventContext* eventContext = nullptr;
+  std::unique_ptr<EventContext> eventContext;
   /// Vector of algorithms states
   AlgsExecutionStates algsStates;
   /// State of the control flow
@@ -83,8 +88,6 @@ struct EventSlot {
   std::string entryPoint;
   /// Pointer to parent slot (null for top level)
   EventSlot* parentSlot = nullptr;
-  /// Quick lookup for sub-slots by event context (top level only)
-  std::unordered_map<EventContext*, unsigned int> contextToSlot;
   /// Listing of sub-slots by the node (name) they are attached to
   std::unordered_map<std::string, std::vector<unsigned int>> subSlotsByNode;
   /// Actual sub-slot instances

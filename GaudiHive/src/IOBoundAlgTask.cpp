@@ -27,13 +27,13 @@ StatusCode IOBoundAlgTask::execute()
   MsgStream            log( messageSvc, "AccelAlgoExecutionTask" );
 
   // select the appropriate store
-  this_algo->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
+  this_algo->whiteboard()->selectStore( m_evtCtx.valid() ? m_evtCtx.slot() : 0 ).ignore();
 
   StatusCode sc( StatusCode::FAILURE );
   try {
     RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
     log << MSG::DEBUG << "Starting execution of algorithm " << m_algorithm->name() << endmsg;
-    sc = m_algorithm->sysExecute( *m_evtCtx );
+    sc = m_algorithm->sysExecute( m_evtCtx );
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       log << MSG::WARNING << "Execution of algorithm " << m_algorithm->name() << " failed" << endmsg;
       eventfailed = true;
@@ -57,7 +57,7 @@ StatusCode IOBoundAlgTask::execute()
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can
   // then receive the FAILURE
-  m_aess->updateEventStatus( eventfailed, *m_evtCtx );
+  m_aess->updateEventStatus( eventfailed, m_evtCtx );
 
   // update scheduler state
   m_promote2ExecutedClosure();

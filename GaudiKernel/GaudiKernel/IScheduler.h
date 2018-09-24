@@ -43,6 +43,6 @@ public:
 
   /// Method to inform the scheduler about event views
   virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
-                                        EventContext* viewContext ) = 0;
+                                        std::unique_ptr<EventContext> viewContext ) = 0;
 };
 #endif
