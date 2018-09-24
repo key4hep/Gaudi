@@ -57,4 +57,10 @@ EventWatchdog        INFO The last event took ~10s
 ApplicationMgr       INFO Application Manager Stopped successfully
 """, stdout = stdout)
 </text></argument>
+<argument name="unsupported_platforms"><set>
+  <text>asan</text>
+  <text>lsan</text>
+  <text>ubsan</text>
+  <text>tsan</text>
+</set></argument>
 </extension>

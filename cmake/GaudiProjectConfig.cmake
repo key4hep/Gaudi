@@ -1783,12 +1783,19 @@ function(gaudi_generate_configurables library)
     set(genconf_products ${genconf_products} ${outdir}/__init__.py)
   endif()
 
+  # If a sanitizer is enabled force genconf to always return true status
+  # to allow builds to continue even if running genconf triggered a sanitizer error
+  set(genconf_force_status "")
+  if (SANITIZER_ENABLED)
+    set(genconf_force_status "||true")
+  endif()
+
   add_custom_command(
     OUTPUT ${genconf_products} ${outdir}/${library}.confdb
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
-                -i ${library}
+                -i ${library} ${genconf_force_status}
     DEPENDS ${conf_depends})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}.confdb)
   # Add the target to the target that groups all of them for the package.
@@ -2470,11 +2477,19 @@ function(gaudi_add_test name)
       if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp)
         file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp)
       endif()
+      set(_test_environment_ "${ARG_ENVIRONMENT}" )
+      if (SANITIZER_ENABLED)
+        if (_test_environment_)
+          set(_test_environment_ "LD_PRELOAD=${SANITIZER_ENABLED};${_test_environment_}" )
+        else()
+          set(_test_environment_ "LD_PRELOAD=${SANITIZER_ENABLED}" )
+        endif()
+      endif()
       gaudi_add_test(${qmt_name}
                      COMMAND ${test_cmd}
                      WORKING_DIRECTORY ${qmtest_root_dir}
                      LABELS QMTest ${ARG_LABELS}
-                     ENVIRONMENT ${ARG_ENVIRONMENT})
+                     ENVIRONMENT ${_test_environment_})
       # we need to reapply the logic to qmt_name
       if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
         set(test_name ${qmt_name})

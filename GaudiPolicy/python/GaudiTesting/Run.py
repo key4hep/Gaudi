@@ -133,6 +133,15 @@ def main():
                   os.environ.get('CMTCONFIG', '')):
         os.environ['TERM'] = 'dumb'
 
+    # If running sanitizer builds, set LD_PRELOAD in environment
+    sanitizer = os.environ.get('PRELOAD_SANITIZER_LIB', '')
+    ld_preload = os.environ.get('LD_PRELOAD', '')
+    if sanitizer and sanitizer not in ld_preload:
+        if ld_preload:
+            os.environ['LD_PRELOAD'] = sanitizer+" "+ld_preload
+        else:
+            os.environ['LD_PRELOAD'] = sanitizer
+
     # Testing the file beginning with "Test" or if it is a qmt file and doing the test
     logging.debug('processing %s', filename)
     if filename.endswith('_test.py'):

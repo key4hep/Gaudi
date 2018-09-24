@@ -1,0 +1,64 @@
+
+# --------------------------------------------------
+# Leak sanitizer suppressions
+# http://clang.llvm.org/docs/LeakSanitizer.html
+# --------------------------------------------------
+
+# PyROOT
+leak:PyROOT::MethodProxy_New
+leak:PyROOT::CreateConverter
+leak:PyROOT::CreateScopeProxy
+leak:PyROOT::CreateExecutor
+leak:PyROOT::TMethodHolder
+leak:PyROOT::TClassMethodHolder::Clone
+leak:PyROOT::MethodProxy::MethodInfo_t::MethodInfo_t
+
+# Python
+leak:PyEval_EvalFrameEx
+leak:^PyObject_Call$
+leak:^builtin_hasattr$
+
+# ROOT
+leak:TClingLookupHelper__ExistingTypeCheck
+leak:^mp_new$
+leak:^pp_new$
+leak:^mp_setthreaded$
+leak:TFormula::HandleParamRanges
+
+# XrootD
+leak:XrdSys
+
+# Xerces
+leak:xercesc_3_1::MemoryManagerImpl::allocate
+
+# TBB
+leak:tbb::internal::task_stream
+
+# xgboost
+leak:libxgboost.so
+
+# These are certainly not leaks from std::string, but a limitation
+# of the traceback coming out of the LCG externals.
+# Perhaps would help if the debug builds used -fno-omit-frame-pointer
+# Perhaps coming out of python in some way ...
+# Suppressed to reduce noise ...
+#
+# Direct leak of 745 byte(s) in 24 object(s) allocated from:
+#    #0 0x7f895ee8a116 in operator new(unsigned long) ../../../../gcc-7.3.0/libsanitizer/lsan/lsan_interceptors.cc:162
+#    #1 0x7f895d90227e in std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_assign(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) /build/pmendez-sftnight/build-730binutils/x86_64-pc-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc:265
+#
+# Direct leak of 82 byte(s) in 1 object(s) allocated from:
+#    #0 0x7f895ee8a116 in operator new(unsigned long) ../../../../gcc-7.3.0/libsanitizer/lsan/lsan_interceptors.cc:162
+#    #1 0x7f895d8f4a2e in void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag) /build/pmendez-sftnight/build-730binutils/x86_64-pc-linux-gnu/libstdc++-v3/include/bits/basic_string.tcc:219
+leak:std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_assign
+leak:std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct
+leak:std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::reserve
+leak:std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate
+#
+# Indirect leak of 36 byte(s) in 9 object(s) allocated from:
+#    #0 0x7fc2f0ecf116 in operator new(unsigned long) ../../../../gcc-7.3.0/libsanitizer/lsan/lsan_interceptors.cc:162
+#    #1 0x7fc2dc2d5cbb in std::vector<unsigned int, std::allocator<unsigned int> >::_M_fill_insert(__gnu_cxx::__normal_iterator<unsigned int*, std::vector<unsigned int, std::allocator<unsigned int> > >, unsigned long, unsigned int const&) (/cvmfs/lhcb.cern.ch/lib/lcg/releases/LCG_93/ROOT/6.12.06/x86_64-centos7-gcc7-dbg/lib/libCling.so+0xc3acbb)
+leak:std::vector<unsigned int, std::allocator<unsigned int> >::_M_fill_insert
+
+# Suppresses *everything* that comes via the runtime interceptor.
+leak:_interceptor_
