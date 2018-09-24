@@ -1,3 +1,5 @@
+#include "CustomPropertiesAlg.h"
+
 // ----------------------------------------------------------------------------
 //  Allow to use std::unordered_map as a property
 // ----------------------------------------------------------------------------
@@ -54,9 +56,6 @@ namespace std
     return s;
   }
 }
-
-// This must be included after the grammar definitions
-#include "CustomPropertiesAlg.h"
 
 // ----------------------------------------------------------------------------
 // Implementation file for class: CustomPropertiesAlg
