@@ -274,9 +274,22 @@ if __name__ == "__main__":
     InstallRootLoggingHandler(prefix, level=level, with_time=opts.debug)
     root_logger = logging.getLogger()
 
+    # Sanitizer support
+    sanitizer = os.environ.get("PRELOAD_SANITIZER_LIB", "")
+    if sanitizer:
+        if sanitizer not in os.environ.get("LD_PRELOAD", ""):
+            opts.preload.insert(0, sanitizer)
+        os.environ["PRELOAD_SANITIZER_LIB"] = ""
+
     # tcmalloc support
     if opts.tcmalloc:
-        opts.preload.insert(0, os.environ.get("TCMALLOCLIB", "libtcmalloc.so"))
+        # Disable tcmalloc if sanitizer is selected
+        if sanitizer:
+            logging.warning("tcmalloc preload disabled when using a sanitizer")
+        else:
+            opts.preload.insert(0, os.environ.get(
+                "TCMALLOCLIB", "libtcmalloc.so"))
+
     # allow preloading of libraries
     if opts.preload:
         preload = os.environ.get("LD_PRELOAD", "")

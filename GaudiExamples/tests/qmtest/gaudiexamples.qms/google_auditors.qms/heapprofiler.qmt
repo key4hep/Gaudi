@@ -22,5 +22,11 @@ ApplicationMgr(EvtMax=10,
 <argument name="reference"><text>refs/google_auditors/heap_profiler.ref</text></argument>
 <argument name="error_reference"><text>refs/google_auditors/heap_profiler_err.ref</text></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-<argument name="unsupported_platforms"><set><text>i686</text></set></argument>
+<argument name="unsupported_platforms"><set>
+  <text>i686</text>
+  <text>asan</text>
+  <text>lsan</text>
+  <text>ubsan</text>
+  <text>tsan</text>
+</set></argument>
 </extension>

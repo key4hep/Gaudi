@@ -20,4 +20,10 @@ app = ApplicationMgr(TopAlg = [sigalg(EventCount=3, Signal=signal.SIGSEGV)],
 # no-op to avoid the check on the stderr
 </text></argument>
 <argument name="exit_code"><integer>139</integer></argument>
+<argument name="unsupported_platforms"><set>
+  <text>asan</text>
+  <text>lsan</text>
+  <text>ubsan</text>
+  <text>tsan</text>
+</set></argument>
 </extension>

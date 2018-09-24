@@ -109,16 +109,20 @@ foreach(undef_symbol mallctl)
 endforeach()
 set_target_properties(GaudiJemalloc PROPERTIES LINK_FLAGS "${GaudiJemalloc_linker_flags}")
 
-find_library(jemalloc_lib NAMES jemalloc)
-if(jemalloc_lib)
-  message(STATUS "Found jemalloc: ${jemalloc_lib}")
-  gaudi_add_test(jira.gaudi_1045
-                 COMMAND gaudirun.py
-                 ENVIRONMENT LD_PRELOAD=${jemalloc_lib})
-  get_filename_component(jemalloc_libdir "${jemalloc_lib}" PATH)
-  gaudi_env(PREPEND LD_LIBRARY_PATH "${jemalloc_libdir}")
+if (NOT SANITIZER_ENABLED)
+  find_library(jemalloc_lib NAMES jemalloc)
+  if(jemalloc_lib)
+    message(STATUS "Found jemalloc: ${jemalloc_lib}")
+    gaudi_add_test(jira.gaudi_1045
+                   COMMAND gaudirun.py
+                   ENVIRONMENT LD_PRELOAD=${jemalloc_lib})
+    get_filename_component(jemalloc_libdir "${jemalloc_lib}" PATH)
+    gaudi_env(PREPEND LD_LIBRARY_PATH "${jemalloc_libdir}")
+  else()
+    message(STATUS "jemalloc not found, cannot test GAUDI-1045")
+  endif()
 else()
-  message(STATUS "jemalloc not found, cannot test GAUDI-1045")
+  message(STATUS "jemalloc test disabled when running a sanitizer")
 endif()
 
 #---Installation------------------------------------------------------------

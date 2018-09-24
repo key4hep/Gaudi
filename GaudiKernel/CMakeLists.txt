@@ -80,8 +80,10 @@ if( CPPUNIT_FOUND )
    endif()
    gaudi_add_unit_test(test_GaudiTime tests/src/test_GaudiTime.cpp
       LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
-      LINK_LIBRARIES GaudiKernel)
+   if (NOT SANITIZER_ENABLED)
+     gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
+        LINK_LIBRARIES GaudiKernel)
+   endif()
    gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(Memory_test tests/src/Memory_test.cpp

@@ -1,0 +1,7 @@
+
+# --------------------------------------------------
+# Thread sanitizer suppressions
+# http://clang.llvm.org/docs/ThreadSanitizer.html
+# --------------------------------------------------
+
+# Nothing yet ..

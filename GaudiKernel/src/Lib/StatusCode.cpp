@@ -60,8 +60,10 @@ void StatusCode::check()
     if ( System::backTrace( addresses, depth ) ) {
 
       for ( size_t idx : {2, 3} ) {
-        if ( System::getStackLevel( addresses[idx], addr, fnc, lib ) && fnc != "StatusCode::~StatusCode()" ) {
-
+        // When running address sanitizer builds with -fno-omit-frame-pointer
+        // StatusCode::check() might appear as the function name, so skip.
+        if ( System::getStackLevel( addresses[idx], addr, fnc, lib ) && fnc != "StatusCode::~StatusCode()" &&
+             fnc != "StatusCode::check()" ) {
           if ( scs ) {
             scs->regFnc( fnc, lib );
           } else {

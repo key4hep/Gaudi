@@ -806,6 +806,7 @@ def main():
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
                 else:
+                    executionTime = float(0)
                     # write the other files
                     for NamedMeasurement in Results.getiterator("NamedMeasurement"):
                         value = NamedMeasurement.find("Value")
