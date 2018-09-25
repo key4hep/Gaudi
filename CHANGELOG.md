@@ -7,6 +7,39 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+### Changed
+- Use `unique_ptr` for `EventContexts` ([mr !732][], [issue #37][])
+- `ConcurrencyFlags`: move setting from `AvalancheScheduler` to `HiveWhiteBoard` ([mr !726][])
+- Introduce a generic `IDataStoreAgent` implementation ([mr !661][])
+- `MetaDataSvc`: save data for all clients of the `JobOptionsSvc` ([mr !720][])
+- Adding actual type of object in data store to error messages ([mr !715][])
+
+### Added
+- Add build and runtime support for gcc/clang sanitizers ([mr !744][])
+- Add debug builds to Gitlab-CI ([mr !756][])
+- Introduce `IDataBroker` interface, and `HiveDataBroker` implementation ([mr !685][], [mr !739][])
+- Added an accumulate helper function to new counters ([mr !717][])
+
+### Fixed
+- Fix Floating Point Exception in `counters.h` ([mr !760][])
+- Make the CMake tests more resilient to symlinks ([mr !742][])
+- Add support for versioned ROOT libraries ([mr !737][])
+- Make event views bookkeeping thread-safe ([mr !729][], [issue #36][])
+- Avoid using a (possibly invalid) `EventContext` pointer ([mr !727][])
+- Mark dependencies as required when the build requires them ([mr !731][])
+- Use std::filesystem only with C++17 ([mr !738][])
+- Fixed indentation of new counters to be backward compatible ([mr !717][])
+- Fixed error handling of `qmt` parsing errors ([mr !714][])
+- Stop profiling on finalize if needed ([mr !713][])
+- `THistSvc`: fix memory corruption in `deReg(string)` ([mr !728][])
+- Avoid possible memory corruption in `PluginService` ([mr !733][])
+- Added correct `vector_of_const_::operator[]` and ::at ([mr !710][])
+
+### Clean up
+- Counters: improve doxygen ([mr !754][])
+- Minor code clean up ([mr !408][])
+
+
 ## [v30r3][] - 2018-08-01
 Improvements, modernization and fixes.
 
@@ -103,7 +136,28 @@ Details about old versions of the project can be found in the
 [ReleaseNotes](ReleaseNotes) folder and in the `release.notes` files in
 [GaudiRelease/doc](GaudiRelease/doc).
 
+[mr !760]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/760
+[mr !756]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/756
+[mr !754]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/754
+[mr !744]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/744
+[mr !742]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/742
+[mr !739]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/739
+[mr !738]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/738
+[mr !737]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/737
+[mr !733]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/733
+[mr !732]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/732
+[mr !731]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/731
+[mr !729]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/729
+[mr !728]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/728
+[mr !727]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/727
+[mr !726]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/726
 [mr !724]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/724
+[mr !720]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/720
+[mr !717]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/717
+[mr !715]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/715
+[mr !714]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/714
+[mr !713]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/713
+[mr !710]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/710
 [mr !709]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/709
 [mr !706]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/706
 [mr !705]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/705
@@ -121,6 +175,7 @@ Details about old versions of the project can be found in the
 [mr !688]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/688
 [mr !687]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/687
 [mr !686]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/686
+[mr !685]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/685
 [mr !684]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/684
 [mr !683]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/683
 [mr !682]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/682
@@ -142,6 +197,7 @@ Details about old versions of the project can be found in the
 [mr !664]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/664
 [mr !663]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/663
 [mr !662]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/662
+[mr !661]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/661
 [mr !660]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/660
 [mr !659]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/659
 [mr !658]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/658
@@ -164,7 +220,10 @@ Details about old versions of the project can be found in the
 [mr !594]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/594
 [mr !526]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/526
 [mr !448]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/448
+[mr !408]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/408
 
+[issue #37]: https://gitlab.cern.ch/gaudi/Gaudi/issues/37
+[issue #36]: https://gitlab.cern.ch/gaudi/Gaudi/issues/36
 [issue #27]: https://gitlab.cern.ch/gaudi/Gaudi/issues/27
 [issue #5]: https://gitlab.cern.ch/gaudi/Gaudi/issues/5
 
