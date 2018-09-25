@@ -91,7 +91,8 @@ doxygen:
     BINARY_TAG: x86_64-centos7-gcc7-opt
     BUILDDIR: build-opt
   script:
-    - find build -type f -exec touch -d $(date +@%s) \{} \;
+    - . ci-utils/env_setup.sh
+    - find ${BUILDDIR} -type f -exec touch -d $(date +@%s) \{} \;
     - make BUILDDIR=${BUILDDIR} doc
     - rm -rf public
     - mkdir -p public/doxygen

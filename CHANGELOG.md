@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Add build and runtime support for gcc/clang sanitizers ([mr !744][])
-- Add debug builds to Gitlab-CI ([mr !756][])
+- Add debug builds to Gitlab-CI and other improvements to CI configuration ([mr !756][])
 - Introduce `IDataBroker` interface, and `HiveDataBroker` implementation ([mr !685][], [mr !739][])
 - Added an accumulate helper function to new counters ([mr !717][])
 
