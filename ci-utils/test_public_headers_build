@@ -12,6 +12,6 @@ fi
 # make sure we do not re-run cmake
 find ${BUILDDIR} -type f -exec touch -d $(date +@%s) \{} \;
 
-${LCG_release_area}/ccache/${CCACHE_VERSION}/${BINARY_TAG}/bin/ccache -z
+${LCG_release_area}/ccache/${CCACHE_VERSION}/${BINARY_TAG}/bin/ccache -z -M 1G
 /usr/bin/time -v make BUILDDIR=${BUILDDIR} test_public_headers_build
 ${LCG_release_area}/ccache/${CCACHE_VERSION}/${BINARY_TAG}/bin/ccache -s
