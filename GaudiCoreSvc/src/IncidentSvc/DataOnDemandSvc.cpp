@@ -484,7 +484,7 @@ void DataOnDemandSvc::handle( const Incident& incident ) {
   const DataIncident* inc = dynamic_cast<const DataIncident*>( &incident );
   if ( !inc ) { return; } // RETURN
   // update if needed!
-  if ( m_updateRequired ) { update(); }
+  if ( m_updateRequired ) { update().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); }
 
   if ( msgLevel( MSG::VERBOSE ) ) {
     verbose() << "Incident: [" << incident.type() << "] "

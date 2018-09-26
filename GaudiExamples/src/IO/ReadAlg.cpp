@@ -53,7 +53,8 @@ StatusCode ReadAlg::initialize() {
   }
   if ( !m_incidentName.empty() ) {
     auto prp = m_recordSvc.as<IProperty>();
-    setProperty( "IncidentName", prp->getProperty( "IncidentName" ) );
+    setProperty( "IncidentName", prp->getProperty( "IncidentName" ) )
+        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_incidentSvc = service( "IncidentSvc", true );
     if ( !m_incidentSvc ) {
       error() << "Failed to access IncidentSvc." << endmsg;

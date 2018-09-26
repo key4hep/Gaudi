@@ -138,7 +138,7 @@ StatusCode HiveSlimEventLoopMgr::initialize() {
 StatusCode HiveSlimEventLoopMgr::reinitialize() {
 
   // Check to see whether a new Event Selector has been specified
-  setProperty( m_appMgrProperty->getProperty( "EvtSel" ) );
+  setProperty( m_appMgrProperty->getProperty( "EvtSel" ) ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   if ( m_evtsel != "NONE" || m_evtsel.empty() ) {
     auto       theSvc    = serviceLocator()->service( "EventSelector" );
     auto       theEvtSel = theSvc.as<IEvtSelector>();
@@ -147,7 +147,7 @@ StatusCode HiveSlimEventLoopMgr::reinitialize() {
       // Setup Event Selector
       if ( m_evtSelector.get() && m_evtContext ) {
         // Need to release context before switching to new event selector
-        m_evtSelector->releaseContext( m_evtContext );
+        m_evtSelector->releaseContext( m_evtContext ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         m_evtContext = nullptr;
       }
       m_evtSelector = theEvtSel;
@@ -172,7 +172,7 @@ StatusCode HiveSlimEventLoopMgr::reinitialize() {
 
     } else if ( m_evtSelector ) {
       if ( m_evtContext ) {
-        m_evtSelector->releaseContext( m_evtContext );
+        m_evtSelector->releaseContext( m_evtContext ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         m_evtContext = nullptr;
       }
       sc = m_evtSelector->createContext( m_evtContext );
@@ -182,7 +182,7 @@ StatusCode HiveSlimEventLoopMgr::reinitialize() {
       }
     }
   } else if ( m_evtSelector && m_evtContext ) {
-    m_evtSelector->releaseContext( m_evtContext );
+    m_evtSelector->releaseContext( m_evtContext ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_evtSelector = nullptr;
     m_evtContext  = nullptr;
   }
@@ -276,12 +276,12 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( EventContext&& ctx ) {
   if ( LIKELY( m_blackListBS != nullptr ) ) { // we are processing a finite number of events, use bitset blacklist
     if ( m_blackListBS->test( ctx.evt() ) ) {
       VERBOSE_MSG << "Event " << ctx.evt() << " on black list" << endmsg;
-      m_whiteboard->freeStore( ctx.slot() );
+      m_whiteboard->freeStore( ctx.slot() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       return StatusCode::RECOVERABLE;
     }
   } else if ( std::binary_search( m_eventNumberBlacklist.begin(), m_eventNumberBlacklist.end(), ctx.evt() ) ) {
     VERBOSE_MSG << "Event " << ctx.evt() << " on black list" << endmsg;
-    m_whiteboard->freeStore( ctx.slot() );
+    m_whiteboard->freeStore( ctx.slot() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     return StatusCode::RECOVERABLE;
   }
 

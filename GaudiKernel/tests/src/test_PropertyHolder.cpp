@@ -53,7 +53,8 @@ BOOST_AUTO_TEST_CASE( backward_compatibility ) {
     AnonymousPropertyHolder                   mgr;
     Gaudi::Property<std::vector<std::string>> vp{&mgr, "name", {}};
 
-    Gaudi::Utils::setProperty( &mgr, "name", std::vector<std::string>{{"All"}} );
+    Gaudi::Utils::setProperty( &mgr, "name", std::vector<std::string>{{"All"}} )
+        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
     BOOST_CHECK( vp == std::vector<std::string>{{"All"}} );
   }

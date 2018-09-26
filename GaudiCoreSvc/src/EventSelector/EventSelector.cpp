@@ -118,7 +118,7 @@ StatusCode EventSelector::lastOfPreviousStream( bool shutDown, EvtSelectorContex
         EventSelector* thisPtr = const_cast<EventSelector*>( this );
         if ( s->selector() && iter.context() ) {
           Context* ctxt = iter.context();
-          s->selector()->releaseContext( ctxt );
+          s->selector()->releaseContext( ctxt ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
           iter.set( 0, 0 );
         }
         status = thisPtr->m_streamtool->finalizeStream( const_cast<EventSelectorDataStream*>( s ) );
@@ -176,7 +176,7 @@ StatusCode EventSelector::createContext( Context*& refpCtxt ) const {
     StatusCode sc = next( *refpCtxt );
     if ( sc.isFailure() ) {
       error() << " createContext() failed to start with event number " << m_firstEvent << endmsg;
-      releaseContext( refpCtxt );
+      releaseContext( refpCtxt ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       refpCtxt = nullptr;
       return StatusCode::FAILURE;
     }
@@ -267,7 +267,7 @@ StatusCode EventSelector::rewind( Context& refCtxt ) const {
   EvtSelectorContext* ctxt = dynamic_cast<EvtSelectorContext*>( &refCtxt );
   if ( ctxt ) {
     ctxt->set( 0, -1, 0, 0 );
-    firstOfNextStream( true, *ctxt );
+    firstOfNextStream( true, *ctxt ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     long nskip = m_firstEvent;
     while ( --nskip > 0 ) {
       StatusCode sc = next( *ctxt );

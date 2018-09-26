@@ -22,7 +22,8 @@ class PythonAdaptor {
 public:
   PythonAdaptor( IJobOptionsSvc* jos ) : m_IJobOptionsSvc( jos ) {}
   void addPropertyToJobOptions( const std::string& client, const std::string& name, const std::string& value ) {
-    m_IJobOptionsSvc->addPropertyToCatalogue( client, Gaudi::Property<std::string>( name, value ) );
+    m_IJobOptionsSvc->addPropertyToCatalogue( client, Gaudi::Property<std::string>( name, value ) )
+        .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   }
 
 private:

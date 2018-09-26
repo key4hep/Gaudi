@@ -110,7 +110,8 @@ void JobOptionsSvc::fillServiceCatalog( const gp::Catalog& catalog ) {
   for ( const auto& client : catalog ) {
     for ( const auto& current : client.second ) {
       addPropertyToCatalogue( client.first,
-                              Gaudi::Property<std::string>{current.NameInClient(), current.ValueAsString()} );
+                              Gaudi::Property<std::string>{current.NameInClient(), current.ValueAsString()} )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     }
   }
 }

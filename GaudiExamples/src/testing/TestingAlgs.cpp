@@ -96,7 +96,7 @@ namespace GaudiTesting {
             error() << "Cannot get IEventProcessor" << endmsg;
             return StatusCode::FAILURE;
           }
-          ep->stopRun();
+          ep->stopRun().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         } else { // "failure"
           return StatusCode::FAILURE;
         }

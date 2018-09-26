@@ -102,7 +102,7 @@ StatusCode TupleAlg2::execute() {
 
   tuple1 << Column( "d1", d1 ) << Column( "d2", d2 ) << Column( "d3", d3 ) << Column( "d4", d4 );
 
-  tuple1->write();
+  tuple1->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   // ==========================================================================
   // book and fill simple NTuple with "triplets"
@@ -122,7 +122,7 @@ StatusCode TupleAlg2::execute() {
   tuple2 << Column( "tr1", tr1 );
   tuple2 << Column( "tr2", tr2 );
 
-  tuple2->write();
+  tuple2->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   return StatusCode::SUCCESS;
 }

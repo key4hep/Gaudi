@@ -128,7 +128,8 @@ namespace concurrency {
             // State which IOVs the data exists for
             output << indent << "current EventID: " << EventIDBase( slot.eventContext->eventID() ) << std::endl;
             std::vector<EventIDRange> validRanges;
-            conditionNode->m_condSvc->validRanges( validRanges, dataNode->name() );
+            conditionNode->m_condSvc->validRanges( validRanges, dataNode->name() )
+                .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
             for ( auto& range : validRanges ) { output << indent << "interval of validity: " << range << std::endl; }
             if ( validRanges.empty() ) output << indent << "no interval(s) of validity" << std::endl;
           } else {

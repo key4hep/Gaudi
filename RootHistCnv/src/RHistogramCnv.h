@@ -103,7 +103,7 @@ namespace RootHistCnv {
           }
         }
       }
-      error( "Histogram object is invalid!" );
+      error( "Histogram object is invalid!" ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       return nullptr;
     }
     /// Inquire class type

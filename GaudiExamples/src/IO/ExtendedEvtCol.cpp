@@ -97,23 +97,26 @@ StatusCode Gaudi::Examples::ExtendedEvtCol::execute() {
   auto tuple = evtCol( TupleID( "MyCOL1" ), "Trivial Event Tag Collection" );
 
   /// put the event address into the event tag collection:
-  tuple->column( "Address", event->registry()->address() );
+  tuple->column( "Address", event->registry()->address() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   /// put the information about the tracks
-  tuple->farray( "TrkMom", trkMomentum, "px", &MyTrack::px, "py", &MyTrack::py, "pz", &MyTrack::pz, tracks->begin(),
-                 tracks->end(), "Ntrack", 5000 );
+  tuple
+      ->farray( "TrkMom", trkMomentum, "px", &MyTrack::px, "py", &MyTrack::py, "pz", &MyTrack::pz, tracks->begin(),
+                tracks->end(), "Ntrack", 5000 )
+      .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   // evaluate the total energy of all tracks:
   double energy =
       std::accumulate( tracks->begin(), tracks->end(), 0.0,
                        [&]( double e, const Gaudi::Examples::MyTrack* track ) { return e + trkMomentum( track ); } );
 
-  tuple->column( "Energy", energy );
+  tuple->column( "Energy", energy ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   // put a track into Event Tag Collection
-  tuple->put( "Track", !tracks->empty() ? *( tracks->begin() ) : nullptr );
+  tuple->put( "Track", !tracks->empty() ? *( tracks->begin() ) : nullptr )
+      .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
-  tuple->write();
+  tuple->write().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   return StatusCode::SUCCESS;
 }

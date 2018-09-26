@@ -151,7 +151,7 @@ StatusCode IODataManager::disconnect( Connection* con ) {
         if ( ( j = m_fidMap.find( c->pfn() ) ) != m_fidMap.end() ) m_fidMap.erase( j );
         if ( c->isConnected() ) {
           MsgStream log( msgSvc(), name() );
-          c->disconnect();
+          c->disconnect().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
           log << MSG::INFO << "Disconnect from dataset " << dsn << " [" << fid << "]" << endmsg;
         }
         delete i->second;
@@ -190,7 +190,7 @@ StatusCode IODataManager::reconnect( Entry* e ) {
         MsgStream log( msgSvc(), name() );
         std::for_each( std::begin( to_retire ), std::end( to_retire ), [&]( Entry* j ) {
           IDataConnection* c = j->connection;
-          c->disconnect();
+          c->disconnect().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
           log << MSG::INFO << "Disconnect from dataset " << c->pfn() << " [" << c->fid() << "]" << endmsg;
         } );
       }

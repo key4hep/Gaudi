@@ -11,4 +11,4 @@
 #include "../SCSAlg.h"
 #include "HackedStatusCode.h"
 
-void SCSAlg::fncUnchecked2() { test(); }
+void SCSAlg::fncUnchecked2() { test().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); }

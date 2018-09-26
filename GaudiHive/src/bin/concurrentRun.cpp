@@ -72,9 +72,10 @@ int main( int argc, char** argv ) {
   IInterface*        iface = Gaudi::createApplicationMgr();
   SmartIF<IProperty> propMgr( iface );
   SmartIF<IAppMgrUI> appUI( iface );
-  propMgr->setProperty( "JobOptionsType", "PYTHON" );
-  propMgr->setProperty( "JobOptionsPath", fileName );
-  propMgr->setProperty( "JobOptionsPreAction", params.str() );
-  propMgr->setProperty( "JobOptionsPostAction", postAction ); // TODO: grep this from command line
+  propMgr->setProperty( "JobOptionsType", "PYTHON" ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  propMgr->setProperty( "JobOptionsPath", fileName ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  propMgr->setProperty( "JobOptionsPreAction", params.str() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+  propMgr->setProperty( "JobOptionsPostAction", postAction )
+      .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); // TODO: grep this from command line
   return appUI->run().getCode();
 }

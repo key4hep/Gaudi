@@ -30,13 +30,15 @@ StatusCode SCSAlg::test() { return StatusCode::SUCCESS; }
 
 void __attribute__( ( noinline ) ) SCSAlg::fncChecked() { test().isSuccess(); }
 
-void __attribute__( ( noinline ) ) SCSAlg::fncUnchecked() { test(); }
+void __attribute__( ( noinline ) ) SCSAlg::fncUnchecked() {
+  test().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+}
 
 void SCSAlg::fncIgnored() {
   // Ignore all unchecked StatusCode instances in the current scope.
   StatusCode::ScopedDisableChecking _sc_ignore;
 
-  test();
+  test().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 }
 
 // Static Factory declaration

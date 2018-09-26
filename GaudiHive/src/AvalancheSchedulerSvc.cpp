@@ -330,7 +330,8 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   if ( m_showDataFlow ) m_precSvc->dumpDataFlow();
 
   // Simulate execution flow
-  if ( m_simulateExecution ) m_precSvc->simulate( m_eventSlots[0] );
+  if ( m_simulateExecution )
+    m_precSvc->simulate( m_eventSlots[0] ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   return sc;
 }
@@ -957,7 +958,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
     //
     IOBoundAlgTask* theTask = new ( tbb::task::allocate_root() )
         IOBoundAlgTask( ialgoPtr, *eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
-    m_IOBoundAlgScheduler->push( *theTask );
+    m_IOBoundAlgScheduler->push( *theTask ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     //
     // FIXME
 

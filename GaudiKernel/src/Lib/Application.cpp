@@ -70,7 +70,8 @@ Gaudi::Application::Application( Gaudi::Application::Options options ) {
       const auto       sep_pos = name.find_last_of( '.' );
       std::string_view client  = name.substr( 0, sep_pos );
       name.remove_prefix( sep_pos + 1 );
-      jos->addPropertyToCatalogue( std::string{client}, Gaudi::Property<std::string>{std::string{name}, item.second} );
+      jos->addPropertyToCatalogue( std::string{client}, Gaudi::Property<std::string>{std::string{name}, item.second} )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } );
   }
 }
@@ -88,14 +89,17 @@ int Gaudi::Application::run() {
   if ( app->initialize() ) {
     if ( app->start() ) {
       // - main processing loop
-      if ( !processor->executeRun( evtMax ) ) setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure );
+      if ( !processor->executeRun( evtMax ) )
+        setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure )
+            .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
       app->stop().ignore();
     } else
-      setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure );
+      setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure )
+          .ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     app->finalize().ignore();
   } else
-    setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure );
+    setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   return getAppReturnCode( prop );
 }
 

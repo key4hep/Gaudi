@@ -174,7 +174,7 @@ StatusCode DetDataSvc::clearStore() {
 
 /// Standard Constructor
 DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : extends( name, svc ) {
-  setProperty( "RootCLID", CLID_Catalog );
+  setProperty( "RootCLID", CLID_Catalog ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 }
 
 /// Set the new event time

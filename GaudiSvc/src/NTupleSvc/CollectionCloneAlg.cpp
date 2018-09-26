@@ -426,7 +426,7 @@ public:
           SmartIF<ISelectStatement> stmt( ObjFactory::create( m_selectorName, serviceLocator() ).release() );
           if ( stmt ) {
             if ( !m_criteria.empty() ) stmt->setCriteria( m_criteria );
-            nt->attachSelector( stmt );
+            nt->attachSelector( stmt ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
           } else {
             MsgStream log( msgSvc(), name() );
             log << MSG::ERROR << "Failed to attach tuple selector to " << m_inputs[i] << endmsg;

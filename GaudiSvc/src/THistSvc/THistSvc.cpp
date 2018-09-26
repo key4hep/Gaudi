@@ -750,7 +750,7 @@ StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs ) const {
       TObject* obj = key->ReadObj();
       if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
         TDirectory* tt = dynamic_cast<TDirectory*>( obj );
-        getTHists( tt, tl, rcs );
+        getTHists( tt, tl, rcs ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       }
     }
   }
@@ -857,7 +857,7 @@ StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs, bool reg ) 
       TObject* obj = key->ReadObj();
       if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
         TDirectory* tt = dynamic_cast<TDirectory*>( obj );
-        getTHists( tt, tl, rcs, reg );
+        getTHists( tt, tl, rcs, reg ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       }
     }
   }
@@ -949,7 +949,7 @@ StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs ) const {
       TObject* obj = key->ReadObj();
       if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
         TDirectory* tt = dynamic_cast<TDirectory*>( obj );
-        getTTrees( tt, tl, rcs );
+        getTTrees( tt, tl, rcs ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       }
     }
   }
@@ -1047,7 +1047,7 @@ StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs, bool reg ) 
       TObject* obj = key->ReadObj();
       if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
         TDirectory* tt = dynamic_cast<TDirectory*>( obj );
-        getTTrees( tt, tl, rcs, reg );
+        getTTrees( tt, tl, rcs, reg ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       }
     }
   }
@@ -1131,7 +1131,7 @@ StatusCode THistSvc::getTEfficiencies( TDirectory* td, TList& tl, bool rcs ) con
       TObject* obj = key->ReadObj();
       if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
         TDirectory* tt = dynamic_cast<TDirectory*>( obj );
-        getTHists( tt, tl, rcs );
+        getTHists( tt, tl, rcs ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       }
     }
   }
@@ -1239,7 +1239,7 @@ StatusCode THistSvc::getTEfficiencies( TDirectory* td, TList& tl, bool rcs, bool
       TObject* obj = key->ReadObj();
       if ( obj && obj->IsA()->InheritsFrom( "TDirectory" ) ) {
         TDirectory* tt = dynamic_cast<TDirectory*>( obj );
-        getTEfficiencies( tt, tl, rcs, reg );
+        getTEfficiencies( tt, tl, rcs, reg ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       }
     }
   }
@@ -1326,7 +1326,7 @@ void THistSvc::handle( const Incident& /* inc */ ) {
 
       IEventProcessor* evt = nullptr;
       if ( service( "ApplicationMgr", evt, true ).isSuccess() ) {
-        evt->stopRun();
+        evt->stopRun().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
         evt->release();
       } else {
         abort();

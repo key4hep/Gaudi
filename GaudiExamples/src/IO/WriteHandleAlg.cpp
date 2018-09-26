@@ -31,7 +31,7 @@ StatusCode WriteHandleAlg::execute() // the execution of the algorithm
   if ( m_useHandle )
     m_output_handle.put( c );
   else
-    eventSvc()->registerObject( "/Event", "MyCollision", c );
+    eventSvc()->registerObject( "/Event", "MyCollision", c ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
 
   return StatusCode::SUCCESS;
 }

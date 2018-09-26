@@ -16,7 +16,7 @@ namespace Gaudi {
     public:
       FetchDataFromFile( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {
         // make sure this algorithm is seen as reentrant by Gaudi
-        this->setProperty( "Cardinality", 0 );
+        this->setProperty( "Cardinality", 0 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       }
       StatusCode initialize() override {
         StatusCode sc = Algorithm::initialize();
@@ -31,7 +31,7 @@ namespace Gaudi {
         if ( sc ) {
           for ( const auto& k : outputDataObjs() ) {
             if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "adding data key " << k << endmsg;
-            evtSvc()->addPreLoadItem( k.key() );
+            evtSvc()->addPreLoadItem( k.key() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
           }
         }
         return sc;

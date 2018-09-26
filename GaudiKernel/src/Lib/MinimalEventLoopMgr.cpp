@@ -315,7 +315,9 @@ namespace {
         : m_appmgr( std::move( appmgr ) ), m_retcode( retcode ) {}
     inline void ignore() { m_retcode = Gaudi::ReturnCode::Success; }
     inline ~RetCodeGuard() {
-      if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) { Gaudi::setAppReturnCode( m_appmgr, m_retcode ); }
+      if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) {
+        Gaudi::setAppReturnCode( m_appmgr, m_retcode ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
+      }
     }
 
   private:

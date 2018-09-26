@@ -63,7 +63,7 @@ StatusCode WriteAlg::initialize() {
 StatusCode WriteAlg::finalize() {
   Counter* pObj = new Counter();
   pObj->set( 123456 );
-  put( m_recordSvc.get(), "/FileRecords/SumCount", pObj );
+  put( m_recordSvc.get(), "/FileRecords/SumCount", pObj ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   m_recordSvc.reset();
   m_evtCount = nullptr;
   return StatusCode::SUCCESS;

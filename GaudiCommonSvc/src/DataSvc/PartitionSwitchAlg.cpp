@@ -56,7 +56,7 @@ public:
       return sc;
     }
     /// Release old tool
-    if ( tool ) toolSvc()->releaseTool( tool );
+    if ( tool ) toolSvc()->releaseTool( tool ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     /// Now check if the partition is present. If not: try to create it
     IInterface* partititon = nullptr;
     sc                     = m_actor->get( m_partName, partititon );
@@ -67,7 +67,7 @@ public:
   /// Finalize
   STATUS finalize() override {
     SmartIF<IAlgTool> tool( m_actor );
-    if ( tool ) toolSvc()->releaseTool( tool );
+    if ( tool ) toolSvc()->releaseTool( tool ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_actor = nullptr;
     return STATUS::SUCCESS;
   }

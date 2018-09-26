@@ -95,7 +95,7 @@ StatusCode GaudiSequencer::initialize() {
     m_timer = m_timerTool->addTimer( name() );
     m_timerTool->increaseIndent();
   } else {
-    release( m_timerTool );
+    release( m_timerTool ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_timerTool = nullptr;
   }
 
