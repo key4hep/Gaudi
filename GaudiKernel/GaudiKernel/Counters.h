@@ -768,9 +768,9 @@ namespace Gaudi
      * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
-    struct BinomialCounter : BufferableCounter<bool, Atomicity, BinomialCounter>,
+    struct BinomialCounter : BufferableCounter<Arithmetic, Atomicity, BinomialCounter>,
                              BinomialAccumulator<Arithmetic, Atomicity> {
-      using BufferableCounter<bool, Atomicity, BinomialCounter>::BufferableCounter;
+      using BufferableCounter<Arithmetic, Atomicity, BinomialCounter>::BufferableCounter;
       std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
       {
         std::string fmt;
