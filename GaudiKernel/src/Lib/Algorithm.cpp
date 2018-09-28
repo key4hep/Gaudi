@@ -37,6 +37,23 @@
 #include "GaudiKernel/Algorithm.h"
 #pragma GCC diagnostic pop
 
+namespace Gaudi
+{
+  namespace Details
+  {
+    bool getDefaultAuditorValue( ISvcLocator* loc )
+    {
+      assert( loc != nullptr );
+      Gaudi::Property<bool> audit{false};
+      auto                  appMgr = loc->service<IProperty>( "ApplicationMgr" );
+      if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
+        audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );
+      }
+      return audit.value();
+    }
+  }
+}
+
 namespace
 {
   template <StatusCode ( Algorithm::*f )(), typename C>
@@ -51,28 +68,9 @@ namespace
 Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const std::string& version )
     : m_name( name )
     , m_version( version )
-    , m_index( 0 )
     , // incremented by AlgResourcePool
     m_pSvcLocator( pSvcLocator )
 {
-  // Auditor monitoring properties
-  // Initialize the default value from ApplicationMgr AuditAlgorithms
-  Gaudi::Property<bool> audit( false );
-  auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
-  if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
-    audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );
-  }
-  m_auditInit           = audit;
-  m_auditorInitialize   = audit;
-  m_auditorReinitialize = audit;
-  m_auditorRestart      = audit;
-  m_auditorExecute      = audit;
-  m_auditorFinalize     = audit;
-  m_auditorBeginRun     = audit;
-  m_auditorEndRun       = audit;
-  m_auditorStart        = audit;
-  m_auditorStop         = audit;
-
   // update handlers.
   m_outputLevel.declareUpdateHandler(
       [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
