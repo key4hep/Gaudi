@@ -54,8 +54,6 @@ namespace
 MinimalEventLoopMgr::MinimalEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc )
     : base_class( nam, svcLoc ), m_appMgrUI( svcLoc )
 {
-  m_topAlgNames.declareUpdateHandler( &MinimalEventLoopMgr::topAlgHandler, this );
-  m_outStreamNames.declareUpdateHandler( &MinimalEventLoopMgr::outStreamHandler, this );
 }
 
 //--------------------------------------------------------------------------------------------

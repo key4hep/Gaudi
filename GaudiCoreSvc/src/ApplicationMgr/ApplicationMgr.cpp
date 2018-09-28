@@ -66,15 +66,7 @@ ApplicationMgr::ApplicationMgr( IInterface* )
   declareProperty( "AlgTypeAliases", algMgr->typeAliases(),
                    "Aliases of algorithm types, to replace an algorithm type for every instance" );
 
-  // Add action handlers to the appropriate properties
-  m_SIGo.declareUpdateHandler( &ApplicationMgr::SIGoHandler, this );
-  m_SIExit.declareUpdateHandler( &ApplicationMgr::SIExitHandler, this );
-  m_topAlgNameList.declareUpdateHandler( &ApplicationMgr::evtLoopPropertyHandler, this );
-  m_outStreamNameList.declareUpdateHandler( &ApplicationMgr::evtLoopPropertyHandler, this );
-  m_outStreamType.declareUpdateHandler( &ApplicationMgr::evtLoopPropertyHandler, this );
-  m_pluginDebugLevel.declareUpdateHandler( &ApplicationMgr::pluginDebugPropertyHandler, this );
   // ServiceMgr Initialization loop checking
-  m_loopCheck.declareUpdateHandler( &ApplicationMgr::initLoopCheckHndlr, this );
   svcManager()->setLoopCheckEnabled( m_loopCheck );
 
   m_svcMapping = {"EvtDataSvc/EventDataSvc",
@@ -903,34 +895,6 @@ StatusCode ApplicationMgr::restart()
 }
 
 //============================================================================
-// SI Go Handler
-//============================================================================
-void ApplicationMgr::SIGoHandler( Gaudi::Details::PropertyBase& )
-{
-
-  MsgStream  log( m_messageSvc, name() );
-  StatusCode sc;
-
-  // Re-initialize everything
-  sc = reinitialize();
-  // Execute a number of events
-  executeRun( m_evtMax );
-
-  return;
-}
-
-//============================================================================
-// SI Exit Handler
-//============================================================================
-void ApplicationMgr::SIExitHandler( Gaudi::Details::PropertyBase& )
-{
-  StatusCode status;
-  status = finalize();
-  status = terminate();
-  ::exit( 0 );
-}
-
-//============================================================================
 // Handle properties of the event loop manager (Top alg/Output stream list)
 //============================================================================
 void ApplicationMgr::evtLoopPropertyHandler( Gaudi::Details::PropertyBase& p )
@@ -1105,25 +1069,6 @@ StatusCode ApplicationMgr::decodeDllNameList()
     log << endmsg;
   }
   return result;
-}
-
-//============================================================================
-// Plugin debug level handler
-//============================================================================
-void ApplicationMgr::pluginDebugPropertyHandler( Gaudi::Details::PropertyBase& )
-{
-  // Setup debug level for the plugin system
-  MsgStream log( m_messageSvc, name() );
-  log << MSG::INFO << "Updating Gaudi::PluginService::SetDebug(level) to level=" << m_pluginDebugLevel << endmsg;
-  Gaudi::PluginService::SetDebug( m_pluginDebugLevel );
-}
-
-//============================================================================
-// Init loop check handler
-//============================================================================
-void ApplicationMgr::initLoopCheckHndlr( Gaudi::Details::PropertyBase& )
-{
-  svcManager()->setLoopCheckEnabled( m_loopCheck );
 }
 
 void ApplicationMgr::outputLevelUpdate()

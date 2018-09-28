@@ -73,14 +73,6 @@ namespace
     }
   }
 }
-// =============================================================================
-// Constructor initialisation and job options
-// =============================================================================
-template <class PBASE>
-void GaudiHistos<PBASE>::initGaudiHistosConstructor()
-{
-  m_histosPrint.declareUpdateHandler( &GaudiHistos<PBASE>::printHistoHandler, this );
-}
 // ============================================================================
 // Initialise Histogramming
 // ============================================================================
@@ -390,21 +382,6 @@ std::string GaudiHistos<PBASE>::convertTitleToID( std::string title ) const
   }
   return title;
 }
-// ============================================================================
-// the handler for "HistoPrint" property
-// ============================================================================
-template <class PBASE>
-void GaudiHistos<PBASE>::printHistoHandler( Gaudi::Details::PropertyBase& )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->histosPrint() ) {
-    this->printHistos( MSG::ALWAYS );
-  }
-}
-// ============================================================================
 // get the constructed histogram path
 // ============================================================================
 template <class PBASE>

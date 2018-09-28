@@ -27,7 +27,7 @@ class GAUDI_API GaudiSequencer : public GaudiAlgorithm
 {
 public:
   /// Standard constructor
-  GaudiSequencer( const std::string& name, ISvcLocator* pSvcLocator );
+  using GaudiAlgorithm::GaudiAlgorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
@@ -61,17 +61,18 @@ private:
   StatusCode decodeNames();
 
   /** for asynchronous changes in the list of algorithms */
-  void membershipHandler( Gaudi::Details::PropertyBase& theProp );
+  void membershipHandler();
 
   /** copy/assignment not allowed **/
   GaudiSequencer( const GaudiSequencer& a ) = delete;
   GaudiSequencer& operator=( const GaudiSequencer& a ) = delete;
 
-  Gaudi::Property<std::vector<std::string>> m_names      = {this, "Members", {}, "list of algorithms"};
-  Gaudi::Property<bool>                     m_sequential = {this, "Sequential", false, "execute members one at a time"};
-  Gaudi::Property<bool>                     m_modeOR     = {this, "ModeOR", false, "use OR logic instead of AND"};
-  Gaudi::Property<bool>                     m_ignoreFilter = {this, "IgnoreFilterPassed", false, "always continue"};
-  Gaudi::Property<bool>                     m_measureTime  = {this, "MeasureTime", false, "measure time"};
+  Gaudi::Property<std::vector<std::string>> m_names = {
+      this, "Members", {}, &GaudiSequencer::membershipHandler, "list of algorithms"};
+  Gaudi::Property<bool> m_sequential   = {this, "Sequential", false, "execute members one at a time"};
+  Gaudi::Property<bool> m_modeOR       = {this, "ModeOR", false, "use OR logic instead of AND"};
+  Gaudi::Property<bool> m_ignoreFilter = {this, "IgnoreFilterPassed", false, "always continue"};
+  Gaudi::Property<bool> m_measureTime  = {this, "MeasureTime", false, "measure time"};
   Gaudi::Property<bool> m_returnOK     = {this, "ReturnOK", false, "forces the sequencer to return a good status"};
   Gaudi::Property<bool> m_shortCircuit = {this, "ShortCircuit", true, "stop processing as soon as possible"};
   Gaudi::Property<bool> m_invert       = {this, "Invert", false, "invert the logic result of the sequencer"};

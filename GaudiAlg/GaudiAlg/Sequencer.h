@@ -26,10 +26,7 @@ public:
   /**
    ** Constructor(s)
    **/
-  Sequencer( const std::string& name,  // The path object's name
-             ISvcLocator*       svcloc // A pointer to a service location service
-             );
-
+  using Algorithm::Algorithm;
   /*****************************
    ** Public Function Members **
    *****************************/
@@ -214,8 +211,22 @@ private:
    ** Private Data Members **
    **************************/
 
-  Gaudi::Property<std::vector<std::string>> m_names{this, "Members", {}, "member names"};
-  Gaudi::Property<std::vector<std::string>> m_branchNames{this, "BranchMembers", {}, "branch member names"};
+  Gaudi::Property<std::vector<std::string>> m_names{this,
+                                                    "Members",
+                                                    {},
+                                                    [this]( auto& ) {
+                                                      if ( this->isInitialized() ) this->decodeMemberNames().ignore();
+
+                                                    },
+                                                    "member names"};
+  Gaudi::Property<std::vector<std::string>> m_branchNames{this,
+                                                          "BranchMembers",
+                                                          {},
+                                                          [this]( auto& ) {
+                                                            if ( this->isInitialized() )
+                                                              this->decodeBranchMemberNames().ignore();
+                                                          },
+                                                          "branch member names"};
   Gaudi::Property<bool> m_stopOverride{this, "StopOverride", false, "stop on filter failure override"};
 
   std::vector<bool>       m_isInverted;       // Member logic inverted list

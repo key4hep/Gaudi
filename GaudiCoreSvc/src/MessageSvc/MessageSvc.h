@@ -164,7 +164,7 @@ private:
                                                                 {this, "alwaysLimit", 0}}};
 
   Gaudi::Property<bool> m_suppress{this, "enableSuppression", false, ""};
-  Gaudi::Property<bool> m_inactCount{this, "countInactive", false, ""};
+  Gaudi::Property<bool> m_inactCount{this, "countInactive", false, &MessageSvc::setupInactCount, ""};
 
   Gaudi::Property<std::vector<std::string>> m_tracedInactiveSources{
       this,

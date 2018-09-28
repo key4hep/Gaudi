@@ -148,11 +148,6 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
                           "AlgTool", StatusCode::FAILURE );
   }
 
-  // initialize output level from MessageSvc and initialize messaging (before enabling update handler)
-  m_outputLevel.value() = setUpMessaging();
-  m_outputLevel.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
-
   // inherit output level from parent
   { // get the "OutputLevel" property from parent
     SmartIF<IProperty> pprop( _p );

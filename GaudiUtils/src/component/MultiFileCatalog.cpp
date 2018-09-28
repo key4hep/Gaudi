@@ -22,11 +22,6 @@ namespace
 DECLARE_COMPONENT( MultiFileCatalog )
 
 // ----------------------------------------------------------------------------
-MultiFileCatalog::MultiFileCatalog( const std::string& nam, ISvcLocator* svc ) : base_class( nam, svc )
-{
-  m_catalogNames.declareUpdateHandler( &Gaudi::MultiFileCatalog::propHandler, this );
-}
-// ----------------------------------------------------------------------------
 StatusCode MultiFileCatalog::initialize()
 {
   if ( !Service::initialize().isSuccess() ) {
@@ -254,7 +249,7 @@ void MultiFileCatalog::rollback()
   for_each( m_catalogs, []( IFileCatalog* i ) { i->rollback(); } );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::propHandler( Details::PropertyBase& /* p */ )
+void MultiFileCatalog::propHandler()
 {
   // not yet initialized
   if ( !m_started ) {

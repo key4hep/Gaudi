@@ -14,20 +14,6 @@
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-/**
- ** Constructor(s)
- **/
-Sequencer::Sequencer( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
-  // Associate action handlers with the "Members" and "BranchMembers" properties
-  m_names.declareUpdateHandler( [this]( Gaudi::Details::PropertyBase& ) {
-    if ( isInitialized() ) decodeMemberNames().ignore();
-  } );
-  m_branchNames.declareUpdateHandler( [this]( Gaudi::Details::PropertyBase& ) {
-    if ( isInitialized() ) decodeBranchMemberNames().ignore();
-  } );
-}
-
 StatusCode Sequencer::initialize()
 {
   StatusCode result = StatusCode::SUCCESS;

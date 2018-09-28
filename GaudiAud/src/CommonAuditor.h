@@ -11,7 +11,7 @@ public:
   /** Constructor
       @param name    The algorithm object's name
       @param svcloc  A pointer to a service location service */
-  CommonAuditor( const std::string& name, ISvcLocator* svcloc );
+  using Auditor::Auditor;
 
   /// \name "before" Auditor hooks
   /// The default behavior is to fall back on the version accepting 2 strings,
@@ -50,10 +50,26 @@ protected:
     return v.empty() || ( ( v[0] != "none" ) && ( find( v.begin(), v.end(), evt ) != v.end() ) );
   }
 
+private:
+  void deprecated_property( Gaudi::Details::PropertyBase& p )
+  {
+    if ( m_customTypes.size() > 0 ) {
+      if ( m_types.size() > 0 ) {
+        error() << p.name() << " is deprecated, but both " << m_customTypes.name() << " and " << m_types.name()
+                << " used." << endmsg;
+        throw GaudiException( "Property CustomEventTypes is deprecated, but both CustomEventTypes and EventTypes used",
+                              this->name(), StatusCode::FAILURE );
+      } else {
+        warning() << p.name() << " " << p.documentation() << endmsg;
+        m_types = m_customTypes;
+      }
+    }
+  };
+
   Gaudi::Property<std::vector<std::string>> m_types{
       this, "EventTypes", {}, "list of event types to audit ([]=all, ['none']=none)"};
   Gaudi::Property<std::vector<std::string>> m_customTypes{
-      this, "CustomEventTypes", {}, "[[deprecated]] use EventTypes instead"};
+      this, "CustomEventTypes", {}, &CommonAuditor::deprecated_property, "[[deprecated]] use EventTypes instead"};
 };
 
 #endif // GAUDIAUD_COMMONAUDITOR_H

@@ -25,15 +25,6 @@ DECLARE_COMPONENT( OutputStream )
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 
-// Standard Constructor
-OutputStream::OutputStream( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
-  // Associate action handlers with the AcceptAlgs, RequireAlgs and VetoAlgs.
-  m_acceptNames.declareUpdateHandler( &OutputStream::acceptAlgsHandler, this );
-  m_requireNames.declareUpdateHandler( &OutputStream::requireAlgsHandler, this );
-  m_vetoNames.declareUpdateHandler( &OutputStream::vetoAlgsHandler, this );
-}
-
 // initialize data writer
 StatusCode OutputStream::initialize()
 {
@@ -116,9 +107,9 @@ StatusCode OutputStream::initialize()
   //     been executed and have indicated that their filter passed.
   //  d. The event is rejected if any Algorithm in the veto list has been
   //     executed and has indicated that its filter has passed.
-  decodeAcceptAlgs().ignore();
-  decodeRequireAlgs().ignore();
-  decodeVetoAlgs().ignore();
+  m_acceptNames.useUpdateHandler();
+  m_requireNames.useUpdateHandler();
+  m_vetoNames.useUpdateHandler();
   return StatusCode::SUCCESS;
 }
 
@@ -427,51 +418,6 @@ StatusCode OutputStream::connectConversionSvc()
   return StatusCode::SUCCESS;
 }
 
-StatusCode OutputStream::decodeAcceptAlgs()
-{
-  ON_DEBUG
-  debug() << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
-  return decodeAlgorithms( m_acceptNames, m_acceptAlgs );
-}
-
-void OutputStream::acceptAlgsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  StatusCode sc = decodeAlgorithms( m_acceptNames, m_acceptAlgs );
-  if ( sc.isFailure() ) {
-    throw GaudiException( "Failure in OutputStream::decodeAlgorithms", "OutputStream::acceptAlgsHandler", sc );
-  }
-}
-
-StatusCode OutputStream::decodeRequireAlgs()
-{
-  ON_DEBUG
-  debug() << "RequireAlgs : " << m_requireNames.value() << endmsg;
-  return decodeAlgorithms( m_requireNames, m_requireAlgs );
-}
-
-void OutputStream::requireAlgsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  StatusCode sc = decodeAlgorithms( m_requireNames, m_requireAlgs );
-  if ( sc.isFailure() ) {
-    throw GaudiException( "Failure in OutputStream::decodeAlgorithms", "OutputStream::requireAlgsHandler", sc );
-  }
-}
-
-StatusCode OutputStream::decodeVetoAlgs()
-{
-  ON_DEBUG
-  debug() << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
-  return decodeAlgorithms( m_vetoNames, m_vetoAlgs );
-}
-
-void OutputStream::vetoAlgsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  StatusCode sc = decodeAlgorithms( m_vetoNames, m_vetoAlgs );
-  if ( sc.isFailure() ) {
-    throw GaudiException( "Failure in OutputStream::decodeAlgorithms", "OutputStream::vetoAlgsHandler", sc );
-  }
-}
-
 Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
 {
   Algorithm* theAlgorithm = nullptr;
@@ -499,13 +445,11 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
   return theAlgorithm;
 }
 
-StatusCode OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
-                                           std::vector<Algorithm*>&                   theAlgs )
+void OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
+                                     std::vector<Algorithm*>&                   theAlgs )
 {
   // Reset the list of Algorithms
   theAlgs.clear();
-
-  StatusCode result = StatusCode::SUCCESS;
 
   // Build the list of Algorithms from the names list
   for ( const auto& it : theNames.value() ) {
@@ -521,9 +465,6 @@ StatusCode OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::stri
       info() << it << " doesn't exist - ignored" << endmsg;
     }
   }
-  result = StatusCode::SUCCESS;
-
-  return result;
 }
 
 bool OutputStream::isEventAccepted() const

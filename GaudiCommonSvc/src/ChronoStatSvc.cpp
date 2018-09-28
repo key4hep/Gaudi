@@ -78,19 +78,6 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css )
       m_statEntities.emplace( key, val );
   }
 }
-ChronoStatSvc::ChronoStatSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
-{
-  // basically limit the integer to MSG::Level range
-  auto int2level = []( int l ) -> MSG::Level {
-    return static_cast<MSG::Level>(
-        std::max( std::min( l, static_cast<int>( MSG::FATAL ) ), static_cast<int>( MSG::NIL ) ) );
-  };
-
-  m_intStatPrintLevel.declareUpdateHandler(
-      [this, int2level]( Gaudi::Details::PropertyBase& ) { m_statPrintLevel = int2level( m_intStatPrintLevel ); } );
-  m_intChronoPrintLevel.declareUpdateHandler(
-      [this, int2level]( Gaudi::Details::PropertyBase& ) { m_chronoPrintLevel = int2level( m_intChronoPrintLevel ); } );
-}
 // ============================================================================
 // Implementation of IService::initialize()
 // ============================================================================

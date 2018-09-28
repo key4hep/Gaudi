@@ -72,10 +72,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const s
   m_auditorEndRun       = audit;
   m_auditorStart        = audit;
   m_auditorStop         = audit;
-
-  // update handlers.
-  m_outputLevel.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
 }
 
 // IAlgorithm implementation

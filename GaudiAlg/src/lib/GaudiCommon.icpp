@@ -64,10 +64,6 @@
 template <class PBASE>
 void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
 {
-  m_errorsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printErrorHandler, this );
-  m_propsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printPropsHandler, this );
-  m_statPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printStatHandler, this );
-
   // setup context from parent if available
   if ( parent ) {
     if ( const GaudiAlgorithm* gAlg = dynamic_cast<const GaudiAlgorithm*>( parent ) ) {
@@ -628,50 +624,6 @@ DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<Data
   }
   // if we get here, ownership has been transferred to the IDataProviderSvc
   return object.release();
-}
-// ============================================================================
-
-// ============================================================================
-// Handle method for changes in the 'ErrorsPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printErrorHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->errorsPrint() ) {
-    this->printErrors();
-  }
-}
-// ============================================================================
-// Handle method for changes in the 'PropertiesPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printPropsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->propsPrint() ) {
-    this->printProps( MSG::ALWAYS );
-  }
-}
-// ============================================================================
-// Handle method for changes in the 'StatPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printStatHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->statPrint() ) {
-    this->printStat( MSG::ALWAYS );
-  }
 }
 // ============================================================================
 

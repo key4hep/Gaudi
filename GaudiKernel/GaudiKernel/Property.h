@@ -15,6 +15,7 @@
 #include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/PropertyFwd.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/TaggedBool.h"
 #include "GaudiKernel/ToStream.h"
 
 namespace Gaudi
@@ -147,6 +148,9 @@ namespace Gaudi
 
     namespace Property
     {
+      using ImmediatelyInvokeHandler = Gaudi::tagged_bool<class ImmediatelyInvokeHandler_tag>;
+
+      // ==========================================================================
       // The following code is going to be a bit unpleasant, but as far as its
       // author can tell, it is as simple as the design constraints and C++'s
       // implementation constraints will allow. If you disagree, please submit
@@ -384,6 +388,7 @@ namespace Gaudi
     using ValueType    = typename std::remove_reference<StorageType>::type;
     using VerifierType = VERIFIER;
     using HandlersType = HANDLERS;
+    // ==========================================================================
 
   private:
     /// Storage.
@@ -426,6 +431,44 @@ namespace Gaudi
     {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
+    }
+
+    /// Autodeclaring constructor with property name, value, updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
+              std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ) )
+    {
+      declareUpdateHandler( std::move( handler ) );
+    }
+
+    /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )( PropertyBase& ),
+              std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ),
+                    [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) )
+    {
+    }
+    /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ),
+                    [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ) )
+    {
+    }
+
+    /// Autodeclaring constructor with property name, value, updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
+              Details::Property::ImmediatelyInvokeHandler invoke, std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ) )
+    {
+      if ( invoke ) useUpdateHandler();
     }
 
     /// Construct an anonymous property from a value.

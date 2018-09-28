@@ -233,9 +233,6 @@ OutputStream        DEBUG Adding OutputStream item /Event/A with 1 level(s).
 OutputStream        DEBUG Adding OutputStream item /Event with 1 level(s).
 OutputStream        DEBUG Adding OutputStream item /Event/B with 1 level(s).
 OutputStream         INFO Data source: EventDataSvc output: DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-OutputStream        DEBUG AcceptAlgs  : []
-OutputStream        DEBUG RequireAlgs : []
-OutputStream        DEBUG VetoAlgs    : []
 OutputStream      VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgExecStateSvc     DEBUG preInit: will add Alg OutputStream later
 OutputStream        DEBUG input handles: 0

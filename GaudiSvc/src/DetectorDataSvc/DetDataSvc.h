@@ -95,7 +95,12 @@ private:
                                         "Detector Data Persistency Storage type"};
   Gaudi::Property<std::string> m_detDbLocation{this, "DetDbLocation", "empty",
                                                "location of detector Db (filename,URL)"};
-  Gaudi::Property<std::string> m_detDbRootName{this, "DetDbRootName", "dd", "name of the root node of the detector"};
+  Gaudi::Property<std::string> m_detDbRootName{this, "DetDbRootName", "dd",
+                                               [this]( Gaudi::Details::PropertyBase& ) {
+                                                 this->setProperty( "RootName", "/" + this->m_detDbRootName ).ignore();
+                                               },
+                                               Gaudi::Details::Property::ImmediatelyInvokeHandler{true},
+                                               "name of the root node of the detector"};
   Gaudi::Property<bool> m_usePersistency{this, "UsePersistency", false, "control if the persistency is required"};
   Gaudi::Property<std::string> m_persistencySvcName{this, "PersistencySvc", "DetectorPersistencySvc",
                                                     "name of the persistency service"};

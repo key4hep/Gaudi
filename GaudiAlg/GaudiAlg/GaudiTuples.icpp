@@ -368,26 +368,6 @@ bool GaudiTuples<PBASE>::evtColExists( const TupleID& ID ) const
   return m.find( ID ) != m.end();
 }
 // ============================================================================
-// Handle method for changes in the 'NTuplePrint'      property
-// ============================================================================
-template <class PBASE>
-void GaudiTuples<PBASE>::printNTupleHandler( Gaudi::Details::PropertyBase& )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) return;
-  if ( this->tuplesPrint() ) this->printTuples();
-}
-// ============================================================================
-// Handle method for changes in the 'EvtColsPrint'      property
-// ============================================================================
-template <class PBASE>
-void GaudiTuples<PBASE>::printEvtColHandler( Gaudi::Details::PropertyBase& )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) return;
-  if ( this->evtColsPrint() ) this->printEvtCols();
-}
-// ============================================================================
 // get the constructed N-Tuple path
 // ============================================================================
 template <class PBASE>

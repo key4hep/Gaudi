@@ -29,7 +29,7 @@ class IIncidentSvc;
 class THistSvc : public extends<Service, ITHistSvc, IIncidentListener, IIoComponent>
 {
 public:
-  THistSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   StatusCode initialize() override;
   StatusCode reinitialize() override;
@@ -301,12 +301,10 @@ private:
   void parseString( const std::string& id, std::string& root, std::string& rem ) const;
 
   /// call-back method to handle input stream property
-  void setupInputFile( Gaudi::Details::PropertyBase& inputfile );
+  void setupInputFile();
 
   /// call-back method to handle output stream property
-  void setupOutputFile( Gaudi::Details::PropertyBase& outputfile );
-
-  void setupCompressionLevel( Gaudi::Details::PropertyBase& cmp );
+  void setupOutputFile();
 
   /// helper function to recursively copy the layout of a TFile into a new TFile
   void copyFileLayout( TDirectory*, TDirectory* );
@@ -333,9 +331,14 @@ private:
   Gaudi::Property<bool> m_print{this, "PrintAll", false};
   Gaudi::Property<int>  m_maxFileSize{this, "MaxFileSize", 10240, "maximum file size in MB. if exceeded,"
                                                                  " will cause an abort. -1 to never check."};
-  Gaudi::Property<int>                      m_compressionLevel{this, "CompressionLevel", 1};
-  Gaudi::Property<std::vector<std::string>> m_outputfile{this, "Output", {}};
-  Gaudi::Property<std::vector<std::string>> m_inputfile{this, "Input", {}};
+  Gaudi::Property<int> m_compressionLevel{this, "CompressionLevel", 1, [this]( auto& ) {
+                                            this->warning()
+                                                << "\"CompressionLevel\" Property has been deprecated. "
+                                                << "Set it via the \"CL=\" parameter in the \"Output\" Property"
+                                                << endmsg;
+                                          }};
+  Gaudi::Property<std::vector<std::string>> m_outputfile{this, "Output", {}, &THistSvc::setupOutputFile};
+  Gaudi::Property<std::vector<std::string>> m_inputfile{this, "Input", {}, &THistSvc::setupInputFile};
 
   /// @}
 
