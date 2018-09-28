@@ -31,9 +31,6 @@ namespace Gaudi
      */
     class GAUDI_API PropertyBase
     {
-    private:
-      // the default constructor is disabled
-      PropertyBase() = delete;
 
     public:
       /// property name
@@ -72,13 +69,13 @@ namespace Gaudi
       virtual bool useUpdateHandler() = 0;
 
       template <class HT>
-      inline PropertyBase& declareReadHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
+      PropertyBase& declareReadHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
       {
         return declareReadHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
       }
 
       template <class HT>
-      inline PropertyBase& declareUpdateHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
+      PropertyBase& declareUpdateHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
       {
         return declareUpdateHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
       }
@@ -174,7 +171,7 @@ namespace Gaudi
       template <class TYPE>
       struct DefaultStringConverterImpl {
       public:
-        inline std::string toString( const TYPE& v )
+        std::string toString( const TYPE& v )
         {
           using Gaudi::Utils::toString;
           return toString( v );
@@ -186,7 +183,7 @@ namespace Gaudi
         virtual TYPE fromString( const TYPE& ref_value, const std::string& s ) = 0;
 
       protected:
-        inline void fromStringImpl( TYPE& buffer, const std::string& s )
+        void fromStringImpl( TYPE& buffer, const std::string& s )
         {
           using Gaudi::Parsers::parse;
           if ( !parse( buffer, s ).isSuccess() ) {
@@ -210,7 +207,7 @@ namespace Gaudi
       //
       template <typename TYPE, typename Enable = void>
       struct DefaultStringConverter : DefaultStringConverterImpl<TYPE> {
-        inline TYPE fromString( const TYPE& ref_value, const std::string& s ) final override
+        TYPE fromString( const TYPE& ref_value, const std::string& s ) final override
         {
           TYPE buffer = ref_value;
           this->fromStringImpl( buffer, s );
@@ -221,7 +218,7 @@ namespace Gaudi
       template <class TYPE>
       struct DefaultStringConverter<TYPE, std::enable_if_t<std::is_default_constructible<TYPE>::value>>
           : DefaultStringConverterImpl<TYPE> {
-        inline TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override
+        TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override
         {
           TYPE buffer{};
           this->fromStringImpl( buffer, s );
@@ -404,7 +401,7 @@ namespace Gaudi
     // ==========================================================================
     /// the constructor with property name, value and documentation.
     template <class T = StorageType>
-    inline Property( std::string name, T&& value, std::string doc = "" )
+    Property( std::string name, T&& value, std::string doc = "" )
         : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
         , m_value( std::forward<T>( value ) )
     {
@@ -415,7 +412,7 @@ namespace Gaudi
     template <typename OWNER, typename T = ValueType,
               typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>,
               typename = std::enable_if_t<std::is_default_constructible<T>::value>>
-    inline Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
+    Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
     {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
@@ -424,7 +421,7 @@ namespace Gaudi
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
-    inline Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
+    Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
     {
       owner->declareProperty( *this );
@@ -494,21 +491,21 @@ namespace Gaudi
 
     /// equality comparison
     template <class T>
-    inline bool operator==( const T& other ) const
+    bool operator==( const T& other ) const
     {
       return m_value == other;
     }
 
     /// inequality comparison
     template <class T>
-    inline bool operator!=( const T& other ) const
+    bool operator!=( const T& other ) const
     {
       return m_value != other;
     }
 
     /// "less" comparison
     template <class T>
-    inline bool operator<( const T& other ) const
+    bool operator<( const T& other ) const
     {
       return m_value < other;
     }
@@ -556,132 +553,132 @@ namespace Gaudi
     /// @{
     /// They are instantiated only if they are implemented in the wrapped class.
     template <class T = const ValueType>
-    inline decltype( auto ) size() const
+    decltype( auto ) size() const
     {
       return value().size();
     }
     template <class T = const ValueType>
-    inline decltype( auto ) length() const
+    decltype( auto ) length() const
     {
       return value().length();
     }
     template <class T = const ValueType>
-    inline decltype( auto ) empty() const
+    decltype( auto ) empty() const
     {
       return value().empty();
     }
     template <class T = ValueType>
-    inline decltype( auto ) clear()
+    decltype( auto ) clear()
     {
       value().clear();
     }
     template <class T = const ValueType>
-    inline decltype( auto ) begin() const
+    decltype( auto ) begin() const
     {
       return value().begin();
     }
     template <class T = const ValueType>
-    inline decltype( auto ) end() const
+    decltype( auto ) end() const
     {
       return value().end();
     }
     template <class T = ValueType>
-    inline decltype( auto ) begin()
+    decltype( auto ) begin()
     {
       return value().begin();
     }
     template <class T = ValueType>
-    inline decltype( auto ) end()
+    decltype( auto ) end()
     {
       return value().end();
     }
     template <class ARG>
-    inline decltype( auto ) operator[]( const ARG& arg ) const
+    decltype( auto ) operator[]( const ARG& arg ) const
     {
       return value()[arg];
     }
     template <class ARG>
-    inline decltype( auto ) operator[]( const ARG& arg )
+    decltype( auto ) operator[]( const ARG& arg )
     {
       return value()[arg];
     }
     template <class T = const ValueType>
-    inline decltype( auto ) find( const typename T::key_type& key ) const
+    decltype( auto ) find( const typename T::key_type& key ) const
     {
       return value().find( key );
     }
     template <class T = ValueType>
-    inline decltype( auto ) find( const typename T::key_type& key )
+    decltype( auto ) find( const typename T::key_type& key )
     {
       return value().find( key );
     }
     template <class ARG, class T = ValueType>
-    inline decltype( auto ) erase( ARG arg )
+    decltype( auto ) erase( ARG arg )
     {
       return value().erase( arg );
     }
     template <class = ValueType>
-    inline Property& operator++()
+    Property& operator++()
     {
       ++value();
       return *this;
     }
     template <class = ValueType>
-    inline ValueType operator++( int )
+    ValueType operator++( int )
     {
       return m_value++;
     }
     template <class = ValueType>
-    inline Property& operator--()
+    Property& operator--()
     {
       --value();
       return *this;
     }
     template <class = ValueType>
-    inline ValueType operator--( int )
+    ValueType operator--( int )
     {
       return m_value--;
     }
     template <class T = ValueType>
-    inline Property& operator+=( const T& other )
+    Property& operator+=( const T& other )
     {
       m_value += other;
       return *this;
     }
     template <class T = ValueType>
-    inline Property& operator-=( const T& other )
+    Property& operator-=( const T& other )
     {
       m_value -= other;
       return *this;
     }
     /// Helpers for DataHandles and derived classes
     template <class T = const ValueType>
-    inline decltype( auto ) key() const
+    decltype( auto ) key() const
     {
       return value().key();
     }
     template <class T = const ValueType>
-    inline decltype( auto ) objKey() const
+    decltype( auto ) objKey() const
     {
       return value().objKey();
     }
     template <class T = const ValueType>
-    inline decltype( auto ) fullKey() const
+    decltype( auto ) fullKey() const
     {
       return value().fullKey();
     }
     template <class T = ValueType>
-    inline decltype( auto ) initialize()
+    decltype( auto ) initialize()
     {
       return value().initialize();
     }
     template <class T = ValueType>
-    inline decltype( auto ) makeHandles() const
+    decltype( auto ) makeHandles() const
     {
       return value().makeHandles();
     }
     template <class ARG, class T = ValueType>
-    inline decltype( auto ) makeHandles( const ARG& arg ) const
+    decltype( auto ) makeHandles( const ARG& arg ) const
     {
       return value().makeHandles( arg );
     }
@@ -690,7 +687,7 @@ namespace Gaudi
 
     // Delegate operator() to the value
     template <class... Args>
-    inline decltype( std::declval<ValueType>()( std::declval<Args&&>()... ) ) operator()( Args&&... args ) const
+    decltype( std::declval<ValueType>()( std::declval<Args&&>()... ) ) operator()( Args&&... args ) const
         noexcept( noexcept( std::declval<ValueType>()( std::declval<Args&&>()... ) ) )
     {
       return value()( std::forward<Args>( args )... );
