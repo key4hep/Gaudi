@@ -75,9 +75,8 @@ StatusCode ViewTester::execute() // the execution of the algorithm
       // Make views
       for ( unsigned int viewIndex = 0; viewIndex < m_viewNumber; ++viewIndex ) {
         // Make event context for the view
-        auto        viewContext = std::make_unique<EventContext>( context.evt(), context.slot() );
-        std::string viewName    = m_baseViewName + std::to_string( viewIndex );
-        viewContext->setExtension<std::string>( viewName );
+        auto               viewContext = std::make_unique<EventContext>( context.evt(), context.slot() );
+        const std::string& viewName    = viewContext->setExtension( m_baseViewName + std::to_string( viewIndex ) );
 
         StatusCode sc = scheduler->scheduleEventView( &context, m_viewNodeName, std::move( viewContext ) );
         if ( sc.isSuccess() )

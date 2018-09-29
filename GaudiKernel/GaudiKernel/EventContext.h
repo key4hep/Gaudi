@@ -79,10 +79,17 @@ public:
 
   void setEventID( const EventIDBase& e ) { m_eid = e; }
 
-  template <typename T>
-  void setExtension( const T& t )
+  template <typename ValueType, typename... Args>
+  ValueType& emplaceExtension( Args&&... args )
   {
-    m_extension = t;
+    return setExtension( ValueType( std::forward<Args>( args )... ) );
+  }
+
+  template <typename T>
+  auto& setExtension( T&& t )
+  {
+    m_extension = std::forward<T>( t );
+    return boost::any_cast<std::decay_t<T>&>( m_extension );
   }
 
   template <typename T>
