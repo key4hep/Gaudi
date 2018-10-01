@@ -89,19 +89,27 @@ public:
   auto& setExtension( T&& t )
   {
     m_extension = std::forward<T>( t );
+    return getExtension<T>();
+  }
+
+  template <typename T>
+  auto& getExtension()
+  {
     return boost::any_cast<std::decay_t<T>&>( m_extension );
   }
 
   template <typename T>
-  T* getExtension()
+  const auto& getExtension() const
   {
-    return boost::any_cast<T>( &m_extension );
+    return boost::any_cast<std::decay_t<T> const&>( m_extension );
   }
 
+  bool hasExtension() const { return !m_extension.empty(); }
+
   template <typename T>
-  const T* getExtension() const
+  bool hasExtension() const
   {
-    return boost::any_cast<T>( &m_extension );
+    return !m_extension.empty() && m_extension.type() == typeid( std::decay_t<T> );
   }
 
   const std::type_info& getExtensionType() const { return m_extension.type(); }
