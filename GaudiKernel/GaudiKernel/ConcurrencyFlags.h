@@ -20,6 +20,11 @@ class AthMpEvtLoopMgr;
  *
  */
 
+namespace SG
+{
+  class HiveMgrSvc;
+}
+
 namespace Gaudi
 {
 
@@ -31,7 +36,7 @@ namespace Gaudi
 
       friend class ::ThreadPoolSvc;
       friend class ::HiveWhiteBoard;
-      friend class ::SGHiveMgrSvc;    // ATLAS
+      friend class SG::HiveMgrSvc;    // ATLAS
       friend class ::AthMpEvtLoopMgr; // ATLAS
 
     public:
