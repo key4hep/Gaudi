@@ -186,14 +186,14 @@ public:
       : GaudiHandleBase( other )
   {
     m_pObject = other.get();
-    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
   }
 
   /** Copy constructor needed for correct ref-counting */
   GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other )
   {
     m_pObject = other.m_pObject;
-    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
   }
 
   /** Assignment operator for correct ref-counting */
@@ -206,7 +206,7 @@ public:
     release().ignore();
     m_pObject = other.get();
     // update ref-counting
-    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
     return *this;
   }
 
@@ -218,7 +218,7 @@ public:
     release().ignore();
     m_pObject = other.m_pObject;
     // update ref-counting
-    if ( m_pObject ) details::nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
     return *this;
   }
 
@@ -313,7 +313,7 @@ protected:
   virtual StatusCode release( T* comp ) const
   { // not really const, because it updates m_pObject
     // const cast to support T being a const type
-    details::nonConst( comp )->release();
+    ::details::nonConst( comp )->release();
     return StatusCode::SUCCESS;
   }
 

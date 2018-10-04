@@ -150,7 +150,7 @@ T* DataObjectHandle<T>::get( bool mustExist ) const
     }
     return nullptr;
   }
-  if ( UNLIKELY( !m_goodType ) ) m_goodType = details::verifyType<T>( dataObj );
+  if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<T>( dataObj );
   return static_cast<T*>( dataObj );
 }
 
@@ -192,7 +192,7 @@ public:
   Range get() const;
 
 private:
-  mutable details::Converter_t<Range> m_converter = nullptr;
+  mutable ::details::Converter_t<Range> m_converter = nullptr;
 };
 
 template <typename ValueType>
@@ -204,7 +204,7 @@ auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range
                           m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
   if ( UNLIKELY( !m_converter ) ) {
-    m_converter = details::select_range_converter<ValueType>( dataObj );
+    m_converter = ::details::select_range_converter<ValueType>( dataObj );
     if ( !m_converter ) {
       throw GaudiException( "The type requested for " + objKey() + " (" + System::typeinfoName( typeid( ValueType ) ) +
                                 ")" + " cannot be obtained from object in event store" + " (" +
@@ -253,7 +253,7 @@ const AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get() const
     throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
                           m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
   }
-  if ( UNLIKELY( !m_goodType ) ) m_goodType = details::verifyType<AnyDataWrapper<T>>( obj );
+  if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<AnyDataWrapper<T>>( obj );
   return static_cast<const AnyDataWrapper<T>*>( obj );
 }
 
@@ -274,7 +274,7 @@ const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj )
 //---------------------------- user-facing interface ----------
 
 template <typename T>
-class DataObjectReadHandle : public DataObjectHandle<details::Payload_t<T>>
+class DataObjectReadHandle : public DataObjectHandle<::details::Payload_t<T>>
 {
   template <typename... Args, std::size_t... Is>
   DataObjectReadHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> )
@@ -284,7 +284,7 @@ class DataObjectReadHandle : public DataObjectHandle<details::Payload_t<T>>
 
 public:
   DataObjectReadHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<details::Payload_t<T>>{k, Gaudi::DataHandle::Reader, owner}
+      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Reader, owner}
   {
   }
 
@@ -292,8 +292,8 @@ public:
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
-      : DataObjectHandle<details::Payload_t<T>>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key,
-                                                 std::move( doc ) )
+      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key,
+                                                   std::move( doc ) )
   {
   }
 
@@ -305,7 +305,7 @@ public:
 };
 
 template <typename T>
-class DataObjectWriteHandle : public DataObjectHandle<details::Payload_t<T>>
+class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<T>>
 {
   template <typename... Args, std::size_t... Is>
   DataObjectWriteHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> )
@@ -315,7 +315,7 @@ class DataObjectWriteHandle : public DataObjectHandle<details::Payload_t<T>>
 
 public:
   DataObjectWriteHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<details::Payload_t<T>>{k, Gaudi::DataHandle::Writer, owner}
+      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Writer, owner}
   {
   }
 
@@ -323,8 +323,8 @@ public:
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
-      : DataObjectHandle<details::Payload_t<T>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
-                                                 std::move( doc ) )
+      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
+                                                   std::move( doc ) )
   {
   }
 

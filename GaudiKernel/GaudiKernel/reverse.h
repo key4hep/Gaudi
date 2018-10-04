@@ -49,7 +49,7 @@ namespace details
 }
 
 template <typename T>
-details::reverse_wrapper<T> reverse( T&& iterable )
+::details::reverse_wrapper<T> reverse( T&& iterable )
 {
   return {std::forward<T>( iterable )};
 }

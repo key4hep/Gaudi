@@ -151,26 +151,26 @@ public:
 
   static auto SortByTimeStamp()
   {
-    return details::add_deref( details::make_cmp(
+    return ::details::add_deref(::details::make_cmp(
         []( const EventIDBase& e ) { return std::tie( e.m_time_stamp, e.m_time_stamp_ns_offset ); } ) );
   };
 
   static auto SortByRunEvent()
   {
-    return details::add_deref(
-        details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_event_number ); } ) );
+    return ::details::add_deref(
+        ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_event_number ); } ) );
   };
 
   static auto SortByLumiEvent()
   {
-    return details::add_deref(
-        details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_lumi_block, e.m_event_number ); } ) );
+    return ::details::add_deref(
+        ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_lumi_block, e.m_event_number ); } ) );
   };
 
   static auto SortByRunLumi()
   {
-    return details::add_deref(
-        details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_lumi_block ); } ) );
+    return ::details::add_deref(
+        ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_lumi_block ); } ) );
   };
 
 private:

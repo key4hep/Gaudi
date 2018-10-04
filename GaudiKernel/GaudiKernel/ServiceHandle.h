@@ -87,11 +87,11 @@ public:
   //   }
 
   /// Allow non const access to the service, even from a const handle...
-  T* get() const { return details::nonConst( GaudiHandle<T>::get() ); }
+  T* get() const { return ::details::nonConst( GaudiHandle<T>::get() ); }
 
   /// Allow non const access to the service, even from a const handle...
-  T* operator->() const { return details::nonConst( GaudiHandle<T>::operator->() ); }
-  T& operator*() const { return *details::nonConst( GaudiHandle<T>::operator->() ); }
+  T* operator->() const { return ::details::nonConst( GaudiHandle<T>::operator->() ); }
+  T& operator*() const { return *::details::nonConst( GaudiHandle<T>::operator->() ); }
 
 protected:
   /** Do the real retrieval of the Service. */
