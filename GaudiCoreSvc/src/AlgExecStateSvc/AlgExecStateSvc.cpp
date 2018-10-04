@@ -83,10 +83,6 @@ void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) c
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::addAlg( IAlgorithm* iAlg ) { return addAlg( iAlg->nameKey() ); }
-
-//-----------------------------------------------------------------------------
-
 void AlgExecStateSvc::addAlg( const Gaudi::StringKey& alg )
 {
   if ( !m_isInit ) {
@@ -126,13 +122,6 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
     throw GaudiException{"cannot find Alg " + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE};
   }
   return itr->second;
-}
-
-//-----------------------------------------------------------------------------
-
-const AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContext& ctx ) const
-{
-  return algExecState( iAlg->nameKey(), ctx );
 }
 
 //-----------------------------------------------------------------------------

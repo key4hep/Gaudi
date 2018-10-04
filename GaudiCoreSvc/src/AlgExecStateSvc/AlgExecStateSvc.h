@@ -20,14 +20,14 @@ public:
 
   typedef IAlgExecStateSvc::AlgStateMap_t AlgStateMap_t;
 
+  using IAlgExecStateSvc::algExecState;
   const AlgExecState& algExecState( const Gaudi::StringKey& algName, const EventContext& ctx ) const override;
-  const AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) const override;
   AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) override;
   const AlgStateMap_t& algExecStates( const EventContext& ctx ) const override;
 
   void reset( const EventContext& ctx ) override;
 
-  void addAlg( IAlgorithm* iAlg ) override;
+  using IAlgExecStateSvc::addAlg;
   void addAlg( const Gaudi::StringKey& algName ) override;
 
   const EventStatus::Status& eventStatus( const EventContext& ctx ) const override;
