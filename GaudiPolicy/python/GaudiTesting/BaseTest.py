@@ -467,6 +467,8 @@ class BaseTest(object):
                                              "standard output",
                                              "Output Diff",
                                              preproc=preproc)(stdout, result)
+        elif lreference:
+            causes += ["missing reference file"]
         # Compare TTree summaries
         causes = self.CheckTTreesSummaries(stdout, result, causes)
         causes = self.CheckHistosSummaries(stdout, result, causes)
