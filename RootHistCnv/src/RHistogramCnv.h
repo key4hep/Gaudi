@@ -32,8 +32,24 @@ namespace RootHistCnv
   class RHistogramCnv : public RConverter
   {
     template <typename CLASS>
-    struct TTH : public CLASS {
-      void CopyH( TObject& o ) { CLASS::Copy( o ); }
+    class TTH
+    {
+    public:
+      template <typename INPUT>
+      TTH( INPUT* i ) : m_c( dynamic_cast<CLASS*>( i ) )
+      {
+      }
+      template <typename INPUT>
+      bool CopyH( INPUT& i )
+      {
+        if ( m_c ) {
+          m_c->Copy( i );
+        }
+        return m_c != nullptr;
+      }
+
+    private:
+      CLASS* m_c = nullptr;
     };
 
   public:
@@ -46,18 +62,19 @@ namespace RootHistCnv
       if ( r && h ) {
         // Need to flip representation .... clumsy for the time being, because
         // THXY constructor has no "generic" copy constructor
-        auto p = std::make_unique<T>();
-        S*   s = dynamic_cast<S*>( r->tObj() );
-        if ( s && p.get() ) {
-          TTH<S>* casted = (TTH<S>*)s;
-          TArray* a      = dynamic_cast<TArray*>( s );
-          casted->CopyH( *p );
-          if ( 0 != a ) {
-            p->Set( a->GetSize() );
-            p->Reset();
-            p->Add( s );
-            h->adoptRepresentation( p.release() );
-            return StatusCode::SUCCESS;
+        auto s = dynamic_cast<S*>( r->tObj() );
+        if ( s ) {
+          auto a = dynamic_cast<TArray*>( s );
+          if ( a ) {
+            auto p  = std::make_unique<T>();
+            auto ok = TTH<S>( s ).CopyH( *p );
+            if ( ok ) {
+              p->Set( a->GetSize() );
+              p->Reset();
+              p->Add( s );
+              h->adoptRepresentation( p.release() );
+              return StatusCode::SUCCESS;
+            }
           }
         }
       }
@@ -68,24 +85,26 @@ namespace RootHistCnv
     /// Create the persistent representation of the histogram object.
     TObject* createPersistent( DataObject* pObj ) override
     {
-      Q* h = dynamic_cast<Q*>( pObj );
-      if ( 0 != h ) {
-        T* r = dynamic_cast<T*>( h->representation() );
+      auto h = dynamic_cast<Q*>( pObj );
+      if ( h ) {
+        auto r = dynamic_cast<T*>( h->representation() );
         if ( r ) {
-          T*      c = new T();
-          TArray* a = dynamic_cast<TArray*>( r );
-          ( (TTH<S>*)r )->CopyH( *c );
-          if ( 0 != a ) {
-            c->Set( a->GetSize() );
-            c->Reset();
-            c->Add( r );
-            c->SetName( pObj->registry()->name().c_str() + 1 );
-            return c;
+          auto a = dynamic_cast<TArray*>( r );
+          if ( a ) {
+            auto c  = std::make_unique<T>();
+            auto ok = TTH<S>( r ).CopyH( *c );
+            if ( ok ) {
+              c->Set( a->GetSize() );
+              c->Reset();
+              c->Add( r );
+              c->SetName( pObj->registry()->name().c_str() + 1 );
+              return c.release();
+            }
           }
         }
       }
       error( "Histogram object is invalid!" );
-      return 0;
+      return nullptr;
     }
     /// Inquire class type
     static const CLID& classID();
