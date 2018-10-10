@@ -1,0 +1,4 @@
+TestToolAlgFailure  ERROR Exception stack trace
+#N  0xffffffff signature()  [/path/to/libLibrary.so]
+#N  0xffffffff signature()  [/path/to/libLibrary.so]
+#N  0xffffffff signature()  [/path/to/libLibrary.so]
