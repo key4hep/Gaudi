@@ -640,6 +640,9 @@ namespace Gaudi
         o << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
         return print( o, true );
       }
+      /** hint whether we should print that counter or not.
+          Typically empty counters may not be printed */
+      virtual bool toBePrinted() const { return true; }
       /// get a string representation
       std::string toString() const
       {
@@ -689,12 +692,18 @@ namespace Gaudi
       using BufferableCounter<Arithmetic, Atomicity, Counter>::print;
       std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
       {
+        // Avoid printing empty counters in non DEBUG mode
         std::string fmt( "#=%|-7lu|" );
         if ( tableFormat ) {
           fmt = "|%|10d| |";
         }
         o << boost::format{fmt} % this->nEntries();
         return o;
+      }
+      virtual bool toBePrinted() const override
+      {
+        return this->nEntries() > 0;
+        ;
       }
     };
 
@@ -716,6 +725,11 @@ namespace Gaudi
           fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g|";
         }
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean();
+      }
+      virtual bool toBePrinted() const override
+      {
+        return this->nEntries() > 0;
+        ;
       }
     };
     template <typename Arithmetic = double, atomicity Atomicity = atomicity::full>
@@ -740,6 +754,11 @@ namespace Gaudi
         }
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation();
       }
+      virtual bool toBePrinted() const override
+      {
+        return this->nEntries() > 0;
+        ;
+      }
     };
 
     /**
@@ -761,6 +780,7 @@ namespace Gaudi
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation() %
                         this->min() % this->max();
       }
+      virtual bool toBePrinted() const override { return this->nEntries() > 0; }
     };
 
     /**

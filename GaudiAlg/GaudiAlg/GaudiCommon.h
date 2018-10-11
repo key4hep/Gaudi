@@ -790,6 +790,8 @@ private:
   Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true, "print the statistics of errors/warnings/exceptions"};
   Gaudi::Property<bool> m_propsPrint{this, "PropertiesPrint", false, "print the properties of the component"};
   Gaudi::Property<bool> m_statPrint{this, "StatPrint", true, "print the table of counters"};
+  Gaudi::Property<bool> m_printEmptyCounters{this, "PrintEmptyCounters", false,
+                                             "force printing of empty counters, otherwise only printed in DEBUG mode"};
   Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
 
   Gaudi::Property<std::string> m_context{this, "Context", {}, "note: overridden by parent settings"};
