@@ -249,25 +249,37 @@ public:
   // Register histogram with the data store
   // ==========================================================================
 
+  using IDataProviderSvc::registerObject;
   virtual StatusCode registerObject( const std::string& fullPath, AIDA::IBaseHistogram* hObj ) = 0;
   // ---------------------------
   virtual StatusCode registerObject( const std::string& parentPath, const std::string& objPath,
                                      AIDA::IBaseHistogram* hObj ) = 0;
   // ---------------------------
-  virtual StatusCode registerObject( const std::string& parentPath, int item, AIDA::IBaseHistogram* hObj ) = 0;
+  StatusCode registerObject( const std::string& parentPath, int item, AIDA::IBaseHistogram* hObj )
+  {
+    return registerObject( parentPath, std::to_string( item ), hObj );
+  }
   // ---------------------------
   virtual StatusCode registerObject( DataObject* parentObj, const std::string& objPath,
                                      AIDA::IBaseHistogram* hObj ) = 0;
   virtual StatusCode registerObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
                                      AIDA::IBaseHistogram* hObj ) = 0;
   // ---------------------------
-  virtual StatusCode registerObject( DataObject* parentObj, int item, AIDA::IBaseHistogram* hObj )           = 0;
-  virtual StatusCode registerObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IBaseHistogram* hObj ) = 0;
+  StatusCode registerObject( DataObject* parentObj, int item, AIDA::IBaseHistogram* hObj )
+  {
+    return registerObject( parentObj, std::to_string( item ), hObj );
+  }
+
+  StatusCode registerObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IBaseHistogram* hObj )
+  {
+    return registerObject( parentObj, std::to_string( item ), hObj );
+  }
 
   // ==========================================================================
   // Unregister histogram from the data store
   // ==========================================================================
 
+  using IDataProviderSvc::unregisterObject;
   virtual StatusCode unregisterObject( AIDA::IBaseHistogram* hObj ) = 0;
   // ---------------------------
   virtual StatusCode unregisterObject( AIDA::IBaseHistogram* hObj, const std::string& objectPath ) = 0;
@@ -278,6 +290,7 @@ public:
   // Retrieve histogram from data store
   // ==========================================================================
 
+  using IDataProviderSvc::retrieveObject;
   virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram1D*& h1dObj ) = 0;
   virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IProfile1D*& h1dObj )   = 0;
   virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, AIDA::IHistogram2D*& h2dObj ) = 0;
@@ -341,6 +354,7 @@ public:
   // Find histogram identified by its full path in the data store
   // ==========================================================================
 
+  using IDataProviderSvc::findObject;
   virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram1D*& h1dObj ) = 0;
   virtual StatusCode findObject( const std::string& fullPath, AIDA::IProfile1D*& h1dObj )   = 0;
   virtual StatusCode findObject( const std::string& fullPath, AIDA::IHistogram2D*& h2dObj ) = 0;
@@ -427,12 +441,6 @@ public:
                     returns pointer to DataObject (NULL on failure)
   */
   virtual DataObject* createDirectory( const std::string& parentDir, const std::string& subDir ) = 0;
-
-  /// Avoids a compiler warning about hidden functions.
-  using IDataProviderSvc::registerObject;
-  using IDataProviderSvc::unregisterObject;
-  using IDataProviderSvc::retrieveObject;
-  using IDataProviderSvc::findObject;
 };
 
 #endif // INTERFACES_IHISTOGRAMSVC_H

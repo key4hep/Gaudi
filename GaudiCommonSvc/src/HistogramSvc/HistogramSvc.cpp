@@ -151,7 +151,7 @@ std::pair<string, string> HistogramSvc::i_splitPath( const string& full )
   }
   // Remove trailing "/" from newPath if it exists
   if ( tmp.rfind( SEPARATOR ) == tmp.length() - 1 ) {
-    tmp.erase( tmp.rfind( SEPARATOR ), 1 );
+    tmp.erase( tmp.length() - 1, 1 );
   }
   int sep = tmp.rfind( SEPARATOR );
   return {tmp.substr( 0, sep ), tmp.substr( sep )};
@@ -170,7 +170,7 @@ DataObject* HistogramSvc::createPath( const string& newPath )
     tmpPath.erase( tmpPath.rfind( SEPARATOR ), 1 );
   }
   DataObject* pObject = nullptr;
-  StatusCode  sc      = DataSvc::findObject( tmpPath, pObject );
+  StatusCode  sc      = findObject( tmpPath, pObject );
   if ( sc.isSuccess() ) {
     return pObject;
   }
@@ -193,14 +193,13 @@ DataObject* HistogramSvc::createDirectory( const string& parentDir, const string
   auto directory = std::make_unique<DataObject>();
   if ( directory ) {
     DataObject* pnode;
-    StatusCode  status = DataSvc::retrieveObject( parentDir, pnode );
-    if ( status.isSuccess() ) {
-      status = DataSvc::registerObject( pnode, subDir, directory.get() );
-      if ( !status.isSuccess() ) {
-        error() << "Unable to create the histogram directory: " << parentDir << "/" << subDir << endmsg;
-        return nullptr;
-      }
-    } else {
+    StatusCode  status = retrieveObject( parentDir, pnode );
+    if ( !status.isSuccess() ) {
+      error() << "Unable to create the histogram directory: " << parentDir << "/" << subDir << endmsg;
+      return nullptr;
+    }
+    status = DataSvc::registerObject( pnode, subDir, directory.get() );
+    if ( !status.isSuccess() ) {
       error() << "Unable to create the histogram directory: " << parentDir << "/" << subDir << endmsg;
       return nullptr;
     }
@@ -987,42 +986,24 @@ StatusCode HistogramSvc::registerObject( const std::string& parent, const std::s
 }
 
 // ============================================================================
-StatusCode HistogramSvc::registerObject( const std::string& parent, int item, Base* obj )
-{
-  return registerObject( parent, std::to_string( item ), obj );
-}
-
-// ============================================================================
 StatusCode HistogramSvc::registerObject( Base* pPar, const std::string& rel, Base* obj )
 {
   return registerObject(::detail::cast( pPar ), rel, obj );
 }
 
 // ============================================================================
-StatusCode HistogramSvc::registerObject( DataObject* pPar, int item, Base* obj )
-{
-  return registerObject( pPar, std::to_string( item ), obj );
-}
-
-// ============================================================================
-StatusCode HistogramSvc::registerObject( Base* pPar, int item, Base* obj )
-{
-  return registerObject(::detail::cast( pPar ), item, obj );
-}
-
-// ============================================================================
-StatusCode HistogramSvc::unregisterObject( Base* obj ) { return DataSvc::unregisterObject(::detail::cast( obj ) ); }
+StatusCode HistogramSvc::unregisterObject( Base* obj ) { return unregisterObject(::detail::cast( obj ) ); }
 
 // ============================================================================
 StatusCode HistogramSvc::unregisterObject( Base* obj, const std::string& objectPath )
 {
-  return DataSvc::unregisterObject(::detail::cast( obj ), objectPath );
+  return unregisterObject(::detail::cast( obj ), objectPath );
 }
 
 // ============================================================================
 StatusCode HistogramSvc::unregisterObject( Base* obj, int item )
 {
-  return DataSvc::unregisterObject(::detail::cast( obj ), item );
+  return unregisterObject(::detail::cast( obj ), item );
 }
 
 // ============================================================================

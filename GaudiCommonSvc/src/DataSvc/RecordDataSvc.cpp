@@ -135,7 +135,7 @@ void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr )
   if ( !data.empty() && pAddr ) {
     string fid = data;
     debug() << "Request to load record for file " << fid << endmsg;
-    StatusCode sc = registerAddress( m_root, fid, pAddr );
+    StatusCode sc = registerAddress( m_root.get(), fid, pAddr );
     if ( !sc.isSuccess() ) {
       warning() << "Failed to register record for:" << fid << endmsg;
       pAddr->release();
