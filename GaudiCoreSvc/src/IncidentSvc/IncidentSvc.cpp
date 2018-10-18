@@ -68,7 +68,7 @@ StatusCode IncidentSvc::initialize()
     error() << "Could not set my properties" << endmsg;
     return sc;
   }
-  return StatusCode::SUCCESS;
+  return sc;
 }
 // ============================================================================
 StatusCode IncidentSvc::finalize()
@@ -76,13 +76,18 @@ StatusCode IncidentSvc::finalize()
   DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] ", System::milliSec )
          << m_timer.outputUserTime( "Total:%2%[s]", System::Sec ) << endmsg;
 
-  // Finalize this specific service
-  StatusCode sc = Service::finalize();
-  if ( UNLIKELY( sc.isFailure() ) ) {
-    return sc;
+  {
+    // clear the local storage of allocated Incident objects.
+    std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
+    for ( auto& fi : m_firedIncidents ) {
+      std::for_each( fi.second.unsafe_begin(), fi.second.unsafe_end(), []( auto i ) { delete i; } );
+      fi.second.clear();
+    }
+    m_firedIncidents.clear();
   }
 
-  return StatusCode::SUCCESS;
+  // Finalize this specific service
+  return Service::finalize();
 }
 // ============================================================================
 // Inherited IIncidentSvc overrides:
