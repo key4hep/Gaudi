@@ -51,7 +51,7 @@ int main()
     std::cout << sig << std::endl;
   }
 
-  // Testing AveragingCounter wiht buffering
+  // Testing AveragingCounter with buffering
   {
     AveragingCounter<float, atomicity::full> avg2;
     {
@@ -69,6 +69,20 @@ int main()
     bin += true;
     bin += false;
     bin += false;
+    std::cout << bin << std::endl;
+  }
+
+  // Testing Binomialcounter with buffers
+  {
+    BinomialCounter<> bin;
+    {
+      auto bufBin = bin.buffer();
+      bufBin += false;
+      bufBin += true;
+      bufBin += true;
+      bufBin += false;
+      bufBin += false;
+    }
     std::cout << bin << std::endl;
   }
 
