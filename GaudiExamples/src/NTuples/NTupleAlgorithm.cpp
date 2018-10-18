@@ -68,7 +68,7 @@ StatusCode NTupleAlgorithm::execute()
   m_ntrk   = long( sin( double( n ) ) * 52. + 50. );
   m_energy = float( sin( double( n ) ) * 52. + 50. );
 
-  m_n = abs( ( 1234567 * ( n + 1 ) ) % 100 );
+  m_n = long( abs( ( 12345 * ( n + 1 ) ) % 100 ) );
 
   for ( int i = 0; i < m_n; i++ ) {
     m_fNumbers[i] = float( cos( double( 2 * n ) ) * 52. + 50. );

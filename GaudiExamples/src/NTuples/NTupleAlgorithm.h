@@ -20,15 +20,15 @@ public:
   StatusCode finalize() override;
 
 private:
-  NTuple::Tuple* m_tuple1;
-  NTuple::Tuple* m_tuple2;
+  NTuple::Tuple* m_tuple1 = nullptr;
+  NTuple::Tuple* m_tuple2 = nullptr;
 
-  NTuple::Item<int>   m_ntrk;
+  NTuple::Item<long>  m_ntrk;
   NTuple::Item<float> m_energy;
   // Items for the column wise n-tuple
-  NTuple::Array<int>   m_iNumbers;
+  NTuple::Array<long>  m_iNumbers;
   NTuple::Array<float> m_fNumbers;
-  NTuple::Item<int>    m_n;
+  NTuple::Item<long>   m_n;
 };
 
 #endif // HISTOGRAMS_NTupleAlgorithm_H
