@@ -27,6 +27,8 @@
 // provides macros for the tests
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <memory>
+
 namespace GaudiKernelTest
 {
   class TimeTest : public CppUnit::TestFixture
@@ -145,7 +147,8 @@ int main( int argc, char* argv[] )
   // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
   //                                                    std::cout ) );
 
-  runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
+  auto l = std::make_unique<GaudiKernelTest::ProgressListener>();
+  runner.eventManager().addListener( l.get() );
 
   // CppUnit::TestResultCollector *collector =
   //  new CppUnit::TestResultCollector();

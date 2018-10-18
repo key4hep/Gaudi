@@ -10,6 +10,7 @@
 
 #include "boost/thread/mutex.hpp"
 #include <chrono>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -88,20 +89,20 @@ namespace GaudiKernelTest
     {
 
       // test default template args
-      Hist<>*              h1 = new Hist<>( "first" );
-      LockedHandle<Hist<>> lh1( h1, h1->mut() );
+      auto                 h1 = std::make_unique<Hist<>>( "first" );
+      LockedHandle<Hist<>> lh1( h1.get(), h1->mut() );
       lh1->acc();
 
       // test explicit mutex type
       typedef std::mutex mut_t;
-      Hist<mut_t>*       h2 = new Hist<mut_t>( "first" );
-      LockedHandle<Hist<mut_t>, mut_t> lh2( h2, h2->mut() );
+      auto               h2 = std::make_unique<Hist<mut_t>>( "first" );
+      LockedHandle<Hist<mut_t>, mut_t> lh2( h2.get(), h2->mut() );
       lh2->acc();
 
       // // test a different mutex type
       typedef boost::mutex mut_b_t;
-      Hist<mut_b_t>*       h3 = new Hist<mut_b_t>( "first" );
-      LockedHandle<Hist<mut_b_t>, mut_b_t> lh3( h3, h3->mut() );
+      auto                 h3 = std::make_unique<Hist<mut_b_t>>( "first" );
+      LockedHandle<Hist<mut_b_t>, mut_b_t> lh3( h3.get(), h3->mut() );
       lh3->acc();
 
       // do a lot to see if we can get a race
@@ -194,7 +195,8 @@ int main( int argc, char* argv[] )
   // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
   //                                                    std::cout ) );
 
-  runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
+  auto l = std::make_unique<GaudiKernelTest::ProgressListener>();
+  runner.eventManager().addListener( l.get() );
 
   bool wasSuccessful = false;
 
