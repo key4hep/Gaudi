@@ -14,6 +14,7 @@
 #include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/apply.h"
 #include "GaudiKernel/detected.h"
+#include "GaudiKernel/invoke.h"
 
 // Boost
 #include "boost/optional.hpp"
@@ -129,6 +130,51 @@ namespace Gaudi
       using std::disjunction;
 #endif
       /////////////////////////////////////////
+      namespace details2
+      {
+        // note: boost::optional in boost 1.66 does not have 'has_value()'...
+        // that requires boost 1.68 or later... so for now, use operator bool() instead ;-(
+        template <typename T>
+        using is_optional_ = decltype( bool( std::declval<T>() ), std::declval<T>().value() );
+      }
+      template <typename Arg>
+      using is_optional = typename Gaudi::cpp17::is_detected<details2::is_optional_, Arg>;
+
+      template <typename Arg>
+      using require_is_optional = std::enable_if_t<is_optional<Arg>::value>;
+
+      template <typename Arg>
+      using require_is_not_optional = std::enable_if_t<!is_optional<Arg>::value>;
+
+      namespace details2
+      {
+        template <typename T, typename = void>
+        struct remove_optional {
+          using type = T;
+        };
+
+        template <typename T>
+        struct remove_optional<T, std::enable_if_t<is_optional<T>::value>> {
+          using type = typename T::value_type;
+        };
+      }
+
+      template <typename T>
+      using remove_optional_t = typename details2::remove_optional<T>::type;
+
+      constexpr struct invoke_optionally_t {
+        template <typename F, typename Arg, typename = require_is_not_optional<Arg>>
+        decltype( auto ) operator()( F&& f, Arg&& arg ) const
+        {
+          return Gaudi::invoke( std::forward<F>( f ), std::forward<Arg>( arg ) );
+        }
+        template <typename F, typename Arg, typename = require_is_optional<Arg>>
+        void operator()( F&& f, Arg&& arg ) const
+        {
+          if ( arg ) Gaudi::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
+        }
+      } invoke_optionally{};
+      /////////////////////////////////////////
 
       template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value &&
                                                                           std::is_base_of<DataObject, Out1>::value>>
@@ -144,15 +190,15 @@ namespace Gaudi
       }
 
       // optional put
-      template <typename OutHandle, typename Out>
-      void put( OutHandle& out_handle, boost::optional<Out>&& out )
+      template <typename OutHandle, typename OptOut, typename = require_is_optional<OptOut>>
+      void put( OutHandle& out_handle, OptOut&& out )
       {
-        if ( out ) put( out_handle, std::move( *out ) );
+        if ( out ) put( out_handle, *std::forward<OptOut>( out ) );
       }
       /////////////////////////////////////////
       // adapt to differences between eg. std::vector (which has push_back) and KeyedContainer (which has insert)
       // adapt to getting a T, and a container wanting T* by doing new T{ std::move(out) }
-      // adapt to getting a boost::optional<T>
+      // adapt to getting a optional<T>
 
       constexpr struct insert_t {
         // for Container<T*>, return T
@@ -179,11 +225,6 @@ namespace Gaudi
           return operator()( c, new c_remove_ptr_t<Container>{std::move( v )} );
         }
 
-        template <typename Container, typename Value>
-        void operator()( Container& c, boost::optional<Value>&& v ) const
-        {
-          if ( v ) operator()( c, std::move( *v ) );
-        }
       } insert{};
 
       /////////////////////////////////////////
@@ -202,30 +243,6 @@ namespace Gaudi
           return *in;
         }
       } deref{};
-
-      /////////////////////////////////////////
-
-      namespace details2
-      {
-        template <typename T>
-        struct remove_optional {
-          typedef T type;
-        };
-        template <typename T>
-        struct remove_optional<boost::optional<T>> {
-          typedef T type;
-        };
-        // template< typename T > struct remove_optional< std::optional<T> >  {typedef T type;};
-      }
-      template <typename T>
-      using remove_optional_t = typename details2::remove_optional<T>::type;
-      template <typename T>
-      struct is_optional : std::false_type {
-      };
-      template <typename T>
-      struct is_optional<boost::optional<T>> : std::true_type {
-      };
-      // C++17: template <typename T> constexpr bool is_optional_v = is_optional<T>::value;
 
       /////////////////////////////////////////
       // if Container is a pointer, then we're optional items
@@ -273,26 +290,26 @@ namespace Gaudi
       template <typename Container>
       class vector_of_const_
       {
-        static constexpr bool is_optional = std::is_pointer<Container>::value;
-        using val_t                       = std::add_const_t<std::remove_pointer_t<Container>>;
-        using ptr_t                       = std::add_pointer_t<val_t>;
-        using ref_t                       = std::add_lvalue_reference_t<val_t>;
-        using ContainerVector             = std::vector<ptr_t>;
+        static constexpr bool is_pointer = std::is_pointer<Container>::value;
+        using val_t                      = std::add_const_t<std::remove_pointer_t<Container>>;
+        using ptr_t                      = std::add_pointer_t<val_t>;
+        using ref_t                      = std::add_lvalue_reference_t<val_t>;
+        using ContainerVector            = std::vector<ptr_t>;
         ContainerVector m_containers;
 
       public:
-        using value_type = std::conditional_t<is_optional, ptr_t, val_t>;
+        using value_type = std::conditional_t<is_pointer, ptr_t, val_t>;
         using size_type  = typename ContainerVector::size_type;
         class iterator
         {
           typename ContainerVector::const_iterator m_i;
           friend class vector_of_const_;
           iterator( typename ContainerVector::const_iterator iter ) : m_i( iter ) {}
-          using ret_t = std::conditional_t<is_optional, ptr_t, ref_t>;
+          using ret_t = std::conditional_t<is_pointer, ptr_t, ref_t>;
 
         public:
           friend bool operator!=( const iterator& lhs, const iterator& rhs ) { return lhs.m_i != rhs.m_i; }
-          ret_t operator*() const { return details2::deref_if( *m_i, std::integral_constant<bool, !is_optional>{} ); }
+          ret_t operator*() const { return details2::deref_if( *m_i, std::integral_constant<bool, !is_pointer>{} ); }
           iterator& operator++()
           {
             ++m_i;
@@ -308,11 +325,10 @@ namespace Gaudi
         };
         vector_of_const_() = default;
         void reserve( size_type size ) { m_containers.reserve( size ); }
-        template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_optional,ptr_t,val_t>>
+        template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_pointer,ptr_t,val_t>>
         void push_back( T&& container )
         {
-          details2::push_back( m_containers, std::forward<T>( container ),
-                               std::integral_constant<bool, is_optional>{} );
+          details2::push_back( m_containers, std::forward<T>( container ), std::integral_constant<bool, is_pointer>{} );
         } // note: does not copy its argument, so we're not really a container...
         iterator  begin() const { return m_containers.begin(); }
         iterator  end() const { return m_containers.end(); }
