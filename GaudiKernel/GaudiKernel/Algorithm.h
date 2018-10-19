@@ -595,8 +595,6 @@ private:
   Gaudi::Property<bool> m_filterCircDeps{this, "FilterCircularDependencies", true,
                                          "filter out circular data dependencies"};
 
-  std::mutex m_lock; ///< for re-entrant Algs
-
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
 
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
