@@ -408,7 +408,7 @@ private:
     }
   }
   static void process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_size );
-  static void sigio_handler( int, struct siginfo*, struct sigcontext* ); // dlopen ==>
+  static void sigio_handler( int, siginfo_t*, void* ); // dlopen ==>
   // void sigio_handler(int, struct siginfo *, struct sigcontext *);
   void               start_smpl();
   void               stop_smpl();
@@ -643,10 +643,9 @@ void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_siz
 
 // sigio_handler()
 // int n                 : signal number of the signal being delivered
-// struct siginfo *info  : pointer to a siginfo_t structure containing info about the signal
-// struct sigcontext *sc : context of the signal, NULL in our case
+// siginfo_t *info       : pointer to a siginfo_t structure containing info about the signal
 // signal handler used to catch sampling buffer overflows. When they occur it calls the process_smpl_buf() function
-void PerfMonAuditor::sigio_handler( int /*n*/, struct siginfo* /*info*/, struct sigcontext* /*sc*/ )
+void PerfMonAuditor::sigio_handler( int /*n*/, siginfo_t* /*info*/, void* )
 {
   PFMon&      pfm = PFMon::instance();
   pfarg_msg_t msg;
@@ -707,7 +706,7 @@ void PerfMonAuditor::start_smpl()
   }
   struct sigaction act;
   memset( &act, 0, sizeof( act ) );
-  act.sa_handler = (sig_t)sigio_handler; // dlopen() ==>
+  act.sa_sigaction = sigio_handler; // dlopen() ==>
   // act.sa_handler = (sig_t)&sigio_handler;
   sigaction( SIGIO, &act, 0 );
   memset( &ctx, 0, sizeof( ctx ) );
@@ -892,7 +891,7 @@ void PerfMonAuditor::finalize_smpl()
               } else {
                 strcat( sym_name, "??? " );
               }
-              sprintf( sym_name, "%s%d ", sym_name, libOffset );
+              sprintf( sym_name + strlen( sym_name ), "%d ", libOffset );
               if ( strlen( sym_name ) <= 0 ) {
                 error() << "ERROR: Symbol name length is zero. Aborting..." << endmsg;
               }
