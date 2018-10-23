@@ -30,10 +30,8 @@ include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
 gaudi_project(Gaudi v30r4)
 
 # These tests do not really fit in a subdirectory.
-get_filename_component(PYTHON_EXECUTABLE_DIR "${PYTHON_EXECUTABLE}" DIRECTORY)
 gaudi_add_test(cmake.CMakeModules
-               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests
-               ENVIRONMENT PATH+=${PYTHON_EXECUTABLE_DIR}:/usr/bin:/bin)
+               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
 gaudi_add_test(cmake.QMTDeps
                COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/extract_qmtest_metadata.py)
 
