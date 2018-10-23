@@ -14,6 +14,7 @@
 #include "GaudiKernel/TypeNameString.h"
 #include "Rtypes.h"
 #include "ThreadLocalStorage.h"
+#include "boost/callable_traits.hpp"
 #include "tbb/concurrent_queue.h"
 #include "tbb/mutex.h"
 #include "tbb/recursive_mutex.h"
@@ -97,18 +98,10 @@ namespace
 {
   namespace detail
   {
-    template <typename lambda>
-    struct arg_helper : public arg_helper<decltype( &lambda::operator() )> {
-    };
-    template <typename T, typename Ret, typename Arg>
-    struct arg_helper<Ret ( T::* )( Arg ) const> {
-      using type = Arg;
-    };
-
-    // given a unary lambda whose argument is of type Arg_t,
-    // argument_t<lambda> will be equal to Arg_t
-    template <typename lambda>
-    using argument_t = typename arg_helper<lambda>::type;
+    // given a callable F(Arg_t,...)
+    // argument_t<F> will be equal to Arg_t
+    template <typename F>
+    using argument_t = std::tuple_element_t<0, boost::callable_traits::args_t<F>>;
   }
 
   template <typename Fun>
