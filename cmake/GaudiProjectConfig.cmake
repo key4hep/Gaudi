@@ -54,12 +54,16 @@ endif()
 find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
 find_program(icecc_cmd icecc)
-set(_clang_format_names)
-foreach(_clang_version 5.0 4.0 3.9 3.8 3.7)
-  list(APPEND _clang_format_names lcg-clang-format-${_clang_version} clang-format-${_clang_version})
-endforeach()
-list(APPEND _clang_format_names clang-format)
-find_program(clang_format_cmd NAMES ${_clang_format_names})
+
+set(CLANG_FORMAT_VERSION "6.0" CACHE STRING "Version of clang-format to use")
+find_program(clang_format_cmd
+  NAMES lcg-clang-format-${CLANG_FORMAT_VERSION}.0
+        lcg-clang-format-${CLANG_FORMAT_VERSION}
+        clang-format-${CLANG_FORMAT_VERSION})
+if(clang_format_cmd)
+  message(STATUS "found clang-format ${CLANG_FORMAT_VERSION}: ${clang_format_cmd}")
+endif()
+
 mark_as_advanced(ccache_cmd distcc_cmd icecc_cmd clang_format_cmd)
 
 if(ccache_cmd)
@@ -852,7 +856,7 @@ for f in \"$@\" ; do
     add_dependencies(apply-formatting apply-formatting-c++)
     file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${clang_format_cmd} -style=${GAUDI_CLANG_STYLE} -i \"$f\" ;;\n")
   else()
-    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ code not supported (install clang-format first)' ; exit 1 ;;\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ code not supported (install clang-format-${CLANG_FORMAT_VERSION} first)' ; exit 1 ;;\n")
   endif()
 
   file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*.py)\n")
