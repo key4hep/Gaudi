@@ -831,8 +831,7 @@ for f in \"$@\" ; do
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
     # Filter out files in InstallArea and build areas.
-    string(REGEX REPLACE "InstallArea/[^;]+;?" "" _all_sources "${_all_sources}")
-    string(REGEX REPLACE "build.[^;]+;?" "" _all_sources "${_all_sources}")
+    list(FILTER _all_sources EXCLUDE REGEX "InstallArea/.*|build\\..*")
     add_custom_target(apply-formatting-c++
       COMMAND ${clang_format_cmd}
                   -style=${GAUDI_CLANG_STYLE}
