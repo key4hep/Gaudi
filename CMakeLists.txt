@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.6)
 
 # Configurable options for building Gaudi in the ATLAS software stack:
 option( GAUDI_ATLAS "Enable ATLAS-specific settings" OFF )
