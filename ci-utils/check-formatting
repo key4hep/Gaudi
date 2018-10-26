@@ -8,7 +8,8 @@ else
   job_id="standalone job"
 fi
 
-sudo pip install autopep8==1.3.5
+YAPF_VERSION=$(sed -E -n 's/ *set\(YAPF_VERSION *"([0-9.]*)".*/\1/p' cmake/GaudiProjectConfig.cmake)
+sudo pip install yapf==$YAPF_VERSION
 
 export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
 make BUILDDIR=${BUILDDIR} configure

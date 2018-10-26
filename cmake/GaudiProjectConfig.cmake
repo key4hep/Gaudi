@@ -64,6 +64,24 @@ if(clang_format_cmd)
   message(STATUS "found clang-format ${CLANG_FORMAT_VERSION}: ${clang_format_cmd}")
 endif()
 
+set(YAPF_VERSION "0.24.0" CACHE STRING "Version of yapf to use")
+if(NOT yapf_cmd)
+  find_program(yapf_cmd NAMES yapf)
+  if(yapf_cmd)
+    execute_process(COMMAND "${yapf_cmd}" --version
+        OUTPUT_VARIABLE yapf_detected_version
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX REPLACE "yapf *" "" yapf_detected_version "${yapf_detected_version}")
+    if(NOT yapf_detected_version STREQUAL YAPF_VERSION)
+      message(STATUS "ignoring yapf: found yapf ${yapf_detected_version}, but ${YAPF_VERSION} required")
+      set(yapf_cmd "yapf-NOTFOUND" CACHE FILEPATH "yapf command" FORCE)
+    endif()
+  endif()
+endif()
+if(yapf_cmd)
+  message(STATUS "found yapf ${YAPF_VERSION}: ${yapf_cmd}")
+endif()
+
 mark_as_advanced(ccache_cmd distcc_cmd icecc_cmd clang_format_cmd)
 
 if(ccache_cmd)
@@ -466,8 +484,6 @@ main()")
   find_program(gaudirun_cmd gaudirun.py HINTS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
-  find_program(autopep8_cmd autopep8 HINTS ${binary_paths})
-
   # genconf is special because it must be known before we actually declare the
   # target in GaudiKernel/src/Util (because we need to be dynamic and agnostic).
   if(TARGET genconf)
@@ -860,16 +876,16 @@ for f in \"$@\" ; do
   endif()
 
   file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*.py)\n")
-  if(autopep8_cmd)
+  if(yapf_cmd)
     add_custom_target(apply-formatting-python
-      COMMAND ${autopep8_cmd}
-                  --recursive --in-place --exclude ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
+      COMMAND ${yapf_cmd}
+                  --recursive --in-place --exclude ${CMAKE_BINARY_DIR} --exclude InstallArea ${CMAKE_SOURCE_DIR}
       COMMENT "Applying coding conventions to Python sources"
     )
     add_dependencies(apply-formatting apply-formatting-python)
-    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${autopep8_cmd} --in-place \"$f\" ;;\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${yapf_cmd} --in-place \"$f\" ;;\n")
   else()
-    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of Python code not supported (install autopep8 first)' ; exit 1 ;;\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of Python code not supported (install yapf ${YAPF_VERSION} first)' ; exit 1 ;;\n")
   endif()
   file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*) echo \"unknown file type $f\" ;;\n  esac\ndone\n")
   execute_process(COMMAND chmod a+x ${CMAKE_BINARY_DIR}/apply-formatting)
