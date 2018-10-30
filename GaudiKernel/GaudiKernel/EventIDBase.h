@@ -66,6 +66,8 @@ public:
   static const number_type    UNDEFNUM;
   static const event_number_t UNDEFEVT;
 
+  friend class EventIDRange;
+
 public:
   /// \name structors
   //@{
@@ -73,6 +75,10 @@ public:
   EventIDBase( number_type run_number, event_number_t event_number, number_type time_stamp = UNDEFNUM,
                number_type time_stamp_ns_offset = 0, number_type lumi_block = UNDEFNUM,
                number_type bunch_crossing_id = 0 );
+
+  EventIDBase (std::tuple<number_type,event_number_t,number_type> run_lumi_ev,
+	       std::tuple<number_type,number_type> time_stamp, number_type bunch_crossing_id = 0);
+
   // Use default copy constructor.
   virtual ~EventIDBase() = default;
   //@}
@@ -140,6 +146,9 @@ public:
   friend bool operator<=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs > rhs ); }
   friend bool operator>=( const EventIDBase& lhs, const EventIDBase& rhs ) { return !( lhs < rhs ); }
 
+  friend EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs );
+  friend EventIDBase max( const EventIDBase& lhs, const EventIDBase& rhs );
+
   bool isRunEvent() const { return m_type & RunEvent; }
   bool isTimeStamp() const { return m_type & TimeStamp; }
   bool isLumiEvent() const { return m_type & LumiEvent; }
@@ -202,6 +211,29 @@ private:
   /// bunch crossing ID,  32 bit unsigned
   number_type m_bunch_crossing_id{UNDEFNUM};
 };
+
+inline EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs ) {
+
+  return EventIDBase(std::min(std::tie(lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number),
+			      std::tie(rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number)),
+		     std::min(std::tie(lhs.m_time_stamp,lhs.m_time_stamp_ns_offset),
+			      std::tie(rhs.m_time_stamp,rhs.m_time_stamp_ns_offset)),
+		     lhs.bunch_crossing_id()//bcid doesn't really matter here 
+		     );   
+}
+
+inline EventIDBase max( const EventIDBase& lhs, const EventIDBase& rhs ) {
+
+  return EventIDBase(std::max(std::tie(lhs.m_run_number, lhs.m_lumi_block, lhs.m_event_number),
+			      std::tie(rhs.m_run_number, rhs.m_lumi_block, rhs.m_event_number)),
+		     std::max(std::tie(lhs.m_time_stamp,lhs.m_time_stamp_ns_offset),
+			      std::tie(rhs.m_time_stamp,rhs.m_time_stamp_ns_offset)),
+		     lhs.bunch_crossing_id()//bcid doesn't really matter here 
+		     );   
+}
+
+
+
 
 inline bool operator<( const EventIDBase& lhs, const EventIDBase& rhs )
 {
