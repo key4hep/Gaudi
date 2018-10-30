@@ -1131,11 +1131,12 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( const EventContext* sourceC
 
   // It's not possible to create an std::functional from a move-capturing lambda
   // So, we have to release the unique pointer
-  auto action = [ this, sourceContext, viewContextPtr = viewContext.release(), &nodeName ]()->StatusCode
+  auto action =
+      [ this, slotIndex = sourceContext->slot(), viewContextPtr = viewContext.release(), &nodeName ]()->StatusCode
   {
 
     // Attach the sub-slot to the top-level slot
-    EventSlot& topSlot = this->m_eventSlots[sourceContext->slot()];
+    EventSlot& topSlot = this->m_eventSlots[slotIndex];
 
     if ( viewContextPtr ) {
       // Re-create the unique pointer
