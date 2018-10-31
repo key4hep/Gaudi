@@ -42,6 +42,18 @@ int main()
     std::cout << avg << std::endl;
   }
 
+  // Testing integer AveragingCounter
+  {
+    AveragingCounter<int> avg;
+    avg += 3;
+    avg += 5;
+    avg += 6;
+    std::cout << avg << std::endl;
+
+    static_assert( std::is_integral<decltype( avg.mean<int>() )>::value );
+    static_assert( std::is_floating_point<decltype( avg.mean() )>::value );
+  }
+
   // Testing SigmaCounter
   {
     SigmaCounter<> sig;
