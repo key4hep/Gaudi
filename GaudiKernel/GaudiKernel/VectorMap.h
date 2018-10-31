@@ -687,11 +687,6 @@ namespace GaudiUtils
      */
     VectorMap( const allocator_type& alloc = allocator_type() ) : m_vct( alloc ) {}
     // ========================================================================
-    /** copy constructor
-     *  @param right object to be copied
-     */
-    VectorMap( const VectorMap& right ) : Gaudi::Utils::MapBase( right ), m_vct( right.m_vct ) {}
-    // ========================================================================
     /** templated constructor from "convertible" sequence
      *  @param first 'begin'-iterator for the convertible sequence
      *  @param last  'end'-iterator for the convertible sequence
@@ -713,22 +708,6 @@ namespace GaudiUtils
         : m_vct( first, alloc )
     {
       std::sort( m_vct.begin(), m_vct.end(), compare() );
-    }
-    // ========================================================================
-    /// destructor (non-virtual!)
-    ~VectorMap() { clear(); }
-    // ========================================================================
-    /* assignement operator
-     * @param rigth object to be assigned
-     * @return self
-     */
-    VectorMap& operator=( const VectorMap& right )
-    {
-      if ( &right == this ) {
-        return *this;
-      }
-      m_vct = right.m_vct;
-      return *this;
     }
     // ========================================================================
   public:
