@@ -192,6 +192,12 @@ namespace Gaudi
     using has_fetch_add = typename Gaudi::cpp17::is_detected<has_fetch_add_, T>::value_t;
 
     /**
+     * type_trait for the result type of a floating point operation on the type Arithmetic
+     */
+    template <typename Arithmetic, typename Result = double>
+    using fp_result_type = std::conditional_t<std::is_integral<Arithmetic>::value, Result, Arithmetic>;
+
+    /**
      * Base type for all functors used as ValuesHandler. The base takes care of storing the value
      */
     template <typename Arithmetic, atomicity Atomicity>
@@ -387,6 +393,7 @@ namespace Gaudi
 
     protected:
       void reset( InnerType in ) { m_value = std::move( in ); }
+
     private:
       typename ValueHandler::InternalType m_value;
     };
@@ -513,35 +520,41 @@ namespace Gaudi
     template <typename Arithmetic, atomicity Atomicity = atomicity::full>
     struct BinomialAccumulator : AccumulatorSet<bool, Atomicity, TrueAccumulator, FalseAccumulator> {
       unsigned long nEntries() const { return this->nTrueEntries() + this->nFalseEntries(); };
-      Arithmetic    efficiency() const
+
+      template <typename Result = fp_result_type<Arithmetic>>
+      auto efficiency() const
       {
         auto nbEntries = nEntries();
-        if ( 1 > nbEntries ) return -1;
-        return static_cast<Arithmetic>( this->nTrueEntries() ) / static_cast<Arithmetic>( nbEntries );
+        if ( 1 > nbEntries ) return Result{-1};
+        return static_cast<Result>( this->nTrueEntries() ) / nbEntries;
       }
-      Arithmetic eff() const { return efficiency(); }
-      Arithmetic efficiencyErr() const
+      auto eff() const { return efficiency(); }
+
+      template <typename Result = fp_result_type<Arithmetic>>
+      auto efficiencyErr() const
       {
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
         using std::sqrt;
-        Arithmetic nbEntries = static_cast<Arithmetic>( nEntries() );
-        if ( 1 > nbEntries ) return -1;
-        return sqrt( static_cast<Arithmetic>( this->nTrueEntries() * this->nFalseEntries() ) / nbEntries ) / nbEntries;
+        auto nbEntries = nEntries();
+        if ( 1 > nbEntries ) return Result{-1};
+        return sqrt( static_cast<Result>( this->nTrueEntries() * this->nFalseEntries() ) / nbEntries ) / nbEntries;
       }
-      Arithmetic effErr() const { return efficiencyErr(); }
+      auto effErr() const { return efficiencyErr(); }
     };
 
     /**
-     * AveragingAccumulator. A AveragingAccumulator is an Accumulator able to compute an average
+     * AveragingAccumulator. An AveragingAccumulator is an Accumulator able to compute an average
      * @see Gaudi::Accumulators for detailed documentation
      */
     template <typename Arithmetic, atomicity Atomicity = atomicity::full>
     struct AveragingAccumulator : AccumulatorSet<Arithmetic, Atomicity, CountAccumulator, SumAccumulator> {
-      Arithmetic mean() const
+
+      template <typename Result = fp_result_type<Arithmetic>>
+      auto mean() const
       {
         auto n = this->nEntries();
-        return n ? this->sum() / n : Arithmetic{};
+        return ( n > 0 ) ? static_cast<Result>( this->sum() ) / n : Result{};
       }
     };
 
@@ -551,40 +564,47 @@ namespace Gaudi
      */
     template <typename Arithmetic, atomicity Atomicity = atomicity::full>
     struct SigmaAccumulator : AccumulatorSet<Arithmetic, Atomicity, AveragingAccumulator, SquareAccumulator> {
-      Arithmetic biased_sample_variance() const
+
+      template <typename Result = fp_result_type<Arithmetic>>
+      auto biased_sample_variance() const
       {
-        auto count = this->nEntries();
-        auto sum   = this->sum();
-        return count ? ( this->sum2() - sum * ( sum / count ) ) / count : Arithmetic{};
-      };
-      Arithmetic unbiased_sample_variance() const
+        auto   n   = this->nEntries();
+        Result sum = this->sum();
+        return ( n > 0 ) ? ( this->sum2() - sum * ( sum / n ) ) / n : Result{};
+      }
+
+      template <typename Result = fp_result_type<Arithmetic>>
+      auto unbiased_sample_variance() const
       {
-        auto count = this->nEntries();
-        auto sum   = this->sum();
-        return ( count > 1 ) ? ( this->sum2() - sum * ( sum / count ) ) / ( count - 1 ) : Arithmetic{};
-      };
-      Arithmetic standard_deviation() const
+        auto   n   = this->nEntries();
+        Result sum = this->sum();
+        return ( n > 1 ) ? ( this->sum2() - sum * ( sum / n ) ) / ( n - 1 ) : Result{};
+      }
+
+      template <typename Result = fp_result_type<Arithmetic>>
+      auto standard_deviation() const
       {
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
         using std::sqrt;
-        auto v = biased_sample_variance();
-        return ( 0 > v ) ? Arithmetic{} : sqrt( v );
+        Result v = biased_sample_variance();
+        return ( 0 > v ) ? Result{} : sqrt( v );
       }
       [[deprecated( "The name 'rms' has changed to standard_deviation" )]] Arithmetic rms() const
       {
         return standard_deviation();
       }
-      Arithmetic meanErr() const
+
+      template <typename Result = fp_result_type<Arithmetic>>
+      auto meanErr() const
       {
         auto n = this->nEntries();
-        if ( 0 == n ) return Arithmetic{};
+        if ( 0 == n ) return Result{};
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
         using std::sqrt;
-        auto v = biased_sample_variance();
-        if ( 0 > v ) return Arithmetic{};
-        return sqrt( v / n );
+        Result v = biased_sample_variance();
+        return ( 0 > v ) ? Result{} : sqrt( v / n );
       }
     };
 
@@ -615,6 +635,7 @@ namespace Gaudi
       Buffer( Buffer&& other ) : base_type( other ), m_prime( other.m_prime ) { other.reset(); }
       void             push() { m_prime.mergeAndReset( static_cast<base_type&&>( *this ) ); }
       ~Buffer() { push(); }
+
     private:
       prime_type& m_prime;
     };
