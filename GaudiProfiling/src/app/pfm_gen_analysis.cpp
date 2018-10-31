@@ -1142,10 +1142,10 @@ void put_S_module( S_module* cur_module, const char* dir )
   bzero( event_str, MAX_EVENT_NAME_LENGTH );
   strcpy( event_str, event );
   if ( cur_module->get_c_mask() > 0 ) {
-    sprintf( event_str, "%s CMASK=%d", event_str, cur_module->get_c_mask() );
+    sprintf( event_str + strlen( event_str ), " CMASK=%d", cur_module->get_c_mask() );
   }
   if ( cur_module->get_inv_mask() > 0 ) {
-    sprintf( event_str, "%s INV=%d", event_str, cur_module->get_inv_mask() );
+    sprintf( event_str + strlen( event_str ), " INV=%d", cur_module->get_inv_mask() );
   }
   fprintf( module_file, "<a name=\"%s\"><a>\n", event_str );
   fprintf( module_file, "<table cellpadding=\"5\">\n" );
@@ -1193,7 +1193,7 @@ void put_S_module( S_module* cur_module, const char* dir )
       fprintf( stderr, "ERROR: Invalid sym and lib name! : %s\naborting...\n", index );
       exit( 1 );
     }
-    strncpy( sym, index, strlen( index ) - strlen( sym_end ) );
+    memcpy( sym, index, strlen( index ) - strlen( sym_end ) );
     strcpy( lib, sym_end + 1 );
     char temp[MAX_SYM_LENGTH];
     bzero( temp, MAX_SYM_LENGTH );
@@ -1288,7 +1288,7 @@ int read_S_file( const char* dir, const char* filename )
           exit( 1 );
         }
         bzero( cur_module_name, MAX_MODULE_NAME_LENGTH );
-        strncpy( cur_module_name, line, strlen( line ) - strlen( end_sym ) );
+        memcpy( cur_module_name, line, strlen( line ) - strlen( end_sym ) );
         cur_module->init( cur_module_name, arch, event, cmask, inv, sp );
         cur_module->set_total( atoi( end_sym + 1 ) );
       }    // module
