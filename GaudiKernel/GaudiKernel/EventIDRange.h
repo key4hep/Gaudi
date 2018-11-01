@@ -38,10 +38,10 @@ public:
 	    std::tie(t.m_time_stamp,t.m_time_stamp_ns_offset) < 
 	    std::tie(m_start.m_time_stamp,m_start.m_time_stamp_ns_offset) 
 	    &&
-	    std::tie( t.m_run_number, t.m_lumi_block, t.m_event_number ) >
+	    std::tie( t.m_run_number, t.m_lumi_block, t.m_event_number ) >=
 	    std::tie( m_stop.m_run_number, m_stop.m_lumi_block, m_stop.m_event_number ) 
 	    &&
-	    std::tie(t.m_time_stamp,t.m_time_stamp_ns_offset) > 
+	    std::tie(t.m_time_stamp,t.m_time_stamp_ns_offset) < 
 	    std::tie(m_stop.m_time_stamp,m_stop.m_time_stamp_ns_offset) 
 	    );
   }
