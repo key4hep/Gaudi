@@ -19,7 +19,6 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/ThreadLocalContext.h"
 
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/Chrono.h"
@@ -528,7 +527,6 @@ StatusCode             Algorithm::endRun()
 
 StatusCode Algorithm::sysExecute( const EventContext& ctx )
 {
-  m_event_context = ctx;
 
   if ( !isEnabled() ) {
     if ( msgLevel( MSG::VERBOSE ) ) {

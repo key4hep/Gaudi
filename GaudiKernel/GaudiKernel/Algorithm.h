@@ -34,6 +34,7 @@
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/System.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/ToolHandle.h"
 #include <Gaudi/PluginService.h>
 
@@ -433,7 +434,7 @@ public:
 public:
   // For concurrency
   /// get the context
-  const EventContext& getContext() const override { return m_event_context; }
+  const EventContext& getContext() const override { return Gaudi::Hive::currentContext(); }
 
 public:
   void registerTool( IAlgTool* tool ) const;
@@ -514,11 +515,10 @@ private:
   unsigned int maxErrors() const { return m_errorMax; }
 
 private:
-  Gaudi::StringKey        m_name;    ///< Algorithm's name for identification
-  std::string             m_type;    ///< Algorithm's type
-  std::string             m_version; ///< Algorithm's version
-  unsigned int            m_index;   ///< Algorithm's index
-  EventContext            m_event_context;
+  Gaudi::StringKey        m_name;     ///< Algorithm's name for identification
+  std::string             m_type;     ///< Algorithm's type
+  std::string             m_version;  ///< Algorithm's version
+  unsigned int            m_index;    ///< Algorithm's index
   std::vector<Algorithm*> m_subAlgms; ///< Sub algorithms
 
   // tools used by algorithm
