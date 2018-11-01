@@ -61,7 +61,7 @@ endif()
 gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
                   LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries}
                   INCLUDE_DIRS Boost ROOT TBB
-                  PUBLIC_HEADERS GaudiKernel)
+                  PUBLIC_HEADERS Gaudi GaudiKernel)
 
 #---Tests-------------------------------------------------------------------
 if( CPPUNIT_FOUND )

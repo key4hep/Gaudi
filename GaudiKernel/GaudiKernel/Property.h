@@ -12,11 +12,12 @@
 // ============================================================================
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/PropertyFwd.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/TaggedBool.h"
 #include "GaudiKernel/ToStream.h"
+#include <Gaudi/Parsers/CommonParsers.h>
+#include <Gaudi/Parsers/InputData.h>
 
 namespace Gaudi
 {
@@ -189,8 +190,8 @@ namespace Gaudi
       protected:
         void fromStringImpl( TYPE& buffer, const std::string& s )
         {
-          using Gaudi::Parsers::parse;
-          if ( !parse( buffer, s ).isSuccess() ) {
+          using Gaudi::Parsers::InputData;
+          if ( !parse( buffer, InputData{s} ).isSuccess() ) {
             throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
           }
         }
