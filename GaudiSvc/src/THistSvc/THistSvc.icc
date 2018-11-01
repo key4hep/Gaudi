@@ -112,7 +112,11 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
       return StatusCode::FAILURE;
     }
 
-    hid             = THistID( uid, temp, to, f, m_files.find( stream )->second.second );
+    const auto findF = m_files.find( stream );
+    hid              = ( findF != m_files.end() ? 
+                         THistID( uid, temp, to, f, findF->second.second ) :
+                         THistID( uid, temp, to, f ) );
+
     hid.shared      = shared;
     TDirectory* dir = changeDir( hid );
 

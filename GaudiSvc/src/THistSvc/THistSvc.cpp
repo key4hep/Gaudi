@@ -618,8 +618,8 @@ StatusCode THistSvc::deReg( TObject* obj )
         return StatusCode::FAILURE;
       }
 
-      m_tobjs.erase( obj_itr );
       vhid->erase( vhid->begin() + obj_itr->second.second );
+      m_tobjs.erase( obj_itr );
 
       m_uids.erase( uid_itr );
       m_ids.erase( id_itr );
@@ -1113,7 +1113,6 @@ void THistSvc::handle( const Incident& /* inc */ )
 
   updateFiles();
 
-  std::map<std::string, std::pair<TFile*, Mode>>::const_iterator itr;
   for ( const auto& f : m_files ) {
     TFile* tf = f.second.first;
 
@@ -1443,19 +1442,8 @@ StatusCode THistSvc::connect( const std::string& ident )
     return StatusCode::FAILURE;
   }
 
-  Mode newMode;
-  if ( typ == 'O' ) {
-    newMode = THistSvc::READ;
-  } else if ( typ == 'N' ) {
-    newMode = THistSvc::WRITE;
-  } else if ( typ == 'A' ) {
-    newMode = THistSvc::APPEND;
-  } else if ( typ == 'R' ) {
-    newMode = THistSvc::UPDATE;
-  } else if ( typ == 'S' ) {
-    newMode = THistSvc::SHARE;
-  } else {
-    // something else?
+  const auto newMode = charToMode( typ );
+  if ( newMode == THistSvc::INVALID ) {
     error() << "No OPT= specified or unknown access mode in: " << ident << endmsg;
     return StatusCode::FAILURE;
   }

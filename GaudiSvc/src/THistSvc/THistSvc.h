@@ -182,6 +182,23 @@ private:
   /// Enumerating all possible file access modes
   enum Mode { READ, WRITE, UPDATE, APPEND, SHARE, INVALID };
 
+  /// Convert a char to a Mode enum
+  Mode charToMode( const char typ )
+  {
+    switch ( typ ) {
+    case 'O':
+      return READ;
+    case 'A':
+      return APPEND;
+    case 'R':
+      return UPDATE;
+    case 'S':
+      return SHARE;
+    default:
+      return INVALID;
+    }
+  }
+
   /// Helper struct that bundles the histogram ID with a mutex, TFile and TObject*
   struct THistID {
     std::string id{""};
