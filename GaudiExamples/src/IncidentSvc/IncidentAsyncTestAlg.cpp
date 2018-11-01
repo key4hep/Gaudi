@@ -20,13 +20,13 @@ StatusCode IncidentAsyncTestAlg::initialize()
   // Copied from CPUCruncher.cpp
   for ( auto k : m_inpKeys ) {
     debug() << "adding input key " << k << endmsg;
-    m_inputObjHandles.emplace_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ) );
+    m_inputObjHandles.emplace_back( new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Reader, this ) );
     declare( *m_inputObjHandles.back() );
   }
 
   for ( auto k : m_outKeys ) {
     debug() << "adding output key " << k << endmsg;
-    m_outputObjHandles.emplace_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ) );
+    m_outputObjHandles.emplace_back( new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Writer, this ) );
     declare( *m_outputObjHandles.back() );
   }
 

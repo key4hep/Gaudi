@@ -48,6 +48,10 @@ public:
   // only return the last part of the key
   const std::string& key() const { return m_key; }
 
+  /// Tell if this DataObjID is has an empty key. This is used as a
+  /// configuration-time convention for optional inputs and outputs.
+  bool empty() const { return m_key.empty(); }
+
   // combination of the key and the ClassName, mostly for debugging
   std::string fullKey() const;
 

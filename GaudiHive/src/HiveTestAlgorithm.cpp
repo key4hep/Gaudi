@@ -32,7 +32,7 @@ StatusCode HiveTestAlgorithm::initialize()
   int i = 0;
   for ( auto k : m_inputs ) {
     debug() << "adding input key " << k << endmsg;
-    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ) );
+    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Reader, this ) );
     declareProperty( "dummy_in_" + std::to_string( i ), *( m_inputHandles.back() ) );
     i++;
   }
@@ -40,7 +40,7 @@ StatusCode HiveTestAlgorithm::initialize()
   i = 0;
   for ( auto k : m_outputs ) {
     debug() << "adding output key " << k << endmsg;
-    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ) );
+    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::v1::DataHandle::Writer, this ) );
     declareProperty( "dummy_out_" + std::to_string( i ), *( m_outputHandles.back() ) );
     i++;
   }

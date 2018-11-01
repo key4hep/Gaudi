@@ -110,7 +110,9 @@ public:
   /** accessor to event service  service
    *  @return pointer to detector service
    */
-  IDataProviderSvc* evtSvc() const;
+  IDataProviderSvc* evtSvc() const { return eventSvc().get(); }
+  /// Added for interface compatibility with Algorithm
+  SmartIF<IDataProviderSvc>& eventSvc() const final override;
 
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;
@@ -205,9 +207,6 @@ public:
   }
 
 public:
-  void acceptDHVisitor( IDataHandleVisitor* ) const override;
-
-public:
   void registerTool( IAlgTool* tool ) const
   {
     if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "Registering tool " << tool->name() << endmsg;
@@ -230,12 +229,18 @@ public:
 protected:
   std::vector<IAlgTool*>& tools();
 
-  /// Hook for for derived classes to provide a custom visitor for data handles.
-  std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
+  /// Hook for for derived classes to alter the DataObjID of dependencies
+  DataObjIDMapping m_updateDependencies;
 
 private:
   // place IAlgTools defined via ToolHandles in m_tools
   void initToolHandles() const;
+
+  // Set up uninitialized circular dependency handling for a certain tool
+  void addUninitializedTool( AlgTool* tool );
+
+  // Forward uninitialized circular dependencies from another tool
+  void propagateUninitializedTools( AlgTool* tool );
 
 public:
   // ==========================================================================
@@ -324,6 +329,10 @@ private:
   mutable std::vector<BaseToolHandle*>       m_toolHandles;
   mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
+
+  // Handling of circular tool dependencies during initialization
+  std::unordered_set<AlgTool*> m_uninitializedTools;
+  std::unordered_set<AlgTool*> m_toolsAwaitingInit;
 
   /** implementation of service method */
   StatusCode service_i( const std::string& algName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;

@@ -4,8 +4,6 @@
 #include <boost/property_map/transform_value_property_map.hpp>
 #include <fstream>
 
-#include "GaudiKernel/DataHandleHolderVisitor.h"
-
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
@@ -161,17 +159,19 @@ namespace concurrency
 
     const std::string& algoName = algo->name();
 
-    m_algoNameToAlgoInputsMap[algoName]  = algo->inputDataObjs();
-    m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
+    using AccessMode = Gaudi::v2::DataHandle::AccessMode;
+
+    m_algoNameToAlgoInputsMap[algoName]  = algo->dataDependencies( AccessMode::Read );
+    m_algoNameToAlgoOutputsMap[algoName] = algo->dataDependencies( AccessMode::Write );
 
     ON_VERBOSE
     {
       verbose() << "    Inputs of " << algoName << ": ";
-      for ( auto tag : algo->inputDataObjs() ) verbose() << tag << " | ";
+      for ( auto tag : algo->dataDependencies( AccessMode::Read ) ) verbose() << tag << " | ";
       verbose() << endmsg;
 
       verbose() << "    Outputs of " << algoName << ": ";
-      for ( auto tag : algo->outputDataObjs() ) verbose() << tag << " | ";
+      for ( auto tag : algo->dataDependencies( AccessMode::Write ) ) verbose() << tag << " | ";
       verbose() << endmsg;
     }
   }

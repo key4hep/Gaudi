@@ -7,7 +7,6 @@
 
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Auditor.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/Service.h"
@@ -89,7 +88,7 @@ SmartIF<ISvcLocator>& AlgTool::serviceLocator() const
 // ============================================================================
 // accessor to event service  service
 // ============================================================================
-IDataProviderSvc* AlgTool::evtSvc() const
+SmartIF<IDataProviderSvc>& AlgTool::eventSvc() const
 {
   if ( !m_evtSvc ) {
     m_evtSvc = service( "EventDataSvc", true );
@@ -97,7 +96,7 @@ IDataProviderSvc* AlgTool::evtSvc() const
       throw GaudiException( "Service [EventDataSvc] not found", name(), StatusCode::FAILURE );
     }
   }
-  return m_evtSvc.get();
+  return m_evtSvc;
 }
 //------------------------------------------------------------------------------
 IToolSvc* AlgTool::toolSvc() const
@@ -188,28 +187,52 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     m_state = m_targetState;
-    if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
 
-    // check for explicit circular data dependencies in declared handles
-    DataObjIDColl out;
-    for ( auto& h : outputHandles() ) {
-      if ( !h->objKey().empty() ) out.emplace( h->fullKey() );
-    }
-    for ( auto& h : inputHandles() ) {
-      if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
-        error() << "Explicit circular data dependency found for id " << h->fullKey() << endmsg;
-        sc = StatusCode::FAILURE;
+    // Perfor any scheduled dependency update
+    if ( m_updateDependencies ) updateDataDependencies( m_updateDependencies );
+
+    // Collect all explicit dependencies in a single place
+    collectExplicitDataDependencies();
+
+    // Check for explicit circular data dependencies
+    sc = handleCircularDataDependencies( [this]( const DataObjID& key ) -> CircularDepAction {
+      error() << "Explicit circular data dependency detected for id " << key << endmsg;
+      return CircularDepAction::Abort;
+    } );
+    if ( !sc ) return sc;
+
+    // Add tool dependencies to our dependency list
+    for ( auto i_tool : tools() ) {
+      auto tool = dynamic_cast<AlgTool*>( i_tool );
+
+      // Here, there is an edge case to be handled concerning circular
+      // dependencies between tools: in the presence of a circular dependency,
+      // one tool will observe the other in an uninitialized state, before its
+      // data dependencies are ready and finalized.
+      //
+      // To handle this, we need to setup a notification mechanism so that this
+      // tool may complete our dependency list once it is initialized. And we
+      // also need to propagate this information and notification to any tool
+      // depending on us which will be initialized in meantime.
+      //
+      if ( tool->FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+        collectImplicitDataDependencies( tool );
+        propagateUninitializedTools( tool );
+      } else {
+        addUninitializedTool( tool );
       }
     }
 
-    if ( !sc ) return sc;
+    // Initialize the inner DataHandles
+    initializeDataHandleHolder(); // this should 'freeze' the handle configuration.
 
-    // visit all sub-tools, build full set
-    DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
-    acceptDHVisitor( &avis );
-
-    // initialize handles
-    initDataHandleHolder(); // this should 'freeze' the handle configuration.
+    // Notify all tools waiting for us to be initialized
+    for ( auto tool : m_toolsAwaitingInit ) {
+      tool->collectImplicitDataDependencies( this );
+      tool->propagateUninitializedTools( this );
+      tool->m_uninitializedTools.erase( this );
+    }
+    m_toolsAwaitingInit.clear();
 
     return sc;
   } );
@@ -452,6 +475,20 @@ void AlgTool::initToolHandles() const
   m_toolHandlesInit = true;
 }
 
+void AlgTool::addUninitializedTool( AlgTool* tool )
+{
+  if ( tool == this ) return;
+  m_uninitializedTools.insert( tool );
+  tool->m_toolsAwaitingInit.insert( this );
+}
+
+void AlgTool::propagateUninitializedTools( AlgTool* tool )
+{
+  for ( auto uninitializedTool : tool->m_uninitializedTools ) {
+    addUninitializedTool( uninitializedTool );
+  }
+}
+
 const std::vector<IAlgTool*>& AlgTool::tools() const
 {
   if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
@@ -499,13 +536,4 @@ IAuditorSvc* AlgTool::auditorSvc() const
     }
   }
   return m_pAuditorSvc.get();
-}
-
-//-----------------------------------------------------------------------------
-void AlgTool::acceptDHVisitor( IDataHandleVisitor* vis ) const
-{
-  //-----------------------------------------------------------------------------
-  vis->visit( this );
-
-  for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
 }

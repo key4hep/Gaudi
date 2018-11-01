@@ -284,7 +284,7 @@ class DataObjectReadHandle : public DataObjectHandle<::details::Payload_t<T>>
 
 public:
   DataObjectReadHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Reader, owner}
+      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::v1::DataHandle::Reader, owner}
   {
   }
 
@@ -292,7 +292,7 @@ public:
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
-      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key,
+      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::v1::DataHandle::Reader, std::move( propertyName ), key,
                                                    std::move( doc ) )
   {
   }
@@ -315,7 +315,7 @@ class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<T>>
 
 public:
   DataObjectWriteHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Writer, owner}
+      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::v1::DataHandle::Writer, owner}
   {
   }
 
@@ -323,7 +323,7 @@ public:
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
-      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
+      : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::v1::DataHandle::Writer, std::move( propertyName ), key,
                                                    std::move( doc ) )
   {
   }
