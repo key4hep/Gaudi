@@ -31,7 +31,7 @@ namespace
   using namespace AIDA;
   using std::string;
 
-  inline string histoAddr( const string& name )
+  string histoAddr( const string& name )
   {
     if ( 0 == name.find( "/stat/" ) ) {
       return string( name, 6 );
@@ -39,7 +39,7 @@ namespace
     return name;
   }
 
-  inline string histoAddr( const DataObject* obj, const string& rel )
+  string histoAddr( const DataObject* obj, const string& rel )
   {
     if ( !obj ) {
       return rel;
@@ -59,18 +59,15 @@ namespace
     return histoAddr( name + "/" + rel );
   }
 
-  inline size_t removeLeading( HistogramSvc::Histo1DMap& m, const string& lead = "/stat/" )
+  size_t removeLeading( HistogramSvc::Histo1DMap& m, const string& lead = "/stat/" )
   {
-    for ( auto it = m.begin(); m.end() != it; ++it ) {
-      if ( 0 == it->first.find( lead ) ) {
-        string            addr = string( it->first, lead.size() );
-        Gaudi::Histo1DDef hdef = it->second;
-        m.erase( it );                       // remove
-        m[addr] = hdef;                      // insert
-        return 1 + removeLeading( m, lead ); // return
-      }
-    }
-    return 0;
+    auto it = std::find_if( m.begin(), m.end(), [&lead]( const auto& i ) { return 0 == i.first.find( lead ); } );
+    if ( it == m.end() ) return 0;
+    string            addr = string( it->first, lead.size() );
+    Gaudi::Histo1DDef hdef = it->second;
+    m.erase( it );                       // remove
+    m[addr] = hdef;                      // insert
+    return 1 + removeLeading( m, lead ); // return
   }
 }
 
@@ -376,14 +373,12 @@ AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const string& rel, con
 // ============================================================================
 HistogramSvc::HistogramSvc( const string& nam, ISvcLocator* svc ) : base_class( nam, svc )
 {
-  // Properties can be declared here
   m_rootName = "/stat";
   m_rootCLID = CLID_DataObject;
-  m_defs1D.declareUpdateHandler( &HistogramSvc::update1Ddefs, this );
 }
 
 // ============================================================================
-void HistogramSvc::update1Ddefs( Gaudi::Details::PropertyBase& )
+void HistogramSvc::update1Ddefs()
 {
   // check and remove the leading '/stat/'
   removeLeading( m_defs1D.value(), "/stat/" );

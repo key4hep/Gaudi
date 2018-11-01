@@ -103,7 +103,7 @@ public:
    *   @param name service instance name
    *   @param svcloc pointer to servcie locator
    */
-  ChronoStatSvc( const std::string& name, ISvcLocator* svcloc );
+  using extends::extends;
   /// Compound assignment operator
   void merge( const ChronoStatSvc& css );
   // ============================================================================
@@ -127,6 +127,12 @@ private:
   void saveStats();
   // ============================================================================
 private:
+  // basically limit the integer to MSG::Level range
+  static MSG::Level int2level( int l )
+  {
+    return static_cast<MSG::Level>(
+        std::max( std::min( l, static_cast<int>( MSG::FATAL ) ), static_cast<int>( MSG::NIL ) ) );
+  };
   // ============================================================================
   /// chrono part
   ChronoMap m_chronoEntities;
@@ -142,7 +148,9 @@ private:
                                           "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_chronoCoutFlag{this, "ChronoDestinationCout", false,
                                          "define the destination of the table to be printed"};
-  Gaudi::Property<int>  m_intChronoPrintLevel{this, "ChronoPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<int> m_intChronoPrintLevel{
+      this, "ChronoPrintLevel", MSG::INFO, [this]( auto& ) { m_chronoPrintLevel = int2level( m_intChronoPrintLevel ); },
+      "print level"};
   Gaudi::Property<bool> m_chronoOrderFlag{this, "ChronoTableToBeOrdered", true, "should the printout be ordered"};
   Gaudi::Property<bool> m_printUserTime{this, "PrintUserTime", true};
   Gaudi::Property<bool> m_printSystemTime{this, "PrintSystemTime", false};
@@ -151,7 +159,9 @@ private:
                                         "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_statCoutFlag{this, "StatDestinationCout", false,
                                        "define the destination of the table to be printed"};
-  Gaudi::Property<int>  m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<int> m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO,
+                                           [this]( auto& ) { m_statPrintLevel = int2level( m_intStatPrintLevel ); },
+                                           "print level"};
   Gaudi::Property<bool> m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
 
   Gaudi::Property<std::string> m_statsOutFileName{

@@ -32,12 +32,6 @@
 // Implementation specific definitions
 #include "PersistencySvc.h"
 
-#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
-#define ON_VERBOSE if ( msgLvel( MSG::VERBOSE ) )
-
-#define DEBMSG ON_DEBUG   debug()
-#define VERMSG ON_VERBOSE verbose()
-
 // Instantiation of a static factory class used by clients to create
 // instances of this service
 DECLARE_COMPONENT( PersistencySvc )
@@ -543,17 +537,9 @@ StatusCode PersistencySvc::finalize()
   return StatusCode::SUCCESS;
 }
 
-void PersistencySvc::svcNamesHandler( Gaudi::Details::PropertyBase& p ) { DEBMSG << p << endmsg; }
-
 /// Set enabled flag
 bool PersistencySvc::enable( bool value )
 {
   std::swap( value, m_enable );
   return value;
-}
-
-/// Standard Constructor
-PersistencySvc::PersistencySvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
-{
-  m_svcNames.declareUpdateHandler( &PersistencySvc::svcNamesHandler, this );
 }

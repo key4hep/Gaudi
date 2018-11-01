@@ -82,7 +82,6 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {"NIL",     "VERBOSE", "D
 // Constructor
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
 {
-  m_inactCount.declareUpdateHandler( &MessageSvc::setupInactCount, this );
 
   m_outputLevel.declareUpdateHandler( [svcloc]( Gaudi::Details::PropertyBase& ) {
     SmartIF<IAppMgrUI> app = svcloc;

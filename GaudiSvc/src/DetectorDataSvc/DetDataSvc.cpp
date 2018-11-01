@@ -171,12 +171,8 @@ StatusCode DetDataSvc::clearStore()
 }
 
 /// Standard Constructor
-DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
+DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : extends( name, svc )
 {
-  m_detDbRootName
-      .declareUpdateHandler(
-          [this]( Gaudi::Details::PropertyBase& ) { setProperty( "RootName", "/" + m_detDbRootName ); } )
-      .useUpdateHandler();
   setProperty( "RootCLID", CLID_Catalog );
 }
 

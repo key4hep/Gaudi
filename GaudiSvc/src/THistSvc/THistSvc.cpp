@@ -55,13 +55,6 @@ namespace
 
 //*************************************************************************//
 
-THistSvc::THistSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
-{
-  m_compressionLevel.declareUpdateHandler( &THistSvc::setupCompressionLevel, this );
-  m_outputfile.declareUpdateHandler( &THistSvc::setupOutputFile, this );
-  m_inputfile.declareUpdateHandler( &THistSvc::setupInputFile, this );
-}
-
 StatusCode THistSvc::initialize()
 {
   GlobalDirectoryRestore restore( m_svcMut );
@@ -76,14 +69,14 @@ StatusCode THistSvc::initialize()
   StatusCode st( StatusCode::SUCCESS );
 
   try {
-    setupOutputFile( m_outputfile );
+    setupOutputFile();
   } catch ( GaudiException& err ) {
     error() << "Caught: " << err << endmsg;
     st = StatusCode::FAILURE;
   }
 
   try {
-    setupInputFile( m_inputfile );
+    setupInputFile();
   } catch ( GaudiException& err ) {
     error() << "Caught: " << err << endmsg;
     st = StatusCode::FAILURE;
@@ -128,13 +121,8 @@ StatusCode THistSvc::initialize()
 
   m_okToConnect = true;
   if ( m_delayConnect ) {
-    if ( !m_inputfile.value().empty() ) {
-      setupInputFile( m_inputfile );
-    }
-    if ( !m_outputfile.value().empty() ) {
-      setupOutputFile( m_outputfile );
-    }
-
+    if ( !m_inputfile.value().empty() ) setupInputFile();
+    if ( !m_outputfile.value().empty() ) setupOutputFile();
     m_delayConnect = false;
   }
   m_alreadyConnectedOutFiles.clear();
@@ -1745,8 +1733,7 @@ void THistSvc::parseString( const std::string& id, std::string& root, std::strin
   }
 }
 
-void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
-                               /*m_inputfile*/ )
+void THistSvc::setupInputFile()
 {
   if ( FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
     debug() << "Delaying connection of Input Files until Initialize"
@@ -1775,8 +1762,7 @@ void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
   }
 }
 
-void THistSvc::setupOutputFile( Gaudi::Details::PropertyBase&
-                                /*m_outputfile*/ )
+void THistSvc::setupOutputFile()
 {
   if ( FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
     debug() << "Delaying connection of Input Files until Initialize"
@@ -1799,13 +1785,6 @@ void THistSvc::setupOutputFile( Gaudi::Details::PropertyBase&
       throw GaudiException( "Problem connecting outputfile !!", name(), StatusCode::FAILURE );
     }
   }
-}
-
-void THistSvc::setupCompressionLevel( Gaudi::Details::PropertyBase&
-                                      /* cl */ )
-{
-  warning() << "\"CompressionLevel\" Property has been deprecated. "
-            << "Set it via the \"CL=\" parameter in the \"Output\" Property" << endmsg;
 }
 
 void THistSvc::copyFileLayout( TDirectory* destination, TDirectory* source )

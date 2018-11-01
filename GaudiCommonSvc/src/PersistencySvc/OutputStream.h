@@ -33,6 +33,10 @@ public:
   typedef std::map<Algorithm*, Items>      AlgDependentItems;
   typedef std::map<std::string, ItemNames> AlgDependentItemNames;
 
+public:
+  /// Standard algorithm Constructor
+  using Algorithm::Algorithm;
+
 protected:
   Gaudi::Property<ItemNames> m_itemNames{this, "ItemList", {}, "vector of item names to be saved to this stream"};
   Gaudi::Property<ItemNames> m_optItemNames{
@@ -54,11 +58,23 @@ protected:
   Gaudi::Property<std::string> m_persName{this, "EvtConversionSvc", "EventPersistencySvc",
                                           "name of the persistency service capable to write data from the store"};
   Gaudi::Property<std::vector<std::string>> m_acceptNames{
-      this, "AcceptAlgs", {}, "names of Algorithms that this stream accepts"};
+      this,
+      "AcceptAlgs",
+      {},
+      [this]( auto& ) { this->decodeAlgorithms( this->m_acceptNames, this->m_acceptAlgs ); },
+      "names of Algorithms that this stream accepts"};
   Gaudi::Property<std::vector<std::string>> m_requireNames{
-      this, "RequireAlgs", {}, "names of Algorithms that this stream requires"};
+      this,
+      "RequireAlgs",
+      {},
+      [this]( auto& ) { this->decodeAlgorithms( this->m_requireNames, this->m_requireAlgs ); },
+      "names of Algorithms that this stream requires"};
   Gaudi::Property<std::vector<std::string>> m_vetoNames{
-      this, "VetoAlgs", {}, "names of Algorithms that this stream is vetoed by"};
+      this,
+      "VetoAlgs",
+      {},
+      [this]( auto& ) { this->decodeAlgorithms( this->m_vetoNames, this->m_vetoAlgs ); },
+      "names of Algorithms that this stream is vetoed by"};
   Gaudi::Property<bool> m_verifyItems{this, "VerifyItems", true,
                                       "flag to indicate that item consistency should be checked"};
 
@@ -98,29 +114,11 @@ protected:
   /// Vector of Algorithms that this stream is vetoed by
   std::vector<Algorithm*> m_vetoAlgs;
 
-public:
-  /// Standard algorithm Constructor
-  OutputStream( const std::string& name, ISvcLocator* pSvcLocator );
-  /// Standard Destructor
-  virtual ~OutputStream() = default;
-
 protected:
-  /// Decode list of Algorithms that this stream accepts
-  StatusCode decodeAcceptAlgs();
-  /// Handler for AcceptAlgs Property
-  void acceptAlgsHandler( Gaudi::Details::PropertyBase& theProp );
-  /// Decode list of Algorithms that this stream requires
-  StatusCode decodeRequireAlgs();
-  /// Handler for RequireAlgs Property
-  void requireAlgsHandler( Gaudi::Details::PropertyBase& theProp );
-  /// Decode list of Algorithms that this stream is vetoed by
-  StatusCode decodeVetoAlgs();
-  /// Handler for VetoAlgs Property
-  void vetoAlgsHandler( Gaudi::Details::PropertyBase& theProp );
   /// Decode a single algorithm name
   Algorithm* decodeAlgorithm( const std::string& theName );
   /// Decode specified list of Algorithms
-  StatusCode decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames, std::vector<Algorithm*>& theAlgs );
+  void decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames, std::vector<Algorithm*>& theAlgs );
   /// Test whether this event should be output
   bool isEventAccepted() const;
   /// Find single item identified by its path (exact match)

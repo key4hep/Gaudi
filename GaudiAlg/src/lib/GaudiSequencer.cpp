@@ -71,14 +71,6 @@ namespace
 //-----------------------------------------------------------------------------
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-GaudiSequencer::GaudiSequencer( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator )
-{
-  m_names.declareUpdateHandler( &GaudiSequencer::membershipHandler, this );
-}
-//=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
 StatusCode GaudiSequencer::initialize()
@@ -276,7 +268,7 @@ StatusCode GaudiSequencer::decodeNames()
 //=========================================================================
 //  Interface for the Property manager
 //=========================================================================
-void GaudiSequencer::membershipHandler( Gaudi::Details::PropertyBase& /* p */ )
+void GaudiSequencer::membershipHandler()
 {
   // no action for not-yet initialized sequencer
   if ( Gaudi::StateMachine::INITIALIZED > FSMState() ) return; // RETURN

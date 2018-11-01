@@ -560,7 +560,10 @@ protected:
 
 private:
   // Properties
-  Gaudi::Property<int>  m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int> m_outputLevel{
+      this, "OutputLevel", MSG::NIL,
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
+      "output level"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
 
   Gaudi::Property<unsigned int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};

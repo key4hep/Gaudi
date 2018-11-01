@@ -277,7 +277,6 @@ public:
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiHistoAlg, PBASE>::value, U>>
   GaudiTuples( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator )
   {
-    initGaudiTuplesConstructor();
   }
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
@@ -285,7 +284,6 @@ public:
   GaudiTuples( const std::string& type, const std::string& name, const IInterface* parent )
       : PBASE( type, name, parent )
   {
-    initGaudiTuplesConstructor();
   }
   // ==========================================================================
 protected:
@@ -315,24 +313,15 @@ protected:
   // ==========================================================================
 private:
   // ==========================================================================
-  /// Constructor initialization and job options
-  inline void initGaudiTuplesConstructor()
-  {
-    m_tuplesPrint.declareUpdateHandler( &GaudiTuples<PBASE>::printNTupleHandler, this );
-    m_evtColsPrint.declareUpdateHandler( &GaudiTuples<PBASE>::printEvtColHandler, this );
-  }
-  // ==========================================================================
-private:
-  // ==========================================================================
-  /// handler for "NTuplePrint" property
-  void printNTupleHandler( Gaudi::Details::PropertyBase& /* theProp */ ); //       "NTuplePrint"
-  /// handler for "EvtColsPrint" property
-  void printEvtColHandler( Gaudi::Details::PropertyBase& /* theProp */ ); //      "EvtcolsPrint"
-  // ==========================================================================
-private:
-  // ==========================================================================
   Gaudi::Property<bool> m_produceNTuples{this, "NTupleProduce", true, "general switch to enable/disable N-tuples"};
-  Gaudi::Property<bool> m_tuplesPrint{this, "NTuplePrint", true, "print N-tuple statistics"};
+  Gaudi::Property<bool> m_tuplesPrint{this, "NTuplePrint", true,
+                                      [this]( auto& ) {
+                                        // no action if not yet initialized
+                                        if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                             this->tuplesPrint() )
+                                          this->printTuples();
+                                      },
+                                      "print N-tuple statistics"};
   Gaudi::Property<bool> m_splitNTupleDir{this, "NTupleSplitDir", false,
                                          "split long directory names into short pieces (suitable for HBOOK)"};
   Gaudi::Property<TupleID::NumericID> m_nTupleOffSet{this, "NTupleOffSet", 0, "offset for numerical N-tuple ID"};
@@ -343,7 +332,14 @@ private:
 
   Gaudi::Property<bool> m_produceEvtCols{this, "EvtColsProduce", false,
                                          "general switch to enable/disable Event Tag Collections"};
-  Gaudi::Property<bool> m_evtColsPrint{this, "EvtColsPrint", false, "print statistics for Event Tag Collections "};
+  Gaudi::Property<bool> m_evtColsPrint{this, "EvtColsPrint", false,
+                                       [this]( auto& ) {
+                                         // no action if not yet initialized
+                                         if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                              this->evtColsPrint() )
+                                           this->printEvtCols();
+                                       },
+                                       "print statistics for Event Tag Collections "};
   Gaudi::Property<bool> m_splitEvtColDir{this, "EvtColSplitDir", false, "split long directory names into short pieces"};
   Gaudi::Property<TupleID::NumericID> m_evtColOffSet{this, "EvtColOffSet", 0, "offset for numerical N-tuple ID"};
   Gaudi::Property<std::string> m_evtColLUN{this, "EvtColLUN", "EVTCOL", "Logical File Unit for Event Tag Collections"};

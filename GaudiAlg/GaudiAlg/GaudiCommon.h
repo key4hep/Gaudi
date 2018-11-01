@@ -733,15 +733,6 @@ public:
   /// get the list of aquired services
   const Services& services() const { return m_services; } // get all services
   // ==========================================================================
-private:
-  // ==========================================================================
-  /// handler for "ErrorPrint" property
-  void printErrorHandler( Gaudi::Details::PropertyBase& /* theProp */ ); //      "ErrorPrint"
-  /// handler for "PropertiesPrint" property
-  void printPropsHandler( Gaudi::Details::PropertyBase& /* theProp */ ); // "PropertiesPrint"
-  /// handler for "StatPrint" property
-  void printStatHandler( Gaudi::Details::PropertyBase& /* theProp */ ); //       "StatPrint"
-  // ==========================================================================
 public:
   // ==========================================================================
   /// Returns the "context" string. Used to identify different processing states.
@@ -787,9 +778,32 @@ private:
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
   // ==========================================================================
   // Properties
-  Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true, "print the statistics of errors/warnings/exceptions"};
-  Gaudi::Property<bool> m_propsPrint{this, "PropertiesPrint", false, "print the properties of the component"};
-  Gaudi::Property<bool> m_statPrint{this, "StatPrint", true, "print the table of counters"};
+  Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true,
+                                      [this]( auto& ) {
+                                        // no action if not yet initialized
+                                        if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                             this->errorsPrint() ) {
+                                          this->printErrors();
+                                        }
+                                      },
+                                      "print the statistics of errors/warnings/exceptions"};
+  Gaudi::Property<bool> m_propsPrint{this, "PropertiesPrint", false,
+                                     [this]( auto& ) {
+                                       // no action if not yet initialized
+                                       if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                            this->propsPrint() ) {
+                                         this->printProps( MSG::ALWAYS );
+                                       }
+                                     },
+                                     "print the properties of the component"};
+  Gaudi::Property<bool> m_statPrint{this, "StatPrint", true,
+                                    [this]( auto& ) {
+                                      // no action if not yet initialized
+                                      if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED && this->statPrint() ) {
+                                        this->printStat( MSG::ALWAYS );
+                                      }
+                                    },
+                                    "print the table of counters"};
   Gaudi::Property<bool> m_printEmptyCounters{this, "PrintEmptyCounters", false,
                                              "force printing of empty counters, otherwise only printed in DEBUG mode"};
   Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
