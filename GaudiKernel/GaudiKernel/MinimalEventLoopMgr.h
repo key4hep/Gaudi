@@ -20,13 +20,34 @@
  *  This is the default processing manager of the application manager.
  *  This object handles the minimal requirements needed by the application manager.
  *  It also is capable of handling a bunch of algorithms and output streams.
- *  However, they list may as well be empty.
+ *  However, the list may as well be empty.
  *
  *  @author Markus Frank
  *  @version 1.0
  */
 class GAUDI_API MinimalEventLoopMgr : public extends<Service, IEventProcessor>
 {
+private:
+  class AbortEventListener : public implements<IIncidentListener>
+  {
+  public:
+    /// Inform that a new incident has occurred
+    void handle( const Incident& i ) override
+    {
+      if ( i.type() == IncidentType::AbortEvent ) {
+        abortEvent       = true;
+        abortEventSource = i.source();
+      }
+    }
+
+  public:
+    /// Flag signalling that the event being processed has to be aborted
+    /// (skip all following top algs).
+    bool abortEvent = false;
+    /// Source of the AbortEvent incident.
+    std::string abortEventSource;
+  };
+
 public:
   typedef std::vector<SmartIF<IAlgorithm>> ListAlg;
 
@@ -55,12 +76,7 @@ protected:
   /// Scheduled stop of event processing
   bool m_scheduledStop = false;
   /// Instance of the incident listener waiting for AbortEvent.
-  SmartIF<IIncidentListener> m_abortEventListener;
-  /// Flag signalling that the event being processedhas to be aborted
-  /// (skip all following top algs).
-  bool m_abortEvent = false;
-  /// Source of the AbortEvent incident.
-  std::string m_abortEventSource;
+  AbortEventListener m_abortEventListener;
 
 public:
   /// Standard Constructor
