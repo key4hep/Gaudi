@@ -27,7 +27,7 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
 
 # Declare project name and version
-gaudi_project(Gaudi v30r3)
+gaudi_project(Gaudi v30r4)
 
 # These tests do not really fit in a subdirectory.
 get_filename_component(PYTHON_EXECUTABLE_DIR "${PYTHON_EXECUTABLE}" DIRECTORY)
