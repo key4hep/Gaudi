@@ -5,11 +5,7 @@
 #
 # Commit Id: $Format:%H$
 
-cmake_minimum_required(VERSION 2.8.12)
-
-if(NOT CMAKE_VERSION VERSION_LESS 3.0) # i.e CMAKE_VERSION >= 3.0
-  cmake_policy(SET CMP0026 NEW)
-endif()
+cmake_minimum_required(VERSION 3.6)
 
 # Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
 if(NOT CMAKE_MODULE_PATH)
@@ -122,7 +118,7 @@ if(GAUDI_USE_CTEST_LAUNCHERS)
   set(__launch_custom_options
     "${__launch_common_options} --output <OUTPUT>")
 
-  if("${CMAKE_GENERATOR}" MATCHES "Ninja" AND NOT CMAKE_VERSION VERSION_LESS 3.0)
+  if("${CMAKE_GENERATOR}" MATCHES "Ninja")
     # this make sense only with CMamke >= 3.0
     set(__launch_compile_options "${__launch_compile_options} --filter-prefix <CMAKE_CL_SHOWINCLUDES_PREFIX>")
   endif()
@@ -835,8 +831,7 @@ for f in \"$@\" ; do
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
     # Filter out files in InstallArea and build areas.
-    string(REGEX REPLACE "InstallArea/[^;]+;?" "" _all_sources "${_all_sources}")
-    string(REGEX REPLACE "build.[^;]+;?" "" _all_sources "${_all_sources}")
+    list(FILTER _all_sources EXCLUDE REGEX "InstallArea/.*|build\\..*")
     add_custom_target(apply-formatting-c++
       COMMAND ${clang_format_cmd}
                   -style=${GAUDI_CLANG_STYLE}
@@ -2468,11 +2463,8 @@ function(gaudi_add_test name)
       string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
       string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
       #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
-      set(test_cmd python -m GaudiTesting.Run)
-      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-        set(test_cmd ${test_cmd} --skip-return-code 77)
-      endif()
-      set(test_cmd ${test_cmd}
+      set(test_cmd python -m GaudiTesting.Run
+                       --skip-return-code 77
                        --report ctest
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --workdir ${qmtest_root_dir}
@@ -2499,9 +2491,7 @@ function(gaudi_add_test name)
       else()
         set(test_name ${package}.${qmt_name})
       endif()
-      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-        set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
-      endif()
+      set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
     endforeach()
     # extract dependencies
     execute_process(COMMAND ${qmtest_metadata_cmd}
@@ -2607,7 +2597,7 @@ function(gaudi_add_compile_test executable)
   # We do not want the install target coming with gaudi_add_executable
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS})
   add_executable(${executable} ${srcs})
-   
+
   # Avoid building this target by default
   set_target_properties(${executable} PROPERTIES EXCLUDE_FROM_ALL TRUE
                                                  EXCLUDE_FROM_DEFAULT_BUILD TRUE)
