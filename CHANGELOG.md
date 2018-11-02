@@ -60,6 +60,7 @@ Improvements, modernization and fixes.
 - Added correct `vector_of_const_::operator[]` and ::at ([mr !710][])
 
 ### Clean up
+- Make `VectorMap` `nothrow_move_constructible` ([mr !791][])
 - Fix some gcc 8 warnings ([mr !782][])
 - Remove unused mutex member in `Algorithm` ([mr !767][])
 - Replaced invalid `std::forward` with `std::move` in `PluginService` ([mr !745][])
@@ -163,6 +164,7 @@ Details about old versions of the project can be found in the
 [ReleaseNotes](ReleaseNotes) folder and in the `release.notes` files in
 [GaudiRelease/doc](GaudiRelease/doc).
 
+[mr !791]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/791
 [mr !789]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/789
 [mr !786]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/786
 [mr !784]: https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/784
