@@ -240,7 +240,7 @@ macro(gaudi_project project version)
   set(CMAKE_PROJECT_NAME ${project})
 
   #--- Define the version of the project - can be used to generate sources,
-  set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
+  set(CMAKE_PROJECT_VERSION ${version})
 
   if(CMAKE_PROJECT_VERSION MATCHES "${GAUDI_VERSION_REGEX}")
     set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")

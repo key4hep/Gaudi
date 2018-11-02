@@ -5,8 +5,8 @@
 #include <any>
 namespace evt_context_detail = std;
 #else
-#include <experimental/any>
-namespace evt_context_detail = std::experimental;
+#include <boost/any.hpp>
+namespace evt_context_detail = boost;
 #endif
 
 #include "GaudiKernel/EventIDBase.h"
