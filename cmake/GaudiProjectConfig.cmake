@@ -857,9 +857,9 @@ if os.path.exists('${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py')
   file(WRITE ${CMAKE_BINARY_DIR}/apply-formatting "#!/bin/sh
 for f in \"$@\" ; do
   case \"$f\" in
-    (*.h|*.cpp|*.icpp)\n")
+    (*.h|*.cpp|*.icpp|*.icc)\n")
   if(clang_format_cmd)
-    file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
+    file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp *.icc)
     # Filter out files in InstallArea and build areas.
     list(FILTER _all_sources EXCLUDE REGEX "InstallArea/.*|build\\..*")
     add_custom_target(apply-formatting-c++
