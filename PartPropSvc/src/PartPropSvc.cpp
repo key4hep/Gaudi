@@ -39,7 +39,7 @@ StatusCode PartPropSvc::initialize()
   for ( auto it = tokens.begin(); it != tokens.end(); ++it ) {
 
     tokenizer tok2( *it, sep_eq );
-    int       nToks( boost::distance( tok2.begin(), tok2.end() ) );
+    int       nToks( std::distance( tok2.begin(), tok2.end() ) );
 
     auto              it2   = tok2.begin();
     const std::string fname = *it2;
