@@ -4,7 +4,7 @@ gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
-find_package(Boost COMPONENTS python27 REQUIRED)
+find_package(Boost COMPONENTS python${boost_python_version} REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(unwind)
 find_package(gperftools)
@@ -29,7 +29,7 @@ if(UNWIND_FOUND AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
                    INCLUDE_DIRS unwind ZLIB)
 
   gaudi_add_python_module(PyCPUFamily src/python/CPUFamily.cpp
-                          LINK_LIBRARIES ${Boost_PYTHON27_LIBRARY}
+                          LINK_LIBRARIES ${Boost_PYTHON${boost_python_version}_LIBRARY}
                           INCLUDE_DIRS Boost PythonLibs)
 
   gaudi_add_executable(GaudiGenProfilingHtml src/app/pfm_gen_analysis.cpp
