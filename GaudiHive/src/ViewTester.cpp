@@ -33,8 +33,7 @@ StatusCode ViewTester::initialize()
   int i = 0;
   for ( auto k : m_inpKeys ) {
     DEBUG_MSG << "adding input key " << k << endmsg;
-    m_inputHandles.emplace_back(
-        std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::v1::DataHandle::Reader, this ) );
+    m_inputHandles.emplace_back( std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::DataHandle::Reader, this ) );
     declareProperty( "dummy_in_" + std::to_string( i ), *( m_inputHandles.back() ) );
     i++;
   }
@@ -43,7 +42,7 @@ StatusCode ViewTester::initialize()
   for ( auto k : m_outKeys ) {
     DEBUG_MSG << "adding output key " << k << endmsg;
     m_outputHandles.emplace_back(
-        std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::v1::DataHandle::Writer, this ) );
+        std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::DataHandle::Writer, this ) );
     declareProperty( "dummy_out_" + std::to_string( i ), *( m_outputHandles.back() ) );
     i++;
   }

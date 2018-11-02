@@ -36,7 +36,6 @@ set(GaudiExamples_srcs
     src/AlgTools/*.cpp
     src/AnyData/*.cpp
     src/DataOnDemand/*.cpp
-    src/DataHandles/*.cpp
     src/AlgErrAud/*.cpp
     src/NTuples/*.cpp
     src/CounterEx/*.cpp

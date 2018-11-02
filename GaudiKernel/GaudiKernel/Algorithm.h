@@ -17,8 +17,7 @@
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/DataHandle.h" // must be include before Property.h, which is included in PropertyHolder.h
-#include "GaudiKernel/DataObjID.h"  // same thing
+#include "GaudiKernel/DataObjID.h" // must be include before Property.h, which is included in PropertyHolder.h
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IChronoStatSvc.h"
@@ -39,6 +38,7 @@
 #include <Gaudi/PluginService.h>
 
 // For concurrency
+#include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataHandleHolderBase.h"
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
@@ -276,7 +276,7 @@ public:
   /** The standard event data service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
-  SmartIF<IDataProviderSvc>& eventSvc() const final override;
+  SmartIF<IDataProviderSvc>& eventSvc() const;
   /// shortcut for  method eventSvc
   SmartIF<IDataProviderSvc>&                                            evtSvc() const { return eventSvc(); }
   [[deprecated( "use eventSvc() instead" )]] SmartIF<IDataProviderSvc>& eventDataService() const { return eventSvc(); }
@@ -437,6 +437,9 @@ public:
   const EventContext& getContext() const override { return Gaudi::Hive::currentContext(); }
 
 public:
+  void acceptDHVisitor( IDataHandleVisitor* ) const override;
+
+public:
   void registerTool( IAlgTool* tool ) const;
   void deregisterTool( IAlgTool* tool ) const;
 
@@ -552,8 +555,8 @@ private:
   SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
 
 protected:
-  /// Hook for for derived classes to alter the DataObjID of dependencies
-  DataObjIDMapping m_updateDependencies;
+  /// Hook for for derived classes to provide a custom visitor for data handles.
+  std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
 
 private:
   // Properties

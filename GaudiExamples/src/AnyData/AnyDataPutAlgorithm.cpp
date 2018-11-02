@@ -29,7 +29,7 @@ AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name, ISvcLocator* 
     : GaudiAlgorithm( name, pSvcLocator )
 {
   for ( int i = 0; i < 100; i++ ) {
-    m_id_vec.emplace_back( "/Event/Test/Ids" + std::to_string( i ), Gaudi::v1::DataHandle::Writer, this );
+    m_id_vec.emplace_back( "/Event/Test/Ids" + std::to_string( i ), Gaudi::DataHandle::Writer, this );
   }
 }
 
