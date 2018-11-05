@@ -65,6 +65,7 @@ namespace Gaudi
     };
 
     DECLARE_COMPONENT( KeyedDataProducer )
+
     struct IntDataConsumer final : Gaudi::Functional::Consumer<void( const int& ), BaseClass_t> {
 
       IntDataConsumer( const std::string& name, ISvcLocator* svcLoc )
@@ -276,5 +277,17 @@ namespace Gaudi
       }
     };
     DECLARE_COMPONENT( OptLdExpTransformer )
+
+    struct VoidConsumer final : Gaudi::Functional::Consumer<void()> {
+
+      using Consumer::Consumer;
+
+      void operator()() const override
+      {
+        info() << "executing VoidConsumer" << endmsg;
+      }
+    };
+
+    DECLARE_COMPONENT( VoidConsumer )
   }
 }
