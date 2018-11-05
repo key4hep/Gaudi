@@ -22,6 +22,7 @@
 
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/Chrono.h"
+#include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/MsgStream.h"
@@ -143,7 +144,6 @@ StatusCode Algorithm::sysInitialize()
     Stat stat( chronoSvc(), "*UNKNOWN Exception*" );
     sc = StatusCode::FAILURE;
   }
-  if ( !sc ) return sc;
 
   algExecStateSvc()->addAlg( this );
 
@@ -156,53 +156,53 @@ StatusCode Algorithm::sysInitialize()
     return sc;
   }
 
-  // Perform any scheduled dependency update
-  if ( m_updateDependencies ) updateDataDependencies( m_updateDependencies );
-
-  // Collect all explicit dependencies in a single place
-  collectExplicitDataDependencies();
-
-  // Print a summary of the Algorithm's inputs and outputs
-  using AccessMode = Gaudi::v2::DataHandle::AccessMode;
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
-    debug() << "input handles: " << dataDependencies( AccessMode::Read ).size() << endmsg;
-    debug() << "output handles: " << dataDependencies( AccessMode::Write ).size() << endmsg;
+    debug() << "input handles: " << inputHandles().size() << endmsg;
+    debug() << "output handles: " << outputHandles().size() << endmsg;
   }
 
-  // Check for explicit circular data dependencies
-  sc = handleCircularDataDependencies( [this]( const DataObjID& key ) -> CircularDepAction {
-    error() << "Explicit circular data dependency detected for id " << key << endmsg;
-    return CircularDepAction::Abort;
-  } );
+  // check for explicit circular data dependencies in declared handles
+  DataObjIDColl out;
+  for ( auto& h : outputHandles() ) {
+    if ( !h->objKey().empty() ) out.emplace( h->fullKey() );
+  }
+  for ( auto& h : inputHandles() ) {
+    if ( !h->objKey().empty() && out.find( h->fullKey() ) != out.end() ) {
+      error() << "Explicit circular data dependency detected for id " << h->fullKey() << endmsg;
+      sc = StatusCode::FAILURE;
+    }
+  }
+
   if ( !sc ) return sc;
 
-  // Initialize ToolHandles if needed
+  if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
+
+  // visit all sub-algs and tools, build full set. First initialize ToolHandles if needed
   try {
     if ( !m_toolHandlesInit ) initToolHandles();
   } catch ( const GaudiException& Exception ) {
     error() << "Failing initializing ToolHandles : " << Exception << endmsg;
     return StatusCode::FAILURE;
   }
+  DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
+  acceptDHVisitor( &avis );
 
-  // Add tool dependencies to our dependency list
-  for ( auto tool : tools() ) collectImplicitDataDependencies( dynamic_cast<AlgTool*>( tool ) );
-
-  // Add sub-Algorithm dependencies to our dependency list
-  for ( auto alg : *subAlgorithms() ) collectImplicitDataDependencies( alg );
-
-  // Check for implicit circular data deps from child Algs/AlgTools
-  sc = handleCircularDataDependencies( [this]( const DataObjID& key ) -> CircularDepAction {
-    if ( m_filterCircDeps ) {
-      warning() << "Implicit circular data dependency detected for id " << key << endmsg;
-      return CircularDepAction::Ignore;
-    } else {
-      error() << "Implicit circular data dependency detected for id " << key << endmsg;
-      return CircularDepAction::Abort;
+  // check for implicit circular data deps from child Algs/AlgTools
+  for ( auto& h : m_outputDataObjs ) {
+    auto i = m_inputDataObjs.find( h );
+    if ( i != m_inputDataObjs.end() ) {
+      if ( m_filterCircDeps ) {
+        warning() << "Implicit circular data dependency detected for id " << h << endmsg;
+        m_inputDataObjs.erase( i );
+      } else {
+        error() << "Implicit circular data dependency detected for id " << h << endmsg;
+        sc = StatusCode::FAILURE;
+      }
     }
-  } );
+  }
+
   if ( !sc ) return sc;
 
-  // Display the final data dependencies
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
     // sort out DataObjects by path so that logging is reproducable
     // we define a little helper creating an ordered set from a non ordered one
@@ -212,25 +212,37 @@ StatusCode Algorithm::sysInitialize()
     };
     // Logging
     debug() << "Data Deps for " << name();
-    for ( auto h : orderset( dataDependencies( AccessMode::Read ) ) ) {
+    for ( auto h : orderset( m_inputDataObjs ) ) {
       debug() << "\n  + INPUT  " << h;
     }
-    for ( auto id : orderset( ignoredDataDependencies( AccessMode::Read ) ) ) {
+    for ( auto id : orderset( avis.ignoredInpKeys() ) ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for ( auto h : orderset( dataDependencies( AccessMode::Write ) ) ) {
+    for ( auto h : orderset( m_outputDataObjs ) ) {
       debug() << "\n  + OUTPUT " << h;
     }
-    for ( auto id : orderset( ignoredDataDependencies( AccessMode::Write ) ) ) {
+    for ( auto id : orderset( avis.ignoredOutKeys() ) ) {
       debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
   }
 
-  // Initialize the inner DataHandles
-  initializeDataHandleHolder();
+  // initialize handles
+  initDataHandleHolder();
 
   return sc;
+}
+
+void Algorithm::acceptDHVisitor( IDataHandleVisitor* vis ) const
+{
+
+  vis->visit( this );
+
+  // loop through tools
+  for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
+
+  // loop through sub-algs
+  for ( auto alg : *subAlgorithms() ) vis->visit( alg );
 }
 
 // IAlgorithm implementation

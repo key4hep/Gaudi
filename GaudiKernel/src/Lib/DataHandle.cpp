@@ -6,6 +6,7 @@ using namespace Gaudi;
 
 namespace Gaudi
 {
+
   std::string DataHandle::pythonRepr() const
   {
     std::ostringstream ost;

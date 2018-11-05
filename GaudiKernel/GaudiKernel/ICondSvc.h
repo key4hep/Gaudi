@@ -31,7 +31,7 @@ public:
   DeclareInterfaceID( ICondSvc, 1, 0 );
 
   /// register dependency between an Algorithm and the Condition Handle it creates
-  virtual StatusCode regHandle( IAlgorithm* alg, const Gaudi::v1::DataHandle& id ) = 0;
+  virtual StatusCode regHandle( IAlgorithm* alg, const Gaudi::DataHandle& id ) = 0;
 
   /// check to see if a specific condition object ID is valid for this event
   virtual bool isValidID( const EventContext& ctx, const DataObjID& id ) const = 0;

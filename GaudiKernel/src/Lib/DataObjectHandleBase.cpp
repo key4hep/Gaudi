@@ -14,7 +14,7 @@ const DataObjID INVALID_DATAOBJID = DataObjID();
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
-    : Gaudi::v1::DataHandle( other )
+    : Gaudi::DataHandle( other )
     , m_EDS( std::move( other.m_EDS ) )
     , m_MS( std::move( other.m_MS ) )
     , m_init( other.m_init )
@@ -32,29 +32,27 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
   // avoid modification of searchDone in other while we are copying
   std::lock_guard<std::mutex> guard( other.m_searchMutex );
   // FIXME: operator= should not change our owner, only our 'value'
-  Gaudi::v1::DataHandle::operator=( other );
-  m_EDS                          = other.m_EDS;
-  m_MS                           = other.m_MS;
-  m_init                         = other.m_init;
-  m_optional                     = other.m_optional;
-  m_wasRead                      = other.m_wasRead;
-  m_wasWritten                   = other.m_wasWritten;
-  m_searchDone                   = other.m_searchDone;
+  Gaudi::DataHandle::operator=( other );
+  m_EDS                      = other.m_EDS;
+  m_MS                       = other.m_MS;
+  m_init                     = other.m_init;
+  m_optional                 = other.m_optional;
+  m_wasRead                  = other.m_wasRead;
+  m_wasWritten               = other.m_wasWritten;
+  m_searchDone               = other.m_searchDone;
   return *this;
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::v1::DataHandle::Mode a,
-                                            IDataHandleHolder* owner )
-    : Gaudi::v1::DataHandle( k, a, owner )
+DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
+    : Gaudi::DataHandle( k, a, owner )
 {
   m_owner->declare( *this );
 }
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleBase::DataObjectHandleBase( const std::string& k, Gaudi::v1::DataHandle::Mode a,
-                                            IDataHandleHolder* owner )
+DataObjectHandleBase::DataObjectHandleBase( const std::string& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
     : DataObjectHandleBase( DataObjID( k ), a, owner )
 {
 }

@@ -6,8 +6,6 @@ namespace Gaudi
   {
     class FetchDataFromFile final : public Algorithm
     {
-      using AccessMode = Gaudi::v2::DataHandle::AccessMode;
-
     public:
       FetchDataFromFile( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
       {
@@ -20,24 +18,22 @@ namespace Gaudi
         if ( sc ) {
           // this is a hack to reuse the automatic dependencies declaration
           for ( auto k : m_dataKeys ) {
-            addDataDependency( k, AccessMode::Write );
+            addDependency( k, Gaudi::DataHandle::Writer );
           }
         }
         return sc;
       }
-
       StatusCode start() override
       {
         StatusCode sc = Algorithm::start();
         if ( sc ) {
-          for ( const auto& k : dataDependencies( AccessMode::Write ) ) {
+          for ( const auto& k : outputDataObjs() ) {
             if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "adding data key " << k << endmsg;
             evtSvc()->addPreLoadItem( k.key() );
           }
         }
         return sc;
       }
-
       StatusCode execute() override { return evtSvc()->preLoad(); }
 
     private:

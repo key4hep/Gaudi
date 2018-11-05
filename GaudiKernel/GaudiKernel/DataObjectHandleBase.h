@@ -23,12 +23,12 @@
 
 //---------------------------------------------------------------------------
 
-class DataObjectHandleBase : public Gaudi::v1::DataHandle
+class DataObjectHandleBase : public Gaudi::DataHandle
 {
 
 public:
-  DataObjectHandleBase( const DataObjID& k, Gaudi::v1::DataHandle::Mode a, IDataHandleHolder* owner );
-  DataObjectHandleBase( const std::string& k, Gaudi::v1::DataHandle::Mode a, IDataHandleHolder* owner );
+  DataObjectHandleBase( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner );
+  DataObjectHandleBase( const std::string& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner );
 
   virtual ~DataObjectHandleBase();
   DataObjectHandleBase( const DataObjectHandleBase& ) = delete;
@@ -38,7 +38,7 @@ public:
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, class K, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-  inline DataObjectHandleBase( OWNER* owner, Gaudi::v1::DataHandle::Mode m, std::string name, const K& key = {},
+  inline DataObjectHandleBase( OWNER* owner, Gaudi::DataHandle::Mode m, std::string name, const K& key = {},
                                std::string doc = "" )
       : DataObjectHandleBase( key, m, owner )
   {
