@@ -50,8 +50,8 @@ int main()
     avg += 6;
     std::cout << avg << std::endl;
 
-    static_assert( std::is_integral<decltype( avg.mean<int>() )>::value );
-    static_assert( std::is_floating_point<decltype( avg.mean() )>::value );
+    static_assert( std::is_integral<decltype( avg.mean<int>() )>::value, "Integral return type expected" );
+    static_assert( std::is_floating_point<decltype( avg.mean() )>::value, "Floating point return type expected" );
   }
 
   // Testing SigmaCounter
