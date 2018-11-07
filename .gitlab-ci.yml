@@ -64,12 +64,10 @@ build:gcc62:opt:
 check-formatting:
   stage: test
   dependencies: []
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc7-opt
-    BUILDDIR: build-opt
+  image: debian:testing
   script:
+    - apt update && apt install -y clang-format-7 python-pip git
+    - pip install yapf==0.24.0
     - ci-utils/check-formatting
   artifacts:
     paths:

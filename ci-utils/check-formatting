@@ -1,21 +1,24 @@
 #!/bin/bash -e
 
-. $(dirname $0)/env_setup.sh
-
 if [ -n "${CI}" ] ; then
   job_id="${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}"
 else
   job_id="standalone job"
 fi
 
+# make sure we have the right versions of the commands
 YAPF_VERSION=$(sed -E -n 's/ *set\(YAPF_VERSION *"([0-9.]*)".*/\1/p' cmake/GaudiProjectConfig.cmake)
-sudo pip install yapf==$YAPF_VERSION
+test "$(yapf --version)" = "yapf $YAPF_VERSION"
 
-export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
-make BUILDDIR=${BUILDDIR} configure
+CLANG_FORMAT_VERSION=$(sed -E -n 's/ *set\(CLANG_FORMAT_VERSION *"([0-9.]*)".*/\1/p' cmake/GaudiProjectConfig.cmake)
+which clang-format-$CLANG_FORMAT_VERSION >/dev/null
 
 git fetch https://gitlab.cern.ch/gaudi/Gaudi.git ${TARGET_BRANCH}
-git diff --name-only --no-renames --diff-filter MA FETCH_HEAD...HEAD | grep -E '\.(h|i?cpp|py)$' | xargs --no-run-if-empty ${BUILDDIR}/apply-formatting || true
+git diff --name-only --no-renames --diff-filter MA FETCH_HEAD...HEAD | \
+  grep -E '\.(i?[ch](pp|xx|c)?|cc|hh)$' | xargs --no-run-if-empty clang-format-$CLANG_FORMAT_VERSION -i --style=file || true
+git diff --name-only --no-renames --diff-filter MA FETCH_HEAD...HEAD | \
+  grep -E '\.py$' | xargs --no-run-if-empty yapf -i || true
+
 echo "From: Gitlab CI <noreply@cern.ch>" > apply-formatting.patch
 echo "Date: $(date -R)" >> apply-formatting.patch
 echo "Subject: [PATCH] Fixed formatting" >> apply-formatting.patch
