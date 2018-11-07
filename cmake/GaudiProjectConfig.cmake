@@ -55,10 +55,11 @@ find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
 find_program(icecc_cmd icecc)
 
-set(CLANG_FORMAT_VERSION "6.0" CACHE STRING "Version of clang-format to use")
+set(CLANG_FORMAT_VERSION "7" CACHE STRING "Version of clang-format to use")
 find_program(clang_format_cmd
-  NAMES lcg-clang-format-${CLANG_FORMAT_VERSION}.0
-        lcg-clang-format-${CLANG_FORMAT_VERSION}
+  NAMES lcg-clang-format-${CLANG_FORMAT_VERSION}
+        lcg-clang-format-${CLANG_FORMAT_VERSION}.0
+        lcg-clang-format-${CLANG_FORMAT_VERSION}.0.0
         clang-format-${CLANG_FORMAT_VERSION})
 if(clang_format_cmd)
   message(STATUS "found clang-format ${CLANG_FORMAT_VERSION}: ${clang_format_cmd}")
