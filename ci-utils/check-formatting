@@ -15,9 +15,9 @@ which clang-format-$CLANG_FORMAT_VERSION >/dev/null
 
 git fetch https://gitlab.cern.ch/gaudi/Gaudi.git ${TARGET_BRANCH}
 git diff --name-only --no-renames --diff-filter MA FETCH_HEAD...HEAD | \
-  grep -E '\.(i?[ch](pp|xx|c)?|cc|hh)$' | xargs --no-run-if-empty clang-format-$CLANG_FORMAT_VERSION -i --style=file || true
+  grep -E '\.(i?[ch](pp|xx|c)?|cc|hh)$' | xargs --no-run-if-empty --max-procs=$(nproc) --max-args=100 clang-format-$CLANG_FORMAT_VERSION -i --style=file || true
 git diff --name-only --no-renames --diff-filter MA FETCH_HEAD...HEAD | \
-  grep -E '\.py$' | xargs --no-run-if-empty yapf -i || true
+  grep -E '\.py$' | xargs --no-run-if-empty --max-procs=$(nproc) --max-args=100 yapf -i || true
 
 echo "From: Gitlab CI <noreply@cern.ch>" > apply-formatting.patch
 echo "Date: $(date -R)" >> apply-formatting.patch
