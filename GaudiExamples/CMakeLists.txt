@@ -5,7 +5,7 @@ gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 find_package(AIDA)
 find_package(HepPDT)
 find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(Boost COMPONENTS python${boost_python_version} REQUIRED)
 find_package(CLHEP)
 find_package(GSL)
 find_package(PythonLibs REQUIRED)
@@ -142,11 +142,9 @@ if(NOT StatusCodeHeaderData_previous STREQUAL StatusCodeHeaderData)
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
 endif()
 
-if(Boost_PYTHON_FOUND)
-  gaudi_add_python_module(PyExample src/PythonModule/*.cpp
-                          LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
-                          INCLUDE_DIRS Boost PythonLibs)
-endif()
+gaudi_add_python_module(PyExample src/PythonModule/*.cpp
+                        LINK_LIBRARIES ${Boost_PYTHON${boost_python_version}_LIBRARY}
+                        INCLUDE_DIRS Boost PythonLibs)
 
 gaudi_install_python_modules()
 
