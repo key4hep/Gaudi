@@ -466,6 +466,9 @@ StatusCode ApplicationMgr::initialize()
   sc = svcManager()->initialize();
   if ( !sc.isSuccess() ) return sc;
 
+  sc = algManager()->initialize();
+  if ( !sc.isSuccess() ) return sc;
+
   //--------------------------------------------------------------------------
   // Final steps: Inform user and change internal state
   //--------------------------------------------------------------------------
@@ -498,6 +501,9 @@ StatusCode ApplicationMgr::start()
   // Initialize the list of top Services
   //--------------------------------------------------------------------------
   sc = svcManager()->start();
+  if ( !sc.isSuccess() ) return sc;
+
+  sc = algManager()->start();
   if ( !sc.isSuccess() ) return sc;
 
   //--------------------------------------------------------------------------
