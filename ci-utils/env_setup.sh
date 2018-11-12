@@ -14,9 +14,8 @@
 
 
 # initial required environment
-export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/CMake/3.11.0/Linux-x86_64/bin:${LCG_contrib}/ninja/1.7.1/x86_64-slc6:${LCG_release_area}/Python/2.7.13-597a5/${BINARY_TAG}/bin${PATH:+:$PATH}
-export PATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/scripts:${PATH}
-export PYTHONPATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/python${PYTHONPATH:+:$PYTHONPATH}
+export PATH=${LCG_contrib}/CMake/3.11.1/Linux-x86_64/bin:${LCG_contrib}/ninja/1.7.2.gcc0ea.kitware.dyndep-1/x86_64-slc6:${LCG_release_area}/Python/2.7.13-597a5/${BINARY_TAG}/bin${PATH:+:$PATH}
+export PATH=/cvmfs/lhcb.cern.ch/lib/bin/x86_64-centos7:${PATH}
 export CMAKE_PREFIX_PATH=${LCG_release_area}:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2017/vtune_amplifier_xe
 export CCACHE_DIR=${PWD}/.ccache
 
