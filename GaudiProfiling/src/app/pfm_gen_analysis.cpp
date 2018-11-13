@@ -849,19 +849,13 @@ public:
     samples[index] += value;
     return;
   }
-  bool get_max( char* index, unsigned int* value )
+  bool get_max( char* index, unsigned int& value )
   {
-    if ( samples.empty() ) return false;
-    unsigned int cur_max = 0;
-    std::map<std::string, unsigned int>::iterator max_pos;
-    for ( std::map<std::string, unsigned int>::iterator it = samples.begin(); it != samples.end(); ++it ) {
-      if ( it->second > cur_max ) {
-        cur_max = it->second;
-        max_pos = it;
-      }
-    }
+    auto max_pos = std::max_element( samples.begin(), samples.end(),
+                                     []( const auto& lhs, const auto& rhs ) { return lhs.second < rhs.second; } );
+    if ( max_pos == samples.end() ) return false;
     strcpy( index, ( max_pos->first ).c_str() );
-    *value = max_pos->second;
+    value = max_pos->second;
     samples.erase( max_pos );
     return true;
   }
@@ -1185,7 +1179,7 @@ void put_S_module( S_module* cur_module, const char* dir )
     char index[MAX_SAMPLE_INDEX_LENGTH];
     bzero( index, MAX_SAMPLE_INDEX_LENGTH );
     unsigned int value;
-    bool         res = cur_module->get_max( index, &value );
+    bool         res = cur_module->get_max( index, value );
     if ( !res ) break;
     char* sym_end = strchr( index, '%' );
     if ( sym_end == NULL ) // error
