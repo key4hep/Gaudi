@@ -1808,7 +1808,7 @@ function(gaudi_generate_configurables library)
     add_custom_target(${package}ConfAll ALL)
   endif()
   add_dependencies(${package}ConfAll ${library}Conf)
-  # ensure that the componentslist file is found at build time (GAUDI-1055)
+  # ensure that the .confdb file is found at build time (GAUDI-1055)
   gaudi_build_env(PREPEND LD_LIBRARY_PATH ${outdir})
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   # Notify the project level target
@@ -1860,6 +1860,9 @@ function(gaudi_generate_confuserdb)
                   -o ${outdir}/${package}_user.confdb
                   ${package} ${modules})
     gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user.confdb)
+
+    # ensure that the .confdb file is found at build time (GAUDI-1055)
+    gaudi_build_env(PREPEND LD_LIBRARY_PATH ${outdir})
 
     # FIXME: dependency on others ConfUserDB
     # Historically we have been relying on the ConfUserDB built in the dependency
