@@ -76,7 +76,6 @@ StatusCode HiveDataBrokerSvc::initialize()
 
   // populate m_dependencies
   m_dependencies = mapProducers( m_algorithms );
-
   return sc;
 }
 
@@ -185,6 +184,20 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
 std::map<DataObjID, HiveDataBrokerSvc::AlgEntry*>
 HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
 {
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "Data Dependencies for Algorithms:";
+    for ( const auto& entry : m_algorithms ) {
+      debug() << "\n " << entry.alg->name() << " :";
+      for ( const auto& id : entry.alg->inputDataObjs() ) {
+        debug() << "\n    o INPUT  " << id.key();
+      }
+      for ( const auto& id : entry.alg->outputDataObjs() ) {
+        debug() << "\n    o OUTPUT " << id.key();
+      }
+    }
+    debug() << endmsg;
+  }
+
   // figure out all outputs
   std::map<DataObjID, AlgEntry*> producers;
   for ( AlgEntry& alg : algorithms ) {
