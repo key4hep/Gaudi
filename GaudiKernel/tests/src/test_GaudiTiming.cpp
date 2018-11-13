@@ -143,7 +143,7 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT( c1.eMeanTime() >= c1.eMinimalTime() );
       CPPUNIT_ASSERT( c1.eMeanTime() <= c1.eMaximalTime() );
       CPPUNIT_ASSERT( c1.eMeanTime() >= 8000 );
-      CPPUNIT_ASSERT( c1.eMeanTime() <= 12000 );
+      CPPUNIT_ASSERT( c1.eMeanTime() <= 19000 );
       CPPUNIT_ASSERT( c1.eMaximalTime() >= c1.eMinimalTime() );
 
       ChronoEntity c2;
