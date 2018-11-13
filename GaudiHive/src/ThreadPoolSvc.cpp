@@ -11,6 +11,14 @@
 
 using namespace tbb;
 
+namespace Gaudi
+{
+  namespace Concurrency
+  {
+    extern thread_local bool ThreadInitDone;
+  }
+}
+
 DECLARE_COMPONENT( ThreadPoolSvc )
 
 //=============================================================================
@@ -91,7 +99,10 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize )
     // Create the TBB task scheduler
     m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
     // Create the barrier for task synchronization
-    if ( m_threadPoolSize <= -1 ) thePoolSize = m_tbbSchedInit->default_num_threads();
+    if ( m_threadPoolSize <= -1 ) {
+      thePoolSize      = m_tbbSchedInit->default_num_threads();
+      m_threadPoolSize = thePoolSize;
+    }
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "creating barrier of size " << thePoolSize << endmsg;
     }
@@ -140,8 +151,6 @@ StatusCode ThreadPoolSvc::terminatePool()
 StatusCode ThreadPoolSvc::launchTasks( bool terminate )
 {
 
-  if ( m_threadInitTools.empty() ) return StatusCode::SUCCESS;
-
   const std::string taskType = terminate ? "termination" : "initialization";
 
   // If we have a thread pool (via a scheduler), then we want to queue
@@ -156,7 +165,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
 
       // Queue the task
       tbb::task::enqueue( *t );
-      this_tbb_thread::sleep( tbb::tick_count::interval_t( .1 ) );
+      this_tbb_thread::sleep( tbb::tick_count::interval_t( .02 ) );
     }
 
     // Now wait for all the workers to reach the barrier
@@ -195,4 +204,25 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
   }
 
   return StatusCode::SUCCESS;
+}
+
+//-----------------------------------------------------------------------------
+
+//
+// tbb will actually create more threads than requested, and will sometimes
+// activate them late. This method is used to initialize one of these threads
+// when it is detected
+
+void ThreadPoolSvc::initThisThread()
+{
+
+  if ( Gaudi::Concurrency::ThreadInitDone ) {
+    // this should never happen
+    error() << "initThisThread triggered, but thread already initialized" << endmsg;
+    throw GaudiException( "initThisThread triggered, but thread already initialized", name(), StatusCode::FAILURE );
+  }
+
+  boost::barrier* noBarrier = nullptr;
+  ThreadInitTask  theTask( m_threadInitTools, noBarrier, serviceLocator(), false );
+  theTask.execute();
 }
