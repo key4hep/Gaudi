@@ -86,10 +86,10 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
   algorithm->release();
   StatusCode rc;
   if ( managed ) {
-    // Bring the created algorithm to the same state of the ApplicationMgr
-    if ( FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+    // Bring the created algorithm to the target state of the ApplicationMgr
+    if ( targetFSMState() >= Gaudi::StateMachine::INITIALIZED ) {
       rc = algorithm->sysInitialize();
-      if ( rc.isSuccess() && FSMState() >= Gaudi::StateMachine::RUNNING ) {
+      if ( rc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING ) {
         rc = algorithm->sysStart();
       }
     }
@@ -135,7 +135,7 @@ StatusCode AlgorithmManager::initialize()
 {
   StatusCode rc;
   for ( auto& it : m_algs ) {
-    if ( !it.managed ) continue;
+    if ( !it.managed || it.algorithm->FSMState() >= Gaudi::StateMachine::INITIALIZED ) continue;
     rc = it.algorithm->sysInitialize();
     if ( rc.isFailure() ) return rc;
   }
@@ -146,7 +146,7 @@ StatusCode AlgorithmManager::start()
 {
   StatusCode rc;
   for ( auto& it : m_algs ) {
-    if ( !it.managed ) continue;
+    if ( !it.managed || it.algorithm->FSMState() >= Gaudi::StateMachine::RUNNING ) continue;
     rc = it.algorithm->sysStart();
     if ( rc.isFailure() ) return rc;
   }
