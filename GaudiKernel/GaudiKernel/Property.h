@@ -176,6 +176,7 @@ namespace Gaudi
       template <class TYPE>
       struct DefaultStringConverterImpl {
       public:
+        virtual ~DefaultStringConverterImpl() = default;
         std::string toString( const TYPE& v )
         {
           using Gaudi::Utils::toString;

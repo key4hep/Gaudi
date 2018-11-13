@@ -239,7 +239,7 @@ if(NOT GAUDI_FLAGS_SET EQUAL GAUDI_FLAGS_OPTIONS)
     endforeach()
     # Common compilation flags
     set(CMAKE_CXX_FLAGS
-        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual"
+        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wnon-virtual-dtor"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_C_FLAGS
