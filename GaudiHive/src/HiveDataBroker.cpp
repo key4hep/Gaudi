@@ -132,11 +132,6 @@ StatusCode HiveDataBrokerSvc::finalize()
 {
   ranges::for_each( m_algorithms | ranges::view::transform( &AlgEntry::alg ),
                     []( Algorithm* alg ) { alg->sysFinalize(); } );
-
-  ranges::for_each(
-      m_algorithms | ranges::view::remove_if( []( const auto& entry ) { return entry.requestCount != 0; } ) |
-          ranges::view::transform( &AlgEntry::alg ),
-      [&]( Algorithm* alg ) { this->warning() << "Unused algorithm: " << AlgorithmRepr{*alg} << endmsg; } );
   m_algorithms.clear();
   return Service::finalize();
 }
@@ -203,9 +198,6 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
   for ( AlgEntry& alg : algorithms ) {
     const auto& output = alg.alg->outputDataObjs();
     if ( output.empty() ) {
-      error() << AlgorithmRepr{*algorithms.back().alg} << " does not produce any data -- should not appear in list of "
-                                                          "producers. Ignoring."
-              << endmsg;
       continue;
     }
     for ( auto id : output ) {
@@ -217,10 +209,10 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
       auto r = producers.emplace( id, &alg );
       if ( !r.second ) {
         if ( output.size() == 1 ) {
-          warning() << "multiple algorithms declare " << id << " as output! -- IGNORING " << AlgorithmRepr{*alg.alg}
-                    << endmsg;
+          error() << "multiple algorithms declare " << id << " as output! -- IGNORING " << AlgorithmRepr{*alg.alg}
+                  << endmsg;
         } else {
-          error() << "multiple algorithms declate " << id << " as output; given that " << AlgorithmRepr{*alg.alg}
+          error() << "multiple algorithms declare " << id << " as output; given that " << AlgorithmRepr{*alg.alg}
                   << " produces multiple outputs ";
           //<< output <<
           error() << " this could lead to clashes in case any of the other "
@@ -256,6 +248,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
       if ( iproducer != producers.end() ) {
         algEntry.dependsOn.insert( iproducer->second );
       } else {
+        throw GaudiException( "unknown requested input: " + id.key(), __func__, StatusCode::FAILURE );
         // TODO: assign to dataloader!
         // algEntry.dependsOn.insert(dataloader.alg);
         // dataloader.data.emplace( id ); // TODO: we may ask to much of the
