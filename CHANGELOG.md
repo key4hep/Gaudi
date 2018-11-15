@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This release is mainly to revert !462 (Reimplemenation of `DataHandle`), which
 caused problems in ATLAS code.
 
-**Seupersede [v30r4][]**
+**Supersedes [v30r4](https://gitlab.cern.ch/gaudi/Gaudi/tags/v30r4)**
 
 ### Changed
 - refer error in databroker when multiple algorithms declare the same output
