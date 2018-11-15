@@ -48,7 +48,7 @@ StatusCode HiveRndm::HiveNumbers::initialize( const SmartIF<IRndmGenSvc>& svc, c
   if ( svc.isValid() && 0 == m_generator ) {
     /// @FIXME: this is a hack, but I do not have the time to review the
     ///         correct constantness of all the methods
-    return const_cast<IRndmGenSvc*>( svc.get() )->generator( par, m_generator );
+    return svc->generator( par, m_generator );
   }
   return StatusCode::FAILURE;
 }

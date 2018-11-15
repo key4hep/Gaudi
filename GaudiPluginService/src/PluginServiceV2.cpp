@@ -237,7 +237,7 @@ namespace Gaudi
 
         Registry::FactoryMap& Registry::factories()
         {
-          std::call_once( m_initialized, &Registry::initialize, const_cast<Registry*>( this ) );
+          std::call_once( m_initialized, &Registry::initialize, this );
           return m_factories;
         }
 

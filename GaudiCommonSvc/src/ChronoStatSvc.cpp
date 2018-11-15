@@ -160,10 +160,10 @@ StatusCode ChronoStatSvc::finalize()
                 << ( m_chronoOrderFlag ? "(ordered)" : "(not ordered)" ) << std::endl;
       std::cout << stars << std::endl;
     } else {
-      log << (MSG::Level)m_chronoPrintLevel << stars << endmsg;
-      log << (MSG::Level)m_chronoPrintLevel << " The Final CPU consumption ( Chrono ) Table "
+      log << m_chronoPrintLevel << stars << endmsg;
+      log << m_chronoPrintLevel << " The Final CPU consumption ( Chrono ) Table "
           << ( m_chronoOrderFlag ? "(ordered)" : "(not ordered)" ) << endmsg;
-      log << (MSG::Level)m_chronoPrintLevel << stars << endmsg;
+      log << m_chronoPrintLevel << stars << endmsg;
     }
     ///
     { // prepare container for printing
@@ -206,7 +206,7 @@ StatusCode ChronoStatSvc::finalize()
         if ( m_printUserTime && m_chronoCoutFlag ) {
           std::cout << stars << std::endl;
         } else if ( m_printUserTime && !m_chronoCoutFlag ) {
-          log << (MSG::Level)m_chronoPrintLevel << stars << endmsg;
+          log << m_chronoPrintLevel << stars << endmsg;
         }
         ///
         for ( auto iter = tmpCont.begin(); tmpCont.end() != iter; ++iter ) {
@@ -239,7 +239,7 @@ StatusCode ChronoStatSvc::finalize()
         if ( ( m_printUserTime || m_printSystemTime ) && m_chronoCoutFlag ) {
           std::cout << stars << std::endl;
         } else if ( ( m_printUserTime || m_printSystemTime ) && !m_chronoCoutFlag ) {
-          log << (MSG::Level)m_chronoPrintLevel << stars << endmsg;
+          log << m_chronoPrintLevel << stars << endmsg;
         }
         ///
         for ( const auto& i : tmpCont ) {
@@ -324,10 +324,10 @@ void ChronoStatSvc::chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag )
 {
   MsgStream log( msgSvc(), chronoTag );
   if ( m_printUserTime ) {
-    log << (MSG::Level)m_chronoPrintLevel << m_chronoEntities[chronoTag].outputUserTime() << endmsg;
+    log << m_chronoPrintLevel << m_chronoEntities[chronoTag].outputUserTime() << endmsg;
   }
   if ( m_printSystemTime ) {
-    log << (MSG::Level)m_chronoPrintLevel << m_chronoEntities[chronoTag].outputSystemTime() << endmsg;
+    log << m_chronoPrintLevel << m_chronoEntities[chronoTag].outputSystemTime() << endmsg;
   }
 }
 // ============================================================================
@@ -363,7 +363,7 @@ void ChronoStatSvc::stat( const IChronoStatSvc::StatTag& statTag, const IChronoS
 void ChronoStatSvc::statPrint( const IChronoStatSvc::StatTag& statTag )
 {
   MsgStream log( msgSvc(), statTag );
-  log << (MSG::Level)m_statPrintLevel << m_statEntities[statTag] << endmsg;
+  log << m_statPrintLevel << m_statEntities[statTag] << endmsg;
 }
 // ============================================================================
 /*  extract the chrono entity for the given tag (name)

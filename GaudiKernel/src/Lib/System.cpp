@@ -313,7 +313,7 @@ const std::string System::getErrorString( unsigned long error )
   char* cerrString( nullptr );
   // Remember: for linux dl* routines must be handled differently!
   if ( error == 0xAFFEDEAD ) {
-    cerrString                    = (char*)::dlerror();
+    cerrString                    = ::dlerror();
     if ( !cerrString ) cerrString = ::strerror( error );
     if ( !cerrString ) {
       cerrString = (char*)"Unknown error. No information found in strerror()!";
