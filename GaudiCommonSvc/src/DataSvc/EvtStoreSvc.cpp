@@ -1,8 +1,10 @@
+#include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/Service.h"
+#include "GaudiKernel/System.h"
 
+#include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IRegistry.h"
 
 #include <algorithm>
@@ -260,19 +262,23 @@ namespace
 
   StatusCode dummy( std::string s )
   {
-    throw std::logic_error{"Unsupported Function Called: " + s};
+    std::string trace;
+    System::backTrace( trace, 6, 2 );
+    throw std::logic_error{"Unsupported Function Called: " + s + "\n" + trace};
     return StatusCode::FAILURE;
   }
   class DummyRegEntry final : public IRegistry
   {
     std::string       m_name;
     std::string       m_identifier;
-    IDataProviderSvc* m_svc;
-    DataObject*       m_data;
+    IDataProviderSvc* m_svc  = nullptr;
+    DataObject*       m_data = nullptr;
+    IOpaqueAddress*   m_addr = nullptr;
 
   public:
-    DummyRegEntry( std::string name, std::string identifier, IDataProviderSvc* svc, DataObject* obj )
-        : m_name{std::move( name )}, m_identifier{std::move( identifier )}, m_svc{svc}, m_data{obj}
+    DummyRegEntry( std::string name, std::string identifier, IDataProviderSvc* svc, DataObject* obj,
+                   IOpaqueAddress* addr = nullptr )
+        : m_name{std::move( name )}, m_identifier{std::move( identifier )}, m_svc{svc}, m_data{obj}, m_addr{addr}
     {
     }
     unsigned long addRef() override
@@ -289,12 +295,13 @@ namespace
     const id_type&    identifier() const override { return m_identifier; }
     IDataProviderSvc* dataSvc() const override { return m_svc; }
     DataObject*       object() const override { return m_data; }
-    IOpaqueAddress*   address() const override
+    IOpaqueAddress*   address() const override { return m_addr; }
+    void              setAddress( IOpaqueAddress* ) override { dummy( __FUNCTION__ ).ignore(); }
+
+    friend std::ostream& operator<<( std::ostream& os, const DummyRegEntry& re )
     {
-      dummy( __FUNCTION__ ).ignore();
-      return nullptr;
+      return os << "DummyRegEntry{ name = " << re.m_name << ", identifier = " << re.m_identifier << " }\n";
     }
-    void setAddress( IOpaqueAddress* ) override { dummy( __FUNCTION__ ).ignore(); }
   };
 }
 
@@ -313,7 +320,9 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
   Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
 
-  SmartIF<IConversionSvc> m_cnvSvc;
+  SmartIF<IConversionSvc> m_dataLoader;
+
+  std::deque<DummyRegEntry> m_regs;
 
 public:
   using extends::extends;
@@ -321,49 +330,65 @@ public:
   CLID               rootCLID() const override;
   const std::string& rootName() const override;
   StatusCode setDataLoader( IConversionSvc* svc, IDataProviderSvc* dpsvc ) override;
+
   StatusCode objectParent( const DataObject*, IRegistry*& ) override { return dummy( __FUNCTION__ ); }
   StatusCode objectParent( const IRegistry*, IRegistry*& ) override { return dummy( __FUNCTION__ ); }
   StatusCode objectLeaves( const DataObject*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
   StatusCode objectLeaves( const IRegistry*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
+
   StatusCode clearSubTree( boost::string_ref ) override { return dummy( __FUNCTION__ ); }
   StatusCode clearSubTree( DataObject* ) override { return dummy( __FUNCTION__ ); }
   StatusCode clearStore() override;
+
   StatusCode traverseSubTree( boost::string_ref, IDataStoreAgent* ) override { return dummy( __FUNCTION__ ); }
-  StatusCode traverseSubTree( DataObject*, IDataStoreAgent* ) override { return dummy( __FUNCTION__ ); }
+  StatusCode traverseSubTree( DataObject*, IDataStoreAgent* ) override;
   StatusCode traverseTree( IDataStoreAgent* ) override { return dummy( __FUNCTION__ ); }
+
   StatusCode setRoot( std::string root_name, DataObject* pObject ) override;
   StatusCode setRoot( std::string root_path, IOpaqueAddress* pRootAddr ) override;
-  StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) override;
-  StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
+
   StatusCode unregisterAddress( boost::string_ref ) override { return dummy( __FUNCTION__ ); };
   StatusCode unregisterAddress( IRegistry*, boost::string_ref ) override { return dummy( __FUNCTION__ ); };
+
+  StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
   StatusCode registerObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject* pObject ) override;
   StatusCode registerObject( DataObject* parentObj, boost::string_ref objectPath, DataObject* pObject ) override;
-  StatusCode unregisterObject( boost::string_ref ) override { return dummy( __FUNCTION__ ); };
+
+  StatusCode unregisterObject( boost::string_ref ) override;
   StatusCode unregisterObject( DataObject* ) override { return dummy( __FUNCTION__ ); };
   StatusCode unregisterObject( DataObject*, boost::string_ref ) override { return dummy( __FUNCTION__ ); };
+
   StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
+
   StatusCode findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
   StatusCode findObject( boost::string_ref fullPath, DataObject*& pObject ) override;
+
   StatusCode updateObject( IRegistry* ) override { return dummy( __FUNCTION__ ); }
   StatusCode updateObject( DataObject* ) override { return dummy( __FUNCTION__ ); }
+
+  // the *PreLoad* functions could be done at the level of the interface -- except for the fact that
+  // they imply a data member which is a vector of DataStoreItems, so it wouldn't be a "pure" interface
+  // anymore...
   StatusCode addPreLoadItem( const DataStoreItem& ) override { return dummy( __FUNCTION__ ); }
   StatusCode removePreLoadItem( const DataStoreItem& ) override { return dummy( __FUNCTION__ ); }
   StatusCode resetPreLoad() override { return dummy( __FUNCTION__ ); }
   StatusCode preLoad() override { return dummy( __FUNCTION__ ); }
+
   StatusCode linkObject( IRegistry*, boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
   StatusCode linkObject( boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
   StatusCode unlinkObject( IRegistry*, boost::string_ref ) override { return dummy( __FUNCTION__ ); }
   StatusCode unlinkObject( DataObject*, boost::string_ref ) override { return dummy( __FUNCTION__ ); }
-  StatusCode unlinkObject( boost::string_ref ) override { return dummy( __FUNCTION__ ); }
+  StatusCode unlinkObject( boost::string_ref ) override;
 
-  StatusCode initialize() override {
-      StatusCode status = extends::initialize();
-      m_cnvSvc = serviceLocator()->service( "EventPersistencySvc" );
-      return status; //  setDataLoader( m_cnvSvc );
+  StatusCode initialize() override
+  {
+    extends::initialize().ignore();
+    return setDataLoader( serviceLocator()->service( "EventPersistencySvc" ).as<IConversionSvc>().get(), nullptr );
   }
-  StatusCode finalize() override {
-    m_cnvSvc = nullptr; // release
+  StatusCode finalize() override
+  {
+    setDataLoader( nullptr, nullptr ); // release
     return extends::finalize();
   }
 };
@@ -374,53 +399,101 @@ DECLARE_COMPONENT( EvtStoreSvc )
 
 CLID               EvtStoreSvc::rootCLID() const { return m_rootCLID; }
 const std::string& EvtStoreSvc::rootName() const { return m_rootName; }
-StatusCode         EvtStoreSvc::setDataLoader( IConversionSvc*, IDataProviderSvc* )
+StatusCode EvtStoreSvc::setDataLoader( IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc )
 {
-  // m_dataLoader = pDataLoader;
-  // if ( m_dataLoader ) m_dataLoader->setDataProvider( dpsvc ? dpsvc : this ).ignore();
+  m_dataLoader = pDataLoader;
+  if ( m_dataLoader ) m_dataLoader->setDataProvider( dpsvc ? dpsvc : this ).ignore();
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::clearStore()
 {
   this->clear();
+  m_regs.clear();
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::setRoot( std::string root_path, DataObject* pObject )
 {
-  debug() << "setRoot( " << root_path << ", " << (void*)pObject << " )" << endmsg;
-  this->clear();
-  // if (pObject) m_store->put(std::move(root_path),std::unique_ptr<DataObject>(pObject));
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "setRoot( " << root_path << ", (DataObject*)" << (void*)pObject << " )" << endmsg;
+  clearStore();
+  if ( pObject ) this->put( std::move( root_path ), std::unique_ptr<DataObject>( pObject ) );
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAddr )
 {
-  debug() << "setRoot( " << root_path << ", " << (void*)pRootAddr << " )" << endmsg;
-  this->clear();
-  // if (pRootAddr) m_store.put(std::move(root_path),std::unique_ptr<IOpaqueAddress>(pRootAddr);
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "setRoot( " << root_path << ", (IOpaqueAddress*)" << (void*)pRootAddr << " )" << endmsg;
+  clearStore();
+  if ( !pRootAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
+  const std::string* par = pRootAddr->par();
+  if ( msgLevel( MSG::DEBUG ) ) debug() << "par[0]=" << par[0] << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) debug() << "par[1]=" << par[1] << endmsg;
+  DataObject* pObject = nullptr;
+  auto        status  = m_dataLoader->createObj( pRootAddr, pObject ); // Call data loader
+  if ( !status.isSuccess() ) return status;
+  if ( msgLevel( MSG::DEBUG ) ) debug() << "Object " << root_path << " created" << endmsg;
+  if ( msgLevel( MSG::DEBUG ) ) debug() << "Filling object refs " << root_path << endmsg;
+  auto* dummy = &m_regs.emplace_back( root_path, root_path, this, pObject );
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Providing RegEntry for (DataObject*)" << (void*)pObject << ": " << *dummy << endmsg;
+  pObject->setRegistry( dummy );
+  pRootAddr->setRegistry( dummy );
+  status = m_dataLoader->fillObjRefs( pRootAddr, pObject );
+  this->put( "", std::unique_ptr<DataObject>( pObject ) );
   return StatusCode::SUCCESS;
 }
-StatusCode EvtStoreSvc::registerAddress( boost::string_ref, IOpaqueAddress* ) { return dummy( __FUNCTION__ ); }
-StatusCode EvtStoreSvc::registerAddress( IRegistry*, boost::string_ref, IOpaqueAddress* )
+StatusCode EvtStoreSvc::registerAddress( boost::string_ref path, IOpaqueAddress* pAddr )
 {
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "registerAddress( " << path << ", (IOpaqueAddress*)" << pAddr << ")" << endmsg;
   return dummy( __FUNCTION__ );
+}
+StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path, IOpaqueAddress* pAddr )
+{
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "registerAddress( (IRegistry*)" << (void*)pReg << ", " << path << ", (IOpaqueAddress*)" << pAddr << ")"
+            << endmsg;
+  if ( !pAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
+  DataObject* pObject = nullptr;
+  auto        status  = m_dataLoader->createObj( pAddr, pObject );
+  if ( !status.isSuccess() ) return status;
+  auto  fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + path.to_string();
+  auto* dummy    = &m_regs.emplace_back( path.to_string(), fullpath, this, pObject, pAddr );
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "providing RegEntry for (DataObject*)" << (void*)pObject << ": " << *dummy << endmsg;
+  pObject->setRegistry( dummy );
+  pAddr->setRegistry( dummy );
+  status = m_dataLoader->fillObjRefs( pAddr, pObject );
+  return registerObject( nullptr, fullpath, pObject ); // FIXME: fix path..
 }
 StatusCode EvtStoreSvc::registerObject( boost::string_ref parentPath, boost::string_ref objectPath,
                                         DataObject* pObject )
 {
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "registerObject( " << parentPath << ", " << objectPath << ", " << (void*)pObject << " )" << endmsg;
   return parentPath.empty() ? registerObject( nullptr, objectPath, pObject ) : dummy( __FUNCTION__ );
 }
-StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, boost::string_ref objectPath, DataObject* pObject )
+StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, boost::string_ref path, DataObject* pObject )
 {
   if ( parentObj ) return StatusCode::FAILURE;
-  debug() << "registerObject( " << (void*)parentObj << ", " << objectPath << ", " << (void*)pObject << " )" << endmsg;
-  this->put( std::string{objectPath.data(), objectPath.size()}, std::unique_ptr<DataObject>( pObject ) );
+  if ( path.starts_with( m_rootName.value() ) ) path.remove_prefix( m_rootName.size() );
+  if ( path.starts_with( "/" ) ) path.remove_prefix( 1 );
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "registerObject( " << (void*)parentObj << ", " << path << ", (DataObject*)" << (void*)pObject
+            << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << " )" << endmsg;
+  this->put( path.to_string(), std::unique_ptr<DataObject>( pObject ) );
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject )
 {
   if ( pDirectory ) return StatusCode::FAILURE;
-  debug() << "retrieveObject( " << (void*)pDirectory << ", " << path << ", " << (void*)pObject << " )" << endmsg;
-  pObject = const_cast<DataObject*>( this->get_ptr<DataObject>( std::string{path.data(), path.size()} ) );
+  if ( path.starts_with( m_rootName.value() ) ) path.remove_prefix( m_rootName.size() );
+  if ( path.starts_with( "/" ) ) path.remove_prefix( 1 );
+  pObject = const_cast<DataObject*>( this->get_ptr<DataObject>( path.to_string() ) );
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "retrieveObject( " << (void*)pDirectory << ", " << path << ", (DataObject*)" << (void*)pObject
+            << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << " )" << endmsg;
+
   return pObject ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 StatusCode EvtStoreSvc::findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject )
@@ -430,4 +503,19 @@ StatusCode EvtStoreSvc::findObject( IRegistry* pDirectory, boost::string_ref pat
 StatusCode EvtStoreSvc::findObject( boost::string_ref fullPath, DataObject*& pObject )
 {
   return retrieveObject( nullptr, fullPath, pObject );
+}
+StatusCode EvtStoreSvc::unlinkObject( boost::string_ref sr )
+{
+  warning() << "EvtStoreSvc::unlinkObject(" << sr << "): not doing anything..." << endmsg;
+  return StatusCode::SUCCESS;
+}
+StatusCode EvtStoreSvc::unregisterObject( boost::string_ref sr )
+{
+  warning() << "EvtStoreSvc::unregisterObjecct(" << sr << "): not doing anything..." << endmsg;
+  return StatusCode::SUCCESS;
+}
+StatusCode EvtStoreSvc::traverseSubTree( DataObject*, IDataStoreAgent* )
+{
+  warning() << "EvtStoreSvc::traverseSubTree: not doing anything..." << endmsg;
+  return StatusCode::SUCCESS;
 }
