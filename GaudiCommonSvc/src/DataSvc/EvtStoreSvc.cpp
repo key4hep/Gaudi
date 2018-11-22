@@ -48,8 +48,8 @@ namespace
   template <typename T>
   void* cast_( std::type_index type, void* self )
   {
-    return type == std::type_index( typeid( T ) ) ? static_cast<T*>( self )
-                                                  : magic_cast( type, std::type_index( typeid( T ) ), self );
+    return type == std::type_index( typeid( T ) ) ? static_cast<T*>( self ) // : magic_cast( type, std::type_index( typeid( T ) ), self );
+                                                  : nullptr;
   }
 
   template <>
@@ -109,11 +109,11 @@ namespace
 
     // 'adopt' a unique pointer...
     template <typename T>
-    Data( std::unique_ptr<T, std::default_delete<T>> t ) : m_vtable{&vtable_for<T>}, m_ptr{t.release()}
+    Data( std::unique_ptr<T, std::default_delete<T>> t ) noexcept : m_vtable{&vtable_for<T>}, m_ptr{t.release()}
     {
     }
 
-    ~Data() { m_vtable->delete_( m_ptr ); }
+    ~Data() noexcept { m_vtable->delete_( m_ptr ); }
 
     Data( const Data& ) = delete;
     Data& operator=( const Data& rhs ) = delete;
@@ -175,32 +175,40 @@ namespace
     void clear() { m_store.clear(); }
   };
 
+  namespace details {
+      template <typename Map> class MapStore
+      {
+        Map m_store;
+
+      public:
+        MapStore() = default;
+
+        template <typename K>
+        const Data* find( K&& k ) const
+        {
+          auto i = m_store.find( std::forward<K>( k ) );
+          return i != m_store.end() ? &i->second : nullptr;
+        }
+
+        template <typename T, typename K>
+        const auto& emplace( K&& k, T&& t )
+        {
+          if ( const auto & [ ret, ok ] = m_store.try_emplace( std::forward<K>( k ), std::forward<T>( t ) ); ok ) {
+            return *ret;
+          }
+          throw std::runtime_error( "entry already exists" );
+        }
+        void clear() { m_store.clear(); }
+      };
+  }
 #include <unordered_map>
   template <typename Key>
-  class UnorderedStore
-  {
-    std::unordered_map<Key, Data> m_store;
+  using UnorderedStore = details::MapStore< std::unordered_map<Key,Data> >;
 
-  public:
-    UnorderedStore() = default;
+#include <map>
+  template <typename Key>
+  using MapStore = details::MapStore< std::map<Key,Data,std::less<>> >;
 
-    template <typename K>
-    const Data* find( K&& k ) const
-    {
-      auto i = m_store.find( std::forward<K>( k ) );
-      return i != m_store.end() ? &i->second : nullptr;
-    }
-
-    template <typename T, typename K>
-    const auto& emplace( K&& k, T&& t )
-    {
-      if ( const auto & [ ret, ok ] = m_store.try_emplace( std::forward<K>( k ), std::forward<T>( t ) ); ok ) {
-        return *ret;
-      }
-      throw std::runtime_error( "entry already exists" );
-    }
-    void clear() { m_store.clear(); }
-  };
 
   template <typename Key, template <typename> typename StoreImpl = UnorderedStore>
   struct Store : private StoreImpl<Key> {
@@ -464,7 +472,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   pObject->setRegistry( dummy );
   pAddr->setRegistry( dummy );
   status = m_dataLoader->fillObjRefs( pAddr, pObject );
-  return registerObject( nullptr, fullpath, pObject ); // FIXME: fix path..
+  return registerObject( nullptr, fullpath, pObject );
 }
 StatusCode EvtStoreSvc::registerObject( boost::string_ref parentPath, boost::string_ref objectPath,
                                         DataObject* pObject )
