@@ -353,11 +353,11 @@ public:
   StatusCode objectLeaves( const IRegistry*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
 
   StatusCode clearSubTree( boost::string_ref ) override { return dummy( __FUNCTION__ ); }
-  StatusCode clearSubTree( DataObject* ) override { return dummy( __FUNCTION__ ); }
+  StatusCode clearSubTree( DataObject* obj) override { return obj && obj->registry() ?  clearSubTree(obj->registry()->identifier()) : StatusCode::FAILURE; }
   StatusCode clearStore() override;
 
   StatusCode traverseSubTree( boost::string_ref, IDataStoreAgent* ) override { return dummy( __FUNCTION__ ); }
-  StatusCode traverseSubTree( DataObject*, IDataStoreAgent* ) override;
+  StatusCode traverseSubTree( DataObject* obj, IDataStoreAgent* pAgent) override { return ( obj && obj->registry() ) ? traverseSubTree( obj->registry()->identifier(), pAgent ) : StatusCode::FAILURE; }
   StatusCode traverseTree( IDataStoreAgent* ) override { return dummy( __FUNCTION__ ); }
 
   StatusCode setRoot( std::string root_name, DataObject* pObject ) override;
@@ -385,7 +385,7 @@ public:
 
   StatusCode addPreLoadItem( const DataStoreItem& ) override;
   StatusCode removePreLoadItem( const DataStoreItem& ) override { return dummy( __FUNCTION__ ); }
-  StatusCode resetPreLoad() override { return dummy( __FUNCTION__ ); }
+  StatusCode resetPreLoad() override { m_preLoads.clear();  return StatusCode::SUCCESS; }
   StatusCode preLoad() override;
 
   StatusCode linkObject( IRegistry*, boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
@@ -536,11 +536,6 @@ StatusCode EvtStoreSvc::unlinkObject( boost::string_ref sr )
 StatusCode EvtStoreSvc::unregisterObject( boost::string_ref sr )
 {
   warning() << "EvtStoreSvc::unregisterObjecct(" << sr << "): not doing anything..." << endmsg;
-  return StatusCode::SUCCESS;
-}
-StatusCode EvtStoreSvc::traverseSubTree( DataObject*, IDataStoreAgent* )
-{
-  warning() << "EvtStoreSvc::traverseSubTree: not doing anything..." << endmsg;
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item )
