@@ -338,6 +338,8 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
 
   SmartIF<IConversionSvc> m_dataLoader;
 
+  /// Items to be pre-loaded
+  std::vector<DataStoreItem> m_preLoads;
 public:
   using extends::extends;
 
@@ -381,10 +383,10 @@ public:
   StatusCode updateObject( IRegistry* ) override { return dummy( __FUNCTION__ ); }
   StatusCode updateObject( DataObject* ) override { return dummy( __FUNCTION__ ); }
 
-  StatusCode addPreLoadItem( const DataStoreItem& ) override { return dummy( __FUNCTION__ ); }
+  StatusCode addPreLoadItem( const DataStoreItem& ) override;
   StatusCode removePreLoadItem( const DataStoreItem& ) override { return dummy( __FUNCTION__ ); }
   StatusCode resetPreLoad() override { return dummy( __FUNCTION__ ); }
-  StatusCode preLoad() override { return dummy( __FUNCTION__ ); }
+  StatusCode preLoad() override;
 
   StatusCode linkObject( IRegistry*, boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
   StatusCode linkObject( boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
@@ -539,5 +541,20 @@ StatusCode EvtStoreSvc::unregisterObject( boost::string_ref sr )
 StatusCode EvtStoreSvc::traverseSubTree( DataObject*, IDataStoreAgent* )
 {
   warning() << "EvtStoreSvc::traverseSubTree: not doing anything..." << endmsg;
+  return StatusCode::SUCCESS;
+}
+StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item )
+{
+  auto i = std::find( begin( m_preLoads ), end( m_preLoads ), item );
+  if ( i == end( m_preLoads ) ) m_preLoads.push_back( item );
+  return StatusCode::SUCCESS;
+}
+StatusCode EvtStoreSvc::preLoad( )
+{
+  for (const auto& i : m_preLoads ) {
+      DataObject *pObj;
+      if (msgLevel(MSG::DEBUG)) debug() << "Preloading " << i.path() << endmsg;
+      retrieveObject( nullptr, i.path(), pObj).ignore();
+  }
   return StatusCode::SUCCESS;
 }
