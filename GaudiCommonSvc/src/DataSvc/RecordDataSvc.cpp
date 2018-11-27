@@ -113,7 +113,7 @@ void RecordDataSvc::handle( const Incident& incident )
 void RecordDataSvc::loadRecords( IRegistry* pObj )
 {
   if ( !pObj ) {
-    error() << "Failed to load records object: " << pObj->identifier() << endmsg;
+    error() << "Failed to load records object" << endmsg;
   } else {
     vector<IRegistry*> leaves;
     DataObject*        p   = nullptr;

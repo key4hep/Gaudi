@@ -150,6 +150,7 @@ StatusCode AvalancheSchedulerSvc::initialize()
     Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
     if ( !algoPtr ) {
       fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+      return StatusCode::FAILURE;
     }
     for ( auto id : algoPtr->outputDataObjs() ) {
       auto r = globalOutp.insert( id );

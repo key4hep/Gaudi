@@ -252,7 +252,10 @@ StatusCode AlgResourcePool::decodeTopAlgs()
   // Now we unroll it ----
   for ( auto& algoSmartIF : m_topAlgList ) {
     Algorithm* algorithm = dynamic_cast<Algorithm*>( algoSmartIF.get() );
-    if ( !algorithm ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+    if ( !algorithm ) {
+      fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+      return StatusCode::FAILURE;
+    }
     sc = flattenSequencer( algorithm, m_flatUniqueAlgList );
   }
   // stupid O(N^2) unique-ification..
@@ -283,7 +286,10 @@ StatusCode AlgResourcePool::decodeTopAlgs()
     verbose() << "Treating resource management and clones of " << item_name << endmsg;
 
     Algorithm* algo = dynamic_cast<Algorithm*>( ialgoSmartIF.get() );
-    if ( !algo ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+    if ( !algo ) {
+      fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+      return StatusCode::FAILURE;
+    }
     const std::string& item_type = algo->type();
 
     size_t                  algo_id = hash_function( item_name );
