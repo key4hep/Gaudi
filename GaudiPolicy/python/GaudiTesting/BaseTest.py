@@ -487,11 +487,14 @@ class BaseTest(object):
         # check standard error
         lreference = self._expandReferenceFileName(self.error_reference)
         # call the validator if we have a file to use
-        if lreference and os.path.isfile(lreference):
-            newcauses = ReferenceFileValidator(lreference,
-                                               "standard error",
-                                               "Error Diff",
-                                               preproc=preproc)(stderr, result)
+        if lreference:
+            if os.path.isfile(lreference):
+                newcauses = ReferenceFileValidator(lreference,
+                                                   "standard error",
+                                                   "Error Diff",
+                                                   preproc=preproc)(stderr, result)
+            else:
+                newcauses += ["missing error reference file"]
             causes += newcauses
             if newcauses:  # Write a new reference file for stdedd
                 newref = open(lreference + ".new", "w")
