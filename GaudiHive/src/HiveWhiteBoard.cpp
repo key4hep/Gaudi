@@ -126,7 +126,7 @@ protected:
   Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
 
-  Gaudi::Property<bool> m_useEvtStoreSvc{ this, "useEvtStoreSvc", true };
+  Gaudi::Property<bool> m_useEvtStoreSvc{ this, "useEvtStoreSvc", false };
   /// Pointer to data loader service
   IConversionSvc* m_dataLoader = nullptr;
   /// Reference to address creator
