@@ -7,6 +7,8 @@
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IRegistry.h"
 
+#include "boost/algorithm/string/predicate.hpp"
+
 #include <algorithm>
 #include <iomanip>
 #include <iterator>
@@ -110,8 +112,6 @@ namespace
 
   public:
     static void setDataProviderSvc( IDataProviderSvc* p ) { s_svc = p; }
-
-    Entry() = default;
 
     template <typename T, // TODO: require T to be move constructible
               typename = std::enable_if_t<!std::is_same_v<Entry, std::decay_t<T>>>>
@@ -226,7 +226,7 @@ namespace
     class MapStore
     {
       Map m_store;
-      // static_assert(Map::key_type == std::String_view )
+      static_assert( std::is_same_v<typename Map::key_type, std::string_view> );
 
     public:
       const Entry* find( std::string_view k ) const noexcept
@@ -248,7 +248,22 @@ namespace
         if ( !r.inserted ) throw std::runtime_error( "failed to insert " + std::string{k} );
         return r.position->second;
       }
-      void clear() noexcept { m_store.clear(); }
+      auto erase( std::string_view k ) { return m_store.erase( k ); }
+      void                         clear() noexcept { m_store.clear(); }
+      template <typename Predicate>
+      void erase_if( Predicate p )
+      {
+        auto i   = m_store.begin();
+        auto end = m_store.end();
+        while ( i != end ) {
+          if ( std::invoke( p, std::as_const( *i ) ) )
+            i = m_store.erase( i );
+          else
+            ++i;
+        }
+      }
+      auto begin() const { return m_store.begin(); }
+      auto end() const { return m_store.end(); }
     };
   }
   using UnorderedStore = details::MapStore<std::unordered_map<std::string_view, Entry>>;
@@ -309,7 +324,18 @@ namespace
       return d->type().name();
     }
 
-    void clear() noexcept { static_cast<StoreImpl*>( this )->clear(); }
+    void clear() noexcept { static_cast<StoreImpl&>( *this ).clear(); }
+
+    auto erase( std::string_view k ) { return static_cast<StoreImpl&>( *this ).erase( k ); }
+
+    template <typename Predicate>
+    void erase_if( Predicate&& p )
+    {
+      static_cast<StoreImpl&>( *this ).erase_if( std::forward<Predicate>( p ) );
+    }
+
+    auto begin() const { return static_cast<const StoreImpl&>( *this ).begin(); }
+    auto end() const { return static_cast<const StoreImpl&>( *this ).begin(); }
   };
 
   StatusCode dummy( std::string s )
@@ -340,6 +366,7 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
 
   /// Items to be pre-loaded
   std::vector<DataStoreItem> m_preLoads;
+
 public:
   using extends::extends;
 
@@ -352,13 +379,19 @@ public:
   StatusCode objectLeaves( const DataObject*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
   StatusCode objectLeaves( const IRegistry*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
 
-  StatusCode clearSubTree( boost::string_ref ) override { return dummy( __FUNCTION__ ); }
-  StatusCode clearSubTree( DataObject* obj) override { return obj && obj->registry() ?  clearSubTree(obj->registry()->identifier()) : StatusCode::FAILURE; }
+  StatusCode clearSubTree( boost::string_ref ) override;
+  StatusCode clearSubTree( DataObject* obj ) override
+  {
+    return obj && obj->registry() ? clearSubTree( obj->registry()->identifier() ) : StatusCode::FAILURE;
+  }
   StatusCode clearStore() override;
 
-  StatusCode traverseSubTree( boost::string_ref, IDataStoreAgent* ) override { return dummy( __FUNCTION__ ); }
-  StatusCode traverseSubTree( DataObject* obj, IDataStoreAgent* pAgent) override { return ( obj && obj->registry() ) ? traverseSubTree( obj->registry()->identifier(), pAgent ) : StatusCode::FAILURE; }
-  StatusCode traverseTree( IDataStoreAgent* ) override { return dummy( __FUNCTION__ ); }
+  StatusCode traverseSubTree( boost::string_ref, IDataStoreAgent* ) override;
+  StatusCode traverseSubTree( DataObject* obj, IDataStoreAgent* pAgent ) override
+  {
+    return ( obj && obj->registry() ) ? traverseSubTree( obj->registry()->identifier(), pAgent ) : StatusCode::FAILURE;
+  }
+  StatusCode traverseTree( IDataStoreAgent* pAgent ) override { return traverseSubTree( boost::string_ref{}, pAgent ); }
 
   StatusCode setRoot( std::string root_name, DataObject* pObject ) override;
   StatusCode setRoot( std::string root_path, IOpaqueAddress* pRootAddr ) override;
@@ -372,8 +405,17 @@ public:
   StatusCode registerObject( DataObject* parentObj, boost::string_ref objectPath, DataObject* pObject ) override;
 
   StatusCode unregisterObject( boost::string_ref ) override;
-  StatusCode unregisterObject( DataObject* ) override { return dummy( __FUNCTION__ ); };
-  StatusCode unregisterObject( DataObject*, boost::string_ref ) override { return dummy( __FUNCTION__ ); };
+  StatusCode unregisterObject( DataObject* obj ) override
+  {
+    return ( obj && obj->registry() ) ? unregisterObject( obj->registry()->identifier() ) : StatusCode::FAILURE;
+  }
+  StatusCode unregisterObject( DataObject* obj, boost::string_ref sr ) override
+  {
+    return !obj ? unregisterObject( sr )
+                : obj->registry()
+                      ? unregisterObject( ( obj->registry()->identifier() + '/' ).append( sr.data(), sr.size() ) )
+                      : StatusCode::FAILURE;
+  };
 
   StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
 
@@ -385,7 +427,11 @@ public:
 
   StatusCode addPreLoadItem( const DataStoreItem& ) override;
   StatusCode removePreLoadItem( const DataStoreItem& ) override { return dummy( __FUNCTION__ ); }
-  StatusCode resetPreLoad() override { m_preLoads.clear();  return StatusCode::SUCCESS; }
+  StatusCode resetPreLoad() override
+  {
+    m_preLoads.clear();
+    return StatusCode::SUCCESS;
+  }
   StatusCode preLoad() override;
 
   StatusCode linkObject( IRegistry*, boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
@@ -419,9 +465,32 @@ StatusCode EvtStoreSvc::setDataLoader( IConversionSvc* pDataLoader, IDataProvide
   if ( m_dataLoader ) m_dataLoader->setDataProvider( dpsvc ? dpsvc : this ).ignore();
   return StatusCode::SUCCESS;
 }
+StatusCode EvtStoreSvc::clearSubTree( boost::string_ref sr )
+{
+  this->erase_if( [sr]( const auto& value ) { return boost::algorithm::starts_with( value.first, sr ); } );
+  return StatusCode::SUCCESS;
+}
 StatusCode EvtStoreSvc::clearStore()
 {
   this->clear();
+  return StatusCode::SUCCESS;
+}
+StatusCode EvtStoreSvc::traverseSubTree( boost::string_ref top, IDataStoreAgent* pAgent )
+{
+  auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
+  std::set<const Entry*, decltype( cmp )>       keys{std::move( cmp )};
+  for ( const auto& v : *this ) {
+    if ( boost::algorithm::starts_with( v.second.identifier(), top ) ) keys.insert( &v.second );
+  }
+  auto k = keys.begin();
+  while ( k != keys.end() ) {
+    const auto& id     = ( *k )->identifier();
+    int         level  = std::count( id.begin(), id.end(), '/' );
+    bool        accept = pAgent->analyse( const_cast<Entry*>( *( k++ ) ), level );
+    if ( !accept ) {
+      while ( k != keys.end() && boost::algorithm::starts_with( ( *k )->identifier(), id ) ) ++k;
+    }
+  }
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::setRoot( std::string root_path, DataObject* pObject )
@@ -472,17 +541,17 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   if ( !status.isSuccess() ) return status;
   auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + path.to_string();
   // the data loader expects the path _including_ the root
-  auto dummy    = Entry{fullpath, std::unique_ptr<DataObject>{}, pAddr};
+  auto dummy = Entry{fullpath, std::unique_ptr<DataObject>{}, pAddr};
   pObject->setRegistry( &dummy );
   status = m_dataLoader->fillObjRefs( pAddr, pObject );
   if ( !status.isSuccess() ) return status;
   // note: registerObject will overwrite the registry in pObject to point at the
   //       one actually used -- so we do not dangle, pointing at dummy beyond its
   //       lifetime
-  status = registerObject( nullptr, fullpath, pObject );
+  status         = registerObject( nullptr, fullpath, pObject );
   IRegistry* reg = pObject->registry();
-  assert(reg != &dummy && reg != nullptr);
-  reg->setAddress(pAddr);
+  assert( reg != &dummy && reg != nullptr );
+  reg->setAddress( pAddr );
   return status;
 }
 StatusCode EvtStoreSvc::registerObject( boost::string_ref parentPath, boost::string_ref objectPath,
@@ -513,7 +582,7 @@ StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, boost::string_ref
   if ( pDirectory ) return StatusCode::FAILURE;
   if ( path.starts_with( m_rootName.value() ) ) path.remove_prefix( m_rootName.size() );
   if ( path.starts_with( "/" ) ) path.remove_prefix( 1 );
-  pObject = const_cast<DataObject*>( this->get_ptr<DataObject>( std::string_view{ path.data(), path.size() } ) );
+  pObject = const_cast<DataObject*>( this->get_ptr<DataObject>( std::string_view{path.data(), path.size()} ) );
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "retrieveObject: " << std::quoted( path.to_string() ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
@@ -535,21 +604,20 @@ StatusCode EvtStoreSvc::unlinkObject( boost::string_ref sr )
 }
 StatusCode EvtStoreSvc::unregisterObject( boost::string_ref sr )
 {
-  warning() << "EvtStoreSvc::unregisterObjecct(" << sr << "): not doing anything..." << endmsg;
-  return StatusCode::SUCCESS;
+  return this->erase( {sr.data(), sr.size()} ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item )
 {
-  auto i = std::find( begin( m_preLoads ), end( m_preLoads ), item );
-  if ( i == end( m_preLoads ) ) m_preLoads.push_back( item );
+  auto i = std::find( m_preLoads.begin(), m_preLoads.begin(), item );
+  if ( i == m_preLoads.end() ) m_preLoads.push_back( item );
   return StatusCode::SUCCESS;
 }
-StatusCode EvtStoreSvc::preLoad( )
+StatusCode EvtStoreSvc::preLoad()
 {
-  for (const auto& i : m_preLoads ) {
-      DataObject *pObj;
-      if (msgLevel(MSG::DEBUG)) debug() << "Preloading " << i.path() << endmsg;
-      retrieveObject( nullptr, i.path(), pObj).ignore();
+  for ( const auto& i : m_preLoads ) {
+    DataObject* pObj;
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "Preloading " << i.path() << endmsg;
+    retrieveObject( nullptr, i.path(), pObj ).ignore();
   }
   return StatusCode::SUCCESS;
 }
