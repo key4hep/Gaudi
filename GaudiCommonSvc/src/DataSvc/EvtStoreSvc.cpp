@@ -118,6 +118,7 @@ namespace
     Entry( std::string identifier, T&& t )
         : m_vtable{&vtable_for<T>}, m_ptr{new T{std::move( t )}}, m_identifier{std::move( identifier )}
     {
+        if constexpr ( std::is_base_of_v<DataObject,T> ) { static_cast<T*>(m_ptr)->setRegistry( this ); }
     }
 
     // 'adopt' a unique pointer... (provided it has a default deleter!)
@@ -351,6 +352,17 @@ namespace
     throw std::logic_error{"Unsupported Function Called: " + s + "\n" + trace};
     return StatusCode::FAILURE;
   }
+
+  std::string_view normalize_path( std::string_view path, std::string_view prefix )
+  {
+    if ( boost::algorithm::starts_with( path, prefix ) ) path.remove_prefix( prefix.size() );
+    if ( boost::algorithm::starts_with( path, "/" ) ) path.remove_prefix( 1 );
+    return path;
+  }
+
+  std::string_view to_view( boost::string_ref sr ) { return {sr.data(), sr.size()}; }
+
+  boost::string_ref to_ref( std::string_view sv ) { return {sv.data(), sv.size()}; }
 }
 
 /**
@@ -419,9 +431,8 @@ public:
   StatusCode unregisterObject( DataObject* obj, boost::string_ref sr ) override
   {
     return !obj ? unregisterObject( sr )
-                : obj->registry()
-                      ? unregisterObject( ( obj->registry()->identifier() + '/' ).append( sr.data(), sr.size() ) )
-                      : StatusCode::FAILURE;
+                : obj->registry() ? unregisterObject( ( obj->registry()->identifier() + '/' ).append( to_view( sr ) ) )
+                                  : StatusCode::FAILURE;
   };
 
   StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
@@ -474,17 +485,17 @@ StatusCode EvtStoreSvc::setDataLoader( IConversionSvc* pDataLoader, IDataProvide
 }
 StatusCode EvtStoreSvc::clearSubTree( boost::string_ref sr )
 {
-  this->erase_if( [sr]( const auto& value ) { return boost::algorithm::starts_with( value.first, sr ); } );
+  erase_if( [sr]( const auto& value ) { return boost::algorithm::starts_with( value.first, sr ); } );
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::clearStore()
 {
-  this->clear();
+  clear();
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::traverseSubTree( boost::string_ref top, IDataStoreAgent* pAgent )
 {
-  if ( boost::algorithm::starts_with( top, rootName() ) ) top.remove_prefix( rootName().size() );
+  top      = to_ref( normalize_path( to_view( top ), rootName() ) );
   auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
   std::set<const Entry*, decltype( cmp )>       keys{std::move( cmp )};
   for ( const auto& v : *this ) {
@@ -558,14 +569,15 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   pObject->setRegistry( &dummy );
   status = m_dataLoader->fillObjRefs( pAddr, pObject );
   if ( !status.isSuccess() ) return status;
-  // note: registerObject will overwrite the registry in pObject to point at the
+  // note: put will overwrite the registry in pObject to point at the
   //       one actually used -- so we do not dangle, pointing at dummy beyond its
   //       lifetime
-  // remove the rootName again -- do not call registerObject, and that may add leaves which
-  // we're in the process of adding already...
-  if ( boost::algorithm::starts_with( fullpath, m_rootName.value() ) ) fullpath = fullpath.substr( m_rootName.size() );
-  if ( boost::algorithm::starts_with( fullpath, "/" ) ) fullpath                = fullpath.substr( 1 );
-  this->put( fullpath, std::unique_ptr<DataObject>( pObject ) );
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "registerAddress: " << std::quoted( normalize_path( fullpath, rootName() ) ) << " (DataObject*)"
+            << (void*)pObject << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} )
+            << endmsg;
+  }
+  put( normalize_path( fullpath, rootName() ), std::unique_ptr<DataObject>( pObject ) );
   IRegistry* reg = pObject->registry();
   assert( reg != &dummy && reg != nullptr );
   reg->setAddress( pAddr );
@@ -585,32 +597,33 @@ StatusCode EvtStoreSvc::registerObject( boost::string_ref parentPath, boost::str
 StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, boost::string_ref path, DataObject* pObject )
 {
   if ( parentObj ) return StatusCode::FAILURE;
-  if ( path.starts_with( m_rootName.value() ) ) path.remove_prefix( m_rootName.size() );
-  if ( path.starts_with( "/" ) ) path.remove_prefix( 1 );
+  auto path_v = normalize_path( to_view( path ), rootName() );
   if ( m_forceLeaves ) {
-    auto dir = path;
-    for ( auto i = dir.rfind( '/' ); i != boost::string_ref::npos; i = dir.rfind( '/' ) ) {
-      dir         = dir.substr( 0, i );
-      auto* entry = this->find( std::string_view{dir.data(), dir.size()} );
-      if ( !entry ) this->put( dir.to_string(), std::make_unique<DataObject>() );
+    auto dir = path_v;
+    for ( auto i = dir.rfind( '/' ); i != std::string_view::npos; i = dir.rfind( '/' ) ) {
+      dir = dir.substr( 0, i );
+      if ( !find( dir ) ) {
+        if ( msgLevel( MSG::DEBUG ) ) {
+          debug() << "registerObject: adding directory " << std::quoted( dir ) << endmsg;
+        }
+        put( dir, DataObject{} );
+      }
     }
   }
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "registerObject: " << std::quoted( path.to_string() ) << " (DataObject*)" << (void*)pObject
+    debug() << "registerObject: " << std::quoted( path_v ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
   }
-  this->put( path.to_string(), std::unique_ptr<DataObject>( pObject ) );
+  put( path_v, std::unique_ptr<DataObject>( pObject ) );
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject )
 {
   if ( pDirectory ) return StatusCode::FAILURE;
-  if ( path.starts_with( m_rootName.value() ) ) path.remove_prefix( m_rootName.size() );
-  if ( path.starts_with( "/" ) ) path.remove_prefix( 1 );
-  pObject = const_cast<DataObject*>(
-      this->get_ptr<DataObject>( path.empty() ? std::string_view{} : std::string_view{path.data(), path.size()} ) );
+  auto path_v = normalize_path( to_view( path ), rootName() );
+  pObject     = const_cast<DataObject*>( get_ptr<DataObject>( path_v ) );
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "retrieveObject: " << std::quoted( path.to_string() ) << " (DataObject*)" << (void*)pObject
+    debug() << "retrieveObject: " << std::quoted( path_v ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
   }
   return pObject ? StatusCode::SUCCESS : StatusCode::FAILURE;
@@ -626,7 +639,7 @@ StatusCode EvtStoreSvc::findObject( boost::string_ref fullPath, DataObject*& pOb
 StatusCode EvtStoreSvc::unlinkObject( boost::string_ref sr ) { return unregisterObject( sr ); }
 StatusCode EvtStoreSvc::unregisterObject( boost::string_ref sr )
 {
-  return this->erase( {sr.data(), sr.size()} ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
+  return erase( to_view( sr ) ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item )
 {
