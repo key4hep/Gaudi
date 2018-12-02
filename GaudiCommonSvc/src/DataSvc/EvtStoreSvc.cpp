@@ -272,6 +272,12 @@ namespace
   template <typename StoreImpl = UnorderedStore>
   struct Store : private StoreImpl {
 
+    template <typename K>
+    const Entry* find( K&& k ) const
+    {
+      return static_cast<const StoreImpl&>( *this ).find( std::forward<K>( k ) );
+    }
+
     template <typename T, typename K>
     const std::decay_t<T>& put( K&& k, T&& t )
     {
@@ -291,7 +297,7 @@ namespace
     template <typename T, typename K>
     const T& get( K&& k ) const
     {
-      const Entry* d = this->find( std::forward<K>( k ) );
+      const Entry* d = find( std::forward<K>( k ) );
       if ( !d ) throw std::out_of_range{no_entry_at + k};
       const auto* p = d->get_ptr<T>();
       if ( !p ) throw std::bad_cast{};
@@ -301,7 +307,7 @@ namespace
     template <typename T, typename K>
     const T* get_ptr( K&& k ) const
     {
-      const Entry* d = this->find( std::forward<K>( k ) );
+      const Entry* d = find( std::forward<K>( k ) );
       if ( !d ) return nullptr;
       const auto* p = d->get_ptr<T>();
       if ( !p ) throw std::bad_cast{};
@@ -311,7 +317,7 @@ namespace
     template <typename K>
     std::optional<size_t> size( K&& k ) const
     {
-      const Entry* d = this->find( std::forward<K>( k ) );
+      const Entry* d = find( std::forward<K>( k ) );
       if ( !d ) throw std::out_of_range{no_entry_at + k};
       return d->size();
     }
@@ -319,7 +325,7 @@ namespace
     template <typename K>
     const char* type_name( K&& k ) const
     {
-      const Entry* d = this->find( std::forward<K>( k ) );
+      const Entry* d = find( std::forward<K>( k ) );
       if ( !d ) throw std::out_of_range{no_entry_at + k};
       return d->type().name();
     }
@@ -361,6 +367,7 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
 {
   Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
+  Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
 
   SmartIF<IConversionSvc> m_dataLoader;
 
@@ -477,6 +484,7 @@ StatusCode EvtStoreSvc::clearStore()
 }
 StatusCode EvtStoreSvc::traverseSubTree( boost::string_ref top, IDataStoreAgent* pAgent )
 {
+  if ( boost::algorithm::starts_with( top, rootName() ) ) top.remove_prefix( rootName().size() );
   auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
   std::set<const Entry*, decltype( cmp )>       keys{std::move( cmp )};
   for ( const auto& v : *this ) {
@@ -484,11 +492,15 @@ StatusCode EvtStoreSvc::traverseSubTree( boost::string_ref top, IDataStoreAgent*
   }
   auto k = keys.begin();
   while ( k != keys.end() ) {
-    const auto& id     = ( *k )->identifier();
-    int         level  = std::count( id.begin(), id.end(), '/' );
-    bool        accept = pAgent->analyse( const_cast<Entry*>( *( k++ ) ), level );
+    const auto& id = ( *k )->identifier();
+    always() << "analyzing " << id << endmsg;
+    int  level  = std::count( id.begin(), id.end(), '/' );
+    bool accept = pAgent->analyse( const_cast<Entry*>( *( k++ ) ), level );
     if ( !accept ) {
-      while ( k != keys.end() && boost::algorithm::starts_with( ( *k )->identifier(), id ) ) ++k;
+      while ( k != keys.end() && boost::algorithm::starts_with( ( *k )->identifier(), id ) ) {
+        always() << "skipping " << ( *k )->identifier() << endmsg;
+        ++k;
+      }
     }
   }
   return StatusCode::SUCCESS;
@@ -536,6 +548,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
             << endmsg;
   }
   if ( !pAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
+  if ( path.empty() || path[0] != '/' ) return StatusCode::FAILURE;
   DataObject* pObject = nullptr;
   auto        status  = m_dataLoader->createObj( pAddr, pObject );
   if ( !status.isSuccess() ) return status;
@@ -548,7 +561,11 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   // note: registerObject will overwrite the registry in pObject to point at the
   //       one actually used -- so we do not dangle, pointing at dummy beyond its
   //       lifetime
-  status         = registerObject( nullptr, fullpath, pObject );
+  // remove the rootName again -- do not call registerObject, and that may add leaves which
+  // we're in the process of adding already...
+  if ( boost::algorithm::starts_with( fullpath, m_rootName.value() ) ) fullpath = fullpath.substr( m_rootName.size() );
+  if ( boost::algorithm::starts_with( fullpath, "/" ) ) fullpath                = fullpath.substr( 1 );
+  this->put( fullpath, std::unique_ptr<DataObject>( pObject ) );
   IRegistry* reg = pObject->registry();
   assert( reg != &dummy && reg != nullptr );
   reg->setAddress( pAddr );
@@ -570,6 +587,14 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, boost::string_ref
   if ( parentObj ) return StatusCode::FAILURE;
   if ( path.starts_with( m_rootName.value() ) ) path.remove_prefix( m_rootName.size() );
   if ( path.starts_with( "/" ) ) path.remove_prefix( 1 );
+  if ( m_forceLeaves ) {
+    auto dir = path;
+    for ( auto i = dir.rfind( '/' ); i != boost::string_ref::npos; i = dir.rfind( '/' ) ) {
+      dir         = dir.substr( 0, i );
+      auto* entry = this->find( std::string_view{dir.data(), dir.size()} );
+      if ( !entry ) this->put( dir.to_string(), std::make_unique<DataObject>() );
+    }
+  }
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "registerObject: " << std::quoted( path.to_string() ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
@@ -582,7 +607,8 @@ StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, boost::string_ref
   if ( pDirectory ) return StatusCode::FAILURE;
   if ( path.starts_with( m_rootName.value() ) ) path.remove_prefix( m_rootName.size() );
   if ( path.starts_with( "/" ) ) path.remove_prefix( 1 );
-  pObject = const_cast<DataObject*>( this->get_ptr<DataObject>( std::string_view{path.data(), path.size()} ) );
+  pObject = const_cast<DataObject*>(
+      this->get_ptr<DataObject>( path.empty() ? std::string_view{} : std::string_view{path.data(), path.size()} ) );
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "retrieveObject: " << std::quoted( path.to_string() ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
@@ -597,11 +623,7 @@ StatusCode EvtStoreSvc::findObject( boost::string_ref fullPath, DataObject*& pOb
 {
   return retrieveObject( nullptr, fullPath, pObject );
 }
-StatusCode EvtStoreSvc::unlinkObject( boost::string_ref sr )
-{
-  warning() << "EvtStoreSvc::unlinkObject(" << sr << "): not doing anything..." << endmsg;
-  return StatusCode::SUCCESS;
-}
+StatusCode EvtStoreSvc::unlinkObject( boost::string_ref sr ) { return unregisterObject( sr ); }
 StatusCode EvtStoreSvc::unregisterObject( boost::string_ref sr )
 {
   return this->erase( {sr.data(), sr.size()} ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
