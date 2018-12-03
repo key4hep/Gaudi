@@ -240,11 +240,10 @@ namespace
       {
         // tricky way to insert a string_view key which points to the
         // string contained in the mapped type...
-        Map dummy;
-        auto[i, b] = dummy.try_emplace( "", std::string{k}, std::forward<T>( t ) );
+        auto[i, b] = m_store.try_emplace( k, std::string{k}, std::forward<T>( t ) );
         if ( !b ) throw std::runtime_error( "failed to insert " + std::string{k} );
-        auto nh  = dummy.extract( i );
-        nh.key() = nh.mapped().identifier();
+        auto nh  = m_store.extract( i );
+        nh.key() = nh.mapped().identifier(); // "re-point" key to the string contained in the Entry
         auto r   = m_store.insert( std::move( nh ) );
         if ( !r.inserted ) throw std::runtime_error( "failed to insert " + std::string{k} );
         return r.position->second;
