@@ -573,7 +573,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   //       one actually used -- so we do not dangle, pointing at dummy beyond its
   //       lifetime
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "registerAddress: " << std::quoted( normalize_path( fullpath, rootName() ) ) << " (DataObject*)"
+    debug() << "registerAddress: " << std::quoted( std::string{normalize_path( fullpath, rootName() )} ) << " (DataObject*)"
             << (void*)pObject << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} )
             << endmsg;
   }
@@ -604,14 +604,14 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, boost::string_ref
       dir = dir.substr( 0, i );
       if ( !find( dir ) ) {
         if ( msgLevel( MSG::DEBUG ) ) {
-          debug() << "registerObject: adding directory " << std::quoted( dir ) << endmsg;
+          debug() << "registerObject: adding directory " << std::quoted( std::string{dir} ) << endmsg;
         }
         put( dir, DataObject{} );
       }
     }
   }
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "registerObject: " << std::quoted( path_v ) << " (DataObject*)" << (void*)pObject
+    debug() << "registerObject: " << std::quoted( std::string{path_v} ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
   }
   put( path_v, std::unique_ptr<DataObject>( pObject ) );
@@ -623,7 +623,7 @@ StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, boost::string_ref
   auto path_v = normalize_path( to_view( path ), rootName() );
   pObject     = const_cast<DataObject*>( get_ptr<DataObject>( path_v ) );
   if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "retrieveObject: " << std::quoted( path_v ) << " (DataObject*)" << (void*)pObject
+    debug() << "retrieveObject: " << std::quoted( std::string{path_v} ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
   }
   return pObject ? StatusCode::SUCCESS : StatusCode::FAILURE;
