@@ -180,9 +180,17 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
       // Expected number based on the type of task.
       int expectedNumInit = terminate ? 0 : m_threadPoolSize;
       if ( numInit != expectedNumInit ) {
-        error() << "not all threads " << ( terminate ? "terminated" : "initialized" ) << " for tool " << t << " : "
-                << t->nInit() << " out of " << m_threadPoolSize << " are currently active" << endmsg;
-        return StatusCode::FAILURE;
+        std::ostringstream ost;
+        ost << "not all threads " << ( terminate ? "terminated" : "initialized" ) << " for tool " << t << " : "
+            << t->nInit() << " out of " << m_threadPoolSize << " are currently active.";
+        if ( terminate ) {
+          // it is likely the case that tbb activated new theads
+          // late in the game, and extra initializations were done
+          info() << ost.str() << endmsg;
+        } else {
+          error() << ost.str() << endmsg;
+          return StatusCode::FAILURE;
+        }
       }
     }
 
