@@ -354,8 +354,8 @@ namespace
 
   std::string_view normalize_path( std::string_view path, std::string_view prefix )
   {
-    if ( boost::algorithm::starts_with( path, prefix ) ) path.remove_prefix( prefix.size() );
-    if ( boost::algorithm::starts_with( path, "/" ) ) path.remove_prefix( 1 );
+    if ( path.size() >= prefix.size() && std::equal( prefix.begin(), prefix.end(), path.begin() ) ) path.remove_prefix( prefix.size() ) ;
+    if ( path.size() > 0 && path[0] == '/' ) path.remove_prefix(1);
     return path;
   }
 
