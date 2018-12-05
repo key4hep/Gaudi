@@ -1,3 +1,4 @@
+# setting LC_ALL to "C"
 
 *******************************************************************************
 *                                                                             *
@@ -10,8 +11,8 @@
 Vanya BELYAEV ibelyaev@physics.syr.edu
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus314.cern.ch on Sun Feb 21 14:05:43 2010
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r5)
+                                          running on pcmz on Wed Dec  5 17:10:00 2018
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
@@ -138,7 +139,7 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 
 
 
- Alg='HistoEx2', ID=' x vs y    (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x12fbd878>
+ Alg='HistoEx2', ID=' x vs y    (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x150f6428>
 
  Histo TES   : "HistoEx2/ x vs y    (profile)"
  Histo Title : " x vs y    (profile)"
@@ -192,7 +193,7 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 
 
  Alg='HistoEx2', ID=' x vs y+3x ' , Histo=Histogram 2D " x vs y+3x " 50 xbins [-2.000000,2.000000], 50 ybins [-4.000000,4.000000]
- Alg='HistoEx2', ID=' x vs y+3x (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x12fbed78>
+ Alg='HistoEx2', ID=' x vs y+3x (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x15148028>
 
  Histo TES   : "HistoEx2/ x vs y+3x (profile)"
  Histo Title : " x vs y+3x (profile)"
@@ -248,7 +249,7 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 
  Alg='HistoEx2', ID=' x vs y-3x ' , Histo=Histogram 2D " x vs y-3x " 50 xbins [-2.000000,2.000000], 50 ybins [-4.000000,4.000000]
  Alg='HistoEx2', ID=' x vs y    ' , Histo=Histogram 2D " x vs y    " 50 xbins [-2.000000,2.000000], 50 ybins [-4.000000,4.000000]
- Alg='HistoEx2', ID=' x vs y-3x (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x12fc0208>
+ Alg='HistoEx2', ID=' x vs y-3x (profile)' , Histo=<ROOT.AIDA::IProfile1D object at 0x1504a6b8>
 
  Histo TES   : "HistoEx2/ x vs y-3x (profile)"
  Histo Title : " x vs y-3x (profile)"
@@ -304,27 +305,27 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 
 ApplicationMgr       INFO Application Manager Stopped successfully
 HistoEx           SUCCESS Booked 3 Histogram(s) : 1D=1 2D=1 3D=1
-HistoEx           SUCCESS List of booked 1D histograms in directory         "HistoEx" :-
+HistoEx           SUCCESS 1D histograms in directory "HistoEx" : 1
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
  |  1D histo                 | " 1D histo "                                  |   200   |        4.5 | 2.8723     |    0.52751 |    -1.0415 |
-HistoEx           SUCCESS List of booked 2D histograms in directory         "HistoEx" :-
+HistoEx           SUCCESS 2D histograms in directory "HistoEx" : 1
  ID= 2D histo                  " 2D histo "                                     Ents/All= 2000/2000 <X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723
-HistoEx           SUCCESS List of booked 3D histograms in directory         "HistoEx" :-
+HistoEx           SUCCESS 3D histograms in directory "HistoEx" : 1
  ID= 3D histo                  " 3D histo "                                     Ents/All=20000/20000<X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723,<Z>/sZ=4.5/2.8723
 HistoEx1          SUCCESS Booked 3 Histogram(s) : 1D=1 2D=1 3D=1
-HistoEx1          SUCCESS List of booked 1D histograms in directory         "HistoEx1" :-
+HistoEx1          SUCCESS 1D histograms in directory "HistoEx1" : 1
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
  |  1D histo                 | " 1D histo "                                  |   200   |        4.5 | 2.8723     |    0.52751 |    -1.0415 |
-HistoEx1          SUCCESS List of booked 2D histograms in directory         "HistoEx1" :-
+HistoEx1          SUCCESS 2D histograms in directory "HistoEx1" : 1
  ID= 2D histo                  " 2D histo "                                     Ents/All= 2000/2000 <X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723
-HistoEx1          SUCCESS List of booked 3D histograms in directory         "HistoEx1" :-
+HistoEx1          SUCCESS 3D histograms in directory "HistoEx1" : 1
  ID= 3D histo                  " 3D histo "                                     Ents/All=20000/20000<X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723,<Z>/sZ=4.5/2.8723
 HistoEx2          SUCCESS Booked 6 Histogram(s) : 2D=3 1DProf=3
-HistoEx2          SUCCESS List of booked 2D histograms in directory         "HistoEx2" :-
+HistoEx2          SUCCESS 2D histograms in directory "HistoEx2" : 3
  ID= x vs y                    " x vs y    "                                    Ents/All=200000/200000<X>/sX=-0.0052187/0.87769,<Y>/sY=-0.0052098/0.99916
  ID= x vs y+3x                 " x vs y+3x "                                    Ents/All=190894/200000<X>/sX=-0.00098056/0.69603,<Y>/sY=-0.0079536/2.0724
  ID= x vs y-3x                 " x vs y-3x "                                    Ents/All=190896/200000<X>/sX=-0.0018744/0.6958,<Y>/sY=-0.00026366/2.0675
-HistoEx2          SUCCESS List of booked 1D profile histograms in directory "HistoEx2" :-
+HistoEx2          SUCCESS 1D profile histograms in directory "HistoEx2" : 3
  ID= x vs y    (profile)       " x vs y    (profile)"                           Ents/All=190848/200000<X>/sX=-0.0052704/0.8777
  ID= x vs y+3x (profile)       " x vs y+3x (profile)"                           Ents/All=190848/200000<X>/sX=-0.0052704/0.8777
  ID= x vs y-3x (profile)       " x vs y-3x (profile)"                           Ents/All=190848/200000<X>/sX=-0.0052704/0.8777
