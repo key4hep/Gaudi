@@ -548,7 +548,13 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
   pObject->setRegistry( &dummy );
   pRootAddr->setRegistry( &dummy );
   status = m_dataLoader->fillObjRefs( pRootAddr, pObject );
-  return registerObject( nullptr, root_path, pObject );
+  auto sc =  registerObject( nullptr, root_path, pObject );
+  if (auto* reg = pObject->registry(); reg ) {
+      reg->setAddress( pRootAddr );
+  } else {
+      delete pRootAddr;
+  }
+  return sc;
 }
 StatusCode EvtStoreSvc::registerAddress( boost::string_ref path, IOpaqueAddress* pAddr )
 {
