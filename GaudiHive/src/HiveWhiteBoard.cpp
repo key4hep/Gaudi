@@ -464,6 +464,7 @@ public:
       // make sure that CommonMessaging is initialized
       iprp->setProperty( m_outputLevel ).ignore();
 
+      if ( !m_useEvtStoreSvc.value() ) sc = isvc->initialize();
       if ( !sc.isSuccess() ) {
         error() << "Failed to instantiate DataSvc as store partition" << endmsg;
         return sc;
