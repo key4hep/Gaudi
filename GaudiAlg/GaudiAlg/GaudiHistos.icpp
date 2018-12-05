@@ -192,8 +192,8 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   Gaudi::Utils::Histos::Table table( m_histo1DTableFormat, m_histo1DTableHeader );
 
   if ( !histo1DMapID().empty() ) {
-    msg << "List of booked 1D histograms in directory         "
-        << "\"" << histoPath() << "\" :-";
+    msg << "1D histograms in directory "
+        << "\"" << histoPath() << "\" : " << histo1DMapID().size();
 
     if ( !table.header().empty() ) {
       msg << std::endl << Gaudi::Utils::Histos::format( "ID", table.header(), m_histo1DTableFormatShort );
@@ -211,8 +211,8 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   }
   // ==========================================================================
   if ( !histo2DMapID().empty() ) {
-    msg << "List of booked 2D histograms in directory         "
-        << "\"" << histoPath() << "\" :-";
+    msg << "2D histograms in directory "
+        << "\"" << histoPath() << "\" : " << histo2DMapID().size();
 
     for ( const auto& entry : ordered( histo2DMapID() ) ) {
       const auto* aida = entry.second;
@@ -226,8 +226,8 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   }
   // ==========================================================================
   if ( !histo3DMapID().empty() ) {
-    msg << "List of booked 3D histograms in directory         "
-        << "\"" << histoPath() << "\" :-";
+    msg << "3D histograms in directory "
+        << "\"" << histoPath() << "\" : " << histo3DMapID().size();
     for ( const auto& entry : ordered( histo3DMapID() ) ) {
       const auto* aida = entry.second;
       if ( !aida ) {
@@ -240,8 +240,8 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   }
   // ==========================================================================
   if ( !profile1DMapID().empty() ) {
-    msg << "List of booked 1D profile histograms in directory "
-        << "\"" << histoPath() << "\" :-";
+    msg << "1D profile histograms in directory "
+        << "\"" << histoPath() << "\" : " << profile1DMapID().size();
     for ( const auto& entry : ordered( profile1DMapID() ) ) {
       const auto* aida = entry.second;
       if ( !aida ) {
@@ -254,8 +254,8 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   }
   // ==========================================================================
   if ( !profile2DMapID().empty() ) {
-    msg << "List of booked 2D profile histograms in directory "
-        << "\"" << histoPath() << "\" :-";
+    msg << "2D profile histograms in directory "
+        << "\"" << histoPath() << "\" : " << profile2DMapID().size();
     for ( const auto& entry : ordered( profile2DMapID() ) ) {
       const auto* aida = entry.second;
       if ( !aida ) {
