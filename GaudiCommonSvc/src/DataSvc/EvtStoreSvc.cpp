@@ -108,7 +108,7 @@ namespace
     //        stable then obviously SBO doesn't affect the payload stability ;-)
     static IDataProviderSvc* s_svc;
     std::string              m_identifier;
-    IOpaqueAddress*          m_addr = nullptr;
+    std::unique_ptr<IOpaqueAddress> m_addr;
 
   public:
     static void setDataProviderSvc( IDataProviderSvc* p ) { s_svc = p; }
@@ -128,14 +128,17 @@ namespace
     {
     }
 
-    Entry( std::string identifier, std::unique_ptr<DataObject> d, IOpaqueAddress* addr = nullptr ) noexcept
-        : m_vtable{&vtable_for<DataObject>}, m_ptr{d.release()}, m_identifier{std::move( identifier )}, m_addr{addr}
+    Entry( std::string identifier, std::unique_ptr<DataObject> d, std::unique_ptr<IOpaqueAddress> addr = {} ) noexcept
+        : m_vtable{&vtable_for<DataObject>}, m_ptr{d.release()}, m_identifier{std::move( identifier )}, m_addr{std::move(addr)}
     {
       if ( auto* pd = static_cast<DataObject*>( m_ptr ); pd ) pd->setRegistry( this );
       if ( m_addr ) m_addr->setRegistry( this );
     }
 
-    ~Entry() noexcept { m_vtable->delete_( m_ptr ); }
+    ~Entry() noexcept
+    {
+        m_vtable->delete_( m_ptr );
+    }
 
     Entry( const Entry& ) = delete;
     Entry& operator=( const Entry& rhs ) = delete;
@@ -144,7 +147,7 @@ namespace
         : m_vtable{std::exchange( rhs.m_vtable, &vtable_for<void> )}
         , m_ptr{std::exchange( rhs.m_ptr, nullptr )}
         , m_identifier{std::move( rhs.m_identifier )}
-        , m_addr{std::exchange( rhs.m_addr, nullptr )}
+        , m_addr{std::move( rhs.m_addr )}
     {
       if ( auto* d = object(); d ) d->setRegistry( this );
       if ( m_addr ) m_addr->setRegistry( this );
@@ -156,7 +159,7 @@ namespace
       m_ptr    = std::exchange( rhs.m_ptr, nullptr );
       if ( auto* d = object(); d ) d->setRegistry( this );
       m_identifier = std::move( rhs.m_identifier );
-      m_addr       = std::exchange( rhs.m_addr, nullptr );
+      m_addr       = std::move( rhs.m_addr );
       if ( m_addr ) m_addr->setRegistry( this );
       return *this;
     }
@@ -191,8 +194,8 @@ namespace
     const id_type&    identifier() const override { return m_identifier; }
     IDataProviderSvc* dataSvc() const override { return s_svc; }
     DataObject*       object() const override { return const_cast<DataObject*>( get_ptr<DataObject>() ); }
-    IOpaqueAddress*   address() const override { return m_addr; }
-    void setAddress( IOpaqueAddress* iAddr ) override { m_addr = iAddr; }
+    IOpaqueAddress*   address() const override { return m_addr.get(); }
+    void setAddress( IOpaqueAddress* iAddr ) override { m_addr.reset( iAddr ); }
   };
   IDataProviderSvc* Entry::s_svc = nullptr;
 
@@ -564,7 +567,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   if ( !status.isSuccess() ) return status;
   auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + path.to_string();
   // the data loader expects the path _including_ the root
-  auto dummy = Entry{fullpath, std::unique_ptr<DataObject>{}, pAddr};
+  auto dummy = Entry{fullpath, std::unique_ptr<DataObject>{}, std::unique_ptr<IOpaqueAddress>(pAddr)};
   pObject->setRegistry( &dummy );
   status = m_dataLoader->fillObjRefs( pAddr, pObject );
   if ( !status.isSuccess() ) return status;
@@ -579,7 +582,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   put( normalize_path( fullpath, rootName() ), std::unique_ptr<DataObject>( pObject ) );
   IRegistry* reg = pObject->registry();
   assert( reg != &dummy && reg != nullptr );
-  reg->setAddress( pAddr );
+  // reg->setAddress( pAddr ); has been deleted! have to retrieve from dummy prior to put
   return status;
 }
 StatusCode EvtStoreSvc::registerObject( boost::string_ref parentPath, boost::string_ref objectPath,
