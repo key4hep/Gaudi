@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Histograms.opts
+JobOptionsSvc        INFO # =======> /home/chris/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Histograms.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
@@ -19,13 +19,13 @@ JobOptionsSvc        INFO # (48,1): RootHistSvc.OutputFile = "histo.root"
 JobOptionsSvc        INFO # (57,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
 JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
 JobOptionsSvc        INFO # (63,1): HistogramDataSvc.OutputLevel = 2
-JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Aida2Root.opts
+JobOptionsSvc        INFO # =======> /home/chris/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Aida2Root.opts
 JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
-JobOptionsSvc        INFO Job options successfully read in from /var/clus/usera/jonesc/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Aida2Root.opts
+JobOptionsSvc        INFO Job options successfully read in from /home/chris/LHCbCMake/Feature/Gaudi/GaudiExamples/options/Aida2Root.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v30r5)
-                                          running on pcmz on Wed Dec  5 17:06:39 2018
+                                          running on localhost on Sat Dec  8 13:24:11 2018
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
@@ -303,15 +303,16 @@ SimpleHistos      SUCCESS 3D histograms in directory "SimpleHistos" : 3
  ID=3d                         "3D plot ForcedID"                               Ents/All=50000/50000<X>/sX=-0.0096715/1.0012,<Y>/sY=0.97036/0.90558,<Z>/sZ=0.0071234/1.1942
  ID=varBinning/z               "3D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.025596/2.8825,<Y>/sY=-0.0086423/1.0004,<Z>/sZ=0.97604/0.91269
 SimpleHistos      SUCCESS 1D profile histograms in directory "SimpleHistos" : 9
- ID=Expo V Gauss 1DProf        "Expo V Gauss 1DProf"                            Ents/All=50000/50000<X>/sX=-0.009832/1.0001
- ID=Expo V Gauss 1DProf s      "Expo V Gauss 1DProf s"                          Ents/All=50000/50000<X>/sX=-0.009832/1.0001
- ID=Gauss V Flat 1DProf        "Gauss V Flat 1DProf"                            Ents/All=50000/50000<X>/sX=-0.013795/5.7724
- ID=Gauss V Flat 1DProf S      "Gauss V Flat 1DProf S"                          Ents/All=50000/50000<X>/sX=-0.013795/5.7724
- ID=Gauss V Flat 1DProf, with limits-I "Gauss V Flat 1DProf, with limits-I"     Ents/All=24807/24807<X>/sX=0.026854/5.7561
- ID=Gauss V Flat 1DProf, with limits-I  s "Gauss V Flat 1DProf, with limits-I  s"  Ents/All=24807/24807<X>/sX=0.026854/5.7561
- ID=Gauss V Flat 1DProf, with limits-II "Gauss V Flat 1DProf, with limits-II"   Ents/All=25193/25193<X>/sX=-0.053822/5.7881
- ID=Gauss V Flat 1DProf, with limits-II s "Gauss V Flat 1DProf, with limits-II s"  Ents/All=25193/25193<X>/sX=-0.053822/5.7881
- ID=varBinning/a               "1D Profile Variable Binning"                    Ents/All=24949/50000<X>/sX=-0.028452/2.8834
+ | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+ | Expo V Gauss 1DProf       | "Expo V Gauss 1DProf"                         |  50000  |  -0.009832 | 1.0001     |     1.0944 |     57.826 |
+ | Expo V Gauss 1DProf s     | "Expo V Gauss 1DProf s"                       |  50000  |  -0.009832 | 1.0001     |     1.0944 |     57.826 |
+ | Gauss V Flat 1DProf       | "Gauss V Flat 1DProf"                         |  50000  |  -0.013795 | 5.7724     |          0 |         -3 |
+ | Gauss V Flat 1DProf S     | "Gauss V Flat 1DProf S"                       |  50000  |  -0.013795 | 5.7724     |          0 |         -3 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I"          |  24807  |   0.026854 | 5.7561     | -0.0078314 |    -1.2358 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-I  s"       |  24807  |   0.026854 | 5.7561     | -0.0078314 |    -1.2358 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II"         |  25193  |  -0.053822 | 5.7881     |          0 |         -3 |
+ | Gauss V Flat 1DProf, with | "Gauss V Flat 1DProf, with limits-II s"       |  25193  |  -0.053822 | 5.7881     |          0 |         -3 |
+ | varBinning/a              | "1D Profile Variable Binning"                 |  50000  |  -0.028452 | 2.8834     |          0 |         -3 |
 SimpleHistos      SUCCESS 2D profile histograms in directory "SimpleHistos" : 3
  ID=2dprof                     "2D profile1"                                    Ents/All=50000/50000<X>/sX=-0.0098803/0.9999,<Y>/sY=0.96914/0.90535
  ID=321                        "2D profile2"                                    Ents/All=50000/50000<X>/sX=-0.0098803/0.9999,<Y>/sY=0.96914/0.90535
@@ -437,11 +438,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DForcedNumericID    INFO Time User   : Tot=   30 [ms] Ave/Min/Max=0.0006(+-0.0775)/    0/   10 [ms] #=49999
-1DOldStyle           INFO Time User   : Tot=   40 [ms] Ave/Min/Max=0.0008(+-0.0894)/    0/   10 [ms] #=49999
+1DForcedNumericID    INFO Time User   : Tot=   20 [ms] Ave/Min/Max=0.0004(+-0.0632)/    0/   10 [ms] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=   40 [ms] Ave/Min/Max=0.0008(+-0.0894)/    0/   10 [ms] #=49999
 1DAutoID             INFO Time User   : Tot=   40 [ms] Ave/Min/Max=0.0008(+-0.0894)/    0/   10 [ms] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=   30 [ms] Ave/Min/Max=0.0006(+-0.0775)/    0/   10 [ms] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 0.93  [s]                                             #=  1
+1DOldStyle           INFO Time User   : Tot=   70 [ms] Ave/Min/Max=0.0014(+-0.118)/    0/   10 [ms] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 1.57  [s]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :

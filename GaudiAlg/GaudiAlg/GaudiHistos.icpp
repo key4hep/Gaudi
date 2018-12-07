@@ -189,12 +189,10 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
 
   // Printout all histograms
 
-  Gaudi::Utils::Histos::Table table( m_histo1DTableFormat, m_histo1DTableHeader );
-
   if ( !histo1DMapID().empty() ) {
     msg << "1D histograms in directory "
         << "\"" << histoPath() << "\" : " << histo1DMapID().size();
-
+    const Gaudi::Utils::Histos::Table table( m_histo1DTableFormat, m_histo1DTableHeader );
     if ( !table.header().empty() ) {
       msg << std::endl << Gaudi::Utils::Histos::format( "ID", table.header(), m_histo1DTableFormatShort );
     }
@@ -242,13 +240,17 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   if ( !profile1DMapID().empty() ) {
     msg << "1D profile histograms in directory "
         << "\"" << histoPath() << "\" : " << profile1DMapID().size();
+    const Gaudi::Utils::Histos::Table table( m_histo1DTableFormat, m_histo1DTableHeader );
+    if ( !table.header().empty() ) {
+      msg << std::endl << Gaudi::Utils::Histos::format( "ID", table.header(), m_histo1DTableFormatShort );
+    }
     for ( const auto& entry : ordered( profile1DMapID() ) ) {
       const auto* aida = entry.second;
       if ( !aida ) {
         this->error() << "IProfile1D points to NULL" << endmsg;
         continue;
       }
-      msg << std::endl << GaudiAlg::Print1DProf::toString( aida, entry.first );
+      msg << std::endl << table.toString( aida, HistoID( entry.first ), m_histo1DTableFormatShort );
     }
     msg << endmsg;
   }
