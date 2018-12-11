@@ -32,9 +32,9 @@ namespace
 {
   // ==========================================================================
   /// define local "bad" value
-  const double s_bad = std::numeric_limits<float>::lowest();
+  const constexpr double s_bad = std::numeric_limits<float>::lowest();
   /// define local "bad" value
-  const long s_long_bad = std::numeric_limits<int>::min();
+  const constexpr long s_long_bad = std::numeric_limits<int>::min();
   // ==========================================================================
   // implementations
   // ============================================================================
@@ -68,7 +68,7 @@ namespace
   template <typename HISTO>
   double _moment( const HISTO* histo, const unsigned int order, const double value = 0 )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     if ( 0 == order ) {
@@ -96,8 +96,8 @@ namespace
       const auto lE = axis.binLowerEdge( i );
       const auto uE = axis.binUpperEdge( i );
       //
-      const auto   yBin = histo->binHeight( i ); // bin weight
-      const double xBin = 0.5 * ( lE + uE );     // bin center
+      const auto yBin = histo->binHeight( i );   // bin weight
+      const auto xBin = 0.5 * double( lE + uE ); // bin center
       //
       weight += yBin;
       result += yBin * std::pow( xBin - value, order );
@@ -113,7 +113,7 @@ namespace
   template <typename HISTO>
   double _momentErr( const HISTO* histo, const unsigned int order )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto n = _nEff( histo );
@@ -131,7 +131,7 @@ namespace
   template <typename HISTO>
   double _centralMoment( const HISTO* histo, const unsigned int order )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     if ( 0 == order ) {
@@ -152,7 +152,7 @@ namespace
   template <typename HISTO>
   double _centralMomentErr( const HISTO* histo, const unsigned int order )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto n = _nEff( histo );
@@ -174,7 +174,7 @@ namespace
   template <typename HISTO>
   double _skewness( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto mu3 = _centralMoment( histo, 3 );
@@ -187,7 +187,7 @@ namespace
   template <typename HISTO>
   double _skewnessErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto n = _nEff( histo );
@@ -203,7 +203,7 @@ namespace
   template <typename HISTO>
   double _kurtosis( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto mu4 = _centralMoment( histo, 4 );
@@ -216,7 +216,7 @@ namespace
   template <typename HISTO>
   double _kurtosisErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto n = _nEff( histo );
@@ -235,7 +235,7 @@ namespace
   template <typename HISTO>
   double _meanErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     }
     const auto n = _nEff( histo );
@@ -247,7 +247,7 @@ namespace
   template <typename HISTO>
   double _rmsErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     }
     const auto n = _nEff( histo );
@@ -265,7 +265,7 @@ namespace
   template <typename HISTO>
   double _sumBinHeightErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     }
     //
@@ -287,7 +287,7 @@ namespace
   template <typename HISTO>
   double _sumAllBinHeightErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     }
     //
@@ -307,7 +307,7 @@ namespace
   template <typename HISTO>
   double _overflowEntriesFrac( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto overflow = histo->binEntries( AIDA::IAxis::OVERFLOW_BIN );
@@ -330,7 +330,7 @@ namespace
   template <typename HISTO>
   double _underflowEntriesFrac( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto underflow = histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN );
@@ -353,7 +353,7 @@ namespace
   template <typename HISTO>
   double _overflowIntegralFrac( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto overflow = histo->binHeight( AIDA::IAxis::OVERFLOW_BIN );
@@ -373,7 +373,7 @@ namespace
   template <typename HISTO>
   double _underflowIntegralFrac( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto underflow = histo->binHeight( AIDA::IAxis::UNDERFLOW_BIN );
@@ -393,7 +393,7 @@ namespace
   template <typename HISTO>
   double _overflowEntriesFracErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     //
@@ -416,7 +416,7 @@ namespace
   template <typename HISTO>
   double _underflowEntriesFracErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     //
@@ -439,7 +439,7 @@ namespace
   template <typename HISTO>
   double _overflowIntegralFracErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     //
@@ -457,7 +457,7 @@ namespace
       return s_bad;
     } // RETURN
     //
-    double error2 = std::pow( (double)oErr, 2 );
+    auto error2 = std::pow( (double)oErr, 2 );
     error2 += ( std::pow( (double)aErr, 2 ) * std::pow( (double)overflow, 2 ) / std::pow( (double)all, 2 ) );
     error2 /= std::pow( (double)all, 2 );
     //
@@ -469,7 +469,7 @@ namespace
   template <typename HISTO>
   double _underflowIntegralFracErr( const HISTO* histo )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     //
@@ -487,7 +487,7 @@ namespace
       return s_bad;
     } // RETURN
     //
-    double error2 = std::pow( (double)oErr, 2 );
+    auto error2 = std::pow( (double)oErr, 2 );
     error2 += ( std::pow( (double)aErr, 2 ) * std::pow( (double)underflow, 2 ) / std::pow( (double)all, 2 ) );
     error2 /= std::pow( (double)all, 2 );
     //
@@ -499,7 +499,7 @@ namespace
   template <typename HISTO>
   long _nEntries( const HISTO* histo, const int imax )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_long_bad;
     } // RETURN
     if ( 0 > imax ) {
@@ -511,11 +511,9 @@ namespace
     const auto& axis = histo->axis();
     // number of bins
     const auto nBins = axis.bins();
-    // loop over all bins
-    for ( int i = 0; i < nBins; ++i ) {
-      if ( i < imax ) {
-        result += histo->binEntries( i );
-      }
+    // loop over bins
+    for ( int i = 0; i < nBins && i < imax; ++i ) {
+      result += histo->binEntries( i );
     }
     //
     if ( nBins < imax ) {
@@ -532,7 +530,7 @@ namespace
                   const int    imin,  // minimal bin number (included)
                   const int    imax ) // maximal bin number (not included)
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_long_bad;
     } // RETURN
     if ( imin == imax ) {
@@ -553,11 +551,9 @@ namespace
     if ( nBins < imin ) {
       return 0;
     } // RETURN
-    // loop over all bins
-    for ( int i = 0; i < nBins; ++i ) {
-      if ( imin <= i && i < imax ) {
-        result += histo->binEntries( i );
-      }
+    // loop over bins
+    for ( int i = imin; i < nBins && imin <= i && i < imax; ++i ) {
+      result += histo->binEntries( i );
     }
     //
     if ( nBins < imax ) {
@@ -567,12 +563,12 @@ namespace
     return result; // RETURN
   }
   // ============================================================================
-  //  get the fraction of entries in histogram up to the certain
+  //  get the fraction of entries in histogram up to the given bin (not-included)
   // ============================================================================
   template <typename HISTO>
   double _nEntriesFrac( const HISTO* histo, const int imax )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     //
@@ -592,19 +588,14 @@ namespace
   }
   // ============================================================================
   /*  get fraction of entries in histogram form the certain
-   *  minimal bin up to the certain maximal bin (not-included)
-   *  @param histo the pointer to the histogram
-   *  @param imin  the minimal bin number (included)
-   *  @param imax  the maximal bin number (not included)
-   *  @param fraction of entries
-   */
+   *  minimal bin up to the certain maximal bin (not-included) */
   // ============================================================================
   template <typename HISTO>
   double _nEntriesFrac( const HISTO* histo,
                         const int    imin,  // minimal bin number (included)
                         const int    imax ) // maximal bin number (not included)
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     const auto N = histo->allEntries();
@@ -627,7 +618,7 @@ namespace
   template <typename HISTO>
   double _nEntriesFracErr( const HISTO* histo, const int imax )
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     //
@@ -643,8 +634,8 @@ namespace
       return s_bad;
     } // RETURN
     //
-    const double _n1 = std::max( (double)n, 1.0 );
-    const double _n2 = std::max( (double)( N - n ), 1.0 );
+    const auto _n1 = std::max( (double)n, 1.0 );
+    const auto _n2 = std::max( (double)( N - n ), 1.0 );
     //
     return std::sqrt( _n1 * ( _n2 / N ) ) / N; // RETURN
   }
@@ -656,7 +647,7 @@ namespace
                            const int    imin,  // minimal bin number (included)
                            const int    imax ) // maximal bin number (not included)
   {
-    if ( !histo ) {
+    if ( UNLIKELY( !histo ) ) {
       return s_bad;
     } // RETURN
     //
@@ -672,8 +663,8 @@ namespace
       return s_bad;
     } // RETURN
     //
-    const double _n1 = std::max( (double)n, 1.0 );
-    const double _n2 = std::max( (double)( N - n ), 1.0 );
+    const auto _n1 = std::max( (double)n, 1.0 );
+    const auto _n2 = std::max( (double)( N - n ), 1.0 );
     //
     return std::sqrt( _n1 * ( _n2 / N ) ) / N; // RETURN
   }
