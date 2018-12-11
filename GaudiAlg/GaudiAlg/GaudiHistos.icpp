@@ -64,7 +64,7 @@ namespace
   }
 
   // ============================================================================
-  // Searches 'title' for all instancies of 'A' and replaces them with 'B'
+  // Searches 'title' for all instances of 'A' and replaces them with 'B'
   // ============================================================================
   inline void stringSearchReplace( std::string& title, const std::string& A, const std::string& B )
   {

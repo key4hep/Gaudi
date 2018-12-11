@@ -142,7 +142,7 @@ namespace
   decltype( auto ) _title( const HISTO* h )
   {
     // strip '|' from title as this is used as printout table delimiter and
-    // instances in the title can cause problems with automatic parsing of the 
+    // instances in the title can cause problems with automatic parsing of the
     // table (e.g. LHCb QM tests) later on.
     auto htitle = h->title();
     boost::erase_all( htitle, "|" );
