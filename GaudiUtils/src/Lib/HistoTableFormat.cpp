@@ -36,6 +36,7 @@
 // ============================================================================
 // Boost
 // ============================================================================
+#include "boost/algorithm/string/erase.hpp"
 #include "boost/format.hpp"
 // ============================================================================
 /** @file
@@ -136,6 +137,18 @@ namespace
   const std::string s_histoFormatFullStatHeader = "|    #    |Udflw/Ovflw|    nEff  | Sum      |     Mean+-Error    |  "
                                                   "    RMS+-Error    | Skewness+-Error    | Kurtosis+-Error    |";
   // ==========================================================================
+  // Get cleaned up histogram title for table printout
+  template <typename HISTO>
+  decltype( auto ) _title( const HISTO* h )
+  {
+    // strip '|' from title as this is used as printout table delimiter and
+    // instances in the title can cause problems with automatic parsing of the 
+    // table (e.g. LHCb QM tests) later on.
+    auto htitle = h->title();
+    boost::erase_all( htitle, "|" );
+    return htitle;
+  }
+  // ==========================================================================
 }
 // ============================================================================
 // get the format by enum
@@ -212,16 +225,16 @@ std::string Gaudi::Utils::Histos::path( const AIDA::IBaseHistogram* aida )
   if ( !aida ) {
     return "";
   } // RETURN
-  const DataObject* object = dynamic_cast<const DataObject*>( aida );
+  const auto object = dynamic_cast<const DataObject*>( aida );
   if ( !object ) {
     return "";
   } // RETURN
-  IRegistry* registry = object->registry();
+  const auto registry = object->registry();
   if ( !registry ) {
     return "";
   } // RETURN
-  std::string            _path = registry->identifier();
-  std::string::size_type n     = _path.find( "/stat/" );
+  const auto _path = registry->identifier();
+  const auto n     = _path.find( "/stat/" );
   return ( 0 == n ? std::string( _path, 6 ) : _path ); // RETURN
 }
 // ============================================================================
@@ -241,7 +254,7 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const
   _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );
 
   _fmt % ( "\"" + path( histo ) + "\"" )                //  1) histogram path
-      % ( "\"" + histo->title() + "\"" )                //  2) title
+      % ( "\"" + _title( histo ) + "\"" )               //  2) title
       % histo->allEntries()                             //  3) # entries
       % histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ) //  4) # underflow
       % histo->binEntries( AIDA::IAxis::OVERFLOW_BIN )  //  5) # overflow
@@ -290,7 +303,7 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const s
   _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );
 
   _fmt % ( "\"" + path( histo ) + "\"" )                //  1) histogram path
-      % ( "\"" + histo->title() + "\"" )                //  2) title
+      % ( "\"" + _title( histo ) + "\"" )               //  2) title
       % histo->allEntries()                             //  3) # entries
       % histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ) //  4) # underflow
       % histo->binEntries( AIDA::IAxis::OVERFLOW_BIN )  //  5) # overflow
