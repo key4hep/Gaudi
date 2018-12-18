@@ -7,6 +7,10 @@
 #include "GaudiAlg/ISequencerTimerTool.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/ThreadLocalContext.h"
+
+#include "GaudiCommon.icpp"
+template class GaudiCommon<Gaudi::Sequence>;
 
 namespace
 {
@@ -75,14 +79,14 @@ namespace
 //=============================================================================
 StatusCode GaudiSequencer::initialize()
 {
-  GaudiAlgorithm::initialize();
-
+  // Note: not calling base class initialize because we want to reimplement the loop over sub algs
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialise" << endmsg;
 
-  StatusCode status = decodeNames();
+  auto status = decodeNames();
   if ( !status.isSuccess() ) return status;
 
-  m_timerTool                                      = tool<ISequencerTimerTool>( "SequencerTimerTool" );
+  m_timerTool = tool<ISequencerTimerTool>( "SequencerTimerTool" );
+
   if ( m_timerTool->globalTiming() ) m_measureTime = true;
 
   if ( m_measureTime ) {
@@ -112,7 +116,7 @@ StatusCode GaudiSequencer::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode GaudiSequencer::execute()
+StatusCode GaudiSequencer::execute( const EventContext& ctx ) const
 {
 
   if ( m_measureTime ) m_timerTool->start( m_timer );
@@ -126,18 +130,18 @@ StatusCode GaudiSequencer::execute()
                             //    also see comment below ....
 
   for ( auto& entry : m_entries ) {
-    Algorithm* myAlg = entry.algorithm();
+    Gaudi::Algorithm* myAlg = entry.algorithm();
     if ( !myAlg->isEnabled() ) continue;
-    if ( !myAlg->isExecuted() ) {
+    if ( myAlg->execState( ctx ).state() != AlgExecState::State::Done ) {
 
       if ( m_measureTime ) m_timerTool->start( entry.timer() );
-      result = myAlg->sysExecute( getContext() );
+      result = myAlg->sysExecute( ctx );
       if ( m_measureTime ) m_timerTool->stop( entry.timer() );
       if ( !result.isSuccess() ) break; //== Abort and return bad status
     }
     //== Check the returned status
     if ( !m_ignoreFilter ) {
-      bool passed = myAlg->filterPassed();
+      bool passed = myAlg->execState( ctx ).filterPassed();
       if ( msgLevel( MSG::VERBOSE ) )
         verbose() << "Algorithm " << myAlg->name() << " returned filter passed " << ( passed ? "true" : "false" )
                   << endmsg;
@@ -166,8 +170,9 @@ StatusCode GaudiSequencer::execute()
     }
   }
   if ( msgLevel( MSG::VERBOSE ) ) verbose() << "SeqPass is " << ( seqPass ? "true" : "false" ) << endmsg;
-  if ( !m_ignoreFilter && !m_entries.empty() ) setFilterPassed( m_invert ? !seqPass : seqPass );
-  setExecuted( true );
+  auto& state = execState( ctx );
+  if ( !m_ignoreFilter && !m_entries.empty() ) state.setFilterPassed( m_invert ? !seqPass : seqPass );
+  state.setState( AlgExecState::State::Done );
 
   if ( m_measureTime ) m_timerTool->stop( m_timer );
 
@@ -201,11 +206,11 @@ StatusCode GaudiSequencer::decodeNames()
       // values... and are not set explicitly already.
       populate_JobOptionsSvc_t populate_guard{theName, jos, std::forward_as_tuple( "Context", context() ),
                                               std::forward_as_tuple( "RootInTES", rootInTES() )};
-      Algorithm* myAlg = nullptr;
-      result           = createSubAlgorithm( theType, theName, myAlg );
-      myIAlg           = myAlg; // ensure that myIAlg.isValid() from here onwards!
+      Gaudi::Algorithm* myAlg = nullptr;
+      result                  = createSubAlgorithm( theType, theName, myAlg );
+      myIAlg                  = myAlg; // ensure that myIAlg.isValid() from here onwards!
     } else {
-      Algorithm* myAlg = dynamic_cast<Algorithm*>( myIAlg.get() );
+      Gaudi::Algorithm* myAlg = dynamic_cast<Gaudi::Algorithm*>( myIAlg.get() );
       if ( myAlg ) {
         subAlgorithms()->push_back( myAlg );
         // when the algorithm is not created, the ref count is short by one, so we have to fix it.
@@ -231,13 +236,13 @@ StatusCode GaudiSequencer::decodeNames()
     if ( result.isSuccess() ) {
       // TODO: (MCl) it is possible to avoid the dynamic_cast in most of the
       //             cases by keeping the result of createSubAlgorithm.
-      Algorithm* myAlg = dynamic_cast<Algorithm*>( myIAlg.get() );
+      Gaudi::Algorithm* myAlg = dynamic_cast<Gaudi::Algorithm*>( myIAlg.get() );
       if ( myAlg ) {
         // Note: The reference counting is kept by the system of sub-algorithms
         m_entries.emplace_back( myAlg );
         if ( msgLevel( MSG::DEBUG ) ) debug() << "Added algorithm " << theName << endmsg;
       } else {
-        warning() << theName << " is not an Algorithm - failed dynamic_cast" << endmsg;
+        warning() << theName << " is not a Gaudi::Algorithm - failed dynamic_cast" << endmsg;
         final = StatusCode::FAILURE;
       }
     } else {
@@ -252,8 +257,8 @@ StatusCode GaudiSequencer::decodeNames()
   msg << "Member list: ";
   GaudiUtils::details::ostream_joiner( msg, m_entries, ", ",
                                        []( auto& os, const AlgorithmEntry& e ) -> decltype( auto ) {
-                                         Algorithm*  alg = e.algorithm();
-                                         std::string typ = System::typeinfoName( typeid( *alg ) );
+                                         Gaudi::Algorithm* alg = e.algorithm();
+                                         std::string       typ = System::typeinfoName( typeid( *alg ) );
                                          os << typ;
                                          if ( alg->name() != typ ) os << "/" << alg->name();
                                          return os;
@@ -315,5 +320,36 @@ std::ostream& GaudiSequencer::toControlFlowExpression( std::ostream& os ) const
 
   if ( m_entries.size() > 1 ) os << ")";
   return os;
+}
+
+// ============================================================================
+StatusCode GaudiSequencer::sysExecute( const EventContext& ctx )
+{
+  StatusCode sc{StatusCode::SUCCESS};
+
+  IAlgContextSvc* algCtx = nullptr;
+  if ( registerContext() ) {
+    algCtx = contextSvc();
+  }
+  // Lock the context
+  Gaudi::Utils::AlgContext cnt( this, algCtx, ctx ); ///< guard/sentry
+
+  // Do not execute if one or more of the m_vetoObjs exist in TES
+  const auto it = find_if( begin( m_vetoObjs ), end( m_vetoObjs ),
+                           [&]( const std::string& loc ) { return this->exist<DataObject>( evtSvc(), loc ); } );
+  if ( it != end( m_vetoObjs ) ) {
+    if ( msgLevel( MSG::DEBUG ) ) debug() << *it << " found, skipping event " << endmsg;
+    return sc;
+  }
+
+  // Execute if m_requireObjs is empty
+  // or if one or more of the m_requireObjs exist in TES
+  bool doIt = m_requireObjs.empty() ||
+              any_of( begin( m_requireObjs ), end( m_requireObjs ),
+                      [&]( const std::string& loc ) { return this->exist<DataObject>( evtSvc(), loc ); } );
+
+  // execute the generic method:
+  if ( doIt ) sc = GaudiCommon<Gaudi::Sequence>::sysExecute( ctx );
+  return sc;
 }
 //=============================================================================

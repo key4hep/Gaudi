@@ -4,12 +4,12 @@
 #include "IOBoundAlgTask.h"
 
 // Framework includes
-#include "GaudiKernel/Algorithm.h" // can be removed ASA dynamic casts to Algorithm are removed
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include <Gaudi/Algorithm.h> // can be removed ASA dynamic casts to Algorithm are removed
 
 // C++
 #include <algorithm>
@@ -147,9 +147,9 @@ StatusCode AvalancheSchedulerSvc::initialize()
 
   // figure out all outputs
   for ( IAlgorithm* ialgoPtr : algos ) {
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
+    Gaudi::Algorithm* algoPtr = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
     if ( !algoPtr ) {
-      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+      fatal() << "Could not convert IAlgorithm into Gaudi::Algorithm: this will result in a crash." << endmsg;
       return StatusCode::FAILURE;
     }
     for ( auto id : algoPtr->outputDataObjs() ) {
@@ -167,9 +167,9 @@ StatusCode AvalancheSchedulerSvc::initialize()
 
   std::map<std::string, DataObjIDColl> algosDependenciesMap;
   for ( IAlgorithm* ialgoPtr : algos ) {
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
+    Gaudi::Algorithm* algoPtr = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
     if ( nullptr == algoPtr ) {
-      fatal() << "Could not convert IAlgorithm into Algorithm for " << ialgoPtr->name()
+      fatal() << "Could not convert IAlgorithm into Gaudi::Algorithm for " << ialgoPtr->name()
               << ": this will result in a crash." << endmsg;
       return StatusCode::FAILURE;
     }
@@ -256,9 +256,10 @@ StatusCode AvalancheSchedulerSvc::initialize()
                << dataLoaderAlg->name() << "\" Algorithm" << ost.str() << endmsg;
 
         // Set the property Load of DataLoader Alg
-        Algorithm* dataAlg = dynamic_cast<Algorithm*>( dataLoaderAlg );
+        Gaudi::Algorithm* dataAlg = dynamic_cast<Gaudi::Algorithm*>( dataLoaderAlg );
         if ( !dataAlg ) {
-          fatal() << "Unable to dcast DataLoader \"" << m_useDataLoader.value() << "\" IAlg to Algorithm" << endmsg;
+          fatal() << "Unable to dcast DataLoader \"" << m_useDataLoader.value() << "\" IAlg to Gaudi::Algorithm"
+                  << endmsg;
           return StatusCode::FAILURE;
         }
 

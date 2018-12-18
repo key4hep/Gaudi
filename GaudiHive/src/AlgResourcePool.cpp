@@ -19,7 +19,6 @@ DECLARE_COMPONENT( AlgResourcePool )
 // destructor
 AlgResourcePool::~AlgResourcePool()
 {
-
   for ( auto& algoId_algoQueue : m_algqueue_map ) {
     auto* queue = algoId_algoQueue.second;
     delete queue;
@@ -171,39 +170,34 @@ StatusCode AlgResourcePool::releaseResource( const std::string& name )
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::flattenSequencer( Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth )
+StatusCode AlgResourcePool::flattenSequencer( Gaudi::Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth )
 {
 
   StatusCode sc = StatusCode::SUCCESS;
 
-  bool isGaudiSequencer( false );
-  bool isAthSequencer( false );
-
   if ( algo->isSequence() ) {
-    if ( algo->hasProperty( "ShortCircuit" ) )
-      isGaudiSequencer = true;
-    else if ( algo->hasProperty( "StopOverride" ) )
-      isAthSequencer = true;
-  }
+    auto seq = dynamic_cast<Gaudi::Sequence*>( algo );
+    if ( seq == 0 ) {
+      error() << "Unable to dcast Algorithm " << algo->name() << " to a Sequence, but it has isSequence==true"
+              << endmsg;
+      return StatusCode::FAILURE;
+    }
 
-  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  if ( // we only want to add basic algorithms -> have no subAlgs
-      // and exclude the case of empty sequencers
-      ( subAlgorithms->empty() && !( isGaudiSequencer || isAthSequencer ) ) ) {
+    auto subAlgorithms = seq->subAlgorithms();
 
+    // Recursively unroll
+    ++recursionDepth;
+
+    for ( auto subalgo : *subAlgorithms ) {
+      sc = flattenSequencer( subalgo, alglist, recursionDepth );
+      if ( sc.isFailure() ) {
+        error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
+        return sc;
+      }
+    }
+  } else {
     alglist.emplace_back( algo );
     return sc;
-  }
-
-  // Recursively unroll
-  ++recursionDepth;
-
-  for ( Algorithm* subalgo : *subAlgorithms ) {
-    sc = flattenSequencer( subalgo, alglist, recursionDepth );
-    if ( sc.isFailure() ) {
-      error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
-      return sc;
-    }
   }
   return sc;
 }
@@ -251,9 +245,9 @@ StatusCode AlgResourcePool::decodeTopAlgs()
 
   // Now we unroll it ----
   for ( auto& algoSmartIF : m_topAlgList ) {
-    Algorithm* algorithm = dynamic_cast<Algorithm*>( algoSmartIF.get() );
+    Gaudi::Algorithm* algorithm = dynamic_cast<Gaudi::Algorithm*>( algoSmartIF.get() );
     if ( !algorithm ) {
-      fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+      fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
       return StatusCode::FAILURE;
     }
     sc = flattenSequencer( algorithm, m_flatUniqueAlgList );
@@ -285,9 +279,9 @@ StatusCode AlgResourcePool::decodeTopAlgs()
 
     verbose() << "Treating resource management and clones of " << item_name << endmsg;
 
-    Algorithm* algo = dynamic_cast<Algorithm*>( ialgoSmartIF.get() );
+    Gaudi::Algorithm* algo = dynamic_cast<Gaudi::Algorithm*>( ialgoSmartIF.get() );
     if ( !algo ) {
-      fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+      fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
       return StatusCode::FAILURE;
     }
     const std::string& item_type = algo->type();
@@ -301,7 +295,15 @@ StatusCode AlgResourcePool::decodeTopAlgs()
 
     queue->push( ialgo );
     m_algList.push_back( ialgo );
-    if ( ialgo->isClonable() ) {
+    if ( ialgo->isReEntrant() ) {
+      if ( ialgo->cardinality() != 0 ) {
+        info() << "Algorithm " << ialgo->name() << " is ReEntrant, but Cardinality was set to " << ialgo->cardinality()
+               << endmsg;
+        m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+      } else {
+        m_n_of_allowed_instances[algo_id] = 1;
+      }
+    } else if ( ialgo->isClonable() ) {
       m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
     } else {
       if ( ialgo->cardinality() == 1 ) {

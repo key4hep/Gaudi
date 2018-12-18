@@ -1,11 +1,11 @@
 #ifndef GAUDIHIVE_ALGRESOURCEPOOL_H
 #define GAUDIHIVE_ALGRESOURCEPOOL_H
 
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Service.h"
+#include <Gaudi/Algorithm.h>
 
 #include <atomic>
 #include <bitset>
@@ -68,7 +68,7 @@ private:
   StatusCode decodeTopAlgs();
 
   /// Recursively flatten an algList
-  StatusCode flattenSequencer( Algorithm* sequencer, ListAlg& alglist, unsigned int recursionDepth = 0 );
+  StatusCode flattenSequencer( Gaudi::Algorithm* sequencer, ListAlg& alglist, unsigned int recursionDepth = 0 );
 
   Gaudi::Property<bool>                     m_lazyCreation{this, "CreateLazily", false, ""};
   Gaudi::Property<std::vector<std::string>> m_topAlgNames{

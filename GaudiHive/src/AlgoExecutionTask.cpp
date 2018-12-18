@@ -3,12 +3,12 @@
 #include "RetCodeGuard.h"
 
 // Framework
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include <Gaudi/Algorithm.h>
 
 #include <functional>
 
@@ -23,8 +23,8 @@ namespace Gaudi
 tbb::task* AlgoExecutionTask::execute()
 {
 
-  IAlgorithm* ialg      = m_algorithm.get();
-  Algorithm*  this_algo = dynamic_cast<Algorithm*>( ialg );
+  IAlgorithm*       ialg      = m_algorithm.get();
+  Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( ialg );
   if ( !this_algo ) {
     throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE );
   }

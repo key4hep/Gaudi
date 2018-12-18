@@ -50,9 +50,9 @@
 #include "GaudiKernel/System.h"
 
 #include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/Service.h"
+#include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/Time.h"
 
@@ -108,7 +108,7 @@ namespace
   };
 
   const std::map<std::string, component_t> allowedFactories{
-      {typeid( Algorithm::Factory::FactoryType ).name(), component_t::Algorithm},
+      {typeid( Gaudi::Algorithm::Factory::FactoryType ).name(), component_t::Algorithm},
       {typeid( Service::Factory::FactoryType ).name(), component_t::Service},
       {typeid( AlgTool::Factory::FactoryType ).name(), component_t::AlgTool},
       {typeid( Auditor::Factory::FactoryType ).name(), component_t::Auditor},
@@ -552,7 +552,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       try {
         switch ( type ) {
         case component_t::Algorithm:
-          prop = SmartIF<IAlgorithm>( Algorithm::Factory::create( factoryName, cname, svcLoc ).release() );
+          prop = SmartIF<IAlgorithm>( Gaudi::Algorithm::Factory::create( factoryName, cname, svcLoc ).release() );
           break;
         case component_t::Service:
           prop = SmartIF<IService>( Service::Factory::create( factoryName, cname, svcLoc ).release() );

@@ -14,12 +14,9 @@ class IHiveWhiteBoard;
 struct IDataManagerSvc;
 class IDataProviderSvc;
 
-/**@class RecoSchedulerSvc RecoSchedulerSvc.h
- *
- *  Basic event loop and scheduler for fast HLT reconstruction.
+/** Basic event loop and scheduler for fast HLT reconstruction.
  *  It uses one fifo queue per tbb thread and schedules full events on a
- *  given thread by putting all algos in the dedicated queue from the beginning
- *
+ *  given thread by putting all algos in the dedicated queue from the beginning.
  */
 class HLTEventLoopMgr : public extends<Service, IEventProcessor>
 {
@@ -87,5 +84,5 @@ private:
   IEvtSelector::Context* m_evtSelContext{nullptr};
 
   /// Vector of algorithms to run for every event
-  std::vector<Algorithm*> m_algos;
+  std::vector<Gaudi::Algorithm*> m_algos;
 };

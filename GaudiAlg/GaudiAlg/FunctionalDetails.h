@@ -506,6 +506,8 @@ namespace Gaudi
         constexpr unsigned int outputLocationSize() const { return N_out; }
 
       protected:
+        bool isReEntrant() const override { return true; }
+
         std::tuple<details::InputHandle_t<Traits_, In>...>   m_inputs;
         std::tuple<details::OutputHandle_t<Traits_, Out>...> m_outputs;
       };
@@ -524,6 +526,8 @@ namespace Gaudi
         }
 
       protected:
+        bool isReEntrant() const override { return true; }
+
         std::tuple<> m_inputs;
       };
 
@@ -568,6 +572,8 @@ namespace Gaudi
         constexpr unsigned int inputLocationSize() const { return N_in; }
 
       protected:
+        bool isReEntrant() const override { return true; }
+
         std::tuple<details::InputHandle_t<Traits_, In>...> m_inputs;
       };
 
@@ -611,6 +617,8 @@ namespace Gaudi
         constexpr unsigned int outputLocationSize() const { return N_out; }
 
       protected:
+        bool isReEntrant() const override { return true; }
+
         std::tuple<details::OutputHandle_t<Traits_, Out>...> m_outputs;
       };
 

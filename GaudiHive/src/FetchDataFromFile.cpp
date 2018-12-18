@@ -4,7 +4,7 @@ namespace Gaudi
 {
   namespace Hive
   {
-    class FetchDataFromFile final : public Algorithm
+    class FetchDataFromFile final : public ::Algorithm
     {
     public:
       FetchDataFromFile( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )

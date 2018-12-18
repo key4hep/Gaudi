@@ -12,7 +12,10 @@ class JobHistory;
 class ServiceHistory;
 class IService;
 
-class Algorithm;
+namespace Gaudi
+{
+  class Algorithm;
+}
 class AlgorithmHistory;
 
 class IAlgTool;
@@ -46,9 +49,9 @@ public:
   virtual void            getServiceHistory( std::set<ServiceHistory*>& ) const = 0;
 
   // Algorithm level objects
-  virtual StatusCode        registerAlg( const Algorithm& )                     = 0;
-  virtual StatusCode        listProperties( const Algorithm& ) const            = 0;
-  virtual AlgorithmHistory* getAlgHistory( const Algorithm& ) const             = 0;
+  virtual StatusCode        registerAlg( const Gaudi::Algorithm& )              = 0;
+  virtual StatusCode        listProperties( const Gaudi::Algorithm& ) const     = 0;
+  virtual AlgorithmHistory* getAlgHistory( const Gaudi::Algorithm& ) const      = 0;
   virtual void              getAlgHistory( std::set<AlgorithmHistory*>& ) const = 0;
 
   // AlgTool level objects

@@ -65,7 +65,7 @@ public:
   const concurrency::PrecedenceRulesGraph* getRules() const { return &m_PRGraph; };
 
 private:
-  StatusCode assembleCFRules( Algorithm*, const std::string&, unsigned int recursionDepth = 0 );
+  StatusCode assembleCFRules( Gaudi::Algorithm*, const std::string&, unsigned int recursionDepth = 0 );
 
 private:
   /// A shortcut to the algorithm resource pool

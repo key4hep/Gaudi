@@ -1,5 +1,4 @@
 #include "HiveDataBroker.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/System.h"
@@ -9,6 +8,7 @@
 #include "range/v3/view/remove_if.hpp"
 #include "range/v3/view/reverse.hpp"
 #include "range/v3/view/transform.hpp"
+#include <Gaudi/Algorithm.h>
 #include <algorithm>
 
 DECLARE_COMPONENT( HiveDataBrokerSvc )
@@ -16,7 +16,7 @@ DECLARE_COMPONENT( HiveDataBrokerSvc )
 namespace
 {
   struct AlgorithmRepr {
-    const Algorithm& parent;
+    const Gaudi::Algorithm& parent;
 
     friend std::ostream& operator<<( std::ostream& s, const AlgorithmRepr& a )
     {
@@ -47,7 +47,7 @@ namespace
     // Maybe modify the AppMgr interface to return Algorithm* ??
     IAlgorithm* tmp;
     StatusCode  sc = am.createAlgorithm( type, name, tmp );
-    return {sc.isSuccess() ? dynamic_cast<Algorithm*>( tmp ) : nullptr};
+    return {sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr};
   }
 }
 
@@ -62,7 +62,7 @@ StatusCode HiveDataBrokerSvc::initialize()
   // warn about non-reentrant algorithms
   ranges::for_each( m_algorithms | ranges::view::transform( []( const auto& entry ) { return entry.alg; } ) |
                         ranges::view::remove_if( []( const auto* alg ) { return alg->cardinality() == 0; } ),
-                    [&]( const Algorithm* alg ) {
+                    [&]( const Gaudi::Algorithm* alg ) {
                       this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{*alg} << endmsg;
                     } );
   //== Print the list of the created algorithms
@@ -131,7 +131,7 @@ StatusCode HiveDataBrokerSvc::stop()
 StatusCode HiveDataBrokerSvc::finalize()
 {
   ranges::for_each( m_algorithms | ranges::view::transform( &AlgEntry::alg ),
-                    []( Algorithm* alg ) { alg->sysFinalize(); } );
+                    []( Gaudi::Algorithm* alg ) { alg->sysFinalize(); } );
   m_algorithms.clear();
   return Service::finalize();
 }
@@ -259,10 +259,11 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
   return producers;
 }
 
-std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            requested,
-                                                                  const std::vector<std::string>& stoppers ) const
+std::vector<Gaudi::Algorithm*>
+HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                          const std::vector<std::string>& stoppers ) const
 {
-  std::vector<Algorithm*> result;
+  std::vector<Gaudi::Algorithm*> result;
 
   std::vector<const AlgEntry*> deps;
   deps.reserve( requested.size() );
@@ -312,10 +313,11 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjI
   return {begin( range ), end( range )};
 }
 
-std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& requested,
-                                                                  const std::vector<std::string>&     stoppers ) const
+std::vector<Gaudi::Algorithm*>
+HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& requested,
+                                          const std::vector<std::string>&     stoppers ) const
 {
-  std::vector<Algorithm*> result;
+  std::vector<Gaudi::Algorithm*> result;
 
   auto alg = std::find_if( begin( m_cfnodes ), end( m_cfnodes ),
                            [&]( const AlgEntry& ae ) { return ae.alg->name() == requested.name(); } );
@@ -339,8 +341,9 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::U
   result.push_back( alg->alg );
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << std::endl << "requested " << requested << " returning " << std::endl << "  ";
-    GaudiUtils::details::ostream_joiner( debug(), result, ",\n  ", []( auto& os, const Algorithm* a ) -> decltype(
-                                                                       auto ) { return os << AlgorithmRepr{*a}; } );
+    GaudiUtils::details::ostream_joiner(
+        debug(), result, ",\n  ",
+        []( auto& os, const Gaudi::Algorithm* a ) -> decltype( auto ) { return os << AlgorithmRepr{*a}; } );
     debug() << std::endl << endmsg;
   }
   return result;

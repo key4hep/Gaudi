@@ -118,9 +118,9 @@ ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 10
 OR                   INFO executing....
 ApplicationMgr       INFO Application Manager Stopped successfully
 TIMER.TIMER          INFO Saving Timing histograms
+ParentAlg            INFO finalizing....
 SubAlg1              INFO finalizing....
 SubAlg2              INFO finalizing....
-ParentAlg            INFO finalizing....
 HelloWorld           INFO finalizing....
 Counter1             INFO Counter1:EventCounter::finalize - total events: 5
 Counter2             INFO Counter2:EventCounter::finalize - total events: 1
@@ -147,8 +147,8 @@ TIMER.TIMER          INFO Algorithm          (millisec) |    <user> |   <clock> 
 TIMER.TIMER          INFO --------------------------------------------------------------------------------------------------
 TIMER.TIMER          INFO EVENT LOOP                    |     0.000 |     0.069 |    0.049       0.2     0.03 |      10 |     0.001 |
 TIMER.TIMER          INFO  ParentAlg                    |     0.000 |     0.008 |    0.007       0.0     0.00 |      10 |     0.000 |
-TIMER.TIMER          INFO  SubAlg1                      |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
-TIMER.TIMER          INFO  SubAlg2                      |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
+TIMER.TIMER          INFO   SubAlg1                     |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
+TIMER.TIMER          INFO   SubAlg2                     |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
 TIMER.TIMER          INFO  StopperAlg                   |     0.000 |     0.001 |    0.001       0.0     0.00 |      10 |     0.000 |
 TIMER.TIMER          INFO  TopSequence                  |     0.000 |     0.018 |    0.011       0.0     0.01 |      10 |     0.000 |
 TIMER.TIMER          INFO   Sequence1                   |     0.000 |     0.009 |    0.004       0.0     0.00 |      10 |     0.000 |

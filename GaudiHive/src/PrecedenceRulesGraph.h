@@ -16,7 +16,6 @@
 // fwk includes
 #include "AlgsExecutionStates.h"
 #include "EventSlot.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ICondSvc.h"
@@ -24,6 +23,7 @@
 #include "GaudiKernel/ITimelineSvc.h"
 #include "GaudiKernel/TaggedBool.h"
 #include "IGraphVisitor.h"
+#include <Gaudi/Algorithm.h>
 
 namespace concurrency
 {
@@ -58,7 +58,7 @@ namespace precedence
   // Precedence rules utilities ==============================================
   struct AlgoProps {
     AlgoProps() {}
-    AlgoProps( Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass )
+    AlgoProps( Gaudi::Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass )
         : m_name( algo->name() )
         , m_nodeIndex( nodeIndex )
         , m_algoIndex( algoIndex )
@@ -74,7 +74,7 @@ namespace precedence
     int         m_algoIndex{-1};
     int         m_rank{-1};
     /// Algorithm representative behind the AlgorithmNode
-    Algorithm* m_algorithm{nullptr};
+    Gaudi::Algorithm* m_algorithm{nullptr};
 
     /// Whether the selection result is negated or not
     bool m_inverted{false};
@@ -507,8 +507,8 @@ namespace concurrency
   {
   public:
     /// Constructor
-    AlgorithmNode( PrecedenceRulesGraph& graph, Algorithm* algoPtr, unsigned int nodeIndex, unsigned int algoIndex,
-                   bool inverted, bool allPass )
+    AlgorithmNode( PrecedenceRulesGraph& graph, Gaudi::Algorithm* algoPtr, unsigned int nodeIndex,
+                   unsigned int algoIndex, bool inverted, bool allPass )
         : ControlFlowNode( graph, nodeIndex, algoPtr->name() )
         , m_algorithm( algoPtr )
         , m_algoIndex( algoIndex )
@@ -540,7 +540,7 @@ namespace concurrency
     const float& getRank() const { return m_rank; }
 
     /// get Algorithm representatives
-    Algorithm* getAlgorithm() const { return m_algorithm; }
+    Gaudi::Algorithm* getAlgorithm() const { return m_algorithm; }
     /// Get algorithm index
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
 
@@ -564,7 +564,7 @@ namespace concurrency
 
   private:
     /// Algorithm representative behind the AlgorithmNode
-    Algorithm* m_algorithm;
+    Gaudi::Algorithm* m_algorithm;
     /// The index of the algorithm
     unsigned int m_algoIndex;
     /// The name of the algorithm
@@ -676,7 +676,7 @@ namespace concurrency
     /// Get DataNode by DataObject path using graph index
     DataNode* getDataNode( const DataObjID& dataPath ) const { return m_dataPathToDataNodeMap.at( dataPath ).get(); }
     /// Register algorithm in the Data Dependency index
-    void registerIODataObjects( const Algorithm* algo );
+    void registerIODataObjects( const Gaudi::Algorithm* algo );
     /// Build data dependency realm WITH data object nodes participating
     StatusCode buildDataDependenciesRealm();
 
@@ -686,16 +686,17 @@ namespace concurrency
     /// Get head node
     DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
-    StatusCode addAlgorithmNode( Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass );
+    StatusCode addAlgorithmNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName, bool inverted,
+                                 bool allPass );
     /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const
     {
       return m_algoNameToAlgoNodeMap.at( algoName ).get();
     }
     /// Add a node, which aggregates decisions of direct daughter nodes
-    StatusCode addDecisionHubNode( Algorithm* daughterAlgo, const std::string& parentName, concurrency::Concurrent,
-                                   concurrency::PromptDecision, concurrency::ModeOr, concurrency::AllPass,
-                                   concurrency::Inverted );
+    StatusCode addDecisionHubNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName,
+                                   concurrency::Concurrent, concurrency::PromptDecision, concurrency::ModeOr,
+                                   concurrency::AllPass, concurrency::Inverted );
     /// Get total number of control flow graph nodes
     unsigned int getControlFlowNodeCounter() const { return m_nodeCounter; }
 

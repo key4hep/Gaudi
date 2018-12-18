@@ -43,8 +43,11 @@
 // ============================================================================
 // forward declarations
 // ============================================================================
-class Algorithm; // GaudiKernel
-class AlgTool;   // GaudiKernel
+namespace Gaudi
+{
+  class Algorithm; // GaudiKernel
+}
+class AlgTool; // GaudiKernel
 class ISvcLocator;
 namespace Gaudi
 {
@@ -654,7 +657,7 @@ public:
 public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from Algorithm
-  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Algorithm, PBASE>::value, U>>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Gaudi::Algorithm, PBASE>::value, U>>
   GaudiCommon( const std::string& name, ISvcLocator* pSvcLocator ) : base_class( name, pSvcLocator )
   {
     initGaudiCommonConstructor();

@@ -19,7 +19,7 @@ namespace Gaudi
     {
 
       /// Write the content of the RootAddress of a data object
-      class DumpAddress : public Algorithm
+      class DumpAddress : public ::Algorithm
       {
       public:
         using Algorithm::Algorithm;

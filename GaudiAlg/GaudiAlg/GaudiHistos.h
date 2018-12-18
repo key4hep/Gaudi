@@ -2699,7 +2699,7 @@ public:
   // ==========================================================================
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from GaudiAlgorithm
-  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiAlgorithm, PBASE>::value, U>>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Gaudi::Algorithm, PBASE>::value, U>>
   GaudiHistos( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator )
   {
   }

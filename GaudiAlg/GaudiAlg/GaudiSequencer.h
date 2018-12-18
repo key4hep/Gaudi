@@ -3,7 +3,9 @@
 
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiAlg/GaudiAlg.h"
+#include "GaudiAlg/GaudiCommon.h"
+#include <Gaudi/Sequence.h>
 
 // Forward declarations
 class ISequencerTimerTool;
@@ -23,16 +25,15 @@ class ISequencerTimerTool;
  *  @author Olivier Callot
  *  @date   2004-05-13
  */
-class GAUDI_API GaudiSequencer : public GaudiAlgorithm
+class GAUDI_API GaudiSequencer : public GaudiCommon<Gaudi::Sequence>
 {
 public:
   /// Standard constructor
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using GaudiCommon::GaudiCommon;
 
-  StatusCode initialize() override; ///< Algorithm initialization
-  StatusCode execute() override;    ///< Algorithm execution
-
-  bool isSequence() const override final { return true; }
+  StatusCode initialize() override;
+  StatusCode execute( const EventContext& ctx ) const override;
+  StatusCode sysExecute( const EventContext& ctx ) override;
 
   /// Produce string represention of the control flow expression.
   std::ostream& toControlFlowExpression( std::ostream& os ) const override;
@@ -42,19 +43,19 @@ private:
   {
   public:
     /// Standard constructor
-    AlgorithmEntry( Algorithm* alg ) : m_algorithm( alg ) {}
+    AlgorithmEntry( Gaudi::Algorithm* alg ) : m_algorithm( alg ) {}
 
     void setReverse( bool flag ) { m_reverse = flag; }
 
-    Algorithm* algorithm() const { return m_algorithm; }
-    bool       reverse() const { return m_reverse; }
+    Gaudi::Algorithm* algorithm() const { return m_algorithm; }
+    bool              reverse() const { return m_reverse; }
     void setTimer( int nb ) { m_timer = nb; }
     int                timer() const { return m_timer; }
 
   private:
-    Algorithm* m_algorithm = nullptr; ///< Algorithm pointer
-    bool       m_reverse   = false;   ///< Indicates that the flag has to be inverted
-    int        m_timer     = 0;       ///< Timer number for this algorithm
+    Gaudi::Algorithm* m_algorithm = nullptr; ///< Algorithm pointer
+    bool              m_reverse   = false;   ///< Indicates that the flag has to be inverted
+    int               m_timer     = 0;       ///< Timer number for this algorithm
   };
 
   /** Decode a vector of string. */
@@ -63,9 +64,10 @@ private:
   /** for asynchronous changes in the list of algorithms */
   void membershipHandler();
 
-  /** copy/assignment not allowed **/
-  GaudiSequencer( const GaudiSequencer& a ) = delete;
-  GaudiSequencer& operator=( const GaudiSequencer& a ) = delete;
+  Gaudi::Property<std::vector<std::string>> m_vetoObjs{
+      this, "VetoObjects", {}, "skip execute if one or more of these TES objects exist"};
+  Gaudi::Property<std::vector<std::string>> m_requireObjs{
+      this, "RequireObjects", {}, "execute only if one or more of these TES objects exist"};
 
   Gaudi::Property<std::vector<std::string>> m_names = {
       this, "Members", {}, &GaudiSequencer::membershipHandler, "list of algorithms"};

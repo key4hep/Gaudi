@@ -7,7 +7,7 @@ namespace Gaudi
 {
   namespace Examples
   {
-    using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Algorithm>;
+    using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<::Algorithm>;
 
     struct THDataProducer : Gaudi::Functional::Producer<int(), BaseClass_t> {
 

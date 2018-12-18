@@ -4,11 +4,11 @@
 #include "GaudiKernel/IHistorySvc.h"
 
 #include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IVersHistoryObj.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
+#include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/MsgStream.h"
@@ -54,9 +54,9 @@ public:
   ServiceHistory* getServiceHistory( const IService& ) const override;
   void            getServiceHistory( std::set<ServiceHistory*>& ) const override;
 
-  StatusCode        registerAlg( const Algorithm& ) override;
-  StatusCode        listProperties( const Algorithm& ) const override;
-  AlgorithmHistory* getAlgHistory( const Algorithm& ) const override;
+  StatusCode        registerAlg( const Gaudi::Algorithm& ) override;
+  StatusCode        listProperties( const Gaudi::Algorithm& ) const override;
+  AlgorithmHistory* getAlgHistory( const Gaudi::Algorithm& ) const override;
   void              getAlgHistory( std::set<AlgorithmHistory*>& ) const override;
 
   StatusCode      registerAlgTool( const IAlgTool& ) override;
@@ -92,7 +92,7 @@ private:
 
   IAlgContextSvc* p_algCtxSvc = nullptr;
 
-  std::map<const Algorithm*, AlgorithmHistory*> m_algmap;
+  std::map<const Gaudi::Algorithm*, AlgorithmHistory*> m_algmap;
 
   std::set<const IAlgTool*> m_ialgtools;
   std::map<const AlgTool*, AlgToolHistory*>  m_algtoolmap;
@@ -104,7 +104,7 @@ private:
 
   void dumpProperties( std::ofstream& ) const;
   void dumpProperties( const IService&, std::ofstream& ) const;
-  void dumpProperties( const Algorithm&, std::ofstream& ) const;
+  void dumpProperties( const Gaudi::Algorithm&, std::ofstream& ) const;
   void dumpProperties( const IAlgTool&, std::ofstream& ) const;
 
   void dumpState( std::ofstream& ) const;

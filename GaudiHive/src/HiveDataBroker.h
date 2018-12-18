@@ -1,7 +1,7 @@
 #pragma once
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IDataBroker.h"
 #include "GaudiKernel/Service.h"
+#include <Gaudi/Algorithm.h>
 #include <stdexcept>
 
 class HiveDataBrokerSvc final : public extends<Service, IDataBroker>
@@ -9,10 +9,10 @@ class HiveDataBrokerSvc final : public extends<Service, IDataBroker>
 public:
   using extends::extends;
 
-  std::vector<Algorithm*> algorithmsRequiredFor( const DataObjIDColl&            requested,
-                                                 const std::vector<std::string>& stoppers = {} ) const override;
-  std::vector<Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg,
-                                                 const std::vector<std::string>&     stoppers = {} ) const override;
+  std::vector<Gaudi::Algorithm*> algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                                        const std::vector<std::string>& stoppers = {} ) const override;
+  std::vector<Gaudi::Algorithm*> algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& alg,
+                                                        const std::vector<std::string>& stoppers = {} ) const override;
 
   StatusCode initialize() override;
   StatusCode start() override;
@@ -27,11 +27,11 @@ private:
 
   struct AlgEntry {
     SmartIF<IAlgorithm> ialg;
-    Algorithm*          alg;
+    Gaudi::Algorithm*   alg;
     std::set<AlgEntry*> dependsOn;
     int                 requestCount = 0;
 
-    AlgEntry( SmartIF<IAlgorithm>&& p ) : ialg{std::move( p )}, alg{dynamic_cast<Algorithm*>( ialg.get() )}
+    AlgEntry( SmartIF<IAlgorithm>&& p ) : ialg{std::move( p )}, alg{dynamic_cast<Gaudi::Algorithm*>( ialg.get() )}
     {
       if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
     }

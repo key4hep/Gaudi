@@ -25,6 +25,15 @@ DECLARE_COMPONENT( OutputStream )
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 
+namespace
+{
+  bool passed( const Gaudi::Algorithm* alg )
+  {
+    const auto& algState = alg->execState( Gaudi::Hive::currentContext() );
+    return algState.state() == AlgExecState::State::Done && algState.filterPassed();
+  }
+}
+
 // initialize data writer
 StatusCode OutputStream::initialize()
 {
@@ -76,7 +85,7 @@ StatusCode OutputStream::initialize()
   ON_DEBUG debug() << "AlgDependentItemList : " << m_algDependentItemList.value() << endmsg;
   for ( const auto& a : m_algDependentItemList ) {
     // Get the algorithm pointer
-    Algorithm* theAlgorithm = decodeAlgorithm( a.first );
+    auto theAlgorithm = decodeAlgorithm( a.first );
     if ( theAlgorithm ) {
       // Get the item list for this alg
       auto& items = m_algDependentItems[theAlgorithm];
@@ -253,9 +262,9 @@ StatusCode OutputStream::collectObjects()
 
   // Collect objects dependent on particular algorithms
   for ( const auto& iAlgItems : m_algDependentItems ) {
-    Algorithm*   alg   = iAlgItems.first;
+    auto         alg   = iAlgItems.first;
     const Items& items = iAlgItems.second;
-    if ( alg->isExecuted() && alg->filterPassed() ) {
+    if ( passed( alg ) ) {
       ON_DEBUG
       debug() << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
       for ( const auto& i : items ) {
@@ -418,9 +427,9 @@ StatusCode OutputStream::connectConversionSvc()
   return StatusCode::SUCCESS;
 }
 
-Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
+Gaudi::Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
 {
-  Algorithm* theAlgorithm = nullptr;
+  Gaudi::Algorithm* theAlgorithm = nullptr;
 
   auto theAlgMgr = serviceLocator()->as<IAlgManager>();
   if ( theAlgMgr ) {
@@ -429,7 +438,7 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
     SmartIF<IAlgorithm>& theIAlg = theAlgMgr->algorithm( theName );
     if ( theIAlg ) {
       try {
-        theAlgorithm = dynamic_cast<Algorithm*>( theIAlg.get() );
+        theAlgorithm = dynamic_cast<Gaudi::Algorithm*>( theIAlg.get() );
       } catch ( ... ) {
         // do nothing
       }
@@ -446,7 +455,7 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
 }
 
 void OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
-                                     std::vector<Algorithm*>&                   theAlgs )
+                                     std::vector<Gaudi::Algorithm*>&            theAlgs )
 {
   // Reset the list of Algorithms
   theAlgs.clear();
@@ -454,7 +463,7 @@ void OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& 
   // Build the list of Algorithms from the names list
   for ( const auto& it : theNames.value() ) {
 
-    Algorithm* theAlgorithm = decodeAlgorithm( it );
+    auto theAlgorithm = decodeAlgorithm( it );
     if ( theAlgorithm ) {
       // Check that the specified algorithm doesn't already exist in the list
       if ( std::find( std::begin( theAlgs ), std::end( theAlgs ), theAlgorithm ) == std::end( theAlgs ) ) {
@@ -469,8 +478,6 @@ void OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& 
 
 bool OutputStream::isEventAccepted() const
 {
-  auto passed = []( const Algorithm* alg ) { return alg->isExecuted() && alg->filterPassed(); };
-
   // Loop over all Algorithms in the accept list to see
   // whether any have been executed and have their filter
   // passed flag set. Any match causes the event to be
