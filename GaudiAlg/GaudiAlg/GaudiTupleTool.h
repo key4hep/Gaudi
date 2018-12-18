@@ -51,4 +51,3 @@ struct GAUDI_API GaudiTupleTool : GaudiTuples<GaudiHistoTool> {
 // The END
 // ============================================================================
 #endif // GAUDIALG_GAUDITUPLETOOL_H
-// ============================================================================

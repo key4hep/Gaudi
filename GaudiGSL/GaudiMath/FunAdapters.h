@@ -279,4 +279,3 @@ namespace Genfun
 #endif
 
 #endif // GAUDIMATH_FUNADAPTERS_H
-// ============================================================================

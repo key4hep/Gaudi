@@ -196,4 +196,3 @@ PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE&>& p
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_PROPERTYMGR_H
-// ============================================================================

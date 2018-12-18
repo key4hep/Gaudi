@@ -35,4 +35,3 @@ namespace GaudiMath
 } // end of namespace GaudiMath
 
 #endif // GAUDIMATH_ADAPTERS_H
-// ============================================================================

@@ -77,4 +77,3 @@ inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColum
 // The END
 // ============================================================================
 #endif // TUPLEEX_TUPLEDEF_H
-// ============================================================================

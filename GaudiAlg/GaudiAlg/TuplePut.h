@@ -155,4 +155,3 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
 // The END
 // ============================================================================
 #endif // GAUDIALG_TUPLEPUT_H
-// ============================================================================

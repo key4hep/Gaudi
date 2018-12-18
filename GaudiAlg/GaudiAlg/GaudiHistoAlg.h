@@ -50,4 +50,3 @@ struct GAUDI_API GaudiHistoAlg : GaudiHistos<GaudiAlgorithm> {
 // The END
 // ============================================================================
 #endif // GAUDIALG_GAUDIHISTOAL_H
-// ============================================================================

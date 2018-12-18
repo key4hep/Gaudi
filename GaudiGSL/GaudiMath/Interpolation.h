@@ -30,4 +30,3 @@ namespace GaudiMath
 } // end of namespace GaudiMath
 
 #endif // GAUDIMATH_INTERPOLATION_H
-// ============================================================================

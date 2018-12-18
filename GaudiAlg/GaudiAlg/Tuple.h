@@ -332,4 +332,3 @@ inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColum
 // THe END
 // ============================================================================
 #endif // GAUDIALG_TUPLE_H
-// ============================================================================

@@ -52,4 +52,3 @@ typedef Gaudi::Property<Gaudi::Histo1DDef&> Histo1DPropertyRef;
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_HISTOPROPERTY_H
-// ============================================================================

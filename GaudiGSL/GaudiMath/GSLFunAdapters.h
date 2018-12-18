@@ -169,4 +169,3 @@ namespace Genfun
 #endif
 
 #endif // GAUDIMATH_GSLFUNADAPTERS_H
-// ============================================================================

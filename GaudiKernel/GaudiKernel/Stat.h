@@ -295,4 +295,3 @@ GAUDI_API std::ostream& operator<<( std::ostream& stream, const Stat& stat );
 // The END
 // ============================================================================
 #endif // __GAUDI_CHRONOSTATSVC_STAT_H__
-// ============================================================================

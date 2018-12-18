@@ -311,4 +311,3 @@ inline std::string ChronoEntity::outputElapsedTime( const std::string& fmt, Syst
 // The END
 // ============================================================================
 #endif //  GAUDIKERNEL_CHRONOENTITY_H
-// ============================================================================
