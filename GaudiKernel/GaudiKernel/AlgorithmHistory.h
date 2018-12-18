@@ -12,7 +12,10 @@
 #include <typeinfo>
 #include <vector>
 
-class Algorithm;
+namespace Gaudi
+{
+  class Algorithm;
+}
 class JobHistory;
 
 /** @class AlgorithmHistory AlgorithmHistory.h
@@ -41,7 +44,7 @@ private: // data
   std::string m_algorithm_name;
 
   // Algorithm
-  const Algorithm* m_algorithm;
+  const Gaudi::Algorithm* m_algorithm;
 
   // Properties.
   PropertyList m_properties;
@@ -54,7 +57,7 @@ private: // data
 
 public: // functions
   // Constructor from the algorithm.
-  explicit AlgorithmHistory( const Algorithm& alg, const JobHistory* job );
+  explicit AlgorithmHistory( const Gaudi::Algorithm& alg, const JobHistory* job );
 
   // All-fields Constructor for persistency
   explicit AlgorithmHistory( const std::string& algVersion, const std::string& algName, const std::string& algType,
@@ -76,7 +79,7 @@ public: // functions
   const std::string& algorithm_name() const { return m_algorithm_name; }
 
   // The actual algorithm
-  const Algorithm* algorithm() const { return m_algorithm; }
+  const Gaudi::Algorithm* algorithm() const { return m_algorithm; }
 
   // Return the algorithm properties.
   const PropertyList& properties() const override { return m_properties; }

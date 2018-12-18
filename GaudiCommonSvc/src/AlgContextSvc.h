@@ -34,9 +34,9 @@ class AlgContextSvc : public extends<Service, IAlgContextSvc, IIncidentListener>
 {
 public:
   /// set the currently executing algorithm ("push_back") @see IAlgContextSvc
-  StatusCode setCurrentAlg( IAlgorithm* a ) override;
+  StatusCode setCurrentAlg( IAlgorithm* a, const EventContext& context ) override;
   /// remove the algorithm ("pop_back") @see IAlgContextSvc
-  StatusCode unSetCurrentAlg( IAlgorithm* a ) override;
+  StatusCode unSetCurrentAlg( IAlgorithm* a, const EventContext& context ) override;
   /// accessor to current algorithm: @see IAlgContextSvc
   IAlgorithm* currentAlg() const override;
   /// get the stack of executed algorithms @see IAlgContextSvc

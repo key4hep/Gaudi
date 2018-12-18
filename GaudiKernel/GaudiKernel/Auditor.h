@@ -16,7 +16,6 @@
 // Forward declarations
 class IService;
 class IMessageSvc;
-class Algorithm;
 
 /** @class Auditor Auditor.h GaudiKernel/Auditor.h
 

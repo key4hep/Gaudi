@@ -18,7 +18,10 @@
 class IInterface;
 class IToolSvc;
 
-class Algorithm;
+namespace Gaudi
+{
+  class Algorithm;
+}
 class AlgTool;
 class Service;
 
@@ -130,7 +133,7 @@ template <class T>
 class ToolHandle : public BaseToolHandle, public GaudiHandle<T>
 {
 
-  friend class Algorithm;
+  friend class Gaudi::Algorithm;
   friend class AlgTool;
   friend class Service;
 

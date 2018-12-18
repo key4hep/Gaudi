@@ -10,9 +10,9 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/Service.h"
+#include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/IJobOptionsSvc.h"

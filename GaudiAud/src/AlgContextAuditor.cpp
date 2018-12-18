@@ -1,11 +1,13 @@
-#include <cassert>
+#include "AlgContextAuditor.h"
 
+#include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
-#include "AlgContextAuditor.h"
+#include <cassert>
 
 // ============================================================================
 /** @file
@@ -16,13 +18,14 @@
 // ============================================================================
 namespace
 {
-  template <StatusCode ( IAlgContextSvc::*fun )( IAlgorithm* )>
+  template <StatusCode ( IAlgContextSvc::*fun )( IAlgorithm*, const EventContext& )>
   void call( IAlgContextSvc* ctx, INamedInterface* a )
   {
     if ( ctx ) {
       // make a safe cast using "smart interface"
       SmartIF<IAlgorithm> alg{a};
-      if ( alg ) ( ctx->*fun )( alg.get() ).ignore();
+      const EventContext& ectx = Gaudi::Hive::currentContext();
+      if ( alg ) ( ctx->*fun )( alg.get(), ectx ).ignore();
     }
   }
 }

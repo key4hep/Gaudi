@@ -30,8 +30,8 @@ class OutputStream : public Algorithm
 public:
   typedef std::vector<DataStoreItem*> Items;
   typedef std::vector<std::string>    ItemNames;
-  typedef std::map<Algorithm*, Items>      AlgDependentItems;
-  typedef std::map<std::string, ItemNames> AlgDependentItemNames;
+  typedef std::map<Gaudi::Algorithm*, Items> AlgDependentItems;
+  typedef std::map<std::string, ItemNames>   AlgDependentItemNames;
 
 public:
   /// Standard algorithm Constructor
@@ -108,17 +108,17 @@ protected:
   int m_events;
 
   /// Vector of Algorithms that this stream accepts
-  std::vector<Algorithm*> m_acceptAlgs;
+  std::vector<Gaudi::Algorithm*> m_acceptAlgs;
   /// Vector of Algorithms that this stream requires
-  std::vector<Algorithm*> m_requireAlgs;
+  std::vector<Gaudi::Algorithm*> m_requireAlgs;
   /// Vector of Algorithms that this stream is vetoed by
-  std::vector<Algorithm*> m_vetoAlgs;
+  std::vector<Gaudi::Algorithm*> m_vetoAlgs;
 
 protected:
   /// Decode a single algorithm name
-  Algorithm* decodeAlgorithm( const std::string& theName );
+  Gaudi::Algorithm* decodeAlgorithm( const std::string& theName );
   /// Decode specified list of Algorithms
-  void decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames, std::vector<Algorithm*>& theAlgs );
+  void decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames, std::vector<Gaudi::Algorithm*>& theAlgs );
   /// Test whether this event should be output
   bool isEventAccepted() const;
   /// Find single item identified by its path (exact match)

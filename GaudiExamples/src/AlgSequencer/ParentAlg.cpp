@@ -3,55 +3,44 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/MsgStream.h"
-
-// Static Factory declaration
+#include "GaudiKernel/ThreadLocalContext.h"
 
 DECLARE_COMPONENT( ParentAlg )
 
-// Constructor
-//------------------------------------------------------------------------------
-ParentAlg::ParentAlg( const std::string& name, ISvcLocator* ploc ) : GaudiAlgorithm( name, ploc )
-{
-  //------------------------------------------------------------------------------
-}
-
-//------------------------------------------------------------------------------
 StatusCode ParentAlg::initialize()
 {
-  //------------------------------------------------------------------------------
-  StatusCode sc;
-
   info() << "creating sub-algorithms...." << endmsg;
 
-  sc = createSubAlgorithm( "SubAlg", "SubAlg1", m_subalg1 );
-  if ( sc.isFailure() ) return Error( "Error creating Sub-Algorithm SubAlg1", sc );
+  auto sc = createSubAlgorithm( "SubAlg", "SubAlg1", m_subalg1 );
+  if ( !sc ) {
+    error() << "Error creating Sub-Algorithm SubAlg1" << endmsg;
+    return sc;
+  }
 
   sc = createSubAlgorithm( "SubAlg", "SubAlg2", m_subalg2 );
-  if ( sc.isFailure() ) return Error( "Error creating Sub-Algorithm SubAlg2", sc );
+  if ( !sc ) {
+    error() << "Error creating Sub-Algorithm SubAlg2" << endmsg;
+    return sc;
+  }
 
-  return StatusCode::SUCCESS;
+  // the base class must be invoked _after_ the subalgorithms are created
+  return Sequence::initialize();
 }
 
-//------------------------------------------------------------------------------
-StatusCode ParentAlg::execute()
+StatusCode ParentAlg::execute( const EventContext& ctx ) const
 {
-  //------------------------------------------------------------------------------
-  StatusCode sc;
   info() << "executing...." << endmsg;
 
   for ( auto alg : ( *subAlgorithms() ) ) {
-    sc = alg->execute();
-    if ( sc.isFailure() ) {
+    if ( !alg->sysExecute( ctx ) ) {
       error() << "Error executing Sub-Algorithm" << alg->name() << endmsg;
     }
   }
   return StatusCode::SUCCESS;
 }
 
-//------------------------------------------------------------------------------
 StatusCode ParentAlg::finalize()
 {
-  //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
-  return StatusCode::SUCCESS;
+  return Sequence::finalize();
 }

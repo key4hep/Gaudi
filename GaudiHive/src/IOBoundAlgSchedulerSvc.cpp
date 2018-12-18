@@ -7,9 +7,9 @@
 
 // Framework includes
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
+#include <Gaudi/Algorithm.h> // will be IAlgorithm if context getter promoted to interface
 
 // Local
 #include "IOBoundAlgSchedulerSvc.h"

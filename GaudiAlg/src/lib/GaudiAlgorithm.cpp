@@ -89,32 +89,34 @@ SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
  *  @return status code
  */
 // ============================================================================
-StatusCode GaudiAlgorithm::sysExecute( const EventContext& evtCtx )
+StatusCode GaudiAlgorithm::sysExecute( const EventContext& ctx )
 {
-  IAlgContextSvc* ctx = nullptr;
+  StatusCode sc{StatusCode::SUCCESS};
+
+  IAlgContextSvc* algCtx = nullptr;
   if ( registerContext() ) {
-    ctx = contextSvc();
+    algCtx = contextSvc();
   }
   // Lock the context
-  Gaudi::Utils::AlgContext cnt( ctx, this ); ///< guard/sentry
+  Gaudi::Utils::AlgContext cnt( this, algCtx, ctx ); ///< guard/sentry
 
   // Do not execute if one or more of the m_vetoObjs exist in TES
-  auto it = std::find_if( std::begin( m_vetoObjs ), std::end( m_vetoObjs ),
-                          [&]( const std::string& loc ) { return this->exist<DataObject>( loc ); } );
-  if ( it != std::end( m_vetoObjs ) ) {
+  const auto it = find_if( begin( m_vetoObjs ), end( m_vetoObjs ),
+                           [&]( const std::string& loc ) { return this->exist<DataObject>( loc ); } );
+  if ( it != end( m_vetoObjs ) ) {
     if ( msgLevel( MSG::DEBUG ) ) debug() << *it << " found, skipping event " << endmsg;
-    return StatusCode::SUCCESS;
+    return sc;
   }
 
   // Execute if m_requireObjs is empty
   // or if one or more of the m_requireObjs exist in TES
   bool doIt =
-      m_requireObjs.empty() || std::any_of( std::begin( m_requireObjs ), std::end( m_requireObjs ),
-                                            [&]( const std::string& loc ) { return this->exist<DataObject>( loc ); } );
+      m_requireObjs.empty() || any_of( begin( m_requireObjs ), end( m_requireObjs ),
+                                       [&]( const std::string& loc ) { return this->exist<DataObject>( loc ); } );
 
   // execute the generic method:
-  if ( doIt ) return Algorithm::sysExecute( evtCtx );
-  return StatusCode::SUCCESS;
+  if ( doIt ) sc = Algorithm::sysExecute( ctx );
+  return sc;
 }
 // ============================================================================
 

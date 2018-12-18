@@ -1,12 +1,12 @@
 // Include files
 #include "AlgorithmManager.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/TypeNameString.h"
+#include <Gaudi/Algorithm.h>
 #include <iostream>
 #ifndef _WIN32
 #include <errno.h>
@@ -60,7 +60,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
       actualalgtype = typeAlias->second;
     }
   }
-  algorithm = Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() ).release();
+  algorithm = Gaudi::Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() ).release();
   if ( !algorithm ) {
     this->error() << "Algorithm of type " << actualalgtype << " is unknown (No factory available)." << endmsg;
 #ifndef _WIN32
@@ -221,7 +221,7 @@ void AlgorithmManager::outputLevelUpdate()
 {
   resetMessaging();
   for ( auto& algItem : m_algs ) {
-    const auto alg = dynamic_cast<Algorithm*>( algItem.algorithm.get() );
+    const auto alg = dynamic_cast<Gaudi::Algorithm*>( algItem.algorithm.get() );
     if ( alg ) alg->resetMessaging();
   }
 }

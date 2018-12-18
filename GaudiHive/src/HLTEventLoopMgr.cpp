@@ -1,5 +1,4 @@
 // FW includes
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/AppReturnCode.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataSvc.h"
@@ -15,6 +14,7 @@
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/Memory.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include <Gaudi/Algorithm.h>
 
 #include "EventSlot.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
@@ -67,14 +67,14 @@ namespace
 
 struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
 
-  std::vector<Algorithm*>&      m_algorithms;
-  std::unique_ptr<EventContext> m_evtCtx;
-  IAlgExecStateSvc*             m_aess;
-  SmartIF<ISvcLocator>          m_serviceLocator;
-  const HLTEventLoopMgr*        m_parent;
+  std::vector<Gaudi::Algorithm*>& m_algorithms;
+  std::unique_ptr<EventContext>   m_evtCtx;
+  IAlgExecStateSvc*               m_aess;
+  SmartIF<ISvcLocator>            m_serviceLocator;
+  const HLTEventLoopMgr*          m_parent;
 
-  HLTExecutionTask( std::vector<Algorithm*>& algorithms, std::unique_ptr<EventContext> ctx, ISvcLocator* svcLocator,
-                    IAlgExecStateSvc* aem, const HLTEventLoopMgr* parent )
+  HLTExecutionTask( std::vector<Gaudi::Algorithm*>& algorithms, std::unique_ptr<EventContext> ctx,
+                    ISvcLocator* svcLocator, IAlgExecStateSvc* aem, const HLTEventLoopMgr* parent )
       : m_algorithms( algorithms )
       , m_evtCtx( std::move( ctx ) )
       , m_aess( aem )
@@ -96,7 +96,7 @@ struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
 
     const SmartIF<IProperty> appmgr( m_serviceLocator );
 
-    for ( Algorithm* ialg : m_algorithms ) {
+    for ( Gaudi::Algorithm* ialg : m_algorithms ) {
 
       // select the appropriate store
       ialg->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
@@ -131,7 +131,7 @@ struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
       m_aess->updateEventStatus( eventfailed, *m_evtCtx );
 
       // in case the algorithm was a filter and the filter did not pass, stop here
-      if ( !ialg->filterPassed() ) break;
+      if ( !ialg->execState( *m_evtCtx ).filterPassed() ) break;
     }
     // update scheduler state
     m_parent->promoteToExecuted( std::move( m_evtCtx ) );
@@ -202,7 +202,7 @@ StatusCode HLTEventLoopMgr::initialize()
     // strictly neccessary, but an optimization)
     for ( const auto& alg : m_topAlgs.value() ) {
       auto algs = databroker->algorithmsRequiredFor( alg );
-      std::copy_if( begin( algs ), end( algs ), std::back_inserter( m_algos ), [this]( const Algorithm* a ) {
+      std::copy_if( begin( algs ), end( algs ), std::back_inserter( m_algos ), [this]( const Gaudi::Algorithm* a ) {
         return std::find( begin( this->m_algos ), end( this->m_algos ), a ) == end( this->m_algos );
       } );
     }
@@ -237,8 +237,8 @@ StatusCode HLTEventLoopMgr::initialize()
     }
 
     // figure out all outputs
-    std::map<DataObjID, Algorithm*> producers;
-    for ( Algorithm* algoPtr : m_algos ) {
+    std::map<DataObjID, Gaudi::Algorithm*> producers;
+    for ( Gaudi::Algorithm* algoPtr : m_algos ) {
       for ( auto id : algoPtr->outputDataObjs() ) {
         auto r        = globalOutp.insert( id );
         producers[id] = algoPtr;
@@ -254,10 +254,10 @@ StatusCode HLTEventLoopMgr::initialize()
     // Building and printing Data Dependencies
     std::vector<DataObjIDColl> algosDependencies;
     algosDependencies.reserve( m_algos.size() ); // reserve so that pointers into the vector do not get invalidated...
-    std::map<const Algorithm*, DataObjIDColl*> algo2Deps;
+    std::map<const Gaudi::Algorithm*, DataObjIDColl*> algo2Deps;
     info() << "Data Dependencies for Algorithms:";
 
-    for ( Algorithm* algoPtr : m_algos ) {
+    for ( Gaudi::Algorithm* algoPtr : m_algos ) {
       info() << "\n  " << algoPtr->name();
 
       DataObjIDColl algoDependencies;
@@ -330,11 +330,11 @@ StatusCode HLTEventLoopMgr::initialize()
     auto start = m_algos.begin();
     auto end   = m_algos.end();
     auto current =
-        std::partition( start, end, [&algo2Deps]( const Algorithm* algo ) { return algo2Deps[algo]->empty(); } );
+        std::partition( start, end, [&algo2Deps]( const Gaudi::Algorithm* algo ) { return algo2Deps[algo]->empty(); } );
 
     // Repeatedly put in front algos for which input are already fullfilled
     while ( current != end ) {
-      current = std::partition( current, end, [start, current, &producers, &algo2Deps]( const Algorithm* algo ) {
+      current = std::partition( current, end, [start, current, &producers, &algo2Deps]( const Gaudi::Algorithm* algo ) {
         return std::none_of( algo2Deps[algo]->begin(), algo2Deps[algo]->end(),
                              [start, current, &producers]( const DataObjID& id ) {
                                return std::find( start, current, producers[id] ) == current;
@@ -350,7 +350,7 @@ StatusCode HLTEventLoopMgr::initialize()
 
   // Fill the containers to convert algo names to index
   debug() << "Order of algo execution :" << endmsg;
-  for ( const Algorithm* algo : m_algos ) debug() << "  . " << algo->name() << endmsg;
+  for ( const Gaudi::Algorithm* algo : m_algos ) debug() << "  . " << algo->name() << endmsg;
 
   return sc;
 }
