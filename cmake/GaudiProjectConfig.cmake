@@ -6,9 +6,10 @@
 # Commit Id: $Format:%H$
 
 cmake_minimum_required(VERSION 2.8.12)
-
-if(NOT CMAKE_VERSION VERSION_LESS 3.0) # i.e CMAKE_VERSION >= 3.0
+if(POLICY CMP0026)
   cmake_policy(SET CMP0026 NEW)
+if(POLICY CMP0077)
+  cmake_policy(SET CMP0077 NEW)
 endif()
 
 # Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
