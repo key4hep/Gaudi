@@ -78,6 +78,10 @@ public:
    */
   virtual bool io_contains( IIoComponent* iocomponent, const std::string& fname ) const = 0;
 
+  /** @brief: retrieve all registered filenames for a given @c IIoComponent
+   */
+  virtual std::vector<std::string> io_retrieve( IIoComponent* iocomponent ) = 0;
+
   /** @brief: retrieve the new filename for a given @c IIoComponent and
    *          @param `fname` filename
    */

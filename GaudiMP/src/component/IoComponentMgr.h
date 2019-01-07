@@ -13,6 +13,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 // FrameWork includes
 #include "GaudiKernel/Service.h"
@@ -90,6 +91,10 @@ public:
   /** @brief: Update all @c IIoComponents with a new work directory
    */
   StatusCode io_update_all( const std::string& work_dir ) override;
+
+  /** @brief: retrieve all registered filenames for a given @c IIoComponent
+   */
+  std::vector<std::string> io_retrieve( IIoComponent* iocomponent ) override;
 
   /** @brief: retrieve the new filename for a given @c IIoComponent and
    *          @param `fname` filename
