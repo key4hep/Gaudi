@@ -36,12 +36,12 @@ EventIDBase::EventIDBase( number_type run_number, event_number_t event_number, n
 }
 
 
-EventIDBase::EventIDBase (std::tuple<number_type,event_number_t,number_type> run_lumi_ev,
+EventIDBase::EventIDBase (std::tuple<number_type,number_type,event_number_t> run_lumi_ev,
 			   std::tuple<number_type,number_type> time_stamp,number_type bunch_crossing_id) : 
   EventIDBase(std::get<0>(run_lumi_ev),//run number
-	       std::get<1>(run_lumi_ev),//event number
+	       std::get<2>(run_lumi_ev),//event number
 	       std::get<0>(time_stamp),//timestamp in seconds
-	       std::get<1>(time_stamp),//nanoseconds offst
-	       std::get<2>(run_lumi_ev),//lumi block
+	       std::get<1>(time_stamp),//nanoseconds offst 
+	       std::get<1>(run_lumi_ev),//lumi block
 	       bunch_crossing_id) {}
 

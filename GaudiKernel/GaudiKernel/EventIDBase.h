@@ -76,8 +76,8 @@ public:
                number_type time_stamp_ns_offset = 0, number_type lumi_block = UNDEFNUM,
                number_type bunch_crossing_id = 0 );
 
-  EventIDBase (std::tuple<number_type,event_number_t,number_type> run_lumi_ev,
-	       std::tuple<number_type,number_type> time_stamp, number_type bunch_crossing_id = 0);
+ EventIDBase(std::tuple<number_type,number_type,event_number_t> run_lumi_ev,
+	     std::tuple<number_type,number_type> time_stamp, number_type bunch_crossing_id);
 
   // Use default copy constructor.
   virtual ~EventIDBase() = default;
