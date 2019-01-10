@@ -5,9 +5,11 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
+#include <atomic>
 #include <fstream>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <string>
 // ============================================================================
 // GaudiKernel
@@ -16,6 +18,8 @@
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Service.h"
+#include "GaudiKernel/ServiceHandle.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 // ============================================================================
 /// forward declarations
 // ============================================================================
@@ -101,9 +105,10 @@ public:
   // ============================================================================
   /**  Default constructor.
    *   @param name service instance name
-   *   @param svcloc pointer to servcie locator
+   *   @param svcloc pointer to service locator
    */
-  using extends::extends;
+  ChronoStatSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc ) {}
+
   /// Compound assignment operator
   void merge( const ChronoStatSvc& css );
   // ============================================================================
@@ -127,6 +132,14 @@ private:
   void saveStats();
   // ============================================================================
 private:
+  bool isMT() const;
+
+  ChronoEntity& getEntity( const ChronoTag& chronoTag )
+  {
+    lock_t lock( m_mutex );
+    return m_chronoEntities[chronoTag];
+  }
+
   // basically limit the integer to MSG::Level range
   static MSG::Level int2level( int l )
   {
@@ -136,6 +149,10 @@ private:
   // ============================================================================
   /// chrono part
   ChronoMap m_chronoEntities;
+  /// Mutex protecting m_chronoEntities.
+  mutable std::mutex                  m_mutex;
+  typedef std::lock_guard<std::mutex> lock_t;
+
   /// level of info printing
   MSG::Level m_chronoPrintLevel = MSG::INFO;
 
@@ -176,6 +193,8 @@ private:
                                        "Use the special format for printout of efficiency counters"};
 
   Gaudi::Property<std::string> m_perEventFile{this, "PerEventFile", "", "File name for per-event deltas"};
+
+  ServiceHandle<IInterface> m_hiveWhiteBoardSvc{this, "HiveWhiteBoardSvc", "EventDataSvc"};
 
   typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>> TimeMap;
   TimeMap       m_perEvtTime;
