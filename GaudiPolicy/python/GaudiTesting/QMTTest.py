@@ -22,7 +22,9 @@ class QMTTest(BaseTest):
         import xml.etree.ElementTree as ET
         log.debug('parsing %s', path)
 
-        self.name = path
+        self.name = '.'.join(os.path.relpath(path, self.basedir)
+                             .replace('.qmt', '').replace('.qms', '')
+                             .split(os.sep))
 
         tree = ET.parse(path)
         for child in tree.getroot():

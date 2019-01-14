@@ -472,13 +472,20 @@ class BaseTest(object):
         # Compare TTree summaries
         causes = self.CheckTTreesSummaries(stdout, result, causes)
         causes = self.CheckHistosSummaries(stdout, result, causes)
-        if causes:  # Write a new reference file for stdout
+        if causes and lreference:  # Write a new reference file for stdout
             try:
-                newref = open(lreference + ".new", "w")
+                cnt = 0
+                newrefname = '.'.join([lreference, 'new'])
+                while os.path.exists(newrefname):
+                    cnt += 1
+                    newrefname = '.'.join([lreference, '~%d~' % cnt, 'new'])
+                newref = open(newrefname, "w")
                 # sanitize newlines
                 for l in stdout.splitlines():
                     newref.write(l.rstrip() + '\n')
                 del newref  # flush and close
+                result['New Output Reference File'] = os.path.relpath(
+                    newrefname, self.basedir)
             except IOError:
                 # Ignore IO errors when trying to update reference files
                 # because we may be in a read-only filesystem
@@ -487,18 +494,28 @@ class BaseTest(object):
         # check standard error
         lreference = self._expandReferenceFileName(self.error_reference)
         # call the validator if we have a file to use
-        if lreference and os.path.isfile(lreference):
-            newcauses = ReferenceFileValidator(lreference,
-                                               "standard error",
-                                               "Error Diff",
-                                               preproc=preproc)(stderr, result)
+        if lreference:
+            if os.path.isfile(lreference):
+                newcauses = ReferenceFileValidator(lreference,
+                                                   "standard error",
+                                                   "Error Diff",
+                                                   preproc=preproc)(stderr, result)
+            else:
+                newcauses += ["missing error reference file"]
             causes += newcauses
-            if newcauses:  # Write a new reference file for stdedd
-                newref = open(lreference + ".new", "w")
+            if newcauses and lreference:  # Write a new reference file for stdedd
+                cnt = 0
+                newrefname = '.'.join([lreference, 'new'])
+                while os.path.exists(newrefname):
+                    cnt += 1
+                    newrefname = '.'.join([lreference, '~%d~' % cnt, 'new'])
+                newref = open(newrefname, "w")
                 # sanitize newlines
                 for l in stderr.splitlines():
                     newref.write(l.rstrip() + '\n')
                 del newref  # flush and close
+                result['New Error Reference File'] = os.path.relpath(
+                    newrefname, self.basedir)
         else:
             causes += BasicOutputValidator(lreference, "standard error",
                                            "ExecTest.expected_stderr")(stderr, result)
