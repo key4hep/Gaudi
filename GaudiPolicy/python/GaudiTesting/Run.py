@@ -154,19 +154,12 @@ def main():
     elif filename.endswith(".qmt"):
         # Check which class should be used to instantiate QMTests
         # by default it is QMTTest but this can be overwritten via the environment
-        try:
-            test_module = os.environ.get(
-                'GAUDI_QMTEST_MODULE', 'GaudiTesting.QMTTest')
-            test_class = os.environ.get('GAUDI_QMTEST_CLASS', 'QMTTest')
-            exec 'from {} import {} as test_class'.format(
-                test_module, test_class)
-            fileToTest = test_class(filename)
-            results = fileToTest.run()
-        except Exception, e:
-            logging.error(
-                'Exception caught when trying to instantiate qmt test python object')
-            logging.error(e)
-            return 1
+        test_module = os.environ.get('GAUDI_QMTEST_MODULE',
+                                     'GaudiTesting.QMTTest')
+        test_class = os.environ.get('GAUDI_QMTEST_CLASS', 'QMTTest')
+        exec 'from {} import {} as test_class'.format(test_module, test_class)
+        fileToTest = test_class(filename)
+        results = fileToTest.run()
 
     report = globals()[opts.report + '_report']
     report(results)
