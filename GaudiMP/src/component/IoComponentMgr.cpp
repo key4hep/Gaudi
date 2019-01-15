@@ -215,10 +215,25 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
   return StatusCode::SUCCESS;
 }
 
+/** @brief: retrieve all registered filenames for a given @c IIoComponent
+ */
+std::vector<std::string> IoComponentMgr::io_retrieve( IIoComponent* iocomponent )
+{
+  std::vector<std::string> fnames;
+  pair<iodITR, iodITR> pit;
+
+  // Find component and copy all registered file names
+  if ( iocomponent != nullptr && findComp( iocomponent, pit ) ) {
+    std::transform( pit.first, pit.second, std::back_inserter( fnames ),
+                    []( const auto& itr ) { return itr.second.m_oldfname; } );
+  }
+  return fnames;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /** @brief: retrieve the new filename for a given @c IIoComponent and
- *          @param `oldfname` filename
+ *          @param `fname` filename
  */
 StatusCode IoComponentMgr::io_retrieve( IIoComponent* iocomponent, std::string& fname )
 {
