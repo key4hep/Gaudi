@@ -6,6 +6,9 @@
 # Commit Id: $Format:%H$
 
 cmake_minimum_required(VERSION 3.6)
+if(POLICY CMP0077)
+  cmake_policy(SET CMP0077 NEW)
+endif()
 
 # Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
 if(NOT CMAKE_MODULE_PATH)

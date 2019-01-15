@@ -690,13 +690,14 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, co
 
     if ( m_dumpIntraEventDynamics ) {
       std::stringstream s;
-      s << index2algname( algo_index ) << ", " << thisAlgsStates.sizeOfSubset( AState::CONTROLREADY ) << ", "
+      s << ( algo_index != -1 ? index2algname( algo_index ) : "START" ) << ", "
+        << thisAlgsStates.sizeOfSubset( AState::CONTROLREADY ) << ", "
         << thisAlgsStates.sizeOfSubset( AState::DATAREADY ) << ", " << thisAlgsStates.sizeOfSubset( AState::SCHEDULED )
         << ", " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << "\n";
       auto threads = ( m_threadPoolSize != -1 ) ? std::to_string( m_threadPoolSize )
                                                 : std::to_string( tbb::task_scheduler_init::default_num_threads() );
       std::ofstream myfile;
-      myfile.open( "IntraEventConcurrencyDynamics_" + threads + "T.csv", std::ios::app );
+      myfile.open( "IntraEventFSMOccupancy_" + threads + "T.csv", std::ios::app );
       myfile << s.str();
       myfile.close();
     }

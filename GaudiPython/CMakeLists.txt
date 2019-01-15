@@ -39,6 +39,11 @@ if( CLHEP_FOUND )
    include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
 endif()
 
+if(NOT ROOT_VERSION VERSION_LESS 6.15)
+  # needed for cppyy at runtime
+  find_package(VDT REQUIRED)
+endif()
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiPythonLib ${lib_sources}
                   LINK_LIBRARIES GaudiAlgLib PythonLibs ${clhep_lib} ${aida_lib}

@@ -55,6 +55,7 @@ elseif( UNIX )
    # front.
    set( extra_sources src/Lib/Platform/SystemLinux.h
                       src/Lib/Platform/SystemLinux.cpp )
+   set( extra_libraries rt )
 endif()
 
 #---Libraries---------------------------------------------------------------

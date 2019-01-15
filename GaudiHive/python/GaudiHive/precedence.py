@@ -85,26 +85,36 @@ class UniformBooleanValue(object):
         return self.value
 
 
-class RndBiased10BooleanValue(object):
-    """
-    Provides randomly distributed boolean value with True taking only 10%.
-    The distribution has only 276 values and is reproducible, if no pattern re-generation is requested.
-    """
+class RndBiasedBooleanValue(object):
+    """Provides randomly ordered set of boolean values with requested proportion of True and False."""
 
-    # 276 values, biased as 90% to 10%
-    builtinPattern = [True, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, True, False, True, False, False, False, False, False, False, False, False, True, False, True, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, True, False, False, False, False, True, True, False,
-                      False, False, False, False, False, False, False, False, False, True, True, False, True, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, True]
-    pattern = []
+    def __init__(self, pattern, seed=None):
+        """
+        Keyword arguments:
+        pattern -- either a dictionary describing proportion of True and False (e.g., {True:5,False:15}), or
+                   a list/tuple containing a pattern to be used as-is (e.g., [False,True,True,False])
+        seed -- an int, long or other hashable object to initialize random number generator (passed to random.shuffle as-is)
+        """
 
-    def __init__(self, useBuiltinPattern=True):
+        if isinstance(pattern, dict):
+            proportion = pattern
 
-        if useBuiltinPattern:
-            self.pattern = self.builtinPattern
-        else:
-            # 278 values, biased approximately as 90% to 10% (276 precedence graph algorithms, plus two algorithms added manually - DstWriter and Framework)
+            length = proportion[True] + proportion[False]
+            if length <= 0:
+                raise "ERROR: Wrong set length requested: %i " % length
+
             self.pattern = [False for i in range(
-                249)] + [True for i in range(29)]
+                proportion[False])] + [True for i in range(proportion[True])]
+
+            if seed is not None:
+                random.seed(seed)
+
             random.shuffle(self.pattern)
+
+        elif isinstance(pattern, (list, tuple)):
+            self.pattern = pattern
+        else:
+            raise "ERROR: unknown pattern type"
 
         self.generator = self._create_generator(self.pattern)
 
