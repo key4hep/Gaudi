@@ -282,10 +282,7 @@ namespace Gaudi
 
       using Consumer::Consumer;
 
-      void operator()() const override
-      {
-        info() << "executing VoidConsumer" << endmsg;
-      }
+      void operator()() const override { info() << "executing VoidConsumer" << endmsg; }
     };
 
     DECLARE_COMPONENT( VoidConsumer )
