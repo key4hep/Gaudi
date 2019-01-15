@@ -44,6 +44,10 @@ def _isCompatible(tp, value):
         if (type(value) is str) or derives_from(value, 'Configurable'):
             # we can set string properties only from strings or configurables
             return value
+        elif isinstance(value, DataObjectHandleBase):
+            # Implicitly convert DataObjectHandleBase to str for backward
+            # compatiblity in cases like B.Input (str) = A.Output (handle)
+            return str(value)
         else:
             raise ValueError(errmsg)
     elif (tp in [list, tuple, dict]):

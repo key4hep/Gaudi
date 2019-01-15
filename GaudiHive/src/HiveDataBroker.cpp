@@ -1,5 +1,4 @@
 #include "HiveDataBroker.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/System.h"
@@ -9,6 +8,7 @@
 #include "range/v3/view/remove_if.hpp"
 #include "range/v3/view/reverse.hpp"
 #include "range/v3/view/transform.hpp"
+#include <Gaudi/Algorithm.h>
 #include <algorithm>
 
 DECLARE_COMPONENT( HiveDataBrokerSvc )
@@ -16,7 +16,7 @@ DECLARE_COMPONENT( HiveDataBrokerSvc )
 namespace
 {
   struct AlgorithmRepr {
-    const Algorithm& parent;
+    const Gaudi::Algorithm& parent;
 
     friend std::ostream& operator<<( std::ostream& s, const AlgorithmRepr& a )
     {
@@ -47,7 +47,7 @@ namespace
     // Maybe modify the AppMgr interface to return Algorithm* ??
     IAlgorithm* tmp;
     StatusCode  sc = am.createAlgorithm( type, name, tmp );
-    return {sc.isSuccess() ? dynamic_cast<Algorithm*>( tmp ) : nullptr};
+    return {sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr};
   }
 }
 
@@ -62,7 +62,7 @@ StatusCode HiveDataBrokerSvc::initialize()
   // warn about non-reentrant algorithms
   ranges::for_each( m_algorithms | ranges::view::transform( []( const auto& entry ) { return entry.alg; } ) |
                         ranges::view::remove_if( []( const auto* alg ) { return alg->cardinality() == 0; } ),
-                    [&]( const Algorithm* alg ) {
+                    [&]( const Gaudi::Algorithm* alg ) {
                       this->warning() << "non-reentrant algorithm: " << AlgorithmRepr{*alg} << endmsg;
                     } );
   //== Print the list of the created algorithms
@@ -76,7 +76,6 @@ StatusCode HiveDataBrokerSvc::initialize()
 
   // populate m_dependencies
   m_dependencies = mapProducers( m_algorithms );
-
   return sc;
 }
 
@@ -132,12 +131,7 @@ StatusCode HiveDataBrokerSvc::stop()
 StatusCode HiveDataBrokerSvc::finalize()
 {
   ranges::for_each( m_algorithms | ranges::view::transform( &AlgEntry::alg ),
-                    []( Algorithm* alg ) { alg->sysFinalize(); } );
-
-  ranges::for_each(
-      m_algorithms | ranges::view::remove_if( []( const auto& entry ) { return entry.requestCount != 0; } ) |
-          ranges::view::transform( &AlgEntry::alg ),
-      [&]( Algorithm* alg ) { this->warning() << "Unused algorithm: " << AlgorithmRepr{*alg} << endmsg; } );
+                    []( Gaudi::Algorithm* alg ) { alg->sysFinalize(); } );
   m_algorithms.clear();
   return Service::finalize();
 }
@@ -185,14 +179,25 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
 std::map<DataObjID, HiveDataBrokerSvc::AlgEntry*>
 HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
 {
+  if ( msgLevel( MSG::DEBUG ) ) {
+    debug() << "Data Dependencies for Algorithms:";
+    for ( const auto& entry : m_algorithms ) {
+      debug() << "\n " << entry.alg->name() << " :";
+      for ( const auto& id : entry.alg->inputDataObjs() ) {
+        debug() << "\n    o INPUT  " << id.key();
+      }
+      for ( const auto& id : entry.alg->outputDataObjs() ) {
+        debug() << "\n    o OUTPUT " << id.key();
+      }
+    }
+    debug() << endmsg;
+  }
+
   // figure out all outputs
   std::map<DataObjID, AlgEntry*> producers;
   for ( AlgEntry& alg : algorithms ) {
     const auto& output = alg.alg->outputDataObjs();
     if ( output.empty() ) {
-      error() << AlgorithmRepr{*algorithms.back().alg} << " does not produce any data -- should not appear in list of "
-                                                          "producers. Ignoring."
-              << endmsg;
       continue;
     }
     for ( auto id : output ) {
@@ -204,10 +209,10 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
       auto r = producers.emplace( id, &alg );
       if ( !r.second ) {
         if ( output.size() == 1 ) {
-          warning() << "multiple algorithms declare " << id << " as output! -- IGNORING " << AlgorithmRepr{*alg.alg}
-                    << endmsg;
+          error() << "multiple algorithms declare " << id << " as output! -- IGNORING " << AlgorithmRepr{*alg.alg}
+                  << endmsg;
         } else {
-          error() << "multiple algorithms declate " << id << " as output; given that " << AlgorithmRepr{*alg.alg}
+          error() << "multiple algorithms declare " << id << " as output; given that " << AlgorithmRepr{*alg.alg}
                   << " produces multiple outputs ";
           //<< output <<
           error() << " this could lead to clashes in case any of the other "
@@ -243,6 +248,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
       if ( iproducer != producers.end() ) {
         algEntry.dependsOn.insert( iproducer->second );
       } else {
+        throw GaudiException( "unknown requested input: " + id.key(), __func__, StatusCode::FAILURE );
         // TODO: assign to dataloader!
         // algEntry.dependsOn.insert(dataloader.alg);
         // dataloader.data.emplace( id ); // TODO: we may ask to much of the
@@ -253,10 +259,11 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
   return producers;
 }
 
-std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            requested,
-                                                                  const std::vector<std::string>& stoppers ) const
+std::vector<Gaudi::Algorithm*>
+HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            requested,
+                                          const std::vector<std::string>& stoppers ) const
 {
-  std::vector<Algorithm*> result;
+  std::vector<Gaudi::Algorithm*> result;
 
   std::vector<const AlgEntry*> deps;
   deps.reserve( requested.size() );
@@ -306,10 +313,11 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjI
   return {begin( range ), end( range )};
 }
 
-std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& requested,
-                                                                  const std::vector<std::string>&     stoppers ) const
+std::vector<Gaudi::Algorithm*>
+HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& requested,
+                                          const std::vector<std::string>&     stoppers ) const
 {
-  std::vector<Algorithm*> result;
+  std::vector<Gaudi::Algorithm*> result;
 
   auto alg = std::find_if( begin( m_cfnodes ), end( m_cfnodes ),
                            [&]( const AlgEntry& ae ) { return ae.alg->name() == requested.name(); } );
@@ -333,8 +341,9 @@ std::vector<Algorithm*> HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::U
   result.push_back( alg->alg );
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << std::endl << "requested " << requested << " returning " << std::endl << "  ";
-    GaudiUtils::details::ostream_joiner( debug(), result, ",\n  ", []( auto& os, const Algorithm* a ) -> decltype(
-                                                                       auto ) { return os << AlgorithmRepr{*a}; } );
+    GaudiUtils::details::ostream_joiner(
+        debug(), result, ",\n  ",
+        []( auto& os, const Gaudi::Algorithm* a ) -> decltype( auto ) { return os << AlgorithmRepr{*a}; } );
     debug() << std::endl << endmsg;
   }
   return result;

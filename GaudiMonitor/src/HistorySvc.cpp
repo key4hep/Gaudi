@@ -14,7 +14,6 @@
 #include "GaudiKernel/ISvcLocator.h"
 
 #include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgTool.h"
@@ -26,6 +25,7 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/ServiceHandle.h"
 #include "GaudiKernel/System.h"
+#include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/IAlgContextSvc.h"
 
@@ -209,9 +209,10 @@ StatusCode HistorySvc::captureState()
 
   size_t count = 0;
   for ( auto ialg : algMgr->getAlgorithms() ) {
-    Algorithm* alg = dynamic_cast<Algorithm*>( ialg );
+    Gaudi::Algorithm* alg = dynamic_cast<Gaudi::Algorithm*>( ialg );
     if ( !alg ) {
-      warning() << "Algorithm " << ialg->name() << " does not inherit from Algorithm. Not registering it." << endmsg;
+      warning() << "Algorithm " << ialg->name() << " does not inherit from Gaudi::Algorithm. Not registering it."
+                << endmsg;
     } else {
       ++count;
       registerAlg( *alg ).ignore();
@@ -290,7 +291,7 @@ StatusCode HistorySvc::finalize()
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::registerAlg( const Algorithm& alg )
+StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg )
 {
 
   JobHistory* job = getJobHistory();
@@ -299,7 +300,7 @@ StatusCode HistorySvc::registerAlg( const Algorithm& alg )
     return StatusCode::SUCCESS;
   }
 
-  ( const_cast<Algorithm*>( &alg ) )->addRef();
+  ( const_cast<Gaudi::Algorithm*>( &alg ) )->addRef();
 
   m_algmap[&alg] = new AlgorithmHistory( alg, job );
 
@@ -316,7 +317,7 @@ StatusCode HistorySvc::registerAlg( const Algorithm& alg )
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::listProperties( const Algorithm& alg ) const
+StatusCode HistorySvc::listProperties( const Gaudi::Algorithm& alg ) const
 {
 
   info() << "Dumping properties for " << alg.name() << endl;
@@ -333,7 +334,7 @@ StatusCode HistorySvc::listProperties( const Algorithm& alg ) const
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpProperties( const Algorithm& alg, std::ofstream& ofs ) const
+void HistorySvc::dumpProperties( const Gaudi::Algorithm& alg, std::ofstream& ofs ) const
 {
 
   AlgorithmHistory* hist = getAlgHistory( alg );
@@ -349,7 +350,7 @@ void HistorySvc::dumpProperties( const Algorithm& alg, std::ofstream& ofs ) cons
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-AlgorithmHistory* HistorySvc::getAlgHistory( const Algorithm& alg ) const
+AlgorithmHistory* HistorySvc::getAlgHistory( const Gaudi::Algorithm& alg ) const
 {
 
   auto itr = m_algmap.find( &alg );
@@ -455,7 +456,7 @@ DataHistory* HistorySvc::createDataHistoryObj( const CLID& id, const std::string
             << "          object CLID: " << id << "  key: \"" << key << "\"" << endmsg;
     algHist = nullptr;
   } else {
-    Algorithm* alg = dynamic_cast<Algorithm*>( ialg );
+    Gaudi::Algorithm* alg = dynamic_cast<Gaudi::Algorithm*>( ialg );
     if ( alg ) {
       algHist = getAlgHistory( *alg );
     } else {
@@ -808,16 +809,16 @@ void HistorySvc::dumpState( const INamedInterface* in, std::ofstream& ofs ) cons
   HistoryObj*      hist  = nullptr;
   IVersHistoryObj* vhist = nullptr;
 
-  const IService*  is = nullptr;
-  const Algorithm* ia = nullptr;
-  const IAlgTool*  it = nullptr;
+  const IService*         is = nullptr;
+  const Gaudi::Algorithm* ia = nullptr;
+  const IAlgTool*         it = nullptr;
   if ( ( is = dynamic_cast<const IService*>( in ) ) != nullptr ) {
     ON_VERBOSE
     verbose() << in->name() << " is Service" << endmsg;
     ServiceHistory* o = getServiceHistory( *is );
     hist              = dynamic_cast<HistoryObj*>( o );
     vhist             = dynamic_cast<IVersHistoryObj*>( o );
-  } else if ( ( ia = dynamic_cast<const Algorithm*>( in ) ) != nullptr ) {
+  } else if ( ( ia = dynamic_cast<const Gaudi::Algorithm*>( in ) ) != nullptr ) {
     ON_VERBOSE
     verbose() << in->name() << " is Alg" << endmsg;
     AlgorithmHistory* o = getAlgHistory( *ia );

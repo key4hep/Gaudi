@@ -16,32 +16,6 @@
 
 #include <algorithm>
 
-namespace
-{
-  class AbortEventListener : public implements<IIncidentListener>
-  {
-  public:
-    AbortEventListener( bool& flag, std::string& source ) : m_flag( flag ), m_source( source )
-    {
-      addRef(); // Initial count set to 1
-    }
-    /// Inform that a new incident has occurred
-    void handle( const Incident& i ) override
-    {
-      if ( i.type() == IncidentType::AbortEvent ) {
-        m_flag   = true;
-        m_source = i.source();
-      }
-    }
-
-  private:
-    /// flag to set
-    bool& m_flag;
-    /// string where to store the source of the incident
-    std::string& m_source;
-  };
-}
-
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
@@ -54,8 +28,6 @@ namespace
 MinimalEventLoopMgr::MinimalEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc )
     : base_class( nam, svcLoc ), m_appMgrUI( svcLoc )
 {
-  m_topAlgNames.declareUpdateHandler( &MinimalEventLoopMgr::topAlgHandler, this );
-  m_outStreamNames.declareUpdateHandler( &MinimalEventLoopMgr::outStreamHandler, this );
 }
 
 //--------------------------------------------------------------------------------------------
@@ -91,8 +63,7 @@ StatusCode MinimalEventLoopMgr::initialize()
     return StatusCode::FAILURE;
   }
 
-  m_abortEventListener = new AbortEventListener( m_abortEvent, m_abortEventSource );
-  m_incidentSvc->addListener( m_abortEventListener, IncidentType::AbortEvent );
+  m_incidentSvc->addListener( &m_abortEventListener, IncidentType::AbortEvent );
 
   // The state is changed at this moment to allow decodeXXXX() to do something
   m_state = INITIALIZED;
@@ -305,8 +276,7 @@ StatusCode MinimalEventLoopMgr::finalize()
   m_outStreamList.clear();
   if ( sc.isSuccess() ) m_state = FINALIZED;
 
-  m_incidentSvc->removeListener( m_abortEventListener, IncidentType::AbortEvent );
-  m_abortEventListener.reset();
+  m_incidentSvc->removeListener( &m_abortEventListener, IncidentType::AbortEvent );
 
   m_incidentSvc.reset();
   m_appMgrUI.reset();
@@ -388,9 +358,9 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   for ( auto& ita : m_topAlgList ) {
     StatusCode sc( StatusCode::FAILURE );
     try {
-      if ( UNLIKELY( m_abortEvent ) ) {
-        DEBMSG << "AbortEvent incident fired by " << m_abortEventSource << endmsg;
-        m_abortEvent = false;
+      if ( UNLIKELY( m_abortEventListener.abortEvent ) ) {
+        DEBMSG << "AbortEvent incident fired by " << m_abortEventListener.abortEventSource << endmsg;
+        m_abortEventListener.abortEvent = false;
         sc.ignore();
         break;
       }
@@ -416,9 +386,9 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   m_aess->updateEventStatus( eventfailed, context );
 
   // ensure that the abortEvent flag is cleared before the next event
-  if ( UNLIKELY( m_abortEvent ) ) {
-    DEBMSG << "AbortEvent incident fired by " << m_abortEventSource << endmsg;
-    m_abortEvent = false;
+  if ( UNLIKELY( m_abortEventListener.abortEvent ) ) {
+    DEBMSG << "AbortEvent incident fired by " << m_abortEventListener.abortEventSource << endmsg;
+    m_abortEventListener.abortEvent = false;
   }
 
   // Call the execute() method of all output streams

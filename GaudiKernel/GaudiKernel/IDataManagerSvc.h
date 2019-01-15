@@ -11,7 +11,7 @@
 
 // Forward declarations
 // Generic interface to data object class
-class DataObject;
+#include "GaudiKernel/DataObject.h"
 // Interface to persistency service
 class IConversionSvc;
 // Opaque addresses
@@ -118,7 +118,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      sub_path   [IN] Path to sub-tree node.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode traverseSubTree( boost::string_ref sub_path, IDataStoreAgent* pAgent ) = 0;
+  virtual StatusCode traverseSubTree( boost::string_ref sub_tree_path, IDataStoreAgent* pAgent ) = 0;
 
   /** Analyse by traversing all data objects below the sub tree identified by its full path name.
       @param      sub_path   [IN] Path to sub-tree node.
@@ -205,8 +205,10 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      pAddress   [IN] Pointer to the object to be connected.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath,
-                                      IOpaqueAddress* pAddress ) = 0;
+  StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress )
+  {
+    return registerAddress( parentObj ? parentObj->registry() : nullptr, objectPath, pAddress );
+  }
 
   /** Register object address with the data store.
       Connect the object identified by its pointer to the parent object
@@ -233,7 +235,10 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      objPath  [IN] Path name of the object relative to the parent.
       @return                   Status code indicating success or failure.
   */
-  virtual StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath ) = 0;
+  StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath )
+  {
+    return unregisterAddress( pParent ? pParent->registry() : nullptr, objPath );
+  }
 
   /** Unregister object address from the data store.
       The object is identified by parent object and the path of the

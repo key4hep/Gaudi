@@ -4,8 +4,8 @@
 #include "GaudiKernel/VectorsAsProperty.h"
 #include <boost/test/minimal.hpp>
 
-#include "GaudiKernel/ParsersFactory.h"
 #include "GaudiKernel/ToStream.h"
+#include <Gaudi/Parsers/Factory.h>
 
 using namespace Gaudi::Parsers;
 

@@ -27,7 +27,7 @@ int main( int argc, char** argv )
   try {
     store( command_line_parser( argc, argv ).options( desc ).positional( p ).run(), vm );
   } catch ( boost::exception_detail::clone_impl<
-            boost::exception_detail::error_info_injector<boost::program_options::unknown_option>> ) {
+            boost::exception_detail::error_info_injector<boost::program_options::unknown_option>>& ) {
     std::cerr << "Unknown option(s) detected." << std::endl << "Usage:" << std::endl << desc << std::endl;
     return ( 1 );
   }

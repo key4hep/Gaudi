@@ -62,7 +62,7 @@ namespace Gaudi
 
   public:
     /// Create a catalog file, initialization of XercesC.
-    MultiFileCatalog( const std::string& nam, ISvcLocator* svc );
+    using extends::extends;
 
     /** IService implementation                                               */
     /// Finalize service object
@@ -167,7 +167,7 @@ namespace Gaudi
 
     /// simple property handle to allow interactive modification of
     /// list of the file catalogs
-    void propHandler( Details::PropertyBase& /* p */ );
+    void propHandler();
 
     void printError( CSTR msg, bool throw_exc = true ) const;
     std::string lookupFID( CSTR lfn ) const;
@@ -176,7 +176,7 @@ namespace Gaudi
     Catalogs m_catalogs;
 
     Gaudi::Property<CatalogNames> m_catalogNames{
-        this, "Catalogs", {{"xmlcatalog_file:test_catalog.xml"}}, "catalog names"};
+        this, "Catalogs", {{"xmlcatalog_file:test_catalog.xml"}}, &MultiFileCatalog::propHandler, "catalog names"};
 
     /// Flag to indicate if catalog is started
     bool m_started = false;

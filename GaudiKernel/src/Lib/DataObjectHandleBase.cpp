@@ -1,9 +1,9 @@
 #include "GaudiKernel/DataObjectHandleBase.h"
 #include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/SerializeSTL.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
+#include <Gaudi/Algorithm.h>
 
 #include <boost/tokenizer.hpp>
 #include <ostream>
@@ -132,7 +132,7 @@ bool DataObjectHandleBase::init()
   setRead( false );
   setWritten( false );
 
-  Algorithm* algorithm = dynamic_cast<Algorithm*>( owner() );
+  Gaudi::Algorithm* algorithm = dynamic_cast<Gaudi::Algorithm*>( owner() );
   if ( algorithm ) {
     // Fetch the event Data Service from the algorithm
     m_EDS = algorithm->evtSvc();
@@ -143,7 +143,7 @@ bool DataObjectHandleBase::init()
       m_EDS = tool->evtSvc();
       m_MS  = tool->msgSvc();
     } else {
-      throw GaudiException( "owner is neither AlgTool nor Algorithm", "Invalid Cast", StatusCode::FAILURE );
+      throw GaudiException( "owner is neither AlgTool nor Gaudi::Algorithm", "Invalid Cast", StatusCode::FAILURE );
     }
   }
   m_init = true;

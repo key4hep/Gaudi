@@ -15,8 +15,8 @@
 // ============================================================================
 // Include parsers for creating parser that handles tuple
 // ============================================================================
-#include "GaudiKernel/ParsersFactory.h"
 #include "GaudiKernel/StdArrayAsProperty.h"
+#include <Gaudi/Parsers/Factory.h>
 
 // ============================================================================
 // GaudiAlg

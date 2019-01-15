@@ -21,26 +21,32 @@
 
 namespace
 {
+
   template <class T>
   static long upper( const INTupleItem* item )
   {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic      ignored "-Wnull-dereference"
     const NTuple::_Data<T>* it = dynamic_cast<const NTuple::_Data<T>*>( item );
+    assert( it != nullptr );
     return it->range().upper();
+#pragma GCC diagnostic pop
   }
 
   template <class TYP>
   static StatusCode createItem( MsgStream& log, INTuple* tuple, INTupleItem* src, const TYP& null )
   {
     NTuple::_Data<TYP>* source = dynamic_cast<NTuple::_Data<TYP>*>( src );
-    TYP                 low    = source->range().lower();
-    TYP                 high   = source->range().upper();
-    long                hasIdx = source->hasIndex();
-    long                ndim   = source->ndim();
-    const std::string&  name   = source->name();
-    std::string         idxName;
-    long                dim[4], idxLen = 0;
-    long                dim1 = 1, dim2 = 1;
-    INTupleItem*        it = nullptr;
+    if ( !source ) return StatusCode::FAILURE;
+    TYP                low    = source->range().lower();
+    TYP                high   = source->range().upper();
+    long               hasIdx = source->hasIndex();
+    long               ndim   = source->ndim();
+    const std::string& name   = source->name();
+    std::string        idxName;
+    long               dim[4], idxLen = 0;
+    long               dim1 = 1, dim2 = 1;
+    INTupleItem*       it = nullptr;
     for ( int i = 0; i < ndim; i++ ) dim[i] = source->dim( i );
     /// Type information of the item
     if ( hasIdx ) {

@@ -34,6 +34,12 @@ def test_correct():
         'DataHandle': DataObjectHandleBase('/Event/X')}
 
 
+def test_str_from_datahandle():
+    a = MyAlg()
+    a.Text = DataObjectHandleBase('value')
+    assert a.getProp('Text') == 'value'
+
+
 def test_invalid_value():
     a = MyAlg()
     try:

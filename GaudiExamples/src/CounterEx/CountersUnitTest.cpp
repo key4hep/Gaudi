@@ -42,6 +42,18 @@ int main()
     std::cout << avg << std::endl;
   }
 
+  // Testing integer AveragingCounter
+  {
+    AveragingCounter<int> avg;
+    avg += 3;
+    avg += 5;
+    avg += 6;
+    std::cout << avg << std::endl;
+
+    static_assert( std::is_integral<decltype( avg.mean<int>() )>::value, "Integral return type expected" );
+    static_assert( std::is_floating_point<decltype( avg.mean() )>::value, "Floating point return type expected" );
+  }
+
   // Testing SigmaCounter
   {
     SigmaCounter<> sig;
@@ -51,7 +63,7 @@ int main()
     std::cout << sig << std::endl;
   }
 
-  // Testing AveragingCounter wiht buffering
+  // Testing AveragingCounter with buffering
   {
     AveragingCounter<float, atomicity::full> avg2;
     {
@@ -69,6 +81,20 @@ int main()
     bin += true;
     bin += false;
     bin += false;
+    std::cout << bin << std::endl;
+  }
+
+  // Testing Binomialcounter with buffers
+  {
+    BinomialCounter<> bin;
+    {
+      auto bufBin = bin.buffer();
+      bufBin += false;
+      bufBin += true;
+      bufBin += true;
+      bufBin += false;
+      bufBin += false;
+    }
     std::cout << bin << std::endl;
   }
 

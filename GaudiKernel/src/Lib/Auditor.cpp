@@ -9,12 +9,7 @@
 #include "GaudiKernel/MsgStream.h"
 
 // Constructor
-Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator )
-    : m_name( name ), m_pSvcLocator( pSvcLocator ), m_isInitialized( false ), m_isFinalized( false )
-{
-  m_outputLevel.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
-}
+Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator ) : m_name( name ), m_pSvcLocator( pSvcLocator ) {}
 
 // IAuditor implementation
 StatusCode Auditor::sysInitialize()

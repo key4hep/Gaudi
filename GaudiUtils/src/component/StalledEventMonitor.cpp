@@ -88,8 +88,9 @@ StatusCode StalledEventMonitor::initialize()
 
   if ( m_eventTimeout ) {
     // create the watchdog thread
-    m_watchdog = std::make_unique<EventWatchdog>(
-        msgSvc(), "EventWatchdog", boost::posix_time::seconds( m_eventTimeout ), m_stackTrace, m_maxTimeoutCount );
+    m_watchdog = std::make_unique<EventWatchdog>( msgSvc(), "EventWatchdog",
+                                                  boost::posix_time::seconds( m_eventTimeout.value() ), m_stackTrace,
+                                                  m_maxTimeoutCount );
 
     // register to the incident service
     static const std::string serviceName = "IncidentSvc";

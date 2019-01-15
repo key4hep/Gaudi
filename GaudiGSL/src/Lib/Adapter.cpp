@@ -139,17 +139,17 @@ namespace Genfun
     // ========================================================================
     double SimpleFunction::operator()( double value ) const
     {
-      return detail::dispatch_variant( m_func, [&]( const Function1& fun ) { return ( *fun )( value ); },
-                                       [&]( const Function2& fun ) {
-                                         m_arg[0] = value;
-                                         std::fill( std::next( m_arg.begin() ), m_arg.end(), 0.0 );
-                                         return ( *fun )( m_arg.data() );
-                                       },
-                                       [&]( const Function3& fun ) {
-                                         m_arg[0] = value;
-                                         std::fill( std::next( m_arg.begin() ), m_arg.end(), 0.0 );
-                                         return ( *fun )( m_arg );
-                                       } );
+      return ::detail::dispatch_variant( m_func, [&]( const Function1& fun ) { return ( *fun )( value ); },
+                                         [&]( const Function2& fun ) {
+                                           m_arg[0] = value;
+                                           std::fill( std::next( m_arg.begin() ), m_arg.end(), 0.0 );
+                                           return ( *fun )( m_arg.data() );
+                                         },
+                                         [&]( const Function3& fun ) {
+                                           m_arg[0] = value;
+                                           std::fill( std::next( m_arg.begin() ), m_arg.end(), 0.0 );
+                                           return ( *fun )( m_arg );
+                                         } );
     }
     // ========================================================================
 
@@ -158,19 +158,19 @@ namespace Genfun
     // ========================================================================
     double SimpleFunction::operator()( const Argument& argument ) const
     {
-      return detail::dispatch_variant( m_func, [&]( const Function1& f ) { return ( *f )( argument[0] ); },
-                                       [&]( const Function2& f ) {
-                                         for ( size_t i = 0; i < m_arg.size(); ++i ) {
-                                           m_arg[i] = argument[i];
-                                         }
-                                         return ( *f )( m_arg.data() );
-                                       },
-                                       [&]( const Function3& f ) {
-                                         for ( size_t i = 0; i < m_arg.size(); ++i ) {
-                                           m_arg[i] = argument[i];
-                                         }
-                                         return ( *f )( m_arg );
-                                       } );
+      return ::detail::dispatch_variant( m_func, [&]( const Function1& f ) { return ( *f )( argument[0] ); },
+                                         [&]( const Function2& f ) {
+                                           for ( size_t i = 0; i < m_arg.size(); ++i ) {
+                                             m_arg[i] = argument[i];
+                                           }
+                                           return ( *f )( m_arg.data() );
+                                         },
+                                         [&]( const Function3& f ) {
+                                           for ( size_t i = 0; i < m_arg.size(); ++i ) {
+                                             m_arg[i] = argument[i];
+                                           }
+                                           return ( *f )( m_arg );
+                                         } );
     }
 
   } // end of namespace GaudiMathImplementation

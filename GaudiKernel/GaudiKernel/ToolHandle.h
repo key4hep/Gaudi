@@ -18,7 +18,10 @@
 class IInterface;
 class IToolSvc;
 
-class Algorithm;
+namespace Gaudi
+{
+  class Algorithm;
+}
 class AlgTool;
 class Service;
 
@@ -130,7 +133,7 @@ template <class T>
 class ToolHandle : public BaseToolHandle, public GaudiHandle<T>
 {
 
-  friend class Algorithm;
+  friend class Gaudi::Algorithm;
   friend class AlgTool;
   friend class Service;
 
@@ -276,7 +279,7 @@ public:
   }
 
   /** Do the real release of the AlgTool. */
-  StatusCode release( T* algTool ) const override { return m_pToolSvc->releaseTool( details::nonConst( algTool ) ); }
+  StatusCode release( T* algTool ) const override { return m_pToolSvc->releaseTool(::details::nonConst( algTool ) ); }
 
   std::string typeAndName() const override { return GaudiHandleBase::typeAndName(); }
 
@@ -289,8 +292,8 @@ public:
   T* operator->() { return GaudiHandle<T>::operator->(); }
   T& operator*() { return *( GaudiHandle<T>::operator->() ); }
 
-  T* operator->() const { return details::nonConst( GaudiHandle<T>::operator->() ); }
-  T& operator*() const { return *( details::nonConst( GaudiHandle<T>::operator->() ) ); }
+  T* operator->() const { return ::details::nonConst( GaudiHandle<T>::operator->() ); }
+  T& operator*() const { return *(::details::nonConst( GaudiHandle<T>::operator->() ) ); }
 #endif
 
 #ifdef ATLAS
@@ -310,7 +313,7 @@ protected:
   IAlgTool* getAsIAlgTool() override
   {
     // const cast to support T being const
-    return details::nonConst( GaudiHandle<T>::get() );
+    return ::details::nonConst( GaudiHandle<T>::get() );
   }
 
   StatusCode i_retrieve( IAlgTool*& algTool ) const override

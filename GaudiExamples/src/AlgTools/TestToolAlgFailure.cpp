@@ -37,6 +37,9 @@ StatusCode TestToolAlgFailure::initialize()
         warning() << "Got exception '" << e.what() << "'" << endmsg;
       } else {
         error() << "Got exception '" << e.what() << "'" << endmsg;
+        if ( m_throwException ) {
+          throw;
+        }
         return StatusCode::FAILURE;
       }
     }

@@ -16,7 +16,6 @@
 // Forward declarations
 class IService;
 class IMessageSvc;
-class Algorithm;
 
 /** @class Auditor Auditor.h GaudiKernel/Auditor.h
 
@@ -134,7 +133,10 @@ private:
 
   mutable SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
 
-  Gaudi::Property<int>  m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int> m_outputLevel{
+      this, "OutputLevel", MSG::NIL,
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
+      "output level"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the auditor be used or not"};
 
   bool m_isInitialized = false; ///< Auditor has been initialized flag

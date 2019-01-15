@@ -706,6 +706,11 @@ def main():
                 labels = [l.text for l in Test.findall('Labels/Label')]
 
                 Results = Test.find("Results")
+                basedir = Test.find("Path")
+                if basedir is None or basedir.text is None:
+                    basedir = os.curdir
+                else:
+                    basedir = basedir.text
 
                 """___ create the local summary   ___"""
 
@@ -819,8 +824,25 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None:
-                            NamedMeasurementFile.write(
-                                formatMeasurementText(value.text))
+                            if cleanName in ('new_output_reference_file',
+                                             'new_error_reference_file'):
+                                ref = os.path.join(basedir, value.text)
+                                if os.path.isfile(ref):
+                                    shutil.copyfile(
+                                        ref,
+                                        os.path.join(testCaseDir,
+                                                     os.path.basename(ref)))
+                                else:
+                                    ref = None
+                            else:
+                                ref = None
+                            if ref:
+                                NamedMeasurementFile.write(
+                                    '<a href="{0}/{1}">{1}</a>'.format(
+                                        summary['id'], os.path.basename(ref)))
+                            else:
+                                NamedMeasurementFile.write(
+                                    formatMeasurementText(value.text))
                         else:
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()

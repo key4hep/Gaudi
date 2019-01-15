@@ -3,8 +3,8 @@
 // ============================================================================
 #include "GaudiKernel/VectorsAsProperty.h"
 // ============================================================================
-#include "GaudiKernel/ParsersFactory.h"
 #include "GaudiKernel/ToStream.h"
+#include <Gaudi/Parsers/Factory.h>
 // ============================================================================
 namespace
 {

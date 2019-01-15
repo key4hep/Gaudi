@@ -102,16 +102,14 @@ StatusCode AlgContextSvc::finalize()
 // ============================================================================
 // set     the currently executing algorithm  ("push_back") @see IAlgContextSvc
 // ============================================================================
-StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a )
+StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a, const EventContext& context )
 {
   if ( !a ) {
     warning() << "IAlgorithm* points to NULL" << endmsg;
     return StatusCode::RECOVERABLE;
   }
   if ( !m_bypassInc ) {
-    auto currSlot                                                = a->getContext().slot();
-    if ( currSlot == EventContext::INVALID_CONTEXT_ID ) currSlot = 0;
-    if ( !m_inEvtLoop[currSlot] ) return StatusCode::SUCCESS;
+    if ( !m_inEvtLoop[context.valid() ? context.slot() : 0] ) return StatusCode::SUCCESS;
   }
   // check whether thread-local algorithm list already exists
   // if not, create it
@@ -125,7 +123,7 @@ StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a )
 // ============================================================================
 // remove the algorithm                       ("pop_back") @see IAlgContextSvc
 // ============================================================================
-StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a )
+StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a, const EventContext& context )
 {
   // check whether thread-local algorithm list already exists
   // if not, create it
@@ -139,9 +137,7 @@ StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a )
   }
 
   if ( !m_bypassInc ) {
-    auto currSlot                                                = a->getContext().slot();
-    if ( currSlot == EventContext::INVALID_CONTEXT_ID ) currSlot = 0;
-    if ( !m_inEvtLoop[currSlot] ) return StatusCode::SUCCESS;
+    if ( !m_inEvtLoop[context.valid() ? context.slot() : 0] ) return StatusCode::SUCCESS;
   }
 
   if ( a->type() != "IncidentProcAlg" ) {

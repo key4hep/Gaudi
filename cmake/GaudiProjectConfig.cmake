@@ -5,10 +5,9 @@
 #
 # Commit Id: $Format:%H$
 
-cmake_minimum_required(VERSION 2.8.12)
-
-if(NOT CMAKE_VERSION VERSION_LESS 3.0) # i.e CMAKE_VERSION >= 3.0
-  cmake_policy(SET CMP0026 NEW)
+cmake_minimum_required(VERSION 3.6)
+if(POLICY CMP0077)
+  cmake_policy(SET CMP0077 NEW)
 endif()
 
 # Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
@@ -122,7 +121,7 @@ if(GAUDI_USE_CTEST_LAUNCHERS)
   set(__launch_custom_options
     "${__launch_common_options} --output <OUTPUT>")
 
-  if("${CMAKE_GENERATOR}" MATCHES "Ninja" AND NOT CMAKE_VERSION VERSION_LESS 3.0)
+  if("${CMAKE_GENERATOR}" MATCHES "Ninja")
     # this make sense only with CMamke >= 3.0
     set(__launch_compile_options "${__launch_compile_options} --filter-prefix <CMAKE_CL_SHOWINCLUDES_PREFIX>")
   endif()
@@ -204,6 +203,13 @@ include(BinaryTagUtils)
 
 find_package(PythonInterp 2.7)
 
+find_package(Boost)
+if((Boost_VERSION GREATER 106700) OR (Boost_VERSION EQUAL 106700))
+  set(boost_python_version "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+else()
+  set(boost_python_version "")
+endif()
+
 #-------------------------------------------------------------------------------
 # gaudi_project(project version
 #               [USE proj1 vers1 [proj2 vers2 ...]]
@@ -244,7 +250,7 @@ macro(gaudi_project project version)
   set(CMAKE_PROJECT_NAME ${project})
 
   #--- Define the version of the project - can be used to generate sources,
-  set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
+  set(CMAKE_PROJECT_VERSION ${version})
 
   if(CMAKE_PROJECT_VERSION MATCHES "${GAUDI_VERSION_REGEX}")
     set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
@@ -407,7 +413,7 @@ macro(gaudi_project project version)
       # Avoid interference from user environment
       unset(ENV{GIT_DIR})
       unset(ENV{GIT_WORK_TREE})
-      execute_process(COMMAND git clone https://gitlab.cern.ch/gaudi/xenv.git ${CMAKE_BINARY_DIR}/contrib/xenv)
+      execute_process(COMMAND git clone -b 0.0.1 https://gitlab.cern.ch/gaudi/xenv.git ${CMAKE_BINARY_DIR}/contrib/xenv)
     endif()
     # I'd like to generate the script with executable permission, but I only
     # found this workaround: https://stackoverflow.com/a/45515418
@@ -834,6 +840,8 @@ for f in \"$@\" ; do
     (*.h|*.cpp|*.icpp)\n")
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
+    # Filter out files in InstallArea and build areas.
+    list(FILTER _all_sources EXCLUDE REGEX "InstallArea/.*|build\\..*")
     add_custom_target(apply-formatting-c++
       COMMAND ${clang_format_cmd}
                   -style=${GAUDI_CLANG_STYLE}
@@ -1803,7 +1811,7 @@ function(gaudi_generate_configurables library)
     add_custom_target(${package}ConfAll ALL)
   endif()
   add_dependencies(${package}ConfAll ${library}Conf)
-  # ensure that the componentslist file is found at build time (GAUDI-1055)
+  # ensure that the .confdb file is found at build time (GAUDI-1055)
   gaudi_build_env(PREPEND LD_LIBRARY_PATH ${outdir})
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   # Notify the project level target
@@ -1855,6 +1863,9 @@ function(gaudi_generate_confuserdb)
                   -o ${outdir}/${package}_user.confdb
                   ${package} ${modules})
     gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user.confdb)
+
+    # ensure that the .confdb file is found at build time (GAUDI-1055)
+    gaudi_build_env(PREPEND LD_LIBRARY_PATH ${outdir})
 
     # FIXME: dependency on others ConfUserDB
     # Historically we have been relying on the ConfUserDB built in the dependency
@@ -2465,11 +2476,8 @@ function(gaudi_add_test name)
       string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
       string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
       #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
-      set(test_cmd python -m GaudiTesting.Run)
-      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-        set(test_cmd ${test_cmd} --skip-return-code 77)
-      endif()
-      set(test_cmd ${test_cmd}
+      set(test_cmd python -m GaudiTesting.Run
+                       --skip-return-code 77
                        --report ctest
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --workdir ${qmtest_root_dir}
@@ -2496,9 +2504,7 @@ function(gaudi_add_test name)
       else()
         set(test_name ${package}.${qmt_name})
       endif()
-      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-        set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
-      endif()
+      set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
     endforeach()
     # extract dependencies
     execute_process(COMMAND ${qmtest_metadata_cmd}
@@ -2604,7 +2610,7 @@ function(gaudi_add_compile_test executable)
   # We do not want the install target coming with gaudi_add_executable
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS})
   add_executable(${executable} ${srcs})
-   
+
   # Avoid building this target by default
   set_target_properties(${executable} PROPERTIES EXCLUDE_FROM_ALL TRUE
                                                  EXCLUDE_FROM_DEFAULT_BUILD TRUE)

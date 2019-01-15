@@ -16,6 +16,9 @@
 // External Libraries
 #include <boost/dynamic_bitset.hpp>
 
+// STL
+#include <memory>
+
 class HiveSlimEventLoopMgr : public extends<Service, IEventProcessor>
 {
 
@@ -56,7 +59,7 @@ protected:
   /// Declare the root address of the event
   StatusCode declareEventRootAddress();
   /// Create event context
-  StatusCode createEventContext( EventContext*& eventContext, int createdEvents );
+  StatusCode createEventContext( std::unique_ptr<EventContext>& eventContext, int createdEvents );
   /// Drain the scheduler from all actions that may be queued
   StatusCode drainScheduler( int& finishedEvents );
   /// Instance of the incident listener waiting for AbortEvent.
@@ -69,7 +72,7 @@ protected:
   SmartIF<IIncidentSvc> m_incidentSvc;
 
   // if finite number of evts is processed use bitset
-  boost::dynamic_bitset<>* m_blackListBS = nullptr;
+  std::unique_ptr<boost::dynamic_bitset<>> m_blackListBS;
 
 public:
   /// Standard Constructor

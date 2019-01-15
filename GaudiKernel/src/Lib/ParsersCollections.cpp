@@ -3,7 +3,7 @@
 // ============================================================================
 #include "GaudiKernel/VectorMap.h"
 // ============================================================================
-#include "GaudiKernel/ParsersFactory.h"
+#include <Gaudi/Parsers/Factory.h>
 // ============================================================================
 
 StatusCode Gaudi::Parsers::parse( GaudiUtils::VectorMap<std::string, double>& result, const std::string& input )

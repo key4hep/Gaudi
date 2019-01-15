@@ -19,11 +19,6 @@
 #
 #     the inverse of list_zip
 #
-cmake_policy(PUSH)
-if(NOT CMAKE_VERSION VERSION_LESS 3.1)
-  cmake_policy(SET CMP0054 NEW)
-endif()
-
 macro(list_pop_front input_list output)
   list(GET ${input_list} 0 ${output})
   list(REMOVE_AT ${input_list} 0)
@@ -51,7 +46,6 @@ function(list_zip output)
   set(${output} ${output_list} PARENT_SCOPE)
 endfunction()
 
-
 function(list_unzip input out1)
   # note: the argument 'out1' guarantees that we have at least one output list
   while(${input})
@@ -64,5 +58,3 @@ function(list_unzip input out1)
     set(${output} ${${output}_new} PARENT_SCOPE)
   endforeach()
 endfunction()
-
-cmake_policy(POP)

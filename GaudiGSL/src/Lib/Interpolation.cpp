@@ -1,5 +1,5 @@
 #include "GaudiMath/Interpolation.h"
-#include "GaudiKernel/ParsersFactory.h"
+#include <Gaudi/Parsers/Factory.h>
 #include <cassert>
 #include <iomanip>
 

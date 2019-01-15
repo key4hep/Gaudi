@@ -205,7 +205,7 @@ public:
   /**@name: Object implementation  */
   //@{
   /// Standard Constructor
-  PersistencySvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
 protected:
   /// Retrieve conversion service by name
@@ -230,9 +230,6 @@ protected:
   bool enable( bool value );
   //@}
 
-  /// Handlers for Service Names Property
-  void svcNamesHandler( Gaudi::Details::PropertyBase& theProp );
-
   /// Default service type
   long m_cnvDefType = TEST_StorageType;
   /// Pointer to datma provider service
@@ -243,7 +240,13 @@ protected:
   mutable SmartIF<IConversionSvc> m_cnvDefault;
 
   Gaudi::Property<std::vector<std::string>> m_svcNames{
-      this, "CnvServices", {}, "Names of services to be requested from the service locator and added by default"};
+      this,
+      "CnvServices",
+      {},
+      [this]( auto& p ) {
+        if ( this->msgLevel( MSG::DEBUG ) ) this->debug() << p << endmsg;
+      },
+      "Names of services to be requested from the service locator and added by default"};
 
   /// Flag to indicate that the service is enabled
   bool m_enable = true;

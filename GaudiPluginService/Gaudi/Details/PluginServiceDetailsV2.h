@@ -214,7 +214,7 @@ namespace Gaudi
         struct DefaultFactory<T, Factory<R( Args... )>> {
           inline typename Factory<R( Args... )>::ReturnType operator()( Args... args )
           {
-            return std::make_unique<T>( std::forward<Args>( args )... );
+            return std::make_unique<T>( std::move( args )... );
           }
         };
 

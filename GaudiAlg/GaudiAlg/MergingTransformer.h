@@ -32,8 +32,26 @@ namespace Gaudi
       MergingTransformer( const std::string& name, ISvcLocator* locator, const KeyValues& inputs,
                           const KeyValue& output );
 
+      // accessor to input Locations
+      const std::string& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
+      unsigned int inputLocationSize() const { return m_inputLocations.value().size(); }
+
       // derived classes can NOT implement execute
-      StatusCode execute() override final;
+      StatusCode execute() override final
+      {
+        vector_of_const_<In> ins;
+        ins.reserve( m_inputs.size() );
+        std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ),
+                        details::details2::get_from_handle<In>{} );
+        try {
+          using details::as_const;
+          details::put( std::get<0>( this->m_outputs ), as_const( *this )( as_const( ins ) ) );
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
+        return StatusCode::SUCCESS;
+      }
 
       virtual Out operator()( const vector_of_const_<In>& inputs ) const = 0;
 
@@ -41,8 +59,10 @@ namespace Gaudi
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
       using InputHandle_t = details::InputHandle_t<Traits_, typename std::remove_pointer<T>::type>;
-      std::vector<std::string>       m_inputLocations; // TODO/FIXME: remove this duplication...
-      std::vector<InputHandle_t<In>> m_inputs;         //   and make the handles properties instead...
+      std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
+      Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
+      // TODO/FIXME: replace vector of string property + call-back with a
+      //             vector<handle> property ... as soon as declareProperty can deal with that.
     };
 
     template <typename Out, typename In, typename Traits_>
@@ -50,36 +70,20 @@ namespace Gaudi
                                                                                          ISvcLocator*     pSvcLocator,
                                                                                          const KeyValues& inputs,
                                                                                          const KeyValue&  output )
-        : base_class( name, pSvcLocator, output ), m_inputLocations( inputs.second )
+        : base_class( name, pSvcLocator, output )
+        , m_inputLocations{this, inputs.first, inputs.second,
+                           [=]( Gaudi::Details::PropertyBase& ) {
+                             this->m_inputs =
+                                 details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
+                             if ( std::is_pointer<In>::value ) { // handle constructor does not (yet) allow to set
+                                                                 // optional flag... so do it
+                                                                 // explicitly here...
+                               std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
+                                              []( auto& h ) { h.setOptional( true ); } );
+                             }
+                           },
+                           Gaudi::Details::Property::ImmediatelyInvokeHandler{true}}
     {
-      // TODO/FIXME: replace vector of string property + call-back with a
-      //             vector<handle> property ... as soon as declareProperty can deal with that.
-      auto p = this->declareProperty( inputs.first, m_inputLocations );
-      p->declareUpdateHandler( [=]( Gaudi::Details::PropertyBase& ) {
-        this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
-        if ( std::is_pointer<In>::value ) { // handle constructor does not (yet) allow to set optional flag... so do it
-                                            // explicitly here...
-          std::for_each( this->m_inputs.begin(), this->m_inputs.end(), []( auto& h ) { h.setOptional( true ); } );
-        }
-      } );
-      p->useUpdateHandler(); // invoke call-back now, to be sure the input handles are synced with the property...
-    }
-
-    template <typename Out, typename In, typename Traits_>
-    StatusCode MergingTransformer<Out( const vector_of_const_<In>& ), Traits_>::execute()
-    {
-      vector_of_const_<In> ins;
-      ins.reserve( m_inputs.size() );
-      std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ),
-                      details::details2::get_from_handle<In>{} );
-      try {
-        using details::as_const;
-        details::put( std::get<0>( this->m_outputs ), as_const( *this )( as_const( ins ) ) );
-      } catch ( GaudiException& e ) {
-        ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
-        return e.code();
-      }
-      return StatusCode::SUCCESS;
     }
   }
 }

@@ -2,7 +2,8 @@
 #include "EventSlot.h"
 #include "PRGraphVisitors.h"
 
-#include "GaudiKernel/Algorithm.h"
+#include <Gaudi/Algorithm.h>
+#include <Gaudi/Sequence.h>
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
@@ -49,8 +50,8 @@ StatusCode PrecedenceSvc::initialize()
                          Inverted{false} );
   // assemble the CF rules
   for ( const auto& ialgoPtr : m_algResourcePool->getTopAlgList() ) {
-    auto algorithm = dynamic_cast<Algorithm*>( ialgoPtr );
-    if ( !algorithm ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+    auto algorithm = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
+    if ( !algorithm ) fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
     sc = assembleCFRules( algorithm, "RootDecisionHub" );
     if ( sc.isFailure() ) {
       fatal() << "Could not assemble the CF precedence realm" << endmsg;
@@ -99,7 +100,8 @@ StatusCode PrecedenceSvc::initialize()
 }
 
 // ============================================================================
-StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& parentName, unsigned int recursionDepth )
+StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::string& parentName,
+                                           unsigned int recursionDepth )
 {
   using namespace concurrency;
 
@@ -110,22 +112,24 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
   bool isGaudiSequencer( false );
   bool isAthSequencer( false );
 
-  if ( algo->isSequence() ) {
+  if ( !algo->isSequence() ) {
+    ON_DEBUG debug() << std::string( recursionDepth, ' ' ) << "Algorithm '" << algo->name() << "' discovered" << endmsg;
+    sc = m_PRGraph.addAlgorithmNode( algo, parentName, false, false );
+    return sc;
+  } else {
     if ( algo->hasProperty( "ShortCircuit" ) )
       isGaudiSequencer = true;
     else if ( algo->hasProperty( "StopOverride" ) )
       isAthSequencer = true;
   }
 
-  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  if ( // we only want to add basic algorithms -> have no subAlgs
-      // and exclude the case of empty sequencers
-      ( subAlgorithms->empty() && !( isGaudiSequencer || isAthSequencer ) ) ) {
-
-    ON_DEBUG debug() << std::string( recursionDepth, ' ' ) << "Algorithm '" << algo->name() << "' discovered" << endmsg;
-    sc = m_PRGraph.addAlgorithmNode( algo, parentName, false, false );
-    return sc;
+  auto seq = dynamic_cast<Gaudi::Sequence*>( algo );
+  if ( seq == 0 ) {
+    error() << "Algorithm " << algo->name() << " has isSequence==true, but unable to dcast to Sequence" << endmsg;
+    return StatusCode::FAILURE;
   }
+
+  auto subAlgorithms = seq->subAlgorithms();
 
   // Recursively unroll
   ON_DEBUG debug() << std::string( recursionDepth, ' ' ) << "Decision hub '" << algo->name() << "' discovered"
@@ -156,7 +160,7 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
     return sc;
   }
 
-  for ( Algorithm* subalgo : *subAlgorithms ) {
+  for ( auto subalgo : *subAlgorithms ) {
     sc = assembleCFRules( subalgo, algo->name(), recursionDepth );
     if ( sc.isFailure() ) {
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;

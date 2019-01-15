@@ -158,13 +158,8 @@ public:
   StatusCode reinitialize() override;
   /// IIncidentListener interfaces overrides: incident handling
   void handle( const Incident& incident ) override;
-  /** Standard initializing service constructor.
-   *  @param   name   [IN]    Service instance name
-   *  @param   svc    [IN]    Pointer to service locator
-   *  @return Reference to DataOnDemandSvc object.
-   */
-  DataOnDemandSvc( const std::string& name,  //       Service instance name
-                   ISvcLocator*       svc ); //  Pointer to service locator
+  /// Standard initializing service constructor.
+  using extends::extends;
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -213,6 +208,18 @@ protected:
   // ==========================================================================
 private:
   // ==========================================================================
+  void force_update( Gaudi::Details::PropertyBase& p )
+  {
+    verbose() << "updated property " << p.name() << ", forcing update" << endmsg;
+    m_updateRequired = true;
+  };
+  void deprecated_property( Gaudi::Details::PropertyBase& p )
+  {
+    warning() << p.name() << " " << p.documentation() << endmsg;
+    force_update( p );
+  };
+
+  // ==========================================================================
   /// Incident service
   SmartIF<IIncidentSvc> m_incSvc = nullptr;
   /// Algorithm manager
@@ -250,18 +257,25 @@ private:
   Gaudi::Property<bool> m_partialPath{this, "UsePreceedingPath", true, "allow creation of partial leaves"};
   Gaudi::Property<bool> m_dump{
       this, "Dump", false,
+      [this]( auto& ) {
+        if ( m_dump && FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+          dump( MSG::ALWAYS );
+        }
+      },
       "dump configuration and stastics, if set to True after initialize it triggers a dump immediately"};
   Gaudi::Property<bool> m_init{this, "PreInitialize", false, "(pre)initialize all algorithms"};
   Gaudi::Property<bool> m_allowInitFailure{
       this, "AllowPreInitializeFailure", false,
       "allow (pre)initialization of algorithms to fail without stopping the application"};
 
-  Gaudi::Property<Setup> m_algMapping{this, "Algorithms", {}, "[[deprecated]] use AlgMap"};
-  Gaudi::Property<Setup> m_nodeMapping{this, "Nodes", {}, "[[deprecated]] use NodeMap"};
+  Gaudi::Property<Setup> m_algMapping{
+      this, "Algorithms", {}, &DataOnDemandSvc::deprecated_property, "[[deprecated]] use AlgMap"};
+  Gaudi::Property<Setup> m_nodeMapping{
+      this, "Nodes", {}, &DataOnDemandSvc::deprecated_property, "[[deprecated]] use NodeMap"};
 
   typedef std::map<std::string, std::string> Map;
-  Gaudi::Property<Map> m_algMap{this, "AlgMap", {}, "mapping {'data': 'algorithm'}"};
-  Gaudi::Property<Map> m_nodeMap{this, "NodeMap", {}, "mapping {'data': 'type'}"};
+  Gaudi::Property<Map> m_algMap{this, "AlgMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'algorithm'}"};
+  Gaudi::Property<Map> m_nodeMap{this, "NodeMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'type'}"};
 
   Gaudi::Property<std::string> m_prefix{this, "Prefix", "/Event/"};
 

@@ -55,13 +55,6 @@ namespace
 
 //*************************************************************************//
 
-THistSvc::THistSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
-{
-  m_compressionLevel.declareUpdateHandler( &THistSvc::setupCompressionLevel, this );
-  m_outputfile.declareUpdateHandler( &THistSvc::setupOutputFile, this );
-  m_inputfile.declareUpdateHandler( &THistSvc::setupInputFile, this );
-}
-
 StatusCode THistSvc::initialize()
 {
   GlobalDirectoryRestore restore( m_svcMut );
@@ -76,14 +69,14 @@ StatusCode THistSvc::initialize()
   StatusCode st( StatusCode::SUCCESS );
 
   try {
-    setupOutputFile( m_outputfile );
+    setupOutputFile();
   } catch ( GaudiException& err ) {
     error() << "Caught: " << err << endmsg;
     st = StatusCode::FAILURE;
   }
 
   try {
-    setupInputFile( m_inputfile );
+    setupInputFile();
   } catch ( GaudiException& err ) {
     error() << "Caught: " << err << endmsg;
     st = StatusCode::FAILURE;
@@ -128,13 +121,8 @@ StatusCode THistSvc::initialize()
 
   m_okToConnect = true;
   if ( m_delayConnect ) {
-    if ( !m_inputfile.value().empty() ) {
-      setupInputFile( m_inputfile );
-    }
-    if ( !m_outputfile.value().empty() ) {
-      setupOutputFile( m_outputfile );
-    }
-
+    if ( !m_inputfile.value().empty() ) setupInputFile();
+    if ( !m_outputfile.value().empty() ) setupOutputFile();
     m_delayConnect = false;
   }
   m_alreadyConnectedOutFiles.clear();
@@ -630,8 +618,8 @@ StatusCode THistSvc::deReg( TObject* obj )
         return StatusCode::FAILURE;
       }
 
-      m_tobjs.erase( obj_itr );
       vhid->erase( vhid->begin() + obj_itr->second.second );
+      m_tobjs.erase( obj_itr );
 
       m_uids.erase( uid_itr );
       m_ids.erase( id_itr );
@@ -1125,7 +1113,6 @@ void THistSvc::handle( const Incident& /* inc */ )
 
   updateFiles();
 
-  std::map<std::string, std::pair<TFile*, Mode>>::const_iterator itr;
   for ( const auto& f : m_files ) {
     TFile* tf = f.second.first;
 
@@ -1455,19 +1442,8 @@ StatusCode THistSvc::connect( const std::string& ident )
     return StatusCode::FAILURE;
   }
 
-  Mode newMode;
-  if ( typ == 'O' ) {
-    newMode = THistSvc::READ;
-  } else if ( typ == 'N' ) {
-    newMode = THistSvc::WRITE;
-  } else if ( typ == 'A' ) {
-    newMode = THistSvc::APPEND;
-  } else if ( typ == 'R' ) {
-    newMode = THistSvc::UPDATE;
-  } else if ( typ == 'S' ) {
-    newMode = THistSvc::SHARE;
-  } else {
-    // something else?
+  const auto newMode = charToMode( typ );
+  if ( newMode == THistSvc::INVALID ) {
     error() << "No OPT= specified or unknown access mode in: " << ident << endmsg;
     return StatusCode::FAILURE;
   }
@@ -1745,8 +1721,7 @@ void THistSvc::parseString( const std::string& id, std::string& root, std::strin
   }
 }
 
-void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
-                               /*m_inputfile*/ )
+void THistSvc::setupInputFile()
 {
   if ( FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
     debug() << "Delaying connection of Input Files until Initialize"
@@ -1775,8 +1750,7 @@ void THistSvc::setupInputFile( Gaudi::Details::PropertyBase&
   }
 }
 
-void THistSvc::setupOutputFile( Gaudi::Details::PropertyBase&
-                                /*m_outputfile*/ )
+void THistSvc::setupOutputFile()
 {
   if ( FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
     debug() << "Delaying connection of Input Files until Initialize"
@@ -1799,13 +1773,6 @@ void THistSvc::setupOutputFile( Gaudi::Details::PropertyBase&
       throw GaudiException( "Problem connecting outputfile !!", name(), StatusCode::FAILURE );
     }
   }
-}
-
-void THistSvc::setupCompressionLevel( Gaudi::Details::PropertyBase&
-                                      /* cl */ )
-{
-  warning() << "\"CompressionLevel\" Property has been deprecated. "
-            << "Set it via the \"CL=\" parameter in the \"Output\" Property" << endmsg;
 }
 
 void THistSvc::copyFileLayout( TDirectory* destination, TDirectory* source )

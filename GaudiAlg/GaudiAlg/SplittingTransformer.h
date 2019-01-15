@@ -45,8 +45,8 @@ namespace Gaudi
       }
 
       // accessor to output Locations
-      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations[n]; }
-      unsigned int                                    outputLocationSize() const { return m_outputLocations.size(); }
+      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n]; }
+      unsigned int outputLocationSize() const { return m_outputLocations.value().size(); }
 
       // derived classes can NOT implement execute
       StatusCode execute() override final
@@ -76,25 +76,29 @@ namespace Gaudi
     private:
       template <typename T>
       using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
-      std::vector<std::string> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the actual handles!
-      std::vector<OutputHandle<Out>> m_outputs;
+      std::vector<OutputHandle<Out>>            m_outputs;
+      Gaudi::Property<std::vector<std::string>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
+                                                                   // actual handles!
     };
 
     template <typename Out, typename... In, typename Traits_>
     SplittingTransformer<vector_of_<Out>( const In&... ), Traits_>::SplittingTransformer(
         const std::string& name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N>& inputs,
         const KeyValues& outputs )
-        : base_class( name, pSvcLocator, inputs ), m_outputLocations( outputs.second )
+        : base_class( name, pSvcLocator, inputs )
+        , m_outputLocations( this, outputs.first, outputs.second,
+                             [=]( Gaudi::Details::PropertyBase& ) {
+                               this->m_outputs = details::make_vector_of_handles<decltype( this->m_outputs )>(
+                                   this, m_outputLocations );
+                               if ( details::is_optional<Out>::value ) { // handle constructor does not (yet) allow to
+                                                                         // set optional flag... so
+                                                                         // do it explicitly here...
+                                 std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
+                                                []( auto& h ) { h.setOptional( true ); } );
+                               }
+                             },
+                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true} )
     {
-      auto p = this->declareProperty( outputs.first, m_outputLocations );
-      p->declareUpdateHandler( [=]( Gaudi::Details::PropertyBase& ) {
-        this->m_outputs = details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
-        if ( details::is_optional<Out>::value ) { // handle constructor does not (yet) allow to set optional flag... so
-                                                  // do it explicitly here...
-          std::for_each( this->m_outputs.begin(), this->m_outputs.end(), []( auto& h ) { h.setOptional( true ); } );
-        }
-      } );
-      p->useUpdateHandler(); // invoke now, to be sure the input handles are synced with the property...
     }
   }
 }

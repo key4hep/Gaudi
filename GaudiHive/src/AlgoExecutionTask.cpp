@@ -3,19 +3,28 @@
 #include "RetCodeGuard.h"
 
 // Framework
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include <Gaudi/Algorithm.h>
 
 #include <functional>
+
+namespace Gaudi
+{
+  namespace Concurrency
+  {
+    extern thread_local bool ThreadInitDone;
+  }
+}
 
 tbb::task* AlgoExecutionTask::execute()
 {
 
-  IAlgorithm* ialg      = m_algorithm.get();
-  Algorithm*  this_algo = dynamic_cast<Algorithm*>( ialg );
+  IAlgorithm*       ialg      = m_algorithm.get();
+  Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( ialg );
   if ( !this_algo ) {
     throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE );
   }
@@ -28,6 +37,19 @@ tbb::task* AlgoExecutionTask::execute()
 
   SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
   MsgStream            log( messageSvc, "AlgoExecutionTask" );
+
+  if ( !Gaudi::Concurrency::ThreadInitDone ) {
+    log << MSG::DEBUG << "New thread detected: 0x" << std::hex << pthread_self() << std::dec
+        << ". Doing thread local initialization." << endmsg;
+    SmartIF<IThreadPoolSvc> tps;
+    tps = m_serviceLocator->service( "ThreadPoolSvc" );
+    if ( !tps.isValid() ) {
+      log << MSG::ERROR << "unable to get the ThreadPoolSvc to trigger thread local initialization" << endmsg;
+      throw GaudiException( "retrieval of ThrePoolSvc failed", "AlgoExecutionTask", StatusCode::FAILURE );
+    }
+
+    tps->initThisThread();
+  }
 
   // select the appropriate store
   this_algo->whiteboard()->selectStore( m_evtCtx.valid() ? m_evtCtx.slot() : 0 ).ignore();

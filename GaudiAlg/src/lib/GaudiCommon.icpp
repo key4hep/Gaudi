@@ -64,10 +64,6 @@
 template <class PBASE>
 void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
 {
-  m_errorsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printErrorHandler, this );
-  m_propsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printPropsHandler, this );
-  m_statPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printStatHandler, this );
-
   // setup context from parent if available
   if ( parent ) {
     if ( const GaudiAlgorithm* gAlg = dynamic_cast<const GaudiAlgorithm*>( parent ) ) {
@@ -518,27 +514,33 @@ void GaudiCommon<PBASE>::Exception( const std::string& msg, const StatusCode sc 
 template <class PBASE>
 long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
 {
-  // print statistics
-  if ( m_counters.empty() ) {
+  // check how many counters think they should be printed or how many
+  // we anyway want to print
+  unsigned int nbPrintedCounters = 0;
+  if ( !m_printEmptyCounters && !this->msgLevel( MSG::DEBUG ) ) {
+    nbPrintedCounters = std::accumulate(
+        m_counters.begin(), m_counters.end(), nbPrintedCounters,
+        []( unsigned int& sum, const auto& entry ) { return sum + entry.second.get().toBePrinted(); } );
+  } else {
+    nbPrintedCounters = m_counters.size();
+  }
+  // in case nothing should be printed, let's stop here
+  if ( nbPrintedCounters == 0 ) {
     return 0;
   }
   MsgStream& msg = this->msgStream( level );
-  //
-  msg << "Number of counters : " << m_counters.size();
-  //
-  if ( !m_counters.empty() ) {
-    msg << "\n" << m_header.value();
-  }
-  //
+  msg << "Number of counters : " << nbPrintedCounters << "\n" << m_header.value();
   for ( const auto& entry : m_counters ) {
-    std::ostringstream ost;
-    entry.second.get().print( ost, entry.first );
-    msg << "\n" << ost.str();
+    if ( m_printEmptyCounters || this->msgLevel( MSG::DEBUG ) || entry.second.get().toBePrinted() ) {
+      std::ostringstream ost;
+      entry.second.get().print( ost, entry.first );
+      msg << "\n" << ost.str();
+    }
   }
   //
   msg << endmsg;
   //
-  return m_counters.size();
+  return nbPrintedCounters;
 }
 // ============================================================================
 
@@ -622,50 +624,6 @@ DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<Data
   }
   // if we get here, ownership has been transferred to the IDataProviderSvc
   return object.release();
-}
-// ============================================================================
-
-// ============================================================================
-// Handle method for changes in the 'ErrorsPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printErrorHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->errorsPrint() ) {
-    this->printErrors();
-  }
-}
-// ============================================================================
-// Handle method for changes in the 'PropertiesPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printPropsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->propsPrint() ) {
-    this->printProps( MSG::ALWAYS );
-  }
-}
-// ============================================================================
-// Handle method for changes in the 'StatPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printStatHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->statPrint() ) {
-    this->printStat( MSG::ALWAYS );
-  }
 }
 // ============================================================================
 

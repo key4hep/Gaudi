@@ -1,12 +1,12 @@
 // Include files
 #include "AlgorithmManager.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/TypeNameString.h"
+#include <Gaudi/Algorithm.h>
 #include <iostream>
 #ifndef _WIN32
 #include <errno.h>
@@ -60,7 +60,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
       actualalgtype = typeAlias->second;
     }
   }
-  algorithm = Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() ).release();
+  algorithm = Gaudi::Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() ).release();
   if ( !algorithm ) {
     this->error() << "Algorithm of type " << actualalgtype << " is unknown (No factory available)." << endmsg;
 #ifndef _WIN32
@@ -86,10 +86,10 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
   algorithm->release();
   StatusCode rc;
   if ( managed ) {
-    // Bring the created algorithm to the same state of the ApplicationMgr
-    if ( FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+    // Bring the created algorithm to the target state of the ApplicationMgr
+    if ( targetFSMState() >= Gaudi::StateMachine::INITIALIZED ) {
       rc = algorithm->sysInitialize();
-      if ( rc.isSuccess() && FSMState() >= Gaudi::StateMachine::RUNNING ) {
+      if ( rc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING ) {
         rc = algorithm->sysStart();
       }
     }
@@ -135,7 +135,7 @@ StatusCode AlgorithmManager::initialize()
 {
   StatusCode rc;
   for ( auto& it : m_algs ) {
-    if ( !it.managed ) continue;
+    if ( !it.managed || it.algorithm->FSMState() >= Gaudi::StateMachine::INITIALIZED ) continue;
     rc = it.algorithm->sysInitialize();
     if ( rc.isFailure() ) return rc;
   }
@@ -146,7 +146,7 @@ StatusCode AlgorithmManager::start()
 {
   StatusCode rc;
   for ( auto& it : m_algs ) {
-    if ( !it.managed ) continue;
+    if ( !it.managed || it.algorithm->FSMState() >= Gaudi::StateMachine::RUNNING ) continue;
     rc = it.algorithm->sysStart();
     if ( rc.isFailure() ) return rc;
   }
@@ -221,7 +221,7 @@ void AlgorithmManager::outputLevelUpdate()
 {
   resetMessaging();
   for ( auto& algItem : m_algs ) {
-    const auto alg = dynamic_cast<Algorithm*>( algItem.algorithm.get() );
+    const auto alg = dynamic_cast<Gaudi::Algorithm*>( algItem.algorithm.get() );
     if ( alg ) alg->resetMessaging();
   }
 }

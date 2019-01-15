@@ -4,6 +4,7 @@ gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(Boost REQUIRED COMPONENTS regex)
 find_package(ROOT REQUIRED COMPONENTS Hist RIO Tree Net Matrix Thread MathCore)
+find_package(TBB REQUIRED)
 find_package(CLHEP)
 
 # Decide whether to link against CLHEP:
@@ -13,7 +14,7 @@ if( CLHEP_FOUND )
 endif()
 
 # Hide some Boost/ROOT/CLHEP compile time warnings
-include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} )
+include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS} )
 if( CLHEP_FOUND )
    include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
 endif()

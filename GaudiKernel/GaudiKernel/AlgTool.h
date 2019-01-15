@@ -303,7 +303,11 @@ private:
   InterfaceList m_interfaceList; ///< Interface list
 
   // Properties
-  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  // initialize output level from MessageSvc and initialize messaging (before enabling update handler)
+  Gaudi::Property<int> m_outputLevel{
+      this, "OutputLevel", setUpMessaging(),
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
+      "output level"};
 
   Gaudi::Property<std::string> m_monitorSvcName{this, "MonitorService", "MonitorSvc",
                                                 "name to use for Monitor Service"};

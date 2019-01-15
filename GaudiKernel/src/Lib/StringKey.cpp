@@ -4,8 +4,8 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/ToStream.h"
+#include <Gaudi/Parsers/CommonParsers.h>
 // ============================================================================
 /** @file
  *  Implementation file for class Gaudi::StringKey

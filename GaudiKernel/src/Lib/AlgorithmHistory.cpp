@@ -10,8 +10,8 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "GaudiKernel/AlgorithmHistory.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/JobHistory.h"
+#include <Gaudi/Algorithm.h>
 #include <assert.h>
 #include <iostream>
 
@@ -26,7 +26,7 @@ using std::vector;
 
 // Constructor.
 
-AlgorithmHistory::AlgorithmHistory( const Algorithm& alg, const JobHistory* job )
+AlgorithmHistory::AlgorithmHistory( const Gaudi::Algorithm& alg, const JobHistory* job )
     : m_algorithm_type( System::typeinfoName( typeid( alg ) ) )
     , m_algorithm_version( alg.version() )
     , m_algorithm_name( alg.name() )
@@ -34,11 +34,6 @@ AlgorithmHistory::AlgorithmHistory( const Algorithm& alg, const JobHistory* job 
     , m_properties( alg.getProperties() )
     , m_jobHistory( job )
 {
-  assert( alg.subAlgorithms() != 0 );
-
-  for ( const auto& ialg : *alg.subAlgorithms() ) {
-    m_subalgorithm_histories.push_back( new AlgorithmHistory( *ialg, job ) );
-  }
 }
 
 //**********************************************************************
@@ -92,20 +87,6 @@ void AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) cons
       ost << endl;
     }
     ost << "]" << endl;
-    // Subalgorithms.
-    if ( subalgorithm_histories().size() == 0 ) {
-      ost << "No subalgorithms.";
-    } else {
-      ost << "Subalgorithms: {" << endl;
-      for ( auto iphist = subalgorithm_histories().begin(); iphist != subalgorithm_histories().end(); ++iphist ) {
-        if ( iphist == subalgorithm_histories().begin() ) {
-          ost << "----------" << endl;
-        }
-        ost << **iphist << endl;
-        ost << "----------" << endl;
-      }
-      ost << "}";
-    }
   } else {
     ind += 2;
     indent( ost, ind );
@@ -116,11 +97,6 @@ void AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) cons
       indent( ost, ind + 2 );
       ost << "<PROPERTY name=\"" << iprop->name() << "\" value=\"" << convert_string( iprop->toString() )
           << "\" documentation=\"" << convert_string( iprop->documentation() ) << "\">" << std::endl;
-    }
-
-    // Subalgs
-    for ( const auto& iphist : subalgorithm_histories() ) {
-      iphist->dump( ost, isXML, ind + 2 );
     }
 
     indent( ost, ind );

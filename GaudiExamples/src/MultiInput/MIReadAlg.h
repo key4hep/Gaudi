@@ -15,7 +15,7 @@ namespace Gaudi
     namespace MultiInput
     {
       /** Simple algorithm used to read data from two files. */
-      class ReadAlg : public Algorithm
+      class ReadAlg : public ::Algorithm
       {
       public:
         using Algorithm::Algorithm;

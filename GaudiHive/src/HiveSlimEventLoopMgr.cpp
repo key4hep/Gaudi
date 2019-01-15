@@ -288,7 +288,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
   // Leave the interface intact and swallow this C trick.
   int& createdEvts = *( (int*)createdEvts_IntPtr );
 
-  EventContext* evtContext( nullptr );
+  std::unique_ptr<EventContext> evtContext;
 
   // Check if event number is in blacklist
   if ( LIKELY( m_blackListBS != nullptr ) ) { // we are processing a finite number of events, use bitset blacklist
@@ -331,7 +331,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
 
   m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginProcessing, *evtContext ) );
 
-  StatusCode addEventStatus = m_schedulerSvc->pushNewEvent( evtContext );
+  StatusCode addEventStatus = m_schedulerSvc->pushNewEvent( evtContext.release() );
 
   // If this fails, we need to wait for something to complete
   if ( !addEventStatus.isSuccess() ) {
@@ -353,7 +353,7 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
 
   if ( maxevt > 0 ) { // finite number of events to process
     const unsigned int umaxevt = static_cast<unsigned int>( maxevt );
-    m_blackListBS              = new boost::dynamic_bitset<>( maxevt ); // all initialized to zero
+    m_blackListBS              = std::make_unique<boost::dynamic_bitset<>>( maxevt ); // all initialized to zero
     for ( unsigned int i = 0; i < m_eventNumberBlacklist.size() && m_eventNumberBlacklist[i] <= umaxevt;
           ++i ) { // black list is sorted in init
       m_blackListBS->set( m_eventNumberBlacklist[i], true );
@@ -364,7 +364,7 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
   sc                                = nextEvent( maxevt );
   if ( sc.isFailure() ) eventfailed = true;
 
-  delete m_blackListBS;
+  m_blackListBS.reset( nullptr );
 
   return eventfailed ? StatusCode::FAILURE : StatusCode::SUCCESS;
 }
@@ -523,10 +523,9 @@ StatusCode HiveSlimEventLoopMgr::declareEventRootAddress()
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::createEventContext( EventContext*& evtContext, int createdEvts )
+StatusCode HiveSlimEventLoopMgr::createEventContext( std::unique_ptr<EventContext>& evtContext, int createdEvts )
 {
-  evtContext = new EventContext;
-  evtContext->set( createdEvts, m_whiteboard->allocateStore( createdEvts ) );
+  evtContext = std::make_unique<EventContext>( createdEvts, m_whiteboard->allocateStore( createdEvts ) );
   m_algExecStateSvc->reset( *evtContext );
 
   StatusCode sc = m_whiteboard->selectStore( evtContext->slot() );

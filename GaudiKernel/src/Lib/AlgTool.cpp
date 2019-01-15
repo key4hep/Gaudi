@@ -5,7 +5,6 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
@@ -14,6 +13,7 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ToolHandle.h"
+#include <Gaudi/Algorithm.h>
 
 //------------------------------------------------------------------------------
 namespace
@@ -134,7 +134,7 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
 
   IInterface* _p = const_cast<IInterface*>( parent );
 
-  if ( Algorithm* _alg = dynamic_cast<Algorithm*>( _p ) ) {
+  if ( Gaudi::Algorithm* _alg = dynamic_cast<Gaudi::Algorithm*>( _p ) ) {
     m_svcLocator = _alg->serviceLocator();
   } else if ( Service* _svc = dynamic_cast<Service*>( _p ) ) {
     m_svcLocator = _svc->serviceLocator();
@@ -147,11 +147,6 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
                               System::typeinfoName( typeid( *_p ) ) + "'",
                           "AlgTool", StatusCode::FAILURE );
   }
-
-  // initialize output level from MessageSvc and initialize messaging (before enabling update handler)
-  m_outputLevel.value() = setUpMessaging();
-  m_outputLevel.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
 
   // inherit output level from parent
   { // get the "OutputLevel" property from parent

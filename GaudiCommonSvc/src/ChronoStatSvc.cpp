@@ -15,6 +15,7 @@
 // ============================================================================
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/IChronoStatSvc.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/MsgStream.h"
@@ -58,6 +59,9 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css )
 
   // Add the content of the maps, leave the rest unchanged
 
+  lock_t lock( m_mutex );
+  lock_t otherLock( css.m_mutex );
+
   // Merge Chronomaps
   for ( auto& item : css.m_chronoEntities ) {
     const IChronoStatSvc::ChronoTag& key = item.first;
@@ -77,19 +81,6 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css )
     else
       m_statEntities.emplace( key, val );
   }
-}
-ChronoStatSvc::ChronoStatSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
-{
-  // basically limit the integer to MSG::Level range
-  auto int2level = []( int l ) -> MSG::Level {
-    return static_cast<MSG::Level>(
-        std::max( std::min( l, static_cast<int>( MSG::FATAL ) ), static_cast<int>( MSG::NIL ) ) );
-  };
-
-  m_intStatPrintLevel.declareUpdateHandler(
-      [this, int2level]( Gaudi::Details::PropertyBase& ) { m_statPrintLevel = int2level( m_intStatPrintLevel ); } );
-  m_intChronoPrintLevel.declareUpdateHandler(
-      [this, int2level]( Gaudi::Details::PropertyBase& ) { m_chronoPrintLevel = int2level( m_intChronoPrintLevel ); } );
 }
 // ============================================================================
 // Implementation of IService::initialize()
@@ -169,11 +160,17 @@ StatusCode ChronoStatSvc::finalize()
     const std::string stars( ( m_chronoCoutFlag ) ? 126 : 100, '*' );
     if ( m_chronoCoutFlag ) {
       std::cout << stars << std::endl;
+      if ( isMT() ) {
+        std::cout << "WARNING: MT job; statistics are unreliable" << std::endl;
+      }
       std::cout << local << " The Final CPU consumption (Chrono) Table "
                 << ( m_chronoOrderFlag ? "(ordered)" : "(not ordered)" ) << std::endl;
       std::cout << stars << std::endl;
     } else {
       log << (MSG::Level)m_chronoPrintLevel << stars << endmsg;
+      if ( isMT() ) {
+        log << (MSG::Level)m_chronoPrintLevel << "WARNING: MT job; statistics are unreliable" << endmsg;
+      }
       log << (MSG::Level)m_chronoPrintLevel << " The Final CPU consumption ( Chrono ) Table "
           << ( m_chronoOrderFlag ? "(ordered)" : "(not ordered)" ) << endmsg;
       log << (MSG::Level)m_chronoPrintLevel << stars << endmsg;
@@ -309,7 +306,7 @@ StatusCode ChronoStatSvc::finalize()
 // ============================================================================
 ChronoEntity* ChronoStatSvc::chronoStart( const ChronoTag& chronoTag )
 {
-  ChronoEntity& entity = m_chronoEntities[chronoTag];
+  ChronoEntity& entity = getEntity( chronoTag );
   entity.start();
   return &entity;
 }
@@ -318,7 +315,7 @@ ChronoEntity* ChronoStatSvc::chronoStart( const ChronoTag& chronoTag )
 // ============================================================================
 const ChronoEntity* ChronoStatSvc::chronoStop( const IChronoStatSvc::ChronoTag& chronoTag )
 {
-  ChronoEntity& entity = m_chronoEntities[chronoTag];
+  ChronoEntity& entity = getEntity( chronoTag );
   entity.stop();
   return &entity;
 }
@@ -328,7 +325,7 @@ const ChronoEntity* ChronoStatSvc::chronoStop( const IChronoStatSvc::ChronoTag& 
 IChronoStatSvc::ChronoTime ChronoStatSvc::chronoDelta( const IChronoStatSvc::ChronoTag& chronoTag,
                                                        IChronoStatSvc::ChronoType       theType )
 {
-  return m_chronoEntities[chronoTag].delta( theType );
+  return getEntity( chronoTag ).delta( theType );
 }
 // ============================================================================
 // Implementation of IChronoStatSvc::chronoPrint
@@ -337,10 +334,10 @@ void ChronoStatSvc::chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag )
 {
   MsgStream log( msgSvc(), chronoTag );
   if ( m_printUserTime ) {
-    log << (MSG::Level)m_chronoPrintLevel << m_chronoEntities[chronoTag].outputUserTime() << endmsg;
+    log << (MSG::Level)m_chronoPrintLevel << getEntity( chronoTag ).outputUserTime() << endmsg;
   }
   if ( m_printSystemTime ) {
-    log << (MSG::Level)m_chronoPrintLevel << m_chronoEntities[chronoTag].outputSystemTime() << endmsg;
+    log << (MSG::Level)m_chronoPrintLevel << getEntity( chronoTag ).outputSystemTime() << endmsg;
   }
 }
 // ============================================================================
@@ -348,7 +345,7 @@ void ChronoStatSvc::chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag )
 // ============================================================================
 IChronoStatSvc::ChronoStatus ChronoStatSvc::chronoStatus( const IChronoStatSvc::ChronoTag& chronoTag )
 {
-  return m_chronoEntities[chronoTag].status();
+  return getEntity( chronoTag ).status();
 }
 // ============================================================================
 // Implementation of IChronoStatSvc::stat
@@ -387,7 +384,8 @@ void ChronoStatSvc::statPrint( const IChronoStatSvc::StatTag& statTag )
 // ============================================================================
 const ChronoEntity* ChronoStatSvc::chrono( const IChronoStatSvc::ChronoTag& t ) const
 {
-  auto it = m_chronoEntities.find( t );
+  lock_t lock( m_mutex );
+  auto   it = m_chronoEntities.find( t );
   return m_chronoEntities.end() != it ? &( it->second ) : nullptr;
 }
 // ============================================================================
@@ -419,9 +417,12 @@ void ChronoStatSvc::saveStats()
 
   // ChronoEntity
   std::vector<std::pair<const ChronoEntity*, const ChronoTag*>> chronos;
-  chronos.reserve( m_chronoEntities.size() );
-  std::transform( std::begin( m_chronoEntities ), std::end( m_chronoEntities ), std::back_inserter( chronos ),
-                  []( ChronoMap::const_reference i ) { return std::make_pair( &i.second, &i.first ); } );
+  {
+    lock_t lock( m_mutex );
+    chronos.reserve( m_chronoEntities.size() );
+    std::transform( std::begin( m_chronoEntities ), std::end( m_chronoEntities ), std::back_inserter( chronos ),
+                    []( ChronoMap::const_reference i ) { return std::make_pair( &i.second, &i.first ); } );
+  }
 
   // sort it
   std::sort( std::begin( chronos ), std::end( chronos ), CompareFirstOfPointerPair );
@@ -472,6 +473,23 @@ void ChronoStatSvc::saveStats()
   out << std::endl;
 }
 // ============================================================================
+// Test if we're running in an MT job.
+// ============================================================================
+bool ChronoStatSvc::isMT() const
+{
+  bool isMT = false;
+  if ( m_hiveWhiteBoardSvc.retrieve().isFailure() ) {
+    error() << "Cannot retrieve HiveWhiteBoardSvc";
+  } else {
+    // In non-MT mode, `EventDataSvc' does not have an IHiveWhiteBoard interface.
+    const SmartIF<IHiveWhiteBoard> wb( m_hiveWhiteBoardSvc.get() );
+    if ( wb && wb->getNumberOfStores() > 1 ) {
+      isMT = true;
+    }
+  }
+  return isMT;
+}
+// ============================================================================
 // print the "Stat" part of the ChronoStatSvc
 // ============================================================================
 void ChronoStatSvc::printStats()
@@ -487,10 +505,16 @@ void ChronoStatSvc::printStats()
   ///
   if ( m_statCoutFlag ) {
     std::cout << stars << std::endl;
+    if ( isMT() ) {
+      std::cout << "WARNING: MT job; statistics are unreliable" << std::endl;
+    }
     std::cout << " The Final stat Table " << ( m_statOrderFlag ? "(ordered)" : "(not ordered)" ) << std::endl;
     std::cout << stars << std::endl;
   } else {
     log << m_statPrintLevel << stars << endmsg;
+    if ( isMT() ) {
+      log << (MSG::Level)m_chronoPrintLevel << "WARNING: MT job; statistics are unreliable" << endmsg;
+    }
     log << m_statPrintLevel << " The Final stat Table " << ( m_statOrderFlag ? "(ordered)" : "(not ordered)" )
         << endmsg;
     log << m_statPrintLevel << stars << endmsg;
@@ -549,6 +573,7 @@ void ChronoStatSvc::handle( const Incident& /* inc */ )
 
   if ( !m_ofd.is_open() ) return;
 
+  lock_t lock( m_mutex );
   for ( const auto& itr : m_chronoEntities ) {
     if ( itr.first.find( ":Execute" ) == std::string::npos ) continue;
 

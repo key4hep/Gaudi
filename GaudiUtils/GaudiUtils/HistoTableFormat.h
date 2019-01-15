@@ -11,6 +11,7 @@
 namespace AIDA
 {
   class IHistogram1D;
+  class IProfile1D;
   class IBaseHistogram;
 }
 // ============================================================================
@@ -127,7 +128,7 @@ namespace Gaudi
        */
       GAUDI_API std::string path( const AIDA::IBaseHistogram* aida );
       // ======================================================================
-      /** Make the string representation of the historgam
+      /** Make the string representation of the histogram
        *  according to the specified format.
        *  The method could be used to access/print various quantities
        *
@@ -167,6 +168,31 @@ namespace Gaudi
        */
       GAUDI_API std::string format( const AIDA::IHistogram1D* histo, const std::string& fmt );
       // ======================================================================
+      /** Make the string representation of the profile histogram
+       *  according to the specified format.
+       *  The method could be used to access/print various quantities
+       *
+       *  @code
+       *
+       *  using namespace Gaudi::Utils::Histos ;
+       *
+       *  const AIDA::IProfile1D* histo = ... ;
+       *
+       *  // print title in a free format:
+       *  std::cout << format   ( histo , "%2%" ) << std::endl ;
+       *
+       *  // print the path in HTS in a free format:
+       *  std::cout << format   ( histo , " path in HTS: %1% " ) << std::endl ;
+       *
+       *  @endcode
+       *
+       *  @param histo reference to the histogram
+       *  @param fmt   the printout format
+       *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+       *  @date   2007-08-08
+       */
+      GAUDI_API std::string format( const AIDA::IProfile1D* histo, const std::string& fmt );
+      // ======================================================================
       /** format a full row in table, including ID, label, path or any other
        *  "extra" identifier in string form
        *
@@ -196,6 +222,37 @@ namespace Gaudi
        *  @date   2007-08-08
        */
       GAUDI_API std::string format( const AIDA::IHistogram1D* histo, const std::string& ID, const std::string& fmt1,
+                                    const std::string& fmt2 );
+      // ======================================================================
+      /** format a full row in table, including ID, label, path or any other
+       *  "extra" identifier in string form
+       *
+       *  @code
+       *
+       *  using namespace Gaudi::Utils::Histos
+       *  const AIDA::IProfile1D* histo = ... ;
+       *
+       *  // define short format
+       *  const std::string fmt1 = " |%1$-30.30s %|33t| %2" ;
+       *
+       *  // define format for the histogram
+       *  const std::string fmt2 = ... ;
+       *
+       *  info () <<
+       *        format   ( "My Histo" , histo , fmt1 , fmt2 )
+       *          << endmsg ;
+       *
+       *  @endcode
+       *
+       *  @param histo pointer to the histogram
+       *  @param ID historgam ID, title, label  or other extra information
+       *  @param fmt1 "short" format used for the table
+       *  @param fmt2 format used for the histogram printout
+       *  @return formatted row
+       *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+       *  @date   2007-08-08
+       */
+      GAUDI_API std::string format( const AIDA::IProfile1D* histo, const std::string& ID, const std::string& fmt1,
                                     const std::string& fmt2 );
       // ========================================================================
       /** print the simple sequence (list-like) of histograms as table
@@ -457,6 +514,9 @@ namespace Gaudi
         /// make the string representation according to the default format
         std::string toString( const AIDA::IHistogram1D* histo ) const;
         // ======================================================================
+        /// make the string representation according to the default format
+        std::string toString( const AIDA::IProfile1D* histo ) const;
+        // ======================================================================
       public:
         // ======================================================================
         /** format a full row in table, including ID, label, path or any other
@@ -483,6 +543,30 @@ namespace Gaudi
          *  @return formatted row
          */
         std::string toString( const AIDA::IHistogram1D* histo, const std::string& ID, const std::string& fmt ) const;
+        /** format a full row in table, including ID, label, path or any other
+         *  "extra" identifier
+         *
+         *  @code
+         *
+         *  using namespace Gaudi::Utils::Histos ;
+         *
+         *  const Table& table = ... ;
+         *
+         *  const AIDA::IProfile1D* histo = ... ;
+         *
+         *  // define short format
+         *  const std::string fmt1 = " |%1$-30.30s %|33t| %2" ;
+         *
+         *  info () << table.toString ( "My Histo" , histo , fmt ) ;
+         *
+         *  @endcode
+         *
+         *  @param histo pointer to the histogram
+         *  @param ID historgam ID, title, label  or other extra infomration
+         *  @param fmt "short" format used for the table
+         *  @return formatted row
+         */
+        std::string toString( const AIDA::IProfile1D* histo, const std::string& ID, const std::string& fmt ) const;
         // ======================================================================
       public:
         // the table header

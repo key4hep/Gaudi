@@ -10,9 +10,6 @@ ApplicationMgr       INFO Application Manager Configured successfully
 ThreadPoolSvc        INFO no thread init tools attached
 AvalancheSchedu...   INFO Activating scheduler in a separate thread
 AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
-AlgResourcePool      INFO Algorithm THDataProducer is un-Clonable but Cardinality was set to 0. Only creating 1 instance
-AlgResourcePool      INFO Algorithm THDataProducer2 is un-Clonable but Cardinality was set to 0. Only creating 1 instance
-AlgResourcePool      INFO Algorithm THDataConsumer is un-Clonable but Cardinality was set to 0. Only creating 1 instance
 AvalancheSchedu...   INFO Found 3 algorithms
 AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   THDataProducer

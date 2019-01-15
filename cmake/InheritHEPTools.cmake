@@ -1,7 +1,7 @@
 # Special toolchain file that looks for the projects used and choose the version
 # of the heptools toolchain from them.
 
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.6)
 
 # FIXME: this is for backward compatibility with the olf LHCb minimal toolchain
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_MODULE_PATH})

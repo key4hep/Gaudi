@@ -37,9 +37,11 @@ scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
 
 AlgResourcePool(OutputLevel=DEBUG)
 
-timeValue = precedence.UniformTimeValue(algoAvgTime)
+timeValue = precedence.UniformTimeValue(avgRuntime=algoAvgTime)
 ifIObound = precedence.UniformBooleanValue(False)
-#ifIObound = precedence.RndBiased10BooleanValue()
+# 278 values, biased approximately as 90% to 10% - corresponds to the .GRAPHML scenario used below
+# (276 precedence graph algorithms, plus two fake algorithms - DstWriter and Framework)
+#ifIObound = precedence.RndBiasedBoolenValue(pattern = {True: 29, False: 249}, seed=1)
 
 
 sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,

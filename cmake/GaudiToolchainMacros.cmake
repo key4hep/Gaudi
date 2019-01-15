@@ -3,7 +3,7 @@
 # heptools and the tdaq projects (tdaq-common and dqm-common). The latter two make contributions to
 # CMAKE_PREFIX_PATH, whereas the heptools tool doesn't.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.6)
 
 ## Hepler macro to debug/print variables in an uniform way.
 macro(print_var var)

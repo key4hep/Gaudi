@@ -2694,13 +2694,14 @@ public: // trivial setters
   inline void setHistoDir( const std::string& val ) { m_histoDir = val; }
   // ==========================================================================
 public:
+  // FIXME: due to a bug in gcc7, the following two cannot be replaced with
+  // using PBASE::PBASE...
   // ==========================================================================
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from GaudiAlgorithm
-  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiAlgorithm, PBASE>::value, U>>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Gaudi::Algorithm, PBASE>::value, U>>
   GaudiHistos( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator )
   {
-    initGaudiHistosConstructor();
   }
   // ==========================================================================
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
@@ -2709,7 +2710,6 @@ public:
   GaudiHistos( const std::string& type, const std::string& name, const IInterface* parent )
       : PBASE( type, name, parent )
   {
-    initGaudiHistosConstructor();
   }
   // ==========================================================================
 protected:
@@ -2743,9 +2743,6 @@ private:
   /// Check if all histogram maps are empty
   bool noHistos() const;
   // ===========================================unsigned===============================
-  /// Constructor initialisation and job options
-  void initGaudiHistosConstructor();
-  // ==========================================================================
   /** @brief Declare a histogram to the monitor service
    *
    *  Uses the histogram ID as the 'name' sent to the monitor service and
@@ -2765,13 +2762,14 @@ protected:
   std::string convertTitleToID( std::string title ) const;
   // ==========================================================================
 private:
-  // ==========================================================================
-  /// the handler for "HistoPrint" property
-  void printHistoHandler( Gaudi::Details::PropertyBase& /* theProp */ ); // "HistoPrint"
-  // ==========================================================================
-private:
   Gaudi::Property<bool> m_produceHistos{this, "HistoProduce", true, "Switch on/off the production of histograms"};
   Gaudi::Property<bool> m_histosPrint{this, "HistoPrint", false,
+                                      [this]( const auto& ) {
+                                        // no action if not yet initialized
+                                        if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                             this->histosPrint() )
+                                          this->printHistos( MSG::ALWAYS );
+                                      },
                                       "Switch on/off the printout of histograms at finalization"};
   Gaudi::Property<bool> m_histoCountersPrint{this, "HistoCountersPrint", true,
                                              "Switch on/off the printout of histogram counters at finalization"};

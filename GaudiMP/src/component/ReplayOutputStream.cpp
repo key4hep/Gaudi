@@ -131,8 +131,9 @@ StatusCode ReplayOutputStream::execute()
   std::for_each( names.begin(), names.end(), [this]( const std::string& name ) {
     SmartIF<IAlgorithm>& alg = this->m_outputStreams[name];
     if ( alg ) {
-      if ( !alg->isExecuted() ) {
-        alg->sysExecute( Gaudi::Hive::currentContext() );
+      const auto& ctx = Gaudi::Hive::currentContext();
+      if ( alg->execState( ctx ).state() != AlgExecState::State::Done ) {
+        alg->sysExecute( ctx );
       } else {
         this->warning() << name << " already executed for the current event" << endmsg;
       }

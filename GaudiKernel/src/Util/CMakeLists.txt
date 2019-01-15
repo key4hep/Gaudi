@@ -18,6 +18,8 @@ gaudi_add_executable(genconf genconf.cpp
                  LINK_LIBRARIES GaudiKernel GaudiPluginService
                                 ${Boost_LIBRARIES} ${ROOT_LIBRARIES}
                  INCLUDE_DIRS Boost ROOT)
+set_target_properties(genconf PROPERTIES ENABLE_EXPORTS TRUE)
+
 if(WIN32)
   gaudi_add_executable(genwindef genwindef.cpp LibSymbolInfo.cpp)
 endif()

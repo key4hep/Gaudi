@@ -5,9 +5,11 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
+#include <atomic>
 #include <fstream>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <string>
 // ============================================================================
 // GaudiKernel
@@ -16,6 +18,8 @@
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Service.h"
+#include "GaudiKernel/ServiceHandle.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 // ============================================================================
 /// forward declarations
 // ============================================================================
@@ -101,9 +105,10 @@ public:
   // ============================================================================
   /**  Default constructor.
    *   @param name service instance name
-   *   @param svcloc pointer to servcie locator
+   *   @param svcloc pointer to service locator
    */
-  ChronoStatSvc( const std::string& name, ISvcLocator* svcloc );
+  ChronoStatSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc ) {}
+
   /// Compound assignment operator
   void merge( const ChronoStatSvc& css );
   // ============================================================================
@@ -127,9 +132,27 @@ private:
   void saveStats();
   // ============================================================================
 private:
+  bool isMT() const;
+
+  ChronoEntity& getEntity( const ChronoTag& chronoTag )
+  {
+    lock_t lock( m_mutex );
+    return m_chronoEntities[chronoTag];
+  }
+
+  // basically limit the integer to MSG::Level range
+  static MSG::Level int2level( int l )
+  {
+    return static_cast<MSG::Level>(
+        std::max( std::min( l, static_cast<int>( MSG::FATAL ) ), static_cast<int>( MSG::NIL ) ) );
+  };
   // ============================================================================
   /// chrono part
   ChronoMap m_chronoEntities;
+  /// Mutex protecting m_chronoEntities.
+  mutable std::mutex                  m_mutex;
+  typedef std::lock_guard<std::mutex> lock_t;
+
   /// level of info printing
   MSG::Level m_chronoPrintLevel = MSG::INFO;
 
@@ -142,7 +165,9 @@ private:
                                           "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_chronoCoutFlag{this, "ChronoDestinationCout", false,
                                          "define the destination of the table to be printed"};
-  Gaudi::Property<int>  m_intChronoPrintLevel{this, "ChronoPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<int> m_intChronoPrintLevel{
+      this, "ChronoPrintLevel", MSG::INFO, [this]( auto& ) { m_chronoPrintLevel = int2level( m_intChronoPrintLevel ); },
+      "print level"};
   Gaudi::Property<bool> m_chronoOrderFlag{this, "ChronoTableToBeOrdered", true, "should the printout be ordered"};
   Gaudi::Property<bool> m_printUserTime{this, "PrintUserTime", true};
   Gaudi::Property<bool> m_printSystemTime{this, "PrintSystemTime", false};
@@ -151,7 +176,9 @@ private:
                                         "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_statCoutFlag{this, "StatDestinationCout", false,
                                        "define the destination of the table to be printed"};
-  Gaudi::Property<int>  m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<int> m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO,
+                                           [this]( auto& ) { m_statPrintLevel = int2level( m_intStatPrintLevel ); },
+                                           "print level"};
   Gaudi::Property<bool> m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
 
   Gaudi::Property<std::string> m_statsOutFileName{
@@ -166,6 +193,8 @@ private:
                                        "Use the special format for printout of efficiency counters"};
 
   Gaudi::Property<std::string> m_perEventFile{this, "PerEventFile", "", "File name for per-event deltas"};
+
+  ServiceHandle<IInterface> m_hiveWhiteBoardSvc{this, "HiveWhiteBoardSvc", "EventDataSvc"};
 
   typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>> TimeMap;
   TimeMap       m_perEvtTime;

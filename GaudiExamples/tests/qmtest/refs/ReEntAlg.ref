@@ -1,0 +1,58 @@
+# setting LC_ALL to "C"
+# --> Including file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/ReEntAlg.py'
+# <-- End of file '/home/marco/Devel/workspace/Gaudi/GaudiExamples/options/ReEntAlg.py'
+MessageSvc           INFO Activating in a separate thread
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r3)
+                                          running on marco-XPS-13 on Wed Oct 17 16:35:22 2018
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
+ReEntAlg             INFO initialize()
+ThreadPoolSvc        INFO no thread init tools attached
+AvalancheSchedu...   INFO Activating scheduler in a separate thread
+AvalancheSchedu...   INFO Found 1 algorithms
+AvalancheSchedu...   INFO Data Dependencies for Algorithms:
+  ReEntAlg
+      none
+PrecedenceSvc        INFO Assembling CF and DF task precedence rules
+PrecedenceSvc        INFO PrecedenceSvc initialized successfully
+AvalancheSchedu...   INFO Concurrency level information:
+AvalancheSchedu...   INFO  o Number of events in flight: 3
+AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':3
+HiveSlimEventLo...WARNING Unable to locate service "EventSelector"
+HiveSlimEventLo...WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+HiveSlimEventLo...   INFO Found 0 events in black list
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+HiveSlimEventLo...   INFO Starting loop on events
+ReEntAlg             INFO execute(): context: (s: 0  e: 0) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 2000 ms for s: 0  e: 0
+ReEntAlg             INFO execute(): context: (s: 0  e: 3) index: 0 cardinality: 0
+ReEntAlg             INFO execute(): context: (s: 1  e: 1) index: 0 cardinality: 0
+ReEntAlg             INFO execute(): context: (s: 2  e: 2) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 2000 ms for s: 0  e: 3
+ReEntAlg             INFO execute(): context: (s: 0  e: 4) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 2500 ms for s: 1  e: 1
+ReEntAlg             INFO execute(): context: (s: 1  e: 5) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 3000 ms for s: 2  e: 2
+ReEntAlg             INFO execute(): context: (s: 2  e: 6) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 2000 ms for s: 0  e: 4
+ReEntAlg             INFO execute(): context: (s: 0  e: 7) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 2500 ms for s: 1  e: 5
+ReEntAlg             INFO execute(): context: (s: 1  e: 8) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 2000 ms for s: 0  e: 7
+ReEntAlg             INFO execute(): context: (s: 0  e: 9) index: 0 cardinality: 0
+ReEntAlg             INFO ... done in 3000 ms for s: 2  e: 6
+ReEntAlg             INFO ... done in 2500 ms for s: 1  e: 8
+ReEntAlg             INFO ... done in 2000 ms for s: 0  e: 9
+HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 80.9531 total time 8201951331
+HiveSlimEventLo...   INFO 0 events were SKIPed
+ApplicationMgr       INFO Application Manager Stopped successfully
+ReEntAlg             INFO finalize()
+HiveSlimEventLo...   INFO Histograms converted successfully according to request.
+AvalancheSchedu...   INFO Joining Scheduler thread
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

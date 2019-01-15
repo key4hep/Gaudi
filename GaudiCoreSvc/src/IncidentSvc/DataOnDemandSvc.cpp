@@ -36,32 +36,6 @@
 #include "boost/algorithm/string/predicate.hpp"
 #include "boost/format.hpp"
 // ============================================================================
-// Constructors and Destructor
-// ============================================================================
-DataOnDemandSvc::DataOnDemandSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
-{
-  m_dump.declareUpdateHandler( [this]( Gaudi::Details::PropertyBase& ) {
-    if ( m_dump && FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
-      dump( MSG::ALWAYS );
-    }
-  } );
-
-  auto force_update = [this]( Gaudi::Details::PropertyBase& p ) {
-    verbose() << "updated property " << p.name() << ", forcig update" << endmsg;
-    m_updateRequired = true;
-  };
-  m_algMap.declareUpdateHandler( force_update );
-  m_nodeMap.declareUpdateHandler( force_update );
-
-  auto deprecated_property = [this, force_update]( Gaudi::Details::PropertyBase& p ) {
-    warning() << p.name() << " " << p.documentation() << endmsg;
-    force_update( p );
-  };
-  m_algMapping.declareUpdateHandler( deprecated_property );
-  m_nodeMapping.declareUpdateHandler( deprecated_property );
-  // ==========================================================================
-}
-// ============================================================================
 // anonymous namespace to hide few local functions
 // ============================================================================
 namespace

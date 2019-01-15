@@ -35,6 +35,11 @@ public:
 
   /// Size of the initialized thread pool
   virtual int poolSize() const = 0;
+
+  /// Do thread local initialization of current thread.
+  /// Should only be used if it's determined that it has not
+  /// already been done.
+  virtual void initThisThread() = 0;
 };
 
 #endif

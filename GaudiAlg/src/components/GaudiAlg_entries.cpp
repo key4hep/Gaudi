@@ -1,5 +1,4 @@
 #include "GaudiAlg/EventCounter.h"
-#include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiSequencer.h"
 #include "GaudiAlg/Prescaler.h"
 #include "GaudiAlg/Sequencer.h"

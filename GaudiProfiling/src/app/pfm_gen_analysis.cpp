@@ -849,19 +849,13 @@ public:
     samples[index] += value;
     return;
   }
-  bool get_max( char* index, unsigned int* value )
+  bool get_max( char* index, unsigned int& value )
   {
-    if ( samples.empty() ) return false;
-    unsigned int cur_max = 0;
-    std::map<std::string, unsigned int>::iterator max_pos;
-    for ( std::map<std::string, unsigned int>::iterator it = samples.begin(); it != samples.end(); ++it ) {
-      if ( it->second > cur_max ) {
-        cur_max = it->second;
-        max_pos = it;
-      }
-    }
+    auto max_pos = std::max_element( samples.begin(), samples.end(),
+                                     []( const auto& lhs, const auto& rhs ) { return lhs.second < rhs.second; } );
+    if ( max_pos == samples.end() ) return false;
     strcpy( index, ( max_pos->first ).c_str() );
-    *value = max_pos->second;
+    value = max_pos->second;
     samples.erase( max_pos );
     return true;
   }
@@ -1142,10 +1136,10 @@ void put_S_module( S_module* cur_module, const char* dir )
   bzero( event_str, MAX_EVENT_NAME_LENGTH );
   strcpy( event_str, event );
   if ( cur_module->get_c_mask() > 0 ) {
-    sprintf( event_str, "%s CMASK=%d", event_str, cur_module->get_c_mask() );
+    sprintf( event_str + strlen( event_str ), " CMASK=%d", cur_module->get_c_mask() );
   }
   if ( cur_module->get_inv_mask() > 0 ) {
-    sprintf( event_str, "%s INV=%d", event_str, cur_module->get_inv_mask() );
+    sprintf( event_str + strlen( event_str ), " INV=%d", cur_module->get_inv_mask() );
   }
   fprintf( module_file, "<a name=\"%s\"><a>\n", event_str );
   fprintf( module_file, "<table cellpadding=\"5\">\n" );
@@ -1185,7 +1179,7 @@ void put_S_module( S_module* cur_module, const char* dir )
     char index[MAX_SAMPLE_INDEX_LENGTH];
     bzero( index, MAX_SAMPLE_INDEX_LENGTH );
     unsigned int value;
-    bool         res = cur_module->get_max( index, &value );
+    bool         res = cur_module->get_max( index, value );
     if ( !res ) break;
     char* sym_end = strchr( index, '%' );
     if ( sym_end == NULL ) // error
@@ -1193,7 +1187,7 @@ void put_S_module( S_module* cur_module, const char* dir )
       fprintf( stderr, "ERROR: Invalid sym and lib name! : %s\naborting...\n", index );
       exit( 1 );
     }
-    strncpy( sym, index, strlen( index ) - strlen( sym_end ) );
+    memcpy( sym, index, strlen( index ) - strlen( sym_end ) );
     strcpy( lib, sym_end + 1 );
     char temp[MAX_SYM_LENGTH];
     bzero( temp, MAX_SYM_LENGTH );
@@ -1288,7 +1282,7 @@ int read_S_file( const char* dir, const char* filename )
           exit( 1 );
         }
         bzero( cur_module_name, MAX_MODULE_NAME_LENGTH );
-        strncpy( cur_module_name, line, strlen( line ) - strlen( end_sym ) );
+        memcpy( cur_module_name, line, strlen( line ) - strlen( end_sym ) );
         cur_module->init( cur_module_name, arch, event, cmask, inv, sp );
         cur_module->set_total( atoi( end_sym + 1 ) );
       }    // module

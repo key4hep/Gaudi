@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.6)
 find_package(GaudiProject)
 # prevent irrelevant problems on SLC6
 set(GAUDI_CXX_STANDARD "c++98"

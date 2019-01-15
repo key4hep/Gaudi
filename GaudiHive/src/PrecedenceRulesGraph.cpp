@@ -156,7 +156,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::registerIODataObjects( const Algorithm* algo )
+  void PrecedenceRulesGraph::registerIODataObjects( const Gaudi::Algorithm* algo )
   {
 
     const std::string& algoName = algo->name();
@@ -226,8 +226,8 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Algorithm* algo, const std::string& parentName, bool inverted,
-                                                     bool allPass )
+  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Gaudi::Algorithm* algo, const std::string& parentName,
+                                                     bool inverted, bool allPass )
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -311,7 +311,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
+  StatusCode PrecedenceRulesGraph::addDecisionHubNode( Gaudi::Algorithm* decisionHubAlgo, const std::string& parentName,
                                                        Concurrent modeConcurrent, PromptDecision modePromptDecision,
                                                        ModeOr modeOR, AllPass allPass, Inverted isInverted )
   {

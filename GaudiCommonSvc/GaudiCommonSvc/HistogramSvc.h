@@ -71,7 +71,7 @@ protected:
     StatusCode retrieve( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::retrieveObject( a1, pObject );
+      StatusCode  sc      = m_svc->retrieveObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -79,7 +79,7 @@ protected:
     StatusCode retrieve( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::retrieveObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->retrieveObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -87,7 +87,7 @@ protected:
     StatusCode find( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::findObject( a1, pObject );
+      StatusCode  sc      = m_svc->findObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -95,7 +95,7 @@ protected:
     StatusCode find( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode  sc      = m_svc->DataSvc::findObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->findObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -625,15 +625,10 @@ public:
   // ==========================================================================
   // Register histogram with the data store
   // ==========================================================================
+  using DataSvc::registerObject;
   StatusCode registerObject( const std::string& parent, const std::string& rel, Base* obj ) override;
 
-  StatusCode registerObject( const std::string& parent, int item, Base* obj ) override;
-
   StatusCode registerObject( Base* pPar, const std::string& rel, Base* obj ) override;
-
-  StatusCode registerObject( DataObject* pPar, int item, Base* obj ) override;
-
-  StatusCode registerObject( Base* pPar, int item, Base* obj ) override;
 
   StatusCode registerObject( const std::string& full, Base* obj ) override;
 
@@ -1091,14 +1086,15 @@ public:
    */
   DataObject* createDirectory( const std::string& parentDir, const std::string& subDir ) override;
 
-  /// handler to be invoked for updating property m_defs1D
-  void update1Ddefs( Gaudi::Details::PropertyBase& );
-
   typedef std::map<std::string, Gaudi::Histo1DDef> Histo1DMap;
 
 private:
+  /// handler to be invoked for updating property m_defs1D
+  void update1Ddefs();
+
   Gaudi::Property<DBaseEntries> m_input{this, "Input", {}, "input streams"};
-  Gaudi::Property<Histo1DMap>   m_defs1D{this, "Predefined1DHistos", {}, "histograms with predefined parameters"};
+  Gaudi::Property<Histo1DMap>   m_defs1D{
+      this, "Predefined1DHistos", {}, &HistogramSvc::update1Ddefs, "histograms with predefined parameters"};
 
   // modified histograms:
   std::set<std::string> m_mods1D;

@@ -4,12 +4,12 @@
 #include "IOBoundAlgTask.h"
 
 // Framework includes
-#include "GaudiKernel/Algorithm.h" // can be removed ASA dynamic casts to Algorithm are removed
 #include "GaudiKernel/ConcurrencyFlags.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include <Gaudi/Algorithm.h> // can be removed ASA dynamic casts to Algorithm are removed
 
 // C++
 #include <algorithm>
@@ -147,9 +147,10 @@ StatusCode AvalancheSchedulerSvc::initialize()
 
   // figure out all outputs
   for ( IAlgorithm* ialgoPtr : algos ) {
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
+    Gaudi::Algorithm* algoPtr = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
     if ( !algoPtr ) {
-      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+      fatal() << "Could not convert IAlgorithm into Gaudi::Algorithm: this will result in a crash." << endmsg;
+      return StatusCode::FAILURE;
     }
     for ( auto id : algoPtr->outputDataObjs() ) {
       auto r = globalOutp.insert( id );
@@ -166,9 +167,9 @@ StatusCode AvalancheSchedulerSvc::initialize()
 
   std::map<std::string, DataObjIDColl> algosDependenciesMap;
   for ( IAlgorithm* ialgoPtr : algos ) {
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
+    Gaudi::Algorithm* algoPtr = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
     if ( nullptr == algoPtr ) {
-      fatal() << "Could not convert IAlgorithm into Algorithm for " << ialgoPtr->name()
+      fatal() << "Could not convert IAlgorithm into Gaudi::Algorithm for " << ialgoPtr->name()
               << ": this will result in a crash." << endmsg;
       return StatusCode::FAILURE;
     }
@@ -255,9 +256,10 @@ StatusCode AvalancheSchedulerSvc::initialize()
                << dataLoaderAlg->name() << "\" Algorithm" << ost.str() << endmsg;
 
         // Set the property Load of DataLoader Alg
-        Algorithm* dataAlg = dynamic_cast<Algorithm*>( dataLoaderAlg );
+        Gaudi::Algorithm* dataAlg = dynamic_cast<Gaudi::Algorithm*>( dataLoaderAlg );
         if ( !dataAlg ) {
-          fatal() << "Unable to dcast DataLoader \"" << m_useDataLoader.value() << "\" IAlg to Algorithm" << endmsg;
+          fatal() << "Unable to dcast DataLoader \"" << m_useDataLoader.value() << "\" IAlg to Gaudi::Algorithm"
+                  << endmsg;
           return StatusCode::FAILURE;
         }
 
@@ -688,13 +690,14 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, co
 
     if ( m_dumpIntraEventDynamics ) {
       std::stringstream s;
-      s << index2algname( algo_index ) << ", " << thisAlgsStates.sizeOfSubset( AState::CONTROLREADY ) << ", "
+      s << ( algo_index != -1 ? index2algname( algo_index ) : "START" ) << ", "
+        << thisAlgsStates.sizeOfSubset( AState::CONTROLREADY ) << ", "
         << thisAlgsStates.sizeOfSubset( AState::DATAREADY ) << ", " << thisAlgsStates.sizeOfSubset( AState::SCHEDULED )
         << ", " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << "\n";
       auto threads = ( m_threadPoolSize != -1 ) ? std::to_string( m_threadPoolSize )
                                                 : std::to_string( tbb::task_scheduler_init::default_num_threads() );
       std::ofstream myfile;
-      myfile.open( "IntraEventConcurrencyDynamics_" + threads + "T.csv", std::ios::app );
+      myfile.open( "IntraEventFSMOccupancy_" + threads + "T.csv", std::ios::app );
       myfile << s.str();
       myfile.close();
     }
@@ -1131,11 +1134,12 @@ StatusCode AvalancheSchedulerSvc::scheduleEventView( const EventContext* sourceC
 
   // It's not possible to create an std::functional from a move-capturing lambda
   // So, we have to release the unique pointer
-  auto action = [ this, sourceContext, viewContextPtr = viewContext.release(), &nodeName ]()->StatusCode
+  auto action =
+      [ this, slotIndex = sourceContext->slot(), viewContextPtr = viewContext.release(), &nodeName ]()->StatusCode
   {
 
     // Attach the sub-slot to the top-level slot
-    EventSlot& topSlot = this->m_eventSlots[sourceContext->slot()];
+    EventSlot& topSlot = this->m_eventSlots[slotIndex];
 
     if ( viewContextPtr ) {
       // Re-create the unique pointer

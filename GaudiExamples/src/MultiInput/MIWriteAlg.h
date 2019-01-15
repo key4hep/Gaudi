@@ -12,7 +12,7 @@ namespace Gaudi
     {
       /** Simple algorithm used to produce dummy data in the transient store.
        * Modified (reduced) version of the IO example WriteAlg. */
-      class WriteAlg : public Algorithm
+      class WriteAlg : public ::Algorithm
       {
       public:
         /// Constructor: A constructor of this form must be provided.

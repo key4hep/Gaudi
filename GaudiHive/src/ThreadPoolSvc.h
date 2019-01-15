@@ -45,6 +45,8 @@ public:
 
   virtual bool isInit() const { return m_init; }
 
+  virtual void initThisThread() override;
+
 private:
   /// Launch tasks to execute the ThreadInitTools
   StatusCode launchTasks( bool finalize = false );
