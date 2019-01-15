@@ -372,8 +372,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()
 std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList()
 {
   m_flatUniqueAlgPtrList.clear();
-  for ( auto algoSmartIF : m_flatUniqueAlgList )
-    m_flatUniqueAlgPtrList.push_back( const_cast<IAlgorithm*>( algoSmartIF.get() ) );
+  for ( auto algoSmartIF : m_flatUniqueAlgList ) m_flatUniqueAlgPtrList.push_back( algoSmartIF.get() );
   return m_flatUniqueAlgPtrList;
 }
 
@@ -382,7 +381,7 @@ std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList()
 std::list<IAlgorithm*> AlgResourcePool::getTopAlgList()
 {
   m_topAlgPtrList.clear();
-  for ( auto algoSmartIF : m_topAlgList ) m_topAlgPtrList.push_back( const_cast<IAlgorithm*>( algoSmartIF.get() ) );
+  for ( auto algoSmartIF : m_topAlgList ) m_topAlgPtrList.push_back( algoSmartIF.get() );
   return m_topAlgPtrList;
 }
 

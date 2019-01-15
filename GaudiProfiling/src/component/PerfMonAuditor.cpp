@@ -779,7 +779,7 @@ void PerfMonAuditor::start_smpl()
     }
     error() << "ERROR: Can't create PFM context " << strerror( errno ) << ". Aborting..." << endmsg;
   }
-  buf_addr = mmap( NULL, (size_t)buf_arg.buf_size, PROT_READ, MAP_PRIVATE, ctx_fd, 0 );
+  buf_addr = mmap( NULL, buf_arg.buf_size, PROT_READ, MAP_PRIVATE, ctx_fd, 0 );
   if ( buf_addr == MAP_FAILED ) {
     error() << "ERROR: cannot mmap sampling buffer: " << strerror( errno ) << ". Aborting..." << endmsg;
   }
@@ -818,7 +818,7 @@ void PerfMonAuditor::stop_smpl()
   m_pfm.pfm_self_stop( ctx_fd );
   process_smpl_buf( hdr, entry_size );
   close( ctx_fd );
-  ret = munmap( hdr, (size_t)buf_arg.buf_size );
+  ret = munmap( hdr, buf_arg.buf_size );
   if ( ret ) {
     error() << "Cannot unmap buffer: %s" << strerror( errno ) << endmsg;
   }

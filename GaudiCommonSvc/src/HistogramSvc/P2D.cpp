@@ -22,13 +22,13 @@ namespace Gaudi
   template <>
   void* Generic2D<AIDA::IProfile2D, TProfile2D>::cast( const std::string& className ) const
   {
-    if ( className == "AIDA::IProfile2D" )
-      return const_cast<AIDA::IProfile2D*>( (AIDA::IProfile2D*)this );
-    else if ( className == "AIDA::IProfile" )
-      return const_cast<AIDA::IProfile*>( (AIDA::IProfile*)this );
-    else if ( className == "AIDA::IBaseHistogram" )
-      return const_cast<AIDA::IBaseHistogram*>( (AIDA::IBaseHistogram*)this );
-    return nullptr;
+    return className == "AIDA::IProfile2D"
+               ? const_cast<AIDA::IProfile2D*>( static_cast<const AIDA::IProfile2D*>( this ) )
+               : className == "AIDA::IProfile"
+                     ? const_cast<AIDA::IProfile*>( static_cast<const AIDA::IProfile*>( this ) )
+                     : className == "AIDA::IBaseHistogram"
+                           ? const_cast<AIDA::IBaseHistogram*>( static_cast<const AIDA::IBaseHistogram*>( this ) )
+                           : nullptr;
   }
 
   template <>

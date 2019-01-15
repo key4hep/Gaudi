@@ -51,13 +51,13 @@ namespace Gaudi
   template <>
   void* Generic1D<AIDA::IProfile1D, TProfile>::cast( const std::string& className ) const
   {
-    if ( className == "AIDA::IProfile1D" )
-      return const_cast<AIDA::IProfile1D*>( (AIDA::IProfile1D*)this );
-    else if ( className == "AIDA::IProfile" )
-      return const_cast<AIDA::IProfile*>( (AIDA::IProfile*)this );
-    else if ( className == "AIDA::IBaseHistogram" )
-      return const_cast<AIDA::IBaseHistogram*>( (AIDA::IBaseHistogram*)this );
-    return nullptr;
+    return className == "AIDA::IProfile1D"
+               ? const_cast<AIDA::IProfile1D*>( static_cast<const AIDA::IProfile1D*>( this ) )
+               : className == "AIDA::IProfile"
+                     ? const_cast<AIDA::IProfile*>( static_cast<const AIDA::IProfile*>( this ) )
+                     : className == "AIDA::IBaseHistogram"
+                           ? const_cast<AIDA::IBaseHistogram*>( static_cast<const AIDA::IBaseHistogram*>( this ) )
+                           : nullptr;
   }
 
   template <>

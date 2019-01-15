@@ -612,7 +612,7 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz )
 {
   char buff[8], *tar, *src = (char *)source;
   extend( m_pointer + siz );
-  tar = (char*)m_buffer + m_pointer;
+  tar = m_buffer + m_pointer;
   switch ( swapBuffer( siz ) ) {
   case SINGLE_BYTE:
     *tar = *src;
@@ -636,7 +636,7 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz )
 inline void StreamBuffer::swapFromBuffer( void* target, int siz )
 {
   char* tar = (char*)target;
-  char* src = (char*)m_buffer + m_pointer;
+  char* src = m_buffer + m_pointer;
   switch ( swapBuffer( siz ) ) {
   case SINGLE_BYTE:
     *tar = *src;

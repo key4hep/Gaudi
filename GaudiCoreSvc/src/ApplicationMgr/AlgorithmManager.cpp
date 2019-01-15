@@ -127,7 +127,7 @@ const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
   m_listOfPtrs.clear();
   m_listOfPtrs.reserve( m_algs.size() );
   std::transform( std::begin( m_algs ), std::end( m_algs ), std::back_inserter( m_listOfPtrs ),
-                  []( const AlgorithmItem& alg ) { return const_cast<IAlgorithm*>( alg.algorithm.get() ); } );
+                  []( const AlgorithmItem& alg ) { return alg.algorithm.get(); } );
   return m_listOfPtrs;
 }
 

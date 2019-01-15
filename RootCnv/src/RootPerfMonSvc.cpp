@@ -90,11 +90,11 @@ void RootPerfMonSvc::record( EventType eventType )
 {
   SysProcStat data;
   m_eventType = eventType;
-  m_utime     = (ULong_t)data.utime;
-  m_stime     = (ULong_t)data.stime;
-  m_vsize     = (ULong_t)data.vsize;
-  m_rss       = (Long_t)data.rss;
-  m_time      = (Long_t)data.time;
+  m_utime     = data.utime;
+  m_stime     = data.stime;
+  m_vsize     = data.vsize;
+  m_rss       = data.rss;
+  m_time      = data.time;
   m_perfTree->Fill();
 }
 

@@ -217,7 +217,7 @@ const std::list<IService*>& ServiceManager::getServices() const
 {
   m_listOfPtrs.clear();
   std::transform( std::begin( m_listsvc ), std::end( m_listsvc ), std::back_inserter( m_listOfPtrs ),
-                  []( ListSvc::const_reference i ) { return const_cast<IService*>( i.service.get() ); } );
+                  []( ListSvc::const_reference i ) { return i.service.get(); } );
   return m_listOfPtrs;
 }
 

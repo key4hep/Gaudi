@@ -809,14 +809,14 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
     size_t indt( 0 );
     for ( auto& slot : m_eventSlots )
       for ( auto it = slot.algsStates.begin( AState::SCHEDULED ); it != slot.algsStates.end( AState::SCHEDULED ); ++it )
-        if ( index2algname( (uint)*it ).length() > indt ) indt = index2algname( (uint)*it ).length();
+        if ( index2algname( *it ).length() > indt ) indt = index2algname( *it ).length();
 
     // Figure the last running schedule across all slots
     for ( auto& slot : m_eventSlots ) {
       for ( auto it = slot.algsStates.begin( AState::SCHEDULED ); it != slot.algsStates.end( AState::SCHEDULED );
             ++it ) {
 
-        const std::string algoName{index2algname( (uint)*it )};
+        const std::string algoName{index2algname( *it )};
 
         outputMS << "  task: " << std::setw( indt ) << algoName << " evt/slot: " << slot.eventContext->evt() << "/"
                  << slot.eventContext->slot();

@@ -169,10 +169,10 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
             status = createItem( tree, nt, is, title, true, (unsigned short)0 );
             break;
           case DataTypeInfo::UINT:
-            status = createItem( tree, nt, is, title, true, (unsigned int)0 );
+            status = createItem( tree, nt, is, title, true, 0u );
             break;
           case DataTypeInfo::ULONG:
-            status = createItem( tree, nt, is, title, true, (unsigned long)0 );
+            status = createItem( tree, nt, is, title, true, 0ul );
             break;
           case DataTypeInfo::CHAR:
             status = createItem( tree, nt, is, title, true, char( 0 ) );
@@ -181,19 +181,19 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
             status = createItem( tree, nt, is, title, true, short( 0 ) );
             break;
           case DataTypeInfo::INT:
-            status = createItem( tree, nt, is, title, true, int( 0 ) );
+            status = createItem( tree, nt, is, title, true, 0 );
             break;
           case DataTypeInfo::LONG:
-            status = createItem( tree, nt, is, title, true, long( 0 ) );
+            status = createItem( tree, nt, is, title, true, 0l );
             break;
           case DataTypeInfo::BOOL:
             status = createItem( tree, nt, is, title, true, false );
             break;
           case DataTypeInfo::FLOAT:
-            status = createItem( tree, nt, is, title, true, float( 0.0 ) );
+            status = createItem( tree, nt, is, title, true, 0.f );
             break;
           case DataTypeInfo::DOUBLE:
-            status = createItem( tree, nt, is, title, true, double( 0.0 ) );
+            status = createItem( tree, nt, is, title, true, 0. );
             break;
           /*
           case DataTypeInfo::NTCHAR:

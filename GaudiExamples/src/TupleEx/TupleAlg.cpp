@@ -386,8 +386,8 @@ StatusCode TupleAlg::execute()
     tuple7->column( "ulong", (unsigned long)randomRange<unsigned char>() );
     tuple7->column( "longlong", (long long)randomRange<char>() );
     tuple7->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() );
-    tuple7->column( "char", (char)randomRange<char>() );
-    tuple7->column( "uchar", (unsigned char)randomRange<unsigned char>() );
+    tuple7->column( "char", randomRange<char>() );
+    tuple7->column( "uchar", randomRange<unsigned char>() );
     tuple7->column( "EventID", evtID );
   }
   tuple7->write();
@@ -406,8 +406,8 @@ StatusCode TupleAlg::execute()
     tuple8->column( "ulong", (unsigned long)randomRange<unsigned char>() );
     tuple8->column( "longlong", (long long)randomRange<char>() );
     tuple8->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() );
-    tuple8->column( "char", (char)randomRange<char>() );
-    tuple8->column( "uchar", (unsigned char)randomRange<unsigned char>() );
+    tuple8->column( "char", randomRange<char>() );
+    tuple8->column( "uchar", randomRange<unsigned char>() );
     tuple8->column( "EventID", evtID );
   }
   tuple8->write();

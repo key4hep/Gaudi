@@ -505,7 +505,7 @@ NTuple::Directory* NTupleSvc::createDirectory( const std::string& fullPath )
       }
     }
   }
-  return dynamic_cast<NTuple::Directory*>( p );
+  return p;
 }
 
 /// Access N tuple on disk

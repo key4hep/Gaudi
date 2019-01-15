@@ -245,7 +245,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
   } else {
     Edges edges;
     edges.resize( bins );
-    for ( int i = 0; i <= bins; ++i ) s >> *(double*)&edges[i];
+    for ( int i = 0; i <= bins; ++i ) s >> edges[i];
     m_rep.reset( new TH1D( title.c_str(), title.c_str(), edges.size() - 1, &edges.front() ) );
   }
   m_axis.initialize( m_rep->GetXaxis(), true );

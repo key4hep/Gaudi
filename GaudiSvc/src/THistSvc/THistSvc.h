@@ -183,7 +183,7 @@ private:
   enum Mode { READ, WRITE, UPDATE, APPEND, SHARE, INVALID };
 
   /// Convert a char to a Mode enum
-  Mode charToMode( const char typ )
+  static Mode charToMode( const char typ )
   {
     switch ( typ ) {
     case 'O':

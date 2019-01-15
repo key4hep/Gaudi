@@ -220,8 +220,8 @@ namespace Gaudi
     {
       using GaudiUtils::details::ostream_joiner;
       return ostream_joiner( s << "{ ", obj, " , ",
-                             []( std::ostream& s, const std::pair<const KTYPE, VTYPE>& i ) -> std::ostream& {
-                               return toStream( i.second, toStream( i.first, s ) << " : " );
+                             []( std::ostream& os, const std::pair<const KTYPE, VTYPE>& i ) -> std::ostream& {
+                               return toStream( i.second, toStream( i.first, os ) << " : " );
                              } )
              << " }";
     }
