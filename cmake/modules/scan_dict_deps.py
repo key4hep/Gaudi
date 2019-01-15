@@ -53,6 +53,10 @@ def main():
     parser = OptionParser(
         usage='%prog [options] output_file variable_name headers...')
     parser.add_option('-I', action='append', dest='include_dirs')
+    parser.add_option('-M', '--for-make', action='store_true',
+                      help='generate Makefile like dependencies (as with gcc '
+                      '-MD) in which case "variable_name" is the name of the '
+                      'target')
 
     opts, args = parser.parse_args()
     if len(args) < 2:
@@ -70,12 +74,16 @@ def main():
     deps = sorted(deps)
 
     # prepare content of output file
-    new_deps = 'set({deps_var}\n    {deps})\n' \
-        .format(deps='\n    '.join(deps), deps_var=variable)
+    if opts.for_make:
+        new_deps = '{target}: {deps}\n'.format(target=variable,
+                                               deps=' '.join(deps))
+    else:
+        new_deps = 'set({deps_var}\n    {deps})\n' \
+            .format(deps='\n    '.join(deps), deps_var=variable)
 
     if new_deps != old_deps:  # write it only if it has changed
         open(output, 'w').write(new_deps)
-        if old_deps:
+        if old_deps and not opts.for_make:
             print 'info: dependencies changed: next build will trigger a reconfigure'
 
 

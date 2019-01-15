@@ -1,4 +1,5 @@
 # Internal settings for ROOT 6
+cmake_minimum_required(VERSION 3.6)
 
 # This is the list of some known component libraries
 set(ROOT_ALL_COMPONENTS Core Cling RIO Hist Tree TreePlayer Matrix
@@ -6,15 +7,18 @@ set(ROOT_ALL_COMPONENTS Core Cling RIO Hist Tree TreePlayer Matrix
 # and build tools
 set(ROOT_ALL_TOOLS root rootcling genreflex)
 
-option(ROOT_DICT_USE_IMPLICIT_DEPENDS
-       "Use CMake IMPLICIT_DEPENDS for dictionary dependencies (if using Makefile generator)"
-       ON)
-
 # checks for computation of dependencies of dictionaries
-if (NOT (CMAKE_GENERATOR MATCHES "Makefile" AND ROOT_DICT_USE_IMPLICIT_DEPENDS))
-  find_package(PythonInterp QUIET)
-  if (PYTHON_EXECUTABLE)
-    set(scan_dicts_deps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py)
+if (NOT CMAKE_GENERATOR MATCHES "Makefile")
+  if(CMAKE_VERSION VERSION_LESS 3.12)
+    find_package(PythonInterp QUIET)
+    if (PYTHON_EXECUTABLE)
+      set(scan_dicts_deps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py)
+    endif()
+  else()
+    find_package(Python2 COMPONENTS Interpreter)
+    if (TARGET Python2::Interpreter)
+      set(scan_dicts_deps Python2::Interpreter ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py)
+    endif()
   endif()
 endif()
 
@@ -208,63 +212,27 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     set(definitions ${definitions} -DNDEBUG)
   endif()
 
-  # special phony target to allow extensions to the dependencies of the
-  # dictionary generation step
-  add_custom_target(${dictionary}GenDeps)
-
-
   if(ROOT_HAS_PCMS)
     set(pcmname ${dictionary}Dict_rdict.pcm)
   else()
     set(pcmname)
   endif()
 
-  if (CMAKE_GENERATOR MATCHES "Makefile" AND ROOT_DICT_USE_IMPLICIT_DEPENDS)
+  if (CMAKE_GENERATOR MATCHES "Makefile")
     set(impl_deps IMPLICIT_DEPENDS)
     foreach(hf ${headerfiles})
       set(impl_deps ${impl_deps} CXX ${hf})
     endforeach()
-    set(${dictionary}GenFileDeps)
     set(deps_scan_cmd)
   elseif (scan_dicts_deps)
+    file(RELATIVE_PATH dep_target "${CMAKE_BINARY_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/${gensrcdict}")
     set(deps_scan_cmd COMMAND ${scan_dicts_deps}
-                    ${include_dirs}
-                    ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake
-                    ${dictionary}GenFileDeps
+                    ${include_dirs} -M
+                    ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.d
+                    ${dep_target}
                     ${headerfiles})
-    if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake)
-      message(STATUS "scanning dependencies for ${dictionary}Gen")
-      execute_process(${deps_scan_cmd})
-    endif()
-    set(impl_deps)
-    include(${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake)
-    # ignore missing files in the dependencies (see GAUDI-1315)
-    set(_filtered)
-    foreach(_dep IN LISTS ${dictionary}GenFileDeps)
-      if(EXISTS "${_dep}")
-        list(APPEND _filtered "${_dep}")
-      else()
-        message(WARNING "${dictionary}Gen dependency ${_dep} disappeared")
-      endif()
-    endforeach()
-    if(NOT _filtered STREQUAL ${dictionary}GenFileDeps)
-      # force a rebuild of the dictionary if a dependency is missing: if it is
-      # the case, we add a dummy (new) dependency on the dictionary generation
-      # (it looks convoluted, but it's required for
-      # https://cmake.org/cmake/help/v3.3/policy/CMP0058.html)
-      set(_rebuild_stamp ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake.changed)
-      if(EXISTS "${_rebuild_stamp}")
-        file(REMOVE "${_rebuild_stamp}")
-      endif()
-      add_custom_command(OUTPUT "${_rebuild_stamp}"
-                         COMMAND ${CMAKE_COMMAND} -E touch "${_rebuild_stamp}")
-      set(${dictionary}GenFileDeps ${_filtered} ${_rebuild_stamp})
-      set(_rebuild_stamp)
-    endif()
-    # we are in a macro, it's polite to clean up temporaries
-    set(_filtered)
-    set(_dep)
-  elseif(NOT _root_dicts_deps_warning)
+    set(impl_deps DEPFILE ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.d)
+  elseif (NOT _root_dicts_deps_warning)
     message(WARNING "generator is not Makefile and Python not available: the dependencies of the dictionary will be incomplete")
     set(_root_dicts_deps_warning 1 CACHE INTERNAL "")
   endif()
@@ -275,7 +243,7 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
          ${headerfiles} -o ${gensrcdict} ${rootmapopts} --select=${selectionfile}
          ${ARG_OPTIONS} ${include_dirs} ${definitions}
     ${deps_scan_cmd}
-    DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps ${${dictionary}GenFileDeps}
+    DEPENDS ${headerfiles} ${selectionfile}
     ${impl_deps})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
