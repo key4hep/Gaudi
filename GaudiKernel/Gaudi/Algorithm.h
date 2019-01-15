@@ -49,6 +49,11 @@ class AlgorithmManager;
 #endif
 namespace Gaudi
 {
+  namespace Details
+  {
+    bool getDefaultAuditorValue( ISvcLocator* loc );
+  }
+
   /** Base class from which all concrete algorithm classes should
    *  be derived.
    *
@@ -488,10 +493,10 @@ namespace Gaudi
     bool isReEntrant() const override { return true; }
 
   private:
-    Gaudi::StringKey m_name;    ///< Algorithm's name for identification
-    std::string      m_type;    ///< Algorithm's type
-    std::string      m_version; ///< Algorithm's version
-    unsigned int     m_index;   ///< Algorithm's index
+    Gaudi::StringKey m_name;      ///< Algorithm's name for identification
+    std::string      m_type;      ///< Algorithm's type
+    std::string      m_version;   ///< Algorithm's version
+    unsigned int     m_index = 0; ///< Algorithm's index
 
     // tools used by algorithm
     mutable std::vector<IAlgTool*>             m_tools;
@@ -537,16 +542,21 @@ namespace Gaudi
 
     Gaudi::Property<unsigned int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
 
-    Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
-    Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
-    Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
-    Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
-    Gaudi::Property<bool> m_auditorExecute{this, "AuditExecute", false, "trigger auditor on execute()"};
-    Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
-    Gaudi::Property<bool> m_auditorBeginRun{this, "AuditBeginRun", false, "trigger auditor on beginRun()"};
-    Gaudi::Property<bool> m_auditorEndRun{this, "AuditEndRun", false, "trigger auditor on endRun()"};
-    Gaudi::Property<bool> m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
-    Gaudi::Property<bool> m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
+    Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", Details::getDefaultAuditorValue( m_pSvcLocator ),
+                                      "[[deprecated]] unused"};
+    Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", m_auditInit.value(),
+                                              "trigger auditor on initialize()"};
+    Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", m_auditInit.value(),
+                                                "trigger auditor on reinitialize()"};
+    Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", m_auditInit.value(), "trigger auditor on restart()"};
+    Gaudi::Property<bool> m_auditorExecute{this, "AuditExecute", m_auditInit.value(), "trigger auditor on execute()"};
+    Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", m_auditInit.value(),
+                                            "trigger auditor on finalize()"};
+    Gaudi::Property<bool> m_auditorBeginRun{this, "AuditBeginRun", m_auditInit.value(),
+                                            "trigger auditor on beginRun()"};
+    Gaudi::Property<bool> m_auditorEndRun{this, "AuditEndRun", m_auditInit.value(), "trigger auditor on endRun()"};
+    Gaudi::Property<bool> m_auditorStart{this, "AuditStart", m_auditInit.value(), "trigger auditor on start()"};
+    Gaudi::Property<bool> m_auditorStop{this, "AuditStop", m_auditInit.value(), "trigger auditor on stop()"};
 
     Gaudi::Property<bool> m_doTimeline{this, "Timeline", true, "send events to TimelineSvc"};
 
