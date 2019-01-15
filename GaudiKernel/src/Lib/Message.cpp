@@ -20,7 +20,7 @@ namespace
   {
     return Gaudi::Time::current().format( !universal, fmt );
   }
-}
+} // namespace
 
 //#############################################################################
 // ---------------------------------------------------------------------------
@@ -28,25 +28,7 @@ namespace
 // Purpose:
 // ---------------------------------------------------------------------------
 //
-Message::Message()
-{
-  m_ecSlot = Gaudi::Hive::currentContextId();
-  m_ecEvt  = Gaudi::Hive::currentContextEvt();
-  m_ecThrd = pthread_self();
-}
-
-//#############################################################################
-// ---------------------------------------------------------------------------
-// Routine: Constructor.
-// Purpose:
-// ---------------------------------------------------------------------------
-//
-Message::Message( const char* src, int type, const char* msg ) : m_message( msg ), m_source( src ), m_type( type )
-{
-  m_ecSlot = Gaudi::Hive::currentContextId();
-  m_ecEvt  = Gaudi::Hive::currentContextEvt();
-  m_ecThrd = pthread_self();
-}
+Message::Message( const char* src, int type, const char* msg ) : m_message( msg ), m_source( src ), m_type( type ) {}
 
 //#############################################################################
 // ---------------------------------------------------------------------------
@@ -57,9 +39,6 @@ Message::Message( const char* src, int type, const char* msg ) : m_message( msg 
 Message::Message( std::string src, int type, std::string msg )
     : m_message( std::move( msg ) ), m_source( std::move( src ) ), m_type( type )
 {
-  m_ecSlot = Gaudi::Hive::currentContextId();
-  m_ecEvt  = Gaudi::Hive::currentContextEvt();
-  m_ecThrd = pthread_self();
 }
 
 //#############################################################################
@@ -227,7 +206,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
     // Find type of formatting.
     std::string this_format;
     while ( i != format.end() && *i != FORMAT_PREFIX && *i != MESSAGE && *i != TYPE && *i != SOURCE && *i != FILL &&
-            *i != WIDTH && *i != TIME && *i != UTIME && *i != SLOT && *i != EVTNUM && *i != THREAD &&
+            *i != WIDTH && *i != TIME && *i != UTIME && *i != SLOT && *i != EVTNUM && *i != THREAD && *i != EVENTID &&
             *i != JUSTIFY_LEFT && *i != JUSTIFY_RIGHT ) {
       this_format += *i++;
     }
@@ -282,27 +261,27 @@ void Message::decodeFormat( const std::string& format ) const
     } break;
 
     case SLOT: {
-      if ( m_ecEvt >= 0 ) {
-        std::ostringstream ost;
+      std::ostringstream ost;
+      if ( m_ecSlot != EventContext::INVALID_CONTEXT_ID ) {
         ost << m_ecSlot;
-        const std::string& slotStr( ost.str() );
-        sizeField( slotStr );
-      } else {
-        const std::string& slotStr( "" );
-        sizeField( slotStr );
       }
+      sizeField( ost.str() );
     } break;
 
     case EVTNUM: {
-      if ( m_ecEvt >= 0 ) {
-        std::ostringstream ost;
+      std::ostringstream ost;
+      if ( m_ecEvt != EventContext::INVALID_CONTEXT_EVT ) {
         ost << m_ecEvt;
-        const std::string& slotStr( ost.str() );
-        sizeField( slotStr );
-      } else {
-        const std::string& slotStr( "" );
-        sizeField( slotStr );
       }
+      sizeField( ost.str() );
+    } break;
+
+    case EVENTID: {
+      std::ostringstream ost;
+      if ( m_ecEvtId.isValid() ) {
+        ost << m_ecEvtId;
+      }
+      sizeField( ost.str() );
     } break;
 
     case MESSAGE:
@@ -383,7 +362,7 @@ namespace
                           []( typename C::const_reference i ) { return isdigit( i ); } );
     }
   } all_digits{};
-}
+} // namespace
 
 void Message::setWidth( const std::string& formatArg ) const
 {
