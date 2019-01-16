@@ -628,6 +628,8 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz )
   case NOSWAP:
     std::copy_n( src, siz, tar );
     break;
+  default:
+    break;
   }
   m_pointer += siz;
 }
@@ -650,6 +652,8 @@ inline void StreamBuffer::swapFromBuffer( void* target, int siz )
     break;
   case NOSWAP:
     std::copy_n( src, siz, tar );
+    break;
+  default:
     break;
   }
   m_pointer += siz;

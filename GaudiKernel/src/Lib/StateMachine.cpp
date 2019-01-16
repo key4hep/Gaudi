@@ -41,6 +41,8 @@ namespace Gaudi
           return OFFLINE;
         }
         break;
+      default:
+        break;
       }
       std::stringstream msg;
       msg << "Invalid transition '" << transition << "' from state '" << state << "'";

@@ -35,8 +35,6 @@ std::string HistoryObj::convert_string( const std::string& input_string )
       modified_string.append( "&quot;" );
     else if ( itr == '\'' )
       modified_string.append( "&apos;" );
-    else if ( itr == '\"' )
-      modified_string.append( "&quot;" );
     else
       modified_string += itr;
   }

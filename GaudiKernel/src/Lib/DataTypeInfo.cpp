@@ -96,8 +96,6 @@ const std::type_info& DataTypeInfo::typeByName( const std::string& typ )
     return typeid( DataObject* );
   else if ( typ == "SmartRef<ContainedObject>" || typ == "const SmartRef<ContainedObject>" )
     return typeid( SmartRef<ContainedObject> );
-  else if ( typ == "void*" || typ == "const void*" )
-    return typeid( void* );
   else
     return typeid( void* );
 }
