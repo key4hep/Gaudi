@@ -34,6 +34,9 @@ files_to_check | \
   grep -E '\.(i?[ch](pp|xx|c)?|cc|hh)$' | xargs --no-run-if-empty --max-procs=$(nproc) --max-args=100 clang-format-$CLANG_FORMAT_VERSION -i --style=file || true
 files_to_check | \
   grep -E '\.py$' | xargs --no-run-if-empty --max-procs=$(nproc) --max-args=100 yapf -i || true
+files_to_check | grep -v -E '\.(i?[ch](pp|xx|c)?|cc|hh|py)$' | \
+  xargs --no-run-if-empty awk 'FNR>1{nextfile} /^#!.*python/{print FILENAME; nextfile}' | \
+  xargs --no-run-if-empty --max-procs=$(nproc) --max-args=100 yapf -i || true
 
 if git diff --exit-code --quiet ; then
   echo "no change"
