@@ -224,7 +224,8 @@ public:
 
   /** Retrieve the component. Release existing component if needed. */
   StatusCode retrieve() const
-  { // not really const, because it updates m_pObject
+  {
+    // not really const, because it updates m_pObject
     StatusCode sc = StatusCode::SUCCESS;
     if ( m_pObject && release().isFailure() ) {
       sc = StatusCode::FAILURE;
@@ -238,7 +239,8 @@ public:
 
   /** Release the component. */
   StatusCode release() const
-  { // not really const, because it updates m_pObject
+  {
+    // not really const, because it updates m_pObject
     StatusCode sc = StatusCode::SUCCESS;
     if ( m_pObject ) {
       sc        = release( m_pObject );
@@ -249,14 +251,16 @@ public:
 
   /// Check if the handle is valid (try to retrive the object is not done yet).
   bool isValid() const
-  { // not really const, because it may update m_pObject
+  {
+    // not really const, because it may update m_pObject
     return m_pObject || retrieve().isSuccess();
   }
 
   /** For testing if handle has component. Does retrieve() if needed.
       If this returns false, the component could not be retrieved. */
   operator bool() const
-  { // not really const, because it may update m_pObject
+  {
+    // not really const, because it may update m_pObject
     return isValid();
   }
 

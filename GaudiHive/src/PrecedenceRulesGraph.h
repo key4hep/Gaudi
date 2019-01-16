@@ -225,8 +225,9 @@ namespace precedence
             << " in the TTT dump" << endmsg;
     }
 
+    // Returns algorithm's FSM state
     std::string operator()( const AlgoProps& props ) const
-    { // Returns algorithm's FSM state
+    {
       std::ostringstream oss;
       oss << m_slot.algsStates[props.m_algoIndex];
       return oss.str();
