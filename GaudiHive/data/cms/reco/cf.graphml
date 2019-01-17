@@ -707,11 +707,10 @@
     <node id="vertexMerger" />
     <node id="zdcreco" />
     <node id="rawDataCollector" />
-    <node id="TriggerResults/HLT" />
-    <node id="hltGtStage2ObjectMap/HLT" />
-    <node id="hltTriggerSummaryAOD/HLT" />
+    <node id="TriggerResults-HLT" />
+    <node id="hltGtStage2ObjectMap-HLT" />
+    <node id="hltTriggerSummaryAOD-HLT" />
     <node id="output" />
-    <edge source="TopSequencer" target="LoadInitialInputs" />
     <edge source="TopSequencer" target="BeamHaloSummary" />
     <edge source="TopSequencer" target="CSCHaloData" />
     <edge source="TopSequencer" target="CastorTowerReco" />
@@ -1415,9 +1414,9 @@
     <edge source="TopSequencer" target="vertexMerger" />
     <edge source="TopSequencer" target="zdcreco" />
     <edge source="TopSequencer" target="rawDataCollector" />
-    <edge source="TopSequencer" target="TriggerResults/HLT" />
-    <edge source="TopSequencer" target="hltGtStage2ObjectMap/HLT" />
-    <edge source="TopSequencer" target="hltTriggerSummaryAOD/HLT" />
+    <edge source="TopSequencer" target="TriggerResults-HLT" />
+    <edge source="TopSequencer" target="hltGtStage2ObjectMap-HLT" />
+    <edge source="TopSequencer" target="hltTriggerSummaryAOD-HLT" />
     <edge source="TopSequencer" target="output" />
   </graph>
 </graphml>

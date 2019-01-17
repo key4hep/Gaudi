@@ -4220,19 +4220,19 @@
     <node id="rawDataCollector-data">
       <data key="d0">DataObject</data>
     </node>
-    <node id="TriggerResults/HLT">
+    <node id="TriggerResults-HLT">
       <data key="d0">GaudiAlgorithm</data>
     </node>
     <node id="TriggerResults-HLT-data">
       <data key="d0">DataObject</data>
     </node>
-    <node id="hltGtStage2ObjectMap/HLT">
+    <node id="hltGtStage2ObjectMap-HLT">
       <data key="d0">GaudiAlgorithm</data>
     </node>
     <node id="hltGtStage2ObjectMap-HLT-data">
       <data key="d0">DataObject</data>
     </node>
-    <node id="hltTriggerSummaryAOD/HLT">
+    <node id="hltTriggerSummaryAOD-HLT">
       <data key="d0">GaudiAlgorithm</data>
     </node>
     <node id="hltTriggerSummaryAOD-HLT-data">
@@ -18365,13 +18365,13 @@
     <edge source="rawDataCollector" target="rawDataCollector-data">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TriggerResults/HLT" target="TriggerResults-HLT-data">
+    <edge source="TriggerResults-HLT" target="TriggerResults-HLT-data">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltGtStage2ObjectMap/HLT" target="hltGtStage2ObjectMap-HLT-data">
+    <edge source="hltGtStage2ObjectMap-HLT" target="hltGtStage2ObjectMap-HLT-data">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltTriggerSummaryAOD/HLT" target="hltTriggerSummaryAOD-HLT-data">
+    <edge source="hltTriggerSummaryAOD-HLT" target="hltTriggerSummaryAOD-HLT-data">
       <data key="d1">Exact</data>
     </edge>
     <edge source="output" target="output-data">
