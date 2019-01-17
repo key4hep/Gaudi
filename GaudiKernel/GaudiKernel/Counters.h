@@ -138,6 +138,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/apply.h"
 #include "GaudiKernel/detected.h"
 
@@ -653,14 +654,19 @@ namespace Gaudi
       }
       /// destructor
       virtual ~PrintableCounter() = default;
+      // add tag to printout
+      template <typename stream>
+      stream& printImpl( stream& s, const std::string& tag ) const
+      {
+        s << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
+        return print( s, true );
+      }
       /// prints the counter to a stream
       virtual std::ostream& print( std::ostream&, bool tableFormat = false ) const = 0;
+      virtual MsgStream& print( MsgStream&, bool tableFormat = true ) const = 0;
       /// prints the counter to a stream in table format, with the given tag
-      virtual std::ostream& print( std::ostream& o, const std::string& tag ) const
-      {
-        o << boost::format{" | %|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
-        return print( o, true );
-      }
+      virtual std::ostream& print( std::ostream& o, const std::string& tag ) const { return printImpl( o, tag ); }
+      virtual MsgStream& print( MsgStream& o, const std::string& tag ) const { return printImpl( o, tag ); }
       /** hint whether we should print that counter or not.
           Typically empty counters may not be printed */
       virtual bool toBePrinted() const { return true; }
@@ -674,13 +680,10 @@ namespace Gaudi
     };
 
     /**
-     * external printout operator to std::ostream
+     * external printout operator to a stream type
      */
-    inline std::ostream& operator<<( std::ostream& stream, const PrintableCounter& counter )
-    {
-      return counter.print( stream );
-    }
-
+    inline std::ostream& operator<<( std::ostream& s, const PrintableCounter& counter ) { return counter.print( s ); }
+    inline MsgStream& operator<<( MsgStream& s, const PrintableCounter& counter ) { return counter.print( s ); }
     /**
      * An empty ancester of all counters that provides a buffer method that
      * returns a buffer on itself
@@ -711,7 +714,9 @@ namespace Gaudi
         return copy;
       }
       using BufferableCounter<Arithmetic, Atomicity, Counter>::print;
-      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+
+      template <typename stream>
+      stream& printImpl( stream& o, bool tableFormat ) const
       {
         // Avoid printing empty counters in non DEBUG mode
         std::string fmt( "#=%|-7lu|" );
@@ -721,6 +726,12 @@ namespace Gaudi
         o << boost::format{fmt} % this->nEntries();
         return o;
       }
+
+      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+      {
+        return printImpl( o, tableFormat );
+      }
+      MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
       virtual bool toBePrinted() const override
       {
         return this->nEntries() > 0;
@@ -737,7 +748,9 @@ namespace Gaudi
                               AveragingAccumulator<Arithmetic, Atomicity> {
       using BufferableCounter<Arithmetic, Atomicity, AveragingCounter>::BufferableCounter;
       using BufferableCounter<Arithmetic, Atomicity, AveragingCounter>::print;
-      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+
+      template <typename stream>
+      stream& printImpl( stream& o, bool tableFormat ) const
       {
         std::string fmt;
         if ( tableFormat ) {
@@ -747,6 +760,13 @@ namespace Gaudi
         }
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean();
       }
+
+      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+      {
+        return printImpl( o, tableFormat );
+      }
+      MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
+
       virtual bool toBePrinted() const override
       {
         return this->nEntries() > 0;
@@ -765,7 +785,9 @@ namespace Gaudi
                           SigmaAccumulator<Arithmetic, Atomicity> {
       using BufferableCounter<Arithmetic, Atomicity, SigmaCounter>::BufferableCounter;
       using BufferableCounter<Arithmetic, Atomicity, SigmaCounter>::print;
-      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+
+      template <typename stream>
+      stream& printImpl( stream& o, bool tableFormat ) const
       {
         std::string fmt;
         if ( tableFormat ) {
@@ -775,6 +797,12 @@ namespace Gaudi
         }
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation();
       }
+
+      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+      {
+        return printImpl( o, tableFormat );
+      }
+      MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
       virtual bool toBePrinted() const override
       {
         return this->nEntries() > 0;
@@ -790,7 +818,9 @@ namespace Gaudi
     struct StatCounter : BufferableCounter<Arithmetic, Atomicity, StatCounter>, StatAccumulator<Arithmetic, Atomicity> {
       using BufferableCounter<Arithmetic, Atomicity, StatCounter>::BufferableCounter;
       using BufferableCounter<Arithmetic, Atomicity, StatCounter>::print;
-      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+
+      template <typename stream>
+      stream& printImpl( stream& o, bool tableFormat ) const
       {
         std::string fmt;
         if ( tableFormat ) {
@@ -801,6 +831,12 @@ namespace Gaudi
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation() %
                         this->min() % this->max();
       }
+
+      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+      {
+        return printImpl( o, tableFormat );
+      }
+      MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
       virtual bool toBePrinted() const override { return this->nEntries() > 0; }
     };
 
@@ -812,7 +848,9 @@ namespace Gaudi
     struct BinomialCounter : BufferableCounter<Arithmetic, Atomicity, BinomialCounter>,
                              BinomialAccumulator<Arithmetic, Atomicity> {
       using BufferableCounter<Arithmetic, Atomicity, BinomialCounter>::BufferableCounter;
-      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+
+      template <typename stream>
+      stream& printImpl( stream& o, bool tableFormat ) const
       {
         std::string fmt;
         if ( tableFormat ) {
@@ -823,13 +861,26 @@ namespace Gaudi
         return o << boost::format{fmt} % this->nEntries() % this->nTrueEntries() % ( this->efficiency() * 100 ) %
                         ( this->efficiencyErr() * 100 );
       }
-      /// prints the counter to a stream in table format, with the given tag
-      virtual std::ostream& print( std::ostream& o, const std::string& tag ) const override
+
+      std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+      {
+        return printImpl( o, tableFormat );
+      }
+      MsgStream& print( MsgStream& o, bool tableFormat = false ) const override { return printImpl( o, tableFormat ); }
+
+      template <typename stream>
+      stream& printImpl( stream& o, const std::string& tag ) const
       {
         // override default print to add a '*' in from of the name
         o << boost::format{" |*%|-48.48s|%|50t|"} % ( "\"" + tag + "\"" );
         return print( o, true );
       }
+      /// prints the counter to a stream in table format, with the given tag
+      virtual std::ostream& print( std::ostream& o, const std::string& tag ) const override
+      {
+        return printImpl( o, tag );
+      }
+      virtual MsgStream& print( MsgStream& o, const std::string& tag ) const override { return printImpl( o, tag ); }
     };
 
     /**
@@ -957,15 +1008,21 @@ public:
     return icontains( name, "eff" ) || icontains( name, "acc" ) || icontains( name, "filt" ) ||
            icontains( name, "fltr" ) || icontains( name, "pass" );
   }
-  std::ostream& printFormatted( std::ostream& o, const std::string& format ) const
+  template <typename stream>
+  stream& printFormattedImpl( stream& o, const std::string& format ) const
   {
     boost::format fmt{format};
     fmt % nEntries() % sum() % mean() % standard_deviation() % min() % max();
     return o << fmt.str();
   }
+  std::ostream& printFormatted( std::ostream& o, const std::string& format ) const
+  {
+    return printFormattedImpl( o, format );
+  }
+  MsgStream& printFormatted( MsgStream& o, const std::string& format ) const { return printFormattedImpl( o, format ); }
   using Gaudi::Accumulators::PrintableCounter::print;
-  std::ostream& print( std::ostream& o, bool tableFormat, const std::string& name, bool flag = true,
-                       std::string fmtHead = "%|-48.48s|%|27t|" ) const
+  template <typename stream>
+  stream& printImpl( stream& o, bool tableFormat, const std::string& name, bool flag, std::string const& fmtHead ) const
   {
     if ( flag && effCounter( name ) && 0 <= eff() && 0 <= effErr() && sum() <= nEntries() &&
          ( 0 == min() || 1 == min() ) && ( 0 == max() || 1 == max() ) ) {
@@ -1005,11 +1062,30 @@ public:
       }
     }
   }
+  std::ostream& print( std::ostream& o, bool tableFormat, const std::string& name, bool flag = true,
+                       std::string fmtHead = "%|-48.48s|%|27t|" ) const
+  {
+    return printImpl( o, tableFormat, name, flag, fmtHead );
+  }
+  MsgStream& print( MsgStream& o, bool tableFormat, const std::string& name, bool flag = true,
+                    std::string fmtHead = "%|-48.48s|%|27t|" ) const
+  {
+    return printImpl( o, tableFormat, name, flag, fmtHead );
+  }
   virtual std::ostream& print( std::ostream& o, const std::string& tag ) const override
   {
     return print( o, true, tag, true );
   }
+  virtual MsgStream& print( MsgStream& o, const std::string& tag ) const override
+  {
+    return print( o, true, tag, true );
+  }
   std::ostream& print( std::ostream& o, bool tableFormat = false ) const override
+  {
+    std::string emptyName;
+    return print( o, tableFormat, emptyName, true );
+  }
+  MsgStream& print( MsgStream& o, bool tableFormat = false ) const override
   {
     std::string emptyName;
     return print( o, tableFormat, emptyName, true );
@@ -1021,6 +1097,7 @@ public:
     return ost.str();
   }
   std::ostream& fillStream( std::ostream& o ) const { return print( o ); }
+  MsgStream& fillStream( MsgStream& o ) const { return print( o ); }
 };
 
 #endif // GAUDIKERNEL_COUNTERS_H
