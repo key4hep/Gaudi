@@ -8,8 +8,8 @@ from GaudiHive import precedence
 
 # metaconfig
 evtslots = 1
-evtMax = 10
-algosInFlight = 4
+evtMax = 1
+algosInFlight = 1
 
 
 InertMessageSvc(OutputLevel=INFO)
@@ -22,7 +22,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
     SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
-                                  OutputLevel=VERBOSE,
+                                  OutputLevel=DEBUG,
                                   PreemptiveIOBoundTasks=True,
                                   MaxIOBoundAlgosInFlight=50,
                                   DumpIntraEventDynamics=True)
@@ -32,14 +32,15 @@ IOBoundAlgSchedulerSvc(OutputLevel=INFO)
 #timeValue = precedence.UniformTimeValue(avgRuntime=0.1)
 timeValue = precedence.RealTimeValue(path="cms/reco/algs-time.json",
                                      defaultTime=0.0)
-#ifIObound = precedence.UniformBooleanValue(False)
-ifIObound = precedence.RndBiasedBooleanValue(
-    pattern={True: 17, False: 152}, seed=1)
+ifIObound = precedence.UniformBooleanValue(False)
+# the CMS reco sceario has 707 algorithms in total
+# ifIObound = precedence.RndBiasedBooleanValue(
+#    pattern={True: 70, False: 637}, seed=1)
 
 sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.9,
                                         cfgPath="cms/reco/cf.graphml",
                                         dfgPath="cms/reco/df.graphml",
-                                        topSequencer='AthSequencer/AthRegSeq').get()
+                                        topSequencer='TopSequencer').get()
 
 ApplicationMgr(EvtMax=evtMax,
                EvtSel='NONE',

@@ -4223,19 +4223,19 @@
     <node id="TriggerResults/HLT">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="TriggerResults/HLT-data">
+    <node id="TriggerResults-HLT-data">
       <data key="d0">DataObject</data>
     </node>
     <node id="hltGtStage2ObjectMap/HLT">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="hltGtStage2ObjectMap/HLT-data">
+    <node id="hltGtStage2ObjectMap-HLT-data">
       <data key="d0">DataObject</data>
     </node>
     <node id="hltTriggerSummaryAOD/HLT">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="hltTriggerSummaryAOD/HLT-data">
+    <node id="hltTriggerSummaryAOD-HLT-data">
       <data key="d0">DataObject</data>
     </node>
     <node id="output">
@@ -4301,7 +4301,7 @@
     <edge source="ecalRecHit-data" target="CSCHaloData">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TriggerResults/HLT-data" target="CSCHaloData">
+    <edge source="TriggerResults-HLT-data" target="CSCHaloData">
       <data key="d1">Exact</data>
     </edge>
     <edge source="CastorTowerReco" target="CastorTowerReco-data">
@@ -4592,7 +4592,7 @@
     <edge source="gtStage2Digis-data" target="RECOoutput">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltGtStage2ObjectMap/HLT-data" target="RECOoutput">
+    <edge source="hltGtStage2ObjectMap-HLT-data" target="RECOoutput">
       <data key="d1">Exact</data>
     </edge>
     <edge source="hbheprereco-data" target="RECOoutput">
@@ -5111,7 +5111,7 @@
     <edge source="logErrorHarvester-data" target="RECOoutput">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TriggerResults/HLT-data" target="RECOoutput">
+    <edge source="TriggerResults-HLT-data" target="RECOoutput">
       <data key="d1">Exact</data>
     </edge>
     <edge source="TriggerResults-data" target="RECOoutput">
@@ -6284,7 +6284,7 @@
     <edge source="offlinePrimaryVerticesWithBS-data" target="RECOoutput">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltTriggerSummaryAOD/HLT-data" target="RECOoutput">
+    <edge source="hltTriggerSummaryAOD-HLT-data" target="RECOoutput">
       <data key="d1">Exact</data>
     </edge>
     <edge source="muons-data" target="RECOoutput">
@@ -18365,13 +18365,13 @@
     <edge source="rawDataCollector" target="rawDataCollector-data">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TriggerResults/HLT" target="TriggerResults/HLT-data">
+    <edge source="TriggerResults/HLT" target="TriggerResults-HLT-data">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltGtStage2ObjectMap/HLT" target="hltGtStage2ObjectMap/HLT-data">
+    <edge source="hltGtStage2ObjectMap/HLT" target="hltGtStage2ObjectMap-HLT-data">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltTriggerSummaryAOD/HLT" target="hltTriggerSummaryAOD/HLT-data">
+    <edge source="hltTriggerSummaryAOD/HLT" target="hltTriggerSummaryAOD-HLT-data">
       <data key="d1">Exact</data>
     </edge>
     <edge source="output" target="output-data">
@@ -18500,7 +18500,7 @@
     <edge source="gtStage2Digis-data" target="output">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltGtStage2ObjectMap/HLT-data" target="output">
+    <edge source="hltGtStage2ObjectMap-HLT-data" target="output">
       <data key="d1">Exact</data>
     </edge>
     <edge source="hbheprereco-data" target="output">
@@ -19019,7 +19019,7 @@
     <edge source="logErrorHarvester-data" target="output">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TriggerResults/HLT-data" target="output">
+    <edge source="TriggerResults-HLT-data" target="output">
       <data key="d1">Exact</data>
     </edge>
     <edge source="TriggerResults-data" target="output">
@@ -20192,7 +20192,7 @@
     <edge source="offlinePrimaryVerticesWithBS-data" target="output">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="hltTriggerSummaryAOD/HLT-data" target="output">
+    <edge source="hltTriggerSummaryAOD-HLT-data" target="output">
       <data key="d1">Exact</data>
     </edge>
     <edge source="muons-data" target="output">
