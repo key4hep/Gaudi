@@ -284,7 +284,7 @@ class CruncherSequence(object):
 
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
                 algo_daughter = CPUCruncher(
-                    algo_name,
+                    n,
                     OutputLevel=self.outputLevel,
                     varRuntime=varRuntime,
                     avgRuntime=avgRuntime,
@@ -292,7 +292,7 @@ class CruncherSequence(object):
                     if self.IOboolValue.get() else 0.,
                     Timeline=self.enableTimeline)
 
-                self._declare_data_deps(algo_name, algo_daughter)
+                self._declare_data_deps(n, algo_daughter)
 
                 if algo_daughter not in seq.Members:
                     seq.Members += [algo_daughter]
