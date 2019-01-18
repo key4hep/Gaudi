@@ -43,6 +43,9 @@ namespace Gaudi
     // cache sumwx and sumwy  when setting contents since I don't have bin mean
     double m_sumwx = 0;
     double m_sumwy = 0;
+
+  private:
+    std::mutex m_fillSerialization;
   };
 }
 #endif // HISTOGRAMSVC_H2D_H
