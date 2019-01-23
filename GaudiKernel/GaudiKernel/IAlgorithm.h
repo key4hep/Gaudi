@@ -8,6 +8,7 @@
 
 class IAlgTool;
 class AlgResourcePool;
+class AlgExecState;
 class EventContext;
 
 namespace Gaudi
@@ -31,7 +32,7 @@ public:
   friend AlgResourcePool;
 
   /// InterfaceID
-  DeclareInterfaceID( IAlgorithm, 6, 0 );
+  DeclareInterfaceID( IAlgorithm, 7, 0 );
 
   /** The version of the algorithm
    */
@@ -39,8 +40,8 @@ public:
 
   /** The type of the algorithm
    */
-  virtual const std::string& type() const    = 0;
-  virtual void setType( const std::string& ) = 0;
+  virtual const std::string& type() const                  = 0;
+  virtual void               setType( const std::string& ) = 0;
 
   /** StringKey rep of name
    */
@@ -66,14 +67,12 @@ public:
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.
   */
-  virtual StatusCode execute() = 0;
+  virtual StatusCode execute( const EventContext& ) const = 0;
 
   /// check if the algorithm is initialized properly
   virtual bool isInitialized() const = 0;
   /// check if the algorithm is finalized properly
   virtual bool isFinalized() const = 0;
-  /// check if the algorithm is already executed for the current event
-  virtual bool isExecuted() const = 0;
 
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
@@ -133,11 +132,6 @@ public:
   */
   virtual StatusCode sysEndRun() = 0;
 
-  /// Reset the Algorithm executed state for the current event
-  [[deprecated( "resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each "
-                "Algorithm" )]] virtual void
-  resetExecuted() = 0;
-
   /** Algorithm begin run. This method is called at the beginning of the event loop.
   */
   virtual StatusCode beginRun() = 0;
@@ -145,9 +139,8 @@ public:
   */
   virtual StatusCode endRun() = 0;
 
-  // ---- Function useful for dealing with sub-algorithms
-  /// Set the executed flag to the specified state
-  virtual void setExecuted( bool state ) const = 0;
+  /// reference to AlgExecState of Alg
+  virtual AlgExecState& execState( const EventContext& ctx ) const = 0;
 
   /// Is this algorithm enabled or disabled?
   virtual bool isEnabled() const = 0;
@@ -155,20 +148,13 @@ public:
   /// Are we a Sequence?
   virtual bool isSequence() const = 0;
 
-  /// Did this algorithm pass or fail its filter criterion for the last event?
-  virtual bool filterPassed() const = 0;
-
-  /// Set the filter passed flag to the specified state
-  virtual void setFilterPassed( bool state ) const = 0;
-
   /// Produce string represention of the control flow expression.
   virtual std::ostream& toControlFlowExpression( std::ostream& os ) const = 0;
 
-  /// For concurrency: get the EventContext
-  virtual const EventContext& getContext() const = 0;
-
   /// Set instantiation index of Alg
   virtual void setIndex( const unsigned int& idx ) = 0;
+
+  virtual bool isReEntrant() const = 0;
 };
 
 #endif // GAUDIKERNEL_IALGORITHM_H

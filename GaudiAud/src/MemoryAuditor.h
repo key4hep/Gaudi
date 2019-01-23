@@ -11,7 +11,7 @@
 class MemoryAuditor : public CommonAuditor
 {
 public:
-  MemoryAuditor( const std::string& name, ISvcLocator* pSvcLocator );
+  using CommonAuditor::CommonAuditor;
 
 protected:
   /// Default (catch-all) "before" Auditor hook

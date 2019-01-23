@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.6)
 
 # Configurable options for building Gaudi in the ATLAS software stack:
 option( GAUDI_ATLAS "Enable ATLAS-specific settings" OFF )
@@ -13,7 +13,7 @@ endif()
 
 #---------------------------------------------------------------
 # Load macros and functions for Gaudi-based projects
-find_package(GaudiProject)
+find_package(GaudiProject REQUIRED)
 #---------------------------------------------------------------
 
 # Base Gaudi on "the ATLAS base project" (AtlasExternals by default) when
@@ -27,13 +27,11 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
 
 # Declare project name and version
-gaudi_project(Gaudi v29r0)
+gaudi_project(Gaudi v30r5)
 
 # These tests do not really fit in a subdirectory.
-gaudi_add_test(cmake.EnvConfigTests
-               COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
-gaudi_add_test(cmake.CMakeModules
-               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
+add_test(NAME cmake.CMakeModules
+         COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
 gaudi_add_test(cmake.QMTDeps
                COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/extract_qmtest_metadata.py)
 

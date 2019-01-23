@@ -1,7 +1,6 @@
 <lcgdict>
   <class name    = "__gnu_cxx::dummy" />
   <!--class pattern = "GaudiPython::Interface<*>"/-->
-  <class pattern = "std::unary_function<*>"/>
   <class name    = "GaudiPython::Helper"/>
 
   <class name    = "std::vector<Gaudi::Details::PropertyBase*>" />
@@ -24,7 +23,7 @@
 
 
   <class name    = "std::vector<IAlgTool*>"          />
-  <class name    = "std::vector<const StatEntity*>"  />
+  <class name    = "std::vector<StatEntity*>"        />
   <class name    = "std::vector<GaudiAlg::ID>"       />
   <class name    = "std::vector<AIDA::IHistogram1D*>"/>
   <class name    = "std::vector<AIDA::IHistogram2D*>"/>
@@ -99,9 +98,6 @@
     <class pattern = "GaudiAlg::*Map*"                   />
     <class pattern = "GaudiHistos<*>::*Map*"             />
     <class pattern = "GaudiTuples<*>::*Map*"             />
-    <class pattern = "std::unary_function<std::pair<*,Tuples::*>" />
-    <class pattern = "std::unary_function<std::pair<*,NTuple::*>" />
-    <class pattern = "std::unary_function<std::pair<*,AIDA::*>"   />
     <class pattern = "*__int128*"   />
     <class name    = "GaudiPython::CallbackStreamBuf">
       <!-- assignment operator and copy constructor cannot compile -->

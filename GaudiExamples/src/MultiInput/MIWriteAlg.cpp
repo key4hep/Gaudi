@@ -59,14 +59,14 @@ StatusCode WriteAlg::execute()
   }
 
   // Create the collection of tracks and register them in the event store
-  int n                   = (int)( rndmflat() * 100. );
+  int            n        = (int)( rndmflat() * 100. );
   MyTrackVector* myTracks = new MyTrackVector();
   for ( int i = 0; i < n; ++i ) {
     // Create new track
     // (ensure that the order of the generated random numbers is stable)
-    double c       = rndmgauss();
-    double b       = rndmgauss();
-    double a       = rndmgauss();
+    double   c     = rndmgauss();
+    double   b     = rndmgauss();
+    double   a     = rndmgauss();
     MyTrack* track = new MyTrack( float( a ), float( b ), float( c ) );
 
     // set Link to header object

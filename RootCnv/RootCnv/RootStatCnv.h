@@ -12,7 +12,7 @@
 #include "RootCnv/RootConverter.h"
 
 // Forward declarations
-class IDataManagerSvc;
+struct IDataManagerSvc;
 
 /*
  *  Gaudi namespace declaration
@@ -97,9 +97,6 @@ namespace Gaudi
      * @return Reference to RootBaseCnv object
      */
     RootStatCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr );
-
-    /// Standard Destructor
-    ~RootStatCnv() override = default;
   };
 }
 #endif // ROOT_RootStatCnv_H

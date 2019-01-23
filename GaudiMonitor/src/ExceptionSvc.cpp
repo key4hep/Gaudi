@@ -36,7 +36,7 @@ StatusCode ExceptionSvc::initialize()
 
   string key = m_mode_exc_s.value();
 
-  auto loc         = key.find( " " );
+  auto        loc  = key.find( " " );
   std::string mode = key.substr( 0, loc );
 
   toupper( mode );
@@ -61,7 +61,7 @@ StatusCode ExceptionSvc::initialize()
   std::string VAL, TAG;
 
   static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*([^[:space:]]+)"};
-  static const auto tok_end = boost::sregex_iterator();
+  static const auto         tok_end = boost::sregex_iterator();
   for ( auto tok_iter = boost::sregex_iterator( begin( key ), end( key ), exp ); tok_iter != tok_end; ++tok_iter ) {
     TAG = ( *tok_iter )[1];
     VAL = ( *tok_iter )[2];

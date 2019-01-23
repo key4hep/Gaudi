@@ -4,11 +4,12 @@ gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
-find_package(Boost COMPONENTS python)
-find_package(PythonLibs)
+find_package(Boost COMPONENTS python${boost_python_version} REQUIRED)
+find_package(PythonLibs REQUIRED)
 find_package(unwind)
 find_package(gperftools)
 find_package(IntelAmplifier)
+find_package(ZLIB REQUIRED)
 
 # Hide some Boost/libunwind compile time warnings
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
@@ -24,15 +25,16 @@ include_directories(src/component)
 #-----------------------------------
 if(UNWIND_FOUND AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   gaudi_add_module(GaudiProfiling src/component/*.cpp
-                   LINK_LIBRARIES GaudiKernel z
-                   INCLUDE_DIRS unwind)
+                   LINK_LIBRARIES GaudiKernel ZLIB
+                   INCLUDE_DIRS unwind ZLIB)
 
   gaudi_add_python_module(PyCPUFamily src/python/CPUFamily.cpp
-                          LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
-                          INCLUDE_DIRS PythonLibs)
+                          LINK_LIBRARIES ${Boost_PYTHON${boost_python_version}_LIBRARY}
+                          INCLUDE_DIRS Boost PythonLibs)
 
   gaudi_add_executable(GaudiGenProfilingHtml src/app/pfm_gen_analysis.cpp
-                       LINK_LIBRARIES z GaudiKernel)
+                       LINK_LIBRARIES GaudiKernel ZLIB
+                       INCLUDE_DIRS unwind ZLIB)
 else()
   message(WARNING "The module GaudiProfiling is disabled (architecture ${CMAKE_SYSTEM_PROCESSOR}).")
 endif()
@@ -43,8 +45,8 @@ endif()
 #-----------------------------------
 if(GPERFTOOLS_FOUND)
   gaudi_add_module(GaudiGoogleProfiling src/component/google/*.cpp
-                   LINK_LIBRARIES GaudiKernel GaudiAlgLib z
-                   INCLUDE_DIRS ${GPERFTOOLS_INCLUDE_DIRS})
+                   LINK_LIBRARIES GaudiKernel GaudiAlgLib ZLIB
+                   INCLUDE_DIRS ${GPERFTOOLS_INCLUDE_DIRS} ZLIB)
 
 # Special handling of unresorlved symbols in GaudiGoogleProfiling.
 # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
@@ -87,8 +89,8 @@ endif()
 # Valgrind profiler
 #-----------------------------------
 gaudi_add_module(GaudiValgrindProfiling src/component/valgrind/*.cpp
-                 LINK_LIBRARIES GaudiKernel GaudiAlgLib z
-                 INCLUDE_DIRS tcmalloc)
+                 LINK_LIBRARIES GaudiKernel GaudiAlgLib ZLIB
+                 INCLUDE_DIRS tcmalloc ZLIB)
 
 
 #-----------------------------------
@@ -107,16 +109,20 @@ foreach(undef_symbol mallctl)
 endforeach()
 set_target_properties(GaudiJemalloc PROPERTIES LINK_FLAGS "${GaudiJemalloc_linker_flags}")
 
-find_library(jemalloc_lib NAMES jemalloc)
-if(jemalloc_lib)
-  message(STATUS "Found jemalloc: ${jemalloc_lib}")
-  gaudi_add_test(jira.gaudi_1045
-                 COMMAND gaudirun.py
-                 ENVIRONMENT LD_PRELOAD=${jemalloc_lib})
-  get_filename_component(jemalloc_libdir "${jemalloc_lib}" PATH)
-  gaudi_env(PREPEND LD_LIBRARY_PATH "${jemalloc_libdir}")
+if (NOT SANITIZER_ENABLED)
+  find_library(jemalloc_lib NAMES jemalloc)
+  if(jemalloc_lib)
+    message(STATUS "Found jemalloc: ${jemalloc_lib}")
+    gaudi_add_test(jira.gaudi_1045
+                   COMMAND gaudirun.py
+                   ENVIRONMENT LD_PRELOAD=${jemalloc_lib})
+    get_filename_component(jemalloc_libdir "${jemalloc_lib}" PATH)
+    gaudi_env(PREPEND LD_LIBRARY_PATH "${jemalloc_libdir}")
+  else()
+    message(STATUS "jemalloc not found, cannot test GAUDI-1045")
+  endif()
 else()
-  message(STATUS "jemalloc not found, cannot test GAUDI-1045")
+  message(STATUS "jemalloc test disabled when running a sanitizer")
 endif()
 
 #---Installation------------------------------------------------------------

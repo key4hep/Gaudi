@@ -15,7 +15,7 @@ class ObjectList;
 
 // Typedefs
 typedef ObjectVector<ContainedObject> ContainedObjectVector;
-typedef ObjectList<ContainedObject> ContainedObjectList;
+typedef ObjectList<ContainedObject>   ContainedObjectList;
 
 // Definition of the CLID for this class
 static const CLID CLID_ContainedObject = 190;
@@ -46,7 +46,7 @@ protected:
 public:
   /// Retrieve pointer to class identifier
   virtual const CLID& clID() const { return classID(); }
-  static const CLID& classID() { return CLID_ContainedObject; }
+  static const CLID&  classID() { return CLID_ContainedObject; }
 
   /// Access to parent object
   const ObjectContainerBase* parent() const { return m_parent; }

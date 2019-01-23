@@ -129,8 +129,8 @@ namespace Genfun
       F.function = &GSL_Adaptor;
       F.params   = &helper;
 
-      double x   = argument[m_index];
-      int ierrno = 0;
+      double x      = argument[m_index];
+      int    ierrno = 0;
       switch ( type() ) {
       case Central:
         ierrno = gsl_diff_central( &F, x, &m_result, &m_error );

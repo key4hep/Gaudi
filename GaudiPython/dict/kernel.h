@@ -115,8 +115,8 @@ namespace GaudiPython
 
   template <class TYPE>
   struct _Property {
-    TYPE m_type;
-    Gaudi::Property<TYPE> m_prop;
+    TYPE                   m_type;
+    Gaudi::Property<TYPE>  m_prop;
     Gaudi::Property<TYPE&> m_ref;
     // constructor
     _Property() : m_type(), m_prop(), m_ref( "", m_type ) {}
@@ -125,27 +125,27 @@ namespace GaudiPython
 
   //--- Template instantiations
   struct __Instantiations {
-    std::vector<Gaudi::Details::PropertyBase*> i0;
+    std::vector<Gaudi::Details::PropertyBase*>       i0;
     std::vector<const Gaudi::Details::PropertyBase*> i00;
-    std::vector<IRegistry*> i00000;
+    std::vector<IRegistry*>                          i00000;
 
-    std::allocator<IRegistry*> a0;
+    std::allocator<IRegistry*>  a0;
     std::allocator<IAlgorithm*> a1;
-    std::allocator<IService*> a2;
+    std::allocator<IService*>   a2;
 
     std::list<IAlgorithm*> i01;
-    std::list<IService*> i02;
+    std::list<IService*>   i02;
 
-    std::vector<IService*> i05_1;
-    std::vector<IAlgTool*> i05_2;
-    std::vector<const StatEntity*> i05_3;
+    std::vector<IService*>    i05_1;
+    std::vector<IAlgTool*>    i05_2;
+    std::vector<StatEntity*>  i05_3;
     std::vector<GaudiAlg::ID> i05_4;
 #ifdef AIDA_FOUND
     std::vector<AIDA::IHistogram1D*> i05_5;
     std::vector<AIDA::IHistogram2D*> i05_6;
     std::vector<AIDA::IHistogram3D*> i05_7;
-    std::vector<AIDA::IProfile1D*> i05_8;
-    std::vector<AIDA::IProfile2D*> i05_9;
+    std::vector<AIDA::IProfile1D*>   i05_8;
+    std::vector<AIDA::IProfile2D*>   i05_9;
 #endif // AIDA_FOUND
 
     // Gaudi::IIODataManager              *gu_i1000;
@@ -158,59 +158,59 @@ namespace GaudiPython
     GaudiPython::PyAlg<GaudiTupleAlg> _alg2;
 #endif // AIDA_FOUND
 
-    GaudiPython::Matrix _mtrx;
-    GaudiPython::Vector _vctr;
+    GaudiPython::Matrix              _mtrx;
+    GaudiPython::Vector              _vctr;
     std::vector<std::vector<double>> _vct1;
 
     // primitives:
-    _Property<bool> pp_01;
-    _Property<char> pp_02;
-    _Property<signed char> pp_03;
-    _Property<unsigned char> pp_04;
-    _Property<short> pp_05;
-    _Property<unsigned short> pp_06;
-    _Property<int> pp_07;
-    _Property<unsigned int> pp_08;
-    _Property<long> pp_09;
-    _Property<unsigned long> pp_10;
-    _Property<long long> pp_11;
+    _Property<bool>               pp_01;
+    _Property<char>               pp_02;
+    _Property<signed char>        pp_03;
+    _Property<unsigned char>      pp_04;
+    _Property<short>              pp_05;
+    _Property<unsigned short>     pp_06;
+    _Property<int>                pp_07;
+    _Property<unsigned int>       pp_08;
+    _Property<long>               pp_09;
+    _Property<unsigned long>      pp_10;
+    _Property<long long>          pp_11;
     _Property<unsigned long long> pp_12;
-    _Property<float> pp_13;
-    _Property<double> pp_14;
-    _Property<long double> pp_15;
-    _Property<std::string> pp_16;
+    _Property<float>              pp_13;
+    _Property<double>             pp_14;
+    _Property<long double>        pp_15;
+    _Property<std::string>        pp_16;
 
     // vectors of primitives
-    _Property<std::vector<bool>> vp_01;
-    _Property<std::vector<char>> vp_02;
-    _Property<std::vector<signed char>> vp_03;
-    _Property<std::vector<unsigned char>> vp_04;
-    _Property<std::vector<short>> vp_05;
-    _Property<std::vector<unsigned short>> vp_06;
-    _Property<std::vector<int>> vp_07;
-    _Property<std::vector<unsigned int>> vp_08;
-    _Property<std::vector<long>> vp_09;
-    _Property<std::vector<unsigned long>> vp_10;
-    _Property<std::vector<long long>> vp_11;
+    _Property<std::vector<bool>>               vp_01;
+    _Property<std::vector<char>>               vp_02;
+    _Property<std::vector<signed char>>        vp_03;
+    _Property<std::vector<unsigned char>>      vp_04;
+    _Property<std::vector<short>>              vp_05;
+    _Property<std::vector<unsigned short>>     vp_06;
+    _Property<std::vector<int>>                vp_07;
+    _Property<std::vector<unsigned int>>       vp_08;
+    _Property<std::vector<long>>               vp_09;
+    _Property<std::vector<unsigned long>>      vp_10;
+    _Property<std::vector<long long>>          vp_11;
     _Property<std::vector<unsigned long long>> vp_12;
-    _Property<std::vector<float>> vp_13;
-    _Property<std::vector<double>> vp_14;
-    _Property<std::vector<long double>> vp_15;
-    _Property<std::vector<std::string>> vp_16;
+    _Property<std::vector<float>>              vp_13;
+    _Property<std::vector<double>>             vp_14;
+    _Property<std::vector<long double>>        vp_15;
+    _Property<std::vector<std::string>>        vp_16;
 
     // some extended types
-    _Property<std::pair<int, int>> ep_01;
-    _Property<std::pair<double, double>> ep_02;
+    _Property<std::pair<int, int>>                    ep_01;
+    _Property<std::pair<double, double>>              ep_02;
     _Property<std::vector<std::pair<double, double>>> ep_04;
     _Property<std::vector<std::vector<std::string>>> ep_05;
-    _Property<std::vector<std::vector<double>>> ep_06;
-    _Property<std::map<int, double>> ep_07;
-    _Property<std::map<std::string, std::string>> ep_08;
-    _Property<std::map<std::string, int>> ep_09;
-    _Property<std::map<std::string, double>> ep_10;
+    _Property<std::vector<std::vector<double>>>      ep_06;
+    _Property<std::map<int, double>>                           ep_07;
+    _Property<std::map<std::string, std::string>>              ep_08;
+    _Property<std::map<std::string, int>>                      ep_09;
+    _Property<std::map<std::string, double>>                   ep_10;
     _Property<std::map<std::string, std::vector<std::string>>> ep_11;
-    _Property<std::map<std::string, std::vector<int>>> ep_12;
-    _Property<std::map<std::string, std::vector<double>>> ep_13;
+    _Property<std::map<std::string, std::vector<int>>>         ep_12;
+    _Property<std::map<std::string, std::vector<double>>>      ep_13;
 
     __Instantiations();
     ~__Instantiations();

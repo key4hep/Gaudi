@@ -45,12 +45,6 @@ namespace
 DECLARE_COMPONENT( ToolSvc )
 
 //------------------------------------------------------------------------------
-ToolSvc::ToolSvc( const std::string& name, ISvcLocator* svc )
-    //------------------------------------------------------------------------------
-    : base_class( name, svc )
-{
-}
-
 ToolSvc::~ToolSvc()
 {
   // tell the remaining observers that we're gone, and forget about unregistering..
@@ -135,12 +129,12 @@ StatusCode ToolSvc::finalize()
         + minimum number of refcounts
   */
   boost::circular_buffer<IAlgTool*> finalizedTools( m_instancesTools.size() ); // list of tools that have been finalized
-  bool fail( false );
-  size_t toolCount               = m_instancesTools.size();
-  unsigned long startRefCount    = 0;
-  unsigned long endRefCount      = totalToolRefCount();
-  unsigned long startMinRefCount = 0;
-  unsigned long endMinRefCount   = minimumToolRefCount();
+  bool                              fail( false );
+  size_t                            toolCount        = m_instancesTools.size();
+  unsigned long                     startRefCount    = 0;
+  unsigned long                     endRefCount      = totalToolRefCount();
+  unsigned long                     startMinRefCount = 0;
+  unsigned long                     endMinRefCount   = minimumToolRefCount();
   while ( toolCount > 0 && endRefCount > 0 && ( endRefCount != startRefCount || endMinRefCount != startMinRefCount ) ) {
     ON_DEBUG if ( endMinRefCount != startMinRefCount )
     {
@@ -192,7 +186,7 @@ StatusCode ToolSvc::finalize()
   // Therefore, the check on non-finalised tools should happen *after* the deletion
   // of the finalized tools.
   ON_DEBUG debug() << "Deleting " << finalizedTools.size() << " finalized tools" << endmsg;
-  auto maxLoop = totalRefCount( finalizedTools ) + 1;
+  auto     maxLoop = totalRefCount( finalizedTools ) + 1;
   while ( --maxLoop > 0 && !finalizedTools.empty() ) {
     IAlgTool* pTool = finalizedTools.front();
     finalizedTools.pop_front();
@@ -287,7 +281,7 @@ StatusCode ToolSvc::retrieve( const std::string& tooltype, const std::string& to
 
   std::lock_guard<CallMutex> lock( m_mut );
 
-  IAlgTool* itool = nullptr;
+  IAlgTool*  itool = nullptr;
   StatusCode sc( StatusCode::FAILURE );
 
   tool = nullptr;
@@ -339,7 +333,7 @@ std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
 {
 
   std::lock_guard<CallMutex> lock( m_mut );
-  std::vector<std::string> tools;
+  std::vector<std::string>   tools;
   for ( const auto& tool : m_instancesTools ) {
     if ( tool->type() == toolType ) tools.push_back( tool->name() );
   }
@@ -350,7 +344,7 @@ std::vector<std::string> ToolSvc::getInstances() const
 //------------------------------------------------------------------------------
 {
   std::lock_guard<CallMutex> lock( m_mut );
-  std::vector<std::string> tools{m_instancesTools.size()};
+  std::vector<std::string>   tools{m_instancesTools.size()};
   std::transform( std::begin( m_instancesTools ), std::end( m_instancesTools ), std::begin( tools ),
                   []( const IAlgTool* t ) { return t->name(); } );
   return tools;
@@ -367,7 +361,7 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
 //------------------------------------------------------------------------------
 {
   std::lock_guard<CallMutex> lock( m_mut );
-  StatusCode sc( StatusCode::SUCCESS );
+  StatusCode                 sc( StatusCode::SUCCESS );
   // test if tool is in known list (protect trying to access a previously deleted tool)
   if ( m_instancesTools.rend() != std::find( m_instancesTools.rbegin(), m_instancesTools.rend(), tool ) ) {
     unsigned long count = tool->refCount();
@@ -423,7 +417,7 @@ namespace
     {
       // remove previous content
       if ( m_tool ) remove( m_tools, m_tool.get() );
-      m_tool.reset( AlgTool::Factory::create( tooltype, tooltype, fullname, parent ) );
+      m_tool = AlgTool::Factory::create( tooltype, tooltype, fullname, parent );
       // set new content
       if ( m_tool ) m_tools.push_back( m_tool.get() );
     }
@@ -613,7 +607,7 @@ bool ToolSvc::existsTool( const std::string& fullname ) const
 //------------------------------------------------------------------------------
 {
   std::lock_guard<CallMutex> lock( m_mut );
-  auto i = std::find_if( std::begin( m_instancesTools ), std::end( m_instancesTools ),
+  auto                       i = std::find_if( std::begin( m_instancesTools ), std::end( m_instancesTools ),
                          [&]( const IAlgTool* tool ) { return tool->name() == fullname; } );
   return i != std::end( m_instancesTools );
 }
@@ -625,7 +619,7 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
 
   // Cache tool name in case of errors
   const std::string toolName = itool->name();
-  StatusCode sc;
+  StatusCode        sc;
 
   // Finalise the tool inside a try block
   try {
@@ -673,7 +667,7 @@ void ToolSvc::registerObserver( IToolSvc::Observer* obs )
   std::lock_guard<CallMutex> lock( m_mut );
   obs->setUnregister( [this, obs]() {
     std::lock_guard<CallMutex> lock( m_mut );
-    auto i = std::find( m_observers.begin(), m_observers.end(), obs );
+    auto                       i = std::find( m_observers.begin(), m_observers.end(), obs );
     if ( i != m_observers.end() ) m_observers.erase( i );
   } );
   m_observers.push_back( obs );

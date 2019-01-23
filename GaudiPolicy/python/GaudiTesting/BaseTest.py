@@ -59,7 +59,7 @@ def kill_tree(ppid, sig):
             raise
         log.debug('no such process %d', ppid)
 
-#-------------------------------------------------------------------------#
+# -------------------------------------------------------------------------#
 
 
 class BaseTest(object):
@@ -241,7 +241,7 @@ class BaseTest(object):
                          'Output Reference File': 'reference',
                          'Error Reference File': 'error_reference',
                          'Causes': 'causes',
-                         #'Validator Result': 'result.annotations',
+                         # 'Validator Result': 'result.annotations',
                          'Unsupported Platforms': 'unsupported_platforms',
                          'Stack Trace': 'stack_trace'}
         resultDict = [(key, getattr(self, attr))
@@ -255,9 +255,9 @@ class BaseTest(object):
         # print self.result.annotations.keys()
         return dict(resultDict)
 
-    #-------------------------------------------------#
-    #----------------Validating tool------------------#
-    #-------------------------------------------------#
+    # -------------------------------------------------#
+    # ----------------Validating tool------------------#
+    # -------------------------------------------------#
 
     def ValidateOutput(self, stdout, stderr, result):
         if not self.stderr:
@@ -302,7 +302,8 @@ class BaseTest(object):
                                 len(reflines) - signature_offset]
             if reflines != outlines:
                 msg = "standard output"
-                # I do not want 2 messages in causes if teh function is called twice
+                # I do not want 2 messages in causes if the function is called
+                # twice
                 if not msg in causes:
                     causes.append(msg)
                 result[res_field +
@@ -466,16 +467,25 @@ class BaseTest(object):
                                              "standard output",
                                              "Output Diff",
                                              preproc=preproc)(stdout, result)
+        elif lreference:
+            causes += ["missing reference file"]
         # Compare TTree summaries
         causes = self.CheckTTreesSummaries(stdout, result, causes)
         causes = self.CheckHistosSummaries(stdout, result, causes)
-        if causes:  # Write a new reference file for stdout
+        if causes and lreference:  # Write a new reference file for stdout
             try:
-                newref = open(lreference + ".new", "w")
+                cnt = 0
+                newrefname = '.'.join([lreference, 'new'])
+                while os.path.exists(newrefname):
+                    cnt += 1
+                    newrefname = '.'.join([lreference, '~%d~' % cnt, 'new'])
+                newref = open(newrefname, "w")
                 # sanitize newlines
                 for l in stdout.splitlines():
                     newref.write(l.rstrip() + '\n')
                 del newref  # flush and close
+                result['New Output Reference File'] = os.path.relpath(
+                    newrefname, self.basedir)
             except IOError:
                 # Ignore IO errors when trying to update reference files
                 # because we may be in a read-only filesystem
@@ -484,18 +494,28 @@ class BaseTest(object):
         # check standard error
         lreference = self._expandReferenceFileName(self.error_reference)
         # call the validator if we have a file to use
-        if lreference and os.path.isfile(lreference):
-            newcauses = ReferenceFileValidator(lreference,
-                                               "standard error",
-                                               "Error Diff",
-                                               preproc=preproc)(stderr, result)
+        if lreference:
+            if os.path.isfile(lreference):
+                newcauses = ReferenceFileValidator(lreference,
+                                                   "standard error",
+                                                   "Error Diff",
+                                                   preproc=preproc)(stderr, result)
+            else:
+                newcauses += ["missing error reference file"]
             causes += newcauses
-            if newcauses:  # Write a new reference file for stdedd
-                newref = open(lreference + ".new", "w")
+            if newcauses and lreference:  # Write a new reference file for stdedd
+                cnt = 0
+                newrefname = '.'.join([lreference, 'new'])
+                while os.path.exists(newrefname):
+                    cnt += 1
+                    newrefname = '.'.join([lreference, '~%d~' % cnt, 'new'])
+                newref = open(newrefname, "w")
                 # sanitize newlines
                 for l in stderr.splitlines():
                     newref.write(l.rstrip() + '\n')
                 del newref  # flush and close
+                result['New Error Reference File'] = os.path.relpath(
+                    newrefname, self.basedir)
         else:
             causes += BasicOutputValidator(lreference, "standard error",
                                            "ExecTest.expected_stderr")(stderr, result)
@@ -507,7 +527,10 @@ class BaseTest(object):
             return ""
 
         # function to split an extension in constituents parts
-        def platformSplit(p): return set(p.split('-' in p and '-' or '_'))
+        def platformSplit(p):
+            import re
+            delim = re.compile('-' in p and r"[-+]" or r"_")
+            return set(delim.split(p))
 
         reference = os.path.normpath(os.path.join(self.basedir,
                                                   os.path.expandvars(reffile)))
@@ -554,7 +577,7 @@ except ImportError:
         # dummy implementation
         return False
 
-#--------------------------------- TOOLS ---------------------------------#
+# --------------------------------- TOOLS ---------------------------------#
 
 
 def RationalizePath(p):
@@ -591,10 +614,9 @@ def which(executable):
     return None
 
 
-
-#-------------------------------------------------------------------------#
-#----------------------------- Result Classe -----------------------------#
-#-------------------------------------------------------------------------#
+# -------------------------------------------------------------------------#
+# ----------------------------- Result Classe -----------------------------#
+# -------------------------------------------------------------------------#
 import types
 
 
@@ -629,11 +651,13 @@ class Result:
         return string
 
 
-#-------------------------------------------------------------------------#
-#--------------------------- Validator Classes ---------------------------#
-#-------------------------------------------------------------------------#
+# -------------------------------------------------------------------------#
+# --------------------------- Validator Classes ---------------------------#
+# -------------------------------------------------------------------------#
 
-# Basic implementation of an option validator for Gaudi test. This implementation is based on the standard (LCG) validation functions used in QMTest.
+# Basic implementation of an option validator for Gaudi test. This
+# implementation is based on the standard (LCG) validation functions used
+# in QMTest.
 
 
 class BasicOutputValidator:
@@ -668,7 +692,8 @@ class BasicOutputValidator:
             returns -- True if 's1' and 's2' are the same, ignoring
             differences in line endings."""
         if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
-            # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
+            # FIXME: (MCl) Hide warnings from new rootmap sanity check until we
+            # can fix them
             to_ignore = re.compile(
                 r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*')
 
@@ -678,8 +703,9 @@ class BasicOutputValidator:
             return s1.splitlines() == s2.splitlines()
 
 
-#------------------------ Preprocessor elements ------------------------#
+# ------------------------ Preprocessor elements ------------------------#
 class FilePreprocessor:
+
     """ Base class for a callable that takes a file and returns a modified
         version of it."""
 
@@ -711,6 +737,7 @@ class FilePreprocessor:
 
 
 class FilePreprocessorSequence(FilePreprocessor):
+
     def __init__(self, members=[]):
         self.members = members
 
@@ -725,6 +752,7 @@ class FilePreprocessorSequence(FilePreprocessor):
 
 
 class LineSkipper(FilePreprocessor):
+
     def __init__(self, strings=[], regexps=[]):
         import re
         self.strings = strings
@@ -741,6 +769,7 @@ class LineSkipper(FilePreprocessor):
 
 
 class BlockSkipper(FilePreprocessor):
+
     def __init__(self, start, end):
         self.start = start
         self.end = end
@@ -758,6 +787,7 @@ class BlockSkipper(FilePreprocessor):
 
 
 class RegexpReplacer(FilePreprocessor):
+
     def __init__(self, orig, repl="", when=None):
         if when:
             when = re.compile(when)
@@ -780,8 +810,9 @@ class RegexpReplacer(FilePreprocessor):
 
 # Common preprocessors
 maskPointers = RegexpReplacer("0x[0-9a-fA-F]{4,16}", "0x########")
-normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9][ A-Z]*",
-                               "00:00:00 1970-01-01")
+normalizeDate = RegexpReplacer(
+    "[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9][ A-Z]*",
+    "00:00:00 1970-01-01")
 normalizeEOL = FilePreprocessor()
 normalizeEOL.__processLine__ = lambda line: str(line).rstrip() + '\n'
 
@@ -794,6 +825,7 @@ skipEmptyLines.__processLine__ = lambda line: (line.strip() and line) or None
 
 
 class LineSorter(FilePreprocessor):
+
     def __init__(self, signature):
         self.signature = signature
         self.siglen = len(signature)
@@ -809,6 +841,7 @@ class LineSorter(FilePreprocessor):
 
 
 class SortGroupOfLines(FilePreprocessor):
+
     '''
     Sort group of lines matching a regular expression
     '''
@@ -835,7 +868,7 @@ class SortGroupOfLines(FilePreprocessor):
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
 for w, o, r in [
-    #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
+    # ("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
     ("TIMER.TIMER", r"\s+[+-]?[0-9]+[0-9.]*", " 0"),  # Normalize time output
     ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
     ("^#.*file", r"file '.*[/\\]([^/\\]*)$", r"file '\1"),
@@ -853,7 +886,9 @@ for w, o, r in [
     (None, r'Service reference count check:',
      r'Looping over all active services...'),
     # Ignore count of declared properties (anyway they are all printed)
-    (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
+    (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+",
+     r"\1NN"),
+    ('ApplicationMgr', r'(declareMultiSvcType|addMultiSvc): ', ''),
 ]:  # [ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o, r, w)
 
@@ -869,11 +904,17 @@ lineSkipper = LineSkipper(["//GP:",
                            "DataListenerSvc      INFO XML written to file:",
                            "[INFO]", "[WARNING]",
                            "DEBUG No writable file catalog found which contains FID:",
-                           "DEBUG Service base class initialized successfully",  # changed between v20 and v21
-                           "DEBUG Incident  timing:",  # introduced with patch #3487
-                           # changed the level of the message from INFO to DEBUG
+                           "DEBUG Service base class initialized successfully",
+                           # changed between v20 and v21
+                           "DEBUG Incident  timing:",
+                           # introduced with patch #3487
+                           # changed the level of the message from INFO to
+                           # DEBUG
                            "INFO  'CnvServices':[",
-                           # The signal handler complains about SIGXCPU not defined on some platforms
+                           # message removed because could be printed in constructor
+                           "DEBUG  'CnvServices':[",
+                           # The signal handler complains about SIGXCPU not
+                           # defined on some platforms
                            'SIGXCPU',
                            ], regexps=[
     r"^JobOptionsSvc        INFO *$",
@@ -901,7 +942,9 @@ lineSkipper = LineSkipper(["//GP:",
     r"StatusCodeSvc.*all StatusCode instances where checked",
     # Hide EventLoopMgr total timing report
     r"EventLoopMgr.*---> Loop Finished",
-    # Remove ROOT TTree summary table, which changes from one version to the other
+    r"HiveSlimEventLo.*---> Loop Finished",
+    # Remove ROOT TTree summary table, which changes from one version to the
+    # other
     r"^\*.*\*$",
     # Remove Histos Summaries
     r"SUCCESS\s*Booked \d+ Histogram\(s\)",
@@ -926,7 +969,8 @@ lineSkipper = LineSkipper(["//GP:",
 ])
 
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
-    # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
+    # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can
+    # fix them
     lineSkipper += LineSkipper(regexps=[
         r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*',
     ])
@@ -935,10 +979,11 @@ normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
                      normalizeEOL + LineSorter("Services to release : ") +
                      SortGroupOfLines(r'^\S+\s+(DEBUG|SUCCESS) Property \[\'Name\':'))
 
-#--------------------- Validation functions/classes ---------------------#
+# --------------------- Validation functions/classes ---------------------#
 
 
 class ReferenceFileValidator:
+
     def __init__(self, reffile, cause, result_key, preproc=normalizeExamples):
         self.reffile = os.path.expandvars(reffile)
         self.cause = cause
@@ -1014,7 +1059,8 @@ def cmpTreesDicts(reference, to_check, ignore=None):
     for k in keys:
         if k in to_check:  # the key must be in the dictionary to_check
             if (type(reference[k]) is dict) and (type(to_check[k]) is dict):
-                # if both reference and to_check values are dictionaries, recurse
+                # if both reference and to_check values are dictionaries,
+                # recurse
                 failed = fail_keys = cmpTreesDicts(
                     reference[k], to_check[k], ignore)
             else:
@@ -1103,7 +1149,7 @@ def parseHistosSummary(lines, pos):
         """
     global h_count_re
     h_table_head = re.compile(
-        r'SUCCESS\s+List of booked (1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
+        r'SUCCESS\s+(1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
     h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]+)\"\s+(.*)")
 
     nlines = len(lines)

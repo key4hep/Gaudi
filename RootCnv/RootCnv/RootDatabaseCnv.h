@@ -38,9 +38,6 @@ namespace Gaudi
      */
     RootDatabaseCnv( long typ, const CLID&, ISvcLocator* svc, RootCnvSvc* mgr );
 
-    /// Standard destructor
-    ~RootDatabaseCnv() override = default;
-
     /** Retrieve the name of the container a given object is placed into
      * @param      pReg     [IN]    Pointer to registry entry.
      *

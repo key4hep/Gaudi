@@ -4,6 +4,7 @@
 // Includes
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/Property.h"
 #include "GaudiKernel/System.h"
 
 #include <algorithm>
@@ -12,6 +13,16 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+
+namespace details
+{
+  /// Cast a pointer to a non const type
+  template <class T>
+  std::remove_const_t<T>* nonConst( T* p )
+  {
+    return const_cast<std::remove_const_t<T>*>( p );
+  }
+}
 
 class GAUDI_API GaudiHandleInfo
 {
@@ -138,6 +149,8 @@ public:
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py */
   std::string pythonRepr() const override;
 
+  using PropertyType = GaudiHandleProperty;
+
 private:
   //
   // Data member
@@ -173,14 +186,14 @@ public:
       : GaudiHandleBase( other )
   {
     m_pObject = other.get();
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
   }
 
   /** Copy constructor needed for correct ref-counting */
   GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other )
   {
     m_pObject = other.m_pObject;
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
   }
 
   /** Assignment operator for correct ref-counting */
@@ -193,7 +206,7 @@ public:
     release().ignore();
     m_pObject = other.get();
     // update ref-counting
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
     return *this;
   }
 
@@ -205,7 +218,7 @@ public:
     release().ignore();
     m_pObject = other.m_pObject;
     // update ref-counting
-    if ( m_pObject ) nonConst( m_pObject )->addRef();
+    if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
     return *this;
   }
 
@@ -300,15 +313,8 @@ protected:
   virtual StatusCode release( T* comp ) const
   { // not really const, because it updates m_pObject
     // const cast to support T being a const type
-    nonConst( comp )->release();
+    ::details::nonConst( comp )->release();
     return StatusCode::SUCCESS;
-  }
-
-  /// Cast a pointer to a non const type
-  template <class CLASS>
-  typename std::remove_const<CLASS>::type* nonConst( CLASS* p ) const
-  {
-    return const_cast<typename std::remove_const<CLASS>::type*>( p );
   }
 
 private:
@@ -354,7 +360,8 @@ protected:
   }
 
 public:
-  typedef std::vector<GaudiHandleBase*> BaseHandleArray;
+  using PropertyType = GaudiHandleArrayProperty;
+  typedef std::vector<GaudiHandleBase*>       BaseHandleArray;
   typedef std::vector<const GaudiHandleBase*> ConstBaseHandleArray;
 
   /** Set the array of handles from list of "type/name" strings in
@@ -416,14 +423,14 @@ public:
   //
   // public nested types
   //
-  typedef std::vector<T> HandleVector;
-  typedef typename HandleVector::value_type value_type;
-  typedef typename HandleVector::size_type size_type;
-  typedef typename HandleVector::reference reference;
-  typedef typename HandleVector::const_reference const_reference;
-  typedef typename HandleVector::iterator iterator;
-  typedef typename HandleVector::const_iterator const_iterator;
-  typedef typename HandleVector::reverse_iterator reverse_iterator;
+  typedef std::vector<T>                                HandleVector;
+  typedef typename HandleVector::value_type             value_type;
+  typedef typename HandleVector::size_type              size_type;
+  typedef typename HandleVector::reference              reference;
+  typedef typename HandleVector::const_reference        const_reference;
+  typedef typename HandleVector::iterator               iterator;
+  typedef typename HandleVector::const_iterator         const_iterator;
+  typedef typename HandleVector::reverse_iterator       reverse_iterator;
   typedef typename HandleVector::const_reverse_iterator const_reverse_iterator;
 
 protected:
@@ -463,7 +470,7 @@ public:
   GaudiHandleArrayBase::BaseHandleArray getBaseArray() override
   {
     GaudiHandleArrayBase::BaseHandleArray baseArray;
-    iterator it = begin(), itEnd = end();
+    iterator                              it = begin(), itEnd = end();
     for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
@@ -471,7 +478,7 @@ public:
   GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override
   {
     GaudiHandleArrayBase::ConstBaseHandleArray baseArray;
-    const_iterator it = begin(), itEnd = end();
+    const_iterator                             it = begin(), itEnd = end();
     for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
@@ -560,7 +567,7 @@ private:
   // Private data members
   //
   HandleVector m_handleArray;
-  bool m_retrieved{false};
+  bool         m_retrieved{false};
 };
 
 // Easy printing out of Handles and HandleArrays

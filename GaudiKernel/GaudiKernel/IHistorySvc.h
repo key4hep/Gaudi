@@ -12,7 +12,10 @@ class JobHistory;
 class ServiceHistory;
 class IService;
 
-class Algorithm;
+namespace Gaudi
+{
+  class Algorithm;
+}
 class AlgorithmHistory;
 
 class IAlgTool;
@@ -35,27 +38,27 @@ public:
   DeclareInterfaceID( IHistorySvc, 2, 0 );
 
   // Job level objects
-  virtual StatusCode registerJob()          = 0;
-  virtual StatusCode listProperties() const = 0;
-  virtual JobHistory* getJobHistory() const = 0;
+  virtual StatusCode  registerJob()          = 0;
+  virtual StatusCode  listProperties() const = 0;
+  virtual JobHistory* getJobHistory() const  = 0;
 
   // Service level objects
-  virtual StatusCode registerSvc( const IService& )                  = 0;
-  virtual StatusCode listProperties( const IService& ) const         = 0;
-  virtual ServiceHistory* getServiceHistory( const IService& ) const = 0;
-  virtual void getServiceHistory( std::set<ServiceHistory*>& ) const = 0;
+  virtual StatusCode      registerSvc( const IService& )                        = 0;
+  virtual StatusCode      listProperties( const IService& ) const               = 0;
+  virtual ServiceHistory* getServiceHistory( const IService& ) const            = 0;
+  virtual void            getServiceHistory( std::set<ServiceHistory*>& ) const = 0;
 
   // Algorithm level objects
-  virtual StatusCode registerAlg( const Algorithm& )                = 0;
-  virtual StatusCode listProperties( const Algorithm& ) const       = 0;
-  virtual AlgorithmHistory* getAlgHistory( const Algorithm& ) const = 0;
-  virtual void getAlgHistory( std::set<AlgorithmHistory*>& ) const  = 0;
+  virtual StatusCode        registerAlg( const Gaudi::Algorithm& )              = 0;
+  virtual StatusCode        listProperties( const Gaudi::Algorithm& ) const     = 0;
+  virtual AlgorithmHistory* getAlgHistory( const Gaudi::Algorithm& ) const      = 0;
+  virtual void              getAlgHistory( std::set<AlgorithmHistory*>& ) const = 0;
 
   // AlgTool level objects
-  virtual StatusCode registerAlgTool( const IAlgTool& )              = 0;
-  virtual StatusCode listProperties( const IAlgTool& ) const         = 0;
-  virtual AlgToolHistory* getAlgToolHistory( const IAlgTool& ) const = 0;
-  virtual void getAlgToolHistory( std::set<AlgToolHistory*>& ) const = 0;
+  virtual StatusCode      registerAlgTool( const IAlgTool& )                    = 0;
+  virtual StatusCode      listProperties( const IAlgTool& ) const               = 0;
+  virtual AlgToolHistory* getAlgToolHistory( const IAlgTool& ) const            = 0;
+  virtual void            getAlgToolHistory( std::set<AlgToolHistory*>& ) const = 0;
 
   // DataObj level objects
   virtual DataHistory* createDataHistoryObj( const CLID& id, const std::string& key, const std::string& storeName ) = 0;

@@ -3,6 +3,7 @@
 // ============================================================================
 // Include files
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -16,8 +17,6 @@
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ToolHandle.h"
 #include <Gaudi/PluginService.h>
-
-#include "GaudiKernel/DataObjIDProperty.h"
 
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataHandleHolderBase.h"
@@ -50,9 +49,7 @@ class GAUDI_API AlgTool
           PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IAlgTool*, const std::string&, const std::string&, const IInterface*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;
 
   /// Query for a given interface
   StatusCode queryInterface( const InterfaceID& riid, void** ppvUnknown ) override;
@@ -67,14 +64,14 @@ public:
   const IInterface* parent() const override;
 
   // State machine implementation
-  StatusCode configure() override { return StatusCode::SUCCESS; }
-  StatusCode initialize() override;
-  StatusCode start() override;
-  StatusCode stop() override;
-  StatusCode finalize() override;
-  StatusCode terminate() override { return StatusCode::SUCCESS; }
-  StatusCode reinitialize() override;
-  StatusCode restart() override;
+  StatusCode                 configure() override { return StatusCode::SUCCESS; }
+  StatusCode                 initialize() override;
+  StatusCode                 start() override;
+  StatusCode                 stop() override;
+  StatusCode                 finalize() override;
+  StatusCode                 terminate() override { return StatusCode::SUCCESS; }
+  StatusCode                 reinitialize() override;
+  StatusCode                 restart() override;
   Gaudi::StateMachine::State FSMState() const override { return m_state; }
   Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
 
@@ -139,7 +136,7 @@ public:
   template <class T>
   StatusCode service( const std::string& type, const std::string& name, T*& svc ) const
   {
-    return service_i( type, name, T::interfaceID(), (void**)&svc );
+    return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &svc ) );
   }
 
   /// Return a pointer to the service identified by name (or "type/name")
@@ -167,6 +164,12 @@ public:
   {
     this->declareTool( hndl, hndl.typeAndName() ).ignore();
     return PropertyHolderImpl::declareProperty( name, hndl, doc );
+  }
+
+  template <class T>
+  StatusCode declareTool( ToolHandle<T>& handle, bool createIf = true )
+  {
+    return this->declareTool( handle, handle.typeAndName(), createIf );
   }
 
   template <class T>
@@ -202,9 +205,7 @@ public:
   }
 
 public:
-  virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
-
-  void commitHandles() override;
+  void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
 public:
   void registerTool( IAlgTool* tool ) const
@@ -289,20 +290,24 @@ public:
 private:
   typedef std::list<std::pair<InterfaceID, void*>> InterfaceList;
 
-  std::string m_type;                   ///< AlgTool type (concrete class name)
+  std::string       m_type;             ///< AlgTool type (concrete class name)
   const std::string m_name;             ///< AlgTool full name
   const IInterface* m_parent = nullptr; ///< AlgTool parent
 
-  mutable SmartIF<ISvcLocator> m_svcLocator;  ///< Pointer to Service Locator service
-  mutable SmartIF<IDataProviderSvc> m_evtSvc; ///< Event data service
-  mutable SmartIF<IToolSvc> m_ptoolSvc;       ///< Tool service
-  mutable SmartIF<IMonitorSvc> m_pMonitorSvc; ///< Online Monitoring Service
-  mutable SmartIF<IAuditorSvc> m_pAuditorSvc; ///< Auditor Service
+  mutable SmartIF<ISvcLocator>      m_svcLocator;  ///< Pointer to Service Locator service
+  mutable SmartIF<IDataProviderSvc> m_evtSvc;      ///< Event data service
+  mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< Tool service
+  mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
+  mutable SmartIF<IAuditorSvc>      m_pAuditorSvc; ///< Auditor Service
 
   InterfaceList m_interfaceList; ///< Interface list
 
   // Properties
-  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  // initialize output level from MessageSvc and initialize messaging (before enabling update handler)
+  Gaudi::Property<int> m_outputLevel{
+      this, "OutputLevel", setUpMessaging(),
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
+      "output level"};
 
   Gaudi::Property<std::string> m_monitorSvcName{this, "MonitorService", "MonitorSvc",
                                                 "name to use for Monitor Service"};
@@ -315,11 +320,9 @@ private:
   Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
   Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
 
-  std::string m_threadID; ///< Thread Id for Alg Tool
-
   // tools used by tool
-  mutable std::vector<IAlgTool*> m_tools;
-  mutable std::vector<BaseToolHandle*> m_toolHandles;
+  mutable std::vector<IAlgTool*>             m_tools;
+  mutable std::vector<BaseToolHandle*>       m_toolHandles;
   mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
   mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
 
@@ -331,27 +334,5 @@ private:
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< state of the Tool
 };
-
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-struct ToolFactory {
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... args )
-  {
-    return new T( std::forward<Args>( args )... );
-  }
-};
-
-// Macros to declare component factories
-#define DECLARE_TOOL_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, ToolFactory<x>, AlgTool::Factory )
-#define DECLARE_NAMESPACE_TOOL_FACTORY( n, x ) DECLARE_TOOL_FACTORY( n::x )
-
-#else
-
-// Macros to declare component factories
-#define DECLARE_TOOL_FACTORY( x ) DECLARE_COMPONENT( x )
-#define DECLARE_NAMESPACE_TOOL_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
-
-#endif
 
 #endif // GAUDIKERNEL_ALGTOOL_H

@@ -20,7 +20,7 @@ public:
 
 private:
   SmartIF<IProperty> m_appmgr;
-  int m_retcode;
+  int                m_retcode;
 };
 
 #endif

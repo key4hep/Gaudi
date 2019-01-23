@@ -4,7 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, AlgResourcePool, ForwardSchedulerSvc
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, AlgResourcePool, AvalancheSchedulerSvc
 
 # Output setup
 # - DST
@@ -16,7 +16,7 @@ dst.Output = "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='R
 # - MiniDST
 mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'";
+mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 mini.OutputLevel = VERBOSE
 
 
@@ -41,14 +41,14 @@ product_name_full_path = "/Event/" + product_name
 
 writer = WriteHandleAlg("Writer",
                         UseHandle=True,
-                        Cardinality=4,
+                        Cardinality=1,
                         OutputLevel=WARNING)
 
 writer.Output.Path = "/Event/" + product_name
 
 
-evtslots = 20
-algoparallel = 10
+evtslots = 1
+algoparallel = 1
 
 whiteboard = HiveWhiteBoard("EventDataSvc",
                             EventSlots=evtslots)
@@ -57,8 +57,8 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=algoparallel,
-                                OutputLevel=INFO)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
+                                  OutputLevel=INFO)
 
 # Application setup
 ApplicationMgr(TopAlg=[writer, dst],

@@ -39,8 +39,8 @@ public:
   struct ServiceItem final {
     ServiceItem( IService* s, long p = 0, bool act = false ) : service( s ), priority( p ), active( act ) {}
     SmartIF<IService> service;
-    long priority;
-    bool active;
+    long              priority;
+    bool              active;
     inline bool operator==( const std::string& name ) const { return service->name() == name; }
     inline bool operator==( const IService* ptr ) const { return service.get() == ptr; }
     inline bool operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
@@ -129,6 +129,9 @@ public:
   using ISvcManager::addService;
 #endif
 
+  /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
+  void outputLevelUpdate() override;
+
 private:
   inline ListSvc::iterator find( const std::string& name )
   {
@@ -152,22 +155,22 @@ private:
   }
 
 private:
-  ListSvc m_listsvc;       ///< List of service maintained by ServiceManager
-                           ///  This contains SmartIF<T> for all services --
-                           ///  and because there can be SmartIF<T>& 'out there' that
-                           ///  refer to these specific SmarIF<T>, we
-                           ///  *unfortunately* must guarantee that they _never_ move
-                           ///  after creation. Hence, we cannot use a plain std::vector
-                           ///  here, as that may cause relocation and/or swapping of
-                           ///  SmartIF<T>'s, and then the already handed out references
-                           ///  may refer to the wrong item.... Note that we could use
-                           ///  an std::vector<std::unique_ptr<ServiceItem>> (sometimes known
-                           ///  as 'stable vector') as then the individual ServiceItems
-                           ///  would stay pinned in their original location, but that
-                           ///  would put ServiceItem on the heap...
-                           ///  And maybe I'm way too paranoid...
-  MapType m_maptype;       ///< Map of service name and service type
-  bool m_loopCheck = true; ///< Check for service initialization loops
+  ListSvc m_listsvc;          ///< List of service maintained by ServiceManager
+                              ///  This contains SmartIF<T> for all services --
+                              ///  and because there can be SmartIF<T>& 'out there' that
+                              ///  refer to these specific SmarIF<T>, we
+                              ///  *unfortunately* must guarantee that they _never_ move
+                              ///  after creation. Hence, we cannot use a plain std::vector
+                              ///  here, as that may cause relocation and/or swapping of
+                              ///  SmartIF<T>'s, and then the already handed out references
+                              ///  may refer to the wrong item.... Note that we could use
+                              ///  an std::vector<std::unique_ptr<ServiceItem>> (sometimes known
+                              ///  as 'stable vector') as then the individual ServiceItems
+                              ///  would stay pinned in their original location, but that
+                              ///  would put ServiceItem on the heap...
+                              ///  And maybe I'm way too paranoid...
+  MapType m_maptype;          ///< Map of service name and service type
+  bool    m_loopCheck = true; ///< Check for service initialization loops
 
   /// Pointer to the application IService interface.
   SmartIF<IService> m_appSvc;
@@ -178,11 +181,11 @@ private:
   GaudiUtils::Map<InterfaceID, SmartIF<IInterface>> m_defaultImplementations;
 
   /// Mutex to synchronize shared service initialization between threads
-  typedef boost::recursive_mutex Mutex_t;
+  typedef boost::recursive_mutex     Mutex_t;
   typedef boost::lock_guard<Mutex_t> LockGuard_t;
 
   mutable Mutex_t m_gLock;
-  mutable std::map<std::string, std::unique_ptr<Mutex_t>> m_lockMap;
+  mutable std::map<std::string, Mutex_t> m_lockMap;
 
 private:
   void dump() const;

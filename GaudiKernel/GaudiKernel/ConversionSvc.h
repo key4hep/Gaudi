@@ -46,7 +46,7 @@ class GAUDI_API ConversionSvc : public extends<Service, IConversionSvc, IAddress
 {
   class WorkerEntry final
   {
-    CLID m_class;
+    CLID        m_class;
     IConverter* m_converter;
 
   public:

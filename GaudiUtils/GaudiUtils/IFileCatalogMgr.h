@@ -1,6 +1,5 @@
 #ifndef GAUDIFILECATALOG_IFILECATALOGMGR_H
 #define GAUDIFILECATALOG_IFILECATALOGMGR_H
-// $ID:$
 
 #include "GaudiKernel/IInterface.h"
 #include <string>

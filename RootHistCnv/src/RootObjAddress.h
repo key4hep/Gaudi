@@ -2,6 +2,7 @@
 #define ROOTHISTCNV_ROOTOBJADDRESS_H 1
 
 #include "GaudiKernel/IOpaqueAddress.h"
+#include "boost/utility/string_ref.hpp"
 
 class TObject;
 
@@ -12,26 +13,23 @@ namespace RootHistCnv
   {
 
   protected:
-    unsigned long m_refCount;
+    unsigned long m_refCount = 0;
     /// Storage type
-    long m_svcType;
+    long m_svcType = 0;
     /// Class id
-    CLID m_clID;
+    CLID m_clID = 0;
     /// String parameters to be accessed
     std::string m_par[2];
     /// Integer parameters to be accessed
-    unsigned long m_ipar[2];
+    unsigned long m_ipar[2] = {0xFFFFFFFF, 0xFFFFFFFF};
     /// Pointer to corresponding directory
-    IRegistry* m_pRegistry;
+    IRegistry* m_pRegistry = nullptr;
     /// Pointer to TObject
-    TObject* m_tObj;
+    TObject* m_tObj = nullptr;
 
   public:
     /// Dummy constructor
-    RootObjAddress() : m_refCount( 0 ), m_svcType( 0 ), m_clID( 0 ), m_pRegistry( 0 ), m_tObj( 0 )
-    {
-      m_ipar[0] = m_ipar[1] = 0xFFFFFFFF;
-    }
+    RootObjAddress() = default;
 
     RootObjAddress( const RootObjAddress& copy )
         : IOpaqueAddress( copy )
@@ -48,18 +46,15 @@ namespace RootHistCnv
     }
 
     /// Standard Constructor
-    RootObjAddress( long svc, const CLID& clid, const std::string& p1 = "", const std::string& p2 = "",
-                    unsigned long ip1 = 0, unsigned long ip2 = 0, TObject* tObj = 0 )
-        : m_refCount( 0 ), m_svcType( svc ), m_clID( clid ), m_pRegistry( 0 ), m_tObj( tObj )
+    RootObjAddress( long svc, const CLID& clid, boost::string_ref p1 = {}, boost::string_ref p2 = {},
+                    unsigned long ip1 = 0, unsigned long ip2 = 0, TObject* tObj = nullptr )
+        : m_svcType( svc ), m_clID( clid ), m_tObj( tObj )
     {
-      m_par[0]  = p1;
-      m_par[1]  = p2;
+      m_par[0]  = p1.to_string();
+      m_par[1]  = p2.to_string();
       m_ipar[0] = ip1;
       m_ipar[1] = ip2;
     }
-
-    /// Standard Destructor
-    ~RootObjAddress() override = default;
 
     /// Add reference to object
     unsigned long addRef() override { return ++m_refCount; }

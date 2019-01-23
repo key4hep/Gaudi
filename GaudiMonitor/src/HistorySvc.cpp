@@ -14,7 +14,6 @@
 #include "GaudiKernel/ISvcLocator.h"
 
 #include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgTool.h"
@@ -26,6 +25,7 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/ServiceHandle.h"
 #include "GaudiKernel/System.h"
+#include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/IAlgContextSvc.h"
 
@@ -60,7 +60,7 @@ namespace
 }
 
 struct DHH {
-  CLID id;
+  CLID        id;
   std::string key;
 
   DHH( const CLID& i, std::string k ) : id( i ), key( std::move( k ) ) {}
@@ -209,9 +209,10 @@ StatusCode HistorySvc::captureState()
 
   size_t count = 0;
   for ( auto ialg : algMgr->getAlgorithms() ) {
-    Algorithm* alg = dynamic_cast<Algorithm*>( ialg );
+    Gaudi::Algorithm* alg = dynamic_cast<Gaudi::Algorithm*>( ialg );
     if ( !alg ) {
-      warning() << "Algorithm " << ialg->name() << " does not inherit from Algorithm. Not registering it." << endmsg;
+      warning() << "Algorithm " << ialg->name() << " does not inherit from Gaudi::Algorithm. Not registering it."
+                << endmsg;
     } else {
       ++count;
       registerAlg( *alg ).ignore();
@@ -290,7 +291,7 @@ StatusCode HistorySvc::finalize()
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::registerAlg( const Algorithm& alg )
+StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg )
 {
 
   JobHistory* job = getJobHistory();
@@ -299,7 +300,7 @@ StatusCode HistorySvc::registerAlg( const Algorithm& alg )
     return StatusCode::SUCCESS;
   }
 
-  ( const_cast<Algorithm*>( &alg ) )->addRef();
+  ( const_cast<Gaudi::Algorithm*>( &alg ) )->addRef();
 
   m_algmap[&alg] = new AlgorithmHistory( alg, job );
 
@@ -316,7 +317,7 @@ StatusCode HistorySvc::registerAlg( const Algorithm& alg )
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::listProperties( const Algorithm& alg ) const
+StatusCode HistorySvc::listProperties( const Gaudi::Algorithm& alg ) const
 {
 
   info() << "Dumping properties for " << alg.name() << endl;
@@ -333,7 +334,7 @@ StatusCode HistorySvc::listProperties( const Algorithm& alg ) const
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpProperties( const Algorithm& alg, std::ofstream& ofs ) const
+void HistorySvc::dumpProperties( const Gaudi::Algorithm& alg, std::ofstream& ofs ) const
 {
 
   AlgorithmHistory* hist = getAlgHistory( alg );
@@ -349,7 +350,7 @@ void HistorySvc::dumpProperties( const Algorithm& alg, std::ofstream& ofs ) cons
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-AlgorithmHistory* HistorySvc::getAlgHistory( const Algorithm& alg ) const
+AlgorithmHistory* HistorySvc::getAlgHistory( const Gaudi::Algorithm& alg ) const
 {
 
   auto itr = m_algmap.find( &alg );
@@ -455,7 +456,7 @@ DataHistory* HistorySvc::createDataHistoryObj( const CLID& id, const std::string
             << "          object CLID: " << id << "  key: \"" << key << "\"" << endmsg;
     algHist = nullptr;
   } else {
-    Algorithm* alg = dynamic_cast<Algorithm*>( ialg );
+    Gaudi::Algorithm* alg = dynamic_cast<Gaudi::Algorithm*>( ialg );
     if ( alg ) {
       algHist = getAlgHistory( *alg );
     } else {
@@ -539,9 +540,9 @@ StatusCode HistorySvc::registerSvc( const IService& svc )
     return StatusCode( StatusCode::SUCCESS, true );
   }
 
-  JobHistory* job      = getJobHistory();
+  JobHistory*     job  = getJobHistory();
   const IService* psvc = &svc;
-  auto itr             = m_svcmap.find( psvc );
+  auto            itr  = m_svcmap.find( psvc );
   if ( itr == m_svcmap.end() ) {
 
     ON_DEBUG
@@ -567,7 +568,7 @@ ServiceHistory* HistorySvc::getServiceHistory( const IService& svc ) const
 {
 
   const IService* psvc = &svc;
-  auto itr             = m_svcmap.find( psvc );
+  auto            itr  = m_svcmap.find( psvc );
   if ( itr != m_svcmap.end() ) return itr->second;
 
   warning() << "Service " << svc.name() << " not registered" << endmsg;
@@ -684,7 +685,7 @@ AlgToolHistory* HistorySvc::getAlgToolHistory( const IAlgTool& alg ) const
 {
 
   const AlgTool* palg = dynamic_cast<const AlgTool*>( &alg );
-  auto itr            = m_algtoolmap.find( palg );
+  auto           itr  = m_algtoolmap.find( palg );
   if ( itr == m_algtoolmap.end() ) {
     warning() << "AlgTool " << alg.name() << " not registered" << endmsg;
     return nullptr;
@@ -744,8 +745,8 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
   std::string client_currently_open = "start";
   for ( auto& item : m_jobHistory->propertyPairs() ) {
     // client is the name of the component of the current property
-    const std::string& client               = item.first;
-    const Gaudi::Details::PropertyBase* prp = item.second;
+    const std::string&                  client = item.first;
+    const Gaudi::Details::PropertyBase* prp    = item.second;
 
     if ( m_outputFileTypeXML ) {
 
@@ -770,10 +771,14 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
     ofs << "SERVICES" << std::endl;
   }
 
-  for ( auto& item : m_svcmap ) {
-    const IService* svc = item.first;
-    dumpState( svc, ofs );
-  }
+  // helper to dump monitored components sorted by name
+  auto sortedDump = [&ofs, this]( const auto& map ) {
+    std::map<std::string, const INamedInterface*> sorted;
+    for ( const auto& item : map ) sorted[item.first->name()] = item.first;
+    for ( const auto& item : sorted ) dumpState( item.second, ofs );
+  };
+
+  sortedDump( m_svcmap );
 
   if ( m_outputFileTypeXML ) {
     ofs << "</SERVICES>" << endl << "<ALGORITHMS> " << endl;
@@ -781,10 +786,7 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
     ofs << "ALGORITHMS" << std::endl;
   }
 
-  for ( auto& item : m_algmap ) {
-    const Algorithm* alg = item.first;
-    dumpState( alg, ofs );
-  }
+  sortedDump( m_algmap );
 
   if ( m_outputFileTypeXML ) {
     ofs << "</ALGORITHMS>" << endl << "<ALGTOOLS> " << endl;
@@ -792,10 +794,7 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
     ofs << "ALGTOOLS" << std::endl;
   }
 
-  for ( auto& item : m_algtoolmap ) {
-    const AlgTool* algtool = item.first;
-    dumpState( algtool, ofs );
-  }
+  sortedDump( m_algtoolmap );
 
   if ( m_outputFileTypeXML ) {
     ofs << "</ALGTOOLS>" << endl << "</SETUP>" << endl;
@@ -807,19 +806,19 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
 void HistorySvc::dumpState( const INamedInterface* in, std::ofstream& ofs ) const
 {
 
-  HistoryObj* hist       = nullptr;
+  HistoryObj*      hist  = nullptr;
   IVersHistoryObj* vhist = nullptr;
 
-  const IService* is  = nullptr;
-  const Algorithm* ia = nullptr;
-  const IAlgTool* it  = nullptr;
+  const IService*         is = nullptr;
+  const Gaudi::Algorithm* ia = nullptr;
+  const IAlgTool*         it = nullptr;
   if ( ( is = dynamic_cast<const IService*>( in ) ) != nullptr ) {
     ON_VERBOSE
     verbose() << in->name() << " is Service" << endmsg;
     ServiceHistory* o = getServiceHistory( *is );
     hist              = dynamic_cast<HistoryObj*>( o );
     vhist             = dynamic_cast<IVersHistoryObj*>( o );
-  } else if ( ( ia = dynamic_cast<const Algorithm*>( in ) ) != nullptr ) {
+  } else if ( ( ia = dynamic_cast<const Gaudi::Algorithm*>( in ) ) != nullptr ) {
     ON_VERBOSE
     verbose() << in->name() << " is Alg" << endmsg;
     AlgorithmHistory* o = getAlgHistory( *ia );

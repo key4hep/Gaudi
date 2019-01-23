@@ -67,7 +67,7 @@ using namespace Gaudi;
 static time_t timegm( struct tm* t )
 {
   // This code is adapted from wine, samba
-  time_t t1 = mktime( t );
+  time_t    t1 = mktime( t );
   struct tm gmt;
   gmtime_s( &gmt, &t1 );
   time_t t2 = mktime( &gmt );
@@ -118,7 +118,7 @@ Time Time::current( void )
 #else
   timeval tv;
   if ( gettimeofday( &tv, nullptr ) != 0 ) {
-    char buf[256];
+    char               buf[256];
     std::ostringstream tag, msg;
     tag << "errno=" << errno;
     if ( strerror_r( errno, buf, 256 ) == 0 ) {
@@ -218,10 +218,10 @@ Time::ValueType Time::utcoffset( int* daylight /* = 0 */ ) const
 #else
   // Adapted from WINE.
   time_t utctime = ( time_t )( m_nsecs / SEC_NSECS );
-  tm localtm;
+  tm     localtm;
   localtime_s( &localtm, &utctime );
   int savedaylight = localtm.tm_isdst;
-  tm gmt;
+  tm  gmt;
   gmtime_s( &gmt, &utctime );
 
   gmt.tm_isdst = savedaylight;
@@ -260,8 +260,8 @@ const char* Time::timezone( int* daylight /* = 0 */ ) const
 std::string Time::format( bool local, std::string spec ) const
 {
   /// @FIXME: This doesn't account for nsecs part!
-  std::string result;
-  tm time                       = split( local );
+  std::string            result;
+  tm                     time   = split( local );
   std::string::size_type length = 0;
 
   // handle the special case of "%f"

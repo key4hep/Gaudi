@@ -353,7 +353,7 @@ namespace GaudiUtils
      */
     result_type insert( const value_type& value )
     {
-      bool found       = true;
+      bool      found  = true;
       _iterator result = lower_bound( value.first );
       if ( end() == result || compare( value.first, result->first ) ) {
         result = m_vct.insert( result, value );
@@ -612,7 +612,7 @@ namespace GaudiUtils
     const mapped_type& operator()( const key_type& key ) const
     {
       static const mapped_type s_default = mapped_type();
-      iterator res                       = find( key );
+      iterator                 res       = find( key );
       if ( end() == res ) {
         return s_default;
       }
@@ -687,11 +687,6 @@ namespace GaudiUtils
      */
     VectorMap( const allocator_type& alloc = allocator_type() ) : m_vct( alloc ) {}
     // ========================================================================
-    /** copy constructor
-     *  @param right object to be copied
-     */
-    VectorMap( const VectorMap& right ) : Gaudi::Utils::MapBase( right ), m_vct( right.m_vct ) {}
-    // ========================================================================
     /** templated constructor from "convertible" sequence
      *  @param first 'begin'-iterator for the convertible sequence
      *  @param last  'end'-iterator for the convertible sequence
@@ -713,22 +708,6 @@ namespace GaudiUtils
         : m_vct( first, alloc )
     {
       std::sort( m_vct.begin(), m_vct.end(), compare() );
-    }
-    // ========================================================================
-    /// destructor (non-virtual!)
-    ~VectorMap() { clear(); }
-    // ========================================================================
-    /* assignement operator
-     * @param rigth object to be assigned
-     * @return self
-     */
-    VectorMap& operator=( const VectorMap& right )
-    {
-      if ( &right == this ) {
-        return *this;
-      }
-      m_vct = right.m_vct;
-      return *this;
     }
     // ========================================================================
   public:

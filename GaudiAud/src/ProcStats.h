@@ -99,12 +99,12 @@ private:
     }
   };
 
-  unique_fd fd;
-  double pg_size;
-  procInfo curr;
+  unique_fd   fd;
+  double      pg_size;
+  procInfo    curr;
   std::string fname;
-  char buf[500];
-  bool valid;
+  char        buf[500];
+  bool        valid;
 
   static ProcStats* inst;
 };

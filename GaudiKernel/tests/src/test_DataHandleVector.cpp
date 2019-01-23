@@ -64,7 +64,7 @@ namespace GaudiKernelTest
 
       // Test move of a vector
       {
-        auto adw = AnyDataWrapper<V>( {1, 2, 3, 4} );
+        auto  adw = AnyDataWrapper<V>( {1, 2, 3, 4} );
         VSize s4( 4 );
         CPPUNIT_ASSERT_EQUAL( s4, ( adw.getData() ).size() );
       }
@@ -166,7 +166,8 @@ int main( int argc, char* argv[] )
   // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
   //                                                    std::cout ) );
 
-  runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
+  auto l = std::make_unique<GaudiKernelTest::ProgressListener>();
+  runner.eventManager().addListener( l.get() );
 
   // CppUnit::TestResultCollector *collector =
   //  new CppUnit::TestResultCollector();

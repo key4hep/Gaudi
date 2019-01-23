@@ -191,41 +191,41 @@ using std::endl;
              (divide by sysconf(_SC_CLK_TCK).
 */
 struct linux_proc {
-  int pid;
-  char comm[400];
-  char state;
-  int ppid;
-  int pgrp;
-  int session;
-  int tty;
-  int tpgid;
-  unsigned long flags;
-  unsigned long minflt;
-  unsigned long cminflt;
-  unsigned long majflt;
-  unsigned long cmajflt;
-  unsigned long utime;
-  unsigned long stime;
-  long cutime;
-  long cstime;
-  long priority;
-  long nice;
-  long num_threads;
-  long itrealvalue;
+  int                pid;
+  char               comm[400];
+  char               state;
+  int                ppid;
+  int                pgrp;
+  int                session;
+  int                tty;
+  int                tpgid;
+  unsigned long      flags;
+  unsigned long      minflt;
+  unsigned long      cminflt;
+  unsigned long      majflt;
+  unsigned long      cmajflt;
+  unsigned long      utime;
+  unsigned long      stime;
+  long               cutime;
+  long               cstime;
+  long               priority;
+  long               nice;
+  long               num_threads;
+  long               itrealvalue;
   unsigned long long starttime;
-  unsigned long vsize;
-  long rss;
-  unsigned long rlim;
-  unsigned long startcode;
-  unsigned long endcode;
-  unsigned long startstack;
-  unsigned long kstkesp;
-  unsigned long kstkeip;
-  unsigned long signal;
-  unsigned long blocked;
-  unsigned long sigignore;
-  unsigned long sigcatch;
-  unsigned long wchan;
+  unsigned long      vsize;
+  long               rss;
+  unsigned long      rlim;
+  unsigned long      startcode;
+  unsigned long      endcode;
+  unsigned long      startstack;
+  unsigned long      kstkesp;
+  unsigned long      kstkeip;
+  unsigned long      signal;
+  unsigned long      blocked;
+  unsigned long      sigignore;
+  unsigned long      sigcatch;
+  unsigned long      wchan;
 };
 #endif // __linux__ or __APPLE__
 
@@ -267,9 +267,9 @@ bool ProcStats::fetch( procInfo& f )
   if ( valid == false ) return false;
 
 #if defined( __linux__ ) or defined( __APPLE__ )
-  double pr_size, pr_rssize;
+  double     pr_size, pr_rssize;
   linux_proc pinfo;
-  int cnt;
+  int        cnt;
 
   fd.lseek( 0, SEEK_SET );
 

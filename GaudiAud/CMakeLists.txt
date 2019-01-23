@@ -2,7 +2,7 @@ gaudi_subdir(GaudiAud)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
-find_package(Boost)
+find_package(Boost REQUIRED)
 
 # Hide some Boost compile time warnings
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})

@@ -12,7 +12,8 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/DataObjectHandleProperty.h"
+#include "GaudiKernel/DataObjectHandleBase.h"
+#include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Property.h"
 
@@ -39,14 +40,12 @@ public:
   PropertyMgr( const PropertyMgr& ) = delete;
   // assignment operator
   PropertyMgr& operator=( const PropertyMgr& ) = delete;
-  /// virtual destructor
-  ~PropertyMgr() override = default;
 
 public:
   /// Declare a property (templated)
-  template <class TYPE, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
-                                                           !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
-                                                           !std::is_base_of<DataObjectHandleBase, TYPE>::value>::type>
+  template <class TYPE, typename = std::enable_if_t<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
+                                                    !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
+                                                    !std::is_base_of<DataObjectHandleBase, TYPE>::value>>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value,
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
@@ -123,7 +122,7 @@ protected:
 
 private:
   /// get the property by name form the proposed list
-  Gaudi::Details::PropertyBase* property( const std::string& name,
+  Gaudi::Details::PropertyBase* property( const std::string&                                name,
                                           const std::vector<Gaudi::Details::PropertyBase*>& props ) const;
 
   /// Throw an exception if the name is already present in the

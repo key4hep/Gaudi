@@ -19,14 +19,6 @@
 //-----------------------------------------------------------------------------
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-DataStreamTool::DataStreamTool( const std::string& type, const std::string& name, const IInterface* parent )
-    : base_class( type, name, parent )
-{
-  // declareInterface<IDataStreamTool>(this);
-}
-//=============================================================================
 StatusCode DataStreamTool::initialize()
 {
 
@@ -55,8 +47,8 @@ StatusCode DataStreamTool::addStream( const std::string& input )
 
   m_streamSpecs.push_back( input );
 
-  auto strname               = name() + '_' + std::to_string( ++m_streamCount );
-  EventSelectorDataStream* s = nullptr;
+  auto                     strname = name() + '_' + std::to_string( ++m_streamCount );
+  EventSelectorDataStream* s       = nullptr;
 
   StatusCode status = createStream( strname, input, s );
 
@@ -95,13 +87,13 @@ StatusCode DataStreamTool::finalize()
 
 StatusCode DataStreamTool::initializeStream( EventSelectorDataStream* s )
 {
-  IEvtSelector* sel = nullptr;
-  StatusCode status = s->initialize();
+  IEvtSelector* sel    = nullptr;
+  StatusCode    status = s->initialize();
   if ( status.isSuccess() ) {
     status = createSelector( s->name(), s->selectorType(), sel );
     if ( status.isSuccess() ) {
       SmartIF<IProperty> prop( sel ); // Att: IProperty, IService used to point to EventSelector
-      SmartIF<IService> isvc( sel );
+      SmartIF<IService>  isvc( sel );
       s->setSelector( sel );
       sel->release(); // No need for this interface anymore, it is passed to the stream
       if ( prop && isvc ) {
@@ -118,7 +110,7 @@ StatusCode DataStreamTool::initializeStream( EventSelectorDataStream* s )
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector( const std::string& nam, const std::string& typ, IEvtSelector*& sel )
 {
-  auto isvc = make_SmartIF( Service::Factory::create( typ, nam, serviceLocator() ) );
+  auto isvc = make_SmartIF( Service::Factory::create( typ, nam, serviceLocator() ).release() );
   if ( isvc ) {
     auto isel = isvc.as<IEvtSelector>();
     if ( isel ) {
@@ -237,9 +229,9 @@ StatusCode DataStreamTool::connectStream( const std::string& info )
   if ( getStream( info ) ) {
     warning() << "Input stream " << info << "already in use" << endmsg;
   }
-  auto nam                   = name() + '_' + std::to_string( ++m_streamCount );
-  EventSelectorDataStream* s = nullptr;
-  StatusCode status          = createStream( nam, info, s );
+  auto                     nam    = name() + '_' + std::to_string( ++m_streamCount );
+  EventSelectorDataStream* s      = nullptr;
+  StatusCode               status = createStream( nam, info, s );
   if ( status.isSuccess() ) return connectStream( s );
   s->release();
   return status;

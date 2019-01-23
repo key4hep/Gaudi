@@ -1,8 +1,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include "GaudiKernel/Parsers.h"
-#include "GaudiKernel/ParsersFactory.h"
+#include <Gaudi/Parsers/CommonParsers.h>
+#include <Gaudi/Parsers/Factory.h>
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -37,7 +37,7 @@ PARSERS_DEF_FOR_SINGLE( float )
 // See GAUDI-1121.
 StatusCode Gaudi::Parsers::parse( float& result, const std::string& input )
 {
-  double tmp{0};
+  double     tmp{0};
   StatusCode sc = Gaudi::Parsers::parse_( tmp, input );
   result        = static_cast<float>( tmp );
   return sc;

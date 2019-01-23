@@ -197,22 +197,6 @@ public:
       @param     pObject    Pointer to location of the object
    */
   virtual StatusCode updateRepRefs( IOpaqueAddress* pAddress, DataObject* pObject ) = 0;
-
-  /// Status code
-  enum Status {
-    /// Invalid address information
-    INVALID_ADDRESS = IInterface::LAST_ERROR + 1,
-    /// Object to be converted is invalid
-    INVALID_OBJECT,
-    /// No more memory available
-    NO_MEMORY,
-    /// Invalid storage type
-    BAD_STORAGE_TYPE,
-    /// Error retrieving source data from source store
-    NO_SOURCE_OBJECT,
-    /// Last entry
-    ICONVERSIONSVC_LAST_ERROR
-  };
 };
 
 #endif // GAUDIKERNEL_ICONVERTER_H

@@ -79,7 +79,7 @@ public:
   StatusCode service( const Gaudi::Utils::TypeNameString& name, T*& svc, bool createIf = true )
   {
     if ( createIf ) {
-      IService* s;
+      IService*  s;
       StatusCode sc = getService( name, s, true );
       if ( !sc.isSuccess() ) return sc; // Must check if initialization was OK!
     }

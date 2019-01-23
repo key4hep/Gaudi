@@ -1,17 +1,16 @@
 #include "GaudiHive/HiveTestAlgorithm.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 
 #include <atomic>
 
-DECLARE_ALGORITHM_FACTORY( HiveTestAlgorithm )
+DECLARE_COMPONENT( HiveTestAlgorithm )
 
 using namespace std;
 
 class MyObject : public DataObject
 {
-  int m_data;
+  int                m_data;
   static atomic<int> c_instances;
   static atomic<int> d_instances;
 
@@ -19,7 +18,7 @@ public:
   MyObject( int d ) : m_data( d ) { c_instances++; }
   MyObject( const MyObject& o ) : DataObject(), m_data( o.m_data ) { c_instances++; }
   ~MyObject() { d_instances++; }
-  int getData() { return m_data; }
+  int         getData() { return m_data; }
   static void dump() { cout << "MyObject (C/D): " << c_instances << "/" << d_instances << endl; }
 };
 

@@ -16,6 +16,7 @@
 namespace AIDA
 {
   class IHistogram1D;
+  class IProfile1D;
 }
 // ============================================================================
 namespace Gaudi
@@ -31,7 +32,7 @@ namespace Gaudi
      */
     class GAUDI_API HistoStats
     {
-    public:
+    public: // 1D Histograms
       // ======================================================================
       /** get the "bin-by-bin"-moment around the specified  "value"
        *  @param histo histogram
@@ -134,8 +135,8 @@ namespace Gaudi
        *  @param number of entries
        */
       static long nEntries( const AIDA::IHistogram1D* histo,
-                            const int imin,   //     minimal bin number (included)
-                            const int imax ); // maximal bin number (not included)
+                            const int                 imin,   // minimal bin number (included)
+                            const int                 imax ); // maximal bin number (not included)
       // ======================================================================
       /** get the fraction of entries in histogram up to
        *  the certain bin (not-included)
@@ -170,6 +171,146 @@ namespace Gaudi
        *  @param error for the fraction of entries
        */
       static double nEntriesFracErr( const AIDA::IHistogram1D* histo, const int imin, const int imax );
+      // ======================================================================
+    public: // 1D Profile Histograms
+      // ======================================================================
+      /** get the "bin-by-bin"-moment around the specified  "value"
+       *  @param histo histogram
+       *  @param order the moment parameter
+       *  @param value central value
+       *  @return the evaluated moment
+       */
+      static double moment( const AIDA::IProfile1D* histo, const unsigned int order, const double value = 0 );
+      // ======================================================================
+      /** evaluate the uncertanty for 'bin-by-bin'-moment
+       *  @param histo histogram
+       *  @param order the moment parameter
+       *  @param value central value
+       *  @return the evaluated uncertanty in the moment
+       */
+      static double momentErr( const AIDA::IProfile1D* histo, const unsigned int order );
+      // ======================================================================
+      /** evaluate the 'bin-by-bin'-central moment (around the mean value)
+       *  @param histo histogram
+       *  @param order the moment parameter
+       *  @param value central value
+       *  @return the evaluated central moment
+       */
+      static double centralMoment( const AIDA::IProfile1D* histo, const unsigned int order );
+      // ======================================================================
+      /** evaluate the uncertanty for 'bin-by-bin'-central moment
+       *  (around the mean value)
+       *  ( the uncertanty is calculated with O(1/n2) precision)
+       *  @param histo histogram
+       *  @param order the moment parameter
+       *  @param value central value
+       *  @return the evaluated uncertanty in the central moment
+       */
+      static double centralMomentErr( const AIDA::IProfile1D* histo, const unsigned int order );
+      // ======================================================================
+      /// get the skewness for the profile histogram
+      static double skewness( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get the error in skewness for the profile histogram
+      static double skewnessErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get the kurtosis for the profile histogram
+      static double kurtosis( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get the error in kurtosis for the profile histogram
+      static double kurtosisErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get the mean value for the profile histogram  (just for completeness)
+      static double mean( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get an error in the mean value
+      static double meanErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get the rms value for the profile histogram  (just for completeness)
+      static double rms( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get an error in the rms value
+      static double rmsErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get an error in the sum bin height ("in-range integral")
+      static double sumBinHeightErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get an error in the sum of all bin height ("integral")
+      static double sumAllBinHeightErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// get the effective entries   (just for completeness)
+      static double nEff( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// the fraction of overflow entries  (useful for shape comparison)
+      static double overflowEntriesFrac( const AIDA::IProfile1D* histo );
+      /// the fraction of underflow entries (useful for shape comparison)
+      static double underflowEntriesFrac( const AIDA::IProfile1D* histo );
+      /// error on fraction of overflow entries  (useful for shape comparison)
+      static double overflowEntriesFracErr( const AIDA::IProfile1D* histo );
+      /// the error on fraction of underflow entries (useful for shape comparison)
+      static double underflowEntriesFracErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /// the fraction of overflow intergal  (useful for shape comparison)
+      static double overflowIntegralFrac( const AIDA::IProfile1D* histo );
+      /// the fraction of underflow integral (useful for shape comparison)
+      static double underflowIntegralFrac( const AIDA::IProfile1D* histo );
+      /// the error on fraction of overflow intergal
+      static double overflowIntegralFracErr( const AIDA::IProfile1D* histo );
+      /// the error on fraction of underflow integral
+      static double underflowIntegralFracErr( const AIDA::IProfile1D* histo );
+      // ======================================================================
+      /** get number of entries in profile histogram up to
+       *  the certain bin (not-included)
+       *  @attention underflow bin is included!
+       *  @param histo the pointer to the histogram
+       *  @param imax  the bin number (not included)
+       *  @param number of entries
+       */
+      static long nEntries( const AIDA::IProfile1D* histo, const int imax );
+      /** get number of entries in profile histogram form the certain
+       *  minimal bin up to the certain maximal bin (not-included)
+       *  @param histo the pointer to the histogram
+       *  @param imin  the minimal bin number (included)
+       *  @param imax  the maximal bin number (not included)
+       *  @param number of entries
+       */
+      static long nEntries( const AIDA::IProfile1D* histo,
+                            const int               imin,   // minimal bin number (included)
+                            const int               imax ); // maximal bin number (not included)
+      // ======================================================================
+      /** get the fraction of entries in profile histogram up to
+       *  the certain bin (not-included)
+       *  @attention underflow bin is included!
+       *  @param histo the pointer to the histogram
+       *  @param imax  the bin number (not included)
+       *  @param fraction of entries
+       */
+      static double nEntriesFrac( const AIDA::IProfile1D* histo, const int imax );
+      /** get fraction of entries in profile histogram form the certain
+       *  minimal bin up to the certain maximal bin (not-included)
+       *  @param histo the pointer to the histogram
+       *  @param imin  the minimal bin number (included)
+       *  @param imax  the maximal bin number (not included)
+       *  @param fraction of entries
+       */
+      static double nEntriesFrac( const AIDA::IProfile1D* histo, const int imin, const int imax );
+      // ======================================================================
+      /** get the (binominal) error for the fraction of entries
+       *  in profile histogram up to the certain bin (not-included)
+       *  @attention underflow bin is included!
+       *  @param histo the pointer to the histogram
+       *  @param imax  the bin number (not included)
+       *  @param error for the fraction of entries
+       */
+      static double nEntriesFracErr( const AIDA::IProfile1D* histo, const int imax );
+      /** get the (binomial) error for the fraction of entries in the profile histogram
+       *  from the certain minimal bin up to the certain maximal bin (not-included)
+       *  @param histo the pointer to the histogram
+       *  @param imin  the minimal bin number (included)
+       *  @param imax  the maximal bin number (not included)
+       *  @param error for the fraction of entries
+       */
+      static double nEntriesFracErr( const AIDA::IProfile1D* histo, const int imin, const int imax );
       // ======================================================================
     };
     // ========================================================================

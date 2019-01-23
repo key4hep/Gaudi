@@ -10,7 +10,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
-#include "GaudiKernel/ThreadGaudi.h"
 
 using std::string;
 
@@ -295,28 +294,19 @@ SmartIF<ISvcLocator>& Service::serviceLocator() const { return m_svcLocator; }
 StatusCode Service::setProperties()
 {
   const bool CREATEIF( true );
-  auto jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", CREATEIF );
+  auto       jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", CREATEIF );
   if ( !jos ) {
     throw GaudiException( "Service [JobOptionsSvc] not found", name(), StatusCode::FAILURE );
   }
-  // set first generic Properties
-  StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName( name() ), this );
-  if ( sc.isFailure() ) return sc;
 
-  // set specific Properties
-  if ( isGaudiThreaded( name() ) ) {
-    if ( jos->setMyProperties( name(), this ).isFailure() ) {
-      return StatusCode::FAILURE;
-    }
+  // initialize messaging (except for MessageSvc)
+  if ( name() != "MessageSvc" ) {
+    // this initializes the messaging, in case property update handlers need to print
+    // and update the property value bypassing the update handler
+    m_outputLevel.value() = setUpMessaging();
   }
-  // initialize output level (except for MessageSvc)
-  if ( name() != "MessageSvc" && msgSvc() ) {
-    if ( m_outputLevel == MSG::NIL ) // if not defined (via options)
-      m_outputLevel = msgLevel();    // set it from MessageSvc
-    else                             // otherwise notify MessageSvc
-      updateMsgStreamOutputLevel( m_outputLevel );
-  }
-  return sc;
+
+  return jos->setMyProperties( name(), this );
 }
 
 //--- Local methods
@@ -330,7 +320,7 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
 
   // Initialize the default value from ApplicationMgr AuditAlgorithms
   Gaudi::Property<bool> audit( false );
-  auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
+  auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
   if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) {
     audit.assign( appMgr->getProperty( "AuditServices" ) );
   }

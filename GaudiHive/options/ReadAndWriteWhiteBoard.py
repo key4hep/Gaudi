@@ -4,7 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, HiveReadAlgorithm, ForwardSchedulerSvc, AlgResourcePool
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, HiveReadAlgorithm, AvalancheSchedulerSvc, AlgResourcePool
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
@@ -49,8 +49,10 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=algoparallel,
-                                OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
+                                  OutputLevel=WARNING,
+                                  CheckDependencies=True,
+                                  DataLoaderAlg=loader.name())
 
 ApplicationMgr(TopAlg=[loader, reader, dst],
                EvtMax=44,

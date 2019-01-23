@@ -1,9 +1,9 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include "GaudiKernel/Parsers.h"
+#include <Gaudi/Parsers/CommonParsers.h>
 // ============================================================================
-#include "GaudiKernel/ParsersFactory.h"
+#include <Gaudi/Parsers/Factory.h>
 // ============================================================================
 StatusCode Gaudi::Parsers::parse( Gaudi::Histo1DDef& result, const std::string& input )
 {

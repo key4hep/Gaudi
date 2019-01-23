@@ -47,9 +47,6 @@ public:
     m_saveIncidentName = "SAVE_RUN_RECORD";
     m_persSvcName      = "PersistencySvc/RecordPersistencySvc";
   }
-
-  /// Standard Destructor
-  ~RunRecordDataSvc() override = default;
 };
 
 // Instantiation of a static factory class used by clients to create instances of this service

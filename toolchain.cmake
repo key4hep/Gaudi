@@ -1,7 +1,7 @@
 # Special wrapper to load the declared version of the heptools toolchain.
-set(heptools_version 91)
+set(heptools_version 94)
 
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.6)
 if($ENV{HEPTOOLS_VERSION})
   set(heptools_version $ENV{HEPTOOLS_VERSION})
 endif()
@@ -10,8 +10,12 @@ endif()
 # compiler (without the proper cache)
 if(NOT CMAKE_SOURCE_DIR MATCHES "CMakeTmp")
 
- # Note: normally we should look for GaudiDefaultToolchain.cmake, but in Gaudi
- # it is not needed
- include(${CMAKE_SOURCE_DIR}/cmake/GaudiDefaultToolchain.cmake)
+  # Note: normally we should look for GaudiDefaultToolchain.cmake, but in Gaudi
+  # it is not needed
+  include(${CMAKE_SOURCE_DIR}/cmake/GaudiDefaultToolchain.cmake)
 
+  # FIXME: make sure we do not pick up ninja from LCG (it requires LD_LIBRARY_PATH set)
+  if(CMAKE_PREFIX_PATH)
+    list(FILTER CMAKE_PREFIX_PATH EXCLUDE REGEX "(LCG_|lcg/nightlies).*ninja")
+  endif()
 endif()

@@ -41,13 +41,13 @@ typedef struct {
 
 typedef struct {
   cgaudi_pluginsvc_t registry;
-  const char* id;
+  const char*        id;
 } cgaudi_factory_t;
 
 typedef struct {
   cgaudi_pluginsvc_t registry;
-  const char* id;
-  const char* key;
+  const char*        id;
+  const char*        key;
 } cgaudi_property_t;
 
 CGAUDI_API
@@ -64,9 +64,6 @@ const char* cgaudi_factory_get_library( cgaudi_factory_t self );
 
 CGAUDI_API
 const char* cgaudi_factory_get_type( cgaudi_factory_t self );
-
-CGAUDI_API
-const char* cgaudi_factory_get_rtype( cgaudi_factory_t self );
 
 CGAUDI_API
 const char* cgaudi_factory_get_classname( cgaudi_factory_t self );

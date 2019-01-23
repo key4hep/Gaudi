@@ -127,7 +127,8 @@ class Configurable(object):
         '_name',                # the (unqualified) component name
         '_inSetDefaults',       # currently setting default values
         '_initok',              # used to enforce base class init
-        '_setupok'              # for debugging purposes (temporary)
+        '_setupok',             # for debugging purposes (temporary)
+        '_unpickling',          # flag for actions done during unpickling
     )
 
     allConfigurables = {}      # just names would do, but currently refs to the actual
@@ -191,7 +192,7 @@ class Configurable(object):
             conf = cls.configurables[name]
             if name != argname:      # special case: user derived <-> real ... make same
                 cls.configurables[conf.getType()] = conf
-            #---PM: Initialize additional properties
+            # ---PM: Initialize additional properties
             for n, v in kwargs.items():
                 if n != "name":  # it should not be confused with a normal property
                     setattr(conf, n, v)
@@ -252,7 +253,7 @@ class Configurable(object):
                 #  in the future:
                 #  return None             # will bomb on use (or go unharmed on non-use)
                 #  for now, allow use through allConfigurables lookup
-                #---PM: Initialize additional properties
+                # ---PM: Initialize additional properties
                 for n, v in kwargs.items():
                     setattr(conf, n, v)
                 return conf
@@ -270,8 +271,8 @@ class Configurable(object):
 
         # update generics super-cache, if needed
         cls.allConfigurables[name] = conf
-        #-->PM#if hasattr( cls, 'getType' ) and name.find('/') < 0:
-        #-->PM#   cls.allConfigurables[ cls.getType() + '/' + name ] = conf
+        # -->PM#if hasattr( cls, 'getType' ) and name.find('/') < 0:
+        # -->PM#   cls.allConfigurables[ cls.getType() + '/' + name ] = conf
 
         return conf
 
@@ -327,6 +328,9 @@ class Configurable(object):
         # for debugging purposes (temporary)
         self._setupok = False
 
+        # used to prevent spurious deprecation warnings when unpickling
+        self._unpickling = False
+
     # pickle support
     def __getstate__(self):
         dict = {}
@@ -346,9 +350,18 @@ class Configurable(object):
 
     def __setstate__(self, dict):
         self._initok = True
-        for n, v in dict.items():
-            setattr(self, n, v)
-        return
+        from contextlib import contextmanager
+
+        @contextmanager
+        def unpickling():
+            try:
+                self._unpickling = True
+                yield
+            finally:
+                self._unpickling = False
+        with unpickling():
+            for n, v in dict.items():
+                setattr(self, n, v)
 
     # to allow a few basic sanity checks, as well as nice syntax
     def __len__(self):

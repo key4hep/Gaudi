@@ -185,10 +185,16 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  inline DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& address,
-                          const bool useRootInTES = true ) const
+  // [[deprecated( "please pass a std::unique_ptr as 2nd argument" )]]
+  inline void put( IDataProviderSvc* svc, DataObject* object, const std::string& address,
+                   const bool useRootInTES = true ) const
   {
-    return GaudiCommon<AlgTool>::put( svc, object, address, useRootInTES );
+    put( svc, std::unique_ptr<DataObject>( object ), address, useRootInTES );
+  }
+  inline void put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, const std::string& address,
+                   const bool useRootInTES = true ) const
+  {
+    GaudiCommon<AlgTool>::put( svc, std::move( object ), address, useRootInTES );
   }
 
   /** @brief Register a data object or container into Gaudi Event Transient Store
@@ -219,9 +225,14 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  inline DataObject* put( DataObject* object, const std::string& address, const bool useRootInTES = true ) const
+  inline const DataObject* put( DataObject* object, const std::string& address, const bool useRootInTES = true ) const
   {
-    return GaudiCommon<AlgTool>::put( evtSvc(), object, address, useRootInTES );
+    return put( std::unique_ptr<DataObject>( object ), address, useRootInTES );
+  }
+  inline const DataObject* put( std::unique_ptr<DataObject> object, const std::string& address,
+                                const bool useRootInTES = true ) const
+  {
+    return GaudiCommon<AlgTool>::put( evtSvc(), std::move( object ), address, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -329,7 +340,7 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type get( const std::string& location,
-                                                                const bool useRootInTES = true ) const
+                                                                const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::get<TYPE>( evtSvc(), location, useRootInTES );
   }
@@ -368,7 +379,7 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( const std::string& location,
-                                                                        const bool useRootInTES = true ) const
+                                                                        const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE>( evtSvc(), location, useRootInTES );
   }
@@ -420,7 +431,7 @@ public:
    *  @retval NULL If the detector object does not exist.
    */
   template <class TYPE>
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc* svc,
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc*  svc,
                                                                            const std::string& location ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE>( svc, location, false );
@@ -638,7 +649,7 @@ public:
    */
   template <class TYPE, class TYPE2>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( const std::string& location,
-                                                                        const bool useRootInTES = true ) const
+                                                                        const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE, TYPE2>( evtSvc(), location, useRootInTES );
   }
@@ -755,8 +766,8 @@ private:
   /// Returns the current active algorithm name via the context service
   inline std::string getCurrentAlgName() const
   {
-    const IAlgContextSvc* asvc = this->contextSvc();
-    const IAlgorithm* current  = ( asvc ? asvc->currentAlg() : NULL );
+    const IAlgContextSvc* asvc    = this->contextSvc();
+    const IAlgorithm*     current = ( asvc ? asvc->currentAlg() : NULL );
     return ( current ? " [" + current->name() + "]" : "" );
   }
   // ==========================================================================

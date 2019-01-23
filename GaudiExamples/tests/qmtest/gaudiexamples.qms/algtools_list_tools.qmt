@@ -11,30 +11,37 @@ ApplicationMgr(EvtMax=1).TopAlg.append(GaudiTesting__ListTools('ListTools'))
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="validator"><text>
 import re
-tools = [l.strip().split()[-1]
-         for l in stdout.splitlines()
-         if re.match(r'^ListTools +INFO   \S+', l)]
-tools.sort()
+tools = set(l.strip().split()[-1]
+            for l in stdout.splitlines()
+            if re.match(r'^ListTools +INFO   \S+', l))
 
-expected = ['ToolSvc.MyTool',
-            'MyAlg.MyTool',
-            'ToolSvc.MyGaudiTool',
-            'MyAlg.MyGaudiTool',
-            'MyAlg.ToolWithName',
-            'MyGaudiAlg.MyTool',
-            'MyGaudiAlg.MyGaudiTool',
-            'MyGaudiAlg.ToolWithName',
-            'MyGaudiAlg.PrivToolHandle',
-            'ToolSvc.TestPubToolHandle',
-            'ToolSvc.GenericToolHandle',
-            'ToolSvc.ConstGenericToolHandle',
-            'ToolSvc.ToolA',
-            'ToolSvc.ToolB',
-            'ToolSvc.PubToolHandle'
-            ]
-expected.sort()
+expected = set(['ToolSvc.MyTool',
+                'MyAlg.MyTool',
+                'ToolSvc.MyGaudiTool',
+                'MyAlg.MyGaudiTool',
+                'MyAlg.ToolWithName',
+                'MyGaudiAlg.LegacyToolHandle',
+                'MyGaudiAlg.MyTool',
+                'MyGaudiAlg.MyGaudiTool',
+                'MyGaudiAlg.ToolWithName',
+                'MyGaudiAlg.PrivToolHandle',
+                'MyGaudiAlg.WrongIfaceTool',
+                'ToolSvc.TestPubToolHandle',
+                'ToolSvc.GenericToolHandle',
+                'ToolSvc.ConstGenericToolHandle',
+                'ToolSvc.ToolA',
+                'ToolSvc.ToolB',
+                'ToolSvc.PubToolHandle'])
 
 if tools != expected:
     causes.append('list of tools')
+    missing = expected - tools
+    extra = tools - expected
+    if missing:
+        result['missing_tools'] = ('&lt;ul&gt;&lt;li&gt;{0}&lt;/li&gt;&lt;/ul&gt;'
+                                   .format('&lt;/li&gt;&lt;li&gt;'.join(sorted(missing))))
+    if extra:
+        result['extra_tools'] = ('&lt;ul&gt;&lt;li&gt;{0}&lt;/li&gt;&lt;/ul&gt;'
+                                 .format('&lt;/li&gt;&lt;li&gt;'.join(sorted(extra))))
 </text></argument>
 </extension>

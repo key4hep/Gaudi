@@ -41,8 +41,5 @@ public:
   //@{
   /// Standard Constructor
   EvtPersistencySvc( const std::string& name, ISvcLocator* svc );
-
-  /// Standard Destructor
-  ~EvtPersistencySvc() override = default;
 };
 #endif // PERSISTENCYSVC_EVTPERSISTENCYSVC_H

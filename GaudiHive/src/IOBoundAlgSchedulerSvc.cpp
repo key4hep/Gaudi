@@ -7,28 +7,15 @@
 
 // Framework includes
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/SvcFactory.h"
+#include <Gaudi/Algorithm.h> // will be IAlgorithm if context getter promoted to interface
 
 // Local
 #include "IOBoundAlgSchedulerSvc.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY( IOBoundAlgSchedulerSvc )
-
-//===========================================================================
-// Infrastructure methods
-
-IOBoundAlgSchedulerSvc::IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svcLoc )
-    : base_class( name, svcLoc ), m_isActive( false )
-{
-}
-
-//---------------------------------------------------------------------------
-IOBoundAlgSchedulerSvc::~IOBoundAlgSchedulerSvc() {}
-//---------------------------------------------------------------------------
+DECLARE_COMPONENT( IOBoundAlgSchedulerSvc )
 
 /**
  * Here, among some "bureaucracy" operations, the scheduler is activated,
@@ -80,7 +67,7 @@ void IOBoundAlgSchedulerSvc::activate()
   m_isActive = true;
 
   // Wait for actions pushed into the queue by finishing tasks.
-  action thisAction;
+  action     thisAction;
   StatusCode sc( StatusCode::SUCCESS );
 
   // Continue to wait if the scheduler is running or there is something to do
@@ -112,7 +99,7 @@ StatusCode IOBoundAlgSchedulerSvc::deactivate()
     // the task doesn't complete by the time the last while-iteration is entered
     m_isActive = false;
     // This would be the last (empty) action, just to trigger one last while-iteration
-    m_actionsQueue.push( [this]() -> StatusCode { return StatusCode::SUCCESS; } );
+    m_actionsQueue.push( []() -> StatusCode { return StatusCode::SUCCESS; } );
   }
 
   return StatusCode::SUCCESS;

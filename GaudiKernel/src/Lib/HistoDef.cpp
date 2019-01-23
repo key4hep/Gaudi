@@ -47,24 +47,16 @@ std::ostream& Gaudi::Histo1DDef::fillStream( std::ostream& o ) const
 {
   return o << "(" << Gaudi::Utils::toString( title() ) << "," << lowEdge() << "," << highEdge() << "," << bins() << ")";
 }
-// ============================================================================
-// ordering operator (to please BoundedVerifier)
-// ============================================================================
-bool Gaudi::Histo1DDef::operator<( const Gaudi::Histo1DDef& right ) const
+namespace Gaudi
 {
-  return this == &right ? false
-                        : title() < right.title()
-                              ? true
-                              : title() > right.title()
-                                    ? false
-                                    : lowEdge() < right.lowEdge()
-                                          ? true
-                                          : lowEdge() > right.lowEdge()
-                                                ? false
-                                                : highEdge() < right.highEdge()
-                                                      ? true
-                                                      : highEdge() > right.highEdge() ? false : bins() < right.bins();
-}
+  // ============================================================================
+  // ordering operator (to please BoundedVerifier)
+  // ============================================================================
+  bool operator<( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right )
+  {
+    return std::tie( left.m_title, left.m_low, left.m_high, left.m_bins ) <
+           std::tie( right.m_title, right.m_low, right.m_high, right.m_bins );
+  }
 // ============================================================================
 // equality operator
 // ============================================================================
@@ -73,24 +65,22 @@ bool Gaudi::Histo1DDef::operator<( const Gaudi::Histo1DDef& right ) const
 #pragma warning( push )
 #pragma warning( disable : 1572 )
 #endif
-bool Gaudi::Histo1DDef::operator==( const Gaudi::Histo1DDef& right ) const
-{
-  return ( this == &right ) || ( title() == right.title() && lowEdge() == right.lowEdge() &&
-                                 highEdge() == right.highEdge() && bins() == right.bins() );
-}
+  bool operator==( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right )
+  {
+    return std::tie( left.m_title, left.m_low, left.m_high, left.m_bins ) ==
+           std::tie( right.m_title, right.m_low, right.m_high, right.m_bins );
+  }
 #ifdef __ICC
 // re-enable icc remark #1572
 #pragma warning( pop )
 #endif
-// ============================================================================
-// non-equality
-// ============================================================================
-bool Gaudi::Histo1DDef::operator!=( const Gaudi::Histo1DDef& right ) const { return !( *this == right ); }
-// ============================================================================
-// the streamer operator for class Gaudi::Histo1DDef
-// ============================================================================
-namespace Gaudi
-{
+  // ============================================================================
+  // non-equality
+  // ============================================================================
+  bool operator!=( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right ) { return !( left == right ); }
+  // ============================================================================
+  // the streamer operator for class Gaudi::Histo1DDef
+  // ============================================================================
   std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo ) { return histo.fillStream( o ); }
 }
 // ============================================================================

@@ -5,13 +5,14 @@
 #include "GaudiKernel/IInterface.h"
 
 // C/C++ include files
+#include "boost/utility/string_ref.hpp"
 #include <string>
 
 // Forward declarations
-class DataObject;
 class IOpaqueAddress;
 class IRegistry;
-class DataStoreItem;
+#include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/DataStoreItem.h"
 
 /** @class IDataProviderSvc IDataProviderSvc.h GaudiKernel/IDataProviderSvc.h
  *
@@ -36,17 +37,18 @@ class DataStoreItem;
  *  <LI> Request object updates.
  *  </UL>
  *
- *- Removed call to update registry entry state in the data service
- *
  *  @author Markus Frank
  *  @author Sebastien Ponce
- *  @version 1.2
  */
 class GAUDI_API IDataProviderSvc : virtual public IInterface
 {
+
+  /// Helper function to convert item numbers to path strings
+  //  /// i.e. int -> "/" + int
+  static inline std::string itemToPath( int item ) { return '/' + std::to_string( item ); }
 public:
   /// InterfaceID
-  DeclareInterfaceID( IDataProviderSvc, 3, 0 );
+  DeclareInterfaceID( IDataProviderSvc, 4, 0 );
 
   enum { SEPARATOR = '/' };
 
@@ -57,7 +59,10 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject( const std::string& fullPath, DataObject* pObject ) = 0;
+  StatusCode registerObject( boost::string_ref fullPath, DataObject* pObject )
+  {
+    return registerObject( nullptr, fullPath, pObject );
+  }
 
   /** Register object with the data store.
    *  Connect the object identified by the path to the parent object
@@ -67,7 +72,7 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject( const std::string& parentPath, const std::string& objectPath,
+  virtual StatusCode registerObject( boost::string_ref parentPath, boost::string_ref objectPath,
                                      DataObject* pObject ) = 0;
 
   /** Register object with the data store.
@@ -78,7 +83,10 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject( const std::string& parentPath, int item, DataObject* pObject ) = 0;
+  StatusCode registerObject( boost::string_ref parentPath, int item, DataObject* pObject )
+  {
+    return registerObject( parentPath, itemToPath( item ), pObject );
+  }
 
   /** Register object with the data store.
    *  Connect the object identified by its pointer to the parent object
@@ -88,7 +96,7 @@ public:
    *  @param      pObject     Pointer to the object to be connected.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject( DataObject* parentObj, const std::string& objectPath, DataObject* pObject ) = 0;
+  virtual StatusCode registerObject( DataObject* parentObj, boost::string_ref objectPath, DataObject* pObject ) = 0;
 
   /** Register object with the data store.
    *  Connect the object identified by its pointer to the node object
@@ -98,7 +106,10 @@ public:
    *  @param      pObject     Pointer to the object to be connected.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject ) = 0;
+  StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject )
+  {
+    return registerObject( parentObj, itemToPath( item ), pObject );
+  }
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -113,7 +124,7 @@ public:
    *  @param      fullPath    Path name of the object.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject( const std::string& fullPath ) = 0;
+  virtual StatusCode unregisterObject( boost::string_ref fullPath ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -129,7 +140,12 @@ public:
    *  @param      objPath     Path name of the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject( const std::string& parentPath, const std::string& objPath ) = 0;
+  StatusCode unregisterObject( boost::string_ref parentPath, boost::string_ref objPath )
+  {
+    DataObject* pO     = nullptr;
+    StatusCode  status = findObject( parentPath, pO );
+    return status.isSuccess() ? unregisterObject( pO, objPath ) : status;
+  }
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -145,7 +161,10 @@ public:
    *  @param      item        Integer identifier of the object item.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject( const std::string& parentPath, int item ) = 0;
+  StatusCode unregisterObject( boost::string_ref parentPath, int item )
+  {
+    return unregisterObject( parentPath, itemToPath( item ) );
+  }
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -176,7 +195,7 @@ public:
    *  @param      objPath     Path name of the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject( DataObject* pParent, const std::string& objPath ) = 0;
+  virtual StatusCode unregisterObject( DataObject* pParent, boost::string_ref objPath ) = 0;
 
   /** Unregister object from the data store.
    *  On registration the client gives up ownership of the object and may no
@@ -192,7 +211,10 @@ public:
    *  @param      item        Integer identifier of the object item.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unregisterObject( DataObject* pParent, int item ) = 0;
+  StatusCode unregisterObject( DataObject* pParent, int item )
+  {
+    return unregisterObject( pParent, itemToPath( item ) );
+  }
 
   /** Retrieve object identified by its directory entry.
    *  The result will be returned in the second argument.
@@ -204,7 +226,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) = 0;
+  virtual StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) = 0;
 
   /** Retrieve object identified by its full path from the data store.
    *  The result will be returned in the second argument.
@@ -214,7 +236,10 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject( const std::string& fullPath, DataObject*& pObject ) = 0;
+  StatusCode retrieveObject( boost::string_ref fullPath, DataObject*& pObject )
+  {
+    return retrieveObject( static_cast<IRegistry*>( nullptr ), fullPath, pObject );
+  }
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the path of the parent object
@@ -226,8 +251,12 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objectPath,
-                                     DataObject*& pObject ) = 0;
+  StatusCode retrieveObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject )
+  {
+    DataObject* parent = nullptr;
+    StatusCode  status = retrieveObject( parentPath, parent );
+    return status.isSuccess() ? retrieveObject( parent, objectPath, pObject ) : status;
+  }
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the path to the parent object
@@ -239,7 +268,10 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject( const std::string& parentPath, int item, DataObject*& pObject ) = 0;
+  StatusCode retrieveObject( boost::string_ref parentPath, int item, DataObject*& pObject )
+  {
+    return retrieveObject( parentPath, itemToPath( item ), pObject );
+  }
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the pointer to the parent
@@ -251,7 +283,10 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objectPath, DataObject*& pObject ) = 0;
+  StatusCode retrieveObject( DataObject* parentObj, boost::string_ref objectPath, DataObject*& pObject )
+  {
+    return retrieveObject( parentObj ? parentObj->registry() : nullptr, objectPath, pObject );
+  }
 
   /** Retrieve object from data store.
    *  The object to be retrieved is identified by the pointer to the parent
@@ -263,7 +298,10 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject ) = 0;
+  StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject )
+  {
+    return retrieveObject( parentObj, itemToPath( item ), pObject );
+  }
 
   /** Find object identified by its directory entry.
    *  The result will be returned in the second argument.
@@ -274,7 +312,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) = 0;
+  virtual StatusCode findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) = 0;
 
   /** Find object identified by its full path in the data store.
    *  The result will be returned in the second argument.
@@ -283,7 +321,7 @@ public:
    *  @param      pObject     Pointer to the object to be connected.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode findObject( const std::string& fullPath, DataObject*& pObject ) = 0;
+  virtual StatusCode findObject( boost::string_ref fullPath, DataObject*& pObject ) = 0;
 
   /** Find object identified by its parent object and the path to the object
    *  relative to the parent.
@@ -294,8 +332,12 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject( const std::string& parentPath, const std::string& objectPath,
-                                 DataObject*& pObject ) = 0;
+  StatusCode findObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject )
+  {
+    DataObject* parent = nullptr;
+    StatusCode  status = findObject( parentPath, parent );
+    return status.isSuccess() ? findObject( parent, objectPath, pObject ) : status;
+  }
 
   /** Find object identified by its parent object and an integer identifier
    *  in the data store.
@@ -305,7 +347,10 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject( const std::string& parentPath, int item, DataObject*& pObject ) = 0;
+  StatusCode findObject( boost::string_ref parentPath, int item, DataObject*& pObject )
+  {
+    return findObject( parentPath, itemToPath( item ), pObject );
+  }
 
   /** Find object identified by its parent object and the path to the object
    *  relative to the parent.
@@ -316,7 +361,10 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject( DataObject* pNode, const std::string& objectPath, DataObject*& pObject ) = 0;
+  StatusCode findObject( DataObject* parentObj, boost::string_ref objectPath, DataObject*& pObject )
+  {
+    return findObject( parentObj ? parentObj->registry() : nullptr, objectPath, pObject );
+  }
 
   /** Find object identified by its parent object and an integer identifier
    *  in the data store.
@@ -326,7 +374,10 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  virtual StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject ) = 0;
+  StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject )
+  {
+    return findObject( parentObj, itemToPath( item ), pObject );
+  }
 
   /** Update object identified by its directory entry.
    *  ** FASTEST ACCESS TO THE DATA STORE **
@@ -341,7 +392,12 @@ public:
    *  @param      fullPath    Path name of the object.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject( const std::string& fullPath ) = 0;
+  StatusCode updateObject( boost::string_ref fullPath )
+  {
+    DataObject* pO     = nullptr;
+    StatusCode  status = findObject( fullPath, pO );
+    return status.isSuccess() ? updateObject( pO ) : retrieveObject( fullPath, pO );
+  }
 
   /** Update object identified by its pointer.
    *  If found, the object update will be initiated.
@@ -359,7 +415,12 @@ public:
    *  @param      updatePath  Path to the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject( const std::string& parentPath, const std::string& updatePath ) = 0;
+  StatusCode updateObject( boost::string_ref parentPath, boost::string_ref updatePath )
+  {
+    DataObject* pParent = nullptr;
+    StatusCode  status  = findObject( parentPath, pParent );
+    return status.isSuccess() ? updateObject( pParent, updatePath ) : status;
+  }
 
   /** Update object identified by its parent's pointer and the path relative
    *  to the parent.
@@ -369,7 +430,12 @@ public:
    *  @param      updatePath  Path to the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode updateObject( DataObject* pParent, const std::string& updatePath ) = 0;
+  StatusCode updateObject( DataObject* pParent, boost::string_ref updatePath )
+  {
+    DataObject* pObject = nullptr;
+    StatusCode  status  = findObject( pParent, updatePath, pObject );
+    return status.isSuccess() ? updateObject( pObject ) : status;
+  }
 
   /** Add an item to the preload list
    *  @param      item        Specs of item to be preloaded
@@ -382,7 +448,10 @@ public:
    *  @param      itemPath    Path to the item to be preloaded.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode addPreLoadItem( const std::string& itemPath ) = 0;
+  StatusCode addPreLoadItem( std::string itemPath )
+  {
+    return addPreLoadItem( DataStoreItem( std::move( itemPath ), 1 ) );
+  }
 
   /** Remove an item from the preload list.
    *  @param      item        Specs of item to be removed from the preload list
@@ -394,7 +463,10 @@ public:
    *  @param      itemPath    Path to the item to be preloaded.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode removePreLoadItem( const std::string& itemPath ) = 0;
+  StatusCode removePreLoadItem( std::string itemPath )
+  {
+    return removePreLoadItem( DataStoreItem( std::move( itemPath ), 1 ) );
+  }
 
   /** Clear the preload list.
    *  @return                 Status code indicating success or failure.
@@ -414,7 +486,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject( IRegistry* from, const std::string& objPath, DataObject* toObj ) = 0;
+  virtual StatusCode linkObject( IRegistry* from, boost::string_ref objPath, DataObject* toObj ) = 0;
 
   /** Add a link to another object.
    *  Both objects must already be registered with the data store.
@@ -424,7 +496,12 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject( const std::string& fromPath, const std::string& objPath, DataObject* toObj ) = 0;
+  StatusCode linkObject( boost::string_ref fromPath, boost::string_ref objPath, DataObject* toObj )
+  {
+    DataObject* pO     = nullptr;
+    StatusCode  status = retrieveObject( fromPath, pO );
+    return status.isSuccess() ? linkObject( pO->registry(), objPath, toObj ) : status;
+  }
 
   /** Add a link to another object.
    *  Both objects must already be registered with the data store.
@@ -434,7 +511,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject( DataObject* fromObj, const std::string& objPath, DataObject* toObj ) = 0;
+  inline StatusCode linkObject( DataObject* fromObj, boost::string_ref objPath, DataObject* toObj );
 
   /** Add a link to another object.
    *  Both objects must already be registered with the data store.
@@ -443,7 +520,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode linkObject( const std::string& fullPath, DataObject* toObj ) = 0;
+  virtual StatusCode linkObject( boost::string_ref fullPath, DataObject* toObj ) = 0;
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -453,7 +530,7 @@ public:
    *  @param      objPath     Path of the entry to be linked relative to from.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject( IRegistry* from, const std::string& objPath ) = 0;
+  virtual StatusCode unlinkObject( IRegistry* from, boost::string_ref objPath ) = 0;
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -463,7 +540,12 @@ public:
    *  @param      objPath     Path of the entry to be linked relative to from.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject( const std::string& fromPath, const std::string& objPath ) = 0;
+  StatusCode unlinkObject( boost::string_ref fromPath, boost::string_ref objPath )
+  {
+    DataObject* pObject = nullptr;
+    StatusCode  status  = findObject( fromPath, pObject );
+    return status.isSuccess() ? unlinkObject( pObject->registry(), objPath ) : status;
+  }
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -473,7 +555,7 @@ public:
    *  @param      objPath     Path of the entry to be linked relative to from.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject( DataObject* fromObj, const std::string& objPath ) = 0;
+  virtual StatusCode unlinkObject( DataObject* fromObj, boost::string_ref objPath ) = 0;
 
   /** Remove a link to another object.
    *  Both objects must be registered with the data store.
@@ -482,10 +564,10 @@ public:
    *  @param      fullPath    Full path of the entry to be linked.
    *  @return                 Status code indicating success or failure.
    */
-  virtual StatusCode unlinkObject( const std::string& fullPath ) = 0;
+  virtual StatusCode unlinkObject( boost::string_ref fullPath ) = 0;
 
   /// Status code definitions
-  enum Status {
+  enum class Status : StatusCode::code_t {
     /// Success
     IDataProviderSvc_NO_ERROR = 1,
     /// The path for this objects is already in use
@@ -514,5 +596,16 @@ public:
     LAST
   };
 };
+
+STATUSCODE_ENUM_DECL( IDataProviderSvc::Status )
+
+inline StatusCode IDataProviderSvc::linkObject( DataObject* fromObj, boost::string_ref objPath, DataObject* toObj )
+{
+  if ( fromObj ) {
+    IRegistry* from_entry = fromObj->registry();
+    if ( from_entry ) return linkObject( from_entry, objPath, toObj );
+  }
+  return Status::INVALID_PARENT;
+}
 
 #endif // GAUDIKERNEL_IDATAPROVIDERSVC_H

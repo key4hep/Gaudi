@@ -33,4 +33,4 @@ See also: \ref externaldocs (from [LCG version @heptools_version@][lcg-details])
 [gug-pdf]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG.pdf
 [gug-2up-pdf]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG-2up.pdf
 
-[lcg-details]: http://lcgsoft.web.cern.ch/lcgsoft/release/@heptools_version@/
+[lcg-details]: http://lcginfo.cern.ch/release/@heptools_version@/

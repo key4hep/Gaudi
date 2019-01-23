@@ -3,8 +3,8 @@ gaudi_subdir(GaudiAlg)
 gaudi_depends_on_subdirs(GaudiUtils GaudiKernel)
 
 find_package(AIDA)
-find_package(Boost COMPONENTS regex)
-find_package(ROOT COMPONENTS RIO)
+find_package(Boost COMPONENTS regex REQUIRED)
+find_package(ROOT COMPONENTS RIO REQUIRED)
 
 # Decide whether to link against AIDA:
 set( aida_lib )
@@ -39,7 +39,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiAlgLib ${lib_sources}
                   LINK_LIBRARIES GaudiUtilsLib Boost
-                  INCLUDE_DIRS Boost ${aida_lib} ${RANGES_V3_INCLUDE_DIRS}
+                  INCLUDE_DIRS Boost ${aida_lib} ${RANGEV3_INCLUDE_DIRS}
                   PUBLIC_HEADERS GaudiAlg)
 gaudi_add_module(GaudiAlg ${module_sources}
                  LINK_LIBRARIES GaudiAlgLib GaudiKernel ROOT

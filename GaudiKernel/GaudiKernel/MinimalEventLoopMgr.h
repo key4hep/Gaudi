@@ -20,20 +20,43 @@
  *  This is the default processing manager of the application manager.
  *  This object handles the minimal requirements needed by the application manager.
  *  It also is capable of handling a bunch of algorithms and output streams.
- *  However, they list may as well be empty.
+ *  However, the list may as well be empty.
  *
  *  @author Markus Frank
  *  @version 1.0
  */
 class GAUDI_API MinimalEventLoopMgr : public extends<Service, IEventProcessor>
 {
+private:
+  class AbortEventListener : public implements<IIncidentListener>
+  {
+  public:
+    /// Inform that a new incident has occurred
+    void handle( const Incident& i ) override
+    {
+      if ( i.type() == IncidentType::AbortEvent ) {
+        abortEvent       = true;
+        abortEventSource = i.source();
+      }
+    }
+
+  public:
+    /// Flag signalling that the event being processed has to be aborted
+    /// (skip all following top algs).
+    bool abortEvent = false;
+    /// Source of the AbortEvent incident.
+    std::string abortEventSource;
+  };
+
 public:
   typedef std::vector<SmartIF<IAlgorithm>> ListAlg;
 
 protected:
   // Properties
-  Gaudi::Property<std::vector<std::string>> m_topAlgNames{this, "TopAlg", {}, "list of top level algorithms names"};
-  Gaudi::Property<std::vector<std::string>> m_outStreamNames{this, "OutStream", {}, "list of output stream names"};
+  Gaudi::Property<std::vector<std::string>> m_topAlgNames{
+      this, "TopAlg", {}, &MinimalEventLoopMgr::topAlgHandler, "list of top level algorithms names"};
+  Gaudi::Property<std::vector<std::string>> m_outStreamNames{
+      this, "OutStream", {}, &MinimalEventLoopMgr::outStreamHandler, "list of output stream names"};
   Gaudi::Property<std::string> m_outStreamType{this, "OutStreamType", "OutputStream",
                                                "[[deprecated]] default type for OutputStream instances"};
   Gaudi::Property<bool> m_printCFExp{this, "PrintControlFlowExpression", false,
@@ -47,7 +70,7 @@ protected:
   SmartIF<IIncidentSvc> m_incidentSvc;
   /// List of top level algorithms
   SmartIF<IAlgExecStateSvc> m_aess;
-  ListAlg m_topAlgList;
+  ListAlg                   m_topAlgList;
   /// List of output streams
   ListAlg m_outStreamList;
   /// State of the object
@@ -55,12 +78,7 @@ protected:
   /// Scheduled stop of event processing
   bool m_scheduledStop = false;
   /// Instance of the incident listener waiting for AbortEvent.
-  SmartIF<IIncidentListener> m_abortEventListener;
-  /// Flag signalling that the event being processedhas to be aborted
-  /// (skip all following top algs).
-  bool m_abortEvent = false;
-  /// Source of the AbortEvent incident.
-  std::string m_abortEventSource;
+  AbortEventListener m_abortEventListener;
 
 public:
   /// Standard Constructor

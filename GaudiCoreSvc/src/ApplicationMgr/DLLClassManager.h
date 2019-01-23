@@ -15,6 +15,7 @@ class ICnvManager;
 class IAlgManager;
 class ISvcManager;
 class IObjManager;
+class IMessageSvc;
 
 //
 // ClassName:   DLLClassManager
@@ -29,8 +30,6 @@ class DLLClassManager : public implements<IClassManager>
 public:
   // default creator
   DLLClassManager( IInterface* iface );
-  // virtual destructor
-  ~DLLClassManager() override = default;
 
   // implementation of IClassManager::loadModule
   StatusCode loadModule( const std::string& module, bool fireIncident = true ) override;
@@ -41,6 +40,6 @@ public:
 private:
   SmartIF<ISvcLocator> m_svclocator; // Service locator reference
   SmartIF<IMessageSvc> m_msgsvc;     // Message Service reference
-  SmartIF<IInterface> m_pOuter;      // Interface hub reference (ApplicationMgr)
+  SmartIF<IInterface>  m_pOuter;     // Interface hub reference (ApplicationMgr)
 };
 #endif // GAUDI_DLLCLASSMANAGER_H

@@ -25,9 +25,9 @@ namespace Gaudi
     typedef Service::Factory Factory;
 
   protected:
-    typedef const std::string& CSTR;
+    typedef const std::string&         CSTR;
     typedef std::vector<IFileCatalog*> Catalogs;
-    typedef std::vector<std::string> CatalogNames;
+    typedef std::vector<std::string>   CatalogNames;
 
     template <class A1, class F>
     std::string _find( A1& arg1, F pmf ) const
@@ -62,9 +62,7 @@ namespace Gaudi
 
   public:
     /// Create a catalog file, initialization of XercesC.
-    MultiFileCatalog( const std::string& nam, ISvcLocator* svc );
-    /// Destructor,
-    ~MultiFileCatalog() override = default;
+    using extends::extends;
 
     /** IService implementation                                               */
     /// Finalize service object
@@ -118,6 +116,10 @@ namespace Gaudi
     void registerLFN( CSTR fid, CSTR lfn ) const override;
     /// Create a FileID and DOM Node
     void registerFID( CSTR fid ) const override { writeCatalog()->registerFID( fid ); }
+    /// rename a PFN
+    void renamePFN( CSTR pfn, CSTR newpfn ) const override { writeCatalog()->renamePFN( pfn, newpfn ); }
+    /// remove a PFN
+    void deletePFN( CSTR pfn ) const override { writeCatalog()->deletePFN( pfn ); }
     /// Dump all MetaData of the catalog for a given file ID
     void getMetaData( CSTR fid, Attributes& attr ) const override
     {
@@ -165,7 +167,7 @@ namespace Gaudi
 
     /// simple property handle to allow interactive modification of
     /// list of the file catalogs
-    void propHandler( Details::PropertyBase& /* p */ );
+    void propHandler();
 
     void printError( CSTR msg, bool throw_exc = true ) const;
     std::string lookupFID( CSTR lfn ) const;
@@ -174,7 +176,7 @@ namespace Gaudi
     Catalogs m_catalogs;
 
     Gaudi::Property<CatalogNames> m_catalogNames{
-        this, "Catalogs", {{"xmlcatalog_file:test_catalog.xml"}}, "catalog names"};
+        this, "Catalogs", {{"xmlcatalog_file:test_catalog.xml"}}, &MultiFileCatalog::propHandler, "catalog names"};
 
     /// Flag to indicate if catalog is started
     bool m_started = false;

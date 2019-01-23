@@ -38,14 +38,11 @@ private:
 public:
   using extends::extends;
 
-  /// Standard Destructor
-  ~PartitionSwitchAlg() override = default;
-
   /// Initialize
   STATUS initialize() override
   {
     SmartIF<IAlgTool> tool( m_actor );
-    STATUS sc = toolSvc()->retrieveTool( m_toolType, m_actor, this );
+    STATUS            sc = toolSvc()->retrieveTool( m_toolType, m_actor, this );
     if ( sc.isFailure() ) {
       error() << "Unable to load PartitionSwitchTool " << m_toolType << endmsg;
       return sc;
@@ -93,12 +90,12 @@ private:
   template <typename... FArgs, typename... Args>
   StatusCode fwd_( StatusCode ( IPartitionControl::*fun )( FArgs... ), Args&&... args )
   {
-    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : NO_INTERFACE;
+    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : IInterface::Status::NO_INTERFACE;
   }
   template <typename... FArgs, typename... Args>
   StatusCode fwd_( StatusCode ( IPartitionControl::*fun )( FArgs... ) const, Args&&... args ) const
   {
-    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : NO_INTERFACE;
+    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : IInterface::Status::NO_INTERFACE;
   }
 
 public:

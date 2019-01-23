@@ -7,18 +7,32 @@
 #include "GaudiKernel/ToolHandle.h"
 #include <thread>
 
+namespace Gaudi
+{
+  namespace Concurrency
+  {
+    thread_local bool ThreadInitDone{false};
+  }
+}
+
 std::atomic<bool> ThreadInitTask::m_execFailed( false );
 
 tbb::task* ThreadInitTask::execute()
 {
 
   SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
-  MsgStream log( messageSvc, "ThreadInitTask" );
+  MsgStream            log( messageSvc, "ThreadInitTask" );
 
   const auto debug = log.level() <= MSG::DEBUG;
 
   if ( debug )
-    log << MSG::DEBUG << "execute in thread 0x" << std::hex << pthread_self() << " at " << this << std::dec << endmsg;
+    log << MSG::DEBUG << "execute() in thread 0x" << std::hex << pthread_self() << " at " << this << std::dec
+        << "  state: " << ( m_terminate ? "terminate" : "initialize" ) << endmsg;
+
+  if ( !m_terminate && Gaudi::Concurrency::ThreadInitDone ) {
+    log << MSG::WARNING << "thread initialization has already been done on thread " << std::hex << pthread_self()
+        << endmsg;
+  }
 
   if ( m_tools.retrieve().isFailure() ) {
     log << MSG::ERROR << "unable to retrieve ToolHandleArray " << m_tools << endmsg;
@@ -26,7 +40,10 @@ tbb::task* ThreadInitTask::execute()
   } else {
 
     if ( m_tools.size() == 0 ) {
-      log << MSG::INFO << "no entries in Tool Array" << endmsg;
+      log << MSG::DEBUG << "no entries in Tool Array" << endmsg;
+      if ( !m_terminate ) {
+        Gaudi::Concurrency::ThreadInitDone = true;
+      }
     } else {
       if ( debug ) log << MSG::DEBUG << "executing in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
 
@@ -38,6 +55,7 @@ tbb::task* ThreadInitTask::execute()
 
           if ( !m_terminate ) {
             t->initThread();
+            Gaudi::Concurrency::ThreadInitDone = true;
           } else {
             t->terminateThread();
           }
@@ -62,7 +80,7 @@ tbb::task* ThreadInitTask::execute()
   }
 
   if ( m_barrier != 0 ) {
-    log << MSG::INFO << "waiting at barrier in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
+    log << MSG::DEBUG << "waiting at barrier in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
     m_barrier->wait();
   }
 

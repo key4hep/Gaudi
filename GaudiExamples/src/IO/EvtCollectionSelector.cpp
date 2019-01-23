@@ -40,17 +40,16 @@ namespace Gaudi
     class EvtCollectionSelector : public NTuple::Selector
     {
     protected:
-      NTuple::Item<int> m_ntrack;
+      NTuple::Item<int>    m_ntrack;
       NTuple::Array<float> m_trkMom;
 #ifndef NO_TRKMOMFIX
       NTuple::Array<float> m_trkMomFixed;
 #endif
       NTuple::Item<Gaudi::Examples::MyTrack*> m_track;
-      int m_cut;
+      int                                     m_cut = 10;
 
     public:
-      EvtCollectionSelector( IInterface* svc ) : NTuple::Selector( svc ), m_cut( 10 ) {}
-      ~EvtCollectionSelector() override = default;
+      using NTuple::Selector::Selector;
 
       /// Initialization
       StatusCode initialize( NTuple::Tuple* nt ) override

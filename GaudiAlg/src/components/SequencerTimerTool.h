@@ -34,8 +34,6 @@ public:
   /// Standard constructor
   SequencerTimerTool( const std::string& type, const std::string& name, const IInterface* parent );
 
-  ~SequencerTimerTool() override = default; ///< Destructor
-
   /** initialize method, to compute the normalization factor **/
   StatusCode initialize() override;
 
@@ -73,15 +71,15 @@ public:
   void saveHistograms() override;
 
 private:
-  Gaudi::Property<int> m_shots{this, "Shots", 3500000, "number of shots for CPU normalization"};
+  Gaudi::Property<int>  m_shots{this, "Shots", 3500000, "number of shots for CPU normalization"};
   Gaudi::Property<bool> m_normalised{this, "Normalised", false, "normalise the time to a nominal PIII"};
   Gaudi::Property<bool> m_globalTiming{this, "GlobalTiming", false};
   Gaudi::Property<std::string::size_type> m_headerSize{this, "NameSize", 30,
                                                        "number of characters to be used in algorithm name column"};
 
-  int m_indent = 0; ///< Amount of indentation
+  int                            m_indent = 0; ///< Amount of indentation
   std::vector<TimerForSequencer> m_timerList;
-  double m_normFactor = 0.001; ///< Factor to convert to standard CPU (1 GHz PIII)
-  double m_speedRatio = 0;
+  double                         m_normFactor = 0.001; ///< Factor to convert to standard CPU (1 GHz PIII)
+  double                         m_speedRatio = 0;
 };
 #endif // SEQUENCERTIMERTOOL_H

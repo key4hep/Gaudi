@@ -37,7 +37,7 @@ GaudiPython::CallbackStreamBuf::CallbackStreamBuf( PyObject* self ) : m_self( se
 int GaudiPython::CallbackStreamBuf::sync()
 {
   size_t length;
-  char* x;
+  char*  x;
   for ( length = 0, x = pbase(); x < epptr(); ++x, ++length )
     ;
   // getting in a null terminated buffer the characters

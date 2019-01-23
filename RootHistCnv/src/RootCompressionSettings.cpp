@@ -22,7 +22,7 @@ RootHistCnv::RootCompressionSettings::RootCompressionSettings( const std::string
   const std::string::size_type idx = settings.find( ':' );
   if ( idx != std::string::npos ) {
     // Get compression algorithm type
-    const std::string alg                = settings.substr( 0, idx );
+    const std::string           alg      = settings.substr( 0, idx );
     ROOT::ECompressionAlgorithm alg_code = ROOT::kUseGlobalSetting;
     if ( alg == "ZLIB" ) {
       alg_code = ROOT::kZLIB;
@@ -34,7 +34,7 @@ RootHistCnv::RootCompressionSettings::RootCompressionSettings( const std::string
 
     // get compression level
     const std::string slev = settings.substr( idx + 1 );
-    const int ilev         = std::stoi( slev );
+    const int         ilev = std::stoi( slev );
 
     // set the level
     m_level = ROOT::CompressionSettings( alg_code, ilev );

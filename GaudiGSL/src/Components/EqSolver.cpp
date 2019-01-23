@@ -65,9 +65,9 @@ namespace
    */
   int fun_gsl( const gsl_vector* v, void* params, gsl_vector* f )
   {
-    EqSolver::EqSolverMisc* local  = static_cast<EqSolver::EqSolverMisc*>( params );
-    const EqSolver::Equations& eqs = *( local->equations() );
-    Argument& arg                  = local->argument();
+    EqSolver::EqSolverMisc*    local = static_cast<EqSolver::EqSolverMisc*>( params );
+    const EqSolver::Equations& eqs   = *( local->equations() );
+    Argument&                  arg   = local->argument();
 
     for ( unsigned int i = 0; i < v->size; ++i ) {
       arg[i] = gsl_vector_get( v, i );
@@ -85,7 +85,7 @@ namespace
   {
     EqSolver::EqSolverMisc* local = static_cast<EqSolver::EqSolverMisc*>( params );
     const EqSolver::Jacobi& jac   = local->jacobi();
-    Argument& arg                 = local->argument();
+    Argument&               arg   = local->argument();
 
     for ( unsigned int i = 0; i < v->size; ++i ) {
       arg[i] = gsl_vector_get( v, i );
@@ -105,10 +105,10 @@ namespace
    */
   int fdfun_gsl( const gsl_vector* v, void* params, gsl_vector* f, gsl_matrix* df )
   {
-    EqSolver::EqSolverMisc* local  = static_cast<EqSolver::EqSolverMisc*>( params );
-    const EqSolver::Equations& eqs = *( local->equations() );
-    const EqSolver::Jacobi& jac    = local->jacobi();
-    Argument& arg                  = local->argument();
+    EqSolver::EqSolverMisc*    local = static_cast<EqSolver::EqSolverMisc*>( params );
+    const EqSolver::Equations& eqs   = *( local->equations() );
+    const EqSolver::Jacobi&    jac   = local->jacobi();
+    Argument&                  arg   = local->argument();
 
     for ( unsigned int i = 0; i < v->size; ++i ) {
       arg[i] = gsl_vector_get( v, i );
@@ -136,12 +136,12 @@ StatusCode EqSolver::solver( const Equations& funcs, Arg& arg ) const
   using namespace Genfun;
 
   gsl_vector_view vect = gsl_vector_view_array( &arg[0], arg.dimension() );
-  EqSolverMisc local( funcs, arg );
+  EqSolverMisc    local( funcs, arg );
 
-  const gsl_multiroot_fdfsolver_type* T = m_type;
-  gsl_multiroot_fdfsolver* s            = nullptr;
-  int status                            = 0;
-  size_t iter                           = 0;
+  const gsl_multiroot_fdfsolver_type* T      = m_type;
+  gsl_multiroot_fdfsolver*            s      = nullptr;
+  int                                 status = 0;
+  size_t                              iter   = 0;
 
   gsl_multiroot_function_fdf function;
 
@@ -186,7 +186,7 @@ StatusCode EqSolver::solver( const Equations& funcs, Arg& arg ) const
     return Error( "Method finished with '" + std::string( gsl_strerror( status ) ) + "' error" );
   }
 
-  return GSL_SUCCESS;
+  return StatusCode( GSL_SUCCESS );
 }
 
 //=============================================================================

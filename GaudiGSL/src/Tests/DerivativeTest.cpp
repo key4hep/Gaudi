@@ -37,9 +37,9 @@ int main()
 
   std::cout << " Test for numerical differentiation of Genfun::Sin(x) " << std::endl;
 
-  const GaudiMath::Function& mysin   = Genfun::Sin();
+  const GaudiMath::Function&   mysin = Genfun::Sin();
   const GaudiMath::Derivative& prim1 = GaudiMath::Derivative( mysin, 0 );
-  const GaudiMath::Function& prim    = prim1;
+  const GaudiMath::Function&   prim  = prim1;
 
   for ( double x = -90 * Gaudi::Units::degree; x <= 180 * Gaudi::Units::degree; x += 10 * Gaudi::Units::degree ) {
     double value = prim( x );

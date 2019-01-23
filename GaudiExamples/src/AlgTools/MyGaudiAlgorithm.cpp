@@ -11,11 +11,11 @@ DECLARE_COMPONENT( MyGaudiAlgorithm )
 
 // Constructor
 //------------------------------------------------------------------------------
-MyGaudiAlgorithm::MyGaudiAlgorithm( const std::string& name, ISvcLocator* ploc )
-    : GaudiAlgorithm( name, ploc ), m_legacyToolHandle( "MyTool/LegacyToolHandle", this )
+MyGaudiAlgorithm::MyGaudiAlgorithm( const std::string& name, ISvcLocator* ploc ) : GaudiAlgorithm( name, ploc )
 {
   // Keep at least one old-style ToolHandle property to test compilation
   declareProperty( "LegacyToolHandle", m_legacyToolHandle );
+  declareProperty( "UndefinedToolHandle", m_undefinedToolHandle );
 
   //------------------------------------------------------------------------------
   m_myCopiedConstToolHandle  = m_myPubToolHandle;
@@ -40,19 +40,27 @@ StatusCode MyGaudiAlgorithm::initialize()
   m_privateToolWithName   = tool<IMyTool>( m_privateToolType, "ToolWithName", this );
   m_privateOtherInterface = tool<IMyOtherTool>( "MyGaudiTool", this );
 
-  // force initialization of tool handles
-  if ( !( m_myPrivToolHandle.retrieve() && m_myConstToolHandle.retrieve() && m_myPubToolHandle.retrieve() &&
-          m_myCopiedConstToolHandle.retrieve() && m_myCopiedConstToolHandle2.retrieve() &&
-          m_myCopiedToolHandle.retrieve() && m_myGenericToolHandle.retrieve() ) ) {
-    error() << "Unable to retrive one of the ToolHandles" << endmsg;
-    return StatusCode::FAILURE;
-  }
+  // disable ToolHandle
+  m_myUnusedToolHandle.disable();
 
   info() << m_tracks.objKey() << endmsg;
   info() << m_hits.objKey() << endmsg;
   info() << m_raw.objKey() << endmsg;
 
   info() << m_selectedTracks.objKey() << endmsg;
+
+  // m_wrongIfaceTool is being retrieved via the wrong interface.
+  // we expect the retrieve() to throw an exception.
+  try {
+    if ( m_wrongIfaceTool.retrieve().isFailure() ) {
+      error() << "unable to retrieve " << m_wrongIfaceTool.typeAndName() << " (unexpected)" << endmsg;
+      m_wrongIfaceTool.disable();
+    }
+  } catch ( GaudiException& ex ) {
+    info() << "unable to retrieve " << m_wrongIfaceTool.typeAndName() << " (expected) with exception: " << ex.what()
+           << endmsg;
+    m_wrongIfaceTool.disable();
+  }
 
   info() << "....initialization done" << endmsg;
 
@@ -90,7 +98,7 @@ StatusCode MyGaudiAlgorithm::execute()
 
   // copy construct some handles
   ToolHandle<const IMyTool> h1( m_myPubToolHandle );
-  ToolHandle<IMyTool> h2( m_myPrivToolHandle );
+  ToolHandle<IMyTool>       h2( m_myPrivToolHandle );
   ToolHandle<const IMyTool> h3( m_myConstToolHandle );
   h1->doIt();
   h2->doIt();

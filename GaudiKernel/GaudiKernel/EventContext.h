@@ -1,11 +1,18 @@
 #ifndef GAUDIKERNEL_EVENTCONTEXT_H
 #define GAUDIKERNEL_EVENTCONTEXT_H 1
 
-#include "GaudiKernel/EventIDBase.h"
+#if __cplusplus >= 201703
+#include <any>
+namespace evt_context_detail = std;
+#else
 #include <boost/any.hpp>
+namespace evt_context_detail = boost;
+#endif
+
+#include "GaudiKernel/EventIDBase.h"
+#include <cstddef>
 #include <iostream>
 #include <limits>
-#include <unistd.h>
 
 /** @class EventContext EventContext.h GaudiKernel/EventContext.h
  *
@@ -24,43 +31,52 @@
 class EventContext
 {
 public:
-  typedef size_t ContextID_t;
-  typedef size_t ContextEvt_t;
+  using ContextID_t  = size_t;
+  using ContextEvt_t = size_t;
 
-  static const ContextID_t INVALID_CONTEXT_ID   = std::numeric_limits<ContextID_t>::max();
-  static const ContextEvt_t INVALID_CONTEXT_EVT = std::numeric_limits<ContextEvt_t>::max();
+  static constexpr ContextID_t  INVALID_CONTEXT_ID  = std::numeric_limits<ContextID_t>::max();
+  static constexpr ContextEvt_t INVALID_CONTEXT_EVT = std::numeric_limits<ContextEvt_t>::max();
 
-  EventContext(){};
-  EventContext( const ContextEvt_t& e, const ContextID_t& s = INVALID_CONTEXT_ID ) : m_evt_num( e ), m_evt_slot( s )
+  EventContext() = default;
+
+  EventContext( const ContextEvt_t e, const ContextID_t s = INVALID_CONTEXT_ID,
+                const ContextID_t subSlot = INVALID_CONTEXT_ID )
+      : m_evt_num( e ), m_evt_slot( s ), m_sub_slot( subSlot )
   {
-    m_valid = ( e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID ) ? false : true;
+    m_valid = ( e != INVALID_CONTEXT_EVT && s != INVALID_CONTEXT_ID );
   }
 
-  ContextEvt_t evt() const { return m_evt_num; }
-  ContextID_t slot() const { return m_evt_slot; }
-  bool valid() const { return m_valid; }
+  ContextEvt_t       evt() const { return m_evt_num; }
+  ContextID_t        slot() const { return m_evt_slot; }
+  ContextID_t        subSlot() const { return m_sub_slot; }
+  bool               usesSubSlot() const { return m_sub_slot != INVALID_CONTEXT_ID; }
+  bool               valid() const { return m_valid; }
   const EventIDBase& eventID() const { return m_eid; }
 
-  void set( const ContextEvt_t& e = 0, const ContextID_t& s = INVALID_CONTEXT_ID )
+  void set( const ContextEvt_t e = 0, const ContextID_t s = INVALID_CONTEXT_ID,
+            const ContextID_t subSlot = INVALID_CONTEXT_ID )
   {
-    m_valid    = ( e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID ) ? false : true;
+    m_valid    = ( e != INVALID_CONTEXT_EVT && s != INVALID_CONTEXT_ID );
     m_evt_num  = e;
     m_evt_slot = s;
+    m_sub_slot = subSlot;
   }
 
-  void setEvt( const ContextEvt_t& e )
+  void setEvt( const ContextEvt_t e )
   {
     if ( e == INVALID_CONTEXT_EVT ) setValid( false );
     m_evt_num = e;
   }
 
-  void setSlot( const ContextID_t& s )
+  void setSlot( const ContextID_t s )
   {
     if ( s == INVALID_CONTEXT_ID ) setValid( false );
     m_evt_slot = s;
   }
 
-  void setValid( const bool& b = true )
+  void setSubSlot( const ContextID_t subslot ) { m_sub_slot = subslot; }
+
+  void setValid( const bool b = true )
   {
     m_valid = b;
     if ( !m_valid ) {
@@ -71,40 +87,68 @@ public:
 
   void setEventID( const EventIDBase& e ) { m_eid = e; }
 
-  template <typename T>
-  void setExtension( const T& t )
+  template <typename ValueType, typename... Args>
+  auto& emplaceExtension( Args&&... args )
   {
-    m_extension = t;
+#if __cplusplus >= 201703
+    return m_extension.emplace<ValueType>( std::forward<Args>( args )... );
+#else
+    return setExtension( ValueType( std::forward<Args>( args )... ) );
+#endif
   }
 
   template <typename T>
-  T* getExtension()
+  auto& setExtension( T&& t )
   {
-    return boost::any_cast<T>( &m_extension );
+    m_extension = std::forward<T>( t );
+    return getExtension<T>();
   }
 
   template <typename T>
-  const T* getExtension() const
+  auto& getExtension()
   {
-    return boost::any_cast<T>( &m_extension );
+    return ::evt_context_detail::any_cast<std::decay_t<T>&>( m_extension );
+  }
+
+  template <typename T>
+  const auto& getExtension() const
+  {
+    return ::evt_context_detail::any_cast<std::decay_t<T> const&>( m_extension );
+  }
+
+  bool hasExtension() const
+  {
+#if __cplusplus >= 201703
+    return m_extension.has_value();
+#else
+    return !m_extension.empty();
+#endif
+  }
+
+  template <typename T>
+  bool hasExtension() const
+  {
+    return hasExtension() && m_extension.type() == typeid( std::decay_t<T> );
   }
 
   const std::type_info& getExtensionType() const { return m_extension.type(); }
 
 private:
+  EventIDBase  m_eid{};
   ContextEvt_t m_evt_num{INVALID_CONTEXT_EVT};
-  ContextID_t m_evt_slot{INVALID_CONTEXT_ID};
-  bool m_valid{false};
+  ContextID_t  m_evt_slot{INVALID_CONTEXT_ID};
+  ContextID_t  m_sub_slot{INVALID_CONTEXT_ID};
+  bool         m_valid{false};
 
-  boost::any m_extension;
-
-  EventIDBase m_eid{};
+  ::evt_context_detail::any m_extension;
 };
 
 inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx )
 {
   if ( ctx.valid() ) {
-    return os << "s: " << ctx.slot() << "  e: " << ctx.evt();
+    os << "s: " << ctx.slot() << "  e: " << ctx.evt();
+    if ( ctx.usesSubSlot() ) os << " sub: " << ctx.subSlot();
+    return os;
   } else {
     return os << "INVALID";
   }
@@ -112,7 +156,7 @@ inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx )
 
 inline std::ostream& operator<<( std::ostream& os, const EventContext* c )
 {
-  if ( c != 0 ) {
+  if ( c ) {
     return os << *c;
   } else {
     return os << "INVALID";

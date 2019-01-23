@@ -37,7 +37,7 @@ namespace
       return nullptr;
     } // RETURN
     const auto& algs = svc->algorithms();
-    auto it          = std::find_if( algs.rbegin(), algs.rend(), Gaudi::Utils::AlgTypeSelector<TYPE>{} );
+    auto        it   = std::find_if( algs.rbegin(), algs.rend(), Gaudi::Utils::AlgTypeSelector<TYPE>{} );
     if ( algs.rend() == it ) {
       return nullptr;
     } // RETURN
@@ -159,7 +159,7 @@ IAlgorithm* Gaudi::Utils::getSequencer( const IAlgContextSvc* svc )
   } // RETURN
   //
   AlgTypeSelector<GaudiSequencer> sel1;
-  AlgTypeSelector<Sequencer> sel2;
+  AlgTypeSelector<Sequencer>      sel2;
 
   const auto& algs = svc->algorithms();
   auto a = std::find_if( algs.rbegin(), algs.rend(), [&]( IAlgorithm* alg ) { return sel1( alg ) || sel2( alg ); } );

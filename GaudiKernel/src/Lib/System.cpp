@@ -11,6 +11,7 @@
 //	Changes    :
 //====================================================================
 #define SYSTEM_SYSTEM_CPP
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <cstring>
@@ -23,6 +24,15 @@
 #include <typeinfo>
 
 #include "GaudiKernel/System.h"
+
+// Platform specific include(s):
+#ifdef __linux__
+#include "Platform/SystemLinux.h"
+#elif defined( __APPLE__ )
+#include "Platform/SystemMacOS.h"
+#elif defined( _WIN32 )
+#include "Platform/SystemWin32.h"
+#endif
 
 #define VCL_NAMESPACE Gaudi
 #include "instrset_detect.cpp"
@@ -55,8 +65,8 @@ static const std::array<const char*, 1> SHLIB_SUFFIXES = {".dll"};
 #include "dl.h"
 struct HMODULE {
   shl_descriptor dsc;
-  long numSym;
-  shl_symbol* sym;
+  long           numSym;
+  shl_symbol*    sym;
 };
 #endif // HPUX or not...
 
@@ -79,9 +89,6 @@ static const std::array<const char*, 1> SHLIB_SUFFIXES = {".so"};
 #define __attribute__( x )
 #endif
 
-static std::vector<std::string> s_argvStrings;
-static std::vector<const char*> s_argvChars;
-
 static unsigned long doLoad( const std::string& name, System::ImageHandle* handle )
 {
 #ifdef _WIN32
@@ -90,10 +97,10 @@ static unsigned long doLoad( const std::string& name, System::ImageHandle* handl
 #else
   const char* path = name.c_str();
 #if defined( __linux ) || defined( __APPLE__ )
-  void* mh         = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
+  void*       mh   = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
   *handle          = mh;
 #elif __hpux
-  shl_t mh     = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
+  shl_t    mh  = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
   HMODULE* mod = new HMODULE;
   if ( 0 != mh ) {
     if ( 0 != ::shl_gethandle_r( mh, &mod->dsc ) ) {
@@ -123,8 +130,8 @@ static unsigned long loadWithoutEnvironment( const std::string& name, System::Im
 
   // Check if the specified name has a shared library suffix already. If it
   // does, don't bother the name any more.
-  std::string dllName = name;
-  bool hasShlibSuffix = false;
+  std::string dllName        = name;
+  bool        hasShlibSuffix = false;
   for ( const char* suffix : SHLIB_SUFFIXES ) {
     const size_t len = strlen( suffix );
     if ( dllName.compare( dllName.length() - len, len, suffix ) == 0 ) {
@@ -146,7 +153,7 @@ static unsigned long loadWithoutEnvironment( const std::string& name, System::Im
 /// Load dynamic link library
 unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* handle )
 {
-  unsigned long res;
+  unsigned long res = 0;
   // if name is empty, just load it
   if ( name.length() == 0 ) {
     res = loadWithoutEnvironment( name, handle );
@@ -170,8 +177,8 @@ unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* hand
       // platform.
       for ( const char* suffix : SHLIB_SUFFIXES ) {
         // Add the suffix if necessary.
-        std::string libName = dllName;
-        const size_t len    = strlen( suffix );
+        std::string  libName = dllName;
+        const size_t len     = strlen( suffix );
         if ( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) {
           libName += suffix;
         }
@@ -229,11 +236,7 @@ unsigned long System::getProcedureByName( ImageHandle handle, const std::string&
   }
   return 1;
 #elif defined( __linux )
-#if __GNUC__ < 4
-  *pFunction = ( EntryPoint )::dlsym( handle, name.c_str() );
-#else
-  *pFunction = FuncPtrCast<EntryPoint>(::dlsym( handle, name.c_str() ) );
-#endif
+  *pFunction = reinterpret_cast<EntryPoint>(::dlsym( handle, name.c_str() ) );
   if ( !*pFunction ) {
     errno = 0xAFFEDEAD;
     // std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
@@ -310,7 +313,7 @@ const std::string System::getErrorString( unsigned long error )
   char* cerrString( nullptr );
   // Remember: for linux dl* routines must be handled differently!
   if ( error == 0xAFFEDEAD ) {
-    cerrString                    = (char*)::dlerror();
+    cerrString                    = ::dlerror();
     if ( !cerrString ) cerrString = ::strerror( error );
     if ( !cerrString ) {
       cerrString = (char*)"Unknown error. No information found in strerror()!";
@@ -328,141 +331,33 @@ const std::string System::getErrorString( unsigned long error )
 
 const std::string System::typeinfoName( const std::type_info& tinfo ) { return typeinfoName( tinfo.name() ); }
 
-const std::string System::typeinfoName( const char* class_name )
-{
-  std::string result;
-#ifdef _WIN32
-  long off = 0;
-  if (::strncmp( class_name, "class ", 6 ) == 0 ) {
-    // The returned name is prefixed with "class "
-    off = 6;
-  }
-  if (::strncmp( class_name, "struct ", 7 ) == 0 ) {
-    // The returned name is prefixed with "struct "
-    off = 7;
-  }
-  if ( off > 0 ) {
-    std::string tmp = class_name + off;
-    long loc        = 0;
-    while ( ( loc = tmp.find( "class " ) ) > 0 ) {
-      tmp.erase( loc, 6 );
-    }
-    loc = 0;
-    while ( ( loc = tmp.find( "struct " ) ) > 0 ) {
-      tmp.erase( loc, 7 );
-    }
-    result = tmp;
-  } else {
-    result = class_name;
-  }
-  // Change any " *" to "*"
-  while ( ( off = result.find( " *" ) ) != std::string::npos ) {
-    result.replace( off, 2, "*" );
-  }
-  // Change any " &" to "&"
-  while ( ( off = result.find( " &" ) ) != std::string::npos ) {
-    result.replace( off, 2, "&" );
-  }
-
-#elif defined( __linux ) || defined( __APPLE__ )
-  int status;
-  auto realname = std::unique_ptr<char, decltype( free )*>(
-      abi::__cxa_demangle( class_name, nullptr, nullptr, &status ), std::free );
-  if ( !realname ) return class_name;
-#if _GLIBCXX_USE_CXX11_ABI
-  static const std::regex cxx11_string{
-      "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"};
-  result = std::regex_replace( realname.get(), cxx11_string, "std::string" );
-#else
-  result     = std::string{realname.get()};
-#endif
-  // substitute ', ' with ','
-  static const std::regex comma_space{", "};
-  result = std::regex_replace( result, comma_space, "," );
-#endif
-  return result;
-}
-
-namespace
-{
-  std::string init_hostName()
-  {
-    std::array<char, 512> buffer;
-    std::fill_n( buffer.begin(), buffer.size(), 0 );
-#ifdef _WIN32
-    unsigned long len = buffer.size();
-    ::GetComputerName( buffer.data(), &len );
-#else
-    ::gethostname( buffer.data(), buffer.size() );
-#endif
-    return {buffer.data()};
-  }
-}
+const std::string System::typeinfoName( const char* class_name ) { return Platform::typeinfoName( class_name ); }
 
 /// Host name
 const std::string& System::hostName()
 {
-  static const std::string host = init_hostName();
+  static const std::string host = Platform::hostName();
   return host;
 }
 
 /// OS name
 const std::string& System::osName()
 {
-  static std::string osname = "";
-#ifdef _WIN32
-  osname = "Windows";
-#else
-  struct utsname ut;
-  if ( uname( &ut ) == 0 ) {
-    osname = ut.sysname;
-  } else {
-    osname = "UNKNOWN";
-  }
-#endif
+  static const std::string osname = Platform::osName();
   return osname;
 }
 
 /// OS version
 const std::string& System::osVersion()
 {
-  static std::string osver = "";
-#ifdef _WIN32
-  OSVERSIONINFO ut;
-  ut.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-  ::GetVersionEx( &ut );
-  std::ostringstream ver;
-  ver << ut.dwMajorVersion << '.' << ut.dwMinorVersion;
-  osver = ver.str();
-#else
-  struct utsname ut;
-  if ( uname( &ut ) == 0 ) {
-    osver = ut.release;
-  } else {
-    osver = "UNKNOWN";
-  }
-#endif
+  static const std::string osver = Platform::osVersion();
   return osver;
 }
 
 /// Machine type
 const std::string& System::machineType()
 {
-  static std::string mach = "";
-#ifdef _WIN32
-  SYSTEM_INFO ut;
-  ::GetSystemInfo( &ut );
-  std::ostringstream arch;
-  arch << ut.wProcessorArchitecture;
-  mach = arch.str();
-#else
-  struct utsname ut;
-  if ( uname( &ut ) == 0 ) {
-    mach = ut.machine;
-  } else {
-    mach = "UNKNOWN";
-  }
-#endif
+  static const std::string mach = Platform::machineType();
   return mach;
 }
 
@@ -475,20 +370,7 @@ int System::instructionsetLevel()
 /// User login name
 const std::string& System::accountName()
 {
-  static std::string account = "";
-  if ( account == "" ) {
-#ifdef _WIN32
-    char buffer[512];
-    unsigned long buflen = sizeof( buffer );
-    ::GetUserName( buffer, &buflen );
-    account = buffer;
-#else
-    const char* acct  = ::getlogin();
-    if ( !acct ) acct = ::getenv( "LOGNAME" );
-    if ( !acct ) acct = ::getenv( "USER" );
-    account           = ( acct ) ? acct : "Unknown";
-#endif
-  }
+  static const std::string account = Platform::accountName();
   return account;
 }
 
@@ -501,74 +383,22 @@ long System::argc() { return cmdLineArgs().size(); }
 /// Const char** command line arguments including executable name as arg[0]
 const std::vector<std::string> System::cmdLineArgs()
 {
-  if ( s_argvChars.size() == 0 ) {
-    char exe[1024];
-#ifdef _WIN32
-/// @todo: rewrite the tokenizer to avoid strncpy, etc
-// Disable warning C4996 triggered by C standard library calls
-#pragma warning( push )
-#pragma warning( disable : 4996 )
-    // For compatibility with UNIX we CANNOT use strtok!
-    // If we would use strtok, options like -g="My world" at
-    // the command line level would result on NT in TWO options
-    // instead in one as in UNIX.
-    char *next, *tmp1, *tmp2;
-    for ( LPTSTR cmd = ::GetCommandLine(); *cmd; cmd = next ) {
-      memset( exe, 0, sizeof( exe ) );
-      while ( *cmd == ' ' ) cmd++;
-      next              = ::strchr( cmd, ' ' );
-      if ( !next ) next = cmd + strlen( cmd );
-      if ( ( tmp1 = ::strchr( cmd, '\"' ) ) > 0 && tmp1 < next ) {
-        tmp2 = ::strchr( ++tmp1, '\"' );
-        if ( tmp2 > 0 ) {
-          next = ++tmp2;
-          if ( cmd < tmp1 ) strncpy( exe, cmd, tmp1 - cmd - 1 );
-          strncpy( &exe[strlen( exe )], tmp1, tmp2 - tmp1 - 1 );
-        } else {
-          std::cout << "Mismatched \" in command line arguments" << std::endl;
-          s_argvChars.erase( s_argvChars.begin(), s_argvChars.end() );
-          s_argvStrings.erase( s_argvStrings.begin(), s_argvStrings.end() );
-          return s_argvStrings;
-        }
-      } else {
-        strncpy( exe, cmd, next - cmd );
-      }
-      s_argvStrings.push_back( exe );
-      s_argvChars.push_back( s_argvStrings.back().c_str() );
-    }
-#pragma warning( pop )
-#elif defined( __linux ) || defined( __APPLE__ )
-    sprintf( exe, "/proc/%d/cmdline", ::getpid() );
-    FILE* cmdLine = ::fopen( exe, "r" );
-    char cmd[1024];
-    if ( cmdLine ) {
-      long len = fread( cmd, sizeof( char ), sizeof( cmd ), cmdLine );
-      if ( len > 0 ) {
-        cmd[len] = 0;
-        for ( char* token = cmd; token - cmd < len; token += strlen( token ) + 1 ) {
-          s_argvStrings.push_back( token );
-          s_argvChars.push_back( s_argvStrings.back().c_str() );
-        }
-        s_argvStrings[0] = exeName();
-        s_argvChars[0]   = s_argvStrings[0].c_str();
-      }
-      ::fclose( cmdLine );
-    }
-#endif
-  }
-  return s_argvStrings;
+  static const std::vector<std::string> args = Platform::cmdLineArgs();
+  return args;
 }
 
 /// Const char** command line arguments including executable name as arg[0]
 char** System::argv()
 {
-  ///
-  if ( s_argvChars.empty() ) {
-    cmdLineArgs();
-  } /// added by I.B.
-  ///
+  auto helperFunc = []( const std::vector<std::string>& args ) -> std::vector<const char*> {
+    std::vector<const char*> result;
+    std::transform( args.begin(), args.end(), std::back_inserter( result ),
+                    []( const std::string& s ) { return s.c_str(); } );
+    return result;
+  };
+  static const std::vector<const char*> args = helperFunc( cmdLineArgs() );
   // We rely here on the fact that a vector's allocation table is contiguous
-  return (char**)&s_argvChars[0];
+  return (char**)&( args[0] );
 }
 
 #ifdef WIN32
@@ -651,7 +481,7 @@ bool System::backTrace( std::string& btrace, const int depth, const int offset )
     std::string fnc, lib;
 
     std::vector<void*> addresses( totalDepth, nullptr );
-    int count = System::backTrace( addresses.data(), totalDepth );
+    int                count = System::backTrace( addresses.data(), totalDepth );
     for ( int i = totalOffset; i < count; ++i ) {
       void* addr = nullptr;
 
@@ -683,7 +513,7 @@ bool System::getStackLevel( void* addresses __attribute__( ( unused ) ), void*& 
     addr = info.dli_saddr;
 
     if ( symbol ) {
-      int stat = -1;
+      int  stat = -1;
       auto dmg =
           std::unique_ptr<char, decltype( free )*>( abi::__cxa_demangle( symbol, nullptr, nullptr, &stat ), std::free );
       fnc = ( stat == 0 ) ? dmg.get() : symbol;

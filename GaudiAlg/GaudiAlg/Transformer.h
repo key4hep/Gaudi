@@ -4,6 +4,7 @@
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/apply.h"
 #include <type_traits>
 #include <utility>
 
@@ -30,26 +31,20 @@ namespace Gaudi
       using details::DataHandleMixin<std::tuple<Out>, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final { return invoke( std::index_sequence_for<In...>{} ); }
-
-      // instead they MUST implement this operator
-      virtual Out operator()( const In&... ) const = 0;
-
-    private:
-      template <std::size_t... I>
-      StatusCode invoke( std::index_sequence<I...> )
+      StatusCode execute() override final
       {
-        using details::as_const;
-        using details::put;
         try {
-          put( std::get<0>( this->m_outputs ),
-               as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... ) );
+          details::put( std::get<0>( this->m_outputs ),
+                        details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
       }
+
+      // instead they MUST implement this operator
+      virtual Out operator()( const In&... ) const = 0;
     };
 
     //
@@ -68,28 +63,42 @@ namespace Gaudi
       // derived classes can NOT implement execute
       StatusCode execute() override final
       {
-        return invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
-      }
-
-      // instead they MUST implement this operator
-      virtual std::tuple<Out...> operator()( const In&... ) const = 0;
-
-    private:
-      template <std::size_t... I, std::size_t... O>
-      StatusCode invoke( std::index_sequence<I...>, std::index_sequence<O...> )
-      {
-        using details::as_const;
-        using details::put;
         try {
-          auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
-          (void)std::initializer_list<int>{
-              ( put( std::get<O>( this->m_outputs ), std::move( std::get<O>( out ) ) ), 0 )...};
+          Gaudi::apply(
+              [this]( auto&... ohandle ) {
+
+#if defined( __clang__ ) && ( __clang_major__ < 6 )
+// clang-5 gives a spurious warning about not using the captured `ohandle`
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-lambda-capture"
+#endif
+
+                Gaudi::apply(
+                    [&ohandle...]( auto&&... data ) {
+#if __cplusplus < 201703L
+                      (void)std::initializer_list<int>{
+                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
+#else
+                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+#endif
+                    },
+                    details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+
+#if defined( __clang__ ) && ( __clang_major__ < 6 )
+#pragma clang diagnostic pop
+#endif
+
+              },
+              this->m_outputs );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
       }
+
+      // instead they MUST implement this operator
+      virtual std::tuple<Out...> operator()( const In&... ) const = 0;
     };
 
     //
@@ -108,29 +117,31 @@ namespace Gaudi
       // derived classes can NOT implement execute
       StatusCode execute() override final
       {
-        return invoke( std::index_sequence_for<In...>{}, std::index_sequence_for<Out...>{} );
-      }
-
-      // instead they MUST implement this operator
-      virtual std::tuple<bool, Out...> operator()( const In&... ) const = 0;
-
-    private:
-      template <std::size_t... I, std::size_t... O>
-      StatusCode invoke( std::index_sequence<I...>, std::index_sequence<O...> )
-      {
-        using details::as_const;
-        using details::put;
         try {
-          auto out = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
-          this->setFilterPassed( std::get<0>( out ) );
-          (void)std::initializer_list<int>{
-              ( put( std::get<O>( this->m_outputs ), std::move( std::get<O + 1>( out ) ) ), 0 )...};
+          Gaudi::apply(
+              [&]( auto&... ohandle ) {
+                Gaudi::apply(
+                    [&ohandle..., this]( bool passed, auto&&... data ) {
+                      this->setFilterPassed( passed );
+#if __cplusplus < 201703L
+                      (void)std::initializer_list<int>{
+                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
+#else
+                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+#endif
+                    },
+                    details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+              },
+              this->m_outputs );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
       }
+
+      // instead they MUST implement this operator
+      virtual std::tuple<bool, Out...> operator()( const In&... ) const = 0;
     };
   }
 }

@@ -42,9 +42,9 @@ namespace win
 #include <windows.h>
 }
 
-win::BOOL APIENTRY DllMain( win::HINSTANCE hinstDLL, // handle to DLL module
-                            win::DWORD fdwReason,    // reason for calling function
-                            win::LPVOID lpvReserved  // reserved
+win::BOOL APIENTRY DllMain( win::HINSTANCE hinstDLL,   // handle to DLL module
+                            win::DWORD     fdwReason,  // reason for calling function
+                            win::LPVOID    lpvReserved // reserved
                             )
 {
   System::setModuleHandle( hinstDLL );

@@ -26,7 +26,7 @@ public:
   DeclareInterfaceID( IDataStreamTool, 2, 0 );
 
   typedef std::vector<std::string> StreamSpecs;
-  typedef long size_type;
+  typedef long                     size_type;
 
   virtual StatusCode initializeStream( EventSelectorDataStream* ) = 0;
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>-v</text>
+  <text>../../options/AvalancheSchedulerErrorTest.py</text>
+</set></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="timeout"><integer>600</integer></argument>
+<argument name="validator"><text>
+ref1="""
+[ slot: 7  event: 7 ]:
+
+RootDecisionHub (0), w/ decision: UNDEFINED(-1)
+  A1 (1), w/ decision: TRUE(1), in state: EVTACCEPTED
+  A2 (2), w/ decision: TRUE(1), in state: EVTACCEPTED
+  A3 (3), w/ decision: UNDEFINED(-1), in state: ERROR
+  A4 (4), w/ decision: TRUE(1), in state: EVTACCEPTED
+  A5 (5), w/ decision: UNDEFINED(-1), in state: CONTROLREADY
+"""
+findReferenceBlock(ref1, id="ref1")
+ref2="""
+HiveSlimEventLoopMgr                    ERROR Failed event detected on s: 7  e: 7
+"""
+findReferenceBlock(ref2, id="ref2")
+</text></argument>
+</extension>

@@ -4,7 +4,7 @@ gaudi_depends_on_subdirs(GaudiPluginService)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
 find_package(ROOT REQUIRED COMPONENTS Core)
-find_package(TBB)
+find_package(TBB REQUIRED)
 find_package(CppUnit)
 
 # Hide some Boost/TBB/CppUnit/ROOT compile time warnings
@@ -39,12 +39,30 @@ message(STATUS "Using VectorClass instrset_detect ${VectorClass_VERSION} at ${Ve
 
 include_directories(${VectorClass_INCLUDE_DIR})
 
+# Extra settings when building on MacOS:
+set( extra_sources )
+set( extra_libraries )
+if( APPLE )
+   set( extra_sources src/Lib/Platform/SystemMacOS.h
+                      src/Lib/Platform/SystemMacOS.mm )
+   find_library( FOUNDATION_FRAMEWORK Foundation )
+   set( extra_libraries ${FOUNDATION_FRAMEWORK} )
+elseif( WIN32 )
+   set( extra_sources src/Lib/Platform/SystemWin32.h
+                      src/Lib/Platform/SystemWin32.cpp )
+elseif( UNIX )
+   # The UNIX variable is set for MacOS as well, so we can't put this in the
+   # front.
+   set( extra_sources src/Lib/Platform/SystemLinux.h
+                      src/Lib/Platform/SystemLinux.cpp )
+   set( extra_libraries rt )
+endif()
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiKernel src/Lib/*.cpp
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService
+gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries}
                   INCLUDE_DIRS Boost ROOT TBB
-                  PUBLIC_HEADERS GaudiKernel)
+                  PUBLIC_HEADERS Gaudi GaudiKernel)
 
 #---Tests-------------------------------------------------------------------
 if( CPPUNIT_FOUND )
@@ -63,8 +81,10 @@ if( CPPUNIT_FOUND )
    endif()
    gaudi_add_unit_test(test_GaudiTime tests/src/test_GaudiTime.cpp
       LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
-      LINK_LIBRARIES GaudiKernel)
+   if (NOT SANITIZER_ENABLED)
+     gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
+        LINK_LIBRARIES GaudiKernel)
+   endif()
    gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(Memory_test tests/src/Memory_test.cpp
@@ -83,8 +103,6 @@ gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
 
 # These are a compile-time tests:
 if( CPPUNIT_FOUND )
-   gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
-      LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
       LINK_LIBRARIES GaudiKernel)
 endif()
@@ -110,11 +128,10 @@ if( GAUDI_BUILD_TESTS )
   get_filename_component(genconf_cmd_name ${genconf_cmd} NAME)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
   gaudi_add_test(genconf_with_custom_factory
-                 COMMAND ${env_cmd} --xml ${env_xml}
-                           ${genconf_cmd_name}
+                 COMMAND ${genconf_cmd_name}
                              -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
                              -p CustomFactoryTest
-                         -i test_CustomFactory
+                             -i test_CustomFactory
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
 endif()
 
@@ -128,12 +145,30 @@ gaudi_add_unit_test(test_PropertyHolder tests/src/test_PropertyHolder.cpp
 gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
-gaudi_add_unit_test(test_IssueSeverity tests/src/test_IssueSeverity.cpp
+gaudi_add_unit_test(test_StatusCode tests/src/test_StatusCode.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+gaudi_add_unit_test(test_EventIDBase tests/src/test_EventIDBase.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
 gaudi_add_unit_test(test_SystemTypeinfoName tests/src/test_SystemTypeinfoName.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_SystemCmdLineArgs tests/src/test_SystemCmdLineArgs.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+gaudi_add_unit_test(test_apply  tests/src/test_apply.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+gaudi_add_unit_test(test_compose  tests/src/test_compose.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+gaudi_add_unit_test(test_reverse  tests/src/test_reverse.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+
+gaudi_add_compile_test(test_StatusCodeFail tests/src/test_StatusCode_fail.cxx
+                       ERRORS "FAIL01;FAIL02;FAIL03;FAIL04")
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)

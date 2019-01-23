@@ -26,7 +26,7 @@ See also:
     - <http://www.cplusplus.com/reference/>
 
 
-[lcg-details]: http://lcgsoft.web.cern.ch/lcgsoft/release/@heptools_version@/
+[lcg-details]: http://lcginfo.cern.ch/release/@heptools_version@/
 [coral]: https://twiki.cern.ch/twiki/bin/view/Persistency/Coral
 [cool]: https://twiki.cern.ch/twiki/bin/view/Persistency/Cool
 [root]: http://root.cern.ch/

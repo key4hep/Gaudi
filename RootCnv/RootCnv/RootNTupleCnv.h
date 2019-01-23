@@ -57,9 +57,6 @@ namespace Gaudi
     {
     }
 
-    /// Standard destructor
-    ~RootNTupleCnv() override = default;
-
     /** Converter overrides: Convert the transient object
      * to the requested representation.
      *

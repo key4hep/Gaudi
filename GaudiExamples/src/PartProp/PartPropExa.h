@@ -11,10 +11,9 @@ class PartPropExa : public Algorithm
 {
 
 public:
-  PartPropExa( const std::string& name, ISvcLocator* pSvcLocator );
+  using Algorithm::Algorithm;
   StatusCode initialize() override;
   StatusCode execute() override;
-  StatusCode finalize() override;
 
 private:
   IPartPropSvc* m_pps;
@@ -25,9 +24,9 @@ namespace HepPDT
   class TestUnknownID : public ProcessUnknownID
   {
   public:
-    TestUnknownID() {}
+    TestUnknownID() = default;
 
-    virtual CommonParticleData* processUnknownID( ParticleID, const ParticleDataTable& pdt ) override;
+    CommonParticleData* processUnknownID( ParticleID, const ParticleDataTable& pdt ) override;
   };
 }
 

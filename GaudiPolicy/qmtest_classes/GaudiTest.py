@@ -555,7 +555,7 @@ class LineSorter(FilePreprocessor):
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
 for w, o, r in [
-    #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
+    # ("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
     ("TIMER.TIMER", r"\s+[+-]?[0-9]+[0-9.]*", " 0"),  # Normalize time output
     ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
     ("0x########", r"\[.*/([^/]*.*)\]", r"[\1]"),
@@ -901,7 +901,7 @@ def parseHistosSummary(lines, pos):
     """
     global h_count_re
     h_table_head = re.compile(
-        r'SUCCESS\s+List of booked (1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
+        r'SUCCESS\s+(1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
     h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]+)\"\s+(.*)")
 
     nlines = len(lines)

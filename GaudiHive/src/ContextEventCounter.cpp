@@ -1,8 +1,3 @@
-// Include files
-
-// From Gaudi
-#include "GaudiKernel/AlgFactory.h"
-// local
 #include "ContextEventCounter.h"
 
 // ----------------------------------------------------------------------------
@@ -10,34 +5,8 @@
 //
 // 27/10/2013: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_ALGORITHM_FACTORY( ContextEventCounterPtr )
-DECLARE_ALGORITHM_FACTORY( ContextEventCounterData )
-
-// ============================================================================
-// Standard constructor, initializes variables
-// ============================================================================
-ContextEventCounterPtr::ContextEventCounterPtr( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator )
-{
-}
-
-// ============================================================================
-// Destructor
-// ============================================================================
-ContextEventCounterPtr::~ContextEventCounterPtr() {}
-
-// ============================================================================
-// Initialization
-// ============================================================================
-StatusCode ContextEventCounterPtr::initialize()
-{
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
-
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
-
-  return StatusCode::SUCCESS;
-}
+DECLARE_COMPONENT( ContextEventCounterPtr )
+DECLARE_COMPONENT( ContextEventCounterData )
 
 // ============================================================================
 // Main execution
@@ -68,8 +37,8 @@ StatusCode ContextEventCounterPtr::finalize()
 
   info() << "Total count of events: "
          << m_ctxtSpecCounter.accumulate(
-                [this]( const int* p ) -> int {
-                  const int r = ( p ) ? *p : 0;
+                [this]( const int* p ) {
+                  const int r = ( p ? *p : 0 );
                   // print partial counts
                   this->debug() << " " << p << " -> " << r << endmsg;
                   return r;
@@ -79,33 +48,7 @@ StatusCode ContextEventCounterPtr::finalize()
 
   m_ctxtSpecCounter.deleteAll();
 
-  return GaudiAlgorithm::finalize(); // must be called after all other actions
-}
-
-// ============================================================================
-// Standard constructor, initializes variables
-// ============================================================================
-ContextEventCounterData::ContextEventCounterData( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator )
-{
-}
-
-// ============================================================================
-// Destructor
-// ============================================================================
-ContextEventCounterData::~ContextEventCounterData() {}
-
-// ============================================================================
-// Initialization
-// ============================================================================
-StatusCode ContextEventCounterData::initialize()
-{
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
-
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
-
-  return StatusCode::SUCCESS;
+  return Algorithm::finalize(); // must be called after all other actions
 }
 
 // ============================================================================
@@ -135,7 +78,7 @@ StatusCode ContextEventCounterData::finalize()
 
   info() << "Total count of events: " << m_ctxtSpecCounter.accumulate( 0 ) << endmsg;
 
-  return GaudiAlgorithm::finalize(); // must be called after all other actions
+  return Algorithm::finalize(); // must be called after all other actions
 }
 
 // ============================================================================

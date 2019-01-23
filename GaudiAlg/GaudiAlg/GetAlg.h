@@ -45,9 +45,9 @@ namespace Gaudi
       /// the only one essential method:
       bool operator()( const IAlgorithm* a ) const override
       {
-        using TYPE_ = typename std::decay<TYPE>::type;
-        using CTYPE = typename std::add_const<TYPE_>::type;
-        using cptr  = typename std::add_pointer<CTYPE>::type;
+        using TYPE_ = std::decay_t<TYPE>;
+        using CTYPE = std::add_const_t<TYPE_>;
+        using cptr  = std::add_pointer_t<CTYPE>;
         return dynamic_cast<cptr>( a );
       }
     };

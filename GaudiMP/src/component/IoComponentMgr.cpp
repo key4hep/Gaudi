@@ -6,22 +6,23 @@
 
 // GaudiMP includes
 #include "IoComponentMgr.h"
-#include "GaudiKernel/FileIncident.h"
-#include "GaudiKernel/IIncidentSvc.h"
-
-#include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/ServiceHandle.h"
-#include <boost/filesystem.hpp>
-
-// STL includes
-
 // FrameWork includes
+#include "GaudiKernel/FileIncident.h"
+#include "GaudiKernel/IFileMgr.h"
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/ServiceHandle.h"
+// BOOST includes
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/filesystem.hpp>
+// STL includes
+#include <algorithm>
+#include <array>
 
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 DECLARE_COMPONENT( IoComponentMgr )
@@ -91,8 +92,8 @@ bool IoComponentMgr::io_hasitem( IIoComponent* iocomponent ) const
   if ( 0 == iocomponent ) {
     return false;
   }
-  const std::string& ioname       = iocomponent->name();
-  IoRegistry_t::const_iterator io = m_ioregistry.find( ioname );
+  const std::string&           ioname = iocomponent->name();
+  IoRegistry_t::const_iterator io     = m_ioregistry.find( ioname );
   return io != m_ioregistry.end();
 }
 
@@ -203,20 +204,36 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
     }
   }
 
-  // We need to take into account that boost::filesystem::absolute() does not
-  // work for files read from eos, i.e. starting with "root:"
-  std::string tmp_name = pfn.empty() ? fname : pfn;
-  bool from_eos        = tmp_name.find( "root:" ) == 0;
-  IoComponentEntry ioc( fname, ( from_eos ? tmp_name : boost::filesystem::absolute( tmp_name ).string() ), iomode );
+  // We need to take into account that boost::filesystem::absolute() does not work with direct I/O inputs
+  const std::string& tmp_name = ( pfn.empty() ? fname : pfn );
+  bool               special_case =
+      std::any_of( begin( m_directio_patterns.value() ), end( m_directio_patterns.value() ),
+                   [&]( const std::string& pf ) { return boost::algorithm::contains( tmp_name, pf ); } );
+  IoComponentEntry ioc( fname, ( special_case ? tmp_name : boost::filesystem::absolute( tmp_name ).string() ), iomode );
   m_cdict.insert( pair<IIoComponent*, IoComponentEntry>( iocomponent, ioc ) );
 
   return StatusCode::SUCCESS;
 }
 
+/** @brief: retrieve all registered filenames for a given @c IIoComponent
+ */
+std::vector<std::string> IoComponentMgr::io_retrieve( IIoComponent* iocomponent )
+{
+  std::vector<std::string> fnames;
+  pair<iodITR, iodITR> pit;
+
+  // Find component and copy all registered file names
+  if ( iocomponent != nullptr && findComp( iocomponent, pit ) ) {
+    std::transform( pit.first, pit.second, std::back_inserter( fnames ),
+                    []( const auto& itr ) { return itr.second.m_oldfname; } );
+  }
+  return fnames;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /** @brief: retrieve the new filename for a given @c IIoComponent and
- *          @param `oldfname` filename
+ *          @param `fname` filename
  */
 StatusCode IoComponentMgr::io_retrieve( IIoComponent* iocomponent, std::string& fname )
 {
@@ -224,7 +241,7 @@ StatusCode IoComponentMgr::io_retrieve( IIoComponent* iocomponent, std::string& 
     return StatusCode::FAILURE;
   }
 
-  std::string ofname        = fname;
+  std::string        ofname = fname;
   const std::string& ioname = iocomponent->name();
 
   DEBMSG << "--> io_retrieve(" << ioname << "," << fname << ")" << endmsg;
@@ -388,7 +405,8 @@ StatusCode IoComponentMgr::io_finalize()
   }
 
   bool allgood = true;
-  for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end(); io != ioEnd; ++io ) {
+  // reverse iteration to unwind component dependencies
+  for ( IoStack_t::reverse_iterator io = m_iostack.rbegin(), ioEnd = m_iostack.rend(); io != ioEnd; ++io ) {
     DEBMSG << " [" << ( *io )->name() << "]->io_finalize()..." << endmsg;
     if ( !( *io )->io_finalize().isSuccess() ) {
       allgood = false;
@@ -464,7 +482,7 @@ void IoComponentMgr::handle( const Incident& i )
     if ( findComp( fi->source(), pit ) ) {
       DEBMSG << "  found component: " << endmsg;
       while ( pit.first != pit.second ) {
-        IIoComponent* c    = pit.first->first;
+        IIoComponent*    c = pit.first->first;
         IoComponentEntry e = pit.first->second;
         DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
 
@@ -483,7 +501,7 @@ void IoComponentMgr::handle( const Incident& i )
     if ( findComp( fi->source(), pit ) ) {
       DEBMSG << "  found component: " << endmsg;
       while ( pit.first != pit.second ) {
-        IIoComponent* c    = pit.first->first;
+        IIoComponent*    c = pit.first->first;
         IoComponentEntry e = pit.first->second;
         DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
 

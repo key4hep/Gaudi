@@ -52,9 +52,9 @@ class PersistencySvc : public extends<Service, IConversionSvc, IPersistencySvc, 
 protected:
   class ServiceEntry final
   {
-    long m_serviceType;
-    mutable SmartIF<IService> m_service;
-    mutable SmartIF<IConversionSvc> m_cnvService;
+    long                             m_serviceType;
+    mutable SmartIF<IService>        m_service;
+    mutable SmartIF<IConversionSvc>  m_cnvService;
     mutable SmartIF<IAddressCreator> m_addrCreator;
 
   public:
@@ -74,10 +74,10 @@ protected:
     }
     ServiceEntry( const ServiceEntry& ) = default;
 
-    SmartIF<IService>& service() const { return m_service; }
-    SmartIF<IConversionSvc>& conversionSvc() const { return m_cnvService; }
+    SmartIF<IService>&        service() const { return m_service; }
+    SmartIF<IConversionSvc>&  conversionSvc() const { return m_cnvService; }
     SmartIF<IAddressCreator>& addrCreator() const { return m_addrCreator; }
-    long svcType() const { return m_serviceType; }
+    long                      svcType() const { return m_serviceType; }
   };
   typedef std::map<long, ServiceEntry> Services;
   /*
@@ -205,10 +205,7 @@ public:
   /**@name: Object implementation  */
   //@{
   /// Standard Constructor
-  PersistencySvc( const std::string& name, ISvcLocator* svc );
-
-  /// Standard Destructor
-  ~PersistencySvc() override = default;
+  using extends::extends;
 
 protected:
   /// Retrieve conversion service by name
@@ -233,9 +230,6 @@ protected:
   bool enable( bool value );
   //@}
 
-  /// Handlers for Service Names Property
-  void svcNamesHandler( Gaudi::Details::PropertyBase& theProp );
-
   /// Default service type
   long m_cnvDefType = TEST_StorageType;
   /// Pointer to datma provider service
@@ -246,7 +240,13 @@ protected:
   mutable SmartIF<IConversionSvc> m_cnvDefault;
 
   Gaudi::Property<std::vector<std::string>> m_svcNames{
-      this, "CnvServices", {}, "Names of services to be requested from the service locator and added by default"};
+      this,
+      "CnvServices",
+      {},
+      [this]( auto& p ) {
+        if ( this->msgLevel( MSG::DEBUG ) ) this->debug() << p << endmsg;
+      },
+      "Names of services to be requested from the service locator and added by default"};
 
   /// Flag to indicate that the service is enabled
   bool m_enable = true;

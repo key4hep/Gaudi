@@ -7,7 +7,6 @@
 #include "PrecedenceSvc.h"
 
 // Framework include files
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
@@ -29,8 +28,7 @@
 #include "tbb/concurrent_queue.h"
 #include "tbb/task.h"
 
-typedef AlgsExecutionStates::State State;
-typedef std::function<StatusCode()> action;
+class IAlgorithm;
 
 //---------------------------------------------------------------------------
 
@@ -120,7 +118,7 @@ public:
   // Make multiple events available to the scheduler
   StatusCode pushNewEvents( std::vector<EventContext*>& eventContexts ) override;
 
-  /// Blocks until an event is availble
+  /// Blocks until an event is available
   StatusCode popFinishedEvent( EventContext*& eventContext ) override;
 
   /// Try to fetch an event from the scheduler
@@ -129,14 +127,21 @@ public:
   /// Get free slots number
   unsigned int freeSlots() override;
 
+  /// Method to inform the scheduler about event views
+  virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
+                                        std::unique_ptr<EventContext> viewContext ) override;
+
 private:
+  using AState = AlgsExecutionStates::State;
+  using action = std::function<StatusCode()>;
+
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
   Gaudi::Property<int> m_threadPoolSize{
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
+  Gaudi::Property<std::string>  m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  Gaudi::Property<std::string>  m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
                                                           "Maximum number of simultaneous I/O-bound algorithms"};
   Gaudi::Property<bool> m_simulateExecution{
@@ -209,121 +214,59 @@ private:
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
-  /// Method to check if an event failed and take appropriate actions
-  StatusCode eventFailed( EventContext* eventContext );
-
   /// Algorithm execution state manager
   SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
 
   /// A shortcut to service for Conditions handling
   SmartIF<ICondSvc> m_condSvc;
 
-  // States management ------------------------------------------------------
-
-  /// Number of algoritms presently in flight
+  /// Number of algorithms presently in flight
   unsigned int m_algosInFlight = 0;
 
-  /// Number of algoritms presently in flight
+  /// Number of algorithms presently in flight
   unsigned int m_IOBoundAlgosInFlight = 0;
 
+  // States management ------------------------------------------------------
+
   /// Loop on algorithm in the slots and promote them to successive states
-  /// (-1 means all slots, while empty string means skipping an update of the Control Flow state)
-  StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
+  /// (-1 for algo_index means skipping an update of the Control Flow state)
+  StatusCode updateStates( int si = -1, int algo_index = -1, int sub_slot = -1, int source_slot = -1 );
 
   /// Algorithm promotion
-  StatusCode promoteToScheduled( unsigned int iAlgo, int si );
-  StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si ); // tests of an asynchronous scheduler
+  StatusCode promoteToScheduled( unsigned int iAlgo, int si, EventContext* );
+  StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si, EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo, EventContext* );
   StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
                                      EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToFinished( unsigned int iAlgo, int si );
 
-  /// Check if the scheduling is in a stall
-  StatusCode isStalled( int si );
+  /// Check if scheduling in a particular slot is in a stall
+  bool isStalled( const EventSlot& ) const;
+  /// Method to execute if an event failed
+  void eventFailed( EventContext* eventContext );
 
   /// Dump the state of the scheduler
   void dumpSchedulerState( int iSlot );
 
-  /// Keep track of update actions scheduled
-  bool m_updateNeeded = true;
-
   // Algos Management -------------------------------------------------------
+
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool> m_algResourcePool;
-
-  /// Drain the actions present in the queue
-  StatusCode m_drain();
 
   // Actions management -----------------------------------------------------
 
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
-
-  // helper task to enqueue the scheduler's actions (closures)
-  struct enqueueSchedulerActionTask : public tbb::task {
-
-    std::function<StatusCode()> m_closure;
-    SmartIF<AvalancheSchedulerSvc> m_scheduler;
-
-    enqueueSchedulerActionTask( AvalancheSchedulerSvc* scheduler, std::function<StatusCode()> _closure )
-        : m_closure( _closure ), m_scheduler( scheduler )
-    {
-    }
-
-    tbb::task* execute() override
-    {
-      m_scheduler->m_actionsQueue.push( m_closure );
-      return nullptr;
-    }
-  };
+  /// Bookkeeping of the number of actions in flight per slot
+  // (accessed/modified from the control thread only)
+  std::vector<unsigned int> m_actionsCounts;
 
   // ------------------------------------------------------------------------
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
-  size_t m_maxEventsInFlight{0};
-  size_t m_maxAlgosInFlight{1};
-  bool m_first = true;
-
-  class SchedulerState
-  {
-
-  public:
-    SchedulerState( Algorithm* a, EventContext* e, pthread_t t ) : m_a( a ), m_e( *e ), m_t( t ) {}
-
-    Algorithm* alg() const { return m_a; }
-    EventContext ctx() const { return m_e; }
-    pthread_t thread() const { return m_t; }
-
-    friend std::ostream& operator<<( std::ostream& os, const SchedulerState& ss )
-    {
-      os << ss.ctx() << "  a: " << ss.alg()->name() << " [" << std::hex << ss.alg() << std::dec << "]  t: 0x"
-         << std::hex << ss.thread() << std::dec;
-      return os;
-    }
-
-    bool operator==( const SchedulerState& ss ) const { return ( m_a == ss.alg() ); }
-
-    bool operator==( Algorithm* a ) const { return ( m_a == a ); }
-
-    bool operator<( const SchedulerState& rhs ) const { return ( m_a < rhs.alg() ); }
-
-  private:
-    Algorithm* m_a;
-    EventContext m_e;
-    pthread_t m_t;
-  };
-
-  static std::list<SchedulerState> m_sState;
-  static std::mutex m_ssMut;
-
-public:
-  void addAlg( Algorithm*, EventContext*, pthread_t );
-  bool delAlg( Algorithm* );
-  void dumpState() override;
-
-private:
-  void dumpState( std::ostringstream& );
+  size_t                  m_maxEventsInFlight{0};
+  size_t                  m_maxAlgosInFlight{1};
 };
 
 #endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

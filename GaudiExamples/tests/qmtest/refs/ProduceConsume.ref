@@ -1,13 +1,13 @@
 # setting LC_ALL to "C"
-# --> Including file '/var/local/sponce/native/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
-# <-- End of file '/var/local/sponce/native/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
-ApplicationMgr    SUCCESS
+# --> Including file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# <-- End of file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+ApplicationMgr    SUCCESS 
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
-                                          running on lblhcbpr3.cern.ch on Tue Apr 18 09:48:23 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r3)
+                                          running on stbc-i5.nikhef.nl on Sun Sep 30 23:16:02 2018
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING Unable to locate service "EventSelector" 
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
@@ -20,6 +20,29 @@ IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
 IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
 FloatDataConsumer    INFO executing FloatDataConsumer: 7
+ContextConsumer      INFO executing ContextConsumer, got INVALID
+ContextIntConsumer   INFO executing ContextIntConsumer, got context = INVALID, int = 7
+VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
+FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
+FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
+FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7
+FrExpTransformer     INFO Converting 34.56 -> 0.54, 6
+FrExpTransformer     INFO Converting 78.9 -> 0.616406, 7
+LdExpTransfomer      INFO Converting 4, 0.77125 -> 12.34
+LdExpTransfomer      INFO Converting 6, 0.887188 -> 56.78
+LdExpTransfomer      INFO Converting 7, 0.704063 -> 90.12
+LdExpTransfomer      INFO Converting 6, 0.54 -> 34.56
+LdExpTransfomer      INFO Converting 7, 0.616406 -> 78.9
+OptFrExpTransfo...   INFO Skipping 12.34
+OptFrExpTransfo...   INFO Converting 56.78 -> 0.887188, 6
+OptFrExpTransfo...   INFO Converting 90.12 -> 0.704063, 7
+OptFrExpTransfo...   INFO Converting 34.56 -> 0.54, 6
+OptFrExpTransfo...   INFO Converting 78.9 -> 0.616406, 7
+OptLdExpTransfo...   INFO Converting 4, 0.77125 -> 12.34
+OptLdExpTransfo...   INFO Converting 6, 0.887188 -> 56.78
+OptLdExpTransfo...   INFO Skipping 90.12
+OptLdExpTransfo...   INFO Converting 6, 0.54 -> 34.56
+OptLdExpTransfo...   INFO Skipping 78.9
 IntDataProducer      INFO executing IntDataProducer, storing 7 into /Event/MyInt
 OtherIntDataPro...   INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
 IntDataConsumer      INFO executing IntDataConsumer, consuming 7 from /Event/MyInt
@@ -28,6 +51,29 @@ IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
 IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
 FloatDataConsumer    INFO executing FloatDataConsumer: 7
+ContextConsumer      INFO executing ContextConsumer, got INVALID
+ContextIntConsumer   INFO executing ContextIntConsumer, got context = INVALID, int = 7
+VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
+FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
+FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
+FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7
+FrExpTransformer     INFO Converting 34.56 -> 0.54, 6
+FrExpTransformer     INFO Converting 78.9 -> 0.616406, 7
+LdExpTransfomer      INFO Converting 4, 0.77125 -> 12.34
+LdExpTransfomer      INFO Converting 6, 0.887188 -> 56.78
+LdExpTransfomer      INFO Converting 7, 0.704063 -> 90.12
+LdExpTransfomer      INFO Converting 6, 0.54 -> 34.56
+LdExpTransfomer      INFO Converting 7, 0.616406 -> 78.9
+OptFrExpTransfo...   INFO Skipping 12.34
+OptFrExpTransfo...   INFO Converting 56.78 -> 0.887188, 6
+OptFrExpTransfo...   INFO Converting 90.12 -> 0.704063, 7
+OptFrExpTransfo...   INFO Converting 34.56 -> 0.54, 6
+OptFrExpTransfo...   INFO Converting 78.9 -> 0.616406, 7
+OptLdExpTransfo...   INFO Converting 4, 0.77125 -> 12.34
+OptLdExpTransfo...   INFO Converting 6, 0.887188 -> 56.78
+OptLdExpTransfo...   INFO Skipping 90.12
+OptLdExpTransfo...   INFO Converting 6, 0.54 -> 34.56
+OptLdExpTransfo...   INFO Skipping 78.9
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ApplicationMgr       INFO Application Manager Finalized successfully

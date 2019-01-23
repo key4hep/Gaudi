@@ -2,8 +2,8 @@ gaudi_subdir(GaudiMP)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
-find_package(ROOT COMPONENTS Net RIO Thread)
-find_package(PythonLibs)
+find_package(ROOT COMPONENTS Net RIO Thread REQUIRED)
+find_package(PythonLibs REQUIRED)
 find_package(AIDA)
 
 # The list of sources to build into the module:
@@ -15,7 +15,7 @@ endif()
 
 # Hide some Boost/ROOT compile time warnings
 find_package(Boost)
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiMPLib src/Lib/*.cpp

@@ -10,9 +10,9 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/Service.h"
+#include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
@@ -40,8 +40,6 @@ namespace Gaudi
   class BootSvcLocator : public implements<ISvcLocator>
   {
   public:
-    BootSvcLocator()           = default;
-    ~BootSvcLocator() override = default;
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
     StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
                            IInterface*& pinterface ) override;
@@ -57,7 +55,7 @@ namespace Gaudi
 }
 
 static SmartIF<ISvcLocator> s_svclocInstance;
-static SmartIF<IAppMgrUI> s_appmgrInstance;
+static SmartIF<IAppMgrUI>   s_appmgrInstance;
 
 //------------------------------------------------------------------------------
 IAppMgrUI* Gaudi::createApplicationMgr( const std::string& dllname, const std::string& factname )
@@ -144,21 +142,20 @@ IInterface* Gaudi::createInstance( const std::string& name, const std::string& f
 //------------------------------------------------------------------------------
 {
 
-  IInterface* ii = ObjFactory::create( factname, nullptr );
+  IInterface* ii = ObjFactory::create( factname, nullptr ).release();
   if ( ii ) return ii;
-  IService* is = Service::Factory::create( factname, name, nullptr );
+  IService* is = Service::Factory::create( factname, name, nullptr ).release();
   if ( is ) return is;
-  IAlgorithm* ia = Algorithm::Factory::create( factname, name, nullptr );
+  IAlgorithm* ia = Algorithm::Factory::create( factname, name, nullptr ).release();
   if ( ia ) return ia;
 
-  void* libHandle   = nullptr;
-  StatusCode status = System::loadDynamicLib( dllname, &libHandle );
-  if ( status.isSuccess() ) {
-    ii = ObjFactory::create( factname, nullptr );
+  void* libHandle = nullptr;
+  if ( System::loadDynamicLib( dllname, &libHandle ) ) {
+    ii = ObjFactory::create( factname, nullptr ).release();
     if ( ii ) return ii;
-    is = Service::Factory::create( factname, name, nullptr );
+    is = Service::Factory::create( factname, name, nullptr ).release();
     if ( is ) return is;
-    ia = Algorithm::Factory::create( factname, name, nullptr );
+    ia = Algorithm::Factory::create( factname, name, nullptr ).release();
     if ( ia ) return ia;
   } else {
     // DLL library not loaded. Try in the local module
@@ -187,8 +184,8 @@ IAppMgrUI* Gaudi::createApplicationMgr()
 //=======================================================================
 
 static std::list<IService*> s_bootServices;
-static SmartIF<IService> s_bootService;
-static SmartIF<IInterface> s_bootInterface;
+static SmartIF<IService>    s_bootService;
+static SmartIF<IInterface>  s_bootInterface;
 
 using Gaudi::BootSvcLocator;
 

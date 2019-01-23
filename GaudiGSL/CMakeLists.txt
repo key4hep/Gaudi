@@ -4,8 +4,8 @@ gaudi_depends_on_subdirs(GaudiAlg)
 
 find_package(CLHEP)
 find_package(GSL)
-find_package(ROOT)
-find_package(Boost)
+find_package(ROOT REQUIRED)
+find_package(Boost REQUIRED)
 
 
 # If any of the non-essential externals is missing, give up on building

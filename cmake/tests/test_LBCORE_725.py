@@ -4,11 +4,13 @@ Test relocatability of data packages.
 import os
 from subprocess import Popen, PIPE
 
-base_dir = os.path.join(os.path.dirname(__file__), 'data', 'LBCORE-725')
+base_dir = os.path.realpath(os.path.join(os.path.dirname(__file__),
+                                         'data',
+                                         'LBCORE-725'))
 build_dir = os.path.join(base_dir, 'tmp')
 release_dir = os.path.join(base_dir, 'dest')
 
-xenv_cmd = os.path.join(os.path.dirname(__file__), os.pardir, 'xenv')
+xenv_cmd = 'xenv'
 
 build_log = None
 build_returncode = None

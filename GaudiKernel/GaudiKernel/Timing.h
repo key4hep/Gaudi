@@ -58,7 +58,7 @@ namespace System
   enum TimeType { Year, Month, Day, Hour, Min, Sec, milliSec, microSec, nanoSec, Native };
 
   /// Convert time from OS native time to requested representation (Experts only)
-  GAUDI_API longlong adjustTime( TimeType typ, longlong timevalue );
+  GAUDI_API long long adjustTime( TimeType typ, long long timevalue );
 
   /// Convert the time from OS native time to requested representation (Experts only)
   template <TimeType T>
@@ -69,7 +69,7 @@ namespace System
         @param timevalue Time value to be converted.
         @return          Requested value in the indicated units.
     */
-  GAUDI_API longlong ellapsedTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
+  GAUDI_API long long ellapsedTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
   /** CPU kernel mode time of process in milliseconds.
       @param typ     Indicator or the unit the time will be returned.
       @param fetch   Indicator of the information to be fetched.
@@ -77,7 +77,7 @@ namespace System
       @param pid     Process ID of which the information will be returned
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong kernelTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
+  GAUDI_API long long kernelTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
   /** CPU user mode time of process in milliseconds.
       @param typ     Indicator or the unit the time will be returned.
       @param fetch   Indicator of the information to be fetched.
@@ -85,7 +85,7 @@ namespace System
       @param pid     Process ID of which the information will be returned
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong userTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
+  GAUDI_API long long userTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
   /** Consumed CPU time of process in milliseconds.
       @param typ     Indicator or the unit the time will be returned.
       @param fetch   Indicator of the information to be fetched.
@@ -93,7 +93,7 @@ namespace System
       @param pid     Process ID of which the information will be returned
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong cpuTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
+  GAUDI_API long long cpuTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
   /** Maximum processing time left for this process.
       @param typ     Indicator or the unit the time will be returned.
       @param fetch   Indicator of the information to be fetched.
@@ -101,7 +101,7 @@ namespace System
       @param pid     Process ID of which the information will be returned
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong remainingTime( TimeType typ = milliSec, InfoType fetch = Quota, long pid = -1 );
+  GAUDI_API long long remainingTime( TimeType typ = milliSec, InfoType fetch = Quota, long pid = -1 );
   /** Process Creation time.
       @param typ     Indicator or the unit the time will be returned.
       @param fetch   Indicator of the information to be fetched.
@@ -109,33 +109,33 @@ namespace System
       @param pid     Process ID of which the information will be returned
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong creationTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
+  GAUDI_API long long creationTime( TimeType typ = milliSec, InfoType fetch = Times, long pid = -1 );
   /** Maximum processing time left for this process.
       @param typ     Indicator or the unit the time will be returned.
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong systemStart( TimeType typ = Sec );
+  GAUDI_API long long systemStart( TimeType typ = Sec );
   /** Maximum processing time left for this process.
       @param typ     Indicator or the unit the time will be returned.
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong upTime( TimeType typ = Hour );
+  GAUDI_API long long upTime( TimeType typ = Hour );
   /** Retrieve absolute system time
       @param typ     Indicator or the unit the time will be returned.
       @return        Requested value in the indicated units.
   */
 
   /// Get current time in specificed units via template parameter (inlined)
-  template <TimeType T>
-  GAUDI_API longlong currentTime();
+  template <TimeType  T>
+  GAUDI_API long long currentTime();
 
   /// Get current time in specificed units
-  GAUDI_API longlong currentTime( TimeType typ = milliSec );
+  GAUDI_API long long currentTime( TimeType typ = milliSec );
 
   /** Retrieve the number of ticks since system startup
       @return        Requested value in the indicated units.
   */
-  GAUDI_API longlong tickCount();
+  GAUDI_API long long tickCount();
 
   /** Simple class to hold the time information of a process.
    *
@@ -156,28 +156,28 @@ namespace System
     ProcessTime( TimeValueType k, TimeValueType u, TimeValueType e ) : i_kernel( k ), i_user( u ), i_elapsed( e ) {}
 
     /// Retrieve the kernel time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType kernelTime() const
     {
       return adjustTime<T>( i_kernel );
     }
 
     /// Retrieve the user time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType userTime() const
     {
       return adjustTime<T>( i_user );
     }
 
     /// Retrieve the elapsed time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType elapsedTime() const
     {
       return adjustTime<T>( i_elapsed );
     }
 
     /// Retrieve the CPU (user+kernel) time in the requested unit.
-    template <TimeType T>
+    template <TimeType   T>
     inline TimeValueType cpuTime() const
     {
       return adjustTime<T>( i_user + i_kernel );
@@ -266,10 +266,10 @@ namespace System
 
   // This is frequently used and thus we inline it if possible
   template <TimeType T>
-  inline longlong currentTime()
+  inline long long   currentTime()
   {
 #ifdef _WIN32
-    longlong current = 0;
+    long long current = 0;
     ::GetSystemTimeAsFileTime( (FILETIME*)&current );
     return adjustTime<T>( current - UNIX_BASE_TIME );
 #else
@@ -280,16 +280,16 @@ namespace System
   }
 
   // Define all template versions here to avoid code bloat
-  template longlong currentTime<Year>();
-  template longlong currentTime<Month>();
-  template longlong currentTime<Day>();
-  template longlong currentTime<Hour>();
-  template longlong currentTime<Min>();
-  template longlong currentTime<Sec>();
-  template longlong currentTime<milliSec>();
-  template longlong currentTime<microSec>();
-  template longlong currentTime<nanoSec>();
-  template longlong currentTime<Native>();
+  template long long currentTime<Year>();
+  template long long currentTime<Month>();
+  template long long currentTime<Day>();
+  template long long currentTime<Hour>();
+  template long long currentTime<Min>();
+  template long long currentTime<Sec>();
+  template long long currentTime<milliSec>();
+  template long long currentTime<microSec>();
+  template long long currentTime<nanoSec>();
+  template long long currentTime<Native>();
 }
 
 #endif // GAUDIKERNEL_TIMING_H

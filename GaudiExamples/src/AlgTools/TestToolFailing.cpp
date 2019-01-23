@@ -14,21 +14,14 @@ class TestToolFailing : public extends<GaudiTool, ITestTool>
 {
 
 public:
-  TestToolFailing( const std::string& type, const std::string& name, const IInterface* parent );
+  using extends::extends;
 
   /// Initialize method
   StatusCode initialize() override;
-
-  ~TestToolFailing() override {} ///< Destructor
 };
 
 // Declaration of the Tool Factory
 DECLARE_COMPONENT( TestToolFailing )
-
-TestToolFailing::TestToolFailing( const std::string& type, const std::string& name, const IInterface* parent )
-    : base_class( type, name, parent )
-{
-}
 
 StatusCode TestToolFailing::initialize()
 {

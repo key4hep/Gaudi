@@ -51,16 +51,11 @@ public:
   {
     setProperty( "StatPrint", "true" ).ignore();
   }
-  /// virtual protected dectrustor
-  ~CounterAlg() override {}
 
-private:
-  // default constructor is disabled
-  CounterAlg();
   // copy constructor is disabled
-  CounterAlg( const CounterAlg& );
+  CounterAlg( const CounterAlg& ) = delete;
   // assignement operator is disabled
-  CounterAlg& operator=( const CounterAlg& );
+  CounterAlg& operator=( const CounterAlg& ) = delete;
 };
 // ============================================================================
 
@@ -107,7 +102,7 @@ StatusCode CounterAlg::execute()
 
   // print the statistics every 1000 events
   const StatEntity& executed = counter( "executed" );
-  const int print            = (int)executed.flag();
+  const int         print    = (int)executed.flag();
   if ( 0 == print % 1000 ) {
     info() << " Event number " << print << endmsg;
     printStat();

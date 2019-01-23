@@ -12,10 +12,6 @@
 
 DECLARE_COMPONENT( MemoryAuditor )
 
-MemoryAuditor::MemoryAuditor( const std::string& name, ISvcLocator* pSvcLocator ) : CommonAuditor( name, pSvcLocator )
-{
-}
-
 void MemoryAuditor::i_before( CustomEventTypeRef evt, const std::string& caller )
 {
   i_printinfo( "Memory usage before", evt, caller );

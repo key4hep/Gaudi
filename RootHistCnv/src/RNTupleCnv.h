@@ -6,7 +6,6 @@
 
 // Forward declarations
 class ISvcLocator;
-class NTUPLEINFO;
 class INTupleItem;
 class INTupleSvc;
 class INTuple;
@@ -43,9 +42,6 @@ namespace RootHistCnv
     /// Standard constructor
     RNTupleCnv( ISvcLocator* svc, const CLID& clid );
 
-    /// Standard destructor
-    ~RNTupleCnv() override = default;
-
     /// Create the transient representation of an object.
     virtual StatusCode load( TTree* tree, INTuple*& refpObj ) = 0;
     /// Book a new N tuple
@@ -63,9 +59,6 @@ namespace RootHistCnv
   };
 
   /// Add an item of a given type to the N tuple
-  template <class TYP>
-  INTupleItem* createNTupleItem( NTUPLEINFO& tags, long i, INTuple* tuple, TYP minimum, TYP maximum, long& size );
-
   template <class TYP>
   INTupleItem* createNTupleItem( std::string itemName, std::string blockName, std::string indexName, int indexRange,
                                  int arraySize, TYP minimum, TYP maximum, INTuple* tuple );

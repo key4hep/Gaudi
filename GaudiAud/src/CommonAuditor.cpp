@@ -1,13 +1,5 @@
 #include "CommonAuditor.h"
-
-CommonAuditor::CommonAuditor( const std::string& name, ISvcLocator* svcloc ) : Auditor( name, svcloc )
-{
-  auto deprecated_property = [this]( Gaudi::Details::PropertyBase& p ) {
-    warning() << p.name() << " " << p.documentation() << endmsg;
-    m_types = m_customTypes;
-  };
-  m_customTypes.declareUpdateHandler( deprecated_property );
-}
+#include "GaudiKernel/GaudiException.h"
 
 void CommonAuditor::before( StandardEventType evt, INamedInterface* caller )
 {

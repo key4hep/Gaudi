@@ -53,38 +53,31 @@ namespace CLHEP
 class TupleAlg : public GaudiTupleAlg
 {
 public:
+  /** standard constructor
+   */
+  using GaudiTupleAlg::GaudiTupleAlg;
+
   /// initialize the algorithm
   StatusCode initialize() override
   {
     StatusCode sc = GaudiTupleAlg::initialize();
-    if ( sc.isFailure() ) {
-      return sc;
-    }
+    if ( sc.isFailure() ) return sc;
     // check for random numbers service
     Assert( randSvc() != 0, "Random Service is not available!" );
     //
     return StatusCode::SUCCESS;
   }
   /** the only one essential method
-   *  @see IAlgoruthm
+   *  @see IAlgorithm
    */
   StatusCode execute() override;
 
-  /** standard constructor
-   *  @param name algorithm instance name
-   *  @param pSvc pointer to Service Locator
-   */
-  TupleAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc ) {}
-  // destructor
-  ~TupleAlg() override {}
+  // copy constructor is disabled
+  TupleAlg( const TupleAlg& ) = delete;
+  // assignment operator is disabled
+  TupleAlg& operator=( const TupleAlg& ) = delete;
 
 private:
-  // default constructor is disabled
-  TupleAlg();
-  // copy constructor is disabled
-  TupleAlg( const TupleAlg& );
-  // assignment operator is disabled
-  TupleAlg& operator=( const TupleAlg& );
   // Make a random generator for a type
   template <class T>
   T randomRange()
@@ -170,7 +163,7 @@ StatusCode TupleAlg::execute()
 
   { // fill using iterator/sequence protocol
     const size_t nCol = 50;
-    float array[nCol];
+    float        array[nCol];
     for ( size_t i = 0; i < nCol; ++i ) {
       array[i] = (float)flat();
     }
@@ -181,8 +174,8 @@ StatusCode TupleAlg::execute()
 
   {
     typedef std::vector<double> Array;
-    const size_t nCol = 62;
-    Array array( nCol );
+    const size_t                nCol = 62;
+    Array                       array( nCol );
     for ( size_t i = 0; i < array.size(); ++i ) {
       array[i] = expo();
     }
@@ -193,7 +186,7 @@ StatusCode TupleAlg::execute()
 
   { // fill with the explicit usage of sequence length
     const size_t nCol = 42;
-    double array[nCol];
+    double       array[nCol];
     for ( size_t i = 0; i < nCol; ++i ) {
       array[i] = gauss();
     }
@@ -203,7 +196,7 @@ StatusCode TupleAlg::execute()
   }
 
   { // fill with the explicit usage of sequence length
-    const size_t nCol = 42;
+    const size_t     nCol = 42;
     CLHEP::HepVector array( nCol );
     for ( size_t i = 0; i < nCol; ++i ) {
       array[i] = gauss();
@@ -240,7 +233,7 @@ StatusCode TupleAlg::execute()
   {
     // fill with simple "pseudo-matrix"
     typedef std::vector<double> Row;
-    typedef std::vector<Row> Mtrx;
+    typedef std::vector<Row>    Mtrx;
 
     const size_t nRow = 26;
     const size_t nCol = 4;
@@ -258,8 +251,8 @@ StatusCode TupleAlg::execute()
 
   {
     // fill with simple CLHEP matrix
-    const size_t nRow = 13;
-    const size_t nCol = 3;
+    const size_t     nRow = 13;
+    const size_t     nCol = 3;
     CLHEP::HepMatrix mtrx( nRow, nCol );
     for ( int iCol = 0; iCol < mtrx.num_col(); ++iCol ) {
       for ( int iRow = 0; iRow < mtrx.num_row(); ++iRow ) {
@@ -278,14 +271,14 @@ StatusCode TupleAlg::execute()
   Tuple tuple5 = nTuple( 5, "Variable-size arrays/vectors" );
 
   {
-    const size_t num = (size_t)poisson();
+    const size_t        num = (size_t)poisson();
     std::vector<double> array;
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with the content of vector
     tuple5->farray( "arr", array.begin(), array.end(), "Len1", 100 );
   }
   {
-    const size_t num = (size_t)poisson();
+    const size_t        num = (size_t)poisson();
     std::vector<double> array;
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with functions of vector
@@ -300,10 +293,10 @@ StatusCode TupleAlg::execute()
   Tuple tuple6 = nTuple( "six", "Variable-size matrices" );
 
   { // fill with the matrix
-    const size_t num = (size_t)poisson();
+    const size_t                num = (size_t)poisson();
     typedef std::vector<double> Row;
-    typedef std::vector<Row> Mtrx;
-    const size_t nCol = 15;
+    typedef std::vector<Row>    Mtrx;
+    const size_t                nCol = 15;
 
     Mtrx mtrx( num, Row( nCol ) );
 
@@ -317,10 +310,10 @@ StatusCode TupleAlg::execute()
   };
 
   { // fill with the matrix
-    const size_t num = (size_t)poisson();
+    const size_t                num = (size_t)poisson();
     typedef std::vector<double> Row;
-    typedef std::vector<Row> Mtrx;
-    const size_t nCol = 15;
+    typedef std::vector<Row>    Mtrx;
+    const size_t                nCol = 15;
 
     Mtrx mtrx( num, Row( nCol ) );
 
@@ -341,19 +334,12 @@ StatusCode TupleAlg::execute()
     const size_t num = (size_t)poisson();
 
     typedef std::vector<double> Array;
-    Array array( num );
+    Array                       array( num );
     std::generate( array.begin(), array.end(), flat );
 
     typedef double ( *fun )( double );
     typedef std::vector<fun> Funs;
-
-    Funs funs;
-    funs.push_back( sin );
-    funs.push_back( cos );
-    funs.push_back( tan );
-    funs.push_back( sinh );
-    funs.push_back( cosh );
-    funs.push_back( tanh );
+    Funs                     funs{sin, cos, tan, sinh, cosh, tanh};
 
     tuple6->fmatrix( "m3flat", // N-tuple entry name
                      funs.begin(), funs.end(), array.begin(), array.end(), "Len3", 100 );
@@ -400,8 +386,8 @@ StatusCode TupleAlg::execute()
     tuple7->column( "ulong", (unsigned long)randomRange<unsigned char>() );
     tuple7->column( "longlong", (long long)randomRange<char>() );
     tuple7->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() );
-    tuple7->column( "char", (char)randomRange<char>() );
-    tuple7->column( "uchar", (unsigned char)randomRange<unsigned char>() );
+    tuple7->column( "char", randomRange<char>() );
+    tuple7->column( "uchar", randomRange<unsigned char>() );
     tuple7->column( "EventID", evtID );
   }
   tuple7->write();
@@ -420,8 +406,8 @@ StatusCode TupleAlg::execute()
     tuple8->column( "ulong", (unsigned long)randomRange<unsigned char>() );
     tuple8->column( "longlong", (long long)randomRange<char>() );
     tuple8->column( "ulonglong", (unsigned long long)randomRange<unsigned char>() );
-    tuple8->column( "char", (char)randomRange<char>() );
-    tuple8->column( "uchar", (unsigned char)randomRange<unsigned char>() );
+    tuple8->column( "char", randomRange<char>() );
+    tuple8->column( "uchar", randomRange<unsigned char>() );
     tuple8->column( "EventID", evtID );
   }
   tuple8->write();

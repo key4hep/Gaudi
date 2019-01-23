@@ -3,6 +3,7 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
+#include "GaudiKernel/apply.h"
 #include <type_traits>
 #include <utility>
 
@@ -22,26 +23,19 @@ namespace Gaudi
       using details::DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final { return invoke( std::index_sequence_for<In...>{} ); }
-
-      // ... instead, they must implement the following operator
-      virtual bool operator()( const In&... ) const = 0;
-
-    private:
-      // note: invoke is not const, as setFilterPassed is not (yet!) const
-      template <std::size_t... I>
-      StatusCode invoke( std::index_sequence<I...> )
+      StatusCode execute() override final
       {
-        using details::as_const;
         try {
-          auto pass = as_const( *this )( as_const( *std::get<I>( this->m_inputs ).get() )... );
-          this->setFilterPassed( pass );
+          this->setFilterPassed( details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
       }
+
+      // ... instead, they must implement the following operator
+      virtual bool operator()( const In&... ) const = 0;
     };
   }
 }

@@ -3,19 +3,28 @@
 #include "RetCodeGuard.h"
 
 // Framework
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include <Gaudi/Algorithm.h>
 
 #include <functional>
+
+namespace Gaudi
+{
+  namespace Concurrency
+  {
+    extern thread_local bool ThreadInitDone;
+  }
+}
 
 tbb::task* AlgoExecutionTask::execute()
 {
 
-  IAlgorithm* ialg     = m_algorithm.get();
-  Algorithm* this_algo = dynamic_cast<Algorithm*>( ialg );
+  IAlgorithm*       ialg      = m_algorithm.get();
+  Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( ialg );
   if ( !this_algo ) {
     throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE );
   }
@@ -23,23 +32,32 @@ tbb::task* AlgoExecutionTask::execute()
   bool eventfailed = false;
   Gaudi::Hive::setCurrentContext( m_evtCtx );
 
-  // TODO reproduce the commented out functionality in a different service
-  // m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
-
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr( m_serviceLocator );
 
   SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
-  MsgStream log( messageSvc, "AlgoExecutionTask" );
+  MsgStream            log( messageSvc, "AlgoExecutionTask" );
+
+  if ( !Gaudi::Concurrency::ThreadInitDone ) {
+    log << MSG::DEBUG << "New thread detected: 0x" << std::hex << pthread_self() << std::dec
+        << ". Doing thread local initialization." << endmsg;
+    SmartIF<IThreadPoolSvc> tps;
+    tps = m_serviceLocator->service( "ThreadPoolSvc" );
+    if ( !tps.isValid() ) {
+      log << MSG::ERROR << "unable to get the ThreadPoolSvc to trigger thread local initialization" << endmsg;
+      throw GaudiException( "retrieval of ThrePoolSvc failed", "AlgoExecutionTask", StatusCode::FAILURE );
+    }
+
+    tps->initThisThread();
+  }
 
   // select the appropriate store
-  this_algo->whiteboard()->selectStore( m_evtCtx->valid() ? m_evtCtx->slot() : 0 ).ignore();
+  this_algo->whiteboard()->selectStore( m_evtCtx.valid() ? m_evtCtx.slot() : 0 ).ignore();
 
   StatusCode sc( StatusCode::FAILURE );
   try {
     RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-    m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Executing );
-    sc = m_algorithm->sysExecute( *m_evtCtx );
+    sc = m_algorithm->sysExecute( m_evtCtx );
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       log << MSG::WARNING << "Execution of algorithm " << m_algorithm->name() << " failed" << endmsg;
       eventfailed = true;
@@ -59,17 +77,13 @@ tbb::task* AlgoExecutionTask::execute()
     eventfailed = true;
   }
 
-  // Commit all DataHandles
-  this_algo->commitHandles();
-
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can
   // then receive the FAILURE
-  m_aess->algExecState( ialg, *m_evtCtx ).setState( AlgExecState::State::Done, sc );
-  m_aess->updateEventStatus( eventfailed, *m_evtCtx );
+  m_aess->updateEventStatus( eventfailed, m_evtCtx );
 
-  // TODO reproduce the commented out functionality in a different service
-  // m_schedSvc->delAlg(this_algo);
+  // update scheduler state
+  m_promote2ExecutedClosure();
 
   Gaudi::Hive::setCurrentContextEvt( -1 );
 

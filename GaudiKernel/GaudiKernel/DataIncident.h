@@ -30,9 +30,6 @@ public:
   {
   }
 
-  /// Standard destructor
-  ~ContextIncident() override = default;
-
   /// Accesssor to the tag value (CONST)
   const T& tag() const { return m_tag; }
 };

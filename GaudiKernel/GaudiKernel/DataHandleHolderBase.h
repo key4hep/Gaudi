@@ -2,6 +2,7 @@
 #define GAUDIKERNEL_DATAHANDLEHOLDERBASE 1
 
 #include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/Property.h"
@@ -81,8 +82,8 @@ protected:
 private:
   std::unordered_set<Gaudi::DataHandle*> m_handles;
 
-  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
-  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
+  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}};
+  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}};
 };
 
 #endif // !GAUDIKERNEL_DATAHANDLEHOLDERBASE

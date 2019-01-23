@@ -6,8 +6,9 @@
 #include "GaudiKernel/Kernel.h"
 
 class ThreadPoolSvc;
-class ForwardSchedulerSvc;
-class AvalancheSchedulerSvc;
+class HiveWhiteBoard;
+class SGHiveMgrSvc;
+class AthMpEvtLoopMgr;
 
 /** @class ConcurrencyFlags ConcurrencyFlags.h GaudiKernel/ConcurrencyFlags.h
  *
@@ -19,6 +20,11 @@ class AvalancheSchedulerSvc;
  *
  */
 
+namespace SG
+{
+  class HiveMgrSvc;
+}
+
 namespace Gaudi
 {
 
@@ -29,8 +35,9 @@ namespace Gaudi
     {
 
       friend class ::ThreadPoolSvc;
-      friend class ::ForwardSchedulerSvc;
-      friend class ::AvalancheSchedulerSvc;
+      friend class ::HiveWhiteBoard;
+      friend class SG::HiveMgrSvc;    // ATLAS
+      friend class ::AthMpEvtLoopMgr; // ATLAS
 
     public:
       /** number of Worker Threads (for MT)

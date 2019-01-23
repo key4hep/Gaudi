@@ -89,9 +89,6 @@ RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
 RootDst             DEBUG OptItemList : []
 RootDst             DEBUG AlgDependentItemList : {}
 RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-RootDst             DEBUG AcceptAlgs  : []
-RootDst             DEBUG RequireAlgs : []
-RootDst             DEBUG VetoAlgs    : []
 RootDst           VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 RootDst             DEBUG input handles: 0
 RootDst             DEBUG output handles: 0
@@ -103,9 +100,6 @@ RootMini            DEBUG Adding OutputStream item /Event with 1 level(s).
 RootMini            DEBUG OptItemList : []
 RootMini            DEBUG AlgDependentItemList : {}
 RootMini             INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-RootMini            DEBUG AcceptAlgs  : []
-RootMini            DEBUG RequireAlgs : []
-RootMini            DEBUG VetoAlgs    : []
 RootMini          VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 RootMini            DEBUG input handles: 0
 RootMini            DEBUG output handles: 0
@@ -119,9 +113,6 @@ FileRecords         DEBUG Adding OutputStream item /FileRecords with 999 level(s
 FileRecords         DEBUG OptItemList : []
 FileRecords         DEBUG AlgDependentItemList : {}
 FileRecords          INFO Data source: FileRecordDataSvc/FileRecordDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-FileRecords         DEBUG AcceptAlgs  : []
-FileRecords         DEBUG RequireAlgs : []
-FileRecords         DEBUG VetoAlgs    : []
 FileRecords       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 FileRecords         DEBUG input handles: 0
 FileRecords         DEBUG output handles: 0
@@ -130,7 +121,6 @@ EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
 HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...WARNING Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
@@ -1359,7 +1349,7 @@ ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 23)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 27)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)

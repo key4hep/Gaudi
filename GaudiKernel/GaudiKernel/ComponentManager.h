@@ -4,6 +4,8 @@
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/IComponentManager.h"
 
+class ApplicationMgr;
+
 /** @class ComponentManager ComponentManager.h
  *
  * Base class for a component manager.
@@ -74,6 +76,8 @@ protected:
 
   /// Service locator (needed to access the MessageSvc)
   mutable SmartIF<ISvcLocator> m_svcLocator;
+
+  friend ApplicationMgr;
 };
 
 #endif /* COMPONENTMANAGER_H_ */

@@ -144,8 +144,6 @@ namespace NTuple
   class GAUDI_API _Item : virtual public _Data<TYP>
   {
   public:
-    /// Destructor.
-    ~_Item() override = default;
     /// Create instance
     static _Item* create( INTuple* tup, const std::string& name, const std::type_info& info, TYP min, TYP max,
                           TYP def );
@@ -369,8 +367,6 @@ namespace NTuple
 
     TYP* begin() { return this->m_ptr->begin(); }
     TYP* end() { return this->m_ptr->end(); }
-
-    ~Array() override = default;
   };
   // =========================================================================
   /** Class acting as a smart pointer holding a N tuple _Item.
@@ -400,7 +396,6 @@ namespace NTuple
     {
       return this->m_ptr->column( i );
     }
-    ~Matrix() override = default;
   };
   // =========================================================================
   /** Abstract base class which allows the user to interact with the
@@ -514,9 +509,6 @@ namespace NTuple
     }
 
   public:
-    /// Standard destructor
-    ~Tuple() override = default;
-
     /// Locate a scalar Item of data to the N tuple type safe
     template <class TYPE>
     StatusCode item( const std::string& name, Item<TYPE>& result )
@@ -983,14 +975,7 @@ namespace NTuple
 
   /** Small class representing an N tuple directory in the transient store
   */
-  class Directory : public DataObject
-  {
-  public:
-    /// Standard constructor
-    Directory() {}
-    /// Standard destructor
-    ~Directory() override = default;
-
+  struct Directory : DataObject {
     /// class ID of the object
     static const CLID& classID() { return CLID_NTupleDirectory; }
     /// class ID of the object
@@ -1018,8 +1003,6 @@ namespace NTuple
         : m_name( std::move( name ) ), m_logName( std::move( logName ) ), m_type( type )
     {
     }
-    /// Standard destructor
-    ~File() override = default;
 
     /// class ID of the object
     static const CLID& classID() { return CLID_NTupleFile; }
@@ -1066,41 +1049,41 @@ namespace NTuple
 // =========================================================================
 #ifndef ALLOW_ALL_TYPES
 #else
-  typedef Item<bool> BoolItem;
-  typedef Item<char> CharItem;
-  typedef Item<unsigned char> UCharItem;
-  typedef Item<short> ShortItem;
-  typedef Item<unsigned short> UShortItem;
-  typedef Item<long> LongItem;
-  typedef Item<long long> LongLongItem;
-  typedef Item<unsigned long> ULongItem;
+  typedef Item<bool>               BoolItem;
+  typedef Item<char>               CharItem;
+  typedef Item<unsigned char>      UCharItem;
+  typedef Item<short>              ShortItem;
+  typedef Item<unsigned short>     UShortItem;
+  typedef Item<long>               LongItem;
+  typedef Item<long long>          LongLongItem;
+  typedef Item<unsigned long>      ULongItem;
   typedef Item<unsigned long long> ULongLongItem;
-  typedef Item<int> IntItem;
-  typedef Item<unsigned int> UIntItem;
-  typedef Item<float> FloatItem;
-  typedef Item<double> DoubleItem;
-  typedef Array<bool> BoolArray;
-  typedef Array<char> CharArray;
-  typedef Array<unsigned char> UCharArray;
-  typedef Array<short> ShortArray;
-  typedef Array<unsigned short> UShortArray;
-  typedef Array<long> LongArray;
-  typedef Array<unsigned long> ULongArray;
-  typedef Array<int> IntArray;
-  typedef Array<unsigned int> UIntArray;
-  typedef Array<float> FloatArray;
-  typedef Array<double> DoubleArray;
-  typedef Matrix<bool> BoolMatrix;
-  typedef Matrix<char> CharMatrix;
-  typedef Matrix<unsigned char> UCharMatrix;
-  typedef Matrix<short> ShortMatrix;
-  typedef Matrix<unsigned short> UShortMatrix;
-  typedef Matrix<long> LongMatrix;
-  typedef Matrix<unsigned long> ULongMatrix;
-  typedef Matrix<int> IntMatrix;
-  typedef Matrix<unsigned int> UIntMatrix;
-  typedef Matrix<float> FloatMatrix;
-  typedef Matrix<double> DoubleMatrix;
+  typedef Item<int>                IntItem;
+  typedef Item<unsigned int>       UIntItem;
+  typedef Item<float>              FloatItem;
+  typedef Item<double>             DoubleItem;
+  typedef Array<bool>              BoolArray;
+  typedef Array<char>              CharArray;
+  typedef Array<unsigned char>     UCharArray;
+  typedef Array<short>             ShortArray;
+  typedef Array<unsigned short>    UShortArray;
+  typedef Array<long>              LongArray;
+  typedef Array<unsigned long>     ULongArray;
+  typedef Array<int>               IntArray;
+  typedef Array<unsigned int>      UIntArray;
+  typedef Array<float>             FloatArray;
+  typedef Array<double>            DoubleArray;
+  typedef Matrix<bool>             BoolMatrix;
+  typedef Matrix<char>             CharMatrix;
+  typedef Matrix<unsigned char>    UCharMatrix;
+  typedef Matrix<short>            ShortMatrix;
+  typedef Matrix<unsigned short>   UShortMatrix;
+  typedef Matrix<long>             LongMatrix;
+  typedef Matrix<unsigned long>    ULongMatrix;
+  typedef Matrix<int>              IntMatrix;
+  typedef Matrix<unsigned int>     UIntMatrix;
+  typedef Matrix<float>            FloatMatrix;
+  typedef Matrix<double>           DoubleMatrix;
 #endif
 
   template <class T>
@@ -1111,8 +1094,8 @@ namespace NTuple
 } // end of namespace NTuple
 
 // Useful:
-typedef SmartDataPtr<NTuple::Tuple> NTuplePtr;
+typedef SmartDataPtr<NTuple::Tuple>     NTuplePtr;
 typedef SmartDataPtr<NTuple::Directory> NTupleDirPtr;
-typedef SmartDataPtr<NTuple::File> NTupleFilePtr;
+typedef SmartDataPtr<NTuple::File>      NTupleFilePtr;
 
 #endif // GAUDIKERNEL_NTUPLE_H

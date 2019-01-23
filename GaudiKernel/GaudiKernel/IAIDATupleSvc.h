@@ -41,6 +41,8 @@ public:
   // =======================================
   // Register a tuple in the transient store
   // =======================================
+  using IDataProviderSvc::registerObject;
+
   virtual StatusCode registerObject( const std::string& dirPath, const std::string& objPath, AIDA::ITuple* tObj ) = 0;
 
   virtual StatusCode registerObject( DataObject* pParent, const std::string& objPath, AIDA::ITuple* tObj ) = 0;
@@ -48,6 +50,8 @@ public:
   // =========================================
   // Unregister a tuple in the transient store
   // =========================================
+  using IDataProviderSvc::unregisterObject;
+
   virtual StatusCode unregisterObject( AIDA::ITuple* tObj ) = 0;
 
   virtual StatusCode unregisterObject( AIDA::ITuple* tObj, const std::string& objectPath ) = 0;
@@ -55,6 +59,8 @@ public:
   // ====================================
   // Retrieve a tuple from the data store
   // ====================================
+  using IDataProviderSvc::retrieveObject;
+
   virtual StatusCode retrieveObject( const std::string& fullPath, AIDA::ITuple*& tObj ) = 0;
 
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
@@ -65,6 +71,8 @@ public:
   // ==============================
   // Find a tuple in the data store
   // ==============================
+  using IDataProviderSvc::findObject;
+
   virtual StatusCode findObject( const std::string& fullPath, AIDA::ITuple*& tObj ) = 0;
 
   virtual StatusCode findObject( IRegistry* pDirectory, const std::string& path, AIDA::ITuple*& tObj ) = 0;

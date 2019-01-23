@@ -24,8 +24,8 @@ StatusCode HelloWorld::initialize()
 
   info() << "initializing...." << endmsg;
 
-  Gaudi::Property<int> m_int;
-  Gaudi::Property<double> m_double;
+  Gaudi::Property<int>         m_int;
+  Gaudi::Property<double>      m_double;
   Gaudi::Property<std::string> m_string;
 
   declareInfo( "int_value", t_int, "description" );
@@ -52,24 +52,5 @@ StatusCode HelloWorld::finalize()
   info() << "finalizing...." << endmsg;
 
   m_initialized = false;
-  return StatusCode::SUCCESS;
-}
-//------------------------------------------------------------------------------
-StatusCode HelloWorld::beginRun()
-{
-  //------------------------------------------------------------------------------
-  info() << "beginning new run...." << endmsg;
-
-  m_initialized = true;
-  return StatusCode::SUCCESS;
-}
-
-//------------------------------------------------------------------------------
-StatusCode HelloWorld::endRun()
-{
-  //------------------------------------------------------------------------------
-  info() << "ending new run...." << endmsg;
-
-  m_initialized = true;
   return StatusCode::SUCCESS;
 }

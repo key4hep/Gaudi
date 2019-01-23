@@ -9,12 +9,7 @@
 #include "GaudiKernel/MsgStream.h"
 
 // Constructor
-Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator )
-    : m_name( name ), m_pSvcLocator( pSvcLocator ), m_isInitialized( false ), m_isFinalized( false )
-{
-  m_outputLevel.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
-}
+Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator ) : m_name( name ), m_pSvcLocator( pSvcLocator ) {}
 
 // IAuditor implementation
 StatusCode Auditor::sysInitialize()
@@ -211,7 +206,10 @@ StatusCode Auditor::setProperties()
   if ( !m_pSvcLocator ) return StatusCode::FAILURE;
   auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
   if ( !jos ) return StatusCode::FAILURE;
-  jos->setMyProperties( name(), this ).ignore();
-  updateMsgStreamOutputLevel( m_outputLevel );
-  return StatusCode::SUCCESS;
+
+  // this initializes the messaging, in case property update handlers need to print
+  // and update the property value bypassing the update handler
+  m_outputLevel.value() = setUpMessaging();
+
+  return jos->setMyProperties( name(), this );
 }

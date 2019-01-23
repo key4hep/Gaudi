@@ -1,10 +1,7 @@
-// $Id: EqSolverPAlg.cpp,v 1.4 2006/01/10 19:58:26 hmd Exp $
-
 // Include files
 
 // from Gaudi
 #include "GaudiGSL/IEqSolver.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiMath/Adapters.h"
 #include "GaudiMath/GaudiMath.h"
@@ -22,17 +19,7 @@
 using namespace Genfun;
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( EqSolverPAlg )
-
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-EqSolverPAlg::EqSolverPAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-EqSolverPAlg::~EqSolverPAlg() {}
+DECLARE_COMPONENT( EqSolverPAlg )
 
 //=============================================================================
 typedef Genfun::AbsFunction GenFunc;

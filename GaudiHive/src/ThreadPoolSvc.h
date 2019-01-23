@@ -30,33 +30,35 @@ public:
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );
 
   /// Initialise
-  virtual StatusCode initialize() override final;
+  StatusCode initialize() override final;
 
   /// Finalise
-  virtual StatusCode finalize() override final;
+  StatusCode finalize() override final;
 
   /// Initialize the thread pool and launch the ThreadInitTasks.
-  virtual StatusCode initPool( const int& poolSize ) override final;
+  StatusCode initPool( const int& poolSize ) override final;
 
   /// Terminate the thread pool and launch thread termination tasks.
-  virtual StatusCode terminatePool() override final;
+  StatusCode terminatePool() override final;
 
-  virtual int poolSize() const override final { return m_threadPoolSize; }
+  int poolSize() const override final { return m_threadPoolSize; }
 
   virtual bool isInit() const { return m_init; }
+
+  virtual void initThisThread() override;
 
 private:
   /// Launch tasks to execute the ThreadInitTools
   StatusCode launchTasks( bool finalize = false );
 
   /// Handle array of thread init tools
-  ToolHandleArray<IThreadInitTool> m_threadInitTools;
+  ToolHandleArray<IThreadInitTool> m_threadInitTools = {this};
 
   /// Was the thread pool initialized?
-  bool m_init;
+  bool m_init = false;
 
   /// Size of the thread pool allocated
-  int m_threadPoolSize;
+  int m_threadPoolSize = 0;
 
   /// Mutex used to protect the initPool and terminatePool methods.
   tbb::spin_mutex m_initMutex;

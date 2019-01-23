@@ -15,8 +15,7 @@
 class MemStatAuditor : public MemoryAuditor
 {
 public:
-  MemStatAuditor( const std::string& name, ISvcLocator* pSvcLocator );
-  ~MemStatAuditor() override = default;
+  using MemoryAuditor::MemoryAuditor;
 
   StatusCode initialize() override;
 
@@ -27,7 +26,7 @@ private:
   void i_printinfo( const std::string& msg, CustomEventTypeRef evt, const std::string& caller ) override;
 
   SmartIF<IChronoStatSvc>& statSvc() { return m_stat; }
-  SmartIF<IChronoStatSvc> m_stat;
+  SmartIF<IChronoStatSvc>  m_stat;
 
   /// vsize of the previous call to printinfo
   double m_vSize = -1;

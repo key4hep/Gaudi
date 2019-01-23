@@ -39,13 +39,13 @@ namespace GaudiPython
     PyAlgorithm( PyObject* self, const std::string& name );
 
   public:
-    StatusCode initialize() override;
-    StatusCode start() override;
-    StatusCode beginRun() override;
-    StatusCode endRun() override;
-    StatusCode execute() override;
-    StatusCode stop() override;
-    StatusCode finalize() override;
+    StatusCode  initialize() override;
+    StatusCode  start() override;
+    StatusCode  beginRun() override;
+    StatusCode  endRun() override;
+    StatusCode  execute() override;
+    StatusCode  stop() override;
+    StatusCode  finalize() override;
     IAlgorithm* myself() { return this; }
 
   private:
@@ -81,8 +81,6 @@ namespace GaudiPython
     // ========================================================================
   protected:
     // ========================================================================
-    /// virtual destructor
-    ~PyAlg() override = default; // virtual destructor
     /// get the object
     PyObject* _obj() const { return m_self; } //     get the object
     // ========================================================================
@@ -97,7 +95,7 @@ namespace GaudiPython
     StatusCode finalize() override { return GaudiPython::call_python_method( m_self, "finalize" ); }
     // ========================================================================
     virtual IAlgorithm* ialgorithm() { return this; }
-    virtual IProperty* iproperty() { return this; }
+    virtual IProperty*  iproperty() { return this; }
     // ========================================================================
     // preserve the existing methods
     virtual StatusCode initialize_() { return ALGORITHM::initialize(); }

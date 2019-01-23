@@ -4,8 +4,8 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/ToStream.h"
+#include <Gaudi/Parsers/CommonParsers.h>
 // ============================================================================
 /** @file
  *  Implementation file for class Gaudi::StringKey
@@ -75,8 +75,8 @@ std::ostream& Gaudi::Utils::toStream( const Gaudi::StringKey& key, std::ostream&
 StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& input )
 {
   std::string _result;
-  StatusCode sc = parse( _result, input );
-  result        = Gaudi::StringKey( _result );
+  StatusCode  sc = parse( _result, input );
+  result         = Gaudi::StringKey( _result );
   return sc;
 }
 // ============================================================================
@@ -94,8 +94,8 @@ StatusCode Gaudi::Parsers::parse( std::vector<Gaudi::StringKey>& result, const s
 {
   result.clear();
   typedef std::vector<std::string> Strings;
-  Strings _result;
-  StatusCode sc = parse( _result, input );
+  Strings                          _result;
+  StatusCode                       sc = parse( _result, input );
   if ( sc.isFailure() ) {
     return sc;
   } // RETURN

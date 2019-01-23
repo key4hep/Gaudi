@@ -1,6 +1,5 @@
 
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RegistryEntry.h"
 #include "GaudiKernel/RndmGenerators.h"
@@ -33,8 +32,8 @@ public:
 
   double get_runtime() const { return m_avg_runtime; }
 
-  CPUCruncher( const std::string& name, // the algorithm instance name
-               ISvcLocator* pSvc );     // the Service Locator
+  CPUCruncher( const std::string& name,   // the algorithm instance name
+               ISvcLocator*       pSvc ); // the Service Locator
 
   /// virtual & protected desctrustor
   virtual ~CPUCruncher(); // virtual & protected desctrustor
@@ -50,8 +49,13 @@ private:
   void findPrimes( const unsigned long int );
 
   /// Calibrate
-  void calibrate();
+  void              calibrate();
   long unsigned int getNCaliIters( double );
+
+  /// Pick up late-attributed data outputs
+  void                  declareRuntimeRequestedOutputs();
+  bool                  m_declAugmented{false};
+  Gaudi::Property<bool> m_loader{this, "Loader", false, "Declare the algorithm to be a data loader"};
 
   Gaudi::Property<std::vector<std::string>> m_inpKeys{this, "inpKeys", {}, ""};
   Gaudi::Property<std::vector<std::string>> m_outKeys{this, "outKeys", {}, ""};
@@ -61,14 +65,15 @@ private:
   Gaudi::Property<bool> m_local_rndm_gen{this, "localRndm", true, "Decide if the local random generator is to be used"};
   Gaudi::Property<bool> m_shortCalib{this, "shortCalib", false, "Enable coarse grained calibration"};
   Gaudi::Property<unsigned int> m_rwRepetitions{this, "RwRepetitions", 1, "Increase access to the WB"};
-  Gaudi::Property<float> m_sleepFraction{
+  Gaudi::Property<float>        m_sleepFraction{
       this, "SleepFraction", 0.0f,
       "Fraction of time, between 0 and 1, when an algorithm is actually sleeping instead of crunching"};
-  Gaudi::Property<bool> m_invertCFD{this, "InvertDecision", false, "Invert control flow decision."};
+  Gaudi::Property<bool>         m_invertCFD{this, "InvertDecision", false, "Invert control flow decision."};
+  Gaudi::Property<unsigned int> m_failNEvents{this, "FailNEvents", 0, "Return FAILURE on every Nth event"};
 
   // To calib only once
   static std::vector<unsigned int> m_niters_vect;
-  static std::vector<double> m_times_vect;
+  static std::vector<double>       m_times_vect;
 
   // For the concurrency
   const uint MAX_INPUTS  = 40;

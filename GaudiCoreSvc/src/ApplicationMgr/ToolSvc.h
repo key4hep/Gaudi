@@ -25,6 +25,11 @@ class ToolSvc : public extends<Service, IToolSvc>
 {
 
 public:
+  /// Standard Constructor.
+  using extends::extends;
+
+  /// Destructor.
+  ~ToolSvc() override;
   /// Initialize the service.
   StatusCode initialize() override;
 
@@ -69,15 +74,6 @@ public:
   /// Get Tool full name by combining nameByUser and "parent" part
   std::string nameTool( const std::string& nameByUser, const IInterface* parent );
 
-  /** Standard Constructor.
-   *  @param  name   String with service name
-   *  @param  svc    Pointer to service locator interface
-   */
-  ToolSvc( const std::string& name, ISvcLocator* svc );
-
-  /// Destructor.
-  ~ToolSvc() override;
-
   void registerObserver( IToolSvc::Observer* obs ) override;
 
 private: // methods
@@ -101,7 +97,7 @@ private: // data
   std::vector<IToolSvc::Observer*> m_observers;
 
   typedef std::recursive_mutex CallMutex;
-  mutable CallMutex m_mut;
+  mutable CallMutex            m_mut;
 };
 
 #endif

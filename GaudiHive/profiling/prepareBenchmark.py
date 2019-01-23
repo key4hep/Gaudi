@@ -29,4 +29,5 @@ if __name__ == "__main__":
             config = prepareConfig("../options/BrunelScenario.py", n_threads=n_threads,
                                    n_parallel_events=n_events, n_parallel_algorithms=n_algos)
             # config.replace(".py",".log"))
-            print "/usr/bin/time -f %%S -o %s.time `alias gaudirun` %s > %s" % (config.replace(".py", ""), config, "/dev/null")
+            print "/usr/bin/time -f %%S -o %s.time `alias gaudirun` %s > %s" % (
+                config.replace(".py", ""), config, "/dev/null")

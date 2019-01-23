@@ -10,7 +10,8 @@ namespace Gaudi
   namespace Examples
   {
 
-    struct SelectTracks : Functional::Transformer<MyTrackVector( const MyTrackVector& )> {
+    struct SelectTracks final : Functional::Transformer<Gaudi::Examples::MyTrack::Selection(
+                                    const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )> {
 
       SelectTracks( const std::string& name, ISvcLocator* pSvc )
           : Transformer( name, pSvc, {KeyValue( "InputData", {"MyTracks"} )},
@@ -18,12 +19,11 @@ namespace Gaudi
       {
       }
 
-      MyTrackVector operator()( const MyTrackVector& in_tracks ) const override
+      Gaudi::Examples::MyTrack::Selection
+      operator()( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& in_tracks ) const override
       {
-        MyTrackVector out_tracks;
-        std::for_each( in_tracks.begin(), in_tracks.end(), [&out_tracks]( const MyTrack* t ) {
-          if ( t->px() >= 10. ) out_tracks.add( new MyTrack( *t ) );
-        } );
+        Gaudi::Examples::MyTrack::Selection out_tracks;
+        out_tracks.insert( in_tracks.begin(), in_tracks.end(), []( const MyTrack* t ) { return t->px() >= 10.; } );
         return out_tracks;
       }
     };

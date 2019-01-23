@@ -258,41 +258,41 @@ namespace NtApi
              (divide by sysconf(_SC_CLK_TCK).
 */
 struct linux_proc {
-  int pid;
-  char comm[400];
-  char state;
-  int ppid;
-  int pgrp;
-  int session;
-  int tty;
-  int tpgid;
-  unsigned long flags;
-  unsigned long minflt;
-  unsigned long cminflt;
-  unsigned long majflt;
-  unsigned long cmajflt;
-  unsigned long utime;
-  unsigned long stime;
-  long cutime;
-  long cstime;
-  long priority;
-  long nice;
-  long num_threads;
-  long itrealvalue;
+  int                pid;
+  char               comm[400];
+  char               state;
+  int                ppid;
+  int                pgrp;
+  int                session;
+  int                tty;
+  int                tpgid;
+  unsigned long      flags;
+  unsigned long      minflt;
+  unsigned long      cminflt;
+  unsigned long      majflt;
+  unsigned long      cmajflt;
+  unsigned long      utime;
+  unsigned long      stime;
+  long               cutime;
+  long               cstime;
+  long               priority;
+  long               nice;
+  long               num_threads;
+  long               itrealvalue;
   unsigned long long starttime;
-  unsigned long vsize;
-  long rss;
-  unsigned long rlim;
-  unsigned long startcode;
-  unsigned long endcode;
-  unsigned long startstack;
-  unsigned long kstkesp;
-  unsigned long kstkeip;
-  unsigned long signal;
-  unsigned long blocked;
-  unsigned long sigignore;
-  unsigned long sigcatch;
-  unsigned long wchan;
+  unsigned long      vsize;
+  long               rss;
+  unsigned long      rlim;
+  unsigned long      startcode;
+  unsigned long      endcode;
+  unsigned long      startstack;
+  unsigned long      kstkesp;
+  unsigned long      kstkeip;
+  unsigned long      signal;
+  unsigned long      blocked;
+  unsigned long      sigignore;
+  unsigned long      sigcatch;
+  unsigned long      wchan;
 };
 
 #ifdef __APPLE__
@@ -303,7 +303,7 @@ static long pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
 void readProcStat( long pid, linux_proc& pinfo )
 {
 
-  int cnt, fd;
+  int  cnt, fd;
   char buf[512];
 
   std::ostringstream ost;
@@ -510,11 +510,11 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* in
 #elif defined( _WIN32 )  // Windows 95,98...
 #elif defined( __linux ) // Linux
     const ssize_t bufsize = 1024;
-    char buf[bufsize];
+    char          buf[bufsize];
     pid = processID( pid );
     sprintf( buf, "/proc/%ld/statm", pid );
-    long size, resident, share, trs, lrs, drs, dt;
-    int fd        = open( buf, O_RDONLY );
+    long    size, resident, share, trs, lrs, drs, dt;
+    int     fd    = open( buf, O_RDONLY );
     ssize_t nread = read( fd, buf, bufsize );
     close( fd );
     if ( nread < bufsize && nread >= 0 ) buf[nread] = '\0';
@@ -628,15 +628,16 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     status = ( status == 0 ) ? 1 : 0;
 #elif defined( _WIN32 )  // Windows 95,98...
 #elif defined( __linux ) // Linux
-    static longlong prc_start          = 0;
-    bool myself                        = pid <= 0 || pid == ::getpid(); // avoid unnecessary calls to getpid if pid<0
+    static long long prc_start         = 0;
+    bool             myself            = pid <= 0 || pid == ::getpid(); // avoid unnecessary calls to getpid if pid<0
     if ( myself && prc_start == 0 ) {                                   // called only once to set prc_start
       linux_proc prc;
       readProcStat( processID( pid ), prc );
       // prc.startup is in ticks since system start, need to offset for absolute time
-      tms tmsb;
-      static longlong offset = 100 * longlong( time( nullptr ) ) - longlong( times( &tmsb ) );
-      prc_start              = ( prc.starttime + offset ) * TICK_TO_100NSEC;
+      tms              tmsb;
+      static long long offset =
+          100 * static_cast<long long>( time( nullptr ) ) - static_cast<long long>( times( &tmsb ) );
+      prc_start = ( prc.starttime + offset ) * TICK_TO_100NSEC;
     }
 
     if ( myself ) { // myself
@@ -648,8 +649,9 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     } else { // other process
       linux_proc prc;
       readProcStat( processID( pid ), prc );
-      tms tmsb;
-      static longlong offset = 100 * longlong( time( nullptr ) ) - longlong( times( &tmsb ) );
+      tms              tmsb;
+      static long long offset =
+          100 * static_cast<long long>( time( nullptr ) ) - static_cast<long long>( times( &tmsb ) );
 
       tms t;
       times( &t );
@@ -665,13 +667,13 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
 // FIXME (MCl): Make an alternative function get timing on OSX
 // times() seems to cause a segmentation fault
 #else // no /proc file system: assume sys_start for the first call
-    tms tmsb;
-    static clock_t sys_start = times( 0 );
-    static longlong offset   = 100 * longlong( time( 0 ) ) - sys_start;
-    clock_t now              = times( &tmsb );
-    info->CreateTime         = offset + now;
-    info->UserTime           = tmsb.tms_utime;
-    info->KernelTime         = tmsb.tms_stime;
+    tms              tmsb;
+    static clock_t   sys_start = times( 0 );
+    static long long offset    = 100 * long long( time( 0 ) ) - sys_start;
+    clock_t          now       = times( &tmsb );
+    info->CreateTime           = offset + now;
+    info->UserTime             = tmsb.tms_utime;
+    info->KernelTime           = tmsb.tms_stime;
     info->CreateTime *= TICK_TO_100NSEC;
     info->UserTime *= TICK_TO_100NSEC;
     info->KernelTime *= TICK_TO_100NSEC;

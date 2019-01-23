@@ -11,12 +11,10 @@
     @author David Quarrie
     @author Marco Clemencic
 */
-class ChronoAuditor : virtual public CommonAuditor
+class ChronoAuditor : public CommonAuditor
 {
 public:
-  ChronoAuditor( const std::string& name, ISvcLocator* pSvcLocator );
-
-  ~ChronoAuditor() override = default;
+  using CommonAuditor::CommonAuditor;
 
   StatusCode initialize() override;
 
@@ -31,7 +29,7 @@ private:
   inline std::string i_id( CustomEventTypeRef evt, const std::string& caller ) { return caller + ":" + evt; }
 
   SmartIF<IChronoStatSvc>& chronoSvc() { return m_chronoSvc; }
-  SmartIF<IChronoStatSvc> m_chronoSvc;
+  SmartIF<IChronoStatSvc>  m_chronoSvc;
 };
 
 #endif

@@ -1,10 +1,12 @@
 # Prepare dummy configurables
 from GaudiKernel.Configurable import ConfigurableAlgorithm, Configurable
+from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
 
 
 class MyAlg(ConfigurableAlgorithm):
     __slots__ = {'Text': 'some text',
-                 'Int': 23}
+                 'Int': 23,
+                 'DataHandle': DataObjectHandleBase('Location')}
 
     def getDlls(self):
         return 'Dummy'
@@ -26,7 +28,16 @@ def test_correct():
     a = MyAlg()
     a.Int = 42
     a.Text = 'value'
-    assert a.getValuedProperties() == {'Int': 42, 'Text': 'value'}
+    a.DataHandle = '/Event/X'
+    assert a.getValuedProperties() == {
+        'Int': 42, 'Text': 'value',
+        'DataHandle': DataObjectHandleBase('/Event/X')}
+
+
+def test_str_from_datahandle():
+    a = MyAlg()
+    a.Text = DataObjectHandleBase('value')
+    assert a.getProp('Text') == 'value'
 
 
 def test_invalid_value():
@@ -44,6 +55,17 @@ def test_invalid_value():
 
     try:
         a.Text = [123]
+        assert False, 'exception expected'
+    except AssertionError:
+        raise
+    except ValueError:
+        pass
+    except Exception, x:
+        assert False, 'ValueError exception expected, got %s' % type(
+            x).__name__
+
+    try:
+        a.DataHandle = [123]
         assert False, 'exception expected'
     except AssertionError:
         raise

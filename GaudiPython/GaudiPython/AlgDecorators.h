@@ -48,9 +48,9 @@ namespace GaudiPython
   public:
     // ========================================================================
     /// the actual type of vector of counters
-    typedef std::vector<const StatEntity*> Counters;
-    typedef std::vector<IAlgTool*> Tools;
-    typedef std::vector<IService*> Services;
+    typedef std::vector<Gaudi::Accumulators::PrintableCounter*> Counters;
+    typedef std::vector<IAlgTool*>                              Tools;
+    typedef std::vector<IService*>                              Services;
     // ========================================================================
     // the general functional methods
     // ========================================================================
@@ -112,10 +112,10 @@ namespace GaudiPython
     // ========================================================================
   public: // inspection: get the counter
     // ========================================================================
-    static const StatEntity* _counter_a_( const GaudiAlgorithm* alg, const std::string& name );
-    static const StatEntity* _counter_t_( const GaudiTool* alg, const std::string& name );
-    static const StatEntity* _counter_a_( const IAlgorithm* alg, const std::string& name );
-    static const StatEntity* _counter_t_( const IAlgTool* alg, const std::string& name );
+    static StatEntity* _counter_a_( const GaudiAlgorithm* alg, const std::string& name );
+    static StatEntity* _counter_t_( const GaudiTool* alg, const std::string& name );
+    static StatEntity* _counter_a_( const IAlgorithm* alg, const std::string& name );
+    static StatEntity* _counter_t_( const IAlgTool* alg, const std::string& name );
     // ========================================================================
   public: // inspection: get all tools
     // ========================================================================

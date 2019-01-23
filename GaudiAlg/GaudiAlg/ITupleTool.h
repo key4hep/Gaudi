@@ -34,7 +34,7 @@ public:
   DeclareInterfaceID( ITupleTool, 2, 0 );
 
   typedef Tuples::TupleID TupleID;
-  typedef Tuples::Tuple Tuple;
+  typedef Tuples::Tuple   Tuple;
 
   /** get N-tuple object ( book on-demand ) with unique identifier
    *
@@ -64,9 +64,6 @@ public:
 
   virtual Tuple evtCol( const TupleID& ID, const std::string& title = "",
                         const CLID& clid = CLID_RowWiseTuple ) const = 0;
-
-protected:
-  ~ITupleTool() override = default; ///< Destructor
 };
 
 // ============================================================================

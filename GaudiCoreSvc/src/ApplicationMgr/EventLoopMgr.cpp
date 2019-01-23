@@ -7,13 +7,13 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
 
 #include <chrono>
 
 #include "EventLoopMgr.h"
-#include "HistogramAgent.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( EventLoopMgr )
@@ -21,7 +21,7 @@ DECLARE_COMPONENT( EventLoopMgr )
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ StatusCode EventLoopMgr::initialize()
   // We do not expect a Event Selector necessarily being declared
   setProperty( m_appMgrProperty->getProperty( "EvtSel" ) ).ignore();
 
-  if ( m_evtsel != "NONE" || m_evtsel.length() == 0 ) {
+  if ( m_evtsel != "NONE" || m_evtsel.empty() ) {
     m_evtSelector = serviceLocator()->service( "EventSelector" );
     if ( m_evtSelector ) {
       // Setup Event Selector
@@ -182,10 +182,8 @@ StatusCode EventLoopMgr::stop()
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::finalize()
 {
-  StatusCode sc;
-
   // Finalize base class
-  sc = MinimalEventLoopMgr::finalize();
+  StatusCode sc = MinimalEventLoopMgr::finalize();
   if ( !sc.isSuccess() ) {
     error() << "Error finalizing base class" << endmsg;
     return sc;
@@ -193,27 +191,27 @@ StatusCode EventLoopMgr::finalize()
 
   // Save Histograms Now
   if ( m_histoPersSvc ) {
-    HistogramAgent agent;
-    sc = m_histoDataMgrSvc->traverseTree( &agent );
+    std::vector<DataObject*> objects;
+    sc = m_histoDataMgrSvc->traverseTree( [&objects]( IRegistry* reg, int ) {
+      DataObject* obj = reg->object();
+      if ( !obj || obj->clID() == CLID_StatisticsFile ) return false;
+      objects.push_back( obj );
+      return true;
+    } );
     if ( sc.isSuccess() ) {
-      IDataSelector* objects = agent.selectedObjects();
       // skip /stat entry!
-      if ( objects->size() > 0 ) {
-        for ( auto& i : *objects ) {
-          IOpaqueAddress* pAddr = nullptr;
-          StatusCode iret       = m_histoPersSvc->createRep( i, pAddr );
-          if ( iret.isSuccess() ) {
-            i->registry()->setAddress( pAddr );
-          } else {
-            sc = iret;
-          }
-        }
-        for ( auto& i : *objects ) {
-          IRegistry* reg              = i->registry();
-          StatusCode iret             = m_histoPersSvc->fillRepRefs( reg->address(), i );
-          if ( !iret.isSuccess() ) sc = iret;
-        }
-      }
+      sc = std::accumulate( begin( objects ), end( objects ), sc, [&]( StatusCode isc, auto& i ) {
+        IOpaqueAddress* pAddr = nullptr;
+        StatusCode      iret  = m_histoPersSvc->createRep( i, pAddr );
+        if ( iret.isFailure() ) return iret;
+        i->registry()->setAddress( pAddr );
+        return isc;
+      } );
+      sc = std::accumulate( begin( objects ), end( objects ), sc, [&]( StatusCode isc, auto& i ) {
+        IRegistry* reg  = i->registry();
+        StatusCode iret = m_histoPersSvc->fillRepRefs( reg->address(), i );
+        return iret.isFailure() ? iret : isc;
+      } );
       if ( sc.isSuccess() ) {
         info() << "Histograms converted successfully according to request." << endmsg;
       } else {
@@ -280,13 +278,13 @@ StatusCode EventLoopMgr::nextEvent( int maxevt )
   // DP Monitoring
   // Calculate runtime
   typedef std::chrono::high_resolution_clock Clock;
-  typedef Clock::time_point time_point;
+  typedef Clock::time_point                  time_point;
 
   const float oneOver1024 = 1.f / 1024.f;
 
-  static int total_nevt = 0;
-  DataObject* pObject   = nullptr;
-  StatusCode sc( StatusCode::SUCCESS, true );
+  static int  total_nevt = 0;
+  DataObject* pObject    = nullptr;
+  StatusCode  sc( StatusCode::SUCCESS, true );
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
@@ -355,13 +353,13 @@ StatusCode EventLoopMgr::nextEvent( int maxevt )
       return sc;
     }
   }
-  time_point end_time = Clock::now();
 
   if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
     debug() << "---> Loop Finished - "
             << " WSS " << System::mappedMemory( System::MemoryUnit::kByte ) * oneOver1024
             << " | total time (skipping 1st evt) "
-            << std::chrono::duration_cast<std::chrono::nanoseconds>( end_time - start_time ).count() << " ns" << endmsg;
+            << std::chrono::duration_cast<std::chrono::nanoseconds>( Clock::now() - start_time ).count() << " ns"
+            << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -378,9 +376,7 @@ StatusCode EventLoopMgr::getEventRoot( IOpaqueAddress*& refpAddr )
     sc = m_evtSelector->next( *m_evtContext );
     if ( sc.isSuccess() ) {
       sc = m_evtSelector->createAddress( *m_evtContext, refpAddr );
-      if ( !sc.isSuccess() ) {
-        warning() << "Error creating IOpaqueAddress." << endmsg;
-      }
+      if ( !sc.isSuccess() ) warning() << "Error creating IOpaqueAddress." << endmsg;
     }
   }
   return sc;

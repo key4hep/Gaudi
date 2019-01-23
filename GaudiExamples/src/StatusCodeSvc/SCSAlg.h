@@ -11,10 +11,8 @@ class SCSAlg : public Algorithm
 {
 
 public:
-  SCSAlg( const std::string& name, ISvcLocator* pSvcLocator );
-  StatusCode initialize() override;
+  using Algorithm::Algorithm;
   StatusCode execute() override;
-  StatusCode finalize() override;
 
   StatusCode test();
 

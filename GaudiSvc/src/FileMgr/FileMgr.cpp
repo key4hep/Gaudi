@@ -5,14 +5,11 @@
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "POSIXFileHandler.h"
-#include "RootFileHandler.h"
-
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-DECLARE_SERVICE_FACTORY( FileMgr )
+DECLARE_COMPONENT( FileMgr )
 
 using namespace std;
 using namespace Io;
@@ -21,11 +18,6 @@ using namespace Io;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 namespace
 {
-
-  void set_bit( int& f, const unsigned int& b ) { f |= 1 << b; }
-
-  bool get_bit( const int& f, const unsigned int& b ) { return f & ( 1 << b ); }
-
   static const std::string s_empty = "";
 
   constexpr struct to_name_t {
@@ -33,21 +25,9 @@ namespace
     std::string operator()( const std::pair<std::string, FileAttr*>& f ) const { return f.first; }
   } to_name{};
 
-  constexpr struct select1st_t {
-    template <typename T, typename S>
-    const T& operator()( const std::pair<T, S>& p ) const
-    {
-      return p.first;
-    }
-  } select1st{};
+  const auto select1st = []( auto&& x ) -> decltype( auto ) { return std::get<0>( std::forward<decltype( x )>( x ) ); };
 
-  constexpr struct select2nd_t {
-    template <typename T, typename S>
-    const S& operator()( const std::pair<T, S>& p ) const
-    {
-      return p.second;
-    }
-  } select2nd{};
+  const auto select2nd = []( auto&& x ) -> decltype( auto ) { return std::get<1>( std::forward<decltype( x )>( x ) ); };
 
   template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
   OutputIterator transform_if( InputIterator first, InputIterator last, OutputIterator result, UnaryOperation op,
@@ -102,14 +82,14 @@ StatusCode FileMgr::initialize()
     // setup file handler for ROOT
 
     msgSvc()->setOutputLevel( "RootFileHandler", m_outputLevel.value() );
-    m_rfh.reset( new RootFileHandler( msgSvc(), m_ssl_proxy, m_ssl_cert ) );
+    m_rfh.emplace( msgSvc(), m_ssl_proxy, m_ssl_cert );
 
-    auto rfh = m_rfh.get(); // used in the lambdas to avoid capturing 'this'
+    auto&        rfh = m_rfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlr(
-        Io::ROOT, [rfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
-                         void*& ptr ) -> Io::open_t { return rfh->openRootFile( n, f, desc, fd, ptr ); },
-        [rfh]( void* ptr ) -> Io::close_t { return rfh->closeRootFile( ptr ); },
-        [rfh]( void* ptr, const Io::IoFlags& f ) -> Io::reopen_t { return rfh->reopenRootFile( ptr, f ); } );
+        Io::ROOT, [&rfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
+                          void*& ptr ) -> Io::open_t { return rfh.openRootFile( n, f, desc, fd, ptr ); },
+        [&rfh]( void* ptr ) -> Io::close_t { return rfh.closeRootFile( ptr ); },
+        [&rfh]( void* ptr, const Io::IoFlags& f ) -> Io::reopen_t { return rfh.reopenRootFile( ptr, f ); } );
 
     if ( regHandler( hdlr ).isFailure() ) {
       error() << "unable to register ROOT file handler with FileMgr" << endmsg;
@@ -121,14 +101,14 @@ StatusCode FileMgr::initialize()
     // setup file handler for POSIX
 
     msgSvc()->setOutputLevel( "POSIXFileHandler", m_outputLevel.value() );
-    m_pfh.reset( new POSIXFileHandler( msgSvc() ) );
+    m_pfh.emplace( msgSvc() );
 
-    auto pfh = m_pfh.get(); // used in the lambdas to avoid capturing 'this'
+    auto&        pfh = m_pfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlp(
-        Io::POSIX, [pfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
-                          void*& ptr ) -> Io::open_t { return pfh->openPOSIXFile( n, f, desc, fd, ptr ); },
-        [pfh]( Io::Fd fd ) -> Io::close_t { return pfh->closePOSIXFile( fd ); },
-        [pfh]( Io::Fd fd, const Io::IoFlags& f ) -> Io::reopen_t { return pfh->reopenPOSIXFile( fd, f ); } );
+        Io::POSIX, [&pfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
+                           void*& ptr ) -> Io::open_t { return pfh.openPOSIXFile( n, f, desc, fd, ptr ); },
+        [&pfh]( Io::Fd fd ) -> Io::close_t { return pfh.closePOSIXFile( fd ); },
+        [&pfh]( Io::Fd fd, const Io::IoFlags& f ) -> Io::reopen_t { return pfh.reopenPOSIXFile( fd, f ); } );
 
     if ( regHandler( hdlp ).isFailure() ) {
       error() << "unable to register ROOT file handler with FileMgr" << endmsg;
@@ -154,8 +134,8 @@ StatusCode FileMgr::finalize()
 
   if ( !m_files.empty() ) {
     auto& log = warning();
-    log << "At finalize, the following files remained open:" << endl;
-    for ( const auto& itr : m_files ) log << *( itr.second ) << endl;
+    log << "At finalize, the following files remained open:\n";
+    for ( const auto& itr : m_files ) log << *( itr.second ) << '\n';
     log << endmsg;
   }
 
@@ -169,14 +149,14 @@ StatusCode FileMgr::finalize()
       debug() << "Saving log to \"" << m_logfile.value() << "\"" << endmsg;
       for ( const auto& itr : m_files ) {
         ofs << itr.second->name() << "  " << itr.second->tech() << "  " << itr.second->desc() << "  "
-            << itr.second->iflags() << endl;
+            << itr.second->iflags() << '\n';
       }
 
       set<FileAttr> fs;
       for ( const auto& it2 : m_oldFiles ) fs.insert( *it2 );
       for ( const auto& it3 : fs ) {
         ofs << it3.name() << "  " << it3.tech() << "  " << it3.desc() << "  " << it3.iflags()
-            << ( it3.isShared() ? "  SHARED" : "" ) << endl;
+            << ( it3.isShared() ? "  SHARED" : "" ) << '\n';
       }
       ofs.close();
     }
@@ -311,7 +291,7 @@ open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::
   verbose() << "open(" << tech << "," << caller << ",\"" << fname << "\",\"" << desc << "\"," << flags
             << ( shared ? ",shared" : ",unshared" ) << ")" << endmsg;
 
-  open_t r = -1;
+  open_t   r = -1;
   FileHdlr fh;
   if ( getHandler( tech, fh ).isFailure() ) return r;
 
@@ -406,8 +386,8 @@ open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::
       r = 1;
     } else {
       warning() << "open call for file \"" << fname << "\" returned a pre-existing file with different"
-                << " FileAttributes -" << endl
-                << "old: " << *( itr->second ) << endl
+                << " FileAttributes -\n"
+                << "old: " << *( itr->second ) << '\n'
                 << "new: " << *fa << endmsg;
       r = 2;
     }
@@ -645,8 +625,8 @@ reopen_t FileMgr::reopen( Fd fd, const IoFlags& flags, const std::string& caller
     return r;
   }
 
-  FileAttr* fa = itr->second;
-  IoTech tech  = fa->tech();
+  FileAttr* fa   = itr->second;
+  IoTech    tech = fa->tech();
 
   FileHdlr fh;
 
@@ -712,8 +692,8 @@ reopen_t FileMgr::reopen( void* vp, const IoFlags& flags, const std::string& cal
   }
 
   FileAttr* fa = itr->second;
-  FileHdlr fh;
-  IoTech tech = fa->tech();
+  FileHdlr  fh;
+  IoTech    tech = fa->tech();
 
   if ( getHandler( tech, fh ).isFailure() ) {
     return r;
@@ -1043,10 +1023,10 @@ void* FileMgr::fptr( const Io::Fd& fd ) const
 void FileMgr::listFiles() const
 {
 
-  info() << "listing registered files [" << ( m_files.size() + m_oldFiles.size() ) << "]:" << endl;
+  info() << "listing registered files [" << ( m_files.size() + m_oldFiles.size() ) << "]:\n";
 
-  for ( auto& itr : m_files ) info() << itr.second << endl;
-  for ( auto& it2 : m_oldFiles ) info() << *it2 << endl;
+  for ( auto& itr : m_files ) info() << itr.second << '\n';
+  for ( auto& it2 : m_oldFiles ) info() << *it2 << '\n';
 
   info() << endmsg;
 }
@@ -1085,7 +1065,7 @@ StatusCode FileMgr::getHandler( const std::string& fname, Io::FileHdlr& hdlr ) c
     return StatusCode::FAILURE;
   }
 
-  auto itr    = fitr.first;
+  auto   itr  = fitr.first;
   IoTech tech = itr->second->tech();
 
   ++itr;
@@ -1105,9 +1085,9 @@ StatusCode FileMgr::getHandler( const std::string& fname, Io::FileHdlr& hdlr ) c
 void FileMgr::listHandlers() const
 {
 
-  info() << "Listing registered handlers:" << endl;
+  info() << "Listing registered handlers:\n";
 
-  for ( const auto& itr : m_handlers ) info() << "    " << itr.first << endl;
+  for ( const auto& itr : m_handlers ) info() << "    " << itr.first << '\n';
   info() << endmsg;
 }
 
@@ -1137,22 +1117,22 @@ StatusCode FileMgr::regAction( bfcn_action_t bf, const Io::Action& a, const Io::
 void FileMgr::listActions() const
 {
 
-  info() << "listing registered actions" << endl;
+  info() << "listing registered actions\n";
 
   for ( const auto& iit : m_actions ) {
-    Io::IoTech t       = iit.first;
+    Io::IoTech       t = iit.first;
     const actionMap& m = iit.second;
 
     if ( !m.empty() ) {
       info() << " --- Tech: ";
       if ( t == Io::UNKNOWN ) {
-        info() << "ALL ---" << endl;
+        info() << "ALL ---\n";
       } else {
-        info() << t << " ---" << endl;
+        info() << t << " ---\n";
       }
       for ( const auto& iia : m ) {
         for ( const auto& it2 : iia.second ) {
-          info() << "   " << iia.first << "  " << it2.second << endl;
+          info() << "   " << iia.first << "  " << it2.second << '\n';
         }
       }
     }
@@ -1190,10 +1170,7 @@ StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const
 {
 
   auto mitr = m.find( a );
-
-  if ( mitr == m.end() || mitr->second.empty() ) {
-    return StatusCode::SUCCESS;
-  }
+  if ( mitr == m.end() || mitr->second.empty() ) return StatusCode::SUCCESS;
 
   ON_DEBUG
   debug() << "executing " << mitr->second.size() << " " << a << " actions on " << *fa << " from " << caller << endmsg;
@@ -1202,7 +1179,7 @@ StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const
 
   auto it2 = m_supMap.find( fa->name() );
   if ( it2 != m_supMap.end() ) {
-    if ( get_bit( it2->second, a ) || get_bit( it2->second, Io::INVALID_ACTION ) ) {
+    if ( it2->second[a] || it2->second[Io::INVALID_ACTION] ) {
       ON_DEBUG
       debug() << "     --> suppressing callback action for " << a << endmsg;
       return StatusCode::SUCCESS;
@@ -1227,7 +1204,6 @@ StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const
 
 bool FileMgr::accessMatch( const Io::IoFlags& fold, const Io::IoFlags& fnew, bool /*strict*/ ) const
 {
-
   ON_VERBOSE
   verbose() << "accessMatch  old: " << fold << "  new: " << fnew << endmsg;
 
@@ -1242,41 +1218,26 @@ void FileMgr::suppressAction( const std::string& f ) { return suppressAction( f,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void FileMgr::suppressAction( const std::string& f, const Io::Action& a )
-{
-
-  auto it2 = m_supMap.find( f );
-  if ( it2 == m_supMap.end() ) {
-    int b( 0 );
-    set_bit( b, a );
-    m_supMap[f] = b;
-  } else {
-    set_bit( it2->second, a );
-  }
-}
+void FileMgr::suppressAction( const std::string& f, const Io::Action& a ) { m_supMap[f].set( a ); }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void FileMgr::listSuppression() const
 {
-
   if ( m_supMap.empty() ) return;
 
-  info() << "listing suppressed file actions" << endl;
+  info() << "listing suppressed file actions\n";
 
-  for ( auto it2 = m_supMap.begin(); it2 != m_supMap.end(); ++it2 ) {
-    info() << "  " << it2->first;
-    if ( get_bit( it2->second, Io::INVALID_ACTION ) ) {
-      info() << " ALL" << endl;
+  for ( const auto& sup : m_supMap ) {
+    info() << "  " << sup.first;
+    if ( sup.second[Io::INVALID_ACTION] ) {
+      info() << " ALL\n";
     } else {
-      for ( int i = 0; i < Io::INVALID_ACTION; ++i ) {
-        if ( get_bit( it2->second, i ) ) {
-          info() << " " << (Io::Action)i;
-        }
+      for ( unsigned i = 0; i != sup.second.size(); ++i ) {
+        if ( sup.second[i] ) info() << " " << (Io::Action)i;
       }
-      info() << endl;
+      info() << '\n';
     }
   }
-
   info() << endmsg;
 }

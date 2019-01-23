@@ -29,9 +29,9 @@ namespace HiveRndm
   class GAUDI_API HiveNumbers
   {
   private:
-    unsigned int m_buffer_index;
-    const unsigned int m_buffer_size;
-    std::vector<double> m_buffer;
+    unsigned int            m_buffer_index;
+    const unsigned int      m_buffer_size;
+    std::vector<double>     m_buffer;
     static HiveNumbersMutex m_genMutex;
 
   protected:

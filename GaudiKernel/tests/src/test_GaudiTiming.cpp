@@ -31,6 +31,8 @@
 // provides macros for the tests
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <memory>
+
 namespace GaudiKernelTest
 {
   class TimingTest : public CppUnit::TestFixture
@@ -103,7 +105,7 @@ namespace GaudiKernelTest
       // This should result in non-zero user and kernel times
       t0      = System::getProcessTime();
       float x = 1.5;
-      long m  = 0;
+      long  m = 0;
       for ( int i = 0; i < 10000; i++ ) {
         x *= sin( x ) / atan( x ) * tanh( x ) * sqrt( x );
         m += System::virtualMemory();
@@ -138,8 +140,11 @@ namespace GaudiKernelTest
       }
       CPPUNIT_ASSERT_EQUAL( c1.nOfMeasurements(), 10UL );
       // average time may be affected by the load of the machine
-      CPPUNIT_ASSERT( std::abs( int( c1.eMeanTime() / 1000 ) - 10 ) < 1 );
-      CPPUNIT_ASSERT( c1.uMaximalTime() >= c1.uMinimalTime() );
+      CPPUNIT_ASSERT( c1.eMeanTime() >= c1.eMinimalTime() );
+      CPPUNIT_ASSERT( c1.eMeanTime() <= c1.eMaximalTime() );
+      CPPUNIT_ASSERT( c1.eMeanTime() >= 8000 );
+      CPPUNIT_ASSERT( c1.eMeanTime() <= 19000 );
+      CPPUNIT_ASSERT( c1.eMaximalTime() >= c1.eMinimalTime() );
 
       ChronoEntity c2;
       c2 += c1;
@@ -147,9 +152,9 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT( c1 < c2 );
 
       // Performance
-      ChronoEntity c3;
+      ChronoEntity        c3;
       System::ProcessTime t0 = System::getProcessTime();
-      int N                  = 1e6;
+      int                 N  = 1e6;
       for ( int i = 0; i < N; i++ ) {
         c3.start();
         c3.stop();
@@ -238,7 +243,8 @@ int main( int argc, char* argv[] )
   // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
   //                                                    std::cout ) );
 
-  runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
+  auto l = std::make_unique<GaudiKernelTest::ProgressListener>();
+  runner.eventManager().addListener( l.get() );
 
   // CppUnit::TestResultCollector *collector =
   //  new CppUnit::TestResultCollector();

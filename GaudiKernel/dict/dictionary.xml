@@ -4,7 +4,6 @@
  <class pattern="DataObjectHandle*"/>
 
   <!-- Base classes in GaudiKernel -->
-  <class name="IssueSeverity"/>
   <class name="StatusCode"/>
   <class name="Gaudi::Details::PropertyBase">
     <field name="m_typeinfo" transient="true"/>
@@ -50,7 +49,6 @@
   <class name="IConversionSvc"/>
   <class name="IConverter"/>
   <class name="ICounterSummarySvc"/>
-  <class name="ICounterSvc"/>
   <class name="IDataManagerSvc"/>
   <class name="IDataProviderSvc"/>
   <class name="IDataSelector"/>
@@ -72,7 +70,6 @@
   <class name="IInspector"/>
   <class name="IInterface"/>
   <class name="InterfaceID"/>
-  <class name="IIssueLogger"/>
   <class name="IJobOptionsSvc"/>
   <class name="IMagneticFieldSvc"/>
   <class name="IMessageSvc"/>
@@ -111,7 +108,6 @@
   <class name="IUpdateManagerSvc"/>
   <class name="IUpdateManagerSvc::PythonHelper"/>
   <class name="IValidity"/>
-  <class name="MetaData"/>
 
   <!-- Gaudi data store classes  -->
   <class name="ContainedObject"         id="000000BE-0000-0000-0000-000000000000">

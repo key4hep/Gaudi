@@ -24,9 +24,7 @@ class IRegistry;
 class GAUDI_API Converter : public implements<IConverter>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IConverter*, ISvcLocator*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IConverter*( ISvcLocator* )>;
 
   /// Initialize the converter
   StatusCode initialize() override;
@@ -97,16 +95,13 @@ public:
   template <class T>
   StatusCode service( const std::string& type, const std::string& name, T*& psvc ) const
   {
-    return service_i( type, name, T::interfaceID(), (void**)&psvc );
+    return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
   }
 
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service( const std::string& name, const bool createIf = true ) const;
 
 protected:
-  /// Standard Destructor
-  ~Converter() override = default;
-
   /// Retrieve pointer to service locator
   SmartIF<ISvcLocator>& serviceLocator() const;
   /// Retrieve pointer to message service
@@ -147,8 +142,8 @@ public:
 
 private:
   friend std::ostream& operator<<( std::ostream&, const ConverterID& );
-  long m_stype;
-  CLID m_clid;
+  long                 m_stype;
+  CLID                 m_clid;
 };
 
 inline std::ostream& operator<<( std::ostream& s, const ConverterID& id )
@@ -156,32 +151,7 @@ inline std::ostream& operator<<( std::ostream& s, const ConverterID& id )
   return s << "CNV_" << id.m_stype << "_" << id.m_clid;
 }
 
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-class CnvFactory final
-{
-public:
-#ifndef __REFLEX__
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... a1 )
-  {
-    return new T( std::forward<Args>( a1 )... );
-  }
-#endif
-};
-
 // Macro to declare component factories
-#define DECLARE_CONVERTER_FACTORY( x )                                                                                 \
-  DECLARE_FACTORY_WITH_CREATOR_AND_ID( x, CnvFactory<x>, ConverterID( x::storageType(), x::classID() ),                \
-                                       Converter::Factory )
-#define DECLARE_NAMESPACE_CONVERTER_FACTORY( n, x ) DECLARE_CONVERTER_FACTORY( n::x )
-
-#else
-
-// Macro to declare component factories
-#define DECLARE_CONVERTER_FACTORY( x ) DECLARE_COMPONENT_WITH_ID( x, ConverterID( x::storageType(), x::classID() ) )
-#define DECLARE_NAMESPACE_CONVERTER_FACTORY( n, x ) DECLARE_CONVERTER_FACTORY( n::x )
-
-#endif
+#define DECLARE_CONVERTER( x ) DECLARE_COMPONENT_WITH_ID( x, ConverterID( x::storageType(), x::classID() ) )
 
 #endif // GAUDIKERNEL_CONVERTER_H

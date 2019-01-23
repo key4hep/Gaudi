@@ -20,7 +20,7 @@
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 /// needed when no service is found or could be returned
@@ -69,7 +69,7 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
   }
 
   const std::string& name = typeName.name();
-  std::string type        = typeName.type();
+  std::string        type = typeName.type();
   if ( !typeName.haveType() ) { // the type is not explicit
     // see we have some specific type mapping for the name
     auto it = m_maptype.find( typeName.name() );
@@ -82,7 +82,7 @@ SmartIF<IService>& ServiceManager::createService( const Gaudi::Utils::TypeNameSt
   auto ip = type.find( "__" );
   if ( ip != std::string::npos ) type.erase( ip, type.length() );
 
-  IService* service = Service::Factory::create( type, name, this );
+  IService* service = Service::Factory::create( type, name, this ).release();
   if ( !service ) {
     fatal() << "No Service factory for " << type << " available." << endmsg;
     return no_service;
@@ -105,7 +105,7 @@ StatusCode ServiceManager::addService( IService* svc, int prio )
 //------------------------------------------------------------------------------
 {
   ListSvc::iterator it = find( svc );
-  LockGuard_t lck( m_gLock );
+  LockGuard_t       lck( m_gLock );
   if ( it != m_listsvc.end() ) {
     it->priority = prio; // if the service is already known, it is equivalent to a setPriority
     it->active   = true; // and make it active
@@ -174,11 +174,12 @@ SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& 
     // then release global lock
 
     LockGuard_t lk( m_gLock );
-    auto mit = m_lockMap.find( name );
+    auto        mit = m_lockMap.find( name );
     if ( mit == m_lockMap.end() ) {
-      mit = m_lockMap.emplace( name, std::unique_ptr<Mutex_t>( new Mutex_t ) ).first;
+      mit = m_lockMap.emplace( std::piecewise_construct_t{}, std::forward_as_tuple( name ), std::forward_as_tuple() )
+                .first;
     }
-    imut = mit->second.get();
+    imut = &mit->second;
   }
 
   {
@@ -216,7 +217,7 @@ const std::list<IService*>& ServiceManager::getServices() const
 {
   m_listOfPtrs.clear();
   std::transform( std::begin( m_listsvc ), std::end( m_listsvc ), std::back_inserter( m_listOfPtrs ),
-                  []( ListSvc::const_reference i ) { return const_cast<IService*>( i.service.get() ); } );
+                  []( ListSvc::const_reference i ) { return i.service.get(); } );
   return m_listOfPtrs;
 }
 
@@ -421,7 +422,7 @@ StatusCode ServiceManager::finalize()
 
   // get list of PostFinalize clients
   std::vector<IIncidentListener*> postFinList;
-  auto p_inc = service<IIncidentSvc>( "IncidentSvc", false );
+  auto                            p_inc = service<IIncidentSvc>( "IncidentSvc", false );
   if ( p_inc ) {
     p_inc->getListeners( postFinList, IncidentType::SvcPostFinalize );
     p_inc.reset();
@@ -533,6 +534,15 @@ void ServiceManager::dump() const
 
   log << "=================================================================\n";
   log << endmsg;
+}
+
+void ServiceManager::outputLevelUpdate()
+{
+  resetMessaging();
+  for ( auto& svcItem : m_listsvc ) {
+    const auto svc = dynamic_cast<Service*>( svcItem.service.get() );
+    if ( svc ) svc->resetMessaging();
+  }
 }
 
 DECLARE_OBJECT_FACTORY( ServiceManager )

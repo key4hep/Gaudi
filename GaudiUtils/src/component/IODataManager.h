@@ -31,17 +31,17 @@ namespace Gaudi
   {
   protected:
     typedef const std::string& CSTR;
-    struct Entry final {
-      std::string type;
-      IoType ioType;
+    struct Entry               final {
+      std::string      type;
+      IoType           ioType;
       IDataConnection* connection;
-      bool keepOpen;
+      bool             keepOpen;
       Entry( CSTR tech, bool k, IoType iot, IDataConnection* con )
           : type( tech ), ioType( iot ), connection( con ), keepOpen( k )
       {
       }
     };
-    typedef std::map<std::string, Entry*> ConnectionMap;
+    typedef std::map<std::string, Entry*>      ConnectionMap;
     typedef std::map<std::string, std::string> FidMap;
 
     Gaudi::Property<std::string> m_catalogSvcName{this, "CatalogType", "Gaudi::MultiFileCatalog/FileCatalog",
@@ -49,7 +49,7 @@ namespace Gaudi
     Gaudi::Property<bool> m_useGFAL{this, "UseGFAL", true, "flag for auto gfal data access"};
     Gaudi::Property<bool> m_quarantine{this, "QuarantineFiles", true,
                                        "if unaccessible files should be quarantines in job"};
-    Gaudi::Property<int> m_ageLimit{this, "AgeLimit", 2, "age limit"};
+    Gaudi::Property<int>  m_ageLimit{this, "AgeLimit", 2, "age limit"};
     Gaudi::Property<bool> m_disablePFNWarning{
         this, "DisablePFNWarning", false,
         "if set to True,  we will not report when a file is opened by its physical name"};
@@ -59,7 +59,7 @@ namespace Gaudi
     /// Reference to file catalog
     SmartIF<IFileCatalog> m_catalog;
     /// Map of FID to PFN
-    FidMap m_fidMap;
+    FidMap     m_fidMap;
     StatusCode connectDataIO( int typ, IoType rw, CSTR fn, CSTR technology, bool keep, Connection* con );
     StatusCode reconnect( Entry* e );
     StatusCode error( CSTR msg, bool rethrow );
@@ -70,9 +70,6 @@ namespace Gaudi
   public:
     /// Inherited constructor
     using extends::extends;
-
-    /// Standard destructor
-    ~IODataManager() override = default;
 
     /// IService implementation: initialize the service
     StatusCode initialize() override;

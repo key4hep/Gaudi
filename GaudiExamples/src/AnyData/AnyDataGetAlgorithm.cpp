@@ -2,7 +2,6 @@
 #include <vector>
 
 // from Gaudi
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/AnyDataWrapper.h"
 
 // local
@@ -42,11 +41,9 @@ StatusCode AnyDataGetAlgorithm<T>::execute()
            << endmsg;
   }
 
-  const auto ids = m_ids.get();
+  const auto& ids = m_ids.get();
   info() << "AnyDataHandler holds:";
-  for ( const auto& i : *ids ) {
-    info() << i << " ";
-  }
+  for ( const auto& i : *ids ) info() << i << " ";
   info() << endmsg;
   return StatusCode::SUCCESS;
 }

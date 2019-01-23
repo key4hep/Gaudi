@@ -9,7 +9,7 @@
 
 // Static Factory declaration
 typedef TemplatedAlg<int, std::vector<std::string>> t1;
-typedef TemplatedAlg<double, bool> t2;
+typedef TemplatedAlg<double, bool>                  t2;
 
 DECLARE_COMPONENT( t1 )
 DECLARE_COMPONENT_WITH_ID( t1, "TAlgIS" )

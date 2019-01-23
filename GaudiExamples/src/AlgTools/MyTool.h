@@ -19,21 +19,20 @@ public:
 
   /// IMyTool interface
   const std::string& message() const override;
-  void doIt() const override;
+  void               doIt() const override;
 
   /// Overriding initialize and finalize
   StatusCode initialize() override;
   StatusCode finalize() override;
 
-protected:
   /// Standard destructor
   ~MyTool() override;
 
 private:
   /// Properties
-  Gaudi::Property<int> m_int{this, "Int", 100};
-  Gaudi::Property<double> m_double{this, "Double", 100.};
+  Gaudi::Property<int>         m_int{this, "Int", 100};
+  Gaudi::Property<double>      m_double{this, "Double", 100.};
   Gaudi::Property<std::string> m_string{this, "String", "hundred"};
-  Gaudi::Property<bool> m_bool{this, "Bool", true};
+  Gaudi::Property<bool>        m_bool{this, "Bool", true};
 };
 #endif // GAUDIEXANMPLES_MYTOOL_H

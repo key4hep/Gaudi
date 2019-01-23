@@ -1,64 +1,122 @@
 #ifndef GAUDIKERNEL_STATUSCODE_H
 #define GAUDIKERNEL_STATUSCODE_H
 
+#include "boost/preprocessor/facilities/overload.hpp"
 #include <ostream>
+#include <type_traits>
+#include <utility>
 
-#include "GaudiKernel/IssueSeverity.h"
 #include "GaudiKernel/Kernel.h"
 
-#include <memory>
-
-/**
- * @class StatusCode StatusCode.h GaudiKernel/StatusCode.h
- *
- * This class is used for returning status codes from appropriate routines.
- *
- * @author Iain Last
- * @author Pere Mato
- * @author Sebastien Ponce
- */
-
-class IMessageSvc;
-class IStatusCodeSvc;
-
-class IgnoreError
-{
+template <typename T>
+struct is_StatusCode_enum : std::false_type {
 };
 
+/**
+ * @class StatusCode
+ *
+ * This class is used for returning status codes from appropriate routines.
+ * A StatusCode is comprised of an (integer) value and a category (similar to std::error_code).
+ * By default StatusCodes are created within a default StatusCode::Category, which
+ * defines the isSuccess(), isFailure() and isRecoverable() behaviour depending on
+ * the value of the StatusCode. This behaviour can be modified by defining a custom
+ * StatusCode::Category and overriding the respective methods.
+ *
+ * To define a new StatusCode::Category, do the following:
+ * - Define an enum class with the values of the StatusCode
+ * - Register the enum with `STATUSCODE_ENUM_DECL( MyEnum )`
+ * - Derive your category from StatusCode::Category and implement/override the relevant methods
+ * - Register the new category with `STATUSCODE_ENUM_IMPL( MyEnum, MyCategory )` in a .cpp file
+ *
+ * \par Combining StatusCodes
+ *  - The bitwise logic operators (&, |, &=, |=) can be used to combine StatusCodes and follows
+ *    three-valued (ternary) logic with RECOVERABLE being the third state. No short-circuiting is applied:
+ *    \code
+ *       StatusCode sc = sc1 & sc2;
+ *       sc |= sc3;
+ *    \endcode
+ *  - The boolean logic operators (&&, ||) perform regular two-valued logic only considering
+ *    success/failure. The usual short-circuiting applies:
+ *    \code
+ *       bool b = sc1 && sc2;
+ *    \endcode
+ *
+ * \note
+ * The StatusCode values 0 and 1 are considered FAILURE/SUCCESS for all categories, i.e.
+ * - operator==() and operator!=() ignore the category for these two values
+ * - isSuccess() and isFailure() cannot be overridden for these two values
+ *
+ * \remark See https://akrzemi1.wordpress.com/2017/07/12/your-own-error-code for details on the underlying design
+ */
 class StatusCode final
 {
 public:
-  enum { FAILURE = 0, SUCCESS = 1, RECOVERABLE = 2 };
+  typedef unsigned long code_t; ///< type of StatusCode value
 
-  /// Constructor.
+  enum class ErrorCode : code_t { FAILURE = 0, SUCCESS = 1, RECOVERABLE = 2 };
+
+  /**
+   * @class StatusCode::Category
+   *
+   * The category assigned to a StatusCode. Derive from this class to implement your own category.
+   * The mapping of StatusCode values to success and recoverable conditions can be defined by
+   * overriding the appropriate methods.
+   */
+  struct Category {
+    constexpr Category() noexcept = default;
+    virtual ~Category() {}
+
+    /// Name of the category
+    virtual const char* name() const = 0;
+
+    /// Description for code within this category
+    virtual std::string message( code_t code ) const { return "UNKNOWN(" + std::to_string( code ) + ")"; }
+
+    /// Is code considered success ?
+    /// \note isFailure() cannot be overridden as it is defined as `!`isSuccess()
+    virtual bool isSuccess( code_t code ) const { return code == static_cast<code_t>( ErrorCode::SUCCESS ); }
+
+    /// Is code considered recoverable ?
+    virtual bool isRecoverable( code_t code ) const { return code == static_cast<code_t>( ErrorCode::RECOVERABLE ); }
+  };
+
+  /// Default Gaudi StatusCode category
+  static const Category& default_category() noexcept;
+
+  // Provide shorthands for default code values
+  constexpr const static auto SUCCESS     = ErrorCode::SUCCESS;
+  constexpr const static auto FAILURE     = ErrorCode::FAILURE;
+  constexpr const static auto RECOVERABLE = ErrorCode::RECOVERABLE;
+
+  /// Default constructor
   StatusCode() = default;
 
-  StatusCode( unsigned long code, IssueSeverity&& sev ) : d_code( code )
+  /// Constructor from enum type (allowing implicit conversion)
+  template <typename T, typename = typename std::enable_if<is_StatusCode_enum<T>::value>::type>
+  StatusCode( T sc, bool checked = false ) noexcept
   {
-    try { // ensure that we do not throw even if we cannot move the severity
-      m_severity = std::make_shared<const IssueSeverity>( std::move( sev ) );
-    } catch ( ... ) {
-    }
+    *this     = StatusCode( static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance );
+    m_checked = checked;
   }
 
-  StatusCode( IssueSeverity&& is )
-      : StatusCode( is.getLevel() == IssueSeverity::RECOVERABLE
-                        ? StatusCode::RECOVERABLE
-                        : ( is.getLevel() < IssueSeverity::ERROR ? StatusCode::SUCCESS : StatusCode::FAILURE ),
-                    std::move( is ) )
+  /// Constructor from code_t in the default category (explicit conversion only)
+  explicit StatusCode( code_t code, const StatusCode::Category& cat = default_category(),
+                       bool checked = false ) noexcept
+      : m_cat( &cat ), m_code( code ), m_checked( checked )
   {
   }
 
-  StatusCode( unsigned long code, bool checked = false ) : d_code( code ), m_checked( checked ) {}
+  /// Constructor from code_t and category (explicit conversion only)
+  explicit StatusCode( code_t code, bool checked ) noexcept : StatusCode( code, default_category(), checked ) {}
 
-  StatusCode( const StatusCode& rhs ) : d_code( rhs.d_code ), m_checked( rhs.m_checked ), m_severity( rhs.m_severity )
+  /// Copy constructor
+  StatusCode( const StatusCode& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked )
   {
     rhs.m_checked = true;
   }
 
-  /// Move constructor.
-  StatusCode( StatusCode&& rhs ) noexcept
-      : d_code( rhs.d_code ), m_checked( rhs.m_checked ), m_severity( std::move( rhs.m_severity ) )
+  /// Move constructor
+  StatusCode( StatusCode&& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked )
   {
     rhs.m_checked = true;
   }
@@ -69,80 +127,84 @@ public:
     if ( UNLIKELY( s_checking ) ) check();
   }
 
-  /** Test for a status code of SUCCESS.
-   * N.B. This is the only case where a function has succeeded.
-   */
-  bool isSuccess() const
+  StatusCode& operator=( const StatusCode& rhs ) noexcept
   {
-    m_checked = true;
-    return ( d_code == SUCCESS );
+    m_cat     = rhs.m_cat;
+    m_code    = rhs.m_code;
+    m_checked = std::exchange( rhs.m_checked, true );
+    return *this;
   }
 
-  /** Test for a status code of FAILURE.
-   * N.B. This is a specific type of failure where there aren't any more
-   * appropriate status codes. To test for any failure use :
-   * if ( !StatusCode.isSuccess() ) ...
-   */
+  bool isSuccess() const;
   bool isFailure() const { return !isSuccess(); }
-  bool isRecoverable() const
+  bool isRecoverable() const;
+
+  /// Shorthand for isSuccess()
+  explicit operator bool() const { return isSuccess(); }
+
+  /// Retrieve value ("checks" the StatusCode)
+  code_t getCode() const
   {
     m_checked = true;
-    return ( d_code == RECOVERABLE );
+    return m_code;
   }
 
-  /// Get the status code by value.
-  unsigned long getCode() const
+  /// Check/uncheck StatusCode
+  const StatusCode& setChecked( bool checked = true ) const
   {
-    m_checked = true;
-    return d_code;
-  }
-
-  /// Set the status code by value.
-  void setCode( unsigned long value )
-  {
-    m_checked = false;
-    d_code    = value;
-  }
-
-  /// Ignore the checking code;
-  void setChecked() const { m_checked = true; }
-  void ignore() const { setChecked(); }
-
-  /// Cast operator.
-  operator unsigned long() const { return getCode(); }
-
-  /// Severity
-  GAUDI_API const IssueSeverity& severity() const;
-
-  /// Assignment operator.
-  StatusCode& operator=( unsigned long value )
-  {
-    setCode( value );
+    m_checked = checked;
     return *this;
   }
-  StatusCode& operator=( const StatusCode& rhs )
+  StatusCode& setChecked( bool checked = true )
   {
-    if ( this == &rhs ) return *this; // Protection against self-assignment
-    d_code        = rhs.d_code;
-    m_checked     = rhs.m_checked;
+    m_checked = checked;
+    return *this;
+  }
+
+  /// Ignore/check StatusCode
+  const StatusCode& ignore() const
+  {
+    setChecked( true );
+    return *this;
+  }
+  StatusCode& ignore()
+  {
+    setChecked( true );
+    return *this;
+  }
+
+  /// Has the StatusCode been checked?
+  bool checked() const { return m_checked; }
+
+  /// Retrieve category (does not "check" the StatusCode)
+  const StatusCode::Category& getCategory() const { return *m_cat; }
+
+  /// Description (or name) of StatusCode value
+  std::string message() const { return getCategory().message( m_code ); }
+
+  friend std::ostream& operator<<( std::ostream& s, const StatusCode& sc )
+  {
+    s << sc.message();
+    return s;
+  }
+
+  /// Check if StatusCode value and category are the same
+  /// \note For code values `0(FAILURE)` and `1(SUCCESS)` the category is ignored
+  /// \note e.g. `sc==StatusCode::SUCCESS` is equivalent to `sc.isSuccess()` for all categories
+  friend bool operator==( const StatusCode& lhs, const StatusCode& rhs );
+  friend bool operator!=( const StatusCode& lhs, const StatusCode& rhs ) { return !( lhs == rhs ); }
+
+  /// Comparison (values are grouped by category first)
+  friend bool operator<( const StatusCode& lhs, const StatusCode& rhs )
+  {
+    lhs.m_checked = true;
     rhs.m_checked = true;
-    m_severity    = rhs.m_severity;
-    return *this;
+    return ( lhs.m_cat < rhs.m_cat || ( lhs.m_cat == rhs.m_cat && lhs.m_code < rhs.m_code ) );
   }
 
-  /// Comparison operator.
-  friend bool operator<( const StatusCode& a, const StatusCode& b ) { return a.d_code < b.d_code; }
-
-  /// Comparison operator.
-  friend bool operator>( const StatusCode& a, const StatusCode& b ) { return a.d_code > b.d_code; }
-
-#ifndef _WIN32
-  operator IgnoreError() const
-  {
-    m_checked = true;
-    return IgnoreError();
-  }
-#endif
+  /// Ternary logic operator with RECOVERABLE being the "third" state
+  StatusCode& operator&=( const StatusCode& rhs );
+  StatusCode& operator|=( const StatusCode& rhs ); ///< @copydoc operator&=
 
   static GAUDI_API void enableChecking();
   static GAUDI_API void disableChecking();
@@ -177,28 +239,115 @@ public:
     }
   };
 
-protected:
-  /// The status code.
-  unsigned long d_code   = SUCCESS;                ///< The status code
-  mutable bool m_checked = false;                  ///< If the Status code has been checked
-  std::shared_ptr<const IssueSeverity> m_severity; ///< Pointer to a IssueSeverity
-
-  static bool s_checking; ///< Global flag to control if StatusCode need to be checked
-
 private:
-  void check();
+  const Category* m_cat{&default_category()};                        ///< The status code category
+  code_t          m_code{static_cast<code_t>( ErrorCode::SUCCESS )}; ///< The status code value
+  mutable bool    m_checked{false};                                  ///< If the StatusCode has been checked
+  static bool     s_checking; ///< Global flag to control if StatusCode need to be checked
+
+  ErrorCode default_value() const; ///< Project onto the default StatusCode values
+  void      check();               ///< Do StatusCode check
 };
 
-inline std::ostream& operator<<( std::ostream& s, const StatusCode& sc )
+/*
+ * Macros to declare/implement StatusCode enums/categories
+ */
+
+/// Declare an enum to be used as StatusCode value
+/// @param ENUM enum class
+#define STATUSCODE_ENUM_DECL( ENUM )                                                                                   \
+  template <>                                                                                                          \
+  struct is_StatusCode_enum<ENUM> : std::true_type {                                                                   \
+    static const StatusCode::Category& instance;                                                                       \
+  };
+
+/// Assign a category to the StatusCode enum declared with STATUSCODE_ENUM_DECL( ENUM )
+/// @param ENUM     enum class
+/// @param CATEGORY (optional) category, otherwise use default StatusCode category
+#define STATUSCODE_ENUM_IMPL( ... ) BOOST_PP_OVERLOAD( STATUSCODE_ENUM_IMPL_, __VA_ARGS__ )( __VA_ARGS__ )
+
+#define STATUSCODE_ENUM_IMPL_1( ENUM )                                                                                 \
+  const StatusCode::Category& is_StatusCode_enum<ENUM>::instance = StatusCode::default_category();
+
+#define STATUSCODE_ENUM_IMPL_2( ENUM, CATEGORY )                                                                       \
+  const StatusCode::Category& is_StatusCode_enum<ENUM>::instance = CATEGORY{};
+
+// Declare the default StatusCode enum
+STATUSCODE_ENUM_DECL( StatusCode::ErrorCode )
+
+/*
+ * Inline methods
+ */
+
+inline const StatusCode::Category& StatusCode::default_category() noexcept
 {
-  if ( sc.isSuccess() ) {
-    return s << "SUCCESS";
-  }
-  if ( sc.isRecoverable() ) {
-    return s << "RECOVERABLE";
-  }
-  s << "FAILURE";
-  return ( StatusCode::FAILURE != sc.getCode() ) ? s << "(" << sc.getCode() << ")" : s;
+  return is_StatusCode_enum<StatusCode::ErrorCode>::instance;
 }
 
-#endif // GAUDIKERNEL_STATUSCODES_H
+inline bool StatusCode::isSuccess() const
+{
+  m_checked = true;
+  return ( m_code == static_cast<code_t>( ErrorCode::SUCCESS ) || m_cat->isSuccess( m_code ) );
+}
+
+inline bool StatusCode::isRecoverable() const
+{
+  m_checked = true;
+  return m_cat->isRecoverable( m_code );
+}
+
+inline StatusCode::ErrorCode StatusCode::default_value() const
+{
+  bool save_checked = m_checked; // Preserve checked status
+  auto r    = isSuccess() ? ErrorCode::SUCCESS : ( isRecoverable() ? ErrorCode::RECOVERABLE : ErrorCode::FAILURE );
+  m_checked = save_checked;
+  return r;
+}
+
+inline bool operator==( const StatusCode& lhs, const StatusCode& rhs )
+{
+  lhs.m_checked = true;
+  rhs.m_checked = true;
+  return ( lhs.m_code == rhs.m_code ) &&
+         ( lhs.m_code == static_cast<StatusCode::code_t>( StatusCode::ErrorCode::SUCCESS ) ||
+           lhs.m_code == static_cast<StatusCode::code_t>( StatusCode::ErrorCode::FAILURE ) ||
+           ( lhs.m_cat == rhs.m_cat ) );
+}
+
+inline StatusCode& StatusCode::operator&=( const StatusCode& rhs )
+{
+  // Ternary AND lookup matrix
+  static constexpr StatusCode::code_t AND[3][3] = {{0, 0, 0}, {0, 1, 2}, {0, 2, 2}};
+
+  StatusCode::code_t l = static_cast<StatusCode::code_t>( default_value() );
+  StatusCode::code_t r = static_cast<StatusCode::code_t>( rhs.default_value() );
+  m_code               = AND[l][r];
+  rhs.m_checked        = true;
+  return *this;
+}
+
+inline StatusCode& StatusCode::operator|=( const StatusCode& rhs )
+{
+  // Ternary OR lookup matrix
+  static constexpr StatusCode::code_t OR[3][3] = {{0, 1, 2}, {1, 1, 1}, {2, 1, 2}};
+
+  StatusCode::code_t l = static_cast<StatusCode::code_t>( default_value() );
+  StatusCode::code_t r = static_cast<StatusCode::code_t>( rhs.default_value() );
+  m_code               = OR[l][r];
+  rhs.m_checked        = true;
+  return *this;
+}
+
+/// Ternary AND operator
+inline StatusCode operator&( StatusCode lhs, const StatusCode& rhs ) { return lhs &= rhs; }
+
+/// Ternary OR operator
+inline StatusCode operator|( StatusCode lhs, const StatusCode& rhs ) { return lhs |= rhs; }
+
+/// Boolean AND assignment operator
+inline bool& operator&=( bool& lhs, const StatusCode& sc ) { return lhs &= sc.isSuccess(); }
+
+/// Boolean OR assignment operator
+inline bool& operator|=( bool& lhs, const StatusCode& sc ) { return lhs |= sc.isSuccess(); }
+
+#endif // GAUDIKERNEL_STATUSCODE_H

@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+class IMessageSvc;
+
 /*
  *   Gaudi namespace declaration
  */
@@ -29,14 +31,12 @@ namespace Gaudi
     /// InterfaceID
     DeclareInterfaceID( IFileCatalog, 2, 0 );
 
-#ifndef __REFLEX__
-    typedef Gaudi::PluginService::Factory<IInterface*, const std::string&, IMessageSvc*> Factory;
-#endif
+    using Factory = Gaudi::PluginService::Factory<IInterface*( const std::string&, IMessageSvc* )>;
 
     /// Public type definitions
     typedef std::pair<std::string, std::string> NamedItem;
-    typedef std::vector<NamedItem> Attributes;
-    typedef std::vector<NamedItem> Files;
+    typedef std::vector<NamedItem>   Attributes;
+    typedef std::vector<NamedItem>   Files;
     typedef std::vector<std::string> Strings;
 
     /** Catalog interface                                               */
@@ -78,6 +78,10 @@ namespace Gaudi
     virtual void registerLFN( const std::string& fid, const std::string& lfn ) const = 0;
     /// Create a Node for a FileID and DOM Node
     virtual void registerFID( const std::string& fid ) const = 0;
+    /// rename a PFN
+    virtual void renamePFN( const std::string& pfn, const std::string& new_pfn ) const = 0;
+    /// remove a PFN
+    virtual void deletePFN( const std::string& pfn ) const = 0;
     /// Dump all MetaData of the catalog for a given file ID
     virtual void getMetaData( const std::string& fid, Attributes& attr ) const = 0;
     /// Access metadata item

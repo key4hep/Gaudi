@@ -90,12 +90,22 @@ public:
   virtual StatusCode commitOutput( const std::string& outputFile, bool do_commit ) = 0;
 
   /// Status code definitions
-  enum Status {
-    /// Success
-    CONVERSIONSVC_NO_ERROR = ICONVERSIONSVC_LAST_ERROR + 1,
+  enum class Status : StatusCode::code_t {
+    /// Invalid address information
+    INVALID_ADDRESS = static_cast<StatusCode::code_t>( IInterface::Status::LAST_ERROR ) + 1,
+    /// Object to be converted is invalid
+    INVALID_OBJECT,
+    /// No more memory available
+    NO_MEMORY,
+    /// Invalid storage type
+    BAD_STORAGE_TYPE,
+    /// Error retrieving source data from source store
+    NO_SOURCE_OBJECT,
     /// No proper converter is available to the service
     NO_CONVERTER
   };
 };
+
+STATUSCODE_ENUM_DECL( IConversionSvc::Status )
 
 #endif // GAUDIKERNEL_ICONVERSIONSVC_H

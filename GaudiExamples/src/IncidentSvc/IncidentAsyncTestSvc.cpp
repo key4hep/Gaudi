@@ -17,7 +17,7 @@ DECLARE_COMPONENT( IncidentAsyncTestSvc )
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 StatusCode IncidentAsyncTestSvc::initialize()
@@ -54,8 +54,8 @@ void IncidentAsyncTestSvc::handle( const Incident& incident )
     }
   } else if ( incident.type() == IncidentType::EndEvent ) {
     {
-      std::unique_lock<decltype( m_eraseMutex )>( m_eraseMutex );
-      auto res = m_ctxData.unsafe_erase( incident.context() );
+      std::unique_lock<decltype( m_eraseMutex )> g( m_eraseMutex );
+      auto                                       res = m_ctxData.unsafe_erase( incident.context() );
       if ( res == 0 ) {
         warning() << " Context is missing for '" << incident.type() << "' event=" << incident.context().evt() << endmsg;
       }
@@ -77,8 +77,8 @@ void IncidentAsyncTestSvc::getData( uint64_t* data, EventContext* ctx ) const
     }
     *data = cit->second;
   } else {
-    const auto& ct = Gaudi::Hive::currentContext();
-    auto cit       = m_ctxData.find( ct );
+    const auto& ct  = Gaudi::Hive::currentContext();
+    auto        cit = m_ctxData.find( ct );
     if ( cit == m_ctxData.end() ) {
       fatal() << " data for event " << ct.evt() << " is not initialized yet!. This shouldn't happen!" << endmsg;
       return;

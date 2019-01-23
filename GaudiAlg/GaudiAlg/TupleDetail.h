@@ -105,10 +105,6 @@ namespace Tuples
         return sc;
       }
 
-    protected:
-      /// empty protected  destructor
-      ~TupleObjImp() override = default;
-
     private:
       HANDLER1 m_handler1;
       HANDLER2 m_handler2;
@@ -143,11 +139,10 @@ namespace Tuples
      * @date   2004-1-24
      */
     template <class HANDLER1, class HANDLER2>
-    inline TupleObj* createTupleObj( HANDLER1 handler1, HANDLER2 handler2, const std::string& name,
-                                     NTuple::Tuple* tuple, const CLID& clid = CLID_ColumnWiseTuple,
-                                     const Tuples::Type type = Tuples::NTUPLE )
+    auto createTupleObj( HANDLER1 handler1, HANDLER2 handler2, const std::string& name, NTuple::Tuple* tuple,
+                         const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
     {
-      return new TupleObjImp<HANDLER1, HANDLER2>( handler1, handler2, name, tuple, clid, type );
+      return std::make_unique<TupleObjImp<HANDLER1, HANDLER2>>( handler1, handler2, name, tuple, clid, type );
     }
 
     /** @class ErrorHandler
@@ -180,7 +175,7 @@ namespace Tuples
 
     private:
       const OBJECT* m_obj = nullptr;
-      FUNCTION m_fun;
+      FUNCTION      m_fun;
     };
 
     /** Templated helper functions allow to avoid heavy semantics of
@@ -228,8 +223,8 @@ namespace Tuples
    * @date   2004-1-24
    */
   template <class OWNER>
-  inline TupleObj* createTupleObj( const OWNER* owner, const std::string& name, NTuple::Tuple* tuple,
-                                   const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
+  auto createTupleObj( const OWNER* owner, const std::string& name, NTuple::Tuple* tuple,
+                       const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
   {
     return detail::createTupleObj( detail::make_handler( owner, &OWNER::Error ),
                                    detail::make_handler( owner, &OWNER::Warning ), name, tuple, clid, type );

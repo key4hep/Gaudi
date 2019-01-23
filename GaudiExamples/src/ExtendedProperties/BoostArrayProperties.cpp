@@ -36,8 +36,6 @@ namespace Gaudi
       // ======================================================================
       /// Standard constructor
       using GaudiAlgorithm::GaudiAlgorithm;
-      /// virtual destructor
-      ~BoostArrayProperties() override = default;
       // ======================================================================
     private:
       // ======================================================================

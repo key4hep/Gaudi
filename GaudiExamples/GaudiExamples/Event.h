@@ -34,11 +34,9 @@ namespace Gaudi
     public:
       /// Constructors
       Event();
-      /// Destructor
-      ~Event() override = default;
 
       /// Retrieve reference to class definition structure
-      const CLID& clID() const override { return classID(); }
+      const CLID&        clID() const override { return classID(); }
       static const CLID& classID() { return CLID_Event; }
 
       /// Retrieve event number
@@ -127,8 +125,7 @@ namespace Gaudi
     /// Remove decay vertex
     inline void Event::removeCollision( Collision* c )
     {
-      SmartRefVector<Collision>::iterator i;
-      for ( i = m_collisions.begin(); i != m_collisions.end(); ++i ) {
+      for ( auto i = m_collisions.begin(); i != m_collisions.end(); ++i ) {
         if ( i->target() == c ) {
           m_collisions.erase( i );
           return;

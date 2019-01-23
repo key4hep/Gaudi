@@ -8,7 +8,6 @@
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
-#include "GaudiKernel/ThreadGaudi.h"
 
 /// Retrieve the class type of objects the converter produces.
 const CLID& Converter::objType() const { return m_classType; }
@@ -143,7 +142,7 @@ StatusCode Converter::service_i( const std::string& svcType, const std::string& 
 SmartIF<IService> Converter::service( const std::string& name, const bool createIf ) const
 {
   SmartIF<INamedInterface> cnvsvc( conversionSvc() );
-  SmartIF<IService> svc;
+  SmartIF<IService>        svc;
   if ( cnvsvc ) {
     const ServiceLocatorHelper helper( *serviceLocator(), "Converter", cnvsvc->name() );
     svc = helper.service( name, false, createIf );

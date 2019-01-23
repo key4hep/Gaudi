@@ -22,11 +22,6 @@ namespace
 DECLARE_COMPONENT( MultiFileCatalog )
 
 // ----------------------------------------------------------------------------
-MultiFileCatalog::MultiFileCatalog( const std::string& nam, ISvcLocator* svc ) : base_class( nam, svc )
-{
-  m_catalogNames.declareUpdateHandler( &Gaudi::MultiFileCatalog::propHandler, this );
-}
-// ----------------------------------------------------------------------------
 StatusCode MultiFileCatalog::initialize()
 {
   if ( !Service::initialize().isSuccess() ) {
@@ -110,19 +105,19 @@ void MultiFileCatalog::addCatalog( CSTR con )
   if ( !con.empty() ) {
     if ( !findCatalog( con, false ) ) {
       static const string xml_typ = "Gaudi::XMLFileCatalog";
-      auto id0                    = con.find( "_" );
-      string typ                  = con.substr( 0, id0 );
-      string url                  = con.substr( id0 + 1 );
-      IInterface* cat             = nullptr;
+      auto                id0     = con.find( "_" );
+      string              typ     = con.substr( 0, id0 );
+      string              url     = con.substr( id0 + 1 );
+      IInterface*         cat     = nullptr;
       if ( strncasecmp( "xml", typ.c_str(), 3 ) == 0 ) {
-        cat = IFileCatalog::Factory::create( xml_typ, url, msgSvc().get() );
+        cat = IFileCatalog::Factory::create( xml_typ, url, msgSvc().get() ).release();
       } else {
         using Gaudi::PluginService::Details::Registry;
         Registry& registry = Registry::instance();
-        if ( registry.getInfo( typ ).type == typeid( Service::Factory::FuncType ).name() ) {
-          cat = Service::Factory::create( typ, url, serviceLocator().get() );
-        } else if ( registry.getInfo( typ ).type == typeid( IFileCatalog::Factory::FuncType ).name() ) {
-          cat = IFileCatalog::Factory::create( typ, url, msgSvc().get() );
+        if ( registry.getInfo( typ ).factory.type() == typeid( Service::Factory::FactoryType ) ) {
+          cat = Service::Factory::create( typ, url, serviceLocator().get() ).release();
+        } else if ( registry.getInfo( typ ).factory.type() == typeid( IFileCatalog::Factory::FactoryType ) ) {
+          cat = IFileCatalog::Factory::create( typ, url, msgSvc().get() ).release();
         }
       }
       if ( cat ) {
@@ -254,7 +249,7 @@ void MultiFileCatalog::rollback()
   for_each( m_catalogs, []( IFileCatalog* i ) { i->rollback(); } );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::propHandler( Details::PropertyBase& /* p */ )
+void MultiFileCatalog::propHandler()
 {
   // not yet initialized
   if ( !m_started ) {

@@ -50,7 +50,7 @@ public:
   class IncidentPack
   {
   public:
-    std::vector<std::unique_ptr<Incident>> incidents;
+    std::vector<std::unique_ptr<Incident>>       incidents;
     std::vector<std::vector<IIncidentListener*>> listeners;
     IncidentPack( IncidentPack&& o ) : incidents( std::move( o.incidents ) ), listeners( std::move( o.listeners ) ){};
     IncidentPack& operator=( IncidentPack&& o )

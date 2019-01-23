@@ -67,7 +67,7 @@ namespace Gaudi
      *  of SmartDataPtr used in the helper classes.
      *  This version is dealing with the general case, where AnyDataWrapper cannot be used
      */
-    template <class TYPE, typename std::enable_if<!std::is_constructible<TYPE>::value, void*>::type = nullptr>
+    template <class TYPE, std::enable_if_t<!std::is_constructible<TYPE>::value, void*> = nullptr>
     inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location )
     {
       DataObject* obj = nullptr;
@@ -86,7 +86,7 @@ namespace Gaudi
      *  This version allows the use of AnyDataWrapper but restricts to the case
      *  where TYPE is constructible
      */
-    template <class TYPE, typename std::enable_if<std::is_constructible<TYPE>::value, void*>::type = nullptr>
+    template <class TYPE, std::enable_if_t<std::is_constructible<TYPE>::value, void*> = nullptr>
     inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location )
     {
       DataObject* obj = nullptr;
@@ -160,7 +160,7 @@ namespace Gaudi
       // ======================================================================
       /// the actual return type
       typedef Gaudi::Range_<std::vector<const TYPE*>> Type;
-      typedef typename _GetType<Type>::return_type return_type;
+      typedef typename _GetType<Type>::return_type    return_type;
       // ======================================================================
     public:
       // ======================================================================
@@ -181,7 +181,7 @@ namespace Gaudi
         if ( object ) {
           /// 2. try to get the selection
           typedef typename TYPE::Selection Selection_;
-          const Selection_* sel = dynamic_cast<Selection_*>( object );
+          const Selection_*                sel = dynamic_cast<Selection_*>( object );
           if ( sel ) {
             if ( common.msgLevel( MSG::DEBUG ) ) {
               common.debug() << "The object of type '" << System::typeinfoName( typeid( *object ) )
@@ -191,7 +191,7 @@ namespace Gaudi
           }
           /// 3. try to get the container
           typedef typename TYPE::Container Container_;
-          const Container_* cnt = dynamic_cast<Container_*>( object );
+          const Container_*                cnt = dynamic_cast<Container_*>( object );
           if ( cnt ) {
             if ( common.msgLevel( MSG::DEBUG ) ) {
               common.debug() << "The object of type '" << System::typeinfoName( typeid( *object ) )
@@ -252,7 +252,7 @@ namespace Gaudi
       // ======================================================================
       /// the actual return type
       typedef Gaudi::NamedRange_<std::vector<const TYPE*>> Type;
-      typedef typename _GetType<Type>::return_type return_type;
+      typedef typename _GetType<Type>::return_type         return_type;
       // ======================================================================
     public:
       // ======================================================================
@@ -279,7 +279,7 @@ namespace Gaudi
           return return_type();
         }
         static const std::string s_empty = "";
-        const IRegistry* reg             = cnt->registry();
+        const IRegistry*         reg     = cnt->registry();
         return return_type( m_range.make_range( cnt ), reg ? reg->identifier() : s_empty );
       }
       // create the range from the selection
@@ -289,7 +289,7 @@ namespace Gaudi
           return return_type();
         }
         static const std::string s_empty = "";
-        const IRegistry* reg             = cnt->registry();
+        const IRegistry*         reg     = cnt->registry();
         return return_type( m_range.make_range( cnt ), reg ? reg->identifier() : s_empty );
       }
       // ======================================================================
@@ -443,13 +443,14 @@ namespace Gaudi
       {
         SmartDataPtr<TYPE> obj( service, location );
         if ( !obj ) {
-          TYPE2* o = new TYPE2();
-          common.put( service, o, location2 );
+          auto o = std::make_unique<TYPE2>();
+          auto r = o.get();
+          common.put( service, std::move( o ), location2 );
           if ( common.msgLevel( MSG::DEBUG ) ) {
-            common.debug() << "The object of type '" << System::typeinfoName( typeid( *o ) )
+            common.debug() << "The object of type '" << System::typeinfoName( typeid( *r ) )
                            << "' has been created from TS at address '" << location2 << "'" << endmsg;
           }
-          return o;
+          return r;
         }
         auto ret = obj.ptr();
         /// check the data
@@ -494,7 +495,7 @@ namespace Gaudi
       {
         DataObject* obj = m_getter.getData( service, location );
         if ( !obj ) {
-          common.put( service, new TYPE2(), location2 );
+          common.put( service, std::make_unique<TYPE2>(), location2 );
           if ( common.msgLevel( MSG::DEBUG ) ) {
             common.debug() << "The object of type '" << System::typeinfoName( typeid( TYPE2 ) )
                            << "' has been created from TS at address '" << location2 << "'" << endmsg;
@@ -516,7 +517,7 @@ namespace Gaudi
     private:
       // ======================================================================
       typedef Gaudi::NamedRange_<std::vector<const TYPE*>> Range;
-      typedef Gaudi::Range_<std::vector<const TYPE*>> Range_;
+      typedef Gaudi::Range_<std::vector<const TYPE*>>      Range_;
       typedef GetOrCreateData<Range_, TYPE2> Helper;
       /// the actual data getter
       typedef GetData<Range> Getter; //  the actual data getter

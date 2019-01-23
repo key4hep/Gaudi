@@ -64,7 +64,7 @@ namespace
   }
 
   // ============================================================================
-  // Searches 'title' for all instancies of 'A' and replaces them with 'B'
+  // Searches 'title' for all instances of 'A' and replaces them with 'B'
   // ============================================================================
   inline void stringSearchReplace( std::string& title, const std::string& A, const std::string& B )
   {
@@ -72,14 +72,6 @@ namespace
       title = title.substr( 0, slash ) + B + title.substr( slash + A.size() );
     }
   }
-}
-// =============================================================================
-// Constructor initialisation and job options
-// =============================================================================
-template <class PBASE>
-void GaudiHistos<PBASE>::initGaudiHistosConstructor()
-{
-  m_histosPrint.declareUpdateHandler( &GaudiHistos<PBASE>::printHistoHandler, this );
 }
 // ============================================================================
 // Initialise Histogramming
@@ -197,12 +189,10 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
 
   // Printout all histograms
 
-  Gaudi::Utils::Histos::Table table( m_histo1DTableFormat, m_histo1DTableHeader );
-
   if ( !histo1DMapID().empty() ) {
-    msg << "List of booked 1D histograms in directory         "
-        << "\"" << histoPath() << "\" :-";
-
+    msg << "1D histograms in directory "
+        << "\"" << histoPath() << "\" : " << histo1DMapID().size();
+    const Gaudi::Utils::Histos::Table table( m_histo1DTableFormat, m_histo1DTableHeader );
     if ( !table.header().empty() ) {
       msg << std::endl << Gaudi::Utils::Histos::format( "ID", table.header(), m_histo1DTableFormatShort );
     }
@@ -219,8 +209,8 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   }
   // ==========================================================================
   if ( !histo2DMapID().empty() ) {
-    msg << "List of booked 2D histograms in directory         "
-        << "\"" << histoPath() << "\" :-";
+    msg << "2D histograms in directory "
+        << "\"" << histoPath() << "\" : " << histo2DMapID().size();
 
     for ( const auto& entry : ordered( histo2DMapID() ) ) {
       const auto* aida = entry.second;
@@ -234,8 +224,8 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   }
   // ==========================================================================
   if ( !histo3DMapID().empty() ) {
-    msg << "List of booked 3D histograms in directory         "
-        << "\"" << histoPath() << "\" :-";
+    msg << "3D histograms in directory "
+        << "\"" << histoPath() << "\" : " << histo3DMapID().size();
     for ( const auto& entry : ordered( histo3DMapID() ) ) {
       const auto* aida = entry.second;
       if ( !aida ) {
@@ -248,22 +238,26 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
   }
   // ==========================================================================
   if ( !profile1DMapID().empty() ) {
-    msg << "List of booked 1D profile histograms in directory "
-        << "\"" << histoPath() << "\" :-";
+    msg << "1D profile histograms in directory "
+        << "\"" << histoPath() << "\" : " << profile1DMapID().size();
+    const Gaudi::Utils::Histos::Table table( m_histo1DTableFormat, m_histo1DTableHeader );
+    if ( !table.header().empty() ) {
+      msg << std::endl << Gaudi::Utils::Histos::format( "ID", table.header(), m_histo1DTableFormatShort );
+    }
     for ( const auto& entry : ordered( profile1DMapID() ) ) {
       const auto* aida = entry.second;
       if ( !aida ) {
         this->error() << "IProfile1D points to NULL" << endmsg;
         continue;
       }
-      msg << std::endl << GaudiAlg::Print1DProf::toString( aida, entry.first );
+      msg << std::endl << table.toString( aida, HistoID( entry.first ), m_histo1DTableFormatShort );
     }
     msg << endmsg;
   }
   // ==========================================================================
   if ( !profile2DMapID().empty() ) {
-    msg << "List of booked 2D profile histograms in directory "
-        << "\"" << histoPath() << "\" :-";
+    msg << "2D profile histograms in directory "
+        << "\"" << histoPath() << "\" : " << profile2DMapID().size();
     for ( const auto& entry : ordered( profile2DMapID() ) ) {
       const auto* aida = entry.second;
       if ( !aida ) {
@@ -359,8 +353,9 @@ void GaudiHistos<PBASE>::newHistoID( const std::string& title, HistoID& ID ) con
   if ( useNumericAutoIDs() || title.empty() ) {
     if ( !useNumericAutoIDs() ) {
       this->Warning(
-          "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID",
-          StatusCode::SUCCESS );
+              "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID",
+              StatusCode::SUCCESS )
+          .ignore();
     }
     // propose the histogram ID (always numeric)
     ID = HistoID( totalNumberOfHistos() + 1 + histoOffSet() );
@@ -389,21 +384,6 @@ std::string GaudiHistos<PBASE>::convertTitleToID( std::string title ) const
   }
   return title;
 }
-// ============================================================================
-// the handler for "HistoPrint" property
-// ============================================================================
-template <class PBASE>
-void GaudiHistos<PBASE>::printHistoHandler( Gaudi::Details::PropertyBase& )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->histosPrint() ) {
-    this->printHistos( MSG::ALWAYS );
-  }
-}
-// ============================================================================
 // get the constructed histogram path
 // ============================================================================
 template <class PBASE>

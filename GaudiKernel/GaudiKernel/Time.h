@@ -2,7 +2,7 @@
 #define GAUDIKERNEL_TIME_H 1
 
 // Include files
-//   for the architecture independent int64 definition (longlong)
+//   for the architecture independent int64 definition (long long)
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StreamBuffer.h"
@@ -57,7 +57,7 @@ namespace Gaudi
     friend class Time;
 
   public:
-    typedef longlong ValueType;
+    typedef long long ValueType;
 
     /** Initialize an empty (zero) time difference.  */
     TimeSpan() = default;
@@ -67,9 +67,9 @@ namespace Gaudi
     TimeSpan( ValueType secs, int nsecs );
     TimeSpan( int days, int hours, int mins, int secs, int nsecs );
 
-    int days() const;
-    int hours() const;
-    int minutes() const;
+    int       days() const;
+    int       hours() const;
+    int       minutes() const;
     ValueType seconds() const;
 
     int lastHours() const;
@@ -239,7 +239,7 @@ namespace Gaudi
     friend class TimeSpan;
 
   public:
-    typedef longlong ValueType;
+    typedef long long ValueType;
 
     /** Symbolic names for months */
     enum Months {

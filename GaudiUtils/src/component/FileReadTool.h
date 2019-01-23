@@ -13,14 +13,9 @@
  *  @author Marco Clemencic
  *  @date 2008-01-18
  */
-class FileReadTool : public extends<AlgTool, IFileAccess>
-{
-
-public:
+struct FileReadTool : extends<AlgTool, IFileAccess> {
   /// Standard constructor
-  FileReadTool( const std::string& type, const std::string& name, const IInterface* parent );
-
-  ~FileReadTool() override = default;
+  using extends::extends;
 
   std::unique_ptr<std::istream> open( const std::string& url ) override;
 

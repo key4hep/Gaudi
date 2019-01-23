@@ -16,7 +16,7 @@ using System::getEnv;
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 // Instantiation of a static factory class used by clients to create
@@ -83,11 +83,11 @@ StatusCode DetDataSvc::setupDetectorDescription()
       return StatusCode::FAILURE;
     } else {
       // Create address
-      unsigned long iargs[]    = {0, 0};
-      const std::string args[] = {m_detDbLocation, m_detDbRootName};
-      StatusCode sc            = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
+      unsigned long     iargs[] = {0, 0};
+      const std::string args[]  = {m_detDbLocation, m_detDbRootName};
+      StatusCode        sc      = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
       if ( sc.isSuccess() ) {
-        sc = i_setRoot( m_rootName, rootAddr );
+        sc = i_setRoot( rootAddr );
         if ( sc.isFailure() ) {
           error() << "Unable to set detector data store root" << endmsg;
           return sc;
@@ -152,13 +152,13 @@ StatusCode DetDataSvc::clearStore()
 
   if ( m_usePersistency ) {
     // Create root address
-    unsigned long iargs[]    = {0, 0};
-    const std::string args[] = {m_detDbLocation, m_detDbRootName};
-    IOpaqueAddress* rootAddr;
-    StatusCode sc = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
+    unsigned long     iargs[] = {0, 0};
+    const std::string args[]  = {m_detDbLocation, m_detDbRootName};
+    IOpaqueAddress*   rootAddr;
+    StatusCode        sc = m_addrCreator->createAddress( m_detStorageType, CLID_Catalog, args, iargs, rootAddr );
     // Set detector data store root
     if ( sc.isSuccess() ) {
-      sc = i_setRoot( m_rootName, rootAddr );
+      sc = i_setRoot( rootAddr );
       if ( sc.isFailure() ) {
         error() << "Unable to set detector data store root" << endmsg;
       }
@@ -171,12 +171,9 @@ StatusCode DetDataSvc::clearStore()
 }
 
 /// Standard Constructor
-DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
+DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : extends( name, svc )
 {
-  m_detDbRootName.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { m_rootName = "/" + m_detDbRootName; } );
-  m_rootName = "/" + m_detDbRootName;
-  m_rootCLID = CLID_Catalog;
+  setProperty( "RootCLID", CLID_Catalog );
 }
 
 /// Set the new event time
@@ -213,7 +210,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate )
   // Check that object to update exists
   if ( !toUpdate ) {
     error() << "There is no DataObject to update" << endmsg;
-    return INVALID_OBJECT;
+    return Status::INVALID_OBJECT;
   }
 
   // Retrieve IValidity interface of object to update
@@ -243,7 +240,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate )
   StatusCode status = TsDataSvc::updateObject( toUpdate );
   if ( !status.isSuccess() ) {
     error() << "Could not update DataObject" << endmsg;
-    if ( status == NO_DATA_LOADER ) error() << "There is no data loader" << endmsg;
+    if ( status == Status::NO_DATA_LOADER ) error() << "There is no data loader" << endmsg;
     return status;
   }
 

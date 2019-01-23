@@ -8,7 +8,7 @@ using namespace Gaudi;
 
 extern "C" int testXMLFileCatalogWrite( int argc, char** argv )
 {
-  int nwrite             = 10;
+  int         nwrite     = 10;
   std::string fname      = "file:test.xml";
   if ( argc > 1 ) fname  = argv[1];
   if ( argc > 2 ) nwrite = ::atol( argv[2] );
@@ -63,10 +63,10 @@ extern "C" int testXMLFileCatalogWrite( int argc, char** argv )
 extern "C" int testXMLFileCatalogRead( int argc, char** argv )
 {
   std::vector<std::string> fids;
-  std::string fname     = "file:test.xml";
-  if ( argc > 1 ) fname = argv[1];
-  bool prt              = argc < 2;
-  time_t start          = time( nullptr );
+  std::string              fname = "file:test.xml";
+  if ( argc > 1 ) fname          = argv[1];
+  bool           prt             = argc < 2;
+  time_t         start           = time( nullptr );
   XMLFileCatalog c( fname, nullptr );
   c.init();
   std::cout << "File loaded in " << time( nullptr ) - start << " seconds. " << std::endl;
@@ -79,8 +79,8 @@ extern "C" int testXMLFileCatalogRead( int argc, char** argv )
   for ( size_t i = 0, tot = ( mult * fids.size() ); i < tot; ++i ) {
     size_t ent = i % fids.size();
     if ( ent == 0 ) std::cout << i << std::endl;
-    std::string fid = fids[ent];
-    XMLFileCatalog::Files pfn, lfn;
+    std::string                fid = fids[ent];
+    XMLFileCatalog::Files      pfn, lfn;
     XMLFileCatalog::Attributes attrs;
     c.getLFN( fid, lfn );
     for ( auto& elem : lfn ) {

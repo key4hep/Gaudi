@@ -27,7 +27,7 @@ int main( int argc, char** argv )
   try {
     store( command_line_parser( argc, argv ).options( desc ).positional( p ).run(), vm );
   } catch ( boost::exception_detail::clone_impl<
-            boost::exception_detail::error_info_injector<boost::program_options::unknown_option>> ) {
+            boost::exception_detail::error_info_injector<boost::program_options::unknown_option>>& ) {
     std::cerr << "Unknown option(s) detected." << std::endl << "Usage:" << std::endl << desc << std::endl;
     return ( 1 );
   }
@@ -62,12 +62,12 @@ int main( int argc, char** argv )
   }
   // end of options handling
 
-  IInterface* iface = Gaudi::createApplicationMgr();
+  IInterface*        iface = Gaudi::createApplicationMgr();
   SmartIF<IProperty> propMgr( iface );
   SmartIF<IAppMgrUI> appUI( iface );
   propMgr->setProperty( "JobOptionsType", "PYTHON" );
   propMgr->setProperty( "JobOptionsPath", fileName );
   propMgr->setProperty( "JobOptionsPreAction", params.str() );
   propMgr->setProperty( "JobOptionsPostAction", postAction ); // TODO: grep this from command line
-  return appUI->run();
+  return appUI->run().getCode();
 }

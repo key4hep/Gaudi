@@ -19,11 +19,11 @@ std::string gpu::replaceEnvironments( const std::string& input )
 {
   static const boost::regex expression( "\\$(([A-Za-z0-9_]+)|\\(([A-Za-z0-9_]+)\\))" );
 
-  std::string result = input;
-  auto start         = input.begin();
-  auto end           = input.end();
+  std::string                                       result = input;
+  auto                                              start  = input.begin();
+  auto                                              end    = input.end();
   boost::match_results<std::string::const_iterator> what;
-  boost::match_flag_type flags = boost::match_default;
+  boost::match_flag_type                            flags = boost::match_default;
   while ( boost::regex_search( start, end, what, expression, flags ) ) {
     std::string var{what[2].first, what[2].second};
     if ( var.empty() ) var = std::string{what[3].first, what[3].second};

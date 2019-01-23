@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE( ctx_data_with_proto )
   BOOST_CHECK( i == 42 );
 
   BOOST_CHECK( i.accumulate( 0 ) == ( 42 + 23 ) );
-  BOOST_CHECK( i.accumulate( 1, std::multiplies<int>() ) == ( 42 * 23 ) );
+  BOOST_CHECK( i.accumulate( 1, std::multiplies<>() ) == ( 42 * 23 ) );
 }
 
 class TestClass
@@ -179,9 +179,9 @@ public:
 BOOST_AUTO_TEST_CASE( ctx_threaded )
 {
   ThreadingTest test;
-  Runner runner( test );
-  std::thread t1( runner, (ContextIdType)1 );
-  std::thread t2( runner, (ContextIdType)2 );
+  Runner        runner( test );
+  std::thread   t1( runner, (ContextIdType)1 );
+  std::thread   t2( runner, (ContextIdType)2 );
   t1.join();
   t2.join();
 

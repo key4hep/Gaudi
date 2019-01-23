@@ -27,33 +27,12 @@
 #include "GaudiKernel/MsgStream.h"
 #include "RndmEngine.h"
 
-/// Standard Service constructor
-RndmEngine::RndmEngine( const std::string& name, ISvcLocator* loc ) : base_class( name, loc ) {}
-
-/// Standard Service destructor
-RndmEngine::~RndmEngine() {}
-
 /// Service override: initialization
 StatusCode RndmEngine::initialize()
 {
-  StatusCode status = Service::initialize();
-  if ( status.isSuccess() ) {
-    status = setProperties();
-    if ( status.isSuccess() ) {
-      m_pIncidentSvc = serviceLocator()->service( "IncidentSvc" );
-      if ( !m_pIncidentSvc ) {
-        status = StatusCode::FAILURE;
-      }
-    }
-  }
+  StatusCode status                = Service::initialize();
+  if ( status.isSuccess() ) status = setProperties();
   return status;
-}
-
-/// Service override: finalization
-StatusCode RndmEngine::finalize()
-{
-  m_pIncidentSvc = 0; // release
-  return Service::finalize();
 }
 
 /** IRndmEngine interface implementation  */
@@ -66,9 +45,6 @@ StreamBuffer& RndmEngine::serialize( StreamBuffer& str ) const { return str; }
 /// Single shot returning single random number
 double RndmEngine::rndm() const { return DBL_MAX; }
 
-/// Single shot returning single random number
-void RndmEngine::handle( const Incident& /* inc */ ) {}
-
 /** Multiple shots returning vector with flat random numbers.
     @param  array    Array containing random numbers
     @param  howmany  fill 'howmany' random numbers into array
@@ -77,10 +53,7 @@ void RndmEngine::handle( const Incident& /* inc */ ) {}
 */
 StatusCode RndmEngine::rndmArray( std::vector<double>& array, long howmany, long start ) const
 {
-  long cnt = start;
   array.resize( start + howmany );
-  for ( long i = start, num = start + howmany; i < num; i++ ) {
-    array[cnt++] = rndm();
-  }
+  std::generate_n( std::next( array.begin(), start ), howmany, [&]() { return this->rndm(); } );
   return StatusCode::SUCCESS;
 }

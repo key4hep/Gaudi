@@ -19,8 +19,8 @@ def test():
 
     labels = ['EVENT LOOP                    ',
               ' ParentAlg                    ',
-              ' SubAlg1                      ',
-              ' SubAlg2                      ',
+              '  SubAlg1                     ',
+              '  SubAlg2                     ',
               ' StopperAlg                   ',
               ' TopSequence                  ',
               '  Sequence1                   ',

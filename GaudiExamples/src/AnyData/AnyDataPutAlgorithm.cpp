@@ -3,7 +3,6 @@
 #include <vector>
 
 // from Gaudi
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/AnyDataWrapper.h"
 
 // local
@@ -16,7 +15,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( AnyDataPutAlgorithm )
+DECLARE_COMPONENT( AnyDataPutAlgorithm )
 
 namespace
 {
@@ -42,17 +41,15 @@ StatusCode AnyDataPutAlgorithm::execute()
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
-  auto i = new AnyDataWrapper<int>{0};
-  auto j = new AnyDataWrapper<vector<int>>{vector<int>{0, 1, 2, 3}};
+  auto i = std::make_unique<AnyDataWrapper<int>>( 0 );
+  auto j = std::make_unique<AnyDataWrapper<vector<int>>>( std::vector<int>{0, 1, 2, 3} );
 
-  put( i, m_loc + "/One" );
-  put( j, m_loc + "/Two" );
+  put( std::move( i ), m_loc + "/One" );
+  put( std::move( j ), m_loc + "/Two" );
 
   m_ids.put( vector<int>( {42, 84} ) );
 
-  for ( int i = 0; i < 100; i++ ) {
-    m_id_vec[i].put( std::move( i ) );
-  }
+  for ( int i = 0; i < 100; ++i ) m_id_vec[i].put( std::move( i ) );
 
   return StatusCode::SUCCESS;
 }

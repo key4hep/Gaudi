@@ -31,8 +31,8 @@ namespace Genfun
 
     public:
       const Genfun::AbsFunction& m_function;
-      Genfun::Argument& m_argument;
-      size_t m_index;
+      Genfun::Argument&          m_argument;
+      size_t                     m_index;
     };
 
     double GSL_Adaptor( double x, void* params );

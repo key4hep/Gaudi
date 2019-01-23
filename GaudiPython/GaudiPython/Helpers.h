@@ -11,9 +11,7 @@
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
-
-// FIXME: (MCl) workaround for ROOT-5847
-#include "GaudiKernel/PropertyFwd.h"
+#include "GaudiKernel/Property.h"
 
 // FIXME: (MCl) workaround for ROOT-5850
 namespace AIDA
@@ -71,6 +69,16 @@ namespace GaudiPython
     {
       DataObject* o;
       return dpsvc->retrieveObject( path, o ).isSuccess() ? o : nullptr;
+    }
+    // ==========================================================================
+    static StatusCode registerObject( IDataProviderSvc* dpsvc, const std::string& path, DataObject* pObject )
+    {
+      return dpsvc->registerObject( path, pObject );
+    }
+    // ==========================================================================
+    static StatusCode unregisterObject( IDataProviderSvc* dpsvc, const std::string& path )
+    {
+      return dpsvc->unregisterObject( path );
     }
     // ==========================================================================
     /** simple wrapper for IDataProviderSvc::findObject
@@ -144,7 +152,7 @@ namespace GaudiPython
 #if PY_VERSION_HEX < 0x02050000
       const
 #endif
-          char* buf   = 0;
+          char*  buf  = 0;
       Py_ssize_t size = ( *( self->ob_type->tp_as_buffer->bf_getcharbuffer ) )( self, 0, &buf );
       return size / sizeof( T );
     }
@@ -167,7 +175,7 @@ namespace GaudiPython
 #if PY_VERSION_HEX < 0x02050000
       const
 #endif
-          char* buf   = nullptr;
+          char*  buf  = nullptr;
       Py_ssize_t size = ( *( self->ob_type->tp_as_buffer->bf_getcharbuffer ) )( self, 0, &buf );
       if ( idx < 0 || idx >= size / int( sizeof( T ) ) ) {
         PyErr_SetString( PyExc_IndexError, "buffer index out of range" );
@@ -180,7 +188,7 @@ namespace GaudiPython
     template <class T>
     static PyObject* toArray( T* ptr, Py_ssize_t size )
     {
-      static PyTypeObject type      = PyBuffer_Type;
+      static PyTypeObject      type = PyBuffer_Type;
       static PySequenceMethods meth = *( PyBuffer_Type.tp_as_sequence );
 #if PY_VERSION_HEX < 0x02050000
       meth.sq_item   = (intargfunc)&Array_item<T>;
@@ -223,12 +231,12 @@ namespace GaudiPython
   template PyObject* Helper::toArray( short*, Py_ssize_t );
   template PyObject* Helper::toArray( float*, Py_ssize_t );
   template PyObject* Helper::toArray( double*, Py_ssize_t );
-  template int* Helper::toAddress( std::vector<int>& );
-  template float* Helper::toAddress( std::vector<float>& );
-  template double* Helper::toAddress( std::vector<double>& );
-  template int* Helper::toAddress<int>( void* );
-  template float* Helper::toAddress<float>( void* );
-  template double* Helper::toAddress<double>( void* );
+  template int*      Helper::toAddress( std::vector<int>& );
+  template float*    Helper::toAddress( std::vector<float>& );
+  template double*   Helper::toAddress( std::vector<double>& );
+  template int*      Helper::toAddress<int>( void* );
+  template float*    Helper::toAddress<float>( void* );
+  template double*   Helper::toAddress<double>( void* );
 
 } // namespace GaudiPython
 

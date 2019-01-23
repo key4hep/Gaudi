@@ -5,7 +5,6 @@
 #include <boost/test/unit_test.hpp>
 
 // System include(s):
-#include <iostream>
 #include <string>
 
 // GaudiKernel include(s):
@@ -22,7 +21,6 @@ class TestClass
 /// Test some simple basic types
 BOOST_AUTO_TEST_CASE( simple_types )
 {
-
   CHECK_TYPE( int );
   CHECK_TYPE( std::string );
   CHECK_TYPE( TestClass );
@@ -40,7 +38,6 @@ class TestContainer
 /// Test some more complex, template types
 BOOST_AUTO_TEST_CASE( template_types )
 {
-
   CHECK_TYPE( TestContainer<int> );
   CHECK_TYPE( TestContainer<TestClass> );
   CHECK_TYPE( TestContainer<std::string> );

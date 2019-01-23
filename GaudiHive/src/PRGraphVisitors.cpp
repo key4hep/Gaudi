@@ -4,16 +4,17 @@
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/ICondSvc.h"
 
+#include <queue>
+
 namespace concurrency
 {
-
-  typedef AlgsExecutionStates::State State;
+  using AState = AlgsExecutionStates::State;
 
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visitEnter( AlgorithmNode& node ) const
   {
 
-    if ( State::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()] ) return false;
+    if ( AState::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()] ) return false;
 
     return true;
   }
@@ -34,7 +35,7 @@ namespace concurrency
     }
 
     if ( result ) {
-      m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
+      m_slot->algsStates.set( node.getAlgoIndex(), AState::DATAREADY ).ignore();
 
       if ( m_trace ) {
         auto sourceNode = ( m_cause.m_source == Cause::source::Task )
@@ -57,18 +58,26 @@ namespace concurrency
     /* Implements 'observer' strategy, i.e., only check if producer of this DataNode
      * has been already executed or not */
 
-    bool result = false; // return false if this DataNode has no producers at all
-
-    for ( auto algoNode : node.getProducers() ) {
+    auto const& producers = node.getProducers();
+    for ( auto algoNode : producers ) {
       const auto& state = m_slot->algsStates[algoNode->getAlgoIndex()];
-      if ( State::EVTACCEPTED == state || State::EVTREJECTED == state ) {
-        result = true;
-        break; // skip checking other producers if one was found to be executed
+      if ( AState::EVTACCEPTED == state || AState::EVTREJECTED == state ) {
+        return true; // skip checking other producers if one was found to be executed
+      }
+    }
+
+    // Check parent slot if necessary
+    if ( m_slot->parentSlot ) {
+      for ( auto algoNode : producers ) {
+        const auto& state = m_slot->parentSlot->algsStates[algoNode->getAlgoIndex()];
+        if ( AState::EVTACCEPTED == state || AState::EVTREJECTED == state ) {
+          return true; // skip checking other producers if one was found to be executed
+        }
       }
     }
 
     // return true only if this DataNode is produced
-    return result;
+    return false;
   }
 
   //--------------------------------------------------------------------------
@@ -87,7 +96,7 @@ namespace concurrency
     /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
      * by its associated ConditionAlgorithm */
 
-    auto promoter = Supervisor( *m_slot, m_cause );
+    auto promoter = Supervisor( *m_slot, m_cause, m_trace );
 
     for ( auto condAlg : node.getProducers() ) condAlg->accept( promoter );
 
@@ -100,15 +109,15 @@ namespace concurrency
   bool DecisionUpdater::visit( AlgorithmNode& node )
   {
 
-    auto& states       = m_slot->algsStates;
-    const State& state = states[node.getAlgoIndex()];
-    int decision       = -1;
+    auto&         states   = m_slot->algsStates;
+    const AState& state    = states[node.getAlgoIndex()];
+    int           decision = -1;
 
     if ( true == node.isOptimist() )
       decision = 1;
-    else if ( State::EVTACCEPTED == state )
+    else if ( AState::EVTACCEPTED == state )
       decision = !node.isLiar();
-    else if ( State::EVTREJECTED == state )
+    else if ( AState::EVTREJECTED == state )
       decision = node.isLiar();
 
     if ( -1 != decision ) {
@@ -131,6 +140,36 @@ namespace concurrency
   //---------------------------------------------------------------------------
   bool Supervisor::visitEnter( DecisionNode& node ) const
   {
+    // Protect against graph traversal escaping from sub-slots
+    if ( m_slot->parentSlot ) {
+      // Examine the ancestry of this node, looking for sub-slot entry point
+      bool                      canFindExit = false;
+      std::queue<DecisionNode*> allAncestors;
+      allAncestors.push( &node );
+      while ( allAncestors.size() ) {
+
+        DecisionNode* thisAncestor = allAncestors.front();
+        allAncestors.pop();
+
+        if ( thisAncestor->getNodeName() == m_slot->entryPoint ) {
+
+          // This ancestor is the sub-slot exit
+          canFindExit = true;
+          break;
+
+        } else {
+
+          // Go further up the node ancestry
+          for ( auto& evenOlder : thisAncestor->m_parents ) {
+
+            allAncestors.push( evenOlder );
+          }
+        }
+      }
+
+      // If the sub-slot entry point is not in this node's ancestry, don't visit the node
+      if ( !canFindExit ) return false;
+    }
 
     if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) return false;
     return true;
@@ -143,28 +182,79 @@ namespace concurrency
     bool foundNonResolvedChild = false;
     bool foundNegativeChild    = false;
     bool foundPositiveChild    = false;
-    int decision               = -1;
+    int  decision              = -1;
 
-    for ( auto child : node.getDaughters() ) {
-      int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+    // Leave a sub-slot if this is the exit node
+    EventSlot* oldSlot = nullptr;
+    if ( m_slot->parentSlot && m_slot->entryPoint == node.getNodeName() ) {
+      oldSlot = m_slot;
+      m_slot  = m_slot->parentSlot;
+    }
 
-      if ( childDecision == -1 )
-        foundNonResolvedChild = true;
-      else if ( childDecision == 1 )
-        foundPositiveChild = true;
-      else
-        foundNegativeChild = true;
+    // If children are in sub-slots, loop over all
+    auto searchResult = m_slot->subSlotsByNode.find( node.getNodeName() );
+    if ( searchResult != m_slot->subSlotsByNode.end() ) {
+      bool breakout = false;
+      for ( unsigned int slotIndex : searchResult->second ) {
 
-      if ( node.m_modePromptDecision ) {
-        if ( node.m_modeOR && foundPositiveChild ) {
-          decision = 1;
-          break;
-        } else if ( !node.m_modeOR && foundNegativeChild ) {
-          decision = 0;
-          break;
+        // Enter the sub-slot
+        m_slot = &( m_slot->allSubSlots[slotIndex] );
+
+        for ( auto child : node.getDaughters() ) {
+
+          int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+
+          if ( childDecision == -1 )
+            foundNonResolvedChild = true;
+          else if ( childDecision == 1 )
+            foundPositiveChild = true;
+          else
+            foundNegativeChild = true;
+
+          if ( node.m_modePromptDecision ) {
+            if ( node.m_modeOR && foundPositiveChild ) {
+              decision = 1;
+              breakout = true;
+              break;
+            } else if ( !node.m_modeOR && foundNegativeChild ) {
+              decision = 0;
+              breakout = true;
+              break;
+            }
+          } else {
+            if ( foundNonResolvedChild ) {
+              breakout = true;
+              break;
+            }
+          }
         }
-      } else {
-        if ( foundNonResolvedChild ) break;
+
+        // Leave the sub-slot
+        m_slot = m_slot->parentSlot;
+        if ( breakout ) break;
+      }
+    } else {
+      for ( auto child : node.getDaughters() ) {
+        int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+
+        if ( childDecision == -1 )
+          foundNonResolvedChild = true;
+        else if ( childDecision == 1 )
+          foundPositiveChild = true;
+        else
+          foundNegativeChild = true;
+
+        if ( node.m_modePromptDecision ) {
+          if ( node.m_modeOR && foundPositiveChild ) {
+            decision = 1;
+            break;
+          } else if ( !node.m_modeOR && foundNegativeChild ) {
+            decision = 0;
+            break;
+          }
+        } else {
+          if ( foundNonResolvedChild ) break;
+        }
       }
     } // end monitoring children
 
@@ -182,12 +272,51 @@ namespace concurrency
       }
     }
 
+    if ( node.m_inverted && decision == 1 )
+      decision = 0;
+    else if ( node.m_inverted && decision == 0 )
+      decision = 1;
+
     if ( node.m_allPass && !foundNonResolvedChild ) decision = 1;
 
     if ( decision != -1 ) {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
+
+      // if a decision was made for this node, propagate the result upwards
+      for ( auto parent : node.m_parents ) {
+        parent->accept( *this );
+      }
+
+      if ( oldSlot ) m_slot = oldSlot;
       return true;
     }
+
+    // if no decision can be made yet, request further information downwards
+    // Enter subslots for children if needed
+    if ( searchResult != m_slot->subSlotsByNode.end() ) {
+      for ( unsigned int slotIndex : searchResult->second ) {
+
+        // Enter sub-slot
+        m_slot = &( m_slot->allSubSlots[slotIndex] );
+
+        for ( auto child : node.getDaughters() ) {
+          bool result = child->accept( *this );
+          if ( !node.m_modeConcurrent )
+            if ( result ) break; // stop on first unresolved child if its decision hub is sequential
+        }
+
+        // Leave sub-slot
+        m_slot = m_slot->parentSlot;
+      }
+    } else {
+      for ( auto child : node.getDaughters() ) {
+        bool result = child->accept( *this );
+        if ( !node.m_modeConcurrent )
+          if ( result ) break; // stop on first unresolved child if its decision hub is sequential
+      }
+    }
+
+    if ( oldSlot ) m_slot = oldSlot;
     return false;
   }
 
@@ -209,10 +338,10 @@ namespace concurrency
     auto& state  = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
-    if ( State::INITIAL == state ) states.updateState( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
+    if ( AState::INITIAL == state ) states.set( node.getAlgoIndex(), AState::CONTROLREADY ).ignore();
 
     // Try to promote with CR->DR
-    if ( State::CONTROLREADY == state ) {
+    if ( AState::CONTROLREADY == state ) {
       auto promoter = DataReadyPromoter( *m_slot, m_cause, m_trace );
       result        = promoter.visit( node );
     } else {
@@ -268,8 +397,8 @@ namespace concurrency
     std::pair<itV, itV> vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
-      precedence::AlgoTraceVertex v = *vp.first;
-      auto index                    = get( &AlgoTraceProps::m_name, execPlan );
+      precedence::AlgoTraceVertex v     = *vp.first;
+      auto                        index = get( &AlgoTraceProps::m_name, execPlan );
       if ( index[v] == node.getNodeName() ) {
         runThroughAdjacents( v, execPlan );
         float rank = m_nodesSucceeded;
@@ -318,11 +447,11 @@ namespace concurrency
     std::pair<itV, itV> vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
-      precedence::AlgoTraceVertex v = *vp.first;
-      auto index                    = get( &AlgoTraceProps::m_name, execPlan );
+      precedence::AlgoTraceVertex v     = *vp.first;
+      auto                        index = get( &AlgoTraceProps::m_name, execPlan );
       if ( index[v] == node.getNodeName() ) {
-        auto index_runtime = get( &AlgoTraceProps::m_runtime, execPlan );
-        float rank         = index_runtime[v];
+        auto  index_runtime = get( &AlgoTraceProps::m_runtime, execPlan );
+        float rank          = index_runtime[v];
         node.setRank( rank );
         // std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
       }
@@ -351,11 +480,11 @@ namespace concurrency
     std::pair<itV, itV> vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
-      precedence::AlgoTraceVertex v = *vp.first;
-      auto index                    = get( &precedence::AlgoTraceProps::m_name, execPlan );
+      precedence::AlgoTraceVertex v     = *vp.first;
+      auto                        index = get( &precedence::AlgoTraceProps::m_name, execPlan );
       if ( index[v] == node.getNodeName() ) {
-        auto index_eccentricity = get( &precedence::AlgoTraceProps::m_eccentricity, execPlan );
-        float rank              = index_eccentricity[v];
+        auto  index_eccentricity = get( &precedence::AlgoTraceProps::m_eccentricity, execPlan );
+        float rank               = index_eccentricity[v];
         node.setRank( rank );
         // std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
       }
@@ -408,22 +537,37 @@ namespace concurrency
   bool RunSimulator::visit( DecisionNode& node )
   {
 
-    // std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
     bool allChildDecisionsResolved = true;
-    for ( auto child : node.getDaughters() ) {
-      int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
+
+    for ( const auto& child : node.getDaughters() ) {
+
+      child->accept( *this );
+
+      int childDecision                                    = m_slot->controlFlowState[child->getNodeIndex()];
+      if ( childDecision == -1 ) allChildDecisionsResolved = false;
+
+      // process children sequentially if their decision hub is sequential
+      if ( !node.m_modeConcurrent && childDecision == -1 ) return false;
 
       if ( childDecision == 1 && node.m_modeOR && node.m_modePromptDecision ) {
         m_slot->controlFlowState[node.getNodeIndex()] = 1;
-        return true;
-      }
 
-      if ( childDecision == -1 ) {
-        allChildDecisionsResolved = false;
+        // if a decision was made for this node, propagate the result upwards
+        for ( auto parent : node.m_parents ) {
+          parent->accept( *this );
+        }
+        return true;
       }
     }
 
-    if ( allChildDecisionsResolved ) m_slot->controlFlowState[node.getNodeIndex()] = 1;
+    if ( allChildDecisionsResolved ) {
+      m_slot->controlFlowState[node.getNodeIndex()] = 1;
+
+      // if a decision was made for this node, propagate the result upwards
+      for ( auto parent : node.m_parents ) {
+        parent->accept( *this );
+      }
+    }
 
     return allChildDecisionsResolved;
   }
@@ -440,24 +584,24 @@ namespace concurrency
   bool RunSimulator::visit( AlgorithmNode& node )
   {
 
-    auto& states  = m_slot->algsStates;
-    int& decision = m_slot->controlFlowState[node.getNodeIndex()];
+    auto& states   = m_slot->algsStates;
+    int&  decision = m_slot->controlFlowState[node.getNodeIndex()];
 
     auto dataPromoter = DataReadyPromoter( *m_slot, m_cause );
 
-    if ( State::INITIAL == states[node.getAlgoIndex()] ) {
-      states.updateState( node.getAlgoIndex(), State::CONTROLREADY );
+    if ( AState::INITIAL == states[node.getAlgoIndex()] ) {
+      states.set( node.getAlgoIndex(), AState::CONTROLREADY );
       if ( dataPromoter.visit( node ) ) {
-        states.updateState( node.getAlgoIndex(), State::SCHEDULED );
-        states.updateState( node.getAlgoIndex(), State::EVTACCEPTED );
+        states.set( node.getAlgoIndex(), AState::SCHEDULED );
+        states.set( node.getAlgoIndex(), AState::EVTACCEPTED );
         decision = 1;
         ++m_nodesSucceeded;
         // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
         return true;
       }
-    } else if ( State::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit( node ) ) {
-      states.updateState( node.getAlgoIndex(), State::SCHEDULED );
-      states.updateState( node.getAlgoIndex(), State::EVTACCEPTED );
+    } else if ( AState::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit( node ) ) {
+      states.set( node.getAlgoIndex(), AState::SCHEDULED );
+      states.set( node.getAlgoIndex(), AState::EVTACCEPTED );
       decision = 1;
       ++m_nodesSucceeded;
       // std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;

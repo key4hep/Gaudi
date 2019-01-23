@@ -20,21 +20,21 @@ namespace Gaudi
     /// Standard constructor
     RootTool( RootDataConnection* con ) { c = con; }
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch( CSTR section, CSTR branch_name ) override
+    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name ) override
     {
-      std::string n = branch_name + ".";
+      std::string n = branch_name.to_string() + ".";
       for ( int i = 0, m = n.length() - 1; i < m; ++i )
         if ( !isalnum( n[i] ) ) n[i] = '_';
-      TTree* t                       = c->getSection( section );
-      TBranch* b                     = t ? t->GetBranch( n.c_str() ) : 0;
-      if ( !b ) b                    = t ? t->GetBranch( branch_name.c_str() ) : 0;
+      TTree*   t                     = c->getSection( section );
+      TBranch* b                     = t ? t->GetBranch( n.c_str() ) : nullptr;
+      if ( !b ) b                    = t ? t->GetBranch( branch_name.to_string().c_str() ) : nullptr;
       if ( b ) b->SetAutoDelete( kFALSE );
       return b;
     }
     /// Load references object from file
-    int loadRefs( CSTR section, CSTR cnt, unsigned long entry, RootObjectRefs& refs ) override
+    int loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry, RootObjectRefs& refs ) override
     {
-      TBranch* b            = getBranch( section, cnt + "#R" );
+      TBranch*        b     = getBranch( section, cnt.to_string() + "#R" );
       RootObjectRefs* prefs = &refs;
       if ( b ) {
         b->SetAddress( &prefs );
@@ -62,7 +62,7 @@ namespace Gaudi
                       if ( r.container ) r.container += ls.first->container;
                       if ( r.link ) r.link += ls.first->link;
                       const string& rc = c->getCont( r.container );
-                      auto k           = ms.find( rc );
+                      auto          k  = ms.find( rc );
                       if ( k != ms.end() ) {
                         const auto& cs = ( *k ).second;
                         r.entry        = ( ls.first->entry >= 0 && ls.first->entry < (int)cs.size() )
@@ -108,7 +108,7 @@ namespace Gaudi
     template <class C, class F>
     StatusCode readBranch( TTree* t, const char* nam, C& v, F pmf )
     {
-      char text[2048];
+      char     text[2048];
       TBranch* b = t->GetBranch( nam );
       if ( b ) {
         TLeaf* l = b->GetLeaf( nam );
@@ -122,14 +122,14 @@ namespace Gaudi
               msgSvc() << "Add Value[" << b->GetName() << "]:" << p << endmsg;
               ( this->*pmf )( v, p );
             } else {
-              sc = RootDataConnection::ROOT_READ_ERROR;
+              sc = RootDataConnection::Status::ROOT_READ_ERROR;
             }
           }
           return sc;
         }
       }
       msgSvc() << MSG::ERROR << "Failed to read '" << nam << "' table." << endmsg;
-      return RootDataConnection::ROOT_READ_ERROR;
+      return RootDataConnection::Status::ROOT_READ_ERROR;
     }
     /// Analyze the Sections table entries
     bool get( const string& dsc, pair<string, ContainerSection>& e )
@@ -139,11 +139,11 @@ namespace Gaudi
         size_t id2 = dsc.find( "[START=" );
         size_t id3 = dsc.find( "[LEN=" );
         if ( id1 != string::npos && id2 != string::npos && id3 != string::npos ) {
-          string cnt         = dsc.substr( id1 + 5, id2 - 1 - 5 );
-          int section_start  = std::stoi( dsc.substr( id2 + 7, id3 - id2 - 8 ) );
-          int section_length = std::stoi( dsc.substr( id3 + 5, dsc.find( "]", id3 + 5 ) - id3 - 5 ) );
-          e.first            = cnt;
-          e.second           = ContainerSection( section_start, section_length );
+          string cnt            = dsc.substr( id1 + 5, id2 - 1 - 5 );
+          int    section_start  = std::stoi( dsc.substr( id2 + 7, id3 - id2 - 8 ) );
+          int    section_length = std::stoi( dsc.substr( id3 + 5, dsc.find( "]", id3 + 5 ) - id3 - 5 ) );
+          e.first               = cnt;
+          e.second              = ContainerSection( section_start, section_length );
           return true;
         }
       }
@@ -154,12 +154,12 @@ namespace Gaudi
     /// Build merge sections from the Sections table entries
     void analyzeMergeMap( StringVec& tmp )
     {
-      LinkSections& ls  = linkSections();
+      LinkSections&  ls = linkSections();
       MergeSections& ms = mergeSections();
       pair<string, ContainerSection> e;
       MsgStream& msg = msgSvc();
-      RootRef r;
-      int cnt = 0;
+      RootRef    r;
+      int        cnt = 0;
       ls.clear();
       ms.clear();
       msg << MSG::VERBOSE;
@@ -190,9 +190,9 @@ namespace Gaudi
     /// Read reference tables
     StatusCode readRefs() override
     {
-      TTree* t = (TTree*)c->file()->Get( "Sections" );
+      TTree*     t = (TTree*)c->file()->Get( "Sections" );
       StatusCode sc( StatusCode::SUCCESS, true );
-      StringVec tmp;
+      StringVec  tmp;
       if ( t && !( sc = readBranch( t, "Sections", tmp, &RootTool::addEntry ) ).isSuccess() )
         return sc;
       else if ( refs() ) {
@@ -213,12 +213,12 @@ namespace Gaudi
     template <class C, class F>
     StatusCode saveBranch( const char* nam, C& v, F pmf )
     {
-      Long64_t i, n;
-      string val, typ = nam;
-      StatusCode sc = StatusCode::SUCCESS;
+      Long64_t             i, n;
+      string               val, typ = nam;
+      StatusCode           sc = StatusCode::SUCCESS;
       TDirectory::TContext ctxt( c->file() );
-      TBranch* b  = refs()->GetBranch( nam );
-      if ( !b ) b = refs()->Branch( nam, 0, ( typ + "/C" ).c_str() );
+      TBranch*             b = refs()->GetBranch( nam );
+      if ( !b ) b            = refs()->Branch( nam, 0, ( typ + "/C" ).c_str() );
       if ( b ) {
         for ( i = b->GetEntries(), n = Long64_t( v.size() ); i < n; ++i ) {
           val = ( this->*pmf )( v[size_t( i )] );

@@ -12,13 +12,9 @@
 #include <vector>
 
 // Framework include files
-#include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IRndmEngine.h"
 #include "GaudiKernel/ISerialize.h"
 #include "GaudiKernel/Service.h"
-
-// Forward declarations
-class IIncidentSvc;
 
 /** Random Generator engine definition
 
@@ -43,22 +39,15 @@ class IIncidentSvc;
     Author:  M.Frank
     Version: 1.0
 */
-class RndmEngine : public extends<Service, IRndmEngine, ISerialize, IIncidentListener>
+class RndmEngine : public extends<Service, IRndmEngine, ISerialize>
 {
 protected:
-  /// Reference to the incident service
-  SmartIF<IIncidentSvc> m_pIncidentSvc;
-
   /// Standard Constructor
-  RndmEngine( const std::string& name, ISvcLocator* loc );
-  /// Standard Destructor
-  ~RndmEngine() override;
+  using extends::extends;
 
 public:
   /// Service override: initialization
   StatusCode initialize() override;
-  /// Service override: finalization
-  StatusCode finalize() override;
   /// Single shot returning single random number
   double rndm() const override;
   /** Multiple shots returning vector with flat random numbers.
@@ -78,8 +67,6 @@ public:
       @return  Reference to read stream buffer
   */
   StreamBuffer& serialize( StreamBuffer& str ) const override;
-  /// Inform that a new incident has occurred
-  void handle( const Incident& inc ) override;
 };
 
 #endif // GAUDI_RNDMGENSVC_RNDMENGINE_H

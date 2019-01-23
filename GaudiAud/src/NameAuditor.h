@@ -11,7 +11,7 @@
 class NameAuditor : public CommonAuditor
 {
 public:
-  NameAuditor( const std::string& name, ISvcLocator* pSvcLocator );
+  using CommonAuditor::CommonAuditor;
 
 private:
   /// Print a message on "before".

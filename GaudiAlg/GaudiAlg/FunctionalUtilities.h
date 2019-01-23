@@ -8,7 +8,6 @@
 // TODO: fwd declare instead?
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiHistoAlg.h"
-#include "GaudiKernel/AnyDataHandle.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/SerializeSTL.h"
 
@@ -91,9 +90,6 @@ namespace Gaudi
 
       // this uses the defaults -- and it itself is the default ;-)
       using useDefaults = use_<>;
-
-      // example: use AnyDataHandle as input and output, and the default BaseClass
-      using useAnyDataHandle = use_<InputHandle_t<AnyDataHandle>, OutputHandle_t<AnyDataHandle>>;
 
       // this example uses GaudiHistoAlg as baseclass, and the default handle types for
       // input and output

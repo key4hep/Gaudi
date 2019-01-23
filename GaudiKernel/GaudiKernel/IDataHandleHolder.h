@@ -22,8 +22,6 @@ public:
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const = 0;
 
-  virtual void commitHandles() = 0;
-
   virtual const DataObjIDColl& inputDataObjs() const  = 0;
   virtual const DataObjIDColl& outputDataObjs() const = 0;
 

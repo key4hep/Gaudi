@@ -3,6 +3,7 @@
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
@@ -36,10 +37,10 @@ StatusCode DLLClassManager::loadModule( const std::string& module, bool fireInci
   std::string mod = module == "" ? System::moduleNameFull() : module;
   if ( module == "NONE" ) return StatusCode::SUCCESS;
 
-  void* libHandle   = nullptr;
-  StatusCode status = StatusCode::FAILURE;
+  void*      libHandle = nullptr;
+  StatusCode status    = StatusCode::FAILURE;
   try {
-    status = System::loadDynamicLib( module, &libHandle );
+    status = System::loadDynamicLib( module, &libHandle ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   } catch ( const std::exception& excpt ) {
     if ( m_msgsvc ) {
       log << MSG::ERROR << "Exception whilst loading " << module << " : " << excpt.what() << endmsg;
@@ -58,7 +59,7 @@ StatusCode DLLClassManager::loadModule( const std::string& module, bool fireInci
   if ( fireIncident && !module.empty() ) {
     // now fire ModuleLoadedIncident
     const bool CREATEIF( true );
-    auto pIncidentSvc = m_svclocator->service<IIncidentSvc>( "IncidentSvc", CREATEIF );
+    auto       pIncidentSvc = m_svclocator->service<IIncidentSvc>( "IncidentSvc", CREATEIF );
     if ( !pIncidentSvc ) {
       log << MSG::FATAL << "Can not locate IncidentSvc" << endmsg;
       throw GaudiException( "Error retrieving IncidentSvc", "DLLClassManager::DLLClassManager", StatusCode::FAILURE );

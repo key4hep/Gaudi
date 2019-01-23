@@ -19,7 +19,7 @@ namespace Gaudi
     {
 
       /// Write the content of the RootAddress of a data object
-      class DumpAddress : public Algorithm
+      class DumpAddress : public ::Algorithm
       {
       public:
         using Algorithm::Algorithm;
@@ -35,7 +35,7 @@ namespace Gaudi
 
         StatusCode execute() override
         {
-          MsgStream log( msgSvc() );
+          MsgStream                log( msgSvc() );
           SmartDataPtr<DataObject> obj( eventSvc(), m_path );
           if ( obj ) {
             Gaudi::RootAddress* addr = dynamic_cast<Gaudi::RootAddress*>( obj->registry()->address() );
@@ -62,8 +62,8 @@ namespace Gaudi
       private:
         Gaudi::Property<std::string> m_output{this, "OutputFile", {}, "Name of the output file"};
         Gaudi::Property<std::string> m_path{this, "ObjectPath", {}, "Path to the object in the transient store"};
-        std::ofstream m_outputFile;
-        long m_count = 0;
+        std::ofstream                m_outputFile;
+        long                         m_count = 0;
       };
       DECLARE_COMPONENT( DumpAddress )
     }

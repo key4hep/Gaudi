@@ -57,7 +57,7 @@ std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string&
 
 std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const AIDA::IHistogram3D& hist )
 {
-  TH3D* h        = getRepresentation<AIDA::IHistogram3D, TH3D>( hist );
+  TH3D*        h = getRepresentation<AIDA::IHistogram3D, TH3D>( hist );
   Histogram3D* n = h ? new Histogram3D( new TH3D( *h ) ) : nullptr;
   return {n, n};
 }
@@ -159,11 +159,11 @@ bool Gaudi::Histogram3D::setRms( double rmsX, double rmsY, double rmsZ )
 void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h )
 {
   // implement here the copy
-  const char* tit = h.title().c_str();
+  const char* title = h.title().c_str();
   if ( h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() && h.zAxis().isFixedBinning() ) {
-    m_rep.reset( new TH3D( tit, tit, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(), h.yAxis().bins(),
-                           h.yAxis().lowerEdge(), h.yAxis().upperEdge(), h.zAxis().bins(), h.zAxis().lowerEdge(),
-                           h.zAxis().upperEdge() ) );
+    m_rep.reset( new TH3D( title, title, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(),
+                           h.yAxis().bins(), h.yAxis().lowerEdge(), h.yAxis().upperEdge(), h.zAxis().bins(),
+                           h.zAxis().lowerEdge(), h.zAxis().upperEdge() ) );
   } else {
     Edges eX, eY, eZ;
     for ( int i = 0; i < h.xAxis().bins(); ++i ) eX.push_back( h.xAxis().binLowerEdge( i ) );
@@ -176,7 +176,7 @@ void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h )
     // add also upperedges at the end
     eZ.push_back( h.zAxis().upperEdge() );
     m_rep.reset(
-        new TH3D( tit, tit, eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front(), eZ.size() - 1, &eZ.front() ) );
+        new TH3D( title, title, eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front(), eZ.size() - 1, &eZ.front() ) );
   }
   m_xAxis.initialize( m_rep->GetXaxis(), true );
   m_yAxis.initialize( m_rep->GetYaxis(), true );

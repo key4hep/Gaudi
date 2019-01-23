@@ -1,7 +1,6 @@
 // Include files
 // from Gaudi
 #include "GaudiGSL/IFuncMinimum.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiMath/Adapters.h"
 // from CLHEP
@@ -35,18 +34,6 @@ using namespace CLHEP;
 //-----------------------------------------------------------------------------
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-FuncMinimumIAlg::FuncMinimumIAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
-}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-FuncMinimumIAlg::~FuncMinimumIAlg() {}
-
-//=============================================================================
 // Class for the function "IFunction"
 // @see AIDA/IFunction.h
 class Function : virtual public AIDA::IFunction
@@ -57,38 +44,37 @@ public:
 
 public:
   Function() { m_gradient.resize( 2 ); }
-  ~Function() override {}
   double value( const std::vector<double>& x ) const override { return 10 * x[0] * x[0] + 20 * x[1] * x[1]; }
-  int dimension() const override { return 2; }
-  bool setTitle( const std::string& ) override { return false; }
-  std::string title( void ) const override { return ""; }
-  bool isEqual( const AIDA::IFunction& ) const override { return false; }
+  int                                      dimension() const override { return 2; }
+  bool                                     setTitle( const std::string& ) override { return false; }
+  std::string                              title( void ) const override { return ""; }
+  bool                                     isEqual( const AIDA::IFunction& ) const override { return false; }
   const std::vector<double>& gradient( const std::vector<double>& x ) const override
   {
     m_gradient[0] = 20 * x[0];
     m_gradient[1] = 40 * x[1];
     return m_gradient;
   }
-  bool providesGradient( void ) const override { return true; }
-  std::string variableName( int ) const override { return ""; }
-  std::vector<std::string> variableNames( void ) const override { return m_names; }
-  bool setParameters( const std::vector<double>& ) override { return false; }
+  bool                       providesGradient( void ) const override { return true; }
+  std::string                variableName( int ) const override { return ""; }
+  std::vector<std::string>   variableNames( void ) const override { return m_names; }
+  bool                       setParameters( const std::vector<double>& ) override { return false; }
   const std::vector<double>& parameters( void ) const override { return m_values; }
-  int numberOfParameters( void ) const override { return 0; }
-  std::vector<std::string> parameterNames() const override { return m_names; }
-  bool setParameter( const std::string&, double ) override { return false; }
-  double parameter( const std::string& ) const override { return 0.0; }
-  int indexOfParameter( const std::string& ) const override { return 0; }
-  const AIDA::IAnnotation& annotation( void ) const override { return *(AIDA::IAnnotation*)0; }
-  AIDA::IAnnotation& annotation( void ) override { return *(AIDA::IAnnotation*)0; }
-  std::string codeletString( void ) const override { return ""; }
-  void* cast( const std::string& ) const override { return 0; }
+  int                        numberOfParameters( void ) const override { return 0; }
+  std::vector<std::string>   parameterNames() const override { return m_names; }
+  bool                       setParameter( const std::string&, double ) override { return false; }
+  double                     parameter( const std::string& ) const override { return 0.0; }
+  int                        indexOfParameter( const std::string& ) const override { return 0; }
+  const AIDA::IAnnotation&   annotation( void ) const override { return *(AIDA::IAnnotation*)0; }
+  AIDA::IAnnotation&         annotation( void ) override { return *(AIDA::IAnnotation*)0; }
+  std::string                codeletString( void ) const override { return ""; }
+  void*                      cast( const std::string& ) const override { return 0; }
 
 private:
-  std::string m_version;
-  std::string m_label;
-  std::vector<std::string> m_names;
-  std::vector<double> m_values;
+  std::string                 m_version;
+  std::string                 m_label;
+  std::vector<std::string>    m_names;
+  std::vector<double>         m_values;
   mutable std::vector<double> m_gradient;
 };
 
@@ -202,4 +188,4 @@ StatusCode FuncMinimumIAlg::finalize()
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( FuncMinimumIAlg )
+DECLARE_COMPONENT( FuncMinimumIAlg )

@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 // ============================================================================
 // GaudiKernel
@@ -60,9 +61,9 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-    inline std::ostream& toStream( ITERATOR first,             // begin of the sequence
-                                   ITERATOR last,              //   end of the sequence
-                                   std::ostream& s,            //            the stream
+    inline std::ostream& toStream( ITERATOR           first,   // begin of the sequence
+                                   ITERATOR           last,    //   end of the sequence
+                                   std::ostream&      s,       //            the stream
                                    const std::string& open,    //               opening
                                    const std::string& close,   //               closing
                                    const std::string& delim ); //             delimiter
@@ -160,6 +161,15 @@ namespace Gaudi
       return toStream( obj.begin(), obj.end(), s, "[ ", " ]", " , " );
     }
     // ========================================================================
+    /** the partial template specialization of <c>std::unordered_set<TYPE,HASH,CMP,ALLOCATOR></c>
+     *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
+     */
+    template <class TYPE, class HASH, class CMP, class ALLOCATOR>
+    inline std::ostream& toStream( const std::unordered_set<TYPE, HASH, CMP, ALLOCATOR>& obj, std::ostream& s )
+    {
+      return toStream( obj.begin(), obj.end(), s, "[", "]", " , " );
+    }
+    // ========================================================================
     /** the partial template specialization of
      *  <c>std::map<KTYPE,VTYPE,CMP,ALLOCATOR></c> printout
      *  the map is printed a'la Python dict: " ( a : b , c: d , e : f )"
@@ -210,8 +220,8 @@ namespace Gaudi
     {
       using GaudiUtils::details::ostream_joiner;
       return ostream_joiner( s << "{ ", obj, " , ",
-                             []( std::ostream& s, const std::pair<const KTYPE, VTYPE>& i ) -> std::ostream& {
-                               return toStream( i.second, toStream( i.first, s ) << " : " );
+                             []( std::ostream& os, const std::pair<const KTYPE, VTYPE>& i ) -> std::ostream& {
+                               return toStream( i.second, toStream( i.first, os ) << " : " );
                              } )
              << " }";
     }
@@ -290,9 +300,9 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-    inline std::ostream& toStream( ITERATOR first,            // begin of the sequence
-                                   ITERATOR last,             //   end of the sequence
-                                   std::ostream& s,           //            the stream
+    inline std::ostream& toStream( ITERATOR           first,  // begin of the sequence
+                                   ITERATOR           last,   //   end of the sequence
+                                   std::ostream&      s,      //            the stream
                                    const std::string& open,   //               opening
                                    const std::string& close,  //               closing
                                    const std::string& delim ) //             delimiter

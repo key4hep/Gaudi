@@ -33,7 +33,14 @@ RandomNumberAlg::RandomNumberAlg( const std::string& name, ISvcLocator* pSvcLoca
 }
 
 // Standard destructor
-RandomNumberAlg::~RandomNumberAlg() { std::cout << "Destructor Called for " << name() << std::endl; }
+RandomNumberAlg::~RandomNumberAlg()
+{
+  // do not print messages if we are created in genconf
+  const std::string cmd = System::cmdLineArgs()[0];
+  if ( cmd.find( "genconf" ) != std::string::npos ) return;
+
+  std::cout << "Destructor Called for " << name() << std::endl;
+}
 
 // The "functional" part of the class: For the EmptyAlgorithm example they do
 //  nothing apart from print out info messages.

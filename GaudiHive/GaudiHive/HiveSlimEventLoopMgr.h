@@ -4,24 +4,20 @@
 // Framework include files
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
-
-// Standard includes
-#include <functional>
+#include "GaudiKernel/SmartIF.h"
 
 // External Libraries
-#include "tbb/concurrent_queue.h"
 #include <boost/dynamic_bitset.hpp>
 
-// Forward declarations
-class IIncidentSvc;
-class IDataManagerSvc;
-class IDataProviderSvc;
+// STL
+#include <memory>
 
 class HiveSlimEventLoopMgr : public extends<Service, IEventProcessor>
 {
@@ -30,9 +26,10 @@ protected:
   Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "", ""};
   Gaudi::Property<std::string> m_evtsel{this, "EvtSel", "", ""};
   Gaudi::Property<bool> m_warnings{this, "Warnings", true, "Set this property to false to suppress warning messages"};
-  Gaudi::Property<std::string> m_schedulerName{this, "SchedulerName", "ForwardSchedulerSvc",
+  Gaudi::Property<std::string> m_schedulerName{this, "SchedulerName", "AvalancheSchedulerSvc",
                                                "Name of the scheduler to be used"};
   Gaudi::Property<std::vector<unsigned int>> m_eventNumberBlacklist{this, "EventNumberBlackList", {}, ""};
+  Gaudi::Property<bool> m_abortOnFailure{this, "AbortOnFailure", true, "Abort job on event failure"};
 
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc> m_evtDataMgrSvc;
@@ -62,7 +59,7 @@ protected:
   /// Declare the root address of the event
   StatusCode declareEventRootAddress();
   /// Create event context
-  StatusCode createEventContext( EventContext*& eventContext, int createdEvents );
+  StatusCode createEventContext( std::unique_ptr<EventContext>& eventContext, int createdEvents );
   /// Drain the scheduler from all actions that may be queued
   StatusCode drainScheduler( int& finishedEvents );
   /// Instance of the incident listener waiting for AbortEvent.
@@ -75,11 +72,12 @@ protected:
   SmartIF<IIncidentSvc> m_incidentSvc;
 
   // if finite number of evts is processed use bitset
-  boost::dynamic_bitset<>* m_blackListBS = nullptr;
+  std::unique_ptr<boost::dynamic_bitset<>> m_blackListBS;
 
 public:
   /// Standard Constructor
   HiveSlimEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc );
+
   /// Standard Destructor
   ~HiveSlimEventLoopMgr() override;
   /// Create event address using event selector

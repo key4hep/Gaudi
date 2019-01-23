@@ -14,7 +14,7 @@
 
 // forward declarations
 class IDataProviderSvc;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class TBufferFile;
 class DataStoreItem;
 class DataObject;
@@ -32,8 +32,8 @@ namespace GaudiMP
   class GAUDI_API TESSerializer : virtual public IDataStoreAgent
   {
     typedef std::vector<DataStoreItem*> Items;
-    typedef std::vector<std::string> ItemNames;
-    typedef std::vector<DataObject*> Objects;
+    typedef std::vector<std::string>    ItemNames;
+    typedef std::vector<DataObject*>    Objects;
 
   public:
     /// Constructor

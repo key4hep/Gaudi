@@ -23,9 +23,9 @@ public:
             const std::string& type    ///< Incident type
             );
 
-  Incident( const std::string& source, ///< Incident source (service or algorithm name)
-            const std::string& type,   ///< Incident type
-            const EventContext& ctx    ///< EventContext
+  Incident( const std::string&  source, ///< Incident source (service or algorithm name)
+            const std::string&  type,   ///< Incident type
+            const EventContext& ctx     ///< EventContext
             )
       : m_source( source ), m_type( type ), m_ctx( ctx )
   {
@@ -53,9 +53,9 @@ public:
   EventContext context() const { return m_ctx; }
 
 private:
-  std::string m_source; ///< Incident source
-  std::string m_type;   ///< incident type
-  EventContext m_ctx;   ///< Event Context when Incident created
+  std::string  m_source; ///< Incident source
+  std::string  m_type;   ///< incident type
+  EventContext m_ctx;    ///< Event Context when Incident created
 };
 
 #ifndef _inc_types_impl_
@@ -63,7 +63,7 @@ private:
 #else
 #define _inc_type_( x )                                                                                                \
   extern const std::string x;                                                                                          \
-  const std::string x { #x }
+  const std::string        x { #x }
 #endif
 /** @namespace IncidentType
  *

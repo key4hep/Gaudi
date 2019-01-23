@@ -42,7 +42,7 @@ namespace
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG debug()
+#define DEBMSG ON_DEBUG   debug()
 #define VERMSG ON_VERBOSE verbose()
 
 // ============================================================================
@@ -68,7 +68,7 @@ StatusCode IncidentSvc::initialize()
     error() << "Could not set my properties" << endmsg;
     return sc;
   }
-  return StatusCode::SUCCESS;
+  return sc;
 }
 // ============================================================================
 StatusCode IncidentSvc::finalize()
@@ -76,13 +76,18 @@ StatusCode IncidentSvc::finalize()
   DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] ", System::milliSec )
          << m_timer.outputUserTime( "Total:%2%[s]", System::Sec ) << endmsg;
 
-  // Finalize this specific service
-  StatusCode sc = Service::finalize();
-  if ( UNLIKELY( sc.isFailure() ) ) {
-    return sc;
+  {
+    // clear the local storage of allocated Incident objects.
+    std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
+    for ( auto& fi : m_firedIncidents ) {
+      std::for_each( fi.second.unsafe_begin(), fi.second.unsafe_end(), []( auto i ) { delete i; } );
+      fi.second.clear();
+    }
+    m_firedIncidents.clear();
   }
 
-  return StatusCode::SUCCESS;
+  // Finalize this specific service
+  return Service::finalize();
 }
 // ============================================================================
 // Inherited IIncidentSvc overrides:
@@ -90,7 +95,7 @@ StatusCode IncidentSvc::finalize()
 void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, long prio, bool rethrow,
                                bool singleShot )
 {
-  static const std::string all{"ALL"};
+  static const std::string               all{"ALL"};
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
   const std::string& ltype = ( !type.empty() ? type : all );
@@ -99,7 +104,7 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
   auto itMap = m_listenerMap.find( ltype );
   if ( itMap == m_listenerMap.end() ) {
     // if not found, create and insert now a list of listeners
-    auto p = m_listenerMap.insert( {ltype, std::unique_ptr<ListenerList>( new ListenerList() )} );
+    auto p = m_listenerMap.insert( {ltype, std::make_unique<ListenerList>()} );
     if ( !p.second ) { /* OOPS */
     }
     itMap = p.first;
@@ -258,7 +263,7 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident )
 
 void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::string& type ) const
 {
-  static const std::string ALL{"ALL"};
+  static const std::string               ALL{"ALL"};
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
   const std::string& ltype = ( !type.empty() ? type : ALL );

@@ -9,27 +9,25 @@
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
+namespace
+{
+  //---------------------------------------------------------------------------
+  /// Translation between state id and name
+  const char* stateToString( const int& stateId )
+  {
+    switch ( stateId ) {
+    case 0:
+      return "FALSE";
+    case 1:
+      return "TRUE";
+    default:
+      return "UNDEFINED";
+    }
+  }
+}
+
 namespace concurrency
 {
-
-  //---------------------------------------------------------------------------
-  std::string ControlFlowNode::stateToString( const int& stateId ) const
-  {
-
-    if ( 0 == stateId )
-      return "FALSE";
-    else if ( 1 == stateId )
-      return "TRUE";
-    else
-      return "UNDEFINED";
-  }
-
-  //---------------------------------------------------------------------------
-  DecisionNode::~DecisionNode()
-  {
-
-    for ( auto node : m_children ) delete node;
-  }
 
   //---------------------------------------------------------------------------
   void DecisionNode::addParentNode( DecisionNode* node )
@@ -64,35 +62,10 @@ namespace concurrency
     if ( visitor.visitEnter( *this ) ) {
       // try to aggregate a decision
       bool result = visitor.visit( *this );
-
-      // if a decision was made for this node, propagate the result upwards
-      if ( result ) {
-        for ( auto parent : m_parents ) {
-          parent->accept( visitor );
-        }
-        return false;
-      }
-
-      // if no decision can be made yet, request further information downwards
-      for ( auto child : m_children ) {
-        bool result = child->accept( visitor );
-        if ( !m_modeConcurrent )
-          if ( result ) break; // stop on first unresolved child if its decision hub is sequential
-      }
-
-      return true; // visitor was accepted to try to aggregate the node's decision
+      return !result;
     }
 
     return false; // visitor was rejected (since the decision node has an aggregated decision already)
-  }
-
-  //---------------------------------------------------------------------------
-  AlgorithmNode::~AlgorithmNode()
-  {
-
-    for ( auto node : m_outputs ) {
-      delete node;
-    }
   }
 
   //---------------------------------------------------------------------------
@@ -102,7 +75,7 @@ namespace concurrency
     output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
            << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
            << ")"
-           << ", in state: " << AlgsExecutionStates::stateNames[states[m_algoIndex]] << std::endl;
+           << ", in state: " << states[m_algoIndex] << std::endl;
   }
 
   //---------------------------------------------------------------------------
@@ -141,7 +114,6 @@ namespace concurrency
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::initialize()
   {
-
     if ( serviceLocator()->existsService( "CondSvc" ) ) {
       SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc" )};
       if ( condSvc.isValid() ) {
@@ -153,16 +125,18 @@ namespace concurrency
     // Detach condition algorithms from the CF realm
     if ( m_conditionsRealmEnabled ) {
       SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
-      auto& condAlgs = condSvc->condAlgs();
+      auto&             condAlgs = condSvc->condAlgs();
       for ( const auto algo : condAlgs ) {
         auto itA = m_algoNameToAlgoNodeMap.find( algo->name() );
-        concurrency::AlgorithmNode* algoNode;
         if ( itA != m_algoNameToAlgoNodeMap.end() ) {
-          algoNode = itA->second;
+          concurrency::AlgorithmNode* algoNode = itA->second.get();
           debug() << "Detaching condition algorithm '" << algo->name() << "' from the CF realm.." << endmsg;
           for ( auto parent : algoNode->getParentDecisionHubs() ) {
             parent->m_children.erase( std::remove( parent->m_children.begin(), parent->m_children.end(), algoNode ),
                                       parent->m_children.end() );
+            // clean up also auxiliary BGL-based graph of precedence rules
+            if ( m_enableAnalysis )
+              boost::remove_edge( node( algoNode->getNodeName() ), node( parent->getNodeName() ), m_PRGraph );
           }
           algoNode->m_parents.clear();
 
@@ -182,7 +156,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::registerIODataObjects( const Algorithm* algo )
+  void PrecedenceRulesGraph::registerIODataObjects( const Gaudi::Algorithm* algo )
   {
 
     const std::string& algoName = algo->name();
@@ -209,7 +183,7 @@ namespace concurrency
     StatusCode global_sc( StatusCode::SUCCESS, true );
 
     // Production of DataNodes by AlgorithmNodes (DataNodes are created here)
-    for ( auto algo : m_algoNameToAlgoNodeMap ) {
+    for ( auto& algo : m_algoNameToAlgoNodeMap ) {
 
       auto& outputs = m_algoNameToAlgoOutputsMap[algo.first];
       for ( auto output : outputs ) {
@@ -220,33 +194,30 @@ namespace concurrency
           global_sc = sc;
         }
         auto dataNode = getDataNode( output );
-        dataNode->addProducerNode( algo.second );
+        dataNode->addProducerNode( algo.second.get() );
         algo.second->addOutputDataNode( dataNode );
-        ON_DEBUG
-        { // Mirror the action above in the BGL-based graph
+
+        // Mirror the action above in the BGL-based graph
+        if ( m_enableAnalysis )
           boost::add_edge( node( algo.second->getNodeName() ), node( output.fullKey() ), m_PRGraph );
-        }
       }
     }
 
     // Consumption of DataNodes by AlgorithmNodes
-    for ( auto algo : m_algoNameToAlgoNodeMap ) {
+    for ( auto& algo : m_algoNameToAlgoNodeMap ) {
 
       for ( auto input : m_algoNameToAlgoInputsMap[algo.first] ) {
 
-        DataNode* dataNode = nullptr;
-
         auto itP = m_dataPathToDataNodeMap.find( input );
 
-        if ( itP != m_dataPathToDataNodeMap.end() ) dataNode = getDataNode( input );
-
+        DataNode* dataNode = ( itP != m_dataPathToDataNodeMap.end() ? getDataNode( input ) : nullptr );
         if ( dataNode ) {
-          dataNode->addConsumerNode( algo.second );
+          dataNode->addConsumerNode( algo.second.get() );
           algo.second->addInputDataNode( dataNode );
-          ON_DEBUG
-          { // Mirror the action above in the BGL-based graph
+
+          // Mirror the action above in the BGL-based graph
+          if ( m_enableAnalysis )
             boost::add_edge( node( input.fullKey() ), node( algo.second->getNodeName() ), m_PRGraph );
-          }
         }
       }
     }
@@ -255,166 +226,164 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Algorithm* algo, const std::string& parentName, bool inverted,
-                                                     bool allPass )
+  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Gaudi::Algorithm* algo, const std::string& parentName,
+                                                     bool inverted, bool allPass )
   {
 
     StatusCode sc = StatusCode::SUCCESS;
 
-    // Create new, or fetch existent, AlgorithmNode
+    /// Create new, or fetch existent, AlgorithmNode
+
     auto& algoName = algo->name();
-    auto itA       = m_algoNameToAlgoNodeMap.find( algoName );
+
     concurrency::AlgorithmNode* algoNode;
+
+    auto itA = m_algoNameToAlgoNodeMap.find( algoName );
     if ( itA != m_algoNameToAlgoNodeMap.end() ) {
-      algoNode = itA->second;
+      algoNode = itA->second.get();
     } else {
-      algoNode = new concurrency::AlgorithmNode( *this, algo, m_nodeCounter, m_algoCounter, inverted, allPass );
-      ON_DEBUG
-      { // Mirror the action above in the BGL-based graph
-        auto source =
-            boost::add_vertex( AlgoProps( algo, m_nodeCounter, m_algoCounter, inverted, allPass ), m_PRGraph );
-        boost::add_edge( source, node( parentName ), m_PRGraph );
+      auto r = m_algoNameToAlgoNodeMap.emplace(
+          algoName, std::make_unique<concurrency::AlgorithmNode>( *this, algo, m_nodeCounter, m_algoCounter, inverted,
+                                                                  allPass ) );
+      algoNode = r.first->second.get();
+
+      // Mirror AlgorithmNode in the BGL-based graph
+      if ( m_enableAnalysis ) {
+        boost::add_vertex( AlgoProps( algo, m_nodeCounter, m_algoCounter, inverted, allPass ), m_PRGraph );
       }
       ++m_nodeCounter;
       ++m_algoCounter;
-      m_algoNameToAlgoNodeMap[algoName] = algoNode;
-      ON_VERBOSE verbose() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
+      ON_VERBOSE verbose() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
+
       registerIODataObjects( algo );
     }
 
-    // Attach AlgorithmNode to its CF decision hub
+    /// Attach AlgorithmNode to its parent DecisionNode
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      auto parentNode = itP->second;
-      ON_VERBOSE verbose() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '" << parentName << "'"
-                           << endmsg;
+      auto parentNode = itP->second.get();
 
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
+
+      // Mirror algorithm to CF parent relationship in the BGL-based graph
+      if ( m_enableAnalysis ) boost::add_edge( node( algo->name() ), node( parentName ), m_PRGraph );
+
+      ON_VERBOSE verbose() << "Attached AlgorithmNode '" << algo->name() << "' to parent DecisionNode '" << parentName
+                           << "'" << endmsg;
     } else {
       sc = StatusCode::FAILURE;
-      error() << "Requested DecisionNode '" << parentName << "' was not found" << endmsg;
+      error() << "Parent DecisionNode '" << parentName << "' was not found" << endmsg;
     }
 
     return sc;
-  }
-
-  //---------------------------------------------------------------------------
-  AlgorithmNode* PrecedenceRulesGraph::getAlgorithmNode( const std::string& algoName ) const
-  {
-
-    return m_algoNameToAlgoNodeMap.at( algoName );
   }
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDataNode( const DataObjID& dataPath )
   {
 
-    StatusCode sc;
-
     auto itD = m_dataPathToDataNodeMap.find( dataPath );
-    concurrency::DataNode* dataNode;
-    if ( itD != m_dataPathToDataNodeMap.end() ) {
-      dataNode = itD->second;
-      sc       = StatusCode::SUCCESS;
+    if ( itD != m_dataPathToDataNodeMap.end() ) return StatusCode::SUCCESS;
+
+    std::unique_ptr<concurrency::DataNode> dataNode;
+    if ( !m_conditionsRealmEnabled ) {
+      dataNode = std::make_unique<concurrency::DataNode>( *this, dataPath );
+      ON_VERBOSE verbose() << "  DataNode " << dataPath << " added @ " << dataNode.get() << endmsg;
+      // Mirror the action above in the BGL-based graph
+      if ( m_enableAnalysis ) boost::add_vertex( DataProps( dataPath ), m_PRGraph );
     } else {
-      if ( !m_conditionsRealmEnabled ) {
-        dataNode = new concurrency::DataNode( *this, dataPath );
-        ON_VERBOSE verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+      SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
+      if ( condSvc->isRegistered( dataPath ) ) {
+        dataNode = std::make_unique<concurrency::ConditionNode>( *this, dataPath, condSvc );
+        ON_VERBOSE verbose() << "  ConditionNode " << dataPath << " added @ " << dataNode.get() << endmsg;
+        // Mirror the action above in the BGL-based graph
+        if ( m_enableAnalysis ) boost::add_vertex( CondDataProps( dataPath ), m_PRGraph );
       } else {
-        SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc", false )};
-        if ( condSvc->isRegistered( dataPath ) ) {
-          dataNode = new concurrency::ConditionNode( *this, dataPath, condSvc );
-          ON_VERBOSE verbose() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
-        } else {
-          dataNode = new concurrency::DataNode( *this, dataPath );
-          ON_VERBOSE verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
-        }
-      }
-
-      m_dataPathToDataNodeMap[dataPath] = dataNode;
-
-      sc = StatusCode::SUCCESS;
-      ON_DEBUG
-      { // Mirror the action above in the BGL-based graph
-        boost::add_vertex( DataProps( dataPath ), m_PRGraph );
+        dataNode = std::make_unique<concurrency::DataNode>( *this, dataPath );
+        ON_VERBOSE verbose() << "  DataNode " << dataPath << " added @ " << dataNode.get() << endmsg;
+        // Mirror the action above in the BGL-based graph
+        if ( m_enableAnalysis ) boost::add_vertex( DataProps( dataPath ), m_PRGraph );
       }
     }
-
-    return sc;
+    m_dataPathToDataNodeMap.emplace( dataPath, std::move( dataNode ) );
+    return StatusCode::SUCCESS;
   }
 
   //---------------------------------------------------------------------------
-  DataNode* PrecedenceRulesGraph::getDataNode( const DataObjID& dataPath ) const
-  {
-
-    return m_dataPathToDataNodeMap.at( dataPath );
-  }
-
-  //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-                                                       bool modeConcurrent, bool modePromptDecision, bool modeOR,
-                                                       bool allPass )
+  StatusCode PrecedenceRulesGraph::addDecisionHubNode( Gaudi::Algorithm* decisionHubAlgo, const std::string& parentName,
+                                                       Concurrent modeConcurrent, PromptDecision modePromptDecision,
+                                                       ModeOr modeOR, AllPass allPass, Inverted isInverted )
   {
 
     StatusCode sc = StatusCode::SUCCESS;
 
+    /// Create new, or fetch existent, DecisionNode
+
     auto& decisionHubName = decisionHubAlgo->name();
 
-    auto itP = m_decisionNameToDecisionHubMap.find( parentName );
-    concurrency::DecisionNode* parentNode;
-    if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      parentNode = itP->second;
-      auto itA   = m_decisionNameToDecisionHubMap.find( decisionHubName );
-      concurrency::DecisionNode* decisionHubNode;
-      if ( itA != m_decisionNameToDecisionHubMap.end() ) {
-        decisionHubNode = itA->second;
-      } else {
-        decisionHubNode = new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent,
-                                                         modePromptDecision, modeOR, allPass );
-        m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
-
-        ON_DEBUG
-        { // Mirror the action above in the BGL-based graph
-          auto source = boost::add_vertex(
-              DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR, allPass ),
-              m_PRGraph );
-          boost::add_edge( source, node( parentName ), m_PRGraph );
-        }
-
-        ++m_nodeCounter;
-
-        ON_VERBOSE verbose() << "Decision hub node " << decisionHubName << " added @ " << decisionHubNode << endmsg;
+    auto                       itA = m_decisionNameToDecisionHubMap.find( decisionHubName );
+    concurrency::DecisionNode* decisionHubNode;
+    if ( itA != m_decisionNameToDecisionHubMap.end() ) {
+      decisionHubNode = itA->second.get();
+    } else {
+      auto r = m_decisionNameToDecisionHubMap.emplace(
+          decisionHubName,
+          std::make_unique<concurrency::DecisionNode>( *this, m_nodeCounter, decisionHubName, modeConcurrent,
+                                                       modePromptDecision, modeOR, allPass, isInverted ) );
+      decisionHubNode = r.first->second.get();
+      // Mirror DecisionNode in the BGL-based graph
+      if ( m_enableAnalysis ) {
+        boost::add_vertex( DecisionHubProps( decisionHubName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR,
+                                             allPass, isInverted ),
+                           m_PRGraph );
       }
 
+      ++m_nodeCounter;
+
+      ON_VERBOSE verbose() << "DecisionNode '" << decisionHubName << "' added @ " << decisionHubNode << endmsg;
+    }
+
+    /// Attach DecisionNode to its parent DecisionNode
+    auto itP = m_decisionNameToDecisionHubMap.find( parentName );
+    if ( itP != m_decisionNameToDecisionHubMap.end() ) {
+      auto parentNode = itP->second.get();
       parentNode->addDaughterNode( decisionHubNode );
       decisionHubNode->addParentNode( parentNode );
+
+      // Mirror DecisionNode-to-DecisionNode relationship in the BGL-based graph
+      if ( m_enableAnalysis ) boost::add_edge( node( decisionHubName ), node( parentName ), m_PRGraph );
+
+      ON_VERBOSE verbose() << "Attached DecisionNode '" << decisionHubName << "' to parent DecisionNode '" << parentName
+                           << "'" << endmsg;
     } else {
       sc = StatusCode::FAILURE;
-      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered." << endmsg;
+      error() << "Parent DecisionNode '" << parentName << "' was not found" << endmsg;
     }
 
     return sc;
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision,
-                                          bool modeOR, bool allPass )
+  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, concurrency::Concurrent modeConcurrent,
+                                          concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOR,
+                                          concurrency::AllPass allPass, concurrency::Inverted isInverted )
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
     if ( itH != m_decisionNameToDecisionHubMap.end() ) {
-      m_headNode = itH->second;
+      m_headNode = itH->second.get();
     } else {
-      m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modePromptDecision,
-                                                  modeOR, allPass );
-      m_decisionNameToDecisionHubMap[headName] = m_headNode;
+      auto r = m_decisionNameToDecisionHubMap.emplace(
+          headName, std::make_unique<concurrency::DecisionNode>( *this, m_nodeCounter, headName, modeConcurrent,
+                                                                 modePromptDecision, modeOR, allPass, isInverted ) );
+      m_headNode = r.first->second.get();
 
-      ON_DEBUG
-      { // Mirror the action above in the BGL-based graph
-        boost::add_vertex(
-            DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR, allPass ),
-            m_PRGraph );
+      // Mirror the action above in the BGL-based graph
+      if ( m_enableAnalysis ) {
+        boost::add_vertex( DecisionHubProps( headName, m_nodeCounter, modeConcurrent, modePromptDecision, modeOR,
+                                             allPass, isInverted ),
+                           m_PRGraph );
       }
 
       ++m_nodeCounter;
@@ -424,24 +393,24 @@ namespace concurrency
   //---------------------------------------------------------------------------
   PRVertexDesc PrecedenceRulesGraph::node( const std::string& name ) const
   {
-
-    PRVertexDesc target{};
-
-    for ( auto vp = vertices( m_PRGraph ); vp.first != vp.second; ++vp.first ) {
-      PRVertexDesc v = *vp.first;
-      if ( boost::apply_visitor( precedence::VertexName(), m_PRGraph[v] ) == name ) {
-        target = v;
-        break;
-      }
-    }
-
-    return target;
+    auto vp = vertices( m_PRGraph );
+    auto i  = std::find_if( vp.first, vp.second, [&]( const PRVertexDesc& v ) {
+      return boost::apply_visitor( precedence::VertexName(), m_PRGraph[v] ) == name;
+    } );
+    return i != vp.second ? *i : PRVertexDesc{};
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::accept( const std::string& algo_name, IGraphVisitor& visitor ) const
+  void PrecedenceRulesGraph::accept( IGraphVisitor& visitor ) const
   {
-    getAlgorithmNode( algo_name )->accept( visitor );
+    // iterate through Algorithm nodes
+    for ( auto& pr : m_algoNameToAlgoNodeMap ) pr.second->accept( visitor );
+
+    // iterate through DecisionHub nodes
+    for ( auto& pr : m_decisionNameToDecisionHubMap ) pr.second->accept( visitor );
+
+    // iterate through Data [and Conditions] nodes
+    for ( auto& pr : m_dataPathToDataNodeMap ) pr.second->accept( visitor );
   }
 
   //---------------------------------------------------------------------------
@@ -466,7 +435,7 @@ namespace concurrency
   void PrecedenceRulesGraph::dumpControlFlow( std::ostringstream& ost, ControlFlowNode* node, const int& indent ) const
   {
     ost << std::string( indent * 2, ' ' );
-    DecisionNode* dn  = dynamic_cast<DecisionNode*>( node );
+    DecisionNode*  dn = dynamic_cast<DecisionNode*>( node );
     AlgorithmNode* an = dynamic_cast<AlgorithmNode*>( node );
     if ( dn != 0 ) {
       if ( node != m_headNode ) {
@@ -477,10 +446,7 @@ namespace concurrency
         ost << ( ( dn->m_allPass ) ? " [PASS] " : "" );
         ost << "\n";
       }
-      const std::vector<ControlFlowNode*>& dth = dn->getDaughters();
-      for ( std::vector<ControlFlowNode*>::const_iterator itr = dth.begin(); itr != dth.end(); ++itr ) {
-        dumpControlFlow( ost, *itr, indent + 1 );
-      }
+      for ( const auto& i : dn->getDaughters() ) dumpControlFlow( ost, i, indent + 1 );
     } else if ( an != 0 ) {
       ost << node->getNodeName() << " [Alg] ";
       if ( an != 0 ) {
@@ -496,7 +462,7 @@ namespace concurrency
   std::string PrecedenceRulesGraph::dumpDataFlow() const
   {
 
-    const char idt[] = "      ";
+    const char         idt[] = "      ";
     std::ostringstream ost;
 
     ost << "\n" << idt << "====================================\n";
@@ -529,81 +495,30 @@ namespace concurrency
     // Declare properties to dump
     boost::dynamic_properties dp;
 
-    using boost::make_transform_value_property_map;
-    using boost::apply_visitor;
-    using boost::get;
-    using boost::vertex_bundle;
+    dp.property( "Entity", boost::make_transform_value_property_map(
+                               []( const VariantVertexProps& v ) { return boost::lexical_cast<std::string>( v ); },
+                               boost::get( boost::vertex_bundle, m_PRGraph ) ) );
 
-    dp.property( "Entity", make_transform_value_property_map(
-                               []( VariantVertexProps const& v ) { return boost::lexical_cast<std::string>( v ); },
-                               get( vertex_bundle, m_PRGraph ) ) );
+    auto add_prop = [&]( auto name, auto&& vis ) {
+      dp.property( name,
+                   boost::make_transform_value_property_map( [vis = std::forward<decltype( vis )>( vis )](
+                                                                 const VariantVertexProps&
+                                                                     v ) { return boost::apply_visitor( vis, v ); },
+                                                             boost::get( boost::vertex_bundle, m_PRGraph ) ) );
+    };
 
-    dp.property( "Name", make_transform_value_property_map(
-                             []( VariantVertexProps const& v ) { return apply_visitor( precedence::VertexName(), v ); },
-                             get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Mode", make_transform_value_property_map(
-                             []( VariantVertexProps const& v ) { return apply_visitor( precedence::GroupMode(), v ); },
-                             get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Logic",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::GroupLogic(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Decision Negation",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::DecisionNegation(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Negative Decision Inversion",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::AllPass(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Exit Policy",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::GroupExit(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Operations",
-                 make_transform_value_property_map(
-                     []( VariantVertexProps const& v ) { return apply_visitor( precedence::Operations(), v ); },
-                     get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "CF Decision", make_transform_value_property_map(
-                                    [&slot]( VariantVertexProps const& v ) {
-                                      return apply_visitor( precedence::CFDecision( slot ), v );
-                                    },
-                                    get( vertex_bundle, m_PRGraph ) ) );
-
-    dp.property( "Algorithm State", make_transform_value_property_map(
-                                        [&slot]( VariantVertexProps const& v ) {
-                                          return apply_visitor( precedence::FSMState( slot ), v );
-                                        },
-                                        get( vertex_bundle, m_PRGraph ) ) );
-
-    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
-    if ( timelineSvc.isValid() ) {
-      dp.property( "Start Time (epoch ns)", make_transform_value_property_map(
-                                                [&timelineSvc]( VariantVertexProps const& v ) {
-                                                  return apply_visitor( precedence::StartTime( timelineSvc ), v );
-                                                },
-                                                get( vertex_bundle, m_PRGraph ) ) );
-      dp.property( "End Time (epoch ns)", make_transform_value_property_map(
-                                              [&timelineSvc]( VariantVertexProps const& v ) {
-                                                return apply_visitor( precedence::EndTime( timelineSvc ), v );
-                                              },
-                                              get( vertex_bundle, m_PRGraph ) ) );
-      dp.property( "Runtime (ns)", make_transform_value_property_map(
-                                       [&timelineSvc]( VariantVertexProps const& v ) {
-                                         return apply_visitor( precedence::Duration( timelineSvc ), v );
-                                       },
-                                       get( vertex_bundle, m_PRGraph ) ) );
-    } else {
-      warning() << "Failed to get the TimelineSvc, timing will not be added to "
-                << "the task precedence rules dump" << endmsg;
-    }
+    add_prop( "Name", precedence::VertexName() );
+    add_prop( "Mode", precedence::GroupMode() );
+    add_prop( "Logic", precedence::GroupLogic() );
+    add_prop( "Decision Negation", precedence::DecisionNegation() );
+    add_prop( "Negative Decision Inversion", precedence::AllPass() );
+    add_prop( "Exit Policy", precedence::GroupExit() );
+    add_prop( "Operations", precedence::Operations() );
+    add_prop( "CF Decision", precedence::CFDecision( slot ) );
+    add_prop( "State", precedence::EntityState( slot, serviceLocator(), m_conditionsRealmEnabled ) );
+    add_prop( "Start Time (Epoch ns)", precedence::StartTime( slot, serviceLocator() ) );
+    add_prop( "End Time (Epoch ns)", precedence::EndTime( slot, serviceLocator() ) );
+    add_prop( "Runtime (ns)", precedence::Duration( slot, serviceLocator() ) );
 
     boost::write_graphml( myfile, m_PRGraph, dp );
 
@@ -623,9 +538,7 @@ namespace concurrency
                 << "the task precedence trace dump" << endmsg;
     } else {
 
-      typedef boost::graph_traits<precedence::PRGraph>::vertex_iterator vertex_iter;
-      std::pair<vertex_iter, vertex_iter> vp;
-      for ( vp = vertices( m_precTrace ); vp.first != vp.second; ++vp.first ) {
+      for ( auto vp = vertices( m_precTrace ); vp.first != vp.second; ++vp.first ) {
         TimelineEvent te{};
         te.algorithm = m_precTrace[*vp.first].m_name;
         timelineSvc->getTimelineEvent( te );
@@ -655,7 +568,7 @@ namespace concurrency
 
     precedence::AlgoTraceVertex source;
 
-    if ( u == nullptr ) {
+    if ( !u ) {
       auto itT = m_prec_trace_map.find( "ENTRY" );
       if ( itT != m_prec_trace_map.end() ) {
         source = itT->second;

@@ -1,6 +1,6 @@
 # setting LC_ALL to "C"
-# --> Including file '/var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/AlgTools.py'
-# <-- End of file '/var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/AlgTools.py'
+# --> Including file '/bld2/leggett/work/ToolRetrieveError/gaudi/gsrc/GaudiExamples/options/AlgTools.py'
+# <-- End of file '/bld2/leggett/work/ToolRetrieveError/gaudi/gsrc/GaudiExamples/options/AlgTools.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
@@ -8,8 +8,8 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v27r1)
-                                          running on pcmf on Mon Oct 31 14:20:24 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r1)
+                                          running on zeus on Mon Jan 29 11:30:05 2018
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -56,36 +56,37 @@ MyGaudiAlg.Tool...   INFO Int    = 100
 MyGaudiAlg.Tool...   INFO Double = 100
 MyGaudiAlg.Tool...   INFO String = hundred
 MyGaudiAlg.Tool...   INFO Bool   = 1
+MyGaudiAlg           INFO /Event/Rec/Tracks
+MyGaudiAlg           INFO /Event/Rec/Hits
+MyGaudiAlg           INFO /Rec/RAW
+MyGaudiAlg           INFO /Event/MyAnalysis/Tracks
+MyGaudiAlg.Wron...   INFO intialize() has been called
+MyGaudiAlg.Wron...   INFO Int    = 100
+MyGaudiAlg.Wron...   INFO Double = 100
+MyGaudiAlg.Wron...   INFO String = hundred
+MyGaudiAlg.Wron...   INFO Bool   = 1
+MyGaudiAlg           INFO unable to retrieve MyTool/WrongIfaceTool (expected) with exception: unable to dcast AlgTool MyTool/WrongIfaceTool to interface IMyOtherTool
+MyGaudiAlg           INFO ....initialization done
 MyGaudiAlg.Priv...   INFO intialize() has been called
 MyGaudiAlg.Priv...   INFO Int    = 100
 MyGaudiAlg.Priv...   INFO Double = 100
 MyGaudiAlg.Priv...   INFO String = Is a private tool
 MyGaudiAlg.Priv...   INFO Bool   = 1
-ToolSvc.ConstGe...   INFO intialize() has been called
-ToolSvc.ConstGe...   INFO Int    = 100
-ToolSvc.ConstGe...   INFO Double = 100
-ToolSvc.ConstGe...   INFO String = hundred
-ToolSvc.ConstGe...   INFO Bool   = 1
 ToolSvc.TestPub...   INFO intialize() has been called
 ToolSvc.TestPub...   INFO Int    = 100
 ToolSvc.TestPub...   INFO Double = 100
 ToolSvc.TestPub...   INFO String = Is a public tool
 ToolSvc.TestPub...   INFO Bool   = 1
-ToolSvc.PubTool...   INFO intialize() has been called
-ToolSvc.PubTool...   INFO Int    = 100
-ToolSvc.PubTool...   INFO Double = 100
-ToolSvc.PubTool...   INFO String = hundred
-ToolSvc.PubTool...   INFO Bool   = 1
 ToolSvc.Generic...   INFO intialize() has been called
 ToolSvc.Generic...   INFO Int    = 100
 ToolSvc.Generic...   INFO Double = 100
 ToolSvc.Generic...   INFO String = hundred
 ToolSvc.Generic...   INFO Bool   = 1
-MyGaudiAlg           INFO /Event/Rec/Tracks
-MyGaudiAlg           INFO /Event/Rec/Hits
-MyGaudiAlg           INFO /Rec/RAW
-MyGaudiAlg           INFO /Event/MyAnalysis/Tracks
-MyGaudiAlg           INFO ....initialization done
+MyGaudiAlg.Lega...   INFO intialize() has been called
+MyGaudiAlg.Lega...   INFO Int    = 100
+MyGaudiAlg.Lega...   INFO Double = 100
+MyGaudiAlg.Lega...   INFO String = hundred
+MyGaudiAlg.Lega...   INFO Bool   = 1
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
@@ -102,11 +103,10 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Co
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -116,6 +116,8 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
@@ -133,11 +135,10 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Co
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -147,6 +148,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
 ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
 ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
@@ -175,8 +178,18 @@ MyGaudiAlg.MyGa...   INFO doItAgain() has been called
 MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO intialize() has been called
+ToolSvc.ConstGe...   INFO Int    = 100
+ToolSvc.ConstGe...   INFO Double = 100
+ToolSvc.ConstGe...   INFO String = hundred
+ToolSvc.ConstGe...   INFO Bool   = 1
 ToolSvc.ConstGe...   INFO doIt() has been called
 MyGaudiAlg           INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO intialize() has been called
+ToolSvc.PubTool...   INFO Int    = 100
+ToolSvc.PubTool...   INFO Double = 100
+ToolSvc.PubTool...   INFO String = hundred
+ToolSvc.PubTool...   INFO Bool   = 1
 ToolSvc.PubTool...   INFO doIt() has been called
 ToolSvc.PubTool...   INFO doIt() has been called
 ToolSvc.ConstGe...   INFO doIt() has been called
@@ -472,7 +485,9 @@ ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
 ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
+MyGaudiAlg.Lega...   INFO finalize() has been called
 ToolSvc.Generic...   INFO finalize() has been called
+MyGaudiAlg.Wron...   INFO finalize() has been called
 ToolSvc.PubTool...   INFO finalize() has been called
 ToolSvc.TestPub...   INFO finalize() has been called
 MyGaudiAlg.Priv...   INFO finalize() has been called
@@ -485,7 +500,9 @@ MyAlg.MyGaudiTool    INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyGaudi...   INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
+MyGaudiAlg.Lega...   INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
+MyGaudiAlg.Wron...   INFO destructor has been called
 ToolSvc.PubTool...   INFO destructor has been called
 ToolSvc.TestPub...   INFO destructor has been called
 MyGaudiAlg.Priv...   INFO destructor has been called

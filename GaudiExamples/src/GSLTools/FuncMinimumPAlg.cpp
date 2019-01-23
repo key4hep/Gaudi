@@ -1,9 +1,6 @@
-// $Id: FuncMinimumPAlg.cpp,v 1.4 2006/01/10 19:58:27 hmd Exp $
-
 // Include files
 // from Gaudi
 #include "GaudiGSL/IFuncMinimum.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiMath/Adapters.h"
 #include "GaudiMath/GaudiMath.h"
@@ -25,18 +22,6 @@ using namespace CLHEP;
  *  @date 2002-09-14
  */
 //-----------------------------------------------------------------------------
-
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-FuncMinimumPAlg::FuncMinimumPAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
-}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-FuncMinimumPAlg::~FuncMinimumPAlg() {}
 
 //=============================================================================
 // Our function
@@ -148,4 +133,4 @@ StatusCode FuncMinimumPAlg::finalize()
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( FuncMinimumPAlg )
+DECLARE_COMPONENT( FuncMinimumPAlg )

@@ -6,7 +6,10 @@
 // from STL
 // ============================================================================
 #include <algorithm>
+#include <functional>
+#include <list>
 #include <map>
+#include <mutex>
 #include <string>
 #include <vector>
 // ============================================================================
@@ -28,11 +31,24 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/System.h"
+
+#ifdef __CLING__
+#define WARN_UNUSED
+#elif __cplusplus > 201402L
+#define WARN_UNUSED [[nodiscard]]
+#else
+#define WARN_UNUSED [[gnu::warn_unused_result]]
+#endif
+
 // ============================================================================
 // forward declarations
 // ============================================================================
-class Algorithm; // GaudiKernel
-class AlgTool;   // GaudiKernel
+namespace Gaudi
+{
+  class Algorithm; // GaudiKernel
+}
+class AlgTool; // GaudiKernel
+class ISvcLocator;
 namespace Gaudi
 {
   namespace Utils
@@ -108,7 +124,8 @@ protected: // definitions
 protected: // few actual data types
   // ==========================================================================
   /// the actual type of general counters
-  typedef std::map<std::string, StatEntity> Statistics;
+  typedef std::map<std::string, StatEntity>                                                    StatisticsOwn;
+  typedef std::map<std::string, std::reference_wrapper<Gaudi::Accumulators::PrintableCounter>> Statistics;
   /// the actual type error/warning counter
   typedef std::map<std::string, unsigned int> Counter;
   /// storage for active tools
@@ -248,8 +265,14 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
+  DataObject* put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, const std::string& location,
                    const bool useRootInTES = true ) const;
+  // [[deprecated( "please pass std::unique_ptr as 2nd argument" )]]
+  DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
+                   const bool useRootInTES = true ) const
+  {
+    return put( svc, std::unique_ptr<DataObject>( object ), location, useRootInTES );
+  }
   /** Useful method for the easy location of tools.
    *
    *  @code
@@ -353,6 +376,7 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       StatusCode
    */
+  WARN_UNUSED
   StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the warning message and return with the given StatusCode.
    *
@@ -377,6 +401,7 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       The given StatusCode
    */
+  WARN_UNUSED
   StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE, const size_t mx = 10 ) const;
   /** Print the info message and return with the given StatusCode.
    *
@@ -393,6 +418,7 @@ public:
    *  @param mx     Maximum number of printouts for this message
    *  @return       The given StatusCode
    */
+  WARN_UNUSED
   StatusCode Info( const std::string& msg, const StatusCode st = StatusCode::SUCCESS, const size_t mx = 10 ) const;
   /** Print the message and return with the given StatusCode.
    *
@@ -405,6 +431,7 @@ public:
    *  @param lev    Printout level for the given message
    *  @return       The given StatusCode
    */
+  WARN_UNUSED
   StatusCode Print( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
                     const MSG::Level lev = MSG::INFO ) const;
   /** Assertion - throw exception if the given condition is not fulfilled
@@ -457,12 +484,15 @@ public:
    *  @param sc     StatusCode
    */
   void Exception( const std::string& msg = "no message",
-                  const StatusCode sc    = StatusCode( StatusCode::FAILURE, true ) ) const;
+                  const StatusCode   sc  = StatusCode( StatusCode::FAILURE, true ) ) const;
 
+private:
+  /// accessor to all owned counters
+  inline StatisticsOwn countersOwn() const { return m_countersOwn; }
 public:
   // ==========================================================================
   /// accessor to all counters
-  inline const Statistics& counters() const { return m_counters; }
+  inline const Statistics counters() const { return m_counters; }
   /** accessor to certain counter by name
    *
    *  @code
@@ -481,7 +511,27 @@ public:
    *  @param tag counter name
    *  @return the counter itself
    */
-  inline StatEntity& counter( const std::string& tag ) const { return m_counters[tag]; }
+  //[[deprecated( "see LHCBPS-1758" )]]
+  inline StatEntity& counter( const std::string& tag ) const
+  {
+    return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag );
+  }
+  inline StatEntity& counter( const std::string& tag )
+  {
+    std::lock_guard<std::mutex> lock( m_countersMutex );
+    // Return referenced StatEntity if it already exists, else create it
+    auto p = m_counters.find( tag );
+    if ( p == end( m_counters ) ) {
+      auto& counter = m_countersOwn[tag];
+      p             = m_counters.emplace( tag, counter ).first;
+    }
+    return m_countersOwn[tag];
+  }
+  inline void registerCounter( const std::string& tag, Gaudi::Accumulators::PrintableCounter& r )
+  {
+    std::lock_guard<std::mutex> lock( m_countersMutex );
+    m_counters.emplace( tag, r );
+  }
   // ==========================================================================
 public:
   /// Insert the actual C++ type of the algorithm/tool in the messages ?
@@ -607,14 +657,14 @@ public:
 public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from Algorithm
-  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<Algorithm, PBASE>::value, U>::type>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Gaudi::Algorithm, PBASE>::value, U>>
   GaudiCommon( const std::string& name, ISvcLocator* pSvcLocator ) : base_class( name, pSvcLocator )
   {
     initGaudiCommonConstructor();
   }
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
-  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<AlgTool, PBASE>::value, U>::type>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<AlgTool, PBASE>::value, U>>
   GaudiCommon( const std::string& type, const std::string& name, const IInterface* ancestor )
       : base_class( type, name, ancestor )
   {
@@ -644,9 +694,6 @@ public:
   StatusCode i_gcFinalize()
 #endif
       ;
-protected:
-  /// Destructor
-  ~GaudiCommon() override = default;
 
 private:
   GaudiCommon()                     = delete;
@@ -689,15 +736,6 @@ public:
   /// get the list of aquired services
   const Services& services() const { return m_services; } // get all services
   // ==========================================================================
-private:
-  // ==========================================================================
-  /// handler for "ErrorPrint" property
-  void printErrorHandler( Gaudi::Details::PropertyBase& /* theProp */ ); //      "ErrorPrint"
-  /// handler for "PropertiesPrint" property
-  void printPropsHandler( Gaudi::Details::PropertyBase& /* theProp */ ); // "PropertiesPrint"
-  /// handler for "StatPrint" property
-  void printStatHandler( Gaudi::Details::PropertyBase& /* theProp */ ); //       "StatPrint"
-  // ==========================================================================
 public:
   // ==========================================================================
   /// Returns the "context" string. Used to identify different processing states.
@@ -734,15 +772,43 @@ private:
   /// Counter of exceptions
   mutable Counter m_exceptions;
   /// General counters
-  mutable Statistics m_counters;
+  StatisticsOwn m_countersOwn;
+  Statistics    m_counters;
+  /// The counters mutex
+  std::mutex m_countersMutex;
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
   // ==========================================================================
   // Properties
-  Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true, "print the statistics of errors/warnings/exceptions"};
-  Gaudi::Property<bool> m_propsPrint{this, "PropertiesPrint", false, "print the properties of the component"};
-  Gaudi::Property<bool> m_statPrint{this, "StatPrint", true, "print the table of counters"};
+  Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true,
+                                      [this]( auto& ) {
+                                        // no action if not yet initialized
+                                        if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                             this->errorsPrint() ) {
+                                          this->printErrors();
+                                        }
+                                      },
+                                      "print the statistics of errors/warnings/exceptions"};
+  Gaudi::Property<bool> m_propsPrint{this, "PropertiesPrint", false,
+                                     [this]( auto& ) {
+                                       // no action if not yet initialized
+                                       if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED &&
+                                            this->propsPrint() ) {
+                                         this->printProps( MSG::ALWAYS );
+                                       }
+                                     },
+                                     "print the properties of the component"};
+  Gaudi::Property<bool> m_statPrint{this, "StatPrint", true,
+                                    [this]( auto& ) {
+                                      // no action if not yet initialized
+                                      if ( this->FSMState() >= Gaudi::StateMachine::INITIALIZED && this->statPrint() ) {
+                                        this->printStat( MSG::ALWAYS );
+                                      }
+                                    },
+                                    "print the table of counters"};
+  Gaudi::Property<bool> m_printEmptyCounters{this, "PrintEmptyCounters", false,
+                                             "force printing of empty counters, otherwise only printed in DEBUG mode"};
   Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
 
   Gaudi::Property<std::string> m_context{this, "Context", {}, "note: overridden by parent settings"};

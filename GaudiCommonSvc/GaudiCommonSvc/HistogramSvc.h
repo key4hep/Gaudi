@@ -60,8 +60,8 @@ private:
   void not_implemented() const { error() << "Sorry, not yet implemented..." << endmsg; }
 
 protected:
-  typedef AIDA::IHistogram3D H3D;
-  typedef AIDA::IProfile2D P2D;
+  typedef AIDA::IHistogram3D   H3D;
+  typedef AIDA::IProfile2D     P2D;
   typedef AIDA::IBaseHistogram Base;
 
   struct Helper {
@@ -71,7 +71,7 @@ protected:
     StatusCode retrieve( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::retrieveObject( a1, pObject );
+      StatusCode  sc      = m_svc->retrieveObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -79,7 +79,7 @@ protected:
     StatusCode retrieve( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::retrieveObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->retrieveObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -87,7 +87,7 @@ protected:
     StatusCode find( A1 a1, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::findObject( a1, pObject );
+      StatusCode  sc      = m_svc->findObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
@@ -95,14 +95,14 @@ protected:
     StatusCode find( A1 a1, A2 a2, A3*& a3 )
     {
       DataObject* pObject = nullptr;
-      StatusCode sc       = m_svc->DataSvc::findObject( a1, a2, pObject );
+      StatusCode  sc      = m_svc->findObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, void ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2, scale );
@@ -113,7 +113,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2, scale );
@@ -124,7 +124,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, void ( T1::*pmf )( const T2* ) )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2 );
@@ -135,7 +135,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2* ) )
     {
-      auto h1       = Gaudi::getRepresentation<R, T1>( *res );
+      auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2 );
@@ -625,15 +625,10 @@ public:
   // ==========================================================================
   // Register histogram with the data store
   // ==========================================================================
+  using DataSvc::registerObject;
   StatusCode registerObject( const std::string& parent, const std::string& rel, Base* obj ) override;
 
-  StatusCode registerObject( const std::string& parent, int item, Base* obj ) override;
-
   StatusCode registerObject( Base* pPar, const std::string& rel, Base* obj ) override;
-
-  StatusCode registerObject( DataObject* pPar, int item, Base* obj ) override;
-
-  StatusCode registerObject( Base* pPar, int item, Base* obj ) override;
 
   StatusCode registerObject( const std::string& full, Base* obj ) override;
 
@@ -894,10 +889,10 @@ public:
     return nullptr;
   }
 
-  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx );
 
-  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, const std::string& /*opt*/ ) override;
 
   AIDA::IHistogram1D* createHistogram1D( const std::string& name, const std::string& title, const Edges& x,
@@ -913,10 +908,10 @@ public:
 
   AIDA::IHistogram1D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram1D& h );
 
-  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy );
 
-  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram2D* createHistogram2D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy,
                                          const std::string& /*opt*/ ) override;
 
@@ -934,10 +929,10 @@ public:
 
   AIDA::IHistogram2D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram2D& h );
 
-  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy, int nz, double lowz, double upz );
 
-  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& tit, int nx, double lowx,
+  AIDA::IHistogram3D* createHistogram3D( const std::string& name, const std::string& title, int nx, double lowx,
                                          double upx, int ny, double lowy, double upy, int nz, double lowz, double upz,
                                          const std::string& /*opt*/ ) override;
 
@@ -955,10 +950,10 @@ public:
 
   AIDA::IHistogram3D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IHistogram3D& h );
 
-  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      const std::string& opt ) override;
 
-  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      double upper, double lower, const std::string& opt ) override;
 
   AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& title, const Edges& x,
@@ -980,10 +975,10 @@ public:
 
   AIDA::IProfile1D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IProfile1D& h );
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy );
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy, const std::string& /*opt*/ ) override;
 
   AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, const Edges& x, const Edges& y,
@@ -992,10 +987,10 @@ public:
   AIDA::IProfile2D* createProfile2D( const std::string& nameAndTitle, int nx, double lowx, double upx, int ny,
                                      double lowy, double upy ) override;
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy, double upper, double lower );
 
-  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& tit, int nx, double lowx, double upx,
+  AIDA::IProfile2D* createProfile2D( const std::string& name, const std::string& title, int nx, double lowx, double upx,
                                      int ny, double lowy, double upy, double upper, double lower,
                                      const std::string& /*opt*/ ) override;
 
@@ -1091,14 +1086,15 @@ public:
    */
   DataObject* createDirectory( const std::string& parentDir, const std::string& subDir ) override;
 
-  /// handler to be invoked for updating property m_defs1D
-  void update1Ddefs( Gaudi::Details::PropertyBase& );
-
   typedef std::map<std::string, Gaudi::Histo1DDef> Histo1DMap;
 
 private:
+  /// handler to be invoked for updating property m_defs1D
+  void update1Ddefs();
+
   Gaudi::Property<DBaseEntries> m_input{this, "Input", {}, "input streams"};
-  Gaudi::Property<Histo1DMap> m_defs1D{this, "Predefined1DHistos", {}, "histograms with predefined parameters"};
+  Gaudi::Property<Histo1DMap>   m_defs1D{
+      this, "Predefined1DHistos", {}, &HistogramSvc::update1Ddefs, "histograms with predefined parameters"};
 
   // modified histograms:
   std::set<std::string> m_mods1D;

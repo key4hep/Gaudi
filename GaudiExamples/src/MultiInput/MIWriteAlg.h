@@ -12,13 +12,11 @@ namespace Gaudi
     {
       /** Simple algorithm used to produce dummy data in the transient store.
        * Modified (reduced) version of the IO example WriteAlg. */
-      class WriteAlg : public Algorithm
+      class WriteAlg : public ::Algorithm
       {
       public:
         /// Constructor: A constructor of this form must be provided.
         using Algorithm::Algorithm;
-        /// Standard Destructor
-        ~WriteAlg() override = default;
         /// Initialize
         StatusCode initialize() override;
         /// Finalize
@@ -27,7 +25,7 @@ namespace Gaudi
         StatusCode execute() override;
 
       private:
-        int m_runnum = 0, m_evtnum = 0;
+        int                                m_runnum = 0, m_evtnum = 0;
         Gaudi::Property<std::vector<long>> m_randomSeeds{
             this, "RandomSeeds", {}, "Seeds to be used in the random number generation"};
       };

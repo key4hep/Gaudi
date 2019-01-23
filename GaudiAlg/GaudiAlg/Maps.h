@@ -113,19 +113,6 @@ namespace GaudiAlg
                               >
       Profile2DMapID;
   // ==========================================================================
-  // ============================ NTuples =====================================
-  // ==========================================================================
-  /// the actual type for  (title)->(tuple) map
-  typedef GaudiUtils::HashMap<std::string,      // Key
-                              Tuples::TupleObj* // Value
-                              >
-      TupleMapTitle;
-  /// the actual type for  (ID)->(tuple) map
-  typedef GaudiUtils::HashMap<TupleID,          // Key
-                              Tuples::TupleObj* // Value
-                              >
-      TupleMapID;
-  // ==========================================================================
 }
 // ============================================================================
 // The END

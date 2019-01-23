@@ -18,7 +18,7 @@ namespace Gaudi
     class Messages;
     class Catalog;
     class Units;
-    class Node;
+    struct Node;
     class IncludedFiles;
     class PragmaOptions;
     // ============================================================================

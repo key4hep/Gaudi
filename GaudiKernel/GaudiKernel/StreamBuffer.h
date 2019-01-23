@@ -76,8 +76,6 @@ public:
   public:
     /// Constructor
     Istream( std::istream& str ) : m_stream( &str ) {}
-    /// Destructor
-    ~Istream() override = default;
 
     /// Data load method
     void load( StreamBuffer& stream ) override
@@ -122,8 +120,8 @@ public:
   {
   public:
     ContainedObject* first;
-    long second;
-    long third;
+    long             second;
+    long             third;
     ContainedLink() : first( 0 ), second( INVALID ), third( INVALID ) {}
     ContainedLink( const ContainedLink& copy ) : first( copy.first ), second( copy.second ), third( copy.third ) {}
     ContainedLink( ContainedObject* pObj, long hint, long link ) : first( pObj ), second( hint ), third( link ) {}
@@ -133,7 +131,7 @@ public:
   {
   public:
     DataObject* first                            = nullptr;
-    long second                                  = INVALID;
+    long        second                           = INVALID;
     IdentifiedLink()                             = default;
     IdentifiedLink( const IdentifiedLink& copy ) = default;
     IdentifiedLink( DataObject* pObj, long hint ) : first( pObj ), second( hint ) {}
@@ -182,7 +180,7 @@ protected:
   StreamBuffer& getObjectPointer( const DataObject* /*pObject*/, TYPE*& refpObject )
   {
     IdentifiedLink& link = m_identifiedLinks.back();
-    DataObject* pObj     = link.first;
+    DataObject*     pObj = link.first;
     m_identifiedLinks.pop_back();
     refpObject = dynamic_cast<TYPE*>( pObj );
     return *this;
@@ -193,7 +191,7 @@ protected:
   template <class TYPE>
   StreamBuffer& getObjectPointer( const ContainedObject* /*pObject*/, TYPE*& refpObject )
   {
-    ContainedLink& link   = m_containedLinks.back();
+    ContainedLink&   link = m_containedLinks.back();
     ContainedObject* pObj = link.first;
     m_containedLinks.pop_back();
     refpObject = dynamic_cast<TYPE*>( pObj );
@@ -341,14 +339,14 @@ public:
 #undef IMPLEMENT_STREAMER
 
   ///  Output Streamer
-  StreamBuffer& operator<<( longlong data )
+  StreamBuffer& operator<<( long long data )
   {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( longlong& data )
+  StreamBuffer& operator>>( long long& data )
   {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
@@ -497,7 +495,7 @@ public:
   StreamBuffer& operator<<( const char* data )
   {
     const char* ptr = 0 == data ? "" : data;
-    int len         = strlen( ptr ) + 1;
+    int         len = strlen( ptr ) + 1;
     if ( 0 == m_analyzer )
       writeBytes( ptr, len );
     else {
@@ -520,7 +518,7 @@ public:
   {
     if ( 0 == m_analyzer ) {
       const char* ptr = data.c_str();
-      long len        = data.length();
+      long        len = data.length();
       writeBytes( ptr, len );
     } else {
       STREAM_ANALYSE( data, sizeof( data ) );
@@ -614,7 +612,7 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz )
 {
   char buff[8], *tar, *src = (char *)source;
   extend( m_pointer + siz );
-  tar = (char*)m_buffer + m_pointer;
+  tar = m_buffer + m_pointer;
   switch ( swapBuffer( siz ) ) {
   case SINGLE_BYTE:
     *tar = *src;
@@ -638,7 +636,7 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz )
 inline void StreamBuffer::swapFromBuffer( void* target, int siz )
 {
   char* tar = (char*)target;
-  char* src = (char*)m_buffer + m_pointer;
+  char* src = m_buffer + m_pointer;
   switch ( swapBuffer( siz ) ) {
   case SINGLE_BYTE:
     *tar = *src;

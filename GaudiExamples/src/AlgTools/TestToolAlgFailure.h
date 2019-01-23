@@ -22,15 +22,14 @@ public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
 
-  ~TestToolAlgFailure() override = default; ///< Destructor
-
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
 
 private:
   Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};
-  Gaudi::Property<bool> m_ignoreFailure{this, "IgnoreFailure", false};
+  Gaudi::Property<bool>                     m_ignoreFailure{this, "IgnoreFailure", false};
+  Gaudi::Property<bool>                     m_throwException{this, "ThrowException", false};
 };
 
 #endif // TESTTOOLALG_H

@@ -16,7 +16,6 @@
 #include "GaudiKernel/KeyedObject.h"
 #include "GaudiKernel/LinkManager.h"
 #include "GaudiKernel/Memory.h"
-#include "GaudiKernel/MetaData.h"
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/NTupleImplementation.h"
 #include "GaudiKernel/ObjectVector.h"
@@ -44,7 +43,6 @@
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IConverter.h"
 #include "GaudiKernel/ICounterSummarySvc.h"
-#include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataSelector.h"
@@ -64,7 +62,6 @@
 #include "GaudiKernel/IInspectable.h"
 #include "GaudiKernel/IInspector.h"
 #include "GaudiKernel/IInterface.h"
-#include "GaudiKernel/IIssueLogger.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMagneticFieldSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
@@ -123,43 +120,43 @@ namespace GaudiKernelDict
                             public std::vector<LinkManager::Link*>,
                             public std::vector<const ContainedObject*>,
                             public std::vector<ContainedObject*> {
-    NTuple::Item<bool> BoolItem;
-    NTuple::Item<char> CharItem;
-    NTuple::Item<unsigned char> UCharItem;
-    NTuple::Item<short> ShortItem;
-    NTuple::Item<unsigned short> UShortItem;
-    NTuple::Item<long> LongItem;
-    NTuple::Item<long long> LongLongItem;
-    NTuple::Item<unsigned long> ULongItem;
+    NTuple::Item<bool>               BoolItem;
+    NTuple::Item<char>               CharItem;
+    NTuple::Item<unsigned char>      UCharItem;
+    NTuple::Item<short>              ShortItem;
+    NTuple::Item<unsigned short>     UShortItem;
+    NTuple::Item<long>               LongItem;
+    NTuple::Item<long long>          LongLongItem;
+    NTuple::Item<unsigned long>      ULongItem;
     NTuple::Item<unsigned long long> ULongLongItem;
-    NTuple::Item<int> IntItem;
-    NTuple::Item<unsigned int> UIntItem;
-    NTuple::Item<float> FloatItem;
-    NTuple::Item<double> DoubleItem;
-    NTuple::Array<bool> BoolArray;
-    NTuple::Array<char> CharArray;
-    NTuple::Array<unsigned char> UCharArray;
-    NTuple::Array<short> ShortArray;
-    NTuple::Array<unsigned short> UShortArray;
-    NTuple::Array<long> LongArray;
-    NTuple::Array<unsigned long> ULongArray;
-    NTuple::Array<int> IntArray;
-    NTuple::Array<unsigned int> UIntArray;
-    NTuple::Array<float> FloatArray;
-    NTuple::Array<double> DoubleArray;
-    NTuple::Matrix<bool> BoolMatrix;
-    NTuple::Matrix<char> CharMatrix;
-    NTuple::Matrix<unsigned char> UCharMatrix;
-    NTuple::Matrix<short> ShortMatrix;
-    NTuple::Matrix<unsigned short> UShortMatrix;
-    NTuple::Matrix<long> LongMatrix;
-    NTuple::Matrix<unsigned long> ULongMatrix;
-    NTuple::Matrix<int> IntMatrix;
-    NTuple::Matrix<unsigned int> UIntMatrix;
-    NTuple::Matrix<float> FloatMatrix;
-    NTuple::Matrix<double> DoubleMatrix;
+    NTuple::Item<int>                IntItem;
+    NTuple::Item<unsigned int>       UIntItem;
+    NTuple::Item<float>              FloatItem;
+    NTuple::Item<double>             DoubleItem;
+    NTuple::Array<bool>              BoolArray;
+    NTuple::Array<char>              CharArray;
+    NTuple::Array<unsigned char>     UCharArray;
+    NTuple::Array<short>             ShortArray;
+    NTuple::Array<unsigned short>    UShortArray;
+    NTuple::Array<long>              LongArray;
+    NTuple::Array<unsigned long>     ULongArray;
+    NTuple::Array<int>               IntArray;
+    NTuple::Array<unsigned int>      UIntArray;
+    NTuple::Array<float>             FloatArray;
+    NTuple::Array<double>            DoubleArray;
+    NTuple::Matrix<bool>             BoolMatrix;
+    NTuple::Matrix<char>             CharMatrix;
+    NTuple::Matrix<unsigned char>    UCharMatrix;
+    NTuple::Matrix<short>            ShortMatrix;
+    NTuple::Matrix<unsigned short>   UShortMatrix;
+    NTuple::Matrix<long>             LongMatrix;
+    NTuple::Matrix<unsigned long>    ULongMatrix;
+    NTuple::Matrix<int>              IntMatrix;
+    NTuple::Matrix<unsigned int>     UIntMatrix;
+    NTuple::Matrix<float>            FloatMatrix;
+    NTuple::Matrix<double>           DoubleMatrix;
 
-    SmartDataPtr<DataObject> p1;
+    SmartDataPtr<DataObject>          p1;
     SmartDataPtr<ObjectContainerBase> p2;
     __Instantiations() : p1( 0, "" ), p2( 0, "" ) {}
   };

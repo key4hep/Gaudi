@@ -18,7 +18,7 @@
 class TupleTool : public GaudiTupleTool, virtual public ITupleTool
 {
 public:
-  typedef Tuples::Tuple Tuple;
+  typedef Tuples::Tuple     Tuple;
   typedef GaudiAlg::TupleID TupleID;
 
   /** Standard constructor
@@ -31,9 +31,6 @@ public:
    *  @param parent pointer to parent component
    */
   TupleTool( const std::string& type, const std::string& name, const IInterface* parent );
-
-  /// destructor: virtual and protected
-  ~TupleTool() override = default;
 
 public:
   /** get N-tuple object ( book on-demand ) with unique identidier

@@ -1,7 +1,8 @@
+# setting LC_ALL to "C"
 # Restarting with LD_PRELOAD='libprofiler.so'
 # WARNING: Ignoring preload of library libprofiler.so because it is already in LD_PRELOAD.
-# --> Including file '/tmp/leggett/tmpIhu832.py'
-# <-- End of file '/tmp/leggett/tmpIhu832.py'
+# --> Including file '/tmp/tmpt5DAlI.py'
+# <-- End of file '/tmp/tmpt5DAlI.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
@@ -19,13 +20,12 @@
  'MessageSvc': {'OutputLevel': 3}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on p05614910w96644.cern.ch on Wed Oct 21 20:01:56 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r0)
+                                          running on zeus on Mon Dec 18 14:44:05 2017
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 Google::CPUProf...   INFO Initialised
-ChronoStatSvc        INFO  Number of skipped events for MemStat-1
 Google::CPUProf...   INFO Starting Auditor for HelloWorld:Initialize
 HelloWorld           INFO initializing....
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -33,8 +33,6 @@ EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-Google::CPUProf...   INFO Starting Auditor for HelloWorld:BeginRun
-HelloWorld           INFO beginning new run....
 Google::CPUProf...   INFO Starting Auditor for HelloWorld:Execute
 HelloWorld           INFO executing....
 Google::CPUProf...   INFO Starting Auditor for HelloWorld:Execute
@@ -55,9 +53,6 @@ Google::CPUProf...   INFO Starting Auditor for HelloWorld:Execute
 HelloWorld           INFO executing....
 Google::CPUProf...   INFO Starting Auditor for HelloWorld:Execute
 HelloWorld           INFO executing....
-EventLoopMgr         INFO ---> Loop Finished -  WSS 50.2617 | total time (skipping 1st evt) 78241727 ns
-Google::CPUProf...   INFO Starting Auditor for HelloWorld:EndRun
-HelloWorld           INFO ending new run....
 ApplicationMgr       INFO Application Manager Stopped successfully
 Google::CPUProf...   INFO Starting Auditor for HelloWorld:Finalize
 HelloWorld           INFO finalizing....
@@ -67,12 +62,10 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 HelloWorld:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
 HelloWorld:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
-HelloWorld:Begi...   INFO Time User   : Tot=    0 [us]                                             #=  1
-HelloWorld:EndRun    INFO Time User   : Tot=    0 [us]                                             #=  1
-HelloWorld:Fina...   INFO Time User   : Tot=    1 [ms]                                             #=  1
+HelloWorld:Fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
 HelloWorld:Init...   INFO Time User   : Tot=    0 [us]                                             #=  1
-HelloWorld:Execute   INFO Time User   : Tot=   10 [ms] Ave/Min/Max=    1(+-0.774)/    0/    2 [ms] #= 10
-ChronoStatSvc        INFO Time User   : Tot=   26 [ms]                                             #=  1
+HelloWorld:Execute   INFO Time User   : Tot=   10 [ms] Ave/Min/Max=    1(+-    3)/    0/   10 [ms] #= 10
+ChronoStatSvc        INFO Time User   : Tot=   20 [ms]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 ApplicationMgr       INFO Application Manager Finalized successfully

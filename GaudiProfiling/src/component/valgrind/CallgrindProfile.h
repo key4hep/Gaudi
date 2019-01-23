@@ -3,7 +3,7 @@
 
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 /** @class CallgrindProfile CallgrindProfile.h valgrind/CallgrindProfile.h
  *
@@ -12,16 +12,13 @@
  *  @author Ben Couturier
  *  @date   2014-08-22
  */
-class CallgrindProfile : public GaudiAlgorithm
+class CallgrindProfile : public Algorithm
 {
 public:
-  using GaudiAlgorithm::GaudiAlgorithm;
+  using Algorithm::Algorithm;
 
-  ~CallgrindProfile() override = default; ///< Destructor
-
-  StatusCode initialize() override; ///< Algorithm initialization
-  StatusCode execute() override;    ///< Algorithm execution
-  StatusCode finalize() override;   ///< Algorithm finalization
+  StatusCode execute() override;  ///< Algorithm execution
+  StatusCode finalize() override; ///< Algorithm finalization
 
 private:
   Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling."};
@@ -36,8 +33,8 @@ private:
       "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
   Gaudi::Property<std::string> m_dumpName{this, "DumpName", "", "Label for the callgrind dump"};
 
-  int m_eventNumber = 0;     // Current event number
-  bool m_profiling  = false; // Whether valgrind is profiling or not
-  bool m_dumpDone   = false; // Whether the counters were dumped
+  int  m_eventNumber = 0;     // Current event number
+  bool m_profiling   = false; // Whether valgrind is profiling or not
+  bool m_dumpDone    = false; // Whether the counters were dumped
 };
 #endif // VALGRIND_CALLGRINDPROFILE_H

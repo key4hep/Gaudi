@@ -104,10 +104,6 @@ EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-s1_HW                INFO beginning new run....
-s2_HW                INFO beginning new run....
-AND                  INFO beginning new run....
-OR                   INFO beginning new run....
 ParentAlg            INFO executing....
 SubAlg1              INFO executing....
 SubAlg2              INFO executing....
@@ -212,14 +208,10 @@ s2_Counter           INFO s2_Counter:EventCounter::execute - seen events: 7
 AND                  INFO executing....
 ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 10
 OR                   INFO executing....
-s1_HW                INFO ending new run....
-s2_HW                INFO ending new run....
-AND                  INFO ending new run....
-OR                   INFO ending new run....
 ApplicationMgr       INFO Application Manager Stopped successfully
+ParentAlg            INFO finalizing....
 SubAlg1              INFO finalizing....
 SubAlg2              INFO finalizing....
-ParentAlg            INFO finalizing....
 s1_Prescaler         INFO s1_Prescaler:Prescaler::finalize - total events: 10, passed events: 5
 s1_HW                INFO finalizing....
 s1_Counter           INFO s1_Counter:EventCounter::finalize - total events: 5
@@ -273,8 +265,8 @@ TIMER.TIMER          INFO   seq_8                       |     0.000 |     0.206 
 TIMER.TIMER          INFO    seq_6                      |     0.000 |     0.156 |    0.103       0.2     0.03 |      10 |     0.002 |
 TIMER.TIMER          INFO     seq_0                     |     0.000 |     0.040 |    0.036       0.1     0.01 |      10 |     0.000 |
 TIMER.TIMER          INFO      ParentAlg                |     0.000 |     0.025 |    0.022       0.0     0.01 |      10 |     0.000 |
-TIMER.TIMER          INFO      SubAlg1                  |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
-TIMER.TIMER          INFO      SubAlg2                  |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
+TIMER.TIMER          INFO       SubAlg1                 |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
+TIMER.TIMER          INFO       SubAlg2                 |     0.000 |     0.000 |    0.000       0.0     0.00 |       0 |     0.000 |
 TIMER.TIMER          INFO      StopperAlg               |     0.000 |     0.003 |    0.003       0.0     0.00 |      10 |     0.000 |
 TIMER.TIMER          INFO     seq_5                     |     0.000 |     0.106 |    0.059       0.1     0.03 |      10 |     0.001 |
 TIMER.TIMER          INFO      seq_2                    |     0.000 |     0.042 |    0.023       0.1     0.02 |      10 |     0.000 |
@@ -300,133 +292,83 @@ TIMER.TIMER          INFO ------------------------------------------------------
 s2_HW:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_Prescaler:Start   INFO Time User   : Tot=    0 [us]                                             #=  1
 ORCounter:Start      INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_9:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_0:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_Counter:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_9:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_3:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_3:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Prescaler:En...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Prescaler:Be...   INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_HW:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_HW:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_4:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_4:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
-SubAlg2:BeginRun     INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_Counter:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg1:Stop         INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_4:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_5:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_5:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Counter:EndRun    INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg2:Stop         INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg2:Start        INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_5:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-SubAlg2:EndRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_HW:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_10:Stop          INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_1:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_0:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_0:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_Prescaler:Stop    INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_Prescaler:Start   INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_1:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_1:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Prescaler:En...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Prescaler:Be...   INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_Prescaler:Stop    INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_1:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_2:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_2:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_2:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_Counter:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_2:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_3:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Counter:EndRun    INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_Counter:Begi...   INFO Time User   : Tot=    0 [us]                                             #=  1
 OR:Stop              INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_6:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
 AND:Start            INFO Time User   : Tot=    0 [us]                                             #=  1
-ParentAlg:BeginRun   INFO Time User   : Tot=    0 [us]                                             #=  1
 ORCounter:Stop       INFO Time User   : Tot=    0 [us]                                             #=  1
 AND:Stop             INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_7:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_7:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
-ORCounter:EndRun     INFO Time User   : Tot=    0 [us]                                             #=  1
-ANDCounter:Begi...   INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_5:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-ANDCounter:EndRun    INFO Time User   : Tot=    0 [us]                                             #=  1
 OR:Start             INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_9:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_8:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_7:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_8:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_7:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_8:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 ANDCounter:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_6:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg1:Start        INFO Time User   : Tot=    0 [us]                                             #=  1
-SubAlg1:EndRun       INFO Time User   : Tot=    0 [us]                                             #=  1
-SubAlg1:BeginRun     INFO Time User   : Tot=    0 [us]                                             #=  1
 StopperAlg:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
 StopperAlg:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
 StopperAlg:Init...   INFO Time User   : Tot=    0 [us]                                             #=  1
 StopperAlg:Fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_6:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
-StopperAlg:EndRun    INFO Time User   : Tot=    0 [us]                                             #=  1
-StopperAlg:Begi...   INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_9:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 ParentAlg:Stop       INFO Time User   : Tot=    0 [us]                                             #=  1
 ParentAlg:Start      INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_6:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_10:Start         INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_10:BeginRun      INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_9:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_10:EndRun        INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_10:Finalize      INFO Time User   : Tot=    0 [us]                                             #=  1
 ANDCounter:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
-ParentAlg:EndRun     INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_6:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_5:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_4:Start          INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_4:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_8:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_3:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-ORCounter:BeginRun   INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_3:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_7:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_2:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
-seq_8:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_0:Stop           INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_HW:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 seq_1:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_Counter:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_Counter:Begi...   INFO Time User   : Tot=    0 [us]                                             #=  1
-AND:EndRun           INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg2:Finalize     INFO Time User   : Tot=    0 [us]                                             #=  1
 ParentAlg:Finalize   INFO Time User   : Tot=    0 [us]                                             #=  1
 ANDCounter:Fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
-OR:EndRun            INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg2:Initialize   INFO Time User   : Tot=    0 [us]                                             #=  1
 ORCounter:Finalize   INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_HW:Finalize       INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_Counter:Fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
 OR:Finalize          INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_HW:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
 AND:Finalize         INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_HW:EndRun         INFO Time User   : Tot=    0 [us]                                             #=  1
-OR:BeginRun          INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_Counter:Fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
-s2_HW:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_Prescaler:Fi...   INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg1:Initialize   INFO Time User   : Tot=    0 [us]                                             #=  1
 SubAlg1:Finalize     INFO Time User   : Tot=    0 [us]                                             #=  1
-s1_HW:BeginRun       INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_Counter:Init...   INFO Time User   : Tot=    0 [us]                                             #=  1
 ANDCounter:Init...   INFO Time User   : Tot=    0 [us]                                             #=  1
 ORCounter:Initi...   INFO Time User   : Tot=    0 [us]                                             #=  1
 s1_Counter:Init...   INFO Time User   : Tot=    0 [us]                                             #=  1
-AND:BeginRun         INFO Time User   : Tot=    0 [us]                                             #=  1
 AND:Initialize       INFO Time User   : Tot=    0 [us]                                             #=  1
 OR:Initialize        INFO Time User   : Tot=    0 [us]                                             #=  1
 s2_Prescaler:Fi...   INFO Time User   : Tot=    0 [us]                                             #=  1

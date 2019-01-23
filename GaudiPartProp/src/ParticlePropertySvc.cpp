@@ -25,15 +25,6 @@ namespace ba = boost::algorithm;
 // ============================================================================
 #include "ParticlePropertySvc.h"
 // ============================================================================
-namespace
-{
-  //@FIXME/@TODO remove once we can assume C++14...
-  template <typename T, class... Args>
-  std::unique_ptr<T> make_unique_( Args&&... args )
-  {
-    return std::unique_ptr<T>( new T( std::forward<Args>( args )... ) );
-  }
-}
 namespace Gaudi
 {
   /** Instantiation of a static factory class used by clients to create
@@ -142,8 +133,8 @@ namespace Gaudi
                                              double maxWidth )
   {
     //
-    auto i = m_owned.insert( make_unique_<ParticleProperty>( particle, geantId, jetsetId, charge, mass, tlife, evtName,
-                                                             pythiaId, maxWidth ) );
+    auto i = m_owned.insert( std::make_unique<ParticleProperty>( particle, geantId, jetsetId, charge, mass, tlife,
+                                                                 evtName, pythiaId, maxWidth ) );
     //
     return i.second ? push_back( i.first->get() ) : StatusCode::FAILURE;
   }
@@ -391,14 +382,14 @@ namespace Gaudi
       std::istringstream input( item );
       // get the name
       std::string p_name;
-      int p_geant;
-      int p_jetset;
-      double p_charge;
-      double p_mass;
-      double p_ltime;
+      int         p_geant;
+      int         p_jetset;
+      double      p_charge;
+      double      p_mass;
+      double      p_ltime;
       std::string p_evtgen;
-      int p_pythia;
-      double p_maxwid;
+      int         p_pythia;
+      double      p_maxwid;
       if ( input >> p_name >> p_geant >> p_jetset >> p_charge >> p_mass >> p_ltime >> p_evtgen >> p_pythia >>
            p_maxwid ) {
         always() << " Add/Modify the particle: "

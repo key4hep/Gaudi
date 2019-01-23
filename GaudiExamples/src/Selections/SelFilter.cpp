@@ -3,6 +3,7 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 // ============================================================================
@@ -25,31 +26,41 @@ namespace Gaudi
      */
     class SelFilter : public GaudiAlgorithm
     {
+      // ======================================================================
+      using Range     = Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>;
+      using Selection = Gaudi::Examples::MyTrack::Selection;
+
+      DataObjectReadHandle<Range>      m_input{this, "Input", "", "TES location of input container"};
+      DataObjectWriteHandle<Selection> m_output{this, "Output", this->name(), "TES location of output container"};
+      // ======================================================================
     public:
       // ======================================================================
-      /// the only one essential method
-      virtual StatusCode execute() override
-      {
+      /// Constructor
+      SelFilter( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
 
-        typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;
+      // using GaudiAlgorithm::GaudiAlgorithm;
+      // ======================================================================
+      /// the only one essential method
+      StatusCode execute() override
+      {
 
         static Rndm::Numbers flat( randSvc(), Rndm::Flat( -1, 1 ) );
 
-        if ( exist<Gaudi::Examples::MyTrack::Selection>( m_input ) ) {
-          info() << "Selection at '" << m_input.value() << "'" << endmsg;
-        } else if ( exist<Gaudi::Examples::MyTrack::Container>( m_input ) ) {
-          info() << "Container at '" << m_input.value() << "'" << endmsg;
+        if ( exist<Gaudi::Examples::MyTrack::Selection>( m_input.objKey() ) ) {
+          info() << "Selection at '" << m_input.objKey() << "'" << endmsg;
+        } else if ( exist<Gaudi::Examples::MyTrack::Container>( m_input.objKey() ) ) {
+          info() << "Container at '" << m_input.objKey() << "'" << endmsg;
         }
 
-        if ( !exist<Range>( m_input ) ) {
-          err() << "No Range is available at location " << m_input.value() << endmsg;
+        if ( !exist<Range>( m_input.objKey() ) ) {
+          err() << "No Range is available at location " << m_input.objKey() << endmsg;
         }
 
         // get input data in 'blind' way
-        Range range = get<Range>( m_input );
+        const auto& range = m_input.get();
 
         // create new selection
-        Gaudi::Examples::MyTrack::Selection* sample = new Gaudi::Examples::MyTrack::Selection();
+        auto sample = std::make_unique<Gaudi::Examples::MyTrack::Selection>();
 
         const double pxCut = flat();
         const double pyCut = flat();
@@ -66,22 +77,10 @@ namespace Gaudi
         info() << "Sample size is " << range.size() << "/" << size << "/" << sample->size() << endmsg;
 
         // register it in TES
-        put( sample, name() );
+        m_output.put( std::move( sample ) );
 
         return StatusCode::SUCCESS;
       }
-      // ======================================================================
-    public:
-      // ======================================================================
-      /// Constructor
-      using GaudiAlgorithm::GaudiAlgorithm;
-      /// destructor
-      ~SelFilter() override = default;
-      // ======================================================================
-    private:
-      // ======================================================================
-      Gaudi::Property<std::string> m_input{this, "Input", "", "TES location of input container"};
-      // ======================================================================
     };
     // ========================================================================
   } // end of namespace Gaudi::Examples

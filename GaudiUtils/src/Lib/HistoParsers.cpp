@@ -23,7 +23,7 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/ParsersFactory.h"
+#include <Gaudi/Parsers/Factory.h>
 // ============================================================================
 // local
 // ============================================================================
@@ -71,11 +71,11 @@ namespace Gaudi
         result = begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a );
       }
       VectorGrammar<Iterator, std::vector<double>, Skipper> edges;
-      RealGrammar<Iterator, double, Skipper> low, high;
-      IntGrammar<Iterator, unsigned int, Skipper> nbins;
+      RealGrammar<Iterator, double, Skipper>                low, high;
+      IntGrammar<Iterator, unsigned int, Skipper>           nbins;
       qi::rule<Iterator, Edges(), qi::locals<char>, Skipper> result;
       qi::rule<Iterator, Edges(), Skipper> inner, inner_pairs;
-      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, char()>       begin;
       qi::rule<Iterator, void( char )> end;
       // ======================================================================
     };
@@ -110,14 +110,14 @@ namespace Gaudi
       }
 
       StringGrammar<Iterator, Skipper> name, title;
-      EdgeGrammar<Iterator, Skipper> edges;
-      RealGrammar<Iterator, double, Skipper> low, high;
+      EdgeGrammar<Iterator, Skipper>   edges;
+      RealGrammar<Iterator, double, Skipper>      low, high;
       IntGrammar<Iterator, unsigned int, Skipper> nbins;
 
       VectorGrammar<Iterator, std::vector<std::pair<double, double>>, Skipper> bins;
-      qi::rule<Iterator, H1(), qi::locals<char>, Skipper> result;
+      qi::rule<Iterator, H1(), qi::locals<char>, Skipper>                      result;
       qi::rule<Iterator, H1(), Skipper> inner;
-      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, char()>       begin;
       qi::rule<Iterator, void( char )> end;
     };
     REGISTER_GRAMMAR( H1, H1Grammar );
@@ -148,11 +148,11 @@ namespace Gaudi
       }
 
       StringGrammar<Iterator, Skipper> name, title;
-      EdgeGrammar<Iterator, Skipper> edges;
+      EdgeGrammar<Iterator, Skipper>   edges;
       VectorGrammar<Iterator, std::vector<std::pair<double, double>>, Skipper> bins;
-      qi::rule<Iterator, H2(), qi::locals<char>, Skipper> result;
+      qi::rule<Iterator, H2(), qi::locals<char>, Skipper>                      result;
       qi::rule<Iterator, H2(), Skipper> inner;
-      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, char()>       begin;
       qi::rule<Iterator, void( char )> end;
 
       // ======================================================================
@@ -196,7 +196,7 @@ namespace
     // ==========================================================================
     // 1) parse the custom format
     //
-    H1 h1;
+    H1         h1;
     StatusCode sc = _parse( h1, input );
     if ( sc.isFailure() || !h1.ok() ) {
       return H1P();
@@ -234,7 +234,7 @@ namespace
     typedef std::unique_ptr<HISTO2> H2P;
     // 1) parse the custom format
     //
-    H2 h2;
+    H2         h2;
     StatusCode sc = _parse( h2, input );
     if ( sc.isFailure() || !h2.ok() ) {
       return H2P();
@@ -277,7 +277,7 @@ namespace
                                          h2.m_yedges.nBins(),        // #bins
                                          &h2.m_yedges.edges.front() ) ); // vector of edges
 
-    int ibin        = 0;
+    int       ibin  = 0;
     const int xBins = h2.m_xedges.nBins();
     const int yBins = h2.m_yedges.nBins();
 
@@ -354,7 +354,7 @@ StatusCode Gaudi::Parsers::parse( TH2D& result, const std::string& input )
 {
   // 1) check the parsing
   std::string name;
-  auto h2 = _parse_2D<TH2D>( input, name );
+  auto        h2 = _parse_2D<TH2D>( input, name );
   if ( h2 ) {
     result.Reset();
     h2->Copy( result ); // ASSIGN
@@ -377,7 +377,7 @@ StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input )
 {
   // 1) check the parsing
   std::string name;
-  auto h2 = _parse_2D<TH2F>( input, name );
+  auto        h2 = _parse_2D<TH2F>( input, name );
   if ( h2 ) {
     result.Reset();
     h2->Copy( result ); // ASSIGN
@@ -407,7 +407,7 @@ StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input )
 
   // 1) check the parsing
   std::string name;
-  auto h1 = _parse_1D<TH1D>( input, name );
+  auto        h1 = _parse_1D<TH1D>( input, name );
   if ( h1 ) {
     result = h1.release();
     result->SetName( name.c_str() );
@@ -433,7 +433,7 @@ StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input )
 
   // 1) check the parsing
   std::string name;
-  auto h2 = _parse_2D<TH2D>( input, name );
+  auto        h2 = _parse_2D<TH2D>( input, name );
   if ( h2 ) {
     result = h2.release();
     result->SetName( name.c_str() );

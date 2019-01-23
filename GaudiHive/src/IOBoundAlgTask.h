@@ -9,6 +9,8 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SmartIF.h"
 
+#include <functional>
+
 /**@class IOBoundAlgTask IOBoundAlgTask.h GaudiHive/src/IOBoundAlgTask.h
  *
  *  Wrapper around I/O-bound Gaudi-algorithms. It may also cover the accelerator-targeted algorithms.
@@ -21,20 +23,24 @@
 class IOBoundAlgTask : public IAlgTask
 {
 public:
-  IOBoundAlgTask( IAlgorithm* algorithm, EventContext* ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem )
-      : m_algorithm( algorithm ), m_evtCtx( ctx ), m_aess( aem ), m_serviceLocator( svcLocator )
+  IOBoundAlgTask( IAlgorithm* algorithm, const EventContext& ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem,
+                  std::function<StatusCode()> promote2ExecutedClosure )
+      : m_algorithm( algorithm )
+      , m_evtCtx( ctx )
+      , m_aess( aem )
+      , m_serviceLocator( svcLocator )
+      , m_promote2ExecutedClosure( std::move( promote2ExecutedClosure ) )
   {
   }
 
-  ~IOBoundAlgTask() override {}
-
-  virtual StatusCode execute() override;
+  StatusCode execute() override final;
 
 private:
-  SmartIF<IAlgorithm> m_algorithm;
-  EventContext* m_evtCtx;
-  IAlgExecStateSvc* m_aess;
-  SmartIF<ISvcLocator> m_serviceLocator;
+  SmartIF<IAlgorithm>         m_algorithm;
+  const EventContext&         m_evtCtx;
+  IAlgExecStateSvc*           m_aess;
+  SmartIF<ISvcLocator>        m_serviceLocator;
+  std::function<StatusCode()> m_promote2ExecutedClosure;
 };
 
 #endif

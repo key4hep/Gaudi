@@ -34,7 +34,7 @@ namespace
   } maybe_stol{};
 }
 
-DECLARE_NAMESPACE_CONVERTER_FACTORY( RootHistCnv, RDirectoryCnv )
+DECLARE_CONVERTER( RootHistCnv::RDirectoryCnv )
 
 //-----------------------------------------------------------------------------
 StatusCode RootHistCnv::RDirectoryCnv::createObj( IOpaqueAddress* /* pAddress */, DataObject*& refpObject )
@@ -74,9 +74,9 @@ StatusCode RootHistCnv::RDirectoryCnv::updateRep( IOpaqueAddress* /* pAddress */
 //-----------------------------------------------------------------------------
 StatusCode RootHistCnv::RDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj )
 {
-  MsgStream log( msgSvc(), "RDirectoryCnv" );
-  IRegistry* pReg          = pObj->registry();
-  std::string full         = pReg->identifier();
+  MsgStream          log( msgSvc(), "RDirectoryCnv" );
+  IRegistry*         pReg  = pObj->registry();
+  std::string        full  = pReg->identifier();
   const std::string& fname = pAddr->par()[0];
 
   TFile* tf = nullptr;
@@ -86,16 +86,16 @@ StatusCode RootHistCnv::RDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataO
   setDirectory( full );
   TIter nextkey( gDirectory->GetListOfKeys() );
   while ( TKey* key = (TKey*)nextkey() ) {
-    IOpaqueAddress* pA = nullptr;
-    TObject* obj       = key->ReadObj();
-    std::string title  = obj->GetTitle();
-    std::string sid    = obj->GetName();
-    std::string f2     = full + "/" + sid;
-    int idh            = maybe_stol( sid ).get_value_or( 0 );
+    IOpaqueAddress* pA    = nullptr;
+    TObject*        obj   = key->ReadObj();
+    std::string     title = obj->GetTitle();
+    std::string     sid   = obj->GetName();
+    std::string     f2    = full + "/" + sid;
+    int             idh   = maybe_stol( sid ).get_value_or( 0 );
     // introduced by Grigori Rybkine
     std::string clname = key->GetClassName();
     std::string clnm   = clname.substr( 0, 3 );
-    TClass* isa        = obj->IsA();
+    TClass*     isa    = obj->IsA();
     if ( isa->InheritsFrom( "TTree" ) ) {
       createAddress( full, CLID_ColumnWiseTuple, idh, obj, pA ).ignore();
       TTree* tree = (TTree*)obj;

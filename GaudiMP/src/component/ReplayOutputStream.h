@@ -8,7 +8,7 @@
 #include "GaudiKernel/ThreadLocalContext.h"
 
 class IAlgManager;
-class IDataManagerSvc;
+struct IDataManagerSvc;
 
 /** @class ReplayOutputStream ReplayOutputStream.h component/ReplayOutputStream.h
   *
@@ -21,7 +21,6 @@ class ReplayOutputStream : public GaudiAlgorithm
 public:
   /// Inherited constructor
   using GaudiAlgorithm::GaudiAlgorithm;
-  ~ReplayOutputStream() override = default; ///< Destructor
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode start() override;      ///< Algorithm initialization
@@ -47,33 +46,10 @@ private:
     ReplayOutputStream* m_ptr;
   };
 
-  /// Helper class to call the required OutputStream.
-  class OutStreamTrigger
-  {
-  public:
-    OutStreamTrigger( ReplayOutputStream* ptr ) : m_ptr( ptr ) {}
-    inline void operator()( const std::string& name ) const
-    {
-      SmartIF<IAlgorithm>& alg = m_ptr->m_outputStreams[name];
-      if ( alg ) {
-        if ( !alg->isExecuted() ) {
-          alg->sysExecute( Gaudi::Hive::currentContext() );
-        } else {
-          m_ptr->warning() << name << " already executed for the current event" << endmsg;
-        }
-      } else {
-        m_ptr->warning() << "invalid OuputStream " << name << endmsg;
-      }
-    }
-
-  private:
-    ReplayOutputStream* m_ptr;
-  };
-
   /// Helper function to call the transition on the contained OutputStreams.
   /// Returns StatusCode::FAILURE if any of the OutputStreams returned a failure.
   template <Gaudi::StateMachine::Transition TR>
-  StatusCode i_outStreamTransition();
+  StatusCode                                i_outStreamTransition();
 
   Gaudi::Property<std::vector<std::string>> m_outputStreamNames{
       this, "OutputStreams", {}, "OutputStream instances that can be called."};
@@ -81,7 +57,7 @@ private:
   /// Internal storage for the OutputStreams to call.
   OutStreamsMapType m_outputStreams;
 
-  SmartIF<IAlgManager> m_algMgr;
+  SmartIF<IAlgManager>     m_algMgr;
   SmartIF<IDataManagerSvc> m_evtMgr;
 };
 

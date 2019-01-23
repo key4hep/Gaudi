@@ -64,9 +64,9 @@ long System::breakExecution( long pid )
     _asm int 3 return 1;
   } else {
     Win::LPTHREAD_START_ROUTINE fun;
-    Win::HANDLE th, ph;
-    Win::HINSTANCE mh;
-    Win::DWORD id;
+    Win::HANDLE                 th, ph;
+    Win::HINSTANCE              mh;
+    Win::DWORD                  id;
     mh = Win::LoadLibrary( "Kernel32" );
     if ( 0 != mh ) {
       fun = (Win::LPTHREAD_START_ROUTINE)Win::GetProcAddress( mh, "DebugBreak" );

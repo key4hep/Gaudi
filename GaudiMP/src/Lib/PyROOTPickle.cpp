@@ -49,7 +49,7 @@ namespace GaudiMP
     Py_DECREF( nattr );
 
     static TClass* bufferclass = TClass::GetClass( "TBufferFile" );
-    TClass* klass              = TClass::GetClass( PyString_AS_STRING( pyname ) );
+    TClass*        klass       = TClass::GetClass( PyString_AS_STRING( pyname ) );
 
     // no cast is needed, but WriteObject taking a TClass argument is protected,
     // so use WriteObjectAny()
@@ -93,8 +93,8 @@ namespace GaudiMP
 
   public: // public, as the python C-API works with C structs
     PyObject_HEAD void* fObject;
-    TClassRef fClass;
-    int fFlags;
+    TClassRef           fClass;
+    int                 fFlags;
 
   private: // private, as the python C-API will handle creation
     ObjectProxy() {}
@@ -107,7 +107,7 @@ namespace GaudiMP
   PyObject* ObjectProxyExpand( PyObject*, PyObject* args )
   {
     // This method is a helper for (un)pickling of ObjectProxy instances.
-    PyObject* pybuf    = 0;
+    PyObject*   pybuf  = 0;
     const char* clname = 0;
     if ( !PyArg_ParseTuple( args, const_cast<char*>( "O!s:__expand__" ), &PyString_Type, &pybuf, &clname ) ) return 0;
 

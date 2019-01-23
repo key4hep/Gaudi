@@ -23,8 +23,6 @@ public:
 private:
   ITHistSvc* m_ths;
 
-  TH1F* m_h1;
-
   void listKeys( TDirectory* td );
 };
 

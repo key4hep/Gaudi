@@ -500,13 +500,13 @@ class iDataSvc(iService):
         if not self._idp:
             raise AttributeError(
                 'C++ service %s does not exist' % self.__dict__['_name'])
-        return self._idp.registerObject(path, obj)
+        return Helper.registerObject(self._idp, path, obj)
 
     def unregisterObject(self, path):
         if not self._idp:
             raise AttributeError(
                 'C++ service %s does not exist' % self.__dict__['_name'])
-        return self._idp.unregisterObject(path)
+        return Helper.unregisterObject(self._idp, path)
 
     def retrieveObject(self, path):
         if not self._idp:
@@ -571,13 +571,13 @@ class iDataSvc(iService):
         if not self._idp:
             raise IndexError('C++ service %s does not exist' %
                              self.__dict__['_name'])
-        return self._idp.registerObject(path, obj)
+        return self.registerObject(path, obj)
 
     def __delitem__(self, path):
         if not self._idp:
             raise IndexError('C++ service %s does not exist' %
                              self.__dict__['_name'])
-        return self._idp.unregisterObject(path)
+        return self.unregisterObject(path)
 
     def leaves(self, node=None):
         if not node:
@@ -931,7 +931,7 @@ class AppMgr(iService):
         self.__dict__['_svcmgr'] = InterfaceCast(gbl.ISvcManager)(self._appmgr)
         self.__dict__['pyalgorithms'] = []
         iService.__init__(self, 'ApplicationMgr', self._appmgr)
-        #------python specific initialization-------------------------------------
+        # ------python specific initialization-------------------------------------
         if self.FSMState() < Gaudi.StateMachine.CONFIGURED:  # Not yet configured
             self.JobOptionsType = 'NONE'
             if joboptions:
@@ -954,7 +954,7 @@ class AppMgr(iService):
             if outputlevel != -1:
                 self.OutputLevel = outputlevel
             self.configure()
-        #---MessageSvc------------------------------------------------------------
+        # ---MessageSvc------------------------------------------------------------
         ms = self.service('MessageSvc')
         if 'MessageSvc' in Configurable.allConfigurables:
             msprops = Configurable.allConfigurables['MessageSvc']
@@ -965,10 +965,10 @@ class AppMgr(iService):
                 setattr(ms, p, v)
         if outputlevel != -1:
             ms.OutputLevel = outputlevel
-        #---JobOptions------------------------------------------------------------
+        # ---JobOptions------------------------------------------------------------
         self.__dict__['_optsvc'] = InterfaceCast(gbl.IJobOptionsSvc)(
             Helper.service(self._svcloc, 'JobOptionsSvc'))
-        #------Configurables initialization (part2)-------------------------------
+        # ------Configurables initialization (part2)-------------------------------
         mkStringProperty = gbl.GaudiPython.Helpers.mkStringProperty
         for n in getNeededConfigurables():
             c = Configurable.allConfigurables[n]
@@ -994,7 +994,7 @@ class AppMgr(iService):
         import atexit
         atexit.register(self.exit)
 
-        #---Hack to avoid bad interactions with the ROOT exit handler
+        # ---Hack to avoid bad interactions with the ROOT exit handler
         # Look for an exit handler installed by ROOT
         root_handler_installed = False
         for h in atexit._exithandlers:
@@ -1282,7 +1282,7 @@ class AppMgr(iService):
             sc = self.start()
             if sc.isFailure():
                 return sc
-        #--- Access a number of services ----
+        # --- Access a number of services ----
         if not hasattr(self, '_perssvc'):
             self.__dict__['_perssvc'] = self.service(
                 'EventPersistencySvc', 'IAddressCreator')
@@ -1292,23 +1292,23 @@ class AppMgr(iService):
         if not hasattr(self, '_evtmgr'):
             self.__dict__['_evtmgr'] = self.service(
                 'EventDataSvc', 'IDataManagerSvc')
-        #--- Get FID from PFN and number of events in file
+        # --- Get FID from PFN and number of events in file
         if pfn.find('PFN:') == 0:
             pfn = pfn[4:]
         fid, maxevt = _getFIDandEvents(pfn)
-        #--- Add FID into catalog if needed ---
+        # --- Add FID into catalog if needed ---
         if not self._filecat.existsFID(fid):
             self._filecat.registerPFN(fid, pfn, '')
-        #--- Loop over events
+        # --- Loop over events
         if type(events) is not list:
             events = (events,)
         for evt in events:
-            #--- Create POOL Address from Generic Address
+            # --- Create POOL Address from Generic Address
             gadd = gbl.GenericAddress(0x02, 1, fid, '/Event', 0, evt)
             oadd = makeNullPointer('IOpaqueAddress')
             self._perssvc.createAddress(
                 gadd.svcType(), gadd.clID(), gadd.par(), gadd.ipar(), oadd)
-            #--- Clear TES, set root and run all algorithms
+            # --- Clear TES, set root and run all algorithms
             self._evtmgr.clearStore()
             self._evtmgr.setRoot('/Event', oadd)
             self._evtpro.executeEvent()

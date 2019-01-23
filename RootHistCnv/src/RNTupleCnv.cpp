@@ -1,6 +1,5 @@
 // Include files
 #include "RNTupleCnv.h"
-#include "NTupleInfo.h"
 #include "RootObjAddress.h"
 
 #include "GaudiKernel/DataObject.h"
@@ -107,9 +106,9 @@ StatusCode RootHistCnv::RNTupleCnv::createObj( IOpaqueAddress* pAddress, DataObj
       log << MSG::ERROR << "Could not cast to RootObjAddress" << endmsg;
       return StatusCode::FAILURE;
     }
-    INTuple* nt = nullptr;
-    TTree* tobj = (TTree*)rAddr->tObj();
-    status      = load( tobj, nt );
+    INTuple* nt   = nullptr;
+    TTree*   tobj = (TTree*)rAddr->tObj();
+    status        = load( tobj, nt );
     if ( status.isSuccess() ) {
       refpObject = dynamic_cast<DataObject*>( nt );
     } else {
@@ -140,10 +139,10 @@ StatusCode RootHistCnv::RNTupleCnv::createRep( DataObject* pObject, IOpaqueAddre
             if ( pParAddr ) {
               TDirectory* pParentDir = (TDirectory*)pParAddr->ipar()[0];
               if ( pParentDir ) {
-                TTree* pTree    = nullptr;
-                std::string dsc = pReg->name().substr( 1 );
-                gDirectory      = pParentDir;
-                status          = book( dsc, dynamic_cast<INTuple*>( pObject ), pTree );
+                TTree* pTree = nullptr;
+                auto   dsc   = pReg->name().substr( 1 );
+                gDirectory   = pParentDir;
+                status       = book( dsc, dynamic_cast<INTuple*>( pObject ), pTree );
                 if ( !status.isSuccess() ) {
                   return status;
                 }
@@ -157,7 +156,7 @@ StatusCode RootHistCnv::RNTupleCnv::createRep( DataObject* pObject, IOpaqueAddre
           }
         }
       } else {
-        TDirectory* pDir      = (TDirectory*)pAddr->ipar()[0];
+        TDirectory*     pDir  = (TDirectory*)pAddr->ipar()[0];
         RootObjAddress* rAddr = dynamic_cast<RootObjAddress*>( pAddr );
         if ( !rAddr ) {
           MsgStream log( msgSvc(), "RNTupleCnv" );
@@ -184,8 +183,8 @@ StatusCode RootHistCnv::RNTupleCnv::updateRep( IOpaqueAddress* pAddr, DataObject
   MsgStream log( msgSvc(), "RNTupleCnv" );
   if ( pAddr ) {
     GlobalDirectoryRestore restore;
-    TDirectory* pDir      = (TDirectory*)pAddr->ipar()[0];
-    RootObjAddress* rAddr = dynamic_cast<RootObjAddress*>( pAddr );
+    TDirectory*            pDir  = (TDirectory*)pAddr->ipar()[0];
+    RootObjAddress*        rAddr = dynamic_cast<RootObjAddress*>( pAddr );
     if ( !rAddr ) {
       log << MSG::ERROR << "Could not cast to RootObjAddress" << endmsg;
       return StatusCode::FAILURE;
@@ -219,7 +218,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType( int type )
   case DataTypeInfo::LONG:
     return "/I"; // long
   case DataTypeInfo::LONGLONG:
-    return "/L"; // longlong
+    return "/L"; // long long
   case DataTypeInfo::USHORT:
     return "/s"; // ushort
   case DataTypeInfo::UINT:
@@ -227,7 +226,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType( int type )
   case DataTypeInfo::ULONG:
     return "/i"; // ulong
   case DataTypeInfo::ULONGLONG:
-    return "/l"; // ulonglong
+    return "/l"; // unsigned long long
   case DataTypeInfo::FLOAT:
     return "/F"; // float
   case DataTypeInfo::DOUBLE:
@@ -281,8 +280,8 @@ namespace RootHistCnv
       varName = itemName;
     }
 
-    TYP null         = 0;
-    INTupleItem* col = nullptr;
+    TYP          null = 0;
+    INTupleItem* col  = nullptr;
 
     if ( min == 0 && max == 0 ) {
       min = NTuple::Range<TYP>::min();

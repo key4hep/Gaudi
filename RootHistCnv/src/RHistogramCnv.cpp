@@ -10,7 +10,7 @@ namespace RootHistCnv
   {
     return CLID_ProfileH;
   }
-  DECLARE_CONVERTER_FACTORY( RootHistCnvP1DCnv )
+  DECLARE_CONVERTER( RootHistCnvP1DCnv )
 }
 
 #include "AIDA/IProfile2D.h"
@@ -23,7 +23,7 @@ namespace RootHistCnv
   {
     return CLID_ProfileH2;
   }
-  DECLARE_CONVERTER_FACTORY( RootHistCnvP2DCnv )
+  DECLARE_CONVERTER( RootHistCnvP2DCnv )
 }
 
 #include "AIDA/IHistogram1D.h"
@@ -36,7 +36,7 @@ namespace RootHistCnv
   {
     return CLID_H1D;
   }
-  DECLARE_CONVERTER_FACTORY( RootHistCnvH1DCnv )
+  DECLARE_CONVERTER( RootHistCnvH1DCnv )
 }
 
 #include "AIDA/IHistogram2D.h"
@@ -49,7 +49,7 @@ namespace RootHistCnv
   {
     return CLID_H2D;
   }
-  DECLARE_CONVERTER_FACTORY( RootHistCnvH2DCnv )
+  DECLARE_CONVERTER( RootHistCnvH2DCnv )
 }
 
 #include "AIDA/IHistogram3D.h"
@@ -62,5 +62,5 @@ namespace RootHistCnv
   {
     return CLID_H3D;
   }
-  DECLARE_CONVERTER_FACTORY( RootHistCnvH3DCnv )
+  DECLARE_CONVERTER( RootHistCnvH3DCnv )
 }

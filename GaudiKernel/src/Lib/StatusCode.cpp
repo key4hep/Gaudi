@@ -5,16 +5,37 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IStatusCodeSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IssueSeverity.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 #include <exception>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdlib.h>
 
+// statics
 bool StatusCode::s_checking( false );
+
+namespace
+{
+  /// Default StatusCode category
+  struct DefaultCategory : public StatusCode::Category {
+
+    const char* name() const override { return "Gaudi"; }
+
+    std::string message( StatusCode::code_t code ) const override
+    {
+      switch ( static_cast<StatusCode::ErrorCode>( code ) ) {
+      case StatusCode::ErrorCode::SUCCESS:
+        return "SUCCESS";
+      case StatusCode::ErrorCode::FAILURE:
+        return "FAILURE";
+      case StatusCode::ErrorCode::RECOVERABLE:
+        return "RECOVERABLE";
+      default:
+        return "UNKNOWN(" + std::to_string( code ) + ")";
+      }
+    }
+  };
+}
+
+STATUSCODE_ENUM_IMPL( StatusCode::ErrorCode, DefaultCategory )
 
 void StatusCode::enableChecking() { s_checking = true; }
 
@@ -22,31 +43,33 @@ void StatusCode::disableChecking() { s_checking = false; }
 
 bool StatusCode::checkingEnabled() { return s_checking; }
 
-const IssueSeverity& StatusCode::severity() const
-{
-  static const IssueSeverity dummy;
-  return m_severity ? *m_severity : dummy;
-}
-
 void StatusCode::check()
 {
 
-  if ( !m_checked && !GaudiException::s_proc && !std::uncaught_exception() ) {
+  if ( !m_checked && !GaudiException::s_proc &&
+#if __cplusplus > 201402L // c++17
+       !std::uncaught_exceptions()
+#else
+       !std::uncaught_exception()
+#endif
+           ) {
 
     auto msg = Gaudi::svcLocator()->as<IMessageSvc>();
     auto scs = Gaudi::svcLocator()->service<IStatusCodeSvc>( "StatusCodeSvc" );
 
     const size_t depth = 21;
-    void* addresses[depth];
+    void*        addresses[depth];
 
     std::string lib, fnc;
-    void* addr = nullptr;
+    void*       addr = nullptr;
     /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
     if ( System::backTrace( addresses, depth ) ) {
 
       for ( size_t idx : {2, 3} ) {
-        if ( System::getStackLevel( addresses[idx], addr, fnc, lib ) && fnc != "StatusCode::~StatusCode()" ) {
-
+        // When running address sanitizer builds with -fno-omit-frame-pointer
+        // StatusCode::check() might appear as the function name, so skip.
+        if ( System::getStackLevel( addresses[idx], addr, fnc, lib ) && fnc != "StatusCode::~StatusCode()" &&
+             fnc != "StatusCode::check()" ) {
           if ( scs ) {
             scs->regFnc( fnc, lib );
           } else {

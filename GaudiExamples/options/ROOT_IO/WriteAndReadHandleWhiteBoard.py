@@ -5,7 +5,7 @@
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
 from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr
-from Configurables import ForwardSchedulerSvc
+from Configurables import AvalancheSchedulerSvc
 
 # Output setup
 # - DST
@@ -17,7 +17,7 @@ dst.Output = "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='R
 # - MiniDST
 mini = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
-mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'";
+mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 mini.OutputLevel = VERBOSE
 
 
@@ -57,9 +57,8 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr()
 
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight=algoparallel,
-                                ThreadPoolSize=algoparallel,
-                                OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
+                                  OutputLevel=WARNING)
 
 # Application setup
 app = ApplicationMgr()

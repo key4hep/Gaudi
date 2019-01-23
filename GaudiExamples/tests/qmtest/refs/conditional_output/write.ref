@@ -86,6 +86,7 @@ DataCreator         DEBUG Property ['Name': Value] =  'StatTableHeader': |    Co
 DataCreator         DEBUG Property ['Name': Value] =  'RootInTES':
 DataCreator         DEBUG Property ['Name': Value] =  'Context':
 DataCreator         DEBUG Property ['Name': Value] =  'TypePrint':True
+DataCreator         DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 DataCreator         DEBUG Property ['Name': Value] =  'StatPrint':True
 DataCreator         DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorsPrint':True
@@ -135,6 +136,7 @@ OddEvents           DEBUG Property ['Name': Value] =  'StatTableHeader': |    Co
 OddEvents           DEBUG Property ['Name': Value] =  'RootInTES':
 OddEvents           DEBUG Property ['Name': Value] =  'Context':
 OddEvents           DEBUG Property ['Name': Value] =  'TypePrint':True
+OddEvents           DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 OddEvents           DEBUG Property ['Name': Value] =  'StatPrint':True
 OddEvents           DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorsPrint':True
@@ -182,6 +184,7 @@ EvenEvents          DEBUG Property ['Name': Value] =  'StatTableHeader': |    Co
 EvenEvents          DEBUG Property ['Name': Value] =  'RootInTES':
 EvenEvents          DEBUG Property ['Name': Value] =  'Context':
 EvenEvents          DEBUG Property ['Name': Value] =  'TypePrint':True
+EvenEvents          DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 EvenEvents          DEBUG Property ['Name': Value] =  'StatPrint':True
 EvenEvents          DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorsPrint':True
@@ -230,9 +233,6 @@ OutputStream        DEBUG Adding OutputStream item /Event/A with 1 level(s).
 OutputStream        DEBUG Adding OutputStream item /Event with 1 level(s).
 OutputStream        DEBUG Adding OutputStream item /Event/B with 1 level(s).
 OutputStream         INFO Data source: EventDataSvc output: DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-OutputStream        DEBUG AcceptAlgs  : []
-OutputStream        DEBUG RequireAlgs : []
-OutputStream        DEBUG VetoAlgs    : []
 OutputStream      VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgExecStateSvc     DEBUG preInit: will add Alg OutputStream later
 OutputStream        DEBUG input handles: 0
@@ -242,7 +242,6 @@ EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
 HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...WARNING Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
@@ -270,13 +269,12 @@ AlgExecStateSvc     DEBUG adding alg DataCreator to 1 slots
 AlgExecStateSvc     DEBUG adding alg OddEvents to 1 slots
 AlgExecStateSvc     DEBUG adding alg EvenEvents to 1 slots
 AlgExecStateSvc   VERBOSE dumping state:
-Event: Invalid
-Algs: 4
- - Slot 0
-  +    OddEvents  e: 0 f: 1 sc: FAILURE
-  + OutputStream  e: 0 f: 1 sc: FAILURE
-  +   EvenEvents  e: 0 f: 1 sc: FAILURE
-  +  DataCreator  e: 0 f: 1 sc: FAILURE
+  [slot: 0, incident: Invalid]:
+
+  +    OddEvents  e: n
+  + OutputStream  e: n
+  +   EvenEvents  e: n
+  +  DataCreator  e: n
 
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
@@ -401,7 +399,7 @@ ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 20)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 24)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)

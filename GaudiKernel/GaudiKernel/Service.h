@@ -36,25 +36,24 @@ class ServiceManager;
 class GAUDI_API Service : public PropertyHolder<CommonMessaging<implements<IService, IProperty, IStateful>>>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IService*, const std::string&, ISvcLocator*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IService*( const std::string&, ISvcLocator* )>;
+
   friend class ServiceManager;
 
   /** Retrieve name of the service               */
   const std::string& name() const override;
 
   // State machine implementation
-  StatusCode configure() override { return StatusCode::SUCCESS; }
-  StatusCode initialize() override;
-  StatusCode start() override;
-  StatusCode stop() override;
-  StatusCode finalize() override;
-  StatusCode terminate() override { return StatusCode::SUCCESS; }
+  StatusCode                 configure() override { return StatusCode::SUCCESS; }
+  StatusCode                 initialize() override;
+  StatusCode                 start() override;
+  StatusCode                 stop() override;
+  StatusCode                 finalize() override;
+  StatusCode                 terminate() override { return StatusCode::SUCCESS; }
   Gaudi::StateMachine::State FSMState() const override { return m_state; }
   Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
-  StatusCode reinitialize() override;
-  StatusCode restart() override;
+  StatusCode                 reinitialize() override;
+  StatusCode                 restart() override;
 
   /** Initialize Service                          */
   StatusCode sysInitialize() override;
@@ -85,7 +84,7 @@ public:
   StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const
   {
     ISvcLocator& svcLoc = *serviceLocator();
-    auto ptr            = ServiceLocatorHelper( svcLoc, *this )
+    auto         ptr    = ServiceLocatorHelper( svcLoc, *this )
                    .service<T>( name, !createIf, // quiet
                                 createIf );
     if ( ptr ) {
@@ -165,22 +164,22 @@ protected:
   int outputLevel() const { return m_outputLevel.value(); }
 
 private:
-  void sysInitialize_imp();
-  StatusCode m_initSC;
+  void           sysInitialize_imp();
+  StatusCode     m_initSC;
   std::once_flag m_initFlag;
 
   /** Service Name  */
   std::string m_name;
   /** Service Locator reference                  */
   mutable SmartIF<ISvcLocator> m_svcLocator;
-  SmartIF<ISvcManager> m_svcManager;
+  SmartIF<ISvcManager>         m_svcManager;
 
   void setServiceManager( ISvcManager* ism ) override;
 
 protected:
   // Properties
 
-  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int>  m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
   Gaudi::Property<bool> m_auditInit{this, "AuditServices", false, "[[deprecated]] unused"};
   Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
   Gaudi::Property<bool> m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
@@ -192,34 +191,5 @@ protected:
   /** Auditor Service                            */
   mutable SmartIF<IAuditorSvc> m_pAuditorSvc;
 };
-
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-class SvcFactory
-{
-public:
-#ifndef __REFLEX__
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... args )
-  {
-    return new T( std::forward<Args>( args )... );
-  }
-#endif
-};
-
-// Macros to declare component factories
-#define DECLARE_SERVICE_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, SvcFactory<x>, Service::Factory )
-#define DECLARE_NAMED_SERVICE_FACTORY( x, n )                                                                          \
-  DECLARE_FACTORY_WITH_CREATOR_AND_ID( x, SvcFactory<x>, #n, Service::Factory )
-#define DECLARE_NAMESPACE_SERVICE_FACTORY( n, x ) DECLARE_SERVICE_FACTORY( n::x )
-
-#else
-
-// macros to declare factories
-#define DECLARE_SERVICE_FACTORY( x ) DECLARE_COMPONENT( x )
-#define DECLARE_NAMED_SERVICE_FACTORY( x, n ) DECLARE_COMPONENT_WITH_ID( x, #n )
-#define DECLARE_NAMESPACE_SERVICE_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
-
-#endif
 
 #endif // GAUDIKERNEL_SERVICE_H

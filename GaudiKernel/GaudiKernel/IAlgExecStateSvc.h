@@ -1,6 +1,7 @@
 #ifndef GAUDIKERNEL_IALGEXECSTATESVC_H
 #define GAUDIKERNEL_IALGEXECSTATESVC_H 1
 
+#include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/StringKey.h"
@@ -8,7 +9,6 @@
 #include <sstream>
 #include <string>
 
-class IAlgorithm;
 class EventContext;
 
 //-----------------------------------------------------------------------------
@@ -29,8 +29,8 @@ class AlgExecState
 public:
   enum State { None = 0, Executing = 1, Done = 2 };
 
-  bool filterPassed() const { return m_filterPassed; }
-  State state() const { return m_state; }
+  bool              filterPassed() const { return m_filterPassed; }
+  State             state() const { return m_state; }
   const StatusCode& execStatus() const { return m_execStatus; }
 
   void setFilterPassed( bool f = true ) { m_filterPassed = f; }
@@ -41,22 +41,35 @@ public:
     m_execStatus = sc;
   }
   void setExecStatus( const StatusCode& sc = StatusCode::SUCCESS ) { m_execStatus = sc; }
-  void reset() { *this = AlgExecState{}; }
+  void                                  reset() { *this = AlgExecState{}; }
 
 private:
-  bool m_filterPassed{true};
-  State m_state{State::None};
+  bool       m_filterPassed{true};
+  State      m_state{State::None};
   StatusCode m_execStatus{StatusCode( StatusCode::FAILURE, true )};
 };
 
 inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s )
 {
-  return ost << "e: " << s.state() << " f: " << s.filterPassed() << " sc: " << s.execStatus();
+  ost << "e: ";
+  switch ( s.state() ) {
+  case AlgExecState::State::None:
+    return ost << "n";
+  case AlgExecState::State::Executing:
+    return ost << "e";
+  default:
+    return ost << "d f: " << s.filterPassed() << " sc: " << s.execStatus();
+  }
 }
 
 namespace EventStatus
 {
   enum Status { Invalid = 0, Success = 1, AlgFail = 2, AlgStall = 3, Other = 4 };
+  inline std::ostream& operator<<( std::ostream& os, Status s )
+  {
+    static constexpr std::array<const char*, 5> label{"Invalid", "Success", "AlgFail", "AlgStall", "Other"};
+    return os << label.at( s );
+  }
 }
 
 class GAUDI_API IAlgExecStateSvc : virtual public IInterface
@@ -69,16 +82,19 @@ public:
 
   // get the Algorithm Execution State for a give Algorithm and EventContext
   virtual const AlgExecState& algExecState( const Gaudi::StringKey& algName, const EventContext& ctx ) const = 0;
-  virtual const AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) const                = 0;
-  virtual AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx )                            = 0;
+  const AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) const
+  {
+    return algExecState( iAlg->nameKey(), ctx );
+  }
+  virtual AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) = 0;
 
   // get all the Algorithm Execution States for a given EventContext
   virtual const AlgStateMap_t& algExecStates( const EventContext& ctx ) const = 0;
 
   virtual void reset( const EventContext& ctx ) = 0;
 
-  virtual void addAlg( IAlgorithm* iAlg )                = 0;
   virtual void addAlg( const Gaudi::StringKey& algName ) = 0;
+  void addAlg( IAlgorithm* iAlg ) { addAlg( iAlg->nameKey() ); }
 
   virtual const EventStatus::Status& eventStatus( const EventContext& ctx ) const = 0;
 

@@ -5,6 +5,7 @@
 #endif
 
 #include "MessageSvc.h"
+#include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/StatusCode.h"
@@ -81,7 +82,11 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {"NIL",     "VERBOSE", "D
 // Constructor
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
 {
-  m_inactCount.declareUpdateHandler( &MessageSvc::setupInactCount, this );
+
+  m_outputLevel.declareUpdateHandler( [svcloc]( Gaudi::Details::PropertyBase& ) {
+    SmartIF<IAppMgrUI> app = svcloc;
+    if ( app ) app->outputLevelUpdate();
+  } );
 
 #ifndef NDEBUG
   // initialize the MsgStream static flag.
@@ -133,7 +138,7 @@ StatusCode MessageSvc::reinitialize()
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop )
 {
   const std::string& pname = prop.name();
-  int level;
+  int                level;
   if ( pname == "fatalColorCode" )
     level = MSG::FATAL;
   else if ( pname == "errorColorCode" )
@@ -459,7 +464,7 @@ void MessageSvc::reportMessage( const StatusCode& code, const std::string& sourc
 
 void MessageSvc::i_reportMessage( const StatusCode& code, const std::string& source )
 {
-  int level   = outputLevel( source );
+  int  level  = outputLevel( source );
   auto report = [&]( Message mesg ) {
     mesg.setSource( source );
     Message stat_code( source, mesg.getType(), "Status Code " + std::to_string( code.getCode() ) );
@@ -600,7 +605,7 @@ int MessageSvc::outputLevel( const std::string& source ) const
 {
   // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
-  auto it = m_thresholdMap.find( source );
+  auto                                   it = m_thresholdMap.find( source );
   return it != m_thresholdMap.end() ? it->second : m_outputLevel.value();
 }
 

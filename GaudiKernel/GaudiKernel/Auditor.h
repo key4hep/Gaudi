@@ -16,7 +16,6 @@
 // Forward declarations
 class IService;
 class IMessageSvc;
-class Algorithm;
 
 /** @class Auditor Auditor.h GaudiKernel/Auditor.h
 
@@ -35,9 +34,7 @@ class Algorithm;
 class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor, IProperty>>>
 {
 public:
-#ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IAuditor*, const std::string&, ISvcLocator*> Factory;
-#endif
+  using Factory = Gaudi::PluginService::Factory<IAuditor*( const std::string&, ISvcLocator* )>;
 
   /** Constructor
       @param name    The algorithm object's name
@@ -136,37 +133,14 @@ private:
 
   mutable SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
 
-  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int> m_outputLevel{
+      this, "OutputLevel", MSG::NIL,
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
+      "output level"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the auditor be used or not"};
 
   bool m_isInitialized = false; ///< Auditor has been initialized flag
   bool m_isFinalized   = false; ///< Auditor has been finalized flag
 };
-
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-class AudFactory
-{
-public:
-#ifndef __REFLEX__
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... args )
-  {
-    return new T( std::forward<Args>( args )... );
-  }
-#endif
-};
-
-// Macros to declare component factories
-#define DECLARE_AUDITOR_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, AudFactory<x>, Auditor::Factory )
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY( n, x ) DECLARE_AUDITOR_FACTORY( n::x )
-
-#else
-
-// macros to declare factories
-#define DECLARE_AUDITOR_FACTORY( x ) DECLARE_COMPONENT( x )
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
-
-#endif
 
 #endif // GAUDIKERNEL_AUDITOR_H

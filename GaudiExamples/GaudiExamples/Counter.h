@@ -27,11 +27,9 @@ namespace Gaudi
     public:
       /// Constructors
       Counter();
-      /// Destructor
-      ~Counter() override = default;
 
       /// Retrieve reference to class definition structure
-      const CLID& clID() const override { return classID(); }
+      const CLID&        clID() const override { return classID(); }
       static const CLID& classID() { return CLID_Counter; }
 
       /// Retrieve counter value

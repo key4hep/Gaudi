@@ -12,9 +12,9 @@ importOptions("optsub1/dummy1.opts")
 
 from Configurables import PropertyAlg, PropertyProxy
 
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 # Algorithms Private Options
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 alg = PropertyAlg(OutputLevel=3,
 
                   Int=101,
@@ -58,9 +58,9 @@ alg = PropertyAlg(OutputLevel=3,
 #proxy = PropertyProxy(String = "This is set by the proxy")
 proxy = PropertyProxy()
 
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 # Private Application Configuration options
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 app = ApplicationMgr()
 app.TopAlg = [alg]
 # test for the multiple inclusion of the same alg
@@ -68,16 +68,16 @@ app.TopAlg += [alg, proxy]
 # test for the removal of an algorithm
 app.TopAlg.remove(alg)
 
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 # Event related parameters
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 app.EvtMax = 1      # events to be processed (default is 10)
 app.EvtSel = "NONE"  # do not use any event input
 app.HistogramPersistency = "NONE"
 
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 # MessageSvc Properties testing
-#--------------------------------------------------------------
+# --------------------------------------------------------------
 msgSvc = MessageSvc()
 msgSvc.setDebug += ["EventLoopMgr"]
 msgSvc.setVerbose += ["MsgTest"]

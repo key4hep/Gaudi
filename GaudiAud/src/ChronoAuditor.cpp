@@ -11,10 +11,6 @@
 
 DECLARE_COMPONENT( ChronoAuditor )
 
-ChronoAuditor::ChronoAuditor( const std::string& name, ISvcLocator* pSvcLocator ) : CommonAuditor( name, pSvcLocator )
-{
-}
-
 StatusCode ChronoAuditor::initialize()
 {
   StatusCode sc = CommonAuditor::initialize();

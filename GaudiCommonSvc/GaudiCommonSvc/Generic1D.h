@@ -45,8 +45,6 @@ namespace Gaudi
     Generic1D( IMPLEMENTATION* p ) : m_rep( p ) {}
 
   public:
-    /// Default destructor
-    ~Generic1D() override = default;
     /// The AIDA user-level unterface leaf class type
     virtual const std::string& userLevelClassType() const { return m_classType; }
     /// Manual cast by class name
@@ -243,8 +241,8 @@ namespace Gaudi
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic1D<INTERFACE, IMPLEMENTATION>::write( const char* file_name ) const
   {
-    TFile* f     = TFile::Open( file_name, "RECREATE" );
-    Int_t nbytes = m_rep->Write();
+    TFile* f      = TFile::Open( file_name, "RECREATE" );
+    Int_t  nbytes = m_rep->Write();
     f->Close();
     return nbytes;
   }

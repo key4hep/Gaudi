@@ -32,12 +32,6 @@
 // Implementation specific definitions
 #include "PersistencySvc.h"
 
-#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
-#define ON_VERBOSE if ( msgLvel( MSG::VERBOSE ) )
-
-#define DEBMSG ON_DEBUG debug()
-#define VERMSG ON_VERBOSE verbose()
-
 // Instantiation of a static factory class used by clients to create
 // instances of this service
 DECLARE_COMPONENT( PersistencySvc )
@@ -65,9 +59,9 @@ StatusCode PersistencySvc::makeCall( int typ, IOpaqueAddress*& pAddress, DataObj
       svc = m_cnvDefault;
       break;
     default:
-      if ( !pAddress ) return INVALID_ADDRESS;
+      if ( !pAddress ) return Status::INVALID_ADDRESS;
       svc = service( pAddress->svcType() );
-      if ( !svc ) return BAD_STORAGE_TYPE;
+      if ( !svc ) return Status::BAD_STORAGE_TYPE;
       break;
     }
 
@@ -202,16 +196,16 @@ StatusCode PersistencySvc::addConverter( const CLID& /* clid */ ) { return Statu
 /// Add converter object to conversion service.
 StatusCode PersistencySvc::addConverter( IConverter* pConverter )
 {
-  if ( !pConverter ) return NO_CONVERTER;
+  if ( !pConverter ) return Status::NO_CONVERTER;
   IConversionSvc* svc = service( pConverter->repSvcType() );
-  return svc ? svc->addConverter( pConverter ) : BAD_STORAGE_TYPE;
+  return svc ? svc->addConverter( pConverter ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Remove converter object from conversion service (if present).
 StatusCode PersistencySvc::removeConverter( const CLID& clid )
 {
   // Remove converter type from all services
-  StatusCode status = NO_CONVERTER, iret = StatusCode::SUCCESS;
+  StatusCode status = Status::NO_CONVERTER, iret = StatusCode::SUCCESS;
   for ( auto& i : m_cnvServices ) {
     iret                           = i.second.conversionSvc()->removeConverter( clid );
     if ( iret.isSuccess() ) status = iret;
@@ -226,7 +220,7 @@ IConverter* PersistencySvc::converter( const CLID& /*clid*/ ) { return nullptr; 
 SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam )
 {
   Gaudi::Utils::TypeNameString tn( nam );
-  auto it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
+  auto                         it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
                           [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
 
@@ -258,7 +252,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service( long type )
 /// Add data service
 StatusCode PersistencySvc::addCnvService( IConversionSvc* servc )
 {
-  if ( !servc ) return BAD_STORAGE_TYPE;
+  if ( !servc ) return Status::BAD_STORAGE_TYPE;
   long type                           = servc->repSvcType();
   long def_typ                        = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
   auto it                             = m_cnvServices.find( type );
@@ -291,7 +285,7 @@ StatusCode PersistencySvc::addCnvService( IConversionSvc* servc )
 StatusCode PersistencySvc::removeCnvService( long svctype )
 {
   auto it = m_cnvServices.find( svctype );
-  if ( it == m_cnvServices.end() ) return BAD_STORAGE_TYPE;
+  if ( it == m_cnvServices.end() ) return Status::BAD_STORAGE_TYPE;
   it->second.service()->release();
   it->second.addrCreator()->release();
   m_cnvServices.erase( it );
@@ -326,7 +320,7 @@ StatusCode PersistencySvc::createAddress( long svc_type, const CLID& clid, const
 {
   refpAddress          = nullptr;
   IAddressCreator* svc = addressCreator( svc_type );
-  return svc ? svc->createAddress( svc_type, clid, pars, ipars, refpAddress ) : BAD_STORAGE_TYPE;
+  return svc ? svc->createAddress( svc_type, clid, pars, ipars, refpAddress ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Convert an address to string form
@@ -341,8 +335,8 @@ StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::
     svc_type = pAddress->svcType();
     clid     = pAddress->clID();
   }
-  IAddressCreator* svc = addressCreator( svc_type );
-  StatusCode status    = BAD_STORAGE_TYPE; // Preset error
+  IAddressCreator* svc    = addressCreator( svc_type );
+  StatusCode       status = Status::BAD_STORAGE_TYPE; // Preset error
   refAddress.clear();
 
   if ( svc ) {
@@ -363,12 +357,12 @@ StatusCode PersistencySvc::createAddress( long /* svc_type */, const CLID& /* cl
   // Assumption is that the Persistency service decodes that header
   // and requests the conversion service referred to by the service
   // type to decode the rest
-  long new_svc_type = 0;
-  CLID new_clid     = 0;
+  long        new_svc_type = 0;
+  CLID        new_clid     = 0;
   std::string address_trailer;
   decodeAddrHdr( refAddress, new_svc_type, new_clid, address_trailer );
   IAddressCreator* svc = addressCreator( new_svc_type );
-  return svc ? svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress ) : BAD_STORAGE_TYPE;
+  return svc ? svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Retrieve string from storage type and clid
@@ -377,7 +371,7 @@ void PersistencySvc::encodeAddrHdr( long service_type, const CLID& clid, std::st
   // For address header, use xml-style format of
   // <addrhdr service_type="xxx" clid="yyy" />
   std::stringstream stream;
-  int svctyp = service_type; // must put int into stream, not char
+  int               svctyp = service_type; // must put int into stream, not char
   stream << "<address_header service_type=\"" << svctyp << "\" clid=\"" << clid << "\" /> ";
   address = stream.str();
 }
@@ -448,7 +442,7 @@ StatusCode PersistencySvc::getService( long service_type, IConversionSvc*& refpS
 StatusCode PersistencySvc::getService( const std::string& service_type, IConversionSvc*& refpSvc )
 {
   const char* imp = service_type.c_str();
-  long len        = service_type.length();
+  long        len = service_type.length();
   if (::strncasecmp( imp, "SICB", len ) == 0 )
     return getService( SICB_StorageType, refpSvc );
   else if (::strncasecmp( imp, "ZEBRA", len ) == 0 )
@@ -543,17 +537,9 @@ StatusCode PersistencySvc::finalize()
   return StatusCode::SUCCESS;
 }
 
-void PersistencySvc::svcNamesHandler( Gaudi::Details::PropertyBase& p ) { DEBMSG << p << endmsg; }
-
 /// Set enabled flag
 bool PersistencySvc::enable( bool value )
 {
   std::swap( value, m_enable );
   return value;
-}
-
-/// Standard Constructor
-PersistencySvc::PersistencySvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
-{
-  m_svcNames.declareUpdateHandler( &PersistencySvc::svcNamesHandler, this );
 }

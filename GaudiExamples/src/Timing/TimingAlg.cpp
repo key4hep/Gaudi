@@ -36,17 +36,13 @@ namespace GaudiExamples
   {
   public:
     // ========================================================================
-    /// the execution of the algorithm
-    virtual StatusCode execute() override; // the execution of the algorithm
-    /// the finalization of the algorithm
-    virtual StatusCode finalize() override; // the finalization of the algorithm
-    // ========================================================================
-  public:
-    // ========================================================================
     /// standard constructor
     using GaudiAlgorithm::GaudiAlgorithm;
-    /// destructor
-    ~TimingAlg() override = default;
+    // ========================================================================
+    /// the execution of the algorithm
+    StatusCode execute() override; // the execution of the algorithm
+    /// the finalization of the algorithm
+    StatusCode finalize() override; // the finalization of the algorithm
     // ========================================================================
   protected:
     // ========================================================================
@@ -72,11 +68,9 @@ namespace GaudiExamples
 // ============================================================================
 double GaudiExamples::TimingAlg::doSomething()
 {
-  double result = 0;
+  double        result = 0;
   Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
-  for ( unsigned long i = 0; i < m_cycles; ++i ) {
-    result += sin( gauss() );
-  }
+  for ( unsigned long i = 0; i < m_cycles; ++i ) result += sin( gauss() );
   return result;
 }
 // ========================================================================

@@ -32,13 +32,13 @@
 class StoreExplorerAlg : public Algorithm
 {
 
-  Gaudi::Property<bool> m_load{this, "Load", false, "load non existing items"};
-  Gaudi::Property<long> m_print{this, "PrintEvt", 1, "limit printout to first N events"};
-  Gaudi::Property<long> m_printMissing{this, "PrintMissing", 0, "indicate if missing entities should be printed"};
+  Gaudi::Property<bool>   m_load{this, "Load", false, "load non existing items"};
+  Gaudi::Property<long>   m_print{this, "PrintEvt", 1, "limit printout to first N events"};
+  Gaudi::Property<long>   m_printMissing{this, "PrintMissing", 0, "indicate if missing entities should be printed"};
   Gaudi::Property<double> m_frequency{this, "PrintFreq", 0.0, "printout frequency"};
-  Gaudi::Property<bool> m_exploreRelations{this, "ExploreRelations", false, "if relations should be followed"};
+  Gaudi::Property<bool>   m_exploreRelations{this, "ExploreRelations", false, "if relations should be followed"};
   Gaudi::Property<std::string> m_dataSvcName{this, "DataSvc", "EventDataSvc", "name of the data provider service"};
-  Gaudi::Property<bool> m_testAccess{this, "TestAccess", false,
+  Gaudi::Property<bool>        m_testAccess{this, "TestAccess", false,
                                      "test access to objects (DataObject and ContainedObject)"};
   Gaudi::Property<bool> m_accessForeign{this, "AccessForeign", false, "indicate if foreign files should be opened"};
 
@@ -54,9 +54,6 @@ class StoreExplorerAlg : public Algorithm
 public:
   /// Inherited constructor
   using Algorithm::Algorithm;
-
-  /// Standard Destructor
-  ~StoreExplorerAlg() override = default;
 
   template <class T>
   std::string access( T* p )
@@ -103,8 +100,8 @@ public:
     ObjectContainerBase* base = dynamic_cast<ObjectContainerBase*>( p );
     if ( base ) {
       try {
-        int numObj    = base->numberOfObjects();
-        const CLID id = p->clID();
+        int        numObj = base->numberOfObjects();
+        const CLID id     = p->clID();
         log << " [" << numObj << "]";
         if ( m_testAccess ) {
           CLID idd = id >> 16;
@@ -140,13 +137,13 @@ public:
       auto mgr = eventSvc().as<IDataManagerSvc>();
       if ( mgr ) {
         std::vector<IRegistry*> leaves;
-        StatusCode sc               = mgr->objectLeaves( pObj, leaves );
-        const std::string* par0     = nullptr;
-        if ( pObj->address() ) par0 = pObj->address()->par();
+        StatusCode              sc   = mgr->objectLeaves( pObj, leaves );
+        const std::string*      par0 = nullptr;
+        if ( pObj->address() ) par0  = pObj->address()->par();
         if ( sc.isSuccess() ) {
           for ( auto i = leaves.begin(); i != leaves.end(); i++ ) {
             const std::string& id = ( *i )->identifier();
-            DataObject* p         = nullptr;
+            DataObject*        p  = nullptr;
             if ( !m_accessForeign && ( *i )->address() ) {
               if ( par0 ) {
                 const std::string* par1 = ( *i )->address()->par();
@@ -207,7 +204,7 @@ public:
     if ( ( ( m_print > m_total++ ) || ( m_frequency * m_total > m_frqPrint ) ) && root ) {
       if ( m_frequency * m_total > m_frqPrint ) m_frqPrint++;
       std::string store_name = "Unknown";
-      IRegistry* pReg        = root->registry();
+      IRegistry*  pReg       = root->registry();
       if ( pReg ) {
         auto isvc              = SmartIF<IService>{pReg->dataSvc()};
         if ( isvc ) store_name = isvc->name();

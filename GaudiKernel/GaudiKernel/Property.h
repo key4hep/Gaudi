@@ -12,10 +12,12 @@
 // ============================================================================
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/PropertyFwd.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/TaggedBool.h"
 #include "GaudiKernel/ToStream.h"
+#include <Gaudi/Parsers/CommonParsers.h>
+#include <Gaudi/Parsers/InputData.h>
 
 namespace Gaudi
 {
@@ -31,9 +33,6 @@ namespace Gaudi
      */
     class GAUDI_API PropertyBase
     {
-    private:
-      // the default constructor is disabled
-      PropertyBase() = delete;
 
     public:
       /// property name
@@ -72,13 +71,13 @@ namespace Gaudi
       virtual bool useUpdateHandler() = 0;
 
       template <class HT>
-      inline PropertyBase& declareReadHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
+      PropertyBase& declareReadHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
       {
         return declareReadHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
       }
 
       template <class HT>
-      inline PropertyBase& declareUpdateHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
+      PropertyBase& declareUpdateHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
       {
         return declareUpdateHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
       }
@@ -150,28 +149,94 @@ namespace Gaudi
 
     namespace Property
     {
+      using ImmediatelyInvokeHandler = Gaudi::tagged_bool<class ImmediatelyInvokeHandler_tag>;
+
+      // ==========================================================================
+      // The following code is going to be a bit unpleasant, but as far as its
+      // author can tell, it is as simple as the design constraints and C++'s
+      // implementation constraints will allow. If you disagree, please submit
+      // a patch which simplifies it. Here is the underlying design rationale:
+      //
+      // - For any given type T used in a Property, we want to have an
+      //   associated StringConverter<T> struct which explains how to convert a
+      //   value of that type into a string (toString) and parse that string
+      //   back (fromString).
+      // - There is a default implementation, called DefaultStringConverter<T>,
+      //   which is based on the overloadable parse() and toStream() global
+      //   methods of Gaudi. Its exact behaviour varies depending on whether T
+      //   is default-constructible or only copy-constructible, which requires a
+      //   layer of SFINAE indirection.
+      // - Some people want to be able to specialize StringConverter as an
+      //   alternative to defining parse/toStream overloads. This interferes
+      //   with the SFINAE tricks used by DefaultStringConverter, so we cannot
+      //   just call a DefaultStringConverter a StringConverter and must add one
+      //   more layer to the StringConverter type hierarchy.
+
+      // This class factors out commonalities between DefaultStringConverters
       template <class TYPE>
-      struct StringConverter {
-        inline std::string toString( const TYPE& v )
+      struct DefaultStringConverterImpl {
+      public:
+        virtual ~DefaultStringConverterImpl() = default;
+        std::string toString( const TYPE& v )
         {
           using Gaudi::Utils::toString;
           return toString( v );
         }
-        inline TYPE fromString( const std::string& s )
+
+        // Implementation of fromString depends on whether TYPE is default-
+        // constructible (fastest, easiest) or only copy-constructible (still
+        // doable as long as the caller can provide a valid value of TYPE)
+        virtual TYPE fromString( const TYPE& ref_value, const std::string& s ) = 0;
+
+      protected:
+        void fromStringImpl( TYPE& buffer, const std::string& s )
         {
-          TYPE tmp{};
-          using Gaudi::Parsers::parse;
-          if ( !parse( tmp, s ).isSuccess() ) {
+          using Gaudi::Parsers::InputData;
+          if ( !parse( buffer, InputData{s} ).isSuccess() ) {
             throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
           }
-          return tmp;
         }
       };
+      // Specialization of toString for strings (identity function)
       template <>
-      inline std::string StringConverter<std::string>::toString( const std::string& v )
+      inline std::string DefaultStringConverterImpl<std::string>::toString( const std::string& v )
       {
         return v;
       }
+
+      // This class provides a default implementation of StringConverter based
+      // on the overloadable parse() and toStream() global Gaudi methods.
+      //
+      // It leverages the fact that TYPE is default-constructible if it can, and
+      // falls back fo a requirement of copy-constructibility if it must. So
+      // here is the "default" implementation for copy-constructible types...
+      //
+      template <typename TYPE, typename Enable = void>
+      struct DefaultStringConverter : DefaultStringConverterImpl<TYPE> {
+        TYPE fromString( const TYPE& ref_value, const std::string& s ) final override
+        {
+          TYPE buffer = ref_value;
+          this->fromStringImpl( buffer, s );
+          return buffer;
+        }
+      };
+      // ...and here is the preferred impl for default-constructible types:
+      template <class TYPE>
+      struct DefaultStringConverter<TYPE, std::enable_if_t<std::is_default_constructible<TYPE>::value>>
+          : DefaultStringConverterImpl<TYPE> {
+        TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override
+        {
+          TYPE buffer{};
+          this->fromStringImpl( buffer, s );
+          return buffer;
+        }
+      };
+
+      // Specializable StringConverter struct with a default implementation
+      template <typename TYPE>
+      struct StringConverter : DefaultStringConverter<TYPE> {
+      };
+
       struct NullVerifier {
         template <class TYPE>
         void operator()( const TYPE& ) const
@@ -260,8 +325,8 @@ namespace Gaudi
           throw std::logic_error( "setReadHandler not implemented for this class" );
         }
         std::function<void( PropertyBase& )> getReadHandler() const { return nullptr; }
-        void useUpdateHandler( const PropertyBase& ) const {}
-        void setUpdateHandler( std::function<void( PropertyBase& )> )
+        void                                 useUpdateHandler( const PropertyBase& ) const {}
+        void                                 setUpdateHandler( std::function<void( PropertyBase& )> )
         {
           throw std::logic_error( "setUpdateHandler not implemented for this class" );
         }
@@ -276,7 +341,7 @@ namespace Gaudi
           }
         }
         void setReadHandler( std::function<void( PropertyBase& )> fun ) { m_readCallBack = std::move( fun ); }
-        std::function<void( PropertyBase& )> getReadHandler() const { return m_readCallBack; }
+        std::function<void( PropertyBase& )>                      getReadHandler() const { return m_readCallBack; }
       };
       struct UpdateHandler : NoHandler {
         std::function<void( PropertyBase& )> m_updateCallBack;
@@ -325,24 +390,25 @@ namespace Gaudi
     using ValueType    = typename std::remove_reference<StorageType>::type;
     using VerifierType = VERIFIER;
     using HandlersType = HANDLERS;
+    // ==========================================================================
 
   private:
     /// Storage.
-    StorageType m_value;
+    StorageType  m_value;
     VerifierType m_verifier;
     HandlersType m_handlers;
     /// helper typedefs for SFINAE
     /// @{
     template <class T>
-    using is_this_type = std::is_same<Property, typename std::remove_reference<T>::type>;
+    using is_this_type = std::is_same<Property, std::remove_reference_t<T>>;
     template <class T>
-    using not_copying = std::enable_if<!is_this_type<T>::value>;
+    using not_copying = std::enable_if_t<!is_this_type<T>::value>;
     /// @}
   public:
     // ==========================================================================
     /// the constructor with property name, value and documentation.
     template <class T = StorageType>
-    inline Property( std::string name, T&& value, std::string doc = "" )
+    Property( std::string name, T&& value, std::string doc = "" )
         : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
         , m_value( std::forward<T>( value ) )
     {
@@ -350,10 +416,10 @@ namespace Gaudi
     }
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = ValueType,
-              typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type,
-              typename = typename std::enable_if<std::is_default_constructible<T>::value>::type>
-    inline Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
+    template <typename OWNER, typename T = ValueType,
+              typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>,
+              typename = std::enable_if_t<std::is_default_constructible<T>::value>>
+    Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
     {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
@@ -361,26 +427,63 @@ namespace Gaudi
 
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType,
-              typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-    inline Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
     {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
     }
 
+    /// Autodeclaring constructor with property name, value, updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
+              std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ) )
+    {
+      declareUpdateHandler( std::move( handler ) );
+    }
+
+    /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )( PropertyBase& ),
+              std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ),
+                    [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) )
+    {
+    }
+    /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ),
+                    [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ) )
+    {
+    }
+
+    /// Autodeclaring constructor with property name, value, updateHandler and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
+              Details::Property::ImmediatelyInvokeHandler invoke, std::string doc = "" )
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ) )
+    {
+      if ( invoke ) useUpdateHandler();
+    }
+
     /// Construct an anonymous property from a value.
     /// This constructor is not generated if T is the current type, so that the
     /// compiler picks up the copy constructor instead of this one.
-    template <class T, typename = typename not_copying<T>::type>
+    template <typename T, typename = not_copying<T>>
     Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
     {
     }
 
     /// Construct an anonymous property with default constructed value.
     /// Can be used only if StorageType is default constructible.
-    template <typename T = StorageType, typename = typename std::enable_if<!std::is_reference<T>::value>::type>
+    template <typename T = StorageType, typename = std::enable_if_t<!std::is_reference<T>::value>>
     Property() : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value()
     {
     }
@@ -433,28 +536,28 @@ namespace Gaudi
 
     /// equality comparison
     template <class T>
-    inline bool operator==( const T& other ) const
+    bool operator==( const T& other ) const
     {
       return m_value == other;
     }
 
     /// inequality comparison
     template <class T>
-    inline bool operator!=( const T& other ) const
+    bool operator!=( const T& other ) const
     {
       return m_value != other;
     }
 
     /// "less" comparison
     template <class T>
-    inline bool operator<( const T& other ) const
+    bool operator<( const T& other ) const
     {
       return m_value < other;
     }
 
     /// allow addition if possible between the property and the other types
     template <class T>
-    decltype( std::declval<ValueType>() + std::declval<T>() ) operator+( const T& other ) const
+    decltype( auto ) operator+( const T& other ) const
     {
       return m_value + other;
     }
@@ -477,7 +580,7 @@ namespace Gaudi
     /// Backward compatibility (\deprecated will be removed)
     /// @{
     const ValueType& value() const { return *this; }
-    ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
+    ValueType&       value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
     bool setValue( const ValueType& v )
     {
       *this = v;
@@ -495,137 +598,146 @@ namespace Gaudi
     /// @{
     /// They are instantiated only if they are implemented in the wrapped class.
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().size() ) size() const
+    decltype( auto ) size() const
     {
       return value().size();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().length() ) length() const
+    decltype( auto ) length() const
     {
       return value().length();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().empty() ) empty() const
+    decltype( auto ) empty() const
     {
       return value().empty();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().clear() ) clear()
+    decltype( auto ) clear()
     {
       value().clear();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().begin() ) begin() const
+    decltype( auto ) begin() const
     {
       return value().begin();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().end() ) end() const
+    decltype( auto ) end() const
     {
       return value().end();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().begin() ) begin()
+    decltype( auto ) begin()
     {
       return value().begin();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().end() ) end()
+    decltype( auto ) end()
     {
       return value().end();
     }
-    template <class ARG, class T = const ValueType>
-    inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg ) const
+    template <class ARG>
+    decltype( auto ) operator[]( const ARG& arg ) const
     {
       return value()[arg];
     }
-    template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg )
+    template <class ARG>
+    decltype( auto ) operator[]( const ARG& arg )
     {
       return value()[arg];
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key ) const
+    decltype( auto ) find( const typename T::key_type& key ) const
     {
       return value().find( key );
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key )
+    decltype( auto ) find( const typename T::key_type& key )
     {
       return value().find( key );
     }
     template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>().erase( ARG{} ) ) erase( ARG arg )
+    decltype( auto ) erase( ARG arg )
     {
       return value().erase( arg );
     }
     template <class = ValueType>
-    inline Property& operator++()
+    Property& operator++()
     {
       ++value();
       return *this;
     }
     template <class = ValueType>
-    inline ValueType operator++( int )
+    ValueType operator++( int )
     {
       return m_value++;
     }
     template <class = ValueType>
-    inline Property& operator--()
+    Property& operator--()
     {
       --value();
       return *this;
     }
     template <class = ValueType>
-    inline ValueType operator--( int )
+    ValueType operator--( int )
     {
       return m_value--;
     }
     template <class T = ValueType>
-    inline Property& operator+=( const T& other )
+    Property& operator+=( const T& other )
     {
       m_value += other;
       return *this;
     }
     template <class T = ValueType>
-    inline Property& operator-=( const T& other )
+    Property& operator-=( const T& other )
     {
       m_value -= other;
       return *this;
     }
     /// Helpers for DataHandles and derived classes
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().key() ) key() const
+    decltype( auto ) key() const
     {
       return value().key();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().objKey() ) objKey() const
+    decltype( auto ) objKey() const
     {
       return value().objKey();
     }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>().fullKey() ) fullKey() const
+    decltype( auto ) fullKey() const
     {
       return value().fullKey();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().initialize() ) initialize()
+    decltype( auto ) initialize()
     {
       return value().initialize();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().makeHandles() ) makeHandles() const
+    decltype( auto ) makeHandles() const
     {
       return value().makeHandles();
     }
     template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>().makeHandles( std::declval<ARG>() ) ) makeHandles( const ARG& arg ) const
+    decltype( auto ) makeHandles( const ARG& arg ) const
     {
       return value().makeHandles( arg );
     }
     /// @}
     // ==========================================================================
+
+    // Delegate operator() to the value
+    template <class... Args>
+    decltype( std::declval<ValueType>()( std::declval<Args&&>()... ) ) operator()( Args&&... args ) const
+        noexcept( noexcept( std::declval<ValueType>()( std::declval<Args&&>()... ) ) )
+    {
+      return value()( std::forward<Args>( args )... );
+    }
+
   public:
     /// get the value from another property
     bool assign( const Details::PropertyBase& source ) override
@@ -650,7 +762,7 @@ namespace Gaudi
     StatusCode fromString( const std::string& source ) override
     {
       using Converter = Details::Property::StringConverter<ValueType>;
-      *this           = Converter().fromString( source );
+      *this           = Converter().fromString( m_value, source );
       return StatusCode::SUCCESS;
     }
     /// value  -> string
@@ -684,7 +796,7 @@ namespace Gaudi
 
   /// implemantation of (value + property)
   template <class T, class TP, class V, class H>
-  decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const Property<TP, V, H>& p )
+  decltype( auto ) operator+( const T& v, const Property<TP, V, H>& p )
   {
     return v + p.value();
   }
@@ -705,78 +817,78 @@ template <class TYPE>
 using SimplePropertyRef = Gaudi::Property<TYPE&>;
 
 // Typedef Properties for built-in types
-typedef Gaudi::Property<bool> BooleanProperty;
-typedef Gaudi::Property<char> CharProperty;
-typedef Gaudi::Property<signed char> SignedCharProperty;
-typedef Gaudi::Property<unsigned char> UnsignedCharProperty;
-typedef Gaudi::Property<short> ShortProperty;
-typedef Gaudi::Property<unsigned short> UnsignedShortProperty;
-typedef Gaudi::Property<int> IntegerProperty;
-typedef Gaudi::Property<unsigned int> UnsignedIntegerProperty;
-typedef Gaudi::Property<long> LongProperty;
-typedef Gaudi::Property<unsigned long> UnsignedLongProperty;
-typedef Gaudi::Property<long long> LongLongProperty;
+typedef Gaudi::Property<bool>               BooleanProperty;
+typedef Gaudi::Property<char>               CharProperty;
+typedef Gaudi::Property<signed char>        SignedCharProperty;
+typedef Gaudi::Property<unsigned char>      UnsignedCharProperty;
+typedef Gaudi::Property<short>              ShortProperty;
+typedef Gaudi::Property<unsigned short>     UnsignedShortProperty;
+typedef Gaudi::Property<int>                IntegerProperty;
+typedef Gaudi::Property<unsigned int>       UnsignedIntegerProperty;
+typedef Gaudi::Property<long>               LongProperty;
+typedef Gaudi::Property<unsigned long>      UnsignedLongProperty;
+typedef Gaudi::Property<long long>          LongLongProperty;
 typedef Gaudi::Property<unsigned long long> UnsignedLongLongProperty;
-typedef Gaudi::Property<float> FloatProperty;
-typedef Gaudi::Property<double> DoubleProperty;
-typedef Gaudi::Property<long double> LongDoubleProperty;
+typedef Gaudi::Property<float>              FloatProperty;
+typedef Gaudi::Property<double>             DoubleProperty;
+typedef Gaudi::Property<long double>        LongDoubleProperty;
 
 typedef Gaudi::Property<std::string> StringProperty;
 
 // Typedef PropertyRefs for built-in types
-typedef Gaudi::Property<bool&> BooleanPropertyRef;
-typedef Gaudi::Property<char&> CharPropertyRef;
-typedef Gaudi::Property<signed char&> SignedCharPropertyRef;
-typedef Gaudi::Property<unsigned char&> UnsignedCharPropertyRef;
-typedef Gaudi::Property<short&> ShortPropertyRef;
-typedef Gaudi::Property<unsigned short&> UnsignedShortPropertyRef;
-typedef Gaudi::Property<int&> IntegerPropertyRef;
-typedef Gaudi::Property<unsigned int&> UnsignedIntegerPropertyRef;
-typedef Gaudi::Property<long&> LongPropertyRef;
-typedef Gaudi::Property<unsigned long&> UnsignedLongPropertyRef;
-typedef Gaudi::Property<long long&> LongLongPropertyRef;
+typedef Gaudi::Property<bool&>               BooleanPropertyRef;
+typedef Gaudi::Property<char&>               CharPropertyRef;
+typedef Gaudi::Property<signed char&>        SignedCharPropertyRef;
+typedef Gaudi::Property<unsigned char&>      UnsignedCharPropertyRef;
+typedef Gaudi::Property<short&>              ShortPropertyRef;
+typedef Gaudi::Property<unsigned short&>     UnsignedShortPropertyRef;
+typedef Gaudi::Property<int&>                IntegerPropertyRef;
+typedef Gaudi::Property<unsigned int&>       UnsignedIntegerPropertyRef;
+typedef Gaudi::Property<long&>               LongPropertyRef;
+typedef Gaudi::Property<unsigned long&>      UnsignedLongPropertyRef;
+typedef Gaudi::Property<long long&>          LongLongPropertyRef;
 typedef Gaudi::Property<unsigned long long&> UnsignedLongLongPropertyRef;
-typedef Gaudi::Property<float&> FloatPropertyRef;
-typedef Gaudi::Property<double&> DoublePropertyRef;
-typedef Gaudi::Property<long double&> LongDoublePropertyRef;
+typedef Gaudi::Property<float&>              FloatPropertyRef;
+typedef Gaudi::Property<double&>             DoublePropertyRef;
+typedef Gaudi::Property<long double&>        LongDoublePropertyRef;
 
 typedef Gaudi::Property<std::string&> StringPropertyRef;
 
 // Typedef "Arrays" of Properties for built-in types
-typedef Gaudi::Property<std::vector<bool>> BooleanArrayProperty;
-typedef Gaudi::Property<std::vector<char>> CharArrayProperty;
-typedef Gaudi::Property<std::vector<signed char>> SignedCharArrayProperty;
-typedef Gaudi::Property<std::vector<unsigned char>> UnsignedCharArrayProperty;
-typedef Gaudi::Property<std::vector<short>> ShortArrayProperty;
-typedef Gaudi::Property<std::vector<unsigned short>> UnsignedShortArrayProperty;
-typedef Gaudi::Property<std::vector<int>> IntegerArrayProperty;
-typedef Gaudi::Property<std::vector<unsigned int>> UnsignedIntegerArrayProperty;
-typedef Gaudi::Property<std::vector<long>> LongArrayProperty;
-typedef Gaudi::Property<std::vector<unsigned long>> UnsignedLongArrayProperty;
-typedef Gaudi::Property<std::vector<long long>> LongLongArrayProperty;
+typedef Gaudi::Property<std::vector<bool>>               BooleanArrayProperty;
+typedef Gaudi::Property<std::vector<char>>               CharArrayProperty;
+typedef Gaudi::Property<std::vector<signed char>>        SignedCharArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned char>>      UnsignedCharArrayProperty;
+typedef Gaudi::Property<std::vector<short>>              ShortArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned short>>     UnsignedShortArrayProperty;
+typedef Gaudi::Property<std::vector<int>>                IntegerArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned int>>       UnsignedIntegerArrayProperty;
+typedef Gaudi::Property<std::vector<long>>               LongArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned long>>      UnsignedLongArrayProperty;
+typedef Gaudi::Property<std::vector<long long>>          LongLongArrayProperty;
 typedef Gaudi::Property<std::vector<unsigned long long>> UnsignedLongLongArrayProperty;
-typedef Gaudi::Property<std::vector<float>> FloatArrayProperty;
-typedef Gaudi::Property<std::vector<double>> DoubleArrayProperty;
-typedef Gaudi::Property<std::vector<long double>> LongDoubleArrayProperty;
+typedef Gaudi::Property<std::vector<float>>              FloatArrayProperty;
+typedef Gaudi::Property<std::vector<double>>             DoubleArrayProperty;
+typedef Gaudi::Property<std::vector<long double>>        LongDoubleArrayProperty;
 
 typedef Gaudi::Property<std::vector<std::string>> StringArrayProperty;
 
 // Typedef "Arrays" of PropertyRefs for built-in types
-typedef Gaudi::Property<std::vector<bool>&> BooleanArrayPropertyRef;
-typedef Gaudi::Property<std::vector<char>&> CharArrayPropertyRef;
-typedef Gaudi::Property<std::vector<signed char>&> SignedCharArrayPropertyRef;
-typedef Gaudi::Property<std::vector<unsigned char>&> UnsignedCharArrayPropertyRef;
-typedef Gaudi::Property<std::vector<short>&> ShortArrayPropertyRef;
-typedef Gaudi::Property<std::vector<unsigned short>&> UnsignedShortArrayPropertyRef;
-typedef Gaudi::Property<std::vector<int>&> IntegerArrayPropertyRef;
-typedef Gaudi::Property<std::vector<unsigned int>&> UnsignedIntegerArrayPropertyRef;
-typedef Gaudi::Property<std::vector<long>&> LongArrayPropertyRef;
-typedef Gaudi::Property<std::vector<unsigned long>&> UnsignedLongArrayPropertyRef;
-typedef Gaudi::Property<std::vector<long long>&> LongLongArrayPropertyRef;
+typedef Gaudi::Property<std::vector<bool>&>               BooleanArrayPropertyRef;
+typedef Gaudi::Property<std::vector<char>&>               CharArrayPropertyRef;
+typedef Gaudi::Property<std::vector<signed char>&>        SignedCharArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned char>&>      UnsignedCharArrayPropertyRef;
+typedef Gaudi::Property<std::vector<short>&>              ShortArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned short>&>     UnsignedShortArrayPropertyRef;
+typedef Gaudi::Property<std::vector<int>&>                IntegerArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned int>&>       UnsignedIntegerArrayPropertyRef;
+typedef Gaudi::Property<std::vector<long>&>               LongArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned long>&>      UnsignedLongArrayPropertyRef;
+typedef Gaudi::Property<std::vector<long long>&>          LongLongArrayPropertyRef;
 typedef Gaudi::Property<std::vector<unsigned long long>&> UnsignedLongLongArrayPropertyRef;
-typedef Gaudi::Property<std::vector<float>&> FloatArrayPropertyRef;
-typedef Gaudi::Property<std::vector<double>&> DoubleArrayPropertyRef;
-typedef Gaudi::Property<std::vector<long double>&> LongDoubleArrayPropertyRef;
+typedef Gaudi::Property<std::vector<float>&>              FloatArrayPropertyRef;
+typedef Gaudi::Property<std::vector<double>&>             DoubleArrayPropertyRef;
+typedef Gaudi::Property<std::vector<long double>&>        LongDoubleArrayPropertyRef;
 
 typedef Gaudi::Property<std::vector<std::string>&> StringArrayPropertyRef;
 
@@ -841,7 +953,7 @@ public:
 
   bool load( PropertyBase& destination ) const override { return destination.assign( *this ); }
 
-  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ); }
+  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ).isSuccess(); }
 
   std::string toString() const override;
 
@@ -881,7 +993,7 @@ public:
 
   bool load( PropertyBase& destination ) const override { return destination.assign( *this ); }
 
-  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ); }
+  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ).isSuccess(); }
 
   std::string toString() const override;
 

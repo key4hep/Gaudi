@@ -26,6 +26,8 @@ class IAlgTool;
 class VFSSvc : public extends<Service, IFileAccess>
 {
 public:
+  /// Inherited constructor
+  using extends::extends;
   /// Initialize Service
   StatusCode initialize() override;
   /// Finalize Service
@@ -36,11 +38,6 @@ public:
 
   /// @see IFileAccess::protocols
   const std::vector<std::string>& protocols() const override;
-
-  /// Inherited constructor
-  using extends::extends;
-
-  ~VFSSvc() override = default; ///< Destructor
 
 private:
   Gaudi::Property<std::vector<std::string>> m_urlHandlersNames{

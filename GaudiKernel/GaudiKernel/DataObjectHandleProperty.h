@@ -35,23 +35,11 @@ public:
   const DataObjectHandleBase& value() const;
   bool setValue( const DataObjectHandleBase& value );
 
-  std::string pythonRepr() const;
-
 private:
   /** Pointer to the real property. Reference would be better,
    *  but Reflex does not support references yet
    */
   DataObjectHandleBase* m_pValue;
 };
-
-namespace Gaudi
-{
-  template <>
-  class Property<DataObjectHandleBase&> : public ::DataObjectHandleProperty
-  {
-  public:
-    Property( const std::string& name, DataObjectHandleBase& value ) : ::DataObjectHandleProperty( name, value ) {}
-  };
-}
 
 #endif

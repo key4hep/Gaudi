@@ -40,6 +40,7 @@ using namespace GaudiUtils;
 #include <chrono>
 
 #include <algorithm>
+#include <memory>
 
 namespace GaudiKernelTest
 {
@@ -76,7 +77,7 @@ namespace GaudiKernelTest
 
     private:
       std::vector<int>& m_results;
-      int m_value;
+      int               m_value;
     };
 
     class Enqueuer
@@ -87,8 +88,8 @@ namespace GaudiKernelTest
 
     private:
       Gaudi::SerialTaskQueue& queue;
-      std::vector<int>& results;
-      int n;
+      std::vector<int>&       results;
+      int                     n;
     };
 
     SerialTaskQueueTest() {}
@@ -221,7 +222,8 @@ int main( int argc, char* argv[] )
   // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
   //                                                    std::cout ) );
 
-  runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
+  auto l = std::make_unique<GaudiKernelTest::ProgressListener>();
+  runner.eventManager().addListener( l.get() );
 
   // CppUnit::TestResultCollector *collector =
   //  new CppUnit::TestResultCollector();

@@ -30,13 +30,13 @@ namespace Gaudi
     class OpenCLAlg : public GaudiAlgorithm
     {
     public:
-      OpenCLAlg( const std::string& name, ISvcLocator* pSvcLocator ) : GaudiAlgorithm( name, pSvcLocator ) {}
+      using GaudiAlgorithm::GaudiAlgorithm;
       StatusCode initialize() override
       {
         StatusCode sc = GaudiAlgorithm::initialize();
 
         // Choose platform according to the macro DEVICE_PREFERENCE
-        cl_device_id* devices;
+        cl_device_id*  devices;
         cl_platform_id platform = NULL;
         clChoosePlatform( devices, platform );
 
@@ -49,7 +49,6 @@ namespace Gaudi
         info() << "Executing " << name() << endmsg;
         return StatusCode::SUCCESS;
       }
-      StatusCode finalize() override { return GaudiAlgorithm::finalize(); }
 
     private:
       void clChoosePlatform( cl_device_id*& devices, cl_platform_id& platform )
@@ -107,12 +106,4 @@ namespace Gaudi
   }
 }
 
-#include "GaudiKernel/AlgFactory.h"
-
-namespace Gaudi
-{
-  namespace Examples
-  {
-    DECLARE_COMPONENT( OpenCLAlg )
-  }
-}
+DECLARE_COMPONENT( Gaudi::Examples::OpenCLAlg )

@@ -26,8 +26,6 @@ public:
   /// Standard constructor
   using GaudiHistoAlg::GaudiHistoAlg;
 
-  ~HistoTimingAlg() override = default; ///< Destructor
-
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
 
@@ -38,7 +36,7 @@ private:
 
   HistoMap m_histos;
 
-  Gaudi::Property<bool> m_useGaudiAlg{this, "UseLookup", false, ""};
+  Gaudi::Property<bool>         m_useGaudiAlg{this, "UseLookup", false, ""};
   Gaudi::Property<unsigned int> m_nHistos{this, "NumHistos", 20, ""};
   Gaudi::Property<unsigned int> m_nTracks{this, "NumTracks", 30, ""};
 };

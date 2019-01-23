@@ -47,7 +47,7 @@ public:
    *  @param svc pointer to Chrono Service
    *  @param tag the unique tag
    */
-  Chrono( IChronoSvc* svc        = nullptr,            // the service
+  Chrono( IChronoSvc*        svc = nullptr,            // the service
           const std::string& tag = "CHRONO::UNNAMED" ) // the unique tag/name
   {
     if ( svc ) {
@@ -87,8 +87,8 @@ public:
    *  @param tag the unique tag
    *  @param svc pointer to Chrono Service
    */
-  Chrono( const std::string& tag, // the unique tag/name
-          IChronoSvc* svc )       // the service
+  Chrono( const std::string& tag,  // the unique tag/name
+          IChronoSvc*        svc ) // the service
   {
     if ( svc ) {
       m_chrono = svc->chronoStart( tag );

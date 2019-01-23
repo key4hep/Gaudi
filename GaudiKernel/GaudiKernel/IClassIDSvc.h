@@ -18,7 +18,6 @@ namespace Athena
 /** @class IClassIDSvc
  * @brief  interface to the CLID database
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
- *$Id: IClassIDSvc.h,v 1.7 2009-01-15 19:05:54 binet Exp $
  */
 
 class IClassIDSvc : virtual public IService

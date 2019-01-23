@@ -7,6 +7,8 @@
 #include "xercesc/parsers/XercesDOMParser.hpp"
 #include "xercesc/sax/ErrorHandler.hpp"
 
+#include <memory>
+
 // Forward declarations
 class IMessageSvc;
 
@@ -31,8 +33,6 @@ namespace Gaudi
   public:
     /// Create a catalog file, initialization of XercesC.
     XMLFileCatalog( CSTR url, IMessageSvc* m );
-    /// Destructor,
-    ~XMLFileCatalog() override = default;
 
     /** Catalog interface                                               */
     /// Create file identifier using UUID mechanism
@@ -76,6 +76,10 @@ namespace Gaudi
     void registerLFN( CSTR fid, CSTR lfn ) const override;
     /// Create a FileID and Node
     void registerFID( CSTR fid ) const override;
+    /// rename a PFN
+    void renamePFN( CSTR pfn, CSTR new_pfn ) const override;
+    /// remove a PFN
+    void deletePFN( CSTR pfn ) const override;
     /// Dump all MetaData of the catalog for a given file ID
     void getMetaData( CSTR fid, Attributes& attr ) const override;
     /// Access metadata item
@@ -95,13 +99,13 @@ namespace Gaudi
     xercesc::DOMNode* element( CSTR fid, bool print_err = true ) const;
     xercesc::DOMNode* child( xercesc::DOMNode* par, CSTR tag, CSTR attr = "", CSTR val = "" ) const;
     std::pair<xercesc::DOMElement*, xercesc::DOMElement*> i_registerFID( CSTR fid ) const;
-    bool m_rdOnly;
-    mutable bool m_update;
-    xercesc::DOMDocument* m_doc;
+    bool                                      m_rdOnly = false;
+    mutable bool                              m_update = false;
+    xercesc::DOMDocument*                     m_doc    = nullptr;
     std::unique_ptr<xercesc::XercesDOMParser> m_parser;
-    std::unique_ptr<xercesc::ErrorHandler> m_errHdlr;
-    std::string m_file;
-    IMessageSvc* m_msgSvc;
+    std::unique_ptr<xercesc::ErrorHandler>    m_errHdlr;
+    std::string                               m_file;
+    IMessageSvc*                              m_msgSvc;
   };
   /// Create file identifier using UUID mechanism
   std::string createGuidAsString();

@@ -47,9 +47,6 @@ namespace Gaudi
     /// Service Constructor
     using extends::extends;
 
-    /// Standard destructor
-    ~RootEvtSelector() override = default;
-
     /// IService implementation: Db event selector override
     StatusCode initialize() override;
 

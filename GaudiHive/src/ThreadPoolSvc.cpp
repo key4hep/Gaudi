@@ -1,7 +1,6 @@
 #include "ThreadPoolSvc.h"
 
 #include "GaudiKernel/ConcurrencyFlags.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "ThreadInitTask.h"
 
 #include "tbb/task.h"
@@ -12,19 +11,20 @@
 
 using namespace tbb;
 
-DECLARE_SERVICE_FACTORY( ThreadPoolSvc )
+namespace Gaudi
+{
+  namespace Concurrency
+  {
+    extern thread_local bool ThreadInitDone;
+  }
+}
+
+DECLARE_COMPONENT( ThreadPoolSvc )
 
 //=============================================================================
 
-ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc )
-    : base_class( name, svcLoc )
-    , m_threadInitTools( this )
-    , m_init( false )
-    , m_threadPoolSize( 0 )
-    , m_tbbSchedInit( nullptr )
-    , m_barrier( nullptr )
+ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ) : extends( name, svcLoc )
 {
-
   declareProperty( "ThreadInitTools", m_threadInitTools, "ToolHandleArray of IThreadInitTools" );
 }
 
@@ -44,12 +44,11 @@ StatusCode ThreadPoolSvc::initialize()
     error() << "Unable to retrieve ThreadInitTools Array" << endmsg;
 
     return StatusCode::FAILURE;
+  }
+  if ( m_threadInitTools.size() != 0 ) {
+    info() << "retrieved " << m_threadInitTools.size() << " thread init tools" << endmsg;
   } else {
-    if ( m_threadInitTools.size() != 0 ) {
-      info() << "retrieved " << m_threadInitTools.size() << " thread init tools" << endmsg;
-    } else {
-      info() << "no thread init tools attached" << endmsg;
-    }
+    info() << "no thread init tools attached" << endmsg;
   }
 
   return StatusCode::SUCCESS;
@@ -98,15 +97,18 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize )
     if ( thePoolSize != -1 ) thePoolSize += 1;
 
     // Create the TBB task scheduler
-    m_tbbSchedInit = std::unique_ptr<tbb::task_scheduler_init>( new tbb::task_scheduler_init( thePoolSize ) );
+    m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
     // Create the barrier for task synchronization
-    if ( m_threadPoolSize <= -1 ) thePoolSize = m_tbbSchedInit->default_num_threads();
+    if ( m_threadPoolSize <= -1 ) {
+      thePoolSize      = m_tbbSchedInit->default_num_threads();
+      m_threadPoolSize = thePoolSize;
+    }
     if ( msgLevel( MSG::DEBUG ) ) {
       debug() << "creating barrier of size " << thePoolSize << endmsg;
     }
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( thePoolSize );
 
-    m_barrier = std::unique_ptr<boost::barrier>( new boost::barrier( thePoolSize ) );
+    m_barrier = std::make_unique<boost::barrier>( thePoolSize );
 
   } else {
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );
@@ -149,8 +151,6 @@ StatusCode ThreadPoolSvc::terminatePool()
 StatusCode ThreadPoolSvc::launchTasks( bool terminate )
 {
 
-  if ( m_threadInitTools.empty() ) return StatusCode::SUCCESS;
-
   const std::string taskType = terminate ? "termination" : "initialization";
 
   // If we have a thread pool (via a scheduler), then we want to queue
@@ -165,7 +165,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
 
       // Queue the task
       tbb::task::enqueue( *t );
-      this_tbb_thread::sleep( tbb::tick_count::interval_t( .1 ) );
+      this_tbb_thread::sleep( tbb::tick_count::interval_t( .02 ) );
     }
 
     // Now wait for all the workers to reach the barrier
@@ -180,9 +180,17 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
       // Expected number based on the type of task.
       int expectedNumInit = terminate ? 0 : m_threadPoolSize;
       if ( numInit != expectedNumInit ) {
-        error() << "not all threads " << ( terminate ? "terminated" : "initialized" ) << " for tool " << t << " : "
-                << t->nInit() << " out of " << m_threadPoolSize << " are currently active" << endmsg;
-        return StatusCode::FAILURE;
+        std::ostringstream ost;
+        ost << "not all threads " << ( terminate ? "terminated" : "initialized" ) << " for tool " << t << " : "
+            << t->nInit() << " out of " << m_threadPoolSize << " are currently active.";
+        if ( terminate ) {
+          // it is likely the case that tbb activated new theads
+          // late in the game, and extra initializations were done
+          info() << ost.str() << endmsg;
+        } else {
+          error() << ost.str() << endmsg;
+          return StatusCode::FAILURE;
+        }
       }
     }
 
@@ -193,7 +201,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
   else {
     if ( msgLevel( MSG::DEBUG ) ) debug() << "launching ThreadInitTask " << taskType << "in this thread." << endmsg;
     boost::barrier* noBarrier = nullptr;
-    ThreadInitTask theTask( m_threadInitTools, noBarrier, serviceLocator(), terminate );
+    ThreadInitTask  theTask( m_threadInitTools, noBarrier, serviceLocator(), terminate );
     theTask.execute();
   }
 
@@ -204,4 +212,25 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
   }
 
   return StatusCode::SUCCESS;
+}
+
+//-----------------------------------------------------------------------------
+
+//
+// tbb will actually create more threads than requested, and will sometimes
+// activate them late. This method is used to initialize one of these threads
+// when it is detected
+
+void ThreadPoolSvc::initThisThread()
+{
+
+  if ( Gaudi::Concurrency::ThreadInitDone ) {
+    // this should never happen
+    error() << "initThisThread triggered, but thread already initialized" << endmsg;
+    throw GaudiException( "initThisThread triggered, but thread already initialized", name(), StatusCode::FAILURE );
+  }
+
+  boost::barrier* noBarrier = nullptr;
+  ThreadInitTask  theTask( m_threadInitTools, noBarrier, serviceLocator(), false );
+  theTask.execute();
 }

@@ -29,14 +29,12 @@ class AppMgrRunable : public extends<Service, IRunable>
 {
 protected:
   /// Reference to application manager UI
-  IAppMgrUI* m_appMgrUI = nullptr;
+  IAppMgrUI*           m_appMgrUI = nullptr;
   Gaudi::Property<int> m_evtMax{this, "EvtMax", 0xFEEDBABE, "number of events to be processed"};
 
 public:
   /// inherit contructor
   using extends::extends;
-  /// Standard Destructor
-  ~AppMgrRunable() override = default;
 
   /// IService implementation: initialize the service
   StatusCode initialize() override;

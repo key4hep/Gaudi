@@ -185,11 +185,13 @@ public:
   {
     // avoid problems with strict-aliasing rules
     seq_type** rptr = &m_random;
-    seq_type* sptr  = &m_sequential;
+    seq_type*  sptr = &m_sequential;
     m_cont.setup( (void*)sptr, (void**)rptr );
   }
   KeyedContainer( KeyedContainer&& other )
-      : m_cont( std::move( other.m_cont ) ), m_sequential( std::move( other.m_sequential ) )
+      : ObjectContainerBase( std::move( other ) )
+      , m_cont( std::move( other.m_cont ) )
+      , m_sequential( std::move( other.m_sequential ) )
   {
     m_cont.setup( (void*)&m_sequential, (void**)&m_random );
     std::for_each( begin(), end(), [this]( ContainedObject* obj ) { obj->setParent( this ); } );
@@ -651,10 +653,10 @@ inline void KeyedContainer<DATATYPE, MAPPING>::erase( iterator start_pos, iterat
     return;
   }
   std::for_each( start_pos, stop_pos, _RemoveRelease( this ) );
-  seq_type* sptr                  = &m_sequential; // avoid problems with strict-aliasing rules
-  std::vector<void*>* v           = (std::vector<void*>*)sptr;
-  std::vector<void*>::iterator i1 = v->begin() + std::distance( m_sequential.begin(), start_pos );
-  std::vector<void*>::iterator i2 = v->begin() + std::distance( m_sequential.begin(), stop_pos );
+  seq_type*                    sptr = &m_sequential; // avoid problems with strict-aliasing rules
+  std::vector<void*>*          v    = (std::vector<void*>*)sptr;
+  std::vector<void*>::iterator i1   = v->begin() + std::distance( m_sequential.begin(), start_pos );
+  std::vector<void*>::iterator i2   = v->begin() + std::distance( m_sequential.begin(), stop_pos );
   m_cont.erase( i1, i2 );
 }
 

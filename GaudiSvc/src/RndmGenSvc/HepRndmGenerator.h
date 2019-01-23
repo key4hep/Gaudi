@@ -32,11 +32,10 @@ namespace HepRndm
 
   protected:
     CLHEP::HepRandomEngine* m_hepEngine = nullptr;
-    TYPE* m_specs                       = nullptr;
+    TYPE*                   m_specs     = nullptr;
 
   public:
     Generator( IInterface* engine ) : RndmGen( engine ) {}
-    ~Generator() override = default;
     /// Initialize the generator
     StatusCode initialize( const IRndmGen::Param& par ) override;
     /// Single shot

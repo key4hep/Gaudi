@@ -7,6 +7,8 @@ import re
 import shutil
 import bisect
 import time
+import base64
+import zlib
 
 from datetime import datetime, timedelta
 from optparse import OptionParser
@@ -61,12 +63,34 @@ def formatMeasurementText(txt, escape=False, preformat=True):
     '''
     from xml.sax.saxutils import escape as escape_xml
     from codecs import encode
+    if hasattr(txt, 'decode'):
+        txt = txt.decode(errors='ignore')
     txt = encode(txt, 'utf-8', 'xmlcharrefreplace')
     if escape:
         txt = escape_xml(txt)
     if preformat:
         txt = '<pre>{0}</pre>'.format(txt)
     return txt
+
+
+VALUE_DECODE = {'base64': base64.b64decode}
+VALUE_DECOMP = {'gzip': zlib.decompress}
+
+
+def dropCustomMeasurements(s):
+    '''
+    Remove custom measurements (sections encompassed by
+    '<DartMeasurement ...></DartMeasurement>' tags) from the input string and
+    return the new value.
+    '''
+    pos = s.find('<DartMeasurement')
+    while pos >= 0:
+        end_pos = s.find('</DartMeasurement>', pos)
+        if end_pos < 0:
+            break  # no end tag, better not to drop the section
+        s = s[:pos] + s[end_pos + 18:]  # 18 is the size of the end tag
+        pos = s.find('<DartMeasurement')
+    return s
 
 
 # Some regular expression that is going to be used in the next functions
@@ -586,7 +610,8 @@ def main():
         print " No file found \n"
         exit()
 
-    print "Converting *Test.xml files from %s to HTML format in %s" % (options.inputDirectory, options.outputDirectory)
+    print "Converting *Test.xml files from %s to HTML format in %s" % (
+        options.inputDirectory, options.outputDirectory)
     # verify or create the output directory
     output = options.outputDirectory
     if not os.path.isdir(output):
@@ -681,6 +706,11 @@ def main():
                 labels = [l.text for l in Test.findall('Labels/Label')]
 
                 Results = Test.find("Results")
+                basedir = Test.find("Path")
+                if basedir is None or basedir.text is None:
+                    basedir = os.curdir
+                else:
+                    basedir = basedir.text
 
                 """___ create the local summary   ___"""
 
@@ -742,19 +772,27 @@ def main():
                 summaryFile.close()
 
                 # write the stdout
-                if Results.find("Measurement") is not None:
+                try:
                     value = Results.find("Measurement").find("Value")
-                    stdout = open(os.path.join(testCaseDir, "stdout"), "w")
-                    if value is not None and value.text is not None:
-                        stdout.write(formatMeasurementText(value.text,
-                                                           escape=True))
-                    else:
-                        stdout.write("<pre></pre>")
-                    stdout.close()
-                else:
-                    stdout = open(os.path.join(testCaseDir, "stdout"), "w")
-                    stdout.write("<pre></pre>")
-                    stdout.close()
+                    text = value.text
+                    if 'encoding' in value.attrib:
+                        text = VALUE_DECODE[value.attrib['encoding']](text)
+                    if 'compression' in value.attrib:
+                        text = VALUE_DECOMP[value.attrib['compression']](text)
+                    text = dropCustomMeasurements(text)
+                    text = formatMeasurementText(text, escape=True)
+                    # no "Measurement" or no "Value" or no text
+                except AttributeError as x:
+                    print 'WARNING: {0[id]}: AttributeError: {1}'.format(
+                        summary, x)
+                    text = '<i>no stdout</i>'
+                except KeyError as x:
+                    print 'WARNING: {0[id]}: KeyError: {1}'.format(
+                        summary, x)
+                    # encoding or compressions unknown, keep original text
+                    text = formatMeasurementText(value=text, escape=True)
+                with open(os.path.join(testCaseDir, "stdout"), "w") as stdout:
+                    stdout.write(text)
 
                 if "ctest" not in site.get("Generator"):
                     # write the other files
@@ -773,6 +811,7 @@ def main():
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
                 else:
+                    executionTime = float(0)
                     # write the other files
                     for NamedMeasurement in Results.getiterator("NamedMeasurement"):
                         value = NamedMeasurement.find("Value")
@@ -785,8 +824,25 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None:
-                            NamedMeasurementFile.write(
-                                formatMeasurementText(value.text))
+                            if cleanName in ('new_output_reference_file',
+                                             'new_error_reference_file'):
+                                ref = os.path.join(basedir, value.text)
+                                if os.path.isfile(ref):
+                                    shutil.copyfile(
+                                        ref,
+                                        os.path.join(testCaseDir,
+                                                     os.path.basename(ref)))
+                                else:
+                                    ref = None
+                            else:
+                                ref = None
+                            if ref:
+                                NamedMeasurementFile.write(
+                                    '<a href="{0}/{1}">{1}</a>'.format(
+                                        summary['id'], os.path.basename(ref)))
+                            else:
+                                NamedMeasurementFile.write(
+                                    formatMeasurementText(value.text))
                         else:
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()

@@ -11,7 +11,7 @@ namespace Containers
 {
   struct hashmap {
     typedef GaudiUtils::HashMap<long, void*> map_type;
-    map_type m;
+    map_type           m;
     std::vector<void*> v;
     bool insert( void* obj, long key )
     {
@@ -23,7 +23,7 @@ namespace Containers
   };
   struct map {
     typedef std::map<long, void*> map_type;
-    map_type m;
+    map_type           m;
     std::vector<void*> v;
     bool insert( void* obj, long key )
     {
@@ -62,7 +62,7 @@ namespace Containers
   template <class CONT>
   class find
   {
-    const void* m_obj;
+    const void*                       m_obj;
     typedef typename CONT::value_type v_type;
 
   public:
@@ -73,28 +73,31 @@ namespace Containers
 }
 void Containers::cannotAssignObjectKey()
 {
-  throw GaudiException( "Cannot assign key to keyed object! Object already has a key.", "KeyedObject", 0 );
+  throw GaudiException( "Cannot assign key to keyed object! Object already has a key.", "KeyedObject",
+                        StatusCode::FAILURE );
 }
 void Containers::cannotInsertToContainer()
 {
-  throw GaudiException( "Cannot insert element to Keyed Container!", "KeyedContainer", 0 );
+  throw GaudiException( "Cannot insert element to Keyed Container!", "KeyedContainer", StatusCode::FAILURE );
 }
 
 void Containers::containerIsInconsistent()
 {
-  throw GaudiException( "Keyed Container structures are inconsistent - severe problem!", "KeyedContainer", 0 );
+  throw GaudiException( "Keyed Container structures are inconsistent - severe problem!", "KeyedContainer",
+                        StatusCode::FAILURE );
 }
 
 void Containers::invalidContainerOperation()
 {
-  throw GaudiException( "Keyed Container cannot satisfy request - severe problem!", "KeyedContainer", 0 );
+  throw GaudiException( "Keyed Container cannot satisfy request - severe problem!", "KeyedContainer",
+                        StatusCode::FAILURE );
 }
 
 template <class T>
 Containers::KeyedObjectManager<T>::KeyedObjectManager() : m_seq( nullptr ), m_direct( 0 )
 {
   if ( sizeof( typename T::map_type ) > sizeof( m_setup.buffer ) ) {
-    throw GaudiException( "Basic STL contaier sizes are incompatible", "KeyedContainer", 0 );
+    throw GaudiException( "Basic STL contaier sizes are incompatible", "KeyedContainer", StatusCode::FAILURE );
   }
   m_setup.s = ::new ( m_setup.buffer + sizeof( m_setup.s ) ) T();
   m_keyCtxt = -1;
@@ -130,7 +133,7 @@ void Containers::KeyedObjectManager<T>::onDirty() const
 {
   m_direct = 1;
   auto& s  = *m_setup.s;
-  long i   = 0;
+  long  i  = 0;
   for ( auto p : s.v ) s.insert( p, i++ );
   s.v.clear();
 }
@@ -212,13 +215,13 @@ template <class T>
 void* Containers::KeyedObjectManager<T>::erase( long key, const void* obj )
 {
   typedef typename T::map_type MTYP;
-  typedef find<MTYP> FND;
+  typedef find<MTYP>           FND;
   if ( 1 == m_direct ) {
     auto& m = m_setup.s->m;
-    auto i  = ( obj ? std::find_if( m.begin(), m.end(), FND( obj ) ) : m_setup.s->m.find( key ) );
+    auto  i = ( obj ? std::find_if( m.begin(), m.end(), FND( obj ) ) : m_setup.s->m.find( key ) );
     if ( i != m_setup.s->m.end() ) {
       void* o = i->second;
-      auto j  = std::find( m_seq->begin(), m_seq->end(), o );
+      auto  j = std::find( m_seq->begin(), m_seq->end(), o );
       if ( j != m_seq->end() ) {
         m_seq->erase( j );
         m_setup.s->m.erase( i );
@@ -284,7 +287,7 @@ template <class T>
 long Containers::KeyedObjectManager<T>::erase( seq_type::iterator beg, seq_type::iterator end )
 {
   typedef typename T::map_type MTYP;
-  typedef find<MTYP> FND;
+  typedef find<MTYP>           FND;
   if ( 0 == m_direct ) {
     onDirty();
     return erase( beg, end );
@@ -459,13 +462,12 @@ namespace Containers
   template <>
   void* KeyedObjectManager<__A>::erase( long key, const void* obj )
   {
-    typedef std::vector<long> id_type;
     if ( 0 == m_direct ) {
       onDirty();
       return erase( key, obj );
     }
     if ( obj ) {
-      id_type& idx = m_setup.s->m_idx;
+      auto& idx = m_setup.s->m_idx;
       for ( auto& elem : idx ) {
         auto j = m_setup.s->v.begin() + ( elem );
         auto k = std::find( m_seq->begin(), m_seq->end(), *j );
@@ -486,7 +488,7 @@ namespace Containers
           containerIsInconsistent();
         }
         void* o = *i;
-        auto j  = std::find( m_seq->begin(), m_seq->end(), o );
+        auto  j = std::find( m_seq->begin(), m_seq->end(), o );
         if ( j == m_seq->end() ) {
           containerIsInconsistent();
         }
@@ -505,7 +507,6 @@ namespace Containers
   template <>
   long KeyedObjectManager<__A>::erase( seq_type::iterator beg, seq_type::iterator end )
   {
-    typedef std::vector<long> id_type;
     if ( beg == m_seq->begin() && end == m_seq->end() ) {
       clear();
       return OBJ_ERASED;
@@ -513,8 +514,8 @@ namespace Containers
       onDirty();
       return erase( beg, end );
     } else {
-      long cnt = 0, nobj = end - beg;
-      id_type& idx = m_setup.s->m_idx;
+      long  cnt = 0, nobj = end - beg;
+      auto& idx = m_setup.s->m_idx;
       for ( auto& elem : idx ) {
         auto j = m_setup.s->v.begin() + ( elem );
         auto k = std::find( beg, end, *j );

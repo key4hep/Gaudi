@@ -51,9 +51,9 @@ public:
     FuncMinimumMisc( const GenFunc& func, Arg& arg );
 
   public:
-    inline const Arg& argument() const { return m_argum; }
-    inline Arg& argument() { return m_argum; }
-    inline const GenFunc* equation() const { return m_eq; }
+    inline const Arg&      argument() const { return m_argum; }
+    inline Arg&            argument() { return m_argum; }
+    inline const GenFunc*  equation() const { return m_eq; }
     inline const Gradient& gradient() const { return m_grad; }
 
   private:
@@ -65,9 +65,9 @@ public:
     FuncMinimumMisc& operator=( const FuncMinimumMisc& ) = delete;
 
   private:
-    Arg m_argum;
+    Arg            m_argum;
     const GenFunc* m_eq;
-    Gradient m_grad;
+    Gradient       m_grad;
   };
 
   /// Inherited constructor

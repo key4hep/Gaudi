@@ -49,8 +49,6 @@ protected:
 
   /// Standard Constructor
   RndmGen( IInterface* engine );
-  /// Standard Destructor
-  ~RndmGen() override = default;
 
 public:
   /** IRndmGen implementation    */

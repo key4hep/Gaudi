@@ -170,7 +170,7 @@ StatusCode GaudiHandleArrayProperty::fromString( const std::string& source )
 {
   // treat as if a Gaudi::Property<std::vector<std::string>>
   std::vector<std::string> tmp;
-  StatusCode sc = Gaudi::Parsers::parse( tmp, source );
+  StatusCode               sc = Gaudi::Parsers::parse( tmp, source );
   if ( sc.isFailure() ) return sc;
   if ( !m_pValue->setTypesAndNames( std::move( tmp ) ) ) return StatusCode::FAILURE;
   useUpdateHandler();

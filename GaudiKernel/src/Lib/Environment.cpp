@@ -27,7 +27,7 @@ namespace
             if ( !System::getEnv( env.c_str(), rep ) ) rep = i_resolve( env, --recursions );
             if ( rep.length() ) {
               std::string e( beg, c - beg + 1 );
-              size_t idx = std::string::npos;
+              size_t      idx = std::string::npos;
               while ( ( idx = source.find( e ) ) != std::string::npos ) {
                 source.replace( idx, e.length(), rep );
               }

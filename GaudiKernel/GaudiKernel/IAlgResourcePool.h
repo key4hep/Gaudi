@@ -1,4 +1,3 @@
-// $Id: IAlgManager.h,v 1.7 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_IALGRESOURCEPOOL_H
 #define GAUDIKERNEL_IALGRESOURCEPOOL_H
 
@@ -40,12 +39,6 @@ public:
 
   /// Get top list of algorithms
   virtual std::list<IAlgorithm*> getTopAlgList() = 0;
-
-  /// Begin Run
-  virtual StatusCode beginRun() = 0;
-
-  /// End Run
-  virtual StatusCode endRun() = 0;
 
   /// Acquire a certain resource
   virtual StatusCode acquireResource( const std::string& name ) = 0;

@@ -12,19 +12,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( CallgrindProfile )
-
-//=============================================================================
-// Initialization
-//=============================================================================
-StatusCode CallgrindProfile::initialize()
-{
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
-
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
-  return StatusCode::SUCCESS;
-}
+DECLARE_COMPONENT( CallgrindProfile )
 
 //=============================================================================
 // Main execution
@@ -35,7 +23,7 @@ StatusCode CallgrindProfile::execute()
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   // Increase event number
-  m_eventNumber += 1;
+  ++m_eventNumber;
 
   if ( m_eventNumber == m_nStartFromEvent ) {
     m_profiling = true;
@@ -84,7 +72,7 @@ StatusCode CallgrindProfile::finalize()
     }
   }
 
-  return GaudiAlgorithm::finalize(); // must be called after all other actions
+  return Algorithm::finalize(); // must be called after all other actions
 }
 
 //=============================================================================

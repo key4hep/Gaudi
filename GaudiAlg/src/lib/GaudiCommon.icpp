@@ -64,10 +64,6 @@
 template <class PBASE>
 void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
 {
-  m_errorsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printErrorHandler, this );
-  m_propsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printPropsHandler, this );
-  m_statPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printStatHandler, this );
-
   // setup context from parent if available
   if ( parent ) {
     if ( const GaudiAlgorithm* gAlg = dynamic_cast<const GaudiAlgorithm*>( parent ) ) {
@@ -149,7 +145,7 @@ StatusCode GaudiCommon<PBASE>::
 
   // get root of DataManager
   SmartIF<IDataManagerSvc> dataMgrSvc( PBASE::evtSvc() );
-  auto rootName = dataMgrSvc->rootName();
+  auto                     rootName = dataMgrSvc->rootName();
   if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
 
   auto fixLocation = [this, rootName]( const std::string& location ) -> std::string {
@@ -210,7 +206,7 @@ StatusCode GaudiCommon<PBASE>::
   StatusCode sc = StatusCode::SUCCESS;
 
   // print the general information about statistical counters
-  if ( this->msgLevel( MSG::DEBUG ) || ( statPrint() && !counters().empty() ) ) {
+  if ( this->msgLevel( MSG::DEBUG ) || ( statPrint() && !m_counters.empty() ) ) {
     // print general statistical counters
     printStat( statPrint() ? MSG::ALWAYS : MSG::DEBUG );
   }
@@ -221,7 +217,7 @@ StatusCode GaudiCommon<PBASE>::
     Gaudi::Utils::RegEx::matchList statList{m_statEntityList.value()};
     Gaudi::Utils::RegEx::matchList counterList{m_counterList.value()};
 
-    for ( const auto& i : this->counters() ) {
+    for ( const auto& i : m_countersOwn ) {
       if ( statList.Or( i.first ) )
         m_counterSummarySvc->addCounter( this->name(), i.first, i.second, Gaudi::CounterSummary::SaveStatEntity );
       else if ( counterList.Or( i.first ) )
@@ -237,7 +233,7 @@ StatusCode GaudiCommon<PBASE>::
     this->debug() << endmsg;
   }
   while ( !m_managedTools.empty() ) {
-    sc = releaseTool( m_managedTools.back() ) && sc;
+    sc = ( releaseTool( m_managedTools.back() ) && sc ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 
   // release all located services
@@ -247,7 +243,7 @@ StatusCode GaudiCommon<PBASE>::
     this->debug() << endmsg;
   }
   while ( !m_services.empty() ) {
-    sc = releaseSvc( m_services.front() ) && sc;
+    sc = ( releaseSvc( m_services.front() ) && sc ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 
   // release the CounterSummarySvc manually
@@ -263,7 +259,8 @@ StatusCode GaudiCommon<PBASE>::
   }
 
   // clear *ALL* counters explicitly
-  m_counters.clear();
+  m_counters.clear();    // delete pointers first
+  m_countersOwn.clear(); // then delete any owned counters
   m_exceptions.clear();
   m_infos.clear();
   m_warnings.clear();
@@ -272,7 +269,7 @@ StatusCode GaudiCommon<PBASE>::
   m_statEntityList.clear();
 
   // finalize base class
-  return sc && PBASE::finalize();
+  return ( sc && PBASE::finalize() ? StatusCode::SUCCESS : StatusCode::FAILURE );
 }
 //=============================================================================
 
@@ -458,7 +455,7 @@ StatusCode GaudiCommon<PBASE>::Print( const std::string& msg, const StatusCode s
 
   // test status code
   if ( st.isSuccess() ) {
-  } else if ( StatusCode::FAILURE != st.getCode() ) {
+  } else if ( StatusCode::FAILURE != st ) {
     str << " StatusCode=" << st.getCode();
   } else {
     str << " StatusCode=FAILURE";
@@ -517,26 +514,33 @@ void GaudiCommon<PBASE>::Exception( const std::string& msg, const StatusCode sc 
 template <class PBASE>
 long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
 {
-  // print statistics
-  if ( counters().empty() ) {
+  // check how many counters think they should be printed or how many
+  // we anyway want to print
+  unsigned int nbPrintedCounters = 0;
+  if ( !m_printEmptyCounters && !this->msgLevel( MSG::DEBUG ) ) {
+    nbPrintedCounters = std::accumulate(
+        m_counters.begin(), m_counters.end(), nbPrintedCounters,
+        []( unsigned int& sum, const auto& entry ) { return sum + entry.second.get().toBePrinted(); } );
+  } else {
+    nbPrintedCounters = m_counters.size();
+  }
+  // in case nothing should be printed, let's stop here
+  if ( nbPrintedCounters == 0 ) {
     return 0;
   }
   MsgStream& msg = this->msgStream( level );
-  //
-  msg << "Number of counters : " << counters().size();
-  //
-  if ( !counters().empty() ) {
-    msg << std::endl << m_header.value();
-  }
-  //
-  for ( const auto& entry : counters() ) {
-    msg << std::endl
-        << Gaudi::Utils::formatAsTableRow( entry.first, entry.second, m_useEffFormat, m_format1, m_format2 );
+  msg << "Number of counters : " << nbPrintedCounters << "\n" << m_header.value();
+  for ( const auto& entry : m_counters ) {
+    if ( m_printEmptyCounters || this->msgLevel( MSG::DEBUG ) || entry.second.get().toBePrinted() ) {
+      std::ostringstream ost;
+      entry.second.get().print( ost, entry.first );
+      msg << "\n" << ost.str();
+    }
   }
   //
   msg << endmsg;
   //
-  return counters().size();
+  return nbPrintedCounters;
 }
 // ============================================================================
 
@@ -575,7 +579,7 @@ long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const
 {
 
   // print ALL properties
-  MsgStream& msg         = this->msgStream( level );
+  MsgStream&  msg        = this->msgStream( level );
   const auto& properties = this->getProperties();
   msg << "List of ALL properties of " << System::typeinfoName( typeid( *this ) ) << "/" << this->name()
       << "  #properties = " << properties.size() << endmsg;
@@ -594,18 +598,18 @@ long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const
 // put results into Gaudi Event Transient Store
 // ============================================================================
 template <class PBASE>
-DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
-                                     const bool useRootInTES ) const
+DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object,
+                                     const std::string& location, const bool useRootInTES ) const
 {
   // check arguments
   Assert( svc, "put():: Invalid 'service'!" );
-  Assert( object, "put():: Invalid 'Object'!" );
+  Assert( static_cast<bool>( object ), "put():: Invalid 'Object'!" );
   Assert( !location.empty(), "put():: Invalid 'address' = '' " );
   // final data location
   const std::string& fullLocation = fullTESLocation( location, useRootInTES );
   // register the object!
-  const StatusCode status = '/' == fullLocation[0] ? svc->registerObject( fullLocation, object )
-                                                   : svc->registerObject( "/Event/" + fullLocation, object );
+  const StatusCode status = '/' == fullLocation[0] ? svc->registerObject( fullLocation, object.get() )
+                                                   : svc->registerObject( "/Event/" + fullLocation, object.get() );
   // check the result!
   if ( status.isFailure() ) {
     Exception( "put():: could not register '" + System::typeinfoName( typeid( *object ) ) + "' at address '" +
@@ -618,51 +622,8 @@ DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, DataObject* object, 
            status, MSG::DEBUG )
         .ignore();
   }
-  return object;
-}
-// ============================================================================
-
-// ============================================================================
-// Handle method for changes in the 'ErrorsPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printErrorHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->errorsPrint() ) {
-    this->printErrors();
-  }
-}
-// ============================================================================
-// Handle method for changes in the 'PropertiesPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printPropsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->propsPrint() ) {
-    this->printProps( MSG::ALWAYS );
-  }
-}
-// ============================================================================
-// Handle method for changes in the 'StatPrint'
-// ============================================================================
-template <class PBASE>
-void GaudiCommon<PBASE>::printStatHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  // no action if not yet initialized
-  if ( this->FSMState() < Gaudi::StateMachine::INITIALIZED ) {
-    return;
-  }
-  if ( this->statPrint() ) {
-    this->printStat( MSG::ALWAYS );
-  }
+  // if we get here, ownership has been transferred to the IDataProviderSvc
+  return object.release();
 }
 // ============================================================================
 

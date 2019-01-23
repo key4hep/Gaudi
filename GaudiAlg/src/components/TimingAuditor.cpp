@@ -52,8 +52,6 @@ public:
 
 public:
   using extends::extends;
-  /// destructor
-  ~TimingAuditor() override = default;
 
   // delete default/copy constructor and assignment
   TimingAuditor()                       = delete;
@@ -279,9 +277,9 @@ void TimingAuditor::before( CustomEventTypeRef evt, const std::string& name )
   }
 
   // look for the user timer in the map
-  int timer        = 0;
-  std::string nick = name + ":" + evt;
-  auto found       = m_mapUser.find( nick );
+  int         timer = 0;
+  std::string nick  = name + ":" + evt;
+  auto        found = m_mapUser.find( nick );
 
   if ( m_mapUser.end() == found ) {
     // add a new timer if not yet available
@@ -301,8 +299,8 @@ void TimingAuditor::after( CustomEventTypeRef evt, const std::string& name, cons
   }
 
   // look for the user timer in the map
-  std::string nick = name + ":" + evt;
-  auto found       = m_mapUser.find( nick );
+  std::string nick  = name + ":" + evt;
+  auto        found = m_mapUser.find( nick );
 
   // We cannot do much if the timer is not available
   if ( m_mapUser.end() == found ) {

@@ -1,27 +1,21 @@
 #include "PrecedenceSvc.h"
-#include "AlgResourcePool.h"
 #include "EventSlot.h"
 #include "PRGraphVisitors.h"
 
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/SvcFactory.h"
+#include <Gaudi/Algorithm.h>
+#include <Gaudi/Sequence.h>
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-DECLARE_SERVICE_FACTORY( PrecedenceSvc )
-
-// ============================================================================
-// Standard constructor, initializes variables
-// ============================================================================
-
-PrecedenceSvc::PrecedenceSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {}
+DECLARE_COMPONENT( PrecedenceSvc )
 
 // ============================================================================
 // Initialization
 // ============================================================================
 StatusCode PrecedenceSvc::initialize()
 {
+  using namespace concurrency;
 
   auto sc = Service::initialize(); // parent class must be initialized first
   if ( sc.isFailure() ) {
@@ -29,18 +23,17 @@ StatusCode PrecedenceSvc::initialize()
     return sc;
   }
 
-  ON_DEBUG
-  {
-    // prepare a directory to dump precedence analysis files to.
-    if ( m_dumpPrecTrace || m_dumpPrecRules ) {
-      if ( !boost::filesystem::create_directory( m_dumpDirName ) ) {
-        error() << "Could not create directory " << m_dumpDirName << "required "
-                                                                     "for task precedence tracing"
-                << endmsg;
-        return StatusCode::FAILURE;
-      }
+  // prepare a directory to dump precedence analysis files to.
+  if ( m_dumpPrecTrace || m_dumpPrecRules ) {
+    if ( !boost::filesystem::create_directory( m_dumpDirName ) ) {
+      error() << "Could not create directory " << m_dumpDirName << "required "
+                                                                   "for task precedence tracing"
+              << endmsg;
+      return StatusCode::FAILURE;
     }
   }
+
+  if ( m_dumpPrecRules ) m_PRGraph.enableAnalysis();
 
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service( "AlgResourcePool" );
@@ -53,11 +46,12 @@ StatusCode PrecedenceSvc::initialize()
 
   ON_DEBUG debug() << "Assembling CF precedence realm:" << endmsg;
   // create the root CF node
-  m_PRGraph.addHeadNode( "RootDecisionHub", true, false, true, true );
+  m_PRGraph.addHeadNode( "RootDecisionHub", Concurrent{true}, PromptDecision{false}, ModeOr{true}, AllPass{true},
+                         Inverted{false} );
   // assemble the CF rules
   for ( const auto& ialgoPtr : m_algResourcePool->getTopAlgList() ) {
-    auto algorithm = dynamic_cast<Algorithm*>( ialgoPtr );
-    if ( !algorithm ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+    auto algorithm = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
+    if ( !algorithm ) fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
     sc = assembleCFRules( algorithm, "RootDecisionHub" );
     if ( sc.isFailure() ) {
       fatal() << "Could not assemble the CF precedence realm" << endmsg;
@@ -106,8 +100,11 @@ StatusCode PrecedenceSvc::initialize()
 }
 
 // ============================================================================
-StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& parentName, unsigned int recursionDepth )
+StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::string& parentName,
+                                           unsigned int recursionDepth )
 {
+  using namespace concurrency;
+
   StatusCode sc = StatusCode::SUCCESS;
 
   ++recursionDepth;
@@ -115,50 +112,55 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
   bool isGaudiSequencer( false );
   bool isAthSequencer( false );
 
-  if ( algo->isSequence() ) {
+  if ( !algo->isSequence() ) {
+    ON_DEBUG debug() << std::string( recursionDepth, ' ' ) << "Algorithm '" << algo->name() << "' discovered" << endmsg;
+    sc = m_PRGraph.addAlgorithmNode( algo, parentName, false, false );
+    return sc;
+  } else {
     if ( algo->hasProperty( "ShortCircuit" ) )
       isGaudiSequencer = true;
     else if ( algo->hasProperty( "StopOverride" ) )
       isAthSequencer = true;
   }
 
-  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  if ( // we only want to add basic algorithms -> have no subAlgs
-      // and exclude the case of empty sequencers
-      ( subAlgorithms->empty() && !( isGaudiSequencer || isAthSequencer ) ) ) {
-
-    ON_DEBUG debug() << std::string( recursionDepth, ' ' ) << "Algorithm '" << algo->name() << "' discovered" << endmsg;
-    sc = m_PRGraph.addAlgorithmNode( algo, parentName, false, false );
-    return sc;
+  auto seq = dynamic_cast<Gaudi::Sequence*>( algo );
+  if ( seq == 0 ) {
+    error() << "Algorithm " << algo->name() << " has isSequence==true, but unable to dcast to Sequence" << endmsg;
+    return StatusCode::FAILURE;
   }
+
+  auto subAlgorithms = seq->subAlgorithms();
 
   // Recursively unroll
   ON_DEBUG debug() << std::string( recursionDepth, ' ' ) << "Decision hub '" << algo->name() << "' discovered"
                    << endmsg;
-  bool modeOR       = false;
-  bool allPass      = false;
-  bool isLazy       = false;
-  bool isSequential = false;
+  bool modeOr         = false;
+  bool allPass        = false;
+  bool promptDecision = false;
+  bool isSequential   = false;
+  bool isInverted     = false;
 
   if ( isGaudiSequencer ) {
-    modeOR                = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
-    allPass               = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
-    isLazy                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" ) ? true : false;
-    if ( allPass ) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
+    modeOr                        = ( algo->getProperty( "ModeOR" ).toString() == "True" );
+    allPass                       = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
+    promptDecision                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" );
+    isInverted                    = ( algo->getProperty( "Invert" ).toString() == "True" );
+    if ( allPass ) promptDecision = false; // standard GaudiSequencer behavior on all pass is to execute everything
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   } else if ( isAthSequencer ) {
-    modeOR       = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
-    allPass      = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
-    isLazy       = ( algo->getProperty( "StopOverride" ).toString() == "True" ) ? false : true;
+    modeOr         = ( algo->getProperty( "ModeOR" ).toString() == "True" );
+    allPass        = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
+    promptDecision = ( algo->getProperty( "StopOverride" ).toString() == "False" );
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   }
-  sc = m_PRGraph.addDecisionHubNode( algo, parentName, !isSequential, isLazy, modeOR, allPass );
+  sc = m_PRGraph.addDecisionHubNode( algo, parentName, Concurrent{!isSequential}, PromptDecision{promptDecision},
+                                     ModeOr{modeOr}, AllPass{allPass}, Inverted{isInverted} );
   if ( sc.isFailure() ) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
   }
 
-  for ( Algorithm* subalgo : *subAlgorithms ) {
+  for ( auto subalgo : *subAlgorithms ) {
     sc = assembleCFRules( subalgo, algo->name(), recursionDepth );
     if ( sc.isFailure() ) {
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
@@ -172,26 +174,23 @@ StatusCode PrecedenceSvc::assembleCFRules( Algorithm* algo, const std::string& p
 StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
 {
 
-  bool ifTrace                            = false;
-  ON_DEBUG if ( m_dumpPrecTrace ) ifTrace = true; // enable precedence analysis
-
-  if ( Cause::source::Task == cause.m_source ) {
+  if ( LIKELY( Cause::source::Task == cause.m_source ) ) {
     ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '" << cause.m_sourceName << "'" << endmsg;
-    auto visitor = concurrency::DecisionUpdater( slot, cause, ifTrace );
+    auto       visitor = concurrency::DecisionUpdater( slot, cause, m_dumpPrecTrace );
     m_PRGraph.getAlgorithmNode( cause.m_sourceName )->accept( visitor );
   } else {
     ON_VERBOSE verbose() << "Triggering top-down traversal at the root node" << endmsg;
-    auto visitor = concurrency::Supervisor( slot, cause, ifTrace );
+    auto       visitor = concurrency::Supervisor( slot, cause, m_dumpPrecTrace );
     m_PRGraph.getHeadNode()->accept( visitor );
   }
 
-  ON_DEBUG
-  {
-    if ( m_dumpPrecTrace )
-      if ( CFRulesResolved( slot ) ) dumpPrecedenceTrace( slot );
-    if ( m_dumpPrecRules )
-      if ( CFRulesResolved( slot ) ) dumpPrecedenceRules( slot );
-  }
+  if ( UNLIKELY( m_dumpPrecTrace ) )
+    if ( UNLIKELY( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) ) )
+      dumpPrecedenceTrace( slot.parentSlot ? *slot.parentSlot : slot );
+
+  if ( UNLIKELY( m_dumpPrecRules ) )
+    if ( UNLIKELY( CFRulesResolved( slot.parentSlot ? *slot.parentSlot : slot ) ) )
+      dumpPrecedenceRules( slot.parentSlot ? *slot.parentSlot : slot );
 
   return StatusCode::SUCCESS;
 }
@@ -200,19 +199,19 @@ StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
 StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const
 {
 
-  Cause cs     = {Cause::source::Root, "RootDecisionHub"};
-  auto visitor = concurrency::RunSimulator( slot, cs );
+  Cause cs      = {Cause::source::Root, "RootDecisionHub"};
+  auto  visitor = concurrency::RunSimulator( slot, cs );
 
   auto& nodeDecisions = slot.controlFlowState;
 
   std::vector<int> prevNodeDecisions;
-  int cntr = 0;
+  int              cntr = 0;
   std::vector<int> counters;
 
   while ( !CFRulesResolved( slot ) ) {
     cntr += 1;
-    int prevAlgosNum = visitor.m_nodesSucceeded;
-    debug() << "  Proceeding with iteration #" << cntr << endmsg;
+    int      prevAlgosNum = visitor.m_nodesSucceeded;
+    ON_DEBUG debug() << "  Proceeding with iteration #" << cntr << endmsg;
     prevNodeDecisions = slot.controlFlowState;
     m_PRGraph.getHeadNode()->accept( visitor );
     if ( prevNodeDecisions == nodeDecisions ) {
@@ -233,8 +232,7 @@ StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const
     if ( visitor.m_nodesSucceeded != prevAlgosNum ) counters.push_back( visitor.m_nodesSucceeded );
   }
 
-  info() << "Asymptotical concurrency speedup depth: " << (float)visitor.m_nodesSucceeded / (float)counters.size()
-         << endmsg;
+  info() << "Asymptotical intra-event speedup: " << (float)visitor.m_nodesSucceeded / (float)counters.size() << endmsg;
 
   // Reset algorithm states and node decisions
   slot.algsStates.reset();
@@ -276,11 +274,9 @@ const std::string PrecedenceSvc::printState( EventSlot& slot ) const
 void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot )
 {
 
-  if ( !m_dumpPrecRules || !msgLevel( MSG::DEBUG ) ) {
-    info() << "No temporal and topological aspects of execution flow were traced. "
-           << "To get them traced, please set DumpPrecedenceRules "
-           << "property to True *and* put the whole application in DEBUG "
-           << "logging mode" << endmsg;
+  if ( !m_dumpPrecRules ) {
+    warning() << "To trace temporal and topological aspects of execution flow, "
+              << "set DumpPrecedenceRules property to True " << endmsg;
     return;
   }
 
@@ -305,10 +301,9 @@ void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot )
 void PrecedenceSvc::dumpPrecedenceTrace( EventSlot& slot )
 {
 
-  if ( !m_dumpPrecTrace || !msgLevel( MSG::DEBUG ) ) {
-    info() << "Task precedence was not traced. To get it traced, please set "
-           << "DumpPrecedenceTrace property to True *and* put the "
-           << "whole application in DEBUG logging mode" << endmsg;
+  if ( !m_dumpPrecTrace ) {
+    warning() << "To trace task precedence patterns, set DumpPrecedenceTrace "
+              << "property to True " << endmsg;
     return;
   }
 

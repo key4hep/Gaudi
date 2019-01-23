@@ -11,8 +11,6 @@
 
 DECLARE_COMPONENT( PartPropExa )
 
-PartPropExa::PartPropExa( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode PartPropExa::initialize()
@@ -45,9 +43,6 @@ StatusCode PartPropExa::initialize()
 StatusCode PartPropExa::execute() { return StatusCode::SUCCESS; }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-StatusCode PartPropExa::finalize() { return StatusCode::SUCCESS; }
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 namespace HepPDT
 {
@@ -57,7 +52,7 @@ namespace HepPDT
 
     std::cout << "TestUnknownID: " << key.PDTname() << std::endl;
 
-    CommonParticleData* cpd = 0;
+    CommonParticleData* cpd = nullptr;
     if ( key.isNucleus() ) {
 
       // have to create a TempParticleData with all properties first

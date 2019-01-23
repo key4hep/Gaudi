@@ -24,16 +24,12 @@ class EqSolverIAlg : public Algorithm
 {
 
 public:
-  /// Standard constructor
-  EqSolverIAlg( const std::string& name, ISvcLocator* pSvcLocator );
-
-  ~EqSolverIAlg() override; ///< Destructor
+  using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
   StatusCode finalize() override;   ///< Algorithm finalization
 
-protected:
 private:
   IEqSolver* m_privateTool;
   IEqSolver* m_publicTool;

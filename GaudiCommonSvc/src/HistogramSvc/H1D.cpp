@@ -31,7 +31,7 @@ std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string&
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const AIDA::IHistogram1D& hist )
 {
   TH1D* h = getRepresentation<AIDA::IHistogram1D, TH1D>( hist );
-  auto n  = ( h ? new Histogram1D( new TH1D( *h ) ) : nullptr );
+  auto  n = ( h ? new Histogram1D( new TH1D( *h ) ) : nullptr );
   return {n, n};
 }
 namespace Gaudi
@@ -172,9 +172,10 @@ bool Gaudi::Histogram1D::fill( double x, double weight )
 void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
 {
   // implement here the copy
-  std::string tit = h.title() + "Copy";
+  std::string title = h.title() + "Copy";
   if ( h.axis().isFixedBinning() ) {
-    m_rep.reset( new TH1D( tit.c_str(), tit.c_str(), h.axis().bins(), h.axis().lowerEdge(), h.axis().upperEdge() ) );
+    m_rep.reset(
+        new TH1D( title.c_str(), title.c_str(), h.axis().bins(), h.axis().lowerEdge(), h.axis().upperEdge() ) );
   } else {
     Edges e;
     for ( int i = 0; i < h.axis().bins(); ++i ) {
@@ -182,7 +183,7 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
     }
     // add also upperedges at the end
     e.push_back( h.axis().upperEdge() );
-    m_rep.reset( new TH1D( tit.c_str(), tit.c_str(), e.size() - 1, &e.front() ) );
+    m_rep.reset( new TH1D( title.c_str(), title.c_str(), e.size() - 1, &e.front() ) );
   }
   m_axis.initialize( m_rep->GetXaxis(), false );
   m_rep->Sumw2();
@@ -224,7 +225,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
 {
   // DataObject::serialize(s);
   std::string title;
-  int size;
+  int         size;
   s >> size;
   for ( int j = 0; j < size; j++ ) {
     std::string key, value;
@@ -235,7 +236,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
     }
   }
   double lowerEdge, upperEdge, binHeight, binError;
-  int isFixedBinning, bins;
+  int    isFixedBinning, bins;
   s >> isFixedBinning >> bins;
 
   if ( isFixedBinning ) {
@@ -244,7 +245,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
   } else {
     Edges edges;
     edges.resize( bins );
-    for ( int i = 0; i <= bins; ++i ) s >> *(double*)&edges[i];
+    for ( int i = 0; i <= bins; ++i ) s >> edges[i];
     m_rep.reset( new TH1D( title.c_str(), title.c_str(), edges.size() - 1, &edges.front() ) );
   }
   m_axis.initialize( m_rep->GetXaxis(), true );
@@ -275,8 +276,8 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s ) const
     s << annotation().value( i );
   }
   const AIDA::IAxis& axis( this->axis() );
-  const int isFixedBinning = axis.isFixedBinning();
-  const int bins           = axis.bins();
+  const int          isFixedBinning = axis.isFixedBinning();
+  const int          bins           = axis.bins();
   s << isFixedBinning << bins;
   if ( isFixedBinning ) {
     s << axis.lowerEdge();

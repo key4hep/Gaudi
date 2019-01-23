@@ -1,14 +1,14 @@
 // ============================================================================
 // Include files
 // ============================================================================
+// GaudiAlg
+// ============================================================================
+#include "GaudiAlg/GaudiAlgorithm.h"
+// ============================================================================
 // GaudiKernel
 // ============================================================================
 #define NO_C_ARRAY_AS_PROPERTY_WARNING
 #include "GaudiKernel/CArrayAsProperty.h"
-// ============================================================================
-// GaudiAlg
-// ============================================================================
-#include "GaudiAlg/GaudiAlgorithm.h"
 // ============================================================================
 /** @file
  *  Simple example/test for "array"-properties
@@ -34,28 +34,22 @@ namespace Gaudi
       /** Standard constructor
        *
        */
-      ArrayProperties( const std::string& name, // algorithm instance name
-                       ISvcLocator* pSvc )      //         service locator
+      ArrayProperties( const std::string& name,  // algorithm instance name
+                       ISvcLocator*       pSvc ) //         service locator
           : GaudiAlgorithm( name, pSvc )
       {
         //
-        std::fill_n( m_doubles, 5, -10 );
-        std::fill_n( m_strings, 4, "blah-blah-blah" );
+        std::fill( std::begin( m_doubles ), std::end( m_doubles ), -10 );
+        std::fill( std::begin( m_strings ), std::end( m_strings ), "blah-blah-blah" );
         //
         declareProperty( "Doubles", m_doubles, "C-array of doubles" );
         declareProperty( "Strings", m_strings, "C-array of strings" );
       }
-      /// virtual destructor
-      ~ArrayProperties() override {}
       // ======================================================================
-    private:
-      // ======================================================================
-      /// the default constructor is disabled
-      ArrayProperties(); // the default constructor is disabled
       /// copy constructor is disabled
-      ArrayProperties( const ArrayProperties& ); // no copy constructor
+      ArrayProperties( const ArrayProperties& ) = delete; // no copy constructor
       /// assignment operator is disabled
-      ArrayProperties& operator=( const ArrayProperties& ); // no assignment
+      ArrayProperties& operator=( const ArrayProperties& ) = delete; // no assignment
       // ======================================================================
     private:
       // ======================================================================

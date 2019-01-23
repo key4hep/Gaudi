@@ -29,7 +29,6 @@ protected:
     Connection( const Connection& c ) : service( c.service ) {}
   };
   typedef std::vector<std::string> DBaseEntries;
-  typedef std::map<std::string, Connection> Connections;
   typedef std::pair<std::string, std::string> Prop;
 
 public:
@@ -101,8 +100,6 @@ public:
 
   /// Standard Constructor
   NTupleSvc( const std::string& name, ISvcLocator* svc );
-  /// Standard Destructor
-  ~NTupleSvc() override = default;
 
 protected:
   /// Create conversion service
@@ -119,7 +116,7 @@ protected:
   Gaudi::Property<DBaseEntries> m_output{this, "Output", {}, "output streams"};
 
   /// Container of connection points
-  Connections m_connections;
+  std::map<std::string, Connection> m_connections;
 };
 
 #endif // GAUDI_NTUPLESVC_H

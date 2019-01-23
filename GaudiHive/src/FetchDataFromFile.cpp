@@ -4,13 +4,17 @@ namespace Gaudi
 {
   namespace Hive
   {
-    class FetchDataFromFile final : public GaudiAlgorithm
+    class FetchDataFromFile final : public ::Algorithm
     {
     public:
-      using GaudiAlgorithm::GaudiAlgorithm;
+      FetchDataFromFile( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
+      {
+        // make sure this algorithm is seen as reentrant by Gaudi
+        this->setProperty( "Cardinality", 0 );
+      }
       StatusCode initialize() override
       {
-        StatusCode sc = GaudiAlgorithm::initialize();
+        StatusCode sc = Algorithm::initialize();
         if ( sc ) {
           // this is a hack to reuse the automatic dependencies declaration
           for ( auto k : m_dataKeys ) {
@@ -21,7 +25,7 @@ namespace Gaudi
       }
       StatusCode start() override
       {
-        StatusCode sc = GaudiAlgorithm::start();
+        StatusCode sc = Algorithm::start();
         if ( sc ) {
           for ( const auto& k : outputDataObjs() ) {
             if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "adding data key " << k << endmsg;

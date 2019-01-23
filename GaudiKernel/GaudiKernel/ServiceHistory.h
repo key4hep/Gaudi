@@ -29,7 +29,7 @@ public:
   virtual ~ServiceHistory() = default;
 
   // Class IDs
-  const CLID& clID() const override { return classID(); }
+  const CLID&        clID() const override { return classID(); }
   static const CLID& classID();
 
   // Return the service properties.
@@ -46,10 +46,10 @@ public:
   const std::string& version() const override { return m_version; }
 
 private:
-  const IService* m_pService;
+  const IService*   m_pService;
   const JobHistory* m_jobHistory;
-  std::string m_name, m_type, m_version;
-  PropertyList m_properties;
+  std::string       m_name, m_type, m_version;
+  PropertyList      m_properties;
 };
 
 // Output stream.

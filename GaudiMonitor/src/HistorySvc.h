@@ -4,11 +4,11 @@
 #include "GaudiKernel/IHistorySvc.h"
 
 #include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IVersHistoryObj.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
+#include <Gaudi/Algorithm.h>
 
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/MsgStream.h"
@@ -36,6 +36,8 @@ struct DHH;
 class HistorySvc : public extends<Service, IHistorySvc, IIncidentListener>
 {
 public:
+  using extends::extends;
+
   StatusCode initialize() override;
   StatusCode reinitialize() override;
   StatusCode finalize() override;
@@ -43,24 +45,24 @@ public:
 
   virtual StatusCode captureState();
 
-  StatusCode registerJob() override;
-  StatusCode listProperties() const override;
+  StatusCode  registerJob() override;
+  StatusCode  listProperties() const override;
   JobHistory* getJobHistory() const override;
 
-  StatusCode registerSvc( const IService& ) override;
-  StatusCode listProperties( const IService& ) const override;
+  StatusCode      registerSvc( const IService& ) override;
+  StatusCode      listProperties( const IService& ) const override;
   ServiceHistory* getServiceHistory( const IService& ) const override;
-  void getServiceHistory( std::set<ServiceHistory*>& ) const override;
+  void            getServiceHistory( std::set<ServiceHistory*>& ) const override;
 
-  StatusCode registerAlg( const Algorithm& ) override;
-  StatusCode listProperties( const Algorithm& ) const override;
-  AlgorithmHistory* getAlgHistory( const Algorithm& ) const override;
-  void getAlgHistory( std::set<AlgorithmHistory*>& ) const override;
+  StatusCode        registerAlg( const Gaudi::Algorithm& ) override;
+  StatusCode        listProperties( const Gaudi::Algorithm& ) const override;
+  AlgorithmHistory* getAlgHistory( const Gaudi::Algorithm& ) const override;
+  void              getAlgHistory( std::set<AlgorithmHistory*>& ) const override;
 
-  StatusCode registerAlgTool( const IAlgTool& ) override;
-  StatusCode listProperties( const IAlgTool& ) const override;
+  StatusCode      registerAlgTool( const IAlgTool& ) override;
+  StatusCode      listProperties( const IAlgTool& ) const override;
   AlgToolHistory* getAlgToolHistory( const IAlgTool& ) const override;
-  void getAlgToolHistory( std::set<AlgToolHistory*>& ) const override;
+  void            getAlgToolHistory( std::set<AlgToolHistory*>& ) const override;
 
   DataHistory* createDataHistoryObj( const CLID& id, const std::string& key, const std::string& store ) override;
   virtual StatusCode registerDataHistory( const CLID& id, const std::string& key, const std::string& store );
@@ -68,12 +70,7 @@ public:
   virtual int getDataHistory( const CLID& id, const std::string& key, const std::string& storeName,
                               std::list<DataHistory*>& dhlist ) const;
 
-  using extends::extends;
-
   void handle( const Incident& inc ) override;
-
-  // Destructor.
-  ~HistorySvc() override = default;
 
 private:
   //   typedef std::map<const CLID, std::map<const std::string, DataHistory*> >
@@ -82,11 +79,11 @@ private:
   typedef IVersHistoryObj::PropertyList PropertyList;
 
   typedef std::multimap<DHH, DataHistory*> DataHistMap;
-  typedef DataHistMap::iterator DHMitr;
+  typedef DataHistMap::iterator       DHMitr;
   typedef DataHistMap::const_iterator DHMCitr;
 
-  Gaudi::Property<bool> m_dump{this, "Dump", false};
-  Gaudi::Property<bool> m_activate{this, "Activate", true};
+  Gaudi::Property<bool>        m_dump{this, "Dump", false};
+  Gaudi::Property<bool>        m_activate{this, "Activate", true};
   Gaudi::Property<std::string> m_outputFile{this, "OutputFile"};
 
   void clearState();
@@ -95,10 +92,10 @@ private:
 
   IAlgContextSvc* p_algCtxSvc = nullptr;
 
-  std::map<const Algorithm*, AlgorithmHistory*> m_algmap;
+  std::map<const Gaudi::Algorithm*, AlgorithmHistory*> m_algmap;
 
   std::set<const IAlgTool*> m_ialgtools;
-  std::map<const AlgTool*, AlgToolHistory*> m_algtoolmap;
+  std::map<const AlgTool*, AlgToolHistory*>  m_algtoolmap;
   std::map<const IService*, ServiceHistory*> m_svcmap;
 
   std::multimap<DHH, DataHistory*> m_datMap;
@@ -107,7 +104,7 @@ private:
 
   void dumpProperties( std::ofstream& ) const;
   void dumpProperties( const IService&, std::ofstream& ) const;
-  void dumpProperties( const Algorithm&, std::ofstream& ) const;
+  void dumpProperties( const Gaudi::Algorithm&, std::ofstream& ) const;
   void dumpProperties( const IAlgTool&, std::ofstream& ) const;
 
   void dumpState( std::ofstream& ) const;
@@ -117,7 +114,7 @@ private:
 
   IAlgorithm* getCurrentIAlg() const;
 
-  IIncidentSvc* m_incidentSvc = nullptr;
+  IIncidentSvc*     m_incidentSvc = nullptr;
   SmartIF<IToolSvc> m_toolSvc;
 
   bool m_outputFileTypeXML = false;

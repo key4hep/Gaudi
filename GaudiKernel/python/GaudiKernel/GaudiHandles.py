@@ -7,7 +7,6 @@ __all__ = [
     "ServiceHandleArray",
     "PublicToolHandleArray", "PrivateToolHandleArray",
 ]
-__version__ = "$Revision: 1.6 $"
 __doc__ = """The python module holding python bindings to XyzHandles"""
 
 from os import linesep

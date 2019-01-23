@@ -74,7 +74,7 @@ namespace GaudiUtils
   class HashMap : public Map<K, T, M>
   {
   public:
-    typedef H hasher;
+    typedef H     hasher;
     inline hasher hash_funct() const { return this->m_map.hash_funct(); }
   };
 } // namespace GaudiUtils

@@ -3,7 +3,7 @@
 
 // std includes
 #include <algorithm>
-#include <chrono>
+#include <memory>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -16,11 +16,23 @@
 // fwk includes
 #include "AlgsExecutionStates.h"
 #include "EventSlot.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ICondSvc.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/ITimelineSvc.h"
+#include "GaudiKernel/TaggedBool.h"
 #include "IGraphVisitor.h"
+#include <Gaudi/Algorithm.h>
+
+namespace concurrency
+{
+  using Concurrent     = Gaudi::tagged_bool<class Concurrent_tag>;
+  using PromptDecision = Gaudi::tagged_bool<class PromptDecision_tag>;
+  using ModeOr         = Gaudi::tagged_bool<class ModeOr_tag>;
+  using AllPass        = Gaudi::tagged_bool<class AllPass_tag>;
+  using Inverted       = Gaudi::tagged_bool<class Inverted_tag>;
+}
 
 namespace precedence
 {
@@ -34,10 +46,10 @@ namespace precedence
     {
     }
     std::string m_name;
-    int m_index{-1};
-    int m_rank{-1};
-    int m_runtime{-1}; // ns
-    int m_eccentricity{-1};
+    int         m_index{-1};
+    int         m_rank{-1};
+    int         m_runtime{-1}; // ns
+    int         m_eccentricity{-1};
   };
 
   using PrecTrace       = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoTraceProps>;
@@ -46,7 +58,7 @@ namespace precedence
   // Precedence rules utilities ==============================================
   struct AlgoProps {
     AlgoProps() {}
-    AlgoProps( Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass )
+    AlgoProps( Gaudi::Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass )
         : m_name( algo->name() )
         , m_nodeIndex( nodeIndex )
         , m_algoIndex( algoIndex )
@@ -58,11 +70,11 @@ namespace precedence
     }
 
     std::string m_name{""};
-    int m_nodeIndex{-1};
-    int m_algoIndex{-1};
-    int m_rank{-1};
+    int         m_nodeIndex{-1};
+    int         m_algoIndex{-1};
+    int         m_rank{-1};
     /// Algorithm representative behind the AlgorithmNode
-    Algorithm* m_algorithm{nullptr};
+    Gaudi::Algorithm* m_algorithm{nullptr};
 
     /// Whether the selection result is negated or not
     bool m_inverted{false};
@@ -73,25 +85,29 @@ namespace precedence
   };
 
   struct DecisionHubProps {
-    DecisionHubProps( const std::string& name, uint nodeIndex, bool modeConcurrent, bool modePromptDecision,
-                      bool modeOR, bool allPass )
+    DecisionHubProps( const std::string& name, uint nodeIndex, concurrency::Concurrent modeConcurrent,
+                      concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOR,
+                      concurrency::AllPass allPass, concurrency::Inverted isInverted )
         : m_name( name )
         , m_nodeIndex( nodeIndex )
         , m_modeConcurrent( modeConcurrent )
         , m_modePromptDecision( modePromptDecision )
+        , m_inverted( isInverted )
         , m_modeOR( modeOR )
         , m_allPass( allPass )
     {
     }
 
     std::string m_name;
-    uint m_nodeIndex;
+    uint        m_nodeIndex;
 
     /// Whether all daughters will be evaluated concurrently or sequentially
     bool m_modeConcurrent;
     /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
     /// Applicable to both concurrent and sequential cases.
     bool m_modePromptDecision;
+    /// Whether the selection result is negated or not
+    bool m_inverted{false};
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
@@ -102,6 +118,10 @@ namespace precedence
     DataProps( const DataObjID& id ) : m_id( id ) {}
 
     DataObjID m_id;
+  };
+
+  struct CondDataProps : DataProps {
+    CondDataProps( const DataObjID& id ) : DataProps( id ) {}
   };
 
   // Vertex unpacking ========================================================
@@ -175,53 +195,99 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
-    EventSlot m_slot;
+    const EventSlot& m_slot;
   };
 
-  struct FSMState : static_visitor<std::string> {
-    FSMState( const EventSlot& slot ) : m_slot( slot ) {}
+  struct EntityState : static_visitor<std::string> {
+    EntityState( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator, bool conditionsEnabled )
+        : m_slot( slot ), m_conditionsEnabled( conditionsEnabled )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream            log{msgSvc, "EntityState.Getter"};
+
+      // Figure if we can discover the data object states
+      m_whiteboard = svcLocator->service<IHiveWhiteBoard>( "EventDataSvc", false );
+      if ( !m_whiteboard.isValid() ) {
+        log << MSG::WARNING << "Failed to locate EventDataSvc: no way to add DO "
+            << "states to the TTT dump " << endmsg;
+      }
+
+      if ( m_conditionsEnabled ) {
+        // Figure if we can discover Condition data object states
+        m_condSvc = svcLocator->service<ICondSvc>( "CondSvc", false );
+        if ( !m_condSvc.isValid() )
+          log << MSG::WARNING << "Failed to locate CondSvc: no way to add Condition DO "
+              << "states to the TTT dump " << endmsg;
+      }
+
+      if ( !m_slot.eventContext->valid() )
+        log << MSG::WARNING << "Event context is invalid: no way to add DO states"
+            << " in the TTT dump" << endmsg;
+    }
 
     std::string operator()( const AlgoProps& props ) const
-    {
-      using State = AlgsExecutionStates::State;
-      State state = m_slot.algsStates[props.m_algoIndex];
-      switch ( state ) {
-      case State::INITIAL:
-        return "INITIAL";
-      case State::CONTROLREADY:
-        return "CONTROLREADY";
-      case State::DATAREADY:
-        return "DATAREADY";
-      case State::EVTACCEPTED:
-        return "EVTACCEPTED";
-      case State::EVTREJECTED:
-        return "EVTREJECTED";
-      case State::ERROR:
-        return "ERROR";
-      default:
-        return "UKNOWN";
-      }
+    { // Returns algorithm's FSM state
+      std::ostringstream oss;
+      oss << m_slot.algsStates[props.m_algoIndex];
+      return oss.str();
     }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
 
-    std::string operator()( const DataProps& ) const { return ""; }
+    std::string operator()( const DataProps& props ) const
+    {
+      std::string state;
 
-    EventSlot m_slot;
+      if ( m_whiteboard.isValid() && m_slot.eventContext->valid() )
+        if ( m_whiteboard->selectStore( m_slot.eventContext->slot() ).isSuccess() )
+          state = m_whiteboard->exists( props.m_id ) ? "Produced" : "Missing";
+
+      return state;
+    }
+
+    std::string operator()( const CondDataProps& props ) const
+    {
+      std::string state;
+
+      if ( m_condSvc.isValid() && m_slot.eventContext->valid() )
+        state = m_condSvc->isValidID( *( m_slot.eventContext ), props.m_id ) ? "Produced" : "Missing";
+
+      return state;
+    }
+
+    const EventSlot& m_slot;
+
+    SmartIF<IHiveWhiteBoard> m_whiteboard;
+    SmartIF<ICondSvc>        m_condSvc;
+    bool                     m_conditionsEnabled{false};
   };
 
   struct StartTime : static_visitor<std::string> {
-    StartTime( SmartIF<ITimelineSvc> timelineSvc ) : m_timelineSvc( timelineSvc ) {}
+    StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream            log{msgSvc, "StartTime.Getter"};
+
+      // Figure if we can discover the algorithm timings
+      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
+      if ( !m_timelineSvc.isValid() ) {
+        log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to "
+            << "add algorithm start time to the TTT dumps" << endmsg;
+      }
+    }
 
     std::string operator()( const AlgoProps& props ) const
     {
 
-      std::string startTime = "UKNOWN";
+      std::string startTime;
 
       if ( m_timelineSvc.isValid() ) {
 
         TimelineEvent te{};
         te.algorithm = props.m_name;
+        te.slot      = m_slot.eventContext->slot();
+        te.event     = m_slot.eventContext->evt();
+
         m_timelineSvc->getTimelineEvent( te );
         startTime = std::to_string(
             std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count() );
@@ -234,21 +300,35 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
+    const EventSlot&      m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
   struct EndTime : static_visitor<std::string> {
-    EndTime( SmartIF<ITimelineSvc> timelineSvc ) : m_timelineSvc( timelineSvc ) {}
+    EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream            log{msgSvc, "EndTime.Getter"};
+
+      // Figure if we can discover the algorithm timings
+      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
+      if ( !m_timelineSvc.isValid() )
+        log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to add "
+            << "algorithm completion time to the TTT dumps" << endmsg;
+    }
 
     std::string operator()( const AlgoProps& props ) const
     {
 
-      std::string endTime = "UKNOWN";
+      std::string endTime;
 
       if ( m_timelineSvc.isValid() ) {
 
         TimelineEvent te{};
         te.algorithm = props.m_name;
+        te.slot      = m_slot.eventContext->slot();
+        te.event     = m_slot.eventContext->evt();
+
         m_timelineSvc->getTimelineEvent( te );
         endTime =
             std::to_string( std::chrono::duration_cast<std::chrono::nanoseconds>( te.end.time_since_epoch() ).count() );
@@ -261,21 +341,35 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
+    const EventSlot&      m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
   struct Duration : static_visitor<std::string> {
-    Duration( SmartIF<ITimelineSvc> timelineSvc ) : m_timelineSvc( timelineSvc ) {}
+    Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
+    {
+      SmartIF<IMessageSvc> msgSvc{svcLocator};
+      MsgStream            log{msgSvc, "Duration.Getter"};
+
+      // Figure if we can discover the algorithm timings
+      m_timelineSvc = svcLocator->service<ITimelineSvc>( "TimelineSvc", false );
+      if ( !m_timelineSvc.isValid() )
+        log << MSG::WARNING << "Failed to locate the TimelineSvc: no way to add "
+            << "algorithm's runtimes to the TTT dumps" << endmsg;
+    }
 
     std::string operator()( const AlgoProps& props ) const
     {
 
-      std::string time = "UKNOWN";
+      std::string time;
 
       if ( m_timelineSvc.isValid() ) {
 
         TimelineEvent te;
         te.algorithm = props.m_name;
+        te.slot      = m_slot.eventContext->slot();
+        te.event     = m_slot.eventContext->evt();
+
         m_timelineSvc->getTimelineEvent( te );
         time = std::to_string( std::chrono::duration_cast<std::chrono::nanoseconds>( te.end - te.start ).count() );
       }
@@ -287,6 +381,7 @@ namespace precedence
 
     std::string operator()( const DataProps& ) const { return ""; }
 
+    const EventSlot&      m_slot;
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
@@ -298,35 +393,35 @@ namespace precedence
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
-  static inline std::ostream& operator<<( std::ostream& os, const AlgoProps& ) { return os << "Algo"; }
+  static inline std::ostream& operator<<( std::ostream& os, const AlgoProps& ) { return os << "Algorithm"; }
   static inline std::ostream& operator<<( std::ostream& os, const DecisionHubProps& ) { return os << "DecisionHub"; }
   static inline std::ostream& operator<<( std::ostream& os, const DataProps& ) { return os << "Data"; }
+  static inline std::ostream& operator<<( std::ostream& os, const CondDataProps& ) { return os << "ConditionData"; }
 
   //=========================================================================
 
-  using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps>;
+  using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps, CondDataProps>;
   using PRGraph            = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VariantVertexProps>;
   using PRVertexDesc       = boost::graph_traits<PRGraph>::vertex_descriptor;
 
 } // namespace prules
 
-struct Cause {
+struct Cause final {
   enum class source { Root, Task };
 
-  source m_source;
+  source      m_source;
   std::string m_sourceName;
 };
 
 namespace concurrency
 {
-
-  using State = AlgsExecutionStates::State;
   class PrecedenceRulesGraph;
 
   using precedence::PRVertexDesc;
   using precedence::AlgoProps;
   using precedence::DecisionHubProps;
   using precedence::DataProps;
+  using precedence::CondDataProps;
   using precedence::VariantVertexProps;
 
   // ==========================================================================
@@ -339,7 +434,7 @@ namespace concurrency
     {
     }
     /// Destructor
-    virtual ~ControlFlowNode() {}
+    virtual ~ControlFlowNode() = default;
 
     /// Visitor entry point
     virtual bool accept( IGraphVisitor& visitor ) = 0;
@@ -355,29 +450,25 @@ namespace concurrency
     PrecedenceRulesGraph* m_graph;
 
   protected:
-    /// Translation between state id and name
-    std::string stateToString( const int& stateId ) const;
     unsigned int m_nodeIndex;
-    std::string m_nodeName;
+    std::string  m_nodeName;
   };
 
-  class DecisionNode : public ControlFlowNode
+  class DecisionNode final : public ControlFlowNode
   {
   public:
     /// Constructor
-    DecisionNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeConcurrent,
-                  bool modePromptDecision, bool modeOR, bool allPass )
+    DecisionNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name,
+                  Concurrent modeConcurrent, PromptDecision modePromptDecision, ModeOr modeOR, AllPass allPass,
+                  Inverted isInverted )
         : ControlFlowNode( graph, nodeIndex, name )
         , m_modeConcurrent( modeConcurrent )
         , m_modePromptDecision( modePromptDecision )
         , m_modeOR( modeOR )
         , m_allPass( allPass )
-        , m_children()
+        , m_inverted( isInverted )
     {
     }
-
-    /// Destructor
-    ~DecisionNode() override;
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -401,6 +492,8 @@ namespace concurrency
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
     bool m_allPass;
+    /// Whether the selection result is negated or not
+    bool m_inverted{false};
     /// All direct daughter nodes in the tree
     std::vector<ControlFlowNode*> m_children;
     /// Direct parent nodes
@@ -410,22 +503,19 @@ namespace concurrency
   // ==========================================================================
   class DataNode;
 
-  class AlgorithmNode : public ControlFlowNode
+  class AlgorithmNode final : public ControlFlowNode
   {
   public:
     /// Constructor
-    AlgorithmNode( PrecedenceRulesGraph& graph, Algorithm* algoPtr, unsigned int nodeIndex, unsigned int algoIndex,
-                   bool inverted, bool allPass )
+    AlgorithmNode( PrecedenceRulesGraph& graph, Gaudi::Algorithm* algoPtr, unsigned int nodeIndex,
+                   unsigned int algoIndex, bool inverted, bool allPass )
         : ControlFlowNode( graph, nodeIndex, algoPtr->name() )
         , m_algorithm( algoPtr )
         , m_algoIndex( algoIndex )
         , m_algoName( algoPtr->name() )
         , m_inverted( inverted )
         , m_allPass( allPass )
-        , m_rank( -1 )
         , m_isIOBound( algoPtr->isIOBound() ){};
-    /// Destructor
-    ~AlgorithmNode();
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -450,7 +540,7 @@ namespace concurrency
     const float& getRank() const { return m_rank; }
 
     /// get Algorithm representatives
-    Algorithm* getAlgorithm() const { return m_algorithm; }
+    Gaudi::Algorithm* getAlgorithm() const { return m_algorithm; }
     /// Get algorithm index
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
 
@@ -474,7 +564,7 @@ namespace concurrency
 
   private:
     /// Algorithm representative behind the AlgorithmNode
-    Algorithm* m_algorithm;
+    Gaudi::Algorithm* m_algorithm;
     /// The index of the algorithm
     unsigned int m_algoIndex;
     /// The name of the algorithm
@@ -484,7 +574,7 @@ namespace concurrency
     /// Whether the selection result is relevant or always "pass"
     bool m_allPass;
     /// Algorithm rank of any kind
-    float m_rank;
+    float m_rank = -1;
     /// If an algorithm is blocking
     bool m_isIOBound;
 
@@ -501,13 +591,15 @@ namespace concurrency
     /// Constructor
     DataNode( PrecedenceRulesGraph& graph, const DataObjID& path ) : m_graph( &graph ), m_data_object_path( path ) {}
 
+    /// Destructor
+    virtual ~DataNode() = default;
+
     const DataObjID& getPath() { return m_data_object_path; }
 
     /// Entry point for a visitor
-    bool accept( IGraphVisitor& visitor )
+    virtual bool accept( IGraphVisitor& visitor )
     {
-      if ( visitor.visitEnter( *this ) ) return visitor.visit( *this );
-      return true;
+      return visitor.visitEnter( *this ) ? visitor.visit( *this ) : true;
     }
     /// Add relationship to producer AlgorithmNode
     void addProducerNode( AlgorithmNode* node )
@@ -530,12 +622,12 @@ namespace concurrency
     PrecedenceRulesGraph* m_graph;
 
   private:
-    DataObjID m_data_object_path;
+    DataObjID                   m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
   };
 
-  class ConditionNode : public DataNode
+  class ConditionNode final : public DataNode
   {
   public:
     /// Constructor
@@ -547,10 +639,9 @@ namespace concurrency
     /// Need to hide the (identical) base method with this one so that
     /// visitEnter(ConditionNode&) and visit(ConditionNode&) are called.
     /// using DataNode::accept; ?
-    bool accept( IGraphVisitor& visitor )
+    bool accept( IGraphVisitor& visitor ) override
     {
-      if ( visitor.visitEnter( *this ) ) return visitor.visit( *this );
-      return true;
+      return visitor.visitEnter( *this ) ? visitor.visit( *this ) : true;
     }
 
   public:
@@ -559,12 +650,6 @@ namespace concurrency
   };
 
   // ==========================================================================
-  using AlgoNodesMap    = std::unordered_map<std::string, AlgorithmNode*>;
-  using DecisionHubsMap = std::unordered_map<std::string, DecisionNode*>;
-  using DataNodesMap    = std::unordered_map<DataObjID, DataNode*, DataObjID_Hasher>;
-
-  using AlgoInputsMap  = std::unordered_map<std::string, DataObjIDColl>;
-  using AlgoOutputsMap = std::unordered_map<std::string, DataObjIDColl>;
 
   struct IPrecedenceRulesGraph {
     virtual ~IPrecedenceRulesGraph() = default;
@@ -574,48 +659,44 @@ namespace concurrency
   {
   public:
     /// Constructor
-    PrecedenceRulesGraph( const std::string& name, SmartIF<ISvcLocator> svc )
-        : m_headNode( 0 )
-        , m_nodeCounter( 0 )
-        , m_algoCounter( 0 )
-        , m_svcLocator( svc )
-        , m_name( name )
-        , m_initTime( std::chrono::system_clock::now() )
+    PrecedenceRulesGraph( const std::string& name, SmartIF<ISvcLocator> svc ) : m_svcLocator( svc ), m_name( name )
     {
-    }
-    /// Destructor
-    ~PrecedenceRulesGraph() override
-    {
-      if ( m_headNode != 0 ) delete m_headNode;
+      // make sure that CommonMessaging is initialized
+      setUpMessaging();
     }
 
     /// Initialize graph
     StatusCode initialize();
 
-    /// A method to update algorithm node decision, and propagate it upwards
-    void accept( const std::string& algo_name, IGraphVisitor& visitor ) const;
+    /// An entry point to visit all graph nodes
+    void accept( IGraphVisitor& visitor ) const;
 
     /// Add DataNode that represents DataObject
     StatusCode addDataNode( const DataObjID& dataPath );
     /// Get DataNode by DataObject path using graph index
-    DataNode* getDataNode( const DataObjID& dataPath ) const;
+    DataNode* getDataNode( const DataObjID& dataPath ) const { return m_dataPathToDataNodeMap.at( dataPath ).get(); }
     /// Register algorithm in the Data Dependency index
-    void registerIODataObjects( const Algorithm* algo );
+    void registerIODataObjects( const Gaudi::Algorithm* algo );
     /// Build data dependency realm WITH data object nodes participating
     StatusCode buildDataDependenciesRealm();
 
     /// Add a node, which has no parents
-    void addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR,
-                      bool allPass );
+    void addHeadNode( const std::string& headName, concurrency::Concurrent, concurrency::PromptDecision,
+                      concurrency::ModeOr, concurrency::AllPass, concurrency::Inverted );
     /// Get head node
     DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
-    StatusCode addAlgorithmNode( Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass );
+    StatusCode addAlgorithmNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName, bool inverted,
+                                 bool allPass );
     /// Get the AlgorithmNode from by algorithm name using graph index
-    AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const;
+    AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const
+    {
+      return m_algoNameToAlgoNodeMap.at( algoName ).get();
+    }
     /// Add a node, which aggregates decisions of direct daughter nodes
-    StatusCode addDecisionHubNode( Algorithm* daughterAlgo, const std::string& parentName, bool modeConcurrent,
-                                   bool modePromptDecision, bool modeOR, bool allPass );
+    StatusCode addDecisionHubNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName,
+                                   concurrency::Concurrent, concurrency::PromptDecision, concurrency::ModeOr,
+                                   concurrency::AllPass, concurrency::Inverted );
     /// Get total number of control flow graph nodes
     unsigned int getControlFlowNodeCounter() const { return m_nodeCounter; }
 
@@ -627,8 +708,6 @@ namespace concurrency
     /// Retrieve pointer to service locator
     SmartIF<ISvcLocator>& serviceLocator() const override { return m_svcLocator; }
     ///
-    const std::chrono::system_clock::time_point getInitTime() const { return m_initTime; }
-
     /// Print a string representing the control flow state
     void printState( std::stringstream& output, AlgsExecutionStates& states, const std::vector<int>& node_decisions,
                      const unsigned int& recursionLevel ) const
@@ -637,6 +716,7 @@ namespace concurrency
     }
 
     /// BGL-based facilities
+    void         enableAnalysis() { m_enableAnalysis = true; };
     PRVertexDesc node( const std::string& ) const;
 
     /// Print out all data origins and destinations, as reflected in the EF graph
@@ -654,31 +734,30 @@ namespace concurrency
 
   private:
     /// the head node of the control flow graph
-    DecisionNode* m_headNode;
+    DecisionNode* m_headNode = nullptr;
     /// Index: map of algorithm's name to AlgorithmNode
-    AlgoNodesMap m_algoNameToAlgoNodeMap;
+    std::unordered_map<std::string, std::unique_ptr<AlgorithmNode>> m_algoNameToAlgoNodeMap;
     /// Index: map of decision's name to DecisionHub
-    DecisionHubsMap m_decisionNameToDecisionHubMap;
+    std::unordered_map<std::string, std::unique_ptr<DecisionNode>> m_decisionNameToDecisionHubMap;
     /// Index: map of data path to DataNode
-    DataNodesMap m_dataPathToDataNodeMap;
+    std::unordered_map<DataObjID, std::unique_ptr<DataNode>, DataObjID_Hasher> m_dataPathToDataNodeMap;
     /// Indexes: maps of algorithm's name to algorithm's inputs/outputs
-    AlgoInputsMap m_algoNameToAlgoInputsMap;
-    AlgoOutputsMap m_algoNameToAlgoOutputsMap;
+    std::unordered_map<std::string, DataObjIDColl> m_algoNameToAlgoInputsMap;
+    std::unordered_map<std::string, DataObjIDColl> m_algoNameToAlgoOutputsMap;
 
     /// Total number of nodes in the graph
-    unsigned int m_nodeCounter;
+    unsigned int m_nodeCounter = 0;
     /// Total number of algorithm nodes in the graph
-    unsigned int m_algoCounter;
+    unsigned int m_algoCounter = 0;
 
     /// Service locator (needed to access the MessageSvc)
     mutable SmartIF<ISvcLocator> m_svcLocator;
-    const std::string m_name;
-
-    const std::chrono::system_clock::time_point m_initTime;
+    const std::string            m_name;
 
     /// facilities for algorithm precedence tracing
     precedence::PrecTrace m_precTrace;
     std::map<std::string, precedence::AlgoTraceVertex> m_prec_trace_map;
+    bool m_enableAnalysis{false};
     /// BGL-based graph of precedence rules
     precedence::PRGraph m_PRGraph;
 

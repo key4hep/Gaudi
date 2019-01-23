@@ -37,7 +37,7 @@ namespace RootHistCnv
     StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override;
     /// Inquire storage type
     static long storageType() { return ROOT_StorageType; }
-    long repSvcType() const override { return i_repSvcType(); }
+    long        repSvcType() const override { return i_repSvcType(); }
 
     StatusCode error( const std::string& msg );
     StatusCode regTFile( const std::string, const TFile* );
@@ -56,8 +56,6 @@ namespace RootHistCnv
   protected:
     /// Standard constructor
     RConverter( const CLID& clid, ISvcLocator* svc ) : Converter( storageType(), clid, svc ) {}
-    /// Standard destructor
-    ~RConverter() override = default;
     /// Create the transient representation of an object.
     virtual StatusCode readObject( IOpaqueAddress* pAddr, DataObject*& refpObj );
     /// Create the persistent representation of an object.

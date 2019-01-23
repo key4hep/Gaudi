@@ -7,6 +7,7 @@
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/ServiceHandle.h"
+#include "GaudiKernel/TaggedBool.h"
 
 #include <stdexcept>
 #include <string>
@@ -17,9 +18,15 @@
 class IInterface;
 class IToolSvc;
 
-class Algorithm;
+namespace Gaudi
+{
+  class Algorithm;
+}
 class AlgTool;
 class Service;
+
+using DisableTool = Gaudi::tagged_bool<class DisableTool_tag>;
+using EnableTool  = Gaudi::tagged_bool<class EnableTool_tag>;
 
 /** General info and helper functions for toolhandles and arrays */
 class ToolHandleInfo
@@ -54,7 +61,7 @@ public:
 
 protected:
   const IInterface* m_parent = nullptr;
-  bool m_createIf{true};
+  bool              m_createIf{true};
 };
 
 /** @class BaseToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
@@ -75,16 +82,41 @@ protected:
 public:
   StatusCode retrieve( IAlgTool*& tool ) const { return i_retrieve( tool ); }
 
+  virtual StatusCode retrieve() const           = 0;
+  virtual StatusCode retrieve( DisableTool sd ) = 0;
+  virtual StatusCode retrieve( EnableTool sd )  = 0;
+
   const IAlgTool* get() const { return getAsIAlgTool(); }
 
   IAlgTool* get() { return getAsIAlgTool(); }
 
   virtual std::string typeAndName() const = 0;
 
+  /// Helper to check if the ToolHandle should be retrieved.
+  inline bool isEnabled() const
+  {
+    // the handle is considered enabled if the type/name is valid and the
+    // enabled flag was set to true, or it was already retrieved
+    return ( m_enabled && !typeAndName().empty() ) || get();
+  }
+
+  inline void enable() { m_enabled = true; }
+
+  inline void disable() { m_enabled = false; }
+
+  inline bool setEnabled( const bool flag )
+  {
+    auto old  = m_enabled;
+    m_enabled = flag;
+    return old;
+  }
+
 protected:
   virtual const IAlgTool* getAsIAlgTool() const = 0;
 
   virtual IAlgTool* getAsIAlgTool() = 0;
+
+  bool m_enabled = true;
 };
 
 /** @class ToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
@@ -101,7 +133,7 @@ template <class T>
 class ToolHandle : public BaseToolHandle, public GaudiHandle<T>
 {
 
-  friend class Algorithm;
+  friend class Gaudi::Algorithm;
   friend class AlgTool;
   friend class Service;
 
@@ -111,7 +143,7 @@ public:
       and you want to use the default name. */
   ToolHandle( const IInterface* parent = nullptr, bool createIf = true )
       : BaseToolHandle( parent, createIf )
-      , GaudiHandle<T>( GaudiHandle<T>::getDefaultType(), toolComponentType( parent ), toolParentName( parent ) )
+      , GaudiHandle<T>( "", toolComponentType( parent ), toolParentName( parent ) )
       , m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {
   }
@@ -164,20 +196,20 @@ public:
   {
   }
 
-  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// Autodeclaring constructor with property propName, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-  inline ToolHandle( OWNER* owner, std::string name, std::string toolType, std::string doc = "" ) : ToolHandle( owner )
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+  inline ToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
+      : ToolHandle( owner )
   {
     // convert name and type to a valid type/name string
-    // - if type does not contain '/' use type/name
+    // - if type does not contain '/' use type/type
     // - otherwise type is already a type/name string
     if ( !toolType.empty() and toolType.find( '/' ) == std::string::npos ) {
-      toolType += '/';
-      toolType += name;
+      toolType += '/' + toolType;
     }
     owner->declareTool( *this, std::move( toolType ) ).ignore();
-    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( name ), *this, std::move( doc ) );
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( propName ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
 
@@ -197,9 +229,29 @@ public:
 
   /** Retrieve the AlgTool. Release existing tool if needed.
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */
-  StatusCode retrieve() const
+  StatusCode retrieve() const override
   { // not really const, because it updates m_pObject
     return GaudiHandle<T>::retrieve();
+  }
+
+  StatusCode retrieve( DisableTool sd ) override
+  {
+    if ( isEnabled() && sd == DisableTool{false} ) {
+      return GaudiHandle<T>::retrieve();
+    } else {
+      disable();
+      return StatusCode::SUCCESS;
+    }
+  }
+
+  StatusCode retrieve( EnableTool sd ) override
+  {
+    if ( isEnabled() && sd == EnableTool{true} ) {
+      return GaudiHandle<T>::retrieve();
+    } else {
+      disable();
+      return StatusCode::SUCCESS;
+    }
   }
 
   /** Release the AlgTool.
@@ -213,12 +265,21 @@ public:
   StatusCode retrieve( T*& algTool ) const override
   {
     IAlgTool* iface = nullptr;
-    algTool         = i_retrieve( iface ) ? dynamic_cast<T*>( iface ) : nullptr;
-    return algTool ? StatusCode::SUCCESS : StatusCode::FAILURE;
+    if ( i_retrieve( iface ).isFailure() ) {
+      return StatusCode::FAILURE;
+    }
+
+    algTool = dynamic_cast<T*>( iface );
+    if ( algTool == nullptr ) {
+      throw GaudiException( "unable to dcast AlgTool " + typeAndName() + " to interface " +
+                                System::typeinfoName( typeid( T ) ),
+                            typeAndName() + " retrieve", StatusCode::FAILURE );
+    }
+    return StatusCode::SUCCESS;
   }
 
   /** Do the real release of the AlgTool. */
-  StatusCode release( T* algTool ) const override { return m_pToolSvc->releaseTool( this->nonConst( algTool ) ); }
+  StatusCode release( T* algTool ) const override { return m_pToolSvc->releaseTool(::details::nonConst( algTool ) ); }
 
   std::string typeAndName() const override { return GaudiHandleBase::typeAndName(); }
 
@@ -231,8 +292,8 @@ public:
   T* operator->() { return GaudiHandle<T>::operator->(); }
   T& operator*() { return *( GaudiHandle<T>::operator->() ); }
 
-  T* operator->() const { return GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ); }
-  T& operator*() const { return *( GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ) ); }
+  T* operator->() const { return ::details::nonConst( GaudiHandle<T>::operator->() ); }
+  T& operator*() const { return *(::details::nonConst( GaudiHandle<T>::operator->() ) ); }
 #endif
 
 #ifdef ATLAS
@@ -252,7 +313,7 @@ protected:
   IAlgTool* getAsIAlgTool() override
   {
     // const cast to support T being const
-    return this->nonConst( GaudiHandle<T>::get() );
+    return ::details::nonConst( GaudiHandle<T>::get() );
   }
 
   StatusCode i_retrieve( IAlgTool*& algTool ) const override
@@ -287,28 +348,26 @@ public:
 
   /// Copy constructor from a non const T to const T tool handle
   template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
-  PublicToolHandle(
-      const PublicToolHandle<NCT>& other,
-      typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
+  PublicToolHandle( const PublicToolHandle<NCT>& other,
+                    std::enable_if_t<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>* = nullptr )
       : ToolHandle<T>( static_cast<const ToolHandle<NCT>&>( other ) )
   {
   }
 
-  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// Autodeclaring constructor with property propName, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-  inline PublicToolHandle( OWNER* owner, std::string name, std::string toolType, std::string doc = "" )
+  inline PublicToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
       : PublicToolHandle()
   {
     // convert name and type to a valid type/name string
-    // - if type does not contain '/' use type/name
+    // - if type does not contain '/' use type/type
     // - otherwise type is already a type/name string
     if ( !toolType.empty() and toolType.find( '/' ) == std::string::npos ) {
-      toolType += '/';
-      toolType += name;
+      toolType += '/' + toolType;
     }
     owner->declareTool( *this, std::move( toolType ) ).ignore();
-    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( name ), *this, std::move( doc ) );
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( propName ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
 };
@@ -373,7 +432,7 @@ public:
 
   /// Autodeclaring constructor with property name, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   inline ToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
                           std::string doc = "" )
       : ToolHandleArray( typesAndNames, owner )

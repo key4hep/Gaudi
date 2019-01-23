@@ -1,0 +1,42 @@
+# setting LC_ALL to "C"
+# --> Including file '/var/local/sponce/native/Gaudi/GaudiExamples/options/ToolHandles.py'
+# <-- End of file '/var/local/sponce/native/Gaudi/GaudiExamples/options/ToolHandles.py'
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v29r0)
+                                          running on lblhcbpr3.cern.ch on Mon Oct  9 17:05:27 2017
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ThreadPoolSvc        INFO no thread init tools attached
+AvalancheSchedu...   INFO Activating scheduler in a separate thread
+AlgResourcePool      INFO TopAlg list empty. Recovering the one of Application Manager
+AvalancheSchedu...   INFO Found 3 algorithms
+AvalancheSchedu...   INFO Data Dependencies for Algorithms:
+  THDataProducer
+    o OUTPUT '/Event/MyInt'
+  THDataProducer2
+    o OUTPUT '/Event/MyFloat'
+  THDataConsumer
+    o INPUT  '/Event/MyFloat'
+    o INPUT  '/Event/MyInt'
+PrecedenceSvc        INFO Assembling CF and DF task precedence rules
+PrecedenceSvc        INFO PrecedenceSvc initialized successfully
+AvalancheSchedu...   INFO Concurrency level information:
+AvalancheSchedu...   INFO  o Number of events in flight: 2
+AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':2
+HistogramPersis...WARNING Histograms saving not required.
+HiveSlimEventLo...   INFO Found 0 events in black list
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+HiveSlimEventLo...   INFO Starting loop on events
+EventSelector        INFO End of event input reached.
+HiveSlimEventLo...   INFO No more events in event selection
+HiveSlimEventLo...  ERROR Detected nullptr ctxt before clearing WB!
+HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 52.5977 total time 113833
+HiveSlimEventLo...   INFO 0 events were SKIPed
+ApplicationMgr       INFO Application Manager Stopped successfully
+HiveSlimEventLo...   INFO Histograms converted successfully according to request.
+AvalancheSchedu...   INFO Joining Scheduler thread
+ToolSvc              INFO Removing all tools created by ToolSvc
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

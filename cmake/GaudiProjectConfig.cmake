@@ -5,10 +5,9 @@
 #
 # Commit Id: $Format:%H$
 
-cmake_minimum_required(VERSION 2.8.12)
-
-if(NOT CMAKE_VERSION VERSION_LESS 3.0) # i.e CMAKE_VERSION >= 3.0
-  cmake_policy(SET CMP0026 NEW)
+cmake_minimum_required(VERSION 3.6)
+if(POLICY CMP0077)
+  cmake_policy(SET CMP0077 NEW)
 endif()
 
 # Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
@@ -41,19 +40,27 @@ option(CMAKE_EXPORT_COMPILE_COMMANDS "Generate compile_commands.json file" ON)
 # It handles versions strings like "vXrY[pZ[aN]]" and "1.2.3.4"
 set(GAUDI_VERSION_REGEX "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+)(([a-z.])([0-9]+))?)?")
 
+# Reset the accumulators GAUDI_RULE_LAUNCH_* in case this is executed multiple times
+foreach(_rule COMPILE LINK CUSTOM)
+  set(GAUDI_RULE_LAUNCH_${_rule})
+  set(GAUDI_RULE_LAUNCH_${_rule}_ENV)  # holds env to be prepended to command
+endforeach()
+
+# Hooks for modifying the launch rules
 if (GAUDI_BUILD_PREFIX_CMD)
-  set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${GAUDI_BUILD_PREFIX_CMD}")
+  set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
 endif()
 
 find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
+find_program(icecc_cmd icecc)
 set(_clang_format_names)
 foreach(_clang_version 5.0 4.0 3.9 3.8 3.7)
   list(APPEND _clang_format_names lcg-clang-format-${_clang_version} clang-format-${_clang_version})
 endforeach()
 list(APPEND _clang_format_names clang-format)
 find_program(clang_format_cmd NAMES ${_clang_format_names})
-mark_as_advanced(ccache_cmd distcc_cmd clang_format_cmd)
+mark_as_advanced(ccache_cmd distcc_cmd icecc_cmd clang_format_cmd)
 
 if(ccache_cmd)
   option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
@@ -63,16 +70,29 @@ if(ccache_cmd)
   endif()
 endif()
 
+set(_distributed_compiler)
 if(distcc_cmd)
   option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
   if(CMAKE_USE_DISTCC)
-    if(CMAKE_USE_CCACHE)
-      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} CCACHE_PREFIX=${distcc_cmd} ${ccache_cmd}")
-      message(STATUS "Enabling distcc builds in ccache")
-    else()
-      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${distcc_cmd}")
-      message(STATUS "Using distcc for building")
+    set(_distributed_compiler distcc)
+  endif()
+endif()
+if(icecc_cmd)
+  option(CMAKE_USE_ICECC "Use icecc to speed up compilation." OFF)
+  if(CMAKE_USE_ICECC)
+    if(_distributed_compiler)
+        message(FATAL_ERROR "Cannot use multiple distributed compilers at the same time")
     endif()
+    set(_distributed_compiler icecc)
+  endif()
+endif()
+if(_distributed_compiler)
+  if(CMAKE_USE_CCACHE)
+    set(GAUDI_RULE_LAUNCH_COMPILE_ENV "${GAUDI_RULE_LAUNCH_COMPILE_ENV} CCACHE_PREFIX=${_distributed_compiler}")
+    message(STATUS "Enabling ${_distributed_compiler} builds in ccache")
+  else()
+    set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${_distributed_compiler}")
+    message(STATUS "Using ${_distributed_compiler} for building")
   endif()
 endif()
 
@@ -101,19 +121,22 @@ if(GAUDI_USE_CTEST_LAUNCHERS)
   set(__launch_custom_options
     "${__launch_common_options} --output <OUTPUT>")
 
-  if("${CMAKE_GENERATOR}" MATCHES "Ninja" AND NOT CMAKE_VERSION VERSION_LESS 3.0)
+  if("${CMAKE_GENERATOR}" MATCHES "Ninja")
     # this make sense only with CMamke >= 3.0
     set(__launch_compile_options "${__launch_compile_options} --filter-prefix <CMAKE_CL_SHOWINCLUDES_PREFIX>")
   endif()
 
   set(GAUDI_RULE_LAUNCH_COMPILE
-    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_compile_options} -- ${GAUDI_RULE_LAUNCH_COMPILE}")
+    "\"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_compile_options} -- ${GAUDI_RULE_LAUNCH_COMPILE}")
+  set(GAUDI_RULE_LAUNCH_COMPILE_ENV "${GAUDI_RULE_LAUNCH_COMPILE_ENV} CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs")
 
   set(GAUDI_RULE_LAUNCH_LINK
-    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_link_options} -- ${GAUDI_RULE_LAUNCH_LINK}")
+    "\"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_link_options} -- ${GAUDI_RULE_LAUNCH_LINK}")
+  set(GAUDI_RULE_LAUNCH_LINK_ENV "${GAUDI_RULE_LAUNCH_LINK_ENV} CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs")
 
   set(GAUDI_RULE_LAUNCH_CUSTOM
-    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_custom_options} -- ${GAUDI_RULE_LAUNCH_CUSTOM}")
+    "\"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_custom_options} -- ${GAUDI_RULE_LAUNCH_CUSTOM}")
+  set(GAUDI_RULE_LAUNCH_CUSTOM_ENV "${GAUDI_RULE_LAUNCH_CUSTOM_ENV} CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs")
 
   if("${CMAKE_GENERATOR}" MATCHES "Make")
     set(GAUDI_RULE_LAUNCH_LINK "env ${GAUDI_RULE_LAUNCH_LINK}")
@@ -124,8 +147,9 @@ endif()
 foreach(_rule COMPILE LINK CUSTOM)
   if(GAUDI_RULE_LAUNCH_${_rule})
     string(STRIP "${GAUDI_RULE_LAUNCH_${_rule}}" GAUDI_RULE_LAUNCH_${_rule})
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_${_rule} "${GAUDI_RULE_LAUNCH_${_rule}}")
-    message(STATUS "Prefix ${_rule} commands with '${GAUDI_RULE_LAUNCH_${_rule}}'")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_${_rule}
+      "${GAUDI_RULE_LAUNCH_${_rule}_ENV} ${GAUDI_RULE_LAUNCH_${_rule}}")
+    message(STATUS "Prefix ${_rule} commands with '${GAUDI_RULE_LAUNCH_${_rule}_ENV} ${GAUDI_RULE_LAUNCH_${_rule}}'")
   endif()
 endforeach()
 
@@ -156,6 +180,9 @@ endif()
 option(GAUDI_STRICT_VERSION_CHECK
        "Require that the version of used projects is exactly the what specified"
        OFF)
+option(GAUDI_TEST_PUBLIC_HEADERS_BUILD
+       "Execute a test build of all public headers in the global target 'all'"
+       OFF)
 
 # FIXME: workaroud to use LCG_releases_base also when we have an old toolchain
 #        that does not define it
@@ -174,7 +201,14 @@ include(CMakeParseArguments)
 include(CMakeFunctionalUtils)
 include(BinaryTagUtils)
 
-find_package(PythonInterp)
+find_package(PythonInterp 2.7)
+
+find_package(Boost)
+if((Boost_VERSION GREATER 106700) OR (Boost_VERSION EQUAL 106700))
+  set(boost_python_version "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+else()
+  set(boost_python_version "")
+endif()
 
 #-------------------------------------------------------------------------------
 # gaudi_project(project version
@@ -216,7 +250,7 @@ macro(gaudi_project project version)
   set(CMAKE_PROJECT_NAME ${project})
 
   #--- Define the version of the project - can be used to generate sources,
-  set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
+  set(CMAKE_PROJECT_VERSION ${version})
 
   if(CMAKE_PROJECT_VERSION MATCHES "${GAUDI_VERSION_REGEX}")
     set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
@@ -234,7 +268,7 @@ macro(gaudi_project project version)
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries." ON)
   option(GAUDI_BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)." ON)
-  option(GAUDI_HIDE_WARNINGS "Turn on or off options that are used to hide warning messages." ON)
+  option(GAUDI_HIDE_WARNINGS "Turn on or off options that are used to hide warning messages." OFF)
   option(GAUDI_USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT does)." ON)
   #-------------------------------------------------------------------------------------------------
   set(GAUDI_DATA_SUFFIXES DBASE;PARAM;EXTRAPACKAGES CACHE STRING
@@ -373,8 +407,40 @@ macro(gaudi_project project version)
   # (python scripts are located as such but run through python)
   set(binary_paths ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
-  find_program(env_cmd xenv HINTS ${binary_paths})
-  set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
+  find_program(env_cmd NAMES xenv)
+  if(NOT env_cmd)
+    if(NOT EXISTS ${CMAKE_BINARY_DIR}/contrib/xenv)
+      # Avoid interference from user environment
+      unset(ENV{GIT_DIR})
+      unset(ENV{GIT_WORK_TREE})
+      execute_process(COMMAND git clone -b 0.0.1 https://gitlab.cern.ch/gaudi/xenv.git ${CMAKE_BINARY_DIR}/contrib/xenv)
+    endif()
+    # I'd like to generate the script with executable permission, but I only
+    # found this workaround: https://stackoverflow.com/a/45515418
+    # - write a temporary file
+    file(WRITE "${CMAKE_BINARY_DIR}/xenv"
+"#!/usr/bin/env python
+from os.path import join, dirname, pardir
+import sys
+sys.path.append(join(dirname(__file__), pardir, 'python'))
+from xenv import main
+main()")
+    # - copy it to the right place with right permissions
+    file(COPY "${CMAKE_BINARY_DIR}/xenv" DESTINATION "${CMAKE_BINARY_DIR}/bin"
+         FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                          GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    # - remove the temporary
+    file(REMOVE "${CMAKE_BINARY_DIR}/xenv")
+    # we have to copy the Python package to the bin directory to be able to run xenv
+    # without setting PYTHONPATH
+    file(COPY ${CMAKE_BINARY_DIR}/contrib/xenv/xenv DESTINATION "${CMAKE_BINARY_DIR}/python")
+
+    set(env_cmd "${CMAKE_BINARY_DIR}/bin/xenv" CACHE FILEPATH "Path to xenv command" FORCE)
+
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/xenv DESTINATION scripts)
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/contrib/xenv/xenv DESTINATION python
+            FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
+  endif()
 
   find_program(default_merge_cmd quick-merge HINTS ${binary_paths})
   set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd})
@@ -437,9 +503,6 @@ macro(gaudi_project project version)
                            PATTERN "*.cmake.in"
                            PATTERN "*.py"
                            PATTERN ".svn" EXCLUDE)
-  install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
-  install(DIRECTORY cmake/EnvConfig DESTINATION scripts
-          FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   if (CMAKE_EXPORT_COMPILE_COMMANDS)
     install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION . OPTIONAL)
@@ -494,6 +557,10 @@ macro(gaudi_project project version)
     # find the real path to the compiler
     set(compiler_bin_path)
     get_filename_component(cxx_basename "${CMAKE_CXX_COMPILER}" NAME)
+    if(cxx_basename MATCHES "lcg-([^-]*)-.*")
+      # the correct path to the compiler may not contain the lcg-abc-X.Y.Z link
+      set(cxx_basename "${CMAKE_MATCH_1}")
+    endif()
     foreach(_ldir ${std_library_path})
       while(NOT _ldir STREQUAL "/")
         get_filename_component(_ldir "${_ldir}" PATH)
@@ -773,6 +840,8 @@ for f in \"$@\" ; do
     (*.h|*.cpp|*.icpp)\n")
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
+    # Filter out files in InstallArea and build areas.
+    list(FILTER _all_sources EXCLUDE REGEX "InstallArea/.*|build\\..*")
     add_custom_target(apply-formatting-c++
       COMMAND ${clang_format_cmd}
                   -style=${GAUDI_CLANG_STYLE}
@@ -1722,12 +1791,19 @@ function(gaudi_generate_configurables library)
     set(genconf_products ${genconf_products} ${outdir}/__init__.py)
   endif()
 
+  # If a sanitizer is enabled force genconf to always return true status
+  # to allow builds to continue even if running genconf triggered a sanitizer error
+  set(genconf_force_status "")
+  if (SANITIZER_ENABLED)
+    set(genconf_force_status "||true")
+  endif()
+
   add_custom_command(
     OUTPUT ${genconf_products} ${outdir}/${library}.confdb
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
-                -i ${library}
+                -i ${library} ${genconf_force_status}
     DEPENDS ${conf_depends})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}.confdb)
   # Add the target to the target that groups all of them for the package.
@@ -1735,7 +1811,7 @@ function(gaudi_generate_configurables library)
     add_custom_target(${package}ConfAll ALL)
   endif()
   add_dependencies(${package}ConfAll ${library}Conf)
-  # ensure that the componentslist file is found at build time (GAUDI-1055)
+  # ensure that the .confdb file is found at build time (GAUDI-1055)
   gaudi_build_env(PREPEND LD_LIBRARY_PATH ${outdir})
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   # Notify the project level target
@@ -1787,6 +1863,9 @@ function(gaudi_generate_confuserdb)
                   -o ${outdir}/${package}_user.confdb
                   ${package} ${modules})
     gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user.confdb)
+
+    # ensure that the .confdb file is found at build time (GAUDI-1055)
+    gaudi_build_env(PREPEND LD_LIBRARY_PATH ${outdir})
 
     # FIXME: dependency on others ConfUserDB
     # Historically we have been relying on the ConfUserDB built in the dependency
@@ -2081,7 +2160,9 @@ function(gaudi_add_library library)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} DESTINATION lib OPTIONAL)
   gaudi_export(LIBRARY ${library})
-  gaudi_install_headers(${ARG_PUBLIC_HEADERS})
+  if(NOT ARG_NO_PUBLIC_HEADERS)
+    gaudi_install_headers(${ARG_PUBLIC_HEADERS})
+  endif()
 endfunction()
 
 # Backward compatibility macro
@@ -2188,7 +2269,7 @@ function(gaudi_add_dictionary dictionary header selection)
     get_property(pcmname TARGET ${dictionary}Gen PROPERTY PCMFILE)
     add_custom_command(OUTPUT ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname}
                        COMMAND ${CMAKE_COMMAND} -E copy ${pcmname} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname}
-                       DEPENDS ${dictionary}Gen)
+                       DEPENDS ${dictionary}Gen ${pcmname})
     add_custom_target(${dictionary}PCM ALL
                       DEPENDS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname})
   endif()
@@ -2337,7 +2418,6 @@ function(gaudi_add_unit_test executable)
   endif()
 endfunction()
 
-
 #-------------------------------------------------------------------------------
 # gaudi_add_test(<name>
 #                [FRAMEWORK options1 options2 ...|QMTEST|COMMAND cmd args ...]
@@ -2396,11 +2476,8 @@ function(gaudi_add_test name)
       string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
       string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
       #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
-      set(test_cmd python -m GaudiTesting.Run)
-      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-        set(test_cmd ${test_cmd} --skip-return-code 77)
-      endif()
-      set(test_cmd ${test_cmd}
+      set(test_cmd python -m GaudiTesting.Run
+                       --skip-return-code 77
                        --report ctest
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --workdir ${qmtest_root_dir}
@@ -2408,20 +2485,26 @@ function(gaudi_add_test name)
       if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp)
         file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp)
       endif()
+      set(_test_environment_ "${ARG_ENVIRONMENT}" )
+      if (SANITIZER_ENABLED)
+        if (_test_environment_)
+          set(_test_environment_ "LD_PRELOAD=${SANITIZER_ENABLED};${_test_environment_}" )
+        else()
+          set(_test_environment_ "LD_PRELOAD=${SANITIZER_ENABLED}" )
+        endif()
+      endif()
       gaudi_add_test(${qmt_name}
                      COMMAND ${test_cmd}
                      WORKING_DIRECTORY ${qmtest_root_dir}
                      LABELS QMTest ${ARG_LABELS}
-                     ENVIRONMENT ${ARG_ENVIRONMENT})
+                     ENVIRONMENT ${_test_environment_})
       # we need to reapply the logic to qmt_name
       if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
         set(test_name ${qmt_name})
       else()
         set(test_name ${package}.${qmt_name})
       endif()
-      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-        set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
-      endif()
+      set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
     endforeach()
     # extract dependencies
     execute_process(COMMAND ${qmtest_metadata_cmd}
@@ -2508,27 +2591,96 @@ function(gaudi_add_test name)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
+# gaudi_add_compile_test(<name>
+#                        source1 source2 ...
+#                        [LINK_LIBRARIES library1 library2 ...]
+#                        [INCLUDE_DIRS dir1 package2 ...]
+#                        [ERRORS error1 error2 ...]
+#                        [LABELS label1 label2 ...])
+#
+# Declare a compilation test (typically to test for compilation failure):
+#  ERRORS - List of errors (regex allowed) that are all required in the output
+#           in order for the test to succeed(!)
+#---------------------------------------------------------------------------------------------------
+function(gaudi_add_compile_test executable)
+  CMAKE_PARSE_ARGUMENTS(ARG ""
+                            ""
+                            "ERRORS;LABELS" ${ARGN})
+
+  # We do not want the install target coming with gaudi_add_executable
+  gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS})
+  add_executable(${executable} ${srcs})
+
+  # Avoid building this target by default
+  set_target_properties(${executable} PROPERTIES EXCLUDE_FROM_ALL TRUE
+                                                 EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+
+  # Concatenate errors into multiline regex
+  if(ARG_ERRORS)
+    string(REPLACE ";" ".*[\\n\\r]*.*" regex "${ARG_ERRORS}")
+  else()
+    set(regex ".*")
+  endif()
+
+  gaudi_add_test(${executable}
+                 COMMAND ${CMAKE_COMMAND} --build . --target ${executable}
+                 LABELS ${ARG_LABELS}
+                 PASSREGEX ${regex})
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
 # gaudi_install_headers(dir1 dir2 ...)
 #
 # Install the declared directories in the 'include' directory.
 # To be used in case the header files do not have a library.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_install_headers)
+  gaudi_get_package_name(package)
   set(has_local_headers FALSE)
   foreach(hdr_dir ${ARGN})
     install(DIRECTORY ${hdr_dir}
-            DESTINATION include
-            FILES_MATCHING
-              PATTERN "*.h"
-              PATTERN "*.icpp"
-              PATTERN "*.hpp"
-              PATTERN "*.hxx"
-              PATTERN "*.icc"
-              PATTERN "*.inl"
-              PATTERN "CVS" EXCLUDE
-              PATTERN ".svn" EXCLUDE)
+            DESTINATION include)
     if(NOT IS_ABSOLUTE ${hdr_dir})
       set(has_local_headers TRUE)
+    endif()
+    #message(STATUS "looking for headers in ${hdr_dir}")
+    file(GLOB_RECURSE hdrs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${hdr_dir}/*.h ${hdr_dir}/*.hxx ${hdr_dir}/*.hpp)
+    if(hdrs)
+      string(REPLACE "/" "_" library "${package}/${hdr_dir}")
+      # add special dummy library to test build of public headers
+      set(srcs)
+      foreach(hdr ${hdrs})
+        set(src ${CMAKE_CURRENT_BINARY_DIR}/${package}_test_public_headers/${hdr}.cpp)
+        get_filename_component(src_dir "${src}" DIRECTORY)
+        file(MAKE_DIRECTORY ${src_dir})
+        file(WRITE ${src} "#include \"${hdr}\" // IWYU pragma: keep\n")
+        set(srcs ${srcs} ${src})
+      endforeach()
+      # avoid creating the target twice if gaudi_install_headers gets called twice
+      # (can happen if both gaudi_install_headers and gaudi_add_library get called)
+      # and warn user about the duplication
+      if(NOT TARGET ${library}_headers)
+        add_custom_target(${library}_headers SOURCES ${hdrs})
+        add_library(test_public_headers_build_${library} STATIC EXCLUDE_FROM_ALL ${srcs})
+        # some headers are special and we need to do something special to compile
+        # them as if they were source files
+        set_target_properties(test_public_headers_build_${library}
+            PROPERTIES COMPILE_DEFINITIONS GAUDI_TEST_PUBLIC_HEADERS_BUILD)
+        if(NOT TARGET test_public_headers_build)
+          if(GAUDI_TEST_PUBLIC_HEADERS_BUILD)
+            # if build of tests is enabled we also build all headers in "all" target
+            add_custom_target(test_public_headers_build ALL)
+          else()
+            add_custom_target(test_public_headers_build)
+          endif()
+        endif()
+      else()
+        message(WARNING "Calling gaudi_install_headers more than once for ${package}")
+        message(WARNING "Are you calling gaudi_install_headers AND gaudi_add_library?")
+        message(WARNING "gaudi_add_library already installs headers.")
+      endif()
+      gaudi_add_genheader_dependencies(test_public_headers_build_${library})
+      add_dependencies(test_public_headers_build test_public_headers_build_${library})
     endif()
   endforeach()
   # flag the current directory as one that installs headers

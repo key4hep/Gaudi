@@ -5,7 +5,6 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
@@ -13,8 +12,8 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/System.h"
-#include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/ToolHandle.h"
+#include <Gaudi/Algorithm.h>
 
 //------------------------------------------------------------------------------
 namespace
@@ -53,11 +52,11 @@ StatusCode AlgTool::queryInterface( const InterfaceID& riid, void** ppvi )
                          [&]( const std::pair<InterfaceID, void*>& item ) { return item.first.versionMatch( riid ); } );
   if ( i == std::end( m_interfaceList ) ) {
     *ppvi = nullptr;
-    return NO_INTERFACE; // RETURN
+    return Status::NO_INTERFACE; // RETURN
   }
   *ppvi = i->second;
   addRef();
-  return SUCCESS; // RETURN
+  return StatusCode::SUCCESS; // RETURN
 }
 //------------------------------------------------------------------------------
 const std::string& AlgTool::name() const
@@ -121,18 +120,7 @@ StatusCode AlgTool::setProperties()
   auto jos = m_svcLocator->service<IJobOptionsSvc>( "JobOptionsSvc" );
   if ( !jos ) return StatusCode::FAILURE;
 
-  // set first generic Properties
-  StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName( name() ), this );
-  if ( sc.isFailure() ) return StatusCode::FAILURE;
-
-  // set specific Properties
-  if ( isGaudiThreaded( name() ) ) {
-    if ( jos->setMyProperties( name(), this ).isFailure() ) {
-      return StatusCode::FAILURE;
-    }
-  }
-  updateMsgStreamOutputLevel( m_outputLevel );
-  return StatusCode::SUCCESS;
+  return jos->setMyProperties( name(), this );
 }
 
 //------------------------------------------------------------------------------
@@ -146,32 +134,26 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
 
   IInterface* _p = const_cast<IInterface*>( parent );
 
+  if ( Gaudi::Algorithm* _alg = dynamic_cast<Gaudi::Algorithm*>( _p ) ) {
+    m_svcLocator = _alg->serviceLocator();
+  } else if ( Service* _svc = dynamic_cast<Service*>( _p ) ) {
+    m_svcLocator = _svc->serviceLocator();
+  } else if ( AlgTool* _too = dynamic_cast<AlgTool*>( _p ) ) {
+    m_svcLocator = _too->serviceLocator();
+  } else if ( Auditor* _aud = dynamic_cast<Auditor*>( _p ) ) {
+    m_svcLocator = _aud->serviceLocator();
+  } else {
+    throw GaudiException( "Failure to create tool '" + type + "/" + name + "': illegal parent type '" +
+                              System::typeinfoName( typeid( *_p ) ) + "'",
+                          "AlgTool", StatusCode::FAILURE );
+  }
+
   // inherit output level from parent
   { // get the "OutputLevel" property from parent
     SmartIF<IProperty> pprop( _p );
     if ( pprop && pprop->hasProperty( "OutputLevel" ) ) {
       m_outputLevel.assign( pprop->getProperty( "OutputLevel" ) );
     }
-  }
-  m_outputLevel.declareUpdateHandler(
-      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
-
-  if ( Algorithm* _alg = dynamic_cast<Algorithm*>( _p ) ) {
-    m_svcLocator = _alg->serviceLocator();
-    m_threadID   = getGaudiThreadIDfromName( _alg->name() );
-  } else if ( Service* _svc = dynamic_cast<Service*>( _p ) ) {
-    m_svcLocator = _svc->serviceLocator();
-    m_threadID   = getGaudiThreadIDfromName( _svc->name() );
-  } else if ( AlgTool* _too = dynamic_cast<AlgTool*>( _p ) ) {
-    m_svcLocator = _too->serviceLocator();
-    m_threadID   = getGaudiThreadIDfromName( _too->m_threadID );
-  } else if ( Auditor* _aud = dynamic_cast<Auditor*>( _p ) ) {
-    m_svcLocator = _aud->serviceLocator();
-    m_threadID   = getGaudiThreadIDfromName( _aud->name() );
-  } else {
-    throw GaudiException( "Failure to create tool '" + type + "/" + name + "': illegal parent type '" +
-                              System::typeinfoName( typeid( *_p ) ) + "'",
-                          "AlgTool", 0 );
   }
 
   {
@@ -190,11 +172,6 @@ AlgTool::AlgTool( const std::string& type, const std::string& name, const IInter
     m_auditorFinalize     = audit;
     m_auditorReinitialize = audit;
     m_auditorRestart      = audit;
-  }
-
-  // check thread ID and try if tool name indicates thread ID
-  if ( m_threadID.empty() ) {
-    m_threadID = getGaudiThreadIDfromName( AlgTool::name() );
   }
 }
 
@@ -407,7 +384,7 @@ AlgTool::~AlgTool()
 void AlgTool::initToolHandles() const
 {
 
-  IAlgTool* tool( 0 );
+  IAlgTool* tool = nullptr;
   for ( auto thArr : m_toolHandleArrays ) {
     if ( !thArr->retrieved() ) {
       if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
@@ -455,15 +432,22 @@ void AlgTool::initToolHandles() const
   }
 
   for ( auto th : m_toolHandles ) {
-    tool = th->get();
-    if ( tool ) {
-      m_tools.push_back( tool );
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
-        debug() << "Adding " << ( th->isPublic() ? "Public" : "Private" ) << " ToolHandle tool " << tool->name() << " ("
-                << tool->type() << ")" << endmsg;
-    } else {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+    if ( !th->isEnabled() ) {
+      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) && !th->typeAndName().empty() )
+        debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+      continue;
     }
+    if ( !th->get() ) {
+      auto sc = th->retrieve();
+      if ( UNLIKELY( sc.isFailure() ) ) {
+        throw GaudiException( "Failed to retrieve tool " + th->typeAndName(), this->name(), StatusCode::FAILURE );
+      }
+    }
+    tool = th->get();
+    if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+      debug() << "Adding " << ( th->isPublic() ? "public" : "private" ) << " ToolHandle tool " << tool->name() << " ("
+              << tool->type() << ")" << endmsg;
+    m_tools.push_back( tool );
   }
   m_toolHandlesInit = true;
 }
@@ -524,17 +508,4 @@ void AlgTool::acceptDHVisitor( IDataHandleVisitor* vis ) const
   vis->visit( this );
 
   for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
-}
-
-//-----------------------------------------------------------------------------
-void AlgTool::commitHandles()
-{
-  //-----------------------------------------------------------------------------
-
-  for ( auto h : outputHandles() ) h->commit();
-
-  for ( auto t : m_tools ) {
-    AlgTool* at = dynamic_cast<AlgTool*>( t );
-    if ( at ) at->commitHandles();
-  }
 }

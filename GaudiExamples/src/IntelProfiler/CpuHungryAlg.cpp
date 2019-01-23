@@ -13,8 +13,6 @@ class CpuHungryAlg : public GaudiAlgorithm
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
-  /// ... and destructor
-  ~CpuHungryAlg() override = default; ///< Destructor
 
   StatusCode initialize() override; ///< Algorithm initialization
   StatusCode execute() override;    ///< Algorithm execution
@@ -28,7 +26,7 @@ private:
 
 private:
   Gaudi::Property<long> m_loops{this, "Loops", 1000000, ""};
-  int m_nevent = 0;
+  int                   m_nevent = 0;
 };
 
 // Register algorithm

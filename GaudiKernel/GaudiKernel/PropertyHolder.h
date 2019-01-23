@@ -22,23 +22,27 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/detected.h"
 
 // ============================================================================
-
-// pre-declaration of GaudiHandles is sufficient
-template <class T>
-class ToolHandle;
-template <class T>
-class ServiceHandle;
-template <class T>
-class ToolHandleArray;
-template <class T>
-class ServiceHandleArray;
-template <class T>
-class DataObjectHandle;
-
 namespace Gaudi
 {
+  namespace Details
+  {
+
+    template <typename T>
+    struct is_gaudi_property : std::false_type {
+    };
+
+    template <typename TYPE, typename VERIFIER, typename HANDLERS>
+    struct is_gaudi_property<Gaudi::Property<TYPE, VERIFIER, HANDLERS>> : std::true_type {
+    };
+
+    template <typename T>
+    using PropertyType_t = typename std::remove_reference_t<T>::PropertyType;
+    template <typename T>
+    using PropertyType = Gaudi::cpp17::detected_or_t<Gaudi::Property<T>, PropertyType_t, T>;
+  }
   namespace Utils
   {
     /// Helper for case insensitive string comparison.
@@ -84,8 +88,7 @@ public:
   /// \endcode
   using PropertyHolderImpl = PropertyHolder<BASE>;
 
-  PropertyHolder()           = default;
-  ~PropertyHolder() override = default;
+  PropertyHolder() = default;
 
   /// \{
   /// prevent copies
@@ -105,29 +108,14 @@ public:
 
   /// Helper to wrap a regular data member and use it as a regular property.
   /// \deprecated Prefer the signatures using a a fully initialized PropertyBase instance.
-  template <class TYPE, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
-                                                           !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
-                                                           !std::is_base_of<DataObjectHandleBase, TYPE>::value>::type>
+  template <typename TYPE, typename = std::enable_if_t<!Gaudi::Details::is_gaudi_property<TYPE>::value>>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" )
   {
-    assertUniqueName( name );
-    m_todelete.emplace_back( new Gaudi::Property<TYPE&>( name, value ) );
+    m_todelete.push_back( std::make_unique<Gaudi::Details::PropertyType<TYPE&>>( name, value ) );
     Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-    p->setDocumentation( doc );
-    m_properties.push_back( p );
-    return p;
-  }
 
-  /// \deprecated Kept for backward compatibility, use the non-const version instead, will be removed in v29r0.
-  template <class TYPE, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
-                                                           !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
-                                                           !std::is_base_of<DataObjectHandleBase, TYPE>::value>::type>
-  [[deprecated(
-      "Kept for backward compatibility, use the non-const version instead, will be removed in v29r0" )]] Gaudi::
-      Details::PropertyBase*
-      declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
-  {
-    return const_cast<PropertyHolder*>( this )->declareProperty<TYPE>( name, value, doc );
+    p->setDocumentation( doc );
+    return &declareProperty( *p );
   }
 
   /// Declare a PropertyBase instance setting name and documentation.
@@ -137,12 +125,11 @@ public:
                                                  Gaudi::Property<TYPE, VERIFIER, HANDLERS>& prop,
                                                  const std::string& doc = "none" )
   {
-    assertUniqueName( name );
     Gaudi::Details::PropertyBase* p = &prop;
     p->setName( name );
+
     p->setDocumentation( doc );
-    m_properties.push_back( p );
-    return p;
+    return &declareProperty( *p );
   }
 
   /// Declare a remote property.
@@ -150,53 +137,13 @@ public:
   Gaudi::Details::PropertyBase* declareRemoteProperty( const std::string& name, IProperty* rsvc,
                                                        const std::string& rname = "" )
   {
-    if ( !rsvc ) {
-      return nullptr;
-    }
-    const std::string& nam          = rname.empty() ? name : rname;
-    Gaudi::Details::PropertyBase* p = property( nam, rsvc->getProperties() );
+    if ( !rsvc ) return nullptr;
+    const std::string&            nam = rname.empty() ? name : rname;
+    Gaudi::Details::PropertyBase* p   = property( nam, rsvc->getProperties() );
     m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
     return p;
   }
 
-  /// Specializations for various GaudiHandles
-  /// \{
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, GaudiHandleBase& ref,
-                                                 const std::string& doc = "none" )
-  {
-    assertUniqueName( name );
-    m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
-    Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-
-    p->setDocumentation( doc );
-    m_properties.push_back( p );
-
-    return p;
-  }
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, GaudiHandleArrayBase& ref,
-                                                 const std::string& doc = "none" )
-  {
-    assertUniqueName( name );
-    m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
-    Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-
-    p->setDocumentation( doc );
-    m_properties.push_back( p );
-
-    return p;
-  }
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandleBase& ref,
-                                                 const std::string& doc = "none" )
-  {
-    assertUniqueName( name );
-    m_todelete.emplace_back( new DataObjectHandleProperty( name, ref ) );
-    Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-
-    p->setDocumentation( doc );
-    m_properties.push_back( p );
-
-    return p;
-  }
   /// \}
 
   // ==========================================================================
@@ -209,9 +156,7 @@ public:
   {
     Gaudi::Details::PropertyBase* pp = property( p.name() );
     try {
-      if ( pp && pp->assign( p ) ) {
-        return StatusCode::SUCCESS;
-      }
+      if ( pp && pp->assign( p ) ) return StatusCode::SUCCESS;
     } catch ( ... ) {
     }
     return StatusCode::FAILURE;
@@ -224,10 +169,8 @@ public:
   {
     std::string name;
     std::string value;
-    StatusCode sc = Gaudi::Parsers::parse( name, value, s );
-    if ( sc.isFailure() ) {
-      return sc;
-    }
+    StatusCode  sc = Gaudi::Parsers::parse( name, value, s );
+    if ( sc.isFailure() ) return sc;
     return setProperty( name, value );
   }
   // ==========================================================================
@@ -315,9 +258,7 @@ public:
   {
     // get the property
     const Gaudi::Details::PropertyBase* p = property( n );
-    if ( !p ) {
-      return StatusCode::FAILURE;
-    }
+    if ( !p ) return StatusCode::FAILURE;
     // convert the value into the string
     v = p->toString();
     return StatusCode::SUCCESS;
@@ -344,18 +285,12 @@ protected:
   {
     // local property ?
     Gaudi::Details::PropertyBase* lp = property( name, m_properties );
-    if ( lp ) {
-      return lp;
-    }
+    if ( lp ) return lp;
     // look for remote property
     for ( const auto& it : m_remoteProperties ) {
-      if ( !Gaudi::Utils::iequal( it.first, name ) ) {
-        continue;
-      }
+      if ( !Gaudi::Utils::iequal( it.first, name ) ) continue;
       const IProperty* p = it.second.first;
-      if ( !p ) {
-        continue;
-      }
+      if ( !p ) continue;
       return property( it.second.second, p->getProperties() );
     }
     return nullptr; // RETURN
@@ -363,7 +298,7 @@ protected:
 
 private:
   /// get the property by name form the proposed list
-  Gaudi::Details::PropertyBase* property( const std::string& name,
+  Gaudi::Details::PropertyBase* property( const std::string&                                name,
                                           const std::vector<Gaudi::Details::PropertyBase*>& props ) const
   {
     auto it = std::find_if( props.begin(), props.end(), [&name]( Gaudi::Details::PropertyBase* p ) {
@@ -378,9 +313,7 @@ private:
   {
     if ( UNLIKELY( hasProperty( name ) ) ) {
       auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
-      if ( !msgSvc ) {
-        std::cerr << "error: cannot get MessageSvc!" << std::endl;
-      }
+      if ( !msgSvc ) std::cerr << "error: cannot get MessageSvc!" << std::endl;
       MsgStream log( msgSvc, this->name() );
       log << MSG::WARNING << "duplicated property name '" << name << "', see https://its.cern.ch/jira/browse/GAUDI-1023"
           << endmsg;

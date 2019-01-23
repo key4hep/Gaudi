@@ -18,7 +18,7 @@ int mallctl( const char* name, void* oldp, size_t* oldlenp, void* newp, size_t n
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( JemallocProfile )
+DECLARE_COMPONENT( JemallocProfile )
 
 //=============================================================================
 // Initialization
@@ -30,7 +30,7 @@ StatusCode JemallocProfile::initialize()
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
   bool active = true;
-  int res     = mallctl( "prof.active", NULL, NULL, &active, sizeof( active ) );
+  int  res    = mallctl( "prof.active", NULL, NULL, &active, sizeof( active ) );
   if ( res != 0 ) {
     return StatusCode::FAILURE;
   }

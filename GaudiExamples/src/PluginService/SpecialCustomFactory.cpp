@@ -8,8 +8,7 @@ namespace PluginServiceTest
   class CustomFactoryAlgorithm : public GaudiAlgorithm
   {
   public:
-    CustomFactoryAlgorithm( const std::string& name, ISvcLocator* svcloc ) : GaudiAlgorithm( name, svcloc ) {}
-    ~CustomFactoryAlgorithm() override {}
+    using GaudiAlgorithm::GaudiAlgorithm;
 
     StatusCode execute() override
     {
@@ -22,21 +21,19 @@ namespace PluginServiceTest
 namespace
 {
   using PluginServiceTest::CustomFactoryAlgorithm;
-  class _register__CustomFactoryAlgorithm
+
+  std::unique_ptr<IAlgorithm> creator( const std::string& name, ISvcLocator* svcLoc )
   {
-  public:
-    typedef Algorithm::Factory s_t;
-    static IAlgorithm* creator( const std::string& name, ISvcLocator*&& svcLoc )
-    {
-      CustomFactoryAlgorithm* p = new CustomFactoryAlgorithm( name, svcLoc );
-      std::cout << "created CustomFactoryAlgorithm at " << p << std::endl;
-      return p;
+    auto p = std::make_unique<CustomFactoryAlgorithm>( name, svcLoc );
+
+    // do not print messages if we are created in genconf
+    const std::string cmd = System::cmdLineArgs()[0];
+    if ( cmd.find( "genconf" ) == std::string::npos ) {
+      std::cout << "created CustomFactoryAlgorithm at " << p.get() << std::endl;
     }
-    _register__CustomFactoryAlgorithm()
-    {
-      using ::Gaudi::PluginService::Details::Registry;
-      Registry::instance().add<s_t, CustomFactoryAlgorithm>(
-          ::Gaudi::PluginService::Details::demangle<CustomFactoryAlgorithm>(), creator );
-    }
-  } _register__CustomFactoryAlgorithm;
+
+    return std::move( p );
+  }
+
+  Gaudi::PluginService::DeclareFactory<CustomFactoryAlgorithm> _{creator};
 }

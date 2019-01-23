@@ -11,9 +11,16 @@ if(GAUDI_REFLEX_COMPONENT_ALIASES)
   add_definitions(-DGAUDI_REFLEX_COMPONENT_ALIASES)
 endif()
 
+if(GAUDI_CXX_STANDARD STRLESS "c++17")
+  find_package(Boost REQUIRED)
+  set(includes INCLUDE_DIRS Boost)
+  set(libs Boost)
+endif()
+
 # Library
-gaudi_add_library(GaudiPluginService src/PluginService.cpp src/capi_pluginservice.cpp
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS}
+gaudi_add_library(GaudiPluginService src/PluginServiceV2.cpp src/PluginServiceV1.cpp src/capi_pluginservice.cpp
+                  ${includes}
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} -lstdc++fs ${libs}
                   PUBLIC_HEADERS Gaudi)
 
 # Disable generation of ConfUserDB (must be done before gaudi_install_python_modules)
@@ -26,11 +33,21 @@ gaudi_add_executable(listcomponents src/listcomponents.cpp)
 target_link_libraries(listcomponents GaudiPluginService ${CMAKE_DL_LIBS})
 
 # Hide some Boost compile time warnings
-find_package(Boost)
+find_package(Boost REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-gaudi_add_unit_test(Test_GaudiPluginService_UseCases tests/src/UseCases.cpp
+gaudi_add_library(Test_GaudiPluginService_UseCasesLib tests/src/UseCasesLib.cpp
+                  NO_PUBLIC_HEADERS
+                  LINK_LIBRARIES GaudiPluginService)
+gaudi_add_unit_test(Test_GaudiPluginService_UseCases tests/src/UseCasesTests.cpp
                     LINK_LIBRARIES GaudiPluginService
+                    TYPE Boost)
+
+gaudi_add_library(Test_GaudiPluginService_LegacyUseCasesLib tests/src/LegacyUseCasesLib.cpp
+                  NO_PUBLIC_HEADERS
+                  LINK_LIBRARIES GaudiPluginService)
+gaudi_add_unit_test(Test_GaudiPluginService_LegacyUseCases tests/src/LegacyUseCasesTests.cpp
+                    LINK_LIBRARIES GaudiPluginService Boost
                     TYPE Boost)
 
 gaudi_add_test(listcomponents.usage
@@ -45,3 +62,8 @@ gaudi_add_test(listcomponents.help2
 gaudi_add_test(listcomponents.wrong_args
                COMMAND $<TARGET_FILE_NAME:listcomponents> -o
                PASSREGEX "ERROR: missing argument")
+
+gaudi_add_test(listcomponents.v1 COMMAND $<TARGET_FILE_NAME:listcomponents> $<TARGET_FILE_NAME:Test_GaudiPluginService_LegacyUseCasesLib>
+               PASSREGEX "v1::$<TARGET_FILE_NAME:Test_GaudiPluginService_LegacyUseCasesLib>:Test::ComponentA")
+gaudi_add_test(listcomponents.v2 COMMAND $<TARGET_FILE_NAME:listcomponents> $<TARGET_FILE_NAME:Test_GaudiPluginService_UseCasesLib>
+               PASSREGEX "v2::$<TARGET_FILE_NAME:Test_GaudiPluginService_UseCasesLib>:special-id")

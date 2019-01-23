@@ -39,7 +39,7 @@ evtslots = 23
 evtMax = 50
 cardinality = 10
 threads = 10
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # The configuration of the whiteboard ------------------------------------------
 # It is useful to call it EventDataSvc to replace the usual data service with
@@ -48,7 +48,7 @@ threads = 10
 whiteboard = HiveWhiteBoard("EventDataSvc",
                             EventSlots=evtslots)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Event Loop Manager -----------------------------------------------------------
 # It's called slim since it has less functionalities overall than the good-old
@@ -57,9 +57,9 @@ whiteboard = HiveWhiteBoard("EventDataSvc",
 slimeventloopmgr = HiveSlimEventLoopMgr(
     SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
-# ForwardScheduler -------------------------------------------------------------
+# AvalancheScheduler -----------------------------------------------------------
 # We just decide how many algorithms in flight we want to have and how many
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
@@ -67,13 +67,13 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads,
                                   OutputLevel=WARNING)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Algo Resource Pool -----------------------------------------------------------
 # Nothing special here, we just set the debug level.
 AlgResourcePool(OutputLevel=DEBUG)
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 # Set up of the crunchers, daily business --------------------------------------
 
@@ -112,4 +112,4 @@ ApplicationMgr(EvtMax=evtMax,
                TopAlg=[a1, a2, a3, a4, ctrp, ctrd],
                MessageSvcType="InertMessageSvc")
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------

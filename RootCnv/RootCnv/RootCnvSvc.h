@@ -11,12 +11,13 @@
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/ConversionSvc.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiUtils/IIODataManager.h"
 
 // C++ include files
 #include <set>
 
 // Forward declarations
-class IDataManagerSvc;
+struct IDataManagerSvc;
 class IIncidentSvc;
 class TClass;
 
@@ -35,7 +36,6 @@ namespace Gaudi
 {
 
   // Forward declarations
-  class IIODataManager;
   class IDataConnection;
   class RootDataConnection;
   class RootConnectionSetup;
@@ -102,11 +102,8 @@ namespace Gaudi
     /// Standard constructor
     RootCnvSvc( const std::string& name, ISvcLocator* svc );
 
-    /// Standard destructor
-    ~RootCnvSvc() override = default;
-
     /// Update state of the service
-    virtual StatusCode updateServiceState( IOpaqueAddress* /* pAddress */ ) override { return StatusCode::SUCCESS; }
+    StatusCode updateServiceState( IOpaqueAddress* /* pAddress */ ) override { return StatusCode::SUCCESS; }
 
     /** Standard way to print errors. after the printout an exception is thrown.
      * @param      msg      [IN]     Message string to be printed.

@@ -31,17 +31,14 @@ namespace RootHistCnv
     /// Standard constructor
     PersSvc( const std::string& name, ISvcLocator* svc ) : ConversionSvc( name, svc, ROOT_StorageType ) {}
 
-    /// Standard destructor
-    ~PersSvc() override = default;
-
   private:
     // undefFileName is defined in PersSvc.cpp
     Gaudi::Property<std::string> m_defFileName{this, "OutputFile", undefFileName, "default file name"};
-    Gaudi::Property<bool> m_alphaIds{this, "ForceAlphaIds", false, "force alphabetic histograms/ntuple IDs"};
+    Gaudi::Property<bool>        m_alphaIds{this, "ForceAlphaIds", false, "force alphabetic histograms/ntuple IDs"};
     Gaudi::Property<bool> m_outputEnabled{this, "OutputEnabled", true, "Flag to enable/disable the output to file."};
 
-    std::unique_ptr<TFile> m_hfile; ///< Pointer to the ROOT file
-    bool m_prtWar = false;          ///< Already printed a Warning
+    std::unique_ptr<TFile> m_hfile;          ///< Pointer to the ROOT file
+    bool                   m_prtWar = false; ///< Already printed a Warning
   };
 
 } // namespace RootHistCnv

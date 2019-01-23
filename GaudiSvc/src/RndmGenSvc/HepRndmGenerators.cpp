@@ -266,7 +266,7 @@ namespace HepRndm
       double sigma = m_specs->sigma();
       double x     = RandFlat::shoot( m_hepEngine, 0., 1. );
       double u     = 1000.0 * x;
-      long i       = long( u );
+      long   i     = long( u );
       double ranlan, v;
       u -= i;
       if ( i >= 70 && i < 800 ) {
@@ -300,13 +300,11 @@ namespace HepRndm
   {
   protected:
     std::unique_ptr<RandGeneral> m_generator;
-    HepRandomEngine* m_hepEngine = nullptr;
+    HepRandomEngine*             m_hepEngine = nullptr;
 
   public:
     /// Standard Constructor
     Generator( IInterface* engine ) : RndmGen( engine ) {}
-    /// Standard Destructor
-    ~Generator() override = default;
     /// Initialize the generator
     StatusCode initialize( const IRndmGen::Param& par ) override
     {

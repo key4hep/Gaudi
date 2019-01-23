@@ -48,7 +48,7 @@ std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( TH2D* rep )
 
 std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist )
 {
-  TH2D* h        = getRepresentation<AIDA::IHistogram2D, TH2D>( hist );
+  TH2D*        h = getRepresentation<AIDA::IHistogram2D, TH2D>( hist );
   Histogram2D* n = h ? new Histogram2D( new TH2D( *h ) ) : nullptr;
   return {n, n};
 }
@@ -56,7 +56,7 @@ std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r  = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionX( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
@@ -66,7 +66,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, c
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r  = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionY( "_py", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
@@ -76,7 +76,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, c
 std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam, const IHistogram2D& hist, int first,
                                                          int last )
 {
-  TH2* r  = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionY( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Histogram1D* p = ( t ? new Histogram1D( t ) : nullptr );
@@ -86,7 +86,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam,
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r      = Gaudi::getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*      r = Gaudi::getRepresentation<IHistogram2D, TH2>( hist );
   TProfile* t = r ? r->ProfileX( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Profile1D* p = ( t ? new Profile1D( t ) : nullptr );
@@ -96,7 +96,7 @@ std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, c
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DY( const std::string& nam, const IHistogram2D& hist, int first,
                                                        int last )
 {
-  TH2* r      = getRepresentation<IHistogram2D, TH2>( hist );
+  TH2*      r = getRepresentation<IHistogram2D, TH2>( hist );
   TProfile* t = r ? r->ProfileY( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
   Profile1D* p = ( t ? new Profile1D( t ) : nullptr );
@@ -208,10 +208,10 @@ bool Gaudi::Histogram2D::setRms( double rmsX, double rmsY )
 void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
 {
   // implement here the copy
-  const char* tit = h.title().c_str();
+  const char* title = h.title().c_str();
   if ( h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() )
-    m_rep.reset( new TH2D( tit, tit, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(), h.yAxis().bins(),
-                           h.yAxis().lowerEdge(), h.yAxis().upperEdge() ) );
+    m_rep.reset( new TH2D( title, title, h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(),
+                           h.yAxis().bins(), h.yAxis().lowerEdge(), h.yAxis().upperEdge() ) );
   else {
     Edges eX, eY;
     for ( int i = 0; i < h.xAxis().bins(); ++i ) eX.push_back( h.xAxis().binLowerEdge( i ) );
@@ -220,7 +220,7 @@ void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
     for ( int i = 0; i < h.yAxis().bins(); ++i ) eY.push_back( h.yAxis().binLowerEdge( i ) );
     // add also upperedges at the end
     eY.push_back( h.yAxis().upperEdge() );
-    m_rep.reset( new TH2D( tit, tit, eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front() ) );
+    m_rep.reset( new TH2D( title, title, eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front() ) );
   }
   m_xAxis.initialize( m_rep->GetXaxis(), true );
   m_yAxis.initialize( m_rep->GetYaxis(), true );

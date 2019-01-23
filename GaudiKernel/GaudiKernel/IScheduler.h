@@ -40,5 +40,9 @@ public:
   virtual unsigned int freeSlots() = 0;
 
   virtual void dumpState(){};
+
+  /// Method to inform the scheduler about event views
+  virtual StatusCode scheduleEventView( const EventContext* sourceContext, const std::string& nodeName,
+                                        std::unique_ptr<EventContext> viewContext ) = 0;
 };
 #endif

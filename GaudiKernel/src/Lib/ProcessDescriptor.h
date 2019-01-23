@@ -17,10 +17,10 @@ namespace System
   */
   typedef struct _PEB* PPEB;
   struct PROCESS_BASIC_INFORMATION {
-    long ExitStatus;
-    PPEB PebBaseAddress;
+    long          ExitStatus;
+    PPEB          PebBaseAddress;
     unsigned long AffinityMask;
-    long BasePriority;
+    long          BasePriority;
     unsigned long UniqueProcessId;
     unsigned long InheritedFromUniqueProcessId;
   };
@@ -36,7 +36,7 @@ namespace System
     unsigned long MinimumWorkingSetSize;
     unsigned long MaximumWorkingSetSize;
     unsigned long PagefileLimit;
-    longlong TimeLimit;
+    long long     TimeLimit;
   };
 
   /** Process I/O Counters
@@ -46,12 +46,12 @@ namespace System
     unsigned long ReadOperationCount;
     unsigned long WriteOperationCount;
     unsigned long OtherOperationCount;
-    //      longlong ReadOperationCount;
-    //      longlong WriteOperationCount;
-    //      longlong OtherOperationCount;
-    longlong ReadTransferCount;
-    longlong WriteTransferCount;
-    longlong OtherTransferCount;
+    //      long long ReadOperationCount;
+    //      long long WriteOperationCount;
+    //      long long OtherOperationCount;
+    long long ReadTransferCount;
+    long long WriteTransferCount;
+    long long OtherTransferCount;
   };
 
   /** Process Virtual Memory Counters
@@ -91,11 +91,11 @@ namespace System
       NtQueryInformationThread using ThreadTimes
   */
   struct KERNEL_USER_TIMES {
-    longlong CreateTime;
-    longlong ExitTime;
-    longlong KernelTime;
-    longlong UserTime;
-    // longlong EllapsedTime; // Added by M.Frank
+    long long CreateTime;
+    long long ExitTime;
+    long long KernelTime;
+    long long UserTime;
+    // long long EllapsedTime; // Added by M.Frank
   };
 
   /**
@@ -111,12 +111,12 @@ namespace System
     class ProcessHandle
     {
       void* m_handle;
-      bool m_needRelease;
+      bool  m_needRelease;
 
     public:
       ProcessHandle( long pid );
       virtual ~ProcessHandle();
-      long item() { return m_needRelease ? 1 : 0; }
+      long  item() { return m_needRelease ? 1 : 0; }
       void* handle() { return m_handle; }
     };
 

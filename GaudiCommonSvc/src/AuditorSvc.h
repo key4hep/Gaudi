@@ -82,14 +82,11 @@ public:
 
   using extends::extends;
 
-  // Destructor.
-  ~AuditorSvc() override = default;
-
 private:
   // management helper
   SmartIF<IAuditor> newAuditor_( MsgStream&, const std::string& );
   SmartIF<IAuditor> findAuditor_( const std::string& );
-  StatusCode syncAuditors_();
+  StatusCode        syncAuditors_();
 
   Gaudi::Property<std::vector<std::string>> m_audNameList{this, "Auditors", {}, "list of auditors names"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "enable/disable alltogether the auditors"};

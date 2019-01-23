@@ -27,12 +27,12 @@ namespace GaudiPython
   {
   public:
     // ========================================================================
-    typedef std::vector<GaudiAlg::ID> IDs;
+    typedef std::vector<GaudiAlg::ID>        IDs;
     typedef std::vector<AIDA::IHistogram1D*> Histos1D;
     typedef std::vector<AIDA::IHistogram2D*> Histos2D;
     typedef std::vector<AIDA::IHistogram3D*> Histos3D;
-    typedef std::vector<AIDA::IProfile1D*> Profiles1D;
-    typedef std::vector<AIDA::IProfile2D*> Profiles2D;
+    typedef std::vector<AIDA::IProfile1D*>   Profiles1D;
+    typedef std::vector<AIDA::IProfile2D*>   Profiles2D;
     // ========================================================================
   public:
     // ========================================================================

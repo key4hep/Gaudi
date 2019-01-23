@@ -1,5 +1,4 @@
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 
 #include "GaudiKernel/IDataManagerSvc.h"
@@ -8,7 +7,7 @@
 
 #include "WriteHandleAlg.h"
 
-DECLARE_ALGORITHM_FACTORY( WriteHandleAlg )
+DECLARE_COMPONENT( WriteHandleAlg )
 
 StatusCode WriteHandleAlg::execute() // the execution of the algorithm
 {

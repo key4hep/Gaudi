@@ -57,6 +57,12 @@ Some extra targets are provided for special cases:
 
     optional operations on the content of `InstallArea` (like compressing
     the `python` directory)
+    
+* `apply-formatting`
+
+    apply automatic code formatting to C++ and python sources (using `clang-format` and 
+    `autopep8` if available)
+   
 
 
 Build

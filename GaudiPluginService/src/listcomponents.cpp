@@ -22,7 +22,9 @@
 #include <dlfcn.h>
 #include <getopt.h>
 
+#define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
+#include <Gaudi/PluginServiceV1.h>
 
 void help( std::string argv0 )
 {
@@ -46,17 +48,20 @@ void usage( std::string argv0 )
 
 int main( int argc, char* argv[] )
 {
-  Gaudi::PluginService::Details::Registry& reg = Gaudi::PluginService::Details::Registry::instance();
-  typedef Gaudi::PluginService::Details::Registry::KeyType key_type;
+  auto& reg2 = Gaudi::PluginService::v2::Details::Registry::instance();
+  auto& reg1 = Gaudi::PluginService::v1::Details::Registry::instance();
+
+  using key_type = Gaudi::PluginService::v2::Details::Registry::KeyType;
 
   // cache to keep track of the loaded factories
   std::map<key_type, std::string> loaded;
   // initialize the local cache
-  for ( const auto& elem : reg.loadedFactories() ) loaded.emplace( elem, "<preloaded>" );
+  for ( const auto& name : reg2.loadedFactoryNames() ) loaded.emplace( name, "<preloaded>" );
+  for ( const auto& name : reg1.loadedFactoryNames() ) loaded.emplace( name, "<preloaded>" );
 
   // Parse command line
   std::list<char*> libs;
-  std::string output_opt( "-" );
+  std::string      output_opt( "-" );
   {
     std::string argv0( argv[0] );
     {
@@ -96,17 +101,22 @@ int main( int argc, char* argv[] )
   }
   std::ostream& output = ( output_file ? *output_file : std::cout );
 
+  auto dump_from = [&output, &loaded]( auto& reg, const char* lib, const char* prefix ) {
+    for ( const auto& factoryName : reg.loadedFactoryNames() ) {
+      auto f = loaded.find( factoryName );
+      if ( f == loaded.end() ) {
+        output << prefix << "::" << lib << ":" << factoryName << std::endl;
+        loaded.emplace( factoryName, lib );
+      } else
+        std::cerr << "WARNING: factory '" << factoryName << "' already found in " << f->second << std::endl;
+    }
+  };
+
   // loop over the list of libraries passed on the command line
-  for ( char* lib : libs ) {
+  for ( const char* lib : libs ) {
     if ( dlopen( lib, RTLD_LAZY | RTLD_LOCAL ) ) {
-      for ( const auto& factory : reg.loadedFactories() ) {
-        auto f = loaded.find( factory );
-        if ( f == loaded.end() ) {
-          output << lib << ":" << factory << std::endl;
-          loaded.emplace( factory, lib );
-        } else
-          std::cerr << "WARNING: factory '" << factory << "' already found in " << f->second << std::endl;
-      }
+      dump_from( reg2, lib, "v2" );
+      dump_from( reg1, lib, "v1" );
     } else {
       std::cerr << "ERROR: failed to load " << lib << ": " << dlerror() << std::endl;
       return EXIT_FAILURE;

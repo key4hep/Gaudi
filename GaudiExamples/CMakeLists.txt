@@ -5,14 +5,14 @@ gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 find_package(AIDA)
 find_package(HepPDT)
 find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(Boost COMPONENTS python${boost_python_version} REQUIRED)
 find_package(CLHEP)
 find_package(GSL)
-find_package(PythonLibs)
-find_package(RELAX)
-find_package(TBB)
+find_package(PythonLibs REQUIRED)
+find_package(RELAX REQUIRED)
+find_package(TBB REQUIRED)
 # ROOT runtime
-find_package(PNG)
+find_package(PNG REQUIRED)
 
 # Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
@@ -24,12 +24,9 @@ if( HEPPDT_FOUND )
    include_directories( SYSTEM ${HEPPDT_INCLUDE_DIRS} )
 endif()
 
-if(NOT CMAKE_VERSION VERSION_LESS 3.1)
-  # FindOpenCL.cmake has been introduced in CMake 3.1.0
-  find_package(OpenCL)
-  if(NOT OpenCL_FOUND)
-    message(STATUS "OpenCL not found, not building OpenCLAlg example.")
-  endif()
+find_package(OpenCL)
+if(NOT OpenCL_FOUND)
+  message(STATUS "OpenCL not found, not building OpenCLAlg example.")
 endif()
 
 #---Libraries---------------------------------------------------------------
@@ -47,7 +44,6 @@ set(GaudiExamples_srcs
     src/ColorMsg/ColorMsgAlg.cpp
     src/History/History.cpp
     src/THist/*.cpp
-    src/ErrorLog/ErrorLogTest.cpp
     src/Maps/*.cpp
     src/MultipleLogStreams/*.cpp
     src/GaudiCommonTests/*.cpp
@@ -64,6 +60,8 @@ set(GaudiExamples_srcs
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
     src/PluginService/*.cpp
+    src/ToolHandles/*.cpp
+    src/ReEntAlg/*.cpp
 )
 
 # Add the sources requiring non-standard externals:
@@ -88,7 +86,7 @@ endif()
 if( OpenCL_FOUND )
    list( APPEND GaudiExamples_srcs src/OpenCL/*.cpp )
 endif()
-if( RANGES_V3_FOUND )
+if( RANGEV3_FOUND )
    list( APPEND GaudiExamples_srcs src/FunctionalAlgorithms/*.cpp )
 endif()
 
@@ -145,11 +143,9 @@ if(NOT StatusCodeHeaderData_previous STREQUAL StatusCodeHeaderData)
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
 endif()
 
-if(Boost_PYTHON_FOUND)
-  gaudi_add_python_module(PyExample src/PythonModule/*.cpp
-                          LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
-                          INCLUDE_DIRS Boost PythonLibs)
-endif()
+gaudi_add_python_module(PyExample src/PythonModule/*.cpp
+                        LINK_LIBRARIES ${Boost_PYTHON${boost_python_version}_LIBRARY}
+                        INCLUDE_DIRS Boost PythonLibs)
 
 gaudi_install_python_modules()
 
@@ -195,3 +191,5 @@ gaudi_add_test(WriteAndReadHandleWhiteBoard
 gaudi_add_test(nose
                COMMAND nosetests -v
                ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
+
+gaudi_add_executable(countersUnitTest src/CounterEx/CountersUnitTest.cpp)

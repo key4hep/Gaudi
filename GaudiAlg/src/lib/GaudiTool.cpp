@@ -93,7 +93,7 @@ namespace GaudiToolLocal
   private:
     // ========================================================================
     typedef std::map<std::string, long> Map;
-    Map m_map;
+    Map         m_map;
     std::string m_message;
     // ========================================================================
   };
@@ -197,7 +197,7 @@ bool GaudiTool::isPublic() const
 {
   const IAlgTool* tool = this;
   // Recurse down the ownership tree, to see with we ever end up at the ToolSvc
-  bool ownedByToolSvc = false;
+  bool         ownedByToolSvc = false;
   unsigned int sanityCheck( 0 );
   while ( tool && ++sanityCheck < 99999 ) {
     ownedByToolSvc = ( nullptr != dynamic_cast<const IToolSvc*>( tool->parent() ) );

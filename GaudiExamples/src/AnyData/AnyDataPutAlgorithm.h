@@ -26,7 +26,7 @@ public:
 private:
   Gaudi::Property<std::string> m_loc{this, "Location", "Test"};
 
-  AnyDataHandle<std::vector<int>> m_ids{"/Event/Test/Ids", Gaudi::DataHandle::Writer, this};
+  DataObjectWriteHandle<std::vector<int>> m_ids{this, "Output", "/Event/Test/Ids"};
 
   std::vector<AnyDataHandle<int>> m_id_vec;
 };

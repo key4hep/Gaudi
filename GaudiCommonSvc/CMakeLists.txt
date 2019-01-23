@@ -3,8 +3,8 @@ gaudi_subdir(GaudiCommonSvc)
 gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(AIDA)
-find_package(Boost COMPONENTS system filesystem)
-find_package(ROOT COMPONENTS Hist RIO)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(ROOT COMPONENTS Hist RIO REQUIRED)
 
 # Decide whether to link against AIDA:
 set( aida_lib )

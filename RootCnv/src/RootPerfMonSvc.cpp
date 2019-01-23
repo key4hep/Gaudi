@@ -44,7 +44,7 @@ StatusCode RootPerfMonSvc::error( CSTR msg )
 // Initialize the Db data persistency service
 StatusCode RootPerfMonSvc::initialize()
 {
-  string cname;
+  string     cname;
   StatusCode status = Service::initialize();
   if ( !status.isSuccess() ) return error( "Failed to initialize Service base class." );
   m_log.reset( new MsgStream( msgSvc(), name() ) );
@@ -90,11 +90,11 @@ void RootPerfMonSvc::record( EventType eventType )
 {
   SysProcStat data;
   m_eventType = eventType;
-  m_utime     = (ULong_t)data.utime;
-  m_stime     = (ULong_t)data.stime;
-  m_vsize     = (ULong_t)data.vsize;
-  m_rss       = (Long_t)data.rss;
-  m_time      = (Long_t)data.time;
+  m_utime     = data.utime;
+  m_stime     = data.stime;
+  m_vsize     = data.vsize;
+  m_rss       = data.rss;
+  m_time      = data.time;
   m_perfTree->Fill();
 }
 
@@ -119,7 +119,7 @@ StatusCode RootPerfMonSvc::stop()
   auto map = new TMap();
   for ( const auto& i : m_outputs ) {
     const char* fn = i.c_str();
-    Long_t id, siz, flags, tim;
+    Long_t      id, siz, flags, tim;
     if ( 0 == gSystem->GetPathInfo( fn, &id, &siz, &flags, &tim ) ) {
       ::sprintf( text, "%ld", siz );
       map->Add( new TObjString( fn ), new TObjString( text ) );

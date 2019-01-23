@@ -164,7 +164,7 @@ public:
   /// Access to embedded type
   const std::type_info* type() const { return &typeid( TYPE ); }
   /// Access to raw data pointer
-  TYPE* data() { return const_cast<TYPE*>( m_target ); }
+  TYPE*       data() { return const_cast<TYPE*>( m_target ); }
   const TYPE* data() const { return m_target; }
   /// Access to the object
   const TYPE* target() const;

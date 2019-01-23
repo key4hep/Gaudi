@@ -39,7 +39,7 @@ StatusCode RootHistCnv::RConverter::createDirectory( const std::string& loc )
   }
 
   std::vector<std::string> lpath;
-  int i = 1;
+  int                      i = 1;
 
   auto p = full.find( ":", 0 );
   if ( p != std::string::npos ) {
@@ -76,9 +76,9 @@ std::string RootHistCnv::RConverter::diskDirectory( const std::string& loc )
 {
   // Get rid of leading /NTUPLES/{INPUT_STREAM} or /stat/{INPUT_STREAM}
   std::string dir;
-  long lf1 = loc.find( "/NTUPLES/" );
-  long lf2 = loc.find( "/stat/" );
-  long ll;
+  long        lf1 = loc.find( "/NTUPLES/" );
+  long        lf2 = loc.find( "/stat/" );
+  long        ll;
   if ( lf1 != -1 ) {
     ll = loc.find( "/", lf1 + 9 );
 
@@ -114,7 +114,7 @@ void RootHistCnv::RConverter::setDirectory( const std::string& loc )
 //-----------------------------------------------------------------------------
 {
   MsgStream log( msgSvc(), "RConverter" );
-  TFile* tf = nullptr;
+  TFile*    tf = nullptr;
 
   std::string full = diskDirectory( loc );
 
@@ -125,7 +125,7 @@ void RootHistCnv::RConverter::setDirectory( const std::string& loc )
     log << MSG::ERROR << "error getting TFile name " << loc << endmsg;
   }
 
-  int p, i = 1;
+  int         p, i = 1;
   std::string cur, sdir;
 
   gDirectory->cd( "/" );
@@ -191,7 +191,7 @@ StatusCode RootHistCnv::RConverter::createAddress( const std::string& rzdir, con
                                                    IOpaqueAddress*& refpAddress )
 //--------------------------------------------------------------------------
 {
-  auto obj          = std::to_string( id );
+  auto       obj    = std::to_string( id );
   StatusCode status = createAddress( rzdir, clid, obj, pTobj, refpAddress );
   if ( status.isSuccess() ) {
     unsigned long* ipar = (unsigned long*)refpAddress->ipar();

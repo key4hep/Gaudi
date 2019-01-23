@@ -1,9 +1,6 @@
-// $Id: FuncMinimumGenAlg.cpp,v 1.3 2006/01/10 19:58:26 hmd Exp $
-
 // Include files
 // from Gaudi
 #include "GaudiGSL/IFuncMinimum.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiMath/Adapters.h"
 // from CLHEP
@@ -27,19 +24,6 @@ using namespace CLHEP;
  */
 //-----------------------------------------------------------------------------
 
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-FuncMinimumGenAlg::FuncMinimumGenAlg( const std::string& name, ISvcLocator* pSvcLocator )
-    : Algorithm( name, pSvcLocator )
-{
-}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-FuncMinimumGenAlg::~FuncMinimumGenAlg() {}
-
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
@@ -54,12 +38,11 @@ class Func : public AbsFunction
 public:
   FUNCTION_OBJECT_DEF( Func )
 public:
-  Func() {}
+  Func() = default;
   Func( const Func& ) : AbsFunction() {}
-  ~Func() override {}
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return 10 + 4 * x[0] * x[0] + 27 * x[1] * x[1] + 25 * x[1]; }
-  unsigned int dimensionality() const override { return 2; }
+  unsigned int                       dimensionality() const override { return 2; }
 };
 FUNCTION_OBJECT_IMP( Func )
 
@@ -73,19 +56,18 @@ FUNCTION_OBJECT_IMP( Func )
 StatusCode FuncMinimumGenAlg::initialize()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Initialise" << endmsg;
+  info() << "==> Initialise" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_publicTool );
   if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
+    error() << "Error retrieving the public tool" << endmsg;
   }
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_privateTool, this );
   if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
+    error() << "Error retrieving the private tool" << endmsg;
   }
-  log << MSG::INFO << "....initialization done" << endmsg;
+  info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -96,8 +78,7 @@ StatusCode FuncMinimumGenAlg::initialize()
 StatusCode FuncMinimumGenAlg::execute()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Execute" << endmsg;
+  info() << "==> Execute" << endmsg;
 
   // the object of the class Func
   Func func;
@@ -114,16 +95,16 @@ StatusCode FuncMinimumGenAlg::execute()
 
   // Call of the method
   m_publicTool->minimum( func, arg );
-  log << endmsg;
-  log << "START OF THR METHOD" << endmsg;
-  log << "MINIMUM FOUND AT: " << endmsg;
+  info() << endmsg;
+  info() << "START OF THR METHOD" << endmsg;
+  info() << "MINIMUM FOUND AT: " << endmsg;
 
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
 
-    log << "Value of argument " << i << " is " << arg[i] << endmsg;
+    info() << "Value of argument " << i << " is " << arg[i] << endmsg;
   }
 
-  log << endmsg;
+  info() << endmsg;
 
   //=============================================================================
   // With Covariance matrix (matrix of error)
@@ -132,26 +113,26 @@ StatusCode FuncMinimumGenAlg::execute()
 
   // Call of the method(with covariance matrix (matrix of error))
   m_publicTool->minimum( func, arg, matrix_error );
-  log << endmsg;
-  log << "THE METHOD WITH MATRIX OF ERROR" << endmsg;
-  log << "MINIMUM FOUND AT: " << endmsg;
+  info() << endmsg;
+  info() << "THE METHOD WITH MATRIX OF ERROR" << endmsg;
+  info() << "MINIMUM FOUND AT: " << endmsg;
 
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
 
-    log << "Value of argument " << i << " is " << arg[i] << endmsg;
+    info() << "Value of argument " << i << " is " << arg[i] << endmsg;
   }
 
-  log << endmsg;
-  log << "MATRIX OF ERROR";
+  info() << endmsg;
+  info() << "MATRIX OF ERROR";
 
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
-    log << endmsg;
+    info() << endmsg;
 
     for ( unsigned int j = 0; j < arg.dimension(); j++ ) {
-      log << matrix_error( i + 1, j + 1 ) << " ";
+      info() << matrix_error( i + 1, j + 1 ) << " ";
     }
   }
-  log << endmsg;
+  info() << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -162,8 +143,7 @@ StatusCode FuncMinimumGenAlg::execute()
 StatusCode FuncMinimumGenAlg::finalize()
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "==> Finalize" << endmsg;
+  info() << "==> Finalize" << endmsg;
 
   toolSvc()->releaseTool( m_publicTool );
   toolSvc()->releaseTool( m_privateTool );
@@ -173,4 +153,4 @@ StatusCode FuncMinimumGenAlg::finalize()
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( FuncMinimumGenAlg )
+DECLARE_COMPONENT( FuncMinimumGenAlg )

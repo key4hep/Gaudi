@@ -45,7 +45,7 @@ def _get_filename():
 
 
 _libname = _get_filename()
-_lib = ctypes.cdll.LoadLibrary(_libname)
+_lib = ctypes.CDLL(_libname, ctypes.RTLD_GLOBAL)
 
 
 class Registry(ctypes.Structure):
@@ -112,10 +112,6 @@ class Factory(ctypes.Structure):
         return _lib.cgaudi_factory_get_type(self)
 
     @property
-    def rtype(self):
-        return _lib.cgaudi_factory_get_rtype(self)
-
-    @property
     def classname(self):
         return _lib.cgaudi_factory_get_classname(self)
 
@@ -131,14 +127,13 @@ class Factory(ctypes.Structure):
     def load(self):
         '''load the C++ library hosting this factory
         '''
-        return ctypes.cdll.LoadLibrary(self.library)
+        return ctypes.CDLL(self.library, ctypes.RTLD_GLOBAL)
 
     def __repr__(self):
-        return "<Factory id=%s library=%s type=%s rtype=%s class=%s props=%d>" % (
+        return "<Factory id=%s library=%s type=%s class=%s props=%d>" % (
             self._id,
             self.library,
             self.type,
-            self.rtype,
             self.classname,
             len(self.properties),
         )
@@ -189,11 +184,6 @@ _functions_list = [
      ),
 
     ("cgaudi_factory_get_type",
-     [Factory],
-     ctypes.c_char_p,
-     ),
-
-    ("cgaudi_factory_get_rtype",
      [Factory],
      ctypes.c_char_p,
      ),

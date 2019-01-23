@@ -22,18 +22,14 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
     SchedulerName="AvalancheSchedulerSvc", OutputLevel=DEBUG)
 
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
-                                  OutputLevel=DEBUG,
-                                  #Optimizer = "DRE",
-                                  PreemptiveIOBoundTasks=False,
-                                  DumpIntraEventDynamics=False)
+                                  OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
 
-#timeValue = precedence.UniformTimeValue(algoAvgTime=0.2)
+#timeValue = precedence.UniformTimeValue(avgRuntime=0.2)
 timeValue = precedence.RealTimeValue(path="atlas/mcreco/averageTiming.mcreco.TriggerOff.json",
                                      defaultTime=0.0)
 ifIObound = precedence.UniformBooleanValue(False)
-#ifIObound = precedence.RndBiased10BooleanValue()
 
 sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
                                         cfgPath="atlas/mcreco/cf.mcreco.TriggerOff.graphml",

@@ -12,6 +12,8 @@
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 // ============================================================================
 
+#include <memory>
+
 #if defined( __clang__ ) || defined( __CLING__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
@@ -90,9 +92,6 @@ namespace Genfun
       /// copy constructor
       NumericalDerivative( const NumericalDerivative& right );
 
-      /// destructor
-      ~NumericalDerivative() override = default;
-
       /// dimensionality of the problem
       unsigned int dimensionality() const override { return m_DIM; }
 
@@ -134,13 +133,13 @@ namespace Genfun
 
     private:
       std::unique_ptr<const AbsFunction> m_function;
-      size_t m_index;
-      size_t m_DIM;
-      Type m_type;
+      size_t                             m_index;
+      size_t                             m_DIM;
+      Type                               m_type;
       //
       mutable Argument m_argument;
-      mutable double m_result;
-      mutable double m_error;
+      mutable double   m_result;
+      mutable double   m_error;
     };
     /// From CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( NumericalDerivative )

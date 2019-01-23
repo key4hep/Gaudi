@@ -4,6 +4,7 @@
 #include <mutex>
 
 #include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/DataObjectHandleProperty.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
@@ -51,6 +52,8 @@ public:
 
   friend std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d );
 
+  using PropertyType = DataObjectHandleProperty;
+
   /// Check if the data object declared is optional for the algorithm
   bool isOptional() const { return m_optional; }
   void setOptional( bool optional = true ) { m_optional = optional; }
@@ -71,7 +74,7 @@ protected:
 
 protected:
   SmartIF<IDataProviderSvc> m_EDS;
-  SmartIF<IMessageSvc> m_MS;
+  SmartIF<IMessageSvc>      m_MS;
 
   bool m_init       = false;
   bool m_optional   = false;

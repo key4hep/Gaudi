@@ -115,7 +115,7 @@ option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
 
-option(GAUDI_DIAGNOTICS_COLOR "enable colors in compiler diagnostics" OFF)
+option(GAUDI_DIAGNOSTICS_COLOR "enable colors in compiler diagnostics" OFF)
 
 # set optimization flags (_opt_level_* and _opt_ext_*)
 # - default optimization levels
@@ -132,6 +132,22 @@ set(_opt_ext_DEBUG "-g")
 set(_opt_level_RELWITHDEBINFO "${_opt_level_RELEASE}")
 set(_opt_ext_RELWITHDEBINFO "${_opt_ext_RELEASE} -g")
 
+# Sanitizer options
+# http://clang.llvm.org/docs/AddressSanitizer.html
+# http://clang.llvm.org/docs/LeakSanitizer.html
+# http://clang.llvm.org/docs/ThreadSanitizer.html
+# http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+# https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html
+set(GAUDI_asan_FLAGS "-fsanitize=address -fsanitize-recover=all -fno-omit-frame-pointer -lasan"
+    CACHE STRING "Build options for AddressSanitizer")
+set(GAUDI_lsan_FLAGS "-fsanitize=leak -fsanitize-recover=all -fno-omit-frame-pointer -llsan"
+    CACHE STRING "Build options for LeakSanitizer")
+set(GAUDI_tsan_FLAGS "-fsanitize=thread -fsanitize-recover=all -fno-omit-frame-pointer -ltsan"
+    CACHE STRING "Build options for ThreadSanitizer")
+set(GAUDI_ubsan_FLAGS "-fsanitize=undefined -fsanitize-recover=all -fno-omit-frame-pointer -lubsan"
+    CACHE STRING "Build options for UndefinedSanitizer")
+set(GAUDI_DEFAULT_SANITIZER)
+
 # - parse subtype flags
 string(TOUPPER "${CMAKE_BUILD_TYPE}" _up_bt)
 foreach(_subtype ${BINARY_TAG_SUBTYPE})
@@ -140,8 +156,22 @@ foreach(_subtype ${BINARY_TAG_SUBTYPE})
     #message(STATUS "setting _opt_level_${_up_bt} -> ${_opt_level_${_up_bt}}")
   elseif(_subtype STREQUAL "g")
     set(_opt_ext_${_up_bt} "${_opt_ext_${_up_bt}} -g")
+  elseif(_subtype STREQUAL "cov")
+    set(_opt_ext_${_up_bt} "${_opt_ext_${_up_bt}} --coverage")
+  elseif(_subtype MATCHES "^(a|l|t|ub)san$")
+    set(GAUDI_DEFAULT_SANITIZER ${_subtype})
   endif()
 endforeach()
+
+set(GAUDI_USE_SANITIZER ${GAUDI_DEFAULT_SANITIZER} CACHE STRING "Enabled given sanitizer")
+if (GAUDI_USE_SANITIZER)
+  if(NOT GAUDI_USE_SANITIZER MATCHES "^(a|l|t|ub)san$")
+    message(FATAL_ERROR "Invalid sanitizer name: ${GAUDI_USE_SANITIZER}")
+  else()
+    set(SANITIZER_ENABLED "lib${GAUDI_USE_SANITIZER}.so")
+    set(_opt_ext_${_up_bt} "${_opt_ext_${_up_bt}} ${GAUDI_${GAUDI_USE_SANITIZER}_FLAGS}")
+  endif()
+endif()
 
 if(_opt_level_${_up_bt})
   message(STATUS "Optimization:     ${_opt_level_${_up_bt}} ${_opt_ext_${_up_bt}}")
@@ -209,11 +239,11 @@ if(NOT GAUDI_FLAGS_SET EQUAL GAUDI_FLAGS_OPTIONS)
     endforeach()
     # Common compilation flags
     set(CMAKE_CXX_FLAGS
-        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
+        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wnon-virtual-dtor"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_C_FLAGS
-        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Wno-long-long"
+        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_Fortran_FLAGS
@@ -391,13 +421,9 @@ if(GAUDI_HIDE_WARNINGS)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
     endif()
   endif()
-else()
-  if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
-  endif()
 endif()
 
-if(GAUDI_DIAGNOTICS_COLOR)
+if(GAUDI_DIAGNOSTICS_COLOR)
   foreach(_language CXX C Fortran)
     set(CMAKE_${_language}_FLAGS "${CMAKE_${_language}_FLAGS} -fdiagnostics-color")
   endforeach()

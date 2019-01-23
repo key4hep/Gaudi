@@ -39,7 +39,7 @@ namespace
     std::string old( addr );
     // remove long names
     if ( 0 < maxLen && maxLen < (int)old.size() ) {
-      auto p1 = old.begin();
+      auto       p1 = old.begin();
       const char sep( '/' );
       while ( old.end() != p1 ) {
         p1      = std::find_if( p1, old.end(), [&]( const char& c ) { return c != sep; } );

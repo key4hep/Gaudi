@@ -17,7 +17,6 @@
 #include "GaudiKernel/strcasecmp.h"
 
 #include "OutputStream.h"
-#include "OutputStreamAgent.h"
 
 #include <set>
 
@@ -26,14 +25,13 @@ DECLARE_COMPONENT( OutputStream )
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 
-// Standard Constructor
-OutputStream::OutputStream( const std::string& name, ISvcLocator* pSvcLocator )
-    : Algorithm( name, pSvcLocator ), m_agent{new OutputStreamAgent( this )}
+namespace
 {
-  // Associate action handlers with the AcceptAlgs, RequireAlgs and VetoAlgs.
-  m_acceptNames.declareUpdateHandler( &OutputStream::acceptAlgsHandler, this );
-  m_requireNames.declareUpdateHandler( &OutputStream::requireAlgsHandler, this );
-  m_vetoNames.declareUpdateHandler( &OutputStream::vetoAlgsHandler, this );
+  bool passed( const Gaudi::Algorithm* alg )
+  {
+    const auto& algState = alg->execState( Gaudi::Hive::currentContext() );
+    return algState.state() == AlgExecState::State::Done && algState.filterPassed();
+  }
 }
 
 // initialize data writer
@@ -87,7 +85,7 @@ StatusCode OutputStream::initialize()
   ON_DEBUG debug() << "AlgDependentItemList : " << m_algDependentItemList.value() << endmsg;
   for ( const auto& a : m_algDependentItemList ) {
     // Get the algorithm pointer
-    Algorithm* theAlgorithm = decodeAlgorithm( a.first );
+    auto theAlgorithm = decodeAlgorithm( a.first );
     if ( theAlgorithm ) {
       // Get the item list for this alg
       auto& items = m_algDependentItems[theAlgorithm];
@@ -118,9 +116,9 @@ StatusCode OutputStream::initialize()
   //     been executed and have indicated that their filter passed.
   //  d. The event is rejected if any Algorithm in the veto list has been
   //     executed and has indicated that its filter has passed.
-  decodeAcceptAlgs().ignore();
-  decodeRequireAlgs().ignore();
-  decodeVetoAlgs().ignore();
+  m_acceptNames.useUpdateHandler();
+  m_requireNames.useUpdateHandler();
+  m_vetoNames.useUpdateHandler();
   return StatusCode::SUCCESS;
 }
 
@@ -189,7 +187,7 @@ StatusCode OutputStream::writeObjects()
         }
         for ( auto& j : *sel ) {
           try {
-            IRegistry* pReg                 = j->registry();
+            IRegistry*       pReg           = j->registry();
             const StatusCode iret           = m_pConversionSvc->fillRepRefs( pReg->address(), j );
             if ( !iret.isSuccess() ) status = iret;
           } catch ( const std::exception& excpt ) {
@@ -242,7 +240,7 @@ StatusCode OutputStream::collectObjects()
     m_currentItem   = i;
     StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
     if ( iret.isSuccess() ) {
-      iret                            = m_pDataManager->traverseSubTree( obj, m_agent.get() );
+      iret                            = collectFromSubTree( obj );
       if ( !iret.isSuccess() ) status = iret;
     } else {
       error() << "Cannot write mandatory object(s) (Not found) " << m_currentItem->path() << endmsg;
@@ -252,12 +250,10 @@ StatusCode OutputStream::collectObjects()
 
   // Traverse the tree and collect the requested objects (tolerate missing items here)
   for ( auto& i : m_optItemList ) {
-    DataObject* obj = nullptr;
-    m_currentItem   = i;
-    StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
-    if ( iret.isSuccess() ) {
-      iret = m_pDataManager->traverseSubTree( obj, m_agent.get() );
-    }
+    DataObject* obj              = nullptr;
+    m_currentItem                = i;
+    StatusCode iret              = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
+    if ( iret.isSuccess() ) iret = collectFromSubTree( obj );
     if ( !iret.isSuccess() ) {
       ON_DEBUG
       debug() << "Ignore request to write non-mandatory object(s) " << m_currentItem->path() << endmsg;
@@ -266,9 +262,9 @@ StatusCode OutputStream::collectObjects()
 
   // Collect objects dependent on particular algorithms
   for ( const auto& iAlgItems : m_algDependentItems ) {
-    Algorithm* alg     = iAlgItems.first;
+    auto         alg   = iAlgItems.first;
     const Items& items = iAlgItems.second;
-    if ( alg->isExecuted() && alg->filterPassed() ) {
+    if ( passed( alg ) ) {
       ON_DEBUG
       debug() << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
       for ( const auto& i : items ) {
@@ -276,7 +272,7 @@ StatusCode OutputStream::collectObjects()
         m_currentItem   = i;
         StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
         if ( iret.isSuccess() ) {
-          iret                            = m_pDataManager->traverseSubTree( obj, m_agent.get() );
+          iret                            = collectFromSubTree( obj );
           if ( !iret.isSuccess() ) status = iret;
         } else {
           error() << "Cannot write mandatory (algorithm dependent) object(s) (Not found) " << m_currentItem->path()
@@ -289,7 +285,7 @@ StatusCode OutputStream::collectObjects()
 
   if ( status.isSuccess() ) {
     // Remove duplicates from the list of objects, preserving the order in the list
-    std::set<DataObject*> unique;
+    std::set<DataObject*>    unique;
     std::vector<DataObject*> tmp; // temporary vector with the reduced list
     tmp.reserve( m_objects.size() );
     for ( auto& o : m_objects ) {
@@ -318,8 +314,8 @@ void OutputStream::clearItems( Items& itms )
 // Find single item identified by its path (exact match)
 DataStoreItem* OutputStream::findItem( const std::string& path )
 {
-  auto matchPath = [&]( const DataStoreItem* i ) { return i->path() == path; };
-  auto i         = std::find_if( m_itemList.begin(), m_itemList.end(), matchPath );
+  auto matchPath                               = [&]( const DataStoreItem* i ) { return i->path() == path; };
+  auto                                       i = std::find_if( m_itemList.begin(), m_itemList.end(), matchPath );
   if ( i == m_itemList.end() ) {
     i = std::find_if( m_optItemList.begin(), m_optItemList.end(), matchPath );
     if ( i == m_optItemList.end() ) return nullptr;
@@ -330,8 +326,8 @@ DataStoreItem* OutputStream::findItem( const std::string& path )
 // Add item to output streamer list
 void OutputStream::addItem( Items& itms, const std::string& descriptor )
 {
-  int level            = 0;
-  auto sep             = descriptor.rfind( "#" );
+  int         level    = 0;
+  auto        sep      = descriptor.rfind( "#" );
   std::string obj_path = descriptor.substr( 0, sep );
   if ( sep != std::string::npos ) {
     std::string slevel = descriptor.substr( sep + 1 );
@@ -408,8 +404,8 @@ StatusCode OutputStream::connectConversionSvc()
   // If this is not desired, then a specialized OutputStream must overwrite
   // this value.
   if ( !dbType.empty() || !svc.empty() ) {
-    std::string typ = !dbType.empty() ? dbType : svc;
-    auto ipers      = serviceLocator()->service<IPersistencySvc>( m_persName );
+    std::string typ   = !dbType.empty() ? dbType : svc;
+    auto        ipers = serviceLocator()->service<IPersistencySvc>( m_persName );
     if ( !ipers ) {
       fatal() << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
       return StatusCode::FAILURE;
@@ -431,54 +427,9 @@ StatusCode OutputStream::connectConversionSvc()
   return StatusCode::SUCCESS;
 }
 
-StatusCode OutputStream::decodeAcceptAlgs()
+Gaudi::Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
 {
-  ON_DEBUG
-  debug() << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
-  return decodeAlgorithms( m_acceptNames, m_acceptAlgs );
-}
-
-void OutputStream::acceptAlgsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  StatusCode sc = decodeAlgorithms( m_acceptNames, m_acceptAlgs );
-  if ( sc.isFailure() ) {
-    throw GaudiException( "Failure in OutputStream::decodeAlgorithms", "OutputStream::acceptAlgsHandler", sc );
-  }
-}
-
-StatusCode OutputStream::decodeRequireAlgs()
-{
-  ON_DEBUG
-  debug() << "RequireAlgs : " << m_requireNames.value() << endmsg;
-  return decodeAlgorithms( m_requireNames, m_requireAlgs );
-}
-
-void OutputStream::requireAlgsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  StatusCode sc = decodeAlgorithms( m_requireNames, m_requireAlgs );
-  if ( sc.isFailure() ) {
-    throw GaudiException( "Failure in OutputStream::decodeAlgorithms", "OutputStream::requireAlgsHandler", sc );
-  }
-}
-
-StatusCode OutputStream::decodeVetoAlgs()
-{
-  ON_DEBUG
-  debug() << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
-  return decodeAlgorithms( m_vetoNames, m_vetoAlgs );
-}
-
-void OutputStream::vetoAlgsHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
-  StatusCode sc = decodeAlgorithms( m_vetoNames, m_vetoAlgs );
-  if ( sc.isFailure() ) {
-    throw GaudiException( "Failure in OutputStream::decodeAlgorithms", "OutputStream::vetoAlgsHandler", sc );
-  }
-}
-
-Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
-{
-  Algorithm* theAlgorithm = nullptr;
+  Gaudi::Algorithm* theAlgorithm = nullptr;
 
   auto theAlgMgr = serviceLocator()->as<IAlgManager>();
   if ( theAlgMgr ) {
@@ -487,7 +438,7 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
     SmartIF<IAlgorithm>& theIAlg = theAlgMgr->algorithm( theName );
     if ( theIAlg ) {
       try {
-        theAlgorithm = dynamic_cast<Algorithm*>( theIAlg.get() );
+        theAlgorithm = dynamic_cast<Gaudi::Algorithm*>( theIAlg.get() );
       } catch ( ... ) {
         // do nothing
       }
@@ -503,18 +454,16 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
   return theAlgorithm;
 }
 
-StatusCode OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
-                                           std::vector<Algorithm*>& theAlgs )
+void OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
+                                     std::vector<Gaudi::Algorithm*>&            theAlgs )
 {
   // Reset the list of Algorithms
   theAlgs.clear();
 
-  StatusCode result = StatusCode::SUCCESS;
-
   // Build the list of Algorithms from the names list
   for ( const auto& it : theNames.value() ) {
 
-    Algorithm* theAlgorithm = decodeAlgorithm( it );
+    auto theAlgorithm = decodeAlgorithm( it );
     if ( theAlgorithm ) {
       // Check that the specified algorithm doesn't already exist in the list
       if ( std::find( std::begin( theAlgs ), std::end( theAlgs ), theAlgorithm ) == std::end( theAlgs ) ) {
@@ -525,15 +474,10 @@ StatusCode OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::stri
       info() << it << " doesn't exist - ignored" << endmsg;
     }
   }
-  result = StatusCode::SUCCESS;
-
-  return result;
 }
 
 bool OutputStream::isEventAccepted() const
 {
-  auto passed = []( const Algorithm* alg ) { return alg->isExecuted() && alg->filterPassed(); };
-
   // Loop over all Algorithms in the accept list to see
   // whether any have been executed and have their filter
   // passed flag set. Any match causes the event to be
@@ -561,4 +505,10 @@ bool OutputStream::isEventAccepted() const
 bool OutputStream::hasInput() const
 {
   return !( m_itemNames.empty() && m_optItemNames.empty() && m_algDependentItemList.empty() );
+}
+
+StatusCode OutputStream::collectFromSubTree( DataObject* pObj )
+{
+  return m_pDataManager->traverseSubTree( pObj,
+                                          [this]( IRegistry* r, int level ) { return this->collect( r, level ); } );
 }

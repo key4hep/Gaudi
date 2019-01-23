@@ -10,6 +10,7 @@
 
 #include "boost/thread/mutex.hpp"
 #include <chrono>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -40,21 +41,21 @@ namespace GaudiKernelTest
   {
   public:
     Hist( const std::string& id ) : m_id( id ) {}
-    const std::string& id() const { return m_id; }
-    void acc()
+    const std::string&       id() const { return m_id; }
+    void                     acc()
     {
       std::cout << "in Hist::access\n";
       m_i++;
     }
     void incr() { m_i++; }
-    int val() const { return m_i; }
+    int  val() const { return m_i; }
 
     M& mut() { return m_mut; }
 
   private:
-    int m_i{0};
+    int         m_i{0};
     std::string m_id;
-    M m_mut;
+    M           m_mut;
   };
 
   template <class T>
@@ -88,26 +89,26 @@ namespace GaudiKernelTest
     {
 
       // test default template args
-      Hist<>* h1 = new Hist<>( "first" );
-      LockedHandle<Hist<>> lh1( h1, h1->mut() );
+      auto                 h1 = std::make_unique<Hist<>>( "first" );
+      LockedHandle<Hist<>> lh1( h1.get(), h1->mut() );
       lh1->acc();
 
       // test explicit mutex type
       typedef std::mutex mut_t;
-      Hist<mut_t>* h2 = new Hist<mut_t>( "first" );
-      LockedHandle<Hist<mut_t>, mut_t> lh2( h2, h2->mut() );
+      auto               h2 = std::make_unique<Hist<mut_t>>( "first" );
+      LockedHandle<Hist<mut_t>, mut_t> lh2( h2.get(), h2->mut() );
       lh2->acc();
 
       // // test a different mutex type
       typedef boost::mutex mut_b_t;
-      Hist<mut_b_t>* h3 = new Hist<mut_b_t>( "first" );
-      LockedHandle<Hist<mut_b_t>, mut_b_t> lh3( h3, h3->mut() );
+      auto                 h3 = std::make_unique<Hist<mut_b_t>>( "first" );
+      LockedHandle<Hist<mut_b_t>, mut_b_t> lh3( h3.get(), h3->mut() );
       lh3->acc();
 
       // do a lot to see if we can get a race
       std::vector<std::thread> threads;
-      size_t nthreads{10};
-      size_t nIter{10000};
+      size_t                   nthreads{10};
+      size_t                   nIter{10000};
       for ( size_t i = 0; i < nthreads; ++i ) {
         threads.push_back( std::thread{Task<LockedHandle<Hist<>>>, &lh1, i, nIter} );
       }
@@ -194,7 +195,8 @@ int main( int argc, char* argv[] )
   // runner.setOutputter( new CppUnit::XmlOutputter( &runner.result(),
   //                                                    std::cout ) );
 
-  runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
+  auto l = std::make_unique<GaudiKernelTest::ProgressListener>();
+  runner.eventManager().addListener( l.get() );
 
   bool wasSuccessful = false;
 

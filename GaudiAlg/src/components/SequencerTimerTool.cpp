@@ -38,7 +38,7 @@ StatusCode SequencerTimerTool::initialize()
 {
   const StatusCode sc = GaudiHistoTool::initialize();
   if ( sc.isFailure() ) return sc;
-  double sum = 0;
+  double            sum = 0;
   TimerForSequencer norm( "normalize", m_headerSize, m_normFactor );
   norm.start();
   IRndmGenSvc* rsvc = svc<IRndmGenSvc>( "RndmGenSvc", true );
@@ -105,13 +105,13 @@ void SequencerTimerTool::saveHistograms()
 {
   if ( produceHistos() ) {
     info() << "Saving Timing histograms" << endmsg;
-    const size_t bins              = m_timerList.size();
+    const size_t        bins       = m_timerList.size();
     AIDA::IHistogram1D* histoTime  = book( "ElapsedTime", 0, bins, bins );
     AIDA::IHistogram1D* histoCPU   = book( "CPUTime", 0, bins, bins );
     AIDA::IHistogram1D* histoCount = book( "Count", 0, bins, bins );
-    TH1D* tHtime                   = Gaudi::Utils::Aida2ROOT::aida2root( histoTime );
-    TH1D* tHCPU                    = Gaudi::Utils::Aida2ROOT::aida2root( histoCPU );
-    TH1D* tHCount                  = Gaudi::Utils::Aida2ROOT::aida2root( histoCount );
+    TH1D*               tHtime     = Gaudi::Utils::Aida2ROOT::aida2root( histoTime );
+    TH1D*               tHCPU      = Gaudi::Utils::Aida2ROOT::aida2root( histoCPU );
+    TH1D*               tHCount    = Gaudi::Utils::Aida2ROOT::aida2root( histoCount );
     for ( const auto& tfsq : m_timerList ) {
       tHtime->Fill( tfsq.name().c_str(), tfsq.elapsedTotal() );
       tHCPU->Fill( tfsq.name().c_str(), tfsq.cpuTotal() );

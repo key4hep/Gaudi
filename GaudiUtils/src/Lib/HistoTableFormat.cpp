@@ -21,6 +21,7 @@
 #endif
 #include "AIDA/IAxis.h"
 #include "AIDA/IHistogram1D.h"
+#include "AIDA/IProfile1D.h"
 #undef class
 // ============================================================================
 // GaudiKernel
@@ -35,6 +36,7 @@
 // ============================================================================
 // Boost
 // ============================================================================
+#include "boost/algorithm/string/erase.hpp"
 #include "boost/format.hpp"
 // ============================================================================
 /** @file
@@ -135,6 +137,18 @@ namespace
   const std::string s_histoFormatFullStatHeader = "|    #    |Udflw/Ovflw|    nEff  | Sum      |     Mean+-Error    |  "
                                                   "    RMS+-Error    | Skewness+-Error    | Kurtosis+-Error    |";
   // ==========================================================================
+  // Get cleaned up histogram title for table printout
+  template <typename HISTO>
+  decltype( auto ) _title( const HISTO* h )
+  {
+    // strip '|' from title as this is used as printout table delimiter and
+    // instances in the title can cause problems with automatic parsing of the
+    // table (e.g. LHCb QM tests) later on.
+    auto htitle = h->title();
+    boost::erase_all( htitle, "|" );
+    return htitle;
+  }
+  // ==========================================================================
 }
 // ============================================================================
 // get the format by enum
@@ -208,32 +222,29 @@ std::string Gaudi::Utils::Histos::Formats::header( const int ID )
 // ============================================================================
 std::string Gaudi::Utils::Histos::path( const AIDA::IBaseHistogram* aida )
 {
-  if ( 0 == aida ) {
+  if ( !aida ) {
     return "";
   } // RETURN
-  const DataObject* object = dynamic_cast<const DataObject*>( aida );
-  if ( 0 == object ) {
+  const auto object = dynamic_cast<const DataObject*>( aida );
+  if ( !object ) {
     return "";
   } // RETURN
-  IRegistry* registry = object->registry();
-  if ( 0 == registry ) {
+  const auto registry = object->registry();
+  if ( !registry ) {
     return "";
   } // RETURN
-  std::string _path        = registry->identifier();
-  std::string::size_type n = _path.find( "/stat/" );
-  if ( 0 == n ) {
-    return std::string( _path, 6 );
-  }             // RETURN
-  return _path; // RETURN
+  const auto _path = registry->identifier();
+  const auto n     = _path.find( "/stat/" );
+  return ( 0 == n ? std::string( _path, 6 ) : _path ); // RETURN
 }
 // ============================================================================
-/*  Make the string representation of the historgam
+/*  Make the string representation of the histogram
  *  according to the specified format.
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const std::string& fmt )
 {
-  if ( 0 == histo ) {
+  if ( !histo ) {
     return "<NULL>";
   }
   using namespace Gaudi::Utils;
@@ -243,15 +254,15 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const
   _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );
 
   _fmt % ( "\"" + path( histo ) + "\"" )                //  1) histogram path
-      % ( "\"" + histo->title() + "\"" )                //  2) title
+      % ( "\"" + _title( histo ) + "\"" )               //  2) title
       % histo->allEntries()                             //  3) # entries
-      % histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ) // 4) # underflow
-      % histo->binEntries( AIDA::IAxis::OVERFLOW_BIN )  // 5) # overflow
-      % histo->equivalentBinEntries()                   //  6) equivalent entries
+      % histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ) //  4) # underflow
+      % histo->binEntries( AIDA::IAxis::OVERFLOW_BIN )  //  5) # overflow
+      % HistoStats::nEff( histo )                       //  6) equivalent entries
       % histo->sumBinHeights()                          //  7) integral
-      % histo->mean()                                   //  8) mean value
+      % HistoStats::mean( histo )                       //  8) mean value
       % HistoStats::meanErr( histo )                    //  9) error in mean
-      % histo->rms()                                    // 10) rms
+      % HistoStats::rms( histo )                        // 10) rms
       % HistoStats::rmsErr( histo )                     // 11) error in rms
       % HistoStats::skewness( histo )                   // 12) skewness
       % HistoStats::skewnessErr( histo )                // 13) error in skewness
@@ -270,8 +281,58 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const
       % HistoStats::underflowIntegralFrac( histo )    // 23) fraction of underflow integral
       % HistoStats::underflowIntegralFracErr( histo ) // 24) error on 23
       % HistoStats::overflowIntegralFrac( histo )     // 25) fraction of overflow intergal
-      % HistoStats::overflowIntegralFracErr( histo ); // 26) error on 25
-  //
+      % HistoStats::overflowIntegralFracErr( histo )  // 26) error on 25
+      ;
+
+  return _fmt.str();
+}
+// ============================================================================
+/*  Make the string representation of the histogram
+ *  according to the specified format.
+ */
+// ============================================================================
+std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const std::string& fmt )
+{
+  if ( !histo ) {
+    return "<NULL>";
+  }
+  using namespace Gaudi::Utils;
+  using namespace boost::io;
+  boost::format _fmt( fmt );
+  // allow various number of arguments
+  _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );
+
+  _fmt % ( "\"" + path( histo ) + "\"" )                //  1) histogram path
+      % ( "\"" + _title( histo ) + "\"" )               //  2) title
+      % histo->allEntries()                             //  3) # entries
+      % histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ) //  4) # underflow
+      % histo->binEntries( AIDA::IAxis::OVERFLOW_BIN )  //  5) # overflow
+      % HistoStats::nEff( histo )                       //  6) equivalent entries
+      % histo->sumBinHeights()                          //  7) integral
+      % HistoStats::mean( histo )                       //  8) mean value
+      % HistoStats::meanErr( histo )                    //  9) error in mean
+      % HistoStats::rms( histo )                        // 10) rms
+      % HistoStats::rmsErr( histo )                     // 11) error in rms
+      % HistoStats::skewness( histo )                   // 12) skewness
+      % HistoStats::skewnessErr( histo )                // 13) error in skewness
+      % HistoStats::kurtosis( histo )                   // 14) kurtosis
+      % HistoStats::kurtosisErr( histo )                // 15) error in kurtosis
+      //
+      % histo->sumAllBinHeights()               // 16) full integral (in and out range)
+      % HistoStats::sumAllBinHeightErr( histo ) // 17) error on 16
+      % HistoStats::sumBinHeightErr( histo )    // 18) error on  7
+      //
+      % ( 100 * HistoStats::underflowEntriesFrac( histo ) )    // 19) fraction of underflow entries
+      % ( 100 * HistoStats::underflowEntriesFracErr( histo ) ) // 20) error on 19
+      % ( 100 * HistoStats::overflowEntriesFrac( histo ) )     // 21) fraction of overflow entries
+      % ( 100 * HistoStats::overflowEntriesFracErr( histo ) )  // 22) error on 21
+      //
+      % HistoStats::underflowIntegralFrac( histo )    // 23) fraction of underflow integral
+      % HistoStats::underflowIntegralFracErr( histo ) // 24) error on 23
+      % HistoStats::overflowIntegralFrac( histo )     // 25) fraction of overflow intergal
+      % HistoStats::overflowIntegralFracErr( histo )  // 26) error on 25
+      ;
+
   return _fmt.str();
 }
 // ============================================================================
@@ -281,6 +342,24 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const
 // ============================================================================
 std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const std::string& ID,
                                           const std::string& fmt1, const std::string& fmt2 )
+{
+  using namespace boost::io;
+  boost::format _fmt( fmt1 );
+  // allow various number of arguments
+  _fmt.exceptions( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) );
+  //
+  _fmt % ID                    // format ID
+      % format( histo, fmt2 ); // format the histogram
+  //
+  return _fmt.str();
+}
+// ============================================================================
+/* format a full row in table, including ID, label, path or any other
+ *  "extra" identifier in string form
+ */
+// ============================================================================
+std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const std::string& ID, const std::string& fmt1,
+                                          const std::string& fmt2 )
 {
   using namespace boost::io;
   boost::format _fmt( fmt1 );
@@ -334,6 +413,25 @@ std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IHistogram1D* his
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IHistogram1D* histo, const std::string& ID,
+                                                   const std::string& fmt ) const
+{
+  return Gaudi::Utils::Histos::format( histo, ID, fmt, format() );
+}
+// ============================================================================
+
+// ============================================================================
+// format the table row using the default format
+// ============================================================================
+std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IProfile1D* histo ) const
+{
+  return Gaudi::Utils::Histos::format( histo, format() );
+}
+// ============================================================================
+/** format a full row in table, including ID, label, path or any other
+ *  "extra" identifier
+ */
+// ============================================================================
+std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IProfile1D* histo, const std::string& ID,
                                                    const std::string& fmt ) const
 {
   return Gaudi::Utils::Histos::format( histo, ID, fmt, format() );

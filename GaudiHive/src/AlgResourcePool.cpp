@@ -1,11 +1,6 @@
-// Include Files
-
-// Framework
 #include "AlgResourcePool.h"
 #include "GaudiAlg/GaudiSequencer.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/ThreadGaudi.h"
 
 // C++
 #include <functional>
@@ -14,7 +9,7 @@
 // DP TODO: Manage smartifs and not pointers to algos
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY( AlgResourcePool )
+DECLARE_COMPONENT( AlgResourcePool )
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define DEBUG_MSG ON_DEBUG debug()
@@ -24,13 +19,10 @@ DECLARE_SERVICE_FACTORY( AlgResourcePool )
 // destructor
 AlgResourcePool::~AlgResourcePool()
 {
-
   for ( auto& algoId_algoQueue : m_algqueue_map ) {
     auto* queue = algoId_algoQueue.second;
     delete queue;
   }
-
-  delete m_CFGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -46,17 +38,8 @@ StatusCode AlgResourcePool::initialize()
   if ( m_topAlgNames.value().empty() ) {
     info() << "TopAlg list empty. Recovering the one of Application Manager" << endmsg;
     const Gaudi::Utils::TypeNameString appMgrName( "ApplicationMgr/ApplicationMgr" );
-    SmartIF<IProperty> appMgrProps( serviceLocator()->service( appMgrName ) );
+    SmartIF<IProperty>                 appMgrProps( serviceLocator()->service( appMgrName ) );
     m_topAlgNames.assign( appMgrProps->getProperty( "TopAlg" ) );
-  }
-
-  // Prepare empty control flow graph
-  // (Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-  //  The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc)
-  if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) ) {
-    const std::string& name  = "ControlFlowGraph";
-    SmartIF<ISvcLocator> svc = serviceLocator();
-    m_CFGraph                = new concurrency::recursive_CF::ControlFlowGraph( name, svc );
   }
 
   sc = decodeTopAlgs();
@@ -92,8 +75,8 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
 {
 
   std::hash<std::string> hash_function;
-  size_t algo_id      = hash_function( name );
-  auto itQueueIAlgPtr = m_algqueue_map.find( algo_id );
+  size_t                 algo_id        = hash_function( name );
+  auto                   itQueueIAlgPtr = m_algqueue_map.find( algo_id );
 
   if ( itQueueIAlgPtr == m_algqueue_map.end() ) {
     error() << "Algorithm " << name << " requested, but not recognised" << endmsg;
@@ -104,9 +87,10 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
   StatusCode sc;
   if ( blocking ) {
     itQueueIAlgPtr->second->pop( algo );
-    sc = StatusCode::SUCCESS;
   } else {
-    sc = itQueueIAlgPtr->second->try_pop( algo );
+    if ( !itQueueIAlgPtr->second->try_pop( algo ) ) {
+      sc = StatusCode::FAILURE;
+    }
   }
 
   // Note that reentrant algos are not consumed so we put them
@@ -150,7 +134,7 @@ StatusCode AlgResourcePool::releaseAlgorithm( const std::string& name, IAlgorith
 {
 
   std::hash<std::string> hash_function;
-  size_t algo_id = hash_function( name );
+  size_t                 algo_id = hash_function( name );
 
   // release resources used by the algorithm
   m_resource_mutex.lock();
@@ -186,77 +170,34 @@ StatusCode AlgResourcePool::releaseResource( const std::string& name )
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::flattenSequencer( Algorithm* algo, ListAlg& alglist, const std::string& parentName,
-                                              unsigned int recursionDepth )
+StatusCode AlgResourcePool::flattenSequencer( Gaudi::Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth )
 {
 
   StatusCode sc = StatusCode::SUCCESS;
 
-  bool isGaudiSequencer( false );
-  bool isAthSequencer( false );
-
   if ( algo->isSequence() ) {
-    if ( algo->hasProperty( "ShortCircuit" ) )
-      isGaudiSequencer = true;
-    else if ( algo->hasProperty( "StopOverride" ) )
-      isAthSequencer = true;
-  }
+    auto seq = dynamic_cast<Gaudi::Sequence*>( algo );
+    if ( seq == 0 ) {
+      error() << "Unable to dcast Algorithm " << algo->name() << " to a Sequence, but it has isSequence==true"
+              << endmsg;
+      return StatusCode::FAILURE;
+    }
 
-  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  if ( // we only want to add basic algorithms -> have no subAlgs
-      // and exclude the case of empty sequencers
-      ( subAlgorithms->empty() && !( isGaudiSequencer || isAthSequencer ) ) ) {
+    auto subAlgorithms = seq->subAlgorithms();
 
+    // Recursively unroll
+    ++recursionDepth;
+
+    for ( auto subalgo : *subAlgorithms ) {
+      sc = flattenSequencer( subalgo, alglist, recursionDepth );
+      if ( sc.isFailure() ) {
+        error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
+        return sc;
+      }
+    }
+  } else {
     alglist.emplace_back( algo );
-    // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-    // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
-    if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) ) {
-      m_CFGraph->addAlgorithmNode( algo, parentName, false, false ).ignore();
-      DEBUG_MSG << std::string( recursionDepth, ' ' ) << algo->name() << " is not a sequencer. Appending it" << endmsg;
-    }
     return sc;
-  }
-
-  // Recursively unroll
-  ++recursionDepth;
-
-  // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-  // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
-  if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) ) {
-    DEBUG_MSG << std::string( recursionDepth, ' ' ) << algo->name() << " is a sequencer. Flattening it." << endmsg;
-
-    bool modeOR       = false;
-    bool allPass      = false;
-    bool isLazy       = false;
-    bool isSequential = false;
-
-    if ( isGaudiSequencer ) {
-      modeOR                = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
-      allPass               = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
-      isLazy                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" ) ? true : false;
-      if ( allPass ) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
-      isSequential =
-          ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
-    } else if ( isAthSequencer ) {
-      modeOR  = ( algo->getProperty( "ModeOR" ).toString() == "True" ) ? true : false;
-      allPass = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" ) ? true : false;
-      isLazy  = ( algo->getProperty( "StopOverride" ).toString() == "True" ) ? false : true;
-      isSequential =
-          ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
-    }
-    sc = m_CFGraph->addDecisionHubNode( algo, parentName, !isSequential, isLazy, modeOR, allPass );
-    if ( sc.isFailure() ) {
-      error() << "Failed to add DecisionHub " << algo->name() << " to control flow graph" << endmsg;
-      return sc;
-    }
-  }
-
-  for ( Algorithm* subalgo : *subAlgorithms ) {
-    sc = flattenSequencer( subalgo, alglist, algo->name(), recursionDepth );
-    if ( sc.isFailure() ) {
-      error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
-      return sc;
-    }
   }
   return sc;
 }
@@ -288,9 +229,9 @@ StatusCode AlgResourcePool::decodeTopAlgs()
     IAlgorithm* algo( nullptr );
 
     Gaudi::Utils::TypeNameString item( name );
-    const std::string& item_name = item.name();
-    const std::string& item_type = item.type();
-    SmartIF<IAlgorithm> algoSmartIF( algMan->algorithm( item_name, false ) );
+    const std::string&           item_name = item.name();
+    const std::string&           item_type = item.type();
+    SmartIF<IAlgorithm>          algoSmartIF( algMan->algorithm( item_name, false ) );
 
     if ( !algoSmartIF.isValid() ) {
       createAlg( item_type, item_name, algo );
@@ -302,17 +243,14 @@ StatusCode AlgResourcePool::decodeTopAlgs()
   }
   // Top Alg list filled ----
 
-  // start forming the control flow graph by adding the head decision hub
-  // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-  // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
-  if ( serviceLocator()->existsService( "ForwardSchedulerSvc" ) )
-    m_CFGraph->addHeadNode( "RootDecisionHub", true, false, true, true );
-
   // Now we unroll it ----
   for ( auto& algoSmartIF : m_topAlgList ) {
-    Algorithm* algorithm = dynamic_cast<Algorithm*>( algoSmartIF.get() );
-    if ( !algorithm ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    sc = flattenSequencer( algorithm, m_flatUniqueAlgList, "RootDecisionHub" );
+    Gaudi::Algorithm* algorithm = dynamic_cast<Gaudi::Algorithm*>( algoSmartIF.get() );
+    if ( !algorithm ) {
+      fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
+      return StatusCode::FAILURE;
+    }
+    sc = flattenSequencer( algorithm, m_flatUniqueAlgList );
   }
   // stupid O(N^2) unique-ification..
   for ( auto i = begin( m_flatUniqueAlgList ); i != end( m_flatUniqueAlgList ); ++i ) {
@@ -333,7 +271,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()
   // Unrolled ---
 
   // Now let's manage the clones
-  unsigned int resource_counter( 0 );
+  unsigned int           resource_counter( 0 );
   std::hash<std::string> hash_function;
   for ( auto& ialgoSmartIF : m_flatUniqueAlgList ) {
 
@@ -341,20 +279,31 @@ StatusCode AlgResourcePool::decodeTopAlgs()
 
     verbose() << "Treating resource management and clones of " << item_name << endmsg;
 
-    Algorithm* algo = dynamic_cast<Algorithm*>( ialgoSmartIF.get() );
-    if ( !algo ) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+    Gaudi::Algorithm* algo = dynamic_cast<Gaudi::Algorithm*>( ialgoSmartIF.get() );
+    if ( !algo ) {
+      fatal() << "Conversion from IAlgorithm to Gaudi::Algorithm failed" << endmsg;
+      return StatusCode::FAILURE;
+    }
     const std::string& item_type = algo->type();
 
-    size_t algo_id                = hash_function( item_name );
-    concurrentQueueIAlgPtr* queue = new concurrentQueueIAlgPtr();
-    m_algqueue_map[algo_id]       = queue;
+    size_t                  algo_id = hash_function( item_name );
+    concurrentQueueIAlgPtr* queue   = new concurrentQueueIAlgPtr();
+    m_algqueue_map[algo_id]         = queue;
 
     // DP TODO Do it properly with SmartIFs, also in the queues
     IAlgorithm* ialgo( ialgoSmartIF.get() );
 
     queue->push( ialgo );
     m_algList.push_back( ialgo );
-    if ( ialgo->isClonable() ) {
+    if ( ialgo->isReEntrant() ) {
+      if ( ialgo->cardinality() != 0 ) {
+        info() << "Algorithm " << ialgo->name() << " is ReEntrant, but Cardinality was set to " << ialgo->cardinality()
+               << endmsg;
+        m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+      } else {
+        m_n_of_allowed_instances[algo_id] = 1;
+      }
+    } else if ( ialgo->isClonable() ) {
       m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
     } else {
       if ( ialgo->cardinality() == 1 ) {
@@ -423,8 +372,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()
 std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList()
 {
   m_flatUniqueAlgPtrList.clear();
-  for ( auto algoSmartIF : m_flatUniqueAlgList )
-    m_flatUniqueAlgPtrList.push_back( const_cast<IAlgorithm*>( algoSmartIF.get() ) );
+  for ( auto algoSmartIF : m_flatUniqueAlgList ) m_flatUniqueAlgPtrList.push_back( algoSmartIF.get() );
   return m_flatUniqueAlgPtrList;
 }
 
@@ -433,51 +381,8 @@ std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList()
 std::list<IAlgorithm*> AlgResourcePool::getTopAlgList()
 {
   m_topAlgPtrList.clear();
-  for ( auto algoSmartIF : m_topAlgList ) m_topAlgPtrList.push_back( const_cast<IAlgorithm*>( algoSmartIF.get() ) );
+  for ( auto algoSmartIF : m_topAlgList ) m_topAlgPtrList.push_back( algoSmartIF.get() );
   return m_topAlgPtrList;
-}
-
-//---------------------------------------------------------------------------
-
-StatusCode AlgResourcePool::beginRun()
-{
-  auto algBeginRun = [&]( SmartIF<IAlgorithm>& algoSmartIF ) -> StatusCode {
-    StatusCode sc = algoSmartIF->sysBeginRun();
-    if ( !sc.isSuccess() ) {
-      warning() << "beginRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
-      return StatusCode::FAILURE;
-    }
-    return StatusCode::SUCCESS;
-  };
-  // Call the beginRun() method of all algorithms
-  for ( auto& algoSmartIF : m_flatUniqueAlgList ) {
-    if ( algBeginRun( algoSmartIF ).isFailure() ) return StatusCode::FAILURE;
-  }
-
-  return StatusCode::SUCCESS;
-}
-
-//---------------------------------------------------------------------------
-
-StatusCode AlgResourcePool::endRun()
-{
-
-  auto algEndRun = [&]( SmartIF<IAlgorithm>& algoSmartIF ) -> StatusCode {
-    StatusCode sc = algoSmartIF->sysEndRun();
-    if ( !sc.isSuccess() ) {
-      warning() << "endRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
-      return StatusCode::FAILURE;
-    }
-    return StatusCode::SUCCESS;
-  };
-  // Call the beginRun() method of all top algorithms
-  for ( auto& algoSmartIF : m_flatUniqueAlgList ) {
-    if ( algEndRun( algoSmartIF ).isFailure() ) return StatusCode::FAILURE;
-  }
-  for ( auto& algoSmartIF : m_topAlgList ) {
-    if ( algEndRun( algoSmartIF ).isFailure() ) return StatusCode::FAILURE;
-  }
-  return StatusCode::SUCCESS;
 }
 
 //---------------------------------------------------------------------------

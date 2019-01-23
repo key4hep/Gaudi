@@ -73,7 +73,7 @@ namespace Genfun
     // ========================================================================
     NumericalIndefiniteIntegral::NumericalIndefiniteIntegral( const AbsFunction& function, const size_t index,
                                                               const double a, const GaudiMath::Integration::Limit limit,
-                                                              const GaudiMath::Integration::Type type,
+                                                              const GaudiMath::Integration::Type        type,
                                                               const GaudiMath::Integration::KronrodRule rule,
                                                               const double epsabs, const double epsrel,
                                                               const size_t size )
@@ -425,8 +425,8 @@ namespace Genfun
       const double a = std::min( m_a, x );
       const double b = std::max( m_a, x );
 
-      size_t neval = 0;
-      int ierror   = gsl_integration_qng( F->fn, a, b, m_epsabs, m_epsrel, &m_result, &m_error, &neval );
+      size_t neval  = 0;
+      int    ierror = gsl_integration_qng( F->fn, a, b, m_epsabs, m_epsrel, &m_result, &m_error, &neval );
 
       if ( ierror ) {
         gsl_error( "NumericalIndefiniteIntegral::QNG ", __FILE__, __LINE__, ierror );

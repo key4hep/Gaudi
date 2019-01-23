@@ -1,84 +1,37 @@
 #include "AlgsExecutionStates.h"
 
-// A simple map to easily translate a state to its name
-std::map<AlgsExecutionStates::State, std::string> AlgsExecutionStates::stateNames = {
-    {INITIAL, "INITIAL"},         {CONTROLREADY, "CONTROLREADY"}, {DATAREADY, "DATAREADY"}, {SCHEDULED, "SCHEDULED"},
-    {EVTACCEPTED, "EVTACCEPTED"}, {EVTREJECTED, "EVTREJECTED"},   {ERROR, "ERROR"}};
+#include <cstdint>
 
-StatusCode AlgsExecutionStates::updateState( unsigned int iAlgo, State newState )
+namespace
 {
+  constexpr auto transition( AlgsExecutionStates::State first, AlgsExecutionStates::State second )
+  {
+    static_assert( sizeof( AlgsExecutionStates::State ) == 1, "no more than 255 states please!" );
+    using ui16 = uint_fast16_t;
+    return static_cast<ui16>( first ) * 256 + static_cast<ui16>( second );
+  }
+}
 
-  MsgStream log( m_MS, "AlgExecutionStates" );
-  const unsigned int states_size = m_states.size();
-
-  if ( iAlgo >= states_size ) {
-    log << MSG::ERROR << "Index out of bound (" << iAlgo << " and the size of the states vector is " << states_size
-        << ")" << endmsg;
-
+StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState )
+{
+  if ( iAlgo >= m_states.size() ) {
+    log() << MSG::ERROR << "Index out of bound (" << iAlgo << " / " << m_states.size() << ")" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  switch ( newState ) {
-  case INITIAL:
-    log << MSG::ERROR << "[AlgIndex " << iAlgo << "] Transition to INITIAL is not defined.";
-    return StatusCode::FAILURE;
-  //
-  case CONTROLREADY:
-    if ( m_states[iAlgo] != INITIAL ) {
-      log << MSG::ERROR << "[AlgIndex " << iAlgo
-          << "] Transition to CONTROLREADY possible only from INITIAL state! The state is " << m_states[iAlgo]
-          << endmsg;
-      return StatusCode::FAILURE;
-    } else {
-      m_states[iAlgo] = CONTROLREADY;
-      return StatusCode::SUCCESS;
-    }
-  //
-  case DATAREADY:
-    if ( m_states[iAlgo] != CONTROLREADY ) {
-      log << MSG::ERROR << "[AlgIndex " << iAlgo
-          << "] Transition to DATAREADY possible only from CONTROLREADY state!The state is " << m_states[iAlgo]
-          << endmsg;
-      return StatusCode::FAILURE;
-    } else {
-      m_states[iAlgo] = DATAREADY;
-      return StatusCode::SUCCESS;
-    }
-  case SCHEDULED:
-    if ( m_states[iAlgo] != DATAREADY ) {
-      log << MSG::ERROR << "[AlgIndex " << iAlgo
-          << "] Transition to SCHEDULED possible only from DATAREADY state! The state is " << m_states[iAlgo] << endmsg;
-      return StatusCode::FAILURE;
-    } else {
-      m_states[iAlgo] = SCHEDULED;
-      return StatusCode::SUCCESS;
-    }
-  //
-  case EVTACCEPTED:
-    if ( m_states[iAlgo] != SCHEDULED ) {
-      log << MSG::ERROR << "[AlgIndex " << iAlgo
-          << "] Transition to EVTACCEPTED possible only from SCHEDULED state! The state is " << m_states[iAlgo]
-          << endmsg;
-      return StatusCode::FAILURE;
-    } else {
-      m_states[iAlgo] = EVTACCEPTED;
-      return StatusCode::SUCCESS;
-    }
-  //
-  case EVTREJECTED:
-    if ( m_states[iAlgo] != SCHEDULED ) {
-      log << MSG::ERROR << "[AlgIndex " << iAlgo
-          << "] Transition to EVTREJECT possible only from SCHEDULED state! The state is " << m_states[iAlgo] << endmsg;
-      return StatusCode::FAILURE;
-    } else {
-      m_states[iAlgo] = EVTREJECTED;
-      return StatusCode::SUCCESS;
-    }
-  default:
-    //
-    m_states[iAlgo] = ERROR;
+  switch ( transition( m_states[iAlgo], newState ) ) {
+  case transition( INITIAL, CONTROLREADY ):   // Fallthrough
+  case transition( CONTROLREADY, DATAREADY ): // Fallthrough
+  case transition( DATAREADY, SCHEDULED ):    // Fallthrough
+  case transition( SCHEDULED, ERROR ):        // Fallthrough
+  case transition( SCHEDULED, EVTACCEPTED ):  // Fallthrough
+  case transition( SCHEDULED, EVTREJECTED ):
+    m_states[iAlgo] = newState;
     return StatusCode::SUCCESS;
+  default:
+    log() << MSG::ERROR << "[AlgIndex " << iAlgo << "] Transition from " << m_states[iAlgo] << " to " << newState
+          << " is not allowed" << endmsg;
+    m_states[iAlgo] = ERROR;
+    return StatusCode::FAILURE;
   }
-
-  return StatusCode::FAILURE;
 }

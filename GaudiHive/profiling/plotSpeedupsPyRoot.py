@@ -48,7 +48,7 @@ HtCoreWeight = 0.4
 
 LabelsFont = 12
 LabelsSize = .6
-#--------------------
+# --------------------
 
 
 def scaleCores(n_threads):
@@ -58,7 +58,7 @@ def scaleCores(n_threads):
         effective_n_threads = PhCores + ht_cores * HtCoreWeight
     return effective_n_threads
 
-#--------------------
+# --------------------
 
 
 def getText(x, y, text, scale, angle, colour, font):
@@ -68,7 +68,7 @@ def getText(x, y, text, scale, angle, colour, font):
         lat.SetTextAngle(angle)
     return lat
 
-#--------------------
+# --------------------
 
 
 def formatGraphs(graph, graphc):
@@ -83,13 +83,13 @@ def formatGraphs(graph, graphc):
         g.SetMarkerColor(LineColours[graph_counter])
     graph_counter += 1
 
-#--------------------
+# --------------------
 
 
 def createFname(neif, nt, cFlag):
     return fname_template % (neif, nt, cFlag)
 
-#--------------------
+# --------------------
 
 
 def xtractTiming(neif, nt, cFlag):
@@ -106,7 +106,7 @@ def xtractTiming(neif, nt, cFlag):
         seconds = xtractTiming(neif, nts[nts.index(nt) - 1], cFlag)
     return seconds
 
-#--------------------
+# --------------------
 
 
 import sys
@@ -119,7 +119,8 @@ if len(sys.argv) > 1:
 for neif in neif_l:
     print "Events in flight: %s" % neif
     for tn in nts:
-        print "%s %s %s" % (tn, xtractTiming(neif, tn, False), xtractTiming(neif, tn, True))
+        print "%s %s %s" % (tn, xtractTiming(
+            neif, tn, False), xtractTiming(neif, tn, True))
 
 
 len_nt = len(nts) + 1

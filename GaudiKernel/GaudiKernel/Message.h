@@ -1,7 +1,9 @@
 #ifndef GAUDIKERNEL_MESSAGE_H
 #define GAUDIKERNEL_MESSAGE_H
 
+#include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/Kernel.h" // for GAUDI_API
+#include "GaudiKernel/ThreadLocalContext.h"
 #include <iostream>
 #include <string>
 
@@ -16,7 +18,7 @@ class GAUDI_API Message final
 {
 public:
   /// Default constructor
-  Message();
+  Message() = default;
 
   /// Constructor.
   Message( const char* src, int type, const char* msg );
@@ -88,35 +90,26 @@ private:
   /// Set the width of a stream.
   void setWidth( const std::string& formatArg ) const;
 
-  /// The message.
-  std::string m_message;
+  std::string         m_message;                          ///< The message text
+  std::string         m_source{"UNKNOWN"};                ///< The message source
+  int                 m_type{0};                          ///< The message type/level
+  mutable std::string m_format{DEFAULT_FORMAT};           ///< The format string
+  mutable std::string m_time_format{DEFAULT_TIME_FORMAT}; ///< Time format string
+  mutable std::string m_formatted_msg;                    ///< Formatted message
+  mutable char        m_fill{' '};                        ///< Current fill character
+  mutable int         m_width{0};                         ///< Current field width
+  mutable bool        m_left{true};                       ///< The message alignment
 
-  /// The source.
-  std::string m_source = "UNKNOWN";
+  /** @name Event identifiers */
+  //@{
+  EventContext::ContextID_t  m_ecSlot{Gaudi::Hive::currentContext().slot()};     ///< Event slot
+  EventContext::ContextEvt_t m_ecEvt{Gaudi::Hive::currentContext().evt()};       ///< Event number
+  EventIDBase                m_ecEvtId{Gaudi::Hive::currentContext().eventID()}; ///< Full event ID
+  pthread_t                  m_ecThrd{pthread_self()};                           ///< Thread ID
+  //@}
 
-  /// The format string.
-  mutable std::string m_format = DEFAULT_FORMAT;
-
-  /// Time format string.
-  mutable std::string m_time_format = DEFAULT_TIME_FORMAT;
-
-  /// The type.
-  int m_type = 0;
-
-  /// Formatted message.
-  mutable std::string m_formatted_msg;
-
-  /// The current fill character.
-  mutable char m_fill = ' ';
-
-  /// The current field width.
-  mutable int m_width = 0;
-
-  /// Justification.
-  mutable bool m_left = true;
-
-  /// Formatting string characters.
-
+  /** @name Formatting characters */
+  //@{
   /// The character used to prefix formatting commands.
   static const char FORMAT_PREFIX = '%';
 
@@ -135,42 +128,36 @@ private:
   /// The character used to indicate that the message timestamp should be printed.
   static const char TIME = 't';
 
-  /// The character used to indicate that the message
-  /// timestamp should be printed in UTC time.
+  /// The character used to indicate that the message timestamp should be printed in UTC time.
   static const char UTIME = 'u';
 
   /// The character used to indicate that the message source should be printed.
   static const char SOURCE = 'S';
 
-  /** The character used to indicate that the previous character is to be used
-   * for padding out fields if the text is not long enough.
-   */
-  static const char FILL = 'F';
+  /// The character used to indicate that the slot number should be printed.
+  static const char SLOT = 's';
 
-  /** The character used to indicate that the previous decimal characters
-   * should be taken as the field width.
-   */
-  static const char WIDTH = 'W';
-
-  /// The default message format.
-  // static const char* Message::DEFAULT_FORMAT = "%
-  // F%67W%L#############################################################################\n-----------------------------------------------------------------------------\nMessage
-  // follows...\nSource  : %S\nType    : %T\nMessage : %M\nEnd of
-  // message.\n-----------------------------------------------------------------------------\n";
-  static constexpr const char* DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
-
-  /// The default time format.
-  // Time format accepts anything that strftime does plus %f for milliseconds
-  static constexpr const char* DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
-
-  /// For slot and event number from EventContext
-  static const char SLOT   = 's';
+  /// The character used to indicate that the event number should be printed.
   static const char EVTNUM = 'e';
+
+  /// The character used to indicate that the thread ID should be printed.
   static const char THREAD = 'X';
 
-  size_t m_ecSlot;
-  long int m_ecEvt;
-  pthread_t m_ecThrd;
+  /// The character used to indicate that the full event ID should be printed.
+  static const char EVENTID = 'E';
+
+  /// The character used to indicate that the previous character is used to pad fields if the text is not long enough.
+  static const char FILL = 'F';
+
+  /// The character used to indicate that the previous decimal characters should be taken as the field width.
+  static const char WIDTH = 'W';
+  //@}
+
+  /// The default message format.
+  static constexpr const char* DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
+
+  /// The default time format (accepts strftime formatters plus \%f for milliseconds).
+  static constexpr const char* DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
 };
 
 /// Insert the message into a stream.

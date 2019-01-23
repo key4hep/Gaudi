@@ -20,7 +20,7 @@ namespace bug_34121
 
     /// IMyTool interface
     const std::string& message() const override;
-    void doIt() const override;
+    void               doIt() const override;
     /// Overriding initialize and finalize
     StatusCode initialize() override;
     StatusCode finalize() override;
