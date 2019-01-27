@@ -79,14 +79,11 @@ size_t GaudiPython::AlgDecorator::_counters_a_( const GaudiAlgorithm* alg, std::
 {
   names.clear();
   out.clear();
-  if ( !alg ) {
-    return 0;
-  } // RETURN
-  //
-  for ( auto& cnt : alg->counters() ) {
-    names.push_back( cnt.first );
-    out.push_back( &( cnt.second.get() ) );
-  }
+  if ( !alg ) return 0;
+  alg->forEachCounter( [&]( const std::string& name, auto& counter ) {
+    names.push_back( name );
+    out.push_back( &counter );
+  } );
   return out.size();
 }
 // ============================================================================
@@ -97,14 +94,11 @@ size_t GaudiPython::AlgDecorator::_counters_t_( const GaudiTool* alg, std::vecto
 {
   names.clear();
   out.clear();
-  if ( !alg ) {
-    return 0;
-  } // RETURN
-  //
-  for ( auto& cnt : alg->counters() ) {
-    names.push_back( cnt.first );
-    out.push_back( &( cnt.second.get() ) );
-  }
+  if ( !alg ) return 0;
+  alg->forEachCounter( [&]( const std::string& name, auto& counter ) {
+    names.push_back( name );
+    out.push_back( &counter );
+  } );
   return out.size();
 }
 // ============================================================================

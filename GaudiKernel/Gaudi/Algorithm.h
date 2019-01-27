@@ -15,6 +15,7 @@
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/CounterHolder.h"
 #include "GaudiKernel/DataObjID.h" // must be include before Property.h, which is included in PropertyHolder.h
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAuditorSvc.h"
@@ -78,8 +79,8 @@ namespace Gaudi
    *  @date   1998
    */
   class GAUDI_API Algorithm
-      : public DataHandleHolderBase<
-            PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
+      : public DataHandleHolderBase<CounterHolder<
+            PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>>
   {
   public:
 #ifndef __REFLEX__

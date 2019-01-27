@@ -650,7 +650,7 @@ namespace Gaudi
       template <class OWNER>
       PrintableCounter( OWNER* o, const std::string& tag )
       {
-        o->registerCounter( tag, *this );
+        o->declareCounter( tag, *this );
       }
       /// destructor
       virtual ~PrintableCounter() = default;
@@ -719,10 +719,7 @@ namespace Gaudi
       stream& printImpl( stream& o, bool tableFormat ) const
       {
         // Avoid printing empty counters in non DEBUG mode
-        std::string fmt( "#=%|-7lu|" );
-        if ( tableFormat ) {
-          fmt = "|%|10d| |";
-        }
+        auto fmt = ( tableFormat ? "|%|10d| |" : "#=%|-7lu|" );
         o << boost::format{fmt} % this->nEntries();
         return o;
       }
@@ -752,12 +749,7 @@ namespace Gaudi
       template <typename stream>
       stream& printImpl( stream& o, bool tableFormat ) const
       {
-        std::string fmt;
-        if ( tableFormat ) {
-          fmt = "|%|10d| |%|11.7g| |%|#11.5g| |";
-        } else {
-          fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g|";
-        }
+        auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |" : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g|" );
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean();
       }
 
@@ -789,12 +781,8 @@ namespace Gaudi
       template <typename stream>
       stream& printImpl( stream& o, bool tableFormat ) const
       {
-        std::string fmt;
-        if ( tableFormat ) {
-          fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |";
-        } else {
-          fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g|";
-        }
+        auto fmt = ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |"
+                                 : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g|" );
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation();
       }
 
@@ -822,12 +810,9 @@ namespace Gaudi
       template <typename stream>
       stream& printImpl( stream& o, bool tableFormat ) const
       {
-        std::string fmt;
-        if ( tableFormat ) {
-          fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
-        } else {
-          fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|";
-        }
+        auto fmt =
+            ( tableFormat ? "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |"
+                          : "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|" );
         return o << boost::format{fmt} % this->nEntries() % this->sum() % this->mean() % this->standard_deviation() %
                         this->min() % this->max();
       }
@@ -852,12 +837,8 @@ namespace Gaudi
       template <typename stream>
       stream& printImpl( stream& o, bool tableFormat ) const
       {
-        std::string fmt;
-        if ( tableFormat ) {
-          fmt = "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%% |";
-        } else {
-          fmt = "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|";
-        }
+        auto fmt = ( tableFormat ? "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%% |"
+                                 : "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|" );
         return o << boost::format{fmt} % this->nEntries() % this->nTrueEntries() % ( this->efficiency() * 100 ) %
                         ( this->efficiencyErr() * 100 );
       }
@@ -920,7 +901,7 @@ public:
   template <class OWNER>
   StatEntity( OWNER* o, const std::string& tag )
   {
-    o->registerCounter( tag, *this );
+    o->declareCounter( tag, *this );
   }
   StatEntity( const unsigned long entries, const double flag, const double flag2, const double minFlag,
               const double maxFlag )
@@ -1027,37 +1008,35 @@ public:
     if ( flag && effCounter( name ) && 0 <= eff() && 0 <= effErr() && sum() <= nEntries() &&
          ( 0 == min() || 1 == min() ) && ( 0 == max() || 1 == max() ) ) {
       // efficiency printing
-      std::string fmt;
       if ( tableFormat ) {
         if ( name.empty() ) {
-          fmt = "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
+          constexpr auto fmt = "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
           return o << boost::format{fmt} % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
                           ( efficiencyErr() * 100 );
         } else {
-          fmt = " |*" + fmtHead + "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
+          auto fmt = " |*" + fmtHead + "|%|10d| |%|11.5g| |(%|#9.7g| +- %|-#8.7g|)%%|   -------   |   -------   |";
           return o << boost::format{fmt} % ( "\"" + name + "\"" ) % BinomialAccParent::nEntries() % sum() %
                           ( efficiency() * 100 ) % ( efficiencyErr() * 100 );
         }
       } else {
-        fmt = "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|";
+        constexpr auto fmt = "#=%|-7lu| Sum=%|-11.5g| Eff=|(%|#9.7g| +- %|-#8.6g|)%%|";
         return o << boost::format{fmt} % BinomialAccParent::nEntries() % sum() % ( efficiency() * 100 ) %
                         ( efficiencyErr() * 100 );
       }
     } else {
       // Standard printing
-      std::string fmt;
       if ( tableFormat ) {
         if ( name.empty() ) {
-          fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
+          constexpr auto fmt = "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
           return o << boost::format{fmt} % nEntries() % sum() % mean() % standard_deviation() % min() % max();
 
         } else {
-          fmt = " | " + fmtHead + "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
+          auto fmt = " | " + fmtHead + "|%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |";
           return o << boost::format{fmt} % ( "\"" + name + "\"" ) % nEntries() % sum() % mean() % standard_deviation() %
                           min() % max();
         }
       } else {
-        fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|";
+        constexpr auto fmt = "#=%|-7lu| Sum=%|-11.5g| Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|";
         return o << boost::format{fmt} % nEntries() % sum() % mean() % standard_deviation() % min() % max();
       }
     }
