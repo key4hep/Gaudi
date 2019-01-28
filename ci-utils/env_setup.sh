@@ -1,7 +1,7 @@
 # default values for some variables defined in .gitlab-ci.yml
 : ${TARGET_BRANCH:=master}
 
-: ${BINARY_TAG:=x86_64-centos7-gcc7-opt}
+: ${BINARY_TAG:=x86_64-centos7-gcc8-opt}
 : ${BUILDDIR:=build.${BINARY_TAG}}
 : ${TESTS_REPORT:=test_report}
 

@@ -8,7 +8,7 @@ image: gitlab-registry.cern.ch/lhcb-core/lbdocker/centos7-build
 variables:
   NO_LBLOGIN: "1"
   TARGET_BRANCH: master
-  BINARY_TAG: x86_64-centos7-gcc7-opt
+  BINARY_TAG: x86_64-centos7-gcc8-opt
   BUILDDIR: build-opt
   TESTS_REPORT: "test_report"
   LCG_hostos: "x86_64-centos7"
@@ -16,12 +16,12 @@ variables:
   LCG_contrib: "/cvmfs/sft.cern.ch/lcg/contrib"
   CCACHE_VERSION: "3.3.4-e92e5"
 
-build:gcc7:opt:
+build:gcc8:opt:
   stage: build
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc7-opt
+    BINARY_TAG: x86_64-centos7-gcc8-opt
     BUILDDIR: build-opt
   script:
     - ci-utils/build
@@ -31,28 +31,13 @@ build:gcc7:opt:
       - .ccache
     expire_in: 1 week
 
-build:gcc7:dbg:
+build:gcc8:dbg:
   stage: build
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc7-dbg
+    BINARY_TAG: x86_64-centos7-gcc8-dbg
     BUILDDIR: build-dbg
-  script:
-    - ci-utils/build
-  artifacts:
-    paths:
-      - ${BUILDDIR}
-      - .ccache
-    expire_in: 1 week
-
-build:gcc62:opt:
-  stage: build
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc62-opt
-    BUILDDIR: build-gcc62
   script:
     - ci-utils/build
   artifacts:
@@ -78,14 +63,14 @@ check-formatting:
 doxygen:
   stage: test
   dependencies:
-    - build:gcc7:opt
+    - build:gcc8:opt
   tags:
     - cvmfs
   only:
     - master
     - tags
   variables:
-    BINARY_TAG: x86_64-centos7-gcc7-opt
+    BINARY_TAG: x86_64-centos7-gcc8-opt
     BUILDDIR: build-opt
   script:
     - . ci-utils/env_setup.sh
@@ -100,14 +85,14 @@ doxygen:
       - public
     expire_in: 1 day
 
-test:gcc7:opt:
+test:gcc8:opt:
   stage: test
   dependencies:
-    - build:gcc7:opt
+    - build:gcc8:opt
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc7-opt
+    BINARY_TAG: x86_64-centos7-gcc8-opt
     BUILDDIR: build-opt
   script:
     - ci-utils/test
@@ -117,33 +102,15 @@ test:gcc7:opt:
     when: always
     expire_in: 1 week
 
-test:gcc7:dbg:
+test:gcc8:dbg:
   stage: test
   dependencies:
-    - build:gcc7:dbg
+    - build:gcc8:dbg
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc7-dbg
+    BINARY_TAG: x86_64-centos7-gcc8-dbg
     BUILDDIR: build-dbg
-  script:
-    - ci-utils/test
-  artifacts:
-    paths:
-      - ${TESTS_REPORT}
-    when: always
-    expire_in: 1 week
-
-test:gcc62:opt:
-  stage: test
-  dependencies:
-    - build:gcc62:opt
-  tags:
-    - cvmfs
-  variables:
-    BINARY_TAG: x86_64-centos7-gcc62-opt
-    BUILDDIR: build-gcc62
-    TESTS_REPORT: test_report-gcc62
   script:
     - ci-utils/test
   artifacts:
@@ -155,11 +122,11 @@ test:gcc62:opt:
 test_public_headers_build:
   stage: test
   dependencies:
-    - build:gcc7:opt
+    - build:gcc8:opt
   tags:
     - cvmfs
   variables:
-    BINARY_TAG: x86_64-centos7-gcc7-opt
+    BINARY_TAG: x86_64-centos7-gcc8-opt
     BUILDDIR: build-opt
   script:
     - ci-utils/test_public_headers_build
