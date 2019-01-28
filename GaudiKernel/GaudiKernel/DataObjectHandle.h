@@ -115,15 +115,15 @@ public:
   /**
    * Get object from store or create a new one if it doesn't exist
    */
-  T* getOrCreate();
+  T* getOrCreate() const;
 
   /**
    * Register object in transient store
    */
-  T* put( std::unique_ptr<T> object );
+  T* put( std::unique_ptr<T> object ) const;
 
   // [[deprecated("please pass a std::unique_ptr instead of a raw pointer")]]
-  T* put( T* object ) { return put( std::unique_ptr<T>( object ) ); }
+  T* put( T* object ) const { return put( std::unique_ptr<T>( object ) ); }
 
 private:
   T* get( bool mustExist ) const;
@@ -156,7 +156,7 @@ T* DataObjectHandle<T>::get( bool mustExist ) const
 
 //---------------------------------------------------------------------------
 template <typename T>
-T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp )
+T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp ) const
 {
   assert( m_init );
   StatusCode rc = m_EDS->registerObject( objKey(), objectp.get() );
@@ -168,7 +168,7 @@ T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp )
 
 //---------------------------------------------------------------------------
 template <typename T>
-T* DataObjectHandle<T>::getOrCreate()
+T* DataObjectHandle<T>::getOrCreate() const
 {
   T* obj = get( false );
   return obj ? obj : put( std::make_unique<T>() );
@@ -231,7 +231,7 @@ public:
   /**
    * Register object in transient store
    */
-  const T* put( T&& object );
+  const T* put( T&& object ) const;
 
   /**
    * Size of boxed item, if boxed item has a 'size' method
@@ -260,7 +260,7 @@ const AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get() const
 //---------------------------------------------------------------------------
 
 template <typename T>
-const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj )
+const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj ) const
 {
   assert( m_init );
   auto       objectp = std::make_unique<AnyDataWrapper<T>>( std::move( obj ) );
