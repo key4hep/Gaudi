@@ -31,12 +31,17 @@ namespace Gaudi
     /// Fill bin content
     bool fill( double x, double y, double z, double weight ) override
     {
+      // avoid race conditions when filling the profile
+      std::lock_guard<std::mutex> guard( m_fillSerialization );
       m_rep->Fill( x, y, z, weight );
       return true;
     }
     /// Retrieve reference to class defininition identifier
     const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_ProfileH2; }
+
+  private:
+    std::mutex m_fillSerialization;
   };
 }
 

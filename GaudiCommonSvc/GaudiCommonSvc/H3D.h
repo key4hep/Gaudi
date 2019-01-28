@@ -45,6 +45,9 @@ namespace Gaudi
     double m_sumwx = 0;
     double m_sumwy = 0;
     double m_sumwz = 0;
+
+  private:
+    std::mutex m_fillSerialization;
   };
 }
 

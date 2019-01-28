@@ -181,6 +181,8 @@ bool Gaudi::Histogram2D::reset()
 #endif
 bool Gaudi::Histogram2D::fill( double x, double y, double weight )
 {
+  // avoid race conditiosn when filling the histogram
+  std::lock_guard<std::mutex> guard( m_fillSerialization );
   ( weight == 1. ) ? m_rep->Fill( x, y ) : m_rep->Fill( x, y, weight );
   return true;
 }

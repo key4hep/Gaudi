@@ -6,6 +6,8 @@
 #include <GaudiKernel/DataObject.h>
 #include <TH1D.h>
 
+#include <mutex>
+
 namespace Gaudi
 {
 
@@ -59,6 +61,9 @@ namespace Gaudi
      * @return the resulting StreamBuffer, after wrinting
      */
     StreamBuffer& serialize( StreamBuffer& s ) const;
+
+  private:
+    std::mutex m_fillSerialization;
 
   }; // end class IHistogram1D
 } // end namespace Gaudi

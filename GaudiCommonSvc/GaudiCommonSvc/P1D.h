@@ -37,6 +37,10 @@ namespace Gaudi
     /// Retrieve reference to class defininition identifier
     const CLID&        clID() const override { return classID(); }
     static const CLID& classID() { return CLID_ProfileH; }
+
+  private:
+    std::mutex m_fillSerialization;
+
   }; // end class IProfile1D
 } // end namespace Gaudi
 
