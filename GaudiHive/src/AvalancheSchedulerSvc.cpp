@@ -863,7 +863,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
       outputMS << m_precSvc->printState( slot ) << "\n";
 
       // Mention sub slots (this is expensive if the number of sub-slots is high)
-      /*if ( !slot.allSubSlots.empty() ) {
+      if ( m_verboseSubSlots && !slot.allSubSlots.empty() ) {
         outputMS << "\nNumber of sub-slots: " << slot.allSubSlots.size() << "\n\n";
         auto slotID = slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]";
         for ( auto& ss : slot.allSubSlots ) {
@@ -872,7 +872,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot )
                    << " ]:\n\n";
           outputMS << m_precSvc->printState( ss ) << "\n";
         }
-      }*/
+      }
     }
   }
 

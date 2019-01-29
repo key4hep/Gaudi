@@ -170,6 +170,8 @@ private:
   Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
                                           "Show the configuration of all Algorithms and Sequences"};
 
+  Gaudi::Property<bool> m_verboseSubSlots{this, "VerboseSubSlots", false, "Dump algorithm states for all sub-slots"};
+
   // Utils and shortcuts ----------------------------------------------------
 
   /// Activate scheduler
