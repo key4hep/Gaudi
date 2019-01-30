@@ -25,10 +25,10 @@ namespace Gaudi
     // general N -> 1 algorithms
     template <typename Out, typename... In, typename Traits_>
     class Transformer<Out( const In&... ), Traits_>
-        : public details::DataHandleMixin<std::tuple<Out>, std::tuple<In...>, Traits_>
+        : public details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_>
     {
     public:
-      using details::DataHandleMixin<std::tuple<Out>, std::tuple<In...>, Traits_>::DataHandleMixin;
+      using details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute() override final
@@ -55,10 +55,10 @@ namespace Gaudi
 
     template <typename... Out, typename... In, typename Traits_>
     class MultiTransformer<std::tuple<Out...>( const In&... ), Traits_>
-        : public details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>
+        : public details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_>
     {
     public:
-      using details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>::DataHandleMixin;
+      using details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute() override final
