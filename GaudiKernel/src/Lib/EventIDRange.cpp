@@ -10,6 +10,14 @@
  *
  *****************************************************************************/
 
+EventIDRange::EventIDRange()
+    : // defauld constructor: Range covering everything
+    m_start( 0, 0, 0, 0, 0, 0 )
+    , m_stop( EventIDBase::UNDEFNUM, EventIDBase::UNDEFEVT, EventIDBase::UNDEFNUM, EventIDBase::UNDEFNUM,
+              EventIDBase::UNDEFNUM, 0 )
+{
+}
+
 EventIDRange::EventIDRange( const EventIDBase& start, const EventIDBase& stop ) : m_start( start ), m_stop( stop ) {}
 
 EventIDRange& EventIDRange::operator=( const EventIDRange& r )

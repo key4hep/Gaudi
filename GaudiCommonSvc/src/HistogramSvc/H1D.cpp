@@ -165,6 +165,8 @@ bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, dou
 
 bool Gaudi::Histogram1D::fill( double x, double weight )
 {
+  // avoid race conditions when filling the histogram
+  std::lock_guard<std::mutex> guard( m_fillSerialization );
   ( weight == 1. ) ? m_rep->Fill( x ) : m_rep->Fill( x, weight );
   return true;
 }
