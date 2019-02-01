@@ -13,20 +13,16 @@ namespace ba = boost::algorithm;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 RootFileHandler::RootFileHandler( IMessageSvc* msg, const std::string& p, const std::string& c )
-    : m_log( msg, "RootFileHandler" ), m_userProxy( p ), m_certDir( c )
-{
+    : m_log( msg, "RootFileHandler" ), m_userProxy( p ), m_certDir( c ) {
   // Protect against multiple instances of TROOT
-  if ( !gROOT ) {
-    static TROOT root( "root", "ROOT I/O" );
-  }
+  if ( !gROOT ) { static TROOT root( "root", "ROOT I/O" ); }
   m_level = msg->outputLevel( "RootFileHandler" );
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 Io::open_t RootFileHandler::openRootFile( const std::string& n, const Io::IoFlags& f, const std::string& desc,
-                                          Io::Fd& fd, void*& ptr )
-{
+                                          Io::Fd& fd, void*& ptr ) {
 
   m_log.setLevel( m_level );
 
@@ -120,8 +116,7 @@ Io::open_t RootFileHandler::openRootFile( const std::string& n, const Io::IoFlag
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-Io::close_t RootFileHandler::closeRootFile( void* ptr )
-{
+Io::close_t RootFileHandler::closeRootFile( void* ptr ) {
 
   if ( m_log.level() <= MSG::DEBUG ) m_log << MSG::DEBUG << "closeRootFile(ptr:" << ptr << ")" << endmsg;
 
@@ -148,8 +143,7 @@ Io::close_t RootFileHandler::closeRootFile( void* ptr )
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-Io::reopen_t RootFileHandler::reopenRootFile( void*, const Io::IoFlags& )
-{
+Io::reopen_t RootFileHandler::reopenRootFile( void*, const Io::IoFlags& ) {
 
   m_log << MSG::ERROR << "reopen not implemented" << endmsg;
   return -1;
@@ -157,8 +151,7 @@ Io::reopen_t RootFileHandler::reopenRootFile( void*, const Io::IoFlags& )
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-bool RootFileHandler::setupSSL()
-{
+bool RootFileHandler::setupSSL() {
 
   if ( m_log.level() <= MSG::DEBUG ) m_log << MSG::DEBUG << "setupSSL" << endmsg;
 

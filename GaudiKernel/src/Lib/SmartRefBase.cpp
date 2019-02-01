@@ -23,16 +23,14 @@
 typedef ObjectContainerBase _Container;
 
 /// Setup smart reference
-void SmartRefBase::set( DataObject* pObj, long hint_id, long link_id )
-{
+void SmartRefBase::set( DataObject* pObj, long hint_id, long link_id ) {
   m_data   = pObj;
   m_hintID = hint_id;
   m_linkID = link_id;
 }
 
 /// Load on demand: ContainedObject type references
-const ContainedObject* SmartRefBase::accessData( const ContainedObject* ) const
-{
+const ContainedObject* SmartRefBase::accessData( const ContainedObject* ) const {
   if ( m_hintID != StreamBuffer::INVALID && m_linkID != StreamBuffer::INVALID ) {
     const _Container* cnt = dynamic_cast<const _Container*>( accessData( m_data ) );
     if ( cnt ) return cnt->containedObject( m_linkID );
@@ -41,12 +39,11 @@ const ContainedObject* SmartRefBase::accessData( const ContainedObject* ) const
 }
 
 /// Load on demand: DataObject type references
-const DataObject* SmartRefBase::accessData( const DataObject* ) const
-{
-  DataObject* target               = nullptr;
-  DataObject* source               = nullptr;
+const DataObject* SmartRefBase::accessData( const DataObject* ) const {
+  DataObject* target = nullptr;
+  DataObject* source = nullptr;
   if ( !m_data && m_contd ) m_data = m_contd->parent();
-  source                           = const_cast<DataObject*>( m_data );
+  source = const_cast<DataObject*>( m_data );
   if ( m_hintID != StreamBuffer::INVALID && source ) {
     LinkManager* mgr = source->linkMgr();
     if ( mgr ) {
@@ -57,9 +54,7 @@ const DataObject* SmartRefBase::accessData( const DataObject* ) const
           IRegistry* reg = source->registry();
           if ( reg ) {
             IDataProviderSvc* datasvc = reg->dataSvc();
-            if ( datasvc && datasvc->retrieveObject( link->path(), target ).isSuccess() ) {
-              link->setObject( target );
-            }
+            if ( datasvc && datasvc->retrieveObject( link->path(), target ).isSuccess() ) { link->setObject( target ); }
           }
         }
       }
@@ -69,8 +64,7 @@ const DataObject* SmartRefBase::accessData( const DataObject* ) const
 }
 
 // Extended equality check
-bool SmartRefBase::isEqualEx( const DataObject* pObj, const SmartRefBase& c ) const
-{
+bool SmartRefBase::isEqualEx( const DataObject* pObj, const SmartRefBase& c ) const {
   if ( c.m_hintID != StreamBuffer::INVALID && pObj ) {
     DataObject* source = const_cast<DataObject*>( c.m_data );
     if ( source ) {
@@ -88,17 +82,15 @@ bool SmartRefBase::isEqualEx( const DataObject* pObj, const SmartRefBase& c ) co
 }
 
 // Extended equality check
-bool SmartRefBase::isEqualEx( const ContainedObject* pObj, const SmartRefBase& c ) const
-{
+bool SmartRefBase::isEqualEx( const ContainedObject* pObj, const SmartRefBase& c ) const {
   return isEqualEx( pObj->parent(), c ) && pObj->index() == c.m_linkID;
 }
 
-const std::string& SmartRefBase::path() const
-{
+const std::string& SmartRefBase::path() const {
   static std::string s_empty_string{};
-  DataObject*        source        = nullptr;
+  DataObject*        source = nullptr;
   if ( !m_data && m_contd ) m_data = m_contd->parent();
-  source                           = const_cast<DataObject*>( m_data );
+  source = const_cast<DataObject*>( m_data );
   if ( m_hintID != StreamBuffer::INVALID && source ) {
     LinkManager* mgr = source->linkMgr();
     if ( mgr ) {

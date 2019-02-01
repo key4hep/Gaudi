@@ -15,8 +15,7 @@
  *  @author Ben Couturier
  *  @date   2016-01-12
  */
-class JemallocProfileSvc : public extends<Service, IIncidentListener>
-{
+class JemallocProfileSvc : public extends<Service, IIncidentListener> {
 
 public:
   /// Standard constructor

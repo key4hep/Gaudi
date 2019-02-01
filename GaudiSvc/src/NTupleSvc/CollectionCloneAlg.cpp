@@ -19,14 +19,12 @@
 #include "GaudiKernel/SmartIF.h"
 #include <vector>
 
-namespace
-{
+namespace {
 
   template <class T>
-  static long upper( const INTupleItem* item )
-  {
+  static long upper( const INTupleItem* item ) {
 #pragma GCC diagnostic push
-#pragma GCC diagnostic      ignored "-Wnull-dereference"
+#pragma GCC diagnostic ignored "-Wnull-dereference"
     const NTuple::_Data<T>* it = dynamic_cast<const NTuple::_Data<T>*>( item );
     assert( it != nullptr );
     return it->range().upper();
@@ -34,8 +32,7 @@ namespace
   }
 
   template <class TYP>
-  static StatusCode createItem( MsgStream& log, INTuple* tuple, INTupleItem* src, const TYP& null )
-  {
+  static StatusCode createItem( MsgStream& log, INTuple* tuple, INTupleItem* src, const TYP& null ) {
     NTuple::_Data<TYP>* source = dynamic_cast<NTuple::_Data<TYP>*>( src );
     if ( !source ) return StatusCode::FAILURE;
     TYP                low    = source->range().lower();
@@ -100,20 +97,19 @@ namespace
     }
     return tuple->add( it );
   }
-}
+} // namespace
 
 /**@class CollectionCloneAlg
-  *
-  * Small algorithm, which allows to merge N-tuples in
-  * a generic way. In the options directory an python
-  * interface is presented, which shows how to steer this
-  * algorithm in a standaqlone program.
-  *
-  * @author:  M.Frank
-  * @version: 1.0
-  */
-class CollectionCloneAlg : public Algorithm
-{
+ *
+ * Small algorithm, which allows to merge N-tuples in
+ * a generic way. In the options directory an python
+ * interface is presented, which shows how to steer this
+ * algorithm in a standaqlone program.
+ *
+ * @author:  M.Frank
+ * @version: 1.0
+ */
+class CollectionCloneAlg : public Algorithm {
 
   Gaudi::Property<std::string> m_tupleSvc{this, "EvtTupleSvc", "EvtTupleSvc", "name of the data provider service"};
   Gaudi::Property<std::vector<std::string>> m_inputs{this, "Input", {}, "input specifications"};
@@ -135,8 +131,7 @@ public:
   using Algorithm::Algorithm;
 
   /// Initialize
-  StatusCode initialize() override
-  {
+  StatusCode initialize() override {
     MsgStream log( msgSvc(), name() );
     m_rootName     = "";
     m_outName      = "";
@@ -150,7 +145,7 @@ public:
     std::string fun;
     using Parser = Gaudi::Utils::AttribStringParser;
     for ( auto attrib : Parser( m_output ) ) {
-      switch (::toupper( attrib.tag[0] ) ) {
+      switch ( ::toupper( attrib.tag[0] ) ) {
       case 'D':
         m_outName = std::move( attrib.value );
         break;
@@ -170,28 +165,25 @@ public:
     }
     if ( !fun.empty() || !m_criteria.empty() ) {
       if ( !m_criteria.empty() && fun.empty() ) fun = "NTuple::Selector";
-      m_selectorName                                = fun;
+      m_selectorName = fun;
     }
     return StatusCode::SUCCESS;
   }
 
   /// Finalize
-  StatusCode finalize() override
-  {
+  StatusCode finalize() override {
     m_dataSvc.reset();
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
-  StatusCode execute() override
-  {
+  StatusCode execute() override {
     StatusCode status = connect();
     return status.isSuccess() ? mergeInputTuples() : status;
   }
 
   /// Book the N-tuple according to the specification
-  virtual StatusCode book( const NTuple::Tuple* nt )
-  {
+  virtual StatusCode book( const NTuple::Tuple* nt ) {
     MsgStream      log( msgSvc(), name() );
     StatusCode     status = StatusCode::SUCCESS;
     NTuple::Tuple* tuple  = m_dataSvc->book( m_outName, nt->clID(), nt->title() );
@@ -252,8 +244,7 @@ public:
   }
 
   // Perform some basic checks
-  virtual StatusCode checkInput( const NTuple::Tuple* clone, const NTuple::Tuple* src )
-  {
+  virtual StatusCode checkInput( const NTuple::Tuple* clone, const NTuple::Tuple* src ) {
     MsgStream log( msgSvc(), name() );
     if ( clone && src ) {
       const INTuple::ItemContainer& clone_items = clone->items();
@@ -305,8 +296,7 @@ public:
   }
 
   /// Merge the entries of a single input tuple into the output
-  StatusCode mergeEntries( const std::string& input )
-  {
+  StatusCode mergeEntries( const std::string& input ) {
     MsgStream log( msgSvc(), name() );
     NTuplePtr out( m_dataSvc.get(), m_outName );
     if ( 0 != out ) {
@@ -400,9 +390,7 @@ public:
         }
         log << MSG::INFO << "End of reading tuple " << input << " after " << nentry << " entries." << endmsg;
 
-        if ( nentry > 0 || m_selectorName != "" ) {
-          return StatusCode::SUCCESS;
-        }
+        if ( nentry > 0 || m_selectorName != "" ) { return StatusCode::SUCCESS; }
         return StatusCode::FAILURE;
       }
       log << MSG::ERROR << "Failed to access input: " << input << endmsg;
@@ -411,8 +399,7 @@ public:
   }
 
   /// Connect input and output N-tuples
-  StatusCode connect()
-  {
+  StatusCode connect() {
     StatusCode status = StatusCode::SUCCESS;
     for ( size_t i = 0; i < m_inputs.size(); ++i ) {
       NTuplePtr nt( m_dataSvc.get(), m_inputs[i] );
@@ -446,8 +433,7 @@ public:
   }
 
   /// Merge all N-tuple entries
-  StatusCode mergeInputTuples()
-  {
+  StatusCode mergeInputTuples() {
     MsgStream log( msgSvc(), name() );
     for ( const auto& input : m_inputs ) {
       StatusCode sc = mergeEntries( input );

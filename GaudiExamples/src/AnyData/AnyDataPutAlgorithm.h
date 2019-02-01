@@ -15,8 +15,7 @@
  *  @author Roel Aaij
  *  @date   2016-05-26
  */
-class AnyDataPutAlgorithm : public GaudiAlgorithm
-{
+class AnyDataPutAlgorithm : public GaudiAlgorithm {
 public:
   /// Standard constructor
   AnyDataPutAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );

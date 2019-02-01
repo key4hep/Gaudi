@@ -4,8 +4,7 @@
 // STD
 #include <string>
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RootCompressionSettings RootCompressionSettings.h
    *
@@ -17,8 +16,7 @@ namespace RootHistCnv
    *  @date   2013-10-24
    */
 
-  class RootCompressionSettings
-  {
+  class RootCompressionSettings {
     /// The cached ROOT compression level int
     int m_level;
 
@@ -29,6 +27,6 @@ namespace RootHistCnv
     /// Get the level
     int level() const { return m_level; }
   };
-}
+} // namespace RootHistCnv
 
 #endif // ROOTCOMPRESSIONSETTINGS_H

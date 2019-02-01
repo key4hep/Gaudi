@@ -1,13 +1,13 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #endif
 #ifdef WIN32
 // Disable warning
 //   warning C4996: 'sprintf': This function or variable may be unsafe.
 // coming from TString.h
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 
 #include <GaudiCommonSvc/Generic3D.h>
@@ -19,11 +19,9 @@
 #include "GaudiPI.h"
 #include "TH3D.h"
 
-namespace Gaudi
-{
+namespace Gaudi {
   template <>
-  void Generic3D<AIDA::IHistogram3D, TH3D>::adoptRepresentation( TObject* rep )
-  {
+  void Generic3D<AIDA::IHistogram3D, TH3D>::adoptRepresentation( TObject* rep ) {
     TH3D* imp = dynamic_cast<TH3D*>( rep );
     if ( !imp ) throw std::runtime_error( "Cannot adopt native histogram representation." );
     m_rep.reset( imp );
@@ -34,13 +32,12 @@ namespace Gaudi
     if ( !a || ( a && a->GetSize() == 0 ) ) m_rep->Sumw2();
     setTitle( m_rep->GetTitle() );
   }
-}
+} // namespace Gaudi
 
 /// Create 3D histogram with fixed bins
 std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string& title, int nBinsX, double xlow,
                                                               double xup, int nBinsY, double ylow, double yup,
-                                                              int nBinsZ, double zlow, double zup )
-{
+                                                              int nBinsZ, double zlow, double zup ) {
   auto p = new Histogram3D(
       new TH3D( title.c_str(), title.c_str(), nBinsX, xlow, xup, nBinsY, ylow, yup, nBinsZ, zlow, zup ) );
   return {p, p};
@@ -48,22 +45,19 @@ std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string&
 
 /// Create 3D histogram with variable bins
 std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const std::string& title, const Edges& eX,
-                                                              const Edges& eY, const Edges& eZ )
-{
+                                                              const Edges& eY, const Edges& eZ ) {
   auto p = new Histogram3D( new TH3D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1,
                                       &eY.front(), eZ.size() - 1, &eZ.front() ) );
   return {p, p};
 }
 
-std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const AIDA::IHistogram3D& hist )
-{
+std::pair<DataObject*, AIDA::IHistogram3D*> Gaudi::createH3D( const AIDA::IHistogram3D& hist ) {
   TH3D*        h = getRepresentation<AIDA::IHistogram3D, TH3D>( hist );
   Histogram3D* n = h ? new Histogram3D( new TH3D( *h ) ) : nullptr;
   return {n, n};
 }
 
-Gaudi::Histogram3D::Histogram3D() : Base( new TH3D() )
-{
+Gaudi::Histogram3D::Histogram3D() : Base( new TH3D() ) {
   setTitle( "" );
   m_rep->Sumw2();
   m_sumwx = 0;
@@ -72,8 +66,7 @@ Gaudi::Histogram3D::Histogram3D() : Base( new TH3D() )
   m_rep->SetDirectory( nullptr );
 }
 
-Gaudi::Histogram3D::Histogram3D( TH3D* rep )
-{
+Gaudi::Histogram3D::Histogram3D( TH3D* rep ) {
   adoptRepresentation( rep );
   m_sumwx = 0;
   m_sumwy = 0;
@@ -83,8 +76,7 @@ Gaudi::Histogram3D::Histogram3D( TH3D* rep )
 
 // set bin content (entries and centre are not used )
 bool Gaudi::Histogram3D::setBinContents( int i, int j, int k, int entries, double height, double error, double centreX,
-                                         double centreY, double centreZ )
-{
+                                         double centreY, double centreZ ) {
   m_rep->SetBinContent( rIndexX( i ), rIndexY( j ), rIndexZ( k ), height );
   m_rep->SetBinError( rIndexX( i ), rIndexY( j ), rIndexZ( k ), error );
   // accumulate sum bin centers
@@ -97,8 +89,7 @@ bool Gaudi::Histogram3D::setBinContents( int i, int j, int k, int entries, doubl
   return true;
 }
 
-bool Gaudi::Histogram3D::reset()
-{
+bool Gaudi::Histogram3D::reset() {
   m_sumwx      = 0;
   m_sumwy      = 0;
   m_sumwz      = 0;
@@ -107,16 +98,14 @@ bool Gaudi::Histogram3D::reset()
   return true;
 }
 
-bool Gaudi::Histogram3D::fill( double x, double y, double z, double weight )
-{
+bool Gaudi::Histogram3D::fill( double x, double y, double z, double weight ) {
   // avoid race conditiosn when filling the histogram
   std::lock_guard<std::mutex> guard( m_fillSerialization );
   m_rep->Fill( x, y, z, weight );
   return true;
 }
 
-void* Gaudi::Histogram3D::cast( const std::string& className ) const
-{
+void* Gaudi::Histogram3D::cast( const std::string& className ) const {
   if ( className == "AIDA::IHistogram3D" ) {
     return (AIDA::IHistogram3D*)this;
   } else if ( className == "AIDA::IHistogram" ) {
@@ -128,38 +117,36 @@ void* Gaudi::Histogram3D::cast( const std::string& className ) const
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( push )
-#pragma warning( disable : 1572 )
+#  pragma warning( push )
+#  pragma warning( disable : 1572 )
 #endif
-bool Gaudi::Histogram3D::setRms( double rmsX, double rmsY, double rmsZ )
-{
+bool Gaudi::Histogram3D::setRms( double rmsX, double rmsY, double rmsZ ) {
   m_rep->SetEntries( m_sumEntries );
   std::vector<double> stat( 11 );
   // sum weights
-  stat[0]                                    = sumBinHeights();
-  stat[1]                                    = 0;
+  stat[0] = sumBinHeights();
+  stat[1] = 0;
   if ( equivalentBinEntries() != 0 ) stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
-  stat[2]                                    = m_sumwx;
-  double meanX                               = 0;
-  if ( sumBinHeights() != 0 ) meanX          = m_sumwx / sumBinHeights();
-  stat[3]                                    = ( meanX * meanX + rmsX * rmsX ) * sumBinHeights();
-  stat[4]                                    = m_sumwy;
-  double meanY                               = 0;
-  if ( sumBinHeights() != 0 ) meanY          = m_sumwy / sumBinHeights();
-  stat[5]                                    = ( meanY * meanY + rmsY * rmsY ) * sumBinHeights();
-  stat[6]                                    = 0;
-  stat[7]                                    = m_sumwz;
-  double meanZ                               = 0;
-  if ( sumBinHeights() != 0 ) meanZ          = m_sumwz / sumBinHeights();
-  stat[8]                                    = ( meanZ * meanZ + rmsZ * rmsZ ) * sumBinHeights();
+  stat[2]      = m_sumwx;
+  double meanX = 0;
+  if ( sumBinHeights() != 0 ) meanX = m_sumwx / sumBinHeights();
+  stat[3]      = ( meanX * meanX + rmsX * rmsX ) * sumBinHeights();
+  stat[4]      = m_sumwy;
+  double meanY = 0;
+  if ( sumBinHeights() != 0 ) meanY = m_sumwy / sumBinHeights();
+  stat[5]      = ( meanY * meanY + rmsY * rmsY ) * sumBinHeights();
+  stat[6]      = 0;
+  stat[7]      = m_sumwz;
+  double meanZ = 0;
+  if ( sumBinHeights() != 0 ) meanZ = m_sumwz / sumBinHeights();
+  stat[8] = ( meanZ * meanZ + rmsZ * rmsZ ) * sumBinHeights();
   // do not need to use sumwxy sumwxz and sumwyz
 
   m_rep->PutStats( &stat.front() );
   return true;
 }
 
-void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h )
-{
+void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h ) {
   // implement here the copy
   const char* title = h.title().c_str();
   if ( h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() && h.zAxis().isFixedBinning() ) {
@@ -191,18 +178,18 @@ void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h )
   m_sumwz      = 0;
 
   // statistics
-  double sumw                                = h.sumBinHeights();
-  double sumw2                               = 0;
+  double sumw  = h.sumBinHeights();
+  double sumw2 = 0;
   if ( h.equivalentBinEntries() != 0 ) sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
-  double sumwx                               = h.meanX() * h.sumBinHeights();
-  double sumwx2                              = ( h.meanX() * h.meanX() + h.rmsX() * h.rmsX() ) * h.sumBinHeights();
-  double sumwy                               = h.meanY() * h.sumBinHeights();
-  double sumwy2                              = ( h.meanY() * h.meanY() + h.rmsY() * h.rmsY() ) * h.sumBinHeights();
-  double sumwz                               = h.meanZ() * h.sumBinHeights();
-  double sumwz2                              = ( h.meanZ() * h.meanZ() + h.rmsZ() * h.rmsZ() ) * h.sumBinHeights();
-  double sumwxy                              = 0;
-  double sumwxz                              = 0;
-  double sumwyz                              = 0;
+  double sumwx  = h.meanX() * h.sumBinHeights();
+  double sumwx2 = ( h.meanX() * h.meanX() + h.rmsX() * h.rmsX() ) * h.sumBinHeights();
+  double sumwy  = h.meanY() * h.sumBinHeights();
+  double sumwy2 = ( h.meanY() * h.meanY() + h.rmsY() * h.rmsY() ) * h.sumBinHeights();
+  double sumwz  = h.meanZ() * h.sumBinHeights();
+  double sumwz2 = ( h.meanZ() * h.meanZ() + h.rmsZ() * h.rmsZ() ) * h.sumBinHeights();
+  double sumwxy = 0;
+  double sumwxz = 0;
+  double sumwyz = 0;
 
   // copy the contents in  (AIDA underflow/overflow are -2,-1)
   for ( int i = -2; i < xAxis().bins(); ++i ) {
@@ -241,5 +228,5 @@ void Gaudi::Histogram3D::copyFromAida( const AIDA::IHistogram3D& h )
 
 #ifdef __ICC
 // re-enable icc remark #1572
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif

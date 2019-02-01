@@ -24,8 +24,7 @@ DECLARE_COMPONENT( CPUCruncher )
 
 CPUCruncher::CPUCruncher( const std::string& name, // the algorithm instance name
                           ISvcLocator*       pSvc )
-    : GaudiAlgorithm( name, pSvc )
-{
+    : GaudiAlgorithm( name, pSvc ) {
 
   declareProperty( "NIterationsVect", m_niters_vect, "Number of iterations for the calibration." );
   declareProperty( "NTimesVect", m_times_vect, "Number of seconds for the calibration." );
@@ -37,15 +36,13 @@ CPUCruncher::CPUCruncher( const std::string& name, // the algorithm instance nam
   name_ninstances->second += 1;
 }
 
-CPUCruncher::~CPUCruncher()
-{
+CPUCruncher::~CPUCruncher() {
   for ( uint i = 0; i < m_inputHandles.size(); ++i ) delete m_inputHandles[i];
 
   for ( uint i = 0; i < m_outputHandles.size(); ++i ) delete m_outputHandles[i];
 }
 
-StatusCode CPUCruncher::initialize()
-{
+StatusCode CPUCruncher::initialize() {
   auto sc = GaudiAlgorithm::initialize();
   if ( !sc ) return sc;
 
@@ -83,8 +80,7 @@ StatusCode CPUCruncher::initialize()
 Calibrate the crunching finding the right relation between max number to be searched and time spent.
 The relation is a sqrt for times greater than 10^-4 seconds.
 */
-void CPUCruncher::calibrate()
-{
+void CPUCruncher::calibrate() {
   m_niters_vect = {0,    500,  600,  700,  800,   1000,  1300,  1600,  2000,  2300,  2600,  3000,  3300,  3500, 3900,
                    4200, 5000, 6000, 8000, 10000, 12000, 15000, 17000, 20000, 25000, 30000, 35000, 40000, 60000};
   if ( !m_shortCalib ) {
@@ -112,8 +108,7 @@ void CPUCruncher::calibrate()
   info() << "Calibration finished!" << endmsg;
 }
 
-unsigned long CPUCruncher::getNCaliIters( double runtime )
-{
+unsigned long CPUCruncher::getNCaliIters( double runtime ) {
 
   unsigned int smaller_i = 0;
   double       time      = 0.;
@@ -146,8 +141,7 @@ unsigned long CPUCruncher::getNCaliIters( double runtime )
   return nCaliIters;
 }
 
-void CPUCruncher::findPrimes( const unsigned long int n_iterations )
-{
+void CPUCruncher::findPrimes( const unsigned long int n_iterations ) {
   // Flag to trigger the allocation
   bool is_prime;
 
@@ -197,8 +191,7 @@ void CPUCruncher::findPrimes( const unsigned long int n_iterations )
 }
 
 //------------------------------------------------------------------------------
-void CPUCruncher::declareRuntimeRequestedOutputs()
-{
+void CPUCruncher::declareRuntimeRequestedOutputs() {
   //
   for ( const auto& k : outputDataObjs() ) {
     auto outputHandle = new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this );
@@ -235,7 +228,6 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
      */
 
     auto getGausRandom = []( double mean, double sigma ) -> double {
-
       unsigned int seed = std::clock();
 
       auto getUnifRandom = []( unsigned int& seed ) -> double {
@@ -289,8 +281,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
     ON_DEBUG endSleeptbb = tbb::tick_count::now();
 
     // actual sleeping time can be longer due to scheduling or resource contention delays
-    ON_DEBUG
-    {
+    ON_DEBUG {
       const double actualDreamTime = ( endSleeptbb - startSleeptbb ).seconds();
       debug() << "Actual dreaming time was: " << actualDreamTime << "s" << endmsg;
     }
@@ -307,9 +298,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
     VERBOSE_MSG << "get from TS: " << inputHandle->objKey() << endmsg;
     DataObject* obj = nullptr;
-    for ( unsigned int i = 0; i < m_rwRepetitions; ++i ) {
-      obj = inputHandle->get();
-    }
+    for ( unsigned int i = 0; i < m_rwRepetitions; ++i ) { obj = inputHandle->get(); }
     if ( obj == nullptr ) error() << "A read object was a null pointer." << endmsg;
   }
 
@@ -333,7 +322,8 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
   const double actualRuntime = ( endtbb - starttbb ).seconds();
 
-  DEBUG_MSG << "Finish event " << context.evt()
+  DEBUG_MSG << "Finish event "
+            << context.evt()
             //      << " on pthreadID " << context.m_thread_id
             << " in " << actualRuntime << " seconds" << endmsg;
 

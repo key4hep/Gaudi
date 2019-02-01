@@ -3,8 +3,7 @@ from GaudiKernel.Configurable import ConfigurableAlgorithm
 
 
 class MyAlg(ConfigurableAlgorithm):
-    __slots__ = {'File': 'filename',
-                 'Text': 'text field'}
+    __slots__ = {'File': 'filename', 'Text': 'text field'}
 
     def getDlls(self):
         return 'Dummy'

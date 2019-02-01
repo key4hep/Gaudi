@@ -23,8 +23,7 @@
  *  @author  Danilo Piparo
  *  @version 1.0
  */
-class AlgsExecutionStates final
-{
+class AlgsExecutionStates final {
 public:
   /// Execution states of the algorithms
   enum State : uint8_t {
@@ -48,14 +47,12 @@ public:
   bool contains( State state ) const { return std::find( m_states.begin(), m_states.end(), state ) != m_states.end(); }
 
   /// check if the collection contains at least one state of any listed types
-  bool containsAny( std::initializer_list<State> l ) const
-  {
+  bool containsAny( std::initializer_list<State> l ) const {
     return std::find_first_of( m_states.begin(), m_states.end(), l.begin(), l.end() ) != m_states.end();
   }
 
   /// check if the collection contains only states of listed types
-  bool containsOnly( std::initializer_list<State> l ) const
-  {
+  bool containsOnly( std::initializer_list<State> l ) const {
     return std::all_of( m_states.begin(), m_states.end(),
                         [l]( State s ) { return std::find( l.begin(), l.end(), s ) != l.end(); } );
   };
@@ -64,8 +61,7 @@ public:
 
   size_t size() const { return m_states.size(); }
 
-  size_t sizeOfSubset( State state ) const
-  {
+  size_t sizeOfSubset( State state ) const {
     return std::count_if( m_states.begin(), m_states.end(), [&]( State s ) { return s == state; } );
   }
 
@@ -76,25 +72,20 @@ private:
   MsgStream log() { return {m_MS, "AlgsExecutionStates"}; }
 
 public:
-  class Iterator final : public std::iterator<std::forward_iterator_tag, uint>
-  {
+  class Iterator final : public std::iterator<std::forward_iterator_tag, uint> {
     auto find_valid( std::vector<State>::const_iterator iter ) const { return std::find( iter, m_v->end(), m_s ); }
 
   public:
     Iterator( State s, const std::vector<State>& v, std::vector<State>::const_iterator pos )
-        : m_s( s ), m_v( &v ), m_pos( find_valid( pos ) )
-    {
-    }
+        : m_s( s ), m_v( &v ), m_pos( find_valid( pos ) ) {}
 
-    friend bool operator==( const Iterator& lhs, const Iterator& rhs )
-    {
+    friend bool operator==( const Iterator& lhs, const Iterator& rhs ) {
       return lhs.m_s == rhs.m_s && lhs.m_v == rhs.m_v && lhs.m_pos == rhs.m_pos;
     }
 
     friend bool operator!=( const Iterator& lhs, const Iterator& rhs ) { return !( lhs == rhs ); }
 
-    Iterator& operator++()
-    {
+    Iterator& operator++() {
       if ( m_pos != m_v->end() ) m_pos = find_valid( std::next( m_pos ) );
       return *this;
     }
@@ -114,8 +105,7 @@ public:
 };
 
 /// Streaming of State values
-inline std::ostream& operator<<( std::ostream& s, AlgsExecutionStates::State x )
-{
+inline std::ostream& operator<<( std::ostream& s, AlgsExecutionStates::State x ) {
   using State = AlgsExecutionStates::State;
   switch ( x ) {
   case State::INITIAL:

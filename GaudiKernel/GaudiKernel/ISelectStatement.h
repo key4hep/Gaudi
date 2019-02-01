@@ -29,8 +29,7 @@
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API ISelectStatement : virtual public IInterface
-{
+class GAUDI_API ISelectStatement : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( ISelectStatement, 2, 0 );

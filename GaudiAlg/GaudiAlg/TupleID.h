@@ -17,21 +17,19 @@
  *  @date 2005-08-06
  */
 // ============================================================================
-namespace Tuples
-{
+namespace Tuples {
   /// the actual type for N-Tuple identifier (HBOOK-style)
   typedef GaudiAlg::ID TupleID;
-  inline std::size_t hash_value( TupleID const& b ) { return b.hash(); }
-}
+  inline std::size_t   hash_value( TupleID const& b ) { return b.hash(); }
+} // namespace Tuples
 // ============================================================================
 
 // ============================================================================
-namespace GaudiAlg
-{
+namespace GaudiAlg {
   /// the actual type for N-Tuple identifier
   typedef Tuples::TupleID TupleID;
-  inline std::size_t hash_value( TupleID const& b ) { return b.hash(); }
-}
+  inline std::size_t      hash_value( TupleID const& b ) { return b.hash(); }
+} // namespace GaudiAlg
 // ============================================================================
 
 #endif // GAUDIALG_TUPLEID_H

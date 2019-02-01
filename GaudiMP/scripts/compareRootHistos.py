@@ -42,6 +42,8 @@ def rec(o, path=None, lst=None):
     else:
         pass
     return lst
+
+
 # =============================================================================
 
 # =============================================================================
@@ -64,6 +66,8 @@ def composition(t):
         else:
             objs += 1
     return objs, hists
+
+
 # =============================================================================
 
 # =============================================================================
@@ -129,14 +133,17 @@ def comparePaths(t1, t2):
     for n in uPar:
         if dp[n].__class__.__name__ in histos:
             uniqueTestHistos += 1
-    print 'Paths unique to Test file : %i ( %i Histos )' % (
-        len(uPar), uniqueTestHistos)
+    print 'Paths unique to Test file : %i ( %i Histos )' % (len(uPar),
+                                                            uniqueTestHistos)
     if uPar:
         for n in uPar:
             print '\t%s : \t%s' % (dp[n], n)
     print 'Matching Histos to test : %i' % (matchingHistos)
     print '=' * 80 + '\n'
-    return (((os, hs), (op, hp)), (uSer, uniqueReferenceHistos), (uPar, uniqueTestHistos), matchingHistos)
+    return (((os, hs), (op, hp)), (uSer, uniqueReferenceHistos),
+            (uPar, uniqueTestHistos), matchingHistos)
+
+
 # =============================================================================
 
 # =============================================================================
@@ -184,7 +191,8 @@ def bin2binIdentity(h1, h2):
 def compareHistos(t1, t2, state, checkBin2BinIdentity):
 
     (((referenceObjects, referenceHistos), (parallObjects, parallHistos)),
-     (uniqueSerPaths, uniqueSerHistos), (uniqueParPaths, uniqueParHistos), mh) = state
+     (uniqueSerPaths, uniqueSerHistos), (uniqueParPaths,
+                                         uniqueParHistos), mh) = state
 
     # deduce which one is test, which reference
     if t1[0] == ref:
@@ -258,8 +266,8 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
                 pBinError += ph.GetBinError(i)
             sint = sh.Integral()
             pint = ph.Integral()
-            doKS = (bool(sint) and bool(pint)) and (
-                sBinError > 0 and pBinError > 0)
+            doKS = (bool(sint) and bool(pint)) and (sBinError > 0
+                                                    and pBinError > 0)
             if checkBin2BinIdentity and doKS:
                 diffBins = bin2binIdentity(sh, ph)
                 if diffBins == 0:
@@ -268,7 +276,8 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
                     failedIdentity += 1
                     diffIdentity.append(h)
                     identityDiffBins[h] = diffBins
-            if (bool(sint) and bool(pint)) and (sBinError > 0 and pBinError > 0):
+            if (bool(sint) and bool(pint)) and (sBinError > 0
+                                                and pBinError > 0):
                 kTested += 1
                 kTest = sh.KolmogorovTest(ph)
                 kTestResults[h] = kTest
@@ -299,8 +308,8 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
     if diffEntries:
         diffEntries.sort()
         for e in diffEntries:
-            print '\t\t\t%s:\t%i != %i' % (
-                e, int(ds[e].GetEntries()), int(dp[e].GetEntries()))
+            print '\t\t\t%s:\t%i != %i' % (e, int(ds[e].GetEntries()),
+                                           int(dp[e].GetEntries()))
     print '-' * 80
 
     # report on Failed Kolmogorov Tests
@@ -311,8 +320,8 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
         diffKols.sort()
         for e in diffKols:
             result = kTestResults[e]  # DP Calculated twice ARGH!!
-            print '%s\t\t%s :\tK-Test Result :\t %5.16f' % (
-                ds[e].ClassName(), e, result)
+            print '%s\t\t%s :\tK-Test Result :\t %5.16f' % (ds[e].ClassName(),
+                                                            e, result)
     print '-' * 60
 
     # report on Failed Integral Checks
@@ -338,20 +347,20 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
         if diffIdentity:
             diffIdentity.sort()
             for e in diffIdentity:
-                print '%s\t\t%s: %i different bins' % (
-                    ds[e].ClassName(), e, identityDiffBins[e])
+                print '%s\t\t%s: %i different bins' % (ds[e].ClassName(), e,
+                                                       identityDiffBins[e])
             print '-' * 80
 
     print '\n' + '=' * 80
     print 'Comparison : Reference/Test ROOT Histo files'
     print '\n\t\tReference\tTest'
-    print '\tObjects : %i\t%i\t\t( p-s = %i )' % (referenceObjects,
-                                                  parallObjects, parallObjects - referenceObjects)
-    print '\tHistos  : %i\t%i\t\t( p-s = %i )' % (referenceHistos,
-                                                  parallHistos,  parallHistos - referenceHistos)
+    print '\tObjects : %i\t%i\t\t( p-s = %i )' % (
+        referenceObjects, parallObjects, parallObjects - referenceObjects)
+    print '\tHistos  : %i\t%i\t\t( p-s = %i )' % (
+        referenceHistos, parallHistos, parallHistos - referenceHistos)
     print '\t          __________'
-    print '\tTotal   : %i\t%i\n' % (
-        referenceHistos + referenceObjects,  parallHistos + parallObjects)
+    print '\tTotal   : %i\t%i\n' % (referenceHistos + referenceObjects,
+                                    parallHistos + parallObjects)
     print 'Objects/Histos unique to Reference File : %i / %i' % (
         len(uniqueSerPaths) - uniqueSerHistos, uniqueSerHistos)
     print 'Objects/Histos unique to Test File : %i / %i' % (
@@ -381,6 +390,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
     print '\n' + '=' * 80
     return retval
 
+
 # =============================================================================
 
 
@@ -392,18 +402,25 @@ def extractBlacklist(listString):
     else:
         gBlackList = []
 
-# =============================================================================
 
+# =============================================================================
 
 if __name__ == '__main__':
     usage = "usage: %prog testFile.root referenceFile.root [options]"
     parser = OptionParser()
-    parser.add_option("-b", dest="blacklist",
-                      help='Comma separated list of regexps matching histograms to skip (for example -b"MemoryTool,ProcTime")')
+    parser.add_option(
+        "-b",
+        dest="blacklist",
+        help=
+        'Comma separated list of regexps matching histograms to skip (for example -b"MemoryTool,ProcTime")'
+    )
 
-    parser.add_option("-i",
-                      action="store_true", dest="bin2bin", default=False,
-                      help="Check for bin to bin identity")
+    parser.add_option(
+        "-i",
+        action="store_true",
+        dest="bin2bin",
+        default=False,
+        help="Check for bin to bin identity")
     (options, args) = parser.parse_args()
 
     if len(args) != 2:

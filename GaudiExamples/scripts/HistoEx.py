@@ -31,10 +31,10 @@ class HistoEx(HistoAlgo):
         for i in range(0, 10):
             self.plot1D(i, ' 1D histo ', 0, 20, 20)
             for j in range(0, 10):
-                self.plot2D(i, j, ' 2D histo ',  0, 20,  0, 20, 20, 20)
+                self.plot2D(i, j, ' 2D histo ', 0, 20, 0, 20, 20, 20)
                 for k in range(0, 10):
-                    self.plot3D(i, j, k, ' 3D histo ',  0, 20,
-                                0, 20,  0, 20, 20, 20, 20)
+                    self.plot3D(i, j, k, ' 3D histo ', 0, 20, 0, 20, 0, 20, 20,
+                                20, 20)
 
         return SUCCESS
 
@@ -55,7 +55,10 @@ def configure(gaudi=None):
 
     gaudi.config()
 
-    gaudi.DLLs = ['GaudiAlg', 'RootHistCnv', ]
+    gaudi.DLLs = [
+        'GaudiAlg',
+        'RootHistCnv',
+    ]
 
     alg = HistoEx('HistoEx')
     gaudi.setAlgorithms([alg])

@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef __GNUC__
-#pragma GCC system_header
+#  pragma GCC system_header
 #endif
 // ============================================================================
 // Include files
@@ -40,10 +40,8 @@
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/VectorMap.h"
 //==============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     //==============================================================================
     // Namespace aliases:
     //==============================================================================
@@ -77,8 +75,7 @@ namespace Gaudi
     //==============================================================================
     template <typename Iterator>
     struct SkipperGrammar : qi::grammar<Iterator> {
-      SkipperGrammar() : SkipperGrammar::base_type( comments )
-      {
+      SkipperGrammar() : SkipperGrammar::base_type( comments ) {
         comments = enc::space | rep::confix( "/*", "*/" )[*( qi::char_ - "*/" )] |
                    rep::confix( "//", ( sp::eol | sp::eoi ) )[*( qi::char_ - ( sp::eol | sp::eoi ) )];
       }
@@ -90,8 +87,7 @@ namespace Gaudi
       //------------------------------------------------------------------------------
       typedef std::string ResultT;
       //------------------------------------------------------------------------------
-      StringGrammar() : StringGrammar::base_type( str )
-      {
+      StringGrammar() : StringGrammar::base_type( str ) {
         begin_quote = enc::char_( "\"'" );
         quote       = enc::char_( qi::_r1 );
 
@@ -101,8 +97,8 @@ namespace Gaudi
       }
       //------------------------------------------------------------------------------
       qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
-      qi::rule<Iterator, char()>       begin_quote;
-      qi::rule<Iterator, void( char )> quote;
+      qi::rule<Iterator, char()>                                   begin_quote;
+      qi::rule<Iterator, void( char )>                             quote;
       //------------------------------------------------------------------------------
     };
     REGISTER_GRAMMAR( std::string, StringGrammar );
@@ -111,8 +107,7 @@ namespace Gaudi
     template <typename Iterator, typename Skipper>
     struct CharGrammar : qi::grammar<Iterator, char(), Skipper> {
       typedef char ResultT;
-      CharGrammar() : CharGrammar::base_type( ch )
-      {
+      CharGrammar() : CharGrammar::base_type( ch ) {
         ch = qi::int_parser<char>() | '\'' >> ( qi::char_ - '\'' ) >> '\'';
       }
       qi::rule<Iterator, char(), Skipper> ch;
@@ -122,8 +117,7 @@ namespace Gaudi
     template <typename Iterator, typename Skipper>
     struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper> {
       typedef bool ResultT;
-      BoolGrammar() : BoolGrammar::base_type( boolean_literal )
-      {
+      BoolGrammar() : BoolGrammar::base_type( boolean_literal ) {
         boolean_literal = ( qi::lit( "true" ) | "True" | "TRUE" | "1" )[qi::_val = true] |
                           ( qi::lit( "false" ) | "False" | "FALSE" | "0" )[qi::_val = false];
       }
@@ -134,8 +128,7 @@ namespace Gaudi
     template <typename Iterator, typename RT, typename Skipper>
     struct IntGrammar : qi::grammar<Iterator, RT(), Skipper> {
       typedef RT ResultT;
-      IntGrammar() : IntGrammar::base_type( integer )
-      {
+      IntGrammar() : IntGrammar::base_type( integer ) {
         integer = qi::int_parser<RT>()[qi::_val = qi::_1] >> -qi::no_case[qi::char_( 'L' )];
       }
       qi::rule<Iterator, RT(), Skipper> integer;
@@ -165,12 +158,10 @@ namespace Gaudi
     // Grammar for std::tuples
     //==============================================================================
     template <typename T>
-    struct tuple_remove_first_type {
-    };
+    struct tuple_remove_first_type {};
 
     template <typename T>
-    struct tuple_get_first_type {
-    };
+    struct tuple_get_first_type {};
 
     template <typename T, typename... Ts>
     struct tuple_remove_first_type<std::tuple<T, Ts...>> {
@@ -195,23 +186,21 @@ namespace Gaudi
       struct Operations {
         //----------------------------------------------------------------------
 
-        void operator()( ResultT& res, HeadT& head, TailT& tail ) const
-        {
+        void operator()( ResultT& res, HeadT& head, TailT& tail ) const {
           res = std::tuple_cat( std::tuple<HeadT>( head ), tail );
         }
         //----------------------------------------------------------------------
       };
       //---------------------------------------------------------------------------
-      TupleInnerGrammar() : TupleInnerGrammar::base_type( tup )
-      {
+      TupleInnerGrammar() : TupleInnerGrammar::base_type( tup ) {
         tup = grHead[qi::_a = qi::_1] >> ',' >> grLast[op( qi::_val, qi::_a, qi::_1 )];
       }
 
-      TupleInnerGrammar<Iterator, TailT, N - 1, Skipper> grLast;
+      TupleInnerGrammar<Iterator, TailT, N - 1, Skipper>   grLast;
       typename Grammar_<Iterator, HeadT, Skipper>::Grammar grHead;
 
       qi::rule<Iterator, ResultT(), qi::locals<HeadT>, Skipper> tup;
-      ph::function<Operations> op;
+      ph::function<Operations>                                  op;
     };
 
     template <typename Iterator, typename TupleT, typename Skipper>
@@ -222,8 +211,7 @@ namespace Gaudi
       //---------------------------------------------------------------------------
       struct Operations {
         //---------------------------------------------------------------------
-        void operator()( ResultT& res, const typename std::tuple_element<0, ResultT>::type& val ) const
-        {
+        void operator()( ResultT& res, const typename std::tuple_element<0, ResultT>::type& val ) const {
           res                = ResultT();
           std::get<0>( res ) = val;
         }
@@ -235,23 +223,22 @@ namespace Gaudi
       typename Grammar_<Iterator, typename std::tuple_element<0, ResultT>::type, Skipper>::Grammar grFirst;
 
       qi::rule<Iterator, ResultT(), Skipper> tup;
-      ph::function<Operations> op;
+      ph::function<Operations>               op;
     };
 
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename TupleT, std::size_t N, typename Skipper>
     struct TupleGrammar : qi::grammar<Iterator, TupleT(), qi::locals<char>, Skipper> {
       typedef TupleT ResultT;
-      TupleGrammar() : TupleGrammar::base_type( tup )
-      {
+      TupleGrammar() : TupleGrammar::base_type( tup ) {
         begin = enc::char_( '[' )[qi::_val = ']'] | enc::char_( '(' )[qi::_val = ')'];
-        end = enc::char_( qi::_r1 );
+        end   = enc::char_( qi::_r1 );
 
         tup = begin[qi::_a = qi::_1] >> grTuple[qi::_val = qi::_1] >> end( qi::_a );
       }
 
-      qi::rule<Iterator, char()>       begin;
-      qi::rule<Iterator, void( char )> end;
+      qi::rule<Iterator, char()>                               begin;
+      qi::rule<Iterator, void( char )>                         end;
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> tup;
       TupleInnerGrammar<Iterator, TupleT, N, Skipper>          grTuple;
     };
@@ -269,21 +256,20 @@ namespace Gaudi
       //------------------------------------------------------------------------------
       typedef VectorT ResultT;
       //------------------------------------------------------------------------------
-      VectorGrammar() : VectorGrammar::base_type( vec )
-      {
+      VectorGrammar() : VectorGrammar::base_type( vec ) {
         begin =
             enc::char_( '[' )[qi::_val = ']'] | enc::char_( '{' )[qi::_val = '}'] | enc::char_( '(' )[qi::_val = ')'];
         end  = enc::char_( qi::_r1 );
         list = elementGrammar % ',';
-        vec = begin[qi::_a = qi::_1] >> -list[qi::_val = qi::_1] >> end( qi::_a );
+        vec  = begin[qi::_a = qi::_1] >> -list[qi::_val = qi::_1] >> end( qi::_a );
       }
       // ----------------------------------------------------------------------------
       typename Grammar_<Iterator, typename VectorT::value_type, Skipper>::Grammar elementGrammar;
-      qi::rule<Iterator, char()>       begin;
-      qi::rule<Iterator, void( char )> end;
+      qi::rule<Iterator, char()>                                                  begin;
+      qi::rule<Iterator, void( char )>                                            end;
 
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> vec;
-      qi::rule<Iterator, ResultT(), Skipper> list;
+      qi::rule<Iterator, ResultT(), Skipper>                   list;
       // ----------------------------------------------------------------------------
     };
     // ----------------------------------------------------------------------------
@@ -324,26 +310,23 @@ namespace Gaudi
       typedef typename PairT::first_type  first_type;
       typedef typename PairT::second_type second_type;
       //------------------------------------------------------------------------------
-      struct first {
-      };
-      struct second {
-      };
+      struct first {};
+      struct second {};
       //------------------------------------------------------------------------------
       PairGrammar() : PairGrammar( "," ) {}
-      PairGrammar( const std::string& delimeter ) : PairGrammar::base_type( pair )
-      {
-        begin = enc::char_( '(' )[qi::_val = ')'] | enc::char_( '[' )[qi::_val = ']'];
-        end  = qi::char_( qi::_r1 );
-        pair = begin[qi::_a = qi::_1] >> pair_in[qi::_val = qi::_1] >> end( qi::_a );
-        pair_in                                           = key >> qi::lit( delimeter ) >> value;
+      PairGrammar( const std::string& delimeter ) : PairGrammar::base_type( pair ) {
+        begin   = enc::char_( '(' )[qi::_val = ')'] | enc::char_( '[' )[qi::_val = ']'];
+        end     = qi::char_( qi::_r1 );
+        pair    = begin[qi::_a = qi::_1] >> pair_in[qi::_val = qi::_1] >> end( qi::_a );
+        pair_in = key >> qi::lit( delimeter ) >> value;
       }
       // ----------------------------------------------------------------------------
       typename Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar  key;
       typename Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar value;
-      qi::rule<Iterator, char()>       begin;
-      qi::rule<Iterator, void( char )> end;
-      qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> pair;
-      qi::rule<Iterator, ResultT(), Skipper> pair_in;
+      qi::rule<Iterator, char()>                                                 begin;
+      qi::rule<Iterator, void( char )>                                           end;
+      qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper>                   pair;
+      qi::rule<Iterator, ResultT(), Skipper>                                     pair_in;
       // ph::function<Operations> op;
       // ----------------------------------------------------------------------------
     }; // END PairGrammar
@@ -361,29 +344,23 @@ namespace Gaudi
       typedef MapT                       ResultT;
       typedef typename MapT::key_type    KeyT;
       typedef typename MapT::mapped_type MappedT;
-      typedef std::pair<KeyT, MappedT> PairT;
+      typedef std::pair<KeyT, MappedT>   PairT;
 
       typedef std::vector<PairT> VectorPairT;
       //------------------------------------------------------------------------------
-      struct tag_key {
-      };
-      struct tag_mapped {
-      };
+      struct tag_key {};
+      struct tag_mapped {};
       struct Operations {
         //----------------------------------------------------------------------
-        void operator()( ResultT& res, const VectorPairT& vec ) const
-        {
-          for ( auto cur = vec.begin(); cur != vec.end(); ++cur ) {
-            res.insert( *cur );
-          }
+        void operator()( ResultT& res, const VectorPairT& vec ) const {
+          for ( auto cur = vec.begin(); cur != vec.end(); ++cur ) { res.insert( *cur ); }
         }
         void operator()( PairT& res, const KeyT& key, tag_key ) const { res.first = key; }
         void operator()( PairT& res, const MappedT& value, tag_mapped ) const { res.second = value; }
         //----------------------------------------------------------------------
       };
       //------------------------------------------------------------------------------
-      MapGrammar() : MapGrammar::base_type( map )
-      {
+      MapGrammar() : MapGrammar::base_type( map ) {
         pair = key[op( qi::_val, qi::_1, tag_key() )] > ( qi::lit( ':' ) | '=' ) >
                value[op( qi::_val, qi::_1, tag_mapped() )];
         list = -( pair % enc::char_( ',' ) );
@@ -395,7 +372,7 @@ namespace Gaudi
       qi::rule<Iterator, PairT(), Skipper>                                      pair;
       qi::rule<Iterator, VectorPairT(), Skipper>                                list;
       qi::rule<Iterator, ResultT(), Skipper>                                    map;
-      ph::function<Operations> op;
+      ph::function<Operations>                                                  op;
       // ----------------------------------------------------------------------------
     };
     // ----------------------------------------------------------------------------
@@ -429,8 +406,7 @@ namespace Gaudi
       typedef typename PointT::Scalar Scalar;
       // ----------------------------------------------------------------------------
       struct Operations {
-        void operator()( ResultT& res, const Scalar& scalar, const char xyz ) const
-        {
+        void operator()( ResultT& res, const Scalar& scalar, const char xyz ) const {
           switch ( xyz ) {
           case 'x':
             res.SetX( scalar );
@@ -447,8 +423,7 @@ namespace Gaudi
         }
       }; //  Operations
          // ----------------------------------------------------------------------------
-      Pnt3DGrammar() : Pnt3DGrammar::base_type( point )
-      {
+      Pnt3DGrammar() : Pnt3DGrammar::base_type( point ) {
         point = list | ( '(' >> list >> ')' ) | ( '[' >> list >> ']' );
         list  = -( enc::no_case[qi::lit( "x" ) | qi::lit( "px" )] >> ':' ) >> scalar[op( qi::_val, qi::_1, 'x' )] >>
                ',' >> -( enc::no_case[qi::lit( "y" ) | qi::lit( "py" )] >> ':' ) >>
@@ -458,7 +433,7 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
       qi::rule<Iterator, ResultT(), Skipper>                point, list;
       typename Grammar_<Iterator, Scalar, Skipper>::Grammar scalar;
-      ph::function<Operations> op;
+      ph::function<Operations>                              op;
       // ----------------------------------------------------------------------------
     }; //   Pnt3DGrammar
     // ----------------------------------------------------------------------------
@@ -483,8 +458,7 @@ namespace Gaudi
       //-----------------------------------------------------------------------------
       struct Operations {
 
-        void operator()( ResultT& res, const ScalarT& scalar, const char xyz ) const
-        {
+        void operator()( ResultT& res, const ScalarT& scalar, const char xyz ) const {
           switch ( xyz ) {
           case 'x':
             res.SetPx( scalar );
@@ -502,16 +476,14 @@ namespace Gaudi
             break;
           }
         }
-        void operator()( ResultT& res, const ResultT& xyz ) const
-        {
+        void operator()( ResultT& res, const ResultT& xyz ) const {
           res.SetPx( xyz.Px() );
           res.SetPy( xyz.Py() );
           res.SetPz( xyz.Pz() );
         }
       }; //   Operations
          // ----------------------------------------------------------------------------
-      Pnt4DGrammar() : Pnt4DGrammar::base_type( point4d )
-      {
+      Pnt4DGrammar() : Pnt4DGrammar::base_type( point4d ) {
         point4d = list4d | ( '(' >> list4d >> ')' ) | ( '[' >> list4d >> ']' );
         list4d  = ( point3d[op( qi::_val, qi::_1 )] >> enc::char_( ";," ) >> e[op( qi::_val, qi::_1, 'e' )] ) |
                  ( e[op( qi::_val, qi::_1, 'e' )] >> enc::char_( ";," ) >> point3d[op( qi::_val, qi::_1 )] );
@@ -527,7 +499,7 @@ namespace Gaudi
       qi::rule<Iterator, ResultT(), Skipper>                 point3d, point4d, list3d, list4d;
       qi::rule<Iterator, ScalarT(), Skipper>                 e;
       typename Grammar_<Iterator, ScalarT, Skipper>::Grammar scalar;
-      ph::function<Operations> op;
+      ph::function<Operations>                               op;
       // ----------------------------------------------------------------------------
     }; //   Pnt4DGrammar
     // ----------------------------------------------------------------------------
@@ -544,8 +516,7 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
       struct Operations {
         void operator()( ResultT& res, const std::string& title ) const { res.setTitle( title ); }
-        void operator()( ResultT& res, const double& val, const char lh ) const
-        {
+        void operator()( ResultT& res, const double& val, const char lh ) const {
           switch ( lh ) {
           case 'l':
             res.setLowEdge( val );
@@ -561,8 +532,7 @@ namespace Gaudi
         void operator()( ResultT& res ) const {}
       }; //   Operations
          // ----------------------------------------------------------------------------
-      Histo1DGrammar() : Histo1DGrammar::base_type( hist )
-      {
+      Histo1DGrammar() : Histo1DGrammar::base_type( hist ) {
         val1 = title[op( qi::_val, qi::_1 )] >> ',' >> qi::double_[op( qi::_val, qi::_1, 'l' )] >> ',' >>
                qi::double_[op( qi::_val, qi::_1, 'h' )] >> -( ',' >> qi::int_[op( qi::_val, qi::_1 )] );
         val2 = qi::double_[op( qi::_val, qi::_1, 'l' )] >> ',' >> qi::double_[op( qi::_val, qi::_1, 'h' )] >> ',' >>
@@ -570,16 +540,16 @@ namespace Gaudi
         val3 = qi::double_[op( qi::_val, qi::_1, 'l' )] >> ',' >> qi::double_[op( qi::_val, qi::_1, 'h' )] >>
                -( ',' >> title[op( qi::_val, qi::_1 )] ) >> -( ',' >> qi::int_[op( qi::_val, qi::_1 )] );
         begin = enc::char_( '[' )[qi::_val = ']'] | enc::char_( '(' )[qi::_val = ')'];
-        end  = enc::char_( qi::_r1 );
-        hist = begin[qi::_a = qi::_1] >> ( val1 | val2 | val3 )[qi::_val = qi::_1] >> end( qi::_a );
+        end   = enc::char_( qi::_r1 );
+        hist  = begin[qi::_a = qi::_1] >> ( val1 | val2 | val3 )[qi::_val = qi::_1] >> end( qi::_a );
       }
       // ----------------------------------------------------------------------------
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> hist;
-      qi::rule<Iterator, ResultT(), Skipper> val1, val2, val3;
-      qi::rule<Iterator, char()>       begin;
-      qi::rule<Iterator, void( char )> end;
-      StringGrammar<Iterator, Skipper> title;
-      ph::function<Operations> op;
+      qi::rule<Iterator, ResultT(), Skipper>                   val1, val2, val3;
+      qi::rule<Iterator, char()>                               begin;
+      qi::rule<Iterator, void( char )>                         end;
+      StringGrammar<Iterator, Skipper>                         title;
+      ph::function<Operations>                                 op;
       // ----------------------------------------------------------------------------
     }; //   Histo1DGrammar
     // ----------------------------------------------------------------------------
@@ -590,22 +560,19 @@ namespace Gaudi
       //------------------------------------------------------------------------------
       typedef std::pair<std::string, std::string> ResultT;
       //------------------------------------------------------------------------------
-      struct first {
-      };
-      struct second {
-      };
+      struct first {};
+      struct second {};
 
-      KeyValueGrammar() : KeyValueGrammar::base_type( pair )
-      {
+      KeyValueGrammar() : KeyValueGrammar::base_type( pair ) {
         //------------------------------------------------------------------------------
         pair = gstring >> ":" >> +enc::char_;
       }
       // ----------------------------------------------------------------------------
-      StringGrammar<Iterator, Skipper> gstring;
+      StringGrammar<Iterator, Skipper>       gstring;
       qi::rule<Iterator, ResultT(), Skipper> pair;
       // ----------------------------------------------------------------------------
     }; // END KeyValueGrammar
     // We don't register KeyalueGrammar because it's a special parser
     // ============================================================================
-  }
-} //   Gaudi::Parsers
+  } // namespace Parsers
+} // namespace Gaudi

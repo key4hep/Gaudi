@@ -47,16 +47,14 @@
 // ************************************************************
 //
 GaudiUtils::AllocatorPool::AllocatorPool( unsigned int sz )
-    : esize( sz < sizeof( PoolLink ) ? sizeof( PoolLink ) : sz ), csize( sz < 1024 / 2 - 16 ? 1024 - 16 : sz * 10 - 16 )
-{
-}
+    : esize( sz < sizeof( PoolLink ) ? sizeof( PoolLink ) : sz )
+    , csize( sz < 1024 / 2 - 16 ? 1024 - 16 : sz * 10 - 16 ) {}
 
 // ************************************************************
 // G4AllocatorPool copy constructor
 // ************************************************************
 //
-GaudiUtils::AllocatorPool::AllocatorPool( const AllocatorPool& right ) : esize( right.esize ), csize( right.csize )
-{
+GaudiUtils::AllocatorPool::AllocatorPool( const AllocatorPool& right ) : esize( right.esize ), csize( right.csize ) {
   *this = right;
 }
 
@@ -64,11 +62,8 @@ GaudiUtils::AllocatorPool::AllocatorPool( const AllocatorPool& right ) : esize( 
 // G4AllocatorPool operator=
 // ************************************************************
 //
-GaudiUtils::AllocatorPool& GaudiUtils::AllocatorPool::operator=( const GaudiUtils::AllocatorPool& right )
-{
-  if ( &right == this ) {
-    return *this;
-  }
+GaudiUtils::AllocatorPool& GaudiUtils::AllocatorPool::operator=( const GaudiUtils::AllocatorPool& right ) {
+  if ( &right == this ) { return *this; }
   chunks  = right.chunks;
   head    = right.head;
   nchunks = right.nchunks;
@@ -85,8 +80,7 @@ GaudiUtils::AllocatorPool::~AllocatorPool() { Reset(); }
 // Reset
 // ************************************************************
 //
-void GaudiUtils::AllocatorPool::Reset()
-{
+void GaudiUtils::AllocatorPool::Reset() {
   // Free all chunks
   //
   PoolChunk* n = chunks;
@@ -105,8 +99,7 @@ void GaudiUtils::AllocatorPool::Reset()
 // Grow
 // ************************************************************
 //
-void GaudiUtils::AllocatorPool::Grow()
-{
+void GaudiUtils::AllocatorPool::Grow() {
   // Allocate new chunk, organize it as a linked list of
   // elements of size 'esize'
   //

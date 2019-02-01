@@ -12,8 +12,6 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *  @date   2005-08-04
  */
-namespace GaudiPython
-{
-} // end of namespace GaudiPython
+namespace GaudiPython {} // end of namespace GaudiPython
 
 #endif // GAUDIPYTHON_GAUDIPYTHON_H

@@ -31,8 +31,7 @@
 DECLARE_COMPONENT( RndmGenSvc )
 
 /// Service override: initialization
-StatusCode RndmGenSvc::initialize()
-{
+StatusCode RndmGenSvc::initialize() {
   StatusCode status = Service::initialize();
 
   auto mgr = serviceLocator()->as<ISvcManager>();
@@ -66,8 +65,7 @@ StatusCode RndmGenSvc::initialize()
 }
 
 /// Service override: finalization
-StatusCode RndmGenSvc::finalize()
-{
+StatusCode RndmGenSvc::finalize() {
   StatusCode status = Service::finalize();
   m_serialize.reset();
   if ( m_engine ) {
@@ -79,16 +77,14 @@ StatusCode RndmGenSvc::finalize()
 
 /** IRndmGenSvc interface implementation  */
 /// Input serialization from stream buffer. Restores the status of the generator engine.
-StreamBuffer& RndmGenSvc::serialize( StreamBuffer& str )
-{
+StreamBuffer& RndmGenSvc::serialize( StreamBuffer& str ) {
   if ( m_serialize ) return m_serialize->serialize( str );
   error() << "Cannot input serialize Generator settings!" << endmsg;
   return str;
 }
 
 /// Output serialization to stream buffer. Saves the status of the generator engine.
-StreamBuffer& RndmGenSvc::serialize( StreamBuffer& str ) const
-{
+StreamBuffer& RndmGenSvc::serialize( StreamBuffer& str ) const {
   if ( m_serialize ) return m_serialize->serialize( str );
   error() << "Cannot output serialize Generator settings!" << endmsg;
   return str;
@@ -98,8 +94,7 @@ StreamBuffer& RndmGenSvc::serialize( StreamBuffer& str ) const
 IRndmEngine* RndmGenSvc::engine() { return m_engine.get(); }
 
 /// Retrieve a valid generator from the service.
-StatusCode RndmGenSvc::generator( const IRndmGen::Param& par, IRndmGen*& refpGen )
-{
+StatusCode RndmGenSvc::generator( const IRndmGen::Param& par, IRndmGen*& refpGen ) {
   auto pGen = SmartIF<IRndmGen>( ObjFactory::create( par.type(), m_engine.get() ).release() );
   if ( !pGen ) {
     refpGen = nullptr;
@@ -119,19 +114,16 @@ double RndmGenSvc::rndm() const { return m_engine ? m_engine->rndm() : -1; }
     @param  start    ... starting at position start
     @return StatusCode indicating failure or success.
 */
-StatusCode RndmGenSvc::rndmArray( std::vector<double>& array, long howmany, long start ) const
-{
+StatusCode RndmGenSvc::rndmArray( std::vector<double>& array, long howmany, long start ) const {
   return m_engine ? m_engine->rndmArray( array, howmany, start ) : StatusCode::FAILURE;
 }
 
 // Allow to set new seeds
-StatusCode RndmGenSvc::setSeeds( const std::vector<long>& seeds )
-{
+StatusCode RndmGenSvc::setSeeds( const std::vector<long>& seeds ) {
   return m_engine ? m_engine->setSeeds( seeds ) : StatusCode::FAILURE;
 }
 
 // Allow to get the seeds
-StatusCode RndmGenSvc::seeds( std::vector<long>& seeds ) const
-{
+StatusCode RndmGenSvc::seeds( std::vector<long>& seeds ) const {
   return m_engine ? m_engine->seeds( seeds ) : StatusCode::FAILURE;
 }

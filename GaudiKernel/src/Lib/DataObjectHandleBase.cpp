@@ -21,14 +21,12 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
     , m_optional( other.m_optional )
     , m_wasRead( other.m_wasRead )
     , m_wasWritten( other.m_wasWritten )
-    , m_searchDone( other.m_searchDone )
-{
+    , m_searchDone( other.m_searchDone ) {
   m_owner->declare( *this );
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBase& other )
-{
+DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBase& other ) {
   // avoid modification of searchDone in other while we are copying
   std::lock_guard<std::mutex> guard( other.m_searchMutex );
   // FIXME: operator= should not change our owner, only our 'value'
@@ -45,24 +43,20 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
-    : Gaudi::DataHandle( k, a, owner )
-{
+    : Gaudi::DataHandle( k, a, owner ) {
   m_owner->declare( *this );
 }
 
 //---------------------------------------------------------------------------
 
 DataObjectHandleBase::DataObjectHandleBase( const std::string& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
-    : DataObjectHandleBase( DataObjID( k ), a, owner )
-{
-}
+    : DataObjectHandleBase( DataObjID( k ), a, owner ) {}
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::~DataObjectHandleBase() { owner()->renounce( *this ); }
 
 //---------------------------------------------------------------------------
-DataObject* DataObjectHandleBase::fetch() const
-{
+DataObject* DataObjectHandleBase::fetch() const {
   DataObject* p = nullptr;
   if ( LIKELY( m_searchDone ) ) { // fast path: searchDone, objKey is in its final state
     m_EDS->retrieveObject( objKey(), p ).ignore();
@@ -122,8 +116,7 @@ void DataObjectHandleBase::fromString( const std::string& s ) { Gaudi::Parsers::
 
 //---------------------------------------------------------------------------
 
-bool DataObjectHandleBase::init()
-{
+bool DataObjectHandleBase::init() {
 
   assert( !m_init );
 
@@ -156,8 +149,7 @@ bool DataObjectHandleBase::isValid() const { return fullKey() != INVALID_DATAOBJ
 
 //---------------------------------------------------------------------------
 
-std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d )
-{
+std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d ) {
 
   str << d.fullKey() << "  m: " << d.mode();
   if ( d.owner() ) str << "  o: " << d.owner()->name();

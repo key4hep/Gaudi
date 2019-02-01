@@ -15,8 +15,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date   2004-06-28
  */
-class TupleTool : public GaudiTupleTool, virtual public ITupleTool
-{
+class TupleTool : public GaudiTupleTool, virtual public ITupleTool {
 public:
   typedef Tuples::Tuple     Tuple;
   typedef GaudiAlg::TupleID TupleID;
@@ -52,24 +51,21 @@ public:
    *  @param clid  class identifier
    *  @return ntuple object
    */
-  Tuple nTuple( const std::string& title, const CLID& clid = CLID_ColumnWiseTuple ) const override
-  {
+  Tuple nTuple( const std::string& title, const CLID& clid = CLID_ColumnWiseTuple ) const override {
     return GaudiTupleTool::nTuple( title, clid );
   }
 
   Tuple nTuple( const TupleID& ID, const std::string& title = "",
-                const CLID& clid = CLID_ColumnWiseTuple ) const override
-  {
+                const CLID& clid = CLID_ColumnWiseTuple ) const override {
     return GaudiTupleTool::nTuple( ID, title, clid );
   }
 
-  Tuple evtCol( const std::string& title, const CLID& clid = CLID_RowWiseTuple ) const override
-  {
+  Tuple evtCol( const std::string& title, const CLID& clid = CLID_RowWiseTuple ) const override {
     return GaudiTupleTool::evtCol( title, clid );
   }
 
-  Tuple evtCol( const TupleID& ID, const std::string& title = "", const CLID& clid = CLID_RowWiseTuple ) const override
-  {
+  Tuple evtCol( const TupleID& ID, const std::string& title = "",
+                const CLID& clid = CLID_RowWiseTuple ) const override {
     return GaudiTupleTool::evtCol( ID, title, clid );
   }
 

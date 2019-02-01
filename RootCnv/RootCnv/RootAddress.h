@@ -18,8 +18,7 @@ class TTreeFormula;
 /*
  * Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // Forward declarations
   class RootDataConnection;
@@ -34,8 +33,7 @@ namespace Gaudi
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootAddress : virtual public GenericAddress
-  {
+  class GAUDI_API RootAddress : virtual public GenericAddress {
   public:
     /// Pointer to ROOT select statement (filled for N-tuples only)
     TTreeFormula* select = nullptr;
@@ -46,12 +44,10 @@ namespace Gaudi
     /// Full constructor
     RootAddress( long svc, const CLID& clid, const std::string& p1 = "", const std::string& p2 = "",
                  unsigned long ip1 = 0, unsigned long ip2 = 0 )
-        : GenericAddress( svc, clid, p1, p2, ip1, ip2 )
-    {
-    }
+        : GenericAddress( svc, clid, p1, p2, ip1, ip2 ) {}
     /// Standard Destructor
     virtual ~RootAddress() { delete select; }
   };
-}
+} // namespace Gaudi
 
 #endif // GAUDIROOTCNV_ROOTADDRESS_H

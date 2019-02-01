@@ -28,8 +28,7 @@ static const CLID CLID_ContainedObject = 190;
     the navigability from the contained object back to its container.
     @author Pavel Binko
 */
-class GAUDI_API ContainedObject
-{
+class GAUDI_API ContainedObject {
 
   /// Allow the container classes access to protected members
   friend class ObjectVector<ContainedObject>;

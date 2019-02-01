@@ -10,14 +10,13 @@
 #include "GaudiKernel/IDODNodeMapper.h"
 
 /** @class DODBasicMapper DODBasicMapper.h IncidentSvc/DODBasicMapper.h
-  *
-  * Default implementation of a DataOnDemand mapper.
-  *
-  * @author Marco Clemencic
-  * @date 16/01/2012
-  */
-class DODBasicMapper : public extends<AlgTool, IDODAlgMapper, IDODNodeMapper>
-{
+ *
+ * Default implementation of a DataOnDemand mapper.
+ *
+ * @author Marco Clemencic
+ * @date 16/01/2012
+ */
+class DODBasicMapper : public extends<AlgTool, IDODAlgMapper, IDODNodeMapper> {
 public:
   /// inherit contructor
   using extends::extends;

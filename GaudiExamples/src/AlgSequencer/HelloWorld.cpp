@@ -9,15 +9,13 @@ DECLARE_COMPONENT( HelloWorld )
 
 // Constructor
 //------------------------------------------------------------------------------
-HelloWorld::HelloWorld( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc )
-{
+HelloWorld::HelloWorld( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc ) {
   //------------------------------------------------------------------------------
   m_initialized = false;
 }
 
 //------------------------------------------------------------------------------
-StatusCode HelloWorld::initialize()
-{
+StatusCode HelloWorld::initialize() {
   //------------------------------------------------------------------------------
   // avoid calling initialize more than once
   if ( m_initialized ) return StatusCode::SUCCESS;
@@ -37,8 +35,7 @@ StatusCode HelloWorld::initialize()
 }
 
 //------------------------------------------------------------------------------
-StatusCode HelloWorld::execute()
-{
+StatusCode HelloWorld::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
 
@@ -46,8 +43,7 @@ StatusCode HelloWorld::execute()
 }
 
 //------------------------------------------------------------------------------
-StatusCode HelloWorld::finalize()
-{
+StatusCode HelloWorld::finalize() {
   //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
 

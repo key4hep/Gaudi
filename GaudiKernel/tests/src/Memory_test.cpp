@@ -6,8 +6,7 @@
 using namespace std;
 using namespace System;
 
-int main( int /* argc */, char** /* argv */ )
-{
+int main( int /* argc */, char** /* argv */ ) {
   size_t kB     = size_t( 1024 );
   size_t nBytes = kB * kB * kB * size_t( 1 );
   void*  p      = ::malloc( nBytes );

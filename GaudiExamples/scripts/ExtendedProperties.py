@@ -53,52 +53,47 @@ def configure(gaudi=None):
     xProps.VectorOfPairsDD = [(0, 1), (1, 2), (2, 3), (3, 4)]
 
     # std::vector<std::vector<std::string> >
-    xProps.VectorOfVectorsString = [
-        ["a", "b", "c"], ["A", "B", "C"]]
+    xProps.VectorOfVectorsString = [["a", "b", "c"], ["A", "B", "C"]]
 
     # std::vector<std::vector<double> >
-    xProps.VectorOfVectorsDouble = [
-        [0, 1, 2], [0, -0.5, -0.25]]
+    xProps.VectorOfVectorsDouble = [[0, 1, 2], [0, -0.5, -0.25]]
 
     # std::map<int,double>
-    xProps.MapIntDouble = {
-        1: 0.1, 2: 0.2, 3: 0.3}
+    xProps.MapIntDouble = {1: 0.1, 2: 0.2, 3: 0.3}
 
     # std::map<std::string,std::string>
     xProps.MapStringString = {
         'a': 'sddsgsgsdgdggf',
         'b': 'sddsgsgsdgdggf',
-        'c': 'sddsgsgsdgdggf'}
+        'c': 'sddsgsgsdgdggf'
+    }
 
     # std::map<std::string,int>
-    xProps.MapStringInt = {
-        'a': 1,
-        'b': 2,
-        "c": 3}
+    xProps.MapStringInt = {'a': 1, 'b': 2, "c": 3}
 
     # std::map<std::string,double>
-    xProps.MapStringDouble = {
-        'aa': 0.1,
-        'bb': 0.2,
-        "cc": 3}
+    xProps.MapStringDouble = {'aa': 0.1, 'bb': 0.2, "cc": 3}
 
     # std::map<std::string,std::vector<std::string> >
     xProps.MapStringVectorOfStrings = {
         'aaa': ['a', 'b', 'c'],
         'bbb': ['a', 'b', 'c'],
-        'ccc': ['a', 'b', 'c']}
+        'ccc': ['a', 'b', 'c']
+    }
 
     # std::map<std::string,std::vector<double> >
     xProps.MapStringVectorOfDoubles = {
         'aaa': [1, 2, 3],
         'bbb': [1., 2., 3.],
-        'ccc': [0.1, 0.2, 0.3]}
+        'ccc': [0.1, 0.2, 0.3]
+    }
 
     # std::map<std::string,std::vector<int> >
     xProps.MapStringVectorOfInts = {
         'aaa': [1, 2, 3],
         'bbb': [4, 5, 6],
-        'ccc': [7, 8, 9]}
+        'ccc': [7, 8, 9]
+    }
 
     return SUCCESS
 
@@ -139,7 +134,6 @@ if '__main__' == __name__:
 
     for p in properties:
         print "Python: Name/Value:  '%s' / '%s' " % (p, properties[p])
-
 
 # =============================================================================
 # The END

@@ -24,8 +24,7 @@
 namespace gp = Gaudi::Parsers;
 // ============================================================================
 static bool IncludeNode( gp::Node* node, const std::string& search_path, gp::IncludedFiles* included,
-                         gp::Messages* messages )
-{
+                         gp::Messages* messages ) {
   gp::Node include_root;
   bool     status = gp::Parse( node->position, node->value, search_path, included, messages, &include_root );
   if ( !status ) return false;
@@ -37,8 +36,7 @@ static bool IncludeNode( gp::Node* node, const std::string& search_path, gp::Inc
 }
 // ============================================================================
 static bool UnitsNode( gp::Node* node, const std::string& search_path, gp::IncludedFiles* included,
-                       gp::Messages* messages )
-{
+                       gp::Messages* messages ) {
   gp::Node units_root;
   bool     status = gp::ParseUnits( node->position, node->value, search_path, included, messages, &units_root );
   if ( !status ) return false;
@@ -48,8 +46,7 @@ static bool UnitsNode( gp::Node* node, const std::string& search_path, gp::Inclu
   return true;
 }
 // ============================================================================
-static std::unique_ptr<gp::PropertyName> GetPropertyName( const gp::Node* node )
-{
+static std::unique_ptr<gp::PropertyName> GetPropertyName( const gp::Node* node ) {
   if ( node->children.size() == 1 ) {
     return std::make_unique<gp::PropertyName>( node->children[0].value, node->position );
   }
@@ -63,8 +60,7 @@ static std::unique_ptr<gp::PropertyName> GetPropertyName( const gp::Node* node )
 }
 // ============================================================================
 static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node, gp::Catalog* catalog,
-                                                            gp::Units* units )
-{
+                                                            gp::Units* units ) {
   std::unique_ptr<gp::PropertyValue> value;
   switch ( node->type ) {
   // ------------------------------------------------------------------------
@@ -153,8 +149,7 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
 }
 
 // ============================================================================
-static std::string SignString( gp::Node::NodeType type )
-{
+static std::string SignString( gp::Node::NodeType type ) {
   switch ( type ) {
   case gp::Node::kEqual: {
     return "=";
@@ -176,8 +171,7 @@ static std::string SignString( gp::Node::NodeType type )
 }
 // ============================================================================
 static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalog* catalog, gp::Units* units,
-                        bool is_print )
-{
+                        bool is_print ) {
   // ----------------------------------------------------------------------------
   std::unique_ptr<gp::PropertyValue> value;
   // ----------------------------------------------------------------------------
@@ -221,9 +215,7 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
   }
   // ----------------------------------------------------------------------------
   bool result = true;
-  if ( !exists || reassign ) {
-    result = catalog->Add( new gp::Property( *property, *value ) );
-  }
+  if ( !exists || reassign ) { result = catalog->Add( new gp::Property( *property, *value ) ); }
 
   if ( result && is_print ) { /*;%|72t|%2% %3%*/
     std::string message = str( boost::format( "%1% %2% %3%" ) % property->FullName() %
@@ -233,8 +225,7 @@ static bool AssignNode( const gp::Node* node, gp::Messages* messages, gp::Catalo
   return result;
 }
 // ============================================================================
-static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* units, bool is_print )
-{
+static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* units, bool is_print ) {
   // --------------------------------------------------------------------------
   double      left  = std::stod( node->children[0].value );
   std::string name  = node->children[1].value;
@@ -243,9 +234,7 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
   gp::Units::Container::mapped_type exists;
   if ( units->Find( name, exists ) ) {
     std::string message = str( boost::format( "Unit '%1%' already defined" ) % name );
-    if ( exists.second.Exists() ) {
-      message += " at " + exists.second.ToString();
-    }
+    if ( exists.second.Exists() ) { message += " at " + exists.second.ToString(); }
     messages->AddError( node->children[1].position, message );
     return false;
   }
@@ -258,8 +247,7 @@ static bool UnitNode( const gp::Node* node, gp::Messages* messages, gp::Units* u
   return result;
 }
 // ============================================================================
-static bool ConditionNode( gp::Node* node, gp::Catalog* catalog, gp::Node** next )
-{
+static bool ConditionNode( gp::Node* node, gp::Catalog* catalog, gp::Node** next ) {
   // ----------------------------------------------------------------------------
   auto property_name = GetPropertyName( &node->children[0] );
   // --------------------------------------------------------------------------
@@ -277,8 +265,7 @@ static bool ConditionNode( gp::Node* node, gp::Catalog* catalog, gp::Node** next
 }
 // ============================================================================
 static bool Analyze( gp::Node* node, const std::string& search_path, gp::IncludedFiles* included,
-                     gp::Messages* messages, gp::Catalog* catalog, gp::Units* units, gp::PragmaOptions* pragma )
-{
+                     gp::Messages* messages, gp::Catalog* catalog, gp::Units* units, gp::PragmaOptions* pragma ) {
   // ----------------------------------------------------------------------------
   bool      result       = true;
   bool      local_result = true;
@@ -350,23 +337,20 @@ static bool Analyze( gp::Node* node, const std::string& search_path, gp::Include
     break;
   }
   // ----------------------------------------------------------------------
-  default: {
-    break;
-  }
+  default: { break; }
   }
   if ( result ) result = local_result;
 
   if ( !skip_childs && next_root ) {
     for ( auto& child : next_root->children ) {
-      local_result         = Analyze( &child, search_path, included, messages, catalog, units, pragma );
+      local_result = Analyze( &child, search_path, included, messages, catalog, units, pragma );
       if ( result ) result = local_result;
     }
   }
   return result;
 }
 
-bool Unreference( gp::Catalog& catalog, gp::Messages* messages )
-{
+bool Unreference( gp::Catalog& catalog, gp::Messages* messages ) {
   bool unreference_result = true;
   for ( auto& client : catalog ) {
     for ( auto& current : client.second ) {
@@ -388,8 +372,7 @@ bool Unreference( gp::Catalog& catalog, gp::Messages* messages )
 
 // ============================================================================
 bool gp::ReadOptions( const std::string& filename, const std::string& search_path, Messages* messages, Catalog* catalog,
-                      Units* units, PragmaOptions* pragma, Node* root )
-{
+                      Units* units, PragmaOptions* pragma, Node* root ) {
   // Extract Path
   IncludedFiles included;
   bool          result = Parse( filename, search_path, &included, messages, root );

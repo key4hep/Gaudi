@@ -15,13 +15,10 @@ static const char SEPARATOR = IDataProviderSvc::SEPARATOR;
 
 // Standard Constructor
 TagCollectionStream::TagCollectionStream( const std::string& nam, ISvcLocator* pSvc )
-    : OutputStream( nam, pSvc ), m_addr{new GenericAddress()}
-{
-}
+    : OutputStream( nam, pSvc ), m_addr{new GenericAddress()} {}
 
 // Connect address column, if not already connected
-StatusCode TagCollectionStream::connectAddress()
-{
+StatusCode TagCollectionStream::connectAddress() {
   NTuplePtr nt( m_collectionSvc, m_tagName );
   if ( !nt ) {
     error() << "Failed to connect to the tag collection " << m_tagName << endmsg;
@@ -39,15 +36,14 @@ StatusCode TagCollectionStream::connectAddress()
 }
 
 // initialize data writer
-StatusCode TagCollectionStream::initialize()
-{
+StatusCode TagCollectionStream::initialize() {
   using Parser = Gaudi::Utils::AttribStringParser;
   std::string log_node, log_file, logical_name;
   m_collectionSvc = service( m_collSvcName, true );
   if ( m_collectionSvc ) {
     std::string tmp;
     for ( auto attrib : Parser( m_output ) ) {
-      switch (::toupper( attrib.tag[0] ) ) {
+      switch ( ::toupper( attrib.tag[0] ) ) {
       case 'C':
         m_tagName = std::move( attrib.value );
         break;
@@ -91,8 +87,7 @@ StatusCode TagCollectionStream::initialize()
 }
 
 // terminate data writer
-StatusCode TagCollectionStream::finalize()
-{
+StatusCode TagCollectionStream::finalize() {
   StatusCode status = OutputStream::finalize();
   m_collectionSvc.reset();
   m_addrColumn = nullptr;
@@ -100,8 +95,7 @@ StatusCode TagCollectionStream::finalize()
 }
 
 // Write tuple data
-StatusCode TagCollectionStream::writeTuple()
-{
+StatusCode TagCollectionStream::writeTuple() {
   StatusCode sc = m_collectionSvc->writeRecord( m_tagName );
   if ( !sc.isSuccess() ) {
     error() << "Failed to write tag collection " << m_tagName << ". "
@@ -111,8 +105,7 @@ StatusCode TagCollectionStream::writeTuple()
 }
 
 // Write data objects
-StatusCode TagCollectionStream::writeData()
-{
+StatusCode TagCollectionStream::writeData() {
   StatusCode sc = OutputStream::writeObjects();
   if ( !sc.isSuccess() ) {
     error() << "Failed to write tag collection " << m_tagName << ". "
@@ -122,17 +115,13 @@ StatusCode TagCollectionStream::writeData()
 }
 
 // Write full event record
-StatusCode TagCollectionStream::writeRecord()
-{
-  if ( writeTuple().isSuccess() ) {
-    return m_objectsFirst ? StatusCode::SUCCESS : writeData();
-  }
+StatusCode TagCollectionStream::writeRecord() {
+  if ( writeTuple().isSuccess() ) { return m_objectsFirst ? StatusCode::SUCCESS : writeData(); }
   return StatusCode::FAILURE;
 }
 
 // Work entry point
-StatusCode TagCollectionStream::writeObjects()
-{
+StatusCode TagCollectionStream::writeObjects() {
   StatusCode status = !m_addrColumn ? connectAddress() : StatusCode::SUCCESS;
   if ( status.isSuccess() ) {
     status = m_objectsFirst ? writeData() : StatusCode::SUCCESS;

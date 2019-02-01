@@ -11,8 +11,7 @@
 
     @author Beat Jost
 */
-class GAUDI_API IPublishSvc : virtual public IInterface
-{
+class GAUDI_API IPublishSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IPublishSvc, 1, 0 );

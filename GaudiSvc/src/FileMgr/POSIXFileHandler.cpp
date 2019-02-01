@@ -12,8 +12,7 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-POSIXFileHandler::POSIXFileHandler( IMessageSvc* msg ) : m_log( msg, "POSIXFileHandler" )
-{
+POSIXFileHandler::POSIXFileHandler( IMessageSvc* msg ) : m_log( msg, "POSIXFileHandler" ) {
 
   m_level = msg->outputLevel( "POSIXFileHandler" );
 }
@@ -21,8 +20,7 @@ POSIXFileHandler::POSIXFileHandler( IMessageSvc* msg ) : m_log( msg, "POSIXFileH
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 Io::open_t POSIXFileHandler::openPOSIXFile( const std::string& n, const Io::IoFlags& f, const std::string& desc,
-                                            Io::Fd& fd, void*& ptr )
-{
+                                            Io::Fd& fd, void*& ptr ) {
 
   m_log.setLevel( m_level );
 
@@ -75,8 +73,7 @@ Io::open_t POSIXFileHandler::openPOSIXFile( const std::string& n, const Io::IoFl
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-Io::close_t POSIXFileHandler::closePOSIXFile( Io::Fd fd )
-{
+Io::close_t POSIXFileHandler::closePOSIXFile( Io::Fd fd ) {
 
   if ( m_log.level() <= MSG::DEBUG ) m_log << MSG::DEBUG << "closePOSIXFile(fd:" << fd << ")" << endmsg;
 
@@ -96,8 +93,7 @@ Io::close_t POSIXFileHandler::closePOSIXFile( Io::Fd fd )
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-Io::reopen_t POSIXFileHandler::reopenPOSIXFile( Io::Fd /*fd*/, const Io::IoFlags& )
-{
+Io::reopen_t POSIXFileHandler::reopenPOSIXFile( Io::Fd /*fd*/, const Io::IoFlags& ) {
 
   m_log << MSG::ERROR << "reopen not implemented" << endmsg;
   return -1;

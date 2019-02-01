@@ -1,14 +1,13 @@
 from ROOT import *
-
 '''
 Script to parse all the logs and produce the speedup plot.
 Usage:
 plotSpeedupsPyRoot.py --> vanilla plot
 plotSpeedupsPyRoot.py 1 --> HT scaled plot
-The variable fname_template contains the template of the file names to be 
+The variable fname_template contains the template of the file names to be
 opened and parsed and is FIXED for all the logs.
-The word "seconds" is looked for in the log and then the total runtime of the 
-event loop is extracted. This allows to discard the time spent in calibration 
+The word "seconds" is looked for in the log and then the total runtime of the
+event loop is extracted. This allows to discard the time spent in calibration
 and so on.
 '''
 
@@ -25,18 +24,11 @@ ScalarTime = 1640.87
 
 # Style
 LegendDrawOpts = "lp"
-LineColours = [kRed,
-               kBlue,
-               kGreen + 2,
-               kOrange,
-               kPink + 10,
-               kViolet + 10]
-MarkerStyles = [kFullCircle,
-                kOpenCross,
-                kFullTriangleUp,
-                kOpenStar,
-                kFullCross,
-                kOpenCircle]
+LineColours = [kRed, kBlue, kGreen + 2, kOrange, kPink + 10, kViolet + 10]
+MarkerStyles = [
+    kFullCircle, kOpenCross, kFullTriangleUp, kOpenStar, kFullCross,
+    kOpenCircle
+]
 MarkerSize = 4
 LineWidth = 6
 LineStyle = 7
@@ -48,6 +40,7 @@ HtCoreWeight = 0.4
 
 LabelsFont = 12
 LabelsSize = .6
+
 # --------------------
 
 
@@ -58,15 +51,18 @@ def scaleCores(n_threads):
         effective_n_threads = PhCores + ht_cores * HtCoreWeight
     return effective_n_threads
 
+
 # --------------------
 
 
 def getText(x, y, text, scale, angle, colour, font):
-    lat = TLatex(x, y, "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (
-        scale, colour, font, text))
+    lat = TLatex(
+        x, y,
+        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
     if angle != 0.:
         lat.SetTextAngle(angle)
     return lat
+
 
 # --------------------
 
@@ -83,11 +79,13 @@ def formatGraphs(graph, graphc):
         g.SetMarkerColor(LineColours[graph_counter])
     graph_counter += 1
 
+
 # --------------------
 
 
 def createFname(neif, nt, cFlag):
     return fname_template % (neif, nt, cFlag)
+
 
 # --------------------
 
@@ -106,22 +104,20 @@ def xtractTiming(neif, nt, cFlag):
         seconds = xtractTiming(neif, nts[nts.index(nt) - 1], cFlag)
     return seconds
 
-# --------------------
 
+# --------------------
 
 import sys
 scaleThreads = False
 if len(sys.argv) > 1:
     scaleThreads = True
 
-
 # main loop: just printouts
 for neif in neif_l:
     print "Events in flight: %s" % neif
     for tn in nts:
-        print "%s %s %s" % (tn, xtractTiming(
-            neif, tn, False), xtractTiming(neif, tn, True))
-
+        print "%s %s %s" % (tn, xtractTiming(neif, tn, False),
+                            xtractTiming(neif, tn, True))
 
 len_nt = len(nts) + 1
 # Prepare ideal speedup graph
@@ -132,7 +128,8 @@ scaled_s = ""
 if scaleThreads:
     scaled_s = " (scaled for HT)"
 idealSpeedup.SetTitle(
-    "GaudiHive Speedup (Brunel, 100 evts);Thread Pool Size%s;Speedup wrt Serial Case" % scaled_s)
+    "GaudiHive Speedup (Brunel, 100 evts);Thread Pool Size%s;Speedup wrt Serial Case"
+    % scaled_s)
 idealSpeedup.SetLineWidth(4)
 idealSpeedup.SetLineColor(kGray - 2)
 idealSpeedup.SetLineStyle(2)
@@ -192,16 +189,18 @@ legend.Draw()
 # Labels
 ph_cores = getText(10.5, 15, "Physical Cores", LabelsSize, 90, 2, LabelsFont)
 ph_cores.Draw()
-ht_cores = getText(12., 15, "Hardware Threaded Regime",
-                   LabelsSize, 90, 2, LabelsFont)
+ht_cores = getText(12., 15, "Hardware Threaded Regime", LabelsSize, 90, 2,
+                   LabelsFont)
 ht_cores.Draw()
-is_text = getText(16, 16.5, "Ideal (linear) Speedup",
-                  LabelsSize, 45, 918, LabelsFont)
+is_text = getText(16, 16.5, "Ideal (linear) Speedup", LabelsSize, 45, 918,
+                  LabelsFont)
 is_text.Draw()
 ht_weight = 0
 if scaleThreads:
     ht_weight = getText(
-        18.5, 8, "#splitline{Hardware threaded}{cores weight: %s}" % HtCoreWeight, LabelsSize, 0, 600, LabelsFont)
+        18.5, 8,
+        "#splitline{Hardware threaded}{cores weight: %s}" % HtCoreWeight,
+        LabelsSize, 0, 600, LabelsFont)
     ht_weight.Draw()
 
 if scaleThreads:

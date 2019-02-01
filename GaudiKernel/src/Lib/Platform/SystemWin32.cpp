@@ -10,13 +10,10 @@
 // Disable warning C4996 triggered by C standard library calls
 #pragma warning( disable : 4996 )
 
-namespace System
-{
-  namespace Win32
-  {
+namespace System {
+  namespace Win32 {
 
-    std::vector<std::string> cmdLineArgs()
-    {
+    std::vector<std::string> cmdLineArgs() {
 
       // The result object:
       std::vector<std::string> result;
@@ -30,7 +27,7 @@ namespace System
       for ( LPTSTR cmd = ::GetCommandLine(); *cmd; cmd = next ) {
         ::memset( exe, 0, sizeof( exe ) );
         while ( *cmd == ' ' ) cmd++;
-        next              = ::strchr( cmd, ' ' );
+        next = ::strchr( cmd, ' ' );
         if ( !next ) next = cmd + ::strlen( cmd );
         if ( ( tmp1 = ::strchr( cmd, '\"' ) ) > 0 && tmp1 < next ) {
           tmp2 = ::strchr( ++tmp1, '\"' );
@@ -51,76 +48,60 @@ namespace System
       return result;
     }
 
-    std::string typeinfoName( const char* class_name )
-    {
+    std::string typeinfoName( const char* class_name ) {
 
       // The result variable:
       std::string result;
 
       long off = 0;
-      if (::strncmp( class_name, "class ", 6 ) == 0 ) {
+      if ( ::strncmp( class_name, "class ", 6 ) == 0 ) {
         // The returned name is prefixed with "class "
         off = 6;
       }
-      if (::strncmp( class_name, "struct ", 7 ) == 0 ) {
+      if ( ::strncmp( class_name, "struct ", 7 ) == 0 ) {
         // The returned name is prefixed with "struct "
         off = 7;
       }
       if ( off > 0 ) {
         std::string tmp = class_name + off;
         long        loc = 0;
-        while ( ( loc = tmp.find( "class " ) ) > 0 ) {
-          tmp.erase( loc, 6 );
-        }
+        while ( ( loc = tmp.find( "class " ) ) > 0 ) { tmp.erase( loc, 6 ); }
         loc = 0;
-        while ( ( loc = tmp.find( "struct " ) ) > 0 ) {
-          tmp.erase( loc, 7 );
-        }
+        while ( ( loc = tmp.find( "struct " ) ) > 0 ) { tmp.erase( loc, 7 ); }
         result = tmp;
       } else {
         result = class_name;
       }
       // Change any " *" to "*"
-      while ( ( off = result.find( " *" ) ) != std::string::npos ) {
-        result.replace( off, 2, "*" );
-      }
+      while ( ( off = result.find( " *" ) ) != std::string::npos ) { result.replace( off, 2, "*" ); }
       // Change any " &" to "&"
-      while ( ( off = result.find( " &" ) ) != std::string::npos ) {
-        result.replace( off, 2, "&" );
-      }
+      while ( ( off = result.find( " &" ) ) != std::string::npos ) { result.replace( off, 2, "&" ); }
 
       return result;
     }
 
-    std::string hostName()
-    {
+    std::string hostName() {
 
       static const size_t STRING_SIZE = 512;
       char                hname[STRING_SIZE];
       size_t              strlen = STRING_SIZE;
-      if ( !::GetComputerName( hname, &strlen ) ) {
-        return "UNKNOWN";
-      }
+      if ( !::GetComputerName( hname, &strlen ) ) { return "UNKNOWN"; }
       return std::string( hname );
     }
 
     std::string osName() { return "Windows"; }
 
-    std::string osVersion()
-    {
+    std::string osVersion() {
 
       OSVERSIONINFO ut;
       ut.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-      if ( !::GetVersionEx( &ut ) ) {
-        return "UNKNOWN";
-      }
+      if ( !::GetVersionEx( &ut ) ) { return "UNKNOWN"; }
       std::ostringstream ver;
       ver << ut.dwMajorVersion << '.' << ut.dwMinorVersion;
       return ver.str();
     }
 
-    std::string machineType()
-    {
+    std::string machineType() {
 
       SYSTEM_INFO ut;
       ::GetSystemInfo( &ut );
@@ -129,15 +110,12 @@ namespace System
       return arch.str();
     }
 
-    std::string accountName()
-    {
+    std::string accountName() {
 
       static const size_t STRING_SIZE = 512;
       char                uname[STRING_SIZE];
       size_t              strlen = STRING_SIZE;
-      if ( !::GetUserName( uname, &strlen ) ) {
-        return "UNKNOWN";
-      }
+      if ( !::GetUserName( uname, &strlen ) ) { return "UNKNOWN"; }
       return std::string( uname );
     }
 

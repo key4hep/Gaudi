@@ -7,8 +7,7 @@
  * @brief  an algorithm to test reentrant Algorithms
  * @author Charles Leggett
  */
-class ReEntAlg : public Gaudi::Algorithm
-{
+class ReEntAlg : public Gaudi::Algorithm {
 
 public:
   ReEntAlg( const std::string& name, ISvcLocator* pSvcLocator );

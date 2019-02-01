@@ -14,14 +14,13 @@
 #include "GaudiKernel/Property.h"
 
 // FIXME: (MCl) workaround for ROOT-5850
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D;
   class IHistogram2D;
   class IHistogram3D;
   class IProfile1D;
   class IProfile2D;
-}
+} // namespace AIDA
 
 #if PY_VERSION_HEX < 0x02050000
 // Note (MCl):
@@ -46,8 +45,7 @@ typedef int Py_ssize_t;
 /** Namespace for all classes interfacing Gaudi to Python.
  */
 
-namespace GaudiPython
-{
+namespace GaudiPython {
 
   struct Helper {
     // This is a number of static functions to overcome the current problem with PyLCGDict that
@@ -55,29 +53,24 @@ namespace GaudiPython
     // (reference to pointers)
     Helper() {}
     // Provided for backward compatibility
-    static IService* service( ISvcLocator* svcloc, const std::string& name, bool createif = false )
-    {
+    static IService* service( ISvcLocator* svcloc, const std::string& name, bool createif = false ) {
       return svcloc->service( name, createif ).get();
     }
     // Provided for backward compatibility
-    static IAlgorithm* algorithm( IAlgManager* algmgr, const std::string& name, const bool createIf = false )
-    {
+    static IAlgorithm* algorithm( IAlgManager* algmgr, const std::string& name, const bool createIf = false ) {
       return algmgr->algorithm( name, createIf ).get();
     }
     // ==========================================================================
-    static DataObject* dataobject( IDataProviderSvc* dpsvc, const std::string& path )
-    {
+    static DataObject* dataobject( IDataProviderSvc* dpsvc, const std::string& path ) {
       DataObject* o;
       return dpsvc->retrieveObject( path, o ).isSuccess() ? o : nullptr;
     }
     // ==========================================================================
-    static StatusCode registerObject( IDataProviderSvc* dpsvc, const std::string& path, DataObject* pObject )
-    {
+    static StatusCode registerObject( IDataProviderSvc* dpsvc, const std::string& path, DataObject* pObject ) {
       return dpsvc->registerObject( path, pObject );
     }
     // ==========================================================================
-    static StatusCode unregisterObject( IDataProviderSvc* dpsvc, const std::string& path )
-    {
+    static StatusCode unregisterObject( IDataProviderSvc* dpsvc, const std::string& path ) {
       return dpsvc->unregisterObject( path );
     }
     // ==========================================================================
@@ -108,38 +101,31 @@ namespace GaudiPython
                                             const bool retrieve = true, const bool disableDoD = false );
     // ==========================================================================
     static IAlgTool* tool( IToolSvc* toolsvc, const std::string& type, const std::string& name, IInterface* p,
-                           bool cif )
-    {
+                           bool cif ) {
       IAlgTool* o;
       return toolsvc->retrieve( type, name, IAlgTool::interfaceID(), o, p, cif ).isSuccess() ? o : nullptr;
     }
-    static long loadDynamicLib( const std::string& name )
-    {
+    static long loadDynamicLib( const std::string& name ) {
       void* h;
       return System::loadDynamicLib( name, &h );
     }
-    static IHistogram1D* histo1D( IHistogramSvc* hsvc, const std::string& path )
-    {
+    static IHistogram1D* histo1D( IHistogramSvc* hsvc, const std::string& path ) {
       IHistogram1D* h;
       return ( hsvc->findObject( path, h ).isSuccess() ) ? h : nullptr;
     }
-    static IHistogram2D* histo2D( IHistogramSvc* hsvc, const std::string& path )
-    {
+    static IHistogram2D* histo2D( IHistogramSvc* hsvc, const std::string& path ) {
       IHistogram2D* h;
       return ( hsvc->findObject( path, h ).isSuccess() ) ? h : nullptr;
     }
-    static IHistogram3D* histo3D( IHistogramSvc* hsvc, const std::string& path )
-    {
+    static IHistogram3D* histo3D( IHistogramSvc* hsvc, const std::string& path ) {
       IHistogram3D* h;
       return ( hsvc->findObject( path, h ).isSuccess() ) ? h : nullptr;
     }
-    static IProfile1D* profile1D( IHistogramSvc* hsvc, const std::string& path )
-    {
+    static IProfile1D* profile1D( IHistogramSvc* hsvc, const std::string& path ) {
       IProfile1D* h = 0;
       return ( hsvc && hsvc->findObject( path, h ).isSuccess() ) ? h : nullptr;
     }
-    static IProfile2D* profile2D( IHistogramSvc* hsvc, const std::string& path )
-    {
+    static IProfile2D* profile2D( IHistogramSvc* hsvc, const std::string& path ) {
       IProfile2D* h = 0;
       return ( hsvc && hsvc->findObject( path, h ).isSuccess() ) ? h : nullptr;
     }
@@ -147,8 +133,7 @@ namespace GaudiPython
     // Array support
   private:
     template <class T>
-    static Py_ssize_t Array_length( PyObject* self )
-    {
+    static Py_ssize_t Array_length( PyObject* self ) {
 #if PY_VERSION_HEX < 0x02050000
       const
 #endif
@@ -158,8 +143,7 @@ namespace GaudiPython
     }
 
     template <class T>
-    static PyObject* toPython( T* /*o*/ )
-    {
+    static PyObject* toPython( T* /*o*/ ) {
       return 0;
     }
     static PyObject* toPython( int* o ) { return PyInt_FromLong( (long)*o ); }
@@ -170,8 +154,7 @@ namespace GaudiPython
     static PyObject* toPython( double* o ) { return PyFloat_FromDouble( *o ); }
 
     template <class T>
-    static PyObject* Array_item( PyObject* self, Py_ssize_t idx )
-    {
+    static PyObject* Array_item( PyObject* self, Py_ssize_t idx ) {
 #if PY_VERSION_HEX < 0x02050000
       const
 #endif
@@ -186,8 +169,7 @@ namespace GaudiPython
 
   public:
     template <class T>
-    static PyObject* toArray( T* ptr, Py_ssize_t size )
-    {
+    static PyObject* toArray( T* ptr, Py_ssize_t size ) {
       static PyTypeObject      type = PyBuffer_Type;
       static PySequenceMethods meth = *( PyBuffer_Type.tp_as_sequence );
 #if PY_VERSION_HEX < 0x02050000
@@ -209,19 +191,16 @@ namespace GaudiPython
     static PyObject* toDoubleArray( void* ptr, Py_ssize_t size ) { return toArray( (double*)ptr, size ); }
 
     template <class T>
-    static T* toAddress( std::vector<T>& v )
-    {
+    static T* toAddress( std::vector<T>& v ) {
       return v.data();
     }
     template <class T>
-    static T* toAddress( void* a )
-    {
+    static T* toAddress( void* a ) {
       return (T*)a;
     }
 
     // FIXME: (MCl) workaround for ROOT-6028, ROOT-6054, ROOT-6073
-    static StatusCode setPropertyFromString( Gaudi::Details::PropertyBase& p, const std::string& s )
-    {
+    static StatusCode setPropertyFromString( Gaudi::Details::PropertyBase& p, const std::string& s ) {
       return p.fromString( s );
     }
   };

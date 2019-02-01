@@ -1,8 +1,8 @@
 #ifndef TIMERFORSEQUENCER_H
 
-#include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Timing.h"
-#include <inttypes.h>
+#  include "GaudiKernel/MsgStream.h"
+#  include "GaudiKernel/Timing.h"
+#  include <inttypes.h>
 
 /** Auxiliary class. Measure the time between start and stop, and compute
  *  average, min and max. In fact, measure the cpu time, and the elapsed time
@@ -17,21 +17,17 @@
  * @author D.Piparo
  */
 
-class TimerForSequencer
-{
+class TimerForSequencer {
 
 public:
   /** Constructor. Specify the name, for later printing. */
   TimerForSequencer( std::string name, unsigned int size, double factor )
-      : m_name( std::move( name ) ), m_size( size ), m_factor( factor )
-  {
-  }
+      : m_name( std::move( name ) ), m_size( size ), m_factor( factor ) {}
 
   ~TimerForSequencer() = default;
 
   /** Start a time measurement */
-  inline void start()
-  {
+  inline void start() {
     m_startClock = System::currentTime( System::microSec );
     m_startCpu   = System::cpuTime( System::microSec );
   }

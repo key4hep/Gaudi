@@ -15,8 +15,7 @@
  * unit of the CPU.
  *
  */
-class CPUCruncher : public GaudiAlgorithm
-{
+class CPUCruncher : public GaudiAlgorithm {
 
 public:
   typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;
@@ -32,8 +31,8 @@ public:
 
   double get_runtime() const { return m_avg_runtime; }
 
-  CPUCruncher( const std::string& name,   // the algorithm instance name
-               ISvcLocator*       pSvc ); // the Service Locator
+  CPUCruncher( const std::string& name, // the algorithm instance name
+               ISvcLocator*       pSvc );     // the Service Locator
 
   /// virtual & protected desctrustor
   virtual ~CPUCruncher(); // virtual & protected desctrustor

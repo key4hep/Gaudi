@@ -24,10 +24,8 @@
 // ============================================================================
 #include "Node.h"
 //============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
     // Namespace aliases:
     // ============================================================================
@@ -41,8 +39,7 @@ namespace Gaudi
     //=============================================================================
     template <typename Iterator>
     struct SkipperGrammar : qi::grammar<Iterator> {
-      SkipperGrammar() : SkipperGrammar::base_type( comments )
-      {
+      SkipperGrammar() : SkipperGrammar::base_type( comments ) {
         comments = enc::space | rep::confix( "/*", "*/" )[*( qi::char_ - "*/" )] |
                    rep::confix( "//", ( sp::eol | sp::eoi ) )[*( qi::char_ - ( sp::eol | sp::eoi ) )];
       }
@@ -54,8 +51,7 @@ namespace Gaudi
       //---------------------------------------------------------------------------
       typedef std::string ResultT;
       //---------------------------------------------------------------------
-      StringGrammar() : StringGrammar::base_type( str )
-      {
+      StringGrammar() : StringGrammar::base_type( str ) {
         begin_quote = enc::char_( "\"'" );
         quote       = enc::char_( qi::_r1 );
 
@@ -66,8 +62,8 @@ namespace Gaudi
       }
       //-----------------------------------------------------------------------------
       qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
-      qi::rule<Iterator, char()>       begin_quote;
-      qi::rule<Iterator, void( char )> quote;
+      qi::rule<Iterator, char()>                                   begin_quote;
+      qi::rule<Iterator, void( char )>                             quote;
       //-----------------------------------------------------------------------------
     };
     // ============================================================================
@@ -76,8 +72,7 @@ namespace Gaudi
       //-----------------------------------------------------------------------------
       typedef std::string ResultT;
       //-----------------------------------------------------------------------------
-      IdentifierGrammar() : IdentifierGrammar::base_type( ident )
-      {
+      IdentifierGrammar() : IdentifierGrammar::base_type( ident ) {
         ident =
             rep::qi::iter_pos[op( qi::_val, qi::_1 )] >> str[op( qi::_val, qi::_1 )][op( qi::_val, Node::kIdentifier )];
         str = -qi::lit( "::" )[qi::_val += "::"] >> inner[qi::_val += qi::_1] >>
@@ -87,8 +82,8 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
       qi::rule<Iterator, Node(), Skipper>        ident;
       qi::rule<Iterator, std::string(), Skipper> str;
-      qi::rule<Iterator, std::string()> inner;
-      ph::function<NodeOperations> op;
+      qi::rule<Iterator, std::string()>          inner;
+      ph::function<NodeOperations>               op;
     };
     // ============================================================================
     template <typename Iterator, typename Skipper>
@@ -96,8 +91,7 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
       typedef bool ResultT;
       // ----------------------------------------------------------------------------
-      BoolGrammar() : BoolGrammar::base_type( boolean )
-      {
+      BoolGrammar() : BoolGrammar::base_type( boolean ) {
         boolean = enc::no_case[qi::lit( "true" )[qi::_val = true] | qi::lit( "false" )[qi::_val = false]];
       }
       // ----------------------------------------------------------------------------
@@ -109,22 +103,20 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
       typedef bool ResultT;
       //---------------------------------------------------------------------
-      RealGrammar() : RealGrammar::base_type( real )
-      {
+      RealGrammar() : RealGrammar::base_type( real ) {
         real = qi::raw[qi::double_][op( qi::_val, qi::_1 )][op( qi::_val, Node::kReal )] >> -qi::char_( 'L' ) >>
                -( -qi::char_( '*' ) >> gunit[op( qi::_val, qi::_1 )] );
       }
       // ----------------------------------------------------------------------------
-      qi::rule<Iterator, Node(), Skipper> real;
+      qi::rule<Iterator, Node(), Skipper>  real;
       IdentifierGrammar<Iterator, Skipper> gunit;
-      ph::function<NodeOperations> op;
+      ph::function<NodeOperations>         op;
     };
     // ============================================================================
     template <typename Iterator, typename Skipper>
     struct UnitsGrammar : qi::grammar<Iterator, Node(), Skipper> {
       // ----------------------------------------------------------------------------
-      UnitsGrammar() : UnitsGrammar::base_type( units )
-      {
+      UnitsGrammar() : UnitsGrammar::base_type( units ) {
         units = *unit[op( qi::_val, qi::_1 )];
         unit  = rep::qi::iter_pos[op( qi::_val, qi::_1 )] >> val[op( qi::_val, qi::_1 )] >> -qi::lit( '*' ) >>
                gunit[op( qi::_val, qi::_1 )] >> qi::lit( '=' ) >>
@@ -133,15 +125,14 @@ namespace Gaudi
         val = qi::raw[qi::double_][op( qi::_val, qi::_1 )][op( qi::_val, Node::kReal )];
       }
       // ----------------------------------------------------------------------------
-      qi::rule<Iterator, Node(), Skipper> units, unit, val;
+      qi::rule<Iterator, Node(), Skipper>  units, unit, val;
       IdentifierGrammar<Iterator, Skipper> gunit;
-      ph::function<NodeOperations> op;
+      ph::function<NodeOperations>         op;
     };
     // ============================================================================
     template <typename Iterator, typename Skipper>
     struct FileGrammar : qi::grammar<Iterator, Node(), Skipper> {
-      FileGrammar() : FileGrammar::base_type( file )
-      {
+      FileGrammar() : FileGrammar::base_type( file ) {
         file  = -shell[op( qi::_val, qi::_1 )] >> *( statement[op( qi::_val, qi::_1 )] )[op( qi::_val, Node::kRoot )];
         shell = rep::confix(
             "#!",
@@ -154,11 +145,11 @@ namespace Gaudi
             -( qi::lit( "#else" )[op( qi::_b, Node::kElse )] >>
                *statement[op( qi::_b, qi::_1 )] )[op( qi::_val, qi::_b )] >>
             qi::lit( "#endif" )[op( qi::_val, Node::kCondition )];
-        include       = qi::lit( "#include" ) >> gstring[op( qi::_val, qi::_1 )][op( qi::_val, Node::kInclude )];
-        units         = qi::lit( "#units" ) >> gstring[op( qi::_val, qi::_1 )][op( qi::_val, Node::kUnits )];
-        print_options = qi::lit( "#printOptions" ) >> qi::lit( "full" )[op( qi::_val, Node::kPrintOptions )];
-        pragma        = qi::lit( "#pragma" ) >> ( pragma_print | pragma_tree | pragma_dump_file );
-        pragma_print  = qi::lit( "print" ) >> enc::no_case[qi::lit( "on" )[op( qi::_val, Node::kPrintOn )] |
+        include          = qi::lit( "#include" ) >> gstring[op( qi::_val, qi::_1 )][op( qi::_val, Node::kInclude )];
+        units            = qi::lit( "#units" ) >> gstring[op( qi::_val, qi::_1 )][op( qi::_val, Node::kUnits )];
+        print_options    = qi::lit( "#printOptions" ) >> qi::lit( "full" )[op( qi::_val, Node::kPrintOptions )];
+        pragma           = qi::lit( "#pragma" ) >> ( pragma_print | pragma_tree | pragma_dump_file );
+        pragma_print     = qi::lit( "print" ) >> enc::no_case[qi::lit( "on" )[op( qi::_val, Node::kPrintOn )] |
                                                           qi::lit( "off" )[op( qi::_val, Node::kPrintOff )]];
         pragma_tree      = enc::no_case[qi::lit( "printtree" )[op( qi::_val, Node::kPrintTree )]];
         pragma_dump_file = qi::lit( "dumpfile" ) >> gstring[op( qi::_val, qi::_1 )][op( qi::_val, Node::kDumpFile )];
@@ -177,7 +168,7 @@ namespace Gaudi
         end_vector   = qi::char_( qi::_r1 );
         vector_value = ( begin_vector[qi::_a = qi::_1] >> -( value[op( qi::_val, qi::_1 )] % ',' ) >>
                          end_vector( qi::_a ) )[op( qi::_val, Node::kVector )];
-        map_value = ( enc::char_( '{' ) >> -( pair[op( qi::_val, qi::_1 )] % ',' ) >>
+        map_value    = ( enc::char_( '{' ) >> -( pair[op( qi::_val, qi::_1 )] % ',' ) >>
                       enc::char_( '}' ) )[op( qi::_val, Node::kMap )];
         pair =
             simple_value[op( qi::_val, qi::_1 )] >> ':' >> value[op( qi::_val, qi::_1 )][op( qi::_val, Node::kPair )];
@@ -186,20 +177,20 @@ namespace Gaudi
       }
       qi::rule<Iterator, Node(), Skipper> file, include, assign, property, property_ref, oper, map_value, pair_value,
           simple_value, pair, units, print_options, pragma, pragma_print, pragma_tree, pragma_dump_file;
-      qi::rule<Iterator, Node(), qi::locals<std::string>> shell;
-      qi::rule<Iterator, Node(), qi::locals<Iterator>, Skipper> statement, value;
-      qi::rule<Iterator, Node(), qi::locals<char>, Skipper>     vector_value;
+      qi::rule<Iterator, Node(), qi::locals<std::string>>         shell;
+      qi::rule<Iterator, Node(), qi::locals<Iterator>, Skipper>   statement, value;
+      qi::rule<Iterator, Node(), qi::locals<char>, Skipper>       vector_value;
       qi::rule<Iterator, Node(), qi::locals<Node, Node>, Skipper> condition;
-      qi::rule<Iterator, char()>           begin_vector;
-      qi::rule<Iterator, void( char )>     end_vector;
-      StringGrammar<Iterator, Skipper>     gstring;
-      BoolGrammar<Iterator, Skipper>       gbool;
-      RealGrammar<Iterator, Skipper>       greal;
-      IdentifierGrammar<Iterator, Skipper> gidentifier;
-      ph::function<NodeOperations> op;
+      qi::rule<Iterator, char()>                                  begin_vector;
+      qi::rule<Iterator, void( char )>                            end_vector;
+      StringGrammar<Iterator, Skipper>                            gstring;
+      BoolGrammar<Iterator, Skipper>                              gbool;
+      RealGrammar<Iterator, Skipper>                              greal;
+      IdentifierGrammar<Iterator, Skipper>                        gidentifier;
+      ph::function<NodeOperations>                                op;
     };
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 #endif // JOBOPTIONSVC_GRAMMAR_H_

@@ -8,7 +8,7 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #endif
 
 #include "GaudiMP/PyROOTPickle.h"
@@ -23,8 +23,7 @@
 static PyObject* gExpand = 0;
 #endif
 
-namespace GaudiMP
-{
+namespace GaudiMP {
 
 #if ROOT_VERSION_CODE < ROOT_VERSION( 5, 19, 0 )
 
@@ -32,8 +31,7 @@ namespace GaudiMP
    * @brief PyROOT object proxy pickle support
    * @param self object proxy instance to be pickled
    */
-  PyObject* ObjectProxyReduce( PyObject* self )
-  {
+  PyObject* ObjectProxyReduce( PyObject* self ) {
     // Turn the object proxy instance into a character stream and return for
     // pickle, together with the callable object that can restore the stream
     // into the object proxy instance.
@@ -82,8 +80,7 @@ namespace GaudiMP
     return result;
   }
 
-  class ObjectProxy
-  {
+  class ObjectProxy {
   public:
     enum EFlags { kNone = 0x0, kIsOwner = 0x0001, kIsReference = 0x0002 };
 
@@ -104,8 +101,7 @@ namespace GaudiMP
    * @brief Helper for (un)pickling of ObjectProxy's
    * @param args The Python arguments.
    */
-  PyObject* ObjectProxyExpand( PyObject*, PyObject* args )
-  {
+  PyObject* ObjectProxyExpand( PyObject*, PyObject* args ) {
     // This method is a helper for (un)pickling of ObjectProxy instances.
     PyObject*   pybuf  = 0;
     const char* clname = 0;
@@ -134,8 +130,7 @@ namespace GaudiMP
    * @param libpyroot_pymodule The libPyROOT python module
    * @param objectproxy_pytype The ObjectProxy python type
    */
-  void PyROOTPickle::Initialize( PyObject* libpyroot_pymodule, PyObject* objectproxy_pytype )
-  {
+  void PyROOTPickle::Initialize( PyObject* libpyroot_pymodule, PyObject* objectproxy_pytype ) {
     Py_INCREF( libpyroot_pymodule );
     PyTypeObject* pytype = (PyTypeObject*)objectproxy_pytype;
 
@@ -171,7 +166,8 @@ namespace GaudiMP
 
 #else //  ROOT_VERSION_CODE < ROOT_VERSION(5,19,0)
 
-  void PyROOTPickle::Initialize( PyObject*, PyObject* ) { /* dummy. It is not needed for this version of ROOT */}
+  void PyROOTPickle::Initialize( PyObject*, PyObject* ) { /* dummy. It is not needed for this version of ROOT */
+  }
 
 #endif //  ROOT_VERSION_CODE < ROOT_VERSION(5,19,0)
 

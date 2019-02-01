@@ -4,8 +4,7 @@
 
 #include <fstream>
 
-StatusCode TimelineSvc::initialize()
-{
+StatusCode TimelineSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() ) return sc;
 
@@ -25,8 +24,7 @@ StatusCode TimelineSvc::initialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode TimelineSvc::reinitialize()
-{
+StatusCode TimelineSvc::reinitialize() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::DEBUG << "reinitialize" << endmsg;
@@ -36,8 +34,7 @@ StatusCode TimelineSvc::reinitialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode TimelineSvc::finalize()
-{
+StatusCode TimelineSvc::finalize() {
   if ( m_dumpTimeline && m_events.size() > 0 ) {
     MsgStream log( msgSvc(), name() );
 
@@ -50,8 +47,7 @@ StatusCode TimelineSvc::finalize()
   return StatusCode::SUCCESS;
 }
 
-ITimelineSvc::TimelineRecorder TimelineSvc::getRecorder( std::string alg, const EventContext& ctx )
-{
+ITimelineSvc::TimelineRecorder TimelineSvc::getRecorder( std::string alg, const EventContext& ctx ) {
   auto&            newTimelineEvent = *m_events.emplace_back();
   TimelineRecorder recorder{newTimelineEvent, std::move( alg ), ctx};
   if ( m_partial ) {
@@ -67,8 +63,7 @@ ITimelineSvc::TimelineRecorder TimelineSvc::getRecorder( std::string alg, const 
   return recorder;
 }
 
-bool TimelineSvc::getTimelineEvent( TimelineEvent& e ) const
-{
+bool TimelineSvc::getTimelineEvent( TimelineEvent& e ) const {
   for ( const auto& candidate : m_events ) {
     if ( candidate.algorithm == e.algorithm && candidate.event == e.event ) {
       e = candidate;
@@ -78,8 +73,7 @@ bool TimelineSvc::getTimelineEvent( TimelineEvent& e ) const
   return false;
 }
 
-void TimelineSvc::outputTimeline()
-{
+void TimelineSvc::outputTimeline() {
   std::ofstream out( m_timelineFile, std::ofstream::out | std::ofstream::trunc );
 
   out << "#start end algorithm thread slot event" << std::endl;

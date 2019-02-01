@@ -10,38 +10,32 @@
 #include <algorithm>
 #include <unordered_set>
 
-namespace
-{
+namespace {
   template <typename Container>
-  std::vector<Gaudi::DataHandle*> handles( Container& c, Gaudi::DataHandle::Mode mode )
-  {
+  std::vector<Gaudi::DataHandle*> handles( Container& c, Gaudi::DataHandle::Mode mode ) {
     std::vector<Gaudi::DataHandle*> h;
     std::copy_if( std::begin( c ), std::end( c ), std::back_inserter( h ),
                   [&]( const Gaudi::DataHandle* hndl ) -> bool { return hndl->mode() & mode; } );
     return h;
   }
-}
+} // namespace
 
 template <class BASE>
-class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder>
-{
+class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder> {
 public:
   using extends<BASE, IDataHandleHolder>::extends;
 
-  std::vector<Gaudi::DataHandle*> inputHandles() const override
-  {
+  std::vector<Gaudi::DataHandle*> inputHandles() const override {
     return handles( m_handles, Gaudi::DataHandle::Reader );
   }
-  std::vector<Gaudi::DataHandle*> outputHandles() const override
-  {
+  std::vector<Gaudi::DataHandle*> outputHandles() const override {
     return handles( m_handles, Gaudi::DataHandle::Writer );
   }
 
   virtual const DataObjIDColl& extraInputDeps() const override { return m_extInputDataObjs; }
   virtual const DataObjIDColl& extraOutputDeps() const override { return m_extOutputDataObjs; }
 
-  void declare( Gaudi::DataHandle& handle ) override
-  {
+  void declare( Gaudi::DataHandle& handle ) override {
     if ( !handle.owner() ) handle.setOwner( this );
 
     if ( handle.owner() != this ) {
@@ -51,8 +45,7 @@ public:
     m_handles.insert( &handle );
   }
 
-  void renounce( Gaudi::DataHandle& handle ) override
-  {
+  void renounce( Gaudi::DataHandle& handle ) override {
     if ( handle.owner() != this ) {
       throw GaudiException( "Attempt to renounce foreign handle with algorithm!", this->name(), StatusCode::FAILURE );
     }
@@ -62,8 +55,7 @@ public:
   const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
   const DataObjIDColl& outputDataObjs() const override { return m_outputDataObjs; }
 
-  void addDependency( const DataObjID& id, const Gaudi::DataHandle::Mode& mode ) override
-  {
+  void addDependency( const DataObjID& id, const Gaudi::DataHandle::Mode& mode ) override {
     if ( mode & Gaudi::DataHandle::Reader ) m_inputDataObjs.emplace( id );
     if ( mode & Gaudi::DataHandle::Writer ) m_outputDataObjs.emplace( id );
   }
@@ -72,8 +64,7 @@ private:
 protected:
   /// initializes all handles - called by the sysInitialize method
   /// of any descendant of this
-  void initDataHandleHolder()
-  {
+  void initDataHandleHolder() {
     for ( auto h : m_handles ) h->init();
   }
 

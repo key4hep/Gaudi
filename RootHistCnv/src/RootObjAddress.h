@@ -6,11 +6,9 @@
 
 class TObject;
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
-  class RootObjAddress : public IOpaqueAddress
-  {
+  class RootObjAddress : public IOpaqueAddress {
 
   protected:
     unsigned long m_refCount = 0;
@@ -37,8 +35,7 @@ namespace RootHistCnv
         , m_svcType( copy.m_svcType )
         , m_clID( copy.m_clID )
         , m_pRegistry( copy.m_pRegistry )
-        , m_tObj( copy.m_tObj )
-    {
+        , m_tObj( copy.m_tObj ) {
       m_par[0]  = copy.m_par[0];
       m_par[1]  = copy.m_par[1];
       m_ipar[0] = copy.m_ipar[0];
@@ -48,8 +45,7 @@ namespace RootHistCnv
     /// Standard Constructor
     RootObjAddress( long svc, const CLID& clid, boost::string_ref p1 = {}, boost::string_ref p2 = {},
                     unsigned long ip1 = 0, unsigned long ip2 = 0, TObject* tObj = nullptr )
-        : m_svcType( svc ), m_clID( clid ), m_tObj( tObj )
-    {
+        : m_svcType( svc ), m_clID( clid ), m_tObj( tObj ) {
       m_par[0]  = p1.to_string();
       m_par[1]  = p2.to_string();
       m_ipar[0] = ip1;
@@ -59,8 +55,7 @@ namespace RootHistCnv
     /// Add reference to object
     unsigned long addRef() override { return ++m_refCount; }
 
-    unsigned long release() override
-    {
+    unsigned long release() override {
       int cnt = --m_refCount;
       if ( 0 == cnt ) delete this;
       return cnt;
@@ -85,6 +80,6 @@ namespace RootHistCnv
     /// Retrieve TObject* ptr
     virtual TObject* tObj() const { return m_tObj; }
   };
-}
+} // namespace RootHistCnv
 
 #endif

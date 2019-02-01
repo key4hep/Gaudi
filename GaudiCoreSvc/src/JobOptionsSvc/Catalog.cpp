@@ -9,31 +9,26 @@
 // ============================================================================
 namespace gp = Gaudi::Parsers;
 // ============================================================================
-namespace
-{
+namespace {
   constexpr struct select1st_t {
     template <typename S, typename T>
-    const S& operator()( const std::pair<S, T>& p ) const
-    {
+    const S& operator()( const std::pair<S, T>& p ) const {
       return p.first;
     }
     template <typename S, typename T>
-    S& operator()( std::pair<S, T>& p ) const
-    {
+    S& operator()( std::pair<S, T>& p ) const {
       return p.first;
     }
   } select1st{};
-}
+} // namespace
 // ============================================================================
-std::vector<std::string> gp::Catalog::ClientNames() const
-{
+std::vector<std::string> gp::Catalog::ClientNames() const {
   std::vector<std::string> result;
   std::transform( std::begin( catalog_ ), std::end( catalog_ ), std::back_inserter( result ), select1st );
   return result;
 }
 // ============================================================================
-bool gp::Catalog::Add( Property* property )
-{
+bool gp::Catalog::Add( Property* property ) {
   assert( property );
   auto it = catalog_.find( property->ClientName() );
   if ( it == catalog_.end() ) {
@@ -48,8 +43,7 @@ bool gp::Catalog::Add( Property* property )
   return true;
 }
 // ============================================================================
-gp::Property* gp::Catalog::Find( const std::string& client, const std::string& name )
-{
+gp::Property* gp::Catalog::Find( const std::string& client, const std::string& name ) {
   auto it = catalog_.find( client );
   if ( it == catalog_.end() ) return nullptr;
 
@@ -57,21 +51,17 @@ gp::Property* gp::Catalog::Find( const std::string& client, const std::string& n
   return ( pit != it->second.end() ) ? &*pit : nullptr;
 }
 // ============================================================================
-std::string gp::Catalog::ToString() const
-{
+std::string gp::Catalog::ToString() const {
   std::string result;
   for ( const auto& client : catalog_ ) {
-    for ( const auto& current : client.second ) {
-      result += current.ToString() + "\n";
-    }
+    for ( const auto& current : client.second ) { result += current.ToString() + "\n"; }
   }
   return result;
 }
 // ============================================================================
 // print the content of the catalogue to std::ostream
 // ============================================================================
-std::ostream& Gaudi::Parsers::Catalog::fillStream( std::ostream& o ) const
-{
+std::ostream& Gaudi::Parsers::Catalog::fillStream( std::ostream& o ) const {
   o << "// " << std::string( 82, '=' ) << std::endl
     << "//       Parser catalog " << std::endl
     << "// " << std::string( 82, '=' ) << std::endl;

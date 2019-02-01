@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#pragma warning( disable : 4786 )
+#  pragma warning( disable : 4786 )
 #endif
 // ============================================================================
 // STD & STL
@@ -44,8 +44,7 @@ DECLARE_COMPONENT( ChronoStatSvc )
 // ============================================================================
 constexpr struct CompareFirstOfPointerPair_t {
   template <typename S, typename T>
-  inline bool operator()( const std::pair<S*, T*>& p1, const std::pair<S*, T*>& p2 ) const
-  {
+  inline bool operator()( const std::pair<S*, T*>& p1, const std::pair<S*, T*>& p2 ) const {
     auto e1 = p1.first;
     auto e2 = p2.first;
     return ( !e1 || !e2 ) || *e1 < *e2;
@@ -54,8 +53,7 @@ constexpr struct CompareFirstOfPointerPair_t {
 // ============================================================================
 // Compound assignment operator.
 // ============================================================================
-void ChronoStatSvc::merge( const ChronoStatSvc& css )
-{
+void ChronoStatSvc::merge( const ChronoStatSvc& css ) {
 
   // Add the content of the maps, leave the rest unchanged
 
@@ -85,8 +83,7 @@ void ChronoStatSvc::merge( const ChronoStatSvc& css )
 // ============================================================================
 // Implementation of IService::initialize()
 // ============================================================================
-StatusCode ChronoStatSvc::initialize()
-{
+StatusCode ChronoStatSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
   ///
@@ -114,13 +111,9 @@ StatusCode ChronoStatSvc::initialize()
     }
   }
 
-  if ( m_chronoTableFlag && !m_printUserTime && !m_printSystemTime && !m_printEllapsedTime ) {
-    m_printUserTime = true;
-  }
+  if ( m_chronoTableFlag && !m_printUserTime && !m_printSystemTime && !m_printEllapsedTime ) { m_printUserTime = true; }
   ///
-  if ( m_printUserTime || m_printSystemTime || m_printEllapsedTime ) {
-    m_chronoTableFlag = true;
-  }
+  if ( m_printUserTime || m_printSystemTime || m_printEllapsedTime ) { m_chronoTableFlag = true; }
   ///
   /// start its own chrono
   chronoStart( name() );
@@ -130,8 +123,7 @@ StatusCode ChronoStatSvc::initialize()
 // ============================================================================
 // Implementation of IService::finalize()
 // ============================================================================
-StatusCode ChronoStatSvc::finalize()
-{
+StatusCode ChronoStatSvc::finalize() {
   std::string local = name() + ".finalize()";
   ///
   MsgStream main_log( msgSvc(), local );
@@ -143,9 +135,7 @@ StatusCode ChronoStatSvc::finalize()
     debug() << "writing per-event timing data to '" << m_perEventFile << "'" << endmsg;
     for ( const auto& itr : m_perEvtTime ) {
       m_ofd << itr.first.substr( 0, itr.first.length() - 8 ) << " ";
-      for ( const auto& itt : itr.second ) {
-        m_ofd << " " << (long int)( itt );
-      }
+      for ( const auto& itt : itr.second ) { m_ofd << " " << (long int)( itt ); }
       m_ofd << std::endl;
     }
 
@@ -160,17 +150,13 @@ StatusCode ChronoStatSvc::finalize()
     const std::string stars( ( m_chronoCoutFlag ) ? 126 : 100, '*' );
     if ( m_chronoCoutFlag ) {
       std::cout << stars << std::endl;
-      if ( isMT() ) {
-        std::cout << "WARNING: MT job; statistics are unreliable" << std::endl;
-      }
+      if ( isMT() ) { std::cout << "WARNING: MT job; statistics are unreliable" << std::endl; }
       std::cout << local << " The Final CPU consumption (Chrono) Table "
                 << ( m_chronoOrderFlag ? "(ordered)" : "(not ordered)" ) << std::endl;
       std::cout << stars << std::endl;
     } else {
       log << m_chronoPrintLevel << stars << endmsg;
-      if ( isMT() ) {
-        log << m_chronoPrintLevel << "WARNING: MT job; statistics are unreliable" << endmsg;
-      }
+      if ( isMT() ) { log << m_chronoPrintLevel << "WARNING: MT job; statistics are unreliable" << endmsg; }
       log << m_chronoPrintLevel << " The Final CPU consumption ( Chrono ) Table "
           << ( m_chronoOrderFlag ? "(ordered)" : "(not ordered)" ) << endmsg;
       log << m_chronoPrintLevel << stars << endmsg;
@@ -179,9 +165,7 @@ StatusCode ChronoStatSvc::finalize()
     { // prepare container for printing
       std::vector<std::pair<ChronoEntity*, const ChronoTag*>> tmpCont;
       tmpCont.reserve( m_chronoEntities.size() );
-      for ( auto& it : m_chronoEntities ) {
-        tmpCont.emplace_back( &it.second, &it.first );
-      }
+      for ( auto& it : m_chronoEntities ) { tmpCont.emplace_back( &it.second, &it.first ); }
       // sort it
       if ( m_chronoOrderFlag ) std::sort( tmpCont.begin(), tmpCont.end(), CompareFirstOfPointerPair );
       // print User Time statistics
@@ -189,13 +173,9 @@ StatusCode ChronoStatSvc::finalize()
         for ( auto iter = tmpCont.begin(); tmpCont.end() != iter; ++iter ) {
           //
           ChronoEntity* entity = iter->first;
-          if ( !entity ) {
-            continue;
-          } /// CONTINUE
+          if ( !entity ) { continue; } /// CONTINUE
           const ChronoTag* tag = iter->second;
-          if ( !tag ) {
-            continue;
-          } /// CONTINUE
+          if ( !tag ) { continue; } /// CONTINUE
           ///
           entity->stop(); /// stop chrono (if it is still in RUNNING status)
           ///
@@ -222,13 +202,9 @@ StatusCode ChronoStatSvc::finalize()
         for ( auto iter = tmpCont.begin(); tmpCont.end() != iter; ++iter ) {
           ///
           ChronoEntity* entity = iter->first;
-          if ( !entity ) {
-            continue;
-          } /// CONTINUE
+          if ( !entity ) { continue; } /// CONTINUE
           const ChronoTag* tag = iter->second;
-          if ( !tag ) {
-            continue;
-          } /// CONTINUE
+          if ( !tag ) { continue; } /// CONTINUE
           ///
           entity->stop(); /// stop chrono (if it is still in RUNNING status)
           ///
@@ -255,13 +231,9 @@ StatusCode ChronoStatSvc::finalize()
         for ( const auto& i : tmpCont ) {
           ///
           ChronoEntity* entity = i.first;
-          if ( !entity ) {
-            continue;
-          } /// CONTINUE
+          if ( !entity ) { continue; } /// CONTINUE
           const ChronoTag* tag = i.second;
-          if ( !tag ) {
-            continue;
-          } /// CONTINUE
+          if ( !tag ) { continue; } /// CONTINUE
           ///
           entity->stop(); /// stop chrono (if it is still in RUNNING status)
           ///
@@ -289,13 +261,9 @@ StatusCode ChronoStatSvc::finalize()
   ///
 
   /// Is the final stat table to be printed?
-  if ( m_statTableFlag ) {
-    printStats();
-  }
+  if ( m_statTableFlag ) { printStats(); }
 
-  if ( !m_statsOutFileName.value().empty() ) {
-    saveStats();
-  }
+  if ( !m_statsOutFileName.value().empty() ) { saveStats(); }
 
   main_log << MSG::INFO << " Service finalized successfully " << endmsg;
 
@@ -304,8 +272,7 @@ StatusCode ChronoStatSvc::finalize()
 // ============================================================================
 // Implementation of IChronoStatSvc::chronoStart
 // ============================================================================
-ChronoEntity* ChronoStatSvc::chronoStart( const ChronoTag& chronoTag )
-{
+ChronoEntity* ChronoStatSvc::chronoStart( const ChronoTag& chronoTag ) {
   ChronoEntity& entity = getEntity( chronoTag );
   entity.start();
   return &entity;
@@ -313,8 +280,7 @@ ChronoEntity* ChronoStatSvc::chronoStart( const ChronoTag& chronoTag )
 // ============================================================================
 // Implementation of IChronoStatSvc::chronoStop
 // ============================================================================
-const ChronoEntity* ChronoStatSvc::chronoStop( const IChronoStatSvc::ChronoTag& chronoTag )
-{
+const ChronoEntity* ChronoStatSvc::chronoStop( const IChronoStatSvc::ChronoTag& chronoTag ) {
   ChronoEntity& entity = getEntity( chronoTag );
   entity.stop();
   return &entity;
@@ -323,35 +289,27 @@ const ChronoEntity* ChronoStatSvc::chronoStop( const IChronoStatSvc::ChronoTag& 
 // Implementation of IChronoStatSvc::chronoDelta
 // ============================================================================
 IChronoStatSvc::ChronoTime ChronoStatSvc::chronoDelta( const IChronoStatSvc::ChronoTag& chronoTag,
-                                                       IChronoStatSvc::ChronoType       theType )
-{
+                                                       IChronoStatSvc::ChronoType       theType ) {
   return getEntity( chronoTag ).delta( theType );
 }
 // ============================================================================
 // Implementation of IChronoStatSvc::chronoPrint
 // ============================================================================
-void ChronoStatSvc::chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag )
-{
+void ChronoStatSvc::chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag ) {
   MsgStream log( msgSvc(), chronoTag );
-  if ( m_printUserTime ) {
-    log << m_chronoPrintLevel << getEntity( chronoTag ).outputUserTime() << endmsg;
-  }
-  if ( m_printSystemTime ) {
-    log << m_chronoPrintLevel << getEntity( chronoTag ).outputSystemTime() << endmsg;
-  }
+  if ( m_printUserTime ) { log << m_chronoPrintLevel << getEntity( chronoTag ).outputUserTime() << endmsg; }
+  if ( m_printSystemTime ) { log << m_chronoPrintLevel << getEntity( chronoTag ).outputSystemTime() << endmsg; }
 }
 // ============================================================================
 // Implementation of IChronoSvc::chronoStatus
 // ============================================================================
-IChronoStatSvc::ChronoStatus ChronoStatSvc::chronoStatus( const IChronoStatSvc::ChronoTag& chronoTag )
-{
+IChronoStatSvc::ChronoStatus ChronoStatSvc::chronoStatus( const IChronoStatSvc::ChronoTag& chronoTag ) {
   return getEntity( chronoTag ).status();
 }
 // ============================================================================
 // Implementation of IChronoStatSvc::stat
 // ============================================================================
-void ChronoStatSvc::stat( const IChronoStatSvc::StatTag& statTag, const IChronoStatSvc::StatFlag& statFlag )
-{
+void ChronoStatSvc::stat( const IChronoStatSvc::StatTag& statTag, const IChronoStatSvc::StatFlag& statFlag ) {
   auto theIter = m_statEntities.find( statTag );
 
   StatEntity* theStat = nullptr;
@@ -370,8 +328,7 @@ void ChronoStatSvc::stat( const IChronoStatSvc::StatTag& statTag, const IChronoS
 // ============================================================================
 // Implementation of IChronoStatSvc::statPrint
 // ============================================================================
-void ChronoStatSvc::statPrint( const IChronoStatSvc::StatTag& statTag )
-{
+void ChronoStatSvc::statPrint( const IChronoStatSvc::StatTag& statTag ) {
   MsgStream log( msgSvc(), statTag );
   log << m_statPrintLevel << m_statEntities[statTag] << endmsg;
 }
@@ -382,8 +339,7 @@ void ChronoStatSvc::statPrint( const IChronoStatSvc::StatTag& statTag )
  *  @return pointer to chrono entity
  */
 // ============================================================================
-const ChronoEntity* ChronoStatSvc::chrono( const IChronoStatSvc::ChronoTag& t ) const
-{
+const ChronoEntity* ChronoStatSvc::chrono( const IChronoStatSvc::ChronoTag& t ) const {
   lock_t lock( m_mutex );
   auto   it = m_chronoEntities.find( t );
   return m_chronoEntities.end() != it ? &( it->second ) : nullptr;
@@ -395,16 +351,14 @@ const ChronoEntity* ChronoStatSvc::chrono( const IChronoStatSvc::ChronoTag& t ) 
  *  @return pointer to stat   entity
  */
 // ============================================================================
-StatEntity* ChronoStatSvc::stat( const IChronoStatSvc::StatTag& t )
-{
+StatEntity* ChronoStatSvc::stat( const IChronoStatSvc::StatTag& t ) {
   auto it = m_statEntities.find( t );
   return m_statEntities.end() != it ? &( it->second ) : nullptr;
 }
 // ============================================================================
 // dump all the statistics into an ASCII file
 // ============================================================================
-void ChronoStatSvc::saveStats()
-{
+void ChronoStatSvc::saveStats() {
   std::ofstream out( m_statsOutFileName.value(), std::ios_base::out | std::ios_base::trunc );
   if ( !out.good() ) {
     info() << "Could not open the output file for writing chrono statistics [" << m_statsOutFileName.value() << "]"
@@ -431,14 +385,10 @@ void ChronoStatSvc::saveStats()
   for ( const auto& iter : chronos ) {
     //
     const ChronoEntity* entity = iter.first;
-    if ( !entity ) {
-      continue;
-    } /// CONTINUE
+    if ( !entity ) { continue; } /// CONTINUE
 
     const ChronoTag* tag = iter.second;
-    if ( !tag ) {
-      continue;
-    } /// CONTINUE
+    if ( !tag ) { continue; } /// CONTINUE
 
     // create an entry in the .INI-like table
     out << "\n[" << *tag << "]\n";
@@ -475,29 +425,23 @@ void ChronoStatSvc::saveStats()
 // ============================================================================
 // Test if we're running in an MT job.
 // ============================================================================
-bool ChronoStatSvc::isMT() const
-{
+bool ChronoStatSvc::isMT() const {
   bool isMT = false;
   if ( m_hiveWhiteBoardSvc.retrieve().isFailure() ) {
     error() << "Cannot retrieve HiveWhiteBoardSvc";
   } else {
     // In non-MT mode, `EventDataSvc' does not have an IHiveWhiteBoard interface.
     const SmartIF<IHiveWhiteBoard> wb( m_hiveWhiteBoardSvc.get() );
-    if ( wb && wb->getNumberOfStores() > 1 ) {
-      isMT = true;
-    }
+    if ( wb && wb->getNumberOfStores() > 1 ) { isMT = true; }
   }
   return isMT;
 }
 // ============================================================================
 // print the "Stat" part of the ChronoStatSvc
 // ============================================================================
-void ChronoStatSvc::printStats()
-{
+void ChronoStatSvc::printStats() {
   /// nothing to print?
-  if ( m_statEntities.empty() ) {
-    return;
-  }
+  if ( m_statEntities.empty() ) { return; }
 
   MsgStream log( msgSvc(), "******Stat******" );
   ///
@@ -505,16 +449,12 @@ void ChronoStatSvc::printStats()
   ///
   if ( m_statCoutFlag ) {
     std::cout << stars << std::endl;
-    if ( isMT() ) {
-      std::cout << "WARNING: MT job; statistics are unreliable" << std::endl;
-    }
+    if ( isMT() ) { std::cout << "WARNING: MT job; statistics are unreliable" << std::endl; }
     std::cout << " The Final stat Table " << ( m_statOrderFlag ? "(ordered)" : "(not ordered)" ) << std::endl;
     std::cout << stars << std::endl;
   } else {
     log << m_statPrintLevel << stars << endmsg;
-    if ( isMT() ) {
-      log << (MSG::Level)m_chronoPrintLevel << "WARNING: MT job; statistics are unreliable" << endmsg;
-    }
+    if ( isMT() ) { log << (MSG::Level)m_chronoPrintLevel << "WARNING: MT job; statistics are unreliable" << endmsg; }
     log << m_statPrintLevel << " The Final stat Table " << ( m_statOrderFlag ? "(ordered)" : "(not ordered)" )
         << endmsg;
     log << m_statPrintLevel << stars << endmsg;
@@ -523,8 +463,8 @@ void ChronoStatSvc::printStats()
   {
     // prepare container for printing
     typedef std::pair<const StatEntity*, const StatTag*> SPair;
-    typedef std::vector<SPair> SCont;
-    SCont                      tmpCont;
+    typedef std::vector<SPair>                           SCont;
+    SCont                                                tmpCont;
     std::transform( std::begin( m_statEntities ), std::end( m_statEntities ), std::back_inserter( tmpCont ),
                     []( StatMap::const_reference i ) { return std::make_pair( &i.second, &i.first ); } );
     // sort it
@@ -540,13 +480,9 @@ void ChronoStatSvc::printStats()
     for ( const auto& iter : tmpCont ) {
       ///
       const StatEntity* entity = iter.first;
-      if ( !entity ) {
-        continue;
-      } /// CONTINUE
+      if ( !entity ) { continue; } /// CONTINUE
       const StatTag* tag = iter.second;
-      if ( !tag ) {
-        continue;
-      } /// CONTINUE
+      if ( !tag ) { continue; } /// CONTINUE
       ///
       if ( m_statCoutFlag ) {
         entity->print( std::cout, true, *tag, m_useEffFormat, "%|-15.15s|%|17t|" );
@@ -568,8 +504,7 @@ void ChronoStatSvc::printStats()
 
 // ============================================================================
 
-void ChronoStatSvc::handle( const Incident& /* inc */ )
-{
+void ChronoStatSvc::handle( const Incident& /* inc */ ) {
 
   if ( !m_ofd.is_open() ) return;
 

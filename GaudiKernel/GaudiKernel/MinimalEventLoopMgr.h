@@ -25,15 +25,12 @@
  *  @author Markus Frank
  *  @version 1.0
  */
-class GAUDI_API MinimalEventLoopMgr : public extends<Service, IEventProcessor>
-{
+class GAUDI_API MinimalEventLoopMgr : public extends<Service, IEventProcessor> {
 private:
-  class AbortEventListener : public implements<IIncidentListener>
-  {
+  class AbortEventListener : public implements<IIncidentListener> {
   public:
     /// Inform that a new incident has occurred
-    void handle( const Incident& i ) override
-    {
+    void handle( const Incident& i ) override {
       if ( i.type() == IncidentType::AbortEvent ) {
         abortEvent       = true;
         abortEventSource = i.source();
@@ -59,7 +56,7 @@ protected:
       this, "OutStream", {}, &MinimalEventLoopMgr::outStreamHandler, "list of output stream names"};
   Gaudi::Property<std::string> m_outStreamType{this, "OutStreamType", "OutputStream",
                                                "[[deprecated]] default type for OutputStream instances"};
-  Gaudi::Property<bool> m_printCFExp{this, "PrintControlFlowExpression", false,
+  Gaudi::Property<bool>        m_printCFExp{this, "PrintControlFlowExpression", false,
                                      "Print the control flow expression representing the content of TopAlg"};
 
   // enums
@@ -88,8 +85,7 @@ public:
 protected:
   /// Helper to release interface pointer
   template <class T>
-  T* releaseInterface( T* iface )
-  {
+  T* releaseInterface( T* iface ) {
     if ( 0 != iface ) iface->release();
     return 0;
   }

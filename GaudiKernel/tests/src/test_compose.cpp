@@ -9,8 +9,7 @@
 const auto f = compose( []( int ) { return 0; }, []( double ) { return 1; }, []( float ) { return 2; },
                         []( const char* ) { return 3; }, []( void* ) { return 4; } );
 
-BOOST_AUTO_TEST_CASE( test_compose )
-{
+BOOST_AUTO_TEST_CASE( test_compose ) {
   {
     BOOST_CHECK( f( 0 ) == 0 );
     BOOST_CHECK( f( 1.0 ) == 1 );

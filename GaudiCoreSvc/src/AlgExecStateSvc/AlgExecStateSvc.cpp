@@ -9,8 +9,7 @@ DECLARE_COMPONENT( AlgExecStateSvc )
 
 //=============================================================================
 
-void AlgExecStateSvc::init()
-{
+void AlgExecStateSvc::init() {
 
   // seriously? do we have no way of getting a Service by type???
   std::string wbn;
@@ -57,8 +56,7 @@ void AlgExecStateSvc::init()
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::checkInit() const
-{
+void AlgExecStateSvc::checkInit() const {
 
   if ( !m_isInit ) {
     fatal() << "AlgExecStateSvc not initialized before first use" << endmsg;
@@ -68,8 +66,7 @@ void AlgExecStateSvc::checkInit() const
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) const
-{
+void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) const {
   size_t slotID = ctx.valid() ? ctx.slot() : 0;
 
   ost << "  [slot: " << slotID << ", incident: " << m_eventStatus.at( slotID ) << "]:\n\n";
@@ -83,8 +80,7 @@ void AlgExecStateSvc::dump( std::ostringstream& ost, const EventContext& ctx ) c
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::addAlg( const Gaudi::StringKey& alg )
-{
+void AlgExecStateSvc::addAlg( const Gaudi::StringKey& alg ) {
   if ( !m_isInit ) {
     if ( msgLevel( MSG::DEBUG ) ) debug() << "preInit: will add Alg " << alg.str() << " later" << endmsg;
     m_preInitAlgs.push_back( alg );
@@ -103,7 +99,7 @@ void AlgExecStateSvc::addAlg( const Gaudi::StringKey& alg )
 
     AlgExecState s;
     for ( auto& a : m_algStates ) a[alg] = s;
-    m_errorCount[alg]                    = 0;
+    m_errorCount[alg] = 0;
   }
 
   if ( msgLevel( MSG::DEBUG ) )
@@ -112,8 +108,7 @@ void AlgExecStateSvc::addAlg( const Gaudi::StringKey& alg )
 
 //-----------------------------------------------------------------------------
 
-const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algName, const EventContext& ctx ) const
-{
+const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algName, const EventContext& ctx ) const {
   checkInit();
 
   auto& algState = m_algStates.at( ctx.slot() );
@@ -126,8 +121,7 @@ const AlgExecState& AlgExecStateSvc::algExecState( const Gaudi::StringKey& algNa
 
 //-----------------------------------------------------------------------------
 
-AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContext& ctx )
-{
+AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContext& ctx ) {
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
 
   auto& algState = m_algStates.at( ctx.slot() );
@@ -143,32 +137,28 @@ AlgExecState& AlgExecStateSvc::algExecState( IAlgorithm* iAlg, const EventContex
 
 //-----------------------------------------------------------------------------
 
-const IAlgExecStateSvc::AlgStateMap_t& AlgExecStateSvc::algExecStates( const EventContext& ctx ) const
-{
+const IAlgExecStateSvc::AlgStateMap_t& AlgExecStateSvc::algExecStates( const EventContext& ctx ) const {
   checkInit();
   return m_algStates.at( ctx.slot() );
 }
 
 //-----------------------------------------------------------------------------
 
-const EventStatus::Status& AlgExecStateSvc::eventStatus( const EventContext& ctx ) const
-{
+const EventStatus::Status& AlgExecStateSvc::eventStatus( const EventContext& ctx ) const {
   checkInit();
   return m_eventStatus.at( ctx.slot() );
 }
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::setEventStatus( const EventStatus::Status& sc, const EventContext& ctx )
-{
+void AlgExecStateSvc::setEventStatus( const EventStatus::Status& sc, const EventContext& ctx ) {
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
   m_eventStatus.at( ctx.slot() ) = sc;
 }
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::updateEventStatus( const bool& fail, const EventContext& ctx )
-{
+void AlgExecStateSvc::updateEventStatus( const bool& fail, const EventContext& ctx ) {
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
   auto& status = m_eventStatus.at( ctx.slot() );
   if ( status == EventStatus::Success ) {
@@ -180,8 +170,7 @@ void AlgExecStateSvc::updateEventStatus( const bool& fail, const EventContext& c
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::reset( const EventContext& ctx )
-{
+void AlgExecStateSvc::reset( const EventContext& ctx ) {
   if ( msgLevel( MSG::DEBUG ) ) verbose() << "reset(" << ctx.slot() << ")" << endmsg;
 
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
@@ -192,8 +181,7 @@ void AlgExecStateSvc::reset( const EventContext& ctx )
 
 //-----------------------------------------------------------------------------
 
-unsigned int AlgExecStateSvc::algErrorCount( const IAlgorithm* iAlg ) const
-{
+unsigned int AlgExecStateSvc::algErrorCount( const IAlgorithm* iAlg ) const {
   auto itr = m_errorCount.find( iAlg->nameKey() );
   if ( itr == m_errorCount.end() ) {
     error() << "Unable to find Algorithm \"" << iAlg->name() << "\" in map"
@@ -206,8 +194,7 @@ unsigned int AlgExecStateSvc::algErrorCount( const IAlgorithm* iAlg ) const
 
 //-----------------------------------------------------------------------------
 
-void AlgExecStateSvc::resetErrorCount( const IAlgorithm* iAlg )
-{
+void AlgExecStateSvc::resetErrorCount( const IAlgorithm* iAlg ) {
   auto itr = m_errorCount.find( iAlg->nameKey() );
   if ( itr != m_errorCount.end() ) {
     itr->second = 0;
@@ -219,8 +206,7 @@ void AlgExecStateSvc::resetErrorCount( const IAlgorithm* iAlg )
 
 //-----------------------------------------------------------------------------
 
-unsigned int AlgExecStateSvc::incrementErrorCount( const IAlgorithm* iAlg )
-{
+unsigned int AlgExecStateSvc::incrementErrorCount( const IAlgorithm* iAlg ) {
   auto itr = m_errorCount.find( iAlg->nameKey() );
   if ( itr == m_errorCount.end() ) {
     error() << "Unable to find Algorithm \"" << iAlg->name() << "\" in map"

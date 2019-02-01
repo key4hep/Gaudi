@@ -17,8 +17,7 @@ class IRegistry;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API GenericAddress : public IOpaqueAddress
-{
+class GAUDI_API GenericAddress : public IOpaqueAddress {
 protected:
   /// Reference count
   unsigned long m_refCount = 0;
@@ -38,8 +37,7 @@ public:
   GenericAddress() = default;
   /// Standard Copy Constructor (note: m_refCount is NOT copied)
   GenericAddress( const GenericAddress& copy )
-      : IOpaqueAddress( copy ), m_svcType( copy.m_svcType ), m_clID( copy.m_clID ), m_pRegistry( copy.m_pRegistry )
-  {
+      : IOpaqueAddress( copy ), m_svcType( copy.m_svcType ), m_clID( copy.m_clID ), m_pRegistry( copy.m_pRegistry ) {
     m_par[0]  = copy.m_par[0];
     m_par[1]  = copy.m_par[1];
     m_ipar[0] = copy.m_ipar[0];
@@ -48,8 +46,7 @@ public:
   /// Standard Constructor
   GenericAddress( long svc, const CLID& clid, std::string p1 = "", std::string p2 = "", unsigned long ip1 = 0,
                   unsigned long ip2 = 0 )
-      : m_svcType( svc ), m_clID( clid )
-  {
+      : m_svcType( svc ), m_clID( clid ) {
     m_par[0]  = std::move( p1 );
     m_par[1]  = std::move( p2 );
     m_ipar[0] = ip1;
@@ -59,8 +56,7 @@ public:
   /// Add reference to object
   unsigned long addRef() override { return ++m_refCount; }
   /// release reference to object
-  unsigned long release() override
-  {
+  unsigned long release() override {
     int cnt = --m_refCount;
     if ( 0 == cnt ) delete this;
     return cnt;

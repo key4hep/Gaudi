@@ -15,8 +15,7 @@
 //              Auditors can be inserted in the system to audit the Algorithms is
 //              in their functions.
 //------------------------------------------------------------------
-class AuditorSvc : public extends<Service, IAuditorSvc>
-{
+class AuditorSvc : public extends<Service, IAuditorSvc> {
 public:
   // Inherited Service overrides:
   //

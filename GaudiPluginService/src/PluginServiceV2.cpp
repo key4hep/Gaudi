@@ -27,44 +27,40 @@
 #include <sys/stat.h>
 
 #ifdef _GNU_SOURCE
-#include <cstring>
-#include <dlfcn.h>
+#  include <cstring>
+#  include <dlfcn.h>
 #endif
 
 #if __GNUC__ >= 8 && __cplusplus >= 201703
-#include <filesystem>
+#  include <filesystem>
 namespace fs = std::filesystem;
 #else
-#include <experimental/filesystem>
+#  include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #endif
 
 #if __cplusplus >= 201703
-#include <string_view>
+#  include <string_view>
 #else
-#include <experimental/string_view>
-namespace std
-{
+#  include <experimental/string_view>
+namespace std {
   using experimental::string_view;
 }
 #endif
 
 #define REG_SCOPE_LOCK std::lock_guard<std::recursive_mutex> _guard( m_mutex );
 
-namespace
-{
+namespace {
   std::mutex registrySingletonMutex;
 }
-#define SINGLETON_LOCK std::lock_guard<std::mutex> _guard(::registrySingletonMutex );
+#define SINGLETON_LOCK std::lock_guard<std::mutex> _guard( ::registrySingletonMutex );
 
 #include <algorithm>
 
-namespace
-{
+namespace {
   struct OldStyleCnv {
     std::string name;
-    void operator()( const char c )
-    {
+    void        operator()( const char c ) {
       switch ( c ) {
       case '<':
       case '>':
@@ -90,22 +86,16 @@ namespace
     }
   };
   /// Convert a class name in the string used with the Reflex plugin service
-  std::string old_style_name( const std::string& name )
-  {
+  std::string old_style_name( const std::string& name ) {
     return std::for_each( name.begin(), name.end(), OldStyleCnv() ).name;
   }
-}
+} // namespace
 
-namespace Gaudi
-{
-  namespace PluginService
-  {
-    GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2
-    {
-      namespace Details
-      {
-        std::string demangle( const std::string& id )
-        {
+namespace Gaudi {
+  namespace PluginService {
+    GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2 {
+      namespace Details {
+        std::string demangle( const std::string& id ) {
           int  status;
           auto realname = std::unique_ptr<char, decltype( free )*>(
               abi::__cxa_demangle( id.c_str(), nullptr, nullptr, &status ), free );
@@ -121,15 +111,13 @@ namespace Gaudi
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
-        Registry& Registry::instance()
-        {
+        Registry& Registry::instance() {
           SINGLETON_LOCK
           static Registry r;
           return r;
         }
 
-        void reportBadAnyCast( const std::type_info& factory_type, const std::string& id )
-        {
+        void reportBadAnyCast( const std::type_info& factory_type, const std::string& id ) {
           if ( logger().level() <= Logger::Debug ) {
             std::stringstream msg;
             const auto&       info = Registry::instance().getInfo( id );
@@ -142,16 +130,14 @@ namespace Gaudi
           }
         }
 
-        Registry::Properties::mapped_type Registry::FactoryInfo::getprop( const Properties::key_type& name ) const
-        {
+        Registry::Properties::mapped_type Registry::FactoryInfo::getprop( const Properties::key_type& name ) const {
           auto p = properties.find( name );
           return ( p != end( properties ) ) ? p->second : Properties::mapped_type{};
         }
 
         Registry::Registry() {}
 
-        void Registry::initialize()
-        {
+        void Registry::initialize() {
           REG_SCOPE_LOCK
 #if defined( _WIN32 )
           const char* envVar = "PATH";
@@ -229,20 +215,17 @@ namespace Gaudi
           }
         }
 
-        const Registry::FactoryMap& Registry::factories() const
-        {
+        const Registry::FactoryMap& Registry::factories() const {
           std::call_once( m_initialized, &Registry::initialize, const_cast<Registry*>( this ) );
           return m_factories;
         }
 
-        Registry::FactoryMap& Registry::factories()
-        {
+        Registry::FactoryMap& Registry::factories() {
           std::call_once( m_initialized, &Registry::initialize, this );
           return m_factories;
         }
 
-        Registry::FactoryInfo& Registry::add( const KeyType& id, FactoryInfo info )
-        {
+        Registry::FactoryInfo& Registry::add( const KeyType& id, FactoryInfo info ) {
           REG_SCOPE_LOCK
           FactoryMap& facts = factories();
 
@@ -269,8 +252,7 @@ namespace Gaudi
           return entry->second;
         }
 
-        const Registry::FactoryInfo& Registry::getInfo( const KeyType& id, const bool load ) const
-        {
+        const Registry::FactoryInfo& Registry::getInfo( const KeyType& id, const bool load ) const {
           REG_SCOPE_LOCK
           static const FactoryInfo unknown = {"unknown"};
           const FactoryMap&        facts   = factories();
@@ -293,8 +275,7 @@ namespace Gaudi
           }
         }
 
-        Registry& Registry::addProperty( const KeyType& id, const KeyType& k, const std::string& v )
-        {
+        Registry& Registry::addProperty( const KeyType& id, const KeyType& k, const std::string& v ) {
           REG_SCOPE_LOCK
           FactoryMap& facts = factories();
           auto        f     = facts.find( id );
@@ -303,8 +284,7 @@ namespace Gaudi
           return *this;
         }
 
-        std::set<Registry::KeyType> Registry::loadedFactoryNames() const
-        {
+        std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
           REG_SCOPE_LOCK
           std::set<KeyType> l;
           for ( const auto& f : factories() ) {
@@ -313,21 +293,17 @@ namespace Gaudi
           return l;
         }
 
-        void Logger::report( Level lvl, const std::string& msg )
-        {
+        void Logger::report( Level lvl, const std::string& msg ) {
           static const char* levels[] = {"DEBUG  : ", "INFO   : ", "WARNING: ", "ERROR  : "};
-          if ( lvl >= level() ) {
-            std::cerr << levels[lvl] << msg << std::endl;
-          }
+          if ( lvl >= level() ) { std::cerr << levels[lvl] << msg << std::endl; }
         }
 
         static auto s_logger = std::make_unique<Logger>();
         Logger&     logger() { return *s_logger; }
-        void setLogger( Logger* logger ) { s_logger.reset( logger ); }
+        void        setLogger( Logger* logger ) { s_logger.reset( logger ); }
 
         // This chunk of code was taken from GaudiKernel (genconf) DsoUtils.h
-        std::string getDSONameFor( void* fptr )
-        {
+        std::string getDSONameFor( void* fptr ) {
 #ifdef _GNU_SOURCE
           Dl_info info;
           if ( dladdr( fptr, &info ) == 0 ) return "";
@@ -344,8 +320,7 @@ namespace Gaudi
         }
       } // namespace Details
 
-      void SetDebug( int debugLevel )
-      {
+      void SetDebug( int debugLevel ) {
         using namespace Details;
         Logger& l = logger();
         if ( debugLevel > 1 )
@@ -356,8 +331,7 @@ namespace Gaudi
           l.setLevel( Logger::Warning );
       }
 
-      int Debug()
-      {
+      int Debug() {
         using namespace Details;
         switch ( logger().level() ) {
         case Logger::Debug:
@@ -369,5 +343,5 @@ namespace Gaudi
         }
       }
     }
-  }
-} // namespace Gaudi::PluginService
+  } // namespace PluginService
+} // namespace Gaudi

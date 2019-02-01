@@ -12,25 +12,23 @@ class DataObject;
 class IOpaqueAddress;
 
 /** @class LinkManager LinkManager.h GaudiKernel/LinkManager.h
-  *
-  *  A LinkManager is the object aggregated into a DataObject,
-  *  which is responsible for the handling of non-tree like links.
-  *
-  *  @author M.Frank
-  */
-class GAUDI_API LinkManager
-{
+ *
+ *  A LinkManager is the object aggregated into a DataObject,
+ *  which is responsible for the handling of non-tree like links.
+ *
+ *  @author M.Frank
+ */
+class GAUDI_API LinkManager {
 
 public:
   /// Directory link types
   enum DirLinkType { INVALID, VALID };
 
   /** Embedded class defining a symbolic link
-    * Note: No copy constructor; bitwise copy (done by the compiler)
-    *       is just fine.
-    */
-  class Link final
-  {
+   * Note: No copy constructor; bitwise copy (done by the compiler)
+   *       is just fine.
+   */
+  class Link final {
     /// DataObject is a friend
     // friend class LinkManager;
     /// String containing path of symbolic link
@@ -43,14 +41,11 @@ public:
   public:
     /// Standard constructor
     Link( long id, std::string path, DataObject* pObject = nullptr )
-        : m_path( std::move( path ) ), m_pObject( pObject ), m_id( id )
-    {
-    }
+        : m_path( std::move( path ) ), m_pObject( pObject ), m_id( id ) {}
     /// Standard constructor
     Link() = default;
     /// Update the link content
-    void set( long id, std::string path, DataObject* pObject )
-    {
+    void set( long id, std::string path, DataObject* pObject ) {
       setObject( pObject );
       m_path = std::move( path );
       m_id   = id;

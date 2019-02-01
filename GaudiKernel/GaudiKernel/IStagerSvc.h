@@ -8,8 +8,7 @@
 class IIncidentListener;
 class Incident;
 
-class GAUDI_API IStagerSvc : virtual public IInterface
-{
+class GAUDI_API IStagerSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IStagerSvc, 2, 0 );

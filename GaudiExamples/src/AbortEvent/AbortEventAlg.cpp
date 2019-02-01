@@ -19,8 +19,7 @@ DECLARE_COMPONENT( AbortEventAlg )
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode AbortEventAlg::initialize()
-{
+StatusCode AbortEventAlg::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -36,14 +35,11 @@ StatusCode AbortEventAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode AbortEventAlg::execute()
-{
+StatusCode AbortEventAlg::execute() {
 
   debug() << "==> Execute" << endmsg;
 
-  if ( ++m_counter == m_count ) {
-    m_incidentSvc->fireIncident( Incident( name(), IncidentType::AbortEvent ) );
-  }
+  if ( ++m_counter == m_count ) { m_incidentSvc->fireIncident( Incident( name(), IncidentType::AbortEvent ) ); }
 
   return StatusCode::SUCCESS;
 }
@@ -51,8 +47,7 @@ StatusCode AbortEventAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode AbortEventAlg::finalize()
-{
+StatusCode AbortEventAlg::finalize() {
 
   debug() << "==> Finalize" << endmsg;
 

@@ -34,9 +34,9 @@ def versionKey(x):
     Key function to be passes to list.sort() to sort strings
     as version numbers.
     '''
-    return [int(i) if i[0] in '0123456789' else i
-            for i in _VK_RE.split(x)
-            if i]
+    return [
+        int(i) if i[0] in '0123456789' else i for i in _VK_RE.split(x) if i
+    ]
 
 
 def findLatestTag():
@@ -48,9 +48,7 @@ def findLatestTag():
     logging.debug('using command %r', cmd)
     output = check_output(cmd)
     vers_exp = re.compile(r'^v\d+r\d+(p\d+)?$')
-    tags = [tag
-            for tag in output.splitlines()
-            if vers_exp.match(tag)]
+    tags = [tag for tag in output.splitlines() if vers_exp.match(tag)]
     if tags:
         tags.sort(key=versionKey)
         logging.info('found %s', tags[-1])
@@ -63,9 +61,10 @@ def releaseNotes(path=os.curdir, from_tag=None, branch=None):
     Return the release notes (in the old LHCb format) extracted from git
     commits for a given path.
     '''
-    cmd = ['git', 'log',
-           '--first-parent', '--date=short',
-           '--pretty=format:! %ad - commit %h%n%n%w(80,1,3)- %s%n%n%b%n']
+    cmd = [
+        'git', 'log', '--first-parent', '--date=short',
+        '--pretty=format:! %ad - commit %h%n%n%w(80,1,3)- %s%n%n%b%n'
+    ]
     if from_tag:
         cmd.append('{0}..{1}'.format(from_tag, branch or ''))
     elif branch:
@@ -81,13 +80,18 @@ def releaseNotes(path=os.curdir, from_tag=None, branch=None):
     # replace ' - commit 123abc' with ' - Contributor Name (commit 123abc)'
     def add_contributors(match):
         try:
-            authors = set(check_output(['git', 'log', '--pretty=format:%aN',
-                                        '{0}^1..{0}^2'.format(match.group(1)),
-                                        ]).splitlines())
+            authors = set(
+                check_output([
+                    'git',
+                    'log',
+                    '--pretty=format:%aN',
+                    '{0}^1..{0}^2'.format(match.group(1)),
+                ]).splitlines())
             return ' - {0} (commit {1})'.format(', '.join(sorted(authors)),
                                                 match.group(1))
         except CalledProcessError:
             return match.group(0)
+
     out = re.sub(r' - commit ([0-9a-f]+)', add_contributors, out)
     return out
 
@@ -102,6 +106,7 @@ def updateReleaseNotes(path, notes):
 
     def dropuntil(predicate, iterable):
         return dropwhile(lambda x: not predicate(x), iterable)
+
     with open(notes_filename) as notes_file:
         orig_data = iter(list(notes_file))
     header = takewhile(str.strip, orig_data)
@@ -143,9 +148,11 @@ def main():
                 dirnames[:] = []
                 yield dirpath
             else:
-                dirnames[:] = [dirname for dirname in dirnames
-                               if (not dirname.startswith('build.') and
-                                   dirname != 'cmake')]
+                dirnames[:] = [
+                    dirname for dirname in dirnames
+                    if (not dirname.startswith('build.') and dirname != 'cmake'
+                        )
+                ]
 
     # Ask for the version of the project
     latest_tag = findLatestTag()
@@ -157,9 +164,10 @@ def main():
     release_notes = {}
     # for each package in the project update the release.notes
     for pkgdir in all_subdirs():
-        updateReleaseNotes(pkgdir,
-                           tag_bar('Gaudi', new_version) + '\n\n' +
-                           releaseNotes(pkgdir, latest_tag, 'master'))
+        updateReleaseNotes(
+            pkgdir,
+            tag_bar('Gaudi', new_version) + '\n\n' + releaseNotes(
+                pkgdir, latest_tag, 'master'))
 
     # update the global CMakeLists.txt
     out = []

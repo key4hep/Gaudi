@@ -8,10 +8,8 @@
 #ifndef SYSPROCSTAT_H_
 #define SYSPROCSTAT_H_
 
-namespace Gaudi
-{
-  class SysProcStat
-  {
+namespace Gaudi {
+  class SysProcStat {
 
   public:
     int           pid, ppid, pgrp, session, tty_nr, tpgid, exit_signal, processor;
@@ -28,5 +26,5 @@ namespace Gaudi
     // updates the values by calling /proc/self/stat
     virtual int update();
   };
-}
+} // namespace Gaudi
 #endif /* SYSPROCSTAT_H_ */

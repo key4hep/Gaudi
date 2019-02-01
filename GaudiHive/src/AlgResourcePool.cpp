@@ -17,8 +17,7 @@ DECLARE_COMPONENT( AlgResourcePool )
 //---------------------------------------------------------------------------
 
 // destructor
-AlgResourcePool::~AlgResourcePool()
-{
+AlgResourcePool::~AlgResourcePool() {
   for ( auto& algoId_algoQueue : m_algqueue_map ) {
     auto* queue = algoId_algoQueue.second;
     delete queue;
@@ -28,8 +27,7 @@ AlgResourcePool::~AlgResourcePool()
 //---------------------------------------------------------------------------
 
 // initialize the pool with the list of algos known to the IAlgManager
-StatusCode AlgResourcePool::initialize()
-{
+StatusCode AlgResourcePool::initialize() {
 
   StatusCode sc( Service::initialize() );
   if ( !sc.isSuccess() ) warning() << "Base class could not be started" << endmsg;
@@ -52,8 +50,7 @@ StatusCode AlgResourcePool::initialize()
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::start()
-{
+StatusCode AlgResourcePool::start() {
 
   StatusCode startSc = Service::start();
   if ( !startSc.isSuccess() ) return startSc;
@@ -71,8 +68,7 @@ StatusCode AlgResourcePool::start()
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorithm*& algo, bool blocking )
-{
+StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorithm*& algo, bool blocking ) {
 
   std::hash<std::string> hash_function;
   size_t                 algo_id        = hash_function( name );
@@ -88,9 +84,7 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
   if ( blocking ) {
     itQueueIAlgPtr->second->pop( algo );
   } else {
-    if ( !itQueueIAlgPtr->second->try_pop( algo ) ) {
-      sc = StatusCode::FAILURE;
-    }
+    if ( !itQueueIAlgPtr->second->try_pop( algo ) ) { sc = StatusCode::FAILURE; }
   }
 
   // Note that reentrant algos are not consumed so we put them
@@ -115,9 +109,7 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
       error() << "Failure to allocate resources of algorithm " << name << endmsg;
       // in case of not reentrant, push it back. Reentrant ones are pushed back
       // in all cases further down
-      if ( 0 != algo->cardinality() ) {
-        itQueueIAlgPtr->second->push( algo );
-      }
+      if ( 0 != algo->cardinality() ) { itQueueIAlgPtr->second->push( algo ); }
     }
     m_resource_mutex.unlock();
     if ( 0 == algo->cardinality() ) {
@@ -130,8 +122,7 @@ StatusCode AlgResourcePool::acquireAlgorithm( const std::string& name, IAlgorith
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::releaseAlgorithm( const std::string& name, IAlgorithm*& algo )
-{
+StatusCode AlgResourcePool::releaseAlgorithm( const std::string& name, IAlgorithm*& algo ) {
 
   std::hash<std::string> hash_function;
   size_t                 algo_id = hash_function( name );
@@ -142,16 +133,13 @@ StatusCode AlgResourcePool::releaseAlgorithm( const std::string& name, IAlgorith
   m_resource_mutex.unlock();
 
   // release algorithm itself if not reentrant
-  if ( 0 != algo->cardinality() ) {
-    m_algqueue_map[algo_id]->push( algo );
-  }
+  if ( 0 != algo->cardinality() ) { m_algqueue_map[algo_id]->push( algo ); }
   return StatusCode::SUCCESS;
 }
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::acquireResource( const std::string& name )
-{
+StatusCode AlgResourcePool::acquireResource( const std::string& name ) {
   m_resource_mutex.lock();
   m_available_resources[m_resource_indices[name]] = false;
   m_resource_mutex.unlock();
@@ -160,8 +148,7 @@ StatusCode AlgResourcePool::acquireResource( const std::string& name )
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::releaseResource( const std::string& name )
-{
+StatusCode AlgResourcePool::releaseResource( const std::string& name ) {
   m_resource_mutex.lock();
   m_available_resources[m_resource_indices[name]] = true;
   m_resource_mutex.unlock();
@@ -170,8 +157,7 @@ StatusCode AlgResourcePool::releaseResource( const std::string& name )
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::flattenSequencer( Gaudi::Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth )
-{
+StatusCode AlgResourcePool::flattenSequencer( Gaudi::Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth ) {
 
   StatusCode sc = StatusCode::SUCCESS;
 
@@ -204,8 +190,7 @@ StatusCode AlgResourcePool::flattenSequencer( Gaudi::Algorithm* algo, ListAlg& a
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::decodeTopAlgs()
-{
+StatusCode AlgResourcePool::decodeTopAlgs() {
 
   SmartIF<IAlgManager> algMan( serviceLocator() );
   if ( !algMan.isValid() ) {
@@ -356,9 +341,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()
   }
 
   // Now resize all the requirement bitsets to the same size
-  for ( auto& kv : m_resource_requirements ) {
-    kv.second.resize( resource_counter );
-  }
+  for ( auto& kv : m_resource_requirements ) { kv.second.resize( resource_counter ); }
 
   // Set all resources to be available
   m_available_resources.resize( resource_counter );
@@ -369,8 +352,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()
 
 //---------------------------------------------------------------------------
 
-std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList()
-{
+std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList() {
   m_flatUniqueAlgPtrList.clear();
   for ( auto algoSmartIF : m_flatUniqueAlgList ) m_flatUniqueAlgPtrList.push_back( algoSmartIF.get() );
   return m_flatUniqueAlgPtrList;
@@ -378,8 +360,7 @@ std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList()
 
 //---------------------------------------------------------------------------
 
-std::list<IAlgorithm*> AlgResourcePool::getTopAlgList()
-{
+std::list<IAlgorithm*> AlgResourcePool::getTopAlgList() {
   m_topAlgPtrList.clear();
   for ( auto algoSmartIF : m_topAlgList ) m_topAlgPtrList.push_back( algoSmartIF.get() );
   return m_topAlgPtrList;
@@ -387,8 +368,7 @@ std::list<IAlgorithm*> AlgResourcePool::getTopAlgList()
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::stop()
-{
+StatusCode AlgResourcePool::stop() {
 
   StatusCode stopSc = Service::stop();
   if ( !stopSc.isSuccess() ) return stopSc;

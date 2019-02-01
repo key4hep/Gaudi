@@ -29,20 +29,17 @@ class DataObject;
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API SmartDataObjectPtr
-{
+class GAUDI_API SmartDataObjectPtr {
 public:
   using AccessFunction = DataObject* (*)( SmartDataObjectPtr* ptr );
   /// Helper class to configure smart pointer functionality
-  class ObjectLoader
-  {
+  class ObjectLoader {
   public:
     static AccessFunction access();
   };
 
   /// Helper class to configure smart pointer functionality
-  class ObjectFinder
-  {
+  class ObjectFinder {
   public:
     static AccessFunction access();
   };
@@ -55,9 +52,7 @@ public:
       @param  path         path to object relative to data directory
   */
   SmartDataObjectPtr( AccessFunction access, IDataProviderSvc* pService, IRegistry* pDir, std::string path )
-      : m_dataProvider( pService ), m_pRegistry( pDir ), m_path( std::move( path ) ), m_accessFunc( access )
-  {
-  }
+      : m_dataProvider( pService ), m_pRegistry( pDir ), m_path( std::move( path ) ), m_accessFunc( access ) {}
   /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */

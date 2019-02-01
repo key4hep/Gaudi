@@ -46,8 +46,7 @@ class IMessageSvc;
     Author:  M.Frank
     Version: 1.0
 */
-class RndmGenSvc : public extends<Service, IRndmGenSvc, IRndmEngine, ISerialize>
-{
+class RndmGenSvc : public extends<Service, IRndmGenSvc, IRndmEngine, ISerialize> {
 private:
   /// Random number engine
   mutable SmartIF<IRndmEngine> m_engine;

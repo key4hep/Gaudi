@@ -8,10 +8,8 @@
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 
-namespace Gaudi
-{
-  namespace Functional
-  {
+namespace Gaudi {
+  namespace Functional {
 
     template <typename Signature, typename Traits_ = Traits::useDefaults>
     class MergingTransformer;
@@ -21,8 +19,7 @@ namespace Gaudi
     ////// Many of the same -> 1
     template <typename Out, typename In, typename Traits_>
     class MergingTransformer<Out( const vector_of_const_<In>& ), Traits_>
-        : public details::DataHandleMixin<std::tuple<Out>, void, Traits_>
-    {
+        : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
       using base_class = details::DataHandleMixin<std::tuple<Out>, void, Traits_>;
 
     public:
@@ -34,11 +31,10 @@ namespace Gaudi
 
       // accessor to input Locations
       const std::string& inputLocation( unsigned int n ) const { return m_inputLocations.value()[n]; }
-      unsigned int inputLocationSize() const { return m_inputLocations.value().size(); }
+      unsigned int       inputLocationSize() const { return m_inputLocations.value().size(); }
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final
-      {
+      StatusCode execute() override final {
         vector_of_const_<In> ins;
         ins.reserve( m_inputs.size() );
         std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ),
@@ -67,9 +63,9 @@ namespace Gaudi
 
     template <typename Out, typename In, typename Traits_>
     MergingTransformer<Out( const vector_of_const_<In>& ), Traits_>::MergingTransformer( const std::string& name,
-                                                                                         ISvcLocator*     pSvcLocator,
-                                                                                         const KeyValues& inputs,
-                                                                                         const KeyValue&  output )
+                                                                                         ISvcLocator*       pSvcLocator,
+                                                                                         const KeyValues&   inputs,
+                                                                                         const KeyValue&    output )
         : base_class( name, pSvcLocator, output )
         , m_inputLocations{this, inputs.first, inputs.second,
                            [=]( Gaudi::Details::PropertyBase& ) {
@@ -82,10 +78,8 @@ namespace Gaudi
                                               []( auto& h ) { h.setOptional( true ); } );
                              }
                            },
-                           Gaudi::Details::Property::ImmediatelyInvokeHandler{true}}
-    {
-    }
-  }
-}
+                           Gaudi::Details::Property::ImmediatelyInvokeHandler{true}} {}
+  } // namespace Functional
+} // namespace Gaudi
 
 #endif

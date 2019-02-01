@@ -20,18 +20,16 @@
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
 /// needed when no service is found or could be returned
 static SmartIF<IService> no_service;
 
 /// utility for various calls...
-namespace
-{
+namespace {
   template <typename C>
-  std::vector<IService*> activeSvc( const C& lst )
-  {
+  std::vector<IService*> activeSvc( const C& lst ) {
     std::vector<IService*> v;
     v.reserve( lst.size() );
     for ( auto& i : lst ) {
@@ -39,20 +37,18 @@ namespace
     }
     return v;
   }
-}
+} // namespace
 
 // constructor
 ServiceManager::ServiceManager( IInterface* application )
-    : base_class( application, IService::interfaceID() ), m_appSvc( application )
-{
+    : base_class( application, IService::interfaceID() ), m_appSvc( application ) {
   // Set the service locator to myself
   m_svcLocator = this;
   addRef(); // increase ref count, so we live forever...
 }
 
 // destructor
-ServiceManager::~ServiceManager()
-{
+ServiceManager::~ServiceManager() {
   //-- inform the orphan services that I am gone....
   for ( auto& svc : m_listsvc ) svc.service->setServiceManager( nullptr );
 }
@@ -131,9 +127,7 @@ StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeN
     StatusCode sc = StatusCode( StatusCode::SUCCESS, true );
     if ( targetFSMState() >= Gaudi::StateMachine::INITIALIZED ) { // WARNING: this can trigger a recursion!!!
       sc = svc->sysInitialize();
-      if ( sc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING ) {
-        sc = svc->sysStart();
-      }
+      if ( sc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING ) { sc = svc->sysStart(); }
     }
     if ( sc.isFailure() ) { // if initialization failed, remove it from the list
       error() << "Unable to initialize service \"" << typeName.name() << "\"" << endmsg;
@@ -162,8 +156,7 @@ StatusCode ServiceManager::addService( const Gaudi::Utils::TypeNameString& typeN
 
 //------------------------------------------------------------------------------
 // Returns a smart pointer to a service.
-SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf )
-{
+SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf ) {
   const std::string& name = typeName.name();
 
   // Acquire the RAII lock to avoid simultaneous attempts from different threads to initialize a service
@@ -198,14 +191,10 @@ SmartIF<IService>& ServiceManager::service( const Gaudi::Utils::TypeNameString& 
 
     // Service not found. The user may be interested in one of the interfaces
     // of the application manager itself
-    if ( name == "ApplicationMgr" || name == "APPMGR" || name == "" ) {
-      return m_appSvc;
-    }
+    if ( name == "ApplicationMgr" || name == "APPMGR" || name == "" ) { return m_appSvc; }
 
     // last resort: we try to create the service
-    if ( createIf && addService( typeName ).isSuccess() ) {
-      return find( name )->service;
-    }
+    if ( createIf && addService( typeName ).isSuccess() ) { return find( name )->service; }
 
     return no_service;
   }
@@ -253,7 +242,7 @@ StatusCode ServiceManager::declareSvcType( const std::string& svcname, const std
 //------------------------------------------------------------------------------
 {
   // once we get to C++17, replace with m_maptype.insert_or_assign...
-  auto p                           = m_maptype.emplace( svcname, svctype );
+  auto p = m_maptype.emplace( svcname, svctype );
   if ( !p.second ) p.first->second = svctype;
   return StatusCode::SUCCESS;
 }
@@ -481,16 +470,14 @@ StatusCode ServiceManager::finalize()
 }
 
 //------------------------------------------------------------------------------
-int ServiceManager::getPriority( const std::string& name ) const
-{
+int ServiceManager::getPriority( const std::string& name ) const {
   //------------------------------------------------------------------------------
   auto it = find( name );
   return ( it != m_listsvc.end() ) ? it->priority : 0;
 }
 
 //------------------------------------------------------------------------------
-StatusCode ServiceManager::setPriority( const std::string& name, int prio )
-{
+StatusCode ServiceManager::setPriority( const std::string& name, int prio ) {
   //------------------------------------------------------------------------------
   auto it = find( name );
   if ( it == m_listsvc.end() ) return StatusCode::FAILURE;
@@ -510,8 +497,7 @@ void ServiceManager::setLoopCheckEnabled( bool en ) { m_loopCheck = en; }
 //------------------------------------------------------------------------------
 // Dump out contents of service list
 //------------------------------------------------------------------------------
-void ServiceManager::dump() const
-{
+void ServiceManager::dump() const {
 
   auto& log = info();
   log << "\n"
@@ -536,8 +522,7 @@ void ServiceManager::dump() const
   log << endmsg;
 }
 
-void ServiceManager::outputLevelUpdate()
-{
+void ServiceManager::outputLevelUpdate() {
   resetMessaging();
   for ( auto& svcItem : m_listsvc ) {
     const auto svc = dynamic_cast<Service*>( svcItem.service.get() );

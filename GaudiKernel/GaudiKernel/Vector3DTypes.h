@@ -22,8 +22,7 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // NB : Please remember to give a simple doxygen comment for each tyedef
 
@@ -35,5 +34,5 @@ namespace Gaudi
   typedef ROOT::Math::Polar3DVectorF   Polar3DVectorF;   ///<  Polar 3D vector (float)
   typedef ROOT::Math::RhoEtaPhiVectorF RhoEtaPhiVectorF; ///<  RhoEtaPhi 3D vector (float)
   typedef ROOT::Math::RhoZPhiVectorF   RhoZPhiVectorF;   ///<  RhoZPhi 3D vector (float)
-}
+} // namespace Gaudi
 #endif // EVENT_VECTOR3DTYPES_H

@@ -12,23 +12,21 @@ class IIncidentSvc;
 /*
  *  LHCb namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // Forward declarations
   class IFileCatalog;
   class RawDataConnectionEntry;
 
   /** @class IIODataManager
-    *
-    *  @author  M.Frank
-    *  @version 1.0
-    *  @date    20/10/2007
-    *  @author  R. Lambert
-    *  @date    03/09/2009
-    */
-  class IODataManager : public extends<Service, IIODataManager>
-  {
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    20/10/2007
+   *  @author  R. Lambert
+   *  @date    03/09/2009
+   */
+  class IODataManager : public extends<Service, IIODataManager> {
   protected:
     typedef const std::string& CSTR;
     struct Entry               final {
@@ -37,20 +35,18 @@ namespace Gaudi
       IDataConnection* connection;
       bool             keepOpen;
       Entry( CSTR tech, bool k, IoType iot, IDataConnection* con )
-          : type( tech ), ioType( iot ), connection( con ), keepOpen( k )
-      {
-      }
+          : type( tech ), ioType( iot ), connection( con ), keepOpen( k ) {}
     };
     typedef std::map<std::string, Entry*>      ConnectionMap;
     typedef std::map<std::string, std::string> FidMap;
 
     Gaudi::Property<std::string> m_catalogSvcName{this, "CatalogType", "Gaudi::MultiFileCatalog/FileCatalog",
                                                   "name of the file catalog service"};
-    Gaudi::Property<bool> m_useGFAL{this, "UseGFAL", true, "flag for auto gfal data access"};
-    Gaudi::Property<bool> m_quarantine{this, "QuarantineFiles", true,
+    Gaudi::Property<bool>        m_useGFAL{this, "UseGFAL", true, "flag for auto gfal data access"};
+    Gaudi::Property<bool>        m_quarantine{this, "QuarantineFiles", true,
                                        "if unaccessible files should be quarantines in job"};
-    Gaudi::Property<int>  m_ageLimit{this, "AgeLimit", 2, "age limit"};
-    Gaudi::Property<bool> m_disablePFNWarning{
+    Gaudi::Property<int>         m_ageLimit{this, "AgeLimit", 2, "age limit"};
+    Gaudi::Property<bool>        m_disablePFNWarning{
         this, "DisablePFNWarning", false,
         "if set to True,  we will not report when a file is opened by its physical name"};
 

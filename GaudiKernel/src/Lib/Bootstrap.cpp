@@ -19,8 +19,7 @@
 
 #include "RVersion.h"
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class BootSvcLocator
 
@@ -37,8 +36,7 @@ namespace Gaudi
       ApplicationMgr instance is created explicitly.
 
   */
-  class BootSvcLocator : public implements<ISvcLocator>
-  {
+  class BootSvcLocator : public implements<ISvcLocator> {
   public:
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
     StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
@@ -47,12 +45,12 @@ namespace Gaudi
                            const bool createIf = true ) override;
 #endif
     const std::list<IService*>& getServices() const override;
-    bool existsService( const std::string& name ) const override;
+    bool                        existsService( const std::string& name ) const override;
 
     /// Returns a smart pointer to a service.
     SmartIF<IService>& service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) override;
   };
-}
+} // namespace Gaudi
 
 static SmartIF<ISvcLocator> s_svclocInstance;
 static SmartIF<IAppMgrUI>   s_appmgrInstance;
@@ -166,15 +164,13 @@ IInterface* Gaudi::createInstance( const std::string& name, const std::string& f
 }
 
 //------------------------------------------------------------------------------
-IAppMgrUI* Gaudi::createApplicationMgr( const std::string& dllname )
-{
+IAppMgrUI* Gaudi::createApplicationMgr( const std::string& dllname ) {
   //------------------------------------------------------------------------------
   return createApplicationMgr( dllname, "ApplicationMgr" );
 }
 
 //------------------------------------------------------------------------------
-IAppMgrUI* Gaudi::createApplicationMgr()
-{
+IAppMgrUI* Gaudi::createApplicationMgr() {
   //------------------------------------------------------------------------------
   return createApplicationMgr( "GaudiCoreSvc", "ApplicationMgr" );
 }
@@ -191,8 +187,7 @@ using Gaudi::BootSvcLocator;
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
 StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
-                                              IInterface*& pinterface )
-{
+                                              IInterface*& pinterface ) {
   StatusCode sc = StatusCode::FAILURE;
   if ( s_appmgrInstance ) {
     sc = s_svclocInstance->getService( typeName, iid, pinterface );
@@ -202,8 +197,7 @@ StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString
   return sc;
 }
 StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString& typeName, IService*& svc,
-                                              const bool createIf )
-{
+                                              const bool createIf ) {
   StatusCode sc = StatusCode::FAILURE;
   if ( s_appmgrInstance ) {
     sc = s_svclocInstance->getService( typeName, svc, createIf );
@@ -214,57 +208,48 @@ StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString
 }
 #endif
 
-const std::list<IService*>& Gaudi::BootSvcLocator::getServices() const
-{
+const std::list<IService*>& Gaudi::BootSvcLocator::getServices() const {
   return s_appmgrInstance ? s_svclocInstance->getServices() : s_bootServices;
 }
-bool Gaudi::BootSvcLocator::existsService( const std::string& name ) const
-{
+bool Gaudi::BootSvcLocator::existsService( const std::string& name ) const {
   return s_appmgrInstance && s_svclocInstance->existsService( name );
 }
 
-SmartIF<IService>& Gaudi::BootSvcLocator::service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf )
-{
+SmartIF<IService>& Gaudi::BootSvcLocator::service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf ) {
   return s_appmgrInstance ? s_svclocInstance->service( typeName, createIf ) : s_bootService;
 }
 
 #ifdef GAUDI_HASCLASSVISIBILITY
-#pragma GCC visibility push( default )
+#  pragma GCC visibility push( default )
 #endif
 // Python bootstrap helpers
 extern "C" {
 #define PyHelper( x ) py_bootstrap_##x
 IInterface* PyHelper( createApplicationMgr )() { return Gaudi::createApplicationMgr(); }
-IInterface* PyHelper( getService )( IInterface* app, char* name )
-{
+IInterface* PyHelper( getService )( IInterface* app, char* name ) {
   auto svcloc = SmartIF<ISvcLocator>( app );
   return svcloc ? svcloc->service<IInterface>( name ).get() : nullptr;
 }
-bool PyHelper( setProperty )( IInterface* p, char* name, char* value )
-{
+bool PyHelper( setProperty )( IInterface* p, char* name, char* value ) {
   auto prop = SmartIF<IProperty>( p );
   return prop && prop->setProperty( name, value ).isSuccess();
 }
-const char* PyHelper( getProperty )( IInterface* p, char* name )
-{
+const char* PyHelper( getProperty )( IInterface* p, char* name ) {
   auto prop = SmartIF<IProperty>( p );
   return prop ? prop->getProperty( name ).toString().c_str() : nullptr;
 }
-bool PyHelper( configureApp )( IInterface* app )
-{
+bool PyHelper( configureApp )( IInterface* app ) {
   auto ui = SmartIF<IAppMgrUI>( app );
   return ui && ui->configure().isSuccess();
 }
-bool PyHelper( addPropertyToCatalogue )( IInterface* p, char* comp, char* name, char* value )
-{
+bool PyHelper( addPropertyToCatalogue )( IInterface* p, char* comp, char* name, char* value ) {
   auto jos = SmartIF<IJobOptionsSvc>( p );
   return jos && jos->addPropertyToCatalogue( comp, Gaudi::Property<std::string>( name, value ) ).isSuccess();
 }
 int PyHelper( ROOT_VERSION_CODE )() { return ROOT_VERSION_CODE; }
 
 #define PyFSMHelper( s )                                                                                               \
-  bool py_bootstrap_fsm_##s( IInterface* i )                                                                           \
-  {                                                                                                                    \
+  bool py_bootstrap_fsm_##s( IInterface* i ) {                                                                         \
     auto fsm = SmartIF<IStateful>( i );                                                                                \
     return fsm && fsm->s().isSuccess();                                                                                \
   }
@@ -272,12 +257,11 @@ int PyHelper( ROOT_VERSION_CODE )() { return ROOT_VERSION_CODE; }
 PyFSMHelper( configure ) PyFSMHelper( initialize ) PyFSMHelper( start ) PyFSMHelper( stop ) PyFSMHelper( finalize )
     PyFSMHelper( terminate )
 
-        bool py_bootstrap_app_run( IInterface* i, int maxevt )
-{
+        bool py_bootstrap_app_run( IInterface* i, int maxevt ) {
   auto ep = SmartIF<IEventProcessor>( i );
   return ep && ep->executeRun( maxevt ).isSuccess();
 }
 }
 #ifdef GAUDI_HASCLASSVISIBILITY
-#pragma GCC visibility pop
+#  pragma GCC visibility pop
 #endif

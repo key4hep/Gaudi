@@ -11,8 +11,7 @@
 
     @author nobody
 */
-class PropertyProxy : public Algorithm
-{
+class PropertyProxy : public Algorithm {
 public:
   /// Constructor of this form must be provided
   PropertyProxy( const std::string& name, ISvcLocator* pSvcLocator );

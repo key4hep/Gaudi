@@ -7,19 +7,14 @@ template <class PBASE>
 AIDA::IHistogram3D* GaudiHistos<PBASE>::book3D( const std::string& title, const double lowX, const double highX,
                                                 const unsigned long binsX, const double lowY, const double highY,
                                                 const unsigned long binsY, const double lowZ, const double highZ,
-                                                const unsigned long binsZ ) const
-{
+                                                const unsigned long binsZ ) const {
   //
-  if ( !produceHistos() ) {
-    return nullptr;
-  } // RETURN
+  if ( !produceHistos() ) { return nullptr; } // RETURN
   //
   // exist?
   auto hist = histo3D( title );
   // histogram is already booked
-  if ( hist ) {
-    return hist;
-  } // RETURN !!
+  if ( hist ) { return hist; } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
@@ -35,12 +30,9 @@ template <class PBASE>
 AIDA::IHistogram3D* GaudiHistos<PBASE>::book3D( const HistoID& ID, const std::string& title, const double lowX,
                                                 const double highX, const unsigned long binsX, const double lowY,
                                                 const double highY, const unsigned long binsY, const double lowZ,
-                                                const double highZ, const unsigned long binsZ ) const
-{
+                                                const double highZ, const unsigned long binsZ ) const {
   //
-  if ( !produceHistos() ) {
-    return nullptr;
-  } // RETURN
+  if ( !produceHistos() ) { return nullptr; } // RETURN
   //
   // Check ID
   if ( ID.undefined() ) {
@@ -51,9 +43,7 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::book3D( const HistoID& ID, const std::st
   // exist?
   auto hist = histo3D( ID );
   // histogram is already booked
-  if ( hist ) {
-    return hist;
-  } // RETURN !!
+  if ( hist ) { return hist; } // RETURN !!
 
   // Histogram title
   const std::string& htitle = ( title.empty() ? "Unnamed 3D Histogram ID=" + ID.idAsString() : title );
@@ -92,11 +82,9 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::book3D( const HistoID& ID, const std::st
 // ============================================================================
 template <class PBASE>
 AIDA::IHistogram3D* GaudiHistos<PBASE>::fill( AIDA::IHistogram3D* histo, const double valueX, const double valueY,
-                                              const double valueZ, const double weight, const std::string& title ) const
-{
-  if ( !histo ) {
-    return nullptr;
-  } // RETURN
+                                              const double valueZ, const double weight,
+                                              const std::string& title ) const {
+  if ( !histo ) { return nullptr; } // RETURN
   //
   if ( !checkForNaN() ) {
     Gaudi::Utils::Histos::fill( histo, valueX, valueY, valueZ, weight );
@@ -123,15 +111,12 @@ AIDA::IHistogram3D*
 GaudiHistos<PBASE>::plot3D( const double valueX, const double valueY, const double valueZ, const std::string& title,
                             const double lowX, const double highX, const double lowY, const double highY,
                             const double lowZ, const double highZ, const unsigned long binsX, const unsigned long binsY,
-                            const unsigned long binsZ, const double weight ) const
-{
+                            const unsigned long binsZ, const double weight ) const {
   AIDA::IHistogram3D* h( nullptr );
   if ( produceHistos() ) {
     // retrieve or book the histogram
     h = histo3D( title );
-    if ( !h ) {
-      h = book3D( title, lowX, highX, binsX, lowY, highY, binsY, lowZ, highZ, binsZ );
-    }
+    if ( !h ) { h = book3D( title, lowX, highX, binsX, lowY, highY, binsY, lowZ, highZ, binsZ ); }
     // fill the histogram
     h = fill( h, valueX, valueY, valueZ, weight, title );
   }
@@ -145,15 +130,12 @@ AIDA::IHistogram3D*
 GaudiHistos<PBASE>::plot3D( const double valueX, const double valueY, const double valueZ, const HistoID& ID,
                             const std::string& title, const double lowX, const double highX, const double lowY,
                             const double highY, const double lowZ, const double highZ, const unsigned long binsX,
-                            const unsigned long binsY, const unsigned long binsZ, const double weight ) const
-{
+                            const unsigned long binsY, const unsigned long binsZ, const double weight ) const {
   AIDA::IHistogram3D* h( nullptr );
   if ( produceHistos() ) {
     // retrieve or book the histogram
     h = histo3D( ID );
-    if ( !h ) {
-      h = book3D( ID, title, lowX, highX, binsX, lowY, highY, binsY, lowZ, highZ, binsZ );
-    }
+    if ( !h ) { h = book3D( ID, title, lowX, highX, binsX, lowY, highY, binsY, lowZ, highZ, binsZ ); }
     // fill the histogram
     h = fill( h, valueX, valueY, valueZ, weight, title );
   }

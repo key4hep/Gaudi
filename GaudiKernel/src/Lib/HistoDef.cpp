@@ -25,9 +25,7 @@
  */
 // ============================================================================
 Gaudi::Histo1DDef::Histo1DDef( const double low, const double high, const int bins, std::string title )
-    : m_title( std::move( title ) ), m_low( low ), m_high( high ), m_bins( bins )
-{
-}
+    : m_title( std::move( title ) ), m_low( low ), m_high( high ), m_bins( bins ) {}
 // ============================================================================
 /*  full constructor from edges, #bins and the title
  *  @param title the histogram title
@@ -37,23 +35,18 @@ Gaudi::Histo1DDef::Histo1DDef( const double low, const double high, const int bi
  */
 // ============================================================================
 Gaudi::Histo1DDef::Histo1DDef( std::string title, const double low, const double high, const int bins )
-    : m_title( std::move( title ) ), m_low( low ), m_high( high ), m_bins( bins )
-{
-}
+    : m_title( std::move( title ) ), m_low( low ), m_high( high ), m_bins( bins ) {}
 // ============================================================================
 // printout of the histogram definition
 // ============================================================================
-std::ostream& Gaudi::Histo1DDef::fillStream( std::ostream& o ) const
-{
+std::ostream& Gaudi::Histo1DDef::fillStream( std::ostream& o ) const {
   return o << "(" << Gaudi::Utils::toString( title() ) << "," << lowEdge() << "," << highEdge() << "," << bins() << ")";
 }
-namespace Gaudi
-{
+namespace Gaudi {
   // ============================================================================
   // ordering operator (to please BoundedVerifier)
   // ============================================================================
-  bool operator<( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right )
-  {
+  bool operator<( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right ) {
     return std::tie( left.m_title, left.m_low, left.m_high, left.m_bins ) <
            std::tie( right.m_title, right.m_low, right.m_high, right.m_bins );
   }
@@ -62,17 +55,16 @@ namespace Gaudi
 // ============================================================================
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-#pragma warning( push )
-#pragma warning( disable : 1572 )
+#  pragma warning( push )
+#  pragma warning( disable : 1572 )
 #endif
-  bool operator==( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right )
-  {
+  bool operator==( const Gaudi::Histo1DDef& left, const Gaudi::Histo1DDef& right ) {
     return std::tie( left.m_title, left.m_low, left.m_high, left.m_bins ) ==
            std::tie( right.m_title, right.m_low, right.m_high, right.m_bins );
   }
 #ifdef __ICC
 // re-enable icc remark #1572
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif
   // ============================================================================
   // non-equality
@@ -82,7 +74,7 @@ namespace Gaudi
   // the streamer operator for class Gaudi::Histo1DDef
   // ============================================================================
   std::ostream& operator<<( std::ostream& o, const Gaudi::Histo1DDef& histo ) { return histo.fillStream( o ); }
-}
+} // namespace Gaudi
 // ============================================================================
 
 // ============================================================================
@@ -92,8 +84,7 @@ namespace Gaudi
  *  @param hist histogram desctriprion
  */
 // ============================================================================
-AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& path, const Gaudi::Histo1DDef& hist )
-{
+AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& path, const Gaudi::Histo1DDef& hist ) {
   return svc ? svc->book( path, hist.title(), hist.bins(), hist.lowEdge(), hist.highEdge() ) : nullptr;
 }
 // ============================================================================
@@ -105,8 +96,7 @@ AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& 
  */
 // ============================================================================
 AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& dir, const std::string& id,
-                                         const Gaudi::Histo1DDef& hist )
-{
+                                         const Gaudi::Histo1DDef& hist ) {
   return svc ? svc->book( dir, id, hist.title(), hist.bins(), hist.lowEdge(), hist.highEdge() ) : nullptr;
 }
 // ============================================================================
@@ -118,8 +108,7 @@ AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& 
  */
 // ============================================================================
 AIDA::IHistogram1D* Gaudi::Histos::book( IHistogramSvc* svc, const std::string& dir, const int id,
-                                         const Gaudi::Histo1DDef& hist )
-{
+                                         const Gaudi::Histo1DDef& hist ) {
   return svc ? svc->book( dir, id, hist.title(), hist.bins(), hist.lowEdge(), hist.highEdge() ) : nullptr;
 }
 // ============================================================================

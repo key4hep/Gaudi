@@ -23,14 +23,12 @@ from Configurables import ApplicationMgr
 
 from Configurables import Gaudi__Examples__BoostArrayProperties as BAP
 
-
 bap = BAP(
-    'BoostArrayProps', Strings=('a', 'bb', 'ccc', 'dddd'), Doubles=(1, 2, 3, 4, 5)
-)
+    'BoostArrayProps',
+    Strings=('a', 'bb', 'ccc', 'dddd'),
+    Doubles=(1, 2, 3, 4, 5))
 
-ApplicationMgr(
-    EvtSel="NONE", TopAlg=[bap], EvtMax=10
-)
+ApplicationMgr(EvtSel="NONE", TopAlg=[bap], EvtMax=10)
 
 # =============================================================================
 # The actual job excution
@@ -58,7 +56,6 @@ if '__main__' == __name__:
         bap.Strings = ['a1', 'a2', 'a3', 'a4']
 
     bap.PropertiesPrint = True
-
 
 # =============================================================================
 # The END

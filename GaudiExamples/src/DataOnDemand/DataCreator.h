@@ -8,8 +8,7 @@
     Trivial Algorithm for test purposes
     @author nobody
 */
-class DataCreator : public GaudiAlgorithm
-{
+class DataCreator : public GaudiAlgorithm {
 public:
   /// Constructor of this form must be provided
   using GaudiAlgorithm::GaudiAlgorithm;

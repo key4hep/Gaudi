@@ -21,8 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-class IThreadInitTool : virtual public IAlgTool
-{
+class IThreadInitTool : virtual public IAlgTool {
 
 public:
   /// Declare the interface to the framework.

@@ -6,18 +6,16 @@
 #include <GaudiKernel/DataObject.h>
 #include <TH2D.h>
 
-namespace Gaudi
-{
+namespace Gaudi {
   class Histogram1D;
 
   /**@class Histogram2D
-    *
-    * AIDA implementation for 2 D histograms using ROOT THD2
-    *
-    * @author  M.Frank
-    */
-  class GAUDI_API Histogram2D : public DataObject, public Generic2D<AIDA::IHistogram2D, TH2D>
-  {
+   *
+   * AIDA implementation for 2 D histograms using ROOT THD2
+   *
+   * @author  M.Frank
+   */
+  class GAUDI_API Histogram2D : public DataObject, public Generic2D<AIDA::IHistogram2D, TH2D> {
   public:
     /// Standard Constructor
     Histogram2D();
@@ -47,5 +45,5 @@ namespace Gaudi
   private:
     std::mutex m_fillSerialization;
   };
-}
+} // namespace Gaudi
 #endif // HISTOGRAMSVC_H2D_H

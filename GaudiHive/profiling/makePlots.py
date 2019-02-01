@@ -31,7 +31,8 @@ def instancesVsTime(filename):
     plt.xlabel("Runtime (s)")
     plt.ylabel("# instances")
     plt.title(
-        "Requested algorithm instances with 10 events and 10 threads in parallel.")
+        "Requested algorithm instances with 10 events and 10 threads in parallel."
+    )
     plt.savefig("test.pdf")
 
 

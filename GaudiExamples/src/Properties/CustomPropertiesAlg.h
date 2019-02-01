@@ -6,10 +6,8 @@
 
 #include <unordered_map>
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     /** @class CustomPropertiesAlg CustomPropertiesAlg.h Properties/CustomPropertiesAlg.h
      *
      * Example on how to use custom property types.
@@ -17,8 +15,7 @@ namespace Gaudi
      * @author Marco Clemencic
      * @date 14/11/2014
      */
-    class CustomPropertiesAlg : public GaudiAlgorithm
-    {
+    class CustomPropertiesAlg : public GaudiAlgorithm {
     public:
       /// Standard constructor
       using GaudiAlgorithm::GaudiAlgorithm;
@@ -29,7 +26,7 @@ namespace Gaudi
     private:
       Gaudi::Property<std::unordered_map<std::string, std::string>> m_unorderedMap{this, "UnorderedMap"};
     };
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 
 #endif // PROPERTIES_CUSTOMPROPERTIESALG_H

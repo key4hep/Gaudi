@@ -36,8 +36,7 @@
 using namespace Gaudi;
 using namespace std;
 
-static inline istream& loadLong( istream& is )
-{
+static inline istream& loadLong( istream& is ) {
   long i;
   is >> i;
   return is;
@@ -54,17 +53,15 @@ static inline istream& operator>>(istream& is, string& /*pObj*/)
 #endif
 
 template <class TYP>
-static StatusCode createItem( TTree* tree, INTuple* tuple, istream& is, const string& name, bool add, const TYP& null )
-{
+static StatusCode createItem( TTree* tree, INTuple* tuple, istream& is, const string& name, bool add,
+                              const TYP& null ) {
   string       idxName;
   long         len, ndim, dim[4], hasIdx, idxLow, idxLen;
   long         dim1 = 1, dim2 = 1;
   INTupleItem* it = nullptr;
   char         c;
   is >> len >> c >> ndim >> c >> hasIdx >> c;
-  if ( hasIdx ) {
-    getline( is, idxName, ';' ) >> idxLow >> c >> idxLen >> c;
-  }
+  if ( hasIdx ) { getline( is, idxName, ';' ) >> idxLow >> c >> idxLen >> c; }
   for ( int i = 0; i < ndim; i++ ) is >> dim[i] >> c;
 
   TYP low = null, high = null;
@@ -99,14 +96,12 @@ static StatusCode createItem( TTree* tree, INTuple* tuple, istream& is, const st
 }
 
 template <class T>
-static inline void putRange( ostream& os, NTuple::_Data<T>* it )
-{
+static inline void putRange( ostream& os, NTuple::_Data<T>* it ) {
   const NTuple::Range<T>& x = it->range();
   os << x.lower() << ';' << x.upper() << ';';
 }
 
-static inline string _tr( string s )
-{
+static inline string _tr( string s ) {
   string local = std::move( s );
   auto   p     = std::begin( local );
   if ( local.compare( 0, 7, "<local>" ) == 0 ) p += 7;
@@ -115,8 +110,7 @@ static inline string _tr( string s )
 }
 
 // Converter overrides: Update the references of an updated transient object.
-StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObject )
-{
+StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObject ) {
   StatusCode          status    = S_FAIL;
   RootDataConnection* con       = nullptr;
   IRegistry*          pRegistry = pAddr->registry();
@@ -144,9 +138,7 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
     }
     par[2]      = _tr( cntName );
     TTree* tree = con->getSection( par[2] );
-    if ( nullptr == tree ) {
-      return makeError( "Failed to access N-Tuple tree:" + cntName );
-    }
+    if ( nullptr == tree ) { return makeError( "Failed to access N-Tuple tree:" + cntName ); }
     if ( !par_val.empty() ) {
       auto ntupleSvc = dataProvider().as<INTupleSvc>();
       if ( ntupleSvc ) {
@@ -241,8 +233,7 @@ StatusCode RootNTupleCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj
 }
 
 // Update the transient object: NTuples end here when reading records
-StatusCode RootNTupleCnv::updateObj( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode RootNTupleCnv::updateObj( IOpaqueAddress* pAddr, DataObject* pObj ) {
   INTuple*     tupl = dynamic_cast<INTuple*>( pObj );
   RootAddress* rpA  = dynamic_cast<RootAddress*>( pAddr );
   if ( !tupl || !rpA ) return makeError( "updateObj> Invalid Tuple reference." );
@@ -261,8 +252,7 @@ StatusCode RootNTupleCnv::updateObj( IOpaqueAddress* pAddr, DataObject* pObj )
 }
 
 // Update the transient object: NTuples end here when reading records
-StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con )
-{
+StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con ) {
   typedef INTuple::ItemContainer Cont;
   const string*                  par  = rpA->par();
   unsigned long*                 ipar = const_cast<unsigned long*>( rpA->ipar() );
@@ -298,9 +288,7 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
         for ( ; ipar[1] < last; ++ipar[1] ) { // loop on all selected entries
           tree->LoadTree( ipar[1] );
           rpA->select->GetNdata();
-          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<float>::epsilon() ) {
-            break;
-          }
+          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<float>::epsilon() ) { break; }
           log() << MSG::DEBUG << par[0] << "/" << par[1] << " SKIP Entry: " << ipar[1] << endmsg;
         }
       }
@@ -363,8 +351,7 @@ StatusCode RootNTupleCnv::i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTr
 }
 
 /// Convert the transient object to the requested representation.
-StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
-{
+StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr ) {
   IRegistry* pRegistry = pObj->registry();
   if ( pRegistry ) {
     pAddr = pRegistry->address();
@@ -376,9 +363,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
     string              secName = cntName.c_str();
     const INTuple*      nt      = dynamic_cast<const INTuple*>( pObj );
     StatusCode          status  = m_dbMgr->connectDatabase( path, IDataConnection::UPDATE, &con );
-    if ( !status.isSuccess() ) {
-      return makeError( "Failed to access Tuple file:" + path );
-    }
+    if ( !status.isSuccess() ) { return makeError( "Failed to access Tuple file:" + path ); }
     TTree* tree = con->getSection( _tr( secName ), true );
     if ( nullptr != nt ) {
       const INTuple::ItemContainer& items = nt->items();
@@ -387,7 +372,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
       string                        desc;
       os << nt->title() << ';' << pObj->clID() << ';' << items.size() << ';';
       map<string, TBranch*> branches;
-      TBranch* b = nullptr;
+      TBranch*              b = nullptr;
       for ( item_no = 0; item_no < items.size(); ++item_no ) {
         INTupleItem* it = items[item_no];
         if ( it->hasIndex() ) {
@@ -469,9 +454,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
                               " is not a valid index column!" );
           }
         }
-        for ( long k = 0; k < it->ndim(); k++ ) {
-          os << it->dim( k ) << ';';
-        }
+        for ( long k = 0; k < it->ndim(); k++ ) { os << it->dim( k ) << ';'; }
         desc       = n;
         TClass* cl = nullptr;
         switch ( it->type() ) {
@@ -605,8 +588,7 @@ StatusCode RootNTupleCnv::createRep( DataObject* pObj, IOpaqueAddress*& pAddr )
 }
 
 // Resolve the references of the converted object.
-StatusCode RootNTupleCnv::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode RootNTupleCnv::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) {
   typedef INTuple::ItemContainer Cont;
   INTuple*                       tupl = dynamic_cast<INTuple*>( pObj );
   IRegistry*                     pReg = pObj->registry();
@@ -653,37 +635,32 @@ StatusCode RootNTupleCnv::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
 }
 
 #ifdef __POOL_COMPATIBILITY
-#include "RootCnv/PoolClasses.h"
+#  include "RootCnv/PoolClasses.h"
 
 // Compatibility code to access ETCs, which were written using POOL
 
-namespace
-{
+namespace {
   // Blob I/O helper class
-  class IOBuffer : public StreamBuffer
-  {
+  class IOBuffer : public StreamBuffer {
   public:
     UCharDbArray d;
     IOBuffer() = default;
-    virtual ~IOBuffer()
-    {
+    virtual ~IOBuffer() {
       m_pointer = 0;
       m_length  = 0;
       m_buffer  = nullptr;
     }
-    void start()
-    {
+    void start() {
       m_pointer = 0;
       m_buffer  = (char*)d.m_buffer;
       m_length  = d.m_size;
     }
   };
-}
+} // namespace
 
 // Helper to read
 template <class T>
-static inline int load( int blob, IOBuffer& s, void* buff )
-{
+static inline int load( int blob, IOBuffer& s, void* buff ) {
   if ( blob ) {
     int len;
     s >> len;
@@ -694,8 +671,7 @@ static inline int load( int blob, IOBuffer& s, void* buff )
 
 // Helper to read specialized for strings
 template <>
-inline int load<string>( int blob, IOBuffer& s, void* ptr )
-{
+inline int load<string>( int blob, IOBuffer& s, void* ptr ) {
   if ( blob ) {
     string* str = (string*)ptr;
     s >> ( *str );
@@ -704,8 +680,7 @@ inline int load<string>( int blob, IOBuffer& s, void* ptr )
 }
 
 // Update the transient object: NTuples end here when reading records
-StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con )
-{
+StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con ) {
   typedef INTuple::ItemContainer Cont;
   const string*                  par  = rpA->par();
   unsigned long*                 ipar = const_cast<unsigned long*>( rpA->ipar() );
@@ -742,9 +717,7 @@ StatusCode RootNTupleCnv::i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTr
         for ( ; ipar[1] < last; ++ipar[1] ) {
           tree->LoadTree( ipar[1] );
           rpA->select->GetNdata();
-          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<float>::epsilon() ) {
-            break;
-          }
+          if ( fabs( rpA->select->EvalInstance( 0 ) ) > std::numeric_limits<float>::epsilon() ) { break; }
           log() << MSG::DEBUG << par[0] << "/" << par[1] << " SKIP Entry: " << ipar[1] << endmsg;
         }
       }

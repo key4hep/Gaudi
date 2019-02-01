@@ -13,8 +13,7 @@
 #define XSTRINGIFY( s ) STRINGIFY( s )
 
 /// Test that we can get the process's name from the command line arguments
-BOOST_AUTO_TEST_CASE( exeNameFromCmdLineArgs )
-{
+BOOST_AUTO_TEST_CASE( exeNameFromCmdLineArgs ) {
   BOOST_CHECK( System::numCmdLineArgs() == 1 );
   BOOST_CHECK( System::cmdLineArgs()[0].find( XSTRINGIFY( BOOST_TEST_MODULE ) ) != std::string::npos );
 }

@@ -8,29 +8,21 @@
 #include "Position.h"
 #include <string>
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
     class Position;
     // ============================================================================
-    class PropertyName final
-    {
+    class PropertyName final {
     public:
       // ----------------------------------------------------------------------------
       explicit PropertyName( std::string property ) : property_( std::move( property ) ) {}
-      PropertyName( std::string property, const Position& pos ) : property_( std::move( property ) ), position_( pos )
-      {
-      }
+      PropertyName( std::string property, const Position& pos )
+          : property_( std::move( property ) ), position_( pos ) {}
       PropertyName( std::string client, std::string property )
-          : client_( std::move( client ) ), property_( std::move( property ) )
-      {
-      }
+          : client_( std::move( client ) ), property_( std::move( property ) ) {}
       PropertyName( std::string client, std::string property, Position pos )
-          : client_( std::move( client ) ), property_( std::move( property ) ), position_( std::move( pos ) )
-      {
-      }
+          : client_( std::move( client ) ), property_( std::move( property ) ), position_( std::move( pos ) ) {}
       const std::string& client() const { return client_; }
       const std::string& property() const { return property_; }
       const Position&    position() const { return position_; }
@@ -45,7 +37,7 @@ namespace Gaudi
       Position    position_;
     };
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 #endif // JOBOPTIONSVC_PROPERTY_NAME_H_

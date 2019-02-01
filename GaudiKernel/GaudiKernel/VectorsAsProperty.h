@@ -26,11 +26,9 @@
  *  @date 2009-09-05
  */
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Parsers
-  {
+  namespace Parsers {
     // ========================================================================
     /** parse 3D-point
      *
@@ -200,15 +198,13 @@ namespace Gaudi
      */
     GAUDI_API StatusCode parse( std::vector<Gaudi::LorentzVector>& result, const std::string& input );
     // ========================================================================
-  } //                                          end of namespace Gaudi::Parsers
+  } // namespace Parsers
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // =========================================================================
-  namespace Utils
-  {
+  namespace Utils {
     // ========================================================================
     /// print XYZ point
     GAUDI_API std::ostream& toStream( const Gaudi::XYZPoint& obj, std::ostream& s );
@@ -217,11 +213,10 @@ namespace Gaudi
     /// print Lorentz vector
     GAUDI_API std::ostream& toStream( const Gaudi::LorentzVector& obj, std::ostream& s );
     // ========================================================================
-  } // end of namespace Gaudi::Utils
+  } // namespace Utils
   // ==========================================================================
 } // end of namespace Gaudi
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_VCTPARSERS_H
-// ============================================================================

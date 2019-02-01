@@ -5,15 +5,13 @@
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
-namespace GaudiExamples
-{
+namespace GaudiExamples {
   /** Small algorithm using Gaudi::ParticlePropertySvc.
    *
    *  @author Marco CLEMENCIC
    *  @date   2008-05-23
    */
-  class GaudiPPS : public GaudiAlgorithm
-  {
+  class GaudiPPS : public GaudiAlgorithm {
   public:
     /// Standard constructor
     using GaudiAlgorithm::GaudiAlgorithm;
@@ -21,5 +19,5 @@ namespace GaudiExamples
     StatusCode initialize() override; ///< Algorithm initialization
     StatusCode execute() override;    ///< Algorithm execution
   };
-}
+} // namespace GaudiExamples
 #endif // PARTPROP_GAUDIPPS_H

@@ -13,8 +13,7 @@ class DataObject;
 
 // added to allow use of AIDA in applications
 // without prefix AIDA:: (as before)
-namespace AIDA
-{
+namespace AIDA {
   class IBaseHistogram;
   class IHistogram;
   class IHistogram1D;
@@ -25,18 +24,18 @@ namespace AIDA
   class IHistogramFactory;
   class IAnnotation;
   class IAxis;
-}
+} // namespace AIDA
 
-using AIDA::IHistogramFactory;
+using AIDA::IAnnotation;
+using AIDA::IAxis;
 using AIDA::IBaseHistogram;
 using AIDA::IHistogram;
 using AIDA::IHistogram1D;
-using AIDA::IProfile1D;
 using AIDA::IHistogram2D;
-using AIDA::IProfile2D;
 using AIDA::IHistogram3D;
-using AIDA::IAxis;
-using AIDA::IAnnotation;
+using AIDA::IHistogramFactory;
+using AIDA::IProfile1D;
+using AIDA::IProfile2D;
 
 /** @class IHistogramSvc IHistogramSvc.h GaudiKernel/IHistogramSvc.h
 
@@ -44,8 +43,7 @@ using AIDA::IAnnotation;
 
     @author Pavel Binko and Anatael Cabrera
 */
-class GAUDI_API IHistogramSvc : virtual public IDataProviderSvc
-{
+class GAUDI_API IHistogramSvc : virtual public IDataProviderSvc {
 public:
   /// InterfaceID
   DeclareInterfaceID( IHistogramSvc, 5, 0 );
@@ -74,30 +72,30 @@ public:
   // ==========================================================================
 
   virtual AIDA::IHistogram1D* book( const std::string& fullPath, const std::string& title, int binsX, double lowX,
-                                    double highX ) = 0;
+                                    double highX )                         = 0;
   virtual AIDA::IHistogram1D* book( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                     int binsX, double lowX, double highX ) = 0;
   virtual AIDA::IHistogram1D* book( const std::string& dirPath, int hID, const std::string& title, int binsX,
-                                    double lowX, double highX ) = 0;
+                                    double lowX, double highX )            = 0;
   virtual AIDA::IHistogram1D* book( DataObject* pParent, const std::string& relPath, const std::string& title,
                                     int binsX, double lowX, double highX ) = 0;
   virtual AIDA::IHistogram1D* book( DataObject* pParent, int hID, const std::string& title, int binsX, double lowX,
-                                    double highX ) = 0;
+                                    double highX )                         = 0;
 
   // ==========================================================================
   // Book 1D profile histogram with fixed binning
   // ==========================================================================
 
   virtual AIDA::IProfile1D* bookProf( const std::string& fullPath, const std::string& title, int binsX, double lowX,
-                                      double highX, const std::string& opt = "" ) = 0;
+                                      double highX, const std::string& opt = "" )                         = 0;
   virtual AIDA::IProfile1D* bookProf( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                       int binsX, double lowX, double highX, const std::string& opt = "" ) = 0;
   virtual AIDA::IProfile1D* bookProf( const std::string& dirPath, int hID, const std::string& title, int binsX,
-                                      double lowX, double highX, const std::string& opt = "" ) = 0;
+                                      double lowX, double highX, const std::string& opt = "" )            = 0;
   virtual AIDA::IProfile1D* bookProf( DataObject* pParent, const std::string& relPath, const std::string& title,
                                       int binsX, double lowX, double highX, const std::string& opt = "" ) = 0;
   virtual AIDA::IProfile1D* bookProf( DataObject* pParent, int hID, const std::string& title, int binsX, double lowX,
-                                      double highX, const std::string& opt = "" ) = 0;
+                                      double highX, const std::string& opt = "" )                         = 0;
 
   // ==========================================================================
   // Book 1D profile histogram with fixed binning & Y-limits
@@ -107,13 +105,13 @@ public:
                                       double highX, double lowY, double highY, const std::string& opt = "s" ) = 0;
   virtual AIDA::IProfile1D* bookProf( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                       int binsX, double lowX, double highX, double lowY, double highY,
-                                      const std::string& opt = "s" ) = 0;
+                                      const std::string& opt = "s" )                                          = 0;
   virtual AIDA::IProfile1D* bookProf( const std::string& dirPath, int hID, const std::string& title, int binsX,
                                       double lowX, double highX, double lowY, double highY,
-                                      const std::string& opt = "s" ) = 0;
+                                      const std::string& opt = "s" )                                          = 0;
   virtual AIDA::IProfile1D* bookProf( DataObject* pParent, const std::string& relPath, const std::string& title,
                                       int binsX, double lowX, double highX, double lowY, double highY,
-                                      const std::string& opt = "s" ) = 0;
+                                      const std::string& opt = "s" )                                          = 0;
   virtual AIDA::IProfile1D* bookProf( DataObject* pParent, int hID, const std::string& title, int binsX, double lowX,
                                       double highX, double lowY, double highY, const std::string& opt = "s" ) = 0;
 
@@ -152,37 +150,37 @@ public:
   // ==========================================================================
 
   virtual AIDA::IHistogram2D* book( const std::string& fullPath, const std::string& title, int binsX, double lowX,
-                                    double highX, int binsY, double lowY, double highY ) = 0;
+                                    double highX, int binsY, double lowY, double highY )                         = 0;
   virtual AIDA::IHistogram2D* book( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                     int binsX, double lowX, double highX, int binsY, double lowY, double highY ) = 0;
   virtual AIDA::IHistogram2D* book( const std::string& dirPath, int hID, const std::string& title, int binsX,
-                                    double lowX, double highX, int binsY, double lowY, double highY ) = 0;
+                                    double lowX, double highX, int binsY, double lowY, double highY )            = 0;
   virtual AIDA::IHistogram2D* book( DataObject* pParent, const std::string& relPath, const std::string& title,
                                     int binsX, double lowX, double highX, int binsY, double lowY, double highY ) = 0;
   virtual AIDA::IHistogram2D* book( DataObject* pParent, int hID, const std::string& title, int binsX, double lowX,
-                                    double highX, int binsY, double lowY, double highY ) = 0;
+                                    double highX, int binsY, double lowY, double highY )                         = 0;
 
   // ==========================================================================
   // Book 2D profile histogram with fixed binning
   // ==========================================================================
 
   virtual AIDA::IProfile2D* bookProf( const std::string& fullPath, const std::string& title, int binsX, double lowX,
-                                      double highX, int binsY, double lowY, double highY ) = 0;
+                                      double highX, int binsY, double lowY, double highY )                         = 0;
   virtual AIDA::IProfile2D* bookProf( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                       int binsX, double lowX, double highX, int binsY, double lowY, double highY ) = 0;
   virtual AIDA::IProfile2D* bookProf( const std::string& dirPath, int hID, const std::string& title, int binsX,
-                                      double lowX, double highX, int binsY, double lowY, double highY ) = 0;
+                                      double lowX, double highX, int binsY, double lowY, double highY )            = 0;
   virtual AIDA::IProfile2D* bookProf( DataObject* pParent, const std::string& relPath, const std::string& title,
                                       int binsX, double lowX, double highX, int binsY, double lowY, double highY ) = 0;
   virtual AIDA::IProfile2D* bookProf( DataObject* pParent, int hID, const std::string& title, int binsX, double lowX,
-                                      double highX, int binsY, double lowY, double highY ) = 0;
+                                      double highX, int binsY, double lowY, double highY )                         = 0;
 
   // ==========================================================================
   // Book 2D histogram with variable binning
   // ==========================================================================
 
   virtual AIDA::IHistogram2D* book( const std::string& fullPath, const std::string& title, std::vector<double> edgesX,
-                                    std::vector<double> edgesY ) = 0;
+                                    std::vector<double> edgesY )                             = 0;
   virtual AIDA::IHistogram2D* book( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                     std::vector<double> edgesX, std::vector<double> edgesY ) = 0;
   virtual AIDA::IHistogram2D* book( const std::string& dirPath, int hID, const std::string& title,
@@ -190,14 +188,14 @@ public:
   virtual AIDA::IHistogram2D* book( DataObject* pParent, const std::string& relPath, const std::string& title,
                                     std::vector<double> edgesX, std::vector<double> edgesY ) = 0;
   virtual AIDA::IHistogram2D* book( DataObject* pParent, int hID, const std::string& title, std::vector<double> edgesX,
-                                    std::vector<double> edgesY ) = 0;
+                                    std::vector<double> edgesY )                             = 0;
 
   // ==========================================================================
   // Book 2D profile histogram with variable binning
   // ==========================================================================
 
   virtual AIDA::IProfile2D* bookProf( const std::string& fullPath, const std::string& title, std::vector<double> edgesX,
-                                      std::vector<double> edgesY ) = 0;
+                                      std::vector<double> edgesY )                             = 0;
   virtual AIDA::IProfile2D* bookProf( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                       std::vector<double> edgesX, std::vector<double> edgesY ) = 0;
   virtual AIDA::IProfile2D* bookProf( const std::string& dirPath, int hID, const std::string& title,
@@ -213,19 +211,19 @@ public:
 
   virtual AIDA::IHistogram3D* book( const std::string& fullPath, const std::string& title, int binsX, double lowX,
                                     double highX, int binsY, double lowY, double highY, int binsZ, double lowZ,
-                                    double highZ ) = 0;
+                                    double highZ )                         = 0;
   virtual AIDA::IHistogram3D* book( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                     int binsX, double lowX, double highX, int binsY, double lowY, double highY,
                                     int binsZ, double lowZ, double highZ ) = 0;
   virtual AIDA::IHistogram3D* book( const std::string& dirPath, int hID, const std::string& title, int binsX,
                                     double lowX, double highX, int binsY, double lowY, double highY, int binsZ,
-                                    double lowZ, double highZ ) = 0;
+                                    double lowZ, double highZ )            = 0;
   virtual AIDA::IHistogram3D* book( DataObject* pParent, const std::string& relPath, const std::string& title,
                                     int binsX, double lowX, double highX, int binsY, double lowY, double highY,
                                     int binsZ, double lowZ, double highZ ) = 0;
   virtual AIDA::IHistogram3D* book( DataObject* pParent, int hID, const std::string& title, int binsX, double lowX,
                                     double highX, int binsY, double lowY, double highY, int binsZ, double lowZ,
-                                    double highZ ) = 0;
+                                    double highZ )                         = 0;
 
   // ==========================================================================
   // Book 3D histogram with variable binning
@@ -235,13 +233,13 @@ public:
                                     std::vector<double> edgesY, std::vector<double> edgesZ ) = 0;
   virtual AIDA::IHistogram3D* book( const std::string& dirPath, const std::string& relPath, const std::string& title,
                                     std::vector<double> edgesX, std::vector<double> edgesY,
-                                    std::vector<double> edgesZ ) = 0;
+                                    std::vector<double> edgesZ )                             = 0;
   virtual AIDA::IHistogram3D* book( const std::string& dirPath, int hID, const std::string& title,
                                     std::vector<double> edgesX, std::vector<double> edgesY,
-                                    std::vector<double> edgesZ ) = 0;
+                                    std::vector<double> edgesZ )                             = 0;
   virtual AIDA::IHistogram3D* book( DataObject* pParent, const std::string& relPath, const std::string& title,
                                     std::vector<double> edgesX, std::vector<double> edgesY,
-                                    std::vector<double> edgesZ ) = 0;
+                                    std::vector<double> edgesZ )                             = 0;
   virtual AIDA::IHistogram3D* book( DataObject* pParent, int hID, const std::string& title, std::vector<double> edgesX,
                                     std::vector<double> edgesY, std::vector<double> edgesZ ) = 0;
 
@@ -255,8 +253,7 @@ public:
   virtual StatusCode registerObject( const std::string& parentPath, const std::string& objPath,
                                      AIDA::IBaseHistogram* hObj ) = 0;
   // ---------------------------
-  StatusCode registerObject( const std::string& parentPath, int item, AIDA::IBaseHistogram* hObj )
-  {
+  StatusCode registerObject( const std::string& parentPath, int item, AIDA::IBaseHistogram* hObj ) {
     return registerObject( parentPath, std::to_string( item ), hObj );
   }
   // ---------------------------
@@ -265,13 +262,11 @@ public:
   virtual StatusCode registerObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
                                      AIDA::IBaseHistogram* hObj ) = 0;
   // ---------------------------
-  StatusCode registerObject( DataObject* parentObj, int item, AIDA::IBaseHistogram* hObj )
-  {
+  StatusCode registerObject( DataObject* parentObj, int item, AIDA::IBaseHistogram* hObj ) {
     return registerObject( parentObj, std::to_string( item ), hObj );
   }
 
-  StatusCode registerObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IBaseHistogram* hObj )
-  {
+  StatusCode registerObject( AIDA::IBaseHistogram* parentObj, int item, AIDA::IBaseHistogram* hObj ) {
     return registerObject( parentObj, std::to_string( item ), hObj );
   }
 
@@ -306,11 +301,11 @@ public:
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
                                      AIDA::IHistogram1D*& h1dObj ) = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IProfile1D*& h1dObj ) = 0;
+                                     AIDA::IProfile1D*& h1dObj )   = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
                                      AIDA::IHistogram2D*& h2dObj ) = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
-                                     AIDA::IProfile2D*& h2dObj ) = 0;
+                                     AIDA::IProfile2D*& h2dObj )   = 0;
   virtual StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath,
                                      AIDA::IHistogram3D*& h3dObj ) = 0;
   // ---------------------------
@@ -321,23 +316,23 @@ public:
   virtual StatusCode retrieveObject( const std::string& parentPath, int item, AIDA::IHistogram3D*& h3dObj ) = 0;
   // ---------------------------
   virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath,
-                                     AIDA::IHistogram1D*& h1dObj ) = 0;
+                                     AIDA::IHistogram1D*& h1dObj )                                                  = 0;
   virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath, AIDA::IProfile1D*& h1dObj ) = 0;
   virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath,
-                                     AIDA::IHistogram2D*& h2dObj ) = 0;
+                                     AIDA::IHistogram2D*& h2dObj )                                                  = 0;
   virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath, AIDA::IProfile2D*& h2dObj ) = 0;
   virtual StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath,
-                                     AIDA::IHistogram3D*& h3dObj ) = 0;
+                                     AIDA::IHistogram3D*& h3dObj )                                                  = 0;
   virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                     AIDA::IHistogram1D*& h1dObj ) = 0;
+                                     AIDA::IHistogram1D*& h1dObj )                                                  = 0;
   virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                     AIDA::IProfile1D*& h1dObj ) = 0;
+                                     AIDA::IProfile1D*& h1dObj )                                                    = 0;
   virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                     AIDA::IHistogram2D*& h2dObj ) = 0;
+                                     AIDA::IHistogram2D*& h2dObj )                                                  = 0;
   virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                     AIDA::IProfile2D*& h2dObj ) = 0;
+                                     AIDA::IProfile2D*& h2dObj )                                                    = 0;
   virtual StatusCode retrieveObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                     AIDA::IHistogram3D*& h3dObj ) = 0;
+                                     AIDA::IHistogram3D*& h3dObj )                                                  = 0;
   // ---------------------------
   virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IHistogram1D*& h1dObj )           = 0;
   virtual StatusCode retrieveObject( DataObject* parentObj, int item, AIDA::IProfile1D*& h1dObj )             = 0;
@@ -370,11 +365,11 @@ public:
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
                                  AIDA::IHistogram1D*& h1dObj ) = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
-                                 AIDA::IProfile1D*& h1dObj ) = 0;
+                                 AIDA::IProfile1D*& h1dObj )   = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
                                  AIDA::IHistogram2D*& h2dObj ) = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
-                                 AIDA::IProfile2D*& h2dObj ) = 0;
+                                 AIDA::IProfile2D*& h2dObj )   = 0;
   virtual StatusCode findObject( const std::string& parentPath, const std::string& objPath,
                                  AIDA::IHistogram3D*& h3dObj ) = 0;
   // ---------------------------
@@ -390,15 +385,15 @@ public:
   virtual StatusCode findObject( DataObject* parentObj, const std::string& objPath, AIDA::IProfile2D*& h2dObj )   = 0;
   virtual StatusCode findObject( DataObject* parentObj, const std::string& objPath, AIDA::IHistogram3D*& h3dObj ) = 0;
   virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                 AIDA::IHistogram1D*& h1dObj ) = 0;
+                                 AIDA::IHistogram1D*& h1dObj )                                                    = 0;
   virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                 AIDA::IProfile1D*& h1dObj ) = 0;
+                                 AIDA::IProfile1D*& h1dObj )                                                      = 0;
   virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                 AIDA::IHistogram2D*& h2dObj ) = 0;
+                                 AIDA::IHistogram2D*& h2dObj )                                                    = 0;
   virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                 AIDA::IProfile2D*& h2dObj ) = 0;
+                                 AIDA::IProfile2D*& h2dObj )                                                      = 0;
   virtual StatusCode findObject( AIDA::IBaseHistogram* parentObj, const std::string& objPath,
-                                 AIDA::IHistogram3D*& h3dObj ) = 0;
+                                 AIDA::IHistogram3D*& h3dObj )                                                    = 0;
   // ---------------------------
   virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IHistogram1D*& h1dObj )           = 0;
   virtual StatusCode findObject( DataObject* parentObj, int item, AIDA::IProfile1D*& h1dObj )             = 0;

@@ -34,8 +34,7 @@
    @author Markus Frank
    @version 1.0
 */
-class EvtPersistencySvc : virtual public PersistencySvc
-{
+class EvtPersistencySvc : virtual public PersistencySvc {
 public:
   /**@name: Object implementation  */
   //@{

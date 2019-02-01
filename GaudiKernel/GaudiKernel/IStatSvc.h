@@ -22,8 +22,7 @@ class StatEntity;
  *  @date December 1, 1999
  *  @date   2007-07-08
  */
-class GAUDI_API IStatSvc : virtual public IInterface
-{
+class GAUDI_API IStatSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IStatSvc, 2, 0 );
@@ -54,4 +53,3 @@ public:
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_ISTATSVC_H
-// ============================================================================

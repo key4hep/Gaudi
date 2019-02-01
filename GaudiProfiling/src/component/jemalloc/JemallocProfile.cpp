@@ -23,25 +23,21 @@ DECLARE_COMPONENT( JemallocProfile )
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode JemallocProfile::initialize()
-{
+StatusCode JemallocProfile::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Initialize" << endmsg;
   bool active = true;
   int  res    = mallctl( "prof.active", NULL, NULL, &active, sizeof( active ) );
-  if ( res != 0 ) {
-    return StatusCode::FAILURE;
-  }
+  if ( res != 0 ) { return StatusCode::FAILURE; }
   return StatusCode::SUCCESS;
 }
 
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode JemallocProfile::execute()
-{
+StatusCode JemallocProfile::execute() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
@@ -69,8 +65,7 @@ StatusCode JemallocProfile::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode JemallocProfile::finalize()
-{
+StatusCode JemallocProfile::finalize() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
   return GaudiAlgorithm::finalize(); // must be called after all other actions

@@ -12,10 +12,8 @@ typedef std::unordered_map<std::string, std::string> MyCustomType;
 // Define the parser
 #include <Gaudi/Parsers/Factory.h>
 
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
 
     // Parser grammar
     template <typename Iterator, typename Skipper>
@@ -27,18 +25,16 @@ namespace Gaudi
 
     // Parse function... nothing special, but it must be done explicitely.
     StatusCode parse( MyCustomType& result, const std::string& input ) { return parse_( result, input ); }
-  }
-}
+  } // namespace Parsers
+} // namespace Gaudi
 
 // We also need to be able to print an object of our type as a string that both
 // Python and our parser can understand,
 #include "GaudiKernel/ToStream.h"
 #include <map>
-namespace std
-{
+namespace std {
   // This is an example valid for any mapping type.
-  ostream& operator<<( ostream& s, const MyCustomType& m )
-  {
+  ostream& operator<<( ostream& s, const MyCustomType& m ) {
     bool first = true;
     s << '{';
     // this is not strictly needed, but it makes the output sorted, which is
@@ -55,24 +51,21 @@ namespace std
     s << '}';
     return s;
   }
-}
+} // namespace std
 
 // ----------------------------------------------------------------------------
 // Implementation file for class: CustomPropertiesAlg
 //
 // 14/11/2014: Marco Clemencic
 // ----------------------------------------------------------------------------
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     DECLARE_COMPONENT( CustomPropertiesAlg )
 
     // ============================================================================
     // Initialization
     // ============================================================================
-    StatusCode CustomPropertiesAlg::initialize()
-    {
+    StatusCode CustomPropertiesAlg::initialize() {
       StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
       if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -86,8 +79,7 @@ namespace Gaudi
     // ============================================================================
     // Main execution
     // ============================================================================
-    StatusCode CustomPropertiesAlg::execute()
-    {
+    StatusCode CustomPropertiesAlg::execute() {
       if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
       // TODO execution logic
@@ -98,14 +90,13 @@ namespace Gaudi
     // ============================================================================
     // Finalize
     // ============================================================================
-    StatusCode CustomPropertiesAlg::finalize()
-    {
+    StatusCode CustomPropertiesAlg::finalize() {
       if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
       // TODO Implement finalize
 
       return GaudiAlgorithm::finalize(); // must be called after all other actions
     }
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 // ============================================================================

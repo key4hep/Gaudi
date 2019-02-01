@@ -8,8 +8,7 @@
 #include <list>
 #include <string>
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   //-----------------------------------------------------------------------------
   bool RootCd( const std::string& full )
@@ -20,9 +19,7 @@ namespace RootHistCnv
     gDirectory->cd( "/" );
     while ( ( p = full.find( "/", i ) ) != -1 ) {
       auto sdir = full.substr( i, p - i );
-      if ( !gDirectory->GetKey( sdir.c_str() ) ) {
-        return false;
-      }
+      if ( !gDirectory->GetKey( sdir.c_str() ) ) { return false; }
       gDirectory->cd( sdir.c_str() );
       i = p + 1;
     }
@@ -56,9 +53,7 @@ namespace RootHistCnv
     if ( full.compare( 0, 1, "/" ) == 0 ) gDirectory->cd( "/" );
 
     for ( const auto& lp : lpath ) {
-      if ( !gDirectory->GetKey( lp.c_str() ) ) {
-        gDirectory->mkdir( lp.c_str() );
-      }
+      if ( !gDirectory->GetKey( lp.c_str() ) ) { gDirectory->mkdir( lp.c_str() ); }
       gDirectory->cd( lp.c_str() );
     }
     gDirectory = gDir;
@@ -80,22 +75,16 @@ namespace RootHistCnv
   //-----------------------------------------------------------------------------
   {
 
-    if ( dir.compare( 0, 1, "/" ) != 0 ) {
-      dir.insert( 0, "/" );
-    }
+    if ( dir.compare( 0, 1, "/" ) != 0 ) { dir.insert( 0, "/" ); }
 
-    if ( dir.compare( dir.length() - 1, 1, "/" ) != 0 ) {
-      dir += "/";
-    }
+    if ( dir.compare( dir.length() - 1, 1, "/" ) != 0 ) { dir += "/"; }
 
     long ll = full.find( dir );
-    if ( ll != 0 ) {
-      return false;
-    }
+    if ( ll != 0 ) { return false; }
 
     full.erase( 0, dir.length() - 1 );
 
     return true;
   }
 
-} // RootHistCnv namespace
+} // namespace RootHistCnv

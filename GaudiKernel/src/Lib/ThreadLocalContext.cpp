@@ -4,21 +4,17 @@
 #include "Rtypes.h"
 #include "ThreadLocalStorage.h"
 
-namespace
-{
+namespace {
   // MacOS X's clang doesn't provide thread_local. So we need to use ROOT's
   // thread-local implementation to operate on this platform.
-  EventContext& s_curCtx()
-  {
+  EventContext& s_curCtx() {
     TTHREAD_TLS_DECL( EventContext, localContext );
     return localContext;
   }
-}
+} // namespace
 
-namespace Gaudi
-{
-  namespace Hive
-  {
+namespace Gaudi {
+  namespace Hive {
     ContextIdType       currentContextId() { return s_curCtx().slot(); }
     ContextIdType       currentContextEvt() { return s_curCtx().evt(); }
     const EventContext& currentContext() { return s_curCtx(); }
@@ -35,5 +31,5 @@ namespace Gaudi
     void setCurrentContext( const EventContext* ctx ) { s_curCtx() = *ctx; }
 
     void setCurrentContext( const EventContext& ctx ) { s_curCtx() = ctx; }
-  }
-}
+  } // namespace Hive
+} // namespace Gaudi

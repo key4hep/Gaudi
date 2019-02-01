@@ -38,16 +38,14 @@
  *  @author Vanya BELYAEV ibelyav@physics.syr.edu
  *  @date 2006-11-26
  */
-class MapAlg : public GaudiAlgorithm
-{
+class MapAlg : public GaudiAlgorithm {
 public:
   typedef int    Key;
   typedef double Value;
 
 public:
   /// finalization
-  StatusCode finalize() override
-  {
+  StatusCode finalize() override {
     always() << endmsg << " FINALIZE " << endmsg << " \tTested maps : " << endmsg << " \t1) "
              << System::typeinfoName( typeid( m_map1 ) ) << endmsg << " \t2) "
              << System::typeinfoName( typeid( m_map2 ) ) << endmsg << " \t3) "
@@ -96,8 +94,7 @@ DECLARE_COMPONENT( MapAlg )
 // ==========================================================================
 /// Main execution
 // ==========================================================================
-StatusCode MapAlg::execute()
-{
+StatusCode MapAlg::execute() {
   using namespace Gaudi::Utils;
 
   Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
@@ -171,15 +168,13 @@ StatusCode MapAlg::execute()
   return StatusCode::SUCCESS;
 }
 // ============================================================================
-void MapAlg::print1( MapAlg::Key key ) const
-{
+void MapAlg::print1( MapAlg::Key key ) const {
   always() << "     CONST: "
            << "  map2['" << key << "']: " << m_map2[key] << ", map3['" << key << "']: " << m_map3[key] << ", map4['"
            << key << "']: " << m_map4[key] << endmsg;
 }
 // ============================================================================
-void MapAlg::print2( MapAlg::Key key )
-{
+void MapAlg::print2( MapAlg::Key key ) {
   always() << " NON-CONST: "
            << "  map1['" << key << "']: " << m_map1[key] << ", map2['" << key << "']: " << m_map2[key] << ", map3['"
            << key << "']: " << m_map3[key] << ", map4['" << key << "']: " << m_map4[key] << endmsg;

@@ -15,8 +15,7 @@ DECLARE_COMPONENT( ReadTES )
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode ReadTES::initialize()
-{
+StatusCode ReadTES::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -29,8 +28,7 @@ StatusCode ReadTES::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode ReadTES::execute()
-{
+StatusCode ReadTES::execute() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 

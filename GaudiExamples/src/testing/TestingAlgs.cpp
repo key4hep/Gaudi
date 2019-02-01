@@ -16,34 +16,28 @@
 
 #include <csignal>
 
-namespace GaudiTesting
-{
+namespace GaudiTesting {
 
-  class DestructorCheckAlg : public GaudiAlgorithm
-  {
+  class DestructorCheckAlg : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    ~DestructorCheckAlg() override
-    {
+    ~DestructorCheckAlg() override {
       // do not print messages if we are created in genconf
       const std::string cmd = System::cmdLineArgs()[0];
       if ( cmd.find( "genconf" ) != std::string::npos ) return;
 
       std::cout << "Destructor of " << name() << std::endl;
     }
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       info() << "Executing " << name() << endmsg;
       return StatusCode::SUCCESS;
     }
   };
 
-  class SleepyAlg : public GaudiAlgorithm
-  {
+  class SleepyAlg : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       info() << "Executing event " << ++m_counter << endmsg;
       info() << "Sleeping for " << m_sleep.value() << " seconds" << endmsg;
       Gaudi::Sleep( m_sleep );
@@ -59,12 +53,10 @@ namespace GaudiTesting
   /**
    * Simple algorithm that raise a signal after N events.
    */
-  class SignallingAlg : public GaudiAlgorithm
-  {
+  class SignallingAlg : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       if ( m_eventCount <= 0 ) {
         info() << "Raising signal now" << endmsg;
         std::raise( m_signal );
@@ -80,12 +72,10 @@ namespace GaudiTesting
     Gaudi::Property<int> m_signal{this, "Signal", SIGINT, "Signal to raise"};
   };
 
-  class StopLoopAlg : public GaudiAlgorithm
-  {
+  class StopLoopAlg : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       if ( m_eventCount <= 0 ) {
         info() << "Stopping loop with " << m_mode.value() << endmsg;
         if ( m_mode == "exception" ) {
@@ -108,18 +98,16 @@ namespace GaudiTesting
     }
 
   private:
-    Gaudi::Property<int> m_eventCount{this, "EventCount", 3,
+    Gaudi::Property<int>         m_eventCount{this, "EventCount", 3,
                                       "Number of events to let go before breaking the event loop"};
     Gaudi::Property<std::string> m_mode{this, "Mode", "failure",
                                         "Type of interruption ['exception', 'stopRun',  'failure']"};
   };
 
-  class CustomIncidentAlg : public GaudiAlgorithm
-  {
+  class CustomIncidentAlg : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       StatusCode sc = GaudiAlgorithm::initialize();
       if ( sc.isFailure() ) return sc;
 
@@ -133,8 +121,7 @@ namespace GaudiTesting
 
       return StatusCode::SUCCESS;
     }
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       if ( m_eventCount == 0 ) {
         info() << "Firing incident " << m_incident.value() << endmsg;
         m_incidentSvc->fireIncident( Incident( name(), m_incident ) );
@@ -146,8 +133,7 @@ namespace GaudiTesting
       --m_eventCount;
       return StatusCode::SUCCESS;
     }
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       m_incidentSvc.reset();
       return GaudiAlgorithm::finalize();
     }
@@ -162,13 +148,11 @@ namespace GaudiTesting
   /**
    * Simple algorithm that creates dummy objects in the transient store.
    */
-  class PutDataObjectAlg : public GaudiAlgorithm
-  {
+  class PutDataObjectAlg : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
 
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       StatusCode sc = GaudiAlgorithm::initialize();
       if ( sc.isFailure() ) return sc;
 
@@ -178,8 +162,7 @@ namespace GaudiTesting
       return StatusCode::SUCCESS;
     }
 
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       StatusCode sc = StatusCode::SUCCESS;
       info() << "Adding " << m_paths.size() << " objects to " << m_dataSvc.value() << endmsg;
       for ( auto& p : m_paths ) {
@@ -192,8 +175,7 @@ namespace GaudiTesting
       return sc;
     }
 
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       m_dataProvider.reset();
       return GaudiAlgorithm::finalize();
     }
@@ -208,13 +190,11 @@ namespace GaudiTesting
   /**
    * Simple algorithm that retrieves objects from the transient store.
    */
-  class GetDataObjectAlg : public GaudiAlgorithm
-  {
+  class GetDataObjectAlg : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
 
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       StatusCode sc = GaudiAlgorithm::initialize();
       if ( sc.isFailure() ) return sc;
 
@@ -224,8 +204,7 @@ namespace GaudiTesting
       return StatusCode::SUCCESS;
     }
 
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       info() << "Getting " << m_paths.size() << " objects from " << m_dataSvc.value() << endmsg;
       bool missing = false;
       for ( auto& p : m_paths ) {
@@ -241,8 +220,7 @@ namespace GaudiTesting
       return ( missing && !m_ignoreMissing ) ? StatusCode::FAILURE : StatusCode::SUCCESS;
     }
 
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       m_dataProvider.reset();
       return GaudiAlgorithm::finalize();
     }
@@ -253,20 +231,17 @@ namespace GaudiTesting
     Gaudi::Property<std::string> m_dataSvc{this, "DataSvc", "EventDataSvc", "Name of the data service to use"};
     Gaudi::Property<bool>        m_ignoreMissing{this, "IgnoreMissing", false,
                                           "if True,  missing objects will not beconsidered an error"};
-    SmartIF<IDataProviderSvc> m_dataProvider;
+    SmartIF<IDataProviderSvc>    m_dataProvider;
   };
 
-  class OddEventsFilter : public GaudiAlgorithm
-  {
+  class OddEventsFilter : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       m_counter = 0;
       return GaudiAlgorithm::initialize();
     }
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       setFilterPassed( ( ++m_counter ) % 2 );
       return StatusCode::SUCCESS;
     }
@@ -275,12 +250,10 @@ namespace GaudiTesting
     int m_counter = 0;
   };
 
-  class EvenEventsFilter : public OddEventsFilter
-  {
+  class EvenEventsFilter : public OddEventsFilter {
   public:
     using OddEventsFilter::OddEventsFilter;
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       setFilterPassed( ( ( ++m_counter ) % 2 ) == 0 );
       return StatusCode::SUCCESS;
     }
@@ -289,18 +262,14 @@ namespace GaudiTesting
   /**
    * Simple algorithm that creates dummy objects in the transient store.
    */
-  class ListTools : public GaudiAlgorithm
-  {
+  class ListTools : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
 
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       StatusCode sc = StatusCode::SUCCESS;
       info() << "All tool instances:" << endmsg;
-      for ( auto& tool : toolSvc()->getTools() ) {
-        info() << "  " << tool->name() << endmsg;
-      }
+      for ( auto& tool : toolSvc()->getTools() ) { info() << "  " << tool->name() << endmsg; }
       return sc;
     }
   };
@@ -308,22 +277,18 @@ namespace GaudiTesting
   /**
    * Simple algorithm that prints the memory usage every N events (property "Frequency").
    */
-  class PrintMemoryUsage : public GaudiAlgorithm
-  {
+  class PrintMemoryUsage : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       m_counter = 0;
       return GaudiAlgorithm::initialize();
     }
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       if ( ( m_frequency <= 1 ) || ( ( m_counter ) % m_frequency == 0 ) ) print();
       return StatusCode::SUCCESS;
     }
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       print();
       return GaudiAlgorithm::finalize();
     }
@@ -331,16 +296,14 @@ namespace GaudiTesting
   protected:
     Gaudi::Property<int> m_frequency{this, "Frequency", 1, "How often to print the memory usage (number of events)"};
     int                  m_counter = 0;
-    void                 print()
-    {
+    void                 print() {
       info() << "vmem: " << System::virtualMemory() << " kB" << endmsg;
       info() << "rss:  " << System::mappedMemory() << " kB" << endmsg;
     }
   };
-}
+} // namespace GaudiTesting
 
-namespace GaudiTesting
-{
+namespace GaudiTesting {
   DECLARE_COMPONENT( DestructorCheckAlg )
   DECLARE_COMPONENT( SleepyAlg )
   DECLARE_COMPONENT( SignallingAlg )
@@ -352,4 +315,4 @@ namespace GaudiTesting
   DECLARE_COMPONENT( EvenEventsFilter )
   DECLARE_COMPONENT( ListTools )
   DECLARE_COMPONENT( PrintMemoryUsage )
-}
+} // namespace GaudiTesting

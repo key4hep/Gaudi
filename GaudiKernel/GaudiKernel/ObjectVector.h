@@ -33,8 +33,7 @@
     @date    19/10/1999, 30/11/2000
 */
 template <class TYPE>
-class ObjectVector : public ObjectContainerBase
-{
+class ObjectVector : public ObjectContainerBase {
 
 public:
   typedef TYPE                                    contained_type;
@@ -61,14 +60,12 @@ public:
   ObjectVector()                            = default;
   ObjectVector( const ObjectVector<TYPE>& ) = delete;
   ObjectVector& operator=( const ObjectVector<TYPE>& ) = delete;
-  ObjectVector( ObjectVector&& rhs ) : ObjectContainerBase( std::move( rhs ) ), m_vector{std::move( rhs.m_vector )}
-  {
+  ObjectVector( ObjectVector&& rhs ) : ObjectContainerBase( std::move( rhs ) ), m_vector{std::move( rhs.m_vector )} {
     std::for_each( begin(), end(), [this]( TYPE* obj ) { obj->setParent( this ); } );
   }
 
   /// Destructor
-  ~ObjectVector() override
-  {
+  ~ObjectVector() override {
     for ( auto& i : m_vector ) {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
@@ -80,8 +77,7 @@ public:
   /// Retrieve class ID
   const CLID& clID() const override { return ObjectVector<TYPE>::classID(); }
   /// Retrieve class ID
-  static const CLID& classID()
-  {
+  static const CLID& classID() {
     static const CLID clid = TYPE::classID() + CLID_ObjectVector;
     return clid;
   }
@@ -152,33 +148,27 @@ public:
   typename ObjectVector<TYPE>::const_reference back() const { return m_vector.back(); }
 
   /// push_back = append = insert a new element at the end of the container
-  void push_back( typename ObjectVector<TYPE>::const_reference value )
-  {
-    if ( value->parent() ) {
-      const_cast<ObjectContainerBase*>( value->parent() )->remove( value );
-    }
+  void push_back( typename ObjectVector<TYPE>::const_reference value ) {
+    if ( value->parent() ) { const_cast<ObjectContainerBase*>( value->parent() )->remove( value ); }
     value->setParent( this );
     m_vector.push_back( value );
   }
 
   /// Add an object to the container
-  long add( ContainedObject* pObject ) override
-  {
+  long add( ContainedObject* pObject ) override {
     try {
       auto ptr = dynamic_cast<typename ObjectVector<TYPE>::value_type>( pObject );
       if ( ptr ) {
         push_back( ptr );
         return m_vector.size() - 1;
       }
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
     return -1;
   }
 
   /// pop_back = remove the last element from the container
   /// The removed object will be deleted (see the method release)
-  void pop_back()
-  {
+  void pop_back() {
     auto position = m_vector.back();
     // Set the back pointer to 0 to avoid repetitional searching
     // for the object in the container, and deleting the object
@@ -190,8 +180,7 @@ public:
 
   /// Release object from the container (the poiter will be removed
   /// from the container, but the object itself will remain alive) (see the method pop_back)
-  long remove( ContainedObject* value ) override
-  {
+  long remove( ContainedObject* value ) override {
     // Find the object of the value value
     auto i = std::find_if( begin(), end(), [&]( const ContainedObject* j ) { return j == value; } );
     if ( i == end() ) {
@@ -209,15 +198,13 @@ public:
 
   /// Insert "value" before "position"
   typename ObjectVector<TYPE>::iterator insert( typename ObjectVector<TYPE>::iterator        position,
-                                                typename ObjectVector<TYPE>::const_reference value )
-  {
+                                                typename ObjectVector<TYPE>::const_reference value ) {
     value->setParent( this );
     return m_vector.insert( position, value );
   }
 
   /// Erase the object at "position" from the container. The removed object will be deleted.
-  void erase( typename ObjectVector<TYPE>::iterator position )
-  {
+  void erase( typename ObjectVector<TYPE>::iterator position ) {
     if ( ( *position )->parent() ) {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
@@ -229,8 +216,7 @@ public:
   }
 
   /// Erase the range [first, last) from the container. The removed object will be deleted
-  void erase( typename ObjectVector<TYPE>::iterator first, typename ObjectVector<TYPE>::iterator last )
-  {
+  void erase( typename ObjectVector<TYPE>::iterator first, typename ObjectVector<TYPE>::iterator last ) {
     for ( auto i = first; i != last; i++ ) {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
@@ -248,16 +234,14 @@ public:
   typename ObjectVector<TYPE>::reference operator[]( typename ObjectVector<TYPE>::size_type n ) { return m_vector[n]; }
 
   /// Return the const_reference to the n'th object in the container
-  typename ObjectVector<TYPE>::const_reference operator[]( typename ObjectVector<TYPE>::size_type n ) const
-  {
+  typename ObjectVector<TYPE>::const_reference operator[]( typename ObjectVector<TYPE>::size_type n ) const {
     return m_vector[n];
   }
 
   /// Return distance of a given object from the beginning of its container
   /// It correcponds to the "index" ( from 0 to size()-1 )
   /// If "obj" not fount, return -1
-  long index( const ContainedObject* obj ) const override
-  {
+  long index( const ContainedObject* obj ) const override {
     auto i = std::find_if( begin(), end(), [&]( const ContainedObject* o ) { return o == obj; } );
     return i != end() ? std::distance( begin(), i ) : -1;
   }
@@ -266,17 +250,14 @@ public:
   ContainedObject* containedObject( long dist ) const override { return m_vector[dist]; }
 
   /// Fill the output stream (ASCII)
-  std::ostream& fillStream( std::ostream& s ) const override
-  {
+  std::ostream& fillStream( std::ostream& s ) const override {
     s << "class ObjectVector :    size = " << std::setw( 12 ) << size() << "\n";
     // Output the base class
     // ObjectContainerBase::fillStream(s);
     if ( !empty() ) {
       s << "\nContents of the STL vector :";
       long count = 0;
-      for ( const auto& i : m_vector ) {
-        s << "\nIndex " << std::setw( 12 ) << count++ << " of object of type " << *i;
-      }
+      for ( const auto& i : m_vector ) { s << "\nIndex " << std::setw( 12 ) << count++ << " of object of type " << *i; }
     }
     return s;
   }

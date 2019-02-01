@@ -17,9 +17,9 @@
 #include "Gaudi/Details/PluginServiceCommon.h"
 
 #if GAUDI_PLUGIN_SERVICE_USE_V2
-#include "Gaudi/PluginServiceV2.h"
+#  include "Gaudi/PluginServiceV2.h"
 #else
-#include "Gaudi/PluginServiceV1.h"
+#  include "Gaudi/PluginServiceV1.h"
 #endif
 
 #endif

@@ -14,8 +14,7 @@
 /** @class FileIncident
  *  @brief This class is the FileIncident.
  **/
-class GAUDI_API FileIncident : public Incident
-{
+class GAUDI_API FileIncident : public Incident {
 public:
   /// standard constructor
   FileIncident( std::string source, std::string type, std::string fileName );
@@ -30,15 +29,11 @@ private:
 };
 
 inline FileIncident::FileIncident( std::string source, std::string type, std::string fileName )
-    : Incident( std::move( source ), std::move( type ) ), m_fileName( std::move( fileName ) )
-{
-}
+    : Incident( std::move( source ), std::move( type ) ), m_fileName( std::move( fileName ) ) {}
 
 inline FileIncident::FileIncident( std::string source, std::string type, std::string fileName, std::string fileGuid )
     : Incident( std::move( source ), std::move( type ) )
     , m_fileName( std::move( fileName ) )
-    , m_fileGuid( std::move( fileGuid ) )
-{
-}
+    , m_fileGuid( std::move( fileGuid ) ) {}
 
 #endif

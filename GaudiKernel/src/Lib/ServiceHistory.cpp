@@ -27,9 +27,7 @@ ServiceHistory::ServiceHistory()
     m_pService( nullptr )
     , m_name( "none" )
     , m_type( "none" )
-    , m_version( "none" )
-{
-}
+    , m_version( "none" ) {}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 ServiceHistory::ServiceHistory( const IService* isv, const JobHistory* job )
@@ -37,8 +35,7 @@ ServiceHistory::ServiceHistory( const IService* isv, const JobHistory* job )
     m_pService( isv )
     , m_jobHistory( job )
     , m_name( isv->name() )
-    , m_version( "none" )
-{
+    , m_version( "none" ) {
 
   const Service* svc = dynamic_cast<const Service*>( isv );
   m_type             = System::typeinfoName( typeid( *svc ) );
@@ -52,8 +49,7 @@ ServiceHistory::ServiceHistory( const IService& isv, const JobHistory* job )
     m_pService( &isv )
     , m_jobHistory( job )
     , m_name( isv.name() )
-    , m_version( "none" )
-{
+    , m_version( "none" ) {
 
   const Service* svc = dynamic_cast<const Service*>( &isv );
   m_type             = System::typeinfoName( typeid( *svc ) );
@@ -62,8 +58,7 @@ ServiceHistory::ServiceHistory( const IService& isv, const JobHistory* job )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const CLID& ServiceHistory::classID()
-{
+const CLID& ServiceHistory::classID() {
 
   static const CLID CLID_ServiceHistory = 187225489; // from `clid ServiceHistory`
   return CLID_ServiceHistory;
@@ -71,8 +66,7 @@ const CLID& ServiceHistory::classID()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void ServiceHistory::dump( std::ostream& ost, const bool isXML, int ind ) const
-{
+void ServiceHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
 
   if ( !isXML ) {
 
@@ -116,8 +110,7 @@ void ServiceHistory::dump( std::ostream& ost, const bool isXML, int ind ) const
 
 // Output stream.
 
-ostream& operator<<( ostream& lhs, const ServiceHistory& rhs )
-{
+ostream& operator<<( ostream& lhs, const ServiceHistory& rhs ) {
 
   rhs.dump( lhs, false );
 

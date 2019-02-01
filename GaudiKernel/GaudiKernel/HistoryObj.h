@@ -18,8 +18,7 @@ class IVersHistoryObj;
 
 */
 
-class GAUDI_API HistoryObj : public DataObject
-{
+class GAUDI_API HistoryObj : public DataObject {
 public:
   HistoryObj()          = default;
   virtual ~HistoryObj() = default;

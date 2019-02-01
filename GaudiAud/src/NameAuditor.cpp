@@ -8,12 +8,10 @@
 
 DECLARE_COMPONENT( NameAuditor )
 
-void NameAuditor::i_before( CustomEventTypeRef evt, const std::string& caller )
-{
+void NameAuditor::i_before( CustomEventTypeRef evt, const std::string& caller ) {
   info() << "About to Enter " << caller << " with auditor trigger " << evt << endmsg;
 }
 
-void NameAuditor::i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& )
-{
+void NameAuditor::i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& ) {
   info() << "Just Exited " << caller << " with auditor trigger " << evt << endmsg;
 }

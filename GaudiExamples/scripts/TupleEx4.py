@@ -14,7 +14,6 @@ N-Tuples outside of algoruthm-scope in 'script-like' environment
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
 
-
 # static configuration : "Configurbales"
 
 from Gaudi.Configuration import *
@@ -26,13 +25,11 @@ from Configurables import NTupleSvc, ToolSvc, RndmGenSvc, ApplicationMgr
 ntSvc = NTupleSvc(Output=[
     "MYLUN1 DATAFILE='TupleEx4_1.root' OPT='NEW'",
     "MYLUN2 DATAFILE='TupleEx4_2.root' OPT='NEW'",
-    "MYLUN3 DATAFILE='TupleEx4_3.root' OPT='NEW'"]
-)
+    "MYLUN3 DATAFILE='TupleEx4_3.root' OPT='NEW'"
+])
 
 # ensure that NTuple Service will be finalized AFTER ToolSvc
-ApplicationMgr(
-    ExtSvc=[NTupleSvc(), ToolSvc(), RndmGenSvc()]
-)
+ApplicationMgr(ExtSvc=[NTupleSvc(), ToolSvc(), RndmGenSvc()])
 
 # go to dynamic configuration
 
@@ -40,18 +37,15 @@ from GaudiPython.Bindings import AppMgr, loaddict
 from GaudiPython.Bindings import gbl as cpp
 import GaudiPython.TupleUtils as TupleUtils
 
-
 # get the application manager   (create if needed)
 gaudi = AppMgr()
 
 import atexit
 atexit.register(gaudi.exit)
 
-
 gaudi.EvtSel = 'NONE'  # no external event input
 # gaudi.HistogramPersistency = 'HBOOK' ## define the persistency type for N-tuples
 gaudi.HistogramPersistency = 'ROOT'  # define the persistency type for N-tuples
-
 
 ## configure & initialize
 gaudi.config()
@@ -68,9 +62,10 @@ rndmSvc = gaudi.service('RndmGenSvc', IRndmGenSvc)
 gauss = Rndm.Numbers(cpp.SmartIF("IRndmGenSvc")(rndmSvc), Rndm.Gauss(0.0, 1.0))
 
 # get the first N-tuple
-tup1 = TupleUtils.nTuple("path",  # the path
-                         "It is a title for my n-tuple",  # the title
-                         LUN='MYLUN1')  # logical unit
+tup1 = TupleUtils.nTuple(
+    "path",  # the path
+    "It is a title for my n-tuple",  # the title
+    LUN='MYLUN1')  # logical unit
 # fill it:
 for i in xrange(0, 5000):
     tup1.column('i', i)  # int
@@ -80,15 +75,15 @@ for i in xrange(0, 5000):
     tup1.column('b1', b)  # bool
     tup1.write()
 
-
 # get some math-stuff
 Math = cpp.ROOT.Math
 
 # get the second N-tuple
-tup2 = TupleUtils.nTuple("another/path",  # the path
-                         "MyTupleLV",  # literal ID
-                         "N-tuple: Lorentz Vectors ",  # the title
-                         LUN='MYLUN1')  # logical unit
+tup2 = TupleUtils.nTuple(
+    "another/path",  # the path
+    "MyTupleLV",  # literal ID
+    "N-tuple: Lorentz Vectors ",  # the title
+    LUN='MYLUN1')  # logical unit
 
 # fill it:
 for i in xrange(0, 1000):
@@ -99,12 +94,12 @@ for i in xrange(0, 1000):
 
     tup2.write()
 
-
 # get the third N-tuple
-tup3 = TupleUtils.nTuple("another/path",  # the path
-                         "MyTuple3DV",  # literal ID
-                         "N-tuple: 3D-Vectors ",  # the title
-                         LUN='MYLUN2')  # logical unit
+tup3 = TupleUtils.nTuple(
+    "another/path",  # the path
+    "MyTuple3DV",  # literal ID
+    "N-tuple: 3D-Vectors ",  # the title
+    LUN='MYLUN2')  # logical unit
 
 # fill it:
 for i in xrange(0, 1000):
@@ -115,12 +110,12 @@ for i in xrange(0, 1000):
 
     tup3.write()
 
-
 # get the fourth N-tuple
-tup4 = TupleUtils.nTuple("another/path",  # the path
-                         "MyTuple3DP",  # literal ID
-                         "N-tuple: 3D-Points",  # the title
-                         LUN='MYLUN3')  # logical unit
+tup4 = TupleUtils.nTuple(
+    "another/path",  # the path
+    "MyTuple3DP",  # literal ID
+    "N-tuple: 3D-Points",  # the title
+    LUN='MYLUN3')  # logical unit
 
 # fill it:
 for i in xrange(0, 1000):
@@ -131,12 +126,12 @@ for i in xrange(0, 1000):
 
     tup4.write()
 
-
 # get the 5th N-tuple
-tup5 = TupleUtils.nTuple("another/path",  # the path
-                         415,  # integer ID
-                         "N-tuple: VarArrays",  # the title
-                         LUN='MYLUN1')  # logical unit
+tup5 = TupleUtils.nTuple(
+    "another/path",  # the path
+    415,  # integer ID
+    "N-tuple: VarArrays",  # the title
+    LUN='MYLUN1')  # logical unit
 
 ##
 std = cpp.std
@@ -165,12 +160,12 @@ for i in xrange(0, 100):
 
     tup5.write()
 
-
 # get the 6th N-tuple
-tup6 = TupleUtils.nTuple("another/path",  # the path
-                         "xTuple",  # literal ID
-                         "N-tuple: FixArrays",  # the title
-                         LUN='MYLUN2')  # logical unit
+tup6 = TupleUtils.nTuple(
+    "another/path",  # the path
+    "xTuple",  # literal ID
+    "N-tuple: FixArrays",  # the title
+    LUN='MYLUN2')  # logical unit
 
 Gaudi = cpp.Gaudi
 
@@ -205,10 +200,11 @@ for i in xrange(0, 10):
     tup6.write()
 
 # get the 7th N-tuple
-tup7 = TupleUtils.nTuple("another/path",  # the path
-                         "FixMatrices",  # literal ID
-                         "N-tuple: FixMatrices",  # the title
-                         LUN='MYLUN3')  # logical unit
+tup7 = TupleUtils.nTuple(
+    "another/path",  # the path
+    "FixMatrices",  # literal ID
+    "N-tuple: FixMatrices",  # the title
+    LUN='MYLUN3')  # logical unit
 
 for i in xrange(0, 100):
 
@@ -233,10 +229,11 @@ for i in xrange(0, 100):
     tup7.write()
 
 # get the 8th N-tuple
-tup8 = TupleUtils.nTuple("another/path",  # the path
-                         "FixSymMatrices",  # literal ID
-                         "N-tuple: FixSymMatrices",  # the title
-                         LUN='MYLUN2')  # logical unit
+tup8 = TupleUtils.nTuple(
+    "another/path",  # the path
+    "FixSymMatrices",  # literal ID
+    "N-tuple: FixSymMatrices",  # the title
+    LUN='MYLUN2')  # logical unit
 
 for i in xrange(0, 100):
 
@@ -260,13 +257,12 @@ for i in xrange(0, 100):
 
     tup8.write()
 
-
 # get the 8th N-tuple
-tup9 = TupleUtils.nTuple("another/path2",  # the path
-                         "Time",  # literal ID
-                         "N-tuple: Gaudi::Time",  # the title
-                         LUN='MYLUN2')  # logical unit
-
+tup9 = TupleUtils.nTuple(
+    "another/path2",  # the path
+    "Time",  # literal ID
+    "N-tuple: Gaudi::Time",  # the title
+    LUN='MYLUN2')  # logical unit
 
 for i in xrange(0, 100):
 
@@ -275,10 +271,8 @@ for i in xrange(0, 100):
     tup9.column(t)
     tup9.write()
 
-
 # release all tuples at the end
 TupleUtils.releaseTuples()
-
 
 # =============================================================================
 # The END

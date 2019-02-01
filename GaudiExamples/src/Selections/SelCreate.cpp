@@ -16,24 +16,21 @@
 // ============================================================================
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "double" to "float" may lose significant bits
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #elif defined( WIN32 )
 // disable warning
 //   C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-#pragma warning( disable : 4244 )
+#  pragma warning( disable : 4244 )
 #endif
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     /** @class SelCreate
      *  Simple class to create few "containers" in TES
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2008-07-23
      */
-    class SelCreate : public GaudiAlgorithm
-    {
+    class SelCreate : public GaudiAlgorithm {
       using Container = Gaudi::Examples::MyTrack::Container;
       DataObjectWriteHandle<Container> m_output{this, "Output", this->name(), "TES location of output container"};
 
@@ -45,8 +42,7 @@ namespace Gaudi
       // using GaudiAlgorithm::GaudiAlgorithm;
       // ======================================================================
       /// the only one essential method
-      StatusCode execute() override
-      {
+      StatusCode execute() override {
         // some random number generators, just to provide the numbers
         static Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
         static Rndm::Numbers flat( randSvc(), Rndm::Flat( 20.0, 100.0 ) );
@@ -71,9 +67,7 @@ namespace Gaudi
         m_output.put( std::move( tracks ) );
 
         typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;
-        if ( !exist<Range>( name() ) ) {
-          err() << "No Range is available at location " << name() << endmsg;
-        }
+        if ( !exist<Range>( name() ) ) { err() << "No Range is available at location " << name() << endmsg; }
 
         // test "get-or-create":
 
@@ -89,7 +83,7 @@ namespace Gaudi
       }
     };
     // ========================================================================
-  } // end of namespace Gaudi::Examples
+  } // namespace Examples
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)

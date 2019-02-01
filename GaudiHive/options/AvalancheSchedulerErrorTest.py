@@ -1,5 +1,4 @@
 #!/usr/bin/env gaudirun.py
-
 """
 Test the correct handling on errors during the event processing:
 - The CPUCruncher is configured to return an ERROR on a fraction of the events
@@ -8,24 +7,22 @@ Test the correct handling on errors during the event processing:
 
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher, InertMessageSvc,
-                           ApplicationMgr, StatusCodeSvc)
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           InertMessageSvc, ApplicationMgr, StatusCodeSvc)
 
 evtslots = 8
 evtMax = 50
 cardinality = 10
 threads = 10
 
-whiteboard = HiveWhiteBoard("EventDataSvc",
-                            EventSlots=evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
-slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc",
-                                        OutputLevel=DEBUG,
-                                        AbortOnFailure=False)
+slimeventloopmgr = HiveSlimEventLoopMgr(
+    SchedulerName="AvalancheSchedulerSvc",
+    OutputLevel=DEBUG,
+    AbortOnFailure=False)
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads,
-                                  OutputLevel=DEBUG)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
 
@@ -51,7 +48,7 @@ a2.outKeys = ['/Event/a2']
 a3 = CPUCruncher("A3")
 a3.inpKeys = ['/Event/a1']
 a3.outKeys = ['/Event/a3']
-a3.FailNEvents = 7    # produce ERROR every Nth event
+a3.FailNEvents = 7  # produce ERROR every Nth event
 
 a4 = CPUCruncher("A4")
 a4.inpKeys = ['/Event/a2']
@@ -69,9 +66,10 @@ for algo in [a1, a2, a3, a4, a5]:
 msgSvc = InertMessageSvc("MessageSvc", Format="% F%30W%S%4W%e%s%7W%R%T %0W%M")
 ApplicationMgr().SvcMapping.append(msgSvc)
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard, scs],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[a1, a2, a3, a4, a5],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard, scs],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[a1, a2, a3, a4, a5],
+    MessageSvcType="InertMessageSvc")

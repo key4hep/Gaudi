@@ -15,8 +15,7 @@
 class ISvcManager;
 class ServiceManager;
 
-class GAUDI_API IService : virtual public extend_interfaces<INamedInterface, IStateful>
-{
+class GAUDI_API IService : virtual public extend_interfaces<INamedInterface, IStateful> {
   friend class ServiceManager;
 
 public:

@@ -13,12 +13,11 @@
 #include "GaudiKernel/IAlgTool.h"
 // ============================================================================
 
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D;
   class IHistogram2D;
   class IHistogram3D;
-}
+} // namespace AIDA
 
 /** @class IHistoTool IHistoTool.h GaudiTools/IHistoTool.h
  *
@@ -28,8 +27,7 @@ namespace AIDA
  *  @date   2004-06-28
  */
 
-class GAUDI_API IHistoTool : virtual public IAlgTool
-{
+class GAUDI_API IHistoTool : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( IHistoTool, 2, 0 );
@@ -85,8 +83,7 @@ public:
    *  @return pointer to AIDA 1D histogram
    */
   AIDA::IHistogram1D* plot( const double value, const std::string& title, const double low, const double high,
-                            const unsigned long bins = 100, const double weight = 1.0 ) const
-  {
+                            const unsigned long bins = 100, const double weight = 1.0 ) const {
     return plot1D( value, title, low, high, bins, weight );
   }
 
@@ -149,8 +146,7 @@ public:
    *  @return pointer to AIDA histogram
    */
   AIDA::IHistogram1D* plot( const double value, const HistoID& ID, const std::string& title, const double low,
-                            const double high, const unsigned long bins = 100, const double weight = 1.0 ) const
-  {
+                            const double high, const unsigned long bins = 100, const double weight = 1.0 ) const {
     return plot1D( value, ID, title, low, high, bins, weight );
   };
 
@@ -380,8 +376,7 @@ public:
    *  @return pointer to AIDA 1D histogram
    */
   AIDA::IHistogram1D* book( const std::string& title, const double low = 0, const double high = 100,
-                            const unsigned long bins = 100 ) const
-  {
+                            const unsigned long bins = 100 ) const {
     return book1D( title, low, high, bins );
   }
 
@@ -452,8 +447,7 @@ public:
    *  @return pointer to AIDA histogram
    */
   AIDA::IHistogram1D* book( const HistoID& ID, const std::string& title = "", const double low = 0,
-                            const double high = 100, const unsigned long bins = 100 ) const
-  {
+                            const double high = 100, const unsigned long bins = 100 ) const {
     return book1D( ID, title, low, high, bins );
   }
 
@@ -631,13 +625,10 @@ public:
    */
   template <class FUNCTION, class OBJECT>
   AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const std::string& title, const double low,
-                            const double high, const unsigned long bins = 100 ) const
-  {
+                            const double high, const unsigned long bins = 100 ) const {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D( title );
-    if ( !h ) {
-      h = book1D( title, low, high, bins );
-    }
+    if ( !h ) { h = book1D( title, low, high, bins ); }
     while ( first != last && h ) {
       h = fill( h, func( *first ), 1.0, title );
       ++first;
@@ -697,13 +688,10 @@ public:
   template <class FUNCTION, class OBJECT>
   AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const HistoID& ID,
                             const std::string& title, const double low, const double high,
-                            const unsigned long bins = 100 ) const
-  {
+                            const unsigned long bins = 100 ) const {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D( ID );
-    if ( !h ) {
-      h = book1D( ID, title, low, high, bins );
-    }
+    if ( !h ) { h = book1D( ID, title, low, high, bins ); }
     while ( first != last && h ) {
       h = fill( h, func( *first ), 1.0, title );
       ++first;
@@ -767,13 +755,10 @@ public:
    */
   template <class FUNCTION, class OBJECT, class WEIGHT>
   AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const std::string& title, const double low,
-                            const double high, const unsigned long bins, const WEIGHT& weight ) const
-  {
+                            const double high, const unsigned long bins, const WEIGHT& weight ) const {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D( title );
-    if ( !h ) {
-      h = book1D( title, low, high, bins );
-    }
+    if ( !h ) { h = book1D( title, low, high, bins ); }
     while ( first != last && h ) {
       h = fill( h, func( *first ), weight( *first ), title );
       ++first;
@@ -843,13 +828,10 @@ public:
   template <class FUNCTION, class OBJECT, class WEIGHT>
   AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const HistoID& ID,
                             const std::string& title, const double low, const double high, const unsigned long bins,
-                            const WEIGHT& weight ) const
-  {
+                            const WEIGHT& weight ) const {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D( ID );
-    if ( !h ) {
-      h = book1D( ID, title, low, high, bins );
-    }
+    if ( !h ) { h = book1D( ID, title, low, high, bins ); }
     while ( first != last && h ) {
       h = fill( h, func( *first ), weight( *first ), title );
       ++first;

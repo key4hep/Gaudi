@@ -12,8 +12,7 @@
 // ============================================================================
 #include "boost/functional/hash.hpp"
 // ============================================================================
-namespace GaudiUtils
-{
+namespace GaudiUtils {
   /// Generic hash implementation (for easy migration to the new Hash class).
   //  To enable the generic hash for a user defined class, it is enough to add
   //  few lines to the .cpp files that needs them
@@ -29,8 +28,7 @@ namespace GaudiUtils
   struct GenericHash {
     // ========================================================================
     /// the generic hash function
-    inline std::size_t operator()( const T& key ) const
-    {
+    inline std::size_t operator()( const T& key ) const {
       const char* p = reinterpret_cast<const char*>( &key );
       return std::accumulate( p, p + sizeof( T ), std::size_t{0},
                               []( std::size_t res, const char& c ) { return ( res << 1 ) ^ c; } );
@@ -127,39 +125,32 @@ namespace GaudiUtils
   // ==========================================================================
   /// remove extra qualifiers:
   template <class T>
-  struct Hash<const T> : public Hash<T> {
-  };
+  struct Hash<const T> : public Hash<T> {};
   /// remove extra qualifiers:
   template <class T>
-  struct Hash<const T*> : public Hash<T*> {
-  };
+  struct Hash<const T*> : public Hash<T*> {};
   /// remove extra qualifiers:
   template <class T>
-  struct Hash<T&> : public Hash<T> {
-  };
+  struct Hash<T&> : public Hash<T> {};
   /// remove extra qualifiers:
   template <class T>
-  struct Hash<const T&> : public Hash<T> {
-  };
+  struct Hash<const T&> : public Hash<T> {};
   // ==========================================================================
   /// the generic implementations of hash-function
   template <class T>
-  inline std::size_t Hash<T>::operator()( const T& key ) const
-  {
+  inline std::size_t Hash<T>::operator()( const T& key ) const {
     using namespace boost;
     return hash_value( key );
   }
   /// the generic implementation of hash for pointers
   template <class T>
-  inline std::size_t Hash<T*>::operator()( const T* key ) const
-  {
+  inline std::size_t Hash<T*>::operator()( const T* key ) const {
     using namespace boost;
     return hash_value( key );
   }
   /// (very)specific for C-strings
   template <>
-  inline std::size_t Hash<char*>::operator()( const char* key ) const
-  {
+  inline std::size_t Hash<char*>::operator()( const char* key ) const {
     std::size_t seed = 0;
     while ( key ) {
       boost::hash_combine( seed, *key );
@@ -174,4 +165,3 @@ namespace GaudiUtils
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_HASH_H
-// ============================================================================

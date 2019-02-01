@@ -11,8 +11,7 @@
 #include "GaudiKernel/StatusCode.h"
 #include <iostream>
 
-extern "C" GAUDI_API int GaudiMain( int argc, char** argv )
-{
+extern "C" GAUDI_API int GaudiMain( int argc, char** argv ) {
   IInterface*        iface = Gaudi::createApplicationMgr();
   SmartIF<IAppMgrUI> appMgr( iface );
   auto               propMgr = appMgr.as<IProperty>();

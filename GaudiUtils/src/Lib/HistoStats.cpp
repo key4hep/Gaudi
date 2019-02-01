@@ -1,7 +1,7 @@
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparisons are meant
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
 // ============================================================================
 // Include files
@@ -28,8 +28,7 @@
  *  @date 2007-08-06
  */
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   /// define local "bad" value
   const constexpr double s_bad = std::numeric_limits<float>::lowest();
@@ -41,8 +40,7 @@ namespace
   // effective entries
   // ============================================================================
   double _nEff( const AIDA::IHistogram1D* histo ) { return ( histo ? histo->equivalentBinEntries() : s_bad ); }
-  double _nEff( const AIDA::IProfile1D* histo )
-  {
+  double _nEff( const AIDA::IProfile1D* histo ) {
     // best guess at equivalent method ...
     return ( histo ? histo->sumBinHeights() : s_bad );
   }
@@ -50,42 +48,31 @@ namespace
   // rms
   // ============================================================================
   template <typename HISTO>
-  double _rms( const HISTO* histo )
-  {
+  double _rms( const HISTO* histo ) {
     return ( histo ? histo->rms() : s_bad );
   }
   // ============================================================================
   // mean
   // ============================================================================
   template <typename HISTO>
-  double _mean( const HISTO* histo )
-  {
+  double _mean( const HISTO* histo ) {
     return ( histo ? histo->mean() : s_bad );
   }
   // ============================================================================
   // moment
   // ============================================================================
   template <typename HISTO>
-  double _moment( const HISTO* histo, const unsigned int order, const double value = 0 )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
-    if ( 0 == order ) {
-      return 1.0;
-    } // RETURN
-    if ( 1 == order ) {
-      return _mean( histo ) - value;
-    } // RETURN
+  double _moment( const HISTO* histo, const unsigned int order, const double value = 0 ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; }          // RETURN
+    if ( 0 == order ) { return 1.0; }                    // RETURN
+    if ( 1 == order ) { return _mean( histo ) - value; } // RETURN
     if ( 2 == order ) {
       const auto _r = _rms( histo );
       const auto _d = value - _mean( histo );
       return std::pow( _r, 2 ) + std::pow( _d, 2 ); // RETURN
     }
     const auto n = _nEff( histo );
-    if ( 0 >= n ) {
-      return 0.0;
-    } // RETURN
+    if ( 0 >= n ) { return 0.0; } // RETURN
     // get the exis
     const auto& axis = histo->axis();
     // number of bins
@@ -102,24 +89,17 @@ namespace
       weight += yBin;
       result += yBin * std::pow( xBin - value, order );
     }
-    if ( 0 != weight ) {
-      result /= weight;
-    }
+    if ( 0 != weight ) { result /= weight; }
     return result;
   }
   // ============================================================================
   // moment error
   // ============================================================================
   template <typename HISTO>
-  double _momentErr( const HISTO* histo, const unsigned int order )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _momentErr( const HISTO* histo, const unsigned int order ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto n = _nEff( histo );
-    if ( 0 >= n ) {
-      return 0.0;
-    }                                                // RETURN
+    if ( 0 >= n ) { return 0.0; }                    // RETURN
     const auto a2o    = _moment( histo, 2 * order ); // a(2o)
     const auto ao     = _moment( histo, order );     // a(o)
     const auto result = std::max( 0.0, ( a2o - std::pow( ao, 2 ) ) / n );
@@ -129,17 +109,10 @@ namespace
   // central moment
   // ============================================================================
   template <typename HISTO>
-  double _centralMoment( const HISTO* histo, const unsigned int order )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
-    if ( 0 == order ) {
-      return 1.0;
-    } // RETURN
-    if ( 1 == order ) {
-      return 0.0;
-    } // RETURN
+  double _centralMoment( const HISTO* histo, const unsigned int order ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
+    if ( 0 == order ) { return 1.0; }           // RETURN
+    if ( 1 == order ) { return 0.0; }           // RETURN
     if ( 2 == order ) {
       return std::pow( _rms( histo ), 2 ); // RETURN
     }
@@ -150,15 +123,10 @@ namespace
   // central moment error
   // ============================================================================
   template <typename HISTO>
-  double _centralMomentErr( const HISTO* histo, const unsigned int order )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _centralMomentErr( const HISTO* histo, const unsigned int order ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto n = _nEff( histo );
-    if ( 0 >= n ) {
-      return 0.0;
-    }                                                     // RETURN
+    if ( 0 >= n ) { return 0.0; }                         // RETURN
     const auto mu2  = _centralMoment( histo, 2 );         // mu(2)
     const auto muo  = _centralMoment( histo, order );     // mu(o)
     const auto mu2o = _centralMoment( histo, 2 * order ); // mu(2o)
@@ -172,11 +140,8 @@ namespace
   // get the skewness for the histogram
   // ============================================================================
   template <typename HISTO>
-  double _skewness( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _skewness( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto mu3 = _centralMoment( histo, 3 );
     const auto s3  = std::pow( _rms( histo ), 3 );
     return ( std::fabs( s3 ) > 0 ? mu3 / s3 : 0.0 );
@@ -185,15 +150,10 @@ namespace
   // get the error in skewness
   // ============================================================================
   template <typename HISTO>
-  double _skewnessErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _skewnessErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto n = _nEff( histo );
-    if ( 2 > n ) {
-      return 0.0;
-    } // RETURN
+    if ( 2 > n ) { return 0.0; } // RETURN
     const auto result = 6.0 * ( n - 2 ) / ( ( n + 1 ) * ( n + 3 ) );
     return std::sqrt( result );
   }
@@ -201,11 +161,8 @@ namespace
   // get the kurtosis for the histogram
   // ============================================================================
   template <typename HISTO>
-  double _kurtosis( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _kurtosis( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto mu4 = _centralMoment( histo, 4 );
     const auto s4  = std::pow( _rms( histo ), 4 );
     return ( std::fabs( s4 ) > 0 ? mu4 / s4 - 3.0 : 0.0 );
@@ -214,15 +171,10 @@ namespace
   // get the error in kurtosis
   // ============================================================================
   template <typename HISTO>
-  double _kurtosisErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _kurtosisErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto n = _nEff( histo );
-    if ( 3 > n ) {
-      return 0.0;
-    } // RETURN
+    if ( 3 > n ) { return 0.0; } // RETURN
     auto result = 24.0 * n;
     result *= ( n - 2 ) * ( n - 3 );
     result /= ( n + 1 ) * ( n + 1 );
@@ -233,11 +185,8 @@ namespace
   // get an error in the mean value
   // ============================================================================
   template <typename HISTO>
-  double _meanErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    }
+  double _meanErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; }
     const auto n = _nEff( histo );
     return ( 0 >= n ? 0.0 : _rms( histo ) / std::sqrt( n ) );
   }
@@ -245,15 +194,10 @@ namespace
   // get the error in rms
   // ============================================================================
   template <typename HISTO>
-  double _rmsErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    }
+  double _rmsErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; }
     const auto n = _nEff( histo );
-    if ( 1 >= n ) {
-      return 0.0;
-    }
+    if ( 1 >= n ) { return 0.0; }
     auto result = 2.0 + _kurtosis( histo );
     result += 2.0 / ( n - 1 );
     result /= 4.0 * n;
@@ -263,11 +207,8 @@ namespace
   // get an error in the sum bin height ("in range integral")
   // ============================================================================
   template <typename HISTO>
-  double _sumBinHeightErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    }
+  double _sumBinHeightErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; }
     //
     double error2 = 0;
     // get the exis
@@ -285,16 +226,11 @@ namespace
   // get an error in the sum all bin height ("integral")
   // ============================================================================
   template <typename HISTO>
-  double _sumAllBinHeightErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    }
+  double _sumAllBinHeightErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; }
     //
     const auto error = _sumBinHeightErr( histo );
-    if ( 0 > error ) {
-      return s_bad;
-    }
+    if ( 0 > error ) { return s_bad; }
     ///
     const auto err1 = histo->binError( AIDA::IAxis::UNDERFLOW_BIN );
     const auto err2 = histo->binError( AIDA::IAxis::OVERFLOW_BIN );
@@ -305,22 +241,13 @@ namespace
   // the fraction of overflow entries  (useful for shape comparison)
   // ============================================================================
   template <typename HISTO>
-  double _overflowEntriesFrac( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _overflowEntriesFrac( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto overflow = histo->binEntries( AIDA::IAxis::OVERFLOW_BIN );
-    if ( 0 == overflow ) {
-      return 0;
-    } // RETURN
+    if ( 0 == overflow ) { return 0; } // RETURN
     const auto all = histo->allEntries();
-    if ( 0 == all ) {
-      return 0;
-    } // "CONVENTION?"  RETURN
-    if ( 0 > all ) {
-      return s_bad;
-    } // Lets be a bit paranoic, RETURN
+    if ( 0 == all ) { return 0; }    // "CONVENTION?"  RETURN
+    if ( 0 > all ) { return s_bad; } // Lets be a bit paranoic, RETURN
     //
     return (double)overflow / (double)all;
   }
@@ -328,22 +255,13 @@ namespace
   // the fraction of underflow entries  (useful for shape comparison)
   // ============================================================================
   template <typename HISTO>
-  double _underflowEntriesFrac( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _underflowEntriesFrac( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto underflow = histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN );
-    if ( 0 == underflow ) {
-      return 0;
-    } // RETURN
+    if ( 0 == underflow ) { return 0; } // RETURN
     const auto all = histo->allEntries();
-    if ( 0 == all ) {
-      return 0;
-    } // "CONVENTION?"  RETURN
-    if ( 0 > all ) {
-      return s_bad;
-    } // Lets be a bit paranoic, RETURN
+    if ( 0 == all ) { return 0; }    // "CONVENTION?"  RETURN
+    if ( 0 > all ) { return s_bad; } // Lets be a bit paranoic, RETURN
     //
     return (double)underflow / (double)all;
   }
@@ -351,19 +269,12 @@ namespace
   // the fraction of overflow integral (useful for shape comparison)
   // ============================================================================
   template <typename HISTO>
-  double _overflowIntegralFrac( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _overflowIntegralFrac( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto overflow = histo->binHeight( AIDA::IAxis::OVERFLOW_BIN );
-    if ( 0 == overflow ) {
-      return 0;
-    } // RETURN
+    if ( 0 == overflow ) { return 0; } // RETURN
     const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) {
-      return 0;
-    } // "CONVENTION?"  RETURN
+    if ( 0 == all ) { return 0; } // "CONVENTION?"  RETURN
     //
     return (double)overflow / (double)all;
   }
@@ -371,19 +282,12 @@ namespace
   // the fraction of underflow entries  (useful for shape comparison)
   // ============================================================================
   template <typename HISTO>
-  double _underflowIntegralFrac( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _underflowIntegralFrac( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto underflow = histo->binHeight( AIDA::IAxis::UNDERFLOW_BIN );
-    if ( 0 == underflow ) {
-      return 0;
-    } // RETURN
+    if ( 0 == underflow ) { return 0; } // RETURN
     const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) {
-      return 0;
-    } // "CONVENTION?"  RETURN
+    if ( 0 == all ) { return 0; } // "CONVENTION?"  RETURN
     //
     return (double)underflow / (double)all;
   }
@@ -391,18 +295,13 @@ namespace
   // error on fraction of overflow entries  (useful for shape comparison)
   // ============================================================================
   template <typename HISTO>
-  double _overflowEntriesFracErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _overflowEntriesFracErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     //
     const auto overflow = histo->binEntries( AIDA::IAxis::OVERFLOW_BIN );
     const auto all      = histo->allEntries();
     //
-    if ( 0 > overflow || 0 >= all || overflow > all ) {
-      return s_bad;
-    }
+    if ( 0 > overflow || 0 >= all || overflow > all ) { return s_bad; }
     //
     const double n  = std::max( (double)overflow, 1.0 );
     const double N  = all;
@@ -414,18 +313,13 @@ namespace
   // error on fraction of underflow entries  (useful for shape comparison)
   // ============================================================================
   template <typename HISTO>
-  double _underflowEntriesFracErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _underflowEntriesFracErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     //
     const auto underflow = histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN );
     const auto all       = histo->allEntries();
     //
-    if ( 0 > underflow || 0 >= all || underflow > all ) {
-      return s_bad;
-    }
+    if ( 0 > underflow || 0 >= all || underflow > all ) { return s_bad; }
     //
     const double n  = std::max( (double)underflow, 1.0 );
     const double N  = all;
@@ -437,25 +331,16 @@ namespace
   // the error on fraction of overflow intergal
   // ============================================================================
   template <typename HISTO>
-  double _overflowIntegralFracErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _overflowIntegralFracErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     //
     const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 == all ) { return s_bad; } // RETURN
     const auto overflow = histo->binHeight( AIDA::IAxis::OVERFLOW_BIN );
     const auto oErr     = histo->binError( AIDA::IAxis::OVERFLOW_BIN );
-    if ( 0 > oErr ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > oErr ) { return s_bad; } // RETURN
     const auto aErr = _sumAllBinHeightErr( histo );
-    if ( 0 > aErr ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > aErr ) { return s_bad; } // RETURN
     //
     auto error2 = std::pow( (double)oErr, 2 );
     error2 += ( std::pow( (double)aErr, 2 ) * std::pow( (double)overflow, 2 ) / std::pow( (double)all, 2 ) );
@@ -467,25 +352,16 @@ namespace
   // the error on fraction of overflow intergal
   // ============================================================================
   template <typename HISTO>
-  double _underflowIntegralFracErr( const HISTO* histo )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _underflowIntegralFracErr( const HISTO* histo ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     //
     const auto all = histo->sumAllBinHeights();
-    if ( 0 == all ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 == all ) { return s_bad; } // RETURN
     const auto underflow = histo->binHeight( AIDA::IAxis::UNDERFLOW_BIN );
     const auto oErr      = histo->binError( AIDA::IAxis::UNDERFLOW_BIN );
-    if ( 0 > oErr ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > oErr ) { return s_bad; } // RETURN
     const auto aErr = _sumAllBinHeightErr( histo );
-    if ( 0 > aErr ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > aErr ) { return s_bad; } // RETURN
     //
     auto error2 = std::pow( (double)oErr, 2 );
     error2 += ( std::pow( (double)aErr, 2 ) * std::pow( (double)underflow, 2 ) / std::pow( (double)all, 2 ) );
@@ -497,14 +373,9 @@ namespace
   // # entries
   // ============================================================================
   template <typename HISTO>
-  long _nEntries( const HISTO* histo, const int imax )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_long_bad;
-    } // RETURN
-    if ( 0 > imax ) {
-      return 0;
-    } // RETURN
+  long _nEntries( const HISTO* histo, const int imax ) {
+    if ( UNLIKELY( !histo ) ) { return s_long_bad; } // RETURN
+    if ( 0 > imax ) { return 0; }                    // RETURN
     long result = histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN );
 
     // get the exis
@@ -512,13 +383,9 @@ namespace
     // number of bins
     const auto nBins = axis.bins();
     // loop over bins
-    for ( int i = 0; i < nBins && i < imax; ++i ) {
-      result += histo->binEntries( i );
-    }
+    for ( int i = 0; i < nBins && i < imax; ++i ) { result += histo->binEntries( i ); }
     //
-    if ( nBins < imax ) {
-      result += histo->binEntries( AIDA::IAxis::OVERFLOW_BIN );
-    }
+    if ( nBins < imax ) { result += histo->binEntries( AIDA::IAxis::OVERFLOW_BIN ); }
     //
     return result;
   }
@@ -527,38 +394,24 @@ namespace
   // ============================================================================
   template <typename HISTO>
   long _nEntries( const HISTO* histo,
-                  const int    imin,  // minimal bin number (included)
-                  const int    imax ) // maximal bin number (not included)
+                  const int    imin, // minimal bin number (included)
+                  const int    imax )   // maximal bin number (not included)
   {
-    if ( UNLIKELY( !histo ) ) {
-      return s_long_bad;
-    } // RETURN
-    if ( imin == imax ) {
-      return 0;
-    } // RETURN
-    if ( imax < imin ) {
-      return _nEntries( histo, imax, imin );
-    } // RETURN
+    if ( UNLIKELY( !histo ) ) { return s_long_bad; }              // RETURN
+    if ( imin == imax ) { return 0; }                             // RETURN
+    if ( imax < imin ) { return _nEntries( histo, imax, imin ); } // RETURN
     //
     long result = 0;
-    if ( 0 > imin ) {
-      result += histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN );
-    }
+    if ( 0 > imin ) { result += histo->binEntries( AIDA::IAxis::UNDERFLOW_BIN ); }
     // get the exis
     const auto& axis = histo->axis();
     // number of bins
     const auto nBins = axis.bins();
-    if ( nBins < imin ) {
-      return 0;
-    } // RETURN
+    if ( nBins < imin ) { return 0; } // RETURN
     // loop over bins
-    for ( int i = imin; i < nBins && imin <= i && i < imax; ++i ) {
-      result += histo->binEntries( i );
-    }
+    for ( int i = imin; i < nBins && imin <= i && i < imax; ++i ) { result += histo->binEntries( i ); }
     //
-    if ( nBins < imax ) {
-      result += histo->binEntries( AIDA::IAxis::OVERFLOW_BIN );
-    }
+    if ( nBins < imax ) { result += histo->binEntries( AIDA::IAxis::OVERFLOW_BIN ); }
     //
     return result; // RETURN
   }
@@ -566,23 +419,14 @@ namespace
   //  get the fraction of entries in histogram up to the given bin (not-included)
   // ============================================================================
   template <typename HISTO>
-  double _nEntriesFrac( const HISTO* histo, const int imax )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _nEntriesFrac( const HISTO* histo, const int imax ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     //
     const auto N = histo->allEntries();
-    if ( 0 >= N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 >= N ) { return s_bad; } // RETURN
     const auto n = _nEntries( histo, imax );
-    if ( 0 > n ) {
-      return s_bad;
-    } // RETURN
-    if ( n > N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > n ) { return s_bad; } // RETURN
+    if ( n > N ) { return s_bad; } // RETURN
     //
     return (double)n / (double)N; // RETURN
   }
@@ -592,23 +436,15 @@ namespace
   // ============================================================================
   template <typename HISTO>
   double _nEntriesFrac( const HISTO* histo,
-                        const int    imin,  // minimal bin number (included)
-                        const int    imax ) // maximal bin number (not included)
+                        const int    imin, // minimal bin number (included)
+                        const int    imax )   // maximal bin number (not included)
   {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     const auto N = histo->allEntries();
-    if ( 0 >= N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 >= N ) { return s_bad; } // RETURN
     const auto n = _nEntries( histo, imin, imax );
-    if ( 0 > n ) {
-      return s_bad;
-    } // RETURN
-    if ( n > N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > n ) { return s_bad; } // RETURN
+    if ( n > N ) { return s_bad; } // RETURN
     //
     return (double)n / (double)N; // RETURN
   }
@@ -616,23 +452,14 @@ namespace
   // # entries fraction error
   // ============================================================================
   template <typename HISTO>
-  double _nEntriesFracErr( const HISTO* histo, const int imax )
-  {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+  double _nEntriesFracErr( const HISTO* histo, const int imax ) {
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     //
     const auto N = histo->allEntries();
-    if ( 0 >= N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 >= N ) { return s_bad; } // RETURN
     const auto n = _nEntries( histo, imax );
-    if ( 0 > n ) {
-      return s_bad;
-    } // RETURN
-    if ( n > N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > n ) { return s_bad; } // RETURN
+    if ( n > N ) { return s_bad; } // RETURN
     //
     const auto _n1 = std::max( (double)n, 1.0 );
     const auto _n2 = std::max( (double)( N - n ), 1.0 );
@@ -644,31 +471,23 @@ namespace
   // ============================================================================
   template <typename HISTO>
   double _nEntriesFracErr( const HISTO* histo,
-                           const int    imin,  // minimal bin number (included)
-                           const int    imax ) // maximal bin number (not included)
+                           const int    imin, // minimal bin number (included)
+                           const int    imax )   // maximal bin number (not included)
   {
-    if ( UNLIKELY( !histo ) ) {
-      return s_bad;
-    } // RETURN
+    if ( UNLIKELY( !histo ) ) { return s_bad; } // RETURN
     //
     const auto N = histo->allEntries();
-    if ( 0 >= N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 >= N ) { return s_bad; } // RETURN
     const auto n = _nEntries( histo, imin, imax );
-    if ( 0 > n ) {
-      return s_bad;
-    } // RETURN
-    if ( n > N ) {
-      return s_bad;
-    } // RETURN
+    if ( 0 > n ) { return s_bad; } // RETURN
+    if ( n > N ) { return s_bad; } // RETURN
     //
     const auto _n1 = std::max( (double)n, 1.0 );
     const auto _n2 = std::max( (double)( N - n ), 1.0 );
     //
     return std::sqrt( _n1 * ( _n2 / N ) ) / N; // RETURN
   }
-} // anon namespace
+} // namespace
 // ============================================================================
 /*  get the moment of the certain around the specified  "value"
  *  @param histo histogram
@@ -677,8 +496,8 @@ namespace
  *  @return the evaluated moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::moment( const AIDA::IHistogram1D* histo, const unsigned int order, const double value )
-{
+double Gaudi::Utils::HistoStats::moment( const AIDA::IHistogram1D* histo, const unsigned int order,
+                                         const double value ) {
   return _moment( histo, order, value );
 }
 // ============================================================================
@@ -689,8 +508,7 @@ double Gaudi::Utils::HistoStats::moment( const AIDA::IHistogram1D* histo, const 
  *  @return the evaluated moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::moment( const AIDA::IProfile1D* histo, const unsigned int order, const double value )
-{
+double Gaudi::Utils::HistoStats::moment( const AIDA::IProfile1D* histo, const unsigned int order, const double value ) {
   return _moment( histo, order, value );
 }
 // ============================================================================
@@ -701,8 +519,7 @@ double Gaudi::Utils::HistoStats::moment( const AIDA::IProfile1D* histo, const un
  *  @return the evaluated uncertanty in the moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::momentErr( const AIDA::IHistogram1D* histo, const unsigned int order )
-{
+double Gaudi::Utils::HistoStats::momentErr( const AIDA::IHistogram1D* histo, const unsigned int order ) {
   return _momentErr( histo, order );
 }
 // ============================================================================
@@ -713,8 +530,7 @@ double Gaudi::Utils::HistoStats::momentErr( const AIDA::IHistogram1D* histo, con
  *  @return the evaluated uncertanty in the moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::momentErr( const AIDA::IProfile1D* histo, const unsigned int order )
-{
+double Gaudi::Utils::HistoStats::momentErr( const AIDA::IProfile1D* histo, const unsigned int order ) {
   return _momentErr( histo, order );
 }
 // ============================================================================
@@ -725,8 +541,7 @@ double Gaudi::Utils::HistoStats::momentErr( const AIDA::IProfile1D* histo, const
  *  @return the evaluated central moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::centralMoment( const AIDA::IHistogram1D* histo, const unsigned int order )
-{
+double Gaudi::Utils::HistoStats::centralMoment( const AIDA::IHistogram1D* histo, const unsigned int order ) {
   return _centralMoment( histo, order );
 }
 // ============================================================================
@@ -737,8 +552,7 @@ double Gaudi::Utils::HistoStats::centralMoment( const AIDA::IHistogram1D* histo,
  *  @return the evaluated central moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::centralMoment( const AIDA::IProfile1D* histo, const unsigned int order )
-{
+double Gaudi::Utils::HistoStats::centralMoment( const AIDA::IProfile1D* histo, const unsigned int order ) {
   return _centralMoment( histo, order );
 }
 // ============================================================================
@@ -751,8 +565,7 @@ double Gaudi::Utils::HistoStats::centralMoment( const AIDA::IProfile1D* histo, c
  *  @return the evaluated uncertanty in the central moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::centralMomentErr( const AIDA::IHistogram1D* histo, const unsigned int order )
-{
+double Gaudi::Utils::HistoStats::centralMomentErr( const AIDA::IHistogram1D* histo, const unsigned int order ) {
   return _centralMomentErr( histo, order );
 }
 // ============================================================================
@@ -765,8 +578,7 @@ double Gaudi::Utils::HistoStats::centralMomentErr( const AIDA::IHistogram1D* his
  *  @return the evaluated uncertanty in the central moment
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::centralMomentErr( const AIDA::IProfile1D* histo, const unsigned int order )
-{
+double Gaudi::Utils::HistoStats::centralMomentErr( const AIDA::IProfile1D* histo, const unsigned int order ) {
   return _centralMomentErr( histo, order );
 }
 // ============================================================================
@@ -844,8 +656,7 @@ double Gaudi::Utils::HistoStats::rmsErr( const AIDA::IProfile1D* histo ) { retur
 // ============================================================================
 // get an error in the sum bin height ("in range integral")
 // ============================================================================
-double Gaudi::Utils::HistoStats::sumBinHeightErr( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::sumBinHeightErr( const AIDA::IHistogram1D* histo ) {
   return _sumBinHeightErr( histo );
 }
 // ============================================================================
@@ -855,127 +666,109 @@ double Gaudi::Utils::HistoStats::sumBinHeightErr( const AIDA::IProfile1D* histo 
 // ============================================================================
 // get an error in the sum all bin height ("integral")
 // ============================================================================
-double Gaudi::Utils::HistoStats::sumAllBinHeightErr( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::sumAllBinHeightErr( const AIDA::IHistogram1D* histo ) {
   return _sumAllBinHeightErr( histo );
 }
 // ============================================================================
 // get an error in the sum all bin height ("integral")
 // ============================================================================
-double Gaudi::Utils::HistoStats::sumAllBinHeightErr( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::sumAllBinHeightErr( const AIDA::IProfile1D* histo ) {
   return _sumAllBinHeightErr( histo );
 }
 // ============================================================================
 // the fraction of overflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowEntriesFrac( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowEntriesFrac( const AIDA::IHistogram1D* histo ) {
   return _overflowEntriesFrac( histo );
 }
 // ============================================================================
 // the fraction of overflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowEntriesFrac( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowEntriesFrac( const AIDA::IProfile1D* histo ) {
   return _overflowEntriesFrac( histo );
 }
 // ============================================================================
 // the fraction of underflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowEntriesFrac( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowEntriesFrac( const AIDA::IHistogram1D* histo ) {
   return _underflowEntriesFrac( histo );
 }
 // ============================================================================
 // the fraction of underflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowEntriesFrac( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowEntriesFrac( const AIDA::IProfile1D* histo ) {
   return _underflowEntriesFrac( histo );
 }
 // ============================================================================
 // the fraction of overflow integral (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowIntegralFrac( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowIntegralFrac( const AIDA::IHistogram1D* histo ) {
   return _overflowIntegralFrac( histo );
 }
 // ============================================================================
 // the fraction of overflow integral (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowIntegralFrac( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowIntegralFrac( const AIDA::IProfile1D* histo ) {
   return _overflowIntegralFrac( histo );
 }
 // ============================================================================
 // the fraction of underflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowIntegralFrac( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowIntegralFrac( const AIDA::IHistogram1D* histo ) {
   return _underflowIntegralFrac( histo );
 }
 // ============================================================================
 // the fraction of underflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowIntegralFrac( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowIntegralFrac( const AIDA::IProfile1D* histo ) {
   return _underflowIntegralFrac( histo );
 }
 // ============================================================================
 // error on fraction of overflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowEntriesFracErr( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowEntriesFracErr( const AIDA::IHistogram1D* histo ) {
   return _overflowEntriesFracErr( histo );
 }
 // ============================================================================
 // error on fraction of overflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowEntriesFracErr( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowEntriesFracErr( const AIDA::IProfile1D* histo ) {
   return _overflowEntriesFracErr( histo );
 }
 // ============================================================================
 // error on fraction of underflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowEntriesFracErr( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowEntriesFracErr( const AIDA::IHistogram1D* histo ) {
   return _underflowEntriesFracErr( histo );
 }
 // ============================================================================
 // error on fraction of underflow entries  (useful for shape comparison)
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowEntriesFracErr( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowEntriesFracErr( const AIDA::IProfile1D* histo ) {
   return _underflowEntriesFracErr( histo );
 }
 // ============================================================================
 // the error on fraction of overflow intergal
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowIntegralFracErr( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowIntegralFracErr( const AIDA::IHistogram1D* histo ) {
   return _overflowIntegralFracErr( histo );
 }
 // ============================================================================
 // the error on fraction of overflow intergal
 // ============================================================================
-double Gaudi::Utils::HistoStats::overflowIntegralFracErr( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::overflowIntegralFracErr( const AIDA::IProfile1D* histo ) {
   return _overflowIntegralFracErr( histo );
 }
 // ============================================================================
 // the error on fraction of overflow intergal
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowIntegralFracErr( const AIDA::IHistogram1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowIntegralFracErr( const AIDA::IHistogram1D* histo ) {
   return _underflowIntegralFracErr( histo );
 }
 // ============================================================================
 // the error on fraction of overflow intergal
 // ============================================================================
-double Gaudi::Utils::HistoStats::underflowIntegralFracErr( const AIDA::IProfile1D* histo )
-{
+double Gaudi::Utils::HistoStats::underflowIntegralFracErr( const AIDA::IProfile1D* histo ) {
   return _underflowIntegralFracErr( histo );
 }
 // ============================================================================
@@ -987,8 +780,7 @@ double Gaudi::Utils::HistoStats::underflowIntegralFracErr( const AIDA::IProfile1
  *  @param number of entries
  */
 // ============================================================================
-long Gaudi::Utils::HistoStats::nEntries( const AIDA::IHistogram1D* histo, const int imax )
-{
+long Gaudi::Utils::HistoStats::nEntries( const AIDA::IHistogram1D* histo, const int imax ) {
   return _nEntries( histo, imax );
 }
 // ============================================================================
@@ -1000,8 +792,7 @@ long Gaudi::Utils::HistoStats::nEntries( const AIDA::IHistogram1D* histo, const 
  *  @param number of entries
  */
 // ============================================================================
-long Gaudi::Utils::HistoStats::nEntries( const AIDA::IProfile1D* histo, const int imax )
-{
+long Gaudi::Utils::HistoStats::nEntries( const AIDA::IProfile1D* histo, const int imax ) {
   return _nEntries( histo, imax );
 }
 // ============================================================================
@@ -1014,8 +805,8 @@ long Gaudi::Utils::HistoStats::nEntries( const AIDA::IProfile1D* histo, const in
  */
 // ============================================================================
 long Gaudi::Utils::HistoStats::nEntries( const AIDA::IHistogram1D* histo,
-                                         const int                 imin,  // minimal bin number (included)
-                                         const int                 imax ) // maximal bin number (not included)
+                                         const int                 imin, // minimal bin number (included)
+                                         const int                 imax )                // maximal bin number (not included)
 {
   return _nEntries( histo, imin, imax );
 }
@@ -1029,8 +820,8 @@ long Gaudi::Utils::HistoStats::nEntries( const AIDA::IHistogram1D* histo,
  */
 // ============================================================================
 long Gaudi::Utils::HistoStats::nEntries( const AIDA::IProfile1D* histo,
-                                         const int               imin,  // minimal bin number (included)
-                                         const int               imax ) // maximal bin number (not included)
+                                         const int               imin, // minimal bin number (included)
+                                         const int               imax )              // maximal bin number (not included)
 {
   return _nEntries( histo, imin, imax );
 }
@@ -1043,8 +834,7 @@ long Gaudi::Utils::HistoStats::nEntries( const AIDA::IProfile1D* histo,
  *  @param fraction of entries
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IHistogram1D* histo, const int imax )
-{
+double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IHistogram1D* histo, const int imax ) {
   return _nEntriesFrac( histo, imax );
 }
 // ============================================================================
@@ -1056,8 +846,7 @@ double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IHistogram1D* histo, 
  *  @param fraction of entries
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IProfile1D* histo, const int imax )
-{
+double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IProfile1D* histo, const int imax ) {
   return _nEntriesFrac( histo, imax );
 }
 // ============================================================================
@@ -1070,8 +859,8 @@ double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IProfile1D* histo, co
  */
 // ============================================================================
 double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IHistogram1D* histo,
-                                               const int                 imin,  // minimal bin number (included)
-                                               const int                 imax ) // maximal bin number (not included)
+                                               const int                 imin, // minimal bin number (included)
+                                               const int                 imax )                // maximal bin number (not included)
 {
   return _nEntriesFrac( histo, imin, imax );
 }
@@ -1085,8 +874,8 @@ double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IHistogram1D* histo,
  */
 // ============================================================================
 double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IProfile1D* histo,
-                                               const int               imin,  // minimal bin number (included)
-                                               const int               imax ) // maximal bin number (not included)
+                                               const int               imin, // minimal bin number (included)
+                                               const int               imax )              // maximal bin number (not included)
 {
   return _nEntriesFrac( histo, imin, imax );
 }
@@ -1099,8 +888,7 @@ double Gaudi::Utils::HistoStats::nEntriesFrac( const AIDA::IProfile1D* histo,
  *  @param error for the fraction of entries
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IHistogram1D* histo, const int imax )
-{
+double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IHistogram1D* histo, const int imax ) {
   return _nEntriesFracErr( histo, imax );
 }
 // ============================================================================
@@ -1112,8 +900,7 @@ double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IHistogram1D* hist
  *  @param error for the fraction of entries
  */
 // ============================================================================
-double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IProfile1D* histo, const int imax )
-{
+double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IProfile1D* histo, const int imax ) {
   return _nEntriesFracErr( histo, imax );
 }
 // ============================================================================
@@ -1126,8 +913,8 @@ double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IProfile1D* histo,
  */
 // ============================================================================
 double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IHistogram1D* histo,
-                                                  const int                 imin,  // minimal bin number (included)
-                                                  const int                 imax ) // maximal bin number (not included)
+                                                  const int                 imin, // minimal bin number (included)
+                                                  const int                 imax )                // maximal bin number (not included)
 {
   return _nEntriesFracErr( histo, imin, imax );
 }
@@ -1141,8 +928,8 @@ double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IHistogram1D* hist
  */
 // ============================================================================
 double Gaudi::Utils::HistoStats::nEntriesFracErr( const AIDA::IProfile1D* histo,
-                                                  const int               imin,  // minimal bin number (included)
-                                                  const int               imax ) // maximal bin number (not included)
+                                                  const int               imin, // minimal bin number (included)
+                                                  const int               imax )              // maximal bin number (not included)
 {
   return _nEntriesFracErr( histo, imin, imax );
 }

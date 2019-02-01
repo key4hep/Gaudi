@@ -8,8 +8,7 @@
 class IIncidentSvc;
 class IncidentListenerTest;
 
-class IncidentListenerTestAlg : public GaudiAlgorithm
-{
+class IncidentListenerTestAlg : public GaudiAlgorithm {
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
 
@@ -20,8 +19,8 @@ public:
   static std::string& incident();
 
 private:
-  static std::string    s_incidentType;
-  SmartIF<IIncidentSvc> m_incSvc;
+  static std::string                                   s_incidentType;
+  SmartIF<IIncidentSvc>                                m_incSvc;
   std::array<std::unique_ptr<IncidentListenerTest>, 6> m_listener;
 };
 

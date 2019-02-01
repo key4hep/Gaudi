@@ -13,40 +13,38 @@
 //====================================================================
 #if defined( _WIN32 )
 
-#if _MSC_VER < 1500
+#  if _MSC_VER < 1500
 // This causes a problem with VC9
 // http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/cfb5a608-cc6c-49b5-8e9e-6e2cbeef43a3
-namespace Win
-{
-#else
+namespace Win {
+#  else
 // Empty macro to hide the references to the 'Win' namespace
-#define Win
-#endif
+#    define Win
+#  endif
 
 // Avoid conflicts between Windows' headers and MSG.
-#ifndef NOMSG
-#define NOMSG
-#ifndef NOGDI
-#define NOGDI
-#endif
-#endif
-#include "process.h"
-#include "windows.h"
+#  ifndef NOMSG
+#    define NOMSG
+#    ifndef NOGDI
+#      define NOGDI
+#    endif
+#  endif
+#  include "process.h"
+#  include "windows.h"
 
-#if _MSC_VER < 1500
+#  if _MSC_VER < 1500
 }; // namespace Win
-#endif
+#  endif
 
 #else
-#include <unistd.h>
+#  include <unistd.h>
 #endif
 
 // Framework include files
 #include "GaudiKernel/Debugger.h"
 
 /// Break the execution of the application and invoke the debugger
-long System::breakExecution()
-{
+long System::breakExecution() {
 #ifdef _WIN32
   _asm int 3 return 1;
 #else
@@ -56,8 +54,7 @@ long System::breakExecution()
 }
 
 /// Break the execution of the application and invoke the debugger on a possibly remote process
-long System::breakExecution( long pid )
-{
+long System::breakExecution( long pid ) {
 #ifdef _WIN32
   long result = 0;
   if ( pid == Win::_getpid() ) {

@@ -22,8 +22,7 @@ class MsgStream;
  **             terminated and the Sequencer assumes the same filtered state as the
  **             last member.
  **/
-class GAUDI_API Sequencer : public Gaudi::Sequence
-{
+class GAUDI_API Sequencer : public Gaudi::Sequence {
 public:
   /**
    ** Constructor(s)
@@ -108,7 +107,7 @@ public:
   StatusCode createAndAppend( const std::string& type,      // The concrete algorithm class of the algorithm
                               const std::string& name,      // The name to be given to the algorithm
                               Gaudi::Algorithm*& pAlgorithm // Set to point to the newly created algorithm object
-                              );
+  );
 
   /**
    ** Create a algorithm and append it to the sequencer branch. A call to this method
@@ -119,11 +118,11 @@ public:
    ** directly via the new operator is preferred since then the framework
    ** may take care of all of the necessary book-keeping.
    **/
-  StatusCode
-  createAndAppendToBranch( const std::string& type,      // The concrete algorithm class of the algorithm
-                           const std::string& name,      // The name to be given to the algorithm
-                           Gaudi::Algorithm*& pAlgorithm // Set to point to the newly created algorithm object
-                           );
+  StatusCode createAndAppendToBranch( const std::string& type,      // The concrete algorithm class of the algorithm
+                                      const std::string& name,      // The name to be given to the algorithm
+                                      Gaudi::Algorithm*& pAlgorithm // Set to point to the newly created algorithm
+                                                                    // object
+  );
 
   /**
    ** Remove the specified algorithm from the sequencer
@@ -210,7 +209,6 @@ private:
                                                     {},
                                                     [this]( auto& ) {
                                                       if ( this->isInitialized() ) this->decodeMemberNames().ignore();
-
                                                     },
                                                     "member names"};
   Gaudi::Property<std::vector<std::string>> m_branchNames{this,
@@ -227,7 +225,7 @@ private:
   std::vector<Gaudi::Algorithm*> m_branchAlgs;       // Branch algorithms
   std::vector<bool>              m_isBranchInverted; // Branch Member logic inverted list
 
-  mutable std::mutex m_branchFilterMutex;
+  mutable std::mutex                                m_branchFilterMutex;
   mutable std::map<EventContext::ContextID_t, bool> m_branchFilterPassed; // Branch filter passed flag
 };
 

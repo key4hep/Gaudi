@@ -25,12 +25,11 @@ DECLARE_CONVERTER( RootHistCnv::RFileCnv )
 RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc ) : RDirectoryCnv( svc, classID() ) {}
 
 //------------------------------------------------------------------------------
-StatusCode RootHistCnv::RFileCnv::initialize()
-{
+StatusCode RootHistCnv::RFileCnv::initialize() {
   // Set compression level property ...
-  ISvcLocator* svcLoc     = Gaudi::svcLocator();
-  auto         jobSvc     = svcLoc->service<IJobOptionsSvc>( "JobOptionsSvc" );
-  auto         prop       = jobSvc->getClientProperty( "RFileCnv", "GlobalCompression" );
+  ISvcLocator* svcLoc = Gaudi::svcLocator();
+  auto         jobSvc = svcLoc->service<IJobOptionsSvc>( "JobOptionsSvc" );
+  auto         prop   = jobSvc->getClientProperty( "RFileCnv", "GlobalCompression" );
   if ( prop ) m_compLevel = prop->toString();
 
   // initialise base class
@@ -100,9 +99,7 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress, DataObjec
   } else if ( mode[0] == 'N' ) {
 
     log << MSG::INFO << "opening Root file \"" << fname << "\" for writing";
-    if ( !m_compLevel.empty() ) {
-      log << ", CompressionLevel='" << m_compLevel << "'";
-    }
+    if ( !m_compLevel.empty() ) { log << ", CompressionLevel='" << m_compLevel << "'"; }
     log << endmsg;
 
     rfile = TFile::Open( fname.c_str(), "RECREATE", "Gaudi Trees" );
@@ -165,18 +162,16 @@ StatusCode RootHistCnv::RFileCnv::updateRep( IOpaqueAddress* pAddress, DataObjec
     }
 
     /*
-    * MetaData
-    * Ana Trisovic
-    * March 2015
-    * */
+     * MetaData
+     * Ana Trisovic
+     * March 2015
+     * */
     SmartIF<IMetaDataSvc> mds;
     mds = serviceLocator()->service( "Gaudi::MetaDataSvc", false );
     // auto mds = service<IMetaDataSvc>("MetaDataSvc", false);
     if ( mds ) {
       std::map<std::string, std::string> m_metadata = mds->getMetaDataMap();
-      if ( !rfile->WriteObject( &m_metadata, "info" ) ) {
-        return StatusCode::FAILURE;
-      }
+      if ( !rfile->WriteObject( &m_metadata, "info" ) ) { return StatusCode::FAILURE; }
     }
     /* */
 

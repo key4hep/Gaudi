@@ -38,32 +38,26 @@
  *  @date 2009-10-09
  */
 // ===========================================================================
-DataObject* GaudiPython::Helper::findobject( IDataProviderSvc* dpsvc, const std::string& path )
-{
+DataObject* GaudiPython::Helper::findobject( IDataProviderSvc* dpsvc, const std::string& path ) {
   DataObject* o = nullptr;
-  if ( !dpsvc ) {
-    return nullptr;
-  }                                             // RETURN
+  if ( !dpsvc ) { return nullptr; }             // RETURN
   StatusCode sc = dpsvc->findObject( path, o ); // NB!
   return sc.isSuccess() ? o : nullptr;          // RETURN
 }
 // ===========================================================================
 /// Anonymous namespace to hide local class
-namespace
-{
+namespace {
   // ==========================================================================
   /** the property of DataService
    *  @see DataSvc
    */
   const std::string s_NAME = "EnableFaultHandler";
   // ======================================================================
-  class Disabler
-  {
+  class Disabler {
   public:
     // =========================================================================
     /// constructor from the interface  and flag
-    Disabler( IInterface* svc, bool disable ) : m_svc( svc ), m_old( s_NAME, true ), m_enable( !disable )
-    {
+    Disabler( IInterface* svc, bool disable ) : m_svc( svc ), m_old( s_NAME, true ), m_enable( !disable ) {
       if ( !m_svc ) {
         m_code = StatusCode::FAILURE;
       } else if ( m_enable ) { /* no action here!! */
@@ -80,8 +74,7 @@ namespace
     }
     // =========================================================================
     /// destructor: restore the property
-    ~Disabler()
-    {
+    ~Disabler() {
       if ( m_enable ) { /* no action here! */
       }                 // no action here
       else if ( code().isSuccess() && m_old.value() != m_enable ) {
@@ -114,11 +107,8 @@ namespace
  */
 // ===========================================================================
 DataObject* GaudiPython::Helper::getobject( IDataProviderSvc* dpsvc, const std::string& path, const bool retrieve,
-                                            const bool disable )
-{
-  if ( !dpsvc ) {
-    return nullptr;
-  } // RETURN 0
+                                            const bool disable ) {
+  if ( !dpsvc ) { return nullptr; } // RETURN 0
   // create the sentry:
   Disabler sentry( dpsvc, disable );
   //

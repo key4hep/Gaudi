@@ -17,9 +17,7 @@
 #include "FuncMinimum.h"
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 /** @file
@@ -32,8 +30,7 @@ using namespace CLHEP;
 // ============================================================================
 // ============================================================================
 FuncMinimum::FuncMinimumMisc::FuncMinimumMisc( const FuncMinimum::GenFunc& func, FuncMinimum::Arg& arg )
-    : m_argum( arg ), m_eq( &func ), m_grad()
-{
+    : m_argum( arg ), m_eq( &func ), m_grad() {
   const size_t N = func.dimensionality();
 
   for ( size_t i = 0; i < N; ++i ) {
@@ -42,33 +39,26 @@ FuncMinimum::FuncMinimumMisc::FuncMinimumMisc( const FuncMinimum::GenFunc& func,
   }
 }
 //=============================================================================
-namespace
-{
+namespace {
   using namespace Genfun;
   /// The function which we minimize
-  double fun_gsl( const gsl_vector* v, void* params )
-  {
+  double fun_gsl( const gsl_vector* v, void* params ) {
     FuncMinimum::FuncMinimumMisc* local = static_cast<FuncMinimum::FuncMinimumMisc*>( params );
     const FuncMinimum::GenFunc&   eq    = *( local->equation() );
     Argument&                     arg   = local->argument();
 
-    for ( unsigned int i = 0; i < v->size; ++i ) {
-      arg[i] = gsl_vector_get( v, i );
-    }
+    for ( unsigned int i = 0; i < v->size; ++i ) { arg[i] = gsl_vector_get( v, i ); }
 
     return eq( arg );
   }
 
   /// The gradient of the function "fun_gsl"
-  void dfun_gsl( const gsl_vector* v, void* params, gsl_vector* df )
-  {
+  void dfun_gsl( const gsl_vector* v, void* params, gsl_vector* df ) {
     FuncMinimum::FuncMinimumMisc* local = static_cast<FuncMinimum::FuncMinimumMisc*>( params );
     const FuncMinimum::Gradient&  grad  = local->gradient();
     Argument&                     arg   = local->argument();
 
-    for ( unsigned int i = 0; i < v->size; ++i ) {
-      arg[i] = gsl_vector_get( v, i );
-    }
+    for ( unsigned int i = 0; i < v->size; ++i ) { arg[i] = gsl_vector_get( v, i ); }
 
     for ( unsigned int i = 0; i < df->size; ++i ) {
       Genfun::GENFUNCTION f = *( grad[i] );
@@ -78,12 +68,11 @@ namespace
 
   /// Compute both the function "fun_gsl"
   /// and gradient of this function "dfun_gsl" together
-  void fdfun_gsl( const gsl_vector* v, void* params, double* f, gsl_vector* df )
-  {
+  void fdfun_gsl( const gsl_vector* v, void* params, double* f, gsl_vector* df ) {
     *f = fun_gsl( v, params );
     dfun_gsl( v, params, df );
   }
-}
+} // namespace
 
 //=============================================================================
 /** Find minimum of the function "GenFunc"
@@ -125,9 +114,7 @@ StatusCode FuncMinimum::minimum( const IFuncMinimum::GenFunc& func, IFuncMinimum
 
     status = gsl_multimin_test_gradient( s->gradient, m_norm_gradient );
 
-    if ( status != GSL_CONTINUE ) {
-      break;
-    }
+    if ( status != GSL_CONTINUE ) { break; }
   }
 
   for ( unsigned int i = 0; i < vect.vector.size; ++i ) {
@@ -148,9 +135,7 @@ StatusCode FuncMinimum::minimum( const IFuncMinimum::GenFunc& func, IFuncMinimum
 
   gsl_multimin_fdfminimizer_free( s );
 
-  if ( status ) {
-    return Error( "Method finished with '" + std::string( gsl_strerror( status ) ) + "' error" );
-  }
+  if ( status ) { return Error( "Method finished with '" + std::string( gsl_strerror( status ) ) + "' error" ); }
 
   return StatusCode::SUCCESS;
 }
@@ -174,7 +159,7 @@ StatusCode FuncMinimum::minimum( const IFuncMinimum::GenFunc& func, IFuncMinimum
   for ( unsigned int i = 0; i < arg.dimension(); ++i ) {
     auto f = func.partial( i );
     for ( unsigned int j = i; j < arg.dimension(); ++j ) {
-      auto fij = f.partial( j );
+      auto fij            = f.partial( j );
       cov( i + 1, j + 1 ) = 0.5 * fij( arg );
     }
   }
@@ -190,9 +175,7 @@ StatusCode FuncMinimum::initialize()
 {
   StatusCode sc = GaudiTool::initialize();
 
-  if ( sc.isFailure() ) {
-    return Error( "Could not initialize base class GaudiTool", sc );
-  }
+  if ( sc.isFailure() ) { return Error( "Could not initialize base class GaudiTool", sc ); }
 
   /// The algorithm for multidimensional minimization
   if ( "conjugate_fr" == m_algType ) {

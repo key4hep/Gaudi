@@ -5,8 +5,7 @@
 #include "GaudiKernel/IDataHandleHolder.h"
 #include <set>
 
-class DHHVisitor : public IDataHandleVisitor
-{
+class DHHVisitor : public IDataHandleVisitor {
 public:
   DHHVisitor( DataObjIDColl& ido, DataObjIDColl& odo );
 

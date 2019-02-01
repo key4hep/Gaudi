@@ -21,8 +21,7 @@ using namespace std;
 namespace bf = boost::filesystem;
 
 //=============================================================================
-StatusCode SequentialOutputStream::writeObjects()
-{
+StatusCode SequentialOutputStream::writeObjects() {
   try {
     makeFilename();
   } catch ( const GaudiException& except ) {
@@ -33,8 +32,7 @@ StatusCode SequentialOutputStream::writeObjects()
 }
 
 //=============================================================================
-StatusCode SequentialOutputStream::execute()
-{
+StatusCode SequentialOutputStream::execute() {
   // Clear any previously existing item list
   clearSelection();
   // Test whether this event should be output
@@ -48,8 +46,7 @@ StatusCode SequentialOutputStream::execute()
 }
 
 //=============================================================================
-void SequentialOutputStream::makeFilename()
-{
+void SequentialOutputStream::makeFilename() {
   if ( m_events % m_eventsPerFile != 0 ) return;
 
   bf::path outputPath( m_outputName );
@@ -78,15 +75,11 @@ void SequentialOutputStream::makeFilename()
     string       iFile  = std::to_string( m_iFile );
     unsigned int length = 0;
 
-    if ( stem.length() > iFile.length() ) {
-      length = stem.length() - iFile.length();
-    }
+    if ( stem.length() > iFile.length() ) { length = stem.length() - iFile.length(); }
 
     stringstream name;
     if ( !dir.empty() ) name << dir << "/";
-    for ( unsigned int i = 0; i < length; ++i ) {
-      name << "0";
-    }
+    for ( unsigned int i = 0; i < length; ++i ) { name << "0"; }
     name << iFile << extension;
     m_outputName = name.str();
   } else {
@@ -98,9 +91,7 @@ void SequentialOutputStream::makeFilename()
     string iFile = std::to_string( m_iFile );
 
     unsigned int length = 0;
-    if ( m_nNumbersAdded > iFile.length() ) {
-      length = m_nNumbersAdded - iFile.length();
-    }
+    if ( m_nNumbersAdded > iFile.length() ) { length = m_nNumbersAdded - iFile.length(); }
 
     stringstream name;
     name << dir << "/" << stem;

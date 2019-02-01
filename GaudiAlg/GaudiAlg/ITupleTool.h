@@ -27,8 +27,7 @@
  */
 // ============================================================================
 
-class GAUDI_API ITupleTool : virtual public IAlgTool
-{
+class GAUDI_API ITupleTool : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( ITupleTool, 2, 0 );
@@ -68,4 +67,3 @@ public:
 
 // ============================================================================
 #endif // GAUDIALG_ITUPLETOOL_H
-// ============================================================================

@@ -26,28 +26,27 @@
 #include <Gaudi/PluginService.h>
 #include <Gaudi/PluginServiceV1.h>
 
-void help( std::string argv0 )
-{
-  std::cout << "Usage: " << argv0 << " [option] library1 [library2 ...]\n"
-                                     "\n list the component factories present in the given libraries\n\n"
-                                     "Options:\n\n"
-                                     "  -h, --help       show this help message and exit\n"
-                                     "  -o OUTPUT, --output OUTPUT\n"
-                                     "                   write the list of factories on the file OUTPUT, use - for\n"
-                                     "                   standard output (default)\n"
+void help( std::string argv0 ) {
+  std::cout << "Usage: " << argv0
+            << " [option] library1 [library2 ...]\n"
+               "\n list the component factories present in the given libraries\n\n"
+               "Options:\n\n"
+               "  -h, --help       show this help message and exit\n"
+               "  -o OUTPUT, --output OUTPUT\n"
+               "                   write the list of factories on the file OUTPUT, use - for\n"
+               "                   standard output (default)\n"
             << std::endl;
 }
 
-void usage( std::string argv0 )
-{
-  std::cout << "Usage: " << argv0 << " [option] library1 [library2 ...]\n"
-                                     "Try `"
+void usage( std::string argv0 ) {
+  std::cout << "Usage: " << argv0
+            << " [option] library1 [library2 ...]\n"
+               "Try `"
             << argv0 << " -h' for more information.\n"
             << std::endl;
 }
 
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   auto& reg2 = Gaudi::PluginService::v2::Details::Registry::instance();
   auto& reg1 = Gaudi::PluginService::v1::Details::Registry::instance();
 
@@ -65,7 +64,7 @@ int main( int argc, char* argv[] )
   {
     std::string argv0( argv[0] );
     {
-      auto i                              = argv0.rfind( '/' );
+      auto i = argv0.rfind( '/' );
       if ( i != std::string::npos ) argv0 = argv0.substr( i + 1 );
     }
 
@@ -96,9 +95,7 @@ int main( int argc, char* argv[] )
 
   // handle output option
   std::unique_ptr<std::ostream> output_file;
-  if ( output_opt != "-" ) {
-    output_file.reset( new std::ofstream{output_opt} );
-  }
+  if ( output_opt != "-" ) { output_file.reset( new std::ofstream{output_opt} ); }
   std::ostream& output = ( output_file ? *output_file : std::cout );
 
   auto dump_from = [&output, &loaded]( auto& reg, const char* lib, const char* prefix ) {

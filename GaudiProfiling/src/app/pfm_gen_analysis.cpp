@@ -86,11 +86,9 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 
 #define PIPE_BUFFER_LENGTH 1000
 
-class PipeReader
-{
+class PipeReader {
 public:
-  PipeReader( const char* cmd )
-  {
+  PipeReader( const char* cmd ) {
     pipe = popen( cmd, "r" );
     if ( !pipe ) {
       printf( "Cannot open pipe. Exiting...\n" );
@@ -100,16 +98,13 @@ public:
     bzero( buffer, PIPE_BUFFER_LENGTH );
     std::string result = "";
     while ( !feof( pipe ) ) {
-      if ( fgets( buffer, PIPE_BUFFER_LENGTH, pipe ) != NULL ) {
-        result += buffer;
-      }
+      if ( fgets( buffer, PIPE_BUFFER_LENGTH, pipe ) != NULL ) { result += buffer; }
       bzero( buffer, PIPE_BUFFER_LENGTH );
     }
     iss = new std::istringstream( result, std::istringstream::in );
   }
 
-  ~PipeReader( void )
-  {
+  ~PipeReader( void ) {
     pclose( pipe );
     delete iss;
   }
@@ -125,14 +120,9 @@ private:
 // const char *srcbuffer  : source string
 // const char **dstbuffer : destination string
 // Skips white spaces
-bool skipWhitespaces( const char* srcbuffer, const char** destbuffer )
-{
-  if ( !isspace( *srcbuffer++ ) ) {
-    return false;
-  }
-  while ( isspace( *srcbuffer ) ) {
-    srcbuffer++;
-  }
+bool skipWhitespaces( const char* srcbuffer, const char** destbuffer ) {
+  if ( !isspace( *srcbuffer++ ) ) { return false; }
+  while ( isspace( *srcbuffer ) ) { srcbuffer++; }
   *destbuffer = srcbuffer;
   return true;
 }
@@ -144,54 +134,37 @@ bool skipWhitespaces( const char* srcbuffer, const char** destbuffer )
 // Skips strings of the form '\\s+strptr\\s+' starting from buffer.
 // Returns a pointer to the first char which does not match the above regexp,
 // or 0 in case the regexp is not matched.
-bool skipString( const char* strptr, const char* srcbuffer, const char** dstbuffer )
-{
-  if ( strncmp( srcbuffer, strptr, strlen( strptr ) ) ) {
-    return false;
-  }
+bool skipString( const char* strptr, const char* srcbuffer, const char** dstbuffer ) {
+  if ( strncmp( srcbuffer, strptr, strlen( strptr ) ) ) { return false; }
   *dstbuffer = srcbuffer + strlen( strptr );
   return true;
 }
 
-class FileInfo
-{
+class FileInfo {
 public:
   typedef int Offset;
   std::string NAME;
   FileInfo( void ) : NAME( "<dynamically generated>" ) {}
-  FileInfo( const std::string& name, bool useGdb ) : NAME( name )
-  {
-    if ( useGdb ) {
-      this->createOffsetMap();
-    }
+  FileInfo( const std::string& name, bool useGdb ) : NAME( name ) {
+    if ( useGdb ) { this->createOffsetMap(); }
   }
 
-  const char* symbolByOffset( Offset offset )
-  {
-    if ( m_symbolCache.empty() ) {
-      return 0;
-    }
+  const char* symbolByOffset( Offset offset ) {
+    if ( m_symbolCache.empty() ) { return 0; }
 
     SymbolCache::iterator i = lower_bound( m_symbolCache.begin(), m_symbolCache.end(), offset, CacheItemComparator() );
-    if ( i->OFFSET == offset ) {
-      return i->NAME.c_str();
-    }
+    if ( i->OFFSET == offset ) { return i->NAME.c_str(); }
 
-    if ( i == m_symbolCache.begin() ) {
-      return m_symbolCache.begin()->NAME.c_str();
-    }
+    if ( i == m_symbolCache.begin() ) { return m_symbolCache.begin()->NAME.c_str(); }
 
     --i;
 
     return i->NAME.c_str();
   }
 
-  Offset next( Offset offset )
-  {
+  Offset next( Offset offset ) {
     SymbolCache::iterator i = upper_bound( m_symbolCache.begin(), m_symbolCache.end(), offset, CacheItemComparator() );
-    if ( i == m_symbolCache.end() ) {
-      return 0;
-    }
+    if ( i == m_symbolCache.end() ) { return 0; }
     return i->OFFSET;
   }
 
@@ -210,8 +183,7 @@ private:
     bool operator()( const int& a, const CacheItem& b ) const { return a < b.OFFSET; }
   };
 
-  void createOffsetMap( void )
-  {
+  void createOffsetMap( void ) {
     std::string commandLine = "objdump -p " + NAME;
     PipeReader  objdump( commandLine.c_str() );
     std::string oldname;
@@ -288,19 +260,18 @@ private:
 
 static std::map<std::string, unsigned int> modules_tot_samples;
 static std::map<std::string, FileInfo>     libsInfo;
-static int nehalem;
+static int                                 nehalem;
 
 static std::map<std::string, std::map<std::string, double>> C_modules;
-static std::vector<std::string> C_events;
-static std::vector<std::string> S_events;
+static std::vector<std::string>                             C_events;
+static std::vector<std::string>                             S_events;
 
 static std::vector<std::string> core_caa_events;
 static std::vector<std::string> nhm_caa_events;
 static std::vector<std::string> core_caa_events_displ;
 static std::vector<std::string> nhm_caa_events_displ;
 
-void init_core_caa_events()
-{
+void init_core_caa_events() {
   core_caa_events.push_back( "BRANCH_INSTRUCTIONS_RETIRED" );
   core_caa_events.push_back( "ILD_STALL" );
   core_caa_events.push_back( "INST_RETIRED:LOADS" );
@@ -324,8 +295,7 @@ void init_core_caa_events()
   // core_caa_events.push_back("IDLE_DURING_DIV");
 }
 
-void init_nhm_caa_events()
-{
+void init_nhm_caa_events() {
   nhm_caa_events.push_back( "ARITH:CYCLES_DIV_BUSY" );
   nhm_caa_events.push_back( "BR_INST_EXEC:ANY" );
   nhm_caa_events.push_back( "BR_INST_EXEC:DIRECT_NEAR_CALL" );
@@ -369,8 +339,7 @@ void init_nhm_caa_events()
   nhm_caa_events.push_back( "UOPS_RETIRED:ANY" );
 }
 
-bool check_for_core_caa_events()
-{
+bool check_for_core_caa_events() {
   for ( std::vector<std::string>::const_iterator it = core_caa_events.begin(); it != core_caa_events.end(); ++it ) {
     if ( find( C_events.begin(), C_events.end(), ( *it ) ) == C_events.end() ) {
       fprintf( stderr, "ERROR: Cannot find event %s!!!\naborting...\n", ( *it ).c_str() );
@@ -380,8 +349,7 @@ bool check_for_core_caa_events()
   return true;
 }
 
-bool check_for_nhm_caa_events()
-{
+bool check_for_nhm_caa_events() {
   for ( std::vector<std::string>::const_iterator it = nhm_caa_events.begin(); it != nhm_caa_events.end(); ++it ) {
     if ( find( C_events.begin(), C_events.end(), ( *it ) ) == C_events.end() ) {
       fprintf( stderr, "ERROR: Cannot find event %s!!!\naborting...\n", ( *it ).c_str() );
@@ -391,8 +359,7 @@ bool check_for_nhm_caa_events()
   return true;
 }
 
-void init_core_caa_events_displ()
-{
+void init_core_caa_events_displ() {
   core_caa_events_displ.push_back( "Total Cycles" );
   core_caa_events_displ.push_back( "Stalled Cycles" );
   core_caa_events_displ.push_back( "% of Total Cycles" );
@@ -441,8 +408,7 @@ void init_core_caa_events_displ()
   core_caa_events_displ.push_back( "% of Mispredicted Branches" );
 }
 
-void calc_core_deriv_values( double totalCycles )
-{
+void calc_core_deriv_values( double totalCycles ) {
   for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
         ++it ) {
     ( it->second )["Total Cycles"]   = ( it->second )["UNHALTED_CORE_CYCLES"];
@@ -523,8 +489,7 @@ void calc_core_deriv_values( double totalCycles )
   }
 }
 
-void init_nhm_caa_events_displ()
-{
+void init_nhm_caa_events_displ() {
   nhm_caa_events_displ.push_back( "Total Cycles" );
   nhm_caa_events_displ.push_back( "Instructions Retired" );
   nhm_caa_events_displ.push_back( "CPI" );
@@ -629,8 +594,7 @@ void init_nhm_caa_events_displ()
   nhm_caa_events_displ.push_back( "Packed % of all UOPS Retired" );
 }
 
-void calc_nhm_deriv_values( double totalCycles )
-{
+void calc_nhm_deriv_values( double totalCycles ) {
   for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
         ++it ) {
     ( it->second )["Total Cycles"] = ( it->second )["CPU_CLK_UNHALTED:THREAD_P"];
@@ -800,22 +764,20 @@ void calc_nhm_deriv_values( double totalCycles )
 }
 
 // S_module class defining the objects containing sampling results for each module
-class S_module
-{
+class S_module {
 private:
   std::map<std::string, unsigned int> samples;
-  unsigned int total_num_samples;
-  std::string  module_name;
-  std::string  arch;
-  std::string  event;
-  unsigned int cmask;
-  unsigned int inv;
-  unsigned int sp;
+  unsigned int                        total_num_samples;
+  std::string                         module_name;
+  std::string                         arch;
+  std::string                         event;
+  unsigned int                        cmask;
+  unsigned int                        inv;
+  unsigned int                        sp;
 
 public:
   S_module() { clear(); }
-  void clear()
-  {
+  void clear() {
     samples.clear();
     total_num_samples = 0;
     sp                = 0;
@@ -825,8 +787,7 @@ public:
     sp                = 0;
   }
   void init( const char* name, const char* architecture, const char* event_name, unsigned int c_mask,
-             unsigned int inv_mask, unsigned int smpl_period )
-  {
+             unsigned int inv_mask, unsigned int smpl_period ) {
     module_name = name;
     arch        = architecture;
     event       = event_name;
@@ -834,8 +795,7 @@ public:
     inv         = inv_mask;
     sp          = smpl_period;
   }
-  void set_total( unsigned int total )
-  {
+  void set_total( unsigned int total ) {
     total_num_samples = total;
     return;
   }
@@ -844,13 +804,11 @@ public:
   unsigned int get_c_mask() { return cmask; }
   std::string  get_arch() { return arch; }
   std::string  get_event() { return event; }
-  void add_sample( const char* index, unsigned int value )
-  {
+  void         add_sample( const char* index, unsigned int value ) {
     samples[index] += value;
     return;
   }
-  bool get_max( char* index, unsigned int& value )
-  {
+  bool get_max( char* index, unsigned int& value ) {
     auto max_pos = std::max_element( samples.begin(), samples.end(),
                                      []( const auto& lhs, const auto& rhs ) { return lhs.second < rhs.second; } );
     if ( max_pos == samples.end() ) return false;
@@ -867,8 +825,7 @@ public:
 // const char *s : source string
 // char *s_mod   : destination string
 // replaces special HTML characters with correctly escaped sequences to be used inside HTML code
-void html_special_chars( const char* s, char* s_mod )
-{
+void html_special_chars( const char* s, char* s_mod ) {
   int n  = strlen( s );
   *s_mod = '\0';
   for ( int i = 0; i < n; i++ ) {
@@ -899,8 +856,7 @@ void html_special_chars( const char* s, char* s_mod )
 // func_name()
 // const char *demangled_symbol : string corresponding to the demangled symbol found by the read_file() function
 // parses the argument and returns just the function name without arguments or return types
-const char* func_name( const char* demangled_symbol )
-{
+const char* func_name( const char* demangled_symbol ) {
   char* operator_string_begin = const_cast<char*>( strstr( demangled_symbol, "operator" ) );
   if ( operator_string_begin != NULL ) {
     char* operator_string_end = operator_string_begin + 8;
@@ -1066,9 +1022,7 @@ const char* func_name( const char* demangled_symbol )
       *end_of_func_name = '\0';
     }
     c = *( --end_of_func_name );
-    while ( isalnum( c ) || c == '_' || c == '~' ) {
-      c = *( --end_of_func_name );
-    }
+    while ( isalnum( c ) || c == '_' || c == '~' ) { c = *( --end_of_func_name ); }
     return ++end_of_func_name;
   }
   return demangled_symbol;
@@ -1079,8 +1033,7 @@ const char* func_name( const char* demangled_symbol )
 // const char *event    : name of architectural event being analysed
 // const char *dir      : directory where sampling results input files are located
 // creates or updates the HTML output file using information contained inside the module object given as a parameter
-void put_S_module( S_module* cur_module, const char* dir )
-{
+void put_S_module( S_module* cur_module, const char* dir ) {
   char module_name[MAX_MODULE_NAME_LENGTH];
   bzero( module_name, MAX_MODULE_NAME_LENGTH );
   strcpy( module_name, ( cur_module->get_module_name() ).c_str() );
@@ -1094,7 +1047,7 @@ void put_S_module( S_module* cur_module, const char* dir )
   bzero( event, MAX_EVENT_NAME_LENGTH );
   strcpy( event, ( cur_module->get_event() ).c_str() );
   std::map<std::string, unsigned int>::iterator result = modules_tot_samples.find( cur_module->get_module_name() );
-  FILE* module_file;
+  FILE*                                         module_file;
   if ( result == modules_tot_samples.end() ) // not found
   {
     if ( ( !strcmp( event, "UNHALTED_CORE_CYCLES" ) && !nehalem ) ||
@@ -1144,8 +1097,9 @@ void put_S_module( S_module* cur_module, const char* dir )
   fprintf( module_file, "<a name=\"%s\"><a>\n", event_str );
   fprintf( module_file, "<table cellpadding=\"5\">\n" );
   fprintf( module_file, "<tr bgcolor=\"#EEEEEE\">\n" );
-  fprintf( module_file, "<th colspan=\"6\" align=\"left\">%s -- cmask: %u -- invmask: %u -- Total Samples: %u -- "
-                        "Sampling Period: %d</th>\n",
+  fprintf( module_file,
+           "<th colspan=\"6\" align=\"left\">%s -- cmask: %u -- invmask: %u -- Total Samples: %u -- "
+           "Sampling Period: %d</th>\n",
            event, cur_module->get_c_mask(), cur_module->get_inv_mask(), cur_module->get_total_num_samples(),
            cur_module->get_smpl_period() );
   fprintf( module_file, "</tr>\n" );
@@ -1231,8 +1185,7 @@ void put_S_module( S_module* cur_module, const char* dir )
 // demangles them to make them human-readable, creates the module objects (with their sampling values),
 // and calls the put_module() function to create (or update) the corresponding HTML output file
 // returns 0 on success
-int read_S_file( const char* dir, const char* filename )
-{
+int read_S_file( const char* dir, const char* filename ) {
   char         line[MAX_LINE_LENGTH];
   char         event[MAX_EVENT_NAME_LENGTH];
   char         arch[MAX_ARCH_NAME_LENGTH];
@@ -1305,9 +1258,7 @@ int read_S_file( const char* dir, const char* filename )
         if ( realPathName != NULL && strlen( realPathName ) > 0 ) {
           std::map<std::string, FileInfo>::iterator result;
           result = libsInfo.find( realPathName );
-          if ( result == libsInfo.end() ) {
-            libsInfo[realPathName] = FileInfo( realPathName, true );
-          }
+          if ( result == libsInfo.end() ) { libsInfo[realPathName] = FileInfo( realPathName, true ); }
           const char* temp_sym = libsInfo[realPathName].symbolByOffset( libOffset );
           if ( temp_sym != NULL && strlen( temp_sym ) > 0 ) {
             int   status;
@@ -1347,8 +1298,7 @@ int read_S_file( const char* dir, const char* filename )
   return 0;
 }
 
-int read_S_events( const char* dir, const char* filename )
-{
+int read_S_events( const char* dir, const char* filename ) {
   char event[MAX_EVENT_NAME_LENGTH];
   char arch[MAX_ARCH_NAME_LENGTH];
   char line[MAX_LINE_LENGTH];
@@ -1394,8 +1344,7 @@ int read_S_events( const char* dir, const char* filename )
 // finalize_html_pages()
 // const char *dir : directory contating sampling result files
 // puts footers in module HTML pages and creates index file
-int finalize_S_html_pages( const char* dir )
-{
+int finalize_S_html_pages( const char* dir ) {
   for ( std::map<std::string, unsigned int>::const_iterator i = modules_tot_samples.begin();
         i != modules_tot_samples.end(); i++ ) {
     char module_filename[MAX_FILENAME_LENGTH];
@@ -1421,8 +1370,7 @@ int finalize_S_html_pages( const char* dir )
 // const char *filename    : input file to analyse
 // analyses the event file and updates the list of modules with counter information found in the file
 // returns the number of modules found in the file
-int read_C_file( const char* dir, const char* filename )
-{
+int read_C_file( const char* dir, const char* filename ) {
   char event[MAX_EVENT_NAME_LENGTH];
   char arch[MAX_ARCH_NAME_LENGTH];
   char line[MAX_LINE_LENGTH];
@@ -1487,8 +1435,7 @@ int read_C_file( const char* dir, const char* filename )
   return number_of_modules;
 }
 
-void put_C_header( FILE* fp, std::vector<std::string>& columns )
-{
+void put_C_header( FILE* fp, std::vector<std::string>& columns ) {
   fprintf(
       fp,
       "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"  \"http://www.w3.org/TR/html4/loose.dtd\">\n" );
@@ -1517,8 +1464,7 @@ void put_C_header( FILE* fp, std::vector<std::string>& columns )
   return;
 }
 
-void put_C_modules( FILE* fp, std::vector<std::string>& columns )
-{
+void put_C_modules( FILE* fp, std::vector<std::string>& columns ) {
   int index = 0;
   for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
         ++it ) {
@@ -1545,14 +1491,12 @@ void put_C_modules( FILE* fp, std::vector<std::string>& columns )
   }
 }
 
-void put_C_footer( FILE* fp )
-{
+void put_C_footer( FILE* fp ) {
   fprintf( fp, "</table>\n</body>\n</html>\n" );
   return;
 }
 
-void put_C_header_csv( FILE* fp, std::vector<std::string>& columns )
-{
+void put_C_header_csv( FILE* fp, std::vector<std::string>& columns ) {
   fprintf( fp, "MODULE NAME" );
   for ( std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it ) {
     if ( strlen( it->c_str() ) == 0 ) {
@@ -1563,8 +1507,7 @@ void put_C_header_csv( FILE* fp, std::vector<std::string>& columns )
   return;
 }
 
-void put_C_modules_csv( FILE* fp, std::vector<std::string>& columns )
-{
+void put_C_modules_csv( FILE* fp, std::vector<std::string>& columns ) {
   for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
         ++it ) {
     fprintf( fp, "%s", ( it->first ).c_str() );
@@ -1589,13 +1532,12 @@ void put_C_modules_csv( FILE* fp, std::vector<std::string>& columns )
 // double value       : value to be normalized
 // double normalizeTo      : value to which the value above should be normalized
 // returns the normalized value
-double normalize( std::string field, double value, double normalizeTo )
-{
+double normalize( std::string field, double value, double normalizeTo ) {
   double max = 0;
   double counter_value;
   for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
         ++it ) {
-    counter_value                  = ( it->second )[field];
+    counter_value = ( it->second )[field];
     if ( max < counter_value ) max = counter_value;
   }
   if ( value > 0 && max > 0 && normalizeTo > 0 ) {
@@ -1609,8 +1551,7 @@ double normalize( std::string field, double value, double normalizeTo )
 // double totalCycles : total cycles spent by all the modules
 // int number_of_modules   : length of the list
 // calculates the iFactor of each module
-void calc_post_deriv_values()
-{
+void calc_post_deriv_values() {
   if ( nehalem ) {
     for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
           ++it ) {
@@ -1636,8 +1577,7 @@ void calc_post_deriv_values()
 // struct C_module *mod  : pointer to the head of the list of modules
 // int number_of_modules : length of the list
 // returns the number of total cycles spent by all the modules
-double getTotalCycles()
-{
+double getTotalCycles() {
   double sum = 0;
   if ( nehalem ) {
     for ( std::map<std::string, std::map<std::string, double>>::iterator it = C_modules.begin(); it != C_modules.end();
@@ -1656,8 +1596,7 @@ double getTotalCycles()
 // main()
 // takes as argument the directory containing results
 // and produces the HTML directory inside of it containing browsable statistics
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   if ( argc < 2 || argc > 4 ) {
     printf( "\n\nUsage: %s DIRECTORY [--caa] [--csv]\n\n", argv[0] );
     exit( 1 );
@@ -1710,9 +1649,7 @@ int main( int argc, char* argv[] )
       }
     } else if ( strstr( dirp->d_name, "_C_" ) != NULL && strstr( dirp->d_name, ".txt" ) != NULL ) {
       int res = read_C_file( argv[1], dirp->d_name );
-      if ( res > num_of_modules ) {
-        num_of_modules = res;
-      }
+      if ( res > num_of_modules ) { num_of_modules = res; }
     }
   }
   closedir( dp );

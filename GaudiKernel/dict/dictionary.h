@@ -94,8 +94,7 @@
 #include "GaudiKernel/IValidity.h"
 #include "GaudiKernel/Incident.h"
 
-namespace GaudiKernelDict
-{
+namespace GaudiKernelDict {
   struct __Instantiations : public KeyedObject<int>,
                             public KeyedObject<unsigned int>,
                             public KeyedObject<long>,
@@ -160,10 +159,9 @@ namespace GaudiKernelDict
     SmartDataPtr<ObjectContainerBase> p2;
     __Instantiations() : p1( 0, "" ), p2( 0, "" ) {}
   };
-}
+} // namespace GaudiKernelDict
 
-class IUpdateManagerSvc::PythonHelper
-{
+class IUpdateManagerSvc::PythonHelper {
 public:
   static StatusCode update( IUpdateManagerSvc* ums, void* obj ) { return ums->i_update( obj ); }
 
@@ -176,17 +174,17 @@ public:
 
 // Disable warning C4345: behavior change: an object of POD type constructed with an initializer of the
 //                        form () will be default-initialized
-#pragma warning( disable : 4345 )
+#  pragma warning( disable : 4345 )
 #endif
 
 #ifdef __ICC
 // disable icc warning #858: type qualifier on return type is meaningless
 // ... a lot of noise produced by the dictionary
-#pragma warning( disable : 858 )
+#  pragma warning( disable : 858 )
 // disable icc remark #2259: non-pointer conversion from "int" to "const char &" may lose significant bits
 //    Strange, things like NTuple::Item<char> produce this warning, as if the operation between chars are done
 //    converting them to integers first.
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 // disable icc remark #177: variable "X" was declared but never referenced
-#pragma warning( disable : 177 )
+#  pragma warning( disable : 177 )
 #endif

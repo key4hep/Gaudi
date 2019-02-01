@@ -18,13 +18,11 @@
 // ----------------------------------------------------------------------------
 DECLARE_COMPONENT( ReplayOutputStream )
 
-namespace
-{
+namespace {
 
   /// Helper class to call trigger the transitions in an OutputStream
   template <Gaudi::StateMachine::Transition TR>
-  class OutStreamTransition
-  {
+  class OutStreamTransition {
   public:
     typedef ReplayOutputStream::OutStreamsMapType::value_type ItemType;
     OutStreamTransition( MsgStream& msg ) : m_msg( msg ), m_code( StatusCode::SUCCESS, false ) {}
@@ -39,8 +37,7 @@ namespace
   };
 
   template <>
-  void OutStreamTransition<Gaudi::StateMachine::INITIALIZE>::operator()( ItemType& item )
-  {
+  void OutStreamTransition<Gaudi::StateMachine::INITIALIZE>::operator()( ItemType& item ) {
     const StatusCode sc = item.second->sysInitialize();
     if ( sc.isFailure() ) {
       m_msg << MSG::WARNING << "Failed to initialize " << item.first << endmsg;
@@ -48,8 +45,7 @@ namespace
     }
   }
   template <>
-  void OutStreamTransition<Gaudi::StateMachine::START>::operator()( ItemType& item )
-  {
+  void OutStreamTransition<Gaudi::StateMachine::START>::operator()( ItemType& item ) {
     const StatusCode sc = item.second->sysStart();
     if ( sc.isFailure() ) {
       m_msg << MSG::WARNING << "Failed to start " << item.first << endmsg;
@@ -57,8 +53,7 @@ namespace
     }
   }
   template <>
-  void OutStreamTransition<Gaudi::StateMachine::STOP>::operator()( ItemType& item )
-  {
+  void OutStreamTransition<Gaudi::StateMachine::STOP>::operator()( ItemType& item ) {
     const StatusCode sc = item.second->sysStop();
     if ( sc.isFailure() ) {
       m_msg << MSG::WARNING << "Failed to stop " << item.first << endmsg;
@@ -66,19 +61,17 @@ namespace
     }
   }
   template <>
-  void OutStreamTransition<Gaudi::StateMachine::FINALIZE>::operator()( ItemType& item )
-  {
+  void OutStreamTransition<Gaudi::StateMachine::FINALIZE>::operator()( ItemType& item ) {
     const StatusCode sc = item.second->sysFinalize();
     if ( sc.isFailure() ) {
       m_msg << MSG::WARNING << "Failed to finalize " << item.first << endmsg;
       m_code = sc;
     }
   }
-}
+} // namespace
 
 template <Gaudi::StateMachine::Transition TR>
-StatusCode                                ReplayOutputStream::i_outStreamTransition()
-{
+StatusCode ReplayOutputStream::i_outStreamTransition() {
   OutStreamTransition<TR> trans( msg() );
   std::for_each( m_outputStreams.begin(), m_outputStreams.end(), trans );
   return trans.result();
@@ -87,8 +80,7 @@ StatusCode                                ReplayOutputStream::i_outStreamTransit
 // ============================================================================
 // Initialization
 // ============================================================================
-StatusCode ReplayOutputStream::initialize()
-{
+StatusCode ReplayOutputStream::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -105,8 +97,7 @@ StatusCode ReplayOutputStream::initialize()
   return i_outStreamTransition<Gaudi::StateMachine::INITIALIZE>();
 }
 
-StatusCode ReplayOutputStream::start()
-{
+StatusCode ReplayOutputStream::start() {
   StatusCode sc = GaudiAlgorithm::start(); // must be executed first
   if ( sc.isFailure() ) return sc;         // error printed already by GaudiAlgorithm
 
@@ -118,8 +109,7 @@ StatusCode ReplayOutputStream::start()
 // ============================================================================
 // Main execution
 // ============================================================================
-StatusCode ReplayOutputStream::execute()
-{
+StatusCode ReplayOutputStream::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   std::vector<std::string> names;
@@ -148,8 +138,7 @@ StatusCode ReplayOutputStream::execute()
 // ============================================================================
 // Finalize
 // ============================================================================
-StatusCode ReplayOutputStream::finalize()
-{
+StatusCode ReplayOutputStream::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
   StatusCode sc = i_outStreamTransition<Gaudi::StateMachine::FINALIZE>();
@@ -159,24 +148,22 @@ StatusCode ReplayOutputStream::finalize()
   m_algMgr.reset();
   m_evtMgr.reset();
 
-  StatusCode fsc           = GaudiAlgorithm::finalize(); // must be called after all other actions
+  StatusCode fsc = GaudiAlgorithm::finalize(); // must be called after all other actions
   if ( sc.isSuccess() ) sc = fsc;
   return sc;
 }
 
-StatusCode ReplayOutputStream::stop()
-{
+StatusCode ReplayOutputStream::stop() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Stop" << endmsg;
 
   StatusCode sc = i_outStreamTransition<Gaudi::StateMachine::STOP>();
 
-  StatusCode ssc           = GaudiAlgorithm::stop(); // must be called after all other actions
+  StatusCode ssc = GaudiAlgorithm::stop(); // must be called after all other actions
   if ( sc.isSuccess() ) sc = ssc;
   return sc;
 }
 
-void ReplayOutputStream::i_addOutputStream( const Gaudi::Utils::TypeNameString& outStream )
-{
+void ReplayOutputStream::i_addOutputStream( const Gaudi::Utils::TypeNameString& outStream ) {
   // we prepend '/' to the name of the algorithm to simplify the handling in
   // OutputStreamsCollector
   const std::string algId = "/" + outStream.name();

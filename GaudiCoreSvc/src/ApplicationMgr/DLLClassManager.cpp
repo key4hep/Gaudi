@@ -17,8 +17,7 @@
 #include <iostream>
 
 // default creator
-DLLClassManager::DLLClassManager( IInterface* iface )
-{
+DLLClassManager::DLLClassManager( IInterface* iface ) {
   m_pOuter     = iface;
   m_svclocator = m_pOuter;
 
@@ -28,8 +27,7 @@ DLLClassManager::DLLClassManager( IInterface* iface )
 }
 
 // implementation of IClassManager::loadModule
-StatusCode DLLClassManager::loadModule( const std::string& module, bool fireIncident )
-{
+StatusCode DLLClassManager::loadModule( const std::string& module, bool fireIncident ) {
   // Access the message service if not yet done already
   if ( !m_msgsvc ) m_msgsvc = m_svclocator;
   MsgStream log( m_msgsvc, "DllClassManager" );
@@ -42,9 +40,7 @@ StatusCode DLLClassManager::loadModule( const std::string& module, bool fireInci
   try {
     status = System::loadDynamicLib( module, &libHandle ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   } catch ( const std::exception& excpt ) {
-    if ( m_msgsvc ) {
-      log << MSG::ERROR << "Exception whilst loading " << module << " : " << excpt.what() << endmsg;
-    }
+    if ( m_msgsvc ) { log << MSG::ERROR << "Exception whilst loading " << module << " : " << excpt.what() << endmsg; }
     status = StatusCode::FAILURE;
   }
 
@@ -71,8 +67,7 @@ StatusCode DLLClassManager::loadModule( const std::string& module, bool fireInci
 }
 
 // implementation of IInterface::queryInterface
-StatusCode DLLClassManager::queryInterface( const InterfaceID& iid, void** pinterface )
-{
+StatusCode DLLClassManager::queryInterface( const InterfaceID& iid, void** pinterface ) {
   // try local interfaces
   StatusCode sc = base_class::queryInterface( iid, pinterface );
   if ( sc.isSuccess() ) return sc;

@@ -16,12 +16,9 @@
 #include "GaudiKernel/MsgStream.h"
 #include "Position.h"
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
-    class Messages final
-    {
+namespace Gaudi {
+  namespace Parsers {
+    class Messages final {
     public:
       Messages( MsgStream& stream ) : stream_( stream ) {}
       // Messages(const MsgStream& stream):stream_(stream){}
@@ -51,8 +48,8 @@ namespace Gaudi
     // ============================================================================
 
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 
 #endif // JOBOPTIONSVC_MESSAGES_H_

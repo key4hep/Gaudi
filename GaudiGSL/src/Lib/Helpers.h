@@ -12,18 +12,15 @@
  */
 
 // ============================================================================
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     /** @class GSL_Helper
      *  the simple structure  to be used
      *  for adaption interface <tt>Genfun::AbsFunction</tt>
      *  to <tt>gsl_function</tt> structure
      *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
      */
-    class GSL_Helper final
-    {
+    class GSL_Helper final {
     public:
       /// constructor
       GSL_Helper( const Genfun::AbsFunction& function, Genfun::Argument& argument, const size_t index );
@@ -45,4 +42,3 @@ namespace Genfun
 // The END
 // ============================================================================
 #endif // GAUDIMATH_HELPERS_H
-// ============================================================================

@@ -10,17 +10,16 @@
 #include "GaudiKernel/Kernel.h"
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
 namespace Genfun // due to CLHEP
 {
-  namespace GaudiMathImplementation
-  {
+  namespace GaudiMathImplementation {
     /** @class Constant Constant.h GaudiMath/Constant.h
      *
      *  Fixed constant function
@@ -28,8 +27,7 @@ namespace Genfun // due to CLHEP
      *  @author Vanya BELYAEV  Ivan.Belyaev@itep.ru
      *  @date   2003-08-31
      */
-    class GAUDI_API Constant : public AbsFunction
-    {
+    class GAUDI_API Constant : public AbsFunction {
     public:
       /// From CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( Constant )
@@ -64,13 +62,12 @@ namespace Genfun // due to CLHEP
 } // end of namespace Genfun
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDIMATH_CONSTANT_H
-// ============================================================================

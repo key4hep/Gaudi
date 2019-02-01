@@ -1,13 +1,13 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #endif
 #ifdef WIN32
 // Disable warning
 //   warning C4996: 'sprintf': This function or variable may be unsafe.
 // coming from TString.h
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 #include "GaudiPI.h"
 #include <GaudiCommonSvc/H1D.h>
@@ -19,43 +19,37 @@
 #include <TProfile.h>
 #include <array>
 
-namespace
-{
-  using AIDA::IProfile1D;
+namespace {
   using AIDA::IHistogram1D;
   using AIDA::IHistogram2D;
-}
+  using AIDA::IProfile1D;
+} // namespace
 
 std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const std::string& title, int binsX, double iminX, double imaxX,
-                                                        int binsY, double iminY, double imaxY )
-{
+                                                        int binsY, double iminY, double imaxY ) {
   auto p = new Histogram2D( new TH2D( title.c_str(), title.c_str(), binsX, iminX, imaxX, binsY, iminY, imaxY ) );
   return {p, p};
 }
 
-std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const std::string& title, const Edges& eX, const Edges& eY )
-{
+std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const std::string& title, const Edges& eX, const Edges& eY ) {
   auto p = new Histogram2D(
       new TH2D( title.c_str(), title.c_str(), eX.size() - 1, &eX.front(), eY.size() - 1, &eY.front() ) );
   return {p, p};
 }
 
-std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( TH2D* rep )
-{
+std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( TH2D* rep ) {
   auto p = new Histogram2D( rep );
   return {p, p};
 }
 
-std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist )
-{
+std::pair<DataObject*, IHistogram2D*> Gaudi::createH2D( const IHistogram2D& hist ) {
   TH2D*        h = getRepresentation<AIDA::IHistogram2D, TH2D>( hist );
   Histogram2D* n = h ? new Histogram2D( new TH2D( *h ) ) : nullptr;
   return {n, n};
 }
 
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, const IHistogram2D& hist, int first,
-                                                       int last )
-{
+                                                       int last ) {
   TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionX( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
@@ -64,8 +58,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DX( const std::string& nam, c
 }
 
 std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, const IHistogram2D& hist, int first,
-                                                       int last )
-{
+                                                       int last ) {
   TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionY( "_py", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
@@ -74,8 +67,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::slice1DY( const std::string& nam, c
 }
 
 std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam, const IHistogram2D& hist, int first,
-                                                         int last )
-{
+                                                         int last ) {
   TH2*  r = getRepresentation<IHistogram2D, TH2>( hist );
   TH1D* t = r ? r->ProjectionY( "_px", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
@@ -84,8 +76,7 @@ std::pair<DataObject*, IHistogram1D*> Gaudi::project1DY( const std::string& nam,
 }
 
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, const IHistogram2D& hist, int first,
-                                                       int last )
-{
+                                                       int last ) {
   TH2*      r = Gaudi::getRepresentation<IHistogram2D, TH2>( hist );
   TProfile* t = r ? r->ProfileX( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
@@ -94,8 +85,7 @@ std::pair<DataObject*, IProfile1D*> Gaudi::profile1DX( const std::string& nam, c
 }
 
 std::pair<DataObject*, IProfile1D*> Gaudi::profile1DY( const std::string& nam, const IHistogram2D& hist, int first,
-                                                       int last )
-{
+                                                       int last ) {
   TH2*      r = getRepresentation<IHistogram2D, TH2>( hist );
   TProfile* t = r ? r->ProfileY( "_pfx", first, last, "e" ) : nullptr;
   if ( t ) t->SetName( nam.c_str() );
@@ -103,11 +93,9 @@ std::pair<DataObject*, IProfile1D*> Gaudi::profile1DY( const std::string& nam, c
   return {p, p};
 }
 
-namespace Gaudi
-{
+namespace Gaudi {
   template <>
-  void* Generic2D<IHistogram2D, TH2D>::cast( const std::string& className ) const
-  {
+  void* Generic2D<IHistogram2D, TH2D>::cast( const std::string& className ) const {
     if ( className == "AIDA::IHistogram2D" )
       return (IHistogram2D*)this;
     else if ( className == "AIDA::IHistogram" )
@@ -116,16 +104,14 @@ namespace Gaudi
   }
 
   template <>
-  int Generic2D<IHistogram2D, TH2D>::binEntries( int indexX, int indexY ) const
-  {
+  int Generic2D<IHistogram2D, TH2D>::binEntries( int indexX, int indexY ) const {
     if ( binHeight( indexX, indexY ) <= 0 ) return 0;
     double xx = binHeight( indexX, indexY ) / binError( indexX, indexY );
     return int( xx * xx + 0.5 );
   }
 
   template <>
-  void Generic2D<AIDA::IHistogram2D, TH2D>::adoptRepresentation( TObject* rep )
-  {
+  void Generic2D<AIDA::IHistogram2D, TH2D>::adoptRepresentation( TObject* rep ) {
     TH2D* imp = dynamic_cast<TH2D*>( rep );
     if ( !imp ) throw std::runtime_error( "Cannot adopt native histogram representation." );
     m_rep.reset( imp );
@@ -135,26 +121,23 @@ namespace Gaudi
     if ( !a || ( a && a->GetSize() == 0 ) ) m_rep->Sumw2();
     setTitle( m_rep->GetTitle() );
   }
-}
+} // namespace Gaudi
 
-Gaudi::Histogram2D::Histogram2D() : Base( new TH2D() )
-{
+Gaudi::Histogram2D::Histogram2D() : Base( new TH2D() ) {
   m_rep->Sumw2();
   m_sumwx = m_sumwy = 0;
   setTitle( "" );
   m_rep->SetDirectory( nullptr );
 }
 
-Gaudi::Histogram2D::Histogram2D( TH2D* rep )
-{
+Gaudi::Histogram2D::Histogram2D( TH2D* rep ) {
   adoptRepresentation( rep );
   m_sumwx = m_sumwy = 0;
   m_rep->SetDirectory( nullptr );
 }
 
 bool Gaudi::Histogram2D::setBinContents( int i, int j, int entries, double height, double error, double centreX,
-                                         double centreY )
-{
+                                         double centreY ) {
   m_rep->SetBinContent( rIndexX( i ), rIndexY( j ), height );
   m_rep->SetBinError( rIndexX( i ), rIndexY( j ), error );
   // accumulate sumwx for in range bins
@@ -166,8 +149,7 @@ bool Gaudi::Histogram2D::setBinContents( int i, int j, int entries, double heigh
   return true;
 }
 
-bool Gaudi::Histogram2D::reset()
-{
+bool Gaudi::Histogram2D::reset() {
   m_sumwx = 0;
   m_sumwy = 0;
   return Base::reset();
@@ -176,39 +158,36 @@ bool Gaudi::Histogram2D::reset()
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( push )
-#pragma warning( disable : 1572 )
+#  pragma warning( push )
+#  pragma warning( disable : 1572 )
 #endif
-bool Gaudi::Histogram2D::fill( double x, double y, double weight )
-{
+bool Gaudi::Histogram2D::fill( double x, double y, double weight ) {
   // avoid race conditiosn when filling the histogram
   std::lock_guard<std::mutex> guard( m_fillSerialization );
   ( weight == 1. ) ? m_rep->Fill( x, y ) : m_rep->Fill( x, y, weight );
   return true;
 }
 
-bool Gaudi::Histogram2D::setRms( double rmsX, double rmsY )
-{
+bool Gaudi::Histogram2D::setRms( double rmsX, double rmsY ) {
   m_rep->SetEntries( m_sumEntries );
   std::vector<double> stat( 11 );
-  stat[0]                                    = sumBinHeights();
-  stat[1]                                    = 0;
+  stat[0] = sumBinHeights();
+  stat[1] = 0;
   if ( equivalentBinEntries() != 0 ) stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
-  stat[2]                                    = m_sumwx;
-  double meanX                               = 0;
-  if ( sumBinHeights() != 0 ) meanX          = m_sumwx / sumBinHeights();
-  stat[3]                                    = ( meanX * meanX + rmsX * rmsX ) * sumBinHeights();
-  stat[4]                                    = m_sumwy;
-  double meanY                               = 0;
-  if ( sumBinHeights() != 0 ) meanY          = m_sumwy / sumBinHeights();
-  stat[5]                                    = ( meanY * meanY + rmsY * rmsY ) * sumBinHeights();
-  stat[6]                                    = 0;
+  stat[2]      = m_sumwx;
+  double meanX = 0;
+  if ( sumBinHeights() != 0 ) meanX = m_sumwx / sumBinHeights();
+  stat[3]      = ( meanX * meanX + rmsX * rmsX ) * sumBinHeights();
+  stat[4]      = m_sumwy;
+  double meanY = 0;
+  if ( sumBinHeights() != 0 ) meanY = m_sumwy / sumBinHeights();
+  stat[5] = ( meanY * meanY + rmsY * rmsY ) * sumBinHeights();
+  stat[6] = 0;
   m_rep->PutStats( &stat.front() );
   return true;
 }
 
-void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
-{
+void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h ) {
   // implement here the copy
   const char* title = h.title().c_str();
   if ( h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() )
@@ -231,14 +210,14 @@ void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
   m_sumwx      = 0;
   m_sumwy      = 0;
   // statistics
-  double sumw                                = h.sumBinHeights();
-  double sumw2                               = 0;
+  double sumw  = h.sumBinHeights();
+  double sumw2 = 0;
   if ( h.equivalentBinEntries() != 0 ) sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
-  double sumwx                               = h.meanX() * h.sumBinHeights();
-  double sumwx2                              = ( h.meanX() * h.meanX() + h.rmsX() * h.rmsX() ) * h.sumBinHeights();
-  double sumwy                               = h.meanY() * h.sumBinHeights();
-  double sumwy2                              = ( h.meanY() * h.meanY() + h.rmsY() * h.rmsY() ) * h.sumBinHeights();
-  double sumwxy                              = 0;
+  double sumwx  = h.meanX() * h.sumBinHeights();
+  double sumwx2 = ( h.meanX() * h.meanX() + h.rmsX() * h.rmsX() ) * h.sumBinHeights();
+  double sumwy  = h.meanY() * h.sumBinHeights();
+  double sumwy2 = ( h.meanY() * h.meanY() + h.rmsY() * h.rmsY() ) * h.sumBinHeights();
+  double sumwxy = 0;
 
   // copy the contents in  (AIDA underflow/overflow are -2,-1)
   for ( int i = -2; i < xAxis().bins(); ++i ) {
@@ -247,9 +226,7 @@ void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
       m_rep->SetBinContent( rIndexX( i ), rIndexY( j ), h.binHeight( i, j ) );
       m_rep->SetBinError( rIndexX( i ), rIndexY( j ), h.binError( i, j ) );
       // calculate statistics
-      if ( i >= 0 && j >= 0 ) {
-        sumwxy += h.binHeight( i, j ) * h.binMeanX( i, j ) * h.binMeanY( i, j );
-      }
+      if ( i >= 0 && j >= 0 ) { sumwxy += h.binHeight( i, j ) * h.binMeanX( i, j ) * h.binMeanY( i, j ); }
     }
   }
   // need to do set entries after setting contents otherwise root will recalculate them
@@ -262,5 +239,5 @@ void Gaudi::Histogram2D::copyFromAida( const IHistogram2D& h )
 
 #ifdef __ICC
 // re-enable icc remark #1572
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif

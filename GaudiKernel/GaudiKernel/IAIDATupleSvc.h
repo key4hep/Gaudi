@@ -9,14 +9,13 @@ class DataObject;
 
 // Added to allow use of AIDA in applications
 // without prefix AIDA:: (as before):
-namespace AIDA
-{
+namespace AIDA {
   class ITuple;
   class IAnnotation;
-}
+} // namespace AIDA
 
-using AIDA::ITuple;
 using AIDA::IAnnotation;
+using AIDA::ITuple;
 
 /** @class IAIDATupleSvc IAIDATupleSvc.h GaudiKernel/IAIDATupleSvc.h
  *
@@ -26,8 +25,7 @@ using AIDA::IAnnotation;
  *  @date   2005-05-23
  */
 
-class GAUDI_API IAIDATupleSvc : virtual public IDataProviderSvc
-{
+class GAUDI_API IAIDATupleSvc : virtual public IDataProviderSvc {
 
 public:
   /// InterfaceID

@@ -6,17 +6,14 @@
 // ===========================================================================
 #include <string>
 
-namespace Gaudi
-{
-  namespace Parsers
-  {
-    namespace Utils
-    {
+namespace Gaudi {
+  namespace Parsers {
+    namespace Utils {
       // ===========================================================================
       std::string replaceEnvironments( const std::string& input );
       // ===========================================================================
-    }
-  }
-}
+    } // namespace Utils
+  }   // namespace Parsers
+} // namespace Gaudi
 // ===========================================================================
 #endif

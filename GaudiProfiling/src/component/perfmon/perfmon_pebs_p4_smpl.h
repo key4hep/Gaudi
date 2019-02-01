@@ -80,9 +80,9 @@ extern "C" {
 #include <perfmon/perfmon.h>
 
 #ifdef __i386__
-#define PFM_PEBS_P4_SMPL_NAME "pebs32_p4"
+#  define PFM_PEBS_P4_SMPL_NAME "pebs32_p4"
 #else
-#define PFM_PEBS_P4_SMPL_NAME "pebs64_p4"
+#  define PFM_PEBS_P4_SMPL_NAME "pebs64_p4"
 #endif
 
 /*

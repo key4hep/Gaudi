@@ -23,8 +23,7 @@
 RndmGen::RndmGen( IInterface* engine ) : m_engine{engine} {}
 
 /// Initialize the generator
-StatusCode RndmGen::initialize( const IRndmGen::Param& par )
-{
+StatusCode RndmGen::initialize( const IRndmGen::Param& par ) {
   m_params.reset( par.clone() );
   return m_engine ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
@@ -32,8 +31,7 @@ StatusCode RndmGen::initialize( const IRndmGen::Param& par )
 StatusCode RndmGen::finalize() { return StatusCode::SUCCESS; }
 
 /// Multiple shots returning vector with random number according to specified distribution.
-StatusCode RndmGen::shootArray( std::vector<double>& array, long howmany, long start ) const
-{
+StatusCode RndmGen::shootArray( std::vector<double>& array, long howmany, long start ) const {
   if ( !m_engine ) return StatusCode::FAILURE;
   array.resize( start + howmany );
   std::generate_n( std::next( std::begin( array ), start ), howmany, [&]() { return this->shoot(); } );

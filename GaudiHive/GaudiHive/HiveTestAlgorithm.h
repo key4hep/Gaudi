@@ -9,8 +9,7 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/Property.h"
 
-class GAUDI_API HiveTestAlgorithm : public GaudiAlgorithm
-{
+class GAUDI_API HiveTestAlgorithm : public GaudiAlgorithm {
 public:
   /**
    ** Constructor(s)

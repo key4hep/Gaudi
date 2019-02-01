@@ -14,14 +14,16 @@ CU = "Child Unset"
 
 
 class PlainConfigurable(ConfigurableAlgTool):
-    __slots__ = {"IntA": CU,
-                 "IntB": CU,
-                 "IntC": CU,
-                 "IntD": CU,
-                 "LstA": [CU],
-                 "LstB": [CU],
-                 "LstC": [CU],
-                 "LstD": [CU]}
+    __slots__ = {
+        "IntA": CU,
+        "IntB": CU,
+        "IntC": CU,
+        "IntD": CU,
+        "LstA": [CU],
+        "LstB": [CU],
+        "LstC": [CU],
+        "LstD": [CU]
+    }
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
         super(PlainConfigurable, self).__init__(name)
@@ -36,14 +38,16 @@ class PlainConfigurable(ConfigurableAlgTool):
 
 
 class Master(ConfigurableUser):
-    __slots__ = {"IntA": PU,
-                 "IntB": PU,
-                 "IntC": PU,
-                 "IntD": PU,
-                 "LstA": [PU],
-                 "LstB": [PU],
-                 "LstC": [PU],
-                 "LstD": [PU]}
+    __slots__ = {
+        "IntA": PU,
+        "IntB": PU,
+        "IntC": PU,
+        "IntD": PU,
+        "LstA": [PU],
+        "LstB": [PU],
+        "LstC": [PU],
+        "LstD": [PU]
+    }
 
     def __apply_configuration__(self):
         self.propagateProperties(others=[PlainConfigurable()])
@@ -53,28 +57,32 @@ class Master(ConfigurableUser):
 
 
 class SubModule(ConfigurableUser):
-    __slots__ = {"IntA": CU,
-                 "IntB": CU,
-                 "IntC": CU,
-                 "IntD": CU,
-                 "LstA": [CU],
-                 "LstB": [CU],
-                 "LstC": [CU],
-                 "LstD": [CU]}
+    __slots__ = {
+        "IntA": CU,
+        "IntB": CU,
+        "IntC": CU,
+        "IntD": CU,
+        "LstA": [CU],
+        "LstB": [CU],
+        "LstC": [CU],
+        "LstD": [CU]
+    }
 
     def getGaudiType(self):
         return 'Test'
 
 
 class SuperModule(ConfigurableUser):
-    __slots__ = {"IntA": PU,
-                 "IntB": PU,
-                 "IntC": PU,
-                 "IntD": PU,
-                 "LstA": [PU],
-                 "LstB": [PU],
-                 "LstC": [PU],
-                 "LstD": [PU]}
+    __slots__ = {
+        "IntA": PU,
+        "IntB": PU,
+        "IntC": PU,
+        "IntD": PU,
+        "LstA": [PU],
+        "LstB": [PU],
+        "LstC": [PU],
+        "LstD": [PU]
+    }
     __used_configurables__ = [SubModule]
 
     def __apply_configuration__(self):

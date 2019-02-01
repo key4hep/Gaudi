@@ -1,19 +1,15 @@
 #include "GaudiKernel/Algorithm.h"
 
-namespace GaudiTesting
-{
-  namespace JIRA
-  {
+namespace GaudiTesting {
+  namespace JIRA {
 
     /** Special service to expose GAUDI-1185.
      */
-    class GAUDI_1185 : public Algorithm
-    {
+    class GAUDI_1185 : public Algorithm {
     public:
       using Algorithm::Algorithm;
 
-      StatusCode initialize() override
-      {
+      StatusCode initialize() override {
         StatusCode sc = Algorithm::initialize();
         if ( !sc ) return sc;
 
@@ -27,5 +23,5 @@ namespace GaudiTesting
     };
 
     DECLARE_COMPONENT( GAUDI_1185 )
-  }
-}
+  } // namespace JIRA
+} // namespace GaudiTesting

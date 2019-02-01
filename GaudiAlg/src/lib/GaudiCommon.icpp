@@ -54,7 +54,7 @@
 // ============================================================================
 // Disable warning on windows
 #ifdef _WIN32
-#pragma warning( disable : 4661 ) // incomplete explicit templates
+#  pragma warning( disable : 4661 ) // incomplete explicit templates
 #endif
 // ============================================================================
 
@@ -62,8 +62,7 @@
 // constructor initialisation
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
-{
+void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent ) {
   // setup context from parent if available
   if ( parent ) {
     if ( const GaudiAlgorithm* gAlg = dynamic_cast<const GaudiAlgorithm*>( parent ) ) {
@@ -101,14 +100,11 @@ void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
 // Initialise the common functionality
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::initialize()
-{
+StatusCode GaudiCommon<PBASE>::initialize() {
 
   // initialize base class
   const StatusCode sc = PBASE::initialize();
-  if ( sc.isFailure() ) {
-    return Error( "Failed to initialise base class PBASE", sc );
-  }
+  if ( sc.isFailure() ) { return Error( "Failed to initialise base class PBASE", sc ); }
 
   // some debug printout
   if ( this->msgLevel( MSG::DEBUG ) ) {
@@ -156,12 +152,10 @@ StatusCode GaudiCommon<PBASE>::initialize()
     return result;
   };
 
-  class DHHFixer : public IDataHandleVisitor
-  {
+  class DHHFixer : public IDataHandleVisitor {
   public:
     DHHFixer( std::function<std::string( const std::string& )> f ) : m_f( std::move( f ) ) {}
-    void visit( const IDataHandleHolder* idhh ) override
-    {
+    void visit( const IDataHandleHolder* idhh ) override {
       if ( !idhh ) return;
 
       std::string r;
@@ -189,8 +183,7 @@ StatusCode GaudiCommon<PBASE>::initialize()
 // Finalize the common functionality
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::finalize()
-{
+StatusCode GaudiCommon<PBASE>::finalize() {
   StatusCode sc = StatusCode::SUCCESS;
 
   // print the general information about statistical counters
@@ -215,9 +208,7 @@ StatusCode GaudiCommon<PBASE>::finalize()
   // release all located tools and services
   if ( this->msgLevel( MSG::DEBUG ) ) {
     this->debug() << "Tools to release :";
-    for ( const auto& i : m_managedTools ) {
-      this->debug() << " " << i->name();
-    }
+    for ( const auto& i : m_managedTools ) { this->debug() << " " << i->name(); }
     this->debug() << endmsg;
   }
   while ( !m_managedTools.empty() ) {
@@ -241,9 +232,7 @@ StatusCode GaudiCommon<PBASE>::finalize()
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() ) {
     this->always() << "Exceptions/Errors/Warnings/Infos Statistics : " << m_exceptions.size() << "/" << m_errors.size()
                    << "/" << m_warnings.size() << "/" << m_infos.size() << endmsg;
-    if ( errorsPrint() ) {
-      printErrors();
-    }
+    if ( errorsPrint() ) { printErrors(); }
   }
 
   // clear *ALL* counters explicitly
@@ -269,11 +258,8 @@ StatusCode GaudiCommon<PBASE>::finalize()
 // manual forced (and 'safe') release of the active tool or service
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::release( const IInterface* interface ) const
-{
-  if ( !interface ) {
-    return Error( "release(IInterface):: IInterface* points to NULL!" );
-  }
+StatusCode GaudiCommon<PBASE>::release( const IInterface* interface ) const {
+  if ( !interface ) { return Error( "release(IInterface):: IInterface* points to NULL!" ); }
   // dispatch between tools and services
   const IAlgTool* algTool = dynamic_cast<const IAlgTool*>( interface );
   // perform the actual release
@@ -285,26 +271,17 @@ StatusCode GaudiCommon<PBASE>::release( const IInterface* interface ) const
 // manual forced (and 'save') release of the tool
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::releaseTool( const IAlgTool* algTool ) const
-{
-  if ( !algTool ) {
-    return Error( "releaseTool(IAlgTool):: IAlgTool* points to NULL!" );
-  }
-  if ( !this->toolSvc() ) {
-    return Error( "releaseTool(IAlgTool):: IToolSvc* points to NULL!" );
-  }
+StatusCode GaudiCommon<PBASE>::releaseTool( const IAlgTool* algTool ) const {
+  if ( !algTool ) { return Error( "releaseTool(IAlgTool):: IAlgTool* points to NULL!" ); }
+  if ( !this->toolSvc() ) { return Error( "releaseTool(IAlgTool):: IToolSvc* points to NULL!" ); }
   // find a tool in the list of active tools
   auto it = std::find( m_managedTools.begin(), m_managedTools.end(), algTool );
-  if ( m_managedTools.end() == it ) {
-    return Warning( "releaseTool(IAlgTool):: IAlgTool* is not active" );
-  }
+  if ( m_managedTools.end() == it ) { return Warning( "releaseTool(IAlgTool):: IAlgTool* is not active" ); }
   // get the tool
   IAlgTool* t = *it;
   // cache name
   const std::string name = t->name();
-  if ( this->msgLevel( MSG::DEBUG ) ) {
-    this->debug() << "Releasing tool '" << name << "'" << endmsg;
-  }
+  if ( this->msgLevel( MSG::DEBUG ) ) { this->debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
   PBASE::deregisterTool( t );
   m_managedTools.erase( it );
@@ -322,8 +299,7 @@ StatusCode GaudiCommon<PBASE>::releaseTool( const IAlgTool* algTool ) const
 // manual forced (and 'safe') release of the service
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::releaseSvc( const IInterface* Svc ) const
-{
+StatusCode GaudiCommon<PBASE>::releaseSvc( const IInterface* Svc ) const {
   if ( !Svc ) return Error( "releaseSvc(IInterface):: IInterface* points to NULL!" );
   SmartIF<IService> svc{const_cast<IInterface*>( Svc )};
   if ( !svc ) return Warning( "releaseSvc(IInterface):: IInterface* is not a service" );
@@ -331,9 +307,7 @@ StatusCode GaudiCommon<PBASE>::releaseSvc( const IInterface* Svc ) const
   if ( it == m_services.end() || !GaudiCommon_details::svc_eq( *it, svc ) ) {
     return Warning( "releaseSvc(IInterface):: IInterface* is not active" );
   }
-  if ( this->msgLevel( MSG::DEBUG ) ) {
-    this->debug() << "Releasing service '" << ( *it )->name() << "'" << endmsg;
-  }
+  if ( this->msgLevel( MSG::DEBUG ) ) { this->debug() << "Releasing service '" << ( *it )->name() << "'" << endmsg; }
   m_services.erase( it );
   return StatusCode::SUCCESS;
 }
@@ -344,8 +318,7 @@ StatusCode GaudiCommon<PBASE>::releaseSvc( const IInterface* Svc ) const
 // Add the given service to the list of active services
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const
-{
+void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const {
   if ( svc ) {
     auto i = std::lower_bound( std::begin( m_services ), std::end( m_services ), svc, GaudiCommon_details::svc_lt );
     if ( i == std::end( m_services ) || !GaudiCommon_details::svc_eq( *i, svc ) ) {
@@ -365,8 +338,7 @@ void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const
 // Print the error  message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Error( const std::string& msg, const StatusCode st, const size_t mx ) const
-{
+StatusCode GaudiCommon<PBASE>::Error( const std::string& msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of errors
   const size_t num = ++m_errors[msg];
   // If suppressed, just return
@@ -385,8 +357,7 @@ StatusCode GaudiCommon<PBASE>::Error( const std::string& msg, const StatusCode s
 // Print the warning  message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Warning( const std::string& msg, const StatusCode st, const size_t mx ) const
-{
+StatusCode GaudiCommon<PBASE>::Warning( const std::string& msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of warnings
   const size_t num = ++m_warnings[msg];
   // If suppressed, just return
@@ -405,8 +376,7 @@ StatusCode GaudiCommon<PBASE>::Warning( const std::string& msg, const StatusCode
 // Print the info message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Info( const std::string& msg, const StatusCode st, const size_t mx ) const
-{
+StatusCode GaudiCommon<PBASE>::Info( const std::string& msg, const StatusCode st, const size_t mx ) const {
   // increase local counter of warnings
   const size_t num = ++m_infos[msg];
   // If suppressed, just return
@@ -425,18 +395,13 @@ StatusCode GaudiCommon<PBASE>::Info( const std::string& msg, const StatusCode st
 //  Print the message and return status code
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::Print( const std::string& msg, const StatusCode st, const MSG::Level lvl ) const
-{
+StatusCode GaudiCommon<PBASE>::Print( const std::string& msg, const StatusCode st, const MSG::Level lvl ) const {
   // perform printout ?
-  if ( !this->msgLevel( lvl ) ) {
-    return st;
-  } // RETURN
+  if ( !this->msgLevel( lvl ) ) { return st; } // RETURN
 
   // use the predefined stream
   MsgStream& str = this->msgStream( lvl );
-  if ( typePrint() ) {
-    str << System::typeinfoName( typeid( *this ) ) << ":: ";
-  }
+  if ( typePrint() ) { str << System::typeinfoName( typeid( *this ) ) << ":: "; }
 
   // print the message
   str << msg;
@@ -461,8 +426,7 @@ StatusCode GaudiCommon<PBASE>::Print( const std::string& msg, const StatusCode s
 // Create and (re)-throw the exception
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::Exception( const std::string& msg, const GaudiException& exc, const StatusCode sc ) const
-{
+void GaudiCommon<PBASE>::Exception( const std::string& msg, const GaudiException& exc, const StatusCode sc ) const {
   // increase local counter of exceptions
   ++m_exceptions[msg];
   Print( "Exception (re)throw: " + msg, sc, MSG::FATAL ).ignore();
@@ -474,8 +438,7 @@ void GaudiCommon<PBASE>::Exception( const std::string& msg, const GaudiException
 // Create and (re)-throw the exception
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::Exception( const std::string& msg, const std::exception& exc, const StatusCode sc ) const
-{
+void GaudiCommon<PBASE>::Exception( const std::string& msg, const std::exception& exc, const StatusCode sc ) const {
   // increase local counter of exceptions
   ++m_exceptions[msg];
   Print( "Exception (re)throw: " + msg, sc, MSG::FATAL ).ignore();
@@ -487,8 +450,7 @@ void GaudiCommon<PBASE>::Exception( const std::string& msg, const std::exception
 // Create and throw the exception
 // ============================================================================
 template <class PBASE>
-void GaudiCommon<PBASE>::Exception( const std::string& msg, const StatusCode sc ) const
-{
+void GaudiCommon<PBASE>::Exception( const std::string& msg, const StatusCode sc ) const {
   // increase local counter of exceptions
   ++m_exceptions[msg];
   Print( "Exception throw: " + msg, sc, MSG::FATAL ).ignore();
@@ -500,8 +462,7 @@ void GaudiCommon<PBASE>::Exception( const std::string& msg, const StatusCode sc 
 // perform the actual printout of counters
 // ============================================================================
 template <class PBASE>
-long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
-{
+long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const {
   // check how many counters think they should be printed or how many
   // we anyway want to print
   auto countToBePrinted = [&]() {
@@ -533,15 +494,12 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
 // perform the actual printout of error counters
 // ============================================================================
 template <class PBASE>
-long GaudiCommon<PBASE>::printErrors( const MSG::Level level ) const
-{
+long GaudiCommon<PBASE>::printErrors( const MSG::Level level ) const {
   // format for printout
   boost::format ftm( " #%|-10s| = %|.8s| %|23t| Message = '%s'" );
 
   auto print = [&]( const Counter& c, const std::string& label ) {
-    for ( const auto& i : c ) {
-      this->msgStream( level ) << ( ftm % label % i.second % i.first ) << endmsg;
-    }
+    for ( const auto& i : c ) { this->msgStream( level ) << ( ftm % label % i.second % i.first ) << endmsg; }
   };
 
   print( m_exceptions, "EXCEPTIONS" );
@@ -560,17 +518,14 @@ long GaudiCommon<PBASE>::printErrors( const MSG::Level level ) const
  */
 // ============================================================================
 template <class PBASE>
-long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const
-{
+long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const {
 
   // print ALL properties
   MsgStream&  msg        = this->msgStream( level );
   const auto& properties = this->getProperties();
   msg << "List of ALL properties of " << System::typeinfoName( typeid( *this ) ) << "/" << this->name()
       << "  #properties = " << properties.size() << endmsg;
-  for ( const auto& property : reverse( properties ) ) {
-    msg << "Property ['Name': Value] = " << *property << endmsg;
-  }
+  for ( const auto& property : reverse( properties ) ) { msg << "Property ['Name': Value] = " << *property << endmsg; }
   return properties.size();
 }
 // ============================================================================
@@ -584,8 +539,7 @@ long GaudiCommon<PBASE>::printProps( const MSG::Level level ) const
 // ============================================================================
 template <class PBASE>
 DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object,
-                                     const std::string& location, const bool useRootInTES ) const
-{
+                                     const std::string& location, const bool useRootInTES ) const {
   // check arguments
   Assert( svc, "put():: Invalid 'service'!" );
   Assert( static_cast<bool>( object ), "put():: Invalid 'Object'!" );

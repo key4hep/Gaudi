@@ -23,9 +23,7 @@ DECLARE_COMPONENT( GaudiCommonTests )
 // Standard constructor, initializes variables
 //=============================================================================
 GaudiCommonTests::GaudiCommonTests( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator )
-{
-}
+    : GaudiAlgorithm( name, pSvcLocator ) {}
 //=============================================================================
 // Destructor
 //=============================================================================
@@ -34,8 +32,7 @@ GaudiCommonTests::~GaudiCommonTests() {}
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode GaudiCommonTests::initialize()
-{
+StatusCode GaudiCommonTests::initialize() {
   // must be called first
   const StatusCode sc = GaudiAlgorithm::initialize();
   if ( sc.isFailure() ) return sc;
@@ -46,8 +43,7 @@ StatusCode GaudiCommonTests::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode GaudiCommonTests::execute()
-{
+StatusCode GaudiCommonTests::execute() {
   info() << "Execute" << endmsg;
 
   const std::string loc1 = "/Event/" + name() + "/Tracks1";
@@ -118,8 +114,7 @@ StatusCode GaudiCommonTests::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode GaudiCommonTests::finalize()
-{
+StatusCode GaudiCommonTests::finalize() {
   // must be called after all other actions
   return GaudiAlgorithm::finalize();
 }

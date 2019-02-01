@@ -7,9 +7,9 @@
 
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
-#pragma warning( disable : 177 )
+#  pragma warning( disable : 177 )
 #elif __clang__
-#pragma clang diagnostic ignored "-Wunused-variable"
+#  pragma clang diagnostic ignored "-Wunused-variable"
 #endif
 
 // For the GAUDI_API macro
@@ -21,12 +21,12 @@
 
 // Force visibility of the classes
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wkeyword-macro"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wkeyword-macro"
 #endif
 #define class class GAUDI_API
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
 #include <AIDA/IAnnotation.h>
 #include <AIDA/IAxis.h>
@@ -43,8 +43,7 @@
 using namespace AIDA;
 
 #define TI( x ) const std::type_info& x##Info = typeid( x )
-namespace
-{
+namespace {
   TI( IBaseHistogram );
   TI( IHistogram );
   TI( IHistogram1D );
@@ -55,4 +54,4 @@ namespace
   TI( IProfile2D );
   TI( IAnnotation );
   TI( IAxis );
-}
+} // namespace

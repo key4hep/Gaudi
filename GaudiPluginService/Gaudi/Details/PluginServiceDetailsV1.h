@@ -24,25 +24,19 @@
 
 #include <mutex>
 
-namespace Gaudi
-{
-  namespace PluginService
-  {
-    GAUDI_PLUGIN_SERVICE_V1_INLINE namespace v1
-    {
-      namespace Details
-      {
+namespace Gaudi {
+  namespace PluginService {
+    GAUDI_PLUGIN_SERVICE_V1_INLINE namespace v1 {
+      namespace Details {
         /// Class providing default factory functions.
         ///
         /// The template argument T is the class to be created, while the methods
         /// template argument S is the specific factory signature.
         template <class T>
-        class Factory
-        {
+        class Factory {
         public:
           template <typename S, typename... Args>
-          static typename S::ReturnType create( Args&&... args )
-          {
+          static typename S::ReturnType create( Args&&... args ) {
             return new T( std::forward<Args>( args )... );
           }
         };
@@ -65,8 +59,7 @@ namespace Gaudi
         ///  <li>http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#195</li>
         /// </ul>
         template <typename F>
-        inline F getCreator( const std::string& id )
-        {
+        inline F getCreator( const std::string& id ) {
           union {
             void* src;
             F     dst;
@@ -82,14 +75,12 @@ namespace Gaudi
 
         /// Return a canonical name for the template argument.
         template <typename T>
-        inline std::string demangle()
-        {
+        inline std::string demangle() {
           return demangle( typeid( T ) );
         }
 
         /// In-memory database of the loaded factories.
-        class GAUDIPS_API Registry
-        {
+        class GAUDIPS_API Registry {
         public:
           typedef std::string KeyType;
 
@@ -104,9 +95,7 @@ namespace Gaudi
                 , type( std::move( t ) )
                 , rtype( std::move( rt ) )
                 , className( std::move( cn ) )
-                , properties( std::move( props ) )
-            {
-            }
+                , properties( std::move( props ) ) {}
 
             std::string library;
             void*       ptr;
@@ -115,8 +104,7 @@ namespace Gaudi
             std::string className;
             Properties  properties;
 
-            FactoryInfo& addProperty( const KeyType& k, std::string v )
-            {
+            FactoryInfo& addProperty( const KeyType& k, std::string v ) {
               properties[k] = std::move( v );
               return *this;
             }
@@ -130,8 +118,7 @@ namespace Gaudi
 
           /// Add a factory to the database.
           template <typename F, typename T, typename I>
-          inline FactoryInfo& add( const I& id, typename F::FuncType ptr )
-          {
+          inline FactoryInfo& add( const I& id, typename F::FuncType ptr ) {
             union {
               typename F::FuncType src;
               void*                dst;
@@ -156,8 +143,7 @@ namespace Gaudi
           std::set<KeyType> loadedFactoryNames() const;
 
           /// Return the known factories (loading the list if not yet done).
-          inline const FactoryMap& factories() const
-          {
+          inline const FactoryMap& factories() const {
             if ( !m_initialized ) const_cast<Registry*>( this )->initialize();
             return m_factories;
           }
@@ -177,8 +163,7 @@ namespace Gaudi
                             const std::string& className, const Properties& props = Properties() );
 
           /// Return the known factories (loading the list if not yet done).
-          inline FactoryMap& factories()
-          {
+          inline FactoryMap& factories() {
             if ( !m_initialized ) initialize();
             return m_factories;
           }
@@ -198,22 +183,21 @@ namespace Gaudi
         };
 
         /// Simple logging class, just to provide a default implementation.
-        class GAUDIPS_API Logger
-        {
+        class GAUDIPS_API Logger {
         public:
           enum Level { Debug = 0, Info = 1, Warning = 2, Error = 3 };
           Logger( Level level = Warning ) : m_level( level ) {}
           virtual ~Logger() {}
           inline Level level() const { return m_level; }
-          inline void setLevel( Level level ) { m_level = level; }
-          inline void info( const std::string& msg ) { report( Info, msg ); }
-          inline void debug( const std::string& msg ) { report( Debug, msg ); }
-          inline void warning( const std::string& msg ) { report( Warning, msg ); }
-          inline void error( const std::string& msg ) { report( Error, msg ); }
+          inline void  setLevel( Level level ) { m_level = level; }
+          inline void  info( const std::string& msg ) { report( Info, msg ); }
+          inline void  debug( const std::string& msg ) { report( Debug, msg ); }
+          inline void  warning( const std::string& msg ) { report( Warning, msg ); }
+          inline void  error( const std::string& msg ) { report( Error, msg ); }
 
         private:
           virtual void report( Level lvl, const std::string& msg );
-          Level m_level;
+          Level        m_level;
         };
 
         /// Return the current logger instance.
@@ -221,29 +205,26 @@ namespace Gaudi
         /// Set the logger instance to use.
         /// It must be a new instance and the ownership is passed to the function.
         GAUDIPS_API void setLogger( Logger* logger );
-      }
+      } // namespace Details
 
       /// Backward compatibility with Reflex.
       GAUDIPS_API void SetDebug( int debugLevel );
       /// Backward compatibility with Reflex.
       GAUDIPS_API int Debug();
     }
-  }
-}
+  } // namespace PluginService
+} // namespace Gaudi
 
 #define _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( name, serial ) _register_##_##serial
 
 #define _PS_V1_INTERNAL_DECLARE_FACTORY_WITH_CREATOR( type, typecreator, id, factory, serial )                         \
-  namespace                                                                                                            \
-  {                                                                                                                    \
-    class _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial )                                                       \
-    {                                                                                                                  \
+  namespace {                                                                                                          \
+    class _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial ) {                                                     \
     public:                                                                                                            \
       typedef factory      s_t;                                                                                        \
       typedef typecreator  f_t;                                                                                        \
       static s_t::FuncType creator() { return &f_t::create<s_t>; }                                                     \
-      _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial )()                                                         \
-      {                                                                                                                \
+      _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial )() {                                                       \
         using ::Gaudi::PluginService::v1::Details::Registry;                                                           \
         Registry::instance().add<s_t, type>( id, creator() );                                                          \
       }                                                                                                                \

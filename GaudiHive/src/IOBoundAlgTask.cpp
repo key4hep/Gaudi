@@ -8,14 +8,11 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 
-StatusCode IOBoundAlgTask::execute()
-{
+StatusCode IOBoundAlgTask::execute() {
 
   IAlgorithm* ialg      = m_algorithm.get();
   Algorithm*  this_algo = dynamic_cast<Algorithm*>( ialg );
-  if ( !this_algo ) {
-    throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE );
-  }
+  if ( !this_algo ) { throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE ); }
 
   bool eventfailed = false;
   Gaudi::Hive::setCurrentContext( m_evtCtx );

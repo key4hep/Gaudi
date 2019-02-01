@@ -7,8 +7,7 @@
 
 class TFile;
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RootHistCnv::RFileCnv RFileCnv.h
 
@@ -20,8 +19,7 @@ namespace RootHistCnv
       @author Charles Leggett
       @author Markus Frank
   */
-  class RFileCnv : public RDirectoryCnv
-  {
+  class RFileCnv : public RDirectoryCnv {
 
   public:
     /// Initialise

@@ -3,8 +3,7 @@
 
 #include "PersistencySvc.h"
 
-class DetPersistencySvc : virtual public PersistencySvc
-{
+class DetPersistencySvc : virtual public PersistencySvc {
 public:
   // Standard Constructor
   DetPersistencySvc( const std::string& name, ISvcLocator* svc );

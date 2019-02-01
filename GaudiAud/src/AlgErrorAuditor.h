@@ -12,8 +12,7 @@ class IMessageSvc;
 
     @author David Quarrie
 */
-class AlgErrorAuditor : public Auditor
-{
+class AlgErrorAuditor : public Auditor {
 public:
   using Auditor::Auditor;
 

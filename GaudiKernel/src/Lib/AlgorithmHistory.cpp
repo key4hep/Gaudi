@@ -15,8 +15,8 @@
 #include <assert.h>
 #include <iostream>
 
-using std::ostream;
 using std::endl;
+using std::ostream;
 using std::type_info;
 using std::vector;
 
@@ -32,9 +32,7 @@ AlgorithmHistory::AlgorithmHistory( const Gaudi::Algorithm& alg, const JobHistor
     , m_algorithm_name( alg.name() )
     , m_algorithm( &alg )
     , m_properties( alg.getProperties() )
-    , m_jobHistory( job )
-{
-}
+    , m_jobHistory( job ) {}
 
 //**********************************************************************
 
@@ -48,23 +46,19 @@ AlgorithmHistory::AlgorithmHistory( const std::string& algVersion, const std::st
     , m_algorithm( nullptr )
     , m_properties( props )
     , m_subalgorithm_histories( subHists )
-    , m_jobHistory( nullptr )
-{
-}
+    , m_jobHistory( nullptr ) {}
 
 //**********************************************************************
 
 // Destructor.
 
-AlgorithmHistory::~AlgorithmHistory()
-{
+AlgorithmHistory::~AlgorithmHistory() {
   for ( auto& i : m_subalgorithm_histories ) delete i;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const CLID& AlgorithmHistory::classID()
-{
+const CLID& AlgorithmHistory::classID() {
 
   static const CLID CLID_AlgorithmHistory = 56809101; // from `clid AlgorithmHistory`
   return CLID_AlgorithmHistory;
@@ -72,8 +66,7 @@ const CLID& AlgorithmHistory::classID()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) const
-{
+void AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
 
   if ( !isXML ) {
     ost << "Type: " << algorithm_type() << endl;
@@ -110,8 +103,7 @@ void AlgorithmHistory::dump( std::ostream& ost, const bool isXML, int ind ) cons
 
 // Output stream.
 
-ostream& operator<<( ostream& lhs, const AlgorithmHistory& rhs )
-{
+ostream& operator<<( ostream& lhs, const AlgorithmHistory& rhs ) {
   rhs.dump( lhs, false );
   return lhs;
 }

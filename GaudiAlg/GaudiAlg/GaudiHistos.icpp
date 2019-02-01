@@ -32,8 +32,7 @@
 // ============================================================================
 // forward declarations from AIDA
 // ============================================================================
-namespace AIDA
-{
+namespace AIDA {
   class IBaseHistogram;
   class IHistogram;
   class IHistogram1D;
@@ -42,23 +41,20 @@ namespace AIDA
   class IProfile;
   class IProfile1D;
   class IProfile2D;
-}
+} // namespace AIDA
 // ============================================================================
 // utility to allow iteration in order
 // ============================================================================
-namespace
-{
+namespace {
   constexpr struct ordered_t {
     template <typename C>
-    std::map<typename C::key_type, typename C::mapped_type> operator()( const C& c ) const
-    {
+    std::map<typename C::key_type, typename C::mapped_type> operator()( const C& c ) const {
       return {std::begin( c ), std::end( c )};
     }
   } ordered{};
 
   template <typename Map>
-  typename Map::mapped_type lookup_( const Map& map, const typename Map::key_type& ID )
-  {
+  typename Map::mapped_type lookup_( const Map& map, const typename Map::key_type& ID ) {
     auto found = map.find( ID );
     return found != std::end( map ) ? found->second : nullptr;
   }
@@ -66,13 +62,12 @@ namespace
   // ============================================================================
   // Searches 'title' for all instances of 'A' and replaces them with 'B'
   // ============================================================================
-  inline void stringSearchReplace( std::string& title, const std::string& A, const std::string& B )
-  {
+  inline void stringSearchReplace( std::string& title, const std::string& A, const std::string& B ) {
     for ( auto slash = title.find_first_of( A ); slash != std::string::npos; slash = title.find_first_of( A ) ) {
       title = title.substr( 0, slash ) + B + title.substr( slash + A.size() );
     }
   }
-}
+} // namespace
 // ============================================================================
 // Initialise Histogramming
 // ============================================================================
@@ -83,8 +78,7 @@ StatusCode GaudiHistos<PBASE>::
 #else
     initialize
 #endif
-    ()
-{
+    () {
   // initialize base class
   const StatusCode sc = PBASE::initialize();
   if ( sc.isFailure() ) return sc;
@@ -96,9 +90,7 @@ StatusCode GaudiHistos<PBASE>::
   }
 
   // check the validity of histogram service
-  if ( !this->histoSvc() ) {
-    return this->Error( "initialize():: IHistogramSvc* is invalid" );
-  }
+  if ( !this->histoSvc() ) { return this->Error( "initialize():: IHistogramSvc* is invalid" ); }
 
   // Warn if the user has decided to use numerical automatic IDs
   if ( useNumericAutoIDs() ) {
@@ -125,8 +117,7 @@ StatusCode GaudiHistos<PBASE>::
 #else
     finalize
 #endif
-    ()
-{
+    () {
 
   if ( produceHistos() ) {
 
@@ -150,9 +141,7 @@ StatusCode GaudiHistos<PBASE>::
     }
 
     // detailed printing
-    if ( histosPrint() ) {
-      printHistos();
-    }
+    if ( histosPrint() ) { printHistos(); }
   }
 
   // clear all maps
@@ -174,14 +163,11 @@ StatusCode GaudiHistos<PBASE>::
 // perform the actual detailed printout of histograms
 // ============================================================================
 template <class PBASE>
-int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
-{
+int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const {
   using namespace Gaudi::Utils::Histos;
 
   if ( noHistos() ) {
-    if ( this->msgLevel( MSG::DEBUG ) ) {
-      this->msgStream( level ) << "No histograms are booked" << endmsg;
-    }
+    if ( this->msgLevel( MSG::DEBUG ) ) { this->msgStream( level ) << "No histograms are booked" << endmsg; }
     return 0; // RETURN
   }
 
@@ -275,8 +261,7 @@ int GaudiHistos<PBASE>::printHistos( const MSG::Level level ) const
 // Check if all histogram maps are empty
 // ============================================================================
 template <class PBASE>
-bool GaudiHistos<PBASE>::noHistos() const
-{
+bool GaudiHistos<PBASE>::noHistos() const {
   return ( histo1DMapTitle().empty() && histo2DMapTitle().empty() && histo3DMapTitle().empty() &&
            profile1DMapTitle().empty() && profile2DMapTitle().empty() && histo1DMapID().empty() &&
            histo2DMapID().empty() && histo3DMapID().empty() && profile1DMapID().empty() && profile2DMapID().empty() );
@@ -285,8 +270,7 @@ bool GaudiHistos<PBASE>::noHistos() const
 // Declare a histogram to the monitor service
 // ============================================================================
 template <class PBASE>
-void GaudiHistos<PBASE>::monitorHisto( const AIDA::IBaseHistogram* hist, const HistoID& ID ) const
-{
+void GaudiHistos<PBASE>::monitorHisto( const AIDA::IBaseHistogram* hist, const HistoID& ID ) const {
   if ( hist && m_declareMoniHists ) {
     if ( this->msgLevel( MSG::DEBUG ) ) {
       this->debug() << "Monitoring histogram '" << ID.idAsString() << "' desc = '"
@@ -299,48 +283,42 @@ void GaudiHistos<PBASE>::monitorHisto( const AIDA::IBaseHistogram* hist, const H
 // access the EXISTING 1D histogram by ID
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram1D* GaudiHistos<PBASE>::histo1D( const HistoID& ID ) const
-{
+AIDA::IHistogram1D* GaudiHistos<PBASE>::histo1D( const HistoID& ID ) const {
   return lookup_( histo1DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 2D histogram by ID
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram2D* GaudiHistos<PBASE>::histo2D( const HistoID& ID ) const
-{
+AIDA::IHistogram2D* GaudiHistos<PBASE>::histo2D( const HistoID& ID ) const {
   return lookup_( histo2DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 3D histogram by ID
 // ============================================================================
 template <class PBASE>
-AIDA::IHistogram3D* GaudiHistos<PBASE>::histo3D( const HistoID& ID ) const
-{
+AIDA::IHistogram3D* GaudiHistos<PBASE>::histo3D( const HistoID& ID ) const {
   return lookup_( histo3DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 1D profile histogram by ID
 // ============================================================================
 template <class PBASE>
-AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D( const HistoID& ID ) const
-{
+AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D( const HistoID& ID ) const {
   return lookup_( profile1DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 2D profile histogram by ID
 // ============================================================================
 template <class PBASE>
-AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D( const HistoID& ID ) const
-{
+AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D( const HistoID& ID ) const {
   return lookup_( profile2DMapID(), ID );
 }
 // ============================================================================
 // Returns the total number of histograms (of all types) currently booked
 // ============================================================================
 template <class PBASE>
-unsigned int GaudiHistos<PBASE>::totalNumberOfHistos() const
-{
+unsigned int GaudiHistos<PBASE>::totalNumberOfHistos() const {
   return histo1DMapID().size() + histo2DMapID().size() + histo3DMapID().size() + profile1DMapID().size() +
          profile2DMapID().size();
 }
@@ -348,8 +326,7 @@ unsigned int GaudiHistos<PBASE>::totalNumberOfHistos() const
 // Create a new histogram ID using the given title
 // ============================================================================
 template <class PBASE>
-void GaudiHistos<PBASE>::newHistoID( const std::string& title, HistoID& ID ) const
-{
+void GaudiHistos<PBASE>::newHistoID( const std::string& title, HistoID& ID ) const {
   if ( useNumericAutoIDs() || title.empty() ) {
     if ( !useNumericAutoIDs() ) {
       this->Warning(
@@ -360,35 +337,27 @@ void GaudiHistos<PBASE>::newHistoID( const std::string& title, HistoID& ID ) con
     // propose the histogram ID (always numeric)
     ID = HistoID( totalNumberOfHistos() + 1 + histoOffSet() );
     // adjust the proposed ID
-    while ( histoExists( ID ) ) {
-      ID = HistoID( ID.numeric() + 1 );
-    }
+    while ( histoExists( ID ) ) { ID = HistoID( ID.numeric() + 1 ); }
   } else {
     // use the title to create a unique literal ID
     ID = HistoID( this->convertTitleToID( title ) );
     // Just in case ...
-    while ( histoExists( ID ) ) {
-      ID = HistoID( ID.idAsString() + "_" );
-    }
+    while ( histoExists( ID ) ) { ID = HistoID( ID.idAsString() + "_" ); }
   }
 }
 // ============================================================================
 // Create an ID string from a title string
 // ============================================================================
 template <class PBASE>
-std::string GaudiHistos<PBASE>::convertTitleToID( std::string title ) const
-{
+std::string GaudiHistos<PBASE>::convertTitleToID( std::string title ) const {
   // clean up the ID string for all unwanted characters
-  for ( const auto& i : m_idReplaceInfo ) {
-    stringSearchReplace( title, i.first, i.second );
-  }
+  for ( const auto& i : m_idReplaceInfo ) { stringSearchReplace( title, i.first, i.second ); }
   return title;
 }
 // get the constructed histogram path
 // ============================================================================
 template <class PBASE>
-std::string GaudiHistos<PBASE>::histoPath() const
-{
+std::string GaudiHistos<PBASE>::histoPath() const {
   std::string path = histoTopDir() + histoDir();
   return splitHistoDir() ? dirHbookName( path ) : path;
 }
@@ -412,4 +381,3 @@ std::string GaudiHistos<PBASE>::histoPath() const
 // The END
 // ============================================================================
 #endif // GAUDIALG_GAUDIHISTOS_ICPP
-// ============================================================================

@@ -21,19 +21,20 @@ app = ApplicationMgr()
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
 OtherIntDataProducer.OutputLocation = "/Event/MyOtherInt"
-app.TopAlg = [IntDataProducer("IntDataProducer"), OtherIntDataProducer,
-              IntDataConsumer("IntDataConsumer"), IntToFloatData(
-                  "IntToFloatData"),
-              IntIntToFloatFloatData("IntIntToFloatFloatData"), FloatDataConsumer(
-                  "FloatDataConsumer"),
-              ContextConsumer("ContextConsumer"),
-              ContextIntConsumer("ContextIntConsumer"),
-              VectorDoubleProducer("VectorDoubleProducer"),
-              FrExpTransformer("FrExpTransformer"), LdExpTransformer(
-                  "LdExpTransfomer"),
-              OptFrExpTransformer("OptFrExpTransformer"), OptLdExpTransformer(
-                  "OptLdExpTransformer")
-              ]
+app.TopAlg = [
+    IntDataProducer("IntDataProducer"), OtherIntDataProducer,
+    IntDataConsumer("IntDataConsumer"),
+    IntToFloatData("IntToFloatData"),
+    IntIntToFloatFloatData("IntIntToFloatFloatData"),
+    FloatDataConsumer("FloatDataConsumer"),
+    ContextConsumer("ContextConsumer"),
+    ContextIntConsumer("ContextIntConsumer"),
+    VectorDoubleProducer("VectorDoubleProducer"),
+    FrExpTransformer("FrExpTransformer"),
+    LdExpTransformer("LdExpTransfomer"),
+    OptFrExpTransformer("OptFrExpTransformer"),
+    OptLdExpTransformer("OptLdExpTransformer")
+]
 # - Events
 app.EvtMax = 2
 app.EvtSel = "NONE"

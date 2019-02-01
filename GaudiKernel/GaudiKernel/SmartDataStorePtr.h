@@ -42,8 +42,7 @@
     @version 1.0
 */
 template <class TYPE, class LOADER>
-class SmartDataStorePtr : public SmartDataObjectPtr
-{
+class SmartDataStorePtr : public SmartDataObjectPtr {
 public:
   /** Standard constructor: Construct an SmartDataStorePtr instance which is
                             able to connect to a DataObject instance
@@ -54,9 +53,7 @@ public:
       @param  pDirectory    Pointer to the data directory entry.
   */
   SmartDataStorePtr( IDataProviderSvc* pService, IRegistry* pRegistry, const std::string& path )
-      : SmartDataObjectPtr( LOADER::access(), pService, pRegistry, path ), m_pObject( 0 )
-  {
-  }
+      : SmartDataObjectPtr( LOADER::access(), pService, pRegistry, path ), m_pObject( 0 ) {}
   /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */
@@ -66,22 +63,19 @@ public:
   virtual ~SmartDataStorePtr() {}
 
   /// Automatic conversion to data type
-  SmartDataStorePtr& operator=( DataObject* pObj )
-  {
+  SmartDataStorePtr& operator=( DataObject* pObj ) {
     m_pObject = dynamic_cast<TYPE*>( pObj );
     return *this;
   }
 
   /// Automatic conversion to data type
-  SmartDataStorePtr& operator=( const DataObject* pObj )
-  {
+  SmartDataStorePtr& operator=( const DataObject* pObj ) {
     m_pObject = dynamic_cast<TYPE*>( const_cast<DataObject*>( pObj ) );
     return *this;
   }
 
   /// unhides assignment operator of base class
-  SmartDataStorePtr& operator=( const SmartDataObjectPtr& copy ) override
-  {
+  SmartDataStorePtr& operator=( const SmartDataObjectPtr& copy ) override {
     this->m_pObject = dynamic_cast<TYPE*>( const_cast<SmartDataObjectPtr*>( &copy ) );
     return *this;
   }
@@ -93,8 +87,7 @@ public:
   TYPE* operator->() { return accessTypeSafeData(); }
 
   /// Dereference operator: the heart of the smart pointer
-  TYPE& operator*()
-  {
+  TYPE& operator*() {
     TYPE* result = accessTypeSafeData();
     return *result;
   }
@@ -103,8 +96,7 @@ public:
   operator TYPE*() { return accessTypeSafeData(); }
 
   /// Automatic conversion to data type
-  operator TYPE&()
-  {
+  operator TYPE&() {
     TYPE* result = accessTypeSafeData();
     return *result;
   }
@@ -116,11 +108,8 @@ public:
   bool operator!() { return 0 == accessTypeSafeData(); }
 
   /// Internal type safe accessor to data
-  TYPE* accessTypeSafeData()
-  {
-    if ( 0 == m_pObject ) {
-      m_pObject = dynamic_cast<TYPE*>( accessData() );
-    }
+  TYPE* accessTypeSafeData() {
+    if ( 0 == m_pObject ) { m_pObject = dynamic_cast<TYPE*>( accessData() ); }
     return m_pObject;
   }
 
@@ -140,8 +129,7 @@ protected:
     @return           Boolean indicating existence of both objects
 */
 template <class A, class LDA, class B, class LDB>
-bool operator&&( SmartDataStorePtr<A, LDA>& object_1, SmartDataStorePtr<B, LDB>& object_2 )
-{
+bool operator&&( SmartDataStorePtr<A, LDA>& object_1, SmartDataStorePtr<B, LDB>& object_2 ) {
   if ( 0 != object_1.accessTypeSafeData() ) {   // Test existence of the first object
     if ( 0 != object_2.accessTypeSafeData() ) { // Test existence of the second object
       return true;                              // Fine: Both objects exist
@@ -161,8 +149,7 @@ bool operator&&( SmartDataStorePtr<A, LDA>& object_1, SmartDataStorePtr<B, LDB>&
     @return           Boolean indicating existence of both objects
 */
 template <class B, class LDB>
-bool operator&&( bool test, SmartDataStorePtr<B, LDB>& object )
-{
+bool operator&&( bool test, SmartDataStorePtr<B, LDB>& object ) {
   if ( test ) {                               // Test existence of the first object
     if ( 0 != object.accessTypeSafeData() ) { // Test existence of the second object
       return true;                            // Fine: Both objects exist
@@ -182,8 +169,7 @@ bool operator&&( bool test, SmartDataStorePtr<B, LDB>& object )
     @return           Boolean indicating existence of both objects
 */
 template <class B, class LDB>
-bool operator&&( SmartDataStorePtr<B, LDB>& object, bool test )
-{
+bool operator&&( SmartDataStorePtr<B, LDB>& object, bool test ) {
   if ( test ) {                               // Test existence of the first object
     if ( 0 != object.accessTypeSafeData() ) { // Test existence of the second object
       return true;                            // Fine: Both objects exist
@@ -207,8 +193,7 @@ bool operator&&( SmartDataStorePtr<B, LDB>& object, bool test )
     @return           Boolean indicating existence of both objects
 */
 template <class A, class LDA, class B, class LDB>
-bool operator||( SmartDataStorePtr<A, LDA>& object_1, SmartDataStorePtr<B, LDB>& object_2 )
-{
+bool operator||( SmartDataStorePtr<A, LDA>& object_1, SmartDataStorePtr<B, LDB>& object_2 ) {
   if ( 0 != object_1.accessTypeSafeData() ) { // Test existence of the first object
     return true;
   }
@@ -229,8 +214,7 @@ bool operator||( SmartDataStorePtr<A, LDA>& object_1, SmartDataStorePtr<B, LDB>&
     @return           Boolean indicating existence of both objects
 */
 template <class B, class LDB>
-bool operator||( bool test, SmartDataStorePtr<B, LDB>& object )
-{
+bool operator||( bool test, SmartDataStorePtr<B, LDB>& object ) {
   if ( test ) { // Test existence of the first object
     return true;
   }
@@ -251,8 +235,7 @@ bool operator||( bool test, SmartDataStorePtr<B, LDB>& object )
     @return           Boolean indicating existence of both objects
 */
 template <class B, class LDB>
-bool operator||( SmartDataStorePtr<B, LDB>& object, bool test )
-{
+bool operator||( SmartDataStorePtr<B, LDB>& object, bool test ) {
   if ( test ) { // Test existence of the first object
     return true;
   }

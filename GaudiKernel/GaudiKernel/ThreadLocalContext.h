@@ -7,10 +7,8 @@
 
 class EventContext;
 
-namespace Gaudi
-{
-  namespace Hive
-  {
+namespace Gaudi {
+  namespace Hive {
     /// Internal type used for the ContextId.
     typedef std::size_t ContextIdType;
 
@@ -28,7 +26,7 @@ namespace Gaudi
     GAUDI_API void setCurrentContextId( const EventContext* ctx );
     GAUDI_API void setCurrentContext( const EventContext* ctx );
     GAUDI_API void setCurrentContext( const EventContext& ctx );
-  }
-}
+  } // namespace Hive
+} // namespace Gaudi
 
 #endif

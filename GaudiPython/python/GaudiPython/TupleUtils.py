@@ -63,7 +63,7 @@ def _nTuple_(s, *args):
 
 
 # =============================================================================
-_nTuple_. __doc__ += "\n" + _Deco.nTuple . __doc__
+_nTuple_.__doc__ += "\n" + _Deco.nTuple.__doc__
 _Tool.nTuple = _nTuple_
 _Tool.ntuple = _nTuple_
 
@@ -126,9 +126,7 @@ def nTuple(dirpath, ID, ID2=None, topdir=None, LUN='FILE1'):
         t0.NTupleTopDir = topdir
 
     # get the tool from Tool service
-    tool = toolSvc.create('TupleTool',
-                          name,
-                          interface=_Tool)
+    tool = toolSvc.create('TupleTool', name, interface=_Tool)
 
     # check the properties and redefine them if needed
     t1 = GaudiPython.iAlgTool(tool.name(), tool)
@@ -166,6 +164,7 @@ def activeTuples():
     """
     return _TOOLS_
 
+
 # =============================================================================
 # Release the active tool/tuples
 
@@ -189,6 +188,7 @@ def releaseTuples():
                 continue
             while 1 < t.refCount():
                 toolSvc._its.releaseTool(t)
+
 
 # =============================================================================
 

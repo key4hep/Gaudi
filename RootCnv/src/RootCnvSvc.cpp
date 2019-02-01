@@ -36,22 +36,19 @@ typedef const string& CSTR;
 
 #define S_OK StatusCode::SUCCESS
 #define S_FAIL StatusCode::FAILURE
-namespace GaudiRoot
-{
+namespace GaudiRoot {
   bool patchStreamers( MsgStream& log );
 }
 
-namespace
-{
+namespace {
   static map<string, TClass*> s_classesNames;
   static map<CLID, TClass*>   s_classesClids;
-}
+} // namespace
 #define MBYTE ( 1024 * 1024 )
 #define kBYTE 1024
 // Standard constructor
 RootCnvSvc::RootCnvSvc( CSTR nam, ISvcLocator* svc )
-    : ConversionSvc( nam, svc, ROOT_StorageType ), m_setup{new RootConnectionSetup()}
-{
+    : ConversionSvc( nam, svc, ROOT_StorageType ), m_setup{new RootConnectionSetup()} {
   m_setup->cacheBranches.push_back( "*" );
   declareProperty( "LoadSection", m_setup->loadSection = "Event" );
 
@@ -63,8 +60,7 @@ RootCnvSvc::RootCnvSvc( CSTR nam, ISvcLocator* svc )
 }
 
 // Small routine to issue exceptions
-StatusCode RootCnvSvc::error( CSTR msg )
-{
+StatusCode RootCnvSvc::error( CSTR msg ) {
   if ( m_log ) {
     log() << MSG::ERROR << "Error: " << msg << endmsg;
     return S_FAIL;
@@ -75,13 +71,10 @@ StatusCode RootCnvSvc::error( CSTR msg )
 }
 
 // Initialize the Db data persistency service
-StatusCode RootCnvSvc::initialize()
-{
+StatusCode RootCnvSvc::initialize() {
   string     cname;
   StatusCode status = ConversionSvc::initialize();
-  if ( !status.isSuccess() ) {
-    return error( "Failed to initialize ConversionSvc base class." );
-  }
+  if ( !status.isSuccess() ) { return error( "Failed to initialize ConversionSvc base class." ); }
   m_log.reset( new MsgStream( msgSvc(), name() ) );
   if ( !m_compression.empty() ) {
     log() << MSG::INFO << "Setting global ROOT compression to:" << m_compression.value() << endmsg;
@@ -106,17 +99,14 @@ StatusCode RootCnvSvc::initialize()
 }
 
 // Finalize the Db data persistency service
-StatusCode RootCnvSvc::finalize()
-{
+StatusCode RootCnvSvc::finalize() {
   log() << MSG::INFO;
   if ( m_ioMgr ) {
     IIODataManager::Connections cons = m_ioMgr->connections( nullptr );
     for ( auto& i : cons ) {
       auto pc = dynamic_cast<RootDataConnection*>( i );
       if ( pc ) {
-        if ( pc->owner() == this && !m_ioPerfStats.empty() ) {
-          pc->saveStatistics( m_ioPerfStats.value() );
-        }
+        if ( pc->owner() == this && !m_ioPerfStats.empty() ) { pc->saveStatistics( m_ioPerfStats.value() ); }
         if ( pc->lookupClient( this ) ) {
           size_t num_clients = pc->removeClient( this );
           if ( num_clients == 0 ) {
@@ -137,8 +127,7 @@ StatusCode RootCnvSvc::finalize()
 }
 
 // ConversionSvc overload: Create new Converter using factory
-IConverter* RootCnvSvc::createConverter( long typ, const CLID& wanted, const ICnvFactory* )
-{
+IConverter* RootCnvSvc::createConverter( long typ, const CLID& wanted, const ICnvFactory* ) {
   if ( wanted == CLID_StatisticsFile )
     return new RootDatabaseCnv( typ, wanted, serviceLocator().get(), this );
   else if ( wanted == CLID_StatisticsDirectory )
@@ -152,8 +141,7 @@ IConverter* RootCnvSvc::createConverter( long typ, const CLID& wanted, const ICn
 }
 
 // ConversionSvc overload: Load the class (dictionary) for the converter
-void RootCnvSvc::loadConverter( DataObject* pObject )
-{
+void RootCnvSvc::loadConverter( DataObject* pObject ) {
   if ( pObject ) {
     string cname = System::typeinfoName( typeid( *pObject ) );
     if ( log().level() <= MSG::DEBUG )
@@ -170,8 +158,7 @@ void RootCnvSvc::loadConverter( DataObject* pObject )
 }
 
 // Helper: Get TClass for a given DataObject pointer
-TClass* RootCnvSvc::getClass( DataObject* pObject )
-{
+TClass* RootCnvSvc::getClass( DataObject* pObject ) {
   auto i = s_classesClids.find( pObject->clID() );
   if ( i != s_classesClids.end() ) return i->second;
   loadConverter( pObject );
@@ -184,22 +171,19 @@ TClass* RootCnvSvc::getClass( DataObject* pObject )
 }
 
 // Connect the output file to the service with open mode.
-StatusCode RootCnvSvc::connectOutput( CSTR dsn, CSTR openMode )
-{
+StatusCode RootCnvSvc::connectOutput( CSTR dsn, CSTR openMode ) {
   StatusCode sc = S_FAIL;
   m_current     = nullptr;
   m_currSection.clear();
-  if (::strncasecmp( openMode.c_str(), "RECREATE", 3 ) == 0 )
+  if ( ::strncasecmp( openMode.c_str(), "RECREATE", 3 ) == 0 )
     sc = connectDatabase( dsn, IDataConnection::RECREATE, &m_current );
-  else if (::strncasecmp( openMode.c_str(), "NEW", 1 ) == 0 )
+  else if ( ::strncasecmp( openMode.c_str(), "NEW", 1 ) == 0 )
     sc = connectDatabase( dsn, IDataConnection::CREATE, &m_current );
-  else if (::strncasecmp( openMode.c_str(), "CREATE", 1 ) == 0 )
+  else if ( ::strncasecmp( openMode.c_str(), "CREATE", 1 ) == 0 )
     sc = connectDatabase( dsn, IDataConnection::CREATE, &m_current );
-  else if (::strncasecmp( openMode.c_str(), "UPDATE", 1 ) == 0 )
+  else if ( ::strncasecmp( openMode.c_str(), "UPDATE", 1 ) == 0 )
     sc = connectDatabase( dsn, IDataConnection::UPDATE, &m_current );
-  if ( sc.isSuccess() && m_current && m_current->isConnected() ) {
-    return S_OK;
-  }
+  if ( sc.isSuccess() && m_current && m_current->isConnected() ) { return S_OK; }
   m_incidentSvc->fireIncident( Incident( dsn, IncidentType::FailOutputFile ) );
   log() << MSG::ERROR << "The dataset " << dsn << " cannot be opened in mode " << openMode << ". [Invalid mode]"
         << endmsg;
@@ -207,8 +191,7 @@ StatusCode RootCnvSvc::connectOutput( CSTR dsn, CSTR openMode )
 }
 
 // Connect the output file to the service with open mode.
-StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnection** con )
-{
+StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnection** con ) {
   try {
     IDataConnection* c             = m_ioMgr->connection( dataset );
     bool             fire_incident = false;
@@ -227,9 +210,7 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
               ContextIncident<TFile*>( connection->pfn(), "CONNECTED_OUTPUT", connection->file() ) );
         }
         if ( 0 != ( mode & IDataConnection::READ ) ) {
-          if ( !m_ioPerfStats.empty() ) {
-            connection->enableStatistics( m_setup->loadSection );
-          }
+          if ( !m_ioPerfStats.empty() ) { connection->enableStatistics( m_setup->loadSection ); }
         }
         connection.release();
       } else {
@@ -256,7 +237,7 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
           const string  par[2]  = {fid, m_recordName};
           unsigned long ipar[2] = {(unsigned long)( *con ), (unsigned long)b->GetEntries() - 1};
           for ( int i = 0; i < b->GetEntries(); ++i ) {
-            ipar[1]                             = i;
+            ipar[1] = i;
             if ( !pc->mergeFIDs().empty() ) fid = pc->mergeFIDs()[i];
             if ( !createAddress( repSvcType(), CLID_DataObject, par, ipar, pAddr ).isSuccess() ) {
               if ( log().level() <= MSG::VERBOSE )
@@ -308,8 +289,7 @@ StatusCode RootCnvSvc::connectDatabase( CSTR dataset, int mode, RootDataConnecti
 StatusCode RootCnvSvc::connectOutput( CSTR db_name ) { return connectOutput( db_name, "NEW" ); }
 
 // Commit pending output on open container
-StatusCode RootCnvSvc::commitOutput( CSTR dsn, bool /* doCommit */ )
-{
+StatusCode RootCnvSvc::commitOutput( CSTR dsn, bool /* doCommit */ ) {
   if ( m_current ) {
     size_t   len     = m_currSection.find( '/', 1 );
     string   section = m_currSection.substr( 1, len == string::npos ? string::npos : len - 1 );
@@ -338,9 +318,7 @@ StatusCode RootCnvSvc::commitOutput( CSTR dsn, bool /* doCommit */ )
       }
 
       b->GetTree()->SetEntries( evt );
-      if ( evt == 1 ) {
-        b->GetTree()->OptimizeBaskets( m_basketSize, 1.1, "" );
-      }
+      if ( evt == 1 ) { b->GetTree()->OptimizeBaskets( m_basketSize, 1.1, "" ); }
       if ( evt > 0 && ( evt % m_autoFlush ) == 0 ) {
         if ( evt == m_autoFlush ) {
           b->GetTree()->SetAutoFlush( m_autoFlush );
@@ -360,23 +338,20 @@ StatusCode RootCnvSvc::commitOutput( CSTR dsn, bool /* doCommit */ )
 }
 
 // Disconnect from an existing data stream.
-StatusCode RootCnvSvc::disconnect( CSTR dataset )
-{
+StatusCode RootCnvSvc::disconnect( CSTR dataset ) {
   IDataConnection* c = m_ioMgr->connection( dataset );
   return c ? m_ioMgr->disconnect( c ) : S_FAIL;
 }
 
 // IAddressCreator implementation: Address creation
 StatusCode RootCnvSvc::createAddress( long typ, const CLID& clid, const string* par, const unsigned long* ip,
-                                      IOpaqueAddress*& refpAddress )
-{
+                                      IOpaqueAddress*& refpAddress ) {
   refpAddress = new RootAddress( typ, clid, par[0], par[1], ip[0], ip[1] );
   return S_OK;
 }
 
 // Insert null marker for not existent transient object
-StatusCode RootCnvSvc::createNullRep( const std::string& path )
-{
+StatusCode RootCnvSvc::createNullRep( const std::string& path ) {
   size_t len     = path.find( '/', 1 );
   string section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
   m_current->saveObj( section, path, nullptr, nullptr, m_bufferSize, m_splitLevel );
@@ -384,12 +359,11 @@ StatusCode RootCnvSvc::createNullRep( const std::string& path )
 }
 
 // Insert null marker for not existent transient object
-StatusCode RootCnvSvc::createNullRef( const std::string& path )
-{
-  RootObjectRefs* refs    = nullptr;
-  size_t          len     = path.find( '/', 1 );
-  string          section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
-  pair<int, unsigned long> ret = m_current->save( section, path + "#R", nullptr, refs, m_bufferSize, m_splitLevel );
+StatusCode RootCnvSvc::createNullRef( const std::string& path ) {
+  RootObjectRefs*          refs    = nullptr;
+  size_t                   len     = path.find( '/', 1 );
+  string                   section = path.substr( 1, len == string::npos ? string::npos : len - 1 );
+  pair<int, unsigned long> ret     = m_current->save( section, path + "#R", nullptr, refs, m_bufferSize, m_splitLevel );
   if ( log().level() <= MSG::VERBOSE )
     log() << MSG::VERBOSE << "Writing object:" << path << " " << ret.first << " " << hex << ret.second << dec
           << " [NULL]" << endmsg;
@@ -397,19 +371,18 @@ StatusCode RootCnvSvc::createNullRef( const std::string& path )
 }
 
 // Mark an object for write given an object reference
-StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr )
-{
+StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) {
   refpAddr = nullptr;
   if ( !pObj ) return error( "createRep> Current Database is invalid!" );
-  CLID       clid = pObj->clID();
-  IRegistry* pR   = pObj->registry();
-  string     p[2] = {m_current->fid(), pR->identifier()};
-  TClass*    cl   = ( clid == CLID_DataObject ) ? m_classDO : getClass( pObj );
-  size_t     len  = p[1].find( '/', 1 );
-  string     sect = p[1].substr( 1, len == string::npos ? string::npos : len - 1 );
-  pair<int, unsigned long> ret = m_current->saveObj( sect, p[1], cl, pObj, m_bufferSize, m_splitLevel, true );
+  CLID                     clid = pObj->clID();
+  IRegistry*               pR   = pObj->registry();
+  string                   p[2] = {m_current->fid(), pR->identifier()};
+  TClass*                  cl   = ( clid == CLID_DataObject ) ? m_classDO : getClass( pObj );
+  size_t                   len  = p[1].find( '/', 1 );
+  string                   sect = p[1].substr( 1, len == string::npos ? string::npos : len - 1 );
+  pair<int, unsigned long> ret  = m_current->saveObj( sect, p[1], cl, pObj, m_bufferSize, m_splitLevel, true );
   if ( ret.first > 1 || ( clid == CLID_DataObject && ret.first == 1 ) ) {
-    unsigned long ip[2]                        = {0, ret.second};
+    unsigned long ip[2] = {0, ret.second};
     if ( m_currSection.empty() ) m_currSection = p[1];
     return createAddress( repSvcType(), clid, p, ip, refpAddr );
   }
@@ -417,8 +390,7 @@ StatusCode RootCnvSvc::i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr
 }
 
 // Save object references to data file
-StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pObj )
-{
+StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pObj ) {
   if ( pObj ) {
     typedef vector<IRegistry*> Leaves;
     Leaves                     leaves;
@@ -460,8 +432,7 @@ StatusCode RootCnvSvc::i__fillRepRefs( IOpaqueAddress* /* pA */, DataObject* pOb
 }
 
 // Read existing object. Open transaction in read mode if not active
-StatusCode RootCnvSvc::i__createObj( IOpaqueAddress* pA, DataObject*& refpObj )
-{
+StatusCode RootCnvSvc::i__createObj( IOpaqueAddress* pA, DataObject*& refpObj ) {
   refpObj = nullptr;
   if ( !pA ) return S_FAIL;
   RootDataConnection* con  = nullptr;
@@ -490,8 +461,7 @@ StatusCode RootCnvSvc::i__createObj( IOpaqueAddress* pA, DataObject*& refpObj )
 }
 
 // Resolve the references of the created transient object.
-StatusCode RootCnvSvc::i__fillObjRefs( IOpaqueAddress* pA, DataObject* pObj )
-{
+StatusCode RootCnvSvc::i__fillObjRefs( IOpaqueAddress* pA, DataObject* pObj ) {
   if ( !pA || !pObj ) return error( "read> Cannot read object -- no valid object address present " );
 
   const unsigned long* ipar = pA->ipar();

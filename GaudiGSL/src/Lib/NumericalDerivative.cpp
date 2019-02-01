@@ -30,10 +30,8 @@
  */
 // ============================================================================
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     // ========================================================================
 
     // ========================================================================
@@ -53,11 +51,8 @@ namespace Genfun
         , m_type( type )
         , m_argument( function.dimensionality() )
         , m_result( GSL_NEGINF )
-        , m_error( GSL_POSINF )
-    {
-      if ( m_index >= m_DIM ) {
-        Exception( "::constructor invalid variable index " );
-      };
+        , m_error( GSL_POSINF ) {
+      if ( m_index >= m_DIM ) { Exception( "::constructor invalid variable index " ); };
     }
     // ========================================================================
 
@@ -72,16 +67,13 @@ namespace Genfun
         , m_type( right.m_type )
         , m_argument( right.m_DIM )
         , m_result( GSL_NEGINF )
-        , m_error( GSL_POSINF )
-    {
-    }
+        , m_error( GSL_POSINF ) {}
     // ========================================================================
 
     // ========================================================================
     /// change the type of the adaptive differentiation
     // ========================================================================
-    const NumericalDerivative::Type& NumericalDerivative::setType( const NumericalDerivative::Type& value )
-    {
+    const NumericalDerivative::Type& NumericalDerivative::setType( const NumericalDerivative::Type& value ) {
       m_type = value;
       return type();
     }
@@ -90,11 +82,8 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Genfun::Derivative NumericalDerivative::partial( unsigned int idx ) const
-    {
-      if ( idx >= m_DIM ) {
-        Exception( "::partial(i): invalid variable index" );
-      }
+    Genfun::Derivative NumericalDerivative::partial( unsigned int idx ) const {
+      if ( idx >= m_DIM ) { Exception( "::partial(i): invalid variable index" ); }
       const AbsFunction& aux = NumericalDerivative( *this, idx, type() );
       return FunctionNoop( &aux );
     }
@@ -103,22 +92,17 @@ namespace Genfun
     // ========================================================================
     /// Function value
     // ========================================================================
-    double NumericalDerivative::operator()( const Argument& argument ) const
-    {
+    double NumericalDerivative::operator()( const Argument& argument ) const {
       // reset the result and the error
       m_result = GSL_NEGINF;
       m_error  = GSL_POSINF;
 
       // check the argument
-      if ( argument.dimension() != m_DIM ) {
-        Exception( "::operator():invalid argument size" );
-      };
+      if ( argument.dimension() != m_DIM ) { Exception( "::operator():invalid argument size" ); };
 
       /// copy the argument
       {
-        for ( size_t i = 0; i < m_DIM; ++i ) {
-          m_argument[i] = argument[i];
-        }
+        for ( size_t i = 0; i < m_DIM; ++i ) { m_argument[i] = argument[i]; }
       }
 
       // create the helper object
@@ -145,9 +129,7 @@ namespace Genfun
         Exception( "::operator(): invalid diffrentiation type " );
       }
 
-      if ( ierrno ) {
-        gsl_error( " NumericalDerivative:: the error from gsl_diff_XXXX", __FILE__, __LINE__, ierrno );
-      }
+      if ( ierrno ) { gsl_error( " NumericalDerivative:: the error from gsl_diff_XXXX", __FILE__, __LINE__, ierrno ); }
 
       return result();
     }
@@ -156,16 +138,13 @@ namespace Genfun
     // ========================================================================
     /// Function value
     // ========================================================================
-    double NumericalDerivative::operator()( const double argument ) const
-    {
+    double NumericalDerivative::operator()( const double argument ) const {
       // reset the result and the error
       m_result = GSL_NEGINF;
       m_error  = GSL_POSINF;
 
       // check the argument
-      if ( 1 != m_DIM ) {
-        Exception( "operator(): invalid argument size " );
-      }
+      if ( 1 != m_DIM ) { Exception( "operator(): invalid argument size " ); }
 
       Argument arg( 1 );
       arg[0] = argument;
@@ -176,8 +155,7 @@ namespace Genfun
     // ========================================================================
     /// Exception
     // ========================================================================
-    StatusCode NumericalDerivative::Exception( const std::string& message, const StatusCode& sc ) const
-    {
+    StatusCode NumericalDerivative::Exception( const std::string& message, const StatusCode& sc ) const {
       throw GaudiException( "NumericalDerivative" + message, "*GaudiMath*", sc );
       return sc;
     }
@@ -185,7 +163,7 @@ namespace Genfun
 
   } // end of namespace GaudiMathImplementation
 
-} // end of namespace Genfun (due to GSL)
+} // namespace Genfun
 
 // ============================================================================
 // The END

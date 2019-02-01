@@ -13,10 +13,8 @@
 
 class EventContext;
 
-namespace Gaudi
-{
-  namespace Hive
-  {
+namespace Gaudi {
+  namespace Hive {
     /**
      *  Simple implementation of a smart pointer with different values for
      *  different event contexts (slots).
@@ -29,22 +27,19 @@ namespace Gaudi
      *  associated to the pointers.
      */
     template <typename T>
-    class ContextSpecificPtr
-    {
+    class ContextSpecificPtr {
     private:
       /// Type used for the internal storage.
       typedef std::unordered_map<ContextIdType, T*> StorageType;
 
     public:
       /// Return the pointer for the current context (null for a new context).
-      inline T* get() const
-      {
+      inline T* get() const {
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
         return m_ptrs[currentContextId()];
       }
       /// Set the pointer for the current context.
-      inline T*& set( T* ptr )
-      {
+      inline T*& set( T* ptr ) {
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
         return m_ptrs[currentContextId()] = ptr;
       }
@@ -62,9 +57,9 @@ namespace Gaudi
       inline bool operator==( T* rhs ) const { return get() == rhs; }
 
       /// @{ Dereference operators.
-      inline T& operator*() { return *get(); }
+      inline T&       operator*() { return *get(); }
       inline const T& operator*() const { return *get(); }
-      inline T* operator->() { return get(); }
+      inline T*       operator->() { return get(); }
       inline const T* operator->() const { return get(); }
       /// @}
 
@@ -77,8 +72,7 @@ namespace Gaudi
       /// all the values corresponding to the contained pointers using init as
       /// first value.
       template <class Mapper>
-      auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init ) const -> decltype( init )
-      {
+      auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init ) const -> decltype( init ) {
         return accumulate( f, init, std::plus<>() );
       }
 
@@ -87,8 +81,7 @@ namespace Gaudi
       /// corresponding to the contained pointers using init as first value.
       template <class Mapper, class BinaryOperation>
       auto accumulate( Mapper f, std::result_of_t<Mapper( const T* )> init, BinaryOperation op ) const
-          -> decltype( init )
-      {
+          -> decltype( init ) {
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
         return std::accumulate( m_ptrs.begin(), m_ptrs.end(), init, [&f, &op]( const auto& partial, const auto& p ) {
           return op( partial, f( p.second ) );
@@ -97,36 +90,31 @@ namespace Gaudi
 
       /// Call a function on each contained pointer.
       template <class F>
-      void for_each( F f ) const
-      {
+      void for_each( F f ) const {
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
         for ( auto& i : m_ptrs ) f( i.second );
       }
 
       /// Call a function on each contained pointer. (non-const version)
       template <class F>
-      void for_each( F f )
-      {
+      void for_each( F f ) {
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
         for ( auto& i : m_ptrs ) f( i.second );
       }
 
       /// Call a function on each element, passing slot# as well
       template <class F>
-      void for_all( F f ) const
-      {
+      void for_all( F f ) const {
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
         for ( auto& i : m_ptrs ) f( i.first, i.second );
       }
       template <class F>
-      void for_all( F f )
-      {
+      void for_all( F f ) {
         std::lock_guard<std::mutex> lock( m_ptrs_lock );
         for ( auto& i : m_ptrs ) f( i.first, i.second );
       }
 
-      void deleteAll()
-      {
+      void deleteAll() {
         for_each( []( T*& p ) {
           delete p;
           p = nullptr;
@@ -147,8 +135,7 @@ namespace Gaudi
      *  New values are created from the prototype passed to the constructor.
      */
     template <typename T>
-    class ContextSpecificData
-    {
+    class ContextSpecificData {
     public:
       /// Constructor with prototype value.
       ContextSpecificData( T proto = {} ) : m_proto( std::move( proto ) ) {}
@@ -156,14 +143,12 @@ namespace Gaudi
       /// Destructor.
       ~ContextSpecificData() { m_ptr.deleteAll(); }
 
-      operator T&()
-      {
+      operator T&() {
         if ( !m_ptr ) m_ptr = new T( m_proto );
         return *m_ptr;
       }
 
-      operator T&() const
-      {
+      operator T&() const {
         if ( !m_ptr ) m_ptr = new T( m_proto );
         return *m_ptr;
       }
@@ -177,34 +162,29 @@ namespace Gaudi
       /// Return the accumulated result, through the operation 'op', of all the
       /// contained values using init as first value.
       template <class T1, class BinaryOperation>
-      T1 accumulate( T1 init, BinaryOperation op ) const
-      {
+      T1 accumulate( T1 init, BinaryOperation op ) const {
         return m_ptr.accumulate( []( const T* p ) { return *p; }, init, op );
       }
 
       /// Call a function on each contained value.
       template <class F>
-      void for_each( F f ) const
-      {
+      void for_each( F f ) const {
         m_ptr.for_each( [&f]( const T* p ) { f( *p ); } );
       }
 
       /// Call a function on each contained value. (non-const version)
       template <class F>
-      void for_each( F f )
-      {
+      void for_each( F f ) {
         m_ptr.for_each( [&f]( T* p ) { f( *p ); } );
       }
 
       /// Call a function on each element, passing slot# as well
       template <class F>
-      void for_all( F f ) const
-      {
+      void for_all( F f ) const {
         m_ptr.for_all( [&f]( size_t s, const T* p ) { f( s, *p ); } );
       }
       template <class F>
-      void for_all( F f )
-      {
+      void for_all( F f ) {
         m_ptr.for_all( [&f]( size_t s, T* p ) { f( s, *p ); } );
       }
 
@@ -217,7 +197,7 @@ namespace Gaudi
       /// Internal implementation.
       mutable ContextSpecificPtr<T> m_ptr;
     };
-  }
-}
+  } // namespace Hive
+} // namespace Gaudi
 
 #endif // _GAUDI_CONTEXTSPECIFICPTR_H_

@@ -19,14 +19,13 @@
  *
  * @author M.Frank
  * @author Sebastien Ponce
-*/
+ */
 
 // Forward declarations
 class IDataProviderSvc;
 class IConversionSvc;
 
-namespace NTuple
-{
+namespace NTuple {
   // Local forward declarations
   template <class TYP>
   class DataItem;
@@ -40,10 +39,9 @@ namespace NTuple
   class _MatrixImp;
 
   /** Concrete class discribing basic data items in an N tuple.
-  */
+   */
   template <class TYP>
-  class _DataImp : virtual public _Data<TYP>
-  {
+  class _DataImp : virtual public _Data<TYP> {
     /// Inhibit Copy Constructor
     _DataImp( const _DataImp& ) = delete;
 
@@ -81,8 +79,7 @@ namespace NTuple
         , m_index( std::move( index ) )
         , m_def( std::move( def ) )
         , m_range( std::move( low ), std::move( high ) )
-        , m_info( info )
-    {
+        , m_info( info ) {
       m_type         = typeid( TYP ) == typeid( void* ) ? DataTypeInfo::POINTER : DataTypeInfo::ID( info );
       this->m_buffer = new TYP[m_length];
       reset();
@@ -94,14 +91,11 @@ namespace NTuple
     /// Reset to default
     void reset() override { std::fill_n( this->m_buffer, m_length, m_def ); }
     /// Number of items filled
-    long filled() const override
-    {
+    long filled() const override {
       int len = 1;
       int nd  = ndim();
       if ( m_length > 1 ) {
-        for ( int l = 0; l < nd - 1; l++ ) {
-          len *= dim( l );
-        }
+        for ( int l = 0; l < nd - 1; l++ ) { len *= dim( l ); }
         if ( indexItem() ) {
           long* ll = (long*)m_indexItem->buffer();
           len *= *ll;
@@ -112,14 +106,12 @@ namespace NTuple
       return len;
     }
     /// Pointer to index column (if present, 0 else)
-    INTupleItem* indexItem() override
-    {
+    INTupleItem* indexItem() override {
       if ( !m_indexItem ) m_indexItem = m_tuple->find( m_index );
       return m_indexItem;
     }
     /// Pointer to index column (if present, 0 else) (CONST)
-    const INTupleItem* indexItem() const override
-    {
+    const INTupleItem* indexItem() const override {
       if ( !m_indexItem ) m_indexItem = m_tuple->find( m_index );
       return m_indexItem;
     }
@@ -158,19 +150,16 @@ namespace NTuple
   };
 
   /** Concrete class discribing a column in a N tuple.
-  */
+   */
   template <class TYP>
-  class _ItemImp : virtual public _DataImp<TYP>, virtual public _Item<TYP>
-  {
+  class _ItemImp : virtual public _DataImp<TYP>, virtual public _Item<TYP> {
 
   public:
     /// Set type definition to make life more easy easy
     typedef Range<TYP> ItemRange;
     /// Standard Constructor
     _ItemImp( INTuple* tup, const std::string& name, const std::type_info& info, TYP min, TYP max, TYP def )
-        : _DataImp<TYP>( tup, name, info, "", 1, min, max, def )
-    {
-    }
+        : _DataImp<TYP>( tup, name, info, "", 1, min, max, def ) {}
     /// Compiler type ID
     // virtual const std::type_info& typeID() const             { return typeid(NTuple::_Item<TYP>);  }
     /// Set default value
@@ -182,19 +171,16 @@ namespace NTuple
   };
 
   /** Concrete class discribing a column-array in a N tuple.
-  */
+   */
   template <class TYP>
-  class _ArrayImp : virtual public _DataImp<TYP>, virtual public _Array<TYP>
-  {
+  class _ArrayImp : virtual public _DataImp<TYP>, virtual public _Array<TYP> {
   public:
     /// Set type definition to make life more easy easy
     typedef Range<TYP> ItemRange;
     /// Standard Constructor
     _ArrayImp( INTuple* tup, const std::string& name, const std::type_info& typ, const std::string& index, long len,
                TYP min, TYP max, TYP def )
-        : _DataImp<TYP>( tup, name, typ, index, len, min, max, def )
-    {
-    }
+        : _DataImp<TYP>( tup, name, typ, index, len, min, max, def ) {}
     /// Compiler type ID
     // virtual const std::type_info& typeID() const             { return typeid(NTuple::_Array<TYP>); }
     /// Set default value
@@ -210,18 +196,16 @@ namespace NTuple
   };
 
   /** Concrete class discribing a matrix column in a N tuple.
-  */
+   */
   template <class TYP>
-  class _MatrixImp : virtual public _DataImp<TYP>, virtual public _Matrix<TYP>
-  {
+  class _MatrixImp : virtual public _DataImp<TYP>, virtual public _Matrix<TYP> {
   public:
     /// Set type definition to make life more easy easy
     typedef Range<TYP> ItemRange;
     /// Standard Constructor
     _MatrixImp( INTuple* tup, const std::string& name, const std::type_info& typ, const std::string& index, long ncol,
                 long nrow, TYP min, TYP max, TYP def )
-        : _DataImp<TYP>( tup, name, typ, index, nrow * ncol, min, max, def )
-    {
+        : _DataImp<TYP>( tup, name, typ, index, nrow * ncol, min, max, def ) {
       this->m_rows = nrow;
     }
     /// Compiler type ID
@@ -235,11 +219,10 @@ namespace NTuple
     /// Dimension
     long ndim() const override { return 2; }
     /// Access individual dimensions
-    long dim( long i ) const override
-    {
+    long dim( long i ) const override {
       return ( this->hasIndex() ) ? ( ( i == 0 ) ? this->m_rows : this->m_length / this->m_rows )
                                   : ( ( i == 1 ) ? this->m_length / this->m_rows : this->m_rows );
     }
   };
-} // end name space NTuple
+} // namespace NTuple
 #endif // GAUDI_NTUPLESVC_NTUPLEITEMS_H

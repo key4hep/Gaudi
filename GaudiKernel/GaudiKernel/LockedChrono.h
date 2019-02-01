@@ -7,11 +7,9 @@
 // ===========================================================================
 #include "GaudiKernel/ChronoEntity.h"
 // ===========================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // =========================================================================
-  namespace Utils
-  {
+  namespace Utils {
     // =======================================================================
     /** @class LockedChrono
      *
@@ -49,13 +47,11 @@ namespace Gaudi
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date   2009-08-10
      */
-    class LockedChrono
-    {
+    class LockedChrono {
     public:
       // ======================================================================
       /// constructor from the actual timer: start the timer
-      LockedChrono( ChronoEntity& c, bool& lock ) : m_timer( c ), m_locker( lock )
-      {
+      LockedChrono( ChronoEntity& c, bool& lock ) : m_timer( c ), m_locker( lock ) {
         if ( !lock ) {
           m_timer.start();
           m_locker = true;
@@ -63,8 +59,7 @@ namespace Gaudi
         }
       }
       /// destructor:
-      ~LockedChrono()
-      {
+      ~LockedChrono() {
         if ( m_locked ) {
           m_timer.stop();
           m_locker = false;
@@ -85,11 +80,10 @@ namespace Gaudi
       // ======================================================================
     };
     // ========================================================================
-  } //                                               end namespace Gaudi::Utils
+  } // namespace Utils
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDI_LOCKEDCHRONO_H
-// ============================================================================

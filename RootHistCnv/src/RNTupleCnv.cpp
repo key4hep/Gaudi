@@ -18,7 +18,7 @@
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //     they are intended
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
 
 //-----------------------------------------------------------------------------
@@ -36,12 +36,11 @@ RootHistCnv::RNTupleCnv::RNTupleCnv( ISvcLocator* svc, const CLID& clid ) : RCon
 
 //-----------------------------------------------------------------------------
 /// Initialize the converter
-StatusCode RootHistCnv::RNTupleCnv::initialize()
-{
+StatusCode RootHistCnv::RNTupleCnv::initialize() {
   //-----------------------------------------------------------------------------
   StatusCode status = Converter::initialize();
   if ( status.isSuccess() ) {
-    m_ntupleSvc                = serviceLocator()->service( "NTupleSvc" );
+    m_ntupleSvc = serviceLocator()->service( "NTupleSvc" );
     if ( !m_ntupleSvc ) status = StatusCode::FAILURE;
   }
   return status;
@@ -49,8 +48,7 @@ StatusCode RootHistCnv::RNTupleCnv::initialize()
 
 //-----------------------------------------------------------------------------
 /// Finalize the converter
-StatusCode RootHistCnv::RNTupleCnv::finalize()
-{
+StatusCode RootHistCnv::RNTupleCnv::finalize() {
   //-----------------------------------------------------------------------------
   m_ntupleSvc.reset();
   return Converter::finalize();
@@ -78,8 +76,7 @@ StatusCode RootHistCnv::RNTupleCnv::updateObj( IOpaqueAddress* pAddress, DataObj
     unsigned long* info = (unsigned long*)pAddress->ipar();
     setDirectory( pAddress->par()[0] );
     status = readData( rtree, dynamic_cast<INTuple*>( pObject ), info[1]++ );
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return status;
 }
 
@@ -143,13 +140,9 @@ StatusCode RootHistCnv::RNTupleCnv::createRep( DataObject* pObject, IOpaqueAddre
                 auto   dsc   = pReg->name().substr( 1 );
                 gDirectory   = pParentDir;
                 status       = book( dsc, dynamic_cast<INTuple*>( pObject ), pTree );
-                if ( !status.isSuccess() ) {
-                  return status;
-                }
+                if ( !status.isSuccess() ) { return status; }
                 status = createAddress( pObject, gDirectory, pTree, pAddr );
-                if ( !status.isSuccess() ) {
-                  return status;
-                }
+                if ( !status.isSuccess() ) { return status; }
                 return writeData( pTree, dynamic_cast<INTuple*>( pObject ) );
               }
             }
@@ -168,8 +161,7 @@ StatusCode RootHistCnv::RNTupleCnv::createRep( DataObject* pObject, IOpaqueAddre
         return writeData( pTree, dynamic_cast<INTuple*>( pObject ) );
       }
     }
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   MsgStream log( msgSvc(), "RNTupleCnv" );
   log << MSG::ERROR << "Failed to create persistent N-tuple!" << endmsg;
   return StatusCode::FAILURE;
@@ -205,8 +197,7 @@ StatusCode RootHistCnv::RNTupleCnv::updateRep( IOpaqueAddress* pAddr, DataObject
 /// Return ROOT type info:
 
 //-----------------------------------------------------------------------------
-std::string RootHistCnv::RNTupleCnv::rootVarType( int type )
-{
+std::string RootHistCnv::RNTupleCnv::rootVarType( int type ) {
   //-----------------------------------------------------------------------------
   switch ( type ) {
   case DataTypeInfo::BOOL:
@@ -242,8 +233,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType( int type )
 }
 
 //-----------------------------------------------------------------------------
-bool RootHistCnv::parseName( const std::string& full, std::string& blk, std::string& var )
-{
+bool RootHistCnv::parseName( const std::string& full, std::string& blk, std::string& var ) {
   //-----------------------------------------------------------------------------
   int sp;
   if ( ( sp = full.find( "/" ) ) != -1 ) {
@@ -265,13 +255,11 @@ bool RootHistCnv::parseName( const std::string& full, std::string& blk, std::str
                                                int indexRange, int arraySize, TYP minimum, TYP maximum,                \
                                                INTuple* tuple )
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   template <class TYP>
   INTupleItem* createNTupleItem( std::string itemName, std::string blockName, std::string indexName, int indexRange,
-                                 int arraySize, TYP min, TYP max, INTuple* ntup )
-  {
+                                 int arraySize, TYP min, TYP max, INTuple* ntup ) {
 
     std::string varName;
     if ( blockName != "" ) {
@@ -327,4 +315,4 @@ namespace RootHistCnv
   INSTANTIATE( unsigned short );
   INSTANTIATE( unsigned long );
   INSTANTIATE( unsigned long long );
-}
+} // namespace RootHistCnv

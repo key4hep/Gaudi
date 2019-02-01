@@ -13,7 +13,7 @@
 #ifdef __ICC
 // disable icc warning #654: overloaded virtual function "B::Y" is only partially overridden in class "C"
 //   TODO: there is only a partial overload of IAuditor::before and IAuditor::after
-#pragma warning( disable : 654 )
+#  pragma warning( disable : 654 )
 #endif
 /** @class TimingAuditor
  *
@@ -24,8 +24,7 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-01-31
  */
-class TimingAuditor : public extends<Auditor, IIncidentListener>
-{
+class TimingAuditor : public extends<Auditor, IIncidentListener> {
 public:
   void before( StandardEventType evt, INamedInterface* alg ) override;
   void after( StandardEventType evt, INamedInterface* alg, const StatusCode& sc ) override;
@@ -86,12 +85,9 @@ private:
 // ============================================================================
 DECLARE_COMPONENT( TimingAuditor )
 // ============================================================================
-StatusCode TimingAuditor::initialize()
-{
+StatusCode TimingAuditor::initialize() {
   StatusCode sc = Auditor::initialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  } // RETURN
+  if ( sc.isFailure() ) { return sc; } // RETURN
 
   // get tool service
   if ( !m_toolSvc ) {
@@ -133,8 +129,7 @@ StatusCode TimingAuditor::initialize()
   return StatusCode::SUCCESS;
 }
 // ============================================================================
-StatusCode TimingAuditor::finalize()
-{
+StatusCode TimingAuditor::finalize() {
   if ( m_incSvc ) {
     m_incSvc->removeListener( this, IncidentType::BeginEvent );
     m_incSvc->removeListener( this, IncidentType::EndEvent );
@@ -155,8 +150,7 @@ StatusCode TimingAuditor::finalize()
   return Auditor::finalize();
 }
 // ============================================================================
-void TimingAuditor::before( StandardEventType evt, INamedInterface* alg )
-{
+void TimingAuditor::before( StandardEventType evt, INamedInterface* alg ) {
   switch ( evt ) {
   case IAuditor::Initialize:
     i_beforeInitialize( alg );
@@ -172,8 +166,7 @@ void TimingAuditor::before( StandardEventType evt, INamedInterface* alg )
   }
 }
 // ============================================================================
-void TimingAuditor::after( StandardEventType evt, INamedInterface* alg, const StatusCode& )
-{
+void TimingAuditor::after( StandardEventType evt, INamedInterface* alg, const StatusCode& ) {
   switch ( evt ) {
   case IAuditor::Initialize:
     i_afterInitialize( alg );
@@ -186,8 +179,7 @@ void TimingAuditor::after( StandardEventType evt, INamedInterface* alg, const St
   }
 }
 // ============================================================================
-void TimingAuditor::i_beforeFinalize( INamedInterface* /*alg*/ )
-{
+void TimingAuditor::i_beforeFinalize( INamedInterface* /*alg*/ ) {
   if ( !m_histoSaved ) {
     m_timer->saveHistograms();
     m_histoSaved = true;
@@ -195,24 +187,15 @@ void TimingAuditor::i_beforeFinalize( INamedInterface* /*alg*/ )
 }
 
 // ============================================================================
-void TimingAuditor::i_beforeInitialize( INamedInterface* alg )
-{
-  if ( m_goodForDOD ) {
-    return;
-  }
+void TimingAuditor::i_beforeInitialize( INamedInterface* alg ) {
+  if ( m_goodForDOD ) { return; }
   //
-  if ( !alg ) {
-    return;
-  }
+  if ( !alg ) { return; }
   auto found = m_map.find( alg );
-  if ( m_map.end() != found ) {
-    return;
-  }
+  if ( m_map.end() != found ) { return; }
   ++m_indent;
   std::string nick = alg->name();
-  if ( 0 < m_indent ) {
-    nick = std::string( m_indent, ' ' ) + nick;
-  }
+  if ( 0 < m_indent ) { nick = std::string( m_indent, ' ' ) + nick; }
   if ( m_inEvent ) {
     nick[0] = '*';
     debug() << "Insert non-structural component '" << alg->name() << "' of type '"
@@ -223,31 +206,21 @@ void TimingAuditor::i_beforeInitialize( INamedInterface* alg )
   m_timer->start( timer );
 }
 // ============================================================================
-void TimingAuditor::i_afterInitialize( INamedInterface* alg )
-{
-  if ( m_goodForDOD || !alg ) {
-    return;
-  }
+void TimingAuditor::i_afterInitialize( INamedInterface* alg ) {
+  if ( m_goodForDOD || !alg ) { return; }
   --m_indent;
 }
 // ============================================================================
-void TimingAuditor::i_beforeExecute( INamedInterface* alg )
-{
-  if ( !alg ) {
-    return;
-  }
+void TimingAuditor::i_beforeExecute( INamedInterface* alg ) {
+  if ( !alg ) { return; }
   ++m_indent;
   auto found = m_map.find( alg );
   if ( m_map.end() == found ) {
     debug() << "Insert non-structural component '" << alg->name() << "' of type '"
             << System::typeinfoName( typeid( *alg ) ) << "' at level " << m_indent << endmsg;
     std::string nick = alg->name();
-    if ( 0 < m_indent ) {
-      nick = std::string( m_indent, ' ' ) + nick;
-    }
-    if ( !m_goodForDOD ) {
-      nick[0] = '*';
-    }
+    if ( 0 < m_indent ) { nick = std::string( m_indent, ' ' ) + nick; }
+    if ( !m_goodForDOD ) { nick[0] = '*'; }
     int timer = m_timer->addTimer( nick );
     m_map.insert( alg, timer );
     m_timer->start( timer );
@@ -256,25 +229,17 @@ void TimingAuditor::i_beforeExecute( INamedInterface* alg )
   m_timer->start( found->second );
 }
 // ============================================================================
-void TimingAuditor::i_afterExecute( INamedInterface* alg )
-{
-  if ( !alg ) {
-    return;
-  }
+void TimingAuditor::i_afterExecute( INamedInterface* alg ) {
+  if ( !alg ) { return; }
   auto found = m_map.find( alg );
-  if ( m_map.end() == found ) {
-    return;
-  }
+  if ( m_map.end() == found ) { return; }
   m_timer->stop( found->second );
   --m_indent;
 }
 // ============================================================================
-void TimingAuditor::before( CustomEventTypeRef evt, const std::string& name )
-{
+void TimingAuditor::before( CustomEventTypeRef evt, const std::string& name ) {
   // Ignore obvious mistakes
-  if ( name.empty() && evt.empty() ) {
-    return;
-  }
+  if ( name.empty() && evt.empty() ) { return; }
 
   // look for the user timer in the map
   int         timer = 0;
@@ -291,12 +256,9 @@ void TimingAuditor::before( CustomEventTypeRef evt, const std::string& name )
   m_timer->start( timer );
 }
 // ============================================================================
-void TimingAuditor::after( CustomEventTypeRef evt, const std::string& name, const StatusCode& )
-{
+void TimingAuditor::after( CustomEventTypeRef evt, const std::string& name, const StatusCode& ) {
   // Ignore obvious mistakes
-  if ( name.empty() && evt.empty() ) {
-    return;
-  }
+  if ( name.empty() && evt.empty() ) { return; }
 
   // look for the user timer in the map
   std::string nick  = name + ":" + evt;
@@ -311,8 +273,7 @@ void TimingAuditor::after( CustomEventTypeRef evt, const std::string& name, cons
   m_timer->stop( found->second );
 }
 // ============================================================================
-void TimingAuditor::handle( const Incident& i )
-{
+void TimingAuditor::handle( const Incident& i ) {
   if ( IncidentType::BeginEvent == i.type() ) {
     m_timer->start( m_map[m_appMgr.get()] );
     ++m_indent;

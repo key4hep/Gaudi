@@ -35,8 +35,7 @@ class IDataProviderSvc;
    @author Markus Frank
    @version 1.0
 */
-class EventLoopMgr : public MinimalEventLoopMgr
-{
+class EventLoopMgr : public MinimalEventLoopMgr {
 public:
 protected:
   // Properties

@@ -20,15 +20,14 @@
  *
  *  @author M.Frank
  */
-class NTupleSvc : public extends<DataSvc, INTupleSvc, IDataSourceMgr>
-{
+class NTupleSvc : public extends<DataSvc, INTupleSvc, IDataSourceMgr> {
 protected:
   struct Connection final {
     IConversionSvc* service;
     Connection( IConversionSvc* s ) : service( s ) {}
     Connection( const Connection& c ) : service( c.service ) {}
   };
-  typedef std::vector<std::string> DBaseEntries;
+  typedef std::vector<std::string>            DBaseEntries;
   typedef std::pair<std::string, std::string> Prop;
 
 public:

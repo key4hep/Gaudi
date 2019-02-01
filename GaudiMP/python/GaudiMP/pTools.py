@@ -41,7 +41,6 @@ import time
 #                          Event Number as an integer (even from RawEvents!)
 #
 
-
 # used to convert stored histos (in AIDA format) to ROOT format
 aida2root = gbl.Gaudi.Utils.Aida2ROOT.aida2root
 
@@ -74,7 +73,7 @@ class HistoAgent():
         self.histos.append(tup)
 
     def Receive(self):
-        hstatus = self._gmpc.nWorkers + 1    # +1 for the Reader!
+        hstatus = self._gmpc.nWorkers + 1  # +1 for the Reader!
         while True:
             tup = self.qin.get()
             if tup == 'HISTOS_SENT':
@@ -121,12 +120,12 @@ class HistoAgent():
                         try:
                             self.bookingDict[o.__class__.__name__](n, o)
                         except:
-                            self.log.warning('FAILED TO REGISTER : %s\tto%s'
-                                             % (o.__class__.__name__, n))
+                            self.log.warning('FAILED TO REGISTER : %s\tto%s' %
+                                             (o.__class__.__name__, n))
                             errors += 1
                     else:
-                        self.log.warning('No booking method for: %s\t%s\t%s'
-                                         % (n, type(o), o.__class__.__name__))
+                        self.log.warning('No booking method for: %s\t%s\t%s' %
+                                         (n, type(o), o.__class__.__name__))
                         errors += 1
                     booked += 1
         hs = self.hvt.getHistoNames()
@@ -187,8 +186,7 @@ class HistoAgent():
         obj = self.hvt._ihs.bookProf(n, o.GetTitle(),
                                      o.GetXaxis().GetNbins(),
                                      o.GetXaxis().GetXmin(),
-                                     o.GetXaxis().GetXmax(),
-                                     o.GetOption())
+                                     o.GetXaxis().GetXmax(), o.GetOption())
         aida2root(obj).Add(o)
 
     def bookTProfile2D(self, n, o):
@@ -204,6 +202,7 @@ class HistoAgent():
                                      o.GetYaxis().GetXmax())
         aida2root(obj).Add(o)
 
+
 # =============================================================================
 
 
@@ -213,7 +212,7 @@ class FileRecordsAgent():
         self.fsr = self._gmpc.fsr
         self.q = self._gmpc.fq
         self.log = self._gmpc.log
-        self.objectsIn = []   # used for collecting FSR store objects
+        self.objectsIn = []  # used for collecting FSR store objects
         self.objectsOut = []
 
     def localCmp(self, tupA, tupB):
@@ -272,8 +271,8 @@ class FileRecordsAgent():
                     assert "KeyedContainer" in o.__class__.__name__
                     nObjects = o.numberOfObjects()
                     if nObjects:
-                        self.log.debug("Keyed Container %s with %i objects"
-                                       % (l, nObjects))
+                        self.log.debug("Keyed Container %s with %i objects" %
+                                       (l, nObjects))
                         tup = (self._gmpc.nodeID, l, pickle.dumps(o))
                         self.objectsOut.append(tup)
         self.log.debug('Done with FSR store, just to send to Writer.')
@@ -319,7 +318,7 @@ class FileRecordsAgent():
             if hasattr(ob, 'numberOfObjects'):
                 nCont = ob.numberOfObjects()
                 self.log.debug('\t %s has containedObjects : %i' %
-                               (type(ob).__name__,  nCont))
+                               (type(ob).__name__, nCont))
             if sourceNode == 0:
                 self.log.debug('Registering Object to : %s' % (path))
                 self.fsr.registerObject(path, ob)
@@ -331,12 +330,12 @@ class FileRecordsAgent():
         # by the writer is written (validation testing occurs on the worker)
 
         self.log.info('FSR Store Rebuilt.  Correcting EventCountFSR')
-        if bool(self.fsr._idp):   # There might not be an FSR stream (Gauss)
+        if bool(self.fsr._idp):  # There might not be an FSR stream (Gauss)
             ecount = '/FileRecords/EventCountFSR'
             if self.fsr[ecount]:
                 self.fsr[ecount].setOutput(self._gmpc.nIn)
-                self.log.info('Event Counter Output set : %s : %i'
-                              % (ecount, self.fsr[ecount].output()))
+                self.log.info('Event Counter Output set : %s : %i' %
+                              (ecount, self.fsr[ecount].output()))
             # Do some reporting
             self.log.debug('FSR store reconstructed!')
             lst = self.fsr.getHistoNames()
@@ -347,8 +346,8 @@ class FileRecordsAgent():
                         ob.configureDirectAccess()
                     if hasattr(ob, 'containedObjects'):
                         # if ob.numberOfObjects() :
-                        self.log.debug('\t%s (cont. objects : %i)'
-                                       % (l, ob.numberOfObjects()))
+                        self.log.debug('\t%s (cont. objects : %i)' %
+                                       (l, ob.numberOfObjects()))
                     else:
                         self.log.debug('\t%s' % (l))
         self.log.info('FSR Store fully rebuilt.')
@@ -369,8 +368,8 @@ class FileRecordsAgent():
             if "LumiFSR" in ob.__class__.__name__:
                 self.MergeLumiFSR(path, ob)
             else:
-                self.log.info("Skipping Merge of Keyed Container %s for %s"
-                              % (ob.__class__.__name__, path))
+                self.log.info("Skipping Merge of Keyed Container %s for %s" %
+                              (ob.__class__.__name__, path))
 
     def ProcessTimeSpanFSR(self, path, ob):
         ob2 = self.fsr.retrieveObject(path)
@@ -426,6 +425,7 @@ class FileRecordsAgent():
         # Add newly merged lumiFSR
         self.fsr[path].add(newLumi)
         return SUCCESS
+
 
 # =============================================================================
 
@@ -503,6 +503,7 @@ class LumiFSR():
             s += "\t\t%i\t%i\t%i\n" % (k, increment, integral)
         return s
 
+
 # =============================================================================
 
 
@@ -546,6 +547,7 @@ class PackedCaloHypo():
         s += "---------------------------------------\n"
         return s
 
+
 # =============================================================================
 
 
@@ -582,12 +584,18 @@ class SyncMini(object):
         s += "----------------------------------\n"
         return s
 
+
 # =============================================================================
 
 
 class Syncer(object):
-    def __init__(self, nWorkers, log, manyEvents=False,
-                 limit=None, step=None, firstEvent=None):
+    def __init__(self,
+                 nWorkers,
+                 log,
+                 manyEvents=False,
+                 limit=None,
+                 step=None,
+                 firstEvent=None):
         # Class to help synchronise the sub-processes
         self.limit = limit
         self.step = step
@@ -626,8 +634,8 @@ class Syncer(object):
         else:
             self.log.critical('Some process is hanging on : %s' % (step))
             for k in self.keys:
-                hangString = "%s : Proc/Stat : %i/%s" % (
-                    step, k, self.d[k].check())
+                hangString = "%s : Proc/Stat : %i/%s" % (step, k,
+                                                         self.d[k].check())
                 self.log.critical(hangString)
             return FAILURE
 
@@ -658,8 +666,8 @@ class Syncer(object):
                         # if last Event set,then event loop finished
                         active.remove(k)
                         alive = time.time() - begin
-                        self.log.info("Audit : Node %i alive for %5.2f"
-                                      % (k, alive))
+                        self.log.info(
+                            "Audit : Node %i alive for %5.2f" % (k, alive))
                     else:
                         sMini.reset()
                 else:
@@ -704,6 +712,7 @@ class Syncer(object):
         stat = [sMini.checkLast() for sMini in self.d.values()]
         return all(stat)
 
+
 # =========================== Methods =========================================
 
 
@@ -712,8 +721,7 @@ def getEventNumber(evt):
     #
     n = None
     # First Attempt : Unpacked Event Data
-    lst = ['/Event/Gen/Header',
-           '/Event/Rec/Header']
+    lst = ['/Event/Gen/Header', '/Event/Rec/Header']
     for l in lst:
         try:
             n = evt[l].evtNumber()
@@ -732,5 +740,6 @@ def getEventNumber(evt):
 
     # Default Action
     return n
+
 
 # ================================= EOF =======================================

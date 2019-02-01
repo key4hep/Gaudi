@@ -8,8 +8,7 @@ class TH1F;
 class ITHistSvc;
 class TDirectory;
 
-class THistRead : public Algorithm
-{
+class THistRead : public Algorithm {
 
 public:
   // Constructor of this form must be provided

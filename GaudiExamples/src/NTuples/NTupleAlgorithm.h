@@ -7,8 +7,7 @@
 
 // Forward declarations
 
-class NTupleAlgorithm : public Algorithm
-{
+class NTupleAlgorithm : public Algorithm {
 
 public:
   // Constructor of this form must be provided

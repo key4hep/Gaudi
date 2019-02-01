@@ -6,12 +6,9 @@
 
 #include <type_traits>
 
-namespace Gaudi
-{
-  namespace cpp17
-  {
-    namespace details
-    {
+namespace Gaudi {
+  namespace cpp17 {
+    namespace details {
       template <typename...>
       struct void_t_ {
         using type = void;
@@ -34,7 +31,7 @@ namespace Gaudi
         using type                  = Op<Args...>;
         using value_t               = std::true_type;
       };
-    }
+    } // namespace details
 
     template <template <class...> class Op, class... Args>
     using is_detected = details::detector<void, void, Op, Args...>;
@@ -45,7 +42,7 @@ namespace Gaudi
     // Op<Args...> if that is a valid type, otherwise Default.
     template <typename Default, template <typename...> class Op, typename... Args>
     using detected_or_t = typename details::detector<Default, void, Op, Args...>::type;
-  }
-}
+  } // namespace cpp17
+} // namespace Gaudi
 
 #endif

@@ -20,20 +20,19 @@ class DataObjectHandleBase;
 
 //---------------------------------------------------------------------------
 
-class GAUDI_API DataObjectHandleProperty : public PropertyWithHandlers<>
-{
+class GAUDI_API DataObjectHandleProperty : public PropertyWithHandlers<> {
 public:
   DataObjectHandleProperty( const std::string& name, DataObjectHandleBase& ref );
   DataObjectHandleProperty& operator=( const DataObjectHandleBase& value );
 
-  DataObjectHandleProperty* clone() const override;
-  bool load( Property& destination ) const override;
-  bool assign( const Property& source ) override;
-  std::string toString() const override;
-  void toStream( std::ostream& out ) const override;
-  StatusCode fromString( const std::string& s ) override;
+  DataObjectHandleProperty*   clone() const override;
+  bool                        load( Property& destination ) const override;
+  bool                        assign( const Property& source ) override;
+  std::string                 toString() const override;
+  void                        toStream( std::ostream& out ) const override;
+  StatusCode                  fromString( const std::string& s ) override;
   const DataObjectHandleBase& value() const;
-  bool setValue( const DataObjectHandleBase& value );
+  bool                        setValue( const DataObjectHandleBase& value );
 
 private:
   /** Pointer to the real property. Reference would be better,

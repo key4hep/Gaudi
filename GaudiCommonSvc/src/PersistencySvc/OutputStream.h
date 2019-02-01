@@ -25,11 +25,10 @@ class DataStoreItem;
     author R. Lambert
     Version: 1.0
 */
-class OutputStream : public Algorithm
-{
+class OutputStream : public Algorithm {
 public:
-  typedef std::vector<DataStoreItem*> Items;
-  typedef std::vector<std::string>    ItemNames;
+  typedef std::vector<DataStoreItem*>        Items;
+  typedef std::vector<std::string>           ItemNames;
   typedef std::map<Gaudi::Algorithm*, Items> AlgDependentItems;
   typedef std::map<std::string, ItemNames>   AlgDependentItemNames;
 
@@ -47,15 +46,15 @@ protected:
       {},
       "mapping between algorithm names, and a list of items for which, if the "
       "algorithm in question accepted the event, they should be also stored"};
-  Gaudi::Property<bool> m_doPreLoad{this, "Preload", true,
+  Gaudi::Property<bool>                     m_doPreLoad{this, "Preload", true,
                                     "flag indicating whether data pre-loading should be performed"};
-  Gaudi::Property<bool> m_doPreLoadOpt{this, "PreloadOptItems", false,
+  Gaudi::Property<bool>                     m_doPreLoadOpt{this, "PreloadOptItems", false,
                                        "flag indicating whether optional items should be preloaded"};
-  Gaudi::Property<std::string> m_output{this, "Output", {}, "name of the output file specification"};
-  Gaudi::Property<std::string> m_outputName{this, "OutputFile", {}, "name of the output file"};
-  Gaudi::Property<std::string> m_storeName{this, "EvtDataSvc", "EventDataSvc",
+  Gaudi::Property<std::string>              m_output{this, "Output", {}, "name of the output file specification"};
+  Gaudi::Property<std::string>              m_outputName{this, "OutputFile", {}, "name of the output file"};
+  Gaudi::Property<std::string>              m_storeName{this, "EvtDataSvc", "EventDataSvc",
                                            "name of the service managing the data store"};
-  Gaudi::Property<std::string> m_persName{this, "EvtConversionSvc", "EventPersistencySvc",
+  Gaudi::Property<std::string>              m_persName{this, "EvtConversionSvc", "EventPersistencySvc",
                                           "name of the persistency service capable to write data from the store"};
   Gaudi::Property<std::vector<std::string>> m_acceptNames{
       this,

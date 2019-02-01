@@ -5,20 +5,18 @@
 #include "GaudiKernel/System.h"
 #include <iterator>
 #ifdef __clang__
-#pragma clang diagnostic push
+#  pragma clang diagnostic push
 // Hide warning message:
 // boost/regex/v4/instances.hpp:128:17: warning: keyword is hidden by macro definition
-#pragma clang diagnostic ignored "-Wkeyword-macro"
+#  pragma clang diagnostic ignored "-Wkeyword-macro"
 #endif
 #include <boost/regex.hpp>
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
 
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     /** Parse attribute strings allowing iteration over the various attributes.
      * Example of usage:
      * \code{.cpp}
@@ -29,8 +27,7 @@ namespace Gaudi
      * }
      * \endcode
      */
-    class AttribStringParser
-    {
+    class AttribStringParser {
     public:
       /// Simple class to wrap tag/value pairs.
       struct Attrib {
@@ -40,29 +37,24 @@ namespace Gaudi
 
       /// Iterator to loop over the tag/value pairs in the attribute string.
       // This class is essentially a wrapper around boost::sregex_iterator.
-      class Iterator : public std::iterator<std::input_iterator_tag, Attrib>
-      {
+      class Iterator : public std::iterator<std::input_iterator_tag, Attrib> {
       public:
         Iterator() = default;
-        Iterator( const boost::sregex_iterator& it, bool expand_vars ) : m_it( it ), m_expandVars( expand_vars )
-        {
+        Iterator( const boost::sregex_iterator& it, bool expand_vars ) : m_it( it ), m_expandVars( expand_vars ) {
           // i_setAttrib();
         }
         Iterator( const Iterator& other ) : Iterator( other.m_it, other.m_expandVars ) {}
         Iterator( Iterator&& other ) : m_it( std::move( other.m_it ) ), m_expandVars( other.m_expandVars ) {}
-        Iterator operator++( int )
-        {
+        Iterator operator++( int ) {
           ++m_it;
           return *this;
         }
-        Iterator operator++()
-        {
+        Iterator operator++() {
           auto old = *this;
           ++m_it;
           return old;
         }
-        reference operator*()
-        {
+        reference operator*() {
           i_setAttrib();
           return m_attrib;
         }
@@ -77,8 +69,7 @@ namespace Gaudi
         Attrib m_attrib;
         /// Helper method used to update the cached Attrib instance when
         /// dereferencing the iterator.
-        void i_setAttrib()
-        {
+        void i_setAttrib() {
           static const boost::sregex_iterator endmark;
           if ( m_it != endmark ) {
             // if we have a match, we cache the values
@@ -119,22 +110,19 @@ namespace Gaudi
       std::string m_data;
       bool        m_expandVars;
 
-      boost::sregex_iterator parse() const
-      {
+      boost::sregex_iterator parse() const {
         static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*'(.*?)'"};
         return boost::sregex_iterator( begin( m_data ), end( m_data ), exp );
       }
       friend Iterator begin( const AttribStringParser& );
     };
-    inline AttribStringParser::Iterator begin( const AttribStringParser& parser )
-    {
+    inline AttribStringParser::Iterator begin( const AttribStringParser& parser ) {
       return AttribStringParser::Iterator( parser.parse(), parser.m_expandVars );
     }
-    inline AttribStringParser::Iterator end( const AttribStringParser& /*parser*/ )
-    {
+    inline AttribStringParser::Iterator end( const AttribStringParser& /*parser*/ ) {
       return AttribStringParser::Iterator();
     }
-  }
-}
+  } // namespace Utils
+} // namespace Gaudi
 
 #endif

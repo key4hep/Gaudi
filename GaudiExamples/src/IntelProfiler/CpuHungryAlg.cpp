@@ -8,8 +8,7 @@
 /// Algorithm which consume a lot of CPU.
 ///
 /// Author: Alexander Mazurov (alexander.mazurov@gmail.com)
-class CpuHungryAlg : public GaudiAlgorithm
-{
+class CpuHungryAlg : public GaudiAlgorithm {
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
@@ -33,8 +32,7 @@ private:
 DECLARE_COMPONENT( CpuHungryAlg )
 
 /// Initialization.
-StatusCode CpuHungryAlg::initialize()
-{
+StatusCode CpuHungryAlg::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -43,45 +41,32 @@ StatusCode CpuHungryAlg::initialize()
 }
 
 /// Execute.
-double CpuHungryAlg::mysin()
-{
+double CpuHungryAlg::mysin() {
   double result = 0;
-  for ( long i = 0; i <= m_loops; ++i ) {
-    result += sin( i );
-  }
+  for ( long i = 0; i <= m_loops; ++i ) { result += sin( i ); }
   return result;
 }
 
-double CpuHungryAlg::mycos()
-{
+double CpuHungryAlg::mycos() {
   double result = 0;
-  for ( long i = 0; i <= m_loops; ++i ) {
-    result += cos( i );
-  }
+  for ( long i = 0; i <= m_loops; ++i ) { result += cos( i ); }
   return result;
 }
 
-double CpuHungryAlg::mytan()
-{
+double CpuHungryAlg::mytan() {
   double result = 0;
-  for ( long i = 0; i <= m_loops; ++i ) {
-    result += tan( i );
-  }
+  for ( long i = 0; i <= m_loops; ++i ) { result += tan( i ); }
   result += myatan();
   return result;
 }
 
-double CpuHungryAlg::myatan()
-{
+double CpuHungryAlg::myatan() {
   double result = 0;
-  for ( long i = 0; i <= m_loops; ++i ) {
-    result += tan( i );
-  }
+  for ( long i = 0; i <= m_loops; ++i ) { result += tan( i ); }
   return result;
 }
 
-StatusCode CpuHungryAlg::execute()
-{
+StatusCode CpuHungryAlg::execute() {
   m_nevent++;
   double result = 0;
   if ( name() == "Alg1" ) {
@@ -98,8 +83,7 @@ StatusCode CpuHungryAlg::execute()
 }
 
 /// Finalize
-StatusCode CpuHungryAlg::finalize()
-{
+StatusCode CpuHungryAlg::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
   return GaudiAlgorithm::finalize(); // must be called after all other actions

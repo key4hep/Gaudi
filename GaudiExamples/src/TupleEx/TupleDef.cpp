@@ -12,8 +12,7 @@
  *  @date   2005-11-29
  */
 
-namespace TupleExample
-{
+namespace TupleExample {
 
   /** helper function useful for the partial
    *  specialization of N-Tuple fills
@@ -23,11 +22,8 @@ namespace TupleExample
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2005-11-29
    */
-  Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Dublet& p )
-  {
-    if ( !t.valid() ) {
-      return t;
-    }
+  Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Dublet& p ) {
+    if ( !t.valid() ) { return t; }
     t->column( n + "F", p.first );
     t->column( n + "S", p.second );
     return t;
@@ -41,17 +37,14 @@ namespace TupleExample
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2005-11-29
    */
-  Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Triplet& p )
-  {
-    if ( !t.valid() ) {
-      return t;
-    }
+  Tuples::Tuple& fillNTuple( Tuples::Tuple& t, const std::string& n, const Triplet& p ) {
+    if ( !t.valid() ) { return t; }
     t->column( n + "F", p.first.first );
     t->column( n + "S", p.first.second );
     t->column( n + "T", p.second );
     return t;
   }
-}
+} // namespace TupleExample
 
 // ============================================================================
 // The END

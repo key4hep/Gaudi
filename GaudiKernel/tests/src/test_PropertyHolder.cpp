@@ -5,17 +5,15 @@
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/PropertyHolder.h"
 
-namespace
-{
+namespace {
   const std::string emptyName{};
   /// Helper to allow instantiation of PropertyHolder.
   struct AnonymousPropertyHolder : public PropertyHolder<implements<IProperty, INamedInterface>> {
     const std::string& name() const override { return emptyName; }
   };
-}
+} // namespace
 
-BOOST_AUTO_TEST_CASE( declareProperty )
-{
+BOOST_AUTO_TEST_CASE( declareProperty ) {
   Gaudi::Property<std::string> p1{"v1"};
   Gaudi::Property<std::string> p2{"v2"};
   Gaudi::Property<std::string> p3{"v3"};
@@ -40,8 +38,7 @@ BOOST_AUTO_TEST_CASE( declareProperty )
   }
 }
 
-BOOST_AUTO_TEST_CASE( backward_compatibility )
-{
+BOOST_AUTO_TEST_CASE( backward_compatibility ) {
   {
     AnonymousPropertyHolder                   mgr;
     Gaudi::Property<std::vector<std::string>> vp{&mgr, "name", {}};

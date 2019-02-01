@@ -8,8 +8,7 @@
 
 void GaudiHandleBase::setTypeAndName( std::string myTypeAndName ) { m_typeAndName = std::move( myTypeAndName ); }
 
-std::string GaudiHandleBase::type() const
-{
+std::string GaudiHandleBase::type() const {
   std::string::size_type slash = m_typeAndName.find( '/' );
   if ( slash != std::string::npos ) {
     // return only part before /
@@ -20,8 +19,7 @@ std::string GaudiHandleBase::type() const
   }
 }
 
-std::string GaudiHandleBase::name() const
-{
+std::string GaudiHandleBase::name() const {
   auto slash = m_typeAndName.find( '/' );
   if ( slash == std::string::npos ) {
     // only type is given, or string is empty.
@@ -41,12 +39,9 @@ void GaudiHandleBase::setName( const std::string& myName ) { m_typeAndName = typ
 
 std::string GaudiHandleBase::pythonPropertyClassName() const { return componentType() + "Handle"; }
 
-std::string GaudiHandleBase::messageName() const
-{
+std::string GaudiHandleBase::messageName() const {
   std::string propName = propertyName();
-  if ( propName.empty() ) {
-    propName = pythonPropertyClassName() + "('" + m_typeAndName + "')";
-  }
+  if ( propName.empty() ) { propName = pythonPropertyClassName() + "('" + m_typeAndName + "')"; }
   return parentName() + "." + propName;
 }
 
@@ -55,8 +50,7 @@ std::string GaudiHandleBase::pythonRepr() const { return pythonPropertyClassName
 //
 // GaudiHandleArrayBase implementation
 //
-bool GaudiHandleArrayBase::setTypesAndNames( const std::vector<std::string>& myTypesAndNamesList )
-{
+bool GaudiHandleArrayBase::setTypesAndNames( const std::vector<std::string>& myTypesAndNamesList ) {
   clear();
   for ( const auto& it : myTypesAndNamesList ) {
     if ( !push_back( it ) ) return false;
@@ -65,15 +59,13 @@ bool GaudiHandleArrayBase::setTypesAndNames( const std::vector<std::string>& myT
 }
 
 const std::vector<std::string> GaudiHandleArrayBase::getBaseInfos( std::string ( GaudiHandleBase::*pMemFunc )()
-                                                                       const ) const
-{
+                                                                       const ) const {
   std::vector<std::string> theList;
   for ( const auto& it : getBaseArray() ) theList.push_back( ( it->*pMemFunc )() );
   return theList;
 }
 
-const std::vector<std::string> GaudiHandleArrayBase::typesAndNames() const
-{
+const std::vector<std::string> GaudiHandleArrayBase::typesAndNames() const {
   return getBaseInfos( &GaudiHandleBase::typeAndName );
 }
 
@@ -83,8 +75,7 @@ const std::vector<std::string> GaudiHandleArrayBase::names() const { return getB
 
 std::string GaudiHandleArrayBase::pythonPropertyClassName() const { return componentType() + "HandleArray"; }
 
-std::string GaudiHandleArrayBase::pythonRepr() const
-{
+std::string GaudiHandleArrayBase::pythonRepr() const {
   std::string repr    = pythonPropertyClassName() + "([";
   auto        theList = typesAndNames();
   auto        first   = theList.begin();
@@ -101,8 +92,7 @@ std::string GaudiHandleArrayBase::pythonRepr() const
 //
 // Public functions
 //
-std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle )
-{
+std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle ) {
   std::string msg;
   const auto& propName = handle.propertyName();
   if ( !propName.empty() ) msg += propName + " = ";

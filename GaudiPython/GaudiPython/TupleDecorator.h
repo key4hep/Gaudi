@@ -28,14 +28,12 @@
 // ============================================================================
 // Forward declarations
 // ============================================================================
-namespace CLHEP
-{
+namespace CLHEP {
   class HepGenMatrix;
   class HepVector;
-}
+} // namespace CLHEP
 // ============================================================================
-namespace GaudiPython
-{
+namespace GaudiPython {
   // ==========================================================================
   /** @class TupleDecorator TupleDecorator.h GaudiPython/TupleDecorator.h
    *  Simple class which performs the decoration of the standard N-Tuple
@@ -43,8 +41,7 @@ namespace GaudiPython
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2005-08-04
    */
-  class GAUDI_API TupleDecorator
-  {
+  class GAUDI_API TupleDecorator {
   public:
     // ========================================================================
     /// accessors to internal
@@ -266,8 +263,7 @@ namespace GaudiPython
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2005-08-17
    */
-  class GAUDI_API TupleAlgDecorator
-  {
+  class GAUDI_API TupleAlgDecorator {
   public:
     // ========================================================================
     /// get n-tuple (book-on-demand)
@@ -309,63 +305,54 @@ namespace GaudiPython
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2005-08-17
    */
-  class GAUDI_API TupleToolDecorator
-  {
+  class GAUDI_API TupleToolDecorator {
   public:
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple nTuple( const ITupleTool& tool, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.nTuple( title, clid );
     }
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple nTuple( const ITupleTool& tool, const GaudiAlg::TupleID& ID, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.nTuple( ID, title, clid );
     }
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple nTuple( const ITupleTool& tool, const int ID, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.nTuple( ID, title, clid );
     }
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple nTuple( const ITupleTool& tool, const std::string& ID, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.nTuple( ID, title, clid );
     }
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple evtCol( const ITupleTool& tool, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.evtCol( title, clid );
     }
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple evtCol( const ITupleTool& tool, const GaudiAlg::TupleID& ID, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.nTuple( ID, title, clid );
     }
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple evtCol( const ITupleTool& tool, const int ID, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.nTuple( ID, title, clid );
     }
     // ========================================================================
     /// get n-tuple (book-on-demand)
     static Tuples::Tuple evtCol( const ITupleTool& tool, const std::string& ID, const std::string& title,
-                                 const CLID& clid = CLID_ColumnWiseTuple )
-    {
+                                 const CLID& clid = CLID_ColumnWiseTuple ) {
       return tool.nTuple( ID, title, clid );
     }
     // ========================================================================
@@ -376,4 +363,3 @@ namespace GaudiPython
 // The END
 // ============================================================================
 #endif // GAUDIPYTHON_TUPLEDECORATOR_H
-// ============================================================================

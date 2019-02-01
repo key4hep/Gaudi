@@ -19,8 +19,7 @@
  */
 // ============================================================================
 
-int main()
-{
+int main() {
 
   const GaudiMath::Function& mysin = GaudiMath::SimpleFun( sin );
   const GaudiMath::Function& mycos = GaudiMath::SimpleFun( cos );

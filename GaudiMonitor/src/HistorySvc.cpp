@@ -49,15 +49,13 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////
 //
 
-namespace
-{
+namespace {
   template <typename MAP, typename SET>
-  inline void map_to_set( const MAP& m, SET& s )
-  {
+  inline void map_to_set( const MAP& m, SET& s ) {
     std::transform( std::begin( m ), std::end( m ), std::inserter( s, s.begin() ),
                     std::mem_fn( &MAP::value_type::second ) );
   }
-}
+} // namespace
 
 struct DHH {
   CLID        id;
@@ -65,8 +63,7 @@ struct DHH {
 
   DHH( const CLID& i, std::string k ) : id( i ), key( std::move( k ) ) {}
 
-  bool operator<( DHH const& rhs ) const
-  {
+  bool operator<( DHH const& rhs ) const {
     if ( id != rhs.id ) {
       return ( id < rhs.id );
     } else {
@@ -77,8 +74,7 @@ struct DHH {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::reinitialize()
-{
+StatusCode HistorySvc::reinitialize() {
 
   clearState();
   m_state = Gaudi::StateMachine::OFFLINE;
@@ -87,25 +83,21 @@ StatusCode HistorySvc::reinitialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-namespace
-{
+namespace {
   constexpr struct clear_t {
     template <typename T1, typename T2>
-    void operator()( std::pair<const T1* const, T2*>& p )
-    {
+    void operator()( std::pair<const T1* const, T2*>& p ) {
       const_cast<T1*>( p.first )->release();
       delete p.second;
     }
   } clear_{};
   template <typename M>
-  void clear( M& m )
-  {
+  void clear( M& m ) {
     std::for_each( std::begin( m ), std::end( m ), clear_ );
     m.clear();
   }
-}
-void HistorySvc::clearState()
-{
+} // namespace
+void HistorySvc::clearState() {
   clear( m_algmap );
 
   m_ialgtools.clear();
@@ -116,8 +108,7 @@ void HistorySvc::clearState()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::initialize()
-{
+StatusCode HistorySvc::initialize() {
 
   StatusCode status = Service::initialize();
   if ( status.isFailure() ) {
@@ -166,8 +157,7 @@ StatusCode HistorySvc::initialize()
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::captureState()
-{
+StatusCode HistorySvc::captureState() {
 
   if ( !m_jobHistory ) {
     m_jobHistory.reset( new JobHistory );
@@ -181,9 +171,7 @@ StatusCode HistorySvc::captureState()
 
       for ( auto& client : jo->getClients() ) {
         if ( client == "ApplicationMgr" ) foundAppMgr = true;
-        for ( auto prop : *jo->getProperties( client ) ) {
-          m_jobHistory->addProperty( client, prop );
-        }
+        for ( auto prop : *jo->getProperties( client ) ) { m_jobHistory->addProperty( client, prop ); }
       }
 
       if ( !foundAppMgr ) {
@@ -191,9 +179,7 @@ StatusCode HistorySvc::captureState()
         if ( !ap ) {
           error() << "could not get the ApplicationMgr" << endmsg;
         } else {
-          for ( auto prop : ap->getProperties() ) {
-            m_jobHistory->addProperty( "ApplicationMgr", prop );
-          }
+          for ( auto prop : ap->getProperties() ) { m_jobHistory->addProperty( "ApplicationMgr", prop ); }
         }
       }
     }
@@ -245,14 +231,11 @@ StatusCode HistorySvc::captureState()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::stop()
-{
+StatusCode HistorySvc::stop() {
 
   if ( !m_activate ) return StatusCode::SUCCESS;
 
-  if ( m_dump ) {
-    listProperties().ignore();
-  }
+  if ( m_dump ) { listProperties().ignore(); }
 
   if ( !m_outputFile.empty() ) {
     std::ofstream ofs( m_outputFile );
@@ -271,8 +254,7 @@ StatusCode HistorySvc::stop()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::finalize()
-{
+StatusCode HistorySvc::finalize() {
 
   ON_VERBOSE
   verbose() << "HistorySvc::finalize()" << endmsg;
@@ -291,8 +273,7 @@ StatusCode HistorySvc::finalize()
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg )
-{
+StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg ) {
 
   JobHistory* job = getJobHistory();
   if ( m_algmap.find( &alg ) != m_algmap.end() ) {
@@ -304,8 +285,7 @@ StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg )
 
   m_algmap[&alg] = new AlgorithmHistory( alg, job );
 
-  ON_DEBUG
-  {
+  ON_DEBUG {
     auto& log = debug();
     log << "Registering algorithm: ";
     log.setColor( MSG::CYAN );
@@ -317,16 +297,13 @@ StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg )
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::listProperties( const Gaudi::Algorithm& alg ) const
-{
+StatusCode HistorySvc::listProperties( const Gaudi::Algorithm& alg ) const {
 
   info() << "Dumping properties for " << alg.name() << endl;
 
   AlgorithmHistory* hist = getAlgHistory( alg );
 
-  if ( !hist ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !hist ) { return StatusCode::FAILURE; }
 
   info() << alg.name() << " --> " << endl << *hist << endmsg;
 
@@ -334,24 +311,18 @@ StatusCode HistorySvc::listProperties( const Gaudi::Algorithm& alg ) const
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpProperties( const Gaudi::Algorithm& alg, std::ofstream& ofs ) const
-{
+void HistorySvc::dumpProperties( const Gaudi::Algorithm& alg, std::ofstream& ofs ) const {
 
   AlgorithmHistory* hist = getAlgHistory( alg );
 
-  if ( !hist ) {
-    return;
-  }
+  if ( !hist ) { return; }
 
   PropertyList::const_iterator itr;
-  for ( auto prop : hist->properties() ) {
-    ofs << alg.name() << "  " << dumpProp( prop ) << std::endl;
-  }
+  for ( auto prop : hist->properties() ) { ofs << alg.name() << "  " << dumpProp( prop ) << std::endl; }
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-AlgorithmHistory* HistorySvc::getAlgHistory( const Gaudi::Algorithm& alg ) const
-{
+AlgorithmHistory* HistorySvc::getAlgHistory( const Gaudi::Algorithm& alg ) const {
 
   auto itr = m_algmap.find( &alg );
   if ( itr == m_algmap.end() ) {
@@ -368,17 +339,14 @@ void HistorySvc::getAlgHistory( std::set<AlgorithmHistory*>& algs ) const { map_
 StatusCode HistorySvc::registerJob() { return StatusCode( StatusCode::SUCCESS, true ); }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::listProperties() const
-{
+StatusCode HistorySvc::listProperties() const {
 
   auto& log = info();
 
   log.setColor( MSG::CYAN );
   log << "Dumping properties for all Algorithms (" << m_algmap.size() << ")" << endmsg;
 
-  for ( auto& alg : m_algmap ) {
-    listProperties( *alg.first ).ignore();
-  }
+  for ( auto& alg : m_algmap ) { listProperties( *alg.first ).ignore(); }
 
   log << MSG::INFO;
   log.setColor( MSG::CYAN );
@@ -394,9 +362,7 @@ StatusCode HistorySvc::listProperties() const
   log.setColor( MSG::CYAN );
   log << "Dumping properties for all Services (" << m_svcmap.size() << ")" << endmsg;
 
-  for ( auto& svc : m_svcmap ) {
-    listProperties( *svc.first ).ignore();
-  }
+  for ( auto& svc : m_svcmap ) { listProperties( *svc.first ).ignore(); }
 
   log << MSG::INFO;
   log.setColor( MSG::CYAN );
@@ -409,8 +375,7 @@ StatusCode HistorySvc::listProperties() const
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpProperties( std::ofstream& ofs ) const
-{
+void HistorySvc::dumpProperties( std::ofstream& ofs ) const {
 
   ofs << "GLOBAL" << std::endl;
   for ( const auto& prop : m_jobHistory->propertyPairs() ) {
@@ -431,8 +396,7 @@ void HistorySvc::dumpProperties( std::ofstream& ofs ) const
 JobHistory* HistorySvc::getJobHistory() const { return m_jobHistory.get(); }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-IAlgorithm* HistorySvc::getCurrentIAlg() const
-{
+IAlgorithm* HistorySvc::getCurrentIAlg() const {
   if ( p_algCtxSvc ) return p_algCtxSvc->currentAlg();
   warning() << "trying to create DataHistoryObj before "
             << "HistorySvc has been initialized" << endmsg;
@@ -442,8 +406,7 @@ IAlgorithm* HistorySvc::getCurrentIAlg() const
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 DataHistory* HistorySvc::createDataHistoryObj( const CLID& id, const std::string& key,
-                                               const std::string& /* storeName */ )
-{
+                                               const std::string& /* storeName */ ) {
 
   if ( !m_activate ) return nullptr;
 
@@ -469,8 +432,7 @@ DataHistory* HistorySvc::createDataHistoryObj( const CLID& id, const std::string
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-StatusCode HistorySvc::registerDataHistory( const CLID& id, const std::string& key, const std::string& storeName )
-{
+StatusCode HistorySvc::registerDataHistory( const CLID& id, const std::string& key, const std::string& storeName ) {
 
   DHH dhh( id, key );
 
@@ -504,8 +466,7 @@ StatusCode HistorySvc::registerDataHistory( const CLID& id, const std::string& k
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 DataHistory* HistorySvc::getDataHistory( const CLID& id, const std::string& key,
-                                         const std::string& /*storeName*/ ) const
-{
+                                         const std::string& /*storeName*/ ) const {
 
   DHH dhh( id, key );
 
@@ -516,8 +477,7 @@ DataHistory* HistorySvc::getDataHistory( const CLID& id, const std::string& key,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int HistorySvc::getDataHistory( const CLID& id, const std::string& key, const std::string& /*storeName*/,
-                                std::list<DataHistory*>& dhlist ) const
-{
+                                std::list<DataHistory*>& dhlist ) const {
 
   DHH dhh( id, key );
 
@@ -533,20 +493,16 @@ int HistorySvc::getDataHistory( const CLID& id, const std::string& key, const st
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::registerSvc( const IService& svc )
-{
+StatusCode HistorySvc::registerSvc( const IService& svc ) {
 
-  if ( svc.name() == "HistoryStore" ) {
-    return StatusCode( StatusCode::SUCCESS, true );
-  }
+  if ( svc.name() == "HistoryStore" ) { return StatusCode( StatusCode::SUCCESS, true ); }
 
   JobHistory*     job  = getJobHistory();
   const IService* psvc = &svc;
   auto            itr  = m_svcmap.find( psvc );
   if ( itr == m_svcmap.end() ) {
 
-    ON_DEBUG
-    {
+    ON_DEBUG {
       auto& log = debug();
       log << "Registering Service: ";
       log.setColor( MSG::CYAN );
@@ -564,8 +520,7 @@ StatusCode HistorySvc::registerSvc( const IService& svc )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-ServiceHistory* HistorySvc::getServiceHistory( const IService& svc ) const
-{
+ServiceHistory* HistorySvc::getServiceHistory( const IService& svc ) const {
 
   const IService* psvc = &svc;
   auto            itr  = m_svcmap.find( psvc );
@@ -580,8 +535,7 @@ void HistorySvc::getServiceHistory( std::set<ServiceHistory*>& svcs ) const { ma
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::listProperties( const IService& svc ) const
-{
+StatusCode HistorySvc::listProperties( const IService& svc ) const {
 
   info() << "Dumping properties for " << svc.name() << endl;
 
@@ -596,22 +550,18 @@ StatusCode HistorySvc::listProperties( const IService& svc ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpProperties( const IService& svc, std::ofstream& ofs ) const
-{
+void HistorySvc::dumpProperties( const IService& svc, std::ofstream& ofs ) const {
 
   ServiceHistory* hist = getServiceHistory( svc );
 
   if ( !hist ) return;
 
-  for ( auto& prop : hist->properties() ) {
-    ofs << svc.name() << "  " << dumpProp( prop ) << std::endl;
-  }
+  for ( auto& prop : hist->properties() ) { ofs << svc.name() << "  " << dumpProp( prop ) << std::endl; }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::registerAlgTool( const IAlgTool& ialg )
-{
+StatusCode HistorySvc::registerAlgTool( const IAlgTool& ialg ) {
 
   if ( !m_isInitialized ) {
     if ( !p_algCtxSvc ) {
@@ -638,8 +588,7 @@ StatusCode HistorySvc::registerAlgTool( const IAlgTool& ialg )
   const JobHistory* job = getJobHistory();
   m_algtoolmap[alg]     = new AlgToolHistory( *alg, job );
 
-  ON_DEBUG
-  {
+  ON_DEBUG {
     auto& log = debug();
     log << "Registering algtool: ";
     log.setColor( MSG::CYAN );
@@ -652,8 +601,7 @@ StatusCode HistorySvc::registerAlgTool( const IAlgTool& ialg )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::listProperties( const IAlgTool& alg ) const
-{
+StatusCode HistorySvc::listProperties( const IAlgTool& alg ) const {
 
   info() << "Dumping properties for " << alg.name() << endl;
 
@@ -667,22 +615,18 @@ StatusCode HistorySvc::listProperties( const IAlgTool& alg ) const
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpProperties( const IAlgTool& alg, std::ofstream& ofs ) const
-{
+void HistorySvc::dumpProperties( const IAlgTool& alg, std::ofstream& ofs ) const {
 
   AlgToolHistory* hist = getAlgToolHistory( alg );
 
   if ( !hist ) return;
 
-  for ( auto& prop : hist->properties() ) {
-    ofs << alg.name() << "  " << dumpProp( prop ) << std::endl;
-  }
+  for ( auto& prop : hist->properties() ) { ofs << alg.name() << "  " << dumpProp( prop ) << std::endl; }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-AlgToolHistory* HistorySvc::getAlgToolHistory( const IAlgTool& alg ) const
-{
+AlgToolHistory* HistorySvc::getAlgToolHistory( const IAlgTool& alg ) const {
 
   const AlgTool* palg = dynamic_cast<const AlgTool*>( &alg );
   auto           itr  = m_algtoolmap.find( palg );
@@ -699,8 +643,7 @@ void HistorySvc::getAlgToolHistory( std::set<AlgToolHistory*>& algs ) const { ma
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::handle( const Incident& incident )
-{
+void HistorySvc::handle( const Incident& incident ) {
 
   if ( incident.type() == IncidentType::BeginEvent ) {
     if ( captureState().isFailure() ) {
@@ -711,8 +654,7 @@ void HistorySvc::handle( const Incident& incident )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-std::string HistorySvc::dumpProp( const Gaudi::Details::PropertyBase* prop, bool isXML, int ind ) const
-{
+std::string HistorySvc::dumpProp( const Gaudi::Details::PropertyBase* prop, bool isXML, int ind ) const {
   std::ostringstream ost;
   if ( isXML ) {
     while ( ind > 0 ) {
@@ -729,8 +671,7 @@ std::string HistorySvc::dumpProp( const Gaudi::Details::PropertyBase* prop, bool
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpState( std::ofstream& ofs ) const
-{
+void HistorySvc::dumpState( std::ofstream& ofs ) const {
 
   if ( m_outputFileTypeXML ) {
     // xml header
@@ -796,15 +737,12 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const
 
   sortedDump( m_algtoolmap );
 
-  if ( m_outputFileTypeXML ) {
-    ofs << "</ALGTOOLS>" << endl << "</SETUP>" << endl;
-  }
+  if ( m_outputFileTypeXML ) { ofs << "</ALGTOOLS>" << endl << "</SETUP>" << endl; }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistorySvc::dumpState( const INamedInterface* in, std::ofstream& ofs ) const
-{
+void HistorySvc::dumpState( const INamedInterface* in, std::ofstream& ofs ) const {
 
   HistoryObj*      hist  = nullptr;
   IVersHistoryObj* vhist = nullptr;

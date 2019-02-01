@@ -14,8 +14,7 @@
     @author M.Frank
     @version 1.0
 */
-class DataStoreItem
-{
+class DataStoreItem {
 protected:
   /// Path of item to be loaded
   std::string m_path;
@@ -35,16 +34,14 @@ public:
   /// Inequality operator
   bool operator!=( const DataStoreItem& cmp ) const { return !( m_path == cmp.path() && m_depth == cmp.depth() ); }
   /// Equivalence operator
-  DataStoreItem& operator=( const DataStoreItem& cmp )
-  {
+  DataStoreItem& operator=( const DataStoreItem& cmp ) {
     m_path  = cmp.path();
     m_depth = cmp.depth();
     analyse();
     return *this;
   }
   /// Interprete the load path for special options
-  void analyse()
-  {
+  void analyse() {
     int len = m_path.length() - 1;
     if ( m_path[len] == '*' ) {
       m_depth = 99999999;

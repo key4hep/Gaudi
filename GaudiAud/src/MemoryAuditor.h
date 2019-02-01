@@ -8,8 +8,7 @@
 ///
 /// @author M. Shapiro, LBNL
 /// @author Marco Clemencic
-class MemoryAuditor : public CommonAuditor
-{
+class MemoryAuditor : public CommonAuditor {
 public:
   using CommonAuditor::CommonAuditor;
 

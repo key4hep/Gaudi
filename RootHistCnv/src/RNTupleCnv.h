@@ -11,8 +11,7 @@ class INTupleSvc;
 class INTuple;
 class TTree;
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RootHistCnv::RNTupleCnv RNTupleCnv.h
       NTuple converter class definition
@@ -21,8 +20,7 @@ namespace RootHistCnv
       Author     : Charles Leggett
 
   */
-  class RNTupleCnv : public RConverter
-  {
+  class RNTupleCnv : public RConverter {
   public:
     /// Initialize the converter
     StatusCode initialize() override;

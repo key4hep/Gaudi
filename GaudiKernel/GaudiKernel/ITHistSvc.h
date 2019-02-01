@@ -6,7 +6,7 @@
 #include <vector>
 
 #ifndef GAUDIKERNEL_ISERVICE_H
-#include "GaudiKernel/IService.h"
+#  include "GaudiKernel/IService.h"
 #endif
 
 #include "GaudiKernel/LockedHandle.h"
@@ -20,8 +20,7 @@ class TList;
 class TDirectory;
 class TGraph;
 
-class GAUDI_API ITHistSvc : virtual public IService
-{
+class GAUDI_API ITHistSvc : virtual public IService {
 public:
   /// InterfaceID
   DeclareInterfaceID( ITHistSvc, 3, 0 );
@@ -129,14 +128,14 @@ public:
   virtual std::vector<std::string> getTrees() const  = 0;
   virtual std::vector<std::string> getGraphs() const = 0;
 
-  virtual StatusCode getTHists( TDirectory* td, TList&, bool recurse = false ) const = 0;
-  virtual StatusCode getTHists( const std::string& name, TList&, bool recurse = false ) const = 0;
-  virtual StatusCode getTHists( TDirectory* td, TList&, bool recurse = false, bool reg = false ) = 0;
+  virtual StatusCode getTHists( TDirectory* td, TList&, bool recurse = false ) const                      = 0;
+  virtual StatusCode getTHists( const std::string& name, TList&, bool recurse = false ) const             = 0;
+  virtual StatusCode getTHists( TDirectory* td, TList&, bool recurse = false, bool reg = false )          = 0;
   virtual StatusCode getTHists( const std::string& name, TList&, bool recurse = false, bool reg = false ) = 0;
 
-  virtual StatusCode getTTrees( TDirectory* td, TList&, bool recurse = false ) const = 0;
-  virtual StatusCode getTTrees( const std::string& name, TList&, bool recurse = false ) const = 0;
-  virtual StatusCode getTTrees( TDirectory* td, TList&, bool recurse = false, bool reg = false ) = 0;
+  virtual StatusCode getTTrees( TDirectory* td, TList&, bool recurse = false ) const                      = 0;
+  virtual StatusCode getTTrees( const std::string& name, TList&, bool recurse = false ) const             = 0;
+  virtual StatusCode getTTrees( TDirectory* td, TList&, bool recurse = false, bool reg = false )          = 0;
   virtual StatusCode getTTrees( const std::string& name, TList&, bool recurse = false, bool reg = false ) = 0;
 
   /// @}

@@ -13,8 +13,7 @@
 //<<<<<< PUBLIC FUNCTIONS                                               >>>>>>
 //<<<<<< CLASS DECLARATIONS                                             >>>>>>
 
-class IgHookTraceAlloc
-{
+class IgHookTraceAlloc {
 public:
   IgHookTraceAlloc( void );
 
@@ -25,8 +24,7 @@ private:
   size_t m_left;
 };
 
-class IgHookTrace
-{
+class IgHookTrace {
 public:
   /** Nearly dummy object type to identify a counter. */
   struct Counter {
@@ -34,8 +32,7 @@ public:
   };
 
   /** Value for a counter chained from a trace.  */
-  class CounterValue
-  {
+  class CounterValue {
   public:
     void* operator new( size_t n, IgHookTraceAlloc* alloc = 0 );
 
@@ -66,9 +63,9 @@ public:
   };
 
   // General utilities
-  static int stacktrace( void** addresses, int nmax );
+  static int   stacktrace( void** addresses, int nmax );
   static void* tosymbol( void* address );
-  static bool symbol( void* address, const char*& sym, const char*& lib, int& offset, int& liboffset );
+  static bool  symbol( void* address, const char*& sym, const char*& lib, int& offset, int& liboffset );
 
   void* operator new( size_t n, IgHookTraceAlloc* alloc = 0 );
 
@@ -79,7 +76,7 @@ public:
   IgHookTrace* next( void );
 
   void* address( void );
-  bool symbol( const char*& sym, const char*& lib, int& offset, int& liboffset );
+  bool  symbol( const char*& sym, const char*& lib, int& offset, int& liboffset );
 
   IgHookTrace* children( void );
   IgHookTrace* child( void* address );

@@ -42,10 +42,8 @@ using namespace GaudiUtils;
 #include <algorithm>
 #include <memory>
 
-namespace GaudiKernelTest
-{
-  class SerialTaskQueueTest : public CppUnit::TestFixture
-  {
+namespace GaudiKernelTest {
+  class SerialTaskQueueTest : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE( SerialTaskQueueTest );
 
@@ -57,12 +55,10 @@ namespace GaudiKernelTest
   public:
     std::vector<int> resultData;
 
-    class PushBackTask : public Gaudi::SerialTaskQueue::WorkItem
-    {
+    class PushBackTask : public Gaudi::SerialTaskQueue::WorkItem {
     public:
       PushBackTask( std::vector<int>& results, int value ) : m_results( results ), m_value( value ) {}
-      void run() override
-      {
+      void run() override {
         using namespace std::chrono;
 
         milliseconds duration( 200 );
@@ -80,8 +76,7 @@ namespace GaudiKernelTest
       int               m_value;
     };
 
-    class Enqueuer
-    {
+    class Enqueuer {
     public:
       Enqueuer( Gaudi::SerialTaskQueue& q, std::vector<int>& r, int _n ) : queue( q ), results( r ), n( _n ) {}
       void operator()() const { queue.add( new PushBackTask( results, n ) ); }
@@ -99,17 +94,14 @@ namespace GaudiKernelTest
 
     void tearDown() override {}
 
-    void test_basic_serial()
-    {
+    void test_basic_serial() {
       std::cout << std::endl;
 
       {
 
         Gaudi::SerialTaskQueue queue;
         std::cout << "enqueue tasks" << std::endl;
-        for ( int i = 0; i != 10; ++i ) {
-          queue.add( new PushBackTask( resultData, i ) );
-        }
+        for ( int i = 0; i != 10; ++i ) { queue.add( new PushBackTask( resultData, i ) ); }
         std::cout << "enqueueing completed" << std::endl;
 
       } // Gaudi::SerialTaskQueue ensures the synchronization.
@@ -119,17 +111,14 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT_EQUAL( expected, resultData );
     }
 
-    void test_basic_parallel()
-    {
+    void test_basic_parallel() {
       std::cout << std::endl;
       {
 
         Gaudi::SerialTaskQueue queue;
         std::cout << "enqueue tasks" << std::endl;
         tbb::task_group g;
-        for ( int i = 0; i != 10; ++i ) {
-          g.run( Enqueuer( queue, resultData, i ) );
-        }
+        for ( int i = 0; i != 10; ++i ) { g.run( Enqueuer( queue, resultData, i ) ); }
         g.wait();
         std::cout << "enqueueing completed" << std::endl;
         // Insertion should not have finished yet
@@ -159,8 +148,7 @@ namespace GaudiKernelTest
    *  @author Marco Clemencic
    *  @date   2006-11-13
    */
-  class ProgressListener : public CppUnit::TestListener
-  {
+  class ProgressListener : public CppUnit::TestListener {
 
   public:
     /// Default constructor.
@@ -169,21 +157,18 @@ namespace GaudiKernelTest
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test* test ) override
-    {
+    void startTest( CppUnit::Test* test ) override {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure& failure ) override
-    {
+    void addFailure( const CppUnit::TestFailure& failure ) override {
       std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
       m_lastTestFailed = true;
     }
 
-    void endTest( CppUnit::Test* /*test*/ ) override
-    {
+    void endTest( CppUnit::Test* /*test*/ ) override {
       if ( !m_lastTestFailed ) std::cout << " : OK";
       std::cout << std::endl;
     }
@@ -191,12 +176,11 @@ namespace GaudiKernelTest
   private:
     bool m_lastTestFailed;
   };
-}
+} // namespace GaudiKernelTest
 
 // Copied from the COOL implementation
 #include <stdexcept>
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   // Retrieve test path from command line first argument.
   // Default to "" which resolve to the top level suite.
   std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );

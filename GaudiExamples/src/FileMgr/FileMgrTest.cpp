@@ -8,8 +8,8 @@
 #include <fstream>
 #include <stdio.h>
 #ifndef __APPLE__
-#include <ext/stdio_filebuf.h> // __gnu_cxx::stdio_filebuf
-#endif                         // not __APPLE__
+#  include <ext/stdio_filebuf.h> // __gnu_cxx::stdio_filebuf
+#endif                           // not __APPLE__
 
 // Static Factory declaration
 
@@ -18,14 +18,11 @@ DECLARE_COMPONENT( FileMgrTest )
 ///////////////////////////////////////////////////////////////////////////
 
 FileMgrTest::FileMgrTest( const std::string& name, ISvcLocator* pSvcLocator )
-    : Algorithm( name, pSvcLocator ), p_fileMgr( 0 )
-{
-}
+    : Algorithm( name, pSvcLocator ), p_fileMgr( 0 ) {}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgrTest::initialize()
-{
+StatusCode FileMgrTest::initialize() {
 
   StatusCode st( StatusCode::SUCCESS );
 
@@ -163,8 +160,7 @@ StatusCode FileMgrTest::initialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgrTest::execute()
-{
+StatusCode FileMgrTest::execute() {
 
 #ifndef __APPLE__
   info() << "writing to " << p_fileMgr->fname( (void*)fp_2 ) << endmsg;
@@ -189,8 +185,7 @@ StatusCode FileMgrTest::execute()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgrTest::finalize()
-{
+StatusCode FileMgrTest::finalize() {
 
   std::vector<std::string>                 v;
   std::vector<std::string>::const_iterator itr;
@@ -198,25 +193,19 @@ StatusCode FileMgrTest::finalize()
 
   auto& log = info();
   log << "listing all open files [" << i << "]" << std::endl;
-  for ( itr = v.begin(); itr != v.end(); ++itr ) {
-    log << "    " << *itr << std::endl;
-  }
+  for ( itr = v.begin(); itr != v.end(); ++itr ) { log << "    " << *itr << std::endl; }
   log << endmsg;
 
   i = p_fileMgr->getFiles( v, false );
   log << "listing ALL files [" << i << "]" << std::endl;
-  for ( itr = v.begin(); itr != v.end(); ++itr ) {
-    log << "    " << *itr << std::endl;
-  }
+  for ( itr = v.begin(); itr != v.end(); ++itr ) { log << "    " << *itr << std::endl; }
   log << endmsg;
 
   std::vector<const Io::FileAttr*>                 v2;
   std::vector<const Io::FileAttr*>::const_iterator it2;
   i = p_fileMgr->getFiles( Io::POSIX, v2, false );
   log << "listing all POSIX files ever opened [" << i << "]" << std::endl;
-  for ( it2 = v2.begin(); it2 != v2.end(); ++it2 ) {
-    log << "    " << ( *it2 )->name() << std::endl;
-  }
+  for ( it2 = v2.begin(); it2 != v2.end(); ++it2 ) { log << "    " << ( *it2 )->name() << std::endl; }
   log << endmsg;
 
   int r;
@@ -276,8 +265,7 @@ StatusCode FileMgrTest::finalize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgrTest::PosixOpenAction( const Io::FileAttr* fa, const std::string& c )
-{
+StatusCode FileMgrTest::PosixOpenAction( const Io::FileAttr* fa, const std::string& c ) {
 
   info() << "PosixOpenAction called by " << c << "  for tech " << fa->tech() << " on " << fa << endmsg;
 
@@ -298,8 +286,7 @@ StatusCode FileMgrTest::PosixOpenAction( const Io::FileAttr* fa, const std::stri
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgrTest::allCloseAction( const Io::FileAttr* fa, const std::string& c )
-{
+StatusCode FileMgrTest::allCloseAction( const Io::FileAttr* fa, const std::string& c ) {
 
   info() << "AllCloseAction called by " << c << "  for tech " << fa->tech() << " on " << fa << endmsg;
 

@@ -15,8 +15,7 @@
 
 namespace gpu = Gaudi::Parsers::Utils;
 
-std::string gpu::replaceEnvironments( const std::string& input )
-{
+std::string gpu::replaceEnvironments( const std::string& input ) {
   static const boost::regex expression( "\\$(([A-Za-z0-9_]+)|\\(([A-Za-z0-9_]+)\\))" );
 
   std::string                                       result = input;

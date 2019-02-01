@@ -8,8 +8,7 @@
 
 #include <mutex>
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /**@class Histogram1D
    *
@@ -17,8 +16,7 @@ namespace Gaudi
    *
    * @author  M.Frank
    */
-  class GAUDI_API Histogram1D : public DataObject, public Gaudi::Generic1D<AIDA::IHistogram1D, TH1D>
-  {
+  class GAUDI_API Histogram1D : public DataObject, public Gaudi::Generic1D<AIDA::IHistogram1D, TH1D> {
   private:
     void init( const std::string& title, bool initialize_axis = true );
     void initSums();

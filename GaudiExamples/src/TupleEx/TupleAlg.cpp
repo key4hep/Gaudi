@@ -24,20 +24,17 @@
 // ============================================================================
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 // CLHEP is just #()$)*#)*@#)$@ Not even the git master (as of Aug 2015) has HepVector::begin and HepVector::end
 // defined!!!
 // fortunately, ADL comes to the rescue...
-namespace CLHEP
-{
+namespace CLHEP {
   class HepVector;
-  double* begin( CLHEP::HepVector& v ) { return &v[0]; }
+  double*       begin( CLHEP::HepVector& v ) { return &v[0]; }
   const double* begin( const CLHEP::HepVector& v ) { return &v[0]; }
-}
+} // namespace CLHEP
 
 // ============================================================================
 /** @class TupleAlg
@@ -50,16 +47,14 @@ namespace CLHEP
  *  @date 2005-05-01
  */
 // ============================================================================
-class TupleAlg : public GaudiTupleAlg
-{
+class TupleAlg : public GaudiTupleAlg {
 public:
   /** standard constructor
    */
   using GaudiTupleAlg::GaudiTupleAlg;
 
   /// initialize the algorithm
-  StatusCode initialize() override
-  {
+  StatusCode initialize() override {
     StatusCode sc = GaudiTupleAlg::initialize();
     if ( sc.isFailure() ) return sc;
     // check for random numbers service
@@ -80,8 +75,7 @@ public:
 private:
   // Make a random generator for a type
   template <class T>
-  T randomRange()
-  {
+  T randomRange() {
     const T min = std::numeric_limits<T>::min();
     const T max = std::numeric_limits<T>::max();
     return min + ( T )( ( max - min ) * (double)( Rndm::Numbers( randSvc(), Rndm::Flat( 0, 1 ) )() ) );
@@ -93,8 +87,7 @@ private:
  *  @see IAlgoruthm
  */
 // ============================================================================
-StatusCode TupleAlg::execute()
-{
+StatusCode TupleAlg::execute() {
   /// avoid long names
   using namespace Tuples;
 
@@ -164,9 +157,7 @@ StatusCode TupleAlg::execute()
   { // fill using iterator/sequence protocol
     const size_t nCol = 50;
     float        array[nCol];
-    for ( size_t i = 0; i < nCol; ++i ) {
-      array[i] = (float)flat();
-    }
+    for ( size_t i = 0; i < nCol; ++i ) { array[i] = (float)flat(); }
 
     // fill with simple array/vector (fixed size):
     tuple3->array( "arflat", array, array + nCol );
@@ -176,9 +167,7 @@ StatusCode TupleAlg::execute()
     typedef std::vector<double> Array;
     const size_t                nCol = 62;
     Array                       array( nCol );
-    for ( size_t i = 0; i < array.size(); ++i ) {
-      array[i] = expo();
-    }
+    for ( size_t i = 0; i < array.size(); ++i ) { array[i] = expo(); }
 
     // fill with simple array/vector (fixed size):
     tuple3->array( "arexpo", array );
@@ -187,9 +176,7 @@ StatusCode TupleAlg::execute()
   { // fill with the explicit usage of sequence length
     const size_t nCol = 42;
     double       array[nCol];
-    for ( size_t i = 0; i < nCol; ++i ) {
-      array[i] = gauss();
-    }
+    for ( size_t i = 0; i < nCol; ++i ) { array[i] = gauss(); }
 
     // fill with simple array/vector (fixed size):
     tuple3->array( "argau", array, nCol );
@@ -198,9 +185,7 @@ StatusCode TupleAlg::execute()
   { // fill with the explicit usage of sequence length
     const size_t     nCol = 42;
     CLHEP::HepVector array( nCol );
-    for ( size_t i = 0; i < nCol; ++i ) {
-      array[i] = gauss();
-    }
+    for ( size_t i = 0; i < nCol; ++i ) { array[i] = gauss(); }
 
     // fill with simple array/vector (fixed size):
     tuple3->array( "argau2", array, nCol );
@@ -222,9 +207,7 @@ StatusCode TupleAlg::execute()
     double mtrx[nRow][nCol];
 
     for ( size_t iRow = 0; iRow < nRow; ++iRow ) {
-      for ( size_t iCol = 0; iCol < nCol; ++iCol ) {
-        mtrx[iRow][iCol] = gauss();
-      }
+      for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = gauss(); }
     }
 
     tuple4->matrix( "mgau", mtrx, nRow, nCol );
@@ -241,9 +224,7 @@ StatusCode TupleAlg::execute()
     Mtrx mtrx( nRow, Row( nCol ) );
 
     for ( size_t iRow = 0; iRow < nRow; ++iRow ) {
-      for ( size_t iCol = 0; iCol < nCol; ++iCol ) {
-        mtrx[iRow][iCol] = flat();
-      }
+      for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = flat(); }
     }
 
     tuple4->matrix( "mflat", mtrx, nRow, nCol );
@@ -255,9 +236,7 @@ StatusCode TupleAlg::execute()
     const size_t     nCol = 3;
     CLHEP::HepMatrix mtrx( nRow, nCol );
     for ( int iCol = 0; iCol < mtrx.num_col(); ++iCol ) {
-      for ( int iRow = 0; iRow < mtrx.num_row(); ++iRow ) {
-        mtrx[iRow][iCol] = expo();
-      }
+      for ( int iRow = 0; iRow < mtrx.num_row(); ++iRow ) { mtrx[iRow][iCol] = expo(); }
     }
 
     tuple4->matrix( "mexpo", mtrx, mtrx.num_row(), mtrx.num_col() );
@@ -301,9 +280,7 @@ StatusCode TupleAlg::execute()
     Mtrx mtrx( num, Row( nCol ) );
 
     for ( size_t iRow = 0; iRow < num; ++iRow ) {
-      for ( size_t iCol = 0; iCol < nCol; ++iCol ) {
-        mtrx[iRow][iCol] = gauss();
-      }
+      for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = gauss(); }
     }
 
     tuple6->fmatrix( "mgau", mtrx.begin(), mtrx.end(), nCol, "Len1", 100 );
@@ -318,9 +295,7 @@ StatusCode TupleAlg::execute()
     Mtrx mtrx( num, Row( nCol ) );
 
     for ( size_t iRow = 0; iRow < num; ++iRow ) {
-      for ( size_t iCol = 0; iCol < nCol; ++iCol ) {
-        mtrx[iRow][iCol] = expo();
-      }
+      for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = expo(); }
     }
 
     tuple6->fmatrix( "mexpo",     // N-tuple entry name
@@ -353,9 +328,7 @@ StatusCode TupleAlg::execute()
     CLHEP::HepMatrix mtrx( num, nCol );
 
     for ( size_t iRow = 0; iRow < num; ++iRow ) {
-      for ( size_t iCol = 0; iCol < nCol; ++iCol ) {
-        mtrx[iRow][iCol] = expo();
-      }
+      for ( size_t iCol = 0; iCol < nCol; ++iCol ) { mtrx[iRow][iCol] = expo(); }
     }
 
     tuple6->fmatrix( "m2expo",       // N-tuple entry name

@@ -4,10 +4,8 @@
 #include <string>
 #include <vector>
 
-namespace Gaudi
-{
-  class GAUDI_API Sequence : public Algorithm
-  {
+namespace Gaudi {
+  class GAUDI_API Sequence : public Algorithm {
   public:
     using Algorithm::Algorithm;
 
@@ -89,4 +87,4 @@ namespace Gaudi
   private:
     std::vector<Algorithm*> m_subAlgms; ///< Sub algorithms
   };
-}
+} // namespace Gaudi

@@ -19,8 +19,7 @@
 // forward declare
 class IIoComponent;
 
-class GAUDI_API IIoComponentMgr : virtual public INamedInterface
-{
+class GAUDI_API IIoComponentMgr : virtual public INamedInterface {
 public:
   DeclareInterfaceID( IIoComponentMgr, 1, 0 );
 

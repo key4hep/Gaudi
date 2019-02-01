@@ -25,8 +25,7 @@ DECLARE_COMPONENT( GslErrorPrint )
  *  @return status code
  */
 // ============================================================================
-StatusCode GslErrorPrint::handle( const GslError& error ) const
-{
+StatusCode GslErrorPrint::handle( const GslError& error ) const {
   AlgTool::error() << " GSL code " << error.code << " Message '" << error.reason << "'"
                    << " File '" << error.file << "'"
                    << " Line " << error.line << endmsg;

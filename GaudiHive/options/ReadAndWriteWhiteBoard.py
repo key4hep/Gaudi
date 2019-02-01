@@ -21,41 +21,42 @@ dst.NeededResources = ['ROOTIO']
 
 GaudiPersistency()
 
-EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1,
-              Input=["DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"])
+EventSelector(
+    OutputLevel=DEBUG,
+    PrintFreq=50,
+    FirstEvent=1,
+    Input=[
+        "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"
+    ])
 FileCatalog(Catalogs=["xmlcatalog_file:HandleWB_ROOTIO.xml"])
 
 product_name = "MyCollision"
 product_name_full_path = "/Event/" + product_name
 
-loader = HiveReadAlgorithm("Loader",
-                           OutputLevel=INFO,
-                           NeededResources=['ROOTIO']
-                           )
+loader = HiveReadAlgorithm(
+    "Loader", OutputLevel=INFO, NeededResources=['ROOTIO'])
 
-reader = ReadHandleAlg("Reader",
-                       OutputLevel=INFO,
-                       NeededResources=["ROOTIO"])
+reader = ReadHandleAlg("Reader", OutputLevel=INFO, NeededResources=["ROOTIO"])
 reader.Input.Path = product_name
-
 
 evtslots = 6
 algoparallel = 20
 
-whiteboard = HiveWhiteBoard("EventDataSvc",
-                            EventSlots=evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
-                                  OutputLevel=WARNING,
-                                  CheckDependencies=True,
-                                  DataLoaderAlg=loader.name())
+scheduler = AvalancheSchedulerSvc(
+    ThreadPoolSize=algoparallel,
+    OutputLevel=WARNING,
+    CheckDependencies=True,
+    DataLoaderAlg=loader.name())
 
-ApplicationMgr(TopAlg=[loader, reader, dst],
-               EvtMax=44,
-               HistogramPersistency="NONE",
-               ExtSvc=[whiteboard],
-               EventLoop=eventloopmgr)
+ApplicationMgr(
+    TopAlg=[loader, reader, dst],
+    EvtMax=44,
+    HistogramPersistency="NONE",
+    ExtSvc=[whiteboard],
+    EventLoop=eventloopmgr)

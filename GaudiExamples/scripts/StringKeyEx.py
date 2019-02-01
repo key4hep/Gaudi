@@ -17,21 +17,13 @@ __author__ = 'Vanya BELYAEV Ivan.Belyaev@nikhef.nl'
 # =============================================================================
 from Gaudi.Configuration import *
 
-
 from Configurables import ApplicationMgr
 
 from Configurables import Gaudi__Examples__StringKeyEx as SKE
 
+ske = SKE('StringKeys', Key='key', Keys=['a', 'b', 'key', 'c', 'd'])
 
-ske = SKE(
-    'StringKeys',
-    Key='key',
-    Keys=['a', 'b', 'key', 'c', 'd']
-)
-
-ApplicationMgr(
-    EvtSel="NONE", TopAlg=[ske], EvtMax=10
-)
+ApplicationMgr(EvtSel="NONE", TopAlg=[ske], EvtMax=10)
 
 # =============================================================================
 # The actual job excution
@@ -70,7 +62,6 @@ if '__main__' == __name__:
     ske.PropertiesPrint = True
 
     gaudi.run(1)
-
 
 # =============================================================================
 # The END

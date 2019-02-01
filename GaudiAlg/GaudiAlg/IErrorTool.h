@@ -21,8 +21,7 @@ class GaudiException;
  *  @author Ivan BELYAEV
  *  @date   2004-06-28
  */
-class GAUDI_API IErrorTool : virtual public IAlgTool
-{
+class GAUDI_API IErrorTool : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( IErrorTool, 2, 0 );
@@ -127,4 +126,3 @@ protected:
 
 // ============================================================================
 #endif // GAUDIALG_IERRORTOOL_H
-// ============================================================================

@@ -39,8 +39,7 @@
     Author:  M.Frank
     Version: 1.0
 */
-class RndmEngine : public extends<Service, IRndmEngine, ISerialize>
-{
+class RndmEngine : public extends<Service, IRndmEngine, ISerialize> {
 protected:
   /// Standard Constructor
   using extends::extends;

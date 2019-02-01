@@ -4,7 +4,8 @@ import time
 from xml.etree import ElementTree
 
 
-def generateOptions(counter, cmask, invmask, sampling_period, startatevent, storeresultsat, family):
+def generateOptions(counter, cmask, invmask, sampling_period, startatevent,
+                    storeresultsat, family):
     cmask = map(int, cmask)
     invmask = map(int, invmask)
     sampling_period = map(int, sampling_period)
@@ -35,8 +36,8 @@ def generateOptions(counter, cmask, invmask, sampling_period, startatevent, stor
         pass
     pfaud.FAMILY = family
     # for <2.5 Python use: test and true_value or false_value
-    pfaud.PREFIX = "%s_%s" % (
-        storeresultsat, "S" if sampling_period[0] > 0 else "C")
+    pfaud.PREFIX = "%s_%s" % (storeresultsat,
+                              "S" if sampling_period[0] > 0 else "C")
     pfaud.SAMPLE = int(sampling_period[0] > 0)
     pfaud.START_AT_EVENT = startatevent
     #pfaud.LEVEL = 5
@@ -73,7 +74,8 @@ class XmlDictObject(dict):
         """
 
         if isinstance(x, dict):
-            return XmlDictObject((k, XmlDictObject.Wrap(v)) for (k, v) in x.iteritems())
+            return XmlDictObject(
+                (k, XmlDictObject.Wrap(v)) for (k, v) in x.iteritems())
         elif isinstance(x, list):
             return [XmlDictObject.Wrap(v) for v in x]
         else:
@@ -82,7 +84,8 @@ class XmlDictObject(dict):
     @staticmethod
     def _UnWrap(x):
         if isinstance(x, dict):
-            return dict((k, XmlDictObject._UnWrap(v)) for (k, v) in x.iteritems())
+            return dict(
+                (k, XmlDictObject._UnWrap(v)) for (k, v) in x.iteritems())
         elif isinstance(x, list):
             return [XmlDictObject._UnWrap(v) for v in x]
         else:
@@ -119,7 +122,7 @@ def _ConvertDictToXmlRecurse(parent, dictitem):
 
 def ConvertDictToXml(xmldict):
     """
-    Converts a dictionary to an XML ElementTree Element 
+    Converts a dictionary to an XML ElementTree Element
     """
 
     roottag = xmldict.keys()[0]

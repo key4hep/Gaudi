@@ -11,15 +11,14 @@
 #include <boost/filesystem.hpp>
 
 /** @class PrecedenceSvc PrecedenceSvc.h GaudiHive/PrecedenceSvc.h
-  *
-  * @brief A service to resolve the task execution precedence.
-  *
-  * @author Illya Shapoval
-  * @created Aug 7, 2017
-  */
+ *
+ * @brief A service to resolve the task execution precedence.
+ *
+ * @author Illya Shapoval
+ * @created Aug 7, 2017
+ */
 
-class PrecedenceSvc : public extends<Service, IPrecedenceSvc>
-{
+class PrecedenceSvc : public extends<Service, IPrecedenceSvc> {
 
 public:
   /// Constructor
@@ -41,8 +40,7 @@ public:
   bool CFRulesResolved( EventSlot& ) const override;
 
   /// Get priority of an algorithm
-  uint getPriority( const std::string& name ) const override
-  {
+  uint getPriority( const std::string& name ) const override {
     return (int)m_PRGraph.getAlgorithmNode( name )->getRank();
   }
 
@@ -79,12 +77,13 @@ private:
   /// Precedence analysis facilities
   boost::filesystem::path m_dumpDirName{
       boost::filesystem::unique_path( boost::filesystem::path( "precedence.analysis.%%%%" ) )};
-  Gaudi::Property<bool> m_dumpPrecTrace{this, "DumpPrecedenceTrace", false,
+  Gaudi::Property<bool>        m_dumpPrecTrace{this, "DumpPrecedenceTrace", false,
                                         "Dump task precedence traces for each event."};
   Gaudi::Property<std::string> m_dumpPrecTraceFile{
-      this, "PrecedenceTraceFile", "", "Override default name of the GRAPHML trace file. NOTE: if more than "
-                                       "1 event is processed, the setting forces creation of a single file "
-                                       "with cumulative precedence trace."};
+      this, "PrecedenceTraceFile", "",
+      "Override default name of the GRAPHML trace file. NOTE: if more than "
+      "1 event is processed, the setting forces creation of a single file "
+      "with cumulative precedence trace."};
   Gaudi::Property<bool>        m_dumpPrecRules{this, "DumpPrecedenceRules", false, "Dump task precedence rules."};
   Gaudi::Property<std::string> m_dumpPrecRulesFile{this, "PrecedenceRulesFile", "",
                                                    "Override default name of the GRAPHML precedence rules file."};

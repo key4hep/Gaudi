@@ -11,25 +11,20 @@
 #include "PropertyName.h"
 #include "PropertyValue.h"
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
-    class Property final
-    {
+    class Property final {
       // ----------------------------------------------------------------------------
     public:
       // ----------------------------------------------------------------------------
       struct LessThen {
-        bool operator()( const Property& first, const Property& second ) const
-        {
+        bool operator()( const Property& first, const Property& second ) const {
           return first.FullName() < second.FullName();
         }
       };
 
-      class Equal
-      {
+      class Equal {
       public:
         Equal( const std::string& short_name ) : short_name_( short_name ) {}
         bool operator()( const Property& property ) const { return short_name_ == property.NameInClient(); }
@@ -39,20 +34,16 @@ namespace Gaudi
       };
       // ----------------------------------------------------------------------------
       Property( PropertyName property_name, PropertyValue property_value )
-          : property_name_( std::move( property_name ) ), property_value_( std::move( property_value ) )
-      {
-      }
+          : property_name_( std::move( property_name ) ), property_value_( std::move( property_value ) ) {}
       // ----------------------------------------------------------------------------
       const PropertyName& property_name() const { return property_name_; }
       PropertyValue&      property_value() { return property_value_; }
       // ----------------------------------------------------------------------------
-      Property& operator+=( const PropertyValue& value )
-      {
+      Property& operator+=( const PropertyValue& value ) {
         property_value_ += value;
         return *this;
       }
-      Property& operator-=( const PropertyValue& value )
-      {
+      Property& operator-=( const PropertyValue& value ) {
         property_value_ -= value;
         return *this;
       }
@@ -79,7 +70,7 @@ namespace Gaudi
       PropertyValue property_value_;
     };
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 #endif // JOBOPTIONSVC_PROPERTY_H_

@@ -5,19 +5,16 @@
 bool              GaudiException::s_proc( false );
 static const bool enableBacktrace = System::isEnvSet( "ENABLE_BACKTRACE" );
 
-namespace
-{
-  inline std::string captureBacktrace( const StatusCode& code )
-  {
+namespace {
+  inline std::string captureBacktrace( const StatusCode& code ) {
     std::string backtrace;
     if ( enableBacktrace && !code.isSuccess() ) System::backTrace( backtrace, 100, 1 );
     return backtrace;
   }
-}
+} // namespace
 
 GaudiException::GaudiException( std::string Message, std::string Tag, StatusCode Code )
-    : m_message( std::move( Message ) ), m_tag( std::move( Tag ) ), m_code( std::move( Code ) )
-{
+    : m_message( std::move( Message ) ), m_tag( std::move( Tag ) ), m_code( std::move( Code ) ) {
   s_proc      = true;
   m_backTrace = captureBacktrace( Code );
 }
@@ -26,14 +23,12 @@ GaudiException::GaudiException( std::string Message, std::string Tag, StatusCode
     : m_message( std::move( Message ) )
     , m_tag( std::move( Tag ) )
     , m_code( std::move( Code ) )
-    , m_previous( Exception.clone() )
-{
+    , m_previous( Exception.clone() ) {
   // Do not capture backtrace in outer chained exceptions, so only innermost exception is printed
 }
 
 GaudiException::GaudiException( std::string Message, std::string Tag, StatusCode Code, const std::exception& Exception )
-    : m_message( std::move( Message ) ), m_tag( std::move( Tag ) ), m_code( std::move( Code ) )
-{
+    : m_message( std::move( Message ) ), m_tag( std::move( Tag ) ), m_code( std::move( Code ) ) {
   s_proc = true;
   m_message += ": " + System::typeinfoName( typeid( Exception ) ) + ", " + Exception.what();
   m_backTrace = captureBacktrace( Code );
@@ -45,19 +40,16 @@ GaudiException::GaudiException( const GaudiException& Exception )
     , m_tag{Exception.tag()}
     , m_code{Exception.code()}
     , m_backTrace{Exception.backTrace()}
-    , m_previous{Exception.previous() ? Exception.previous()->clone() : nullptr}
-{
+    , m_previous{Exception.previous() ? Exception.previous()->clone() : nullptr} {
   s_proc = true;
 }
 
-GaudiException::~GaudiException() throw()
-{
+GaudiException::~GaudiException() throw() {
   m_code.setChecked();
   s_proc = false;
 }
 
-GaudiException& GaudiException::operator=( const GaudiException& Exception )
-{
+GaudiException& GaudiException::operator=( const GaudiException& Exception ) {
   m_message   = Exception.message();
   m_tag       = Exception.tag();
   m_code      = Exception.code();
@@ -66,15 +58,13 @@ GaudiException& GaudiException::operator=( const GaudiException& Exception )
   return *this;
 }
 
-std::ostream& GaudiException::printOut( std::ostream& os ) const
-{
+std::ostream& GaudiException::printOut( std::ostream& os ) const {
   os << tag() << " \t " << message() << "\t StatusCode=" << code();
   if ( !backTrace().empty() ) os << std::endl << "Exception stack trace\n" << backTrace();
   return ( 0 != previous() ) ? previous()->printOut( os << std::endl ) : os;
 }
 
-MsgStream& GaudiException::printOut( MsgStream& os ) const
-{
+MsgStream& GaudiException::printOut( MsgStream& os ) const {
   os << tag() << " \t " << message() << "\t StatusCode=" << code();
   if ( !backTrace().empty() ) os << endmsg << "Exception stack trace\n" << backTrace();
   return ( 0 != previous() ) ? previous()->printOut( os << endmsg ) : os;
@@ -82,14 +72,12 @@ MsgStream& GaudiException::printOut( MsgStream& os ) const
 
 std::ostream& operator<<( std::ostream& os, const GaudiException& ge ) { return ge.printOut( os ); }
 
-std::ostream& operator<<( std::ostream& os, const GaudiException* pge )
-{
+std::ostream& operator<<( std::ostream& os, const GaudiException* pge ) {
   return ( 0 == pge ) ? ( os << " GaudiException* points to NULL!" ) : ( os << *pge );
 }
 
 MsgStream& operator<<( MsgStream& os, const GaudiException& ge ) { return ge.printOut( os ); }
 
-MsgStream& operator<<( MsgStream& os, const GaudiException* pge )
-{
+MsgStream& operator<<( MsgStream& os, const GaudiException* pge ) {
   return ( 0 == pge ) ? ( os << " GaudiException* points to NULL!" ) : ( os << *pge );
 }

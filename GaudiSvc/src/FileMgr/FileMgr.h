@@ -23,18 +23,17 @@
 #include <map>
 #include <string>
 
-using Io::IoTech;
-using Io::IoFlag;
-using Io::IoFlags;
+using Io::Fd;
 using Io::FileAttr;
 using Io::FileHdlr;
-using Io::Fd;
+using Io::IoFlag;
+using Io::IoFlags;
+using Io::IoTech;
 
 class RootFileHandler;
 class POSIXFileHandler;
 
-class FileMgr : public extends<Service, IFileMgr, IIncidentListener>
-{
+class FileMgr : public extends<Service, IFileMgr, IIncidentListener> {
 public:
   using extends::extends;
   ~FileMgr() override;
@@ -134,9 +133,9 @@ private:
 
   typedef std::multimap<std::string, FileAttr*> fileMap;
 
-  fileMap m_files;
-  std::map<IoTech, FileHdlr> m_handlers;
-  std::map<Fd, FileAttr*>    m_descriptors;
+  fileMap                                m_files;
+  std::map<IoTech, FileHdlr>             m_handlers;
+  std::map<Fd, FileAttr*>                m_descriptors;
   std::vector<std::unique_ptr<FileAttr>> m_attr;
 
   std::vector<FileAttr*> m_oldFiles;

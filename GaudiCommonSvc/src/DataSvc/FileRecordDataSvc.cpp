@@ -35,12 +35,10 @@
  *   @author  M.Frank
  *   @version 1.0
  */
-class FileRecordDataSvc : public RecordDataSvc
-{
+class FileRecordDataSvc : public RecordDataSvc {
 public:
   /// Standard Constructor
-  FileRecordDataSvc( const std::string& nam, ISvcLocator* svc ) : RecordDataSvc( nam, svc )
-  {
+  FileRecordDataSvc( const std::string& nam, ISvcLocator* svc ) : RecordDataSvc( nam, svc ) {
     m_cnvSvc           = nullptr;
     m_rootName         = "/FileRecords";
     m_incidentName     = "NEW_FILE_RECORD";

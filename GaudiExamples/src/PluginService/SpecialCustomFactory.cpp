@@ -3,27 +3,22 @@
 
 #include <iostream>
 
-namespace PluginServiceTest
-{
-  class CustomFactoryAlgorithm : public GaudiAlgorithm
-  {
+namespace PluginServiceTest {
+  class CustomFactoryAlgorithm : public GaudiAlgorithm {
   public:
     using GaudiAlgorithm::GaudiAlgorithm;
 
-    StatusCode execute() override
-    {
+    StatusCode execute() override {
       info() << "running" << endmsg;
       return StatusCode::SUCCESS;
     }
   };
-}
+} // namespace PluginServiceTest
 
-namespace
-{
+namespace {
   using PluginServiceTest::CustomFactoryAlgorithm;
 
-  std::unique_ptr<IAlgorithm> creator( const std::string& name, ISvcLocator* svcLoc )
-  {
+  std::unique_ptr<IAlgorithm> creator( const std::string& name, ISvcLocator* svcLoc ) {
     auto p = std::make_unique<CustomFactoryAlgorithm>( name, svcLoc );
 
     // do not print messages if we are created in genconf
@@ -36,4 +31,4 @@ namespace
   }
 
   Gaudi::PluginService::DeclareFactory<CustomFactoryAlgorithm> _{creator};
-}
+} // namespace

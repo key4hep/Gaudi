@@ -27,25 +27,20 @@
 #include "TH2.h"
 #include "TH3.h"
 // ============================================================================
-namespace AIDA
-{
+namespace AIDA {
   class ICloud1D;
   class ICloud2D;
   class ICloud3D;
-}
+} // namespace AIDA
 
-namespace detail
-{
+namespace detail {
   template <class T>
-  static DataObject* cast( T* p )
-  {
+  static DataObject* cast( T* p ) {
     DataObject* q = dynamic_cast<DataObject*>( p );
-    if ( !q && p ) {
-      throw std::runtime_error( "HistogramSvc: Unexpected object type." );
-    }
+    if ( !q && p ) { throw std::runtime_error( "HistogramSvc: Unexpected object type." ); }
     return q;
   }
-}
+} // namespace detail
 
 // ============================================================================
 /** @class HistogramSvc HistogramSvc.h
@@ -53,8 +48,7 @@ namespace detail
  *  HistogramSvc class definition
  *
  */
-class HistogramSvc : public extends<DataSvc, IHistogramSvc>, virtual public AIDA::IHistogramFactory
-{
+class HistogramSvc : public extends<DataSvc, IHistogramSvc>, virtual public AIDA::IHistogramFactory {
 
 private:
   void not_implemented() const { error() << "Sorry, not yet implemented..." << endmsg; }
@@ -68,40 +62,35 @@ protected:
     HistogramSvc* m_svc;
     Helper( HistogramSvc* p ) : m_svc( p ) {}
     template <class A1, class A3>
-    StatusCode retrieve( A1 a1, A3*& a3 )
-    {
+    StatusCode retrieve( A1 a1, A3*& a3 ) {
       DataObject* pObject = nullptr;
       StatusCode  sc      = m_svc->retrieveObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
     template <class A1, class A2, class A3>
-    StatusCode retrieve( A1 a1, A2 a2, A3*& a3 )
-    {
+    StatusCode retrieve( A1 a1, A2 a2, A3*& a3 ) {
       DataObject* pObject = nullptr;
       StatusCode  sc      = m_svc->retrieveObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
     template <class A1, class A3>
-    StatusCode find( A1 a1, A3*& a3 )
-    {
+    StatusCode find( A1 a1, A3*& a3 ) {
       DataObject* pObject = nullptr;
       StatusCode  sc      = m_svc->findObject( a1, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
     template <class A1, class A2, class A3>
-    StatusCode find( A1 a1, A2 a2, A3*& a3 )
-    {
+    StatusCode find( A1 a1, A2 a2, A3*& a3 ) {
       DataObject* pObject = nullptr;
       StatusCode  sc      = m_svc->findObject( a1, a2, pObject );
       a3                  = dynamic_cast<A3*>( pObject );
       return sc;
     }
     template <class R, class S, class T1, class T2>
-    static R* act( R* res, const S& b, void ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
-    {
+    static R* act( R* res, const S& b, void ( T1::*pmf )( const T2*, Double_t ), Double_t scale ) {
       auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
@@ -111,8 +100,7 @@ protected:
       return nullptr;
     }
     template <class R, class S, class T1, class T2>
-    static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
-    {
+    static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2*, Double_t ), Double_t scale ) {
       auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
@@ -122,8 +110,7 @@ protected:
       return nullptr;
     }
     template <class R, class S, class T1, class T2>
-    static R* act( R* res, const S& b, void ( T1::*pmf )( const T2* ) )
-    {
+    static R* act( R* res, const S& b, void ( T1::*pmf )( const T2* ) ) {
       auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
@@ -133,8 +120,7 @@ protected:
       return nullptr;
     }
     template <class R, class S, class T1, class T2>
-    static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2* ) )
-    {
+    static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2* ) ) {
       auto       h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
@@ -172,8 +158,7 @@ public:
 
   template <class T>
   inline T* i_book( DataObject* pPar, const std::string& rel, const std::string& title,
-                    const std::pair<DataObject*, T*>& o )
-  {
+                    const std::pair<DataObject*, T*>& o ) {
     if ( o.first && registerObject( pPar, rel, (Base*)o.second ).isSuccess() ) return o.second;
     delete o.first;
     throw GaudiException( "Cannot book " + System::typeinfoName( typeid( T ) ) + " " + title, "HistogramSvc",
@@ -869,22 +854,19 @@ public:
   AIDA::IHistogram2D* projectionYZ( const std::string& nameAndTitle, const AIDA::IHistogram3D& h ) override;
 
   AIDA::IHistogram2D* sliceXY( const std::string& /* nameAndTitle */, const AIDA::IHistogram3D& /* h */, int /* low */,
-                               int /* high */ ) override
-  {
+                               int /* high */ ) override {
     not_implemented();
     return nullptr;
   }
 
   AIDA::IHistogram2D* sliceXZ( const std::string& /* nameAndTitle */, const AIDA::IHistogram3D& /* h */, int /* low */,
-                               int /* high */ ) override
-  {
+                               int /* high */ ) override {
     not_implemented();
     return nullptr;
   }
 
   AIDA::IHistogram2D* sliceYZ( const std::string& /* nameAndTitle */, const AIDA::IHistogram3D& /* h */, int /* low */,
-                               int /* high */ ) override
-  {
+                               int /* high */ ) override {
     not_implemented();
     return nullptr;
   }
@@ -1008,65 +990,56 @@ public:
 
   AIDA::IProfile2D* createCopy( DataObject* pPar, const std::string& rel, const AIDA::IProfile2D& h );
 
-  AIDA::ICloud1D* createCloud1D( const std::string&, const std::string&, int, const std::string& ) override
-  {
+  AIDA::ICloud1D* createCloud1D( const std::string&, const std::string&, int, const std::string& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud1D* createCloud1D( const std::string& ) override
-  {
+  AIDA::ICloud1D* createCloud1D( const std::string& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud1D* createCopy( const std::string&, const AIDA::ICloud1D& ) override
-  {
+  AIDA::ICloud1D* createCopy( const std::string&, const AIDA::ICloud1D& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud2D* createCloud2D( const std::string&, const std::string&, int, const std::string& ) override
-  {
+  AIDA::ICloud2D* createCloud2D( const std::string&, const std::string&, int, const std::string& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud2D* createCloud2D( const std::string& ) override
-  {
+  AIDA::ICloud2D* createCloud2D( const std::string& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud2D* createCopy( const std::string&, const AIDA::ICloud2D& ) override
-  {
+  AIDA::ICloud2D* createCopy( const std::string&, const AIDA::ICloud2D& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud3D* createCloud3D( const std::string&, const std::string&, int, const std::string& ) override
-  {
+  AIDA::ICloud3D* createCloud3D( const std::string&, const std::string&, int, const std::string& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud3D* createCloud3D( const std::string& ) override
-  {
+  AIDA::ICloud3D* createCloud3D( const std::string& ) override {
     not_implemented();
     return nullptr;
   }
 
-  AIDA::ICloud3D* createCopy( const std::string&, const AIDA::ICloud3D& ) override
-  {
+  AIDA::ICloud3D* createCopy( const std::string&, const AIDA::ICloud3D& ) override {
     not_implemented();
     return nullptr;
   }
 
   /// Avoids a compiler warning about hidden functions.
-  using IDataProviderSvc::registerObject;
-  using IDataProviderSvc::unregisterObject;
-  using IDataProviderSvc::retrieveObject;
   using IDataProviderSvc::findObject;
+  using IDataProviderSvc::registerObject;
+  using IDataProviderSvc::retrieveObject;
+  using IDataProviderSvc::unregisterObject;
 
   /// Print (ASCII) the 1D histogram into the output stream
   std::ostream& print( Base* h, std::ostream& s = std::cout ) const override;

@@ -6,69 +6,56 @@
 
 #include <sstream>
 
-namespace Gaudi
-{
-  namespace Parsers
-  {
-    StatusCode parse( DataObjectHandleBase& v, const std::string& s )
-    {
+namespace Gaudi {
+  namespace Parsers {
+    StatusCode parse( DataObjectHandleBase& v, const std::string& s ) {
       DataObjID id;
       auto      sc = parse( id, s );
       if ( sc ) v.setKey( std::move( id ) );
       return sc;
     }
-  }
+  } // namespace Parsers
 
-  namespace Utils
-  {
+  namespace Utils {
     std::ostream& toStream( const DataObjectHandleBase& v, std::ostream& o ) { return o << v; }
-  }
-}
+  } // namespace Utils
+} // namespace Gaudi
 
 //---------------------------------------------------------------------------
 
 DataObjectHandleProperty::DataObjectHandleProperty( const std::string& name, DataObjectHandleBase& ref )
-    : PropertyWithHandlers( name, typeid( DataObjectHandleBase ) ), m_pValue( &ref )
-{
-}
+    : PropertyWithHandlers( name, typeid( DataObjectHandleBase ) ), m_pValue( &ref ) {}
 
 //---------------------------------------------------------------------------
 
-StatusCode DataObjectHandleProperty::fromString( const std::string& s )
-{
-  if ( !Gaudi::Parsers::parse( *m_pValue, s ).isSuccess() ) {
-    return StatusCode::FAILURE;
-  }
+StatusCode DataObjectHandleProperty::fromString( const std::string& s ) {
+  if ( !Gaudi::Parsers::parse( *m_pValue, s ).isSuccess() ) { return StatusCode::FAILURE; }
   return useUpdateHandler() ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 
 //---------------------------------------------------------------------------
 
-bool DataObjectHandleProperty::setValue( const DataObjectHandleBase& value )
-{
+bool DataObjectHandleProperty::setValue( const DataObjectHandleBase& value ) {
   *m_pValue = value;
   return useUpdateHandler();
 }
 
 //---------------------------------------------------------------------------
 
-std::string DataObjectHandleProperty::toString() const
-{
+std::string DataObjectHandleProperty::toString() const {
   useReadHandler();
   return m_pValue->toString();
 }
 
 //---------------------------------------------------------------------------
-void DataObjectHandleProperty::toStream( std::ostream& out ) const
-{
+void DataObjectHandleProperty::toStream( std::ostream& out ) const {
   // implicitly invokes useReadHandler()
   out << toString();
 }
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleProperty& DataObjectHandleProperty::operator=( const DataObjectHandleBase& value )
-{
+DataObjectHandleProperty& DataObjectHandleProperty::operator=( const DataObjectHandleBase& value ) {
   setValue( value );
   return *this;
 }
@@ -87,8 +74,7 @@ bool DataObjectHandleProperty::assign( const Property& source ) { return fromStr
 
 //---------------------------------------------------------------------------
 
-const DataObjectHandleBase& DataObjectHandleProperty::value() const
-{
+const DataObjectHandleBase& DataObjectHandleProperty::value() const {
   useReadHandler();
   return *m_pValue;
 }

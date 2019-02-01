@@ -4,20 +4,20 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   meant
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #endif
 
 #include "ProcStats.h"
 
 #if defined( __linux__ ) or defined( __APPLE__ )
-#include <iostream>
-#include <sstream>
-#include <sys/signal.h>
-#include <sys/syscall.h>
-#ifdef __linux__
-#include <sys/procfs.h>
-#endif // __linux__
-#include <cstdio>
+#  include <iostream>
+#  include <sstream>
+#  include <sys/signal.h>
+#  include <sys/syscall.h>
+#  ifdef __linux__
+#    include <sys/procfs.h>
+#  endif // __linux__
+#  include <cstdio>
 
 using std::cerr;
 using std::cout;
@@ -229,16 +229,14 @@ struct linux_proc {
 };
 #endif // __linux__ or __APPLE__
 
-ProcStats::cleanup::~cleanup()
-{
+ProcStats::cleanup::~cleanup() {
   if ( ProcStats::inst != 0 ) {
     delete ProcStats::inst;
     ProcStats::inst = 0;
   }
 }
 
-ProcStats* ProcStats::instance()
-{
+ProcStats* ProcStats::instance() {
   static cleanup c;
   if ( !inst ) inst = new ProcStats;
   return inst;
@@ -246,8 +244,7 @@ ProcStats* ProcStats::instance()
 
 ProcStats* ProcStats::inst = 0;
 
-ProcStats::ProcStats() : valid( false )
-{
+ProcStats::ProcStats() : valid( false ) {
 #if defined( __linux__ ) or defined( __APPLE__ )
   pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
 
@@ -262,8 +259,7 @@ ProcStats::ProcStats() : valid( false )
   valid = true;
 }
 
-bool ProcStats::fetch( procInfo& f )
-{
+bool ProcStats::fetch( procInfo& f ) {
   if ( valid == false ) return false;
 
 #if defined( __linux__ ) or defined( __APPLE__ )

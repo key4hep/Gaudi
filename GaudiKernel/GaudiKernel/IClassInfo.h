@@ -9,8 +9,7 @@
 
     Data base class allowing to store persistent type information
 */
-class GAUDI_API IClassInfo
-{
+class GAUDI_API IClassInfo {
 public:
   /// Standard Destructor
   virtual ~IClassInfo() = default;

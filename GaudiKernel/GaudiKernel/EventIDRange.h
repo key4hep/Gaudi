@@ -20,8 +20,7 @@
  *  @brief Event ID Range object. Holds two EventIDBases (start and stop)
  */
 
-class EventIDRange
-{
+class EventIDRange {
 public:
   EventIDRange();
   EventIDRange( const EventIDBase& start, const EventIDBase& stop );
@@ -31,8 +30,7 @@ public:
   EventIDBase start() const { return m_start; }
   EventIDBase stop() const { return m_stop; }
 
-  bool isInRange( const EventIDBase& t ) const
-  { // return ( t >= m_start && t < m_stop ); }
+  bool isInRange( const EventIDBase& t ) const { // return ( t >= m_start && t < m_stop ); }
     return ( std::tie( t.m_run_number, t.m_lumi_block, t.m_event_number ) >=
                  std::tie( m_start.m_run_number, m_start.m_lumi_block, m_start.m_event_number ) &&
              std::tie( t.m_time_stamp, t.m_time_stamp_ns_offset ) <
@@ -45,8 +43,7 @@ public:
 
   static EventIDRange intersect( const EventIDRange& it ) { return it; }
   template <typename... T>
-  static EventIDRange intersect( const EventIDRange& first, const T&... rest )
-  {
+  static EventIDRange intersect( const EventIDRange& first, const T&... rest ) {
     EventIDRange r = intersect( rest... );
 
     EventIDBase i1 = max( first.start(), r.start() );
@@ -67,15 +64,13 @@ private:
   EventIDBase m_stop{};
 };
 
-inline bool operator==( const EventIDRange& lhs, const EventIDRange& rhs )
-{
+inline bool operator==( const EventIDRange& lhs, const EventIDRange& rhs ) {
   return lhs.m_start == rhs.m_start && lhs.m_stop == rhs.m_stop;
 }
 
 inline bool operator!=( const EventIDRange& lhs, const EventIDRange& rhs ) { return !( lhs == rhs ); }
 
-inline EventIDRange::operator std::string() const
-{
+inline EventIDRange::operator std::string() const {
   std::ostringstream os;
   os << "{" << m_start << " - " << m_stop << "}";
   return os.str();

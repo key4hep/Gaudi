@@ -7,20 +7,17 @@
 /// in derived projects
 #define GAUDI_PROPERTY_v2
 
-namespace Gaudi
-{
-  namespace Details
-  {
+namespace Gaudi {
+  namespace Details {
     class PropertyBase;
-    namespace Property
-    {
+    namespace Property {
       struct NullVerifier;
       struct UpdateHandler;
-    }
-  }
+    } // namespace Property
+  }   // namespace Details
   template <class TYPE, class VERIFIER, class HANDLERS>
   class Property;
-}
+} // namespace Gaudi
 
 /// \fixme backward compatibility hack for old Property base class
 using Property

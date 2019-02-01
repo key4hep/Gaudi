@@ -12,7 +12,8 @@
 DECLARE_COMPONENT( NTupleAlgorithm )
 
 //------------------------------------------------------------------------------
-NTupleAlgorithm::NTupleAlgorithm( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
+NTupleAlgorithm::NTupleAlgorithm( const std::string& name, ISvcLocator* pSvcLocator )
+    : Algorithm( name, pSvcLocator )
 //------------------------------------------------------------------------------
 {
   m_tuple1 = nullptr;

@@ -2,8 +2,7 @@
 #include "TError.h"
 #include <cstdlib>
 
-static int usage()
-{
+static int usage() {
   ::printf( "Gaudi merge facility for ROOT tree based files.\n"
             " Usage: \n"
             "gaudi_merge -o <output-file> -i <input-file 1> [ -i <input-file 2> ...]\n\n"
@@ -15,20 +14,18 @@ static int usage()
 }
 
 static ErrorHandlerFunc_t s_err = nullptr;
-static void err_handler( Int_t level, Bool_t abort_bool, const char* location, const char* msg )
-{
+static void               err_handler( Int_t level, Bool_t abort_bool, const char* location, const char* msg ) {
   if ( msg && strstr( msg, "no dictionary for class" ) ) return;
   s_err( level, abort_bool, location, msg );
 }
 
-int main( int argc, char** argv )
-{
+int main( int argc, char** argv ) {
   bool           dbg = false, fixup = true;
   vector<string> input;
   string         output;
   for ( int i = 1; i < argc; ++i ) {
     if ( *argv[i] == '-' ) {
-      switch (::toupper( *( argv[i] + 1 ) ) ) {
+      switch ( ::toupper( *( argv[i] + 1 ) ) ) {
       case 'N':
         fixup = false;
         break;

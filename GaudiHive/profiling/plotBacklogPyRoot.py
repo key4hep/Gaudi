@@ -1,7 +1,6 @@
 from ROOT import *
 import sys
 import re
-
 """
 Produces the backlog plot, parsing the output of the EventLoopManager.
 Lines with the pattern "Event backlog" are looked for.
@@ -37,10 +36,13 @@ def parseLog(logfilename):
     for line in lines:
         if "Event backlog" in line:
             content.append(
-                re.match(".* \(max= ([0-9]*), min= ([0-9]*) \) = ([0-9]*).*", line).groups())
+                re.match(".* \(max= ([0-9]*), min= ([0-9]*) \) = ([0-9]*).*",
+                         line).groups())
         elif "Running with" in line:
-            NEventsInFlight, NThreads = map(int, re.match(
-                ".*Running with ([0-9]*).* ([0-9]*) threads", line).groups())
+            NEventsInFlight, NThreads = map(
+                int,
+                re.match(".*Running with ([0-9]*).* ([0-9]*) threads",
+                         line).groups())
 
     return content
 
@@ -84,8 +86,9 @@ def createInFlightGraph(nevts):
 
 
 def getText(x, y, text, scale, angle, colour, font, NDC=False):
-    lat = TLatex(float(x), float(y),
-                 "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
+    lat = TLatex(
+        float(x), float(y),
+        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
     if (NDC):
         lat.SetNDC()
     if angle != 0.:
@@ -114,11 +117,12 @@ def doPlot(logfilename, logfilename_copy):
     graph_c.Draw("PLSame")
 
     # Labels
-    eventInFlightLabel = getText(float(n_vals + 1) * 1.03, NEventsInFlight,
-                                 "#splitline{# Simultaneous}{       Events}", .6, 270, 2, 12)
+    eventInFlightLabel = getText(
+        float(n_vals + 1) * 1.03, NEventsInFlight,
+        "#splitline{# Simultaneous}{       Events}", .6, 270, 2, 12)
     eventInFlightLabel.Draw()
-    nThreadsLabel = getText(.15, .7, "%s Threads" %
-                            NThreads, .6, 0, 2, 12, True)
+    nThreadsLabel = getText(.15, .7, "%s Threads" % NThreads, .6, 0, 2, 12,
+                            True)
     nThreadsLabel.Draw()
 
     # Build a Legend

@@ -6,23 +6,18 @@
 // Event Model related classes
 #include "GaudiExamples/MyTrack.h"
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
     class CountSelectedTracks final
-        : public Functional::FilterPredicate<bool( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )>
-    {
+        : public Functional::FilterPredicate<bool( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& )> {
     public:
       CountSelectedTracks( const std::string& name, ISvcLocator* pSvc )
-          : FilterPredicate( name, pSvc, {KeyValue{"InputData", Functional::concat_alternatives(
-                                                                    "BogusLocation", "MoreBogus", "MyOutTracks" )}} )
-      {
-      }
+          : FilterPredicate( name, pSvc,
+                             {KeyValue{"InputData", Functional::concat_alternatives( "BogusLocation", "MoreBogus",
+                                                                                     "MyOutTracks" )}} ) {}
 
-      StatusCode initialize() override
-      {
+      StatusCode initialize() override {
         StatusCode sc = FilterPredicate::initialize();
         if ( !sc ) return sc;
         m_tracksCount = 0;
@@ -30,15 +25,13 @@ namespace Gaudi
         return sc;
       }
 
-      bool operator()( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& in_tracks ) const override
-      {
+      bool operator()( const Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>& in_tracks ) const override {
         ++m_eventsCount;
         m_tracksCount += in_tracks.size();
         return true;
       }
 
-      StatusCode finalize() override
-      {
+      StatusCode finalize() override {
         info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
         return FilterPredicate::finalize();
       }
@@ -49,5 +42,5 @@ namespace Gaudi
     };
 
     DECLARE_COMPONENT( CountSelectedTracks )
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi

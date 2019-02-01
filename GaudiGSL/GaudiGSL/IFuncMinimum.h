@@ -12,9 +12,8 @@ namespace Genfun /// CLHEP
 {
   class AbsFunction;
   class Argument;
-}
-namespace CLHEP
-{
+} // namespace Genfun
+namespace CLHEP {
   class HepSymMatrix; /// CLHEP
 }
 

@@ -7,8 +7,7 @@
 
 DECLARE_COMPONENT( ParentAlg )
 
-StatusCode ParentAlg::initialize()
-{
+StatusCode ParentAlg::initialize() {
   info() << "creating sub-algorithms...." << endmsg;
 
   auto sc = createSubAlgorithm( "SubAlg", "SubAlg1", m_subalg1 );
@@ -27,20 +26,16 @@ StatusCode ParentAlg::initialize()
   return Sequence::initialize();
 }
 
-StatusCode ParentAlg::execute( const EventContext& ctx ) const
-{
+StatusCode ParentAlg::execute( const EventContext& ctx ) const {
   info() << "executing...." << endmsg;
 
   for ( auto alg : ( *subAlgorithms() ) ) {
-    if ( !alg->sysExecute( ctx ) ) {
-      error() << "Error executing Sub-Algorithm" << alg->name() << endmsg;
-    }
+    if ( !alg->sysExecute( ctx ) ) { error() << "Error executing Sub-Algorithm" << alg->name() << endmsg; }
   }
   return StatusCode::SUCCESS;
 }
 
-StatusCode ParentAlg::finalize()
-{
+StatusCode ParentAlg::finalize() {
   info() << "finalizing...." << endmsg;
   return Sequence::finalize();
 }

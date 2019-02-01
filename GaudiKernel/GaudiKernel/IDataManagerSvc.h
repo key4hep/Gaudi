@@ -127,8 +127,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @return                     Status code indicating success or failure.
   */
   template <typename F, typename = std::enable_if_t<!std::is_convertible<F, IDataStoreAgent*>::value>>
-  StatusCode traverseSubTree( boost::string_ref sub_path, F&& f )
-  {
+  StatusCode traverseSubTree( boost::string_ref sub_path, F&& f ) {
     auto agent = makeDataStoreAgent( std::forward<F>( f ) );
     return traverseSubTree( sub_path, &agent );
   }
@@ -149,8 +148,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @return                     Status code indicating success or failure
   */
   template <typename F, typename = std::enable_if_t<!std::is_convertible<F, IDataStoreAgent*>::value>>
-  StatusCode traverseSubTree( DataObject* pObject, F&& f )
-  {
+  StatusCode traverseSubTree( DataObject* pObject, F&& f ) {
     auto agent = makeDataStoreAgent( std::forward<F>( f ) );
     return traverseSubTree( pObject, &agent );
   }
@@ -166,8 +164,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @return     Status code indicating success or failure
   */
   template <typename F, typename = std::enable_if_t<!std::is_convertible<F, IDataStoreAgent*>::value>>
-  StatusCode traverseTree( F&& f )
-  {
+  StatusCode traverseTree( F&& f ) {
     auto agent = makeDataStoreAgent( std::forward<F>( f ) );
     return traverseTree( &agent );
   }
@@ -205,8 +202,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      pAddress   [IN] Pointer to the object to be connected.
       @return                     Status code indicating success or failure.
   */
-  StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress )
-  {
+  StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) {
     return registerAddress( parentObj ? parentObj->registry() : nullptr, objectPath, pAddress );
   }
 
@@ -235,8 +231,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      objPath  [IN] Path name of the object relative to the parent.
       @return                   Status code indicating success or failure.
   */
-  StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath )
-  {
+  StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath ) {
     return unregisterAddress( pParent ? pParent->registry() : nullptr, objPath );
   }
 

@@ -1,15 +1,13 @@
 #include "GaudiKernel/IPartitionControl.h"
 #include "GaudiKernel/StatusCode.h"
 
-namespace
-{
+namespace {
   struct IPartitionControlCategory : StatusCode::Category {
     const char* name() const override { return "IPartitionControl"; }
 
     bool isRecoverable( StatusCode::code_t ) const override { return false; }
 
-    std::string message( StatusCode::code_t code ) const override
-    {
+    std::string message( StatusCode::code_t code ) const override {
       switch ( static_cast<IPartitionControl::Status>( code ) ) {
       case IPartitionControl::Status::PARTITION_NOT_PRESENT:
         return "PARTITION_NOT_PRESENT";
@@ -22,6 +20,6 @@ namespace
       }
     }
   };
-}
+} // namespace
 
 STATUSCODE_ENUM_IMPL( IPartitionControl::Status, IPartitionControlCategory )

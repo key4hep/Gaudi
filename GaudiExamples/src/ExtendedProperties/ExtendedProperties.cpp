@@ -26,7 +26,7 @@
 
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
-#pragma warning( disable : 177 )
+#  pragma warning( disable : 177 )
 #endif
 
 /** @file
@@ -45,13 +45,11 @@
  *  @date  2006-03-21
  */
 
-class ExtendedProperties : public GaudiAlgorithm
-{
+class ExtendedProperties : public GaudiAlgorithm {
 public:
   StatusCode execute() override;
 
-  ExtendedProperties( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc )
-  {
+  ExtendedProperties( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {
     setProperty( "PropertiesPrint", "true" ).ignore();
 
     m_20["key"] = "value";
@@ -62,8 +60,8 @@ private:
   Gaudi::Property<std::pair<double, double>> m_1{this, "PairDD"};
 
   Gaudi::Property<std::vector<std::pair<double, double>>> m_2{this, "VectorOfPairsDD"};
-  Gaudi::Property<std::vector<std::vector<std::string>>> m_3{this, "VectorOfVectorsString"};
-  Gaudi::Property<std::vector<std::vector<double>>>      m_4{this, "VectorOfVectorsDouble"};
+  Gaudi::Property<std::vector<std::vector<std::string>>>  m_3{this, "VectorOfVectorsString"};
+  Gaudi::Property<std::vector<std::vector<double>>>       m_4{this, "VectorOfVectorsDouble"};
 
   Gaudi::Property<std::map<int, double>>                           m_5{this, "MapIntDouble"};
   Gaudi::Property<std::map<std::string, std::string>>              m_6{this, "MapStringString"};
@@ -82,7 +80,7 @@ private:
   Gaudi::Property<std::map<unsigned int, std::string>> m_16{this, "MapUIntString"};
 
   Gaudi::Property<std::map<std::string, std::string>> m_20{this, "EmptyMap"};
-  Gaudi::Property<std::vector<int>> m_21{this, "EmptyVector"};
+  Gaudi::Property<std::vector<int>>                   m_21{this, "EmptyVector"};
 
   Gaudi::Property<std::tuple<std::string, int, double>> m_22{this, "TupleStringIntDouble"};
   // std::array must be explicitly initialized
@@ -95,11 +93,9 @@ private:
 // ============================================================================
 DECLARE_COMPONENT( ExtendedProperties )
 // ============================================================================
-namespace
-{
+namespace {
   template <class TYPE>
-  inline SimplePropertyRef<TYPE> _prop( TYPE& value )
-  {
+  inline SimplePropertyRef<TYPE> _prop( TYPE& value ) {
     // construct a readable name
     std::string            name = System::typeinfoName( typeid( value ) );
     std::string::size_type ipos = name.find( "std::" );
@@ -127,15 +123,9 @@ namespace
       std::string::size_type ip2 = ipos + 11;
       int                    ip3 = 1;
       for ( ; ip2 < name.size(); ++ip2 ) {
-        if ( '<' == name[ip2] ) {
-          ip3 += 1;
-        }
-        if ( '>' == name[ip2] ) {
-          ip3 -= 1;
-        }
-        if ( 0 == ip3 ) {
-          break;
-        }
+        if ( '<' == name[ip2] ) { ip3 += 1; }
+        if ( '>' == name[ip2] ) { ip3 -= 1; }
+        if ( 0 == ip3 ) { break; }
       }
       name.erase( ipos, ip2 + 1 - ipos );
       ipos = name.find( ",allocator<" );
@@ -146,15 +136,9 @@ namespace
         std::string::size_type ip2 = ipos + 6;
         int                    ip3 = 1;
         for ( ; ip2 < name.size(); ++ip2 ) {
-          if ( '<' == name[ip2] ) {
-            ip3 += 1;
-          }
-          if ( '>' == name[ip2] ) {
-            ip3 -= 1;
-          }
-          if ( 0 == ip3 ) {
-            break;
-          }
+          if ( '<' == name[ip2] ) { ip3 += 1; }
+          if ( '>' == name[ip2] ) { ip3 -= 1; }
+          if ( 0 == ip3 ) { break; }
         }
         name.erase( ipos, ip2 + 1 - ipos );
         ipos = name.find( ",less<" );
@@ -167,10 +151,9 @@ namespace
     }
     return SimplePropertyRef<TYPE>( name, value );
   }
-}
+} // namespace
 // ============================================================================
-StatusCode ExtendedProperties::execute()
-{
+StatusCode ExtendedProperties::execute() {
   always() << " My Properties : " << endmsg;
 
   always() << " \t" << m_1 << endmsg;

@@ -255,8 +255,8 @@ class DotVisitor(object):
             elif isinstance(visitee, seq):
                 entry = '%s [label="SEQ", shape=circle]' % dot_id
             else:
-                entry = '%s [label="%s", shape=circle]' % (
-                    dot_id, type(visitee))
+                entry = '%s [label="%s", shape=circle]' % (dot_id,
+                                                           type(visitee))
             self.nodes.append(entry)
             if len(self.stack) != 0:
                 mother = self.collapse_identical_ancestors(

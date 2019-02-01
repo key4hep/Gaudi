@@ -14,31 +14,26 @@
 // ===========================================================================
 #include "SvcCatalog.h"
 // ===========================================================================
-namespace
-{
+namespace {
   constexpr struct select1st_t {
     template <typename S, typename T>
-    const S& operator()( const std::pair<S, T>& p ) const
-    {
+    const S& operator()( const std::pair<S, T>& p ) const {
       return p.first;
     }
     template <typename S, typename T>
-    S& operator()( std::pair<S, T>& p ) const
-    {
+    S& operator()( std::pair<S, T>& p ) const {
       return p.first;
     }
   } select1st{};
-}
+} // namespace
 // ===========================================================================
-SvcCatalog::~SvcCatalog()
-{
+SvcCatalog::~SvcCatalog() {
   for ( const auto& cur : m_catalog ) {
     for ( auto& prop : cur.second ) delete prop;
   }
 }
 // ============================================================================
-StatusCode SvcCatalog::addProperty( const std::string& client, const Gaudi::Details::PropertyBase* property )
-{
+StatusCode SvcCatalog::addProperty( const std::string& client, const Gaudi::Details::PropertyBase* property ) {
   auto props = findProperties( client );
   if ( props ) {
     removeProperty( client, property->name() ).ignore();
@@ -49,8 +44,7 @@ StatusCode SvcCatalog::addProperty( const std::string& client, const Gaudi::Deta
   return StatusCode::SUCCESS;
 }
 // ============================================================================
-StatusCode SvcCatalog::removeProperty( const std::string& client, const std::string& name )
-{
+StatusCode SvcCatalog::removeProperty( const std::string& client, const std::string& name ) {
   auto props = findProperties( client );
   if ( props ) {
     auto res = findProperty( *props, name );
@@ -62,34 +56,29 @@ StatusCode SvcCatalog::removeProperty( const std::string& client, const std::str
   return StatusCode::SUCCESS;
 }
 // ============================================================================
-const SvcCatalog::PropertiesT* SvcCatalog::getProperties( const std::string& client ) const
-{
+const SvcCatalog::PropertiesT* SvcCatalog::getProperties( const std::string& client ) const {
   return findProperties( client );
 }
 // ============================================================================
-std::vector<std::string> SvcCatalog::getClients() const
-{
+std::vector<std::string> SvcCatalog::getClients() const {
   std::vector<std::string> result;
   result.reserve( m_catalog.size() );
   std::transform( std::begin( m_catalog ), std::end( m_catalog ), std::back_inserter( result ), select1st );
   return result;
 }
 // ============================================================================
-const SvcCatalog::PropertiesT* SvcCatalog::findProperties( const std::string& client ) const
-{
+const SvcCatalog::PropertiesT* SvcCatalog::findProperties( const std::string& client ) const {
   auto result = m_catalog.find( client );
   return ( result != m_catalog.end() ) ? &result->second : nullptr;
 }
 // ============================================================================
-SvcCatalog::PropertiesT* SvcCatalog::findProperties( const std::string& client )
-{
+SvcCatalog::PropertiesT* SvcCatalog::findProperties( const std::string& client ) {
   auto result = m_catalog.find( client );
   return ( result != m_catalog.end() ) ? &result->second : nullptr;
 }
 // ============================================================================
 std::pair<bool, SvcCatalog::PropertiesT::const_iterator> SvcCatalog::findProperty( const SvcCatalog::PropertiesT& props,
-                                                                                   const std::string& name ) const
-{
+                                                                                   const std::string& name ) const {
   auto p = std::find_if( std::begin( props ), std::end( props ), [&]( const Gaudi::Details::PropertyBase* prop ) {
     return boost::iequals( name, prop->name() );
   } );
@@ -97,16 +86,14 @@ std::pair<bool, SvcCatalog::PropertiesT::const_iterator> SvcCatalog::findPropert
 }
 // ============================================================================
 std::pair<bool, SvcCatalog::PropertiesT::iterator> SvcCatalog::findProperty( SvcCatalog::PropertiesT& props,
-                                                                             const std::string& name )
-{
+                                                                             const std::string&       name ) {
   auto p = std::find_if( std::begin( props ), std::end( props ), [&]( const Gaudi::Details::PropertyBase* prop ) {
     return boost::iequals( name, prop->name() );
   } );
   return {p != std::end( props ), p};
 }
 // ============================================================================
-std::ostream& SvcCatalog::fillStream( std::ostream& o ) const
-{
+std::ostream& SvcCatalog::fillStream( std::ostream& o ) const {
   // loop over the clients:
   for ( const auto& iclient : m_catalog ) {
     o << "Client '" << iclient.first << "'" << std::endl;
@@ -117,14 +104,12 @@ std::ostream& SvcCatalog::fillStream( std::ostream& o ) const
   //
   return o; // RETURN
 }
-const Gaudi::Details::PropertyBase* SvcCatalog::getProperty( const std::string& client, const std::string& name ) const
-{
+const Gaudi::Details::PropertyBase* SvcCatalog::getProperty( const std::string& client,
+                                                             const std::string& name ) const {
   auto props = findProperties( client );
   if ( props ) {
     const auto res = findProperty( *props, name );
-    if ( res.first ) {
-      return *res.second;
-    }
+    if ( res.first ) { return *res.second; }
   }
   return nullptr;
 }

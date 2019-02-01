@@ -16,8 +16,7 @@
  *  @date 2007-03-08
  */
 // ============================================================================
-class ExceptionSvc : public extends<Service, IExceptionSvc>
-{
+class ExceptionSvc : public extends<Service, IExceptionSvc> {
 public:
   /// Handle caught GaudiExceptions
   StatusCode handle( const INamedInterface& o, const GaudiException& e ) const override; ///< Handle caught exceptions
@@ -48,7 +47,7 @@ private:
   enum Policy { ALL, NONE };
   enum ReturnState { SUCCESS, FAILURE, RECOVERABLE, RETHROW, DEFAULT };
 
-  Policy m_mode_exc = ALL, m_mode_err = NONE;
+  Policy                             m_mode_exc = ALL, m_mode_err = NONE;
   std::map<std::string, ReturnState> m_retCodesExc, m_retCodesErr;
 
   Gaudi::Property<std::string> m_mode_exc_s{this, "Catch", "ALL"};
@@ -57,6 +56,3 @@ private:
 
 // ============================================================================
 #endif // GAUDISVC_EXCEPTIONSVC_H
-// ============================================================================
-// The END
-// ============================================================================

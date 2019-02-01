@@ -13,13 +13,11 @@
 
 DECLARE_COMPONENT( HiveDataBrokerSvc )
 
-namespace
-{
+namespace {
   struct AlgorithmRepr {
     const Gaudi::Algorithm& parent;
 
-    friend std::ostream& operator<<( std::ostream& s, const AlgorithmRepr& a )
-    {
+    friend std::ostream& operator<<( std::ostream& s, const AlgorithmRepr& a ) {
       std::string typ = System::typeinfoName( typeid( a.parent ) );
       s << typ;
       if ( a.parent.name() != typ ) s << "/" << a.parent.name();
@@ -33,8 +31,7 @@ namespace
 
   // Sort a DataObjIDColl in a well-defined, reproducible manner.
   // Used for making debugging dumps.
-  std::vector<const DataObjID*> sortedDataObjIDColl( const DataObjIDColl& coll )
-  {
+  std::vector<const DataObjID*> sortedDataObjIDColl( const DataObjIDColl& coll ) {
     std::vector<const DataObjID*> v;
     v.reserve( coll.size() );
     for ( const DataObjID& id : coll ) v.push_back( &id );
@@ -42,17 +39,15 @@ namespace
     return v;
   }
 
-  SmartIF<IAlgorithm> createAlgorithm( IAlgManager& am, const std::string& type, const std::string& name )
-  {
+  SmartIF<IAlgorithm> createAlgorithm( IAlgManager& am, const std::string& type, const std::string& name ) {
     // Maybe modify the AppMgr interface to return Algorithm* ??
     IAlgorithm* tmp;
     StatusCode  sc = am.createAlgorithm( type, name, tmp );
     return {sc.isSuccess() ? dynamic_cast<Gaudi::Algorithm*>( tmp ) : nullptr};
   }
-}
+} // namespace
 
-StatusCode HiveDataBrokerSvc::initialize()
-{
+StatusCode HiveDataBrokerSvc::initialize() {
   auto sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
   // populate m_algorithms
@@ -69,8 +64,9 @@ StatusCode HiveDataBrokerSvc::initialize()
   if ( msgLevel( MSG::DEBUG ) ) {
     MsgStream& msg = debug();
     msg << "Available DataProducers: ";
-    GaudiUtils::details::ostream_joiner( msg, m_algorithms, ", ", []( auto& os, const AlgEntry& e ) -> decltype(
-                                                                      auto ) { return os << AlgorithmRepr{*e.alg}; } );
+    GaudiUtils::details::ostream_joiner(
+        msg, m_algorithms, ", ",
+        []( auto& os, const AlgEntry& e ) -> decltype( auto ) { return os << AlgorithmRepr{*e.alg}; } );
     msg << endmsg;
   }
 
@@ -79,8 +75,7 @@ StatusCode HiveDataBrokerSvc::initialize()
   return sc;
 }
 
-StatusCode HiveDataBrokerSvc::start()
-{
+StatusCode HiveDataBrokerSvc::start() {
 
   StatusCode ss = Service::start();
   if ( !ss.isSuccess() ) return ss;
@@ -104,8 +99,7 @@ StatusCode HiveDataBrokerSvc::start()
   return ss;
 }
 
-StatusCode HiveDataBrokerSvc::stop()
-{
+StatusCode HiveDataBrokerSvc::stop() {
   StatusCode ss = Service::stop();
   if ( !ss.isSuccess() ) return ss;
 
@@ -128,8 +122,7 @@ StatusCode HiveDataBrokerSvc::stop()
   return ss;
 }
 
-StatusCode HiveDataBrokerSvc::finalize()
-{
+StatusCode HiveDataBrokerSvc::finalize() {
   ranges::for_each( m_algorithms | ranges::view::transform( &AlgEntry::alg ),
                     []( Gaudi::Algorithm* alg ) { alg->sysFinalize(); } );
   m_algorithms.clear();
@@ -138,8 +131,7 @@ StatusCode HiveDataBrokerSvc::finalize()
 
 // populate m_algorithms
 std::vector<HiveDataBrokerSvc::AlgEntry>
-HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const
-{
+HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const {
   std::vector<AlgEntry> algorithms;
 
   //= Get the Application manager, to see if algorithm exist
@@ -177,18 +169,13 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
 }
 
 std::map<DataObjID, HiveDataBrokerSvc::AlgEntry*>
-HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
-{
+HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "Data Dependencies for Algorithms:";
     for ( const auto& entry : m_algorithms ) {
       debug() << "\n " << entry.alg->name() << " :";
-      for ( const auto& id : entry.alg->inputDataObjs() ) {
-        debug() << "\n    o INPUT  " << id.key();
-      }
-      for ( const auto& id : entry.alg->outputDataObjs() ) {
-        debug() << "\n    o OUTPUT " << id.key();
-      }
+      for ( const auto& id : entry.alg->inputDataObjs() ) { debug() << "\n    o INPUT  " << id.key(); }
+      for ( const auto& id : entry.alg->outputDataObjs() ) { debug() << "\n    o OUTPUT " << id.key(); }
     }
     debug() << endmsg;
   }
@@ -197,9 +184,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
   std::map<DataObjID, AlgEntry*> producers;
   for ( AlgEntry& alg : algorithms ) {
     const auto& output = alg.alg->outputDataObjs();
-    if ( output.empty() ) {
-      continue;
-    }
+    if ( output.empty() ) { continue; }
     for ( auto id : output ) {
       if ( id.key().find( ":" ) != std::string::npos ) {
         error() << " in Alg " << AlgorithmRepr{*alg.alg} << " alternatives are NOT allowed for outputs! id: " << id
@@ -261,8 +246,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const
 
 std::vector<Gaudi::Algorithm*>
 HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            requested,
-                                          const std::vector<std::string>& stoppers ) const
-{
+                                          const std::vector<std::string>& stoppers ) const {
   std::vector<Gaudi::Algorithm*> result;
 
   std::vector<const AlgEntry*> deps;
@@ -315,8 +299,7 @@ HiveDataBrokerSvc::algorithmsRequiredFor( const DataObjIDColl&            reques
 
 std::vector<Gaudi::Algorithm*>
 HiveDataBrokerSvc::algorithmsRequiredFor( const Gaudi::Utils::TypeNameString& requested,
-                                          const std::vector<std::string>&     stoppers ) const
-{
+                                          const std::vector<std::string>&     stoppers ) const {
   std::vector<Gaudi::Algorithm*> result;
 
   auto alg = std::find_if( begin( m_cfnodes ), end( m_cfnodes ),

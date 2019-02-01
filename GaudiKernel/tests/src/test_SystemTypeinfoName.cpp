@@ -11,16 +11,13 @@
 #include "GaudiKernel/System.h"
 
 /// Primitive test class used in the tests
-class TestClass
-{
-};
+class TestClass {};
 
 /// Helper macro testing the return value of System::typeinfoName
 #define CHECK_TYPE( TYPE ) BOOST_CHECK( System::typeinfoName( typeid( TYPE ) ) == #TYPE )
 
 /// Test some simple basic types
-BOOST_AUTO_TEST_CASE( simple_types )
-{
+BOOST_AUTO_TEST_CASE( simple_types ) {
   CHECK_TYPE( int );
   CHECK_TYPE( std::string );
   CHECK_TYPE( TestClass );
@@ -31,13 +28,10 @@ BOOST_AUTO_TEST_CASE( simple_types )
 
 /// Templated test class used in the tests
 template <class T>
-class TestContainer
-{
-};
+class TestContainer {};
 
 /// Test some more complex, template types
-BOOST_AUTO_TEST_CASE( template_types )
-{
+BOOST_AUTO_TEST_CASE( template_types ) {
   CHECK_TYPE( TestContainer<int> );
   CHECK_TYPE( TestContainer<TestClass> );
   CHECK_TYPE( TestContainer<std::string> );

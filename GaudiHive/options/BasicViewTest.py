@@ -1,5 +1,4 @@
 #!/usr/bin/env gaudirun.py
-
 '''
 A test for basic functionality of sub-event scheduling.
 Algorithms A2 and A3 should run twice per event, in sub-event contexts.
@@ -15,8 +14,8 @@ Four instances of ViewTester are used as follows:
 '''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher, GaudiSequencer, Test__ViewTester)
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -79,24 +78,24 @@ for algo in [a1, a2, a3, a4]:
     algo.Cardinality = cardinality
     algo.OutputLevel = INFO
 
-viewNode = GaudiSequencer("viewNode",
-                          Members=[a2, a3],
-                          Sequential=False,
-                          OutputLevel=INFO)
+viewNode = GaudiSequencer(
+    "viewNode", Members=[a2, a3], Sequential=False, OutputLevel=INFO)
 
-createViewSeq = GaudiSequencer("createViewSeq",
-                               Members=[a1, viewNode, a4],
-                               Sequential=True,
-                               OutputLevel=INFO)
+createViewSeq = GaudiSequencer(
+    "createViewSeq",
+    Members=[a1, viewNode, a4],
+    Sequential=True,
+    OutputLevel=INFO)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[createViewSeq],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[createViewSeq],
+    MessageSvcType="InertMessageSvc")
 
 # -------------------------------------------------------------------------------

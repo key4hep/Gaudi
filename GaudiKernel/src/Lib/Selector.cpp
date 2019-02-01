@@ -20,8 +20,7 @@
 StatusCode NTuple::Selector::initialize( NTuple::Tuple* /* nt */ ) { return StatusCode::SUCCESS; }
 
 /// Overloaded callback from SelectStatement
-bool NTuple::Selector::operator()( void* nt )
-{
+bool NTuple::Selector::operator()( void* nt ) {
   DataObject* p      = static_cast<DataObject*>( nt );
   bool        result = false;
   try {
@@ -31,12 +30,9 @@ bool NTuple::Selector::operator()( void* nt )
         m_status    = initialize( tuple );
         m_firstCall = false;
       }
-      if ( m_status.isSuccess() ) {
-        result = this->operator()( tuple );
-      }
+      if ( m_status.isSuccess() ) { result = this->operator()( tuple ); }
     }
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return result;
 }
 

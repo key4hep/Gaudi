@@ -39,6 +39,7 @@ class TupleEx(TupleAlgo):
     """
     Simple algorithm which implicitely book&fill N-Tuples
     """
+
     # standard constructor
 
     def __init__(self, name='TupleEx', **args):
@@ -86,12 +87,14 @@ def configure(gaudi=None):
 
     gaudi.config()
 
-    gaudi.DLLs = ['GaudiAlg', 'RootHistCnv', ]
+    gaudi.DLLs = [
+        'GaudiAlg',
+        'RootHistCnv',
+    ]
 
     alg = TupleEx(
         # configure the property
-        NTupleLUN='MYLUN'
-    )
+        NTupleLUN='MYLUN')
 
     gaudi.setAlgorithms([alg])
 

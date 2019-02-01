@@ -11,8 +11,7 @@ class AlgResourcePool;
 class AlgExecState;
 class EventContext;
 
-namespace Gaudi
-{
+namespace Gaudi {
   class StringKey;
 }
 
@@ -26,8 +25,7 @@ namespace Gaudi
     @author D.Quarrie
     @author Marco Clemencic
 */
-class GAUDI_API IAlgorithm : virtual public extend_interfaces<INamedInterface, IStateful>
-{
+class GAUDI_API IAlgorithm : virtual public extend_interfaces<INamedInterface, IStateful> {
 public:
   friend AlgResourcePool;
 
@@ -133,10 +131,10 @@ public:
   virtual StatusCode sysEndRun() = 0;
 
   /** Algorithm begin run. This method is called at the beginning of the event loop.
-  */
+   */
   virtual StatusCode beginRun() = 0;
   /** Algorithm end run. This method is called at the end of the event loop.
-  */
+   */
   virtual StatusCode endRun() = 0;
 
   /// reference to AlgExecState of Alg

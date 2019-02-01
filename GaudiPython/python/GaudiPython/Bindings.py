@@ -1,18 +1,18 @@
 # File: GaudiPython/Bindings.py
 # Author: Pere Mato (pere.mato@cern.ch)
-
 """ GaudiPython.Bindings module.
     This module provides the basic bindings of the main Gaudi
     components to Python. It is itself based on the ROOT cppyy
     Python extension module.
 """
 
-__all__ = ['gbl', 'InterfaceCast', 'Interface', 'PropertyEntry',
-           'AppMgr', 'PyAlgorithm', 'CallbackStreamBuf',
-           'iAlgorithm', 'iDataSvc', 'iHistogramSvc', 'iNTupleSvc', 'iService', 'iAlgTool', 'Helper',
-           'SUCCESS', 'FAILURE', 'toArray',
-           'ROOT', 'makeNullPointer', 'setOwnership',
-           'getClass', 'loaddict', 'deprecation']
+__all__ = [
+    'gbl', 'InterfaceCast', 'Interface', 'PropertyEntry', 'AppMgr',
+    'PyAlgorithm', 'CallbackStreamBuf', 'iAlgorithm', 'iDataSvc',
+    'iHistogramSvc', 'iNTupleSvc', 'iService', 'iAlgTool', 'Helper', 'SUCCESS',
+    'FAILURE', 'toArray', 'ROOT', 'makeNullPointer', 'setOwnership',
+    'getClass', 'loaddict', 'deprecation'
+]
 
 from GaudiKernel import ROOT6WorkAroundEnabled
 
@@ -73,10 +73,13 @@ for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
 if hasattr(Helper, "toArray"):
     # This is not backward compatible, but allows to use the same signature
     # with all the versions of ROOT.
-    def toArray(typ): return getattr(Helper, "toArray")
+    def toArray(typ):
+        return getattr(Helper, "toArray")
 else:
     # forward to the actual implementation of GaudiPython::Helper::toArray<T>
-    def toArray(typ): return getattr(Helper, "toArray<%s>" % typ)
+    def toArray(typ):
+        return getattr(Helper, "toArray<%s>" % typ)
+
 
 # ----Convenient accessors to PyROOT functionality ----------------------------
 ROOT = cppyy.libPyROOT
@@ -86,6 +89,7 @@ setOwnership = cppyy.libPyROOT.SetOwnership
 
 def deprecation(message):
     warnings.warn('GaudiPython: ' + message, DeprecationWarning, stacklevel=3)
+
 
 # ----InterfaceCast class -----------------------------------------------------
 
@@ -112,7 +116,10 @@ class InterfaceCast(object):
                 import traceback
                 traceback.print_stack()
         return None
+
     cast = __call__
+
+
 # ---Interface class (for backward compatibility)------------------------------
 
 
@@ -123,6 +130,7 @@ class Interface(InterfaceCast):
 
     def cast(self, obj):
         return self(obj)
+
 
 # ----load dictionary function using Gaudi function----------------------------
 
@@ -136,6 +144,7 @@ def loaddict(dict):
             cppyy.loadDict(dict)
         except:
             raise ImportError, 'Error loading dictionary library'
+
 
 # ---get a class (by loading modules if needed)--------------------------------
 
@@ -167,6 +176,7 @@ def getClass(name, libs=[]):
     # return None ( or raise exception? I do not know...  )
     return None
 
+
 # ----PropertyEntry class------------------------------------------------------
 
 
@@ -178,9 +188,9 @@ class PropertyEntry(object):
         self.__doc__ = " --- Property type is " + self.ptype()
 
         if issubclass(type(prop), GaudiHandleProperty):
-            self._value = prop.value()   # do nothing for ATLAS' handles
+            self._value = prop.value()  # do nothing for ATLAS' handles
         elif issubclass(type(prop), GaudiHandleArrayProperty):
-            self._value = prop.value()   # do nothing for ATLAS' handles
+            self._value = prop.value()  # do nothing for ATLAS' handles
         else:
             # for all other types try to extract the native python type
             try:
@@ -212,6 +222,7 @@ class PropertyEntry(object):
 
     def hasDoc(self):
         return len(self.__doc__) > 0 and self.__doc__ != 'none'
+
 
 # ----iProperty class----------------------------------------------------------
 
@@ -262,12 +273,12 @@ class iProperty(object):
             prop = ip.getProperty(name)
 
             if ROOT6WorkAroundEnabled('ROOT-7201'):
-                canSetValue = (hasattr(prop, 'value') and
-                               'const&[' not in prop.value.func_doc and
-                               type(value) == type(prop.value()))
+                canSetValue = (hasattr(prop, 'value')
+                               and 'const&[' not in prop.value.func_doc
+                               and type(value) == type(prop.value()))
             else:
-                canSetValue = (hasattr(prop, 'value') and
-                               type(value) == type(prop.value()))
+                canSetValue = (hasattr(prop, 'value')
+                               and type(value) == type(prop.value()))
 
             if canSetValue:
                 if not prop.setValue(value):
@@ -356,6 +367,7 @@ class iProperty(object):
     def name(self):
         return self._name
 
+
 # ----iService class-----------------------------------------------------------
 
 
@@ -374,27 +386,30 @@ class iService(iProperty):
         if isvc:
             iService.__init__(self, self._name, isvc)
 
-    def initialize(self): return self.__call_interface_method__(
-        "_isvc", "initialize")
+    def initialize(self):
+        return self.__call_interface_method__("_isvc", "initialize")
 
-    def start(self): return self.__call_interface_method__("_isvc", "start")
+    def start(self):
+        return self.__call_interface_method__("_isvc", "start")
 
-    def stop(self): return self.__call_interface_method__("_isvc", "stop")
+    def stop(self):
+        return self.__call_interface_method__("_isvc", "stop")
 
-    def finalize(self): return self.__call_interface_method__(
-        "_isvc", "finalize")
+    def finalize(self):
+        return self.__call_interface_method__("_isvc", "finalize")
 
-    def reinitialize(self): return self.__call_interface_method__(
-        "_isvc", "reinitialize")
+    def reinitialize(self):
+        return self.__call_interface_method__("_isvc", "reinitialize")
 
-    def restart(self): return self.__call_interface_method__(
-        "_isvc", "restart")
+    def restart(self):
+        return self.__call_interface_method__("_isvc", "restart")
 
     def isValid(self):
         if self._isvc:
             return True
         else:
             return False
+
 
 # ----iAlgorithm class---------------------------------------------------------
 
@@ -410,50 +425,53 @@ class iAlgorithm(iProperty):
             self.__dict__['_ialg'] = None
 
     def retrieveInterface(self):
-        ialg = Helper.algorithm(InterfaceCast(
-            gbl.IAlgManager)(self._svcloc), self._name)
+        ialg = Helper.algorithm(
+            InterfaceCast(gbl.IAlgManager)(self._svcloc), self._name)
         if ialg:
             iAlgorithm.__init__(self, self._name, ialg)
 
-    def initialize(self): return self.__call_interface_method__(
-        "_ialg", "initialize")
+    def initialize(self):
+        return self.__call_interface_method__("_ialg", "initialize")
 
-    def start(self): return self.__call_interface_method__("_ialg", "start")
+    def start(self):
+        return self.__call_interface_method__("_ialg", "start")
 
-    def execute(self): return self.__call_interface_method__(
-        "_ialg", "execute")
+    def execute(self):
+        return self.__call_interface_method__("_ialg", "execute")
 
-    def stop(self): return self.__call_interface_method__("_ialg", "stop")
+    def stop(self):
+        return self.__call_interface_method__("_ialg", "stop")
 
-    def finalize(self): return self.__call_interface_method__(
-        "_ialg", "finalize")
+    def finalize(self):
+        return self.__call_interface_method__("_ialg", "finalize")
 
-    def reinitialize(self): return self.__call_interface_method__(
-        "_ialg", "reinitialize")
+    def reinitialize(self):
+        return self.__call_interface_method__("_ialg", "reinitialize")
 
-    def restart(self): return self.__call_interface_method__(
-        "_ialg", "restart")
+    def restart(self):
+        return self.__call_interface_method__("_ialg", "restart")
 
-    def sysInitialize(self): return self.__call_interface_method__(
-        "_ialg", "sysInitialize")
+    def sysInitialize(self):
+        return self.__call_interface_method__("_ialg", "sysInitialize")
 
-    def sysStart(self): return self.__call_interface_method__(
-        "_ialg", "sysStart")
+    def sysStart(self):
+        return self.__call_interface_method__("_ialg", "sysStart")
 
-    def sysExecute(self): return self.__call_interface_method__(
-        "_ialg", "sysExecute")
+    def sysExecute(self):
+        return self.__call_interface_method__("_ialg", "sysExecute")
 
-    def sysStop(self): return self.__call_interface_method__(
-        "_ialg", "sysStop")
+    def sysStop(self):
+        return self.__call_interface_method__("_ialg", "sysStop")
 
-    def sysFinalize(self): return self.__call_interface_method__(
-        "_ialg", "sysFinalize")
+    def sysFinalize(self):
+        return self.__call_interface_method__("_ialg", "sysFinalize")
 
-    def sysReinitialize(self): return self.__call_interface_method__(
-        "_ialg", "sysReinitialize")
+    def sysReinitialize(self):
+        return self.__call_interface_method__("_ialg", "sysReinitialize")
 
-    def sysRestart(self): return self.__call_interface_method__(
-        "_ialg", "sysRestart")
+    def sysRestart(self):
+        return self.__call_interface_method__("_ialg", "sysRestart")
+
 
 # ----iAlgTool class-----------------------------------------------------------
 
@@ -475,17 +493,21 @@ class iAlgTool(iProperty):
         if itool:
             iAlgTool.__init__(self, self._name, itool)
 
-    def start(self): return self.__call_interface_method__("_itool", "start")
+    def start(self):
+        return self.__call_interface_method__("_itool", "start")
 
-    def stop(self): return self.__call_interface_method__("_itool", "stop")
+    def stop(self):
+        return self.__call_interface_method__("_itool", "stop")
 
-    def type(self): return self.__call_interface_method__("_itool", "type")
+    def type(self):
+        return self.__call_interface_method__("_itool", "type")
 
     def name(self):
         if self._itool:
             return self._itool.name()
         else:
             return self._name
+
 
 # ----iDataSvc class-----------------------------------------------------------
 
@@ -512,6 +534,7 @@ class iDataSvc(iService):
         if not self._idp:
             return None
         return Helper.dataobject(self._idp, path)
+
     # get object from TES
 
     def findObject(self, path):
@@ -528,8 +551,8 @@ class iDataSvc(iService):
 
         """
         if not self._idp:
-            raise IndexError('C++ service %s does not exist' %
-                             self.__dict__['_name'])
+            raise IndexError(
+                'C++ service %s does not exist' % self.__dict__['_name'])
         return Helper.findobject(self._idp, path)
 
     # get or retrieve object, possible switch-off 'on-demand' actions
@@ -557,26 +580,26 @@ class iDataSvc(iService):
 
         """
         if not self._idp:
-            raise IndexError('C++ service %s does not exist' %
-                             self.__dict__['_name'])
+            raise IndexError(
+                'C++ service %s does not exist' % self.__dict__['_name'])
         return Helper.getobject(self._idp, path, *args)
 
     def __getitem__(self, path):
         if not self._idp:
-            raise IndexError('C++ service %s does not exist' %
-                             self.__dict__['_name'])
+            raise IndexError(
+                'C++ service %s does not exist' % self.__dict__['_name'])
         return Helper.dataobject(self._idp, path)
 
     def __setitem__(self, path, obj):
         if not self._idp:
-            raise IndexError('C++ service %s does not exist' %
-                             self.__dict__['_name'])
+            raise IndexError(
+                'C++ service %s does not exist' % self.__dict__['_name'])
         return self.registerObject(path, obj)
 
     def __delitem__(self, path):
         if not self._idp:
-            raise IndexError('C++ service %s does not exist' %
-                             self.__dict__['_name'])
+            raise IndexError(
+                'C++ service %s does not exist' % self.__dict__['_name'])
         return self.unregisterObject(path)
 
     def leaves(self, node=None):
@@ -642,14 +665,14 @@ class iDataSvc(iService):
 
     def setRoot(self, name, obj):
         if not self._idm:
-            raise IndexError('C++ service %s does not exist' %
-                             self.__dict__['_name'])
+            raise IndexError(
+                'C++ service %s does not exist' % self.__dict__['_name'])
         return self._idm.setRoot(name, obj)
 
     def clearStore(self):
         if not self._idm:
-            raise IndexError('C++ service %s does not exist' %
-                             self.__dict__['_name'])
+            raise IndexError(
+                'C++ service %s does not exist' % self.__dict__['_name'])
         return self._idm.clearStore()
 
 
@@ -738,6 +761,7 @@ class iHistogramSvc(iDataSvc):
         fun = gbl.Gaudi.Utils.Aida2ROOT.aida2root
         return fun(self.getAsAIDA(path))
 
+
 # ----iNTupleSvc class---------------------------------------------------------
 
 
@@ -760,8 +784,9 @@ class iNTupleSvc(iDataSvc):
         import Persistency as prs
         helper = prs.get(typ)
         helper.configure(AppMgr())
-        self.Output = [helper.formatOutput(
-            files[lun], lun=lun) for lun in files]
+        self.Output = [
+            helper.formatOutput(files[lun], lun=lun) for lun in files
+        ]
         if AppMgr().HistogramPersistency == 'NONE':
             AppMgr().HistogramPersistency = "ROOT"
 
@@ -785,12 +810,12 @@ class iToolSvc(iService):
             itool = Helper.tool(self._its, '', name[8:], None, False)
         elif name.count('.') > 1:
             ptool = self._retrieve(name[:name.rfind('.')])
-            itool = Helper.tool(
-                self._its, '', name[name.rfind('.') + 1:], ptool, False)
+            itool = Helper.tool(self._its, '', name[name.rfind('.') + 1:],
+                                ptool, False)
         elif _gaudi:
             prop = _gaudi.property(name[:name.rfind('.')])
-            itool = Helper.tool(
-                self._its, '', name[name.rfind('.') + 1:], prop._ip, False)
+            itool = Helper.tool(self._its, '', name[name.rfind('.') + 1:],
+                                prop._ip, False)
         if quiet:
             self.OutputLevel = sol
         return itool
@@ -811,6 +836,7 @@ class iToolSvc(iService):
         if type(itool) is iAlgTool:
             self._its.releaseTool(itool._itool)
 
+
 # ----iJopOptSvc class---------------------------------------------------------
 
 
@@ -818,6 +844,7 @@ class iJobOptSvc(iService):
     """
     Python-image of C++ class IJobOptionsSvc
     """
+
     # constructor
 
     def __init__(self, name, svc):
@@ -835,7 +862,7 @@ class iJobOptSvc(iService):
         props = self._optsvc.getProperties(component)
         prps = {}
         if not props:
-            return prps              # RETURN
+            return prps  # RETURN
         for p in props:
             prop = p.name().upper()
             try:
@@ -844,7 +871,7 @@ class iJobOptSvc(iService):
                 value = p.value()
             prps[prop] = value
 
-        return prps                               # RETURN
+        return prps  # RETURN
 
     def getProperty(self, component, name):
         """
@@ -855,15 +882,17 @@ class iJobOptSvc(iService):
         """
         # get all properties of the component
         all = self.getProperties(component)
-        return all.get(name.upper(), None)     # RETURN
+        return all.get(name.upper(), None)  # RETURN
+
 
 # ----iEventSelector class-----------------------------------------------------
 
 
 class iEventSelector(iService):
     def __init__(self):
-        iService.__init__(self, 'EventSelector', Helper.service(
-            gbl.Gaudi.svcLocator(), 'EventSelector'))
+        iService.__init__(
+            self, 'EventSelector',
+            Helper.service(gbl.Gaudi.svcLocator(), 'EventSelector'))
         self.__dict__['g'] = AppMgr()
 
     def open(self, stream, typ='Gaudi::RootCnvSvc', **kwargs):
@@ -876,6 +905,7 @@ class iEventSelector(iService):
     def rewind(self):
         # It is not possible to reinitialize EventSelector only
         self.g.service('EventLoopMgr').reinitialize()
+
 
 # ----AppMgr class-------------------------------------------------------------
 
@@ -903,8 +933,12 @@ class AppMgr(iService):
         # Reset the Python global
         _gaudi = None
 
-    def __init__(self, outputlevel=-1, joboptions=None, selfoptions={},
-                 dllname=None, factname=None):
+    def __init__(self,
+                 outputlevel=-1,
+                 joboptions=None,
+                 selfoptions={},
+                 dllname=None,
+                 factname=None):
         global _gaudi
         if _gaudi:
             return
@@ -916,7 +950,9 @@ class AppMgr(iService):
             from GaudiKernel.Proxy.Configurable import expandvars
         except ImportError:
             # pass-through implementation if expandvars is not defined (AthenaCommon)
-            def expandvars(data): return data
+            def expandvars(data):
+                return data
+
         if dllname and factname:
             self.__dict__['_appmgr'] = gbl.Gaudi.createApplicationMgr(
                 dllname, factname)
@@ -926,20 +962,22 @@ class AppMgr(iService):
             self.__dict__['_appmgr'] = gbl.Gaudi.createApplicationMgr()
         self.__dict__['_svcloc'] = gbl.Gaudi.svcLocator()
         self.__dict__['_algmgr'] = InterfaceCast(gbl.IAlgManager)(self._appmgr)
-        self.__dict__['_evtpro'] = InterfaceCast(
-            gbl.IEventProcessor)(self._appmgr)
+        self.__dict__['_evtpro'] = InterfaceCast(gbl.IEventProcessor)(
+            self._appmgr)
         self.__dict__['_svcmgr'] = InterfaceCast(gbl.ISvcManager)(self._appmgr)
         self.__dict__['pyalgorithms'] = []
         iService.__init__(self, 'ApplicationMgr', self._appmgr)
         # ------python specific initialization-------------------------------------
-        if self.FSMState() < Gaudi.StateMachine.CONFIGURED:  # Not yet configured
+        if self.FSMState(
+        ) < Gaudi.StateMachine.CONFIGURED:  # Not yet configured
             self.JobOptionsType = 'NONE'
             if joboptions:
                 from GaudiKernel.ProcessJobOptions import importOptions
                 importOptions(joboptions)
             # Ensure that the ConfigurableUser instances have been applied
             import GaudiKernel.Proxy.Configurable
-            if hasattr(GaudiKernel.Proxy.Configurable, "applyConfigurableUsers"):
+            if hasattr(GaudiKernel.Proxy.Configurable,
+                       "applyConfigurableUsers"):
                 GaudiKernel.Proxy.Configurable.applyConfigurableUsers()
             # This is the default and could be overridden with "selfopts"
             self.OutputLevel = 3
@@ -977,7 +1015,8 @@ class AppMgr(iService):
             for p, v in c.getValuedProperties().items():
                 v = expandvars(v)
                 # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
-                if hasattr(Configurable, "PropertyReference") and type(v) == Configurable.PropertyReference:
+                if hasattr(Configurable, "PropertyReference") and type(
+                        v) == Configurable.PropertyReference:
                     # this is done in "getFullName", but the exception is ignored,
                     # so we do it again to get it
                     v = v.__resolve__()
@@ -1015,16 +1054,21 @@ class AppMgr(iService):
                     orig_register(self.exit)
                     # we do not need to remove out handler from the list because
                     # it can be safely called more than once
-            register.__doc__ = (orig_register.__doc__ +
-                                "\nNote: version hacked by GaudiPython to work " +
-                                "around a problem with the ROOT exit handler")
+
+            register.__doc__ = (
+                orig_register.__doc__ +
+                "\nNote: version hacked by GaudiPython to work " +
+                "around a problem with the ROOT exit handler")
             atexit.register = register
 
-    def state(self): return self._isvc.FSMState()
+    def state(self):
+        return self._isvc.FSMState()
 
-    def FSMState(self): return self._isvc.FSMState()
+    def FSMState(self):
+        return self._isvc.FSMState()
 
-    def targetFSMState(self): return self._isvc.targetFSMState()
+    def targetFSMState(self):
+        return self._isvc.targetFSMState()
 
     def service(self, name, interface=None):
         svc = Helper.service(self._svcloc, name)
@@ -1163,6 +1207,7 @@ class AppMgr(iService):
         """
         Print the sequence of Algorithms.
         """
+
         def printAlgo(algName, appMgr, prefix=' '):
             print prefix + algName
             alg = appMgr.algorithm(algName.split("/")[-1])
@@ -1171,6 +1216,7 @@ class AppMgr(iService):
                 subs = prop["Members"].value()
                 for i in subs:
                     printAlgo(i.strip('"'), appMgr, prefix + "     ")
+
         mp = self.properties()
         prefix = 'ApplicationMgr    SUCCESS '
         print prefix + "****************************** Algorithm Sequence ****************************"
@@ -1203,11 +1249,11 @@ class AppMgr(iService):
                           '" generated by GaudiPython \n\n')
             for opt in options:
                 if type(options) is dict:
-                    tmpfile.write(' \t ' + opt + ' = ' +
-                                  options[opt] + ' ;  // added by GaudiPython \n')
+                    tmpfile.write(' \t ' + opt + ' = ' + options[opt] +
+                                  ' ;  // added by GaudiPython \n')
                 else:
-                    tmpfile.write(
-                        ' \t ' + opt + ' ;  // added by GaudiPython \n')
+                    tmpfile.write(' \t ' + opt +
+                                  ' ;  // added by GaudiPython \n')
             tmpfile.write('/// End of  file "' + tmpfilename +
                           '" generated by GaudiPython \n\n')
             tmpfile.close()
@@ -1245,7 +1291,7 @@ class AppMgr(iService):
                 if 'DLLS' == key or 'EXTSVC' == key:
                     continue
                 self.__setattr__(key, props[key])
-        return SUCCESS                                           # RETURN
+        return SUCCESS  # RETURN
 
     def configure(self):
         return self._appmgr.configure()
@@ -1284,14 +1330,14 @@ class AppMgr(iService):
                 return sc
         # --- Access a number of services ----
         if not hasattr(self, '_perssvc'):
-            self.__dict__['_perssvc'] = self.service(
-                'EventPersistencySvc', 'IAddressCreator')
+            self.__dict__['_perssvc'] = self.service('EventPersistencySvc',
+                                                     'IAddressCreator')
         if not hasattr(self, '_filecat'):
-            self.__dict__['_filecat'] = self.service(
-                'FileCatalog', 'Gaudi::IFileCatalog')
+            self.__dict__['_filecat'] = self.service('FileCatalog',
+                                                     'Gaudi::IFileCatalog')
         if not hasattr(self, '_evtmgr'):
-            self.__dict__['_evtmgr'] = self.service(
-                'EventDataSvc', 'IDataManagerSvc')
+            self.__dict__['_evtmgr'] = self.service('EventDataSvc',
+                                                    'IDataManagerSvc')
         # --- Get FID from PFN and number of events in file
         if pfn.find('PFN:') == 0:
             pfn = pfn[4:]
@@ -1301,13 +1347,13 @@ class AppMgr(iService):
             self._filecat.registerPFN(fid, pfn, '')
         # --- Loop over events
         if type(events) is not list:
-            events = (events,)
+            events = (events, )
         for evt in events:
             # --- Create POOL Address from Generic Address
             gadd = gbl.GenericAddress(0x02, 1, fid, '/Event', 0, evt)
             oadd = makeNullPointer('IOpaqueAddress')
-            self._perssvc.createAddress(
-                gadd.svcType(), gadd.clID(), gadd.par(), gadd.ipar(), oadd)
+            self._perssvc.createAddress(gadd.svcType(), gadd.clID(),
+                                        gadd.par(), gadd.ipar(), oadd)
             # --- Clear TES, set root and run all algorithms
             self._evtmgr.clearStore()
             self._evtmgr.setRoot('/Event', oadd)
@@ -1325,10 +1371,12 @@ class AppMgr(iService):
             if self.FSMState() == Gaudi.StateMachine.CONFIGURED:
                 self._appmgr.terminate()
         return SUCCESS
+
     # Custom destructor to ensure that the application is correctly finalized when exiting from python.
 
     def __del__(self):
         self.exit()
+
     evtSvc = evtsvc
     histSvc = histsvc
     ntupleSvc = ntuplesvc
@@ -1336,6 +1384,7 @@ class AppMgr(iService):
     detSvc = detsvc
     toolSvc = toolsvc
     partSvc = partsvc
+
 
 # -----------------------------------------------------------------------------
 
@@ -1353,6 +1402,7 @@ def _getFIDandEvents(pfn):
     tfile.Close()
     return fid, nevt
 
+
 # -----------------------------------------------------------------------------
 
 
@@ -1363,14 +1413,14 @@ def getComponentProperties(name):
     properties = {}
     if name == 'GaudiCoreSvc':
         if Helper.loadDynamicLib(name) != 1:
-            raise ImportError,  'Error loading component library ' + name
+            raise ImportError, 'Error loading component library ' + name
         factorylist = gbl.FactoryTable.instance().getEntries()
         factories = _copyFactoriesFromList(factorylist)
         g = AppMgr(outputlevel=7)
     else:
         g = AppMgr(outputlevel=7)
         if Helper.loadDynamicLib(name) != 1:
-            raise ImportError,  'Error loading component library ' + name
+            raise ImportError, 'Error loading component library ' + name
         factorylist = gbl.FactoryTable.instance().getEntries()
         factories = _copyFactoriesFromList(factorylist)
     svcloc = gbl.Gaudi.svcLocator()
@@ -1422,7 +1472,7 @@ def _copyFactoriesFromList(factories):
 _CallbackStreamBufBase = gbl.GaudiPython.CallbackStreamBuf
 
 
-class CallbackStreamBuf (_CallbackStreamBufBase):
+class CallbackStreamBuf(_CallbackStreamBufBase):
     def __init__(self, callback):
         _CallbackStreamBufBase.__init__(self, self)
         self.callback = callback
@@ -1439,7 +1489,7 @@ class CallbackStreamBuf (_CallbackStreamBufBase):
 _PyAlgorithm = gbl.GaudiPython.PyAlgorithm
 
 
-class PyAlgorithm (_PyAlgorithm):
+class PyAlgorithm(_PyAlgorithm):
     def __init__(self, name=None):
         if not name:
             name = self.__class__.__name__
@@ -1455,19 +1505,26 @@ class PyAlgorithm (_PyAlgorithm):
         if sc.isFailure():
             pass
 
-    def initialize(self): return 1
+    def initialize(self):
+        return 1
 
-    def start(self): return 1
+    def start(self):
+        return 1
 
-    def execute(self): return 1
+    def execute(self):
+        return 1
 
-    def stop(self): return 1
+    def stop(self):
+        return 1
 
-    def finalize(self): return 1
+    def finalize(self):
+        return 1
 
-    def beginRun(self): return 1
+    def beginRun(self):
+        return 1
 
-    def endRun(self): return 1
+    def endRun(self):
+        return 1
 
 
 # ----Enable tab completion----------------------------------------------------

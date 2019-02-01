@@ -51,8 +51,7 @@
 #include "GaudiKernel/Kernel.h"
 #include <memory>
 
-namespace GaudiUtils
-{
+namespace GaudiUtils {
   /** @class AllocatorPool AllocatorPool.h GaudiKernel/AllocatorPool.h
    *
    *  Allocator pool.
@@ -60,8 +59,7 @@ namespace GaudiUtils
    *
    *  @date 2006-02-14
    */
-  class GAUDI_API AllocatorPool final
-  {
+  class GAUDI_API AllocatorPool final {
   public:
     /// Create a pool of elements of size n
     explicit AllocatorPool( unsigned int n = 0 );
@@ -86,13 +84,12 @@ namespace GaudiUtils
     struct PoolLink final {
       PoolLink* next = nullptr;
     };
-    class PoolChunk final
-    {
+    class PoolChunk final {
     public:
       explicit PoolChunk( unsigned int sz ) : size( sz ), mem{new char[size]} {}
-      const unsigned int               size;
-      std::unique_ptr<char[]>          mem;
-      PoolChunk*                       next = nullptr;
+      const unsigned int      size;
+      std::unique_ptr<char[]> mem;
+      PoolChunk*              next = nullptr;
     };
 
     /// Make pool larger
@@ -112,11 +109,8 @@ namespace GaudiUtils
 // Alloc
 // ************************************************************
 //
-inline void* GaudiUtils::AllocatorPool::Alloc()
-{
-  if ( head == 0 ) {
-    Grow();
-  }
+inline void* GaudiUtils::AllocatorPool::Alloc() {
+  if ( head == 0 ) { Grow(); }
   PoolLink* p = head; // return first element
   head        = p->next;
   return p;
@@ -126,8 +120,7 @@ inline void* GaudiUtils::AllocatorPool::Alloc()
 // Free
 // ************************************************************
 //
-inline void GaudiUtils::AllocatorPool::Free( void* b )
-{
+inline void GaudiUtils::AllocatorPool::Free( void* b ) {
   PoolLink* p = static_cast<PoolLink*>( b );
   p->next     = head; // put b back as first element
   head        = p;
@@ -143,4 +136,3 @@ inline unsigned int GaudiUtils::AllocatorPool::Size() const { return nchunks * c
 // The END
 // ============================================================================
 #endif
-// ============================================================================

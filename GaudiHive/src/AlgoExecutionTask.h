@@ -11,8 +11,7 @@
 // External libs
 #include "tbb/task.h"
 
-class AlgoExecutionTask : public tbb::task
-{
+class AlgoExecutionTask : public tbb::task {
 public:
   AlgoExecutionTask( IAlgorithm* algorithm, const EventContext& ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem,
                      std::function<StatusCode()> promote2ExecutedClosure )

@@ -30,16 +30,12 @@
  */
 // ============================================================================
 
-class TupleAlg2 : public GaudiTupleAlg
-{
+class TupleAlg2 : public GaudiTupleAlg {
 public:
   /// initialize the algorithm
-  StatusCode initialize() override
-  {
+  StatusCode initialize() override {
     StatusCode sc = GaudiTupleAlg::initialize();
-    if ( sc.isFailure() ) {
-      return sc;
-    }
+    if ( sc.isFailure() ) { return sc; }
     // check for random numbers service
     Assert( randSvc() != 0, "Random Service is not available!" );
     //
@@ -72,8 +68,7 @@ DECLARE_COMPONENT( TupleAlg2 )
  *  @see IAlgoruthm
  */
 // ============================================================================
-StatusCode TupleAlg2::execute()
-{
+StatusCode TupleAlg2::execute() {
   /// avoid long names
   using namespace Tuples;
   using namespace TupleExample;

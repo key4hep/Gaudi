@@ -5,8 +5,7 @@
 // System include(s):
 #include <string>
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /// Helper function creating file identifier using the UUID mechanism
   std::string createGuidAsString();

@@ -4,8 +4,7 @@
 // Include files
 // ============================================================================
 
-namespace GaudiMath
-{
+namespace GaudiMath {
   /** @class Integration Integration.h GaudiMath/Integration.h
    *
    *  collection of common types for classes
@@ -14,8 +13,7 @@ namespace GaudiMath
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2003-09-01
    */
-  namespace Integration
-  {
+  namespace Integration {
     /// infinity
     enum Inf { Infinity = 0 };
     /// how to distinguish variable low and variable high limits
@@ -42,4 +40,3 @@ namespace GaudiMath
 // The END
 // ============================================================================
 #endif // GAUDIMATH_INTEGRATION_H
-// ============================================================================

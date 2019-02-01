@@ -1,7 +1,7 @@
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //  TODO: should be removed because come from HepPDT
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
 
 // Include files
@@ -19,8 +19,7 @@
 #include <boost/tokenizer.hpp>
 
 //*************************************************************************//
-StatusCode PartPropSvc::initialize()
-{
+StatusCode PartPropSvc::initialize() {
 
   StatusCode status = Service::initialize();
 
@@ -86,8 +85,7 @@ StatusCode PartPropSvc::initialize()
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode PartPropSvc::finalize()
-{
+StatusCode PartPropSvc::finalize() {
 
   m_pdt.reset();
 
@@ -101,17 +99,14 @@ StatusCode PartPropSvc::finalize()
 
   StatusCode status = Service::finalize();
 
-  if ( status.isSuccess() ) {
-    debug() << "Service finalised successfully" << endmsg;
-  }
+  if ( status.isSuccess() ) { debug() << "Service finalised successfully" << endmsg; }
 
   return status;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-PartPropSvc::inputFunPtr PartPropSvc::parseTableType( const std::string& typ )
-{
+PartPropSvc::inputFunPtr PartPropSvc::parseTableType( const std::string& typ ) {
   static const auto table = {
       std::make_pair( "PDG", &HepPDT::addPDGParticles ),       std::make_pair( "PYTHIA", &HepPDT::addPythiaParticles ),
       std::make_pair( "EVTGEN", &HepPDT::addEvtGenParticles ), std::make_pair( "HERWIG", &HepPDT::addHerwigParticles ),
@@ -127,8 +122,7 @@ PartPropSvc::inputFunPtr PartPropSvc::parseTableType( const std::string& typ )
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode PartPropSvc::createTable()
-{
+StatusCode PartPropSvc::createTable() {
 
   // use a handler for unknown heavy ions
   if ( !m_upid ) {
@@ -159,8 +153,7 @@ StatusCode PartPropSvc::createTable()
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-HepPDT::ParticleDataTable* PartPropSvc::PDT()
-{
+HepPDT::ParticleDataTable* PartPropSvc::PDT() {
 
   if ( !m_pdt ) {
     debug() << "creating ParticleDataTable" << endmsg;
@@ -175,8 +168,7 @@ HepPDT::ParticleDataTable* PartPropSvc::PDT()
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-void PartPropSvc::setUnknownParticleHandler( HepPDT::ProcessUnknownID* puid, const std::string& n )
-{
+void PartPropSvc::setUnknownParticleHandler( HepPDT::ProcessUnknownID* puid, const std::string& n ) {
   if ( m_pdt ) {
     error() << "not setting Unknown Particle Handler \"" << n << "\" as ParticleDataTable already instantiated"
             << endmsg;

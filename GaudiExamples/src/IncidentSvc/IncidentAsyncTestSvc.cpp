@@ -17,11 +17,10 @@ DECLARE_COMPONENT( IncidentAsyncTestSvc )
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
-StatusCode IncidentAsyncTestSvc::initialize()
-{
+StatusCode IncidentAsyncTestSvc::initialize() {
   auto sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
   m_incSvc = service( "IncidentSvc", true );
@@ -34,17 +33,14 @@ StatusCode IncidentAsyncTestSvc::initialize()
     m_incidentNames.setValue( incNames );
   }
   auto& incNames = m_incidentNames.value();
-  for ( auto& i : incNames ) {
-    m_incSvc->addListener( this, i, m_prio );
-  }
+  for ( auto& i : incNames ) { m_incSvc->addListener( this, i, m_prio ); }
   return sc;
 }
 
 StatusCode IncidentAsyncTestSvc::finalize() { return Service::finalize(); }
 
 //=============================================================================
-void IncidentAsyncTestSvc::handle( const Incident& incident )
-{
+void IncidentAsyncTestSvc::handle( const Incident& incident ) {
   if ( incident.type() == IncidentType::BeginEvent ) {
     auto res = m_ctxData.insert(
         std::make_pair( incident.context(), incident.context().evt() * m_eventMultiplier + m_fileOffset ) );
@@ -66,8 +62,7 @@ void IncidentAsyncTestSvc::handle( const Incident& incident )
   info() << " Handling incident '" << incident.type() << "' at ctx=" << incident.context() << endmsg;
 }
 
-void IncidentAsyncTestSvc::getData( uint64_t* data, EventContext* ctx ) const
-{
+void IncidentAsyncTestSvc::getData( uint64_t* data, EventContext* ctx ) const {
   debug() << "Asked for data with context " << *ctx << endmsg;
   if ( ctx ) {
     auto cit = m_ctxData.find( *ctx );

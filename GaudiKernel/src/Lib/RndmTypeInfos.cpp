@@ -7,9 +7,9 @@
 
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
-#pragma warning( disable : 177 )
+#  pragma warning( disable : 177 )
 #elif __clang__
-#pragma clang diagnostic ignored "-Wunused-variable"
+#  pragma clang diagnostic ignored "-Wunused-variable"
 #endif
 
 /**
@@ -22,8 +22,7 @@
  * @author Sebastien Ponce
  */
 
-namespace
-{
+namespace {
   const std::type_info& Param                 = typeid( IRndmGen::Param );
   const std::type_info& GaussInfo             = typeid( Rndm::Gauss );
   const std::type_info& ExponentialInfo       = typeid( Rndm::Exponential );
@@ -39,4 +38,4 @@ namespace
   const std::type_info& BitInfo               = typeid( Rndm::Bit );
   const std::type_info& DefinedPdfInfo        = typeid( Rndm::DefinedPdf );
   const std::type_info& GaussianTailInfo      = typeid( Rndm::GaussianTail );
-}
+} // namespace

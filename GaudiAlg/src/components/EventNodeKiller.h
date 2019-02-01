@@ -14,8 +14,7 @@
  *  @author Marco Cattaneo
  *  @date   2005-07-14
  */
-class EventNodeKiller : public GaudiAlgorithm
-{
+class EventNodeKiller : public GaudiAlgorithm {
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
 

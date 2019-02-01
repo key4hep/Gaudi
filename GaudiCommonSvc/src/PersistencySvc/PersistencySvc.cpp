@@ -47,8 +47,7 @@ enum CnvSvcAction {
   UPDATE_REP_REFS
 };
 
-StatusCode PersistencySvc::makeCall( int typ, IOpaqueAddress*& pAddress, DataObject*& pObject )
-{
+StatusCode PersistencySvc::makeCall( int typ, IOpaqueAddress*& pAddress, DataObject*& pObject ) {
   if ( m_enable ) {
     IConversionSvc* svc = nullptr;
     switch ( typ ) {
@@ -103,56 +102,47 @@ StatusCode PersistencySvc::makeCall( int typ, IOpaqueAddress*& pAddress, DataObj
 }
 
 /// Create the transient representation of an object.
-StatusCode PersistencySvc::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj )
-{
+StatusCode PersistencySvc::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) {
   return makeCall( CREATE_OBJ, pAddr, refpObj );
 }
 
 /// Resolve the references of the created transient object.
-StatusCode PersistencySvc::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode PersistencySvc::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) {
   return makeCall( FILL_OBJ_REFS, pAddr, pObj );
 }
 
 /// Update the transient object from the other representation.
-StatusCode PersistencySvc::updateObj( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode PersistencySvc::updateObj( IOpaqueAddress* pAddr, DataObject* pObj ) {
   return makeCall( UPDATE_OBJ, pAddr, pObj );
 }
 
 /// Update the references of an updated transient object.
-StatusCode PersistencySvc::updateObjRefs( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode PersistencySvc::updateObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) {
   return makeCall( UPDATE_OBJ_REFS, pAddr, pObj );
 }
 
 /// Convert the transient object to the requested representation.
-StatusCode PersistencySvc::createRep( DataObject* pObj, IOpaqueAddress*& refpAddr )
-{
+StatusCode PersistencySvc::createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) {
   return makeCall( CREATE_REP, refpAddr, pObj );
 }
 
 /// Resolve the references of the converted object.
-StatusCode PersistencySvc::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode PersistencySvc::fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) {
   return makeCall( FILL_REP_REFS, pAddr, pObj );
 }
 
 /// Update the converted representation of a transient object.
-StatusCode PersistencySvc::updateRep( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode PersistencySvc::updateRep( IOpaqueAddress* pAddr, DataObject* pObj ) {
   return makeCall( UPDATE_REP, pAddr, pObj );
 }
 
 /// Update the references of an already converted object.
-StatusCode PersistencySvc::updateRepRefs( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode PersistencySvc::updateRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) {
   return makeCall( UPDATE_REP_REFS, pAddr, pObj );
 }
 
 /// Retrieve address creator service from list
-SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type )
-{
+SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type ) {
   long typ = type;
   auto it  = m_cnvServices.find( typ );
   if ( it == m_cnvServices.end() ) {
@@ -168,12 +158,9 @@ SmartIF<IAddressCreator>& PersistencySvc::addressCreator( long type )
 }
 
 /// Define transient data store
-StatusCode PersistencySvc::setDataProvider( IDataProviderSvc* pDataSvc )
-{
+StatusCode PersistencySvc::setDataProvider( IDataProviderSvc* pDataSvc ) {
   m_dataSvc = pDataSvc;
-  for ( auto& i : m_cnvServices ) {
-    i.second.conversionSvc()->setDataProvider( m_dataSvc ).ignore();
-  }
+  for ( auto& i : m_cnvServices ) { i.second.conversionSvc()->setDataProvider( m_dataSvc ).ignore(); }
   return StatusCode( StatusCode::SUCCESS, true );
 }
 
@@ -181,8 +168,7 @@ StatusCode PersistencySvc::setDataProvider( IDataProviderSvc* pDataSvc )
 SmartIF<IDataProviderSvc>& PersistencySvc::dataProvider() const { return m_dataSvc; }
 
 /// Set conversion service the converter is connected to
-StatusCode PersistencySvc::setConversionSvc( IConversionSvc* svc )
-{
+StatusCode PersistencySvc::setConversionSvc( IConversionSvc* svc ) {
   m_cnvDefault = svc;
   return StatusCode( StatusCode::SUCCESS, true );
 }
@@ -194,20 +180,18 @@ SmartIF<IConversionSvc>& PersistencySvc::conversionSvc() const { return m_cnvDef
 StatusCode PersistencySvc::addConverter( const CLID& /* clid */ ) { return StatusCode::FAILURE; }
 
 /// Add converter object to conversion service.
-StatusCode PersistencySvc::addConverter( IConverter* pConverter )
-{
+StatusCode PersistencySvc::addConverter( IConverter* pConverter ) {
   if ( !pConverter ) return Status::NO_CONVERTER;
   IConversionSvc* svc = service( pConverter->repSvcType() );
   return svc ? svc->addConverter( pConverter ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Remove converter object from conversion service (if present).
-StatusCode PersistencySvc::removeConverter( const CLID& clid )
-{
+StatusCode PersistencySvc::removeConverter( const CLID& clid ) {
   // Remove converter type from all services
   StatusCode status = Status::NO_CONVERTER, iret = StatusCode::SUCCESS;
   for ( auto& i : m_cnvServices ) {
-    iret                           = i.second.conversionSvc()->removeConverter( clid );
+    iret = i.second.conversionSvc()->removeConverter( clid );
     if ( iret.isSuccess() ) status = iret;
   }
   return status;
@@ -217,8 +201,7 @@ StatusCode PersistencySvc::removeConverter( const CLID& clid )
 IConverter* PersistencySvc::converter( const CLID& /*clid*/ ) { return nullptr; }
 
 /// Retrieve conversion service by name
-SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam )
-{
+SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam ) {
   Gaudi::Utils::TypeNameString tn( nam );
   auto                         it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
                           [&]( Services::const_reference i ) { return i.second.service()->name() == tn.name(); } );
@@ -235,8 +218,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service( const std::string& nam )
 }
 
 /// Retrieve conversion service from list
-SmartIF<IConversionSvc>& PersistencySvc::service( long type )
-{
+SmartIF<IConversionSvc>& PersistencySvc::service( long type ) {
   // Check wether this is already an active service
   auto it = m_cnvServices.find( type );
   if ( it != m_cnvServices.end() ) return it->second.conversionSvc();
@@ -250,13 +232,12 @@ SmartIF<IConversionSvc>& PersistencySvc::service( long type )
 }
 
 /// Add data service
-StatusCode PersistencySvc::addCnvService( IConversionSvc* servc )
-{
+StatusCode PersistencySvc::addCnvService( IConversionSvc* servc ) {
   if ( !servc ) return Status::BAD_STORAGE_TYPE;
-  long type                           = servc->repSvcType();
-  long def_typ                        = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
-  auto it                             = m_cnvServices.find( type );
-  auto cnv_svc                        = ( it != m_cnvServices.end() ? it->second.conversionSvc() : nullptr );
+  long type    = servc->repSvcType();
+  long def_typ = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
+  auto it      = m_cnvServices.find( type );
+  auto cnv_svc = ( it != m_cnvServices.end() ? it->second.conversionSvc() : nullptr );
   if ( type == def_typ ) m_cnvDefault = servc;
   if ( cnv_svc == servc ) return StatusCode::SUCCESS;
 
@@ -282,8 +263,7 @@ StatusCode PersistencySvc::addCnvService( IConversionSvc* servc )
 }
 
 /// Remove conversion service
-StatusCode PersistencySvc::removeCnvService( long svctype )
-{
+StatusCode PersistencySvc::removeCnvService( long svctype ) {
   auto it = m_cnvServices.find( svctype );
   if ( it == m_cnvServices.end() ) return Status::BAD_STORAGE_TYPE;
   it->second.service()->release();
@@ -296,15 +276,13 @@ StatusCode PersistencySvc::removeCnvService( long svctype )
 long PersistencySvc::repSvcType() const { return m_cnvDefault ? m_cnvDefault->repSvcType() : 0; }
 
 /// Set default conversion service
-StatusCode PersistencySvc::setDefaultCnvService( long type )
-{
+StatusCode PersistencySvc::setDefaultCnvService( long type ) {
   m_cnvDefault = service( type );
   return StatusCode::SUCCESS;
 }
 
 /// Connect the output file to the service with open mode.
-StatusCode PersistencySvc::connectOutput( const std::string& outputFile, const std::string& /* openMode */ )
-{
+StatusCode PersistencySvc::connectOutput( const std::string& outputFile, const std::string& /* openMode */ ) {
   return connectOutput( outputFile );
 }
 
@@ -316,16 +294,14 @@ StatusCode PersistencySvc::commitOutput( const std::string&, bool ) { return Sta
 
 /// Create a Generic address using explicit arguments to identify a single object.
 StatusCode PersistencySvc::createAddress( long svc_type, const CLID& clid, const std::string* pars,
-                                          const unsigned long* ipars, IOpaqueAddress*& refpAddress )
-{
+                                          const unsigned long* ipars, IOpaqueAddress*& refpAddress ) {
   refpAddress          = nullptr;
   IAddressCreator* svc = addressCreator( svc_type );
   return svc ? svc->createAddress( svc_type, clid, pars, ipars, refpAddress ) : Status::BAD_STORAGE_TYPE;
 }
 
 /// Convert an address to string form
-StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::string& refAddress )
-{
+StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::string& refAddress ) {
   // Assumuption is that the Persistency service prepends a header
   // and requests the conversion service refered to by the service
   // type to encode the rest
@@ -352,8 +328,7 @@ StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress, std::
 
 /// Convert an address in string form to object form
 StatusCode PersistencySvc::createAddress( long /* svc_type */, const CLID& /* clid */, const std::string& refAddress,
-                                          IOpaqueAddress*& refpAddress )
-{
+                                          IOpaqueAddress*& refpAddress ) {
   // Assumption is that the Persistency service decodes that header
   // and requests the conversion service referred to by the service
   // type to decode the rest
@@ -366,8 +341,7 @@ StatusCode PersistencySvc::createAddress( long /* svc_type */, const CLID& /* cl
 }
 
 /// Retrieve string from storage type and clid
-void PersistencySvc::encodeAddrHdr( long service_type, const CLID& clid, std::string& address ) const
-{
+void PersistencySvc::encodeAddrHdr( long service_type, const CLID& clid, std::string& address ) const {
   // For address header, use xml-style format of
   // <addrhdr service_type="xxx" clid="yyy" />
   std::stringstream stream;
@@ -378,8 +352,7 @@ void PersistencySvc::encodeAddrHdr( long service_type, const CLID& clid, std::st
 
 /// Retrieve storage type and clid from address header of string
 void PersistencySvc::decodeAddrHdr( const std::string& address, long& service_type, CLID& clid,
-                                    std::string& address_trailer ) const
-{
+                                    std::string& address_trailer ) const {
   // For address header, use xml-style format of
   // <address_header service_type="xxx" clid="yyy" />
   service_type = 0;
@@ -419,8 +392,7 @@ void PersistencySvc::decodeAddrHdr( const std::string& address, long& service_ty
 }
 
 /// Set address creator facility
-StatusCode PersistencySvc::setAddressCreator( IAddressCreator* )
-{
+StatusCode PersistencySvc::setAddressCreator( IAddressCreator* ) {
   // The persistency service is a address creation dispatcher istelf.
   // The persistency service can NEVER create addresses itself.
   // The entry point must only be provided in order to fulfill the needs of the
@@ -432,54 +404,52 @@ StatusCode PersistencySvc::setAddressCreator( IAddressCreator* )
 SmartIF<IAddressCreator>& PersistencySvc::addressCreator() const { return m_addrCreator; }
 
 /// Retrieve conversion service identified by technology
-StatusCode PersistencySvc::getService( long service_type, IConversionSvc*& refpSvc )
-{
+StatusCode PersistencySvc::getService( long service_type, IConversionSvc*& refpSvc ) {
   refpSvc = service( service_type );
   return refpSvc ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 
 /// Retrieve conversion service identified by technology
-StatusCode PersistencySvc::getService( const std::string& service_type, IConversionSvc*& refpSvc )
-{
+StatusCode PersistencySvc::getService( const std::string& service_type, IConversionSvc*& refpSvc ) {
   const char* imp = service_type.c_str();
   long        len = service_type.length();
-  if (::strncasecmp( imp, "SICB", len ) == 0 )
+  if ( ::strncasecmp( imp, "SICB", len ) == 0 )
     return getService( SICB_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "ZEBRA", len ) == 0 )
+  else if ( ::strncasecmp( imp, "ZEBRA", len ) == 0 )
     return getService( SICB_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "MS Access", len ) == 0 )
+  else if ( ::strncasecmp( imp, "MS Access", len ) == 0 )
     return getService( ACCESS_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "Microsoft Access", strlen( "Microsoft Access" ) ) == 0 )
+  else if ( ::strncasecmp( imp, "Microsoft Access", strlen( "Microsoft Access" ) ) == 0 )
     return getService( ACCESS_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "SQL Server", len ) == 0 )
+  else if ( ::strncasecmp( imp, "SQL Server", len ) == 0 )
     return getService( SQLSERVER_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "Microsoft ODBC for Oracle", len ) == 0 )
+  else if ( ::strncasecmp( imp, "Microsoft ODBC for Oracle", len ) == 0 )
     return getService( ORACLE_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "Oracle ODBC", strlen( "Oracle ODBC" ) ) == 0 )
+  else if ( ::strncasecmp( imp, "Oracle ODBC", strlen( "Oracle ODBC" ) ) == 0 )
     return getService( ORACLE_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "Oracle OCI", strlen( "Oracle OCI" ) ) == 0 )
+  else if ( ::strncasecmp( imp, "Oracle OCI", strlen( "Oracle OCI" ) ) == 0 )
     return getService( ORACLE_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "MySQL", len ) == 0 )
+  else if ( ::strncasecmp( imp, "MySQL", len ) == 0 )
     return getService( MYSQL_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "ROOT", len ) == 0 )
+  else if ( ::strncasecmp( imp, "ROOT", len ) == 0 )
     return getService( ROOT_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "OBJY", len ) == 0 )
+  else if ( ::strncasecmp( imp, "OBJY", len ) == 0 )
     return getService( OBJY_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "OBJYECTI", 7 ) == 0 )
+  else if ( ::strncasecmp( imp, "OBJYECTI", 7 ) == 0 )
     return getService( OBJY_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "POOL_ROOTKEY", 12 ) == 0 )
+  else if ( ::strncasecmp( imp, "POOL_ROOTKEY", 12 ) == 0 )
     return getService( POOL_ROOTKEY_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "POOL_ROOTTREE", 12 ) == 0 )
+  else if ( ::strncasecmp( imp, "POOL_ROOTTREE", 12 ) == 0 )
     return getService( POOL_ROOTTREE_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "POOL_ROOT", 9 ) == 0 )
+  else if ( ::strncasecmp( imp, "POOL_ROOT", 9 ) == 0 )
     return getService( POOL_ROOT_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "POOL_MySQL", 8 ) == 0 )
+  else if ( ::strncasecmp( imp, "POOL_MySQL", 8 ) == 0 )
     return getService( POOL_MYSQL_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "POOL_ORACLE", 8 ) == 0 )
+  else if ( ::strncasecmp( imp, "POOL_ORACLE", 8 ) == 0 )
     return getService( POOL_ORACLE_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "POOL_ACCESS", 8 ) == 0 )
+  else if ( ::strncasecmp( imp, "POOL_ACCESS", 8 ) == 0 )
     return getService( POOL_ACCESS_StorageType, refpSvc );
-  else if (::strncasecmp( imp, "POOL", 4 ) == 0 )
+  else if ( ::strncasecmp( imp, "POOL", 4 ) == 0 )
     return getService( POOL_StorageType, refpSvc );
 
   for ( const auto& i : m_cnvServices ) {
@@ -516,20 +486,16 @@ StatusCode PersistencySvc::getService( const std::string& service_type, IConvers
 const CLID& PersistencySvc::objType() const { return CLID_NULL; }
 
 /// Initialize the service.
-StatusCode PersistencySvc::initialize()
-{
+StatusCode PersistencySvc::initialize() {
   m_addrCreator = this; // initialize internal pointer to IAddressCreator interface
   // Initialize basic service
   StatusCode status = Service::initialize();
-  if ( UNLIKELY( !status.isSuccess() ) ) {
-    error() << "Error initializing Service base class." << endmsg;
-  }
+  if ( UNLIKELY( !status.isSuccess() ) ) { error() << "Error initializing Service base class." << endmsg; }
   return status;
 }
 
 /// stop the service.
-StatusCode PersistencySvc::finalize()
-{
+StatusCode PersistencySvc::finalize() {
   // Release all workers
   m_cnvServices.clear();
   // Release references to this to avoid loops
@@ -538,8 +504,7 @@ StatusCode PersistencySvc::finalize()
 }
 
 /// Set enabled flag
-bool PersistencySvc::enable( bool value )
-{
+bool PersistencySvc::enable( bool value ) {
   std::swap( value, m_enable );
   return value;
 }

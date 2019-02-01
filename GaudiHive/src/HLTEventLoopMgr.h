@@ -18,8 +18,7 @@ class IDataProviderSvc;
  *  It uses one fifo queue per tbb thread and schedules full events on a
  *  given thread by putting all algos in the dedicated queue from the beginning.
  */
-class HLTEventLoopMgr : public extends<Service, IEventProcessor>
-{
+class HLTEventLoopMgr : public extends<Service, IEventProcessor> {
 
 public:
   /// Standard Constructor

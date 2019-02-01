@@ -5,7 +5,6 @@ from Gaudi.Configuration import ApplicationMgr
 from Configurables import Gaudi__Examples__SelCreate as SelCreate
 from Configurables import Gaudi__Examples__SelFilter as SelFilter
 
-
 ApplicationMgr(
     EvtMax=20,
     EvtSel='NONE',

@@ -33,8 +33,7 @@ struct DHH;
  *
  */
 
-class HistorySvc : public extends<Service, IHistorySvc, IIncidentListener>
-{
+class HistorySvc : public extends<Service, IHistorySvc, IIncidentListener> {
 public:
   using extends::extends;
 
@@ -64,11 +63,11 @@ public:
   AlgToolHistory* getAlgToolHistory( const IAlgTool& ) const override;
   void            getAlgToolHistory( std::set<AlgToolHistory*>& ) const override;
 
-  DataHistory* createDataHistoryObj( const CLID& id, const std::string& key, const std::string& store ) override;
+  DataHistory*       createDataHistoryObj( const CLID& id, const std::string& key, const std::string& store ) override;
   virtual StatusCode registerDataHistory( const CLID& id, const std::string& key, const std::string& store );
-  DataHistory* getDataHistory( const CLID& id, const std::string& key, const std::string& store ) const override;
-  virtual int getDataHistory( const CLID& id, const std::string& key, const std::string& storeName,
-                              std::list<DataHistory*>& dhlist ) const;
+  DataHistory*       getDataHistory( const CLID& id, const std::string& key, const std::string& store ) const override;
+  virtual int        getDataHistory( const CLID& id, const std::string& key, const std::string& storeName,
+                                     std::list<DataHistory*>& dhlist ) const;
 
   void handle( const Incident& inc ) override;
 
@@ -79,8 +78,8 @@ private:
   typedef IVersHistoryObj::PropertyList PropertyList;
 
   typedef std::multimap<DHH, DataHistory*> DataHistMap;
-  typedef DataHistMap::iterator       DHMitr;
-  typedef DataHistMap::const_iterator DHMCitr;
+  typedef DataHistMap::iterator            DHMitr;
+  typedef DataHistMap::const_iterator      DHMCitr;
 
   Gaudi::Property<bool>        m_dump{this, "Dump", false};
   Gaudi::Property<bool>        m_activate{this, "Activate", true};
@@ -94,7 +93,7 @@ private:
 
   std::map<const Gaudi::Algorithm*, AlgorithmHistory*> m_algmap;
 
-  std::set<const IAlgTool*> m_ialgtools;
+  std::set<const IAlgTool*>                  m_ialgtools;
   std::map<const AlgTool*, AlgToolHistory*>  m_algtoolmap;
   std::map<const IService*, ServiceHistory*> m_svcmap;
 

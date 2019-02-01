@@ -39,32 +39,27 @@ class EventIterator;
    @author Markus Frank
    @version 1.0
 */
-class EventCollectionSelector : public extends<Service, IEvtSelector>
-{
+class EventCollectionSelector : public extends<Service, IEvtSelector> {
 public:
-  class MyContextType : public IEvtSelector::Context
-  {
+  class MyContextType : public IEvtSelector::Context {
   public:
     std::string                    criteria;
     NTuple::Tuple*                 tuple;
     NTuple::Item<IOpaqueAddress*>* item;
     IOpaqueAddress*                addressBuffer;
-    MyContextType( NTuple::Tuple* t, NTuple::Item<IOpaqueAddress*>* i )
-    {
+    MyContextType( NTuple::Tuple* t, NTuple::Item<IOpaqueAddress*>* i ) {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
       tuple = t;
       item  = i;
     }
-    MyContextType( MyContextType* ctxt = nullptr )
-    {
+    MyContextType( MyContextType* ctxt = nullptr ) {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
       tuple = ( ctxt ) ? ctxt->tuple : nullptr;
       item  = ( ctxt ) ? ctxt->item : nullptr;
     }
-    MyContextType( const MyContextType& ctxt ) : IEvtSelector::Context( ctxt )
-    {
+    MyContextType( const MyContextType& ctxt ) : IEvtSelector::Context( ctxt ) {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
       tuple = ctxt.tuple;
@@ -72,7 +67,7 @@ public:
     }
     ~MyContextType() override { addressBuffer->release(); }
     void* identifier() const override { return (void*)addressBuffer; }
-    void setAddress( IOpaqueAddress* pAddr );
+    void  setAddress( IOpaqueAddress* pAddr );
   };
 
 protected:
@@ -100,78 +95,78 @@ public:
 
   /// Create a new event loop context
   /** @param refpCtxt   [IN/OUT]  Reference to pointer to store the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode createContext( Context*& refpCtxt ) const override;
 
   /// Get next iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode next( Context& refCtxt ) const override;
 
   /// Get next iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode next( Context& refCtxt, int jump ) const override;
 
   /// Get previous iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    * @param jump      [IN]      Number of events to be skipped
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param jump      [IN]      Number of events to be skipped
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode previous( Context& refCtxt ) const override;
 
   /// Get previous iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    * @param jump      [IN]      Number of events to be skipped
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param jump      [IN]      Number of events to be skipped
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode previous( Context& refCtxt, int jump ) const override;
 
   /// Rewind the dataset
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode rewind( Context& refCtxt ) const override;
 
   /// Create new Opaque address corresponding to the current record
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    * @param refpAddr  [OUT]     Reference to address pointer
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param refpAddr  [OUT]     Reference to address pointer
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const override;
 
   /// Release existing event iteration context
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode releaseContext( Context*& refCtxt ) const override;
 
   /** Will set a new criteria for the selection of the next list of events and will change
-    * the state of the context in a way to point to the new list.
-    *
-    * @param cr The new criteria string.
-    * @param c  Reference pointer to the Context object.
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * the state of the context in a way to point to the new list.
+   *
+   * @param cr The new criteria string.
+   * @param c  Reference pointer to the Context object.
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode resetCriteria( const std::string& cr, Context& c ) const override;
 
   /** Access last item in the iteration
-    * @param refCtxt [IN/OUT] Reference to the Context object.
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param refCtxt [IN/OUT] Reference to the Context object.
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode last( Context& refCtxt ) const override;
 
   /// Connect collection to selector

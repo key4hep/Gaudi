@@ -17,8 +17,7 @@
 // ============================================================================
 #include "GaudiAlg/GaudiHistoID.h"
 // ============================================================================
-GaudiAlg::ID::LiteralID GaudiAlg::ID::idAsString() const
-{
+GaudiAlg::ID::LiteralID GaudiAlg::ID::idAsString() const {
   std::ostringstream s;
   fillStream( s );
   return s.str();
@@ -26,8 +25,7 @@ GaudiAlg::ID::LiteralID GaudiAlg::ID::idAsString() const
 // ============================================================================
 // Operator overloading for ostream
 // ============================================================================
-std::ostream& GaudiAlg::ID::fillStream( std::ostream& s ) const
-{
+std::ostream& GaudiAlg::ID::fillStream( std::ostream& s ) const {
   if ( numeric() ) {
     s << numericID();
   } else if ( literal() ) {

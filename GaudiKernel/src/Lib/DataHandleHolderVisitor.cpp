@@ -6,18 +6,14 @@
 #include <tuple>
 #include <typeinfo>
 
-namespace
-{
+namespace {
   using std::make_tuple;
 }
 
 DHHVisitor::DHHVisitor( DataObjIDColl& ido, DataObjIDColl& odo ) : m_ido( ido ), m_odo( odo ) {}
 
-void DHHVisitor::visit( const IDataHandleHolder* v )
-{
-  if ( !v ) {
-    return;
-  }
+void DHHVisitor::visit( const IDataHandleHolder* v ) {
+  if ( !v ) { return; }
 
   // Loop over inputs and outputs of handles, extra dependiencies and objects to
   // collect all of them.

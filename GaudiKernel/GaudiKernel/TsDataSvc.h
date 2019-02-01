@@ -12,11 +12,10 @@
 #include "tbb/recursive_mutex.h"
 #include "tbb/spin_mutex.h"
 
-namespace
-{
+namespace {
   typedef tbb::recursive_mutex tsDataSvcMutex;
   // typedef  tbb::spin_mutex tsDataSvcMutex;
-}
+} // namespace
 
 // Forward declarations
 // Incident service
@@ -29,13 +28,12 @@ class DataObject;
 class IDataStoreAgent;
 
 // Do not clutter global namespace for helpers...
-namespace DataSvcHelpers
-{
+namespace DataSvcHelpers {
   // Map of objects where loading is inhibited
   class InhibitMap;
   // Generic registry entry
   class RegistryEntry;
-}
+} // namespace DataSvcHelpers
 
 /**
  * @class TsDataSvc TsDataSvc.h GaudiKernel/TsDataSvc.h
@@ -55,9 +53,8 @@ namespace DataSvcHelpers
  * @author Sebastien Ponce
  * @author Danilo Piparo
  * @version 1.1
-*/
-class GAUDI_API TsDataSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc>
-{
+ */
+class GAUDI_API TsDataSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc> {
 
   /// Pointer to data loader service
   IConversionSvc* m_dataLoader = nullptr;
@@ -69,11 +66,11 @@ class GAUDI_API TsDataSvc : public extends<Service, IDataProviderSvc, IDataManag
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<std::vector<std::string>> m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
 
-  Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
+  Gaudi::Property<bool>        m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
   Gaudi::Property<std::string> m_faultName{this, "DataFaultName", "DataFault", "Name of the data fault incident"};
 
-  Gaudi::Property<bool> m_enableAccessHdlr{this, "EnableAccessHandler", false,
+  Gaudi::Property<bool>        m_enableAccessHdlr{this, "EnableAccessHandler", false,
                                            "enable incidents on data access requests"};
   Gaudi::Property<std::string> m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
 
@@ -152,7 +149,7 @@ public:
       object. Does not clear the store before reinitializing it. This could
       lead to errors and should be handle with care. Use setRoot if unsure */
   virtual StatusCode i_setRoot( std::string root_name, DataObject* pRootObj );
-  StatusCode i_setRoot( DataObject* pRootObj ) { return i_setRoot( m_rootName, pRootObj ); }
+  StatusCode         i_setRoot( DataObject* pRootObj ) { return i_setRoot( m_rootName, pRootObj ); }
 
   /** Initialize data store for new event by giving new event path and address
       of root object. Takes care to clear the store before reinitializing it */
@@ -163,7 +160,7 @@ public:
    *  could lead to errors and should be handle with care. Use setRoot if unsure
    */
   virtual StatusCode i_setRoot( std::string root_path, IOpaqueAddress* pRootAddr );
-  StatusCode i_setRoot( IOpaqueAddress* pRootAddr ) { return i_setRoot( m_rootName, pRootAddr ); }
+  StatusCode         i_setRoot( IOpaqueAddress* pRootAddr ) { return i_setRoot( m_rootName, pRootAddr ); }
 
   /** IDataManagerSvc: IDataManagerSvc: Pass a default data loader to the
    *  service and optionally a data provider
@@ -289,11 +286,11 @@ protected:
   StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode, boost::string_ref path,
                             DataSvcHelpers::RegistryEntry*& pEntry );
   /** Invoke data fault handling if enabled
-    * @param pReg  [IN]   Pointer to missing registry entry
-    * @param path  [IN]   Sub-path of requested object from pReg
-    *
-    * @return Object corresponding to the specified leaf
-    */
+   * @param pReg  [IN]   Pointer to missing registry entry
+   * @param path  [IN]   Sub-path of requested object from pReg
+   *
+   * @return Object corresponding to the specified leaf
+   */
   DataObject* handleDataFault( IRegistry* pReg, boost::string_ref path = {} );
 
   /// Mutex to protect access to the store

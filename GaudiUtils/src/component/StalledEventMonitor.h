@@ -26,8 +26,7 @@ class IIncidentSvc;
  *  @author Marco Clemencic
  *  @date   Apr 19, 2010
  */
-class StalledEventMonitor : public extends<Service, IIncidentListener>
-{
+class StalledEventMonitor : public extends<Service, IIncidentListener> {
 public:
   /// Constructor
   using extends::extends;
@@ -51,7 +50,7 @@ public:
 private:
   Gaudi::Property<unsigned int> m_eventTimeout{
       this, "EventTimeout", 600, "Number of seconds allowed to process a single event (0 to disable the check)."};
-  Gaudi::Property<int> m_maxTimeoutCount{this, "MaxTimeoutCount", 0,
+  Gaudi::Property<int>  m_maxTimeoutCount{this, "MaxTimeoutCount", 0,
                                          "Number timeouts before aborting the execution (0 means never abort)."};
   Gaudi::Property<bool> m_stackTrace{this, "StackTrace", false, "Whether to print the stack-trace on timeout."};
 

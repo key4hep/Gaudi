@@ -13,18 +13,15 @@
 // ============================================================================
 class IAlgContextSvc;
 // ============================================================================
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** @class AlgSelector
      *  Simple interface class for selection of algorithms
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    class GAUDI_API AlgSelector
-    {
+    class GAUDI_API AlgSelector {
     public:
       /// the only one essential method:
       virtual bool operator()( const IAlgorithm* ) const = 0;
@@ -39,12 +36,10 @@ namespace Gaudi
      *  @date 2007-09-07
      */
     template <class TYPE>
-    class GAUDI_API AlgTypeSelector : public AlgSelector
-    {
+    class GAUDI_API AlgTypeSelector : public AlgSelector {
     public:
       /// the only one essential method:
-      bool operator()( const IAlgorithm* a ) const override
-      {
+      bool operator()( const IAlgorithm* a ) const override {
         using TYPE_ = std::decay_t<TYPE>;
         using CTYPE = std::add_const_t<TYPE_>;
         using cptr  = std::add_pointer_t<CTYPE>;
@@ -58,8 +53,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-07
      */
-    class GAUDI_API AlgNameSelector : public AlgSelector
-    {
+    class GAUDI_API AlgNameSelector : public AlgSelector {
     public:
       AlgNameSelector() = delete;
       /// constructor form the name
@@ -72,13 +66,11 @@ namespace Gaudi
       std::string m_name; ///< algorithm name
     };
     // ========================================================================
-  } // end of namespace Gaudi::Utils
+  } // namespace Utils
 } // end of namespace Gaudi
 // ============================================================================
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** simple function to get the algorithm from Context Service
      *
@@ -128,7 +120,7 @@ namespace Gaudi
      */
     GAUDI_API IAlgorithm* getAlgorithm( const std::vector<IAlgorithm*>& lst, const AlgSelector& sel );
     // ========================================================================
-  } // end of namespace Gaudi::Utils
+  } // namespace Utils
 } // end of namespace Gaudi
 // ============================================================================
 // The END

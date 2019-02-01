@@ -4,8 +4,7 @@
 
 #include "GaudiKernel/EventIDRange.h"
 
-BOOST_AUTO_TEST_CASE( comparison )
-{
+BOOST_AUTO_TEST_CASE( comparison ) {
   {
     // Constructor:
     // number_type run_number, event_number_t event_number, number_type time_stamp = UNDEFNUM,

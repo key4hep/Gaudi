@@ -1,6 +1,6 @@
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-private-field"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wunused-private-field"
 #endif
 // ============================================================================
 // Include files
@@ -23,5 +23,5 @@ MyClass1::~MyClass1() {}
 // The END
 // ============================================================================
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif

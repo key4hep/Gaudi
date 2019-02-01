@@ -16,11 +16,9 @@
 // ===========================================================================
 #include "GaudiAlg/GaudiAlgorithm.h"
 // ===========================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // =========================================================================
-  namespace Examples
-  {
+  namespace Examples {
     // =======================================================================
     /** @class StringKeyEx   StringKeys/StirngKeyEx.cpp
      *  Simple example which illustrate the usage of class StringKey
@@ -28,8 +26,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-07
      */
-    class StringKeyEx : public GaudiAlgorithm
-    {
+    class StringKeyEx : public GaudiAlgorithm {
     public:
       // ======================================================================
       /// execution of the algorithm
@@ -50,14 +47,13 @@ namespace Gaudi
       // ======================================================================
     };
     // ========================================================================
-  } //                                         end of namespace Gaudi::Examples
+  } // namespace Examples
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
 // Execution method
 // ============================================================================
-StatusCode Gaudi::Examples::StringKeyEx::execute()
-{
+StatusCode Gaudi::Examples::StringKeyEx::execute() {
   // 1. check the settings of key from the properties
   always() << "The Key  : " << Gaudi::Utils::toString( m_key.value() ) << endmsg;
   always() << "The Keys : " << Gaudi::Utils::toString( m_keys.value() ) << endmsg;

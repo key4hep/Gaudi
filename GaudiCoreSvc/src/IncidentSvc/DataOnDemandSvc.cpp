@@ -38,16 +38,14 @@
 // ============================================================================
 // anonymous namespace to hide few local functions
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   /** remove the prefix from the string
    *  @param value input string
    *  @param prefix prefix to be removed
    *  @return input string without prefix
    */
-  inline std::string no_prefix( const std::string& value, const std::string& prefix )
-  {
+  inline std::string no_prefix( const std::string& value, const std::string& prefix ) {
     return boost::algorithm::starts_with( value, prefix ) ? value.substr( prefix.size() ) : value;
   }
   // ==========================================================================
@@ -58,12 +56,9 @@ namespace
    *  @return number of modified keys
    */
   template <class MAP>
-  inline size_t add_prefix( MAP& _map, const std::string& prefix )
-  {
+  inline size_t add_prefix( MAP& _map, const std::string& prefix ) {
     // empty  prefix
-    if ( prefix.empty() ) {
-      return 0;
-    } // RETURN
+    if ( prefix.empty() ) { return 0; } // RETURN
     /// loop over all entries to find the  proper keys
     auto it = std::find_if_not( _map.begin(), _map.end(), [&]( typename MAP::ValueType::const_reference i ) {
       return boost::algorithm::starts_with( i.first, prefix );
@@ -83,16 +78,11 @@ namespace
    *  @return increment of the output set size
    */
   template <class SET>
-  inline size_t get_dir( const std::string& object, SET& _set )
-  {
+  inline size_t get_dir( const std::string& object, SET& _set ) {
     std::string::size_type ifind = object.rfind( '/' );
     // stop recursion
-    if ( std::string::npos == ifind ) {
-      return 0;
-    } // RETURN
-    if ( 0 == ifind ) {
-      return 0;
-    }
+    if ( std::string::npos == ifind ) { return 0; } // RETURN
+    if ( 0 == ifind ) { return 0; }
     //
     const std::string top = std::string( object, 0, ifind );
     _set.insert( top );
@@ -105,28 +95,21 @@ namespace
    *  @return incrment of the output set size
    */
   template <class MAP, class SET>
-  inline size_t get_dirs( const MAP& _map, SET& _set )
-  {
+  inline size_t get_dirs( const MAP& _map, SET& _set ) {
     size_t size = _set.size();
-    for ( const auto& item : _map ) {
-      get_dir( item.first, _set );
-    }
+    for ( const auto& item : _map ) { get_dir( item.first, _set ); }
     return _set.size() - size;
   }
   // ==========================================================================
 } // end of anonymous namespace
 
-void DataOnDemandSvc::i_setNodeHandler( const std::string& name, const std::string& type )
-{
+void DataOnDemandSvc::i_setNodeHandler( const std::string& name, const std::string& type ) {
   ClassH cl = TClass::GetClass( type.c_str() );
-  if ( !cl ) {
-    warning() << "Failed to access dictionary class for " << name << " of type:" << type << endmsg;
-  }
+  if ( !cl ) { warning() << "Failed to access dictionary class for " << name << " of type:" << type << endmsg; }
   m_nodes[name] = Node( cl, false, type );
 }
 
-StatusCode DataOnDemandSvc::i_setAlgHandler( const std::string& name, const Gaudi::Utils::TypeNameString& alg )
-{
+StatusCode DataOnDemandSvc::i_setAlgHandler( const std::string& name, const Gaudi::Utils::TypeNameString& alg ) {
   Leaf leaf( alg.type(), alg.name() );
   if ( m_init ) {
     StatusCode sc = configureHandler( leaf );
@@ -146,11 +129,8 @@ StatusCode DataOnDemandSvc::i_setAlgHandler( const std::string& name, const Gaud
 // ============================================================================
 // update the content of Data-On-Demand actions
 // ============================================================================
-StatusCode DataOnDemandSvc::update()
-{
-  if ( !m_updateRequired ) {
-    return StatusCode::SUCCESS;
-  }
+StatusCode DataOnDemandSvc::update() {
+  if ( !m_updateRequired ) { return StatusCode::SUCCESS; }
 
   /// convert obsolete "Nodes"      into new "NodeMap"
   StatusCode sc = setupNodeHandlers(); // convert "Nodes"      new "NodeMap"
@@ -170,17 +150,11 @@ StatusCode DataOnDemandSvc::update()
   add_prefix( m_nodeMap, m_prefix );
   /// get all directories
   std::set<std::string> dirs;
-  if ( m_partialPath ) {
-    get_dirs( m_algMap, dirs );
-  }
-  if ( m_partialPath ) {
-    get_dirs( m_nodeMap, dirs );
-  }
+  if ( m_partialPath ) { get_dirs( m_algMap, dirs ); }
+  if ( m_partialPath ) { get_dirs( m_nodeMap, dirs ); }
   //
   auto _e = dirs.find( "/Event" );
-  if ( dirs.end() != _e ) {
-    dirs.erase( _e );
-  }
+  if ( dirs.end() != _e ) { dirs.erase( _e ); }
   // add all directories as nodes
   for ( const auto& dir : dirs ) {
     if ( m_algMap.end() == m_algMap.find( dir ) && m_nodeMap.end() == m_nodeMap.find( dir ) )
@@ -195,9 +169,7 @@ StatusCode DataOnDemandSvc::update()
     if ( i_setAlgHandler( alg.first, alg.second ).isFailure() ) return StatusCode::FAILURE;
   }
   /// setup nodes
-  for ( const auto& node : m_nodeMap ) {
-    i_setNodeHandler( node.first, node.second );
-  }
+  for ( const auto& node : m_nodeMap ) { i_setNodeHandler( node.first, node.second ); }
   ///
   m_updateRequired = false;
   //
@@ -206,17 +178,12 @@ StatusCode DataOnDemandSvc::update()
 //=============================================================================
 // Inherited Service overrides:
 //=============================================================================
-StatusCode DataOnDemandSvc::initialize()
-{
+StatusCode DataOnDemandSvc::initialize() {
   // initialize the Service Base class
   StatusCode sc = Service::initialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  if ( sc.isFailure() ) { return sc; }
   sc = setup();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  if ( sc.isFailure() ) { return sc; }
   //
   if ( m_dump ) {
     dump( MSG::INFO );
@@ -224,17 +191,14 @@ StatusCode DataOnDemandSvc::initialize()
     dump( MSG::DEBUG );
   }
   //
-  if ( m_init ) {
-    return update();
-  }
+  if ( m_init ) { return update(); }
   //
   return StatusCode::SUCCESS;
 }
 // ============================================================================
 // finalization of the service
 // ============================================================================
-StatusCode DataOnDemandSvc::finalize()
-{
+StatusCode DataOnDemandSvc::finalize() {
   //
   info() << "Handled \"" << m_trapType.value() << "\" incidents: " << m_statAlg << "/" << m_statNode << "/" << m_stat
          << "(Alg/Node/Total)." << endmsg;
@@ -282,8 +246,7 @@ StatusCode DataOnDemandSvc::finalize()
 // ============================================================================
 /// re-initialization of the service
 // ============================================================================
-StatusCode DataOnDemandSvc::reinitialize()
-{
+StatusCode DataOnDemandSvc::reinitialize() {
   // reinitialize the Service Base class
   if ( m_incSvc ) {
     m_incSvc->removeListener( this, m_trapType );
@@ -298,14 +261,10 @@ StatusCode DataOnDemandSvc::reinitialize()
   m_toolSvc.reset();
   //
   StatusCode sc = Service::reinitialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  if ( sc.isFailure() ) { return sc; }
   //
   sc = setup();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  if ( sc.isFailure() ) { return sc; }
   //
   if ( m_dump ) {
     dump( MSG::INFO );
@@ -318,8 +277,7 @@ StatusCode DataOnDemandSvc::reinitialize()
 // ============================================================================
 // setup service
 // ============================================================================
-StatusCode DataOnDemandSvc::setup()
-{
+StatusCode DataOnDemandSvc::setup() {
   if ( !( m_algMgr = serviceLocator() ) ) // assignment meant
   {
     error() << "Failed to retrieve the IAlgManager interface." << endmsg;
@@ -366,15 +324,14 @@ StatusCode DataOnDemandSvc::setup()
 // ============================================================================
 // setup node handlers
 // ============================================================================
-StatusCode DataOnDemandSvc::setupNodeHandlers()
-{
+StatusCode DataOnDemandSvc::setupNodeHandlers() {
   std::string nam, typ, tag;
   StatusCode  sc = StatusCode::SUCCESS;
   // Setup for node leafs, where simply a constructor is called...
   for ( auto node : m_nodeMapping ) {
     using Parser = Gaudi::Utils::AttribStringParser;
     for ( auto attrib : Parser( node ) ) {
-      switch (::toupper( attrib.tag[0] ) ) {
+      switch ( ::toupper( attrib.tag[0] ) ) {
       case 'D':
         tag = std::move( attrib.value );
         break;
@@ -396,14 +353,13 @@ StatusCode DataOnDemandSvc::setupNodeHandlers()
 // ============================================================================
 // setup algorithm  handlers
 // ============================================================================
-StatusCode DataOnDemandSvc::setupAlgHandlers()
-{
+StatusCode DataOnDemandSvc::setupAlgHandlers() {
   std::string typ, tag;
 
   for ( auto alg : m_algMapping ) {
     using Parser = Gaudi::Utils::AttribStringParser;
     for ( auto attrib : Parser( alg ) ) {
-      switch (::toupper( attrib.tag[0] ) ) {
+      switch ( ::toupper( attrib.tag[0] ) ) {
       case 'D':
         tag = std::move( attrib.value );
         break;
@@ -426,18 +382,11 @@ StatusCode DataOnDemandSvc::setupAlgHandlers()
 // ============================================================================
 /// Configure handler for leaf
 // ============================================================================
-StatusCode DataOnDemandSvc::configureHandler( Leaf& l )
-{
-  if ( l.algorithm ) {
-    return StatusCode::SUCCESS;
-  }
-  if ( !m_algMgr ) {
-    return StatusCode::FAILURE;
-  }
+StatusCode DataOnDemandSvc::configureHandler( Leaf& l ) {
+  if ( l.algorithm ) { return StatusCode::SUCCESS; }
+  if ( !m_algMgr ) { return StatusCode::FAILURE; }
   l.algorithm = m_algMgr->algorithm( l.name, false );
-  if ( l.algorithm ) {
-    return StatusCode::SUCCESS;
-  }
+  if ( l.algorithm ) { return StatusCode::SUCCESS; }
   // create it!
   StatusCode sc = m_algMgr->createAlgorithm( l.type, l.name, l.algorithm, true );
   if ( sc.isFailure() ) {
@@ -445,9 +394,7 @@ StatusCode DataOnDemandSvc::configureHandler( Leaf& l )
     l.algorithm = nullptr;
     return sc; // RETURN
   }
-  if ( l.algorithm->isInitialized() ) {
-    return StatusCode::SUCCESS;
-  }
+  if ( l.algorithm->isInitialized() ) { return StatusCode::SUCCESS; }
   // initialize it!
   sc = l.algorithm->sysInitialize();
   if ( sc.isFailure() ) {
@@ -455,9 +402,7 @@ StatusCode DataOnDemandSvc::configureHandler( Leaf& l )
     l.algorithm = nullptr;
     return sc; // RETURN
   }
-  if ( Gaudi::StateMachine::RUNNING == l.algorithm->FSMState() ) {
-    return StatusCode::SUCCESS;
-  }
+  if ( Gaudi::StateMachine::RUNNING == l.algorithm->FSMState() ) { return StatusCode::SUCCESS; }
   // run it!
   sc = l.algorithm->sysStart();
   if ( sc.isFailure() ) {
@@ -469,8 +414,7 @@ StatusCode DataOnDemandSvc::configureHandler( Leaf& l )
 }
 
 // local algorithms
-namespace
-{
+namespace {
   /// Helper class to uniform the access to the main method of IDODNodeMapper
   /// and IDODAlgMapper.
   struct ToolGetter {
@@ -492,15 +436,13 @@ namespace
 
   /// Simple algorithmic class to get the first non-empty node type or algorithm
   /// type/name given a path and a list of mapping tools.
-  class Finder
-  {
+  class Finder {
     const ToolGetter                    getter;
     const std::vector<IDODNodeMapper*>& nodes;
     const std::vector<IDODAlgMapper*>&  algs;
     /// Looping algorithm.
     template <class R, class C>
-    R find( const C& l ) const
-    {
+    R find( const C& l ) const {
       for ( auto& i : l ) {
         auto result = getter( i );
         if ( isGood( result ) ) return result;
@@ -511,37 +453,28 @@ namespace
   public:
     /// Constructor.
     Finder( std::string _path, const std::vector<IDODNodeMapper*>& _nodes, const std::vector<IDODAlgMapper*>& _algs )
-        : getter( std::move( _path ) ), nodes( _nodes ), algs( _algs )
-    {
-    }
+        : getter( std::move( _path ) ), nodes( _nodes ), algs( _algs ) {}
     /// Find the node type for the requested path.
     inline std::string node() const { return find<std::string>( nodes ); }
     /// Find the algorithm for the requested path.
     inline Gaudi::Utils::TypeNameString alg() const { return find<Gaudi::Utils::TypeNameString>( algs ); }
   };
-}
+} // namespace
 
 // ===========================================================================
 // IIncidentListener interfaces overrides: incident handling
 // ===========================================================================
-void DataOnDemandSvc::handle( const Incident& incident )
-{
+void DataOnDemandSvc::handle( const Incident& incident ) {
 
   Gaudi::Utils::LockedChrono timer( m_timer_all, m_locked_all );
 
   ++m_stat;
   // proper incident type?
-  if ( incident.type() != m_trapType ) {
-    return;
-  } // RETURN
+  if ( incident.type() != m_trapType ) { return; } // RETURN
   const DataIncident* inc = dynamic_cast<const DataIncident*>( &incident );
-  if ( !inc ) {
-    return;
-  } // RETURN
+  if ( !inc ) { return; } // RETURN
   // update if needed!
-  if ( m_updateRequired ) {
-    update();
-  }
+  if ( m_updateRequired ) { update(); }
 
   if ( msgLevel( MSG::VERBOSE ) ) {
     verbose() << "Incident: [" << incident.type() << "] "
@@ -553,18 +486,14 @@ void DataOnDemandSvc::handle( const Incident& incident )
   auto icl = m_nodes.find( tag );
   if ( icl != m_nodes.end() ) {
     StatusCode sc = execHandler( tag, icl->second );
-    if ( sc.isSuccess() ) {
-      ++m_statNode;
-    }
+    if ( sc.isSuccess() ) { ++m_statNode; }
     return; // RETURN
   }
   // ==========================================================================
   auto ialg = m_algs.find( tag );
   if ( ialg != m_algs.end() ) {
     StatusCode sc = execHandler( tag, ialg->second );
-    if ( sc.isSuccess() ) {
-      ++m_statAlg;
-    }
+    if ( sc.isSuccess() ) { ++m_statAlg; }
     return; // RETURN
   }
   // ==========================================================================
@@ -597,14 +526,11 @@ void DataOnDemandSvc::handle( const Incident& incident )
 // ===========================================================================
 // execute the handler
 // ===========================================================================
-StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Node& n )
-{
+StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Node& n ) {
 
   Gaudi::Utils::LockedChrono timer( m_timer_nodes, m_locked_nodes );
 
-  if ( n.executing ) {
-    return StatusCode::FAILURE;
-  } // RETURN
+  if ( n.executing ) { return StatusCode::FAILURE; } // RETURN
 
   Protection p( n.executing );
 
@@ -614,9 +540,7 @@ StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Node& n )
     object.reset( new DataObject() );
   } else {
     // try to recover the handler
-    if ( !n.clazz ) {
-      n.clazz = TClass::GetClass( n.name.c_str() );
-    }
+    if ( !n.clazz ) { n.clazz = TClass::GetClass( n.name.c_str() ); }
     if ( !n.clazz ) {
       error() << "Failed to get dictionary for class '" << n.name << "' for location:" << tag << endmsg;
       return StatusCode::FAILURE; // RETURN
@@ -642,13 +566,10 @@ StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Node& n )
 // ===========================================================================
 // execute the handler
 // ===========================================================================
-StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Leaf& l )
-{
+StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Leaf& l ) {
   Gaudi::Utils::LockedChrono timer( m_timer_algs, m_locked_algs );
   //
-  if ( l.executing ) {
-    return StatusCode::FAILURE;
-  } // RETURN
+  if ( l.executing ) { return StatusCode::FAILURE; } // RETURN
   //
   if ( !l.algorithm ) {
     StatusCode sc = configureHandler( l );
@@ -681,11 +602,8 @@ StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Leaf& l )
  *  @param mode  the printout mode
  */
 // ============================================================================
-void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
-{
-  if ( m_algs.empty() && m_nodes.empty() ) {
-    return;
-  }
+void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
+  if ( m_algs.empty() && m_nodes.empty() ) { return; }
 
   typedef std::pair<std::string, std::string> Pair;
   std::map<std::string, Pair>                 _m;
@@ -698,9 +616,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
     const Leaf& l   = alg.second;
     std::string nam = ( l.name == l.type ? l.type : ( l.type + "/" + l.name ) );
     //
-    if ( !mode && 0 == l.num ) {
-      continue;
-    }
+    if ( !mode && 0 == l.num ) { continue; }
     //
     std::string val;
     if ( mode ) {
@@ -723,9 +639,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
     //
     std::string val;
 
-    if ( !mode && 0 == n.num ) {
-      continue;
-    }
+    if ( !mode && 0 == n.num ) { continue; }
 
     if ( mode ) {
       val = ( 0 == n.clazz ) ? "F" : "T";
@@ -736,9 +650,7 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
     _m[no_prefix( node.first, m_prefix )] = {nam, val};
   }
   //
-  if ( _m.empty() ) {
-    return;
-  }
+  if ( _m.empty() ) { return; }
 
   // find the correct formats
   size_t n1 = 0;
@@ -749,18 +661,10 @@ void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const
     n2 = std::max( n2, i.second.first.size() );
     n3 = std::max( n3, i.second.second.size() );
   }
-  if ( 10 > n1 ) {
-    n1 = 10;
-  }
-  if ( 10 > n2 ) {
-    n2 = 10;
-  }
-  if ( 60 < n1 ) {
-    n1 = 60;
-  }
-  if ( 60 < n2 ) {
-    n2 = 60;
-  }
+  if ( 10 > n1 ) { n1 = 10; }
+  if ( 10 > n2 ) { n2 = 10; }
+  if ( 60 < n1 ) { n1 = 60; }
+  if ( 60 < n2 ) { n2 = 60; }
   //
 
   const std::string _f = " | %%1$-%1%.%1%s | %%2$-%2%.%2%s | %%3$%3%.%3%s |";

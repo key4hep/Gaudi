@@ -22,9 +22,7 @@
 #include "CLHEP/GenericFunctions/Sin.hh"
 // ============================================================================
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 // ============================================================================
@@ -37,8 +35,7 @@ using namespace CLHEP;
  */
 // ============================================================================
 
-int main()
-{
+int main() {
 
   std::cout << " Test for embedded exceptions ( 2 exception shoudl be catched) " << std::endl;
 
@@ -58,9 +55,7 @@ int main()
     const GaudiMath::Function& prim = GaudiMath::Derivative( mysin, 10 );
     std::cout << "One should never see this line!! " << std::endl;
     mysin + prim;
-  } catch ( const GaudiException& e ) {
-    std::cout << " OK 2) " << e << std::endl;
-  }
+  } catch ( const GaudiException& e ) { std::cout << " OK 2) " << e << std::endl; }
 }
 
 // ============================================================================

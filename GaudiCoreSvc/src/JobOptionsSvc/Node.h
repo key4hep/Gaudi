@@ -19,10 +19,8 @@
 #include "Iterator.h"
 #include "Position.h"
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
     struct Node final {
       enum NodeType {
@@ -69,8 +67,7 @@ namespace Gaudi
     };
     // ============================================================================
     struct NodeOperations final {
-      struct value {
-      };
+      struct value {};
       //---------------------------------------------------------------------------
       void operator()( Node& node, Node::NodeType type ) const { node.type = type; }
 
@@ -78,15 +75,13 @@ namespace Gaudi
 
       void operator()( Node& node, std::string val ) const { node.value = std::move( val ); }
 
-      void operator()( Node& node, boost::iterator_range<Iterator> range ) const
-      {
+      void operator()( Node& node, boost::iterator_range<Iterator> range ) const {
         node.value = boost::copy_range<std::string>( range );
       }
 
       void operator()( Node& node, bool val ) const { node.value = val ? "1" : "0"; }
 
-      void operator()( Node& node, const Iterator& iter ) const
-      {
+      void operator()( Node& node, const Iterator& iter ) const {
         const IteratorPosition& pos = iter.get_position();
         node.position               = Position( pos.file, pos.line, pos.column );
       }
@@ -94,8 +89,8 @@ namespace Gaudi
       //---------------------------------------------------------------------------
     };
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 BOOST_FUSION_ADAPT_STRUCT( Gaudi::Parsers::Node,
                            ( Gaudi::Parsers::Node::NodeType,

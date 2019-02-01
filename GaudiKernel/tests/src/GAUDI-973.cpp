@@ -3,8 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 
-int main()
-{
+int main() {
   std::unordered_map<Gaudi::StringKey, int> m = {{"one", 1}, {"two", 2}};
 
   std::cout << "one -> " << m["one"] << std::endl;

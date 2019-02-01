@@ -23,8 +23,7 @@
     @Author  M.Frank
     @Version 1.0
 */
-class TagCollectionSvc : public NTupleSvc
-{
+class TagCollectionSvc : public NTupleSvc {
 public:
   /// unhides some NTupleSvc methods
   using NTupleSvc::connect;

@@ -14,8 +14,7 @@
 #include <tbb/concurrent_queue.h>
 #include <tbb/task.h>
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** Class for a generic serial queue of tasks (modeled on the Intel Threading
    *  Building Blocks Design Pattern "Local Serializer").
@@ -30,13 +29,11 @@ namespace Gaudi
    *
    *  @author Marco Clemencic
    */
-  class SerialTaskQueue
-  {
+  class SerialTaskQueue {
   public:
     /// Base class for the task to be executed by the serial queue.
     /// Actual tasks must specialize this class implementing the method run().
-    class WorkItem
-    {
+    class WorkItem {
     public:
       virtual ~WorkItem();
       /// Method to be implemented by the actual task classes.
@@ -63,8 +60,7 @@ namespace Gaudi
 
   private:
     /// Wrapper for the WorkItem class for internal concurrency bookkeeping.
-    class SerialWorkItem
-    {
+    class SerialWorkItem {
     public:
       /// Initialize the instance from the WorkiItem and the SerialTaskQueue
       /// (for synchronization).
@@ -81,14 +77,12 @@ namespace Gaudi
     };
 
     /// Helper class to wrap a SerialWorkItem in a tbb::task.
-    class SerialWorkItemRunner : public tbb::task
-    {
+    class SerialWorkItemRunner : public tbb::task {
     public:
       /// Initialize the instance.
       SerialWorkItemRunner( SerialWorkItem* item ) : m_item( item ) {}
       /// Call the run method of the work item.
-      tbb::task* execute() override
-      {
+      tbb::task* execute() override {
         m_item->run();
         return NULL;
       }
@@ -107,8 +101,7 @@ namespace Gaudi
     tbb::concurrent_queue<SerialWorkItem*> m_queue;
   };
 
-  inline void SerialTaskQueue::SerialWorkItem::run()
-  {
+  inline void SerialTaskQueue::SerialWorkItem::run() {
     // run the wrapped task
     m_item->run();
 

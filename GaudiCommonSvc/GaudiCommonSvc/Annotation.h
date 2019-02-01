@@ -9,13 +9,11 @@
 
 #include "AIDA/IAnnotation.h"
 
-namespace AIDA
-{
+namespace AIDA {
 
   ///  Implementation of the AIDA IAnnotation interface class
 
-  class Annotation : virtual public IAnnotation
-  {
+  class Annotation : virtual public IAnnotation {
 
   public:
     /// Add a key/value pair with a given sticky.
@@ -64,18 +62,16 @@ namespace AIDA
 
     std::string emptyString;
   };
-}
+} // namespace AIDA
 
-inline bool AIDA::Annotation::addItem( const std::string& key, const std::string& value, bool sticky )
-{
+inline bool AIDA::Annotation::addItem( const std::string& key, const std::string& value, bool sticky ) {
   if ( m_identifiers.find( key ) != m_identifiers.end() ) return false;
   m_annotationItems.emplace_back( key, value, sticky );
   m_identifiers.emplace( key, m_annotationItems.size() - 1 );
   return true;
 }
 
-inline bool AIDA::Annotation::removeItem( const std::string& key )
-{
+inline bool AIDA::Annotation::removeItem( const std::string& key ) {
   auto iKey = m_identifiers.find( key );
   if ( iKey == m_identifiers.end() ) return false;
 
@@ -99,14 +95,12 @@ inline bool AIDA::Annotation::removeItem( const std::string& key )
   return true;
 }
 
-inline std::string AIDA::Annotation::value( const std::string& key ) const
-{
+inline std::string AIDA::Annotation::value( const std::string& key ) const {
   auto iKey = m_identifiers.find( key );
   return iKey != m_identifiers.end() ? m_annotationItems[iKey->second].m_value : emptyString;
 }
 
-inline void AIDA::Annotation::setValue( const std::string& key, const std::string& value )
-{
+inline void AIDA::Annotation::setValue( const std::string& key, const std::string& value ) {
   auto iKey = m_identifiers.find( key );
   if ( iKey == m_identifiers.end() )
     // if not found, then add it
@@ -115,28 +109,24 @@ inline void AIDA::Annotation::setValue( const std::string& key, const std::strin
     m_annotationItems[iKey->second].m_value = value;
 }
 
-inline void AIDA::Annotation::setSticky( const std::string& key, bool sticky )
-{
-  auto iKey                                                                   = m_identifiers.find( key );
+inline void AIDA::Annotation::setSticky( const std::string& key, bool sticky ) {
+  auto iKey = m_identifiers.find( key );
   if ( iKey != m_identifiers.end() ) m_annotationItems[iKey->second].m_sticky = sticky;
 }
 
 inline int AIDA::Annotation::size() const { return m_annotationItems.size(); }
 
-inline std::string AIDA::Annotation::key( int index ) const
-{
+inline std::string AIDA::Annotation::key( int index ) const {
   if ( index < 0 || index >= static_cast<int>( m_annotationItems.size() ) ) return emptyString;
   return m_annotationItems[index].m_key;
 }
 
-inline std::string AIDA::Annotation::value( int index ) const
-{
+inline std::string AIDA::Annotation::value( int index ) const {
   if ( index < 0 || index >= static_cast<int>( m_annotationItems.size() ) ) return emptyString;
   return m_annotationItems[index].m_value;
 }
 
-inline void AIDA::Annotation::reset()
-{
+inline void AIDA::Annotation::reset() {
   // Collect the non-sticky items
   std::vector<std::string> itemsToRemove;
   itemsToRemove.reserve( size() );

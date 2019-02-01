@@ -19,39 +19,32 @@
  *  @date   2004-03-06
  */
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
 
     GSLFunctionWithError::GSLFunctionWithError( GSLFunctionWithError::Function function )
-        : AbsFunction(), m_function( function ), m_result( std::make_unique<gsl_sf_result>() )
-    {
+        : AbsFunction(), m_function( function ), m_result( std::make_unique<gsl_sf_result>() ) {
       m_result->val = -1.e+10;
       m_result->err = -1.e+10;
     }
 
     GSLFunctionWithError::GSLFunctionWithError( const GSLFunctionWithError& func )
-        : AbsFunction(), m_function( func.m_function ), m_result( std::make_unique<gsl_sf_result>() )
-    {
+        : AbsFunction(), m_function( func.m_function ), m_result( std::make_unique<gsl_sf_result>() ) {
       m_result->val = func.m_result->val;
       m_result->err = func.m_result->err;
     }
 
-    double GSLFunctionWithError::operator()( double x ) const
-    {
+    double GSLFunctionWithError::operator()( double x ) const {
       ( *m_function )( x, m_result.get() );
       return m_result->val;
     }
 
-    double GSLFunctionWithError::operator()( const Genfun::Argument& x ) const
-    {
+    double GSLFunctionWithError::operator()( const Genfun::Argument& x ) const {
       ( *m_function )( x[0], m_result.get() );
       return m_result->val;
     }
 
-    Genfun::Derivative GSLFunctionWithError::partial( unsigned int i ) const
-    {
+    Genfun::Derivative GSLFunctionWithError::partial( unsigned int i ) const {
       if ( i >= 1 ) {
         const AbsFunction& aux = GaudiMath::Constant( 0, 1 );
         return Genfun::FunctionNoop( &aux );
@@ -67,24 +60,18 @@ namespace Genfun
     double GSLFunctionWithError::error() const { return m_result->err; }
 
     GSLFunctionWithMode::GSLFunctionWithMode( GSLFunctionWithMode::Function function, const gsl_mode_t& mod )
-        : AbsFunction(), m_function( function ), m_mode( std::make_unique<gsl_mode_t>( mod ) )
-    {
-    }
+        : AbsFunction(), m_function( function ), m_mode( std::make_unique<gsl_mode_t>( mod ) ) {}
 
     GSLFunctionWithMode::GSLFunctionWithMode( const GSLFunctionWithMode& func )
-        : AbsFunction(), m_function( func.m_function ), m_mode( std::make_unique<gsl_mode_t>( *( func.m_mode ) ) )
-    {
-    }
+        : AbsFunction(), m_function( func.m_function ), m_mode( std::make_unique<gsl_mode_t>( *( func.m_mode ) ) ) {}
 
     double GSLFunctionWithMode::operator()( double x ) const { return ( *m_function )( x, *m_mode ); }
 
-    double GSLFunctionWithMode::operator()( const Genfun::Argument& x ) const
-    {
+    double GSLFunctionWithMode::operator()( const Genfun::Argument& x ) const {
       return ( *m_function )( x[0], *m_mode );
     }
 
-    Genfun::Derivative GSLFunctionWithMode::partial( unsigned int i ) const
-    {
+    Genfun::Derivative GSLFunctionWithMode::partial( unsigned int i ) const {
       if ( i >= 1 ) {
         const AbsFunction& aux = GaudiMath::Constant( 0, 1 );
         return Genfun::FunctionNoop( &aux );
@@ -102,32 +89,25 @@ namespace Genfun
         : AbsFunction()
         , m_function( function )
         , m_mode( std::make_unique<gsl_mode_t>( mod ) )
-        , m_result( std::make_unique<gsl_sf_result>( gsl_sf_result{-1.e+10, -1.e+10} ) )
-    {
-    }
+        , m_result( std::make_unique<gsl_sf_result>( gsl_sf_result{-1.e+10, -1.e+10} ) ) {}
 
     GSLFunctionWithModeAndError::GSLFunctionWithModeAndError( const GSLFunctionWithModeAndError& func )
         : AbsFunction()
         , m_function( func.m_function )
         , m_mode( std::make_unique<gsl_mode_t>( *func.m_mode ) )
-        , m_result( std::make_unique<gsl_sf_result>( *func.m_result ) )
-    {
-    }
+        , m_result( std::make_unique<gsl_sf_result>( *func.m_result ) ) {}
 
-    double GSLFunctionWithModeAndError::operator()( double x ) const
-    {
+    double GSLFunctionWithModeAndError::operator()( double x ) const {
       ( *m_function )( x, *m_mode, m_result.get() );
       return m_result->val;
     }
 
-    double GSLFunctionWithModeAndError::operator()( const Genfun::Argument& x ) const
-    {
+    double GSLFunctionWithModeAndError::operator()( const Genfun::Argument& x ) const {
       ( *m_function )( x[0], *m_mode, m_result.get() );
       return m_result->val;
     }
 
-    Genfun::Derivative GSLFunctionWithModeAndError::partial( unsigned int i ) const
-    {
+    Genfun::Derivative GSLFunctionWithModeAndError::partial( unsigned int i ) const {
       if ( i >= 1 ) {
         const AbsFunction& aux = GaudiMath::Constant( 0, 1 );
         return Genfun::FunctionNoop( &aux );

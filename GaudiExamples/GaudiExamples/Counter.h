@@ -5,10 +5,8 @@
 #include "GaudiKernel/DataObject.h"
 #include <iostream>
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
     class Collision;
 
@@ -21,8 +19,7 @@ namespace Gaudi
         @author Markus Frank
     */
 
-    class GAUDI_API Counter : public DataObject
-    {
+    class GAUDI_API Counter : public DataObject {
 
     public:
       /// Constructors
@@ -45,6 +42,6 @@ namespace Gaudi
       /// Counter number
       int m_counter;
     };
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 #endif // GAUDIEXAMPLES_COUNTER_H

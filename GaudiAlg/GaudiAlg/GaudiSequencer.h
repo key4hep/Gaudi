@@ -25,8 +25,7 @@ class ISequencerTimerTool;
  *  @author Olivier Callot
  *  @date   2004-05-13
  */
-class GAUDI_API GaudiSequencer : public GaudiCommon<Gaudi::Sequence>
-{
+class GAUDI_API GaudiSequencer : public GaudiCommon<Gaudi::Sequence> {
 public:
   /// Standard constructor
   using GaudiCommon::GaudiCommon;
@@ -39,8 +38,7 @@ public:
   std::ostream& toControlFlowExpression( std::ostream& os ) const override;
 
 private:
-  class AlgorithmEntry final
-  {
+  class AlgorithmEntry final {
   public:
     /// Standard constructor
     AlgorithmEntry( Gaudi::Algorithm* alg ) : m_algorithm( alg ) {}
@@ -49,8 +47,8 @@ private:
 
     Gaudi::Algorithm* algorithm() const { return m_algorithm; }
     bool              reverse() const { return m_reverse; }
-    void setTimer( int nb ) { m_timer = nb; }
-    int                timer() const { return m_timer; }
+    void              setTimer( int nb ) { m_timer = nb; }
+    int               timer() const { return m_timer; }
 
   private:
     Gaudi::Algorithm* m_algorithm = nullptr; ///< Algorithm pointer

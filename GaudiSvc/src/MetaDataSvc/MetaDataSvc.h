@@ -11,10 +11,8 @@
 #include "GaudiKernel/IMetaDataSvc.h"
 #include "GaudiKernel/Service.h"
 
-namespace Gaudi
-{
-  class MetaDataSvc : public extends<Service, IMetaDataSvc>
-  {
+namespace Gaudi {
+  class MetaDataSvc : public extends<Service, IMetaDataSvc> {
   public:
     using extends::extends;
 
@@ -31,6 +29,6 @@ namespace Gaudi
 
     std::map<std::string, std::string> m_metadata;
   };
-}
+} // namespace Gaudi
 
 #endif /* GAUDISVC_SRC_METADATASVC_METADATASVC_H_ */

@@ -34,8 +34,7 @@ DECLARE_COMPONENT( GslSvc )
  *  @return status code
  */
 // ============================================================================
-StatusCode GslSvc::initialize()
-{
+StatusCode GslSvc::initialize() {
   // initialize the base class
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) {
@@ -110,8 +109,7 @@ StatusCode GslSvc::initialize()
  *  @return status code
  */
 // ============================================================================
-StatusCode GslSvc::finalize()
-{
+StatusCode GslSvc::finalize() {
   debug() << "==> Finalize" << endmsg;
 
   // deactivate the static accessor to the service
@@ -127,8 +125,7 @@ StatusCode GslSvc::finalize()
  *  @return current GSL error handler
  */
 // ============================================================================
-IGslSvc::GslErrorHandler GslSvc::handler() const
-{
+IGslSvc::GslErrorHandler GslSvc::handler() const {
   GslErrorHandler hh = gsl_set_error_handler( nullptr );
   gsl_set_error_handler( hh );
   return hh;
@@ -141,8 +138,7 @@ IGslSvc::GslErrorHandler GslSvc::handler() const
  *  @return GSL error handler
  */
 // ============================================================================
-IGslSvc::GslErrorHandler GslSvc::setHandler( IGslSvc::GslErrorHandler handler ) const
-{
+IGslSvc::GslErrorHandler GslSvc::setHandler( IGslSvc::GslErrorHandler handler ) const {
   gsl_set_error_handler( handler );
   {
     debug() << " New GSL handler is set '" << ( handler ? System::typeinfoName( typeid( handler ) ) : "NULL" ) << "'"
@@ -158,15 +154,10 @@ IGslSvc::GslErrorHandler GslSvc::setHandler( IGslSvc::GslErrorHandler handler ) 
  *  @return status code
  */
 // ============================================================================
-StatusCode GslSvc::status( const int error ) const
-{
-  if ( GSL_SUCCESS == error ) {
-    return StatusCode::SUCCESS;
-  }
+StatusCode GslSvc::status( const int error ) const {
+  if ( GSL_SUCCESS == error ) { return StatusCode::SUCCESS; }
   StatusCode sc( error );
-  if ( sc.isSuccess() ) {
-    return StatusCode::FAILURE;
-  }
+  if ( sc.isSuccess() ) { return StatusCode::FAILURE; }
   return sc;
 }
 // ============================================================================
@@ -177,13 +168,10 @@ StatusCode GslSvc::status( const int error ) const
  *  @return status code
  */
 // ============================================================================
-StatusCode GslSvc::handle( const GslError& error ) const
-{
+StatusCode GslSvc::handle( const GslError& error ) const {
   StatusCode sc = StatusCode::SUCCESS;
   // code to be ignored?
-  if ( m_ignore.end() != std::find( m_ignore.begin(), m_ignore.end(), error.code ) ) {
-    return sc;
-  }
+  if ( m_ignore.end() != std::find( m_ignore.begin(), m_ignore.end(), error.code ) ) { return sc; }
   // invoke all handlers
   for ( auto handler = m_handlers.begin(); sc.isSuccess() && m_handlers.end() != handler; ++handler ) {
     sc = ( *handler )->handle( error );

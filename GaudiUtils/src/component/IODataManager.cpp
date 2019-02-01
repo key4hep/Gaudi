@@ -11,29 +11,26 @@
 
 #include <set>
 
-namespace
-{
+namespace {
 
   constexpr struct select2nd_t {
     template <typename S, typename T>
-    const T& operator()( const std::pair<S, T>& p ) const
-    {
+    const T& operator()( const std::pair<S, T>& p ) const {
       return p.second;
     }
   } select2nd{};
 
   template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
   OutputIterator transform_copy_if( InputIterator first, InputIterator last, OutputIterator result, UnaryOperation op,
-                                    UnaryPredicate pred )
-  {
+                                    UnaryPredicate pred ) {
     while ( first != last ) {
-      auto val                     = op( *first );
+      auto val = op( *first );
       if ( pred( val ) ) *result++ = std::move( val );
       ++first;
     }
     return result;
   }
-}
+} // namespace
 
 using namespace Gaudi;
 
@@ -42,8 +39,7 @@ DECLARE_COMPONENT( IODataManager )
 static std::set<std::string> s_badFiles;
 
 /// IService implementation: Db event selector override
-StatusCode IODataManager::initialize()
-{
+StatusCode IODataManager::initialize() {
   // Initialize base class
   StatusCode status = Service::initialize();
   MsgStream  log( msgSvc(), name() );
@@ -66,15 +62,13 @@ StatusCode IODataManager::initialize()
 }
 
 /// IService implementation: finalize the service
-StatusCode IODataManager::finalize()
-{
+StatusCode IODataManager::finalize() {
   m_catalog = nullptr; // release
   return Service::finalize();
 }
 
 /// Small routine to issue exceptions
-StatusCode IODataManager::error( CSTR msg, bool rethrow )
-{
+StatusCode IODataManager::error( CSTR msg, bool rethrow ) {
   MsgStream log( msgSvc(), name() );
   log << MSG::ERROR << "Error: " << msg << endmsg;
   if ( rethrow ) System::breakExecution();
@@ -82,8 +76,7 @@ StatusCode IODataManager::error( CSTR msg, bool rethrow )
 }
 
 /// Get connection by owner instance (0=ALL)
-IODataManager::Connections IODataManager::connections( const IInterface* owner ) const
-{
+IODataManager::Connections IODataManager::connections( const IInterface* owner ) const {
   Connections conns;
   transform_copy_if( std::begin( m_connectionMap ), std::end( m_connectionMap ), std::back_inserter( conns ),
                      []( ConnectionMap::const_reference i ) { return i.second->connection; },
@@ -92,8 +85,7 @@ IODataManager::Connections IODataManager::connections( const IInterface* owner )
 }
 
 /// Connect data file for writing
-StatusCode IODataManager::connectRead( bool keep_open, Connection* con )
-{
+StatusCode IODataManager::connectRead( bool keep_open, Connection* con ) {
   if ( !establishConnection( con ) ) {
     return connectDataIO( UNKNOWN, Connection::READ, con->name(), "UNKNOWN", keep_open, con );
   }
@@ -102,44 +94,37 @@ StatusCode IODataManager::connectRead( bool keep_open, Connection* con )
 }
 
 /// Connect data file for reading
-StatusCode IODataManager::connectWrite( Connection* con, IoType mode, CSTR doctype )
-{
-  if ( !establishConnection( con ) ) {
-    return connectDataIO( UNKNOWN, mode, con->name(), doctype, true, con );
-  }
+StatusCode IODataManager::connectWrite( Connection* con, IoType mode, CSTR doctype ) {
+  if ( !establishConnection( con ) ) { return connectDataIO( UNKNOWN, mode, con->name(), doctype, true, con ); }
   std::string dsn = con ? con->name() : std::string( "Unknown" );
   return error( "Failed to connect to data:" + dsn, false );
 }
 
 /// Read raw byte buffer from input stream
-StatusCode IODataManager::read( Connection* con, void* const data, size_t len )
-{
+StatusCode IODataManager::read( Connection* con, void* const data, size_t len ) {
   return establishConnection( con ).isSuccess() ? con->read( data, len ) : StatusCode::FAILURE;
 }
 
 /// Write raw byte buffer to output stream
-StatusCode IODataManager::write( Connection* con, const void* data, int len )
-{
+StatusCode IODataManager::write( Connection* con, const void* data, int len ) {
   return establishConnection( con ).isSuccess() ? con->write( data, len ) : StatusCode::FAILURE;
 }
 
 /// Seek on the file described by ioDesc. Arguments as in ::seek()
-long long int IODataManager::seek( Connection* con, long long int where, int origin )
-{
+long long int IODataManager::seek( Connection* con, long long int where, int origin ) {
   return establishConnection( con ).isSuccess() ? con->seek( where, origin ) : -1;
 }
 
-StatusCode IODataManager::disconnect( Connection* con )
-{
+StatusCode IODataManager::disconnect( Connection* con ) {
   if ( con ) {
     std::string dataset = con->name();
     std::string dsn     = dataset;
     StatusCode  sc      = con->disconnect();
-    if (::strncasecmp( dsn.c_str(), "FID:", 4 ) == 0 )
+    if ( ::strncasecmp( dsn.c_str(), "FID:", 4 ) == 0 )
       dsn = dataset.substr( 4 );
-    else if (::strncasecmp( dsn.c_str(), "LFN:", 4 ) == 0 )
+    else if ( ::strncasecmp( dsn.c_str(), "LFN:", 4 ) == 0 )
       dsn = dataset.substr( 4 );
-    else if (::strncasecmp( dsn.c_str(), "PFN:", 4 ) == 0 )
+    else if ( ::strncasecmp( dsn.c_str(), "PFN:", 4 ) == 0 )
       dsn = dataset.substr( 4 );
 
     auto j = m_fidMap.find( dataset );
@@ -167,8 +152,7 @@ StatusCode IODataManager::disconnect( Connection* con )
   return StatusCode::FAILURE;
 }
 
-StatusCode IODataManager::reconnect( Entry* e )
-{
+StatusCode IODataManager::reconnect( Entry* e ) {
   StatusCode sc = StatusCode::FAILURE;
   if ( e && e->connection ) {
     switch ( e->ioType ) {
@@ -205,16 +189,14 @@ StatusCode IODataManager::reconnect( Entry* e )
 }
 
 /// Retrieve known connection
-IIODataManager::Connection* IODataManager::connection( CSTR dataset ) const
-{
+IIODataManager::Connection* IODataManager::connection( CSTR dataset ) const {
   auto j = m_fidMap.find( dataset );
   if ( j == m_fidMap.end() ) return nullptr;
   auto i = m_connectionMap.find( j->second );
   return ( i != m_connectionMap.end() ) ? i->second->connection : nullptr;
 }
 
-StatusCode IODataManager::establishConnection( Connection* con )
-{
+StatusCode IODataManager::establishConnection( Connection* con ) {
   if ( !con ) return error( "Severe logic bug: No connection object avalible.", true );
 
   if ( con->isConnected() ) {
@@ -234,17 +216,16 @@ StatusCode IODataManager::establishConnection( Connection* con )
 }
 
 StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR technology, bool keep_open,
-                                         Connection* connection )
-{
+                                         Connection* connection ) {
   MsgStream   log( msgSvc(), name() );
   std::string dsn = dataset;
   try {
     StatusCode sc( StatusCode::SUCCESS, true );
-    if (::strncasecmp( dsn.c_str(), "FID:", 4 ) == 0 )
+    if ( ::strncasecmp( dsn.c_str(), "FID:", 4 ) == 0 )
       dsn = dataset.substr( 4 ), typ = FID;
-    else if (::strncasecmp( dsn.c_str(), "LFN:", 4 ) == 0 )
+    else if ( ::strncasecmp( dsn.c_str(), "LFN:", 4 ) == 0 )
       dsn = dataset.substr( 4 ), typ = LFN;
-    else if (::strncasecmp( dsn.c_str(), "PFN:", 4 ) == 0 )
+    else if ( ::strncasecmp( dsn.c_str(), "PFN:", 4 ) == 0 )
       dsn = dataset.substr( 4 ), typ = PFN;
     else if ( typ == UNKNOWN )
       return connectDataIO( PFN, rw, dsn, technology, keep_open, connection );
@@ -378,9 +359,7 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
     return sc;
   } catch ( std::exception& e ) {
     error( std::string( "connectDataIO> Caught exception:" ) + e.what(), false ).ignore();
-  } catch ( ... ) {
-    error( std::string( "connectDataIO> Caught unknown exception" ), false ).ignore();
-  }
+  } catch ( ... ) { error( std::string( "connectDataIO> Caught unknown exception" ), false ).ignore(); }
   m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
   error( "connectDataIO> The dataset " + dsn + " cannot be opened.", false ).ignore();
   s_badFiles.insert( dsn );

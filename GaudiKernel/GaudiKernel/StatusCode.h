@@ -9,8 +9,7 @@
 #include "GaudiKernel/Kernel.h"
 
 template <typename T>
-struct is_StatusCode_enum : std::false_type {
-};
+struct is_StatusCode_enum : std::false_type {};
 
 /**
  * @class StatusCode
@@ -48,8 +47,7 @@ struct is_StatusCode_enum : std::false_type {
  *
  * \remark See https://akrzemi1.wordpress.com/2017/07/12/your-own-error-code for details on the underlying design
  */
-class StatusCode final
-{
+class StatusCode final {
 public:
   typedef unsigned long code_t; ///< type of StatusCode value
 
@@ -93,8 +91,7 @@ public:
 
   /// Constructor from enum type (allowing implicit conversion)
   template <typename T, typename = typename std::enable_if<is_StatusCode_enum<T>::value>::type>
-  StatusCode( T sc, bool checked = false ) noexcept
-  {
+  StatusCode( T sc, bool checked = false ) noexcept {
     *this     = StatusCode( static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance );
     m_checked = checked;
   }
@@ -102,33 +99,27 @@ public:
   /// Constructor from code_t in the default category (explicit conversion only)
   explicit StatusCode( code_t code, const StatusCode::Category& cat = default_category(),
                        bool checked = false ) noexcept
-      : m_cat( &cat ), m_code( code ), m_checked( checked )
-  {
-  }
+      : m_cat( &cat ), m_code( code ), m_checked( checked ) {}
 
   /// Constructor from code_t and category (explicit conversion only)
   explicit StatusCode( code_t code, bool checked ) noexcept : StatusCode( code, default_category(), checked ) {}
 
   /// Copy constructor
-  StatusCode( const StatusCode& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked )
-  {
+  StatusCode( const StatusCode& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked ) {
     rhs.m_checked = true;
   }
 
   /// Move constructor
-  StatusCode( StatusCode&& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked )
-  {
+  StatusCode( StatusCode&& rhs ) noexcept : m_cat( rhs.m_cat ), m_code( rhs.m_code ), m_checked( rhs.m_checked ) {
     rhs.m_checked = true;
   }
 
   /// Destructor.
-  ~StatusCode()
-  {
+  ~StatusCode() {
     if ( UNLIKELY( s_checking ) ) check();
   }
 
-  StatusCode& operator=( const StatusCode& rhs ) noexcept
-  {
+  StatusCode& operator=( const StatusCode& rhs ) noexcept {
     m_cat     = rhs.m_cat;
     m_code    = rhs.m_code;
     m_checked = std::exchange( rhs.m_checked, true );
@@ -143,32 +134,27 @@ public:
   explicit operator bool() const { return isSuccess(); }
 
   /// Retrieve value ("checks" the StatusCode)
-  code_t getCode() const
-  {
+  code_t getCode() const {
     m_checked = true;
     return m_code;
   }
 
   /// Check/uncheck StatusCode
-  const StatusCode& setChecked( bool checked = true ) const
-  {
+  const StatusCode& setChecked( bool checked = true ) const {
     m_checked = checked;
     return *this;
   }
-  StatusCode& setChecked( bool checked = true )
-  {
+  StatusCode& setChecked( bool checked = true ) {
     m_checked = checked;
     return *this;
   }
 
   /// Ignore/check StatusCode
-  const StatusCode& ignore() const
-  {
+  const StatusCode& ignore() const {
     setChecked( true );
     return *this;
   }
-  StatusCode& ignore()
-  {
+  StatusCode& ignore() {
     setChecked( true );
     return *this;
   }
@@ -182,8 +168,7 @@ public:
   /// Description (or name) of StatusCode value
   std::string message() const { return getCategory().message( m_code ); }
 
-  friend std::ostream& operator<<( std::ostream& s, const StatusCode& sc )
-  {
+  friend std::ostream& operator<<( std::ostream& s, const StatusCode& sc ) {
     s << sc.message();
     return s;
   }
@@ -195,8 +180,7 @@ public:
   friend bool operator!=( const StatusCode& lhs, const StatusCode& rhs ) { return !( lhs == rhs ); }
 
   /// Comparison (values are grouped by category first)
-  friend bool operator<( const StatusCode& lhs, const StatusCode& rhs )
-  {
+  friend bool operator<( const StatusCode& lhs, const StatusCode& rhs ) {
     lhs.m_checked = true;
     rhs.m_checked = true;
     return ( lhs.m_cat < rhs.m_cat || ( lhs.m_cat == rhs.m_cat && lhs.m_code < rhs.m_code ) );
@@ -224,17 +208,14 @@ public:
    * }
    * @endcode
    */
-  class ScopedDisableChecking
-  {
+  class ScopedDisableChecking {
     bool m_enabled;
 
   public:
-    ScopedDisableChecking() : m_enabled( StatusCode::checkingEnabled() )
-    {
+    ScopedDisableChecking() : m_enabled( StatusCode::checkingEnabled() ) {
       if ( m_enabled ) StatusCode::disableChecking();
     }
-    ~ScopedDisableChecking()
-    {
+    ~ScopedDisableChecking() {
       if ( m_enabled ) StatusCode::enableChecking();
     }
   };
@@ -279,33 +260,28 @@ STATUSCODE_ENUM_DECL( StatusCode::ErrorCode )
  * Inline methods
  */
 
-inline const StatusCode::Category& StatusCode::default_category() noexcept
-{
+inline const StatusCode::Category& StatusCode::default_category() noexcept {
   return is_StatusCode_enum<StatusCode::ErrorCode>::instance;
 }
 
-inline bool StatusCode::isSuccess() const
-{
+inline bool StatusCode::isSuccess() const {
   m_checked = true;
   return ( m_code == static_cast<code_t>( ErrorCode::SUCCESS ) || m_cat->isSuccess( m_code ) );
 }
 
-inline bool StatusCode::isRecoverable() const
-{
+inline bool StatusCode::isRecoverable() const {
   m_checked = true;
   return m_cat->isRecoverable( m_code );
 }
 
-inline StatusCode::ErrorCode StatusCode::default_value() const
-{
+inline StatusCode::ErrorCode StatusCode::default_value() const {
   bool save_checked = m_checked; // Preserve checked status
   auto r    = isSuccess() ? ErrorCode::SUCCESS : ( isRecoverable() ? ErrorCode::RECOVERABLE : ErrorCode::FAILURE );
   m_checked = save_checked;
   return r;
 }
 
-inline bool operator==( const StatusCode& lhs, const StatusCode& rhs )
-{
+inline bool operator==( const StatusCode& lhs, const StatusCode& rhs ) {
   lhs.m_checked = true;
   rhs.m_checked = true;
   return ( lhs.m_code == rhs.m_code ) &&
@@ -314,8 +290,7 @@ inline bool operator==( const StatusCode& lhs, const StatusCode& rhs )
            ( lhs.m_cat == rhs.m_cat ) );
 }
 
-inline StatusCode& StatusCode::operator&=( const StatusCode& rhs )
-{
+inline StatusCode& StatusCode::operator&=( const StatusCode& rhs ) {
   // Ternary AND lookup matrix
   static constexpr StatusCode::code_t AND[3][3] = {{0, 0, 0}, {0, 1, 2}, {0, 2, 2}};
 
@@ -326,8 +301,7 @@ inline StatusCode& StatusCode::operator&=( const StatusCode& rhs )
   return *this;
 }
 
-inline StatusCode& StatusCode::operator|=( const StatusCode& rhs )
-{
+inline StatusCode& StatusCode::operator|=( const StatusCode& rhs ) {
   // Ternary OR lookup matrix
   static constexpr StatusCode::code_t OR[3][3] = {{0, 1, 2}, {1, 1, 1}, {2, 1, 2}};
 

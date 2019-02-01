@@ -8,10 +8,8 @@
 #include <string>
 #include <vector>
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
     // Forward declarations
     // ============================================================================
@@ -30,6 +28,6 @@ namespace Gaudi
     bool ReadOptions( const std::string& filename, const std::string& search_path, Messages* messages, Catalog* catalog,
                       Units* units, PragmaOptions* pragma, Node* root );
     // ============================================================================
-  }
-}
+  } // namespace Parsers
+} // namespace Gaudi
 #endif // JOBOPTIONSVC_ANALYZER_H_

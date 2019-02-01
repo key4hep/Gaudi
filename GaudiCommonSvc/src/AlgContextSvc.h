@@ -30,8 +30,7 @@ class IIncidentSvc;
  *          Serial-MT cases
  *  @date 2007-03-07 (modified)
  */
-class AlgContextSvc : public extends<Service, IAlgContextSvc, IIncidentListener>
-{
+class AlgContextSvc : public extends<Service, IAlgContextSvc, IIncidentListener> {
 public:
   /// set the currently executing algorithm ("push_back") @see IAlgContextSvc
   StatusCode setCurrentAlg( IAlgorithm* a, const EventContext& context ) override;
@@ -71,11 +70,10 @@ private:
   Gaudi::Property<bool> m_check{this, "Check", true, "Flag to perform more checks"};
   Gaudi::Property<bool> m_bypassInc{this, "BypassIncidents", false,
                                     "Flag to bypass begin/endevent incident requirement"};
-  std::vector<int> m_inEvtLoop;
+  std::vector<int>      m_inEvtLoop;
 };
 
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDISVC_ALGCONTEXTSVC_H
-// ============================================================================

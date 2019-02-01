@@ -38,4 +38,3 @@ struct GslErrorPrint : extends<AlgTool, IGslErrorHandler> {
 // The END
 // ============================================================================
 #endif // GAUDIGSL_GSLERRORPrint_H
-// ============================================================================

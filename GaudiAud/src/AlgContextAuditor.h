@@ -18,8 +18,7 @@ class IAlgContextSvc;
  *  @author M. Shapiro, LBNL
  *  @author modified by Vanya BELYAEV ibelyaev@physics.syr.edu
  */
-class AlgContextAuditor : public Auditor
-{
+class AlgContextAuditor : public Auditor {
 public:
   // IAuditor implementation
   void beforeInitialize( INamedInterface* a ) override;
@@ -54,4 +53,3 @@ private:
 // The END
 // ============================================================================
 #endif // GAUDIAUD_ALGCONTEXTAUDITOR_H
-// ============================================================================

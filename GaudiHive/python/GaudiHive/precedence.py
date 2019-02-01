@@ -12,8 +12,9 @@ from Configurables import GaudiSequencer, CPUCruncher
 def _buildFilePath(filePath):
 
     if not os.path.exists(filePath):
-        __fullFilePath__ = os.path.realpath(os.path.join(
-            os.environ.get('GAUDIHIVEROOT', ''), "data", filePath))
+        __fullFilePath__ = os.path.realpath(
+            os.path.join(
+                os.environ.get('GAUDIHIVEROOT', ''), "data", filePath))
         if not os.path.exists(__fullFilePath__):
             print "\nERROR: invalid file path '%s'. It must be either absolute, or relative to '$GAUDIHIVEROOT/data/'." % filePath
             sys.exit(1)
@@ -75,7 +76,6 @@ class RealTimeValue(object):
 
 
 class UniformBooleanValue(object):
-
     def __init__(self, value):
 
         self.value = value
@@ -103,8 +103,8 @@ class RndBiasedBooleanValue(object):
             if length <= 0:
                 raise "ERROR: Wrong set length requested: %i " % length
 
-            self.pattern = [False for i in range(
-                proportion[False])] + [True for i in range(proportion[True])]
+            self.pattern = [False for i in range(proportion[False])
+                            ] + [True for i in range(proportion[True])]
 
             if seed is not None:
                 random.seed(seed)
@@ -143,8 +143,16 @@ class CruncherSequence(object):
 
     unique_data_objects = []
 
-    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, topSequencer,
-                 showStat=False, timeline=False, outputLevel=INFO):
+    def __init__(self,
+                 timeValue,
+                 IOboolValue,
+                 sleepFraction,
+                 cfgPath,
+                 dfgPath,
+                 topSequencer,
+                 showStat=False,
+                 timeline=False,
+                 outputLevel=INFO):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
@@ -173,18 +181,26 @@ class CruncherSequence(object):
 
             print "\n===== Statistics on Algorithms ====="
             print "Total number of algorithm nodes: ", len(
-                self.unique_algos) + sum([self.dupl_algos[i] - 1 for i in self.dupl_algos])
+                self.unique_algos) + sum(
+                    [self.dupl_algos[i] - 1 for i in self.dupl_algos])
             print "Number of unique algorithms: ", len(self.unique_algos)
-            print "  -->", len(self.dupl_algos), "of them being re-used with the following distribution: ", [
-                self.dupl_algos[i] for i in self.dupl_algos]
+            print "  -->", len(
+                self.dupl_algos
+            ), "of them being re-used with the following distribution: ", [
+                self.dupl_algos[i] for i in self.dupl_algos
+            ]
             # pprint.pprint(dupl_algos)
 
             print "\n===== Statistics on Sequencers ====="
             print "Total number of sequencers: ", len(
-                self.unique_sequencers) + sum([self.dupl_seqs[i] - 1 for i in self.dupl_seqs])
+                self.unique_sequencers) + sum(
+                    [self.dupl_seqs[i] - 1 for i in self.dupl_seqs])
             print "Number of unique sequencers: ", len(self.unique_sequencers)
-            print "  -->", len(self.dupl_seqs), "of them being re-used with the following distribution: ", [
-                self.dupl_seqs[i] for i in self.dupl_seqs]
+            print "  -->", len(
+                self.dupl_seqs
+            ), "of them being re-used with the following distribution: ", [
+                self.dupl_seqs[i] for i in self.dupl_seqs
+            ]
             # pprint.pprint(dupl_seqs)
             print "Number of OR-sequencers: ", len(self.OR_sequencers)
 
@@ -267,13 +283,15 @@ class CruncherSequence(object):
                         self.dupl_algos[n] += 1
 
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
-                algo_daughter = CPUCruncher(algo_name,
-                                            OutputLevel=self.outputLevel,
-                                            shortCalib=True,
-                                            varRuntime=varRuntime,
-                                            avgRuntime=avgRuntime,
-                                            SleepFraction=self.sleepFraction if self.IOboolValue.get() else 0.,
-                                            Timeline=self.enableTimeline)
+                algo_daughter = CPUCruncher(
+                    algo_name,
+                    OutputLevel=self.outputLevel,
+                    shortCalib=True,
+                    varRuntime=varRuntime,
+                    avgRuntime=avgRuntime,
+                    SleepFraction=self.sleepFraction
+                    if self.IOboolValue.get() else 0.,
+                    Timeline=self.enableTimeline)
 
                 self._declare_data_deps(algo_name, algo_daughter)
 

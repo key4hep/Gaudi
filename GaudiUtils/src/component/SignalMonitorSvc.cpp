@@ -11,10 +11,8 @@
 
 #include <iostream>
 
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     /**
      * Implementation of Gaudi::ISignalMonitor.
      *
@@ -25,8 +23,7 @@ namespace Gaudi
      * It can be interrogated to check if a signal has been received.
      *
      */
-    class SignalMonitorSvc : public extends<Service, Gaudi::ISignalMonitor>
-    {
+    class SignalMonitorSvc : public extends<Service, Gaudi::ISignalMonitor> {
     public:
 #ifdef _WIN32
       typedef void( __cdecl* handler_t )( int );
@@ -36,8 +33,7 @@ namespace Gaudi
 
       /// Declare a signal to be monitored.
       /// It installs a signal handler for the requested signal.
-      void monitorSignal( int signum, bool propagate ) override
-      {
+      void monitorSignal( int signum, bool propagate ) override {
         if ( !m_monitored[signum] ) {
           handler_t sa;
           handler_t oldact;
@@ -57,8 +53,7 @@ namespace Gaudi
 
       /// Remove the specific signal handler for the requested signal, restoring
       /// the previous signal handler.
-      void ignoreSignal( int signum ) override
-      {
+      void ignoreSignal( int signum ) override {
         if ( m_monitored[signum] ) {
 #ifdef _WIN32
           (void)signal( signum, m_oldActions[signum] );
@@ -80,8 +75,7 @@ namespace Gaudi
       void clearSignal( int signum ) override { m_caught[signum] = 0; }
 
       /// Initialize internal variables of the service and set the instance pointer.
-      SignalMonitorSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc )
-      {
+      SignalMonitorSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {
 #ifdef _WIN32
         m_defaultAction = SIG_DFL;
 #else
@@ -99,8 +93,7 @@ namespace Gaudi
       }
 
       /// Stop monitoring signals and clear the instance pointer.
-      ~SignalMonitorSvc() override
-      {
+      ~SignalMonitorSvc() override {
         for ( int i = 0; i < NSIG; ++i ) ignoreSignal( i );
         setInstance( nullptr );
       }
@@ -121,8 +114,7 @@ namespace Gaudi
       /// List of replaced signal actions (for the recovery when disable the monitoring).
       handler_t m_oldActions[NSIG];
 
-      void i_handle( int signum )
-      {
+      void i_handle( int signum ) {
         m_caught[signum] = 1;
         if ( m_monitored[signum] == propagate &&
 #ifdef _WIN32
@@ -130,7 +122,7 @@ namespace Gaudi
 #else
              m_oldActions[signum].sa_handler != SIG_DFL
 #endif
-             ) {
+        ) {
 #ifdef _WIN32
           m_oldActions[signum]( signum );
 #else
@@ -153,8 +145,7 @@ namespace Gaudi
     };
 
     // Implementation of the signal handler function.
-    void SignalMonitorSvc::dispatcher( int signum )
-    {
+    void SignalMonitorSvc::dispatcher( int signum ) {
       if ( instance() ) instance()->i_handle( signum );
     }
 
@@ -173,11 +164,9 @@ namespace Gaudi
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
 
-namespace
-{
+namespace {
   // hack because windows doesn't provide sys_siglist
-  const char* sig_desc( int signum )
-  {
+  const char* sig_desc( int signum ) {
     if ( signum >= NSIG || signum < 0 ) return nullptr;
 #ifdef _WIN32
     switch ( signum ) {
@@ -204,12 +193,10 @@ namespace
   }
 
   /// Helper class to map signal names and numbers.
-  class SigMap
-  {
+  class SigMap {
   public:
     /// Accessor to the singleton
-    static const SigMap& instance()
-    {
+    static const SigMap& instance() {
       static SigMap _instance;
       return _instance;
     }
@@ -218,8 +205,7 @@ namespace
     /// Return the signal description corresponding to a signal number (empty string if not known).
     inline const std::string& desc( int signum ) const { return m_num2desc[signum]; }
     /// Return the signal number corresponding to a signal name or description (-1 if not known).
-    inline int signum( const std::string& str ) const
-    {
+    inline int signum( const std::string& str ) const {
       auto it = m_name2num.find( str );
       return it != m_name2num.end() ? it->second : -1;
     }
@@ -227,8 +213,7 @@ namespace
   private:
     /// Constructor.
     /// Initializes internal maps.
-    SigMap()
-    {
+    SigMap() {
 #define addSignal( id ) i_addSignal( id, #id );
 // List of signals from http://en.wikipedia.org/wiki/POSIX_signal
 #ifdef SIGABRT
@@ -318,8 +303,7 @@ namespace
 #undef addSignal
     }
     /// Internal helper function used to fill the maps
-    inline void i_addSignal( int signum, const char* signame )
-    {
+    inline void i_addSignal( int signum, const char* signame ) {
       m_num2id[signum]    = signame;
       m_name2num[signame] = signum;
       const char* desc    = sig_desc( signum );
@@ -332,12 +316,10 @@ namespace
     GaudiUtils::HashMap<int, std::string> m_num2id;   //< Map signal number to string id
     GaudiUtils::HashMap<int, std::string> m_num2desc; //< Map signal number to description
   };
-}
+} // namespace
 
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     /**
      * Service that stop the processing if a signal is received.
      *
@@ -347,16 +329,12 @@ namespace Gaudi
      * registered when this service is initialized.
      *
      */
-    class StopSignalHandler : public extends<Service, IIncidentListener>
-    {
+    class StopSignalHandler : public extends<Service, IIncidentListener> {
     public:
       using extends::extends;
-      StatusCode initialize() override
-      {
+      StatusCode initialize() override {
         StatusCode sc = Service::initialize();
-        if ( sc.isFailure() ) {
-          return sc;
-        }
+        if ( sc.isFailure() ) { return sc; }
         std::string serviceName( "Gaudi::Utils::SignalMonitorSvc" );
         m_signalMonitor = serviceLocator()->service( serviceName );
         if ( !m_signalMonitor ) {
@@ -379,9 +357,7 @@ namespace Gaudi
         // Decode the signal names
         for ( const auto& signame : m_usedSignals ) {
           auto sigid = i_decodeSignal( signame );
-          if ( sigid.first >= 0 ) {
-            m_signals[sigid.first] = sigid.second;
-          }
+          if ( sigid.first >= 0 ) { m_signals[sigid.first] = sigid.second; }
         }
         debug() << "Stopping on the signals:" << endmsg;
         const SigMap& sigmap( SigMap::instance() );
@@ -397,8 +373,7 @@ namespace Gaudi
         m_incidentSvc->addListener( this, IncidentType::BeginEvent );
         return StatusCode::SUCCESS;
       }
-      StatusCode finalize() override
-      {
+      StatusCode finalize() override {
         m_incidentSvc->removeListener( this, IncidentType::BeginEvent );
         m_incidentSvc.reset();
         // disable the monitoring of the signals
@@ -410,8 +385,7 @@ namespace Gaudi
         return Service::finalize();
       }
 
-      void handle( const Incident& ) override
-      {
+      void handle( const Incident& ) override {
         if ( !m_stopRequested ) {
           const SigMap& sigmap( SigMap::instance() );
           for ( const auto& s : m_signals ) {
@@ -460,8 +434,7 @@ namespace Gaudi
       /// Pointer to the interface to set the return code of the application.
       SmartIF<IProperty> m_appProperty;
       /// Function to translate the signal name to the signal number.
-      std::pair<int, bool> i_decodeSignal( const std::string& sig )
-      {
+      std::pair<int, bool> i_decodeSignal( const std::string& sig ) {
         debug() << "Decoding signal declaration '" << sig << "'" << endmsg;
         if ( sig.empty() || sig == "+" ) {
           debug() << "Empty signal, ignored" << endmsg;
@@ -490,9 +463,7 @@ namespace Gaudi
         } else {
           verbose() << "Matched signal '" << sigmap.name( signum ) << "' (" << signum;
           const std::string& desc = sigmap.desc( signum );
-          if ( !desc.empty() ) {
-            verbose() << ", " << desc;
-          }
+          if ( !desc.empty() ) { verbose() << ", " << desc; }
           verbose() << ")" << endmsg;
         }
         return {signum, propagate};

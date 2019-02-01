@@ -21,16 +21,15 @@
 #include <numeric>
 
 /**@class StoreExplorerAlg
-  *
-  * Small algorith, which traverses the data store and
-  * prints generic information about all leaves, which
-  * can be loaded/accessed.
-  *
-  * @author:  M.Frank
-  * @version: 1.0
-  */
-class StoreExplorerAlg : public Algorithm
-{
+ *
+ * Small algorith, which traverses the data store and
+ * prints generic information about all leaves, which
+ * can be loaded/accessed.
+ *
+ * @author:  M.Frank
+ * @version: 1.0
+ */
+class StoreExplorerAlg : public Algorithm {
 
   Gaudi::Property<bool>   m_load{this, "Load", false, "load non existing items"};
   Gaudi::Property<long>   m_print{this, "PrintEvt", 1, "limit printout to first N events"};
@@ -56,8 +55,7 @@ public:
   using Algorithm::Algorithm;
 
   template <class T>
-  std::string access( T* p )
-  {
+  std::string access( T* p ) {
     if ( !p ) return "Access FAILED.";
     std::string result = std::accumulate(
         std::begin( *p ), std::end( *p ), std::string{}, [&]( std::string s, typename T::const_reference i ) {
@@ -67,8 +65,7 @@ public:
   }
 
   /// Print datastore leaf
-  void printObj( IRegistry* pReg, std::vector<bool>& flg )
-  {
+  void printObj( IRegistry* pReg, std::vector<bool>& flg ) {
     auto& log = info();
     for ( size_t j = 1; j < flg.size(); j++ ) {
       if ( !flg[j - 1] && flg[j] )
@@ -91,9 +88,7 @@ public:
         std::string typ = System::typeinfoName( typeid( *p ) );
         if ( m_testAccess ) p->clID();
         log << "  " << typ.substr( 0, 32 );
-      } catch ( ... ) {
-        log << "Access test FAILED";
-      }
+      } catch ( ... ) { log << "Access test FAILED"; }
     } else {
       log << "  (Unloaded) ";
     }
@@ -123,15 +118,12 @@ public:
             break;
           }
         }
-      } catch ( ... ) {
-        log << "Access test FAILED";
-      }
+      } catch ( ... ) { log << "Access test FAILED"; }
     }
     log << endmsg;
   }
 
-  void explore( IRegistry* pObj, std::vector<bool>& flg )
-  {
+  void explore( IRegistry* pObj, std::vector<bool>& flg ) {
     printObj( pObj, flg );
     if ( pObj ) {
       auto mgr = eventSvc().as<IDataManagerSvc>();
@@ -139,7 +131,7 @@ public:
         std::vector<IRegistry*> leaves;
         StatusCode              sc   = mgr->objectLeaves( pObj, leaves );
         const std::string*      par0 = nullptr;
-        if ( pObj->address() ) par0  = pObj->address()->par();
+        if ( pObj->address() ) par0 = pObj->address()->par();
         if ( sc.isSuccess() ) {
           for ( auto i = leaves.begin(); i != leaves.end(); i++ ) {
             const std::string& id = ( *i )->identifier();
@@ -173,8 +165,7 @@ public:
   }
 
   /// Initialize
-  StatusCode initialize() override
-  {
+  StatusCode initialize() override {
     m_rootName.clear();
     m_dataSvc = service( m_dataSvcName, true );
     if ( !m_dataSvc ) {
@@ -191,22 +182,20 @@ public:
   }
 
   /// Finalize
-  StatusCode finalize() override
-  {
+  StatusCode finalize() override {
     m_dataSvc.reset();
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
-  StatusCode execute() override
-  {
+  StatusCode execute() override {
     SmartDataPtr<DataObject> root( m_dataSvc.get(), m_rootName );
     if ( ( ( m_print > m_total++ ) || ( m_frequency * m_total > m_frqPrint ) ) && root ) {
       if ( m_frequency * m_total > m_frqPrint ) m_frqPrint++;
       std::string store_name = "Unknown";
       IRegistry*  pReg       = root->registry();
       if ( pReg ) {
-        auto isvc              = SmartIF<IService>{pReg->dataSvc()};
+        auto isvc = SmartIF<IService>{pReg->dataSvc()};
         if ( isvc ) store_name = isvc->name();
       }
       info() << "========= " << m_rootName << "[" << std::showbase << std::hex << (unsigned long)root.ptr() << std::dec

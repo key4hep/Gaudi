@@ -41,8 +41,8 @@ def _procRootMap(rtmpfile, rtmapdict):
                 entry, lib = _getEntry(line)
                 if not rtmapdict.has_key(entry):
                     rtmapdict[entry] = []
-                rtmapdict[entry].append(
-                    (os.path.join(os.path.dirname(rtmpfile), lib), block))
+                rtmapdict[entry].append((os.path.join(
+                    os.path.dirname(rtmpfile), lib), block))
             else:
                 block = _getBlock(line)
 
@@ -58,8 +58,8 @@ def _procSysRootMap(rtmapdict):
                     entry, lib = _getEntry(line)
                     if not rtmapdict.has_key(entry):
                         rtmapdict[entry] = []
-                    rtmapdict[entry].append(
-                        (os.path.join(os.environ["ROOTSYS"], "lib", lib), block))
+                    rtmapdict[entry].append((os.path.join(
+                        os.environ["ROOTSYS"], "lib", lib), block))
                 else:
                     block = _getBlock(line)
     else:

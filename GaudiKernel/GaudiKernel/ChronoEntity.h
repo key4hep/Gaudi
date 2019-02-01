@@ -18,8 +18,7 @@
  *  @author   Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date December 1, 1999
  */
-class GAUDI_API ChronoEntity
-{
+class GAUDI_API ChronoEntity {
 public:
   /// default constructor
   ChronoEntity() = default;
@@ -256,8 +255,7 @@ inline double ChronoEntity::eMeanErrorTime() const { return m_elapsed.flagMeanEr
 // ============================================================================
 // return the last delta-time of type "type"
 // ============================================================================
-inline IChronoSvc::ChronoTime ChronoEntity::delta( IChronoSvc::ChronoType type ) const
-{
+inline IChronoSvc::ChronoTime ChronoEntity::delta( IChronoSvc::ChronoType type ) const {
   const IChronoSvc::ChronoTime result = -1;
   switch ( type ) {
   case IChronoSvc::USER:
@@ -279,8 +277,7 @@ inline IChronoSvc::ChronoTime ChronoEntity::delta( IChronoSvc::ChronoType type )
  *  @see boost::format
  */
 // ============================================================================
-inline std::string ChronoEntity::outputUserTime( const std::string& fmt, System::TimeType unit ) const
-{
+inline std::string ChronoEntity::outputUserTime( const std::string& fmt, System::TimeType unit ) const {
   return outputTime( IChronoSvc::USER, fmt, unit );
 }
 // ============================================================================
@@ -291,8 +288,7 @@ inline std::string ChronoEntity::outputUserTime( const std::string& fmt, System:
  *  @see boost::format
  */
 // ============================================================================
-inline std::string ChronoEntity::outputSystemTime( const std::string& fmt, System::TimeType unit ) const
-{
+inline std::string ChronoEntity::outputSystemTime( const std::string& fmt, System::TimeType unit ) const {
   return outputTime( IChronoSvc::KERNEL, fmt, unit );
 }
 // ============================================================================
@@ -303,12 +299,10 @@ inline std::string ChronoEntity::outputSystemTime( const std::string& fmt, Syste
  *  @see boost::format
  */
 // ============================================================================
-inline std::string ChronoEntity::outputElapsedTime( const std::string& fmt, System::TimeType unit ) const
-{
+inline std::string ChronoEntity::outputElapsedTime( const std::string& fmt, System::TimeType unit ) const {
   return outputTime( IChronoSvc::ELAPSED, fmt, unit );
 }
 // ============================================================================
 // The END
 // ============================================================================
 #endif //  GAUDIKERNEL_CHRONOENTITY_H
-// ============================================================================

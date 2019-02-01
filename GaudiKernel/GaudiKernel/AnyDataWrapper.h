@@ -7,18 +7,15 @@
 #include <cstddef>
 #include <iterator>
 
-namespace details
-{
+namespace details {
 #if __cplusplus < 201703L
   template <typename C>
-  constexpr auto size( const C& c ) noexcept( noexcept( c.size() ) ) -> decltype( c.size() )
-  {
+  constexpr auto size( const C& c ) noexcept( noexcept( c.size() ) ) -> decltype( c.size() ) {
     return c.size();
   }
 
   template <typename T, std::size_t N>
-  constexpr auto size( const T ( &array )[N] ) noexcept
-  {
+  constexpr auto size( const T ( &array )[N] ) noexcept {
     return N;
   }
 #else
@@ -26,12 +23,11 @@ namespace details
 #endif
 
   template <typename T, typename... Args>
-  constexpr auto size( const T&, Args&&... ) noexcept
-  {
+  constexpr auto size( const T&, Args&&... ) noexcept {
     static_assert( sizeof...( Args ) == 0, "No extra args please" );
     return boost::none;
   }
-}
+} // namespace details
 
 // ugly hack to circumvent the usage of boost::any
 struct GAUDI_API AnyDataWrapperBase : DataObject {
@@ -40,8 +36,7 @@ struct GAUDI_API AnyDataWrapperBase : DataObject {
 };
 
 template <class T>
-class GAUDI_API AnyDataWrapper final : public AnyDataWrapperBase
-{
+class GAUDI_API AnyDataWrapper final : public AnyDataWrapperBase {
 public:
   AnyDataWrapper( T&& data ) : m_data( std::move( data ) ){};
 
@@ -51,8 +46,7 @@ public:
   const T& getData() const { return m_data; }
   T&       getData() { return m_data; }
 
-  boost::optional<std::size_t> size() const override
-  {
+  boost::optional<std::size_t> size() const override {
     // TODO: C++17:  add 'using std::size' and remove the first two implementations in details...
     using ::details::size;
     return size( m_data );

@@ -25,8 +25,7 @@ class IOpaqueAddress;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API IAddressCreator : virtual public IInterface
-{
+class GAUDI_API IAddressCreator : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAddressCreator, 3, 0 );

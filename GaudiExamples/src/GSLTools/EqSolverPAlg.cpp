@@ -34,21 +34,16 @@ double function3( const std::vector<double>& x ) { return x[2] * x[2] * x[2] * x
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode EqSolverPAlg::initialize()
-{
+StatusCode EqSolverPAlg::initialize() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Initialise" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "EqSolver", m_publicTool );
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { log << MSG::ERROR << "Error retrieving the public tool" << endmsg; }
   sc = toolSvc()->retrieveTool( "EqSolver", m_privateTool, this );
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { log << MSG::ERROR << "Error retrieving the private tool" << endmsg; }
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -57,8 +52,7 @@ StatusCode EqSolverPAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode EqSolverPAlg::execute()
-{
+StatusCode EqSolverPAlg::execute() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Execute" << endmsg;
@@ -101,8 +95,7 @@ StatusCode EqSolverPAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode EqSolverPAlg::finalize()
-{
+StatusCode EqSolverPAlg::finalize() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Finalize" << endmsg;

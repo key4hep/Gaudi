@@ -43,7 +43,9 @@ def ctest_report(results):
                                                   for item in sorted(v.iteritems())),
                'Causes': lambda v: 'unexpected ' + ', '.join(v)}
 
-    def id_handler(v): return str(v)
+    def id_handler(v):
+        return str(v)
+
     ignore = set(['Status', 'Name', 'stdout', 'Exit Code'])
     template = (
         '<DartMeasurement type="text/string" name="{0}">{1}</DartMeasurement>')
@@ -72,47 +74,69 @@ def main():
     from optparse import OptionParser, OptionGroup
     parser = OptionParser()
 
-    parser.add_option('--report', action='store',
-                      choices=[n.replace('_report', '')
-                               for n in globals() if n.endswith('_report')],
-                      help='choose a report method [default %default]')
-    parser.add_option('--common-tmpdir', action='store',
-                      help='directory to be used as common temporary directory')
-    parser.add_option('-C', '--workdir', action='store',
-                      help='directory to change to before starting the test')
+    parser.add_option(
+        '--report',
+        action='store',
+        choices=[
+            n.replace('_report', '') for n in globals()
+            if n.endswith('_report')
+        ],
+        help='choose a report method [default %default]')
+    parser.add_option(
+        '--common-tmpdir',
+        action='store',
+        help='directory to be used as common temporary directory')
+    parser.add_option(
+        '-C',
+        '--workdir',
+        action='store',
+        help='directory to change to before starting the test')
 
-    parser.add_option('--skip-return-code', type='int',
-                      help='return code to use to flag a test as skipped '
-                           '[default %default]')
+    parser.add_option(
+        '--skip-return-code',
+        type='int',
+        help='return code to use to flag a test as skipped '
+        '[default %default]')
 
     verbosity_opts = OptionGroup(parser, 'Verbosity Level',
                                  'set the verbosity level of messages')
-    verbosity_opts.add_option('--silent',
-                              action='store_const', dest='log_level',
-                              const=logging.CRITICAL,
-                              help='only critical error messages')
-    verbosity_opts.add_option('--quiet',
-                              action='store_const', dest='log_level',
-                              const=logging.ERROR,
-                              help='error messages')
-    verbosity_opts.add_option('--warning',
-                              action='store_const', dest='log_level',
-                              const=logging.WARNING,
-                              help='warning and error messages')
-    verbosity_opts.add_option('--verbose',
-                              action='store_const', dest='log_level',
-                              const=logging.INFO,
-                              help='progress information messages')
-    verbosity_opts.add_option('--debug',
-                              action='store_const', dest='log_level',
-                              const=logging.DEBUG,
-                              help='debugging messages')
+    verbosity_opts.add_option(
+        '--silent',
+        action='store_const',
+        dest='log_level',
+        const=logging.CRITICAL,
+        help='only critical error messages')
+    verbosity_opts.add_option(
+        '--quiet',
+        action='store_const',
+        dest='log_level',
+        const=logging.ERROR,
+        help='error messages')
+    verbosity_opts.add_option(
+        '--warning',
+        action='store_const',
+        dest='log_level',
+        const=logging.WARNING,
+        help='warning and error messages')
+    verbosity_opts.add_option(
+        '--verbose',
+        action='store_const',
+        dest='log_level',
+        const=logging.INFO,
+        help='progress information messages')
+    verbosity_opts.add_option(
+        '--debug',
+        action='store_const',
+        dest='log_level',
+        const=logging.DEBUG,
+        help='debugging messages')
     parser.add_option_group(verbosity_opts)
 
-    parser.set_defaults(log_level=logging.WARNING,
-                        report='basic',
-                        workdir=os.curdir,
-                        skip_return_code=0)
+    parser.set_defaults(
+        log_level=logging.WARNING,
+        report='basic',
+        workdir=os.curdir,
+        skip_return_code=0)
 
     opts, args = parser.parse_args()
     if len(args) != 1:
@@ -129,8 +153,8 @@ def main():
     os.chdir(opts.workdir)
 
     # FIXME: whithout this, we get some spurious '\x1b[?1034' in the std out on SLC6
-    if "slc6" in (os.environ.get('BINARY_TAG', '') or
-                  os.environ.get('CMTCONFIG', '')):
+    if "slc6" in (os.environ.get('BINARY_TAG', '')
+                  or os.environ.get('CMTCONFIG', '')):
         os.environ['TERM'] = 'dumb'
 
     # If running sanitizer builds, set LD_PRELOAD in environment
@@ -138,7 +162,7 @@ def main():
     ld_preload = os.environ.get('LD_PRELOAD', '')
     if sanitizer and sanitizer not in ld_preload:
         if ld_preload:
-            os.environ['LD_PRELOAD'] = sanitizer+" "+ld_preload
+            os.environ['LD_PRELOAD'] = sanitizer + " " + ld_preload
         else:
             os.environ['LD_PRELOAD'] = sanitizer
 

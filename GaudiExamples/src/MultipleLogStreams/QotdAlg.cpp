@@ -8,10 +8,11 @@ using namespace GaudiEx;
 DECLARE_COMPONENT( QotdAlg )
 
 //------------------------------------------------------------------------------
-QotdAlg::QotdAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ), m_evtCnt( 0 )
+QotdAlg::QotdAlg( const std::string& name, ISvcLocator* pSvcLocator )
+    : Algorithm( name, pSvcLocator )
+    , m_evtCnt( 0 )
 //------------------------------------------------------------------------------
-{
-}
+{}
 
 //------------------------------------------------------------------------------
 StatusCode QotdAlg::initialize()

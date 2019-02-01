@@ -80,8 +80,7 @@ struct IGslErrorHandler; // from GaudiGSL
  *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
  *  @date   29/04/2002
  */
-class GslSvc : public extends<Service, IGslSvc>
-{
+class GslSvc : public extends<Service, IGslSvc> {
 public:
   using extends::extends;
 
@@ -144,4 +143,3 @@ private:
 // The END
 // ============================================================================
 #endif // GAUDIGSL_GSLSVC_H
-// ============================================================================

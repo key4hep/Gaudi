@@ -1,5 +1,4 @@
 #!/usr/bin/env gaudirun.py
-
 '''
 Reference optionfile which shows in a simple way how to take advantage of the
 Gaudi components desicated to concurrency.
@@ -28,10 +27,8 @@ entity to test it. It's an algorithm that simply wastes cpu.
 '''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher,
-                           ContextEventCounterPtr,
-                           ContextEventCounterData)
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           ContextEventCounterPtr, ContextEventCounterData)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -45,8 +42,7 @@ threads = 10
 # It is useful to call it EventDataSvc to replace the usual data service with
 # the whiteboard transparently.
 
-whiteboard = HiveWhiteBoard("EventDataSvc",
-                            EventSlots=evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 # -------------------------------------------------------------------------------
 
@@ -64,8 +60,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads,
-                                  OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=WARNING)
 
 # -------------------------------------------------------------------------------
 
@@ -105,11 +100,12 @@ ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[a1, a2, a3, a4, ctrp, ctrd],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[a1, a2, a3, a4, ctrp, ctrd],
+    MessageSvcType="InertMessageSvc")
 
 # -------------------------------------------------------------------------------

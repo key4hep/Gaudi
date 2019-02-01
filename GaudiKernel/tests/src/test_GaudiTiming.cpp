@@ -33,10 +33,8 @@
 
 #include <memory>
 
-namespace GaudiKernelTest
-{
-  class TimingTest : public CppUnit::TestFixture
-  {
+namespace GaudiKernelTest {
+  class TimingTest : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE( TimingTest );
 
@@ -51,8 +49,7 @@ namespace GaudiKernelTest
     TimingTest() {}
     virtual ~TimingTest() {}
 
-    void test_adjustTime()
-    {
+    void test_adjustTime() {
       long long t = 12345678901234560LL; // units of 100 nanoseconds
       // 1234567890123456000 nanoseconds
       //    1234567890123456 microseconds
@@ -76,8 +73,7 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT_EQUAL( System::adjustTime<System::Native>( t ), 12345678901234560LL );
     }
 
-    void test_currentTime()
-    {
+    void test_currentTime() {
       long long now = System::currentTime( System::microSec );
       CPPUNIT_ASSERT( now ); // non-zero
 
@@ -91,8 +87,7 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT( fabs( seconds - 1.f ) < 0.01 );
     }
 
-    void test_ProcessTime()
-    {
+    void test_ProcessTime() {
       System::ProcessTime t0 = System::getProcessTime();
       Gaudi::Sleep( 1 );
       System::ProcessTime t1 = System::getProcessTime();
@@ -116,21 +111,17 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT( ( t1 - t0 ).kernelTime<System::microSec>() > 0 );
     }
 
-    void test_ProcessTimePerf()
-    {
+    void test_ProcessTimePerf() {
       System::ProcessTime t, t0, t1;
 
       t0    = System::getProcessTime();
       int N = 1e6;
-      for ( int i = 0; i < N; i++ ) {
-        t = System::getProcessTime();
-      }
+      for ( int i = 0; i < N; i++ ) { t = System::getProcessTime(); }
       t1 = System::getProcessTime();
       std::cout << " (" << ( t1 - t0 ).elapsedTime<System::nanoSec>() / N << " ns per call)";
     }
 
-    void test_ChronoEntity()
-    {
+    void test_ChronoEntity() {
 
       ChronoEntity c1;
       for ( int i = 0; i < 10; i++ ) {
@@ -180,8 +171,7 @@ namespace GaudiKernelTest
    *  @author Marco Clemencic
    *  @date   2006-11-13
    */
-  class ProgressListener : public CppUnit::TestListener
-  {
+  class ProgressListener : public CppUnit::TestListener {
 
   public:
     /// Default constructor.
@@ -190,21 +180,18 @@ namespace GaudiKernelTest
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test* test ) override
-    {
+    void startTest( CppUnit::Test* test ) override {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure& failure ) override
-    {
+    void addFailure( const CppUnit::TestFailure& failure ) override {
       std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
       m_lastTestFailed = true;
     }
 
-    void endTest( CppUnit::Test* /*test*/ ) override
-    {
+    void endTest( CppUnit::Test* /*test*/ ) override {
       if ( !m_lastTestFailed ) std::cout << " : OK";
       std::cout << std::endl;
     }
@@ -212,12 +199,11 @@ namespace GaudiKernelTest
   private:
     bool m_lastTestFailed;
   };
-}
+} // namespace GaudiKernelTest
 
 // Copied from the COOL implementation
 #include <stdexcept>
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   // Retrieve test path from command line first argument.
   // Default to "" which resolve to the top level suite.
   std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );

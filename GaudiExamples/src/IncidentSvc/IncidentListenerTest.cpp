@@ -11,8 +11,7 @@
 
 //=============================================================================
 IncidentListenerTest::IncidentListenerTest( const std::string& name, ISvcLocator* svcloc, long shots )
-    : m_name( name ), m_shots( shots )
-{
+    : m_name( name ), m_shots( shots ) {
   m_msgSvc = svcloc; // default message service
   if ( !m_msgSvc ) throw GaudiException( "Cannot find MessageSvc", m_name, StatusCode::FAILURE );
   m_incSvc = svcloc->service( "IncidentSvc" );
@@ -22,8 +21,7 @@ IncidentListenerTest::IncidentListenerTest( const std::string& name, ISvcLocator
 IncidentListenerTest::~IncidentListenerTest() {}
 
 //=============================================================================
-void IncidentListenerTest::handle( const Incident& incident )
-{
+void IncidentListenerTest::handle( const Incident& incident ) {
   MsgStream log( m_msgSvc, m_name );
   log << MSG::INFO << "Handling incident '" << incident.type() << "'" << endmsg;
   if ( ( m_shots > 0 ) && ( --m_shots == 0 ) ) {

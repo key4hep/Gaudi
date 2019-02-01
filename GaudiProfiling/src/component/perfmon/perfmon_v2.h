@@ -9,7 +9,7 @@
 #define __PERFMON_V2_H__
 
 #ifndef __PERFMON_H__
-#error "this file should never be included directly, use perfmon.h instead"
+#  error "this file should never be included directly, use perfmon.h instead"
 #endif
 
 /*
@@ -126,12 +126,12 @@ typedef struct {
   uint64_t reserved[4]; /* for future use */
 } pfarg_setinfo_t;
 
-#ifdef __crayx2
-#define PFM_MAX_HW_PMDS 512
-#else
-#define PFM_MAX_HW_PMDS 256
-#endif
-#define PFM_HW_PMD_BV PFM_BVSIZE( PFM_MAX_HW_PMDS )
+#  ifdef __crayx2
+#    define PFM_MAX_HW_PMDS 512
+#  else
+#    define PFM_MAX_HW_PMDS 256
+#  endif
+#  define PFM_HW_PMD_BV PFM_BVSIZE( PFM_MAX_HW_PMDS )
 
 typedef struct {
   uint32_t msg_type;                     /* PFM_MSG_OVFL */

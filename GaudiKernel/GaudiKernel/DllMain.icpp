@@ -19,8 +19,7 @@
 #include "GaudiKernel/System.h"
 
 #if !defined( __APPLE__ )
-class GaudiDll
-{
+class GaudiDll {
   GaudiDll() {}
 
 public:
@@ -30,23 +29,21 @@ public:
 #endif
 
 #if defined( _WIN32 ) && defined( _DLL )
-namespace win
-{
+namespace win {
 // Avoid conflicts between Windows' headers and MSG.
-#ifndef NOMSG
-#define NOMSG
-#ifndef NOGDI
-#define NOGDI
-#endif
-#endif
-#include <windows.h>
-}
+#  ifndef NOMSG
+#    define NOMSG
+#    ifndef NOGDI
+#      define NOGDI
+#    endif
+#  endif
+#  include <windows.h>
+} // namespace win
 
 win::BOOL APIENTRY DllMain( win::HINSTANCE hinstDLL,   // handle to DLL module
                             win::DWORD     fdwReason,  // reason for calling function
                             win::LPVOID    lpvReserved // reserved
-                            )
-{
+) {
   System::setModuleHandle( hinstDLL );
   switch ( fdwReason ) {
   case DLL_PROCESS_ATTACH: {
@@ -75,12 +72,10 @@ static void _fini() { GaudiDll::finalize( 0 ); }
 static void _init() __attribute__( ( constructor ) );
 static void _fini() __attribute__( ( destructor ) );
 
-static void _init()
-{
+static void _init() {
   // FIXME GaudiDll::initialize(0);
 }
-static void _fini()
-{
+static void _fini() {
   // FIXME GaudiDll::finalize(0);
 }
 

@@ -24,8 +24,7 @@
 /*
  * Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class RootPerfMonSvc RootPerfMonSvc.h src/RootPerfMonSvc.h
    *
@@ -37,8 +36,7 @@ namespace Gaudi
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootPerfMonSvc : public extends<Service, IIncidentListener>
-  {
+  class GAUDI_API RootPerfMonSvc : public extends<Service, IIncidentListener> {
   protected:
     Gaudi::Property<std::string> m_ioPerfStats{this, "IOPerfStats", "",
                                                "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
@@ -95,6 +93,6 @@ namespace Gaudi
     // Service overload: Stop the service
     StatusCode stop() override;
   };
-}
+} // namespace Gaudi
 
 #endif // GAUDIROOTCNV_GAUDIROOTPERFMONSVC_H

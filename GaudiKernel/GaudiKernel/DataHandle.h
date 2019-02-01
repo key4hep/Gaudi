@@ -22,11 +22,9 @@
 
 class IDataHandleHolder;
 
-namespace Gaudi
-{
+namespace Gaudi {
 
-  class DataHandle
-  {
+  class DataHandle {
   public:
     enum Mode { Reader = 1 << 2, Writer = 1 << 4, Updater = Reader | Writer };
 
@@ -38,8 +36,8 @@ namespace Gaudi
 
     virtual ~DataHandle() = default;
 
-    virtual void setOwner( IDataHandleHolder* o ) { m_owner = o; }
-    virtual IDataHandleHolder*                owner() const { return m_owner; }
+    virtual void               setOwner( IDataHandleHolder* o ) { m_owner = o; }
+    virtual IDataHandleHolder* owner() const { return m_owner; }
 
     virtual Mode mode() const { return m_mode; }
 
@@ -71,6 +69,6 @@ namespace Gaudi
     Mode m_mode   = Reader;
     bool m_isCond = false;
   };
-}
+} // namespace Gaudi
 
 #endif

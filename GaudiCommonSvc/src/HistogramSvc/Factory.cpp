@@ -7,14 +7,13 @@
 #include <GaudiCommonSvc/P1D.h>
 #include <GaudiCommonSvc/P2D.h>
 
-namespace
-{
+namespace {
   typedef Gaudi::Histogram1D H1D;
   typedef Gaudi::Profile1D   P1D;
   typedef Gaudi::Histogram2D H2D;
   typedef Gaudi::Profile2D   P2D;
   typedef Gaudi::Histogram3D H3D;
-}
+} // namespace
 
 DECLARE_COMPONENT( HistogramSvc )
 

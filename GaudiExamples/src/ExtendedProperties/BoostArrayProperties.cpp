@@ -19,14 +19,11 @@
  *  @date 2009-09-15
  */
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Examples
-  {
+  namespace Examples {
     // ========================================================================
-    class BoostArrayProperties : public GaudiAlgorithm
-    {
+    class BoostArrayProperties : public GaudiAlgorithm {
     public:
       // ======================================================================
       /// execute it!
@@ -48,14 +45,13 @@ namespace Gaudi
       // ======================================================================
     };
     // ========================================================================
-  } //                                         end of namespace Gaudi::Examples
+  } // namespace Examples
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
 // execute it!
 // ============================================================================
-StatusCode Gaudi::Examples::BoostArrayProperties::execute()
-{
+StatusCode Gaudi::Examples::BoostArrayProperties::execute() {
   propsPrint();
   //
   info() << " Doubles : " << Gaudi::Utils::toString( m_doubles ) << endmsg;

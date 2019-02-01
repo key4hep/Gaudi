@@ -7,7 +7,6 @@ theApp.TopAlg = ['RandomNumberAlg']
 MessageSvc = Service('MessageSvc')
 MessageSvc.OutputLevel = 3
 
-
 # --------------------------------------------------------------
 # Event related parameters
 # --------------------------------------------------------------

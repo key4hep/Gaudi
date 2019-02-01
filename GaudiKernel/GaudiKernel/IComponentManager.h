@@ -8,8 +8,7 @@
 
     @author Marco Clemencic
 */
-class GAUDI_API IComponentManager : virtual public IStateful
-{
+class GAUDI_API IComponentManager : virtual public IStateful {
 public:
   /// InterfaceID
   DeclareInterfaceID( IComponentManager, 1, 0 );

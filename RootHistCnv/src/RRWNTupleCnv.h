@@ -7,16 +7,14 @@
 // Forward declarations
 class TTree;
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
   /** @class RootHistCnv::RRWNTupleCnv RRWNTupleCnv.h
 
       Row wise NTuple converter class definition
       @author Charles Leggett
   */
 
-  class RRWNTupleCnv : public RNTupleCnv
-  {
+  class RRWNTupleCnv : public RNTupleCnv {
   public:
     /// Inquire class type
     static const CLID& classID() { return CLID_RowWiseTuple; }

@@ -3,14 +3,12 @@
 
 #include "GaudiKernel/HistogramBase.h"
 
-namespace Gaudi
-{
+namespace Gaudi {
   template <class Q, class T>
-  T* getRepresentation( const Q& hist )
-  {
+  T* getRepresentation( const Q& hist ) {
     auto p = dynamic_cast<const HistogramBase*>( &hist );
     return p ? dynamic_cast<T*>( p->representation() ) : nullptr;
   }
-}
+} // namespace Gaudi
 
 #endif

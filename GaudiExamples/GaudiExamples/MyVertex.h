@@ -9,10 +9,8 @@
 #include "GaudiExamples/Event.h"
 #include "GaudiExamples/MyTrack.h"
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     // Forward declarations
     //    class MyTrack;
 
@@ -25,8 +23,7 @@ namespace Gaudi
      *
      *  @author Markus Frank
      */
-    class GAUDI_API MyVertex : public KeyedObject<int>
-    {
+    class GAUDI_API MyVertex : public KeyedObject<int> {
     protected:
       /// The vertex location
       float m_x, m_y, m_z;
@@ -112,8 +109,7 @@ namespace Gaudi
     inline void MyVertex::addDecayParticle( MyTrack* p ) { m_decayParticles.push_back( SmartRef<MyTrack>( p ) ); }
 
     /// Remove decay vertex
-    inline void MyVertex::removeDecayParticle( MyTrack* p )
-    {
+    inline void MyVertex::removeDecayParticle( MyTrack* p ) {
       SmartRefVector<MyTrack>::iterator i;
       for ( i = m_decayParticles.begin(); i != m_decayParticles.end(); ++i ) {
         if ( i->target() == p ) {
@@ -130,8 +126,7 @@ namespace Gaudi
     inline void MyVertex::addCollision( Collision* c ) { m_collisions.push_back( SmartRef<Collision>( c ) ); }
 
     /// Remove decay vertex
-    inline void MyVertex::removeCollision( Collision* c )
-    {
+    inline void MyVertex::removeCollision( Collision* c ) {
       SmartRefVector<Collision>::iterator i;
       for ( i = m_collisions.begin(); i != m_collisions.end(); ++i ) {
         if ( i->target() == c ) {
@@ -140,7 +135,7 @@ namespace Gaudi
         }
       }
     }
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 
 #endif // GAUDIPOOLDB_TEST_MYTRACK_H

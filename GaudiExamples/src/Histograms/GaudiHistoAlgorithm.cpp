@@ -26,9 +26,7 @@ DECLARE_COMPONENT( GaudiHistoAlgorithm )
 // Standard constructor, initializes variables
 //=============================================================================
 GaudiHistoAlgorithm::GaudiHistoAlgorithm( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiHistoAlg( name, pSvcLocator )
-{
-}
+    : GaudiHistoAlg( name, pSvcLocator ) {}
 //=============================================================================
 // Destructor
 //=============================================================================
@@ -37,8 +35,7 @@ GaudiHistoAlgorithm::~GaudiHistoAlgorithm() {}
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode GaudiHistoAlgorithm::initialize()
-{
+StatusCode GaudiHistoAlgorithm::initialize() {
   // must be called first
   const StatusCode sc = GaudiHistoAlg::initialize();
   if ( sc.isFailure() ) return sc;
@@ -49,8 +46,7 @@ StatusCode GaudiHistoAlgorithm::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode GaudiHistoAlgorithm::execute()
-{
+StatusCode GaudiHistoAlgorithm::execute() {
 
   // count calls
   static int nCalls( 0 );
@@ -142,9 +138,7 @@ StatusCode GaudiHistoAlgorithm::execute()
 
   // old style filling
   static IHistogram1D* test( 0 );
-  if ( 0 == nCalls ) {
-    test = histoSvc()->book( "OldStyle/1112", "Old Style Histo", 100, -5, 5 );
-  }
+  if ( 0 == nCalls ) { test = histoSvc()->book( "OldStyle/1112", "Old Style Histo", 100, -5, 5 ); }
   if ( nCalls > 0 ) chronoSvc()->chronoStart( "1DOldStyle" );
   test->fill( gauss );
   if ( nCalls > 0 ) chronoSvc()->chronoStop( "1DOldStyle" );
@@ -172,8 +166,7 @@ StatusCode GaudiHistoAlgorithm::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode GaudiHistoAlgorithm::finalize()
-{
+StatusCode GaudiHistoAlgorithm::finalize() {
   // must be called after all other actions
   return GaudiHistoAlg::finalize();
 }

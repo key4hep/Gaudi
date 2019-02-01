@@ -19,10 +19,10 @@ DECLARE_COMPONENT( THistRead )
 
 //------------------------------------------------------------------------------
 THistRead::THistRead( const std::string& name, ISvcLocator* pSvcLocator )
-    : Algorithm( name, pSvcLocator ), m_ths( nullptr )
+    : Algorithm( name, pSvcLocator )
+    , m_ths( nullptr )
 //------------------------------------------------------------------------------
-{
-}
+{}
 
 //------------------------------------------------------------------------------
 StatusCode THistRead::initialize()

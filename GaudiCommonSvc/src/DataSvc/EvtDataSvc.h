@@ -10,8 +10,7 @@
  *
  *  @author M.Frank
  */
-class EvtDataSvc : public DataSvc
-{
+class EvtDataSvc : public DataSvc {
 public:
   using DataSvc::DataSvc;
   StatusCode initialize() override;

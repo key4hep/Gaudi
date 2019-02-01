@@ -28,4 +28,3 @@ struct GAUDI_API IGslErrorHandler : extend_interfaces<IAlgTool> {
 // The END
 // ============================================================================
 #endif // GAUDIGSL_IGSLERRORHANDLER_H
-// ============================================================================

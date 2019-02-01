@@ -38,8 +38,7 @@
     virtual ret method args const = 0;                                                                                 \
   };
 
-namespace implementation_detail
-{
+namespace implementation_detail {
   generate_( name, const std::string&, () )
 
       generate_( serviceLocator, SmartIF<ISvcLocator>&, () )
@@ -56,8 +55,7 @@ using add_serviceLocator = typename std::conditional<implementation_detail::has_
 template <typename Base>
 class CommonMessaging;
 
-class CommonMessagingBase
-{
+class CommonMessagingBase {
 public:
   /// Virtual destructor
   virtual ~CommonMessagingBase() = default;
@@ -70,8 +68,7 @@ public:
   inline const SmartIF<IMessageSvc>& msgSvc() const { return m_msgsvc; }
 
   /// Return an uninitialized MsgStream.
-  inline MsgStream& msgStream() const
-  {
+  inline MsgStream& msgStream() const {
     if ( UNLIKELY( ( !m_msgStream.get() ) ) ) create_msgStream();
     return *m_msgStream;
   }
@@ -130,8 +127,7 @@ private:
 };
 
 template <typename BASE>
-class GAUDI_API CommonMessaging : public add_serviceLocator<add_name<BASE>>, public CommonMessagingBase
-{
+class GAUDI_API CommonMessaging : public add_serviceLocator<add_name<BASE>>, public CommonMessagingBase {
 public:
   using base_class = CommonMessaging;
 
@@ -139,15 +135,13 @@ public:
   using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
 
   /// get the cached level (originally extracted from the embedded MsgStream)
-  inline MSG::Level msgLevel() const
-  {
+  inline MSG::Level msgLevel() const {
     if ( LIKELY( m_commonMessagingReady ) ) return m_level;
     return setUpMessaging();
   }
 
   /// Backward compatibility function for getting the output level
-  [[deprecated( "please use msgLevel() instead of outputLevel()" )]] inline MSG::Level outputLevel() const
-  {
+  [[deprecated( "please use msgLevel() instead of outputLevel()" )]] inline MSG::Level outputLevel() const {
     return msgLevel();
   }
 
@@ -159,8 +153,7 @@ private:
   void create_msgStream() const override final { m_msgStream.reset( new MsgStream( msgSvc(), this->name() ) ); }
 
   /// Initialise the messaging objects
-  void initMessaging() const
-  {
+  void initMessaging() const {
     if ( !m_msgsvc ) {
       // Get default implementation of the message service.
       m_msgsvc = this->serviceLocator();
@@ -173,23 +166,18 @@ private:
 
 protected:
   /// Set up local caches
-  MSG::Level setUpMessaging() const
-  {
-    if ( UNLIKELY( !m_commonMessagingReady ) ) {
-      initMessaging();
-    }
+  MSG::Level setUpMessaging() const {
+    if ( UNLIKELY( !m_commonMessagingReady ) ) { initMessaging(); }
     return m_level;
   }
   /// Reinitialize internal states.
-  MSG::Level resetMessaging()
-  {
+  MSG::Level resetMessaging() {
     m_commonMessagingReady = false;
     return setUpMessaging();
   }
   /// Update the output level of the cached MsgStream.
   /// This function is meant to be called by the update handler of the OutputLevel property.
-  void updateMsgStreamOutputLevel( int level )
-  {
+  void updateMsgStreamOutputLevel( int level ) {
     setUpMessaging();
     if ( level != MSG::NIL && level != m_level ) {
       if ( msgSvc() ) msgSvc()->setOutputLevel( this->name(), level );

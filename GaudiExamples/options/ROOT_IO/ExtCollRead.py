@@ -15,13 +15,13 @@ esel.Input = [  # new
     # old
     "COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:ROOT_IO.tags' "
     "SVC='Gaudi::RootCnvSvc' SEL='(Ntrack>15)' "
-    "FUN='Gaudi::Examples::EvtCollectionSelector'"]
+    "FUN='Gaudi::Examples::EvtCollectionSelector'"
+]
 evtColl = TagCollectionSvc("EvtTupleSvc")
 
 # Application
-app = ApplicationMgr(TopAlg=[ReadAlg()],
-                     EvtMax=-1,
-                     HistogramPersistency="NONE")
+app = ApplicationMgr(
+    TopAlg=[ReadAlg()], EvtMax=-1, HistogramPersistency="NONE")
 app.ExtSvc.append(evtColl)
 
 # Verbosity

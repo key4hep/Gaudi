@@ -41,8 +41,7 @@
     Author:  M.Frank
     Version: 1.0
 */
-class GAUDI_API SelectStatement : public implements<ISelectStatement>
-{
+class GAUDI_API SelectStatement : public implements<ISelectStatement> {
 public:
   /// Standard Constructor initializing select string
   explicit SelectStatement( const std::string& s, long typ ) : m_select( s ), m_isActive( false ), m_type( typ ) {}
@@ -57,8 +56,7 @@ public:
   /// Access the selection string
   const std::string& criteria() const override { return m_select; }
   /// Set the type
-  void setCriteria( const std::string& crit ) override
-  {
+  void setCriteria( const std::string& crit ) override {
     m_select = crit;
     ( m_select.length() > 0 ) ? m_type |= STRING : m_type &= ~STRING;
   }

@@ -17,8 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace Io
-{
+namespace Io {
 
   //
   // Io modes
@@ -38,8 +37,7 @@ namespace Io
     INVALID = 1 << 31
   };
 
-  class IoFlags final
-  {
+  class IoFlags final {
   public:
     IoFlags() = default;
     IoFlags( int i ) : _f( i ){};
@@ -59,17 +57,13 @@ namespace Io
     bool isRdWr() const { return ( ( _f & RDWR ) != 0 ); }
     bool isInvalid() const { return ( ( _f & INVALID ) != 0 ); }
 
-    bool match( const IoFlags& fa, bool strict = true ) const
-    {
-      if ( strict ) {
-        return ( _f == fa );
-      }
+    bool match( const IoFlags& fa, bool strict = true ) const {
+      if ( strict ) { return ( _f == fa ); }
       // only look at first 2 bits
       return ( ( _f & 3 ) == ( fa & 3 ) );
     }
 
-    std::string bits() const
-    {
+    std::string bits() const {
       std::string    s;
       int            f( _f );
       const int      SHIFT = 8 * sizeof( int ) - 1;
@@ -87,8 +81,7 @@ namespace Io
     int _f = INVALID;
   };
 
-  static std::string IoFlagName( IoFlags f )
-  {
+  static std::string IoFlagName( IoFlags f ) {
     static const std::map<IoFlag, std::string> s_names = {{{READ, "READ"},
                                                            {WRITE, "WRITE"},
                                                            {RDWR, "RDWR"},
@@ -108,8 +101,7 @@ namespace Io
     return ff;
   }
 
-  inline IoFlags IoFlagFromName( const std::string& f )
-  {
+  inline IoFlags IoFlagFromName( const std::string& f ) {
     static const std::map<std::string, IoFlag> s_n = {{{"READ", Io::READ},
                                                        {"WRITE", Io::WRITE},
                                                        {"RDWR", Io::RDWR},
@@ -124,9 +116,7 @@ namespace Io
     std::string fs;
     while ( ( k = f.find( "|", j ) ) != std::string::npos ) {
       fs = f.substr( j, k - j );
-      if ( s_n.find( fs ) == s_n.end() ) {
-        return Io::INVALID;
-      }
+      if ( s_n.find( fs ) == s_n.end() ) { return Io::INVALID; }
       if ( fl.isInvalid() ) {
         fl = s_n.at( fs );
       } else {
@@ -135,9 +125,7 @@ namespace Io
       j = k + 1;
     }
     fs = f.substr( j );
-    if ( s_n.find( fs ) == s_n.end() ) {
-      return Io::INVALID;
-    }
+    if ( s_n.find( fs ) == s_n.end() ) { return Io::INVALID; }
     if ( fl.isInvalid() ) {
       fl = s_n.at( fs );
     } else {
@@ -157,8 +145,7 @@ namespace Io
 
   enum IoTech { UNKNOWN, POSIX, ROOT, BS, HDF5, SQLITE };
 
-  inline std::ostream& operator<<( std::ostream& s, const IoTech& t )
-  {
+  inline std::ostream& operator<<( std::ostream& s, const IoTech& t ) {
     static const std::array<const char*, SQLITE + 1> tbl = {{"UNKNOWN", "POSIX", "ROOT", "BS", "HDF5", "SQLITE"}};
     return t < tbl.size() ? s << tbl[t] : s;
   }
@@ -171,8 +158,7 @@ namespace Io
 
   typedef int Fd;
 
-  class FileAttr final
-  {
+  class FileAttr final {
   public:
     FileAttr() = default;
     FileAttr( Fd f, std::string n, std::string d, IoTech t, IoFlags fa, void* p, bool o, bool s = false )
@@ -206,22 +192,19 @@ namespace Io
     void isOpen( bool b ) { m_isOpen = b; }
     void isShared( bool s ) { m_shared = s; }
 
-    friend std::ostream& operator<<( std::ostream& os, const FileAttr& fa )
-    {
+    friend std::ostream& operator<<( std::ostream& os, const FileAttr& fa ) {
       os << "name: \"" << fa.name() << "\"  tech: " << fa.tech() << "  desc: " << fa.desc()
          << "  flags: " << IoFlagName( fa.flags() ) << "  i_flags: " << IoFlagName( fa.iflags() ) << "  Fd: " << fa.fd()
          << "  ptr: " << fa.fptr() << ( fa.isOpen() ? "  [o]" : "  [c]" ) << ( fa.isShared() ? " [s]" : " [u]" );
       return os;
     }
 
-    bool operator==( const FileAttr& fa ) const
-    {
+    bool operator==( const FileAttr& fa ) const {
       return ( m_fd == fa.fd() && m_name == fa.name() && m_desc == fa.desc() && m_tech == fa.tech() &&
                m_flags == fa.flags() && m_fptr == fa.fptr() && m_isOpen == fa.isOpen() && m_shared == fa.isShared() );
     }
 
-    bool operator<( const FileAttr& rhs ) const
-    {
+    bool operator<( const FileAttr& rhs ) const {
       if ( m_name != rhs.name() ) {
         return ( m_name < rhs.name() );
       } else {
@@ -252,8 +235,8 @@ namespace Io
   typedef int reopen_t;
 
   typedef std::function<Io::open_t( const std::string&, Io::IoFlags, const std::string&, Io::Fd&, void*& )> bfcn_open_t;
-  typedef std::function<Io::close_t( Io::Fd )> bfcn_close_t;
-  typedef std::function<Io::close_t( void* )>  bfcn_closeP_t;
+  typedef std::function<Io::close_t( Io::Fd )>               bfcn_close_t;
+  typedef std::function<Io::close_t( void* )>                bfcn_closeP_t;
   typedef std::function<Io::reopen_t( Io::Fd, Io::IoFlags )> bfcn_reopen_t;
   typedef std::function<Io::reopen_t( void*, Io::IoFlags )>  bfcn_reopenP_t;
 
@@ -285,8 +268,7 @@ namespace Io
   enum Action { OPEN = 0, CLOSE, REOPEN, OPEN_ERR, CLOSE_ERR, REOPEN_ERR, INVALID_ACTION };
   using Action_bitmap = std::bitset<INVALID_ACTION + 1>;
 
-  inline std::ostream& operator<<( std::ostream& s, const Action& t )
-  {
+  inline std::ostream& operator<<( std::ostream& s, const Action& t ) {
     static const std::array<const char*, INVALID_ACTION + 1> tbl = {
         {"OPEN", "CLOSE", "REOPEN", "OPEN_ERR", "CLOSE_ERR", "REOPEN_ERR", "INVALID_ACTION"}};
     return t < tbl.size() ? s << tbl[t] : s;
@@ -294,13 +276,12 @@ namespace Io
 
 #define FILEMGR_CALLBACK_ARGS const Io::FileAttr*, const std::string&
   typedef std::function<StatusCode( FILEMGR_CALLBACK_ARGS )> bfcn_action_t;
-}
+} // namespace Io
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class GAUDI_API IFileMgr : virtual public IService
-{
+class GAUDI_API IFileMgr : virtual public IService {
 
 public:
   DeclareInterfaceID( IFileMgr, 1, 0 );
@@ -329,12 +310,12 @@ public:
 
   // get all files known to mgr. return numbers found.
   // will replace contents of FILES
-  virtual int getFiles( std::vector<std::string>& FILES, bool onlyOpen = true ) const = 0;
+  virtual int getFiles( std::vector<std::string>& FILES, bool onlyOpen = true ) const         = 0;
   virtual int getFiles( std::vector<const Io::FileAttr*>& FILES, bool onlyOpen = true ) const = 0;
 
   // get all files of specific IoTech. returns number found.
   // will replace contents of FILES
-  virtual int getFiles( const Io::IoTech&, std::vector<std::string>& FILES, bool onlyOpen = true ) const = 0;
+  virtual int getFiles( const Io::IoTech&, std::vector<std::string>& FILES, bool onlyOpen = true ) const         = 0;
   virtual int getFiles( const Io::IoTech&, std::vector<const Io::FileAttr*>& FILES, bool onlyOpen = true ) const = 0;
 
   // get all file of specific IoTech and access mode.
@@ -390,10 +371,10 @@ public:
   // Callback actions
   virtual StatusCode regAction( Io::bfcn_action_t, const Io::Action&, const std::string& d = "" ) = 0;
   virtual StatusCode regAction( Io::bfcn_action_t, const Io::Action&, const Io::IoTech&,
-                                const std::string& d = "" ) = 0;
+                                const std::string& d = "" )                                       = 0;
 
   // Suppress callback action(s) for specific file.
-  virtual void suppressAction( const std::string& ) = 0;
+  virtual void suppressAction( const std::string& )                    = 0;
   virtual void suppressAction( const std::string&, const Io::Action& ) = 0;
 };
 #endif

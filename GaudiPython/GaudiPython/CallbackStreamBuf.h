@@ -10,35 +10,30 @@
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================
 
-namespace GaudiPython
-{
+namespace GaudiPython {
   int GAUDI_API call_python_method( PyObject* self, const char* method, char* buf );
 
-  class GAUDI_API CallbackStreamBuf : public std::stringbuf
-  {
+  class GAUDI_API CallbackStreamBuf : public std::stringbuf {
   private:
-    class PyObject_t
-    {
+    class PyObject_t {
       PyObject* m_obj;
 
     public:
-      PyObject_t( PyObject* obj = nullptr ) : m_obj( obj )
-      {
+      PyObject_t( PyObject* obj = nullptr ) : m_obj( obj ) {
         if ( m_obj ) Py_INCREF( m_obj );
       }
-      ~PyObject_t()
-      {
+      ~PyObject_t() {
         if ( m_obj ) Py_DECREF( m_obj );
       }
       PyObject* get() { return m_obj; }
     };
-    PyObject_t m_self;
+    PyObject_t            m_self;
     std::array<char, 512> m_callbackBuff; // used for passing the flushed chars in the python callback
 
   public:
     CallbackStreamBuf( PyObject* self );
     int sync() override;
   };
-}
+} // namespace GaudiPython
 
 #endif

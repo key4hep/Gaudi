@@ -9,8 +9,7 @@ class IIncidentSvc;
 class IncidentListener;
 class IIncidentAsyncTestSvc;
 
-class IncidentAsyncTestAlg : public Algorithm
-{
+class IncidentAsyncTestAlg : public Algorithm {
 public:
   using Algorithm::Algorithm;
 

@@ -5,8 +5,7 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/SystemBase.h"
 
-namespace System
-{
+namespace System {
   // Forward declarations
   class ProcessDescriptor;
   /// Retrieve Process structure
@@ -106,10 +105,8 @@ namespace System
    * @author M.Frank
    * @author Sebastien Ponce
    */
-  class ProcessDescriptor
-  {
-    class ProcessHandle
-    {
+  class ProcessDescriptor {
+    class ProcessHandle {
       void* m_handle;
       bool  m_needRelease;
 
@@ -132,10 +129,9 @@ namespace System
     long query( long pid, InfoType info, long* buffer );
   };
 
-  inline ProcessDescriptor* getProcess()
-  {
+  inline ProcessDescriptor* getProcess() {
     static ProcessDescriptor p;
     return &p;
   }
-}
+} // namespace System
 #endif // GAUDIKERNEL_PROCESS_H

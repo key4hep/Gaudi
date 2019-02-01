@@ -39,12 +39,10 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( HLTEventLoopMgr )
 
-namespace
-{
+namespace {
   struct DataObjIDDotRepr {
     const DataObjID&     parent;
-    friend std::ostream& operator<<( std::ostream& os, const DataObjIDDotRepr& repr )
-    {
+    friend std::ostream& operator<<( std::ostream& os, const DataObjIDDotRepr& repr ) {
       return os << '\"' << repr.parent.fullKey() << '\"';
     }
   };
@@ -55,15 +53,14 @@ namespace
 
   // Sort a DataObjIDColl in a well-defined, reproducible manner.
   // Used for making debugging dumps.
-  std::vector<const DataObjID*> sortedDataObjIDColl( const DataObjIDColl& coll )
-  {
+  std::vector<const DataObjID*> sortedDataObjIDColl( const DataObjIDColl& coll ) {
     std::vector<const DataObjID*> v;
     v.reserve( coll.size() );
     for ( const DataObjID& id : coll ) v.push_back( &id );
     std::sort( v.begin(), v.end(), DataObjIDSorter() );
     return v;
   }
-}
+} // namespace
 
 struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
 
@@ -79,18 +76,14 @@ struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
       , m_evtCtx( std::move( ctx ) )
       , m_aess( aem )
       , m_serviceLocator( svcLocator )
-      , m_parent( parent )
-  {
-  }
+      , m_parent( parent ) {}
 
-  MsgStream log()
-  {
+  MsgStream log() {
     SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
     return MsgStream( messageSvc, "HLTExecutionTask" );
   }
 
-  tbb::task* execute() override
-  {
+  tbb::task* execute() override {
     bool eventfailed = false;
     Gaudi::Hive::setCurrentContext( m_evtCtx.get() );
 
@@ -141,8 +134,7 @@ struct HLTEventLoopMgr::HLTExecutionTask final : tbb::task {
   }
 };
 
-StatusCode HLTEventLoopMgr::initialize()
-{
+StatusCode HLTEventLoopMgr::initialize() {
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() ) {
     error() << "Failed to initialize Service Base class." << endmsg;
@@ -315,9 +307,7 @@ StatusCode HLTEventLoopMgr::initialize()
       for ( const DataObjID* o : sortedDataObjIDColl( unmetDep ) ) {
         ost << "\n   o " << *o << "    required by Algorithm: ";
         for ( const auto& i : algo2Deps ) {
-          if ( i.second->find( *o ) != i.second->end() ) {
-            ost << "\n       * " << i.first->name();
-          }
+          if ( i.second->find( *o ) != i.second->end() ) { ost << "\n       * " << i.first->name(); }
         }
       }
       fatal() << "The following unmet INPUT dependencies were found:" << ost.str() << endmsg;
@@ -355,8 +345,7 @@ StatusCode HLTEventLoopMgr::initialize()
   return sc;
 }
 
-StatusCode HLTEventLoopMgr::finalize()
-{
+StatusCode HLTEventLoopMgr::finalize() {
   StatusCode sc;
   // Save Histograms Now
   if ( m_histoPersSvc ) {
@@ -390,8 +379,7 @@ StatusCode HLTEventLoopMgr::finalize()
   return sc.isFailure() ? sc2.ignore(), sc : sc2;
 }
 
-StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
-{
+StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr ) {
   // Leave the interface intact and swallow this C trick.
   int& createdEvts = *reinterpret_cast<int*>( createdEvts_IntPtr );
 
@@ -429,8 +417,7 @@ StatusCode HLTEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
   return StatusCode::SUCCESS;
 }
 
-StatusCode HLTEventLoopMgr::stopRun()
-{
+StatusCode HLTEventLoopMgr::stopRun() {
   // Set the application return code
   auto appmgr = serviceLocator()->as<IProperty>();
   if ( Gaudi::setAppReturnCode( appmgr, Gaudi::ReturnCode::ScheduledStop ).isFailure() ) {
@@ -439,8 +426,7 @@ StatusCode HLTEventLoopMgr::stopRun()
   return StatusCode::SUCCESS;
 }
 
-StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
-{
+StatusCode HLTEventLoopMgr::nextEvent( int maxevt ) {
   // Calculate runtime
   using Clock = std::chrono::high_resolution_clock;
 
@@ -469,7 +455,7 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
   while ( maxevt < 0 || m_finishedEvt < (unsigned int)maxevt ) {
     // if the created events did not reach maxevt, create an event
     if ( !( ( newEvtAllowed || createdEvts == 0 ) && // Launch the first event alone
-            // The events are not finished with an unlimited number of events
+                                                     // The events are not finished with an unlimited number of events
             createdEvts >= 0 &&
             // The events are not finished with a limited number of events
             ( createdEvts < maxevt || maxevt < 0 ) &&
@@ -479,8 +465,9 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
       std::unique_lock<std::mutex> lock{m_createEventMutex};
       using namespace std::chrono_literals;
       m_createEventCond.wait_for( lock, 1ms, [this, newEvtAllowed, createdEvts, maxevt] {
-        return ( newEvtAllowed || createdEvts == 0 ) && // Launch the first event alone
-               // The events are not finished with an unlimited number of events
+        return ( newEvtAllowed ||
+                 createdEvts == 0 ) && // Launch the first event alone
+                                       // The events are not finished with an unlimited number of events
                createdEvts >= 0 &&
                // The events are not finished with a limited number of events
                ( createdEvts < maxevt || maxevt < 0 ) &&
@@ -510,8 +497,7 @@ StatusCode HLTEventLoopMgr::nextEvent( int maxevt )
   return StatusCode::SUCCESS;
 }
 
-StatusCode HLTEventLoopMgr::declareEventRootAddress()
-{
+StatusCode HLTEventLoopMgr::declareEventRootAddress() {
   IOpaqueAddress* pAddr = nullptr;
   StatusCode      sc    = m_evtSelector->next( *m_evtSelContext );
   if ( sc.isSuccess() ) {
@@ -530,9 +516,7 @@ StatusCode HLTEventLoopMgr::declareEventRootAddress()
     return StatusCode::FAILURE;
   }
   sc = m_evtDataMgrSvc->setRoot( "/Event", pAddr );
-  if ( !sc.isSuccess() ) {
-    warning() << "Error declaring event root address." << endmsg;
-  }
+  if ( !sc.isSuccess() ) { warning() << "Error declaring event root address." << endmsg; }
   return StatusCode::SUCCESS;
 }
 
@@ -540,9 +524,8 @@ StatusCode HLTEventLoopMgr::declareEventRootAddress()
  * It can be possible that an event fails. In this case this method is called.
  * It dumps the state of the scheduler, drains the actions (without executing
  * them) and events in the queues and returns a failure.
-*/
-StatusCode HLTEventLoopMgr::eventFailed( EventContext* eventContext ) const
-{
+ */
+StatusCode HLTEventLoopMgr::eventFailed( EventContext* eventContext ) const {
   fatal() << "*** Event " << eventContext->evt() << " on slot " << eventContext->slot() << " failed! ***" << endmsg;
   std::ostringstream ost;
   m_algExecStateSvc->dump( ost, *eventContext );
@@ -550,8 +533,7 @@ StatusCode HLTEventLoopMgr::eventFailed( EventContext* eventContext ) const
   return StatusCode::FAILURE;
 }
 
-void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventContext ) const
-{
+void HLTEventLoopMgr::promoteToExecuted( std::unique_ptr<EventContext> eventContext ) const {
   // Check if the execution failed
   if ( m_algExecStateSvc->eventStatus( *eventContext ) != EventStatus::Success )
     eventFailed( eventContext.get() ).ignore();

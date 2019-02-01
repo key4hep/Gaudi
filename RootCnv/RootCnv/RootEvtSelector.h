@@ -23,8 +23,7 @@
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // Forward declarations
   class RootCnvSvc;
@@ -37,8 +36,7 @@ namespace Gaudi
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootEvtSelector : public extends<Service, IEvtSelector>
-  {
+  class GAUDI_API RootEvtSelector : public extends<Service, IEvtSelector> {
 
     /// Helper method to issue error messages
     StatusCode error( const std::string& msg ) const;
@@ -142,5 +140,5 @@ namespace Gaudi
     /// Property: File criteria to define item iteration
     std::string m_criteria;
   };
-}
+} // namespace Gaudi
 #endif // GAUDIROOTCNV_ROOTEVTSELECTOR_H

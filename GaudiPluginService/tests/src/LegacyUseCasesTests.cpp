@@ -23,8 +23,7 @@
 
 BOOST_AUTO_TEST_CASE( basic ) { BOOST_CHECK( Base::Factory::create( "Component0" ) != nullptr ); }
 
-BOOST_AUTO_TEST_CASE( basic_with_args )
-{
+BOOST_AUTO_TEST_CASE( basic_with_args ) {
   Base2* instance = Base2::Factory::create( "Component2", "hello", 2 );
   BOOST_CHECK( instance != nullptr );
 
@@ -34,22 +33,19 @@ BOOST_AUTO_TEST_CASE( basic_with_args )
   BOOST_CHECK( c2->s == "hello" );
 }
 
-BOOST_AUTO_TEST_CASE( namespaces )
-{
+BOOST_AUTO_TEST_CASE( namespaces ) {
   BOOST_CHECK( Base::Factory::create( "Test::ComponentA" ) != nullptr );
   BOOST_CHECK( Base::Factory::create( "Test::ComponentB" ) != nullptr );
   BOOST_CHECK( Base::Factory::create( "Test::ComponentC" ) != nullptr );
 }
 
-BOOST_AUTO_TEST_CASE( ids )
-{
+BOOST_AUTO_TEST_CASE( ids ) {
   BOOST_CHECK( Base2::Factory::create( "Id2", "id", -2 ) != nullptr );
   BOOST_CHECK( Base::Factory::create( "A" ) != nullptr );
   BOOST_CHECK( Base::Factory::create( "B" ) != nullptr );
 }
 
-BOOST_AUTO_TEST_CASE( properties )
-{
+BOOST_AUTO_TEST_CASE( properties ) {
   using Gaudi::PluginService::Details::Registry;
   Registry&            reg   = Registry::instance();
   Registry::Properties props = reg.getInfo( "Component1" ).properties;
@@ -57,8 +53,7 @@ BOOST_AUTO_TEST_CASE( properties )
   BOOST_CHECK( props["name"] == "Component1" );
 }
 
-BOOST_AUTO_TEST_CASE( custom_factory )
-{
+BOOST_AUTO_TEST_CASE( custom_factory ) {
   {
     _custom_factory_called = false;
 

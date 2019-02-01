@@ -19,10 +19,8 @@
 #include <Gaudi/Parsers/CommonParsers.h>
 #include <Gaudi/Parsers/InputData.h>
 
-namespace Gaudi
-{
-  namespace Details
-  {
+namespace Gaudi {
+  namespace Details {
     // ============================================================================
     /** PropertyBase base class allowing PropertyBase* collections to be "homogeneous"
      *
@@ -31,8 +29,7 @@ namespace Gaudi
      * \author Vanya BELYAEV ibelyaev@physics.syr.edu
      * \author Marco Clemencic
      */
-    class GAUDI_API PropertyBase
-    {
+    class GAUDI_API PropertyBase {
 
     public:
       /// property name
@@ -71,14 +68,12 @@ namespace Gaudi
       virtual bool useUpdateHandler() = 0;
 
       template <class HT>
-      PropertyBase& declareReadHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
-      {
+      PropertyBase& declareReadHandler( void ( HT::*MF )( PropertyBase& ), HT* instance ) {
         return declareReadHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
       }
 
       template <class HT>
-      PropertyBase& declareUpdateHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
-      {
+      PropertyBase& declareUpdateHandler( void ( HT::*MF )( PropertyBase& ), HT* instance ) {
         return declareUpdateHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
       }
 
@@ -99,8 +94,7 @@ namespace Gaudi
 
       /// set the type of the owner class (used for documentation)
       template <class OWNER>
-      void setOwnerType()
-      {
+      void setOwnerType() {
         setOwnerType( typeid( OWNER ) );
       }
 
@@ -108,22 +102,19 @@ namespace Gaudi
       const std::type_info* ownerType() const { return m_ownerType; }
 
       /// get the string for the type of the owner class (used for documentation)
-      std::string ownerTypeName() const
-      {
+      std::string ownerTypeName() const {
         return m_ownerType ? System::typeinfoName( *m_ownerType ) : std::string( "unknown owner type" );
       }
 
     protected:
       /// constructor from the property name and the type
       PropertyBase( const std::type_info& type, std::string name = "", std::string doc = "" )
-          : m_name( to_view( std::move( name ) ) ), m_documentation( to_view( std::move( doc ) ) ), m_typeinfo( &type )
-      {
-      }
+          : m_name( to_view( std::move( name ) ) )
+          , m_documentation( to_view( std::move( doc ) ) )
+          , m_typeinfo( &type ) {}
       /// constructor from the property name and the type
       PropertyBase( std::string name, const std::type_info& type )
-          : m_name( to_view( std::move( name ) ) ), m_documentation( m_name ), m_typeinfo( &type )
-      {
-      }
+          : m_name( to_view( std::move( name ) ) ), m_documentation( m_name ), m_typeinfo( &type ) {}
       /// copy constructor
       PropertyBase( const PropertyBase& ) = default;
       /// assignment operator
@@ -142,13 +133,11 @@ namespace Gaudi
       const std::type_info* m_ownerType = nullptr;
     };
 
-    inline std::ostream& operator<<( std::ostream& stream, const PropertyBase& prop )
-    {
+    inline std::ostream& operator<<( std::ostream& stream, const PropertyBase& prop ) {
       return prop.fillStream( stream );
     }
 
-    namespace Property
-    {
+    namespace Property {
       using ImmediatelyInvokeHandler = Gaudi::tagged_bool<class ImmediatelyInvokeHandler_tag>;
 
       // ==========================================================================
@@ -177,8 +166,7 @@ namespace Gaudi
       struct DefaultStringConverterImpl {
       public:
         virtual ~DefaultStringConverterImpl() = default;
-        std::string toString( const TYPE& v )
-        {
+        std::string toString( const TYPE& v ) {
           using Gaudi::Utils::toString;
           return toString( v );
         }
@@ -189,8 +177,7 @@ namespace Gaudi
         virtual TYPE fromString( const TYPE& ref_value, const std::string& s ) = 0;
 
       protected:
-        void fromStringImpl( TYPE& buffer, const std::string& s )
-        {
+        void fromStringImpl( TYPE& buffer, const std::string& s ) {
           using Gaudi::Parsers::InputData;
           if ( !parse( buffer, InputData{s} ).isSuccess() ) {
             throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
@@ -199,8 +186,7 @@ namespace Gaudi
       };
       // Specialization of toString for strings (identity function)
       template <>
-      inline std::string DefaultStringConverterImpl<std::string>::toString( const std::string& v )
-      {
+      inline std::string DefaultStringConverterImpl<std::string>::toString( const std::string& v ) {
         return v;
       }
 
@@ -213,8 +199,7 @@ namespace Gaudi
       //
       template <typename TYPE, typename Enable = void>
       struct DefaultStringConverter : DefaultStringConverterImpl<TYPE> {
-        TYPE fromString( const TYPE& ref_value, const std::string& s ) final override
-        {
+        TYPE fromString( const TYPE& ref_value, const std::string& s ) final override {
           TYPE buffer = ref_value;
           this->fromStringImpl( buffer, s );
           return buffer;
@@ -224,8 +209,7 @@ namespace Gaudi
       template <class TYPE>
       struct DefaultStringConverter<TYPE, std::enable_if_t<std::is_default_constructible<TYPE>::value>>
           : DefaultStringConverterImpl<TYPE> {
-        TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override
-        {
+        TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override {
           TYPE buffer{};
           this->fromStringImpl( buffer, s );
           return buffer;
@@ -234,19 +218,15 @@ namespace Gaudi
 
       // Specializable StringConverter struct with a default implementation
       template <typename TYPE>
-      struct StringConverter : DefaultStringConverter<TYPE> {
-      };
+      struct StringConverter : DefaultStringConverter<TYPE> {};
 
       struct NullVerifier {
         template <class TYPE>
-        void operator()( const TYPE& ) const
-        {
-        }
+        void operator()( const TYPE& ) const {}
       };
       template <class TYPE>
       struct BoundedVerifier {
-        void operator()( const TYPE& value ) const
-        {
+        void operator()( const TYPE& value ) const {
           using Gaudi::Utils::toString;
           // throw the exception if the limit is defined and value is outside
           if ( ( m_hasLowerBound && ( value < m_lowerBound ) ) || ( m_hasUpperBound && ( m_upperBound < value ) ) )
@@ -263,40 +243,34 @@ namespace Gaudi
         const TYPE& upper() const { return m_upperBound; }
 
         /// Set lower bound value
-        void setLower( const TYPE& value )
-        {
+        void setLower( const TYPE& value ) {
           m_hasLowerBound = true;
           m_lowerBound    = value;
         }
         /// Set upper bound value
-        void setUpper( const TYPE& value )
-        {
+        void setUpper( const TYPE& value ) {
           m_hasUpperBound = true;
           m_upperBound    = value;
         }
         /// Clear lower bound value
-        void clearLower()
-        {
+        void clearLower() {
           m_hasLowerBound = false;
           m_lowerBound    = TYPE();
         }
         /// Clear upper bound value
-        void clearUpper()
-        {
+        void clearUpper() {
           m_hasUpperBound = false;
           m_upperBound    = TYPE();
         }
 
         /// Set both bounds (lower and upper) at the same time
-        void setBounds( const TYPE& lower, const TYPE& upper )
-        {
+        void setBounds( const TYPE& lower, const TYPE& upper ) {
           setLower( lower );
           setUpper( upper );
         }
 
         /// Clear both bounds (lower and upper) at the same time
-        void clearBounds()
-        {
+        void clearBounds() {
           clearLower();
           clearUpper();
         }
@@ -320,33 +294,27 @@ namespace Gaudi
 
       struct NoHandler {
         void useReadHandler( const PropertyBase& ) const {}
-        void setReadHandler( std::function<void( PropertyBase& )> )
-        {
+        void setReadHandler( std::function<void( PropertyBase& )> ) {
           throw std::logic_error( "setReadHandler not implemented for this class" );
         }
         std::function<void( PropertyBase& )> getReadHandler() const { return nullptr; }
         void                                 useUpdateHandler( const PropertyBase& ) const {}
-        void                                 setUpdateHandler( std::function<void( PropertyBase& )> )
-        {
+        void                                 setUpdateHandler( std::function<void( PropertyBase& )> ) {
           throw std::logic_error( "setUpdateHandler not implemented for this class" );
         }
         std::function<void( PropertyBase& )> getUpdateHandler() const { return nullptr; }
       };
       struct ReadHandler : NoHandler {
         mutable std::function<void( PropertyBase& )> m_readCallBack;
-        void useReadHandler( const PropertyBase& p ) const
-        {
-          if ( m_readCallBack ) {
-            SwapCall{m_readCallBack}( const_cast<PropertyBase&>( p ) );
-          }
+        void                                         useReadHandler( const PropertyBase& p ) const {
+          if ( m_readCallBack ) { SwapCall{m_readCallBack}( const_cast<PropertyBase&>( p ) ); }
         }
         void setReadHandler( std::function<void( PropertyBase& )> fun ) { m_readCallBack = std::move( fun ); }
-        std::function<void( PropertyBase& )>                      getReadHandler() const { return m_readCallBack; }
+        std::function<void( PropertyBase& )> getReadHandler() const { return m_readCallBack; }
       };
       struct UpdateHandler : NoHandler {
         std::function<void( PropertyBase& )> m_updateCallBack;
-        void useUpdateHandler( PropertyBase& p )
-        {
+        void                                 useUpdateHandler( PropertyBase& p ) {
           if ( m_updateCallBack ) {
             try {
               SwapCall{m_updateCallBack}( p );
@@ -359,14 +327,14 @@ namespace Gaudi
         std::function<void( PropertyBase& )> getUpdateHandler() const { return m_updateCallBack; }
       };
       struct ReadUpdateHandler : ReadHandler, UpdateHandler {
-        using ReadHandler::useReadHandler;
-        using ReadHandler::setReadHandler;
         using ReadHandler::getReadHandler;
-        using UpdateHandler::useUpdateHandler;
-        using UpdateHandler::setUpdateHandler;
+        using ReadHandler::setReadHandler;
+        using ReadHandler::useReadHandler;
         using UpdateHandler::getUpdateHandler;
+        using UpdateHandler::setUpdateHandler;
+        using UpdateHandler::useUpdateHandler;
       };
-    }
+    } // namespace Property
 
   } // namespace Details
 
@@ -381,8 +349,7 @@ namespace Gaudi
   // ============================================================================
   template <class TYPE, class VERIFIER = Details::Property::NullVerifier,
             class HANDLERS = Details::Property::UpdateHandler>
-  class Property : public Details::PropertyBase
-  {
+  class Property : public Details::PropertyBase {
   public:
     // ==========================================================================
     /// Hosted type
@@ -410,8 +377,7 @@ namespace Gaudi
     template <class T = StorageType>
     Property( std::string name, T&& value, std::string doc = "" )
         : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
-        , m_value( std::forward<T>( value ) )
-    {
+        , m_value( std::forward<T>( value ) ) {
       m_verifier( m_value );
     }
     /// Autodeclaring constructor with property name, value and documentation.
@@ -419,8 +385,7 @@ namespace Gaudi
     template <typename OWNER, typename T = ValueType,
               typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>,
               typename = std::enable_if_t<std::is_default_constructible<T>::value>>
-    Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" )
-    {
+    Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" ) {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
     }
@@ -429,8 +394,7 @@ namespace Gaudi
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
     Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
-        : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
-    {
+        : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) ) {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
     }
@@ -440,8 +404,7 @@ namespace Gaudi
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
               std::string doc = "" )
-        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ) )
-    {
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ) ) {
       declareUpdateHandler( std::move( handler ) );
     }
 
@@ -451,25 +414,20 @@ namespace Gaudi
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )( PropertyBase& ),
               std::string doc = "" )
         : Property( owner, std::move( name ), std::forward<T>( value ),
-                    [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) )
-    {
-    }
+                    [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) ) {}
     /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "" )
         : Property( owner, std::move( name ), std::forward<T>( value ),
-                    [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ) )
-    {
-    }
+                    [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ) ) {}
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
               Details::Property::ImmediatelyInvokeHandler invoke, std::string doc = "" )
-        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ) )
-    {
+        : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ) ) {
       if ( invoke ) useUpdateHandler();
     }
 
@@ -477,54 +435,44 @@ namespace Gaudi
     /// This constructor is not generated if T is the current type, so that the
     /// compiler picks up the copy constructor instead of this one.
     template <typename T, typename = not_copying<T>>
-    Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
-    {
-    }
+    Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) ) {}
 
     /// Construct an anonymous property with default constructed value.
     /// Can be used only if StorageType is default constructible.
     template <typename T = StorageType, typename = std::enable_if_t<!std::is_reference<T>::value>>
-    Property() : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value()
-    {
-    }
+    Property() : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value() {}
 
     using Details::PropertyBase::declareReadHandler;
     using Details::PropertyBase::declareUpdateHandler;
 
     /// set new callback for reading
-    Details::PropertyBase& declareReadHandler( std::function<void( Details::PropertyBase& )> fun ) override
-    {
+    Details::PropertyBase& declareReadHandler( std::function<void( Details::PropertyBase& )> fun ) override {
       m_handlers.setReadHandler( std::move( fun ) );
       return *this;
     }
     /// set new callback for update
-    Details::PropertyBase& declareUpdateHandler( std::function<void( Details::PropertyBase& )> fun ) override
-    {
+    Details::PropertyBase& declareUpdateHandler( std::function<void( Details::PropertyBase& )> fun ) override {
       m_handlers.setUpdateHandler( std::move( fun ) );
       return *this;
     }
 
     /// get a reference to the readCallBack
-    const std::function<void( Details::PropertyBase& )> readCallBack() const override
-    {
+    const std::function<void( Details::PropertyBase& )> readCallBack() const override {
       return m_handlers.getReadHandler();
     }
     /// get a reference to the updateCallBack
-    const std::function<void( Details::PropertyBase& )> updateCallBack() const override
-    {
+    const std::function<void( Details::PropertyBase& )> updateCallBack() const override {
       return m_handlers.getUpdateHandler();
     }
 
     /// manual trigger for callback for update
-    bool useUpdateHandler() override
-    {
+    bool useUpdateHandler() override {
       m_handlers.useUpdateHandler( *this );
       return true;
     }
 
     /// Automatic conversion to value (const reference).
-    operator const ValueType&() const
-    {
+    operator const ValueType&() const {
       m_handlers.useReadHandler( *this );
       return m_value;
     }
@@ -536,36 +484,31 @@ namespace Gaudi
 
     /// equality comparison
     template <class T>
-    bool operator==( const T& other ) const
-    {
+    bool operator==( const T& other ) const {
       return m_value == other;
     }
 
     /// inequality comparison
     template <class T>
-    bool operator!=( const T& other ) const
-    {
+    bool operator!=( const T& other ) const {
       return m_value != other;
     }
 
     /// "less" comparison
     template <class T>
-    bool operator<( const T& other ) const
-    {
+    bool operator<( const T& other ) const {
       return m_value < other;
     }
 
     /// allow addition if possible between the property and the other types
     template <class T>
-    decltype( auto ) operator+( const T& other ) const
-    {
+    decltype( auto ) operator+( const T& other ) const {
       return m_value + other;
     }
 
     /// Assignment from value.
     template <class T = ValueType>
-    Property& operator=( T&& v )
-    {
+    Property& operator=( T&& v ) {
       m_verifier( v );
       m_value = std::forward<T>( v );
       m_handlers.useUpdateHandler( *this );
@@ -581,13 +524,11 @@ namespace Gaudi
     /// @{
     const ValueType& value() const { return *this; }
     ValueType&       value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
-    bool setValue( const ValueType& v )
-    {
+    bool             setValue( const ValueType& v ) {
       *this = v;
       return true;
     }
-    bool set( const ValueType& v )
-    {
+    bool set( const ValueType& v ) {
       *this = v;
       return true;
     }
@@ -598,133 +539,108 @@ namespace Gaudi
     /// @{
     /// They are instantiated only if they are implemented in the wrapped class.
     template <class T = const ValueType>
-    decltype( auto ) size() const
-    {
+    decltype( auto ) size() const {
       return value().size();
     }
     template <class T = const ValueType>
-    decltype( auto ) length() const
-    {
+    decltype( auto ) length() const {
       return value().length();
     }
     template <class T = const ValueType>
-    decltype( auto ) empty() const
-    {
+    decltype( auto ) empty() const {
       return value().empty();
     }
     template <class T = ValueType>
-    decltype( auto ) clear()
-    {
+    decltype( auto ) clear() {
       value().clear();
     }
     template <class T = const ValueType>
-    decltype( auto ) begin() const
-    {
+    decltype( auto ) begin() const {
       return value().begin();
     }
     template <class T = const ValueType>
-    decltype( auto ) end() const
-    {
+    decltype( auto ) end() const {
       return value().end();
     }
     template <class T = ValueType>
-    decltype( auto ) begin()
-    {
+    decltype( auto ) begin() {
       return value().begin();
     }
     template <class T = ValueType>
-    decltype( auto ) end()
-    {
+    decltype( auto ) end() {
       return value().end();
     }
     template <class ARG>
-    decltype( auto ) operator[]( const ARG& arg ) const
-    {
+    decltype( auto ) operator[]( const ARG& arg ) const {
       return value()[arg];
     }
     template <class ARG>
-    decltype( auto ) operator[]( const ARG& arg )
-    {
+    decltype( auto ) operator[]( const ARG& arg ) {
       return value()[arg];
     }
     template <class T = const ValueType>
-    decltype( auto ) find( const typename T::key_type& key ) const
-    {
+    decltype( auto ) find( const typename T::key_type& key ) const {
       return value().find( key );
     }
     template <class T = ValueType>
-    decltype( auto ) find( const typename T::key_type& key )
-    {
+    decltype( auto ) find( const typename T::key_type& key ) {
       return value().find( key );
     }
     template <class ARG, class T = ValueType>
-    decltype( auto ) erase( ARG arg )
-    {
+    decltype( auto ) erase( ARG arg ) {
       return value().erase( arg );
     }
     template <class = ValueType>
-    Property& operator++()
-    {
+    Property& operator++() {
       ++value();
       return *this;
     }
     template <class = ValueType>
-    ValueType operator++( int )
-    {
+    ValueType operator++( int ) {
       return m_value++;
     }
     template <class = ValueType>
-    Property& operator--()
-    {
+    Property& operator--() {
       --value();
       return *this;
     }
     template <class = ValueType>
-    ValueType operator--( int )
-    {
+    ValueType operator--( int ) {
       return m_value--;
     }
     template <class T = ValueType>
-    Property& operator+=( const T& other )
-    {
+    Property& operator+=( const T& other ) {
       m_value += other;
       return *this;
     }
     template <class T = ValueType>
-    Property& operator-=( const T& other )
-    {
+    Property& operator-=( const T& other ) {
       m_value -= other;
       return *this;
     }
     /// Helpers for DataHandles and derived classes
     template <class T = const ValueType>
-    decltype( auto ) key() const
-    {
+    decltype( auto ) key() const {
       return value().key();
     }
     template <class T = const ValueType>
-    decltype( auto ) objKey() const
-    {
+    decltype( auto ) objKey() const {
       return value().objKey();
     }
     template <class T = const ValueType>
-    decltype( auto ) fullKey() const
-    {
+    decltype( auto ) fullKey() const {
       return value().fullKey();
     }
     template <class T = ValueType>
-    decltype( auto ) initialize()
-    {
+    decltype( auto ) initialize() {
       return value().initialize();
     }
     template <class T = ValueType>
-    decltype( auto ) makeHandles() const
-    {
+    decltype( auto ) makeHandles() const {
       return value().makeHandles();
     }
     template <class ARG, class T = ValueType>
-    decltype( auto ) makeHandles( const ARG& arg ) const
-    {
+    decltype( auto ) makeHandles( const ARG& arg ) const {
       return value().makeHandles( arg );
     }
     /// @}
@@ -733,15 +649,13 @@ namespace Gaudi
     // Delegate operator() to the value
     template <class... Args>
     decltype( std::declval<ValueType>()( std::declval<Args&&>()... ) ) operator()( Args&&... args ) const
-        noexcept( noexcept( std::declval<ValueType>()( std::declval<Args&&>()... ) ) )
-    {
+        noexcept( noexcept( std::declval<ValueType>()( std::declval<Args&&>()... ) ) ) {
       return value()( std::forward<Args>( args )... );
     }
 
   public:
     /// get the value from another property
-    bool assign( const Details::PropertyBase& source ) override
-    {
+    bool assign( const Details::PropertyBase& source ) override {
       // Check if the property of is of "the same" type, except for strings
       const Property* p =
           ( std::is_same<ValueType, std::string>::value ) ? nullptr : dynamic_cast<const Property*>( &source );
@@ -753,27 +667,23 @@ namespace Gaudi
       return true;
     }
     /// set value to another property
-    bool load( Details::PropertyBase& dest ) const override
-    {
+    bool load( Details::PropertyBase& dest ) const override {
       // delegate to the 'opposite' method
       return dest.assign( *this );
     }
     /// string -> value
-    StatusCode fromString( const std::string& source ) override
-    {
+    StatusCode fromString( const std::string& source ) override {
       using Converter = Details::Property::StringConverter<ValueType>;
       *this           = Converter().fromString( m_value, source );
       return StatusCode::SUCCESS;
     }
     /// value  -> string
-    std::string toString() const override
-    {
+    std::string toString() const override {
       using Converter = Details::Property::StringConverter<ValueType>;
       return Converter().toString( *this );
     }
     /// value  -> stream
-    void toStream( std::ostream& out ) const override
-    {
+    void toStream( std::ostream& out ) const override {
       m_handlers.useReadHandler( *this );
       using Utils::toStream;
       toStream( m_value, out );
@@ -782,22 +692,19 @@ namespace Gaudi
 
   /// delegate (value == property) to property operator==
   template <class T, class TP, class V, class H>
-  bool operator==( const T& v, const Property<TP, V, H>& p )
-  {
+  bool operator==( const T& v, const Property<TP, V, H>& p ) {
     return p == v;
   }
 
   /// delegate (value != property) to property operator!=
   template <class T, class TP, class V, class H>
-  bool operator!=( const T& v, const Property<TP, V, H>& p )
-  {
+  bool operator!=( const T& v, const Property<TP, V, H>& p ) {
     return p != v;
   }
 
   /// implemantation of (value + property)
   template <class T, class TP, class V, class H>
-  decltype( auto ) operator+( const T& v, const Property<TP, V, H>& p )
-  {
+  decltype( auto ) operator+( const T& v, const Property<TP, V, H>& p ) {
     return v + p.value();
   }
 
@@ -895,22 +802,19 @@ typedef Gaudi::Property<std::vector<std::string>&> StringArrayPropertyRef;
 /// Helper class to simplify the migration old properties deriving directly from
 /// PropertyBase.
 template <typename Handler = typename Gaudi::Details::Property::UpdateHandler>
-class PropertyWithHandlers : public Gaudi::Details::PropertyBase
-{
+class PropertyWithHandlers : public Gaudi::Details::PropertyBase {
   Handler m_handlers;
 
 public:
   using PropertyBase::PropertyBase;
 
   /// set new callback for reading
-  PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) override
-  {
+  PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) override {
     m_handlers.setReadHandler( std::move( fun ) );
     return *this;
   }
   /// set new callback for update
-  PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) override
-  {
+  PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) override {
     m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
@@ -924,8 +828,7 @@ public:
   void useReadHandler() const { m_handlers.useReadHandler( *this ); }
 
   /// use the call-back function at update, if available
-  bool useUpdateHandler() override
-  {
+  bool useUpdateHandler() override {
     m_handlers.useUpdateHandler( *this );
     return true;
   }
@@ -938,13 +841,11 @@ class GaudiHandleBase;
 // definition is not needed. The rest goes into the .cpp file.
 // The goal is to decouple the header files, to avoid that the whole
 // world depends on GaudiHandle.h
-class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers<>
-{
+class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers<> {
 public:
   GaudiHandleProperty( std::string name, GaudiHandleBase& ref );
 
-  GaudiHandleProperty& operator=( const GaudiHandleBase& value )
-  {
+  GaudiHandleProperty& operator=( const GaudiHandleBase& value ) {
     setValue( value );
     return *this;
   }
@@ -961,8 +862,7 @@ public:
 
   StatusCode fromString( const std::string& s ) override;
 
-  const GaudiHandleBase& value() const
-  {
+  const GaudiHandleBase& value() const {
     useReadHandler();
     return *m_pValue;
   }
@@ -978,13 +878,11 @@ private:
 // forward-declaration is sufficient here
 class GaudiHandleArrayBase;
 
-class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers<>
-{
+class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers<> {
 public:
   GaudiHandleArrayProperty( std::string name, GaudiHandleArrayBase& ref );
 
-  GaudiHandleArrayProperty& operator=( const GaudiHandleArrayBase& value )
-  {
+  GaudiHandleArrayProperty& operator=( const GaudiHandleArrayBase& value ) {
     setValue( value );
     return *this;
   }
@@ -1001,8 +899,7 @@ public:
 
   StatusCode fromString( const std::string& s ) override;
 
-  const GaudiHandleArrayBase& value() const
-  {
+  const GaudiHandleArrayBase& value() const {
     useReadHandler();
     return *m_pValue;
   }
@@ -1015,10 +912,8 @@ private:
   GaudiHandleArrayBase* m_pValue;
 };
 
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** simple function which check the existence of the property with
      *  the given name.
@@ -1143,7 +1038,7 @@ namespace Gaudi
      *  @date   2006-09-09
      */
     GAUDI_API const Gaudi::Details::PropertyBase*
-    getProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, const std::string& name );
+                    getProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, const std::string& name );
     // ========================================================================
     /** simple function to set the property of the given object from the value
      *
@@ -1194,8 +1089,7 @@ namespace Gaudi
      * @date 2007-05-13
      */
     template <class TYPE>
-    StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value )
-    {
+    StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value ) {
       return setProperty( component, name, value, std::string() );
     }
     // ========================================================================
@@ -1246,8 +1140,7 @@ namespace Gaudi
      */
     template <unsigned N>
     StatusCode setProperty( IProperty* component, const std::string& name, const char ( &value )[N],
-                            const std::string& doc = "" )
-    {
+                            const std::string& doc = "" ) {
       return component ? setProperty( component, name, std::string( value, value + N ), doc ) : StatusCode::FAILURE;
     }
     // ========================================================================
@@ -1282,8 +1175,7 @@ namespace Gaudi
      * @date 2007-05-13
      */
     template <class TYPE>
-    StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value, const std::string& doc )
-    {
+    StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value, const std::string& doc ) {
       using Gaudi::Utils::toString;
       return component && hasProperty( component, name )
                  ? Gaudi::Utils::setProperty( component, name, toString( value ), doc )
@@ -1362,8 +1254,7 @@ namespace Gaudi
      */
     template <class TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const Gaudi::Property<TYPE>& value,
-                            const std::string& doc = "" )
-    {
+                            const std::string& doc = "" ) {
       return setProperty( component, name, &value, doc );
     }
     // ========================================================================
@@ -1389,11 +1280,8 @@ namespace Gaudi
      */
     template <class TYPE>
     StatusCode setProperty( IInterface* component, const std::string& name, const TYPE& value,
-                            const std::string& doc = "" )
-    {
-      if ( !component ) {
-        return StatusCode::FAILURE;
-      }
+                            const std::string& doc = "" ) {
+      if ( !component ) { return StatusCode::FAILURE; }
       auto property = SmartIF<IProperty>{component};
       return property ? setProperty( property, name, value, doc ) : StatusCode::FAILURE;
     }
@@ -1443,11 +1331,8 @@ namespace Gaudi
      */
     template <unsigned N>
     StatusCode setProperty( IInterface* component, const std::string& name, const char ( &value )[N],
-                            const std::string& doc = "" )
-    {
-      if ( 0 == component ) {
-        return StatusCode::FAILURE;
-      }
+                            const std::string& doc = "" ) {
+      if ( 0 == component ) { return StatusCode::FAILURE; }
       return setProperty( component, name, std::string{value, value + N}, doc );
     }
     // ========================================================================
@@ -1523,15 +1408,13 @@ namespace Gaudi
      */
     template <class TYPE>
     StatusCode setProperty( IInterface* component, const std::string& name, const Gaudi::Property<TYPE>& value,
-                            const std::string& doc = "" )
-    {
+                            const std::string& doc = "" ) {
       return setProperty( component, name, &value, doc );
     }
     // ========================================================================
-  } // end of namespace Gaudi::Utils
+  } // namespace Utils
 } // end of namespace Gaudi
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_PROPERTY_H
-// ============================================================================

@@ -21,7 +21,7 @@ from GaudiPython.GaudiAlgs import HistoAlgo, SUCCESS
 # =============================================================================
 
 
-class HistoEx1 (HistoAlgo):
+class HistoEx1(HistoAlgo):
     """ Simple algorithm which explicitely book&fill three histograms """
 
     def __init__(self, name):

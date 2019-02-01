@@ -35,19 +35,17 @@
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
 #ifdef WIN32
 // Disable the warning
 //    C4996: 'std::copy': Function call with parameters that may be unsafe
 // The parameters are checked
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
 
     struct NumericalIndefiniteIntegral::_Function {
       gsl_function* fn;
@@ -91,14 +89,9 @@ namespace Genfun
         , m_epsrel( epsrel )
         //
         , m_size( size )
-        , m_argument( function.dimensionality() )
-    {
-      if ( GaudiMath::Integration::Fixed == m_rule ) {
-        m_rule = GaudiMath::Integration::Default;
-      }
-      if ( m_index >= m_DIM ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_argument( function.dimensionality() ) {
+      if ( GaudiMath::Integration::Fixed == m_rule ) { m_rule = GaudiMath::Integration::Default; }
+      if ( m_index >= m_DIM ) { Exception( "::constructor: invalid variable index" ); }
     }
     // ========================================================================
 
@@ -131,11 +124,8 @@ namespace Genfun
         , m_epsrel( epsrel )
         //
         , m_size( size )
-        , m_argument( function.dimensionality() )
-    {
-      if ( m_index >= m_DIM ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_argument( function.dimensionality() ) {
+      if ( m_index >= m_DIM ) { Exception( "::constructor: invalid variable index" ); }
       m_points.push_back( a );
       std::sort( m_points.begin(), m_points.end() );
       m_points.erase( std::unique( m_points.begin(), m_points.end() ), m_points.end() );
@@ -166,11 +156,8 @@ namespace Genfun
         , m_epsabs( epsabs )
         , m_epsrel( epsrel )
         , m_size( size )
-        , m_argument( function.dimensionality() )
-    {
-      if ( m_index >= m_DIM ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_argument( function.dimensionality() ) {
+      if ( m_index >= m_DIM ) { Exception( "::constructor: invalid variable index" ); }
     }
     // ========================================================================
 
@@ -191,16 +178,13 @@ namespace Genfun
         , m_epsabs( right.m_epsabs )
         , m_epsrel( right.m_epsrel )
         , m_size( right.m_size )
-        , m_argument( right.m_argument )
-    {
-    }
+        , m_argument( right.m_argument ) {}
     // ========================================================================
 
     // ========================================================================
     // throw the exception
     // ========================================================================
-    StatusCode NumericalIndefiniteIntegral::Exception( const std::string& message, const StatusCode& sc ) const
-    {
+    StatusCode NumericalIndefiniteIntegral::Exception( const std::string& message, const StatusCode& sc ) const {
       throw GaudiException( "NumericalIndefiniteIntegral::" + message, "*GaudiMath*", sc );
       return sc;
     }
@@ -209,16 +193,13 @@ namespace Genfun
     // ========================================================================
     /// evaluate the function
     // ========================================================================
-    double NumericalIndefiniteIntegral::operator()( const double argument ) const
-    {
+    double NumericalIndefiniteIntegral::operator()( const double argument ) const {
       // reset the result and the error
       m_result = GSL_NEGINF;
       m_error  = GSL_POSINF;
 
       // check the argument
-      if ( 1 != m_DIM ) {
-        Exception( "operator(): invalid argument size " );
-      };
+      if ( 1 != m_DIM ) { Exception( "operator(): invalid argument size " ); };
 
       m_argument[0] = argument;
       return ( *this )( m_argument );
@@ -228,11 +209,8 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Genfun::Derivative NumericalIndefiniteIntegral::partial( unsigned int idx ) const
-    {
-      if ( idx >= m_DIM ) {
-        Exception( "::partial(i): invalid variable index " );
-      };
+    Genfun::Derivative NumericalIndefiniteIntegral::partial( unsigned int idx ) const {
+      if ( idx >= m_DIM ) { Exception( "::partial(i): invalid variable index " ); };
       if ( idx != m_index ) {
         const AbsFunction& aux = NumericalDerivative( *this, idx );
         return Genfun::FunctionNoop( &aux );
@@ -247,21 +225,16 @@ namespace Genfun
     // ========================================================================
     /// evaluate the function
     // ========================================================================
-    double NumericalIndefiniteIntegral::operator()( const Argument& argument ) const
-    {
+    double NumericalIndefiniteIntegral::operator()( const Argument& argument ) const {
       // reset the result and the error
       m_result = GSL_NEGINF;
       m_error  = GSL_POSINF;
 
       // check the argument
-      if ( argument.dimension() != m_DIM ) {
-        Exception( "operator(): invalid argument size " );
-      };
+      if ( argument.dimension() != m_DIM ) { Exception( "operator(): invalid argument size " ); };
 
       // copy the argument
-      for ( size_t i = 0; i < m_DIM; ++i ) {
-        m_argument[i] = argument[i];
-      }
+      for ( size_t i = 0; i < m_DIM; ++i ) { m_argument[i] = argument[i]; }
 
       // create the helper object
       GSL_Helper helper( *m_function, m_argument, m_index );
@@ -300,14 +273,11 @@ namespace Genfun
     // ========================================================================
     /// allocate the integration workspace
     // ========================================================================
-    NumericalIndefiniteIntegral::_Workspace* NumericalIndefiniteIntegral::allocate() const
-    {
+    NumericalIndefiniteIntegral::_Workspace* NumericalIndefiniteIntegral::allocate() const {
       if ( !m_ws ) {
         m_ws.reset( new _Workspace() );
         m_ws->ws = gsl_integration_workspace_alloc( size() );
-        if ( !m_ws->ws ) {
-          Exception( "allocate()::invalid workspace" );
-        };
+        if ( !m_ws->ws ) { Exception( "allocate()::invalid workspace" ); };
       }
       return m_ws.get();
     }
@@ -316,12 +286,9 @@ namespace Genfun
     // ========================================================================
     // adaptive integration on infinite interval
     // ========================================================================
-    double NumericalIndefiniteIntegral::QAGI( _Function* F ) const
-    {
+    double NumericalIndefiniteIntegral::QAGI( _Function* F ) const {
       // check the argument
-      if ( !F ) {
-        Exception( "::QAGI: invalid function" );
-      }
+      if ( !F ) { Exception( "::QAGI: invalid function" ); }
 
       const double x = m_argument[m_index];
 
@@ -340,9 +307,7 @@ namespace Genfun
         Exception( "::QAGI: invalid mode" );
       };
 
-      if ( ierror ) {
-        gsl_error( "NumericalIndefiniteIntegral::QAGI", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QAGI", __FILE__, __LINE__, ierror ); }
 
       return m_result;
     }
@@ -351,11 +316,8 @@ namespace Genfun
     // ========================================================================
     // adaptive integration with known singular points
     // ========================================================================
-    double NumericalIndefiniteIntegral::QAGP( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QAGP::invalid function" );
-      }
+    double NumericalIndefiniteIntegral::QAGP( _Function* F ) const {
+      if ( !F ) { Exception( "QAGP::invalid function" ); }
 
       const double x = m_argument[m_index];
       if ( m_a == x ) {
@@ -365,9 +327,7 @@ namespace Genfun
       }
 
       // no known singular points ?
-      if ( points().empty() ) {
-        return QAGS( F );
-      }
+      if ( points().empty() ) { return QAGS( F ); }
 
       // integration limits
       const auto limits = std::minmax( m_a, x );
@@ -379,20 +339,14 @@ namespace Genfun
       Points pnts;
       pnts.reserve( std::distance( lower, upper ) );
       std::copy( lower, upper, std::back_inserter( pnts ) );
-      if ( *lower != limits.first ) {
-        pnts.insert( pnts.begin(), limits.first );
-      }
-      if ( *upper != limits.second ) {
-        pnts.insert( pnts.end(), limits.second );
-      }
+      if ( *lower != limits.first ) { pnts.insert( pnts.begin(), limits.first ); }
+      if ( *upper != limits.second ) { pnts.insert( pnts.end(), limits.second ); }
 
       // use GSL
       int ierror = gsl_integration_qagp( F->fn, pnts.data(), pnts.size(), m_epsabs, m_epsrel, size(), ws()->ws,
                                          &m_result, &m_error );
 
-      if ( ierror ) {
-        gsl_error( "NumericalIndefiniteIntegral::QAGI ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QAGI ", __FILE__, __LINE__, ierror ); }
 
       // sign
       if ( GaudiMath::Integration::VariableHighLimit == limit() && x < m_a ) {
@@ -408,11 +362,8 @@ namespace Genfun
     // ========================================================================
     // non-adaptive integration
     // ========================================================================
-    double NumericalIndefiniteIntegral::QNG( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QNG::invalid function" );
-      }
+    double NumericalIndefiniteIntegral::QNG( _Function* F ) const {
+      if ( !F ) { Exception( "QNG::invalid function" ); }
 
       const double x = m_argument[m_index];
       if ( m_a == x ) {
@@ -428,9 +379,7 @@ namespace Genfun
       size_t neval  = 0;
       int    ierror = gsl_integration_qng( F->fn, a, b, m_epsabs, m_epsrel, &m_result, &m_error, &neval );
 
-      if ( ierror ) {
-        gsl_error( "NumericalIndefiniteIntegral::QNG ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QNG ", __FILE__, __LINE__, ierror ); }
 
       // sign
       if ( GaudiMath::Integration::VariableHighLimit == limit() && x < m_a ) {
@@ -445,11 +394,8 @@ namespace Genfun
     // ========================================================================
     // simple adaptive integration
     // ========================================================================
-    double NumericalIndefiniteIntegral::QAG( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QAG::invalid function" );
-      }
+    double NumericalIndefiniteIntegral::QAG( _Function* F ) const {
+      if ( !F ) { Exception( "QAG::invalid function" ); }
 
       const double x = m_argument[m_index];
       if ( m_a == x ) {
@@ -467,9 +413,7 @@ namespace Genfun
       int ierror = gsl_integration_qag( F->fn, limits.first, limits.second, m_epsabs, m_epsrel, size(), (int)rule(),
                                         ws()->ws, &m_result, &m_error );
 
-      if ( ierror ) {
-        gsl_error( "NumericalIndefiniteIntegral::QAG ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QAG ", __FILE__, __LINE__, ierror ); }
 
       // sign
       if ( GaudiMath::Integration::VariableHighLimit == limit() && x < m_a ) {
@@ -485,11 +429,8 @@ namespace Genfun
     // ========================================================================
     // adaptive integration with singularities
     // ========================================================================
-    double NumericalIndefiniteIntegral::QAGS( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QAG::invalid function" );
-      }
+    double NumericalIndefiniteIntegral::QAGS( _Function* F ) const {
+      if ( !F ) { Exception( "QAG::invalid function" ); }
 
       const double x = m_argument[m_index];
       if ( m_a == x ) {
@@ -507,9 +448,7 @@ namespace Genfun
       int ierror = gsl_integration_qags( F->fn, limits.first, limits.second, m_epsabs, m_epsrel, size(), ws()->ws,
                                          &m_result, &m_error );
 
-      if ( ierror ) {
-        gsl_error( "NumericalIndefiniteIntegral::QAGS ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QAGS ", __FILE__, __LINE__, ierror ); }
 
       // sign
       if ( GaudiMath::Integration::VariableHighLimit == limit() && x < m_a ) {

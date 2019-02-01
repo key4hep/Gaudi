@@ -12,8 +12,7 @@ class ApplicationMgr;
  *
  * @author Marco Clemencic
  */
-class GAUDI_API ComponentManager : public CommonMessaging<implements<IComponentManager>>
-{
+class GAUDI_API ComponentManager : public CommonMessaging<implements<IComponentManager>> {
 public:
   /// Constructor.
   /// @param application    the manager of managers
@@ -27,8 +26,7 @@ public:
   /// owner.
   StatusCode queryInterface( const InterfaceID& iid, void** pinterface ) override;
 
-  SmartIF<ISvcLocator>& serviceLocator() const override
-  {
+  SmartIF<ISvcLocator>& serviceLocator() const override {
     if ( !m_svcLocator ) m_svcLocator = m_application;
     return m_svcLocator;
   }

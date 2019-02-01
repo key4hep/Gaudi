@@ -19,6 +19,7 @@ from StringIO import StringIO
 class ZipdirError(RuntimeError):
     pass
 
+
 # Collect the changes to be applied to the zip file.
 #
 #  @param directory: directory to be packed in the zip file
@@ -61,7 +62,8 @@ def _zipChanges(directory, infolist):
                     added.append(filename)
                 else:
                     filetime = time.localtime(
-                        os.stat(os.path.join(directory, filename))[stat.ST_MTIME])[:6]
+                        os.stat(os.path.join(directory,
+                                             filename))[stat.ST_MTIME])[:6]
                     if filetime > infos[filename]:
                         action = "M"
                         modified.append(filename)
@@ -76,7 +78,8 @@ def _zipChanges(directory, infolist):
             elif (ext not in [".pyc", ".pyo", ".stamp", ".cmtref", ".confdb"]
                   and not f.startswith('.__afs')):
                 raise ZipdirError(
-                    "Cannot add '%s' to the zip file, only '.py' are allowed." % os.path.join(arcdir, f))
+                    "Cannot add '%s' to the zip file, only '.py' are allowed."
+                    % os.path.join(arcdir, f))
     # check for removed files
     for filename in infos:
         if filename not in all_files:
@@ -115,8 +118,8 @@ def checkEncoding(fileObj):
         logging.getLogger('checkEncoding').debug('checking encoding %s on %s',
                                                  enc, fileObj.name)
     else:
-        logging.getLogger('checkEncoding').debug('checking encoding %s on file object',
-                                                 enc)
+        logging.getLogger('checkEncoding').debug(
+            'checking encoding %s on file object', enc)
     # try to read the file with the declared encoding
     fileObj.seek(0)
     codecs.getreader(enc)(fileObj).read()
@@ -127,7 +130,8 @@ def zipdir(directory, no_pyc=False):
     filename = os.path.realpath(directory + ".zip")
     log = logging.getLogger("zipdir")
     if not os.path.isdir(directory):
-        log.warning('directory %s missing, creating empty .zip file', directory)
+        log.warning('directory %s missing, creating empty .zip file',
+                    directory)
         open(filename, "ab").close()
         return
     msg = "Zipping directory '%s'"
@@ -149,7 +153,8 @@ def zipdir(directory, no_pyc=False):
             infolist = zipfile.ZipFile(filename).infolist()
         else:
             infolist = []
-        (added, modified, untouched, removed) = _zipChanges(directory, infolist)
+        (added, modified, untouched, removed) = _zipChanges(
+            directory, infolist)
         if added or modified or removed:
             tempBuf = StringIO()
             z = zipfile.PyZipFile(tempBuf, "w", zipfile.ZIP_DEFLATED)
@@ -181,6 +186,7 @@ def zipdir(directory, no_pyc=False):
     finally:
         zipFile.close()
 
+
 # Main function of the script.
 #  Parse arguments and call zipdir() for each directory passed as argument
 
@@ -188,12 +194,16 @@ def zipdir(directory, no_pyc=False):
 def main(argv=None):
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] directory1 [directory2 ...]")
-    parser.add_option("--no-pyc", action="store_true",
-                      help="copy the .py files without pre-compiling them")
-    parser.add_option("--quiet", action="store_true",
-                      help="do not print info messages")
-    parser.add_option("--debug", action="store_true",
-                      help="print debug messages (has priority over --quiet)")
+    parser.add_option(
+        "--no-pyc",
+        action="store_true",
+        help="copy the .py files without pre-compiling them")
+    parser.add_option(
+        "--quiet", action="store_true", help="do not print info messages")
+    parser.add_option(
+        "--debug",
+        action="store_true",
+        help="print debug messages (has priority over --quiet)")
 
     if argv is None:
         argv = sys.argv

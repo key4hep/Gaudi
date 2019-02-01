@@ -8,8 +8,7 @@ if __name__ == '__main__':
     from pprint import pprint
     from GaudiSvc import getMetaData
     from optparse import OptionParser
-    parser = OptionParser(usage='%prog filename',
-                          description=__doc__)
+    parser = OptionParser(usage='%prog filename', description=__doc__)
 
     opts, args = parser.parse_args()
 

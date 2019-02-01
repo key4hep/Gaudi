@@ -13,8 +13,7 @@ class IOpaqueAddress;
 
     Small class which allows access to internal type IDs.
 */
-class GAUDI_API DataTypeInfo
-{
+class GAUDI_API DataTypeInfo {
 private:
   // This object cannot be instantiated!
   DataTypeInfo() {}
@@ -85,8 +84,7 @@ public:
   static Type ID( const SmartRef<ContainedObject>& ) { return CONTAINED_REF; }
 
   /// Access to type information: the reverse way
-  static Type ID( const std::type_info& typ )
-  {
+  static Type ID( const std::type_info& typ ) {
     if ( typ == typeid( unsigned char ) )
       return UCHAR;
     else if ( typ == typeid( unsigned short ) )
@@ -130,8 +128,7 @@ public:
   }
 
   /// Access to type information: the reverse way
-  static const std::type_info& type( long typ )
-  {
+  static const std::type_info& type( long typ ) {
     switch ( typ ) {
     case UCHAR:
       return typeid( unsigned char );
@@ -181,8 +178,7 @@ public:
   }
 
   /// Access to type information: the reverse way
-  static long size( long typ )
-  {
+  static long size( long typ ) {
     switch ( typ ) {
     case UCHAR:
       return sizeof( unsigned char );
@@ -232,8 +228,7 @@ public:
   static long size( const std::type_info& typ ) { return size( ID( typ ) ); }
 
   /// Copy data
-  static int copy( void* tar, const void* src, long typ, int numObj )
-  {
+  static int copy( void* tar, const void* src, long typ, int numObj ) {
     switch ( typ ) {
     case UCHAR:
       numObj *= sizeof( unsigned char );

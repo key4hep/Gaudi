@@ -17,8 +17,7 @@
 // Declaration of the Algorithm Factory
 DECLARE_COMPONENT( AnyDataPutAlgorithm )
 
-namespace
-{
+namespace {
   using std::vector;
 }
 
@@ -26,8 +25,7 @@ namespace
 // Standard constructor, initializes variables
 //=============================================================================
 AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator )
-{
+    : GaudiAlgorithm( name, pSvcLocator ) {
   for ( int i = 0; i < 100; i++ ) {
     m_id_vec.emplace_back( "/Event/Test/Ids" + std::to_string( i ), Gaudi::DataHandle::Writer, this );
   }
@@ -36,8 +34,7 @@ AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name, ISvcLocator* 
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode AnyDataPutAlgorithm::execute()
-{
+StatusCode AnyDataPutAlgorithm::execute() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 

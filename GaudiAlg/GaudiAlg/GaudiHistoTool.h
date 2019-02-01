@@ -52,4 +52,3 @@ struct GAUDI_API GaudiHistoTool : GaudiHistos<GaudiTool> {
 // The END
 // ============================================================================
 #endif // GAUDIALG_GAUDIHISTOTOOL_H
-// ============================================================================

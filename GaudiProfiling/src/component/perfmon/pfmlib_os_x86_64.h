@@ -23,17 +23,17 @@
 #define __PFMLIB_OS_X86_64_H__
 
 #ifndef __PFMLIB_OS_H__
-#error "you should never include this file directly, use pfmlib_os.h"
+#  error "you should never include this file directly, use pfmlib_os.h"
 #endif
 
 #include <perfmon/pfmlib_comp.h>
 
 #ifndef __x86_64__
-#error "you should not be including this file"
+#  error "you should not be including this file"
 #endif
 
 #ifndef __PFMLIB_OS_COMPILE
-#include <perfmon/perfmon.h>
+#  include <perfmon/perfmon.h>
 /*
  * macros version of pfm_self_start/pfm_self_stop to be used in per-process self-monitoring sessions.
  * they are also defined as real functions.

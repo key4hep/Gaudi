@@ -9,8 +9,7 @@
 using namespace System;
 namespace bf = boost::filesystem;
 
-int main()
-{
+int main() {
   int err( 0 );
   std::cout << "*** PathResolver_test starts ***" << std::endl;
 
@@ -25,11 +24,11 @@ int main()
   std::string ref4( "C:/WINNT/explorer.exe" );
   setEnv( "DATAPATH", "..\\tests\\PathResolver;..\\tests\\PathResolver\\A;..\\tests\\PathResolver\\B", 1 );
 #else
-#if defined( __APPLE__ )
+#  if defined( __APPLE__ )
   std::string ref4( "/usr/bin/true" );
-#else
+#  else
   std::string ref4( "/bin/true" );
-#endif
+#  endif
   setEnv( "DATAPATH", "../tests/PathResolver:../tests/PathResolver/A:../tests/PathResolver/B", 1 );
 #endif
 

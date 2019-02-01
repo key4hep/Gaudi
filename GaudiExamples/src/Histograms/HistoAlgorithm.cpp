@@ -11,7 +11,8 @@
 DECLARE_COMPONENT( HistoAlgorithm )
 
 //------------------------------------------------------------------------------
-HistoAlgorithm::HistoAlgorithm( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
+HistoAlgorithm::HistoAlgorithm( const std::string& name, ISvcLocator* pSvcLocator )
+    : Algorithm( name, pSvcLocator )
 //------------------------------------------------------------------------------
 {
   m_h1D = m_h1DVar = 0;

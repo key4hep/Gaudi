@@ -26,10 +26,8 @@
  *  @date 2007-04-09
  */
 // ============================================================================
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     /** @class EvtColAlg
      *  Example of usage GaudiTupleAlg base class
      *  @attention the action of Tuples::TupleObg::write uis restored again!
@@ -38,15 +36,11 @@ namespace Gaudi
      *  @date 2005-08-17
      */
     // ========================================================================
-    class EvtColAlg : public GaudiTupleAlg
-    {
+    class EvtColAlg : public GaudiTupleAlg {
     public:
-      StatusCode initialize() override
-      {
+      StatusCode initialize() override {
         StatusCode sc = GaudiTupleAlg::initialize();
-        if ( sc.isFailure() ) {
-          return sc;
-        }
+        if ( sc.isFailure() ) { return sc; }
         // check for random numbers service
         Assert( randSvc() != 0, "Random Service is not available!" );
         //
@@ -58,8 +52,7 @@ namespace Gaudi
        *  @param name algorrithm instance name
        *  @param pSvc pointer to service locator
        */
-      EvtColAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc )
-      {
+      EvtColAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc ) {
         /// redefine the default values for various properties
         setProperty( "NTupleProduce", "false" ).ignore();
         setProperty( "NTuplePrint", "false" ).ignore();
@@ -81,32 +74,23 @@ namespace Gaudi
       EvtColAlg& operator=( const EvtColAlg& );
     };
     // ========================================================================
-  } // end of namespace Gaudi::Examples
+  } // namespace Examples
 } // end of namespace Gaudi
 // ============================================================================
 /// the only one real method - algorithm execution
 // ============================================================================
-StatusCode Gaudi::Examples::EvtColAlg::execute()
-{
+StatusCode Gaudi::Examples::EvtColAlg::execute() {
   static int s_nEvt = 0;
   static int s_nRun = 0;
 
-  if ( 1 == ++s_nEvt % 50 ) {
-    ++s_nRun;
-  }
+  if ( 1 == ++s_nEvt % 50 ) { ++s_nRun; }
 
   DataObject* event = get<DataObject>( "/Event" );
-  if ( 0 == event ) {
-    return StatusCode::FAILURE;
-  }
+  if ( 0 == event ) { return StatusCode::FAILURE; }
   IRegistry* registry = event->registry();
-  if ( 0 == registry ) {
-    return Error( "IRegistry* point to NULL!" );
-  }
+  if ( 0 == registry ) { return Error( "IRegistry* point to NULL!" ); }
   IOpaqueAddress* address = registry->address();
-  if ( 0 == address ) {
-    return Error( "Address points to NULL!" );
-  }
+  if ( 0 == address ) { return Error( "Address points to NULL!" ); }
 
   Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
   Rndm::Numbers flat( randSvc(), Rndm::Flat( -10.0, 10.0 ) );

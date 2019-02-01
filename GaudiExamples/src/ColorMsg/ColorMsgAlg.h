@@ -9,8 +9,7 @@
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
  */
 
-class ColorMsgAlg : public Algorithm
-{
+class ColorMsgAlg : public Algorithm {
 
 public:
   ColorMsgAlg( const std::string& name, ISvcLocator* pSvcLocator );

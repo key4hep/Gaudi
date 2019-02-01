@@ -15,17 +15,14 @@
 // ============================================================================
 #include "GaudiExamples/MyTrack.h"
 // ============================================================================
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     /** @class SelFilter
      *  Simple class to create few "containers" in TES
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2008-07-23
      */
-    class SelFilter : public GaudiAlgorithm
-    {
+    class SelFilter : public GaudiAlgorithm {
       // ======================================================================
       using Range     = Gaudi::Range_<Gaudi::Examples::MyTrack::ConstVector>;
       using Selection = Gaudi::Examples::MyTrack::Selection;
@@ -41,8 +38,7 @@ namespace Gaudi
       // using GaudiAlgorithm::GaudiAlgorithm;
       // ======================================================================
       /// the only one essential method
-      StatusCode execute() override
-      {
+      StatusCode execute() override {
 
         static Rndm::Numbers flat( randSvc(), Rndm::Flat( -1, 1 ) );
 
@@ -83,7 +79,7 @@ namespace Gaudi
       }
     };
     // ========================================================================
-  } // end of namespace Gaudi::Examples
+  } // namespace Examples
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)

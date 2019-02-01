@@ -31,14 +31,12 @@ static const InterfaceID IID_IRndmGaussianTail( 163, 1, 0 );
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API IRndmGen : virtual public IInterface
-{
+class GAUDI_API IRndmGen : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IRndmGen, 2, 0 );
 
-  class Param
-  {
+  class Param {
   protected:
     /// Type of the generator
     const InterfaceID m_type;
