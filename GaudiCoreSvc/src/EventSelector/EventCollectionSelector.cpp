@@ -22,8 +22,7 @@ DECLARE_COMPONENT( EventCollectionSelector )
  *  @author  M.Frank
  *  @version 1.0
  */
-class EventCollectionContext : public IEvtSelector::Context
-{
+class EventCollectionContext : public IEvtSelector::Context {
 public:
   typedef std::list<std::string> ListName;
 
@@ -40,26 +39,24 @@ public:
   EventCollectionContext( const EventCollectionSelector* pSelector );
   /// Standard destructor
   ~EventCollectionContext() override;
-  const std::string& currentInput() const { return m_currentInput; }
-  void setCurrentInput( const std::string& v ) { m_currentInput = v; }
-  ListName&                                files() { return m_files; }
-  void*                                    identifier() const override { return (void*)m_pSelector; }
-  void setCriteria( const std::string& crit ) { m_criteria = crit; }
-  ListName::const_iterator             fileIterator() { return m_fileIterator; }
-  void setFileIterator( ListName::const_iterator new_iter ) { m_fileIterator = new_iter; }
+  const std::string&       currentInput() const { return m_currentInput; }
+  void                     setCurrentInput( const std::string& v ) { m_currentInput = v; }
+  ListName&                files() { return m_files; }
+  void*                    identifier() const override { return (void*)m_pSelector; }
+  void                     setCriteria( const std::string& crit ) { m_criteria = crit; }
+  ListName::const_iterator fileIterator() { return m_fileIterator; }
+  void                     setFileIterator( ListName::const_iterator new_iter ) { m_fileIterator = new_iter; }
 };
 
 EventCollectionContext::~EventCollectionContext() { m_pAddressBuffer->release(); }
 
-EventCollectionContext::EventCollectionContext( const EventCollectionSelector* pSelector ) : m_pSelector( pSelector )
-{
+EventCollectionContext::EventCollectionContext( const EventCollectionSelector* pSelector ) : m_pSelector( pSelector ) {
   m_pAddressBuffer = new GenericAddress();
   m_pAddressBuffer->addRef();
 }
 
 // IService implementation: Db event selector override
-StatusCode EventCollectionSelector::initialize()
-{
+StatusCode EventCollectionSelector::initialize() {
   // Initialize base class
   StatusCode status = Service::initialize();
   if ( !status.isSuccess() ) {
@@ -81,8 +78,7 @@ StatusCode EventCollectionSelector::initialize()
 }
 
 // Connect collection to selector
-StatusCode EventCollectionSelector::connectDataSource( const std::string& db, const std::string& /* typ */ ) const
-{
+StatusCode EventCollectionSelector::connectDataSource( const std::string& db, const std::string& /* typ */ ) const {
   StatusCode              status = StatusCode::FAILURE;
   SmartIF<IDataSourceMgr> svc( m_tupleSvc );
   if ( svc && !db.empty() ) {
@@ -93,9 +89,7 @@ StatusCode EventCollectionSelector::connectDataSource( const std::string& db, co
     else
       ident += "TYP='" + m_dbType + "' ";
     ident += "OPT='READ' ";
-    if ( m_authentication.length() > 0 ) {
-      ident += "AUTH='" + m_authentication + "' ";
-    }
+    if ( m_authentication.length() > 0 ) { ident += "AUTH='" + m_authentication + "' "; }
     status = svc->connect( ident );
   }
   return status;
@@ -103,8 +97,7 @@ StatusCode EventCollectionSelector::connectDataSource( const std::string& db, co
 
 /// Connect to existing N-tuple
 StatusCode EventCollectionSelector::connectTuple( const std::string& nam, const std::string& itName,
-                                                  NTuple::Tuple*& tup, NTuple::Item<IOpaqueAddress*>*& item ) const
-{
+                                                  NTuple::Tuple*& tup, NTuple::Item<IOpaqueAddress*>*& item ) const {
   std::string top    = "/NTUPLES/" + name() + '/' + nam;
   StatusCode  status = m_tupleSvc->retrieveObject( top, (DataObject*&)tup );
   if ( status.isSuccess() ) {
@@ -123,8 +116,7 @@ StatusCode EventCollectionSelector::connectTuple( const std::string& nam, const 
 
 /// Connect selection statement to refine data access
 StatusCode EventCollectionSelector::connectStatement( const std::string& typ, const std::string& crit,
-                                                      INTuple* tuple ) const
-{
+                                                      INTuple* tuple ) const {
   std::string seltyp = typ;
   if ( !seltyp.empty() || !crit.empty() ) {
     if ( !crit.empty() && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
@@ -140,8 +132,7 @@ StatusCode EventCollectionSelector::connectStatement( const std::string& typ, co
 }
 
 /// Read next record of the N-tuple
-StatusCode EventCollectionSelector::getNextRecord( NTuple::Tuple* tuple ) const
-{
+StatusCode EventCollectionSelector::getNextRecord( NTuple::Tuple* tuple ) const {
   StatusCode status = StatusCode::FAILURE;
   if ( tuple ) {
     do {
@@ -149,9 +140,7 @@ StatusCode EventCollectionSelector::getNextRecord( NTuple::Tuple* tuple ) const
       if ( status.isSuccess() ) {
         ISelectStatement* statement = tuple->selector();
         bool              use_it    = ( statement ) ? ( *statement )( tuple ) : true;
-        if ( use_it ) {
-          return status;
-        }
+        if ( use_it ) { return status; }
       }
     } while ( status.isSuccess() );
   }
@@ -159,8 +148,7 @@ StatusCode EventCollectionSelector::getNextRecord( NTuple::Tuple* tuple ) const
 }
 
 /// Read previous record of the N-tuple
-StatusCode EventCollectionSelector::getPreviousRecord( NTuple::Tuple* tuple ) const
-{
+StatusCode EventCollectionSelector::getPreviousRecord( NTuple::Tuple* tuple ) const {
   StatusCode status = StatusCode::FAILURE;
   if ( tuple ) {
     IRegistry* pReg = tuple->registry();
@@ -175,9 +163,7 @@ StatusCode EventCollectionSelector::getPreviousRecord( NTuple::Tuple* tuple ) co
             if ( status.isSuccess() ) {
               ISelectStatement* statement = tuple->selector();
               bool              use_it    = ( statement ) ? ( *statement )( tuple ) : true;
-              if ( use_it ) {
-                return status;
-              }
+              if ( use_it ) { return status; }
             }
           } else {
             return StatusCode::FAILURE;
@@ -190,8 +176,7 @@ StatusCode EventCollectionSelector::getPreviousRecord( NTuple::Tuple* tuple ) co
 }
 
 // Connect collection to selector
-StatusCode EventCollectionSelector::connectCollection( MyContextType* ctxt ) const
-{
+StatusCode EventCollectionSelector::connectCollection( MyContextType* ctxt ) const {
   if ( ctxt ) {
     StatusCode status = connectDataSource( m_database, m_dbType );
     if ( status.isSuccess() ) {
@@ -210,8 +195,7 @@ StatusCode EventCollectionSelector::connectCollection( MyContextType* ctxt ) con
 }
 
 // Finalize service
-StatusCode EventCollectionSelector::finalize()
-{
+StatusCode EventCollectionSelector::finalize() {
   // release services
   m_pAddrCreator = nullptr;
   m_tupleSvc     = nullptr;
@@ -219,8 +203,7 @@ StatusCode EventCollectionSelector::finalize()
 }
 
 /// Create a new event loop context
-StatusCode EventCollectionSelector::createContext( Context*& refpCtxt ) const
-{
+StatusCode EventCollectionSelector::createContext( Context*& refpCtxt ) const {
   refpCtxt          = nullptr;
   auto       ctxt   = std::make_unique<MyContextType>();
   StatusCode status = connectCollection( ctxt.get() );
@@ -236,15 +219,12 @@ StatusCode EventCollectionSelector::createContext( Context*& refpCtxt ) const
 StatusCode EventCollectionSelector::next( Context& refCtxt ) const { return next( refCtxt, 1 ); }
 
 /// Get next iteration item from the event loop context, but skip jump elements
-StatusCode EventCollectionSelector::next( Context& refCtxt, int jump ) const
-{
+StatusCode EventCollectionSelector::next( Context& refCtxt, int jump ) const {
   MyContextType* ctxt = dynamic_cast<MyContextType*>( &refCtxt );
   if ( ctxt ) {
     *( ctxt->item ) = ctxt->addressBuffer;
     StatusCode sc   = StatusCode::SUCCESS;
-    for ( int i = 0; i < jump && sc.isSuccess(); ++i ) {
-      sc = getNextRecord( ctxt->tuple );
-    }
+    for ( int i = 0; i < jump && sc.isSuccess(); ++i ) { sc = getNextRecord( ctxt->tuple ); }
     return sc;
   }
   return StatusCode::FAILURE;
@@ -254,15 +234,12 @@ StatusCode EventCollectionSelector::next( Context& refCtxt, int jump ) const
 StatusCode EventCollectionSelector::previous( Context& refCtxt ) const { return previous( refCtxt, 1 ); }
 
 /// Get previous iteration item from the event loop context, but skip jump elements
-StatusCode EventCollectionSelector::previous( Context& refCtxt, int jump ) const
-{
+StatusCode EventCollectionSelector::previous( Context& refCtxt, int jump ) const {
   MyContextType* ctxt = dynamic_cast<MyContextType*>( &refCtxt );
   if ( ctxt ) {
     *( ctxt->item ) = ctxt->addressBuffer;
     StatusCode sc   = StatusCode::SUCCESS;
-    for ( int i = 0; i < jump && sc.isSuccess(); ++i ) {
-      sc = getPreviousRecord( ctxt->tuple );
-    }
+    for ( int i = 0; i < jump && sc.isSuccess(); ++i ) { sc = getPreviousRecord( ctxt->tuple ); }
     return sc;
   }
   return StatusCode::FAILURE;
@@ -272,8 +249,7 @@ StatusCode EventCollectionSelector::previous( Context& refCtxt, int jump ) const
 StatusCode EventCollectionSelector::rewind( Context& /* refCtxt */ ) const { return StatusCode::FAILURE; }
 
 /// Create new Opaque address corresponding to the current record
-StatusCode EventCollectionSelector::createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const
-{
+StatusCode EventCollectionSelector::createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const {
   const MyContextType* ctxt = dynamic_cast<const MyContextType*>( &refCtxt );
   if ( ctxt ) {
     IOpaqueAddress* pA = *( ctxt->item );
@@ -293,8 +269,7 @@ StatusCode EventCollectionSelector::createAddress( const Context& refCtxt, IOpaq
 }
 
 /// Release existing event iteration context
-StatusCode EventCollectionSelector::releaseContext( Context*& refCtxt ) const
-{
+StatusCode EventCollectionSelector::releaseContext( Context*& refCtxt ) const {
   MyContextType* ctxt = dynamic_cast<MyContextType*>( refCtxt );
   if ( ctxt ) {
     delete ctxt;
@@ -306,8 +281,7 @@ StatusCode EventCollectionSelector::releaseContext( Context*& refCtxt ) const
 
 /// Will set a new criteria for the selection of the next list of events and will change
 /// the state of the context in a way to point to the new list.
-StatusCode EventCollectionSelector::resetCriteria( const std::string& cr, Context& refCtxt ) const
-{
+StatusCode EventCollectionSelector::resetCriteria( const std::string& cr, Context& refCtxt ) const {
   MyContextType* ctxt = dynamic_cast<MyContextType*>( &refCtxt );
   if ( ctxt ) {
     ctxt->criteria = cr;

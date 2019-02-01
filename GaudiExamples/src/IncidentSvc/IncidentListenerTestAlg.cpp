@@ -13,8 +13,7 @@ std::string IncidentListenerTestAlg::s_incidentType = "TestIncident";
 std::string& IncidentListenerTestAlg::incident() { return s_incidentType; }
 
 //=============================================================================
-StatusCode IncidentListenerTestAlg::initialize()
-{
+StatusCode IncidentListenerTestAlg::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize();
   if ( sc.isFailure() ) return sc;
 
@@ -49,16 +48,14 @@ StatusCode IncidentListenerTestAlg::initialize()
 }
 
 //=============================================================================
-StatusCode IncidentListenerTestAlg::execute()
-{
+StatusCode IncidentListenerTestAlg::execute() {
   info() << "Firing incident" << endmsg;
   m_incSvc->fireIncident( Incident( name(), incident() ) );
   return StatusCode::SUCCESS;
 }
 
 //=============================================================================
-StatusCode IncidentListenerTestAlg::finalize()
-{
+StatusCode IncidentListenerTestAlg::finalize() {
   info() << "Finalize" << endmsg;
   return GaudiAlgorithm::finalize();
 }

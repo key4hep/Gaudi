@@ -55,13 +55,11 @@
  *  @date 2006-05-12
  */
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
   class Histo1DDef;
   // ==========================================================================
-  namespace Parsers
-  {
+  namespace Parsers {
     // ========================================================================
     /** parse the <c>bool</c> value
      *  @see Gaudi::Parsers::BoolGrammar
@@ -415,8 +413,7 @@ namespace Gaudi
      *  @see Gaudi::Parsers::MapGrammar
      */
     template <typename K, typename V, typename M>
-    GAUDI_API StatusCode parse( GaudiUtils::Map<K, V, M>& result, const std::string& input )
-    {
+    GAUDI_API StatusCode parse( GaudiUtils::Map<K, V, M>& result, const std::string& input ) {
       return parse( (M&)result, input );
     }
     // ========================================================================
@@ -489,18 +486,13 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <class T, unsigned int N>
-    StatusCode parse( T ( &result )[N], const std::string& input )
-    {
+    StatusCode parse( T ( &result )[N], const std::string& input ) {
       typedef std::vector<T> _Vct;
       // create the temporary vector
       _Vct       tmp;
       StatusCode sc = parse( tmp, input );
-      if ( sc.isFailure() ) {
-        return sc;
-      } //  RETURN
-      if ( N != tmp.size() ) {
-        return StatusCode::FAILURE;
-      } //  RETURN
+      if ( sc.isFailure() ) { return sc; }                   //  RETURN
+      if ( N != tmp.size() ) { return StatusCode::FAILURE; } //  RETURN
       //
       std::copy( tmp.begin(), tmp.end(), result );
       //
@@ -515,16 +507,13 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <unsigned int N>
-    StatusCode parse( char ( &result )[N], const std::string& input )
-    {
+    StatusCode parse( char ( &result )[N], const std::string& input ) {
       // clear the string
       std::fill_n( result, N, ' ' );
       // create the temporary string
       std::string tmp;
       StatusCode  sc = parse( tmp, input );
-      if ( sc.isFailure() ) {
-        return sc;
-      } //  RETURN
+      if ( sc.isFailure() ) { return sc; } //  RETURN
       if ( N == tmp.size() ) {
         std::copy( tmp.begin(), tmp.end(), result );
       } else if ( N + 2 == tmp.size() && ( '\'' == tmp[0] || '\"' == tmp[0] ) && ( tmp[0] == tmp[tmp.size() - 1] ) ) {
@@ -536,6 +525,6 @@ namespace Gaudi
       return StatusCode::SUCCESS; //  RETURN
     }
     // ========================================================================
-  } //                                          end of namespace Gaudi::Parsers
+  } // namespace Parsers
   // ==========================================================================
 } //                                                     end of namespace Gaudi

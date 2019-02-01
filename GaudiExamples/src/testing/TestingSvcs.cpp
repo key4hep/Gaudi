@@ -1,18 +1,15 @@
 #include "GaudiKernel/Service.h"
 
-namespace GaudiTesting
-{
+namespace GaudiTesting {
 
   /** Special service that issue a failure in one of the transitions (for testing).
    */
-  class FailingSvc : public Service
-  {
+  class FailingSvc : public Service {
   public:
     /// Standard Constructor
     using Service::Service;
 
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       StatusCode sc = Service::initialize();
       if ( sc.isFailure() ) {
         error() << "failed to initialize base class" << endmsg;
@@ -20,8 +17,7 @@ namespace GaudiTesting
       }
       return handle( "initialize" );
     }
-    StatusCode start() override
-    {
+    StatusCode start() override {
       StatusCode sc = Service::start();
       if ( sc.isFailure() ) {
         error() << "failed to start base class" << endmsg;
@@ -29,14 +25,12 @@ namespace GaudiTesting
       }
       return handle( "start" );
     }
-    StatusCode stop() override
-    {
+    StatusCode stop() override {
       StatusCode sc = handle( "stop" );
       if ( sc.isFailure() ) return sc;
       return Service::stop();
     }
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       StatusCode sc = handle( "finalize" );
       if ( sc.isFailure() ) return sc;
       return Service::finalize();
@@ -47,8 +41,7 @@ namespace GaudiTesting
         this, "Transition", "", "In which transition to fail ['initialize', 'start', 'stop',  'finalize']"};
     Gaudi::Property<std::string> m_mode{this, "Mode", "failure", "Type of failure ['failure',  'exception']"};
 
-    inline StatusCode handle( const std::string& transition )
-    {
+    inline StatusCode handle( const std::string& transition ) {
       if ( m_transition == transition ) {
         if ( m_mode == "exception" ) {
           throw GaudiException( "forced failure in " + transition, name(), StatusCode::FAILURE );
@@ -63,4 +56,4 @@ namespace GaudiTesting
   };
 
   DECLARE_COMPONENT( FailingSvc )
-}
+} // namespace GaudiTesting

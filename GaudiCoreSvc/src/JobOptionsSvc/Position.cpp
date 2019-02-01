@@ -10,7 +10,6 @@
 // Boost:
 // ============================================================================
 #include <boost/format.hpp>
-std::string Gaudi::Parsers::Position::ToString() const
-{
+std::string Gaudi::Parsers::Position::ToString() const {
   return str( boost::format( "%1%: (%2%, %3%)" ) % filename_ % line_ % column_ );
 }

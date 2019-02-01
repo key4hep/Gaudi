@@ -8,17 +8,14 @@
 // ============================================================================
 // forward declarations
 // ============================================================================
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D;
   class IProfile1D;
   class IBaseHistogram;
-}
+} // namespace AIDA
 // ============================================================================
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** @namespace Gaudi::Utils::Histos
      *  Collection of useful utilities for manipulations with
@@ -26,8 +23,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2007-08-08
      */
-    namespace Histos
-    {
+    namespace Histos {
       // ======================================================================
       /** @namespace Gaudi::Utils::Histos::Formats
        *
@@ -70,8 +66,7 @@ namespace Gaudi
        *  @author Vanya BELYAEV ibelyaev@physics.syed.edu
        *  @date 2007-08-07
        */
-      namespace Formats
-      {
+      namespace Formats {
         // ====================================================================
         /** the ID for predefined formats
          *  - Default   : the default format
@@ -120,7 +115,7 @@ namespace Gaudi
          */
         GAUDI_API std::string header( const int ID = Default );
         // ====================================================================
-      } // end of namespace Gaudi::Utils::Histos::Formats
+      } // namespace Formats
       // ======================================================================
       /** get the path in THS for AIDA histogram
        *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -279,12 +274,9 @@ namespace Gaudi
        *  @param fmt    the format to be used
        */
       template <class HISTO, class STREAM, class TERMINATOR>
-      inline STREAM& printList( HISTO first, HISTO last, const std::string& fmt, STREAM& stream, TERMINATOR term )
-      {
-        for ( ; first != last; ++first ) {
-          stream << format( *first, fmt ) << term;
-        }              // print table rows
-        return stream; // RETURN
+      inline STREAM& printList( HISTO first, HISTO last, const std::string& fmt, STREAM& stream, TERMINATOR term ) {
+        for ( ; first != last; ++first ) { stream << format( *first, fmt ) << term; } // print table rows
+        return stream;                                                                // RETURN
       }
       // ======================================================================
       /** print the simple container of histograms as table
@@ -311,8 +303,7 @@ namespace Gaudi
        *  @param fmt    the format to be used
        */
       template <class LIST, class STREAM, class TERMINATOR>
-      inline STREAM& printList( const LIST& histos, const std::string& fmt, STREAM& stream, TERMINATOR term )
-      {
+      inline STREAM& printList( const LIST& histos, const std::string& fmt, STREAM& stream, TERMINATOR term ) {
         return printList( histos.begin(), histos.end(), fmt, stream, term );
       }
       // ======================================================================
@@ -362,8 +353,7 @@ namespace Gaudi
        */
       template <class HISTO, class STREAM, class TERMINATOR>
       inline STREAM& printMap( HISTO begin, HISTO end, const std::string& fmt1, const std::string& fmt2, STREAM& stream,
-                               TERMINATOR term )
-      {
+                               TERMINATOR term ) {
         for ( ; begin != end; ++begin ) {
           stream << format( begin->second, // the histogram
                             begin->first,  // the key
@@ -417,8 +407,7 @@ namespace Gaudi
        */
       template <class MAP, class STREAM, class TERMINATOR>
       inline STREAM& printMap( const MAP& histos, const std::string& fmt1, const std::string& fmt2, STREAM& stream,
-                               TERMINATOR term )
-      {
+                               TERMINATOR term ) {
         return printMap( histos.begin(), histos.end(), fmt1, fmt2, stream, term );
       }
       // ======================================================================
@@ -435,8 +424,7 @@ namespace Gaudi
        *  @date   2007-08-07
        */
       // ========================================================================
-      class GAUDI_API Table
-      {
+      class GAUDI_API Table {
       public:
         /// constructor from enum
         Table( const int ID = 0 );
@@ -452,15 +440,10 @@ namespace Gaudi
          *  @param term   the terminmator for the stream
          */
         template <class HISTO, class STREAM, class TERMINATOR>
-        STREAM& printList( HISTO first, HISTO last, STREAM& stream, TERMINATOR term ) const
-        {
-          if ( !header().empty() ) {
-            stream << header() << term;
-          }
+        STREAM& printList( HISTO first, HISTO last, STREAM& stream, TERMINATOR term ) const {
+          if ( !header().empty() ) { stream << header() << term; }
           Gaudi::Utils::Histos::printList( first, last, format(), stream, term );
-          if ( !footer().empty() ) {
-            stream << footer() << term;
-          }
+          if ( !footer().empty() ) { stream << footer() << term; }
           return stream;
         }
         // ======================================================================
@@ -479,8 +462,7 @@ namespace Gaudi
          */
         template <class HISTO, class STREAM, class TERMINATOR>
         STREAM& printMap( HISTO first, HISTO last, const std::string& fmt, const std::string& hval, STREAM& stream,
-                          TERMINATOR term ) const
-        {
+                          TERMINATOR term ) const {
           if ( !hval.empty() || !header().empty() ) {
             stream << Gaudi::Utils::Histos::format( hval, header(), fmt ) << term;
           }
@@ -577,8 +559,8 @@ namespace Gaudi
         std::string m_format; ///< the defautl format
         //
       };
-    } // end of namespace Gaudi::Utils::Histos
-  }   // end of namespace Gaudi::Utils
+    } // namespace Histos
+  }   // namespace Utils
 } // end of namespace Gaudi
 // ============================================================================
 // The END

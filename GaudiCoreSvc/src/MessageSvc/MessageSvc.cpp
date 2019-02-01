@@ -1,7 +1,7 @@
 #ifdef _WIN32
 // Avoid conflicts between windows and the message service.
-#define NOMSG
-#define NOGDI
+#  define NOMSG
+#  define NOGDI
 #endif
 
 #include "MessageSvc.h"
@@ -15,8 +15,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace
-{
+namespace {
 
   // erase_if functions for containers which do NOT invalidate iterators
   // after the erase point, eg.std::{unordered_}{,multi}map, std::{forward_,}list.
@@ -25,8 +24,7 @@ namespace
   // TODO: replace with std::experimental::erase_if (Libraries Fundamental TS v2)
 
   template <typename Container, typename Iterator, typename Predicate>
-  void erase_if( Container& c, Iterator first, Iterator last, Predicate pred )
-  {
+  void erase_if( Container& c, Iterator first, Iterator last, Predicate pred ) {
     while ( first != last ) {
       if ( pred( *first ) )
         first = c.erase( first );
@@ -36,19 +34,16 @@ namespace
   }
 
   template <typename Container, typename Predicate>
-  void erase_if( Container& c, Predicate pred )
-  {
+  void erase_if( Container& c, Predicate pred ) {
     return erase_if( c, std::begin( c ), std::end( c ), std::forward<Predicate>( pred ) );
   }
 
   template <typename Container, typename Iterator, typename Predicate>
-  void erase_if( Container& c, std::pair<Iterator, Iterator> range, Predicate pred )
-  {
+  void erase_if( Container& c, std::pair<Iterator, Iterator> range, Predicate pred ) {
     return erase_if( c, std::move( range.first ), std::move( range.second ), std::forward<Predicate>( pred ) );
   }
 
-  std::string colTrans( const std::string& col, int offset )
-  {
+  std::string colTrans( const std::string& col, int offset ) {
     int icol = 0;
     if ( col == "black" )
       icol = MSG::BLACK;
@@ -70,7 +65,7 @@ namespace
       icol = 8;
     return std::to_string( icol + offset );
   }
-}
+} // namespace
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -80,8 +75,7 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {"NIL",     "VERBOSE", "D
                                                         "WARNING", "ERROR",   "FATAL", "ALWAYS"};
 
 // Constructor
-MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
-{
+MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc ) {
 
   m_outputLevel.declareUpdateHandler( [svcloc]( Gaudi::Details::PropertyBase& ) {
     SmartIF<IAppMgrUI> app = svcloc;
@@ -109,8 +103,7 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
 //#############################################################################
 
 /// Initialize Service
-StatusCode MessageSvc::initialize()
-{
+StatusCode MessageSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
 
@@ -127,16 +120,14 @@ StatusCode MessageSvc::initialize()
 //#############################################################################
 
 /// Reinitialize Service
-StatusCode MessageSvc::reinitialize()
-{
+StatusCode MessageSvc::reinitialize() {
   m_state = Gaudi::StateMachine::OFFLINE;
   return initialize();
 }
 
 //#############################################################################
 
-void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop )
-{
+void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop ) {
   const std::string& pname = prop.name();
   int                level;
   if ( pname == "fatalColorCode" )
@@ -178,8 +169,7 @@ void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop )
 }
 //#############################################################################
 
-void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop )
-{
+void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop ) {
   // Just report problems in the settings of the limits and unknown limit parameters
   if ( prop.name() == "alwaysLimit" ) {
     Gaudi::Property<int>* p = dynamic_cast<Gaudi::Property<int>*>( &prop );
@@ -189,9 +179,7 @@ void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop )
     }
   } else if ( prop.name() == "defaultLimit" ) {
     for ( int i = MSG::VERBOSE; i < MSG::NUM_LEVELS; ++i ) {
-      if ( i != MSG::ALWAYS ) {
-        m_msgLimit[i] = m_msgLimit[MSG::NIL].value();
-      }
+      if ( i != MSG::ALWAYS ) { m_msgLimit[i] = m_msgLimit[MSG::NIL].value(); }
     }
   } else if ( prop.name() != "fatalLimit" && prop.name() != "errorLimit" && prop.name() != "warningLimit" &&
               prop.name() == "infoLimit" && prop.name() == "debugLimit" && prop.name() == "verboseLimit" ) {
@@ -201,8 +189,7 @@ void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop )
 }
 //#############################################################################
 
-void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop )
-{
+void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop ) {
 
   static const std::array<std::pair<const char*, MSG::Level>, 7> tbl{{{"setFatal", MSG::FATAL},
                                                                       {"setError", MSG::ERROR},
@@ -234,8 +221,7 @@ void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop )
 #ifdef NDEBUG
 void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& ) {}
 #else
-void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& prop )
-{
+void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& prop ) {
   if ( prop.name() == "countInactive" ) {
     Gaudi::Property<bool>* p = dynamic_cast<Gaudi::Property<bool>*>( &prop );
     if ( p ) MsgStream::enableCountInactive( p->value() );
@@ -245,8 +231,7 @@ void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& prop )
 
 //#############################################################################
 /// Finalize Service
-StatusCode MessageSvc::finalize()
-{
+StatusCode MessageSvc::finalize() {
 
   m_suppress = false;
 
@@ -303,9 +288,7 @@ StatusCode MessageSvc::finalize()
     unsigned int ml( 0 );
     for ( const auto& itr : m_inactiveMap ) {
       for ( unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic ) {
-        if ( itr.second.msg[ic] != 0 && itr.first.length() > ml ) {
-          ml = itr.first.length();
-        }
+        if ( itr.second.msg[ic] != 0 && itr.first.length() > ml ) { ml = itr.first.length(); }
       }
     }
 
@@ -362,14 +345,12 @@ StatusCode MessageSvc::finalize()
 // Purpose: dispatches a message to the relevant streams.
 // ---------------------------------------------------------------------------
 //
-void MessageSvc::reportMessage( const Message& msg, int outputLevel )
-{
+void MessageSvc::reportMessage( const Message& msg, int outputLevel ) {
   std::unique_lock<std::recursive_mutex> lock( m_reportMutex );
   i_reportMessage( msg, outputLevel );
 }
 
-void MessageSvc::i_reportMessage( const Message& msg, int outputLevel )
-{
+void MessageSvc::i_reportMessage( const Message& msg, int outputLevel ) {
   int key = msg.getType();
 
   ++m_msgCount[key];
@@ -379,9 +360,7 @@ void MessageSvc::i_reportMessage( const Message& msg, int outputLevel )
   // processing logged streams
   if ( !m_loggedStreams.empty() ) {
     auto iLog = m_loggedStreams.find( msg.getSource() );
-    if ( m_loggedStreams.end() != iLog ) {
-      ( *iLog->second ) << *cmsg << std::endl;
-    }
+    if ( m_loggedStreams.end() != iLog ) { ( *iLog->second ) << *cmsg << std::endl; }
   }
 
   if ( m_suppress.value() || m_stats.value() ) {
@@ -415,9 +394,7 @@ void MessageSvc::i_reportMessage( const Message& msg, int outputLevel )
     }
   }
 
-  if ( cmsg != &msg ) {
-    delete cmsg;
-  }
+  if ( cmsg != &msg ) { delete cmsg; }
 }
 
 //#############################################################################
@@ -434,8 +411,7 @@ void MessageSvc::reportMessage( const Message& msg ) { reportMessage( msg, outpu
 // Purpose: dispatches a message to the relevant streams.
 // ---------------------------------------------------------------------------
 //
-void MessageSvc::reportMessage( const char* source, int type, const char* message )
-{
+void MessageSvc::reportMessage( const char* source, int type, const char* message ) {
   reportMessage( Message{source, type, message} );
 }
 
@@ -445,8 +421,7 @@ void MessageSvc::reportMessage( const char* source, int type, const char* messag
 // Purpose: dispatches a message to the relevant streams.
 // ---------------------------------------------------------------------------
 //
-void MessageSvc::reportMessage( const std::string& source, int type, const std::string& message )
-{
+void MessageSvc::reportMessage( const std::string& source, int type, const std::string& message ) {
   reportMessage( Message{source, type, message} );
 }
 
@@ -456,14 +431,12 @@ void MessageSvc::reportMessage( const std::string& source, int type, const std::
 // Purpose: finds a message for a given status code and dispatches it.
 // ---------------------------------------------------------------------------
 //
-void MessageSvc::reportMessage( const StatusCode& code, const std::string& source )
-{
+void MessageSvc::reportMessage( const StatusCode& code, const std::string& source ) {
   std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
   i_reportMessage( code, source );
 }
 
-void MessageSvc::i_reportMessage( const StatusCode& code, const std::string& source )
-{
+void MessageSvc::i_reportMessage( const StatusCode& code, const std::string& source ) {
   int  level  = outputLevel( source );
   auto report = [&]( Message mesg ) {
     mesg.setSource( source );
@@ -487,8 +460,7 @@ void MessageSvc::i_reportMessage( const StatusCode& code, const std::string& sou
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::insertStream( int key, const std::string& name, std::ostream* stream )
-{
+void MessageSvc::insertStream( int key, const std::string& name, std::ostream* stream ) {
   m_streamMap.emplace( key, NamedStream( name, stream ) );
 }
 
@@ -517,8 +489,7 @@ void MessageSvc::eraseStream( int message_type ) { m_streamMap.erase( message_ty
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::eraseStream( int key, std::ostream* stream )
-{
+void MessageSvc::eraseStream( int key, std::ostream* stream ) {
   if ( stream ) {
     erase_if( m_streamMap, m_streamMap.equal_range( key ),
               [&]( StreamMap::const_reference j ) { return j.second.second == stream; } );
@@ -532,8 +503,7 @@ void MessageSvc::eraseStream( int key, std::ostream* stream )
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::eraseStream( std::ostream* stream )
-{
+void MessageSvc::eraseStream( std::ostream* stream ) {
   if ( stream ) {
     erase_if( m_streamMap, [&]( StreamMap::const_reference j ) { return j.second.second == stream; } );
   }
@@ -546,8 +516,7 @@ void MessageSvc::eraseStream( std::ostream* stream )
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::insertMessage( const StatusCode& key, const Message& msg )
-{
+void MessageSvc::insertMessage( const StatusCode& key, const Message& msg ) {
   std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
   m_messageMap.emplace( key, msg );
 }
@@ -559,8 +528,7 @@ void MessageSvc::insertMessage( const StatusCode& key, const Message& msg )
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::eraseMessage()
-{
+void MessageSvc::eraseMessage() {
   std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
   m_messageMap.clear();
 }
@@ -572,8 +540,7 @@ void MessageSvc::eraseMessage()
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::eraseMessage( const StatusCode& key )
-{
+void MessageSvc::eraseMessage( const StatusCode& key ) {
   std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
   m_messageMap.erase( key );
 }
@@ -585,8 +552,7 @@ void MessageSvc::eraseMessage( const StatusCode& key )
 // ---------------------------------------------------------------------------
 //
 
-void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg )
-{
+void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg ) {
   std::unique_lock<std::recursive_mutex> lock( m_messageMapMutex );
 
   erase_if( m_messageMap, m_messageMap.equal_range( key ),
@@ -594,15 +560,13 @@ void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg )
 }
 
 // ---------------------------------------------------------------------------
-int MessageSvc::outputLevel() const
-{
+int MessageSvc::outputLevel() const {
   // ---------------------------------------------------------------------------
   return m_outputLevel;
 }
 
 // ---------------------------------------------------------------------------
-int MessageSvc::outputLevel( const std::string& source ) const
-{
+int MessageSvc::outputLevel( const std::string& source ) const {
   // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
   auto                                   it = m_thresholdMap.find( source );
@@ -610,15 +574,13 @@ int MessageSvc::outputLevel( const std::string& source ) const
 }
 
 // ---------------------------------------------------------------------------
-void MessageSvc::setOutputLevel( int new_level )
-{
+void MessageSvc::setOutputLevel( int new_level ) {
   // ---------------------------------------------------------------------------
   m_outputLevel = new_level;
 }
 
 // ---------------------------------------------------------------------------
-void MessageSvc::setOutputLevel( const std::string& source, int level )
-{
+void MessageSvc::setOutputLevel( const std::string& source, int level ) {
   // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock( m_thresholdMapMutex );
 
@@ -632,8 +594,7 @@ void MessageSvc::setOutputLevel( const std::string& source, int level )
 }
 
 // ---------------------------------------------------------------------------
-std::string MessageSvc::getLogColor( int logLevel ) const
-{
+std::string MessageSvc::getLogColor( int logLevel ) const {
   // ---------------------------------------------------------------------------
   return ( logLevel < MSG::NUM_LEVELS ) ? m_logColorCodes[logLevel] : "";
 }
@@ -642,8 +603,7 @@ std::string MessageSvc::getLogColor( int logLevel ) const
 int MessageSvc::messageCount( MSG::Level level ) const { return m_msgCount[level]; }
 
 // ---------------------------------------------------------------------------
-void MessageSvc::incrInactiveCount( MSG::Level level, const std::string& source )
-{
+void MessageSvc::incrInactiveCount( MSG::Level level, const std::string& source ) {
   ++( m_inactiveMap[source].msg[level] );
 
   if ( std::find( begin( m_tracedInactiveSources ), end( m_tracedInactiveSources ), source ) !=
@@ -656,8 +616,7 @@ void MessageSvc::incrInactiveCount( MSG::Level level, const std::string& source 
 }
 
 // ---------------------------------------------------------------------------
-void MessageSvc::setupLogStreams()
-{
+void MessageSvc::setupLogStreams() {
   // reset state
   m_loggedStreams.clear();
 
@@ -665,9 +624,7 @@ void MessageSvc::setupLogStreams()
 
     std::set<std::string> outFileNames;
     for ( auto& jProp : m_loggedStreamsName ) {
-      if ( jProp.first != iProp.first ) {
-        outFileNames.insert( jProp.second );
-      }
+      if ( jProp.first != iProp.first ) { outFileNames.insert( jProp.second ); }
     }
     tee( iProp.first, iProp.second, outFileNames );
 
@@ -676,14 +633,11 @@ void MessageSvc::setupLogStreams()
 
 // ---------------------------------------------------------------------------
 void MessageSvc::tee( const std::string& sourceName, const std::string& outFileName,
-                      const std::set<std::string>& outFileNames )
-{
+                      const std::set<std::string>& outFileNames ) {
   const std::ios_base::openmode openMode = std::ios_base::out | std::ios_base::trunc;
 
   auto iStream = m_loggedStreams.find( sourceName );
-  if ( iStream != std::end( m_loggedStreams ) ) {
-    m_loggedStreams.erase( iStream );
-  }
+  if ( iStream != std::end( m_loggedStreams ) ) { m_loggedStreams.erase( iStream ); }
 
   // before creating a new ofstream, make sure there is no already existing
   // one with the same file name...
@@ -694,6 +648,6 @@ void MessageSvc::tee( const std::string& sourceName, const std::string& outFileN
     }
   }
 
-  auto out                                       = std::make_shared<std::ofstream>( outFileName, openMode );
+  auto out = std::make_shared<std::ofstream>( outFileName, openMode );
   if ( out->good() ) m_loggedStreams[sourceName] = std::move( out );
 }

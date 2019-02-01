@@ -28,18 +28,16 @@
 // a constant to guard against seg-faults in loadBuffer
 #define SERIALIZER_END "EOF"
 
-namespace
-{
+namespace {
   struct DataObjectPush {
     DataObjectPush( DataObject*& p ) { Gaudi::pushCurrentDataObject( &p ); }
     ~DataObjectPush() { Gaudi::popCurrentDataObject(); }
   };
-}
+} // namespace
 
 using namespace std;
 
-bool GaudiMP::TESSerializer::analyse( IRegistry* dir, int level )
-{
+bool GaudiMP::TESSerializer::analyse( IRegistry* dir, int level ) {
   if ( level < m_currentItem->depth() ) {
     if ( dir->object() != 0 ) {
       m_objects.push_back( dir->object() );
@@ -56,13 +54,10 @@ GaudiMP::TESSerializer::TESSerializer( IDataProviderSvc* svc, IAddressCreator* a
     , m_currentItem( 0 )
     , m_verifyItems( false )
     , m_strict( false )
-    , m_addressCreator( ac )
-{
-}
+    , m_addressCreator( ac ) {}
 
 /// Serialize contents of TES to a TBufferFile
-void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer )
-{
+void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer ) {
   //
   //  Write all valid objects to the TBufferFile provided in the argument
   //  As objects are collected, the member variable m_classMap is filled
@@ -102,9 +97,7 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer )
     m_currentItem = ( *i );
     // cout << "Retrieving Optional Object : " << m_currentItem->path() << endl;
     status = m_TES->retrieveObject( m_currentItem->path(), obj );
-    if ( status.isSuccess() ) {
-      m_TESMgr->traverseSubTree( obj, this );
-    }
+    if ( status.isSuccess() ) { m_TESMgr->traverseSubTree( obj, this ); }
   }
 
   // cout << "TESSerializer : Beginning loop to write to TBufferFile for nObjects : " << m_objects.size() << endl;
@@ -184,8 +177,7 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer )
 }
 
 /// Reconstruct the TES from a given TBufferFile
-void GaudiMP::TESSerializer::loadBuffer( TBufferFile& buffer )
-{
+void GaudiMP::TESSerializer::loadBuffer( TBufferFile& buffer ) {
 
   // reverse mechanism of dumps
   // buffer is: length of DataObjects vector
@@ -318,8 +310,7 @@ void GaudiMP::TESSerializer::loadBuffer( TBufferFile& buffer )
 
 // Protected
 /// Add item to output streamer list (protected)
-void GaudiMP::TESSerializer::addItem( Items& itms, const std::string& descriptor )
-{
+void GaudiMP::TESSerializer::addItem( Items& itms, const std::string& descriptor ) {
   // supports # notation
   int level = 0;
 
@@ -365,22 +356,19 @@ void GaudiMP::TESSerializer::addItem( Items& itms, const std::string& descriptor
 }
 
 /// Add item to serialization list; ie append to std::vector of DataStoreItems
-void GaudiMP::TESSerializer::addItem( const std::string& path )
-{
+void GaudiMP::TESSerializer::addItem( const std::string& path ) {
   // #notation supported
   addItem( m_itemList, path );
 }
 
 /// Add optional item to output streamer list
-void GaudiMP::TESSerializer::addOptItem( const std::string& path )
-{
+void GaudiMP::TESSerializer::addOptItem( const std::string& path ) {
   // #notation supported
   addItem( m_optItemList, path );
 }
 
 /// Uses cout to print the contents of the mandatory and optional item lists
-void GaudiMP::TESSerializer::checkItems()
-{
+void GaudiMP::TESSerializer::checkItems() {
   cout << "TESSerializer m_itemList : " << m_itemList.size() << " Items" << endl;
   for ( Items::const_iterator i = m_itemList.begin(); i != m_itemList.end(); ++i ) {
     cout << "\tItem : " << ( *i )->path() << endl;
@@ -392,8 +380,7 @@ void GaudiMP::TESSerializer::checkItems()
 }
 
 /// Find single item identified by its path (exact match)
-DataStoreItem* GaudiMP::TESSerializer::findItem( const std::string& path )
-{
+DataStoreItem* GaudiMP::TESSerializer::findItem( const std::string& path ) {
   for ( Items::const_iterator i = m_itemList.begin(); i != m_itemList.end(); ++i ) {
     if ( ( *i )->path() == path ) return ( *i );
   }

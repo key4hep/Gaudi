@@ -12,22 +12,19 @@
 // ============================================================================
 
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
-    class Units final
-    {
+    class Units final {
     public:
       typedef std::map<std::string, std::pair<double, Position>> Container;
-      typedef Container::mapped_type ValueWithPosition;
+      typedef Container::mapped_type                             ValueWithPosition;
 
       bool Add( std::string name, double value );
       bool Add( std::string name, double value, const Position& pos );
 
-      bool Find( const std::string& name, ValueWithPosition& result ) const;
-      bool Find( const std::string& name, double& result ) const;
+      bool        Find( const std::string& name, ValueWithPosition& result ) const;
+      bool        Find( const std::string& name, double& result ) const;
       std::string ToString() const;
 
     private:
@@ -35,8 +32,8 @@ namespace Gaudi
     };
 
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 
 #endif /* UNITS_H_ */

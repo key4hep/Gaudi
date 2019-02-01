@@ -22,8 +22,7 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // NB : Please remember to give a simple doxygen comment for each tyedef
 
@@ -36,5 +35,5 @@ namespace Gaudi
   typedef ROOT::Math::Polar3DPointF   Polar3DPointF;   ///< 3D polar point (float)
   typedef ROOT::Math::RhoEtaPhiPointF RhoEtaPhiPointF; ///< 3D RhoEtaPhi point (float)
   typedef ROOT::Math::RhoZPhiPointF   RhoZPhiPointF;   ///< 3D RhoZPhi point (float)
-}
+} // namespace Gaudi
 #endif // KERNEL_POINT3DTYPES_H

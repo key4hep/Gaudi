@@ -12,12 +12,12 @@
 #include "GaudiKernel/Kernel.h"
 #include <vector>
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wkeyword-macro"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wkeyword-macro"
 #endif
 #define class class GAUDI_API
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
 #include "AIDA/IAxis.h"
 #include "AIDA/IHistogram1D.h"
@@ -45,8 +45,7 @@
  *  @date 2007-08-07
  */
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   // Examples of formats
   // ==========================================================================
@@ -139,8 +138,7 @@ namespace
   // ==========================================================================
   // Get cleaned up histogram title for table printout
   template <typename HISTO>
-  decltype( auto ) _title( const HISTO* h )
-  {
+  decltype( auto ) _title( const HISTO* h ) {
     // strip '|' from title as this is used as printout table delimiter and
     // instances in the title can cause problems with automatic parsing of the
     // table (e.g. LHCb QM tests) later on.
@@ -149,12 +147,11 @@ namespace
     return htitle;
   }
   // ==========================================================================
-}
+} // namespace
 // ============================================================================
 // get the format by enum
 // ============================================================================
-std::string Gaudi::Utils::Histos::Formats::format( const int ID )
-{
+std::string Gaudi::Utils::Histos::Formats::format( const int ID ) {
   switch ( ID ) {
   case Old:
     return s_histoFormatOld;
@@ -187,8 +184,7 @@ std::string Gaudi::Utils::Histos::Formats::format( const int ID )
 // ============================================================================
 // get the recommended header by enum
 // ============================================================================
-std::string Gaudi::Utils::Histos::Formats::header( const int ID )
-{
+std::string Gaudi::Utils::Histos::Formats::header( const int ID ) {
   switch ( ID ) {
   case Old:
     return s_histoFormatOldHeader;
@@ -220,19 +216,12 @@ std::string Gaudi::Utils::Histos::Formats::header( const int ID )
 // ============================================================================
 // get the path in TES for AIDA histogram
 // ============================================================================
-std::string Gaudi::Utils::Histos::path( const AIDA::IBaseHistogram* aida )
-{
-  if ( !aida ) {
-    return "";
-  } // RETURN
+std::string Gaudi::Utils::Histos::path( const AIDA::IBaseHistogram* aida ) {
+  if ( !aida ) { return ""; } // RETURN
   const auto object = dynamic_cast<const DataObject*>( aida );
-  if ( !object ) {
-    return "";
-  } // RETURN
+  if ( !object ) { return ""; } // RETURN
   const auto registry = object->registry();
-  if ( !registry ) {
-    return "";
-  } // RETURN
+  if ( !registry ) { return ""; } // RETURN
   const auto _path = registry->identifier();
   const auto n     = _path.find( "/stat/" );
   return ( 0 == n ? std::string( _path, 6 ) : _path ); // RETURN
@@ -242,11 +231,8 @@ std::string Gaudi::Utils::Histos::path( const AIDA::IBaseHistogram* aida )
  *  according to the specified format.
  */
 // ============================================================================
-std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const std::string& fmt )
-{
-  if ( !histo ) {
-    return "<NULL>";
-  }
+std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const std::string& fmt ) {
+  if ( !histo ) { return "<NULL>"; }
   using namespace Gaudi::Utils;
   using namespace boost::io;
   boost::format _fmt( fmt );
@@ -291,11 +277,8 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const
  *  according to the specified format.
  */
 // ============================================================================
-std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const std::string& fmt )
-{
-  if ( !histo ) {
-    return "<NULL>";
-  }
+std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const std::string& fmt ) {
+  if ( !histo ) { return "<NULL>"; }
   using namespace Gaudi::Utils;
   using namespace boost::io;
   boost::format _fmt( fmt );
@@ -341,8 +324,7 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const s
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const std::string& ID,
-                                          const std::string& fmt1, const std::string& fmt2 )
-{
+                                          const std::string& fmt1, const std::string& fmt2 ) {
   using namespace boost::io;
   boost::format _fmt( fmt1 );
   // allow various number of arguments
@@ -359,8 +341,7 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IHistogram1D* histo, const
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const std::string& ID, const std::string& fmt1,
-                                          const std::string& fmt2 )
-{
+                                          const std::string& fmt2 ) {
   using namespace boost::io;
   boost::format _fmt( fmt1 );
   // allow various number of arguments
@@ -374,8 +355,7 @@ std::string Gaudi::Utils::Histos::format( const AIDA::IProfile1D* histo, const s
 // ============================================================================
 // helper method to merge the headers for short format table
 // ============================================================================
-std::string Gaudi::Utils::Histos::format( const std::string& val1, const std::string& val2, const std::string& fmt )
-{
+std::string Gaudi::Utils::Histos::format( const std::string& val1, const std::string& val2, const std::string& fmt ) {
   using namespace boost::io;
   boost::format _fmt( fmt );
   // allow various number of arguments
@@ -392,19 +372,14 @@ std::string Gaudi::Utils::Histos::format( const std::string& val1, const std::st
 Gaudi::Utils::Histos::Table::Table( const int ID )
     : m_header( Gaudi::Utils::Histos::Formats::header( ID ) )
     , m_footer()
-    , m_format( Gaudi::Utils::Histos::Formats::format( ID ) )
-{
-}
+    , m_format( Gaudi::Utils::Histos::Formats::format( ID ) ) {}
 // ============================================================================
 Gaudi::Utils::Histos::Table::Table( const std::string& format, const std::string& header, const std::string& footer )
-    : m_header( header ), m_footer( footer ), m_format( format )
-{
-}
+    : m_header( header ), m_footer( footer ), m_format( format ) {}
 // ============================================================================
 // format the table row using the default format
 // ============================================================================
-std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IHistogram1D* histo ) const
-{
+std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IHistogram1D* histo ) const {
   return Gaudi::Utils::Histos::format( histo, format() );
 }
 // ============================================================================
@@ -413,8 +388,7 @@ std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IHistogram1D* his
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IHistogram1D* histo, const std::string& ID,
-                                                   const std::string& fmt ) const
-{
+                                                   const std::string& fmt ) const {
   return Gaudi::Utils::Histos::format( histo, ID, fmt, format() );
 }
 // ============================================================================
@@ -422,8 +396,7 @@ std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IHistogram1D* his
 // ============================================================================
 // format the table row using the default format
 // ============================================================================
-std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IProfile1D* histo ) const
-{
+std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IProfile1D* histo ) const {
   return Gaudi::Utils::Histos::format( histo, format() );
 }
 // ============================================================================
@@ -432,8 +405,7 @@ std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IProfile1D* histo
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::Table::toString( const AIDA::IProfile1D* histo, const std::string& ID,
-                                                   const std::string& fmt ) const
-{
+                                                   const std::string& fmt ) const {
   return Gaudi::Utils::Histos::format( histo, ID, fmt, format() );
 }
 // ============================================================================

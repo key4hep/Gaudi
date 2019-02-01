@@ -43,14 +43,12 @@
  */
 // ============================================================================
 
-class CounterNewAlg : public Gaudi::Functional::Producer<int()>
-{
+class CounterNewAlg : public Gaudi::Functional::Producer<int()> {
 public:
   int operator()() const override;
 
   CounterNewAlg( const std::string& name, ISvcLocator* pSvc )
-      : Producer( name, pSvc, KeyValue( "OutputLocation", "dummy" ) )
-  {
+      : Producer( name, pSvc, KeyValue( "OutputLocation", "dummy" ) ) {
     setProperty( "StatPrint", "true" ).ignore();
   }
 
@@ -73,8 +71,7 @@ DECLARE_COMPONENT( CounterNewAlg )
 // ============================================================================
 
 // ============================================================================
-int CounterNewAlg::operator()() const
-{
+int CounterNewAlg::operator()() const {
 
   // count overall number of executions:
   ++m_executed_counter;

@@ -25,8 +25,7 @@
 
 double fun( const std::vector<double>& x ) { return 3 * x[0] * x[0] + 5 * x[1] * x[1] + 8; }
 
-int main()
-{
+int main() {
   const GaudiMath::Function& myfun = GaudiMath::adapter( 2, &fun );
   Genfun::Argument           arg( myfun.dimensionality() );
 

@@ -19,8 +19,7 @@ class TBranch;
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class RootNTupleCnv RootNTupleCnv.h Root/RootNTupleCnv.h
    *
@@ -33,8 +32,7 @@ namespace Gaudi
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootNTupleCnv : public RootStatCnv
-  {
+  class GAUDI_API RootNTupleCnv : public RootStatCnv {
   protected:
     /// Update the transient object: NTuples end here when reading records
     StatusCode i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con );
@@ -53,9 +51,8 @@ namespace Gaudi
      *
      * @return Reference to RootNTupleCnv object
      */
-    RootNTupleCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr ) : RootStatCnv( typ, clid, svc, mgr )
-    {
-    }
+    RootNTupleCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr )
+        : RootStatCnv( typ, clid, svc, mgr ) {}
 
     /** Converter overrides: Convert the transient object
      * to the requested representation.
@@ -95,8 +92,7 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure
      */
-    StatusCode fillObjRefs( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override
-    {
+    StatusCode fillObjRefs( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override {
       return StatusCode::SUCCESS;
     }
 
@@ -117,8 +113,7 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure
      */
-    StatusCode updateObjRefs( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override
-    {
+    StatusCode updateObjRefs( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override {
       return StatusCode::SUCCESS;
     }
 
@@ -130,8 +125,7 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure
      */
-    StatusCode updateRep( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override
-    {
+    StatusCode updateRep( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override {
       return StatusCode::SUCCESS;
     }
 
@@ -143,11 +137,10 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure
      */
-    StatusCode updateRepRefs( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override
-    {
+    StatusCode updateRepRefs( IOpaqueAddress* /* pAddress */, DataObject* /* pObject  */ ) override {
       return StatusCode::SUCCESS;
     }
   };
-}
+} // namespace Gaudi
 
 #endif // GAUDIROOTCNV_ROOTNTUPLECNV_H

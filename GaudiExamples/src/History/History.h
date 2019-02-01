@@ -4,8 +4,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IHistorySvc.h"
 
-class History : public Algorithm
-{
+class History : public Algorithm {
   SmartIF<IHistorySvc> m_histSvc;
 
 public:

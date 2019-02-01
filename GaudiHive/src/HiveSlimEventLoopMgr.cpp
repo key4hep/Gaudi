@@ -25,15 +25,12 @@ DECLARE_COMPONENT( HiveSlimEventLoopMgr )
 // Standard Constructor
 //--------------------------------------------------------------------------------------------
 HiveSlimEventLoopMgr::HiveSlimEventLoopMgr( const std::string& name, ISvcLocator* svcLoc )
-    : base_class( name, svcLoc ), m_appMgrUI( svcLoc )
-{
-}
+    : base_class( name, svcLoc ), m_appMgrUI( svcLoc ) {}
 
 //--------------------------------------------------------------------------------------------
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
-HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr()
-{
+HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr() {
   m_histoDataMgrSvc.reset();
   m_histoPersSvc.reset();
   m_evtDataMgrSvc.reset();
@@ -45,8 +42,7 @@ HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr()
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::initialize
 //--------------------------------------------------------------------------------------------
-StatusCode HiveSlimEventLoopMgr::initialize()
-{
+StatusCode HiveSlimEventLoopMgr::initialize() {
 
   if ( !m_appMgrUI ) return StatusCode::FAILURE;
 
@@ -145,8 +141,7 @@ StatusCode HiveSlimEventLoopMgr::initialize()
 //--------------------------------------------------------------------------------------------
 // implementation of IService::reinitialize
 //--------------------------------------------------------------------------------------------
-StatusCode HiveSlimEventLoopMgr::reinitialize()
-{
+StatusCode HiveSlimEventLoopMgr::reinitialize() {
 
   // Check to see whether a new Event Selector has been specified
   setProperty( m_appMgrProperty->getProperty( "EvtSel" ) );
@@ -204,8 +199,7 @@ StatusCode HiveSlimEventLoopMgr::reinitialize()
 // implementation of IService::stop
 //--------------------------------------------------------------------------------------------
 // Removed call to MinimalEventLoopMgr!
-StatusCode HiveSlimEventLoopMgr::stop()
-{
+StatusCode HiveSlimEventLoopMgr::stop() {
   if ( !m_endEventFired ) {
     // Fire pending EndEvent incident
     m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndEvent ) );
@@ -218,8 +212,7 @@ StatusCode HiveSlimEventLoopMgr::stop()
 // implementation of IAppMgrUI::finalize
 //--------------------------------------------------------------------------------------------
 // Removed call to MinimalEventLoopMgr!
-StatusCode HiveSlimEventLoopMgr::finalize()
-{
+StatusCode HiveSlimEventLoopMgr::finalize() {
 
   StatusCode scRet;
   StatusCode sc = Service::finalize();
@@ -282,8 +275,7 @@ StatusCode HiveSlimEventLoopMgr::finalize()
 //--------------------------------------------------------------------------------------------
 // implementation of executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
-StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
-{
+StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr ) {
 
   // Leave the interface intact and swallow this C trick.
   int& createdEvts = *( (int*)createdEvts_IntPtr );
@@ -346,8 +338,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr )
 //--------------------------------------------------------------------------------------------
 // implementation of IEventProcessing::executeRun
 //--------------------------------------------------------------------------------------------
-StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
-{
+StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt ) {
   StatusCode sc;
   bool       eventfailed = false;
 
@@ -361,7 +352,7 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
   }
 
   // Call now the nextEvent(...)
-  sc                                = nextEvent( maxevt );
+  sc = nextEvent( maxevt );
   if ( sc.isFailure() ) eventfailed = true;
 
   m_blackListBS.reset( nullptr );
@@ -372,8 +363,7 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )
 //--------------------------------------------------------------------------------------------
 // Implementation of IEventProcessor::stopRun()
 //--------------------------------------------------------------------------------------------
-StatusCode HiveSlimEventLoopMgr::stopRun()
-{
+StatusCode HiveSlimEventLoopMgr::stopRun() {
   // Set the application return code
   auto appmgr = serviceLocator()->as<IProperty>();
   if ( Gaudi::setAppReturnCode( appmgr, Gaudi::ReturnCode::ScheduledStop ).isFailure() ) {
@@ -390,8 +380,7 @@ StatusCode HiveSlimEventLoopMgr::stopRun()
 // This is also the natural place to put the preparation of the algorithms
 // contexts, which contain the event specific data.
 #include "GaudiKernel/Memory.h"
-StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
-{
+StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
 
   // Calculate runtime
   using Clock = std::chrono::high_resolution_clock;
@@ -463,7 +452,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
 
       // Pull out of the scheduler the finished events
       if ( drainScheduler( finishedEvts ).isFailure() ) loop_ended = true;
-      newEvtAllowed                                                = true;
+      newEvtAllowed = true;
     }
   } // end main loop on finished events
   auto end_time = Clock::now();
@@ -479,8 +468,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt )
 //---------------------------------------------------------------------------
 
 /// Create event address using event selector
-StatusCode HiveSlimEventLoopMgr::getEventRoot( IOpaqueAddress*& refpAddr )
-{
+StatusCode HiveSlimEventLoopMgr::getEventRoot( IOpaqueAddress*& refpAddr ) {
   refpAddr      = nullptr;
   StatusCode sc = m_evtSelector->next( *m_evtContext );
   if ( sc.isFailure() ) return sc;
@@ -496,8 +484,7 @@ StatusCode HiveSlimEventLoopMgr::getEventRoot( IOpaqueAddress*& refpAddr )
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::declareEventRootAddress()
-{
+StatusCode HiveSlimEventLoopMgr::declareEventRootAddress() {
   StatusCode sc;
   if ( m_evtContext ) {
     //---This is the "event iterator" context from EventSelector
@@ -508,23 +495,18 @@ StatusCode HiveSlimEventLoopMgr::declareEventRootAddress()
       return StatusCode::FAILURE;
     }
     sc = m_evtDataMgrSvc->setRoot( "/Event", pAddr );
-    if ( !sc.isSuccess() ) {
-      warning() << "Error declaring event root address." << endmsg;
-    }
+    if ( !sc.isSuccess() ) { warning() << "Error declaring event root address." << endmsg; }
   } else {
     //---In case of no event selector----------------
     sc = m_evtDataMgrSvc->setRoot( "/Event", new DataObject() );
-    if ( !sc.isSuccess() ) {
-      warning() << "Error declaring event root DataObject" << endmsg;
-    }
+    if ( !sc.isSuccess() ) { warning() << "Error declaring event root DataObject" << endmsg; }
   }
   return StatusCode::SUCCESS;
 }
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::createEventContext( std::unique_ptr<EventContext>& evtContext, int createdEvts )
-{
+StatusCode HiveSlimEventLoopMgr::createEventContext( std::unique_ptr<EventContext>& evtContext, int createdEvts ) {
   evtContext = std::make_unique<EventContext>( createdEvts, m_whiteboard->allocateStore( createdEvts ) );
   m_algExecStateSvc->reset( *evtContext );
 
@@ -537,8 +519,7 @@ StatusCode HiveSlimEventLoopMgr::createEventContext( std::unique_ptr<EventContex
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::drainScheduler( int& finishedEvts )
-{
+StatusCode HiveSlimEventLoopMgr::drainScheduler( int& finishedEvts ) {
 
   StatusCode sc( StatusCode::SUCCESS );
 
@@ -595,8 +576,7 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler( int& finishedEvts )
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::clearWBSlot( int evtSlot )
-{
+StatusCode HiveSlimEventLoopMgr::clearWBSlot( int evtSlot ) {
   StatusCode sc = m_whiteboard->clearStore( evtSlot );
   if ( !sc.isSuccess() ) warning() << "Clear of Event data store failed" << endmsg;
   return m_whiteboard->freeStore( evtSlot );

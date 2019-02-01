@@ -13,8 +13,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date   2004-01-23
  */
-namespace Tuples
-{
+namespace Tuples {
   class Tuple;
   class TupleObj;
 } // end of namespace Tuples

@@ -20,10 +20,10 @@ DECLARE_COMPONENT( THistWrite )
 
 //------------------------------------------------------------------------------
 THistWrite::THistWrite( const std::string& name, ISvcLocator* pSvcLocator )
-    : Algorithm( name, pSvcLocator ), m_ths( nullptr )
+    : Algorithm( name, pSvcLocator )
+    , m_ths( nullptr )
 //------------------------------------------------------------------------------
-{
-}
+{}
 
 //------------------------------------------------------------------------------
 StatusCode THistWrite::initialize()
@@ -48,9 +48,7 @@ StatusCode THistWrite::initialize()
 
   // Write to stream "new"
   std::unique_ptr<TH1F> h2 = std::make_unique<TH1F>( "Tree2", "Tree 2", 100, 0., 100. );
-  if ( m_ths->regHist( "/new/Tree2", std::move( h2 ) ).isFailure() ) {
-    error() << "Couldn't register Tree2" << endmsg;
-  }
+  if ( m_ths->regHist( "/new/Tree2", std::move( h2 ) ).isFailure() ) { error() << "Couldn't register Tree2" << endmsg; }
 
   // Update to stream "upd", dir "/xxx"
   std::unique_ptr<TH1F> h3 = std::make_unique<TH1F>( "1Dgauss", "1D Gaussian", 100, -50., 50. );
@@ -88,18 +86,14 @@ StatusCode THistWrite::initialize()
   }
 
   TH1D* h7 = new TH1D( "TempHist7", "Temporary Tree 7", 100, 0., 100. );
-  if ( m_ths->regHist( "TempHist7", h7 ).isFailure() ) {
-    error() << "Couldn't register TempHist7" << endmsg;
-  }
+  if ( m_ths->regHist( "TempHist7", h7 ).isFailure() ) { error() << "Couldn't register TempHist7" << endmsg; }
   if ( strcmp( h7->GetName(), "TempHist7" ) ) {
     error() << "Couldn't use TempHist7 afterwards. getName = " << h7->GetName() << endmsg;
   }
 
   // Profile in "/"
   std::unique_ptr<TH1> tp = std::make_unique<TProfile>( "profile", "profile", 100, -50., -50. );
-  if ( m_ths->regHist( "/rec/prof", std::move( tp ) ).isFailure() ) {
-    error() << "Couldn't register prof" << endmsg;
-  }
+  if ( m_ths->regHist( "/rec/prof", std::move( tp ) ).isFailure() ) { error() << "Couldn't register prof" << endmsg; }
 
   // Tree with branches in "/trees/stuff"
   std::unique_ptr<TTree> tr = std::make_unique<TTree>( "treename", "tree title" );
@@ -162,27 +156,21 @@ StatusCode THistWrite::execute()
   }
 
   if ( m_ths->getHist( "/upd/xxx/gauss1d", h ).isSuccess() ) {
-    for ( int i = 0; i < 1000; ++i ) {
-      h->Fill( gauss(), 1. );
-    }
+    for ( int i = 0; i < 1000; ++i ) { h->Fill( gauss(), 1. ); }
   } else {
     error() << "Couldn't retrieve 1Dgauss" << endmsg;
   }
 
   TH2* h2( nullptr );
   if ( m_ths->getHist( "/rec/gauss2d", h2 ).isSuccess() ) {
-    for ( int i = 0; i < 1000; ++i ) {
-      h2->Fill( gauss(), gauss(), 1. );
-    }
+    for ( int i = 0; i < 1000; ++i ) { h2->Fill( gauss(), gauss(), 1. ); }
   } else {
     error() << "Couldn't retrieve 2Dgauss" << endmsg;
   }
 
   TH3* h3( nullptr );
   if ( m_ths->getHist( "/rec/gauss3d", h3 ).isSuccess() ) {
-    for ( int i = 0; i < 1000; ++i ) {
-      h3->Fill( gauss(), gauss(), gauss(), 1. );
-    }
+    for ( int i = 0; i < 1000; ++i ) { h3->Fill( gauss(), gauss(), gauss(), 1. ); }
   } else {
     error() << "Couldn't retrieve 3Dgauss" << endmsg;
   }
@@ -201,27 +189,21 @@ StatusCode THistWrite::execute()
 
   LockedHandle<TH1> lh1( nullptr, nullptr );
   if ( m_ths->getShared( "/upd/xxx/gauss1d_shared", lh1 ).isSuccess() ) {
-    for ( int i = 0; i < 1000; ++i ) {
-      lh1->Fill( gauss(), 1. );
-    }
+    for ( int i = 0; i < 1000; ++i ) { lh1->Fill( gauss(), 1. ); }
   } else {
     error() << "Couldn't retrieve 1Dgauss_shared" << endmsg;
   }
 
   LockedHandle<TH2> lh2( nullptr, nullptr );
   if ( m_ths->getShared( "/rec/gauss2d_shared", lh2 ).isSuccess() ) {
-    for ( int i = 0; i < 1000; ++i ) {
-      lh2->Fill( gauss(), gauss(), 1. );
-    }
+    for ( int i = 0; i < 1000; ++i ) { lh2->Fill( gauss(), gauss(), 1. ); }
   } else {
     error() << "Couldn't retrieve 2Dgauss_shared" << endmsg;
   }
 
   LockedHandle<TH3> lh3( nullptr, nullptr );
   if ( m_ths->getShared( "/rec/gauss3d_shared", lh3 ).isSuccess() ) {
-    for ( int i = 0; i < 1000; ++i ) {
-      lh3->Fill( gauss(), gauss(), gauss(), 1. );
-    }
+    for ( int i = 0; i < 1000; ++i ) { lh3->Fill( gauss(), gauss(), gauss(), 1. ); }
   } else {
     error() << "Couldn't retrieve 3Dgauss_shared" << endmsg;
   }
@@ -251,15 +233,15 @@ StatusCode THistWrite::execute()
 }
 
 //------------------------------------------------------------------------------
-void THistWrite::listKeys( TDirectory* td )
-{
+void THistWrite::listKeys( TDirectory* td ) {
   //------------------------------------------------------------------------------
 
   info() << "printing keys for: " << td->GetPath() << "  (" << td->GetList()->GetSize() << ")" << endmsg;
   TIter nextkey( td->GetList() );
   while ( TKey* key = (TKey*)nextkey() ) {
     if ( key != 0 ) {
-      info() << key->GetName() << " (" << key->IsA()->GetName() << ") "
+      info() << key->GetName() << " (" << key->IsA()->GetName()
+             << ") "
              // << key->GetObjectStat()
              // << "  " << key->IsOnHeap()
              << key->GetCycle() << endmsg;
@@ -282,12 +264,8 @@ StatusCode THistWrite::finalize()
   }
 
   TH1* h7 = nullptr;
-  if ( m_ths->getHist( "TempHist7", h7 ).isFailure() ) {
-    error() << "Couldn't retrieve TempHist7" << endmsg;
-  }
-  if ( m_ths->deReg( h7 ).isFailure() ) {
-    error() << "Failed to deregister histogram TempHist7" << endmsg;
-  }
+  if ( m_ths->getHist( "TempHist7", h7 ).isFailure() ) { error() << "Couldn't retrieve TempHist7" << endmsg; }
+  if ( m_ths->deReg( h7 ).isFailure() ) { error() << "Failed to deregister histogram TempHist7" << endmsg; }
 
   return StatusCode::SUCCESS;
 }

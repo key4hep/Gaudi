@@ -11,8 +11,7 @@ DECLARE_COMPONENT( InertMessageSvc )
 
 //---------------------------------------------------------------------------
 
-StatusCode InertMessageSvc::initialize()
-{
+StatusCode InertMessageSvc::initialize() {
   StatusCode sc = MessageSvc::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;          // error printed already by MessageSvc
 
@@ -24,8 +23,7 @@ StatusCode InertMessageSvc::initialize()
 
 //---------------------------------------------------------------------------
 
-StatusCode InertMessageSvc::InertMessageSvc::finalize()
-{
+StatusCode InertMessageSvc::InertMessageSvc::finalize() {
   m_deactivate();
   m_thread.join();
   return MessageSvc::finalize(); // must be called after all other actions
@@ -33,8 +31,7 @@ StatusCode InertMessageSvc::InertMessageSvc::finalize()
 
 //---------------------------------------------------------------------------
 
-void InertMessageSvc::m_activate()
-{
+void InertMessageSvc::m_activate() {
   m_isActive = true;
   std::function<void()> thisMessageAction;
   while ( m_isActive || !m_messageActionsQueue.empty() ) {
@@ -45,8 +42,7 @@ void InertMessageSvc::m_activate()
 
 //---------------------------------------------------------------------------
 
-void InertMessageSvc::m_deactivate()
-{
+void InertMessageSvc::m_deactivate() {
   if ( m_isActive ) {
 // This would be the last action
 #if defined( __clang__ ) || defined( __CLING__ )
@@ -64,41 +60,37 @@ void InertMessageSvc::m_deactivate()
  * (and basically always will given the asynchronous nature of the printing)
  * go out of scope before the differed print.
  */
-void InertMessageSvc::reportMessage( const Message& msg, int outputLevel )
-{
+void InertMessageSvc::reportMessage( const Message& msg, int outputLevel ) {
 // msg has to be copied as the reference may become invalid by the time it is used
 #if defined( __clang__ ) || defined( __CLING__ )
-  m_messageActionsQueue.push(
-      [ this, m = Message( msg ), outputLevel ]() { this->i_reportMessage( m, outputLevel ); } );
+  m_messageActionsQueue.push( [this, m = Message( msg ), outputLevel]() { this->i_reportMessage( m, outputLevel ); } );
 #else
   m_messageActionsQueue.emplace(
-      [ this, m = Message( msg ), outputLevel ]() { this->i_reportMessage( m, outputLevel ); } );
+      [this, m = Message( msg ), outputLevel]() { this->i_reportMessage( m, outputLevel ); } );
 #endif
 }
 
 //---------------------------------------------------------------------------
 
-void InertMessageSvc::reportMessage( const Message& msg )
-{
+void InertMessageSvc::reportMessage( const Message& msg ) {
 // msg has to be copied as the reference may become invalid by the time it's used
 #if defined( __clang__ ) || defined( __CLING__ )
   m_messageActionsQueue.push(
-      [ this, m = Message( msg ) ]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
+      [this, m = Message( msg )]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
 #else
   m_messageActionsQueue.emplace(
-      [ this, m = Message( msg ) ]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
+      [this, m = Message( msg )]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
 #endif
 }
 
 //---------------------------------------------------------------------------
 
-void InertMessageSvc::reportMessage( const StatusCode& code, const std::string& source )
-{
+void InertMessageSvc::reportMessage( const StatusCode& code, const std::string& source ) {
 // msg has to be copied as the source may become invalid by the time it's used
 #if defined( __clang__ ) || defined( __CLING__ )
-  m_messageActionsQueue.push( [ this, code, s = std::string( source ) ]() { this->i_reportMessage( code, s ); } );
+  m_messageActionsQueue.push( [this, code, s = std::string( source )]() { this->i_reportMessage( code, s ); } );
 #else
-  m_messageActionsQueue.emplace( [ this, code, s = std::string( source ) ]() { this->i_reportMessage( code, s ); } );
+  m_messageActionsQueue.emplace( [this, code, s = std::string( source )]() { this->i_reportMessage( code, s ); } );
 #endif
 }
 

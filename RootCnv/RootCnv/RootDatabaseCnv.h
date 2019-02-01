@@ -13,8 +13,7 @@
 /*
  *   Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class RootDatabaseCnv RootDatabaseCnv.h Root/RootDatabaseCnv.h
    *
@@ -26,8 +25,7 @@ namespace Gaudi
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootDatabaseCnv : public RootDirectoryCnv
-  {
+  class GAUDI_API RootDatabaseCnv : public RootDirectoryCnv {
   public:
     /** Initializing Constructor
      * @param      typ      [IN]     Concrete storage type of the converter
@@ -54,5 +52,5 @@ namespace Gaudi
      */
     StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;
   };
-}
+} // namespace Gaudi
 #endif // GAUDIROOTCNV_ROOTDATABASECNV_H

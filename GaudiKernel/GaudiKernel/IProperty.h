@@ -17,8 +17,7 @@
     @author Pere Mato
     @date   29/10/98
 */
-class GAUDI_API IProperty : virtual public IInterface
-{
+class GAUDI_API IProperty : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IProperty, 2, 1 );

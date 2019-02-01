@@ -2,7 +2,6 @@
 
 using namespace Gaudi::Examples;
 
-Event::Event() : DataObject()
-{
+Event::Event() : DataObject() {
   // m_collisions(this);
 }

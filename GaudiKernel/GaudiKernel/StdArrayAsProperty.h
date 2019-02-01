@@ -23,11 +23,9 @@
 // ============================================================================
 #include <Gaudi/Parsers/CommonParsers.h>
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Parsers
-  {
+  namespace Parsers {
     // ========================================================================
     /** parse class std::array from the string
      *  @param result (OUTPUT) the actual result
@@ -37,8 +35,7 @@ namespace Gaudi
      *  @date 2009-09-16
      */
     template <class TYPE, std::size_t N>
-    StatusCode parse( std::array<TYPE, N>& result, const std::string& input )
-    {
+    StatusCode parse( std::array<TYPE, N>& result, const std::string& input ) {
       std::vector<TYPE> tmp;
       StatusCode        sc = parse( tmp, input );
       if ( sc.isFailure() ) return sc; // RETURN
@@ -47,7 +44,7 @@ namespace Gaudi
       return StatusCode::SUCCESS;
     }
     // ========================================================================
-  } //                                          end of namespace Gaudi::Parsers
+  } // namespace Parsers
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================

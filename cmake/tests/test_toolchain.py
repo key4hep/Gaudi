@@ -11,10 +11,11 @@ class Tests(CMakeTestScripts):
     scripts_dir = join(base_dir, 'cmake_scripts')
 
     def setup(self):
-        os.environ['CMAKE_PREFIX_PATH'] = join(
-            self.base_dir, 'data', 'toolchain')
+        os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data',
+                                               'toolchain')
         os.environ['BINARY_TAG'] = 'x86_64-slc0-gcc99-opt'
 
-    tests = ['toolchain_extensions_min',
-             'toolchain_extensions',
-             'toolchain_extensions_multi']
+    tests = [
+        'toolchain_extensions_min', 'toolchain_extensions',
+        'toolchain_extensions_multi'
+    ]

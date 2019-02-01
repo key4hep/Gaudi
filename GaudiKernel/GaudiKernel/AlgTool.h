@@ -46,8 +46,7 @@ class ToolHandleInfo;
  */
 class GAUDI_API AlgTool
     : public DataHandleHolderBase<
-          PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
-{
+          PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>> {
 public:
   using Factory = Gaudi::PluginService::Factory<IAlgTool*( const std::string&, const std::string&, const IInterface* )>;
 
@@ -126,16 +125,14 @@ public:
    *  creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( const std::string& name, T*& svc, bool createIf = true ) const
-  {
+  StatusCode service( const std::string& name, T*& svc, bool createIf = true ) const {
     return service_i( name, createIf, T::interfaceID(), (void**)&svc );
   }
 
   /** Access a service by name, type creating it if it doesn't already exist.
    */
   template <class T>
-  StatusCode service( const std::string& type, const std::string& name, T*& svc ) const
-  {
+  StatusCode service( const std::string& type, const std::string& name, T*& svc ) const {
     return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &svc ) );
   }
 
@@ -143,15 +140,13 @@ public:
   SmartIF<IService> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const;
 
   template <typename T>
-  SmartIF<T> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const
-  {
+  SmartIF<T> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const {
     return SmartIF<T>( service( name, createIf, quiet ) );
   }
 
 protected:
   template <typename I>
-  void declareInterface( I* i )
-  {
+  void declareInterface( I* i ) {
     m_interfaceList.emplace_back( I::interfaceID(), i );
   }
 
@@ -160,21 +155,18 @@ public:
 
   template <class T>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<T>& hndl,
-                                                 const std::string& doc = "none" )
-  {
+                                                 const std::string& doc = "none" ) {
     this->declareTool( hndl, hndl.typeAndName() ).ignore();
     return PropertyHolderImpl::declareProperty( name, hndl, doc );
   }
 
   template <class T>
-  StatusCode declareTool( ToolHandle<T>& handle, bool createIf = true )
-  {
+  StatusCode declareTool( ToolHandle<T>& handle, bool createIf = true ) {
     return this->declareTool( handle, handle.typeAndName(), createIf );
   }
 
   template <class T>
-  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true )
-  {
+  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true ) {
 
     StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
     if ( UNLIKELY( !sc ) ) {
@@ -192,15 +184,13 @@ public:
   // declare ToolHandleArrays to the AlgTool
   template <class T>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr,
-                                                 const std::string& doc = "none" )
-  {
+                                                 const std::string& doc = "none" ) {
     addToolsArray( hndlArr );
     return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
   }
 
   template <class T>
-  void addToolsArray( ToolHandleArray<T>& hndlArr )
-  {
+  void addToolsArray( ToolHandleArray<T>& hndlArr ) {
     m_toolHandleArrays.push_back( &hndlArr );
   }
 
@@ -208,14 +198,12 @@ public:
   void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
 public:
-  void registerTool( IAlgTool* tool ) const
-  {
+  void registerTool( IAlgTool* tool ) const {
     if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "Registering tool " << tool->name() << endmsg;
     m_tools.push_back( tool );
   }
 
-  void deregisterTool( IAlgTool* tool ) const
-  {
+  void deregisterTool( IAlgTool* tool ) const {
     auto it = std::find( m_tools.begin(), m_tools.end(), tool );
     if ( it != m_tools.end() ) {
       if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) debug() << "De-Registering tool " << tool->name() << endmsg;
@@ -251,8 +239,7 @@ public:
    *   @retval NULL No monitor service is present
    *   @retval non-NULL A monitor service is present and available to be used
    */
-  inline IMonitorSvc* monitorSvc() const
-  {
+  inline IMonitorSvc* monitorSvc() const {
     // If not already located try to locate it without forcing a creation
     if ( !m_pMonitorSvc ) m_pMonitorSvc = service( m_monitorSvcName, false, true );
     return m_pMonitorSvc.get();
@@ -264,8 +251,7 @@ public:
       @param desc Textual description of the information being monitored
   */
   template <class T>
-  void declareInfo( const std::string& name, const T& var, const std::string& desc ) const
-  {
+  void declareInfo( const std::string& name, const T& var, const std::string& desc ) const {
     IMonitorSvc* mS = monitorSvc();
     if ( mS ) mS->declareInfo( name, var, desc, this );
   }
@@ -278,8 +264,7 @@ public:
       @param desc Textual description of the information being monitored
   */
   void declareInfo( const std::string& name, const std::string& format, const void* var, int size,
-                    const std::string& desc ) const
-  {
+                    const std::string& desc ) const {
     IMonitorSvc* mS = monitorSvc();
     if ( mS ) mS->declareInfo( name, format, var, size, desc, this );
   }

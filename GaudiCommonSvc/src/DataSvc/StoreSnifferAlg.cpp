@@ -17,15 +17,14 @@
 using namespace std;
 
 /**@class StoreSnifferAlg
-  *
-  * Small algorithm, which traverses the data store and
-  * prints a summary of the leafs accessed during the run.
-  *
-  * @author:  M.Frank
-  * @version: 1.0
-  */
-class StoreSnifferAlg : public Algorithm
-{
+ *
+ * Small algorithm, which traverses the data store and
+ * prints a summary of the leafs accessed during the run.
+ *
+ * @author:  M.Frank
+ * @version: 1.0
+ */
+class StoreSnifferAlg : public Algorithm {
 public:
   /// Standard algorithm constructor
   using Algorithm::Algorithm;
@@ -37,14 +36,13 @@ public:
     int  id;
     CLID clid;
   };
-  typedef map<string, LeafInfo> SniffInfo;
+  typedef map<string, LeafInfo>      SniffInfo;
   typedef map<string, map<int, int>> Correlations;
 
   SniffInfo    m_info, m_curr;
   Correlations m_corr, m_links;
 
-  size_t explore( IRegistry* pObj )
-  {
+  size_t explore( IRegistry* pObj ) {
     if ( pObj ) {
       auto mgr = eventSvc().as<IDataManagerSvc>();
       if ( mgr ) {
@@ -74,16 +72,14 @@ public:
   }
 
   /// Initialize
-  StatusCode initialize() override
-  {
+  StatusCode initialize() override {
     m_info.clear();
     m_mgr = eventSvc();
     return StatusCode::SUCCESS;
   }
 
   /// Finalize
-  StatusCode finalize() override
-  {
+  StatusCode finalize() override {
     auto& log = always();
     log << "== BEGIN ============= Access list content:" << m_info.size() << endmsg;
     for ( const auto& i : m_info ) {
@@ -128,8 +124,7 @@ public:
   }
 
   /// Execute procedure
-  StatusCode execute() override
-  {
+  StatusCode execute() override {
     SmartDataPtr<DataObject> root( eventSvc(), "/Event" );
     if ( root ) {
       m_curr.clear();
@@ -147,13 +142,13 @@ public:
           c           = m_corr.find( nam );
         }
         for ( const auto& l : m_curr ) {
-          const auto& id                = l.second.id;
-          auto        k                 = c->second.find( id );
+          const auto& id = l.second.id;
+          auto        k  = c->second.find( id );
           if ( k == c->second.end() ) k = c->second.emplace( id, 0 ).first;
           ++( k->second );
         }
 
-        c                           = m_links.find( nam );
+        c = m_links.find( nam );
         if ( c == m_links.end() ) c = m_links.emplace( nam, std::map<int, int>{} ).first;
         if ( m_curr.find( nam ) == m_curr.end() ) continue;
 
@@ -167,8 +162,8 @@ public:
           // cout << "Link:" << lnk->path() << " " << (char*)(il != m_curr.end() ? "Found" : "Not there") << endl;
           if ( il == m_curr.end() ) continue;
           if ( !lnk->object() ) continue;
-          const auto& id                = il->second.id;
-          auto        k                 = c->second.find( id );
+          const auto& id = il->second.id;
+          auto        k  = c->second.find( id );
           if ( k == c->second.end() ) k = c->second.emplace( id, 0 ).first;
           ++( k->second );
         }

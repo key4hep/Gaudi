@@ -17,8 +17,7 @@
     @date   30/10/98
 */
 
-class GAUDI_API IAppMgrUI : virtual public INamedInterface
-{
+class GAUDI_API IAppMgrUI : virtual public INamedInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAppMgrUI, 4, 0 );

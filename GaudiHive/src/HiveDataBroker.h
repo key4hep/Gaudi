@@ -4,8 +4,7 @@
 #include <Gaudi/Algorithm.h>
 #include <stdexcept>
 
-class HiveDataBrokerSvc final : public extends<Service, IDataBroker>
-{
+class HiveDataBrokerSvc final : public extends<Service, IDataBroker> {
 public:
   using extends::extends;
 
@@ -20,7 +19,7 @@ public:
   StatusCode finalize() override;
 
 private:
-  Gaudi::Property<std::string> m_dataLoader{this, "DataLoader", "",
+  Gaudi::Property<std::string>              m_dataLoader{this, "DataLoader", "",
                                             "Attribute any unmet input dependencies to this Algorithm"};
   Gaudi::Property<std::vector<std::string>> m_producers{
       this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies"};
@@ -31,8 +30,7 @@ private:
     std::set<AlgEntry*> dependsOn;
     int                 requestCount = 0;
 
-    AlgEntry( SmartIF<IAlgorithm>&& p ) : ialg{std::move( p )}, alg{dynamic_cast<Gaudi::Algorithm*>( ialg.get() )}
-    {
+    AlgEntry( SmartIF<IAlgorithm>&& p ) : ialg{std::move( p )}, alg{dynamic_cast<Gaudi::Algorithm*>( ialg.get() )} {
       if ( !alg ) throw std::runtime_error( "algorithm pointer == nullptr???" );
     }
   };

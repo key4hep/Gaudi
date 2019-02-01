@@ -8,8 +8,7 @@
  * @author M. Shapiro, LBNL
  * @author Marco Clemencic
  */
-class NameAuditor : public CommonAuditor
-{
+class NameAuditor : public CommonAuditor {
 public:
   using CommonAuditor::CommonAuditor;
 

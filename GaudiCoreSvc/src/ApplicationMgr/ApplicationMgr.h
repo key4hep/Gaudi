@@ -46,8 +46,7 @@ class IJobOptionsSvc;
 */
 class ApplicationMgr
     : public PropertyHolder<
-          CommonMessaging<implements<IAppMgrUI, IEventProcessor, IService, IStateful, INamedInterface, IProperty>>>
-{
+          CommonMessaging<implements<IAppMgrUI, IEventProcessor, IService, IStateful, INamedInterface, IProperty>>> {
 public:
   // default creator
   ApplicationMgr( IInterface* = nullptr );
@@ -103,37 +102,30 @@ public:
 
   /// @name Gaudi::Details::PropertyBase handlers
   //@{
-  void evtLoopPropertyHandler( Gaudi::Details::PropertyBase& theProp );
+  void       evtLoopPropertyHandler( Gaudi::Details::PropertyBase& theProp );
   StatusCode decodeExtSvcNameList();
   StatusCode decodeCreateSvcNameList();
   void       createSvcNameListHandler( Gaudi::Details::PropertyBase& );
-  void extSvcNameListHandler( Gaudi::Details::PropertyBase& theProp );
+  void       extSvcNameListHandler( Gaudi::Details::PropertyBase& theProp );
   StatusCode decodeDllNameList();
-  void dllNameListHandler( Gaudi::Details::PropertyBase& theProp );
-  void pluginDebugPropertyHandler( Gaudi::Details::PropertyBase& theProp );
+  void       dllNameListHandler( Gaudi::Details::PropertyBase& theProp );
+  void       pluginDebugPropertyHandler( Gaudi::Details::PropertyBase& theProp );
   //@}
 
   template <class I>
-  SmartIF<IComponentManager>& getManager()
-  {
+  SmartIF<IComponentManager>& getManager() {
     return m_managers[I::interfaceID().id()];
   }
 
-  inline SmartIF<ISvcManager>& svcManager()
-  {
+  inline SmartIF<ISvcManager>& svcManager() {
     // Cache the casted pointer to ISvcManager
-    if ( !m_svcManager ) {
-      m_svcManager = getManager<IService>();
-    }
+    if ( !m_svcManager ) { m_svcManager = getManager<IService>(); }
     return m_svcManager;
   }
 
-  inline SmartIF<IAlgManager>& algManager()
-  {
+  inline SmartIF<IAlgManager>& algManager() {
     // Cache the casted pointer to IAlgManager
-    if ( !m_algManager ) {
-      m_algManager = getManager<IAlgorithm>();
-    }
+    if ( !m_algManager ) { m_algManager = getManager<IAlgorithm>(); }
     return m_algManager;
   }
 
@@ -177,7 +169,7 @@ protected:
                                              /// any service!)
   SmartIF<DLLClassManager> m_classManager;   ///< Reference to the class manager
 
-  Gaudi::Property<int> m_SIGo{this, "Go", 0,
+  Gaudi::Property<int>                      m_SIGo{this, "Go", 0,
                               [this]( auto& ) {
                                 // Re-initialize everything
                                 this->reinitialize().ignore();
@@ -185,7 +177,7 @@ protected:
                                 this->executeRun( m_evtMax ).ignore();
                               },
                               "For SI's \"Go\" command via callback"};
-  Gaudi::Property<int> m_SIExit{this, "Exit", 0,
+  Gaudi::Property<int>                      m_SIExit{this, "Exit", 0,
                                 [this]( auto& ) {
                                   finalize().ignore();
                                   terminate().ignore();

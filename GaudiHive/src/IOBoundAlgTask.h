@@ -20,8 +20,7 @@
  *  @version 1.0
  */
 
-class IOBoundAlgTask : public IAlgTask
-{
+class IOBoundAlgTask : public IAlgTask {
 public:
   IOBoundAlgTask( IAlgorithm* algorithm, const EventContext& ctx, ISvcLocator* svcLocator, IAlgExecStateSvc* aem,
                   std::function<StatusCode()> promote2ExecutedClosure )
@@ -29,9 +28,7 @@ public:
       , m_evtCtx( ctx )
       , m_aess( aem )
       , m_serviceLocator( svcLocator )
-      , m_promote2ExecutedClosure( std::move( promote2ExecutedClosure ) )
-  {
-  }
+      , m_promote2ExecutedClosure( std::move( promote2ExecutedClosure ) ) {}
 
   StatusCode execute() override final;
 

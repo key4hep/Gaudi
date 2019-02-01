@@ -35,8 +35,7 @@
 
 struct isSingleShot_t;
 
-class IncidentSvc : public extends<Service, IIncidentSvc>
-{
+class IncidentSvc : public extends<Service, IIncidentSvc> {
 public:
   struct Listener final {
     IIncidentListener* iListener{nullptr};
@@ -45,16 +44,14 @@ public:
     bool               singleShot{false};
 
     Listener( IIncidentListener* il, long pri, bool thr = false, bool single = false )
-        : iListener( il ), priority( pri ), rethrow( thr ), singleShot( single )
-    {
-    }
+        : iListener( il ), priority( pri ), rethrow( thr ), singleShot( single ) {}
   };
 
 private:
   // Typedefs
   // ListenerList should be a list rather than a vector because handing
   // a fired incident may result in a call to addListener.
-  typedef std::list<Listener> ListenerList;
+  typedef std::list<Listener>                                                  ListenerList;
   typedef GaudiUtils::HashMap<Gaudi::StringKey, std::unique_ptr<ListenerList>> ListenerMap;
 
 public:
@@ -102,7 +99,7 @@ private:
   // ==========================================================================
   // When TBB supports unique_ptrs in concurrent queue typedef should be changed
   // typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
-  typedef tbb::concurrent_queue<Incident*> IncQueue_t;
+  typedef tbb::concurrent_queue<Incident*>                                                    IncQueue_t;
   tbb::concurrent_unordered_map<EventContext, IncQueue_t, EventContextHash, EventContextHash> m_firedIncidents;
 };
 // ============================================================================

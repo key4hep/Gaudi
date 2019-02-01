@@ -10,12 +10,12 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=2)
 
 # - Algorithms
-topalgs = [THDataProducer("THDataProducer"),
-           THDataProducer2("THDataProducer2"),
-           THDataConsumer("THDataConsumer")]
+topalgs = [
+    THDataProducer("THDataProducer"),
+    THDataProducer2("THDataProducer2"),
+    THDataConsumer("THDataConsumer")
+]
 
 # Application manager
-app = ApplicationMgr(EvtMax=4,
-                     ExtSvc=[whiteboard],
-                     EventLoop=slimeventloopmgr,
-                     TopAlg=topalgs)
+app = ApplicationMgr(
+    EvtMax=4, ExtSvc=[whiteboard], EventLoop=slimeventloopmgr, TopAlg=topalgs)

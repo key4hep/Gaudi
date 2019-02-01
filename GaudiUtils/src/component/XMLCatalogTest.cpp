@@ -6,11 +6,10 @@
 
 using namespace Gaudi;
 
-extern "C" int testXMLFileCatalogWrite( int argc, char** argv )
-{
-  int         nwrite     = 10;
-  std::string fname      = "file:test.xml";
-  if ( argc > 1 ) fname  = argv[1];
+extern "C" int testXMLFileCatalogWrite( int argc, char** argv ) {
+  int         nwrite = 10;
+  std::string fname  = "file:test.xml";
+  if ( argc > 1 ) fname = argv[1];
   if ( argc > 2 ) nwrite = ::atol( argv[2] );
   XMLFileCatalog c( fname, nullptr );
   c.init();
@@ -60,13 +59,12 @@ extern "C" int testXMLFileCatalogWrite( int argc, char** argv )
   return 0;
 }
 
-extern "C" int testXMLFileCatalogRead( int argc, char** argv )
-{
+extern "C" int testXMLFileCatalogRead( int argc, char** argv ) {
   std::vector<std::string> fids;
   std::string              fname = "file:test.xml";
-  if ( argc > 1 ) fname          = argv[1];
-  bool           prt             = argc < 2;
-  time_t         start           = time( nullptr );
+  if ( argc > 1 ) fname = argv[1];
+  bool           prt   = argc < 2;
+  time_t         start = time( nullptr );
   XMLFileCatalog c( fname, nullptr );
   c.init();
   std::cout << "File loaded in " << time( nullptr ) - start << " seconds. " << std::endl;

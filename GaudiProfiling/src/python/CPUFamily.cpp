@@ -15,16 +15,14 @@
 #define cpuid( func, ax, bx, cx, dx )                                                                                  \
   __asm__ __volatile__( "cpuid" : "=a"( ax ), "=b"( bx ), "=c"( cx ), "=d"( dx ) : "a"( func ) );
 
-bool is_nehalem()
-{
+bool is_nehalem() {
   int a, b, c, d;
   cpuid( 1, a, b, c, d );
   int sse4_2_mask = 1 << 20;
   return ( c & sse4_2_mask );
 }
 
-const char* CPUFamily()
-{
+const char* CPUFamily() {
   if ( is_nehalem() ) {
     return "nehalem";
   } else {
@@ -32,8 +30,7 @@ const char* CPUFamily()
   }
 }
 
-BOOST_PYTHON_MODULE( PyCPUFamily )
-{
+BOOST_PYTHON_MODULE( PyCPUFamily ) {
   using namespace boost::python;
   def( "CPUFamily", CPUFamily );
 }

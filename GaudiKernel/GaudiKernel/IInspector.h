@@ -12,8 +12,7 @@
 
     Inspector base class
 */
-class GAUDI_API IInspector : virtual public IInterface
-{
+class GAUDI_API IInspector : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IInspector, 1, 0 );
@@ -21,8 +20,7 @@ public:
   enum { Mutable = 1 << 1, Const = 1 << 2 };
 
 protected:
-  class IValue
-  {
+  class IValue {
   protected:
     void* m_P;
     IValue() = default;
@@ -44,8 +42,7 @@ protected:
 
 private:
   template <class T>
-  class _V : public IValue
-  {
+  class _V : public IValue {
     T m_O;
 
   public:
@@ -55,8 +52,7 @@ private:
   };
 
   template <class T>
-  class _TT : public Tag
-  {
+  class _TT : public Tag {
   public:
     _TT() : Tag( sizeof( T ), typeid( T ) ) {}
   };
@@ -81,20 +77,17 @@ public:
   // User interface of the IInspector interface
   /// Inspect single item by its reference (mutable and const)
   template <class T, class O>
-  StatusCode inspectByRef( const T* pObj, const O* pOwner, const std::string& comment, long flag = Mutable )
-  {
+  StatusCode inspectByRef( const T* pObj, const O* pOwner, const std::string& comment, long flag = Mutable ) {
     return inspectByRef( pObj, _TT<T>(), (void*)pOwner, _TT<O>(), comment, flag );
   }
   /// Inspect single item by its value (const)
   template <class T, class O>
-  StatusCode inspectByValue( const T& obj, const O* pOwner, const std::string& comment )
-  {
+  StatusCode inspectByValue( const T& obj, const O* pOwner, const std::string& comment ) {
     return inspectByValue( new _V<T>( obj ), _TT<T>(), (void*)pOwner, _TT<O>(), comment );
   }
   /// Inspect container of object items by its reference (mutable and const)
   template <class T, class O>
-  StatusCode inspectContByRef( const T* pObj, const O* pOwner, const std::string& comment, long flag = Mutable )
-  {
+  StatusCode inspectContByRef( const T* pObj, const O* pOwner, const std::string& comment, long flag = Mutable ) {
     typedef typename T::value_type _VVV;
     typedef typename T::value_type _TTT;
     // Unfortunately this is not implemented on G++:
@@ -103,8 +96,7 @@ public:
   }
   /// Inspect container of object items by its value (const)
   template <class T, class O>
-  StatusCode inspectContByValue( const T& obj, const O* pOwner, const std::string& comment )
-  {
+  StatusCode inspectContByValue( const T& obj, const O* pOwner, const std::string& comment ) {
     typedef typename T::value_type _VVV;
     typedef typename T::value_type _TTT;
     // Unfortunately this is not implemented on G++:

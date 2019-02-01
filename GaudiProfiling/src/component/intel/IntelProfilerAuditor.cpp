@@ -19,7 +19,7 @@
 
 // * Intel User API
 #ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wunused-function"
+#  pragma GCC diagnostic ignored "-Wunused-function"
 #endif
 #include "ittnotify.h"
 
@@ -28,8 +28,7 @@ typedef std::map<std::string, __itt_event> TaskTypes;
 // Gaudi profiling auditor. The auditor use Intel API for control profiling
 // flow. We need to run profiling  throw Intel Amplifier amplxe-cl command
 // line tool.
-class IntelProfilerAuditor : public extends<Auditor, IIncidentListener>
-{
+class IntelProfilerAuditor : public extends<Auditor, IIncidentListener> {
 public:
   // ## Public functions.
   using extends::extends;
@@ -47,9 +46,7 @@ private:
   struct stack_entity {
     stack_entity( const std::string& name_, bool status_, const __itt_event event_ = 0,
                   const __itt_event parent_event_ = 0 )
-        : name( name_ ), status( status_ ), event( event_ ), parent_event( parent_event_ )
-    {
-    }
+        : name( name_ ), status( status_ ), event( event_ ), parent_event( parent_event_ ) {}
     // Name of the component.
     std::string name;
     // Running status: on/off.
@@ -77,9 +74,9 @@ private:
   Gaudi::Property<std::string> m_alg_delim{this, "TaskTypeNameDelimeter", " ",
                                            "The String delimiter between sequences/algorithms names in "
                                            "\"Task Type\" grouping at Amplifier. Default=\" \"."};
-  Gaudi::Property<bool> m_enable_frames{this, "EnableFrames", false,
+  Gaudi::Property<bool>        m_enable_frames{this, "EnableFrames", false,
                                         "Enable frames (needed for detecting slow events). Default=false."};
-  Gaudi::Property<int> m_frames_rate{this, "FramesRate", 100,
+  Gaudi::Property<int>         m_frames_rate{this, "FramesRate", 100,
                                      "Frames rate. The recommended maximum rate for calling the Frame API is "
                                      "1000 frames (events) per second. A higher rate may result in large product"
                                      " memory consumption and slow finalization. "
@@ -120,21 +117,17 @@ private:
   std::string taskTypeName( const std::string& component_name ) const;
 };
 // ## Implementation.
-void IntelProfilerAuditor::start()
-{
+void IntelProfilerAuditor::start() {
   m_isStarted = true;
   __itt_resume();
 }
 
-void IntelProfilerAuditor::start_profiling_component( const std::string& name )
-{
+void IntelProfilerAuditor::start_profiling_component( const std::string& name ) {
   if ( !m_isStarted ) return;
   std::string               typeName = taskTypeName( name );
   __itt_event               taskId   = 0;
   TaskTypes::const_iterator iter     = m_tasktypes.find( typeName );
-  if ( iter != m_tasktypes.end() ) {
-    taskId = iter->second;
-  }
+  if ( iter != m_tasktypes.end() ) { taskId = iter->second; }
 
   if ( !taskId && m_algs_for_tasktypes.empty() ) {
     // Create event
@@ -170,29 +163,25 @@ void IntelProfilerAuditor::start_profiling_component( const std::string& name )
   __itt_resume();
 }
 
-void IntelProfilerAuditor::resume()
-{
+void IntelProfilerAuditor::resume() {
   if ( !m_isStarted ) return;
   debug() << stackIndent() << "Resume" << endmsg;
   __itt_resume();
 }
 
-void IntelProfilerAuditor::pause()
-{
+void IntelProfilerAuditor::pause() {
   if ( !m_isStarted ) return;
   debug() << stackIndent() << "Pause" << endmsg;
   __itt_pause();
 }
 
-void IntelProfilerAuditor::skip_profiling_component( const std::string& name )
-{
+void IntelProfilerAuditor::skip_profiling_component( const std::string& name ) {
   if ( !m_isStarted ) return;
   m_stack.push_back( stack_entity( name, false ) );
   debug() << stackIndent() << "Skip component " << name << endmsg;
 }
 
-void IntelProfilerAuditor::stop()
-{
+void IntelProfilerAuditor::stop() {
   if ( !m_isStarted ) return;
   m_isStarted = false;
   __itt_pause();
@@ -200,13 +189,11 @@ void IntelProfilerAuditor::stop()
 
 bool IntelProfilerAuditor::hasIncludes() const { return !m_included.empty(); }
 
-bool IntelProfilerAuditor::isIncluded( const std::string& name ) const
-{
+bool IntelProfilerAuditor::isIncluded( const std::string& name ) const {
   return std::find( m_included.begin(), m_included.end(), name ) != m_included.end();
 }
 
-bool IntelProfilerAuditor::isExcluded( const std::string& name ) const
-{
+bool IntelProfilerAuditor::isExcluded( const std::string& name ) const {
   return std::find( m_excluded.begin(), m_excluded.end(), name ) != m_excluded.end();
 }
 
@@ -214,15 +201,13 @@ bool IntelProfilerAuditor::isRunning() const { return !m_stack.empty() && m_stac
 
 int IntelProfilerAuditor::stackLevel() const { return m_stack.size(); }
 
-std::string IntelProfilerAuditor::stackIndent( bool newLevel ) const
-{
+std::string IntelProfilerAuditor::stackIndent( bool newLevel ) const {
   std::stringstream indent( std::stringstream::out );
   indent << std::setw( stackLevel() * 2 + ( newLevel ? 2 : 0 ) ) << " ";
   return indent.str();
 }
 
-std::string IntelProfilerAuditor::taskTypeName( const std::string& component_name ) const
-{
+std::string IntelProfilerAuditor::taskTypeName( const std::string& component_name ) const {
   std::string result;
   std::string delim = "";
   for ( const auto& value : m_stack ) {
@@ -232,8 +217,7 @@ std::string IntelProfilerAuditor::taskTypeName( const std::string& component_nam
   return result + m_alg_delim + component_name;
 }
 
-StatusCode IntelProfilerAuditor::initialize()
-{
+StatusCode IntelProfilerAuditor::initialize() {
   info() << "Initialised" << endmsg;
 
   IIncidentSvc*    inSvc = NULL;
@@ -248,15 +232,9 @@ StatusCode IntelProfilerAuditor::initialize()
   inSvc->addListener( this, IncidentType::EndProcessing );
 
   std::string str_excluded, str_included, str_eventtypes;
-  for ( const auto& name : m_excluded ) {
-    str_excluded += " " + name;
-  }
-  for ( const auto& name : m_included ) {
-    str_included += " " + name;
-  }
-  for ( const auto& name : m_algs_for_tasktypes ) {
-    str_eventtypes += " " + name;
-  }
+  for ( const auto& name : m_excluded ) { str_excluded += " " + name; }
+  for ( const auto& name : m_included ) { str_included += " " + name; }
+  for ( const auto& name : m_algs_for_tasktypes ) { str_eventtypes += " " + name; }
 
   if ( !m_included.empty() ) {
     info() << "Included algorithms (" << m_included.size() << "): " << str_included << endmsg;
@@ -277,8 +255,7 @@ StatusCode IntelProfilerAuditor::initialize()
   return StatusCode::SUCCESS;
 }
 
-void IntelProfilerAuditor::handle( const Incident& incident )
-{
+void IntelProfilerAuditor::handle( const Incident& incident ) {
   if ( IncidentType::BeginEvent != incident.type() ) return;
   // Increment the event counter
   ++m_nEvents;
@@ -294,8 +271,7 @@ void IntelProfilerAuditor::handle( const Incident& incident )
   }
 }
 
-void IntelProfilerAuditor::before( StandardEventType type, INamedInterface* i )
-{
+void IntelProfilerAuditor::before( StandardEventType type, INamedInterface* i ) {
   // Skip unnecessary event types.
   if ( !( ( type == IAuditor::Execute ) && m_isStarted ) ) return;
 
@@ -336,19 +312,14 @@ void IntelProfilerAuditor::before( StandardEventType type, INamedInterface* i )
       }
     }
   }
-  if ( m_nEvents % m_frames_rate == 0 ) {
-    __itt_frame_begin_v3( domain, NULL );
-  }
+  if ( m_nEvents % m_frames_rate == 0 ) { __itt_frame_begin_v3( domain, NULL ); }
 }
 
-void IntelProfilerAuditor::after( StandardEventType type, INamedInterface* i, const StatusCode& /* sc*/ )
-{
+void IntelProfilerAuditor::after( StandardEventType type, INamedInterface* i, const StatusCode& /* sc*/ ) {
   // Skip unnecessary event types
   if ( !( ( type == IAuditor::Execute ) && m_isStarted ) ) return;
 
-  if ( ( m_nEvents + 1 ) % m_frames_rate == 0 ) {
-    __itt_frame_end_v3( domain, NULL );
-  }
+  if ( ( m_nEvents + 1 ) % m_frames_rate == 0 ) { __itt_frame_end_v3( domain, NULL ); }
 
   // Name of the current component
   const std::string& name  = i->name();
@@ -372,15 +343,11 @@ void IntelProfilerAuditor::after( StandardEventType type, INamedInterface* i, co
   } else if ( state.status ) {
     // If the profiling is running and we have parent component that is
     // paused then pause the profiling.
-    if ( !m_stack.back().status ) {
-      pause();
-    }
+    if ( !m_stack.back().status ) { pause(); }
   } else {
     // If the profiling was stopped, but the parent component should be profiled
     // then resume profiling.
-    if ( m_stack.back().status ) {
-      resume();
-    }
+    if ( m_stack.back().status ) { resume(); }
   }
 }
 

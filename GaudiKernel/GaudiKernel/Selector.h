@@ -18,18 +18,15 @@
 #include "GaudiKernel/SelectStatement.h"
 
 // Forward declarations
-namespace NTuple
-{
+namespace NTuple {
   class Tuple;
 }
 
-namespace NTuple
-{
+namespace NTuple {
 
   /** NTuple Selector class.
-  */
-  class GAUDI_API Selector : public SelectStatement
-  {
+   */
+  class GAUDI_API Selector : public SelectStatement {
   protected:
     /// reference to parent interface
     IInterface* m_parent;
@@ -54,5 +51,5 @@ namespace NTuple
     /// Selector Initialization
     virtual StatusCode initialize( NTuple::Tuple* nt );
   };
-}
+} // namespace NTuple
 #endif // GAUDI_NTUPLESVC_SELECTOR_H

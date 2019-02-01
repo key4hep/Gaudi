@@ -34,8 +34,7 @@ class DataObject;
  *  @date   2005-08-03
  */
 // ============================================================================
-namespace GaudiPython
-{
+namespace GaudiPython {
   // ==========================================================================
   /** @class Decorator
    *  simple class with allows to "decorate" the python
@@ -43,8 +42,7 @@ namespace GaudiPython
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2007-08-03
    */
-  class GAUDI_API AlgDecorator
-  {
+  class GAUDI_API AlgDecorator {
   public:
     // ========================================================================
     /// the actual type of vector of counters

@@ -28,11 +28,9 @@
 
 #include "GaudiKernel/Kernel.h"
 
-namespace GaudiMP
-{
+namespace GaudiMP {
 
-  class GAUDI_API PyROOTPickle
-  {
+  class GAUDI_API PyROOTPickle {
   public:
     /**
      * @brief Install the pickling of ObjectProxy's functionality.

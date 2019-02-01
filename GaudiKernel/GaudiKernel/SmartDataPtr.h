@@ -44,8 +44,7 @@
 */
 
 template <class TYPE>
-class SmartDataPtr : public SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>
-{
+class SmartDataPtr : public SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader> {
 public:
 /// unhides assignment operator of base class
 #if !defined( __ICC ) && !defined( __COVERITY__ )
@@ -63,9 +62,7 @@ public:
       @param  fullPath      Full path leading to the data object.
   */
   SmartDataPtr( IDataProviderSvc* pService, const std::string& fullPath )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, fullPath )
-  {
-  }
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, fullPath ) {}
 
   /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
@@ -76,9 +73,7 @@ public:
       @param  pDirectory    Pointer to the data directory entry.
   */
   SmartDataPtr( IDataProviderSvc* pService, IRegistry* pDirectory )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, pDirectory, "" )
-  {
-  }
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, pDirectory, "" ) {}
 
   /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
@@ -92,8 +87,7 @@ public:
       @param  path          Path to the data object relative to the parent object.
   */
   SmartDataPtr( IDataProviderSvc* pService, DataObject* pObject, const std::string& path )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, path )
-  {
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( pService, nullptr, path ) {
     if ( pObject ) this->m_pRegistry = pObject->registry();
   }
 
@@ -107,9 +101,7 @@ public:
       @param  pDirectory    Pointer to the data directory entry.
   */
   SmartDataPtr( SmartDataObjectPtr& refObject, IRegistry* pDirectory )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), pDirectory, "" )
-  {
-  }
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), pDirectory, "" ) {}
 
   /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
@@ -121,9 +113,7 @@ public:
       @param  path          Path to the data object relative to the parent object.
   */
   SmartDataPtr( SmartDataObjectPtr& refObject, const std::string& path )
-      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), refObject.directory(), path )
-  {
-  }
+      : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( refObject.service(), refObject.directory(), path ) {}
 
   /** Copy constructor: Construct an copy of a SmartDataPtr instance.
       @param  copy          Copy Smart Pointer to object.
@@ -131,21 +121,19 @@ public:
   SmartDataPtr( const SmartDataObjectPtr& copy ) : SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>( copy ) {}
 
   /** Standard destructor
-  */
+   */
   virtual ~SmartDataPtr() = default;
 
   /// Automatic conversion to data type
   template <class OTHER>
-  SmartDataPtr& operator=( OTHER* pObj )
-  {
+  SmartDataPtr& operator=( OTHER* pObj ) {
     this->m_pObject = dynamic_cast<TYPE*>( pObj );
     return *this;
   }
 
   /// Automatic conversion to data type
   template <class OTHER>
-  SmartDataPtr& operator=( const OTHER* pObj )
-  {
+  SmartDataPtr& operator=( const OTHER* pObj ) {
     this->m_pObject = dynamic_cast<TYPE*>( const_cast<OTHER*>( pObj ) );
     return *this;
   }

@@ -1,15 +1,13 @@
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/StatusCode.h"
 
-namespace
-{
+namespace {
   struct IConvSvcCategory : StatusCode::Category {
     const char* name() const override { return "IConversionSvc"; }
 
     bool isRecoverable( StatusCode::code_t ) const override { return false; }
 
-    std::string message( StatusCode::code_t code ) const override
-    {
+    std::string message( StatusCode::code_t code ) const override {
       switch ( static_cast<IConversionSvc::Status>( code ) ) {
       case IConversionSvc::Status::INVALID_ADDRESS:
         return "INVALID_ADDRESS";
@@ -28,6 +26,6 @@ namespace
       }
     }
   };
-}
+} // namespace
 
 STATUSCODE_ENUM_IMPL( IConversionSvc::Status, IConvSvcCategory )

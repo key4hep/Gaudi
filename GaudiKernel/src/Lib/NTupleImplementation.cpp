@@ -20,21 +20,18 @@
 #include "GaudiKernel/ISelectStatement.h"
 
 /*
-*/
-namespace NTuple
-{
+ */
+namespace NTuple {
   /// Standard Constructor
   TupleImp::TupleImp( std::string title ) : m_title( std::move( title ) ) {}
 
   /// Standard Destructor
-  TupleImp::~TupleImp()
-  {
+  TupleImp::~TupleImp() {
     for ( auto& i : m_items ) i->release();
   }
 
   /// Attach selector
-  StatusCode TupleImp::attachSelector( ISelectStatement* sel )
-  {
+  StatusCode TupleImp::attachSelector( ISelectStatement* sel ) {
     m_pSelector = sel;
     return StatusCode::SUCCESS;
   }
@@ -43,22 +40,19 @@ namespace NTuple
   ISelectStatement* TupleImp::selector() { return m_pSelector.get(); }
 
   /// Reset N tuple to default values
-  void TupleImp::reset()
-  {
+  void TupleImp::reset() {
     for ( auto& i : m_items ) i->reset();
   }
 
   /// Locate a column of data to the N tuple (not type safe)
-  INTupleItem* TupleImp::i_find( const std::string& name ) const
-  {
+  INTupleItem* TupleImp::i_find( const std::string& name ) const {
     auto i = std::find_if( std::begin( m_items ), std::end( m_items ),
                            [&]( ItemContainer::const_reference j ) { return j->name() == name; } );
     return i != std::end( m_items ) ? const_cast<INTupleItem*>( *i ) : nullptr;
   }
 
   /// Add an item row to the N tuple
-  StatusCode TupleImp::add( INTupleItem* item )
-  {
+  StatusCode TupleImp::add( INTupleItem* item ) {
     if ( item ) {
       INTupleItem* i = i_find( item->name() );
       if ( !i ) {
@@ -70,15 +64,13 @@ namespace NTuple
   }
 
   /// Remove a column from the N-tuple
-  StatusCode TupleImp::remove( const std::string& name )
-  {
+  StatusCode TupleImp::remove( const std::string& name ) {
     INTupleItem* i = i_find( name );
     return i ? remove( i ) : StatusCode::FAILURE;
   }
 
   /// Remove a column from the N-tuple
-  StatusCode TupleImp::remove( INTupleItem* item )
-  {
+  StatusCode TupleImp::remove( INTupleItem* item ) {
     auto i = std::find( std::begin( m_items ), std::end( m_items ), item );
     if ( i == std::end( m_items ) ) return StatusCode::FAILURE;
     m_items.erase( i );
@@ -86,14 +78,12 @@ namespace NTuple
     return StatusCode::SUCCESS;
   }
   /// Set N tuple data buffer
-  char* TupleImp::setBuffer( std::unique_ptr<char[]>&& buff )
-  {
+  char* TupleImp::setBuffer( std::unique_ptr<char[]>&& buff ) {
     m_buffer = std::move( buff );
     return m_buffer.get();
   }
   /// Set N tuple data buffer
-  char* TupleImp::setBuffer( char* buff )
-  {
+  char* TupleImp::setBuffer( char* buff ) {
     m_buffer.reset( buff );
     return m_buffer.get();
   }

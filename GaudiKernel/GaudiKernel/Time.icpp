@@ -3,27 +3,23 @@
 
 // Implementation of inline function for classes Gaudi::Time and Gaudi::TimeSpan
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** Initialize time to @a nsecs nanoseconds since 00:00:00 on January
       1, 1970 in UTC.  */
-  inline Time::Time( ValueType nsecs ) : m_nsecs( nsecs )
-  {
+  inline Time::Time( ValueType nsecs ) : m_nsecs( nsecs ) {
     TimeAssert( m_nsecs >= 0, "cannot create a negative time" );
   }
 
   /** Initialize time to @a ts nanoseconds since 00:00:00 on January 1,
       1970 in UTC.  */
-  inline Time::Time( TimeSpan ts ) : m_nsecs( ts.m_nsecs )
-  {
+  inline Time::Time( TimeSpan ts ) : m_nsecs( ts.m_nsecs ) {
     TimeAssert( m_nsecs >= 0, "cannot create a negative time" );
   }
 
   /** Initialize time to @a secs (seconds) and @a nsecs (nanoseconds)
       summed since 00:00:00 on January 1, 1970 in UTC.  */
-  inline Time::Time( ValueType secs, int nsecs ) : m_nsecs( secs * Time::SEC_NSECS + nsecs )
-  {
+  inline Time::Time( ValueType secs, int nsecs ) : m_nsecs( secs * Time::SEC_NSECS + nsecs ) {
     TimeAssert( m_nsecs >= 0, "cannot create a negative time" );
   }
 
@@ -33,8 +29,7 @@ namespace Gaudi
 
   /** Add the specified amount to the time.  Note that #Time is always
       expressed in UTC.  */
-  inline Time& Time::operator+=( const TimeSpan& x )
-  {
+  inline Time& Time::operator+=( const TimeSpan& x ) {
     TimeAssert( m_nsecs >= -x.m_nsecs, "time operation lead to negative time" );
     m_nsecs += x.m_nsecs;
     return *this;
@@ -42,8 +37,7 @@ namespace Gaudi
 
   /** Subtract the specified amount from the time.  Note that #Time is
       always expressed in UTC.  */
-  inline Time& Time::operator-=( const TimeSpan& x )
-  {
+  inline Time& Time::operator-=( const TimeSpan& x ) {
     TimeAssert( m_nsecs >= x.m_nsecs, "time operation lead to negative time" );
     m_nsecs -= x.m_nsecs;
     return *this;
@@ -56,8 +50,7 @@ namespace Gaudi
   inline Time Time::max() { return 0x7fffffffffffffffLL; }
 
   /** Check if the @a year is a leap-year.  */
-  inline bool Time::isLeap( int year )
-  {
+  inline bool Time::isLeap( int year ) {
     return ( ( year % 4 ) == 0 && ( ( year % 100 ) != 0 || ( year % 400 ) == 0 ) );
   }
 
@@ -92,8 +85,7 @@ namespace Gaudi
       @param mins  Whole minutes.
       @param secs  Whole seconds.
       @param nsecs Nanoseconds.  */
-  inline TimeSpan::TimeSpan( int days, int hours, int mins, int secs, int nsecs )
-  {
+  inline TimeSpan::TimeSpan( int days, int hours, int mins, int secs, int nsecs ) {
     m_nsecs = ( secs + 60 * ( mins + 60 * ( hours + 24 * days ) ) ) * Time::SEC_NSECS + nsecs;
   }
 
@@ -129,71 +121,60 @@ namespace Gaudi
   inline int TimeSpan::lastNSeconds() const { return int( m_nsecs % Time::SEC_NSECS ); }
 
   /** Add to a time span.  */
-  inline TimeSpan& TimeSpan::operator+=( const TimeSpan& x )
-  {
+  inline TimeSpan& TimeSpan::operator+=( const TimeSpan& x ) {
     m_nsecs += x.m_nsecs;
     return *this;
   }
 
   /** Subtract from a time span.  */
-  inline TimeSpan& TimeSpan::operator-=( const TimeSpan& x )
-  {
+  inline TimeSpan& TimeSpan::operator-=( const TimeSpan& x ) {
     m_nsecs -= x.m_nsecs;
     return *this;
   }
 
   /** Multiply a time span.  */
-  inline TimeSpan& TimeSpan::operator*=( const TimeSpan& x )
-  {
+  inline TimeSpan& TimeSpan::operator*=( const TimeSpan& x ) {
     m_nsecs *= x.m_nsecs;
     return *this;
   }
 
   /** Divide a time span.  */
-  inline TimeSpan& TimeSpan::operator/=( const TimeSpan& x )
-  {
+  inline TimeSpan& TimeSpan::operator/=( const TimeSpan& x ) {
     m_nsecs /= x.m_nsecs;
     return *this;
   }
 
   /** Compute a modulo of a time span.  */
-  inline TimeSpan& TimeSpan::operator%=( const TimeSpan& x )
-  {
+  inline TimeSpan& TimeSpan::operator%=( const TimeSpan& x ) {
     m_nsecs %= x.m_nsecs;
     return *this;
   }
 
   /// Output operator.
-  inline std::ostream& operator<<( std::ostream& out, const Gaudi::Time& time )
-  {
+  inline std::ostream& operator<<( std::ostream& out, const Gaudi::Time& time ) {
     return out << Gaudi::TimeSpan( time ).seconds() << '.' << time.nanoformat();
   }
 
   /// Output operator.
-  inline std::ostream& operator<<( std::ostream& out, const Gaudi::TimeSpan& time )
-  {
+  inline std::ostream& operator<<( std::ostream& out, const Gaudi::TimeSpan& time ) {
     return out << time.seconds() << '.' << Gaudi::Time( time ).nanoformat();
   }
-}
+} // namespace Gaudi
 
 //<<<<<< INLINE PUBLIC FUNCTIONS                                        >>>>>>
-inline Gaudi::Time operator+( const Gaudi::Time& t, const Gaudi::TimeSpan& ts )
-{
+inline Gaudi::Time operator+( const Gaudi::Time& t, const Gaudi::TimeSpan& ts ) {
   return Gaudi::Time( t.ns() + ts.ns() );
 }
 
-inline Gaudi::Time operator+( const Gaudi::TimeSpan& ts, const Gaudi::Time& t )
-{
+inline Gaudi::Time operator+( const Gaudi::TimeSpan& ts, const Gaudi::Time& t ) {
   return Gaudi::Time( t.ns() + ts.ns() );
 }
 
-inline Gaudi::TimeSpan operator-( const Gaudi::Time& t1, const Gaudi::Time& t2 )
-{
+inline Gaudi::TimeSpan operator-( const Gaudi::Time& t1, const Gaudi::Time& t2 ) {
   return Gaudi::TimeSpan( t1.ns() - t2.ns() );
 }
 
-inline Gaudi::Time operator-( const Gaudi::Time& t, const Gaudi::TimeSpan& ts )
-{
+inline Gaudi::Time operator-( const Gaudi::Time& t, const Gaudi::TimeSpan& ts ) {
   return Gaudi::Time( t.ns() - ts.ns() );
 }
 
@@ -214,8 +195,7 @@ inline bool operator!( const Gaudi::TimeSpan& ts ) { return !ts.ns(); }
 // Output serialization
 inline StreamBuffer& operator<<( StreamBuffer& s, const Gaudi::Time& t ) { return s << t.ns(); }
 // Input serialization
-inline StreamBuffer& operator>>( StreamBuffer& s, Gaudi::Time& t )
-{
+inline StreamBuffer& operator>>( StreamBuffer& s, Gaudi::Time& t ) {
   Gaudi::Time::ValueType tmp;
   s >> tmp;
   t = Gaudi::Time( tmp );
@@ -224,12 +204,10 @@ inline StreamBuffer& operator>>( StreamBuffer& s, Gaudi::Time& t )
 
 // make sure that "namespace  Gaudi { using ::operator<; }" continues to compile...
 // to be removed once all instances of the above have been removed from user code...
-class backwards_compatibility_hack_time_timespan
-{
+class backwards_compatibility_hack_time_timespan {
   backwards_compatibility_hack_time_timespan() = delete;
 };
-inline bool operator<( backwards_compatibility_hack_time_timespan, backwards_compatibility_hack_time_timespan )
-{
+inline bool operator<( backwards_compatibility_hack_time_timespan, backwards_compatibility_hack_time_timespan ) {
   return false;
 }
 

@@ -4,19 +4,16 @@
 /**
  ** Constructor(s)
  **/
-EventCounter::EventCounter( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
+EventCounter::EventCounter( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {
   m_frequency.verifier().setBounds( 0, 1000 );
 }
 
-StatusCode EventCounter::initialize()
-{
+StatusCode EventCounter::initialize() {
   info() << name() << ":EventCounter::initialize - Frequency: " << m_frequency << endmsg;
   return StatusCode::SUCCESS;
 }
 
-StatusCode EventCounter::execute()
-{
+StatusCode EventCounter::execute() {
   m_total++;
   int freq = m_frequency;
   if ( freq > 0 ) {
@@ -29,8 +26,7 @@ StatusCode EventCounter::execute()
   return StatusCode::SUCCESS;
 }
 
-StatusCode EventCounter::finalize()
-{
+StatusCode EventCounter::finalize() {
   info() << name() << ":EventCounter::finalize - total events: " << m_total << endmsg;
   return StatusCode::SUCCESS;
 }

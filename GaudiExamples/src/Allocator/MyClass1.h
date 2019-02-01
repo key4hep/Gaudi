@@ -16,8 +16,7 @@
  *  @author Vanya BELYAEV
  *  @date   2006-02-14
  */
-class MyClass1
-{
+class MyClass1 {
 public:
   MyClass1();
   virtual ~MyClass1();

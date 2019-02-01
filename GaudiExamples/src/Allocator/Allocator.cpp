@@ -31,11 +31,9 @@
  *  @date 2006-02-10
  */
 
-namespace
-{
+namespace {
 
-  std::ostream& operator<<( std::ostream& stream, const ChronoEntity& ent )
-  {
+  std::ostream& operator<<( std::ostream& stream, const ChronoEntity& ent ) {
     return stream << "U:" << ent.outputUserTime() << "\nS:" << ent.outputSystemTime()
                   << "\nE:" << ent.outputElapsedTime();
     //     return stream
@@ -57,10 +55,9 @@ namespace
     //       << " \t" << ent.eMeanErrorTime ()
     //       << " \t" << ent.eRMSTime       () ;
   }
-}
+} // namespace
 
-namespace
-{
+namespace {
   /** the simple function to test the preformace of
    *  allocators. Actually it tests the CPU
    *  performace of operators "new" and "delete"
@@ -79,8 +76,7 @@ namespace
    *  @param chrono  CPU=measurer
    */
   template <class TYPE>
-  void makeTest( const size_t number, const size_t repeat, ChronoEntity& chrono )
-  {
+  void makeTest( const size_t number, const size_t repeat, ChronoEntity& chrono ) {
 
     // create an vector of pointers (FIXED length!)
     typedef std::vector<TYPE*> Vct;
@@ -93,9 +89,7 @@ namespace
         // - 1) start the clock
         chrono.start();
         // - 2) fill the vector with the data
-        for ( size_t i = 0; i < number; ++i ) {
-          vct[i] = new TYPE();
-        }
+        for ( size_t i = 0; i < number; ++i ) { vct[i] = new TYPE(); }
         // - 3)stop the clock
         chrono.stop();
       }
@@ -109,19 +103,16 @@ namespace
         // - 1) start clock
         chrono.start();
         // - 2) delete the content
-        for ( size_t i = 0; i < number; ++i ) {
-          delete vct[i];
-        }
+        for ( size_t i = 0; i < number; ++i ) { delete vct[i]; }
         // - 3) stop clock
         chrono.stop();
       }
 
     } // end of repetition loop
   }
-}
+} // namespace
 
-int main()
-{
+int main() {
 
   const size_t number  = 10000;
   const size_t repeate = 4000;

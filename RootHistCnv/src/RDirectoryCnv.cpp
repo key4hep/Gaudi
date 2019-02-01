@@ -22,17 +22,15 @@
 #include "TProfile2D.h"
 #include "TTree.h"
 
-namespace
-{
+namespace {
   constexpr struct maybe_stol_t {
-    boost::optional<int> operator()( const std::string& s ) const
-    {
+    boost::optional<int> operator()( const std::string& s ) const {
       auto pos = s.find_first_of( "0123456789+-" );
       if ( pos == std::string::npos ) return boost::none;
       return std::stol( s.substr( pos ) );
     }
   } maybe_stol{};
-}
+} // namespace
 
 DECLARE_CONVERTER( RootHistCnv::RDirectoryCnv )
 
@@ -72,8 +70,7 @@ StatusCode RootHistCnv::RDirectoryCnv::updateRep( IOpaqueAddress* /* pAddress */
 }
 
 //-----------------------------------------------------------------------------
-StatusCode RootHistCnv::RDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode RootHistCnv::RDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) {
   MsgStream          log( msgSvc(), "RDirectoryCnv" );
   IRegistry*         pReg  = pObj->registry();
   std::string        full  = pReg->identifier();

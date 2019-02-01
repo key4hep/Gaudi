@@ -41,8 +41,7 @@ constexpr char SEPARATOR{'/'};
 
 /// Standard Constructor
 DataSvcHelpers::RegistryEntry::RegistryEntry( std::string path, RegistryEntry* parent )
-    : m_path( std::move( path ) ), m_pParent( parent )
-{
+    : m_path( std::move( path ) ), m_pParent( parent ) {
   std::string::size_type sep = m_path.rfind( SEPARATOR );
   if ( m_path.front() != SEPARATOR ) m_path.insert( 0, 1, SEPARATOR );
   if ( sep != std::string::npos ) m_path.erase( 0, sep );
@@ -51,8 +50,7 @@ DataSvcHelpers::RegistryEntry::RegistryEntry( std::string path, RegistryEntry* p
 }
 
 /// Standard destructor
-DataSvcHelpers::RegistryEntry::~RegistryEntry()
-{
+DataSvcHelpers::RegistryEntry::~RegistryEntry() {
   deleteElements();
   if ( m_pObject ) {
     if ( !m_isSoft ) m_pObject->setRegistry( nullptr );
@@ -65,24 +63,21 @@ DataSvcHelpers::RegistryEntry::~RegistryEntry()
 }
 
 /// Release entry
-unsigned long DataSvcHelpers::RegistryEntry::release()
-{
+unsigned long DataSvcHelpers::RegistryEntry::release() {
   unsigned long cnt = --m_refCount;
   if ( !m_refCount ) delete this;
   return cnt;
 }
 
 /// Set new parent pointer
-void DataSvcHelpers::RegistryEntry::setParent( RegistryEntry* pParent )
-{
+void DataSvcHelpers::RegistryEntry::setParent( RegistryEntry* pParent ) {
   m_pParent = pParent;
   m_fullpath.clear();
   assemblePath( m_fullpath );
 }
 
 /// Create soft link
-void DataSvcHelpers::RegistryEntry::makeSoft( DataObject* pObject )
-{
+void DataSvcHelpers::RegistryEntry::makeSoft( DataObject* pObject ) {
   m_isSoft = true;
   setObject( pObject );
   //  if ( 0 != m_pObject )   { // Useless: This justs sets my own address again...
@@ -91,15 +86,13 @@ void DataSvcHelpers::RegistryEntry::makeSoft( DataObject* pObject )
 }
 
 /// Create soft link
-void DataSvcHelpers::RegistryEntry::makeSoft( IOpaqueAddress* pAddress )
-{
+void DataSvcHelpers::RegistryEntry::makeSoft( IOpaqueAddress* pAddress ) {
   m_isSoft = true;
   setAddress( pAddress );
 }
 
 /// Create hard link
-void DataSvcHelpers::RegistryEntry::makeHard( DataObject* pObject )
-{
+void DataSvcHelpers::RegistryEntry::makeHard( DataObject* pObject ) {
   makeSoft( pObject );
   m_isSoft = false;
   if ( m_pObject ) m_pObject->setRegistry( this );
@@ -107,15 +100,13 @@ void DataSvcHelpers::RegistryEntry::makeHard( DataObject* pObject )
 }
 
 /// Create hard link
-void DataSvcHelpers::RegistryEntry::makeHard( IOpaqueAddress* pAddress )
-{
+void DataSvcHelpers::RegistryEntry::makeHard( IOpaqueAddress* pAddress ) {
   m_isSoft = false;
   setAddress( pAddress );
 }
 
 /// Update Opaque address of registry entry
-void DataSvcHelpers::RegistryEntry::setAddress( IOpaqueAddress* pAddress )
-{
+void DataSvcHelpers::RegistryEntry::setAddress( IOpaqueAddress* pAddress ) {
   if ( pAddress ) {
     pAddress->addRef();
     pAddress->setRegistry( this );
@@ -125,8 +116,7 @@ void DataSvcHelpers::RegistryEntry::setAddress( IOpaqueAddress* pAddress )
 }
 
 /// Set object pointer of data store item
-void DataSvcHelpers::RegistryEntry::setObject( DataObject* pObject )
-{
+void DataSvcHelpers::RegistryEntry::setObject( DataObject* pObject ) {
   if ( pObject ) {
     pObject->addRef();
     if ( !isSoft() ) pObject->setRegistry( this );
@@ -136,8 +126,7 @@ void DataSvcHelpers::RegistryEntry::setObject( DataObject* pObject )
 }
 
 /// Remove an object from the container
-long DataSvcHelpers::RegistryEntry::remove( IRegistry* obj )
-{
+long DataSvcHelpers::RegistryEntry::remove( IRegistry* obj ) {
   try {
     RegistryEntry* pEntry = dynamic_cast<RegistryEntry*>( obj );
     auto           i      = std::remove( std::begin( m_store ), std::end( m_store ), pEntry );
@@ -145,14 +134,12 @@ long DataSvcHelpers::RegistryEntry::remove( IRegistry* obj )
       pEntry->release();
       m_store.erase( i, std::end( m_store ) );
     }
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return m_store.size();
 }
 
 /// Remove entry from data store
-StatusCode DataSvcHelpers::RegistryEntry::remove( boost::string_ref nam )
-{
+StatusCode DataSvcHelpers::RegistryEntry::remove( boost::string_ref nam ) {
   if ( nam.front() == SEPARATOR ) nam.remove_prefix( 1 );
   auto i = std::find_if( m_store.begin(), m_store.end(), [&]( const auto* entry ) {
     // skip leading SEPARATOR
@@ -165,8 +152,7 @@ StatusCode DataSvcHelpers::RegistryEntry::remove( boost::string_ref nam )
 }
 
 /// Internal method to add entries
-DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_create( std::string nam )
-{
+DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_create( std::string nam ) {
   if ( nam.front() != SEPARATOR ) nam.insert( 0, 1, SEPARATOR );
   // if this object is already present, this is an error....
   auto not_present =
@@ -175,15 +161,13 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_create( std::str
 }
 
 /// Add object to the container
-long DataSvcHelpers::RegistryEntry::add( IRegistry* obj )
-{
+long DataSvcHelpers::RegistryEntry::add( IRegistry* obj ) {
   RegistryEntry* pEntry = CAST_REGENTRY( RegistryEntry*, obj );
   return i_add( pEntry );
 }
 
 /// Add object to the container
-long DataSvcHelpers::RegistryEntry::i_add( RegistryEntry* pEntry )
-{
+long DataSvcHelpers::RegistryEntry::i_add( RegistryEntry* pEntry ) {
   // TODO: if this is the sole place where items are added to m_store,
   //      and we know here that they must be RegisteryEntry, can we
   //      drop the dynamic_cast every where else???
@@ -195,17 +179,13 @@ long DataSvcHelpers::RegistryEntry::i_add( RegistryEntry* pEntry )
     pEntry->setDataSvc( m_pDataProviderSvc );
     m_store.push_back( pEntry );
     pEntry->setParent( this );
-    if ( !pEntry->isSoft() && pEntry->address() ) {
-      pEntry->address()->setRegistry( pEntry );
-    }
-  } catch ( ... ) {
-  }
+    if ( !pEntry->isSoft() && pEntry->address() ) { pEntry->address()->setRegistry( pEntry ); }
+  } catch ( ... ) {}
   return m_store.size();
 }
 
 /// Add entry to the current data store item
-StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, DataObject* pObject, bool is_soft )
-{
+StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, DataObject* pObject, bool is_soft ) {
   RegistryEntry* entry = i_create( std::move( name ) );
   if ( !entry ) return StatusCode::FAILURE;
   ( is_soft ) ? entry->makeSoft( pObject ) : entry->makeHard( pObject );
@@ -214,8 +194,7 @@ StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, DataObject* pOb
 }
 
 /// Add entry to the current data store item
-StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, IOpaqueAddress* pAddress, bool is_soft )
-{
+StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, IOpaqueAddress* pAddress, bool is_soft ) {
   RegistryEntry* entry = i_create( std::move( name ) );
   if ( !entry ) return StatusCode::FAILURE;
   ( is_soft ) ? entry->makeSoft( pAddress ) : entry->makeHard( pAddress );
@@ -224,8 +203,7 @@ StatusCode DataSvcHelpers::RegistryEntry::add( std::string name, IOpaqueAddress*
 }
 
 /// Delete recursively all elements pending from the current store item
-long DataSvcHelpers::RegistryEntry::deleteElements()
-{
+long DataSvcHelpers::RegistryEntry::deleteElements() {
   for ( auto& i : m_store ) {
     RegistryEntry* entry = CAST_REGENTRY( RegistryEntry*, i );
     if ( entry ) {
@@ -238,15 +216,13 @@ long DataSvcHelpers::RegistryEntry::deleteElements()
 }
 
 /// Try to find an object identified by its pointer
-IRegistry* DataSvcHelpers::RegistryEntry::i_find( const IRegistry* obj ) const
-{
+IRegistry* DataSvcHelpers::RegistryEntry::i_find( const IRegistry* obj ) const {
   auto i = std::find( m_store.begin(), m_store.end(), obj );
   return ( i != m_store.end() ) ? ( *i ) : nullptr;
 }
 
 /// Find identified leaf in this registry node
-DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( boost::string_ref path ) const
-{
+DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( boost::string_ref path ) const {
   if ( path.front() == SEPARATOR ) path.remove_prefix( 1 ); // strip leading '/', if present
   while ( !path.empty() ) {
     // check that the chars of path prior to / are the same as regEnt->name()
@@ -273,8 +249,7 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( boost::str
 }
 
 /// Find identified leaf in this registry node
-DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( const DataObject* key ) const
-{
+DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( const DataObject* key ) const {
   if ( key ) {
     if ( key == m_pObject ) return const_cast<RegistryEntry*>( this );
     // Look in the immediate level:
@@ -286,16 +261,14 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( const Data
         const RegistryEntry* entry = CAST_REGENTRY( RegistryEntry*, i );
         result                     = entry->i_find( key );
         if ( result ) return result;
-      } catch ( ... ) {
-      }
+      } catch ( ... ) {}
     }
   }
   return nullptr;
 }
 
 // Traverse registry tree
-StatusCode DataSvcHelpers::RegistryEntry::traverseTree( IDataStoreAgent* pAgent, int level )
-{
+StatusCode DataSvcHelpers::RegistryEntry::traverseTree( IDataStoreAgent* pAgent, int level ) {
   bool       go_down = pAgent->analyse( this, level );
   StatusCode status;
   if ( go_down ) {
@@ -303,17 +276,14 @@ StatusCode DataSvcHelpers::RegistryEntry::traverseTree( IDataStoreAgent* pAgent,
       try {
         RegistryEntry* entry = CAST_REGENTRY( RegistryEntry*, i );
         entry->traverseTree( pAgent, level + 1 ).ignore();
-      } catch ( ... ) {
-        status = StatusCode::FAILURE;
-      }
+      } catch ( ... ) { status = StatusCode::FAILURE; }
     }
   }
   return status;
 }
 
 // Recursive helper to assemble the full path name of the entry
-void DataSvcHelpers::RegistryEntry::assemblePath( std::string& buffer ) const
-{
+void DataSvcHelpers::RegistryEntry::assemblePath( std::string& buffer ) const {
   if ( m_pParent ) m_pParent->assemblePath( buffer );
   buffer += m_path;
 }

@@ -28,19 +28,17 @@
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
 #ifdef WIN32
 // Disable the warning
 //    C4996: 'std::copy': Function call with parameters that may be unsafe
 // The parameters are checked
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
 
     struct NumericalDefiniteIntegral::_Function {
       gsl_function* fn;
@@ -113,17 +111,10 @@ namespace Genfun
         , m_rule( rule )
         , m_epsabs( epsabs )
         , m_epsrel( epsrel )
-        , m_size( size )
-    {
-      if ( GaudiMath::Integration::Fixed == m_rule ) {
-        m_rule = GaudiMath::Integration::Default;
-      }
-      if ( function.dimensionality() < 2 ) {
-        Exception( "::constructor: invalid dimensionality " );
-      }
-      if ( m_index >= function.dimensionality() ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_size( size ) {
+      if ( GaudiMath::Integration::Fixed == m_rule ) { m_rule = GaudiMath::Integration::Default; }
+      if ( function.dimensionality() < 2 ) { Exception( "::constructor: invalid dimensionality " ); }
+      if ( m_index >= function.dimensionality() ) { Exception( "::constructor: invalid variable index" ); }
 
       m_DIM      = function.dimensionality() - 1;
       m_argument = Argument( m_DIM );
@@ -153,14 +144,9 @@ namespace Genfun
         , m_points( points )
         , m_epsabs( epsabs )
         , m_epsrel( epsrel )
-        , m_size( size )
-    {
-      if ( function.dimensionality() < 2 ) {
-        Exception( "::constructor: invalid dimensionality " );
-      }
-      if ( m_index >= function.dimensionality() ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_size( size ) {
+      if ( function.dimensionality() < 2 ) { Exception( "::constructor: invalid dimensionality " ); }
+      if ( m_index >= function.dimensionality() ) { Exception( "::constructor: invalid variable index" ); }
 
       m_DIM      = function.dimensionality() - 1;
       m_argument = Argument( m_DIM );
@@ -212,14 +198,9 @@ namespace Genfun
         , m_rule( GaudiMath::Integration::Fixed )
         , m_epsabs( epsabs )
         , m_epsrel( epsrel )
-        , m_size( size )
-    {
-      if ( function.dimensionality() < 2 ) {
-        Exception( "::constructor: invalid dimensionality " );
-      }
-      if ( m_index >= function.dimensionality() ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_size( size ) {
+      if ( function.dimensionality() < 2 ) { Exception( "::constructor: invalid dimensionality " ); }
+      if ( m_index >= function.dimensionality() ) { Exception( "::constructor: invalid variable index" ); }
 
       m_DIM      = function.dimensionality() - 1;
       m_argument = Argument( m_DIM );
@@ -264,14 +245,9 @@ namespace Genfun
         , m_epsabs( epsabs )
         , m_epsrel( epsrel )
         //
-        , m_size( size )
-    {
-      if ( function.dimensionality() < 2 ) {
-        Exception( "::constructor: invalid dimensionality " );
-      }
-      if ( m_index >= function.dimensionality() ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_size( size ) {
+      if ( function.dimensionality() < 2 ) { Exception( "::constructor: invalid dimensionality " ); }
+      if ( m_index >= function.dimensionality() ) { Exception( "::constructor: invalid variable index" ); }
 
       m_DIM      = function.dimensionality() - 1;
       m_argument = Argument( m_DIM );
@@ -311,14 +287,9 @@ namespace Genfun
         , m_rule( GaudiMath::Integration::Fixed )
         , m_epsabs( epsabs )
         , m_epsrel( epsrel )
-        , m_size( size )
-    {
-      if ( function.dimensionality() < 2 ) {
-        Exception( "::constructor: invalid dimensionality " );
-      }
-      if ( m_index >= function.dimensionality() ) {
-        Exception( "::constructor: invalid variable index" );
-      }
+        , m_size( size ) {
+      if ( function.dimensionality() < 2 ) { Exception( "::constructor: invalid dimensionality " ); }
+      if ( m_index >= function.dimensionality() ) { Exception( "::constructor: invalid variable index" ); }
 
       m_DIM      = function.dimensionality() - 1;
       m_argument = Argument( m_DIM );
@@ -341,15 +312,12 @@ namespace Genfun
         , m_epsrel( right.m_epsrel )
         , m_size( right.m_size )
         , m_argument( right.m_argument )
-        , m_argF( right.m_argF )
-    {
-    }
+        , m_argF( right.m_argF ) {}
 
     // ========================================================================
     // throw the exception
     // ========================================================================
-    StatusCode NumericalDefiniteIntegral::Exception( const std::string& message, const StatusCode& sc ) const
-    {
+    StatusCode NumericalDefiniteIntegral::Exception( const std::string& message, const StatusCode& sc ) const {
       throw GaudiException( "NumericalDefiniteIntegral::" + message, "*GaudiMath*", sc );
       return sc;
     }
@@ -358,16 +326,13 @@ namespace Genfun
     // ========================================================================
     /// evaluate the function
     // ========================================================================
-    double NumericalDefiniteIntegral::operator()( const double argument ) const
-    {
+    double NumericalDefiniteIntegral::operator()( const double argument ) const {
       // reset the result and the error
       m_result = -std::numeric_limits<double>::infinity();
       m_error  = std::numeric_limits<double>::infinity();
 
       // check the argument
-      if ( 1 != m_DIM ) {
-        Exception( "operator(): invalid argument size " );
-      };
+      if ( 1 != m_DIM ) { Exception( "operator(): invalid argument size " ); };
 
       m_argument[0] = argument;
       return ( *this )( m_argument );
@@ -377,11 +342,8 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Genfun::Derivative NumericalDefiniteIntegral::partial( unsigned int idx ) const
-    {
-      if ( idx >= m_DIM ) {
-        Exception( "::partial(i): invalid variable index " );
-      };
+    Genfun::Derivative NumericalDefiniteIntegral::partial( unsigned int idx ) const {
+      if ( idx >= m_DIM ) { Exception( "::partial(i): invalid variable index " ); };
       //
       const AbsFunction& aux = NumericalDerivative( *this, idx );
       return Genfun::FunctionNoop( &aux );
@@ -391,16 +353,13 @@ namespace Genfun
     // ========================================================================
     /// evaluate the function
     // ========================================================================
-    double NumericalDefiniteIntegral::operator()( const Argument& argument ) const
-    {
+    double NumericalDefiniteIntegral::operator()( const Argument& argument ) const {
       // reset the result and the error
       m_result = -std::numeric_limits<double>::infinity();
       m_error  = std::numeric_limits<double>::infinity();
 
       // check the argument
-      if ( argument.dimension() != m_DIM ) {
-        Exception( "operator(): invalid argument size " );
-      };
+      if ( argument.dimension() != m_DIM ) { Exception( "operator(): invalid argument size " ); };
 
       // copy the argument
 
@@ -420,9 +379,7 @@ namespace Genfun
       _Function F1;
       F1.fn = &F;
 
-      if ( GaudiMath::Integration::Infinite == category() ) {
-        return QAGI( &F1 );
-      } // RETURN
+      if ( GaudiMath::Integration::Infinite == category() ) { return QAGI( &F1 ); } // RETURN
 
       if ( m_a == m_b ) {
         m_result = 0;
@@ -456,14 +413,11 @@ namespace Genfun
     // ========================================================================
     /// allocate the integration workspace
     // ========================================================================
-    NumericalDefiniteIntegral::_Workspace* NumericalDefiniteIntegral::allocate() const
-    {
+    NumericalDefiniteIntegral::_Workspace* NumericalDefiniteIntegral::allocate() const {
       if ( !m_ws ) {
         m_ws.reset( new _Workspace() );
         m_ws->ws = gsl_integration_workspace_alloc( size() );
-        if ( !m_ws->ws ) {
-          Exception( "allocate()::invalid workspace" );
-        };
+        if ( !m_ws->ws ) { Exception( "allocate()::invalid workspace" ); };
       }
       return m_ws.get();
     }
@@ -472,12 +426,9 @@ namespace Genfun
     // ========================================================================
     // adaptive integration on infinite interval
     // ========================================================================
-    double NumericalDefiniteIntegral::QAGI( _Function* F ) const
-    {
+    double NumericalDefiniteIntegral::QAGI( _Function* F ) const {
       // check the argument
-      if ( !F ) {
-        Exception( "::QAGI: invalid function" );
-      }
+      if ( !F ) { Exception( "::QAGI: invalid function" ); }
 
       // allocate workspace
       allocate();
@@ -494,9 +445,7 @@ namespace Genfun
         Exception( "::QAGI: invalid mode" );
       };
 
-      if ( ierror ) {
-        gsl_error( "NumericalDefiniteIntegral::QAGI", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalDefiniteIntegral::QAGI", __FILE__, __LINE__, ierror ); }
 
       return m_result;
     }
@@ -505,24 +454,17 @@ namespace Genfun
     // ========================================================================
     // adaptive integration with known singular points
     // ========================================================================
-    double NumericalDefiniteIntegral::QAGP( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QAGP::invalid function" );
-      }
+    double NumericalDefiniteIntegral::QAGP( _Function* F ) const {
+      if ( !F ) { Exception( "QAGP::invalid function" ); }
 
       // no known singular points ?
-      if ( points().empty() ) {
-        return QAGS( F );
-      }
+      if ( points().empty() ) { return QAGS( F ); }
 
       // use GSL
       int ierror = gsl_integration_qagp( F->fn, const_cast<double*>( points().data() ), points().size(), m_epsabs,
                                          m_epsrel, size(), ws()->ws, &m_result, &m_error );
 
-      if ( ierror ) {
-        gsl_error( "NumericalDefiniteIntegral::QAGI ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalDefiniteIntegral::QAGI ", __FILE__, __LINE__, ierror ); }
 
       // the sign
       if ( m_b < m_a ) m_result = -m_result;
@@ -534,11 +476,8 @@ namespace Genfun
     // ========================================================================
     // non-adaptive integration
     // ========================================================================
-    double NumericalDefiniteIntegral::QNG( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QNG::invalid function" );
-      }
+    double NumericalDefiniteIntegral::QNG( _Function* F ) const {
+      if ( !F ) { Exception( "QNG::invalid function" ); }
 
       // integration limits
       const auto lim = std::minmax( m_a, m_b );
@@ -546,9 +485,7 @@ namespace Genfun
       size_t neval = 0;
       int ierror = gsl_integration_qng( F->fn, lim.first, lim.second, m_epsabs, m_epsrel, &m_result, &m_error, &neval );
 
-      if ( ierror ) {
-        gsl_error( "NumericalIndefiniteIntegral::QNG ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QNG ", __FILE__, __LINE__, ierror ); }
       // sign
       if ( m_b < m_a ) m_result = -m_result;
 
@@ -559,11 +496,8 @@ namespace Genfun
     // ========================================================================
     // simple adaptive integration
     // ========================================================================
-    double NumericalDefiniteIntegral::QAG( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QAG::invalid function" );
-      }
+    double NumericalDefiniteIntegral::QAG( _Function* F ) const {
+      if ( !F ) { Exception( "QAG::invalid function" ); }
 
       // allocate workspace
       allocate();
@@ -574,9 +508,7 @@ namespace Genfun
       int ierror = gsl_integration_qag( F->fn, lim.first, lim.second, m_epsabs, m_epsrel, size(), (int)rule(), ws()->ws,
                                         &m_result, &m_error );
 
-      if ( ierror ) {
-        gsl_error( "NumericalDefiniteIntegral::QAG ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalDefiniteIntegral::QAG ", __FILE__, __LINE__, ierror ); }
       // sign
       if ( m_b < m_a ) m_result = -m_result;
 
@@ -587,11 +519,8 @@ namespace Genfun
     // ========================================================================
     // adaptive integration with singularities
     // ========================================================================
-    double NumericalDefiniteIntegral::QAGS( _Function* F ) const
-    {
-      if ( !F ) {
-        Exception( "QAG::invalid function" );
-      }
+    double NumericalDefiniteIntegral::QAGS( _Function* F ) const {
+      if ( !F ) { Exception( "QAG::invalid function" ); }
 
       if ( m_a == m_b ) {
         m_result = 0;
@@ -608,9 +537,7 @@ namespace Genfun
       int ierror = gsl_integration_qags( F->fn, lim.first, lim.second, m_epsabs, m_epsrel, size(), ws()->ws, &m_result,
                                          &m_error );
 
-      if ( ierror ) {
-        gsl_error( "NumericalDefiniteIntegral::QAGS ", __FILE__, __LINE__, ierror );
-      }
+      if ( ierror ) { gsl_error( "NumericalDefiniteIntegral::QAGS ", __FILE__, __LINE__, ierror ); }
 
       // sign
       if ( m_b < m_a ) m_result = -m_result;

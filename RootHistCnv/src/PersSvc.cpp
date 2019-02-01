@@ -8,11 +8,10 @@
 #include "RootObjAddress.h"
 #include "TFile.h"
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
   static std::string stat_dir      = "/stat";
   static std::string undefFileName = "UndefinedROOTOutputFileName";
-}
+} // namespace RootHistCnv
 
 #include "PersSvc.h"
 

@@ -6,10 +6,10 @@
 DECLARE_COMPONENT( LoopAlg )
 
 //------------------------------------------------------------------------------
-LoopAlg::LoopAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
+LoopAlg::LoopAlg( const std::string& name, ISvcLocator* pSvcLocator )
+    : Algorithm( name, pSvcLocator )
 //------------------------------------------------------------------------------
-{
-}
+{}
 
 //------------------------------------------------------------------------------
 StatusCode LoopAlg::initialize()

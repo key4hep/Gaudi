@@ -1,11 +1,13 @@
 # explicit list for wildcard imports
 __all__ = [
     "GaudiHandle",
-    "PublicToolHandle", "PrivateToolHandle",
+    "PublicToolHandle",
+    "PrivateToolHandle",
     "ServiceHandle",
     "GaudiHandleArray",
     "ServiceHandleArray",
-    "PublicToolHandleArray", "PrivateToolHandleArray",
+    "PublicToolHandleArray",
+    "PrivateToolHandleArray",
 ]
 __doc__ = """The python module holding python bindings to XyzHandles"""
 
@@ -22,8 +24,9 @@ class GaudiHandle(object):
             # this is a GaudiHandle or equivalent
             typeAndName = typeAndName.toStringProperty()
         if type(typeAndName) != str:
-            raise TypeError("Argument to %s must be a string. Got a %s instead" %
-                            (self.__class__.__name__, type(typeAndName).__name__))
+            raise TypeError(
+                "Argument to %s must be a string. Got a %s instead" %
+                (self.__class__.__name__, type(typeAndName).__name__))
         self.typeAndName = typeAndName
 
     def __repr__(self):
@@ -95,6 +98,7 @@ class ServiceHandle(GaudiHandle):
     def __init__(self, serviceName=''):
         GaudiHandle.__init__(self, serviceName)
 
+
 #
 # The HandleArrays
 #
@@ -112,8 +116,9 @@ class GaudiHandleArray(list):
         list.__init__(self)
         # check the type
         if type(typesAndNames) != list:
-            raise TypeError("Argument to %s must be a list. Got a %s instead" %
-                            (self.__class__.__name__, type(typesAndNames).__name__))
+            raise TypeError(
+                "Argument to %s must be a list. Got a %s instead" %
+                (self.__class__.__name__, type(typesAndNames).__name__))
         # add entries to list
         for tn in typesAndNames:
             self.append(tn)
@@ -131,7 +136,8 @@ class GaudiHandleArray(list):
     def __str__(self):
         """Print entries, one per line"""
         shortName = self.__class__.__name__
-        return "%s:%s" % (shortName, linesep + linesep.join([str(s) for s in self]))
+        return "%s:%s" % (shortName,
+                          linesep + linesep.join([str(s) for s in self]))
 
     def __getitem__(self, index):
         if type(index) == str:
@@ -139,8 +145,8 @@ class GaudiHandleArray(list):
             for h in self:
                 if h.getName() == index:
                     return h
-            raise IndexError("%s does not have a %s with instance name %s" %
-                             (self.__class__.__name__, self.handleType.componentType, index))
+            raise IndexError("%s does not have a %s with instance name %s" % (
+                self.__class__.__name__, self.handleType.componentType, index))
         else:
             return list.__getitem__(self, index)
 
@@ -167,18 +173,22 @@ class GaudiHandleArray(list):
             pass  # leave handle as-is
         elif isinstance(value, GaudiHandle):
             # do not allow different type of handles
-            raise TypeError("Can not add a %s to a %s" %
-                            (value.__class__.__name__, self.__class__.__name__))
+            raise TypeError(
+                "Can not add a %s to a %s" % (value.__class__.__name__,
+                                              self.__class__.__name__))
         elif value.getGaudiType() != self.__class__.handleType.componentType:
             # assume it is a configurable: allow only correct types
             raise TypeError("Can not append %s (%s) to a %s" %
-                            (value.__class__.__name__, value.getGaudiType(), self.__class__.__name__))
+                            (value.__class__.__name__, value.getGaudiType(),
+                             self.__class__.__name__))
         elif hasattr(value, 'isPublic'):
             # check public vs private if applicable for this configurable
             pop = value.isPublic() and 'Public' or 'Private'
             if value.isPublic() != self.__class__.handleType.isPublic:
-                raise TypeError("Can not append %s (%s %s) to a %s" %
-                                (value.__class__.__name__, pop, value.getGaudiType(), self.__class__.__name__))
+                raise TypeError(
+                    "Can not append %s (%s %s) to a %s" %
+                    (value.__class__.__name__, pop, value.getGaudiType(),
+                     self.__class__.__name__))
 
         # check that an instance name appears only once in the list
         try:

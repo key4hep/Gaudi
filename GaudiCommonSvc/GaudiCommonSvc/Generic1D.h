@@ -12,29 +12,27 @@
 // Hide warning message:
 // warning: 'XYZ' overrides a member function but is not marked 'override'
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class Generic1D Generic1D.h GaudiPI/Generic1D.h
-    *
-    * Common AIDA implementation stuff for histograms and profiles
-    * using ROOT implementations
-    *
-    * Credits: This code is the result of some stripdown implementation
-    * of LCG/PI. Credits to them!
-    *
-    *  @author M.Frank
-    */
+   *
+   * Common AIDA implementation stuff for histograms and profiles
+   * using ROOT implementations
+   *
+   * Credits: This code is the result of some stripdown implementation
+   * of LCG/PI. Credits to them!
+   *
+   *  @author M.Frank
+   */
   template <class INTERFACE, class IMPLEMENTATION>
-  class GAUDI_API Generic1D : virtual public INTERFACE, virtual public HistogramBase
-  {
+  class GAUDI_API Generic1D : virtual public INTERFACE, virtual public HistogramBase {
   public:
     typedef Generic1D<INTERFACE, IMPLEMENTATION> Base;
     /// Default constructor
@@ -137,8 +135,7 @@ namespace Gaudi
   }; // end class Generic1D
 
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic1D<INTERFACE, IMPLEMENTATION>::setTitle( const std::string& title )
-  {
+  bool Generic1D<INTERFACE, IMPLEMENTATION>::setTitle( const std::string& title ) {
     m_rep->SetTitle( title.c_str() );
     if ( !annotation().addItem( "Title", title ) ) m_annotation.setValue( "Title", title );
     if ( !annotation().addItem( "title", title ) ) annotation().setValue( "title", title );
@@ -146,53 +143,45 @@ namespace Gaudi
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic1D<INTERFACE, IMPLEMENTATION>::setName( const std::string& newName )
-  {
+  bool Generic1D<INTERFACE, IMPLEMENTATION>::setName( const std::string& newName ) {
     m_rep->SetName( newName.c_str() );
     m_annotation.setValue( "Name", newName );
     return true;
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic1D<INTERFACE, IMPLEMENTATION>::binRms( int index ) const
-  {
+  double Generic1D<INTERFACE, IMPLEMENTATION>::binRms( int index ) const {
     return m_rep->GetBinError( rIndex( index ) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic1D<INTERFACE, IMPLEMENTATION>::binMean( int index ) const
-  {
+  double Generic1D<INTERFACE, IMPLEMENTATION>::binMean( int index ) const {
     return m_rep->GetBinCenter( rIndex( index ) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic1D<INTERFACE, IMPLEMENTATION>::binHeight( int index ) const
-  {
+  double Generic1D<INTERFACE, IMPLEMENTATION>::binHeight( int index ) const {
     return m_rep->GetBinContent( rIndex( index ) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic1D<INTERFACE, IMPLEMENTATION>::binError( int index ) const
-  {
+  double Generic1D<INTERFACE, IMPLEMENTATION>::binError( int index ) const {
     return m_rep->GetBinError( rIndex( index ) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  int Generic1D<INTERFACE, IMPLEMENTATION>::extraEntries() const
-  {
+  int Generic1D<INTERFACE, IMPLEMENTATION>::extraEntries() const {
     return binEntries( AIDA::IAxis::UNDERFLOW_BIN ) + binEntries( AIDA::IAxis::OVERFLOW_BIN );
   }
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic1D<INTERFACE, IMPLEMENTATION>::reset()
-  {
+  bool Generic1D<INTERFACE, IMPLEMENTATION>::reset() {
     m_sumEntries = 0;
     m_rep->Reset();
     return true;
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic1D<INTERFACE, IMPLEMENTATION>::equivalentBinEntries() const
-  {
+  double Generic1D<INTERFACE, IMPLEMENTATION>::equivalentBinEntries() const {
     if ( sumBinHeights() <= 0 ) return 0;
     Stat_t stats[11]; // cover up to 3D...
     m_rep->GetStats( stats );
@@ -200,15 +189,13 @@ namespace Gaudi
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic1D<INTERFACE, IMPLEMENTATION>::scale( double scaleFactor )
-  {
+  bool Generic1D<INTERFACE, IMPLEMENTATION>::scale( double scaleFactor ) {
     m_rep->Scale( scaleFactor );
     return true;
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic1D<INTERFACE, IMPLEMENTATION>::add( const INTERFACE& h )
-  {
+  bool Generic1D<INTERFACE, IMPLEMENTATION>::add( const INTERFACE& h ) {
     const Generic1D<INTERFACE, IMPLEMENTATION>* p = dynamic_cast<const Generic1D<INTERFACE, IMPLEMENTATION>*>( &h );
     if ( p ) {
       m_rep->Add( p->m_rep.get() );
@@ -218,8 +205,7 @@ namespace Gaudi
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  std::ostream& Generic1D<INTERFACE, IMPLEMENTATION>::print( std::ostream& s ) const
-  {
+  std::ostream& Generic1D<INTERFACE, IMPLEMENTATION>::print( std::ostream& s ) const {
     /// bin contents and errors are printed for all bins including under and overflows
     m_rep->Print( "all" );
     return s;
@@ -227,8 +213,7 @@ namespace Gaudi
 
   /// Write (ASCII) the histogram table into the output stream
   template <class INTERFACE, class IMPLEMENTATION>
-  std::ostream& Generic1D<INTERFACE, IMPLEMENTATION>::write( std::ostream& s ) const
-  {
+  std::ostream& Generic1D<INTERFACE, IMPLEMENTATION>::write( std::ostream& s ) const {
     s << "\n1D Histogram Table: " << std::endl;
     s << "Bin, Height, Error " << std::endl;
     for ( int i = 0; i < axis().bins(); ++i )
@@ -239,19 +224,18 @@ namespace Gaudi
 
   /// Write (ASCII) the histogram table into a file
   template <class INTERFACE, class IMPLEMENTATION>
-  int Generic1D<INTERFACE, IMPLEMENTATION>::write( const char* file_name ) const
-  {
+  int Generic1D<INTERFACE, IMPLEMENTATION>::write( const char* file_name ) const {
     TFile* f      = TFile::Open( file_name, "RECREATE" );
     Int_t  nbytes = m_rep->Write();
     f->Close();
     return nbytes;
   }
-}
+} // namespace Gaudi
 
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 #endif // AIDAROOT_GENERIC1D_H

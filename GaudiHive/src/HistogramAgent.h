@@ -15,16 +15,14 @@
 
     @author Markus Frank
 */
-class HistogramAgent final : virtual public IDataStoreAgent
-{
+class HistogramAgent final : virtual public IDataStoreAgent {
   IDataSelector m_objects;
 
 public:
   /// Return the set of selected DataObjects
   const IDataSelector& selectedObjects() const { return m_objects; }
   /// Analyses a given directory entry
-  bool analyse( IRegistry* pRegistry, int ) override
-  {
+  bool analyse( IRegistry* pRegistry, int ) override {
     DataObject* obj = pRegistry->object();
     if ( obj && obj->clID() != CLID_StatisticsFile ) {
       m_objects.push_back( obj );

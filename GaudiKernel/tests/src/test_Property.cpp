@@ -4,11 +4,9 @@
 
 #include "GaudiKernel/Property.h"
 
-struct MyClass {
-};
+struct MyClass {};
 
-BOOST_AUTO_TEST_CASE( value_props_constructors )
-{
+BOOST_AUTO_TEST_CASE( value_props_constructors ) {
   {
     Gaudi::Property<std::string> p;
     BOOST_CHECK( p.value() == "" );
@@ -75,8 +73,7 @@ BOOST_AUTO_TEST_CASE( value_props_constructors )
   }
 }
 
-BOOST_AUTO_TEST_CASE( string_conversion )
-{
+BOOST_AUTO_TEST_CASE( string_conversion ) {
   {
     Gaudi::Property<std::string> p1{"p1", ""};
     BOOST_CHECK( p1.value() == "" );
@@ -134,13 +131,11 @@ BOOST_AUTO_TEST_CASE( string_conversion )
 }
 
 template <class T>
-const T& convert_to( const T& v )
-{
+const T& convert_to( const T& v ) {
   return v;
 }
 
-BOOST_AUTO_TEST_CASE( implicit_conversion )
-{
+BOOST_AUTO_TEST_CASE( implicit_conversion ) {
   {
     Gaudi::Property<int> p( 123 );
     BOOST_CHECK( convert_to<int>( p ) == 123 );
@@ -159,8 +154,7 @@ BOOST_AUTO_TEST_CASE( implicit_conversion )
   }
 }
 
-BOOST_AUTO_TEST_CASE( copy_constructor )
-{
+BOOST_AUTO_TEST_CASE( copy_constructor ) {
   {
     Gaudi::Property<std::string> orig{"name", "value", "doc"};
     Gaudi::Property<std::string> dest( orig );
@@ -181,8 +175,7 @@ BOOST_AUTO_TEST_CASE( copy_constructor )
     BOOST_CHECK( dest.value() == "newvalue" );
   }
 }
-BOOST_AUTO_TEST_CASE( move_constructor )
-{
+BOOST_AUTO_TEST_CASE( move_constructor ) {
   Gaudi::Property<std::string> orig{"name", "value", "doc"};
   Gaudi::Property<std::string> dest( std::move( orig ) );
   BOOST_CHECK( dest.name() == "name" );
@@ -190,8 +183,7 @@ BOOST_AUTO_TEST_CASE( move_constructor )
   BOOST_CHECK( dest.documentation() == "doc" );
   BOOST_CHECK( dest.ownerTypeName() == "unknown owner type" );
 }
-BOOST_AUTO_TEST_CASE( copy_assignment )
-{
+BOOST_AUTO_TEST_CASE( copy_assignment ) {
   Gaudi::Property<std::string> orig{"name", "value", "doc"};
   Gaudi::Property<std::string> dest = orig;
   BOOST_CHECK( dest.name() == "name" );
@@ -199,8 +191,7 @@ BOOST_AUTO_TEST_CASE( copy_assignment )
   BOOST_CHECK( dest.documentation() == "doc" );
   BOOST_CHECK( dest.ownerTypeName() == "unknown owner type" );
 }
-BOOST_AUTO_TEST_CASE( move_assignment )
-{
+BOOST_AUTO_TEST_CASE( move_assignment ) {
   Gaudi::Property<std::string> orig{"name", "value", "doc"};
   Gaudi::Property<std::string> dest = std::move( orig );
   BOOST_CHECK( dest.name() == "name" );
@@ -209,8 +200,7 @@ BOOST_AUTO_TEST_CASE( move_assignment )
   BOOST_CHECK( dest.ownerTypeName() == "unknown owner type" );
 }
 
-BOOST_AUTO_TEST_CASE( backward_compatibility )
-{
+BOOST_AUTO_TEST_CASE( backward_compatibility ) {
   {
     Gaudi::Property<int> ip{"name", 42};
     BOOST_CHECK( !ip.readCallBack() );

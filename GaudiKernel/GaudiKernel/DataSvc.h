@@ -24,11 +24,10 @@ class DataObject;
 class IDataStoreAgent;
 
 // Do not clutter global namespace for helpers...
-namespace DataSvcHelpers
-{
+namespace DataSvcHelpers {
   // Map of objects where loading is inhibited
   class InhibitMap;
-}
+} // namespace DataSvcHelpers
 
 /**
  * @class DataSvc DataSvc.h GaudiKernel/DataSvc.h
@@ -39,9 +38,8 @@ namespace DataSvcHelpers
  * @author Markus Frank
  * @author Sebastien Ponce
  * @version 1.0
-*/
-class GAUDI_API DataSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc>
-{
+ */
+class GAUDI_API DataSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc> {
 
   /// Pointer to data loader service
   SmartIF<IConversionSvc> m_dataLoader = nullptr;
@@ -57,11 +55,11 @@ private:
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
   Gaudi::Property<std::vector<std::string>> m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
 
-  Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
+  Gaudi::Property<bool>        m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
   Gaudi::Property<std::string> m_faultName{this, "DataFaultName", "DataFault", "Name of the data fault incident"};
 
-  Gaudi::Property<bool> m_enableAccessHdlr{this, "EnableAccessHandler", false,
+  Gaudi::Property<bool>        m_enableAccessHdlr{this, "EnableAccessHandler", false,
                                            "enable incidents on data access requests"};
   Gaudi::Property<std::string> m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
 
@@ -280,16 +278,16 @@ protected:
   StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode, boost::string_ref path,
                             DataSvcHelpers::RegistryEntry*& pEntry );
   /** Invoke data fault handling if enabled
-    * @param pReg  [IN]   Pointer to missing registry entry
-    * @param path  [IN]   Sub-path of requested object from pReg
-    *
-    * @return Object corresponding to the specified leaf
-    */
+   * @param pReg  [IN]   Pointer to missing registry entry
+   * @param path  [IN]   Sub-path of requested object from pReg
+   *
+   * @return Object corresponding to the specified leaf
+   */
   DataObject* handleDataFault( IRegistry* pReg, boost::string_ref path = "" );
 
 private:
-  StatusCode i_retrieveEntry( DataSvcHelpers::RegistryEntry* parentObj, boost::string_ref path,
-                              DataSvcHelpers::RegistryEntry*& pEntry );
+  StatusCode  i_retrieveEntry( DataSvcHelpers::RegistryEntry* parentObj, boost::string_ref path,
+                               DataSvcHelpers::RegistryEntry*& pEntry );
   DataObject* i_handleDataFault( IRegistry* pReg, boost::string_ref path = boost::string_ref{} );
 };
 #endif // GAUDIKERNEL_DATASVC_H

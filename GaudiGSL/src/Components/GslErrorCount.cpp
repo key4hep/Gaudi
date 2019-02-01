@@ -25,8 +25,7 @@ DECLARE_COMPONENT( GslErrorCount )
  *  @return status code
  */
 // ============================================================================
-StatusCode GslErrorCount::finalize()
-{
+StatusCode GslErrorCount::finalize() {
   // printout the Error table
   const std::string stars( 78, '*' );
   info() << stars << endmsg;
@@ -53,8 +52,7 @@ StatusCode GslErrorCount::finalize()
  *  @return status code
  */
 // ============================================================================
-StatusCode GslErrorCount::handle( const GslError& error ) const
-{
+StatusCode GslErrorCount::handle( const GslError& error ) const {
   ++m_counters[error];
   return StatusCode::SUCCESS;
 }

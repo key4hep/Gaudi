@@ -2,18 +2,15 @@
 
 #include <cstdint>
 
-namespace
-{
-  constexpr auto transition( AlgsExecutionStates::State first, AlgsExecutionStates::State second )
-  {
+namespace {
+  constexpr auto transition( AlgsExecutionStates::State first, AlgsExecutionStates::State second ) {
     static_assert( sizeof( AlgsExecutionStates::State ) == 1, "no more than 255 states please!" );
     using ui16 = uint_fast16_t;
     return static_cast<ui16>( first ) * 256 + static_cast<ui16>( second );
   }
-}
+} // namespace
 
-StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState )
-{
+StatusCode AlgsExecutionStates::set( unsigned int iAlgo, State newState ) {
   if ( iAlgo >= m_states.size() ) {
     log() << MSG::ERROR << "Index out of bound (" << iAlgo << " / " << m_states.size() << ")" << endmsg;
     return StatusCode::FAILURE;

@@ -25,16 +25,14 @@
  */
 
 template <class T, class MutexType = std::mutex>
-class LockedHandle
-{
+class LockedHandle {
 public:
   LockedHandle( T* ptr, MutexType& mut ) : m_ptr( ptr ), m_mutex( &mut ) {}
   LockedHandle( T* ptr, MutexType* mut ) : m_ptr( ptr ), m_mutex( mut ) {}
   LockedHandle( T* ptr ) : m_ptr( ptr ), m_mutex( 0 ) {}
   LockedHandle() : m_ptr( nullptr ), m_mutex( nullptr ) {}
 
-  void set( T* ptr, MutexType* mut )
-  {
+  void set( T* ptr, MutexType* mut ) {
     m_ptr   = ptr;
     m_mutex = mut;
   }
@@ -43,8 +41,7 @@ public:
 
   T* get() const { return m_ptr; }
 
-  class Guard
-  {
+  class Guard {
     Guard( const Guard& a ) = delete;
 
   public:
@@ -62,8 +59,7 @@ public:
     MutexType* m_mutex{nullptr};
   };
 
-  class ConstGuard
-  {
+  class ConstGuard {
     ConstGuard( const ConstGuard& a ) = delete;
 
   public:

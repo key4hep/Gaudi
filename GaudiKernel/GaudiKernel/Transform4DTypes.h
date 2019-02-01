@@ -21,10 +21,9 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-23
  */
-namespace Gaudi
-{
+namespace Gaudi {
   // NB : Please remember to give a simple doxygen comment for each tyedef
 
   typedef ROOT::Math::LorentzRotation LorentzRotation; ///< Lorentz rotation
-}
+} // namespace Gaudi
 #endif // KERNEL_TRANSFORM4DTYPES_H

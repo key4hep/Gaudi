@@ -12,8 +12,7 @@
 #include "GaudiPython/Algorithm.h"
 // ============================================================================
 
-namespace
-{
+namespace {
   /// @FIXME: (MCl) work-around to fix the warning
   ///
   ///   warning: deprecated conversion from string constant to ‘char*’
@@ -21,18 +20,15 @@ namespace
   /// that occurs when a string constant (e.g.: "abc", "") is passed to a function
   /// expecting char *
   inline char* chr( const char* c ) { return const_cast<char*>( c ); }
-}
+} // namespace
 
 // ============================================================================
 /// call the python method
 // ============================================================================
-StatusCode GaudiPython::call_python_method( PyObject* self, const char* method )
-{
+StatusCode GaudiPython::call_python_method( PyObject* self, const char* method ) {
   StatusCode sc = StatusCode::FAILURE;
   // check arguments
-  if ( !self || !method ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !self || !method ) { return StatusCode::FAILURE; }
 
   // call Python
   PyObject* r = PyObject_CallMethod( self, chr( method ), nullptr );
@@ -78,8 +74,7 @@ StatusCode GaudiPython::call_python_method( PyObject* self, const char* method )
  */
 // ============================================================================
 GaudiPython::PyAlgorithm::PyAlgorithm( PyObject* self, const std::string& name )
-    : Algorithm( name, Gaudi::svcLocator() ), m_self( self )
-{
+    : Algorithm( name, Gaudi::svcLocator() ), m_self( self ) {
   // The owner of the Algorithm is Python (as creator) therefore
   // it should not be deleted by Gaudi (added an extra addRef()).
   addRef();

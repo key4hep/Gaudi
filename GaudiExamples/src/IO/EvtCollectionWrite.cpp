@@ -24,8 +24,7 @@ using namespace Gaudi::Examples;
 
 DECLARE_COMPONENT( EvtCollectionWrite )
 
-StatusCode EvtCollectionWrite::initialize()
-{
+StatusCode EvtCollectionWrite::initialize() {
   StatusCode status = service( "EvtTupleSvc", m_evtTupleSvc );
   if ( status.isSuccess() ) {
     NTuplePtr nt( m_evtTupleSvc, "/NTUPLES/EvtColl/Dir1/Dir2/Dir3/Collection" );
@@ -57,8 +56,7 @@ StatusCode EvtCollectionWrite::initialize()
 }
 
 // Event callback
-StatusCode EvtCollectionWrite::execute()
-{
+StatusCode EvtCollectionWrite::execute() {
   auto&                    log = msgStream();
   SmartDataPtr<DataObject> evtRoot( eventSvc(), "/Event" );
   SmartDataPtr<Event>      evt( eventSvc(), "/Event/Header" );
@@ -73,13 +71,11 @@ StatusCode EvtCollectionWrite::execute()
       m_ntrkColl      = trkCont->size();
       m_eneColl       = 0.f;
       log << MSG::DEBUG << " ->Track:";
-      for ( size_t j = 0; j < 100; ++j ) {
-        m_trkMomFixed[j] = 0;
-      }
+      for ( size_t j = 0; j < 100; ++j ) { m_trkMomFixed[j] = 0; }
       int cnt = 0;
       for ( const auto& i : *trkCont ) {
-        float p                           = sqrt( i->px() * i->px() + i->py() * i->py() + i->pz() * i->pz() );
-        if ( cnt < 5000 ) m_trkMom[cnt]   = p;
+        float p = sqrt( i->px() * i->px() + i->py() * i->py() + i->pz() * i->pz() );
+        if ( cnt < 5000 ) m_trkMom[cnt] = p;
         if ( cnt < 5 ) m_trkMomFixed[cnt] = p;
         m_eneColl += p;
         ++cnt;

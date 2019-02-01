@@ -6,8 +6,7 @@
 #include <algorithm>
 #include <array>
 
-BOOST_AUTO_TEST_CASE( comparison )
-{
+BOOST_AUTO_TEST_CASE( comparison ) {
   // comparison and sorting
   {
     EventIDBase ei1{100, 1};

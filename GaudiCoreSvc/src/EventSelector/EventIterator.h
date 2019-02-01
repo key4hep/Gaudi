@@ -29,8 +29,7 @@
    @author Markus Frank
    @version 1.0
 */
-class EvtSelectorContext : public IEvtSelector::Context
-{
+class EvtSelectorContext : public IEvtSelector::Context {
   // Friend declaration
   friend class EventSelector;
   friend class EventCollectionSelector;
@@ -53,8 +52,7 @@ protected:
   /// Pointer to opaque address
   IOpaqueAddress* m_pAddress = nullptr;
   /// Set the address of the iterator
-  void set( const IEvtSelector* sel, IDataStreamTool::size_type id, IEvtSelector::Context* it, IOpaqueAddress* pA )
-  {
+  void set( const IEvtSelector* sel, IDataStreamTool::size_type id, IEvtSelector::Context* it, IOpaqueAddress* pA ) {
     m_pSelector = sel;
     m_context   = it;
     m_streamID  = id;
@@ -62,8 +60,7 @@ protected:
     m_strCount  = -1;
   }
   /// Set the address of the iterator
-  void set( IEvtSelector::Context* it, IOpaqueAddress* pA )
-  {
+  void set( IEvtSelector::Context* it, IOpaqueAddress* pA ) {
     m_context  = it;
     m_pAddress = pA;
   }
@@ -72,15 +69,13 @@ protected:
   /// Access "real" iterator
   IEvtSelector::Context* context() const { return m_context; }
   /// Increase counters
-  IDataStreamTool::size_type increaseCounters( bool reset = false )
-  {
+  IDataStreamTool::size_type increaseCounters( bool reset = false ) {
     m_count++;
     m_strCount = ( reset ) ? 0 : m_strCount + 1;
     return m_count;
   }
   /// Decrease counters
-  IDataStreamTool::size_type decreaseCounters( bool reset = false )
-  {
+  IDataStreamTool::size_type decreaseCounters( bool reset = false ) {
     m_count++;
     m_strCount = ( reset ) ? 0 : m_strCount - 1;
     return m_count;

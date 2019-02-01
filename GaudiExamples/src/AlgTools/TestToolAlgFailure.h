@@ -15,8 +15,7 @@
  *  @date   2008-10-22
  */
 
-class TestToolAlgFailure : public GaudiAlgorithm
-{
+class TestToolAlgFailure : public GaudiAlgorithm {
 
 public:
   /// Standard constructor

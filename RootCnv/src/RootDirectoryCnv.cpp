@@ -28,20 +28,16 @@ DECLARE_COMPONENT_WITH_ID(RootDirectoryCnv,
 
 // Standard Constructor
 RootDirectoryCnv::RootDirectoryCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr )
-    : RootStatCnv( typ, clid, svc, mgr )
-{
-}
+    : RootStatCnv( typ, clid, svc, mgr ) {}
 
 // Create transient object from persistent data
-StatusCode RootDirectoryCnv::createObj( IOpaqueAddress* /* pAddr */, DataObject*& refpObj )
-{
+StatusCode RootDirectoryCnv::createObj( IOpaqueAddress* /* pAddr */, DataObject*& refpObj ) {
   refpObj = new NTuple::Directory();
   return StatusCode::SUCCESS;
 }
 
 // Converter overrides: Convert the transient object to the requested representation.
-StatusCode RootDirectoryCnv::createRep( DataObject* pObj, IOpaqueAddress*& /* refpAddr */ )
-{
+StatusCode RootDirectoryCnv::createRep( DataObject* pObj, IOpaqueAddress*& /* refpAddr */ ) {
   string dsc;
   if ( objType() == CLID_StatisticsDirectory ) {
     dsc = "Directory containing statistics results.";
@@ -56,14 +52,12 @@ StatusCode RootDirectoryCnv::createRep( DataObject* pObj, IOpaqueAddress*& /* re
 }
 
 // Fill transient object references
-StatusCode RootDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj )
-{
+StatusCode RootDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) {
   return updateObjRefs( pAddr, pObj );
 }
 
 // Converter overrides: Update the references of an updated transient object.
-StatusCode RootDirectoryCnv::updateObjRefs( IOpaqueAddress* pAddr, DataObject* pObject )
-{
+StatusCode RootDirectoryCnv::updateObjRefs( IOpaqueAddress* pAddr, DataObject* pObject ) {
   typedef vector<RootNTupleDescriptor*> REFS;
   REFS                                  refs;
   StatusCode                            status = StatusCode( StatusCode::FAILURE, true );
@@ -145,25 +139,21 @@ StatusCode RootDirectoryCnv::updateObjRefs( IOpaqueAddress* pAddr, DataObject* p
 }
 
 // Converter overrides: Update transient object from persistent data
-StatusCode RootDirectoryCnv::updateObj( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ )
-{
+StatusCode RootDirectoryCnv::updateObj( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ ) {
   return StatusCode::SUCCESS;
 }
 
 // Converter overrides: Update persistent object representation.
-StatusCode RootDirectoryCnv::updateRep( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ )
-{
+StatusCode RootDirectoryCnv::updateRep( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ ) {
   return StatusCode::SUCCESS;
 }
 
 // Converter overrides: Update references of persistent object representation.
-StatusCode RootDirectoryCnv::updateRepRefs( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ )
-{
+StatusCode RootDirectoryCnv::updateRepRefs( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ ) {
   return StatusCode::SUCCESS;
 }
 
 // Converter overrides: Fill references of persistent object representation.
-StatusCode RootDirectoryCnv::fillRepRefs( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ )
-{
+StatusCode RootDirectoryCnv::fillRepRefs( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ ) {
   return StatusCode::SUCCESS;
 }

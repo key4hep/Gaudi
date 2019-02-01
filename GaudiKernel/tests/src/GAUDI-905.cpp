@@ -2,8 +2,7 @@
 
 void func( const Gaudi::StringKey& ) {}
 
-int main()
-{
+int main() {
   func( "test" );
   return 0;
 }

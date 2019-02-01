@@ -26,26 +26,19 @@
  * @author Pere Mato
  * @author Sebastien Ponce
  */
-class GAUDI_API InterfaceID final
-{
+class GAUDI_API InterfaceID final {
 public:
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
   /// constructor from a pack long
   constexpr InterfaceID( unsigned long lid )
-      : m_id( lid & 0xFFFF ), m_major_ver( ( lid & 0xFF000000 ) >> 24 ), m_minor_ver( ( lid & 0xFF0000 ) >> 16 )
-  {
-  }
+      : m_id( lid & 0xFFFF ), m_major_ver( ( lid & 0xFF000000 ) >> 24 ), m_minor_ver( ( lid & 0xFF0000 ) >> 16 ) {}
 #endif
   /// constructor from components
   constexpr InterfaceID( unsigned long id, unsigned long major, unsigned long minor = 0 )
-      : m_id( id ), m_major_ver( major ), m_minor_ver( minor )
-  {
-  }
+      : m_id( id ), m_major_ver( major ), m_minor_ver( minor ) {}
   /// constructor from components
   InterfaceID( const char* name, unsigned long major, unsigned long minor = 0 )
-      : m_id( hash32( name ) ), m_major_ver( major ), m_minor_ver( minor )
-  {
-  }
+      : m_id( hash32( name ) ), m_major_ver( major ), m_minor_ver( minor ) {}
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NEW_INTERFACES )
   /// conversion to unsigned long
   constexpr operator unsigned long() const { return ( m_major_ver << 24 ) + ( m_minor_ver << 16 ) + m_id; }
@@ -59,20 +52,17 @@ public:
   /** check compatibility. The major version is check and the minor one
    *  should be bigger or equal
    */
-  constexpr bool versionMatch( const InterfaceID& iid ) const
-  {
+  constexpr bool versionMatch( const InterfaceID& iid ) const {
     return ( id() == iid.id() && majorVersion() == iid.majorVersion() && minorVersion() >= iid.minorVersion() );
   }
   /// check full compatibility.
-  constexpr bool fullMatch( const InterfaceID& iid ) const
-  {
+  constexpr bool fullMatch( const InterfaceID& iid ) const {
     return ( id() == iid.id() && majorVersion() == iid.majorVersion() && minorVersion() == iid.minorVersion() );
   }
   /// compare operator
   constexpr bool operator==( const InterfaceID& iid ) const { return fullMatch( iid ); }
   /// Jenkins one-at-time hash function -- see https://en.wikipedia.org/wiki/Jenkins_hash_function
-  static unsigned int hash32( const char* key )
-  {
+  static unsigned int hash32( const char* key ) {
     unsigned int hash = 0;
     for ( const char* k = key; *k; ++k ) {
       hash += *k;
@@ -91,55 +81,46 @@ private:
   unsigned long m_minor_ver;
 };
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   template <typename... I>
-  struct interface_list {
-  };
+  struct interface_list {};
 
-  namespace meta
-  {
+  namespace meta {
     // identity T -> type = T; note that id_<T> is a complete type, even if T is not
     template <typename T>
     struct id_ {
       using type = T;
     };
 
-    namespace detail
-    {
+    namespace detail {
       template <typename... Is>
-      struct inherit_from : Is... {
-      };
+      struct inherit_from : Is... {};
 
       template <typename List, typename I>
-      struct append1 {
-      };
+      struct append1 {};
 
       // interpose an id_<I> as id_<I> is a complete type, even if I is not... and we need complete
       // types to inherit from
       template <typename... Is, typename I>
       struct append1<interface_list<Is...>, I>
           : id_<typename std::conditional<std::is_base_of<id_<I>, inherit_from<id_<Is>...>>::value,
-                                          interface_list<Is...>, interface_list<Is..., I>>::type> {
-      };
+                                          interface_list<Is...>, interface_list<Is..., I>>::type> {};
 
       template <typename, typename>
-      struct appendN {
-      };
+      struct appendN {};
 
       template <typename State>
-      struct appendN<interface_list<>, State> : id_<State> {
-      };
+      struct appendN<interface_list<>, State> : id_<State> {};
 
       template <typename... Is, typename I, typename List>
       struct appendN<interface_list<I, Is...>, List> : appendN<interface_list<Is...>, typename append1<List, I>::type> {
       };
-    }
+    } // namespace detail
 
     template <typename... Is>
     using unique_interface_list = detail::appendN<interface_list<Is...>, interface_list<>>;
-  }
+  } // namespace meta
 
   // interface_list concatenation
   template <typename... I>
@@ -147,8 +128,7 @@ namespace Gaudi
 
   // identity
   template <typename... I>
-  struct interface_list_cat<interface_list<I...>> : meta::unique_interface_list<I...> {
-  };
+  struct interface_list_cat<interface_list<I...>> : meta::unique_interface_list<I...> {};
 
   // binary op
   template <typename... I1, typename... I2>
@@ -158,8 +138,7 @@ namespace Gaudi
   // induction of binary op
   template <typename... I1, typename... I2, typename... Others>
   struct interface_list_cat<interface_list<I1...>, interface_list<I2...>, Others...>
-      : interface_list_cat<interface_list<I1..., I2...>, Others...> {
-  };
+      : interface_list_cat<interface_list<I1..., I2...>, Others...> {};
 
   // append is a special case of concatenation...
   template <typename... I>
@@ -167,15 +146,12 @@ namespace Gaudi
 
   template <typename... Is, typename I>
   struct interface_list_append<interface_list<Is...>, I>
-      : interface_list_cat<interface_list<Is...>, interface_list<I>> {
-  };
+      : interface_list_cat<interface_list<Is...>, interface_list<I>> {};
 
   // helpers for implementation of interface cast
-  namespace iid_cast_details
-  {
+  namespace iid_cast_details {
     template <typename I>
-    constexpr void* void_cast( const I* i )
-    {
+    constexpr void* void_cast( const I* i ) {
       return const_cast<I*>( i );
     }
 
@@ -185,8 +161,7 @@ namespace Gaudi
     template <>
     struct iid_cast_t<> {
       template <typename P>
-      constexpr void* operator()( const InterfaceID&, P* ) const
-      {
+      constexpr void* operator()( const InterfaceID&, P* ) const {
         return nullptr;
       }
     };
@@ -194,23 +169,20 @@ namespace Gaudi
     template <typename I, typename... Is>
     struct iid_cast_t<I, Is...> {
       template <typename P>
-      inline void* operator()( const InterfaceID& tid, P* ptr ) const
-      {
+      inline void* operator()( const InterfaceID& tid, P* ptr ) const {
         return tid.versionMatch( I::interfaceID() ) ? void_cast<typename I::interface_type>( ptr )
                                                     : iid_cast_t<Is...>{}( tid, ptr );
       }
     };
-  }
+  } // namespace iid_cast_details
 
   template <typename... Is>
-  std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> )
-  {
+  std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
     return {Is::name()...};
   }
 
   template <typename... Is, typename P>
-  inline void* iid_cast( const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr )
-  {
+  inline void* iid_cast( const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr ) {
     constexpr auto iid_cast_ = iid_cast_details::iid_cast_t<Is...>{};
     return iid_cast_( tid, ptr );
   }
@@ -231,8 +203,7 @@ namespace Gaudi
 
     static inline const std::type_info& TypeInfo() { return typeid( typename iids::type ); }
 
-    static inline const InterfaceID& interfaceID()
-    {
+    static inline const InterfaceID& interfaceID() {
       static const InterfaceID s_iid( name().c_str(), majVers, minVers );
       return s_iid;
     }
@@ -241,13 +212,11 @@ namespace Gaudi
   constexpr struct fullMatch_t {
     template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1,
               unsigned long minor2>
-    constexpr bool operator()( InterfaceId<IFACE1, major1, minor1>, InterfaceId<IFACE2, major2, minor2> ) const
-    {
+    constexpr bool operator()( InterfaceId<IFACE1, major1, minor1>, InterfaceId<IFACE2, major2, minor2> ) const {
       return false;
     }
     template <typename IFACE, unsigned long major, unsigned long minor>
-    constexpr bool operator()( InterfaceId<IFACE, major, minor>, InterfaceId<IFACE, major, minor> ) const
-    {
+    constexpr bool operator()( InterfaceId<IFACE, major, minor>, InterfaceId<IFACE, major, minor> ) const {
       return true;
     }
   } fullMatch{};
@@ -255,17 +224,15 @@ namespace Gaudi
   constexpr struct majorMatch_t {
     template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1,
               unsigned long minor2>
-    constexpr bool operator()( InterfaceId<IFACE1, major1, minor1>, InterfaceId<IFACE2, major2, minor2> ) const
-    {
+    constexpr bool operator()( InterfaceId<IFACE1, major1, minor1>, InterfaceId<IFACE2, major2, minor2> ) const {
       return false;
     }
     template <typename IFACE, unsigned long major, unsigned long minor1, unsigned long minor2>
-    constexpr bool operator()( InterfaceId<IFACE, major, minor1>, InterfaceId<IFACE, major, minor2> ) const
-    {
+    constexpr bool operator()( InterfaceId<IFACE, major, minor1>, InterfaceId<IFACE, major, minor2> ) const {
       return true;
     }
   } majorMatch{};
-}
+} // namespace Gaudi
 
 /** @class IInterface IInterface.h GaudiKernel/IInterface.h
     Definition of the basic interface
@@ -274,8 +241,7 @@ namespace Gaudi
     @author Markus Frank
     @author Marco Clemencic
 */
-class GAUDI_API IInterface
-{
+class GAUDI_API IInterface {
 public:
   /// Interface ID
   using iid = Gaudi::InterfaceId<IInterface, 0, 0>;
@@ -347,22 +313,19 @@ public:
 
 STATUSCODE_ENUM_DECL( IInterface::Status )
 
-namespace Gaudi
-{
+namespace Gaudi {
   /// Cast a IInterface pointer to an IInterface specialization (TARGET).
   template <typename TARGET>
-  TARGET* Cast( IInterface* i )
-  {
+  TARGET* Cast( IInterface* i ) {
     return reinterpret_cast<TARGET*>( i->i_cast( TARGET::interfaceID() ) );
   }
   /// Cast a IInterface pointer to an IInterface specialization (TARGET).
   /// const version
   template <typename TARGET>
-  const TARGET* Cast( const IInterface* i )
-  {
+  const TARGET* Cast( const IInterface* i ) {
     return reinterpret_cast<const TARGET*>( i->i_cast( TARGET::interfaceID() ) );
   }
-}
+} // namespace Gaudi
 
 /** Templated function that throws an exception if the version if the interface
     implemented by the object behind the interface is incompatible. This is the
@@ -375,8 +338,7 @@ namespace Gaudi
     @author Pere Mato
 */
 template <class I>
-bool isValidInterface( I* i )
-{
+bool isValidInterface( I* i ) {
   void* ii = nullptr;
   ;
   StatusCode sc = i->queryInterface( I::interfaceID(), &ii );
@@ -385,8 +347,7 @@ bool isValidInterface( I* i )
 
 //#ifdef GAUDI_V20_COMPAT
 /// ostream operator for InterfaceID. Needed by PluginSvc
-inline std::ostream& operator<<( std::ostream& s, const InterfaceID& id )
-{
+inline std::ostream& operator<<( std::ostream& s, const InterfaceID& id ) {
   s << "IID_" << id.id();
   return s;
 }
@@ -403,8 +364,7 @@ inline std::ostream& operator<<( std::ostream& s, const InterfaceID& id )
 /// <tr><td><tt>(IInterface *&)m_mySvc</tt></td><td><tt>*pp_cast<IInterface>(&m_mySvc)</tt></td></tr>
 /// </table>
 template <class DEST, class SRC>
-inline DEST** pp_cast( SRC** ptr )
-{
+inline DEST** pp_cast( SRC** ptr ) {
   return reinterpret_cast<DEST**>( ptr );
 }
 

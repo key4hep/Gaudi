@@ -2,8 +2,7 @@
 #include <cstdlib>
 #include <stdexcept>
 
-static int usage()
-{
+static int usage() {
   ::printf( "Gaudi event extraction facility for ROOT tree based files.\n"
             " Usage: \n"
             "extract_event -o <output-file> -i <input-file> ...]\n\n"
@@ -14,14 +13,13 @@ static int usage()
   return 1;
 }
 
-int main( int argc, char** argv )
-{
+int main( int argc, char** argv ) {
   string input;
   string output;
   int    evt_num = -1;
   for ( int i = 1; i < argc; ++i ) {
     if ( *argv[i] == '-' ) {
-      switch (::toupper( *( argv[i] + 1 ) ) ) {
+      switch ( ::toupper( *( argv[i] + 1 ) ) ) {
       case 'E':
         if ( 1 != ::sscanf( argv[i + 1], "%d", &evt_num ) ) {
           ::printf( "\nERROR: No valid event identifier given.\n\n" );
@@ -61,8 +59,6 @@ int main( int argc, char** argv )
     return 0;
   } catch ( const std::exception& e ) {
     ::printf( "\nERROR: Event extraction from file %s failed [%s]\n", input.c_str(), e.what() );
-  } catch ( ... ) {
-    ::printf( "\nERROR: Event extraction from file %s failed [unknown reason]\n", input.c_str() );
-  }
+  } catch ( ... ) { ::printf( "\nERROR: Event extraction from file %s failed [unknown reason]\n", input.c_str() ); }
   return 1;
 }

@@ -12,8 +12,7 @@
     @author M.Frank
     @date 1999
 */
-class RandomNumberAlg : public Algorithm
-{
+class RandomNumberAlg : public Algorithm {
 protected:
   /// Allocate wrapper for random number generator
   Rndm::Numbers m_numbers;

@@ -33,21 +33,20 @@ class IMessageSvc;
 
     @author Pere Mato
 */
-class ServiceManager : public extends<ComponentManager, ISvcManager, ISvcLocator>
-{
+class ServiceManager : public extends<ComponentManager, ISvcManager, ISvcLocator> {
 public:
   struct ServiceItem final {
     ServiceItem( IService* s, long p = 0, bool act = false ) : service( s ), priority( p ), active( act ) {}
     SmartIF<IService> service;
     long              priority;
     bool              active;
-    inline bool operator==( const std::string& name ) const { return service->name() == name; }
-    inline bool operator==( const IService* ptr ) const { return service.get() == ptr; }
-    inline bool operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
+    inline bool       operator==( const std::string& name ) const { return service->name() == name; }
+    inline bool       operator==( const IService* ptr ) const { return service.get() == ptr; }
+    inline bool       operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
   };
 
   // typedefs and classes
-  typedef std::list<ServiceItem> ListSvc;
+  typedef std::list<ServiceItem>                    ListSvc;
   typedef GaudiUtils::Map<std::string, std::string> MapType;
 
   /// default creator
@@ -99,7 +98,7 @@ public:
   StatusCode restart() override;
 
   /// manage priorities of services
-  int getPriority( const std::string& name ) const override;
+  int        getPriority( const std::string& name ) const override;
   StatusCode setPriority( const std::string& name, int pri ) override;
 
   /// Get the value of the initialization loop check flag.
@@ -108,8 +107,7 @@ public:
   void setLoopCheckEnabled( bool en ) override;
 
   /// Return the name of the manager (implementation of INamedInterface)
-  const std::string& name() const override
-  {
+  const std::string& name() const override {
     static std::string _name = "ServiceManager";
     return _name;
   }
@@ -119,37 +117,32 @@ public:
 
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
-  inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true )
-  {
+  inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) {
     return SmartIF<T>{service( typeName, createIf )};
   }
 
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
-  using ISvcManager::createService;
   using ISvcManager::addService;
+  using ISvcManager::createService;
 #endif
 
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
   void outputLevelUpdate() override;
 
 private:
-  inline ListSvc::iterator find( const std::string& name )
-  {
+  inline ListSvc::iterator find( const std::string& name ) {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
-  inline ListSvc::const_iterator find( const std::string& name ) const
-  {
+  inline ListSvc::const_iterator find( const std::string& name ) const {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
-  inline ListSvc::iterator find( const IService* ptr )
-  {
+  inline ListSvc::iterator find( const IService* ptr ) {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
-  inline ListSvc::const_iterator find( const IService* ptr ) const
-  {
+  inline ListSvc::const_iterator find( const IService* ptr ) const {
     boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
     return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
@@ -184,7 +177,7 @@ private:
   typedef boost::recursive_mutex     Mutex_t;
   typedef boost::lock_guard<Mutex_t> LockGuard_t;
 
-  mutable Mutex_t m_gLock;
+  mutable Mutex_t                        m_gLock;
   mutable std::map<std::string, Mutex_t> m_lockMap;
 
 private:

@@ -27,13 +27,14 @@ def configure(gaudi=None):
 
     gaudi.HistogramPersistency = 'ROOT'
 
-    gaudi.DLLs += ['GaudiAlg', 'RootHistCnv', ]
+    gaudi.DLLs += [
+        'GaudiAlg',
+        'RootHistCnv',
+    ]
     gaudi.ExtSvc += ['TagCollectionSvc/EvtTupleSvc']
 
     evtSel = gaudi.evtSel()
-    evtSel.open('PFN:EvtTags1.root',
-                collection='Fill/COL1',
-                sel='binom==6')
+    evtSel.open('PFN:EvtTags1.root', collection='Fill/COL1', sel='binom==6')
 
     gaudi.config()
 
@@ -48,8 +49,8 @@ if '__main__' == __name__:
     # configuration (options)
     from Configurables import GaudiPersistency, FileCatalog, ApplicationMgr
     GaudiPersistency()
-    ApplicationMgr().ExtSvc.append(FileCatalog(
-        Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
+    ApplicationMgr().ExtSvc.append(
+        FileCatalog(Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
     # execution
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)

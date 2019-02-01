@@ -9,10 +9,8 @@
 class StatEntity;
 class Stat;
 
-namespace Gaudi
-{
-  namespace CounterSummary
-  {
+namespace Gaudi {
+  namespace CounterSummary {
     /// How is the counter to be saved?
     enum SaveType {
       SaveSimpleCounter = 0,   /// store only the flag()
@@ -20,8 +18,8 @@ namespace Gaudi
       SaveAlwaysSimpleCounter, /// store always, store only the flag()
       SaveAlwaysStatEntity     /// store always, store all information
     };
-  }
-}
+  } // namespace CounterSummary
+} // namespace Gaudi
 
 /** @class ICounterSummarySvc ICounterSummarySvc.h
  *
@@ -33,8 +31,7 @@ namespace Gaudi
  *  @author Rob Lambert
  *  @date   2009-07-29
  */
-class GAUDI_API ICounterSummarySvc : virtual public IService
-{
+class GAUDI_API ICounterSummarySvc : virtual public IService {
 
 public:
   /// InterfaceID

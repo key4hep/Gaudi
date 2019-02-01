@@ -21,8 +21,7 @@
 DECLARE_COMPONENT( EvtCollectionStream )
 
 // initialize data writer
-StatusCode EvtCollectionStream::initialize()
-{
+StatusCode EvtCollectionStream::initialize() {
   // Use the Job options service to set the Algorithm's parameters
   setProperties();
   // Get access to the DataManagerSvc
@@ -40,20 +39,18 @@ StatusCode EvtCollectionStream::initialize()
 }
 
 // terminate data writer
-StatusCode EvtCollectionStream::finalize()
-{
+StatusCode EvtCollectionStream::finalize() {
   m_pTupleSvc = nullptr; // release
   clearItems();
   return StatusCode::SUCCESS;
 }
 
 // Work entry point
-StatusCode EvtCollectionStream::execute()
-{
+StatusCode EvtCollectionStream::execute() {
   StatusCode status = ( m_pTupleSvc ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   if ( status.isSuccess() ) {
     for ( const auto& i : m_itemList ) {
-      StatusCode iret                 = m_pTupleSvc->writeRecord( i->path() );
+      StatusCode iret = m_pTupleSvc->writeRecord( i->path() );
       if ( !iret.isSuccess() ) status = iret;
     }
   }
@@ -64,8 +61,7 @@ StatusCode EvtCollectionStream::execute()
 void EvtCollectionStream::clearItems() { m_itemList.clear(); }
 
 // Add item to output streamer list
-void EvtCollectionStream::addItem( const std::string& descriptor )
-{
+void EvtCollectionStream::addItem( const std::string& descriptor ) {
   auto        sep      = descriptor.rfind( "#" );
   int         level    = 0;
   std::string obj_path = descriptor.substr( 0, sep );

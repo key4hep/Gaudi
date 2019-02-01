@@ -17,8 +17,7 @@ using namespace std;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-std::string HistoryObj::convert_string( const std::string& input_string )
-{
+std::string HistoryObj::convert_string( const std::string& input_string ) {
 
   // Conversion of special characteres into xml language
 
@@ -44,8 +43,7 @@ std::string HistoryObj::convert_string( const std::string& input_string )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void HistoryObj::indent( std::ostream& ost, int i ) const
-{
+void HistoryObj::indent( std::ostream& ost, int i ) const {
   while ( i > 0 ) {
     ost << " ";
     --i;
@@ -54,8 +52,7 @@ void HistoryObj::indent( std::ostream& ost, int i ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const CLID& HistoryObj::classID()
-{
+const CLID& HistoryObj::classID() {
 
   static const CLID CLID_HistoryObj = 86452397;
   return CLID_HistoryObj;
@@ -65,8 +62,7 @@ const CLID& HistoryObj::classID()
 
 // Output stream.
 
-std::ostream& operator<<( std::ostream& lhs, const HistoryObj& rhs )
-{
+std::ostream& operator<<( std::ostream& lhs, const HistoryObj& rhs ) {
   rhs.dump( lhs, false );
   return lhs;
 }

@@ -20,8 +20,7 @@
  *  @date   2003-07-07
  */
 
-class EqSolver : public extends<GaudiTool, IEqSolver>
-{
+class EqSolver : public extends<GaudiTool, IEqSolver> {
 public:
   typedef std::vector<Equations> Jacobi;
 
@@ -36,8 +35,7 @@ public:
   /// Overriding initialize
   StatusCode initialize() override;
 
-  class EqSolverMisc
-  {
+  class EqSolverMisc {
   public:
     /** standard constructor
      *
@@ -80,8 +78,8 @@ private:
 private:
   Gaudi::Property<std::string> m_algType{this, "Algorithm", "fdfsolver_hybridsj",
                                          "type of the algorithm for root finding"};
-  Gaudi::Property<double> m_max_iter{this, "Iteration", 1000, "maximum of iteration"};
-  Gaudi::Property<double> m_norm_residual{this, "Residual", 1.0e-7, "absolute error bound for the residual value"};
+  Gaudi::Property<double>      m_max_iter{this, "Iteration", 1000, "maximum of iteration"};
+  Gaudi::Property<double>      m_norm_residual{this, "Residual", 1.0e-7, "absolute error bound for the residual value"};
 
   const gsl_multiroot_fdfsolver_type* m_type = nullptr;
 };

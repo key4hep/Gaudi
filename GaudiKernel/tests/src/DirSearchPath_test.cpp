@@ -1,7 +1,7 @@
 /** unit test for DirSearchPath class
-  * ---------------------------------------------------------------------
-  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
-  */
+ * ---------------------------------------------------------------------
+ * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
+ */
 
 //<<<<<< INCLUDES                                                       >>>>>>
 
@@ -10,7 +10,7 @@
 #ifdef __ICC
 // disable icc warning #279: controlling expression is constant
 // ... a lot of noise produced by the boost/filesystem/operations.hpp
-#pragma warning( disable : 279 )
+#  pragma warning( disable : 279 )
 #endif
 #include "GaudiKernel/DirSearchPath.h"
 #include "boost/filesystem/operations.hpp"
@@ -18,8 +18,7 @@
 using namespace std;
 using namespace boost::filesystem;
 
-int main()
-{
+int main() {
   cout << "*** DirSearchPath_test Starts ***" << endl;
   DirSearchPath bad( "foo:fo:  : *" );
   try {

@@ -16,8 +16,7 @@ class IAlgTool;
  *
  * @author G.Corti
  */
-class GAUDI_API IToolSvc : virtual public IInterface
-{
+class GAUDI_API IToolSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IToolSvc, 2, 1 );
@@ -136,8 +135,8 @@ public:
    *
    */
   template <class T>
-  StatusCode retrieveTool( const std::string& type, T*& tool, const IInterface* parent = nullptr, bool createIf = true )
-  {
+  StatusCode retrieveTool( const std::string& type, T*& tool, const IInterface* parent = nullptr,
+                           bool createIf = true ) {
     return retrieve( type, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }
 
@@ -186,8 +185,7 @@ public:
    */
   template <class T>
   StatusCode retrieveTool( const std::string& type, const std::string& name, T*& tool,
-                           const IInterface* parent = nullptr, bool createIf = true )
-  {
+                           const IInterface* parent = nullptr, bool createIf = true ) {
     return retrieve( type, name, T::interfaceID(), (IAlgTool*&)tool, parent, createIf );
   }
 
@@ -220,11 +218,9 @@ public:
    *   un-register it before it is deleted (e.g. during the finalization).
    *
    */
-  class Observer
-  {
+  class Observer {
   public:
-    virtual ~Observer()
-    {
+    virtual ~Observer() {
       if ( m_unregister ) m_unregister();
     }
     void setUnregister( std::function<void()> unregister ) { m_unregister = std::move( unregister ); }

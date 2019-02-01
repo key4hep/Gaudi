@@ -15,8 +15,7 @@ class IIncidentSvc;
     @author Markus Frank
 */
 
-class ReadAlg : public Algorithm, virtual public IIncidentListener
-{
+class ReadAlg : public Algorithm, virtual public IIncidentListener {
   /// Reference to run records data service
   SmartIF<IDataProviderSvc> m_recordSvc;
   /// Reference to incident service

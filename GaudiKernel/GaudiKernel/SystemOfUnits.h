@@ -42,10 +42,8 @@
 #ifndef GAUDI_SYSTEM_OF_UNITS_H
 #define GAUDI_SYSTEM_OF_UNITS_H
 
-namespace Gaudi
-{
-  namespace Units
-  {
+namespace Gaudi {
+  namespace Units {
 
     //
     // Length [L]

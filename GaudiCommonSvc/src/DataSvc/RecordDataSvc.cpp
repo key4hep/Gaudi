@@ -35,8 +35,7 @@ using namespace std;
 DECLARE_COMPONENT( RecordDataSvc )
 
 /// Service initialisation
-StatusCode RecordDataSvc::initialize()
-{
+StatusCode RecordDataSvc::initialize() {
   // Nothing to do: just call base class initialisation
   StatusCode sc = DataSvc::initialize();
 
@@ -80,8 +79,7 @@ StatusCode RecordDataSvc::initialize()
 }
 
 /// Service finalization
-StatusCode RecordDataSvc::finalize()
-{
+StatusCode RecordDataSvc::finalize() {
   if ( m_incidentSvc ) m_incidentSvc->removeListener( this );
   m_cnvSvc.reset();
   DataSvc::finalize().ignore();
@@ -89,8 +87,7 @@ StatusCode RecordDataSvc::finalize()
 }
 
 /// Inform that a new incident has occured
-void RecordDataSvc::handle( const Incident& incident )
-{
+void RecordDataSvc::handle( const Incident& incident ) {
   if ( incident.type() == "FILE_OPEN_READ" ) {
     typedef ContextIncident<IOpaqueAddress*> Ctxt;
     auto                                     inc = dynamic_cast<const Ctxt*>( &incident );
@@ -110,8 +107,7 @@ void RecordDataSvc::handle( const Incident& incident )
 }
 
 /// Load dependent records into memory
-void RecordDataSvc::loadRecords( IRegistry* pObj )
-{
+void RecordDataSvc::loadRecords( IRegistry* pObj ) {
   if ( !pObj ) {
     error() << "Failed to load records object" << endmsg;
   } else {
@@ -130,8 +126,7 @@ void RecordDataSvc::loadRecords( IRegistry* pObj )
 }
 
 /// Load new run record into the data store if necessary
-void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr )
-{
+void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr ) {
   if ( !data.empty() && pAddr ) {
     string fid = data;
     debug() << "Request to load record for file " << fid << endmsg;
@@ -141,9 +136,7 @@ void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr )
       pAddr->release();
       return;
     }
-    if ( m_autoLoad ) {
-      loadRecords( pAddr->registry() );
-    }
+    if ( m_autoLoad ) { loadRecords( pAddr->registry() ); }
     m_incidents.push_back( pAddr->registry()->identifier() );
   } else if ( !data.empty() && !pAddr ) {
     info() << "Failed to register record for:" << data << " [Invalid Address]" << endmsg;
@@ -151,7 +144,6 @@ void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr )
 }
 
 /// Standard Constructor
-RecordDataSvc::RecordDataSvc( const string& name, ISvcLocator* svc ) : base_class( name, svc )
-{
+RecordDataSvc::RecordDataSvc( const string& name, ISvcLocator* svc ) : base_class( name, svc ) {
   m_rootName = "/Records";
 }

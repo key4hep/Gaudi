@@ -22,8 +22,7 @@ class IService;
 
     @author Pere Mato
 */
-class GAUDI_API ISvcLocator : virtual public IInterface
-{
+class GAUDI_API ISvcLocator : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( ISvcLocator, 3, 0 );
@@ -34,8 +33,7 @@ public:
       @param svc Returned service pointer
   */
   virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, IService*& svc,
-                                 const bool createIf = true )
-  {
+                                 const bool createIf = true ) {
     SmartIF<IService>& s = service( typeName, createIf );
     svc                  = s.get();
     if ( svc ) {
@@ -51,8 +49,7 @@ public:
       @param pinterface Returned pointer to the requested interface
   */
   virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName, const InterfaceID& iid,
-                                 IInterface*& pinterface )
-  {
+                                 IInterface*& pinterface ) {
     auto svc = service( typeName, false );
     return svc ? svc->queryInterface( iid, (void**)&pinterface ) : StatusCode::FAILURE;
   }
@@ -76,8 +73,7 @@ public:
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   /// Templated method to access a service by name.
   template <class T>
-  StatusCode service( const Gaudi::Utils::TypeNameString& name, T*& svc, bool createIf = true )
-  {
+  StatusCode service( const Gaudi::Utils::TypeNameString& name, T*& svc, bool createIf = true ) {
     if ( createIf ) {
       IService*  s;
       StatusCode sc = getService( name, s, true );
@@ -88,8 +84,7 @@ public:
 
   /// Templated method to access a service by type and name.
   template <class T>
-  StatusCode service( const std::string& type, const std::string& name, T*& svc, bool createIf = true )
-  {
+  StatusCode service( const std::string& type, const std::string& name, T*& svc, bool createIf = true ) {
     return service( type + "/" + name, svc, createIf );
   }
 #endif
@@ -99,15 +94,13 @@ public:
 
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
-  inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true )
-  {
+  inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) {
     return SmartIF<T>{service( typeName, createIf )};
   }
 
   // try to access a different interface of  the _current_ serviceLocator...
   template <typename IFace>
-  SmartIF<IFace> as()
-  {
+  SmartIF<IFace> as() {
     return SmartIF<IFace>{this};
   }
 };

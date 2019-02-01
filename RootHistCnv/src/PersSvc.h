@@ -7,8 +7,7 @@
 // Forward declarations
 class TFile;
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RootHistCnv::PersSvc PersSvc.h
 
@@ -16,8 +15,7 @@ namespace RootHistCnv
       @author Charles Leggett
   */
 
-  class PersSvc : public ConversionSvc
-  {
+  class PersSvc : public ConversionSvc {
   public:
     /// Initialise the service
     StatusCode initialize() override;

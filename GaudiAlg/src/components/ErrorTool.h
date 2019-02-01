@@ -18,8 +18,7 @@
  */
 // ============================================================================
 
-class ErrorTool : public GaudiTool, virtual public IErrorTool
-{
+class ErrorTool : public GaudiTool, virtual public IErrorTool {
 
 public:
   /** Standard constructor
@@ -54,8 +53,7 @@ public:
    *  @return       status code
    */
   StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
-                    const size_t mx = 10 ) const override
-  {
+                    const size_t mx = 10 ) const override {
     return GaudiTool::Error( msg, st, mx );
   }
 
@@ -70,8 +68,7 @@ public:
    *  @return       status code
    */
   StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
-                      const size_t mx = 10 ) const override
-  {
+                      const size_t mx = 10 ) const override {
     return GaudiTool::Warning( msg, st, mx );
   }
 
@@ -85,8 +82,7 @@ public:
    *  @return       status code
    */
   StatusCode Print( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
-                    const MSG::Level lev = MSG::INFO ) const override
-  {
+                    const MSG::Level lev = MSG::INFO ) const override {
     return GaudiTool::Print( msg, st, lev );
   }
 
@@ -100,8 +96,7 @@ public:
    *  @return             status code
    */
   void Assert( const bool ok, const std::string& message = "",
-               const StatusCode sc = StatusCode::FAILURE ) const override
-  {
+               const StatusCode sc = StatusCode::FAILURE ) const override {
     GaudiTool::Assert( ok, message, sc );
   }
 
@@ -114,8 +109,7 @@ public:
    *  @return       status code (fictive)
    */
   void Exception( const std::string& msg, const GaudiException& exc,
-                  const StatusCode sc = StatusCode::FAILURE ) const override
-  {
+                  const StatusCode sc = StatusCode::FAILURE ) const override {
     GaudiTool::Exception( msg, exc, sc );
   }
 
@@ -128,8 +122,7 @@ public:
    *  @return       status code (fictive)
    */
   void Exception( const std::string& msg, const std::exception& exc,
-                  const StatusCode sc = StatusCode::FAILURE ) const override
-  {
+                  const StatusCode sc = StatusCode::FAILURE ) const override {
     GaudiTool::Exception( msg, exc, sc );
   }
 
@@ -140,8 +133,7 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  void Exception( const std::string& msg = "no message", const StatusCode sc = StatusCode::FAILURE ) const override
-  {
+  void Exception( const std::string& msg = "no message", const StatusCode sc = StatusCode::FAILURE ) const override {
     GaudiTool::Exception( msg, sc );
   }
 };

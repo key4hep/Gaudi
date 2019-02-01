@@ -29,21 +29,19 @@ class IIncidentSvc;
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class RootConnectionSet RootDataConnection.h GaudiRootCnv/RootDataConnection.h
-    *
-    *  Class describing the setup parameters of a ROOT data connection.
-    *  The parameters are filled by the conversion service (using properties)
-    *  and is then passed to all data connections served by this service.
-    *
-    *  @author  M.Frank
-    *  @version 1.0
-    *  @date    20/12/2009
-    */
-  class GAUDI_API RootConnectionSetup final
-  {
+   *
+   *  Class describing the setup parameters of a ROOT data connection.
+   *  The parameters are filled by the conversion service (using properties)
+   *  and is then passed to all data connections served by this service.
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    20/12/2009
+   */
+  class GAUDI_API RootConnectionSetup final {
   private:
     /// Reference to message service
     std::unique_ptr<MsgStream> m_msgSvc;
@@ -85,15 +83,14 @@ namespace Gaudi
   };
 
   /** @class RootDataConnection RootDataConnection.h GaudiRootCnv/RootDataConnection.h
-    *
-    *  Concrete implementation of the IDataConnection interface to access ROOT files.
-    *
-    *  @author  M.Frank
-    *  @version 1.0
-    *  @date    20/12/2009
-    */
-  class GAUDI_API RootDataConnection : virtual public Gaudi::IDataConnection
-  {
+   *
+   *  Concrete implementation of the IDataConnection interface to access ROOT files.
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    20/12/2009
+   */
+  class GAUDI_API RootDataConnection : virtual public Gaudi::IDataConnection {
   public:
     enum class Status : StatusCode::code_t { ROOT_READ_ERROR = 0x2, ROOT_OPEN_ERROR = 0x4 };
 
@@ -115,8 +112,7 @@ namespace Gaudi
       /// Copy constructor
       ContainerSection( const ContainerSection& s ) : start( s.start ), length( s.length ) {}
       /// Assignment operator to copy objects
-      ContainerSection& operator=( const ContainerSection& s )
-      {
+      ContainerSection& operator=( const ContainerSection& s ) {
         if ( this != &s ) {
           start  = s.start;
           length = s.length;
@@ -193,8 +189,7 @@ namespace Gaudi
      * @author  M.Frank
      * @version 1.0
      */
-    class Tool
-    {
+    class Tool {
     protected:
       typedef RootDataConnection::StringVec         StringVec;
       typedef RootDataConnection::ParamMap          ParamMap;
@@ -305,8 +300,7 @@ namespace Gaudi
     TTree* getSection( boost::string_ref sect, bool create = false );
 
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name )
-    {
+    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name ) {
       return m_tool->getBranch( section, branch_name );
     }
     /// Access data branch by name: Get existing branch in write mode
@@ -326,14 +320,12 @@ namespace Gaudi
     const std::string& getDb( int which ) const;
 
     /// Access container name from saved index
-    const std::string& getCont( int which ) const
-    {
+    const std::string& getCont( int which ) const {
       return ( which >= 0 ) && ( size_t( which ) < m_conts.size() ) ? *( m_conts.begin() + which ) : empty();
     }
 
     /// Access link name from saved index
-    const std::string& getLink( int which ) const
-    {
+    const std::string& getLink( int which ) const {
       return ( which >= 0 ) && ( size_t( which ) < m_links.size() ) ? *( m_links.begin() + which ) : empty();
     }
   };

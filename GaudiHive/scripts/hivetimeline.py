@@ -56,11 +56,18 @@ def setPalette(nevts, nevtcolors):
 
     from ROOT import TColor
     algcolors = range(2, 10) + [20, 28, 29, 30, 33, 38, 40] + range(41, 50)
-    evtcolors = [TColor.GetColor(0, 255 - g, g)
-                 for g in range(20, 255, (255 - 20) / nevtcolors)]
+    evtcolors = [
+        TColor.GetColor(0, 255 - g, g)
+        for g in range(20, 255, (255 - 20) / nevtcolors)
+    ]
 
 
-def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=500):
+def plot(data,
+         showThreads=True,
+         batch=False,
+         nevtcolors=10,
+         width=1200,
+         height=500):
     import ROOT
 
     tmin = min(f.start for f in data)
@@ -75,8 +82,8 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
     c.SetRightMargin(0.2)
     c.SetTopMargin(0.1)
     c.SetBottomMargin(0.1)
-    c.coord = ROOT.TH2I('coord', ';Time (ns)', 100,
-                        0, tmax - tmin, ymax, 0, ymax)
+    c.coord = ROOT.TH2I('coord', ';Time (ns)', 100, 0, tmax - tmin, ymax, 0,
+                        ymax)
     c.coord.GetYaxis().SetTitle(('Thread' if showThreads else 'Slot'))
     c.coord.GetYaxis().SetTitleOffset(0.5)
     c.coord.GetYaxis().CenterTitle()
@@ -140,8 +147,8 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
         c.lines.append(l)
         l.SetLineWidth(10)
         l.SetLineColor(evtcolors[cl])
-        l.DrawLineNDC(0.807 + bwidth * cl, 0.37,
-                      0.807 + bwidth * (cl + 1), 0.37)
+        l.DrawLineNDC(0.807 + bwidth * cl, 0.37, 0.807 + bwidth * (cl + 1),
+                      0.37)
 
     c.t1 = ROOT.TText(0.807, 0.314, 'Events')
     c.t1.SetNDC()
@@ -172,39 +179,68 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
 
-    parser.add_argument('timeline', nargs=1,
-                        help='timeline file')
+    parser.add_argument('timeline', nargs=1, help='timeline file')
 
-    parser.add_argument('-s', '--select', default='.*',
-                        help='Regular expression to filter algorithms')
+    parser.add_argument(
+        '-s',
+        '--select',
+        default='.*',
+        help='Regular expression to filter algorithms')
 
-    parser.add_argument('-b', '--batch', action='store_true', default=False,
-                        help='Do not wait for user input')
+    parser.add_argument(
+        '-b',
+        '--batch',
+        action='store_true',
+        default=False,
+        help='Do not wait for user input')
 
-    parser.add_argument('--slots', action='store_true', default=False,
-                        help='Show slots instead of threads (leads to overlaps!)')
+    parser.add_argument(
+        '--slots',
+        action='store_true',
+        default=False,
+        help='Show slots instead of threads (leads to overlaps!)')
 
-    parser.add_argument('-p', '--print', dest='outfile', nargs='?',
-                        const='timeline.png',
-                        help='Save to FILE [%(const)s]')
+    parser.add_argument(
+        '-p',
+        '--print',
+        dest='outfile',
+        nargs='?',
+        const='timeline.png',
+        help='Save to FILE [%(const)s]')
 
-    parser.add_argument('-n', '--nevtcolors', default=10, type=int,
-                        help='Number of colors used for events (10 is default)')
+    parser.add_argument(
+        '-n',
+        '--nevtcolors',
+        default=10,
+        type=int,
+        help='Number of colors used for events (10 is default)')
 
-    parser.add_argument('-e', '--skipevents', default=0, type=int,
-                        help='Number of events to skip at the start')
+    parser.add_argument(
+        '-e',
+        '--skipevents',
+        default=0,
+        type=int,
+        help='Number of events to skip at the start')
 
-    parser.add_argument('-x', '--width', default=1200, type=int,
-                        help='width of the output picture')
+    parser.add_argument(
+        '-x',
+        '--width',
+        default=1200,
+        type=int,
+        help='width of the output picture')
 
-    parser.add_argument('-y', '--height', default=500, type=int,
-                        help='height of the output picture')
+    parser.add_argument(
+        '-y',
+        '--height',
+        default=500,
+        type=int,
+        help='height of the output picture')
 
     args = parser.parse_args()
 
     data = read(args.timeline[0], args.select, args.skipevents)
-    c = plot(data, not args.slots, args.batch,
-             args.nevtcolors, args.width, args.height)
+    c = plot(data, not args.slots, args.batch, args.nevtcolors, args.width,
+             args.height)
     if args.outfile:
         c.SaveAs(args.outfile)
 

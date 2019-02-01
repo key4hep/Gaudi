@@ -18,31 +18,31 @@ extern "C" {
 #endif
 
 #ifdef __ia64__
-#include <perfmon/perfmon_ia64.h>
+#  include <perfmon/perfmon_ia64.h>
 #endif
 
 #ifdef __x86_64__
-#include <perfmon/perfmon_x86_64.h>
+#  include <perfmon/perfmon_x86_64.h>
 #endif
 
 #ifdef __i386__
-#include <perfmon/perfmon_i386.h>
+#  include <perfmon/perfmon_i386.h>
 #endif
 
 #if defined( __powerpc__ ) || defined( __cell__ )
-#include <perfmon/perfmon_powerpc.h>
+#  include <perfmon/perfmon_powerpc.h>
 #endif
 
 #ifdef __sparc__
-#include <perfmon/perfmon_sparc.h>
+#  include <perfmon/perfmon_sparc.h>
 #endif
 
 #ifdef __mips__
-#include <perfmon/perfmon_mips64.h>
+#  include <perfmon/perfmon_mips64.h>
 #endif
 
 #ifdef __crayx2
-#include <perfmon/perfmon_crayx2.h>
+#  include <perfmon/perfmon_crayx2.h>
 #endif
 
 #define PFM_MAX_PMCS PFM_ARCH_MAX_PMCS
@@ -52,10 +52,10 @@ extern "C" {
 /*
  * number of element for each type of bitvector
  */
-#define PFM_BPL ( sizeof( uint64_t ) << 3 )
-#define PFM_BVSIZE( x ) ( ( ( x ) + PFM_BPL - 1 ) / PFM_BPL )
-#define PFM_PMD_BV PFM_BVSIZE( PFM_MAX_PMDS )
-#define PFM_PMC_BV PFM_BVSIZE( PFM_MAX_PMCS )
+#  define PFM_BPL ( sizeof( uint64_t ) << 3 )
+#  define PFM_BVSIZE( x ) ( ( ( x ) + PFM_BPL - 1 ) / PFM_BPL )
+#  define PFM_PMD_BV PFM_BVSIZE( PFM_MAX_PMDS )
+#  define PFM_PMC_BV PFM_BVSIZE( PFM_MAX_PMCS )
 #endif
 
 /*

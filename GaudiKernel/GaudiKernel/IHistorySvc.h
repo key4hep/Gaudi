@@ -12,8 +12,7 @@ class JobHistory;
 class ServiceHistory;
 class IService;
 
-namespace Gaudi
-{
+namespace Gaudi {
   class Algorithm;
 }
 class AlgorithmHistory;
@@ -31,8 +30,7 @@ class HistoryObj;
     @author Charles Leggett
 */
 
-class GAUDI_API IHistorySvc : virtual public IService
-{
+class GAUDI_API IHistorySvc : virtual public IService {
 public:
   /// InterfaceID
   DeclareInterfaceID( IHistorySvc, 2, 0 );

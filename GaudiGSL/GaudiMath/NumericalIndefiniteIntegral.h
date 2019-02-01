@@ -23,19 +23,17 @@
 #include "gsl/gsl_integration.h"
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
 /// forward declaration
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     /** @class NumericalIndefiniteIntegral NumericalIndefiniteIntegral.h
      *
      *  The simple class for numerical integrations.
@@ -80,8 +78,7 @@ namespace Genfun
      *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
      *  @date   2003-08-31
      */
-    class GAUDI_API NumericalIndefiniteIntegral : public AbsFunction
-    {
+    class GAUDI_API NumericalIndefiniteIntegral : public AbsFunction {
     public:
       struct _Workspace {
         gsl_integration_workspace* ws;
@@ -330,8 +327,7 @@ namespace Genfun
 
     public:
       struct gsl_ws_deleter {
-        void operator()( _Workspace* p ) const
-        {
+        void operator()( _Workspace* p ) const {
           if ( p ) gsl_integration_workspace_free( p->ws );
           delete p;
         }
@@ -357,7 +353,7 @@ namespace Genfun
       mutable double m_result = GSL_NEGINF;
       mutable double m_error  = GSL_POSINF;
 
-      size_t m_size;
+      size_t                                              m_size;
       mutable std::unique_ptr<_Workspace, gsl_ws_deleter> m_ws;
 
       mutable Argument m_argument;
@@ -369,9 +365,9 @@ namespace Genfun
 } // end of namespace Genfun
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 // ============================================================================

@@ -9,11 +9,8 @@
 // ============================================================================
 /// call a python method with a string as an argument
 // ============================================================================
-int GaudiPython::call_python_method( PyObject* self, const char* method, char* buf )
-{
-  if ( !self || !method ) {
-    return 1;
-  }
+int GaudiPython::call_python_method( PyObject* self, const char* method, char* buf ) {
+  if ( !self || !method ) { return 1; }
   PyObject* r = PyObject_CallMethod( self, const_cast<char*>( method ), const_cast<char*>( "s" ), buf );
   if ( !r ) {
     std::string err( "Unsuccessful call to bound Python method" );
@@ -34,8 +31,7 @@ GaudiPython::CallbackStreamBuf::CallbackStreamBuf( PyObject* self ) : m_self( se
 // ============================================================================
 /// reimplementation of stringbuf::sync()
 // ============================================================================
-int GaudiPython::CallbackStreamBuf::sync()
-{
+int GaudiPython::CallbackStreamBuf::sync() {
   size_t length;
   char*  x;
   for ( length = 0, x = pbase(); x < epptr(); ++x, ++length )

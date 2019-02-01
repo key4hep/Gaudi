@@ -10,8 +10,7 @@
 
 #include "ITestTool.h"
 
-class TestToolFailing : public extends<GaudiTool, ITestTool>
-{
+class TestToolFailing : public extends<GaudiTool, ITestTool> {
 
 public:
   using extends::extends;
@@ -23,8 +22,7 @@ public:
 // Declaration of the Tool Factory
 DECLARE_COMPONENT( TestToolFailing )
 
-StatusCode TestToolFailing::initialize()
-{
+StatusCode TestToolFailing::initialize() {
   debug() << "Initialize" << endmsg;
   if ( !GaudiTool::initialize() ) return StatusCode::FAILURE;
 

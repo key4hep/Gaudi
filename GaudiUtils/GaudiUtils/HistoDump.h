@@ -13,23 +13,19 @@
 // ============================================================================
 /// forward declarations:
 // ============================================================================
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D; // AIDA
   class IProfile1D;   // AIDA
-}
+} // namespace AIDA
 // ============================================================================
 class TH1;      // ROOT
 class TProfile; // ROOT
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Utils
-  {
+  namespace Utils {
     // ========================================================================
-    namespace Histos
-    {
+    namespace Histos {
       // ======================================================================
       /** dump the text representation of the histogram
        *  @param histo  (INPUT) the histogram
@@ -138,9 +134,9 @@ namespace Gaudi
       std::string histoDump( const TH1* histo, const std::size_t width = 80, const std::size_t height = 50,
                              const bool errors = false );
       // ======================================================================
-    } //                                  end of namespace Gaudi::Utils::Histos
+    } // namespace Histos
     // ========================================================================
-  } //                                            end of namespace Gaudi::Utils
+  } // namespace Utils
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================

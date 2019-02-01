@@ -18,8 +18,7 @@
 // ============================================================================
 class GaudiException;
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   /** @namespace Gaudi::Guards Guards.h GaudiKernel/Guards.h
    *  Collection of very simple classes which allows to
    *  execution of some functions within  the given well-defined
@@ -70,8 +69,7 @@ namespace Gaudi
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2007-03-07
    */
-  namespace Guards
-  {
+  namespace Guards {
     /** @class ExceptionGuard Guards.h GaudiKernel/Guards.h
      *  The most simple guard - it execute the certain code
      *  withing  typical "try {} catch" clause, used in
@@ -104,8 +102,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2007-03-07
      */
-    class GAUDI_API ExceptionGuard
-    {
+    class GAUDI_API ExceptionGuard {
     public:
       /* constructor form the object/scope, function and log-stream
        * @param obj the object/scope
@@ -113,33 +110,24 @@ namespace Gaudi
        * @param log output log-stream
        */
       template <class OBJECT, class FUNCTION>
-      ExceptionGuard( OBJECT obj, FUNCTION fun, MsgStream& log, IExceptionSvc* svc = 0 )
-      {
+      ExceptionGuard( OBJECT obj, FUNCTION fun, MsgStream& log, IExceptionSvc* svc = 0 ) {
         try {
           // execute the functor:
           m_sc = fun( obj ); ///< execute the functor
           // in the case of error try use Exception Service
-          if ( svc && m_sc.isFailure() ) {
-            m_sc = svc->handleErr( *obj, m_sc );
-          }
+          if ( svc && m_sc.isFailure() ) { m_sc = svc->handleErr( *obj, m_sc ); }
         } catch ( const GaudiException& e ) {
           // Use the local handler and then (if possible) the Exception Service
           handle( e, log );
-          if ( svc ) {
-            m_sc = svc->handle( *obj, e );
-          }
+          if ( svc ) { m_sc = svc->handle( *obj, e ); }
         } catch ( const std::exception& e ) {
           // Use the local handler and then (if possible) the Exception Service
           handle( e, log );
-          if ( svc ) {
-            m_sc = svc->handle( *obj, e );
-          }
+          if ( svc ) { m_sc = svc->handle( *obj, e ); }
         } catch ( ... ) {
           // Use the local handler and then (if possible) the Exception Service
           handle( log );
-          if ( svc ) {
-            m_sc = svc->handle( *obj );
-          }
+          if ( svc ) { m_sc = svc->handle( *obj ); }
         }
       }
       /// destructor
@@ -212,8 +200,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-03-07
      */
-    class GAUDI_API AuditorGuard final
-    {
+    class GAUDI_API AuditorGuard final {
     public:
       /// constructor
       AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::StandardEventType evt );
@@ -265,8 +252,7 @@ namespace Gaudi
       /// Flag to remember which event type was used.
       bool m_customEvtType = false;
 
-      inline void i_before()
-      {
+      inline void i_before() {
         if ( m_svc ) { // if the service is not available, we cannot do anything
           if ( m_obj ) {
             if ( m_customEvtType ) {
@@ -284,8 +270,7 @@ namespace Gaudi
         }
       }
 
-      inline void i_after()
-      {
+      inline void i_after() {
         if ( m_svc ) { // if the service is not available, we cannot do anything
           if ( m_obj ) {
             if ( m_customEvtType ) {
@@ -320,7 +305,7 @@ namespace Gaudi
         }
       }
     };
-  } // end of namespace Gaudi::Guards
+  } // namespace Guards
 } // end of namespace Gaudi
 
 // ============================================================================

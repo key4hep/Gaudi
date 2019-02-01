@@ -28,16 +28,14 @@
 
 #define REG_SCOPE_LOCK std::lock_guard<std::recursive_mutex> _guard( m_mutex );
 
-namespace
-{
+namespace {
   std::mutex registrySingletonMutex;
 }
-#define SINGLETON_LOCK std::lock_guard<std::mutex> _guard(::registrySingletonMutex );
+#define SINGLETON_LOCK std::lock_guard<std::mutex> _guard( ::registrySingletonMutex );
 
 #include <algorithm>
 
-namespace
-{
+namespace {
   // string trimming functions taken from
   // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 
@@ -46,30 +44,26 @@ namespace
   } is_space{};
 
   // trim from start
-  static inline std::string& ltrim( std::string& s )
-  {
+  static inline std::string& ltrim( std::string& s ) {
     s.erase( s.begin(), std::find_if_not( s.begin(), s.end(), is_space ) );
     return s;
   }
 
   // trim from end
-  static inline std::string& rtrim( std::string& s )
-  {
+  static inline std::string& rtrim( std::string& s ) {
     s.erase( std::find_if_not( s.rbegin(), s.rend(), is_space ).base(), s.end() );
     return s;
   }
   // trim from both ends
   static inline std::string& trim( std::string& s ) { return ltrim( rtrim( s ) ); }
-}
+} // namespace
 
-namespace
-{
+namespace {
   /// Helper function used to set values in FactoryInfo data members only
   /// if the original value is empty and reporting warnings in case of
   /// inconsistencies.
   inline void factoryInfoSetHelper( std::string& dest, const std::string value, const std::string& desc,
-                                    const std::string& id )
-  {
+                                    const std::string& id ) {
     if ( dest.empty() ) {
       dest = value;
     } else if ( dest != value ) {
@@ -80,8 +74,7 @@ namespace
 
   struct OldStyleCnv {
     std::string name;
-    void operator()( const char c )
-    {
+    void        operator()( const char c ) {
       switch ( c ) {
       case '<':
       case '>':
@@ -107,31 +100,24 @@ namespace
     }
   };
   /// Convert a class name in the string used with the Reflex plugin service
-  std::string old_style_name( const std::string& name )
-  {
+  std::string old_style_name( const std::string& name ) {
     return std::for_each( name.begin(), name.end(), OldStyleCnv() ).name;
   }
-}
+} // namespace
 
-namespace Gaudi
-{
-  namespace PluginService
-  {
-    GAUDI_PLUGIN_SERVICE_V1_INLINE namespace v1
-    {
+namespace Gaudi {
+  namespace PluginService {
+    GAUDI_PLUGIN_SERVICE_V1_INLINE namespace v1 {
       Exception::Exception( std::string msg ) : m_msg( std::move( msg ) ) {}
       Exception::~Exception() throw() {}
       const char* Exception::what() const throw() { return m_msg.c_str(); }
 
-      namespace Details
-      {
-        void* getCreator( const std::string& id, const std::string& type )
-        {
+      namespace Details {
+        void* getCreator( const std::string& id, const std::string& type ) {
           return Registry::instance().get( id, type );
         }
 
-        std::string demangle( const std::string& id )
-        {
+        std::string demangle( const std::string& id ) {
           int  status;
           auto realname = std::unique_ptr<char, decltype( free )*>(
               abi::__cxa_demangle( id.c_str(), nullptr, nullptr, &status ), free );
@@ -147,8 +133,7 @@ namespace Gaudi
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
-        Registry& Registry::instance()
-        {
+        Registry& Registry::instance() {
           SINGLETON_LOCK
           static Registry r;
           return r;
@@ -156,8 +141,7 @@ namespace Gaudi
 
         Registry::Registry() : m_initialized( false ) {}
 
-        void Registry::initialize()
-        {
+        void Registry::initialize() {
           REG_SCOPE_LOCK
           if ( m_initialized ) return;
           m_initialized = true;
@@ -254,8 +238,7 @@ namespace Gaudi
 
         Registry::FactoryInfo& Registry::add( const std::string& id, void* factory, const std::string& type,
                                               const std::string& rtype, const std::string& className,
-                                              const Properties& props )
-        {
+                                              const Properties& props ) {
           REG_SCOPE_LOCK
           FactoryMap& facts = factories();
           auto        entry = facts.find( id );
@@ -278,8 +261,7 @@ namespace Gaudi
           return entry->second;
         }
 
-        void* Registry::get( const std::string& id, const std::string& type ) const
-        {
+        void* Registry::get( const std::string& id, const std::string& type ) const {
           REG_SCOPE_LOCK
           const FactoryMap& facts = factories();
           auto              f     = facts.find( id );
@@ -287,8 +269,9 @@ namespace Gaudi
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
             const Properties& props = f->second.properties;
             if ( props.find( "ReflexName" ) != props.end() )
-              logger().warning( "requesting factory via old name '" + id + "'"
-                                                                           "use '" +
+              logger().warning( "requesting factory via old name '" + id +
+                                "'"
+                                "use '" +
                                 f->second.className + "' instead" );
 #endif
             if ( !f->second.ptr ) {
@@ -307,8 +290,7 @@ namespace Gaudi
           return nullptr; // factory not found
         }
 
-        const Registry::FactoryInfo& Registry::getInfo( const std::string& id ) const
-        {
+        const Registry::FactoryInfo& Registry::getInfo( const std::string& id ) const {
           REG_SCOPE_LOCK
           static const FactoryInfo unknown( "unknown" );
           const FactoryMap&        facts = factories();
@@ -316,17 +298,15 @@ namespace Gaudi
           return ( f != facts.end() ) ? f->second : unknown;
         }
 
-        Registry& Registry::addProperty( const std::string& id, const std::string& k, const std::string& v )
-        {
+        Registry& Registry::addProperty( const std::string& id, const std::string& k, const std::string& v ) {
           REG_SCOPE_LOCK
-          FactoryMap& facts                               = factories();
-          auto        f                                   = facts.find( id );
+          FactoryMap& facts = factories();
+          auto        f     = facts.find( id );
           if ( f != facts.end() ) f->second.properties[k] = v;
           return *this;
         }
 
-        std::set<Registry::KeyType> Registry::loadedFactoryNames() const
-        {
+        std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
           REG_SCOPE_LOCK
           std::set<KeyType> l;
           for ( const auto& f : factories() ) {
@@ -335,22 +315,18 @@ namespace Gaudi
           return l;
         }
 
-        void Logger::report( Level lvl, const std::string& msg )
-        {
+        void Logger::report( Level lvl, const std::string& msg ) {
           static const char* levels[] = {"DEBUG  : ", "INFO   : ", "WARNING: ", "ERROR  : "};
-          if ( lvl >= level() ) {
-            std::cerr << levels[lvl] << msg << std::endl;
-          }
+          if ( lvl >= level() ) { std::cerr << levels[lvl] << msg << std::endl; }
         }
 
         static auto s_logger = std::make_unique<Logger>();
         Logger&     logger() { return *s_logger; }
-        void setLogger( Logger* logger ) { s_logger.reset( logger ); }
+        void        setLogger( Logger* logger ) { s_logger.reset( logger ); }
 
       } // namespace Details
 
-      void SetDebug( int debugLevel )
-      {
+      void SetDebug( int debugLevel ) {
         using namespace Details;
         Logger& l = logger();
         if ( debugLevel > 1 )
@@ -361,8 +337,7 @@ namespace Gaudi
           l.setLevel( Logger::Warning );
       }
 
-      int Debug()
-      {
+      int Debug() {
         using namespace Details;
         switch ( logger().level() ) {
         case Logger::Debug:
@@ -374,5 +349,5 @@ namespace Gaudi
         }
       }
     }
-  }
-} // namespace Gaudi::PluginService
+  } // namespace PluginService
+} // namespace Gaudi

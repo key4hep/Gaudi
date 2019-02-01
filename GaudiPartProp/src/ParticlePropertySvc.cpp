@@ -25,8 +25,7 @@ namespace ba = boost::algorithm;
 // ============================================================================
 #include "ParticlePropertySvc.h"
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   /** Instantiation of a static factory class used by clients to create
    *  instances of this service
    */
@@ -44,23 +43,17 @@ namespace Gaudi
    * to add/replace/modify the existing particle properties
    */
   // ============================================================================
-  ParticlePropertySvc::ParticlePropertySvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc )
-  {
+  ParticlePropertySvc::ParticlePropertySvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc ) {
     /// @todo: remove reference to LHCb-specific environment variable
     // Redefine the default name:
-    if ( System::getEnv( "PARAMFILESROOT", m_filename.value() ) ) {
-      m_filename.value() += "/data/ParticleTable.txt";
-    }
+    if ( System::getEnv( "PARAMFILESROOT", m_filename.value() ) ) { m_filename.value() += "/data/ParticleTable.txt"; }
   }
   // ============================================================================
   /// initialize the service and setProperties
   // ============================================================================
-  StatusCode ParticlePropertySvc::initialize()
-  {
+  StatusCode ParticlePropertySvc::initialize() {
     StatusCode sc = Service::initialize();
-    if ( sc.isFailure() ) {
-      return sc;
-    }
+    if ( sc.isFailure() ) { return sc; }
 
     sc = setProperties();
     if ( sc.isFailure() ) {
@@ -109,8 +102,7 @@ namespace Gaudi
   // =============================================================================
   /// finalize
   // =============================================================================
-  StatusCode ParticlePropertySvc::finalize()
-  {
+  StatusCode ParticlePropertySvc::finalize() {
     if ( !m_other.empty() ) {
       info() << "Additional Properties have been read from files: " << Gaudi::Utils::toString( m_other ) << endmsg;
     }
@@ -130,8 +122,7 @@ namespace Gaudi
   // =============================================================================
   StatusCode ParticlePropertySvc::push_back( const std::string& particle, int geantId, int jetsetId, double charge,
                                              double mass, double tlife, const std::string& evtName, int pythiaId,
-                                             double maxWidth )
-  {
+                                             double maxWidth ) {
     //
     auto i = m_owned.insert( std::make_unique<ParticleProperty>( particle, geantId, jetsetId, charge, mass, tlife,
                                                                  evtName, pythiaId, maxWidth ) );
@@ -141,11 +132,8 @@ namespace Gaudi
   // =============================================================================
   /// Add a particle property.
   // =============================================================================
-  StatusCode ParticlePropertySvc::push_back( ParticleProperty* pp )
-  {
-    if ( !pp ) {
-      return StatusCode::FAILURE;
-    }
+  StatusCode ParticlePropertySvc::push_back( ParticleProperty* pp ) {
+    if ( !pp ) { return StatusCode::FAILURE; }
     //
     { // try to add into Geant(3)ID map
       const int ID = pp->geantID();
@@ -187,8 +175,8 @@ namespace Gaudi
     //
     // add to Pythia map only if Pythia ID is different from
     // zero ( StdHep id is always different from zero in this case )
-    if ( 0 != pp->pythiaID() && 0 != pp->jetsetID() &&
-         "Tcherenkov" != pp->particle() ) { // try to add into PythiaID map
+    if ( 0 != pp->pythiaID() && 0 != pp->jetsetID() && "Tcherenkov" != pp->particle() ) { // try to add into PythiaID
+                                                                                          // map
       const int ID = pp->pythiaID();
       // is this already in the map?
       auto ifind = m_pythiaidmap.find( ID );
@@ -205,23 +193,16 @@ namespace Gaudi
   // =============================================================================
   /// Erase a property from all maps
   // =============================================================================
-  namespace
-  {
+  namespace {
     template <class MAP>
-    void _remove_( MAP& m, const ParticleProperty* pp )
-    {
+    void _remove_( MAP& m, const ParticleProperty* pp ) {
       auto i = std::find_if( m.begin(), m.end(), [&]( typename MAP::const_reference i ) { return i.second == pp; } );
-      if ( i != m.end() ) {
-        m.erase( i );
-      }
+      if ( i != m.end() ) { m.erase( i ); }
     }
-  }
+  } // namespace
   // ============================================================================
-  StatusCode ParticlePropertySvc::erase( const ParticleProperty* pp )
-  {
-    if ( !pp ) {
-      return StatusCode::FAILURE;
-    }
+  StatusCode ParticlePropertySvc::erase( const ParticleProperty* pp ) {
+    if ( !pp ) { return StatusCode::FAILURE; }
 
     _remove_( m_idmap, pp );
     _remove_( m_namemap, pp );
@@ -233,21 +214,16 @@ namespace Gaudi
   // ============================================================================
   /// Parses the file and fill all the maps
   // ============================================================================
-  StatusCode ParticlePropertySvc::parse()
-  {
+  StatusCode ParticlePropertySvc::parse() {
 
     // parse "the main" file
     StatusCode sc = parse( m_filename );
-    if ( sc.isFailure() ) {
-      return sc;
-    }
+    if ( sc.isFailure() ) { return sc; }
 
     // parse "other" files
     for ( auto& file : m_other ) {
       sc = parse( file );
-      if ( sc.isFailure() ) {
-        return sc;
-      }
+      if ( sc.isFailure() ) { return sc; }
     }
 
     // Now check that the file format was consistent with what parser
@@ -261,8 +237,7 @@ namespace Gaudi
     return sc;
   }
   // ============================================================================
-  StatusCode ParticlePropertySvc::parse( const std::string& file )
-  {
+  StatusCode ParticlePropertySvc::parse( const std::string& file ) {
     auto infile = ( m_fileAccess ? m_fileAccess->open( file ) : nullptr );
     if ( !infile ) {
       error() << "Unable to open properties file : " << file << endmsg;
@@ -308,17 +283,12 @@ namespace Gaudi
    *  @return pointer to antiparticle
    */
   // ============================================================================
-  const ParticleProperty* ParticlePropertySvc::anti( const ParticleProperty* pp ) const
-  {
-    if ( !pp ) {
-      return nullptr;
-    }
+  const ParticleProperty* ParticlePropertySvc::anti( const ParticleProperty* pp ) const {
+    if ( !pp ) { return nullptr; }
     const int ID     = pp->pdgID();
     const int antiID = -1 * ID;
     for ( const auto& ap : m_vectpp ) {
-      if ( ap && antiID == ap->pdgID() ) {
-        return ap;
-      } // RETURN
+      if ( ap && antiID == ap->pdgID() ) { return ap; } // RETURN
     };
     //
     return pp; // RETURN
@@ -329,37 +299,27 @@ namespace Gaudi
    *  @return status code
    */
   // ============================================================================
-  StatusCode ParticlePropertySvc::setAntiParticles()
-  {
+  StatusCode ParticlePropertySvc::setAntiParticles() {
     // initialize particle<-->antiParticle relations
     for ( auto& pp : m_vectpp ) {
-      if ( !pp ) {
-        continue;
-      } // CONTINUE
+      if ( !pp ) { continue; } // CONTINUE
       const ParticleProperty* ap = anti( pp );
-      if ( ap ) {
-        pp->setAntiParticle( ap );
-      }
+      if ( ap ) { pp->setAntiParticle( ap ); }
     }
     return StatusCode::SUCCESS;
   }
   // ============================================================================
   /// rebuild "the linear container" from the map
   // ============================================================================
-  namespace
-  {
+  namespace {
     /// load mapped values from maps into set
     template <typename MAP, typename SET>
-    void _load_( MAP& m, SET& result )
-    {
-      for ( auto i = m.begin(); m.end() != i; ++i ) {
-        result.insert( i->second );
-      }
+    void _load_( MAP& m, SET& result ) {
+      for ( auto i = m.begin(); m.end() != i; ++i ) { result.insert( i->second ); }
     }
-  }
+  } // namespace
   // ============================================================================
-  StatusCode ParticlePropertySvc::rebuild()
-  {
+  StatusCode ParticlePropertySvc::rebuild() {
     std::set<mapped_type> local;
     m_vectpp.clear();
     m_vectpp.reserve( m_idmap.size() + 100 );
@@ -375,8 +335,7 @@ namespace Gaudi
   // ============================================================================
   // treat additional particles
   // ============================================================================
-  StatusCode ParticlePropertySvc::addParticles()
-  {
+  StatusCode ParticlePropertySvc::addParticles() {
     // loop over all "explicit" particles
     for ( const auto& item : m_particles ) {
       std::istringstream input( item );
@@ -400,9 +359,7 @@ namespace Gaudi
         //
         StatusCode sc = push_back( p_name, p_geant, p_jetset, p_charge, p_mass * Gaudi::Units::GeV,
                                    p_ltime * Gaudi::Units::s, p_evtgen, p_pythia, p_maxwid * Gaudi::Units::GeV );
-        if ( sc.isFailure() ) {
-          return sc;
-        } // RETURN
+        if ( sc.isFailure() ) { return sc; } // RETURN
       } else {
         error() << " could not parse '" << item << "'" << endmsg;
         return StatusCode::FAILURE; // RETURN
@@ -415,15 +372,12 @@ namespace Gaudi
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( push )
-#pragma warning( disable : 1572 )
+#  pragma warning( push )
+#  pragma warning( disable : 1572 )
 #endif
-  bool ParticlePropertySvc::diff( const ParticleProperty* o, const ParticleProperty* n, const MSG::Level l ) const
-  {
+  bool ParticlePropertySvc::diff( const ParticleProperty* o, const ParticleProperty* n, const MSG::Level l ) const {
     //
-    if ( o == n ) {
-      return false;
-    }
+    if ( o == n ) { return false; }
     //
     auto& log = msgStream();
     log << l;
@@ -469,16 +423,14 @@ namespace Gaudi
       result = true;
       log << " WMAX:" << o->maxWidth() << "/" << n->maxWidth() << "'";
     }
-    if ( result ) {
-      log << endmsg;
-    }
+    if ( result ) { log << endmsg; }
     //
     return result;
   }
-}
+} // namespace Gaudi
 #ifdef __ICC
 // re-enable icc remark #1572
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif
 // ============================================================================
 // The END

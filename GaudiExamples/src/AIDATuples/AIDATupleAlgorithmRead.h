@@ -10,8 +10,7 @@ using namespace AIDA;
 // Forward declarations
 class AIDATupleSvc;
 
-class AIDATupleAlgorithmRead : public Algorithm
-{
+class AIDATupleAlgorithmRead : public Algorithm {
 
 public:
   /// Constructor of this form must be provided

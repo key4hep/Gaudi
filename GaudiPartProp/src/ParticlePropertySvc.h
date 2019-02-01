@@ -15,8 +15,7 @@
 
 class IFileAccess;
 
-namespace Gaudi
-{
+namespace Gaudi {
   // ============================================================================
   /** @class ParticlePropertySvc ParticlePropertySvc.h
    *
@@ -69,18 +68,17 @@ namespace Gaudi
    *
    *  The replaces/modified particles are reported.
    */
-  class ParticlePropertySvc : public extends<Service, IParticlePropertySvc>
-  {
+  class ParticlePropertySvc : public extends<Service, IParticlePropertySvc> {
   public:
     // typedefs for container type
-    typedef ParticleProperty* mapped_type;
+    typedef ParticleProperty*                  mapped_type;
     typedef std::map<int, mapped_type>         MapID;
     typedef std::map<std::string, mapped_type> MapName;
     typedef std::map<int, mapped_type>         MapStdHepID;
     typedef std::map<int, mapped_type>         MapPythiaID;
-    using IParticlePropertySvc::VectPP;
     using IParticlePropertySvc::const_iterator;
     using IParticlePropertySvc::iterator;
+    using IParticlePropertySvc::VectPP;
     // Inherited Service overrides:
 
     /// Initialise the service.
@@ -159,7 +157,7 @@ namespace Gaudi
     bool diff( const ParticleProperty* o, const ParticleProperty* n, const MSG::Level l = MSG::DEBUG ) const;
 
   private:
-    Gaudi::Property<std::string> m_filename{this, "ParticlePropertiesFile", "ParticleTable.txt",
+    Gaudi::Property<std::string>              m_filename{this, "ParticlePropertiesFile", "ParticleTable.txt",
                                             "Filename of the particle properties file"};
     Gaudi::Property<std::vector<std::string>> m_other{this, "OtherFiles", {}, "additional file names"};
     Gaudi::Property<std::vector<std::string>> m_particles{

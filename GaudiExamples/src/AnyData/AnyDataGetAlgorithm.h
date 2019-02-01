@@ -15,8 +15,7 @@
  *  @date   2016-05-26
  */
 template <class T>
-class AnyDataGetAlgorithm : public GaudiAlgorithm
-{
+class AnyDataGetAlgorithm : public GaudiAlgorithm {
 public:
   /// Standard constructor
   AnyDataGetAlgorithm( const std::string& name, ISvcLocator* svcLoc ) : GaudiAlgorithm( name, svcLoc ) {}

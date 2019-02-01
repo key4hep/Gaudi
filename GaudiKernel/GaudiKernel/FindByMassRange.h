@@ -21,8 +21,7 @@
 
     @author Ian Last
 */
-class GAUDI_API FindByMassRange
-{
+class GAUDI_API FindByMassRange {
 
 public:
   /// Constructor - sets the mass range in Gev.

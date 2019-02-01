@@ -1,16 +1,14 @@
 #ifndef IGRAPHVISITOR_H_
 #define IGRAPHVISITOR_H_
 
-namespace concurrency
-{
+namespace concurrency {
 
   class DecisionNode;
   class AlgorithmNode;
   class DataNode;
   class ConditionNode;
 
-  class IGraphVisitor
-  {
+  class IGraphVisitor {
   public:
     virtual ~IGraphVisitor() = default;
 
@@ -28,6 +26,6 @@ namespace concurrency
 
     virtual void reset(){};
   };
-}
+} // namespace concurrency
 
 #endif /* IGRAPHVISITOR_H_ */

@@ -2,8 +2,7 @@ from Gaudi.Configuration import *
 
 
 class DelayedInstance(ConfigurableUser):
-    __slots__ = {"Property": 0,
-                 "Applied": False}
+    __slots__ = {"Property": 0, "Applied": False}
 
     def __apply_configuration__(self):
         print "Applying", self.getName()
@@ -12,8 +11,7 @@ class DelayedInstance(ConfigurableUser):
 
 
 class Application(ConfigurableUser):
-    __slots__ = {"Property": 10,
-                 "Applied": False}
+    __slots__ = {"Property": 10, "Applied": False}
     __used_configurables__ = []
 
     def __apply_configuration__(self):

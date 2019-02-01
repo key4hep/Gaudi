@@ -14,8 +14,7 @@ class IRegistry;
 
     @author Markus Frank
 */
-class GAUDI_API IDataStoreAgent
-{
+class GAUDI_API IDataStoreAgent {
 public:
   /// destructor
   virtual ~IDataStoreAgent() = default;
@@ -26,26 +25,21 @@ public:
   virtual bool analyse( IRegistry* pObject, int level ) = 0;
 };
 
-namespace details
-{
+namespace details {
   template <typename F>
-  class GenericDataStoreAgent final : public IDataStoreAgent
-  {
+  class GenericDataStoreAgent final : public IDataStoreAgent {
     F f;
 
   public:
     template <typename G>
-    GenericDataStoreAgent( G&& g ) : f{std::forward<G>( g )}
-    {
-    }
+    GenericDataStoreAgent( G&& g ) : f{std::forward<G>( g )} {}
 
     bool analyse( IRegistry* pObj, int level ) override { return Gaudi::invoke( f, pObj, level ); }
   };
-}
+} // namespace details
 
 template <typename F>
-::details::GenericDataStoreAgent<F> makeDataStoreAgent( F&& f )
-{
+::details::GenericDataStoreAgent<F> makeDataStoreAgent( F&& f ) {
   return {std::forward<F>( f )};
 }
 

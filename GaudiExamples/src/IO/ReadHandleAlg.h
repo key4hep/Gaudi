@@ -16,10 +16,9 @@ class IIncidentSvc;
 using namespace Gaudi::Examples;
 
 /** @class ReadHandleAlg ReadHandleAlg.h
-*/
+ */
 
-class ReadHandleAlg : public GaudiAlgorithm
-{
+class ReadHandleAlg : public GaudiAlgorithm {
 
   DataObjectReadHandle<Collision> m_inputHandle{this, "Input", "/Event/MyCollision"};
 

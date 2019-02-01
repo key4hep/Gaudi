@@ -22,8 +22,7 @@
  * @author Vanya Belyaev
  * @date    Nov 26, 1999
  */
-class GAUDI_API Chrono
-{
+class GAUDI_API Chrono {
 public:
   // =========================================================================
   /** Constructor from Chrono Service and the tag
@@ -50,17 +49,14 @@ public:
   Chrono( IChronoSvc*        svc = nullptr,            // the service
           const std::string& tag = "CHRONO::UNNAMED" ) // the unique tag/name
   {
-    if ( svc ) {
-      m_chrono = svc->chronoStart( tag );
-    }
+    if ( svc ) { m_chrono = svc->chronoStart( tag ); }
   }
 
   // =========================================================================
   /** Move Constructor
    **/
 
-  Chrono( Chrono&& rhs )
-  {
+  Chrono( Chrono&& rhs ) {
     m_chrono     = rhs.m_chrono;
     rhs.m_chrono = nullptr;
   }
@@ -87,12 +83,10 @@ public:
    *  @param tag the unique tag
    *  @param svc pointer to Chrono Service
    */
-  Chrono( const std::string& tag,  // the unique tag/name
-          IChronoSvc*        svc ) // the service
+  Chrono( const std::string& tag, // the unique tag/name
+          IChronoSvc*        svc )       // the service
   {
-    if ( svc ) {
-      m_chrono = svc->chronoStart( tag );
-    }
+    if ( svc ) { m_chrono = svc->chronoStart( tag ); }
   }
   // =========================================================================
   /** Constructor from Chrono Object/Entity
@@ -115,11 +109,8 @@ public:
    *
    *  @param c the pointer to Chrono Object/Entity
    */
-  Chrono( ChronoEntity* c ) : m_chrono( c )
-  {
-    if ( m_chrono ) {
-      m_chrono->start();
-    }
+  Chrono( ChronoEntity* c ) : m_chrono( c ) {
+    if ( m_chrono ) { m_chrono->start(); }
   }
   // =========================================================================
   /** Constructor from Chrono Object/Entity
@@ -145,11 +136,8 @@ public:
   Chrono( ChronoEntity& c ) : m_chrono( &c ) { m_chrono->start(); }
   // =========================================================================
   /// Destructor , stop the chrono
-  ~Chrono()
-  {
-    if ( m_chrono ) {
-      m_chrono->stop();
-    }
+  ~Chrono() {
+    if ( m_chrono ) { m_chrono->stop(); }
   }
   // =========================================================================
 private:

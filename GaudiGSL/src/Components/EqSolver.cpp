@@ -29,8 +29,7 @@ DECLARE_COMPONENT( EqSolver )
 // ============================================================================
 // ============================================================================
 EqSolver::EqSolverMisc::EqSolverMisc( const EqSolver::Equations& funcs, EqSolver::Arg& arg )
-    : m_argum( arg ), m_eqs( &funcs )
-{
+    : m_argum( arg ), m_eqs( &funcs ) {
   const size_t N = funcs.size();
   for ( size_t i = 0; i < N; ++i ) {
     Equations last;
@@ -44,8 +43,7 @@ EqSolver::EqSolverMisc::EqSolverMisc( const EqSolver::Equations& funcs, EqSolver
 // ============================================================================
 
 // ============================================================================
-EqSolver::EqSolverMisc::~EqSolverMisc()
-{
+EqSolver::EqSolverMisc::~EqSolverMisc() {
   while ( !m_jac.empty() ) {
     Equations& last = m_jac.back();
     while ( !last.empty() ) {
@@ -57,39 +55,30 @@ EqSolver::EqSolverMisc::~EqSolverMisc()
 }
 // ============================================================================
 
-namespace
-{
+namespace {
   using namespace Genfun;
 
   /** The function which we solver
    */
-  int fun_gsl( const gsl_vector* v, void* params, gsl_vector* f )
-  {
+  int fun_gsl( const gsl_vector* v, void* params, gsl_vector* f ) {
     EqSolver::EqSolverMisc*    local = static_cast<EqSolver::EqSolverMisc*>( params );
     const EqSolver::Equations& eqs   = *( local->equations() );
     Argument&                  arg   = local->argument();
 
-    for ( unsigned int i = 0; i < v->size; ++i ) {
-      arg[i] = gsl_vector_get( v, i );
-    }
+    for ( unsigned int i = 0; i < v->size; ++i ) { arg[i] = gsl_vector_get( v, i ); }
 
-    for ( unsigned int i = 0; i < v->size; ++i ) {
-      gsl_vector_set( f, i, ( *eqs[i] )( arg ) );
-    }
+    for ( unsigned int i = 0; i < v->size; ++i ) { gsl_vector_set( f, i, ( *eqs[i] )( arg ) ); }
     return GSL_SUCCESS;
   }
 
   /** The gradient of the function "fun_gsl"
    */
-  int dfun_gsl( const gsl_vector* v, void* params, gsl_matrix* df )
-  {
+  int dfun_gsl( const gsl_vector* v, void* params, gsl_matrix* df ) {
     EqSolver::EqSolverMisc* local = static_cast<EqSolver::EqSolverMisc*>( params );
     const EqSolver::Jacobi& jac   = local->jacobi();
     Argument&               arg   = local->argument();
 
-    for ( unsigned int i = 0; i < v->size; ++i ) {
-      arg[i] = gsl_vector_get( v, i );
-    }
+    for ( unsigned int i = 0; i < v->size; ++i ) { arg[i] = gsl_vector_get( v, i ); }
 
     for ( unsigned int i = 0; i < v->size; ++i ) {
       for ( unsigned int j = 0; j < v->size; ++j ) {
@@ -103,16 +92,13 @@ namespace
   /** Compute both the function "fun_gsl"
    * and gradient of this function "dfun_gsl" together
    */
-  int fdfun_gsl( const gsl_vector* v, void* params, gsl_vector* f, gsl_matrix* df )
-  {
+  int fdfun_gsl( const gsl_vector* v, void* params, gsl_vector* f, gsl_matrix* df ) {
     EqSolver::EqSolverMisc*    local = static_cast<EqSolver::EqSolverMisc*>( params );
     const EqSolver::Equations& eqs   = *( local->equations() );
     const EqSolver::Jacobi&    jac   = local->jacobi();
     Argument&                  arg   = local->argument();
 
-    for ( unsigned int i = 0; i < v->size; ++i ) {
-      arg[i] = gsl_vector_get( v, i );
-    }
+    for ( unsigned int i = 0; i < v->size; ++i ) { arg[i] = gsl_vector_get( v, i ); }
 
     for ( unsigned int i = 0; i < v->size; ++i ) {
       gsl_vector_set( f, i, ( *eqs[i] )( arg ) );
@@ -123,7 +109,7 @@ namespace
     }
     return GSL_SUCCESS;
   }
-}
+} // namespace
 
 //=============================================================================
 /** Solving nonlinear system of the function "GenFunc"
@@ -162,9 +148,7 @@ StatusCode EqSolver::solver( const Equations& funcs, Arg& arg ) const
 
     status = gsl_multiroot_test_residual( s->f, m_norm_residual );
 
-    if ( status != GSL_CONTINUE ) {
-      break;
-    }
+    if ( status != GSL_CONTINUE ) { break; }
   }
 
   for ( unsigned int i = 0; i < vect.vector.size; ++i ) {
@@ -182,20 +166,15 @@ StatusCode EqSolver::solver( const Equations& funcs, Arg& arg ) const
 
   gsl_multiroot_fdfsolver_free( s );
 
-  if ( status ) {
-    return Error( "Method finished with '" + std::string( gsl_strerror( status ) ) + "' error" );
-  }
+  if ( status ) { return Error( "Method finished with '" + std::string( gsl_strerror( status ) ) + "' error" ); }
 
   return StatusCode( GSL_SUCCESS );
 }
 
 //=============================================================================
-StatusCode EqSolver::initialize()
-{
+StatusCode EqSolver::initialize() {
   StatusCode sc = GaudiTool::initialize();
-  if ( sc.isFailure() ) {
-    return Error( "Could not initiliaze base class GaudiTool", sc );
-  }
+  if ( sc.isFailure() ) { return Error( "Could not initiliaze base class GaudiTool", sc ); }
 
   /* The algorithm for multiional root-finding
      (solving nonlinear systems with n equations in n unknowns)*/

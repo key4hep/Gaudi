@@ -6,13 +6,11 @@
 
 #include <queue>
 
-namespace concurrency
-{
+namespace concurrency {
   using AState = AlgsExecutionStates::State;
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visitEnter( AlgorithmNode& node ) const
-  {
+  bool DataReadyPromoter::visitEnter( AlgorithmNode& node ) const {
 
     if ( AState::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()] ) return false;
 
@@ -20,8 +18,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visit( AlgorithmNode& node )
-  {
+  bool DataReadyPromoter::visit( AlgorithmNode& node ) {
 
     bool result = true; // return true if this algorithm has no data inputs
 
@@ -53,8 +50,7 @@ namespace concurrency
   bool DataReadyPromoter::visitEnter( DataNode& ) const { return true; }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visit( DataNode& node )
-  {
+  bool DataReadyPromoter::visit( DataNode& node ) {
     /* Implements 'observer' strategy, i.e., only check if producer of this DataNode
      * has been already executed or not */
 
@@ -81,8 +77,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visitEnter( ConditionNode& node ) const
-  {
+  bool DataReadyPromoter::visitEnter( ConditionNode& node ) const {
 
     if ( node.m_condSvc->isValidID( *( m_slot->eventContext ), node.getPath() ) )
       return false; // do not enter this ConditionNode if the condition has bee already loaded
@@ -91,8 +86,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool DataReadyPromoter::visit( ConditionNode& node )
-  {
+  bool DataReadyPromoter::visit( ConditionNode& node ) {
     /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
      * by its associated ConditionAlgorithm */
 
@@ -106,8 +100,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool DecisionUpdater::visit( AlgorithmNode& node )
-  {
+  bool DecisionUpdater::visit( AlgorithmNode& node ) {
 
     auto&         states   = m_slot->algsStates;
     const AState& state    = states[node.getAlgoIndex()];
@@ -138,8 +131,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool Supervisor::visitEnter( DecisionNode& node ) const
-  {
+  bool Supervisor::visitEnter( DecisionNode& node ) const {
     // Protect against graph traversal escaping from sub-slots
     if ( m_slot->parentSlot ) {
       // Examine the ancestry of this node, looking for sub-slot entry point
@@ -160,10 +152,7 @@ namespace concurrency
         } else {
 
           // Go further up the node ancestry
-          for ( auto& evenOlder : thisAncestor->m_parents ) {
-
-            allAncestors.push( evenOlder );
-          }
+          for ( auto& evenOlder : thisAncestor->m_parents ) { allAncestors.push( evenOlder ); }
         }
       }
 
@@ -176,8 +165,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool Supervisor::visit( DecisionNode& node )
-  {
+  bool Supervisor::visit( DecisionNode& node ) {
 
     bool foundNonResolvedChild = false;
     bool foundNegativeChild    = false;
@@ -283,9 +271,7 @@ namespace concurrency
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
       // if a decision was made for this node, propagate the result upwards
-      for ( auto parent : node.m_parents ) {
-        parent->accept( *this );
-      }
+      for ( auto parent : node.m_parents ) { parent->accept( *this ); }
 
       if ( oldSlot ) m_slot = oldSlot;
       return true;
@@ -321,16 +307,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool Supervisor::visitEnter( AlgorithmNode& node ) const
-  {
+  bool Supervisor::visitEnter( AlgorithmNode& node ) const {
 
     if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) return false;
     return true;
   }
 
   //--------------------------------------------------------------------------
-  bool Supervisor::visit( AlgorithmNode& node )
-  {
+  bool Supervisor::visit( AlgorithmNode& node ) {
 
     bool result = false;
 
@@ -354,8 +338,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByProductConsumption::visit( AlgorithmNode& node )
-  {
+  bool RankerByProductConsumption::visit( AlgorithmNode& node ) {
 
     auto& products = node.getOutputDataNodes();
     float rank     = 0;
@@ -374,16 +357,15 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByCummulativeOutDegree::visit( AlgorithmNode& node )
-  {
+  bool RankerByCummulativeOutDegree::visit( AlgorithmNode& node ) {
 
     std::ifstream myfile;
     myfile.open( "InputExecutionPlan.graphml", std::ios::in );
 
     precedence::PrecTrace execPlan;
 
-    using precedence::AlgoTraceProps;
     using boost::get;
+    using precedence::AlgoTraceProps;
 
     boost::dynamic_properties dp;
     dp.property( "name", get( &AlgoTraceProps::m_name, execPlan ) );
@@ -394,7 +376,7 @@ namespace concurrency
     boost::read_graphml( myfile, execPlan, dp );
 
     typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
-    std::pair<itV, itV> vp;
+    std::pair<itV, itV>                                                 vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v     = *vp.first;
@@ -413,8 +395,7 @@ namespace concurrency
 
   //--------------------------------------------------------------------------
   void RankerByCummulativeOutDegree::runThroughAdjacents(
-      boost::graph_traits<precedence::PrecTrace>::vertex_descriptor vertex, precedence::PrecTrace graph )
-  {
+      boost::graph_traits<precedence::PrecTrace>::vertex_descriptor vertex, precedence::PrecTrace graph ) {
     typename boost::graph_traits<precedence::PrecTrace>::adjacency_iterator itVB;
     typename boost::graph_traits<precedence::PrecTrace>::adjacency_iterator itVE;
 
@@ -425,15 +406,14 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByTiming::visit( AlgorithmNode& node )
-  {
+  bool RankerByTiming::visit( AlgorithmNode& node ) {
 
     std::ifstream myfile;
     myfile.open( "InputExecutionPlan.graphml", std::ios::in );
 
     precedence::PrecTrace execPlan;
-    using precedence::AlgoTraceProps;
     using boost::get;
+    using precedence::AlgoTraceProps;
 
     boost::dynamic_properties dp;
     dp.property( "name", get( &AlgoTraceProps::m_name, execPlan ) );
@@ -444,7 +424,7 @@ namespace concurrency
     boost::read_graphml( myfile, execPlan, dp );
 
     typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
-    std::pair<itV, itV> vp;
+    std::pair<itV, itV>                                                 vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v     = *vp.first;
@@ -460,8 +440,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByEccentricity::visit( AlgorithmNode& node )
-  {
+  bool RankerByEccentricity::visit( AlgorithmNode& node ) {
 
     std::ifstream myfile;
     myfile.open( "Eccentricity.graphml", std::ios::in );
@@ -477,7 +456,7 @@ namespace concurrency
     boost::read_graphml( myfile, execPlan, dp );
 
     typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
-    std::pair<itV, itV> vp;
+    std::pair<itV, itV>                                                 vp;
 
     for ( vp = boost::vertices( execPlan ); vp.first != vp.second; ++vp.first ) {
       precedence::AlgoTraceVertex v     = *vp.first;
@@ -493,8 +472,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  bool RankerByDataRealmEccentricity::visit( AlgorithmNode& node )
-  {
+  bool RankerByDataRealmEccentricity::visit( AlgorithmNode& node ) {
 
     // Find eccentricity of the node (only within the data realm of the execution flow graph)
     recursiveVisit( node );
@@ -509,8 +487,7 @@ namespace concurrency
   }
 
   //--------------------------------------------------------------------------
-  void RankerByDataRealmEccentricity::recursiveVisit( AlgorithmNode& node )
-  {
+  void RankerByDataRealmEccentricity::recursiveVisit( AlgorithmNode& node ) {
 
     m_currentDepth += 1;
 
@@ -526,16 +503,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visitEnter( DecisionNode& node ) const
-  {
+  bool RunSimulator::visitEnter( DecisionNode& node ) const {
 
     if ( m_slot->controlFlowState[node.getNodeIndex()] != 1 ) return true;
     return false;
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visit( DecisionNode& node )
-  {
+  bool RunSimulator::visit( DecisionNode& node ) {
 
     bool allChildDecisionsResolved = true;
 
@@ -543,7 +518,7 @@ namespace concurrency
 
       child->accept( *this );
 
-      int childDecision                                    = m_slot->controlFlowState[child->getNodeIndex()];
+      int childDecision = m_slot->controlFlowState[child->getNodeIndex()];
       if ( childDecision == -1 ) allChildDecisionsResolved = false;
 
       // process children sequentially if their decision hub is sequential
@@ -553,9 +528,7 @@ namespace concurrency
         m_slot->controlFlowState[node.getNodeIndex()] = 1;
 
         // if a decision was made for this node, propagate the result upwards
-        for ( auto parent : node.m_parents ) {
-          parent->accept( *this );
-        }
+        for ( auto parent : node.m_parents ) { parent->accept( *this ); }
         return true;
       }
     }
@@ -564,25 +537,21 @@ namespace concurrency
       m_slot->controlFlowState[node.getNodeIndex()] = 1;
 
       // if a decision was made for this node, propagate the result upwards
-      for ( auto parent : node.m_parents ) {
-        parent->accept( *this );
-      }
+      for ( auto parent : node.m_parents ) { parent->accept( *this ); }
     }
 
     return allChildDecisionsResolved;
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visitEnter( AlgorithmNode& node ) const
-  {
+  bool RunSimulator::visitEnter( AlgorithmNode& node ) const {
 
     if ( m_slot->controlFlowState[node.getNodeIndex()] != 1 ) return true;
     return false;
   }
 
   //--------------------------------------------------------------------------
-  bool RunSimulator::visit( AlgorithmNode& node )
-  {
+  bool RunSimulator::visit( AlgorithmNode& node ) {
 
     auto& states   = m_slot->algsStates;
     int&  decision = m_slot->controlFlowState[node.getNodeIndex()];
@@ -610,4 +579,4 @@ namespace concurrency
 
     return false;
   }
-}
+} // namespace concurrency

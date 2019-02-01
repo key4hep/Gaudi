@@ -22,8 +22,7 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   typedef ROOT::Math::SMatrix<double, 1, 1, ROOT::Math::MatRepSym<double, 1>> SymMatrix1x1; ///< Symmetrix 1x1 matrix
                                                                                             ///(double)
@@ -62,5 +61,5 @@ namespace Gaudi
                                                                                            ///(float)
   typedef ROOT::Math::SMatrix<float, 9, 9, ROOT::Math::MatRepSym<float, 9>> SymMatrix9x9F; ///< Symmetrix 9x9 matrix
                                                                                            ///(float)
-}
+} // namespace Gaudi
 #endif // KERNEL_SYMMETRICMATRIXTYPES_H

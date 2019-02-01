@@ -9,8 +9,7 @@
 
 #include "tbb/concurrent_vector.h"
 
-class TimelineSvc : public extends<Service, ITimelineSvc>
-{
+class TimelineSvc : public extends<Service, ITimelineSvc> {
 public:
   using extends::extends;
 
@@ -19,7 +18,7 @@ public:
   StatusCode finalize() override;
 
   TimelineRecorder getRecorder( std::string alg, const EventContext& ctx ) override;
-  bool getTimelineEvent( TimelineEvent& ) const override;
+  bool             getTimelineEvent( TimelineEvent& ) const override;
 
   bool isEnabled() const override { return m_isEnabled; }
 

@@ -27,8 +27,7 @@
  *  @date 2001-01-23
  */
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
   /** @class NamedRange NamedRange.h GaudiUtils/NamedRange.h
    *
@@ -40,8 +39,7 @@ namespace Gaudi
    *  @date   2004-11-19
    */
   template <class CONTAINER, class ITERATOR = typename Gaudi::details::container<CONTAINER>::Iterator>
-  class NamedRange_ : public Gaudi::Range_<CONTAINER, ITERATOR>
-  {
+  class NamedRange_ : public Gaudi::Range_<CONTAINER, ITERATOR> {
   protected:
     // ========================================================================
     /// the base class
@@ -88,8 +86,7 @@ namespace Gaudi
   public:
     // ========================================================================
     /// get a "slice" of a range, in Python style
-    inline NamedRange_ slice( long index1, long index2 ) const
-    {
+    inline NamedRange_ slice( long index1, long index2 ) const {
       return NamedRange_( Base::slice( index1, index2 ), m_name );
     }
     // ========================================================================
@@ -118,8 +115,7 @@ namespace Gaudi
    *  @date 2007-11-29
    */
   template <class CONTAINER>
-  inline NamedRange_<CONTAINER> range( const CONTAINER& cnt, std::string name )
-  {
+  inline NamedRange_<CONTAINER> range( const CONTAINER& cnt, std::string name ) {
     return NamedRange_<CONTAINER>( cnt.begin(), cnt.end(), std::move( name ) );
   }
   // ==========================================================================

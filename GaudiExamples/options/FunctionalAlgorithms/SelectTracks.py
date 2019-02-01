@@ -13,16 +13,18 @@ GaudiPersistency()
 FileRecordDataSvc(IncidentName="NEW_FILE_RECORD")
 FileCatalog(Catalogs=["xmlcatalog_file:ROOTIO.xml"])
 esel = EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1)
-esel.Input = ["DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'",
-              "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootEvtSelector' OPT='READ'"]
+esel.Input = [
+    "DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'",
+    "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootEvtSelector' OPT='READ'"
+]
 
 # Algorithms
-evtAlgs = GaudiSequencer("EventAlgs",
-                         Members=[SelectTracks(), CountSelectedTracks()],
-                         VetoObjects=["FSR"])
-fsrAlgs = GaudiSequencer("FSRAlgs",
-                         Members=[ReadTES(Locations=["FSR"])],
-                         RequireObjects=["FSR"])
+evtAlgs = GaudiSequencer(
+    "EventAlgs",
+    Members=[SelectTracks(), CountSelectedTracks()],
+    VetoObjects=["FSR"])
+fsrAlgs = GaudiSequencer(
+    "FSRAlgs", Members=[ReadTES(Locations=["FSR"])], RequireObjects=["FSR"])
 
 # Application setup
 app = ApplicationMgr()

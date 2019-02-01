@@ -22,8 +22,7 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // NB : Please remember to give a simple doxygen comment for each typedef
 
@@ -62,5 +61,5 @@ namespace Gaudi
   typedef ROOT::Math::SMatrix<float, 3, 4> Matrix3x4F; ///< Generic 3x4 matrix (float)
   typedef ROOT::Math::SMatrix<float, 2, 3> Matrix2x3F; ///< Generic 2x3 matrix (float)
   typedef ROOT::Math::SMatrix<float, 3, 2> Matrix3x2F; ///< Generic 3x2 matrix (float)
-}
+} // namespace Gaudi
 #endif // KERNEL_GENERICMATRIXTYPES_H

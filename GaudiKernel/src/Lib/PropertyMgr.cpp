@@ -24,13 +24,11 @@
 
 using Gaudi::Details::PropertyBase;
 
-namespace
-{
+namespace {
   // ==========================================================================
   /// case insensitive comparison of strings
   constexpr struct NoCaseCmp_t {
-    inline bool operator()( const std::string& v1, const std::string& v2 ) const
-    {
+    inline bool operator()( const std::string& v1, const std::string& v2 ) const {
       return v1.size() == v2.size() && std::equal( std::begin( v1 ), std::end( v1 ), std::begin( v2 ),
                                                    []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
     }
@@ -43,19 +41,17 @@ namespace
     inline bool operator()( const PropertyBase* p ) const { return p && noCaseCmp( p->name(), m_name ); }
   };
   // ==========================================================================
-}
+} // namespace
 // ====================================================================
 // constructor from the interface
 // ====================================================================
-PropertyMgr::PropertyMgr( IInterface* iface ) : m_pOuter( iface )
-{
+PropertyMgr::PropertyMgr( IInterface* iface ) : m_pOuter( iface ) {
   addRef(); // initial reference count set to 1
 }
 // ====================================================================
 // Declare a remote property
 // ====================================================================
-PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProperty* rsvc, const std::string& rname )
-{
+PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProperty* rsvc, const std::string& rname ) {
   if ( !rsvc ) return nullptr;
   const std::string& nam = rname.empty() ? name : rname;
   PropertyBase*      p   = property( nam, rsvc->getProperties() );
@@ -65,8 +61,7 @@ PropertyBase* PropertyMgr::declareRemoteProperty( const std::string& name, IProp
 // ============================================================================
 // Declare a property
 // ============================================================================
-PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleBase& ref, const std::string& doc )
-{
+PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleBase& ref, const std::string& doc ) {
   assertUniqueName( name );
   m_todelete.emplace_back( new typename GaudiHandleBase::PropertyType( name, ref ) );
   Property* p = m_todelete.back().get();
@@ -77,8 +72,8 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandle
   return p;
 }
 // ============================================================================
-PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleArrayBase& ref, const std::string& doc )
-{
+PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandleArrayBase& ref,
+                                            const std::string& doc ) {
   assertUniqueName( name );
   m_todelete.emplace_back( new typename GaudiHandleArrayBase::PropertyType( name, ref ) );
   Property* p = m_todelete.back().get();
@@ -90,8 +85,8 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, GaudiHandle
 }
 
 // ============================================================================
-PropertyBase* PropertyMgr::declareProperty( const std::string& name, DataObjectHandleBase& ref, const std::string& doc )
-{
+PropertyBase* PropertyMgr::declareProperty( const std::string& name, DataObjectHandleBase& ref,
+                                            const std::string& doc ) {
   assertUniqueName( name );
   m_todelete.emplace_back( new typename DataObjectHandleBase::PropertyType( name, ref ) );
   Property* p = m_todelete.back().get();
@@ -104,16 +99,14 @@ PropertyBase* PropertyMgr::declareProperty( const std::string& name, DataObjectH
 // ====================================================================
 // get the property by name form the proposed list
 // ====================================================================
-PropertyBase* PropertyMgr::property( const std::string& name, const std::vector<PropertyBase*>& props ) const
-{
+PropertyBase* PropertyMgr::property( const std::string& name, const std::vector<PropertyBase*>& props ) const {
   auto it = std::find_if( props.begin(), props.end(), PropByName{name} );
   return ( it != props.end() ) ? *it : nullptr; // RETURN
 }
 // ====================================================================
 // retrieve the property by name
 // ====================================================================
-PropertyBase* PropertyMgr::property( const std::string& name ) const
-{
+PropertyBase* PropertyMgr::property( const std::string& name ) const {
   // local property ?
   PropertyBase* lp = property( name, m_properties );
   if ( lp ) return lp; // RETURN
@@ -131,14 +124,12 @@ PropertyBase* PropertyMgr::property( const std::string& name ) const
  *  Implementation of IProperty::setProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::setProperty( const PropertyBase& p )
-{
+StatusCode PropertyMgr::setProperty( const PropertyBase& p ) {
   PropertyBase* pp = property( p.name() );
   try {
     if ( pp && pp->assign( p ) ) return StatusCode::SUCCESS;
   } // RETURN
-  catch ( ... ) {
-  }
+  catch ( ... ) {}
   //
   return StatusCode::FAILURE;
 }
@@ -147,8 +138,7 @@ StatusCode PropertyMgr::setProperty( const PropertyBase& p )
  *  Implementation of IProperty::setProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::setProperty( const std::string& i )
-{
+StatusCode PropertyMgr::setProperty( const std::string& i ) {
   std::string name, value;
   StatusCode  sc = Gaudi::Parsers::parse( name, value, i );
   return sc.isFailure() ? sc : setProperty( name, value );
@@ -158,8 +148,7 @@ StatusCode PropertyMgr::setProperty( const std::string& i )
  *  Implementation of IProperty::setProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::setProperty( const std::string& n, const std::string& v )
-{
+StatusCode PropertyMgr::setProperty( const std::string& n, const std::string& v ) {
   PropertyBase* p = property( n );
   return ( p && p->fromString( v ) ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
@@ -168,13 +157,11 @@ StatusCode PropertyMgr::setProperty( const std::string& n, const std::string& v 
  *  Implementation of IProperty::getProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::getProperty( PropertyBase* p ) const
-{
+StatusCode PropertyMgr::getProperty( PropertyBase* p ) const {
   try {
     const PropertyBase* pp = property( p->name() );
     if ( pp && pp->load( *p ) ) return StatusCode::SUCCESS; // RETURN
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return StatusCode::FAILURE; // RETURN
 }
 // =====================================================================
@@ -182,8 +169,7 @@ StatusCode PropertyMgr::getProperty( PropertyBase* p ) const
  *  Implementation of IProperty::getProperty
  */
 // =====================================================================
-const PropertyBase& PropertyMgr::getProperty( const std::string& name ) const
-{
+const PropertyBase& PropertyMgr::getProperty( const std::string& name ) const {
   const PropertyBase* p = property( name );
   if ( !p ) throw std::out_of_range( "Property " + name + " not found." ); // Not found
   return *p;                                                               // RETURN
@@ -193,8 +179,7 @@ const PropertyBase& PropertyMgr::getProperty( const std::string& name ) const
  *  Implementation of IProperty::getProperty
  */
 // =====================================================================
-StatusCode PropertyMgr::getProperty( const std::string& n, std::string& v ) const
-{
+StatusCode PropertyMgr::getProperty( const std::string& n, std::string& v ) const {
   // get the property
   const PropertyBase* p = property( n );
   if ( !p ) return StatusCode::FAILURE;
@@ -210,8 +195,7 @@ const std::vector<PropertyBase*>& PropertyMgr::getProperties() const { return m_
 // =====================================================================
 // Implementation of IInterface::queryInterface
 // =====================================================================
-StatusCode PropertyMgr::queryInterface( const InterfaceID& iid, void** pinterface )
-{
+StatusCode PropertyMgr::queryInterface( const InterfaceID& iid, void** pinterface ) {
   // try local interfaces
   StatusCode sc = base_class::queryInterface( iid, pinterface );
   if ( sc.isSuccess() ) return sc;
@@ -221,13 +205,11 @@ StatusCode PropertyMgr::queryInterface( const InterfaceID& iid, void** pinterfac
 // =====================================================================
 // Implementation of IProperty::hasProperty
 // =====================================================================
-bool PropertyMgr::hasProperty( const std::string& name ) const
-{
+bool PropertyMgr::hasProperty( const std::string& name ) const {
   return any_of( begin( m_properties ), end( m_properties ),
                  [&name]( const PropertyBase* prop ) { return noCaseCmp( prop->name(), name ); } );
 }
-void PropertyMgr::assertUniqueName( const std::string& name ) const
-{
+void PropertyMgr::assertUniqueName( const std::string& name ) const {
   if ( LIKELY( !hasProperty( name ) ) ) return;
   auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
   if ( !msgSvc ) std::cerr << "error: cannot get MessageSvc!" << std::endl;

@@ -16,20 +16,17 @@ using std::string;
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-Service::~Service()
-{
+Service::~Service() {
   if ( m_svcManager ) m_svcManager->removeService( this ).ignore();
 }
 
 // IService::sysInitialize
-StatusCode Service::sysInitialize()
-{
+StatusCode Service::sysInitialize() {
   std::call_once( m_initFlag, &Service::sysInitialize_imp, this );
   return m_initSC;
 }
 
-void Service::sysInitialize_imp()
-{
+void Service::sysInitialize_imp() {
 
   try {
     m_targetState = Gaudi::StateMachine::INITIALIZED;
@@ -60,16 +57,14 @@ void Service::sysInitialize_imp()
 }
 
 //--- IService::initialize
-StatusCode Service::initialize()
-{
+StatusCode Service::initialize() {
   ON_DEBUG debug() << "Service base class initialized successfully" << endmsg;
   m_state = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::CONFIGURE, m_state );
   return StatusCode::SUCCESS;
 }
 
 // IService::sysStart
-StatusCode Service::sysStart()
-{
+StatusCode Service::sysStart() {
   StatusCode sc;
 
   try {
@@ -77,7 +72,7 @@ StatusCode Service::sysStart()
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
                                        ( m_auditorStart ) ? auditorSvc().get() : nullptr, IAuditor::Start );
-    sc                            = start();
+    sc = start();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
   } catch ( const GaudiException& Exception ) {
@@ -97,8 +92,7 @@ StatusCode Service::sysStart()
 }
 
 // IService::sysStop
-StatusCode Service::sysStop()
-{
+StatusCode Service::sysStop() {
   StatusCode sc;
 
   try {
@@ -106,7 +100,7 @@ StatusCode Service::sysStop()
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
                                        ( m_auditorStop ) ? auditorSvc().get() : nullptr, IAuditor::Stop );
-    sc                            = stop();
+    sc = stop();
     if ( sc.isSuccess() ) m_state = m_targetState;
     return sc;
   } catch ( const GaudiException& Exception ) {
@@ -126,22 +120,19 @@ StatusCode Service::sysStop()
 }
 
 //--- IService::stop
-StatusCode Service::stop()
-{
+StatusCode Service::stop() {
   // stub implementation
   return StatusCode::SUCCESS;
 }
 
 //--- IService::start
-StatusCode Service::start()
-{
+StatusCode Service::start() {
   // stub implementation
   return StatusCode::SUCCESS;
 }
 
 //--- IService::sysFinalize
-StatusCode Service::sysFinalize()
-{
+StatusCode Service::sysFinalize() {
 
   StatusCode sc( StatusCode::FAILURE );
 
@@ -150,7 +141,7 @@ StatusCode Service::sysFinalize()
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
                                        ( m_auditorFinalize ) ? auditorSvc().get() : nullptr, IAuditor::Finalize );
-    sc                            = finalize();
+    sc = finalize();
     if ( sc.isSuccess() ) m_state = m_targetState;
   } catch ( const GaudiException& Exception ) {
     fatal() << " Exception with tag=" << Exception.tag() << " is caught " << endmsg;
@@ -170,15 +161,13 @@ StatusCode Service::sysFinalize()
 }
 
 //--- IService::finalize
-StatusCode Service::finalize()
-{
+StatusCode Service::finalize() {
   // m_state = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::TERMINATE,m_state);
   return StatusCode::SUCCESS;
 }
 
 //--- IService::sysReinitialize
-StatusCode Service::sysReinitialize()
-{
+StatusCode Service::sysReinitialize() {
 
   StatusCode sc;
 
@@ -212,8 +201,7 @@ StatusCode Service::sysReinitialize()
 }
 
 //--- IService::sysRestart
-StatusCode Service::sysRestart()
-{
+StatusCode Service::sysRestart() {
 
   StatusCode sc;
 
@@ -246,8 +234,7 @@ StatusCode Service::sysRestart()
 }
 
 //--- IService::reinitialize
-StatusCode Service::reinitialize()
-{
+StatusCode Service::reinitialize() {
   /* @TODO
    * MCl 2008-10-23: the implementation of reinitialize as finalize+initialize
    *                 is causing too many problems
@@ -268,8 +255,7 @@ StatusCode Service::reinitialize()
 }
 
 //--- IService::restart
-StatusCode Service::restart()
-{
+StatusCode Service::restart() {
   // Default implementation is stop+start
   StatusCode sc = stop();
   if ( sc.isFailure() ) {
@@ -291,13 +277,10 @@ const std::string& Service::name() const { return m_name; }
 SmartIF<ISvcLocator>& Service::serviceLocator() const { return m_svcLocator; }
 
 // Use the job options service to set declared properties
-StatusCode Service::setProperties()
-{
+StatusCode Service::setProperties() {
   const bool CREATEIF( true );
   auto       jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", CREATEIF );
-  if ( !jos ) {
-    throw GaudiException( "Service [JobOptionsSvc] not found", name(), StatusCode::FAILURE );
-  }
+  if ( !jos ) { throw GaudiException( "Service [JobOptionsSvc] not found", name(), StatusCode::FAILURE ); }
 
   // initialize messaging (except for MessageSvc)
   if ( name() != "MessageSvc" ) {
@@ -311,8 +294,7 @@ StatusCode Service::setProperties()
 
 //--- Local methods
 // Standard Constructor
-Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( name ) ), m_svcLocator( svcloc )
-{
+Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( name ) ), m_svcLocator( svcloc ) {
   if ( m_name != "MessageSvc" ) { // the MessageSvc should not notify itself
     m_outputLevel.declareUpdateHandler(
         [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
@@ -321,9 +303,7 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
   // Initialize the default value from ApplicationMgr AuditAlgorithms
   Gaudi::Property<bool> audit( false );
   auto                  appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
-  if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) {
-    audit.assign( appMgr->getProperty( "AuditServices" ) );
-  }
+  if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) { audit.assign( appMgr->getProperty( "AuditServices" ) ); }
   m_auditInit           = audit;
   m_auditorInitialize   = audit;
   m_auditorStart        = audit;
@@ -333,13 +313,10 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
   m_auditorRestart      = audit;
 }
 
-SmartIF<IAuditorSvc>& Service::auditorSvc() const
-{
+SmartIF<IAuditorSvc>& Service::auditorSvc() const {
   if ( !m_pAuditorSvc ) {
     m_pAuditorSvc = serviceLocator()->service( "AuditorSvc" );
-    if ( !m_pAuditorSvc ) {
-      throw GaudiException( "Service [AuditorSvc] not found", name(), StatusCode::FAILURE );
-    }
+    if ( !m_pAuditorSvc ) { throw GaudiException( "Service [AuditorSvc] not found", name(), StatusCode::FAILURE ); }
   }
   return m_pAuditorSvc;
 }

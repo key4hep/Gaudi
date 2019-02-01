@@ -8,12 +8,10 @@
 // Accessing data:
 #include "GaudiKernel/PhysicalConstants.h"
 
-namespace bug_34121
-{ // see https://its.cern.ch/jira/browse/GAUDI-200
+namespace bug_34121 { // see https://its.cern.ch/jira/browse/GAUDI-200
 
   // Tool example
-  class Tool : public extends<AlgTool, IMyTool>
-  {
+  class Tool : public extends<AlgTool, IMyTool> {
   public:
     /// Standard Constructor
     using extends::extends;

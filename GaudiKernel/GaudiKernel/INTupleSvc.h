@@ -6,11 +6,10 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 
 // Forward declarations
-namespace NTuple
-{
+namespace NTuple {
   class Tuple;
   struct Directory;
-}
+} // namespace NTuple
 
 /** @class INTupleSvc INTupleSvc.h GaudiKernel/INTupleSvc.h
 
@@ -34,8 +33,7 @@ namespace NTuple
    @author Markus Frank
    @version 1.0
 */
-class GAUDI_API INTupleSvc : virtual public IDataProviderSvc
-{
+class GAUDI_API INTupleSvc : virtual public IDataProviderSvc {
 public:
   /// InterfaceID
   DeclareInterfaceID( INTupleSvc, 2, 0 );

@@ -9,11 +9,9 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Property.h"
 
-namespace Gaudi
-{
+namespace Gaudi {
   /// ApplicationMgr return code definitions.
-  namespace ReturnCode
-  {
+  namespace ReturnCode {
 
     constexpr int Success = 0x00;
 
@@ -34,7 +32,7 @@ namespace Gaudi
     constexpr int FinalizationFailure = 0x0b;
     /// @}
     constexpr int SignalOffset = 0x80; //< Offset for signal-related return codes
-  }
+  }                                    // namespace ReturnCode
 
   /**
    * Set the application return code.
@@ -48,8 +46,7 @@ namespace Gaudi
    *
    * @return SUCCESS if it was possible to set the return code or the return code was already set
    */
-  inline StatusCode setAppReturnCode( SmartIF<IProperty>& appmgr, int value, bool force = false )
-  {
+  inline StatusCode setAppReturnCode( SmartIF<IProperty>& appmgr, int value, bool force = false ) {
     if ( appmgr ) {
       Gaudi::Property<int> returnCode( "ReturnCode", 0 );
       if ( appmgr->getProperty( &returnCode ).isSuccess() ) {
@@ -69,13 +66,12 @@ namespace Gaudi
    *
    * @return the return code or 0 if it was not possible to get it
    */
-  inline int getAppReturnCode( const SmartIF<IProperty>& appmgr )
-  {
+  inline int getAppReturnCode( const SmartIF<IProperty>& appmgr ) {
     if ( appmgr ) {
       Gaudi::Property<int> returnCode( "ReturnCode", 0 );
       if ( appmgr->getProperty( &returnCode ).isSuccess() ) return returnCode.value();
     }
     return 0;
   }
-}
+} // namespace Gaudi
 #endif /* APPRETURNCODE_H_ */

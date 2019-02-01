@@ -24,8 +24,7 @@ class IRegistry;
  * \b ScanOnBeginEvent (bool): If the scan has to be started during the BeginEvent incident (true) or on demand (false,
  * default)
  */
-class DataSvcFileEntriesTool : public extends<AlgTool, IDataStoreLeaves, IIncidentListener>
-{
+class DataSvcFileEntriesTool : public extends<AlgTool, IDataStoreLeaves, IIncidentListener> {
 public:
   /// Inherited constructor
   using extends::extends;
@@ -94,8 +93,7 @@ private:
 
 #include "GaudiKernel/GaudiException.h"
 
-StatusCode DataSvcFileEntriesTool::initialize()
-{
+StatusCode DataSvcFileEntriesTool::initialize() {
   StatusCode sc = AlgTool::initialize();
   if ( sc.isFailure() ) return sc;
 
@@ -117,21 +115,16 @@ StatusCode DataSvcFileEntriesTool::initialize()
   m_incidentSvc->addListener( this, IncidentType::BeginEvent );
 
   // If the Root node is not specified, take the name from the data service itself.
-  if ( m_rootNode.empty() ) {
-    m_rootNode = m_dataMgrSvc->rootName();
-  }
+  if ( m_rootNode.empty() ) { m_rootNode = m_dataMgrSvc->rootName(); }
 
   // Clear the cache (in case the instance is re-initilized).
   m_leaves.clear();
   return StatusCode::SUCCESS;
 }
 
-StatusCode DataSvcFileEntriesTool::finalize()
-{
+StatusCode DataSvcFileEntriesTool::finalize() {
   // unregister from the incident service
-  if ( m_incidentSvc ) {
-    m_incidentSvc->removeListener( this, IncidentType::BeginEvent );
-  }
+  if ( m_incidentSvc ) { m_incidentSvc->removeListener( this, IncidentType::BeginEvent ); }
   // Release the services
   m_incidentSvc.reset();
   m_dataMgrSvc.reset();
@@ -140,8 +133,7 @@ StatusCode DataSvcFileEntriesTool::finalize()
   return AlgTool::finalize();
 }
 
-void DataSvcFileEntriesTool::handle( const Incident& incident )
-{
+void DataSvcFileEntriesTool::handle( const Incident& incident ) {
   // Get the file id of the root node at every event
   IOpaqueAddress* addr = i_getRootNode()->address();
   if ( addr )
@@ -156,16 +148,12 @@ void DataSvcFileEntriesTool::handle( const Incident& incident )
   }
 }
 
-const IDataStoreLeaves::LeavesList& DataSvcFileEntriesTool::leaves() const
-{
-  if ( m_leaves.empty() ) {
-    const_cast<DataSvcFileEntriesTool*>( this )->i_collectLeaves();
-  }
+const IDataStoreLeaves::LeavesList& DataSvcFileEntriesTool::leaves() const {
+  if ( m_leaves.empty() ) { const_cast<DataSvcFileEntriesTool*>( this )->i_collectLeaves(); }
   return m_leaves;
 }
 
-IRegistry* DataSvcFileEntriesTool::i_getRootNode()
-{
+IRegistry* DataSvcFileEntriesTool::i_getRootNode() {
   DataObject* obj = nullptr;
   StatusCode  sc  = m_dataSvc->retrieveObject( m_rootNode.value(), obj );
   if ( sc.isFailure() ) {
@@ -177,8 +165,7 @@ IRegistry* DataSvcFileEntriesTool::i_getRootNode()
 void DataSvcFileEntriesTool::i_collectLeaves() { i_collectLeaves( i_getRootNode() ); }
 
 /// todo: implement the scanning as an IDataStoreAgent
-void DataSvcFileEntriesTool::i_collectLeaves( IRegistry* reg )
-{
+void DataSvcFileEntriesTool::i_collectLeaves( IRegistry* reg ) {
   // I do not put sanity checks on the pointers because I know how I'm calling the function
   IOpaqueAddress* addr = reg->address();
   if ( addr ) { // we consider only objects that are in a file

@@ -13,8 +13,7 @@ DECLARE_COMPONENT( PrecedenceSvc )
 // ============================================================================
 // Initialization
 // ============================================================================
-StatusCode PrecedenceSvc::initialize()
-{
+StatusCode PrecedenceSvc::initialize() {
   using namespace concurrency;
 
   auto sc = Service::initialize(); // parent class must be initialized first
@@ -26,8 +25,9 @@ StatusCode PrecedenceSvc::initialize()
   // prepare a directory to dump precedence analysis files to.
   if ( m_dumpPrecTrace || m_dumpPrecRules ) {
     if ( !boost::filesystem::create_directory( m_dumpDirName ) ) {
-      error() << "Could not create directory " << m_dumpDirName << "required "
-                                                                   "for task precedence tracing"
+      error() << "Could not create directory " << m_dumpDirName
+              << "required "
+                 "for task precedence tracing"
               << endmsg;
       return StatusCode::FAILURE;
     }
@@ -101,8 +101,7 @@ StatusCode PrecedenceSvc::initialize()
 
 // ============================================================================
 StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::string& parentName,
-                                           unsigned int recursionDepth )
-{
+                                           unsigned int recursionDepth ) {
   using namespace concurrency;
 
   StatusCode sc = StatusCode::SUCCESS;
@@ -141,10 +140,10 @@ StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::st
   bool isInverted     = false;
 
   if ( isGaudiSequencer ) {
-    modeOr                        = ( algo->getProperty( "ModeOR" ).toString() == "True" );
-    allPass                       = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
-    promptDecision                = ( algo->getProperty( "ShortCircuit" ).toString() == "True" );
-    isInverted                    = ( algo->getProperty( "Invert" ).toString() == "True" );
+    modeOr         = ( algo->getProperty( "ModeOR" ).toString() == "True" );
+    allPass        = ( algo->getProperty( "IgnoreFilterPassed" ).toString() == "True" );
+    promptDecision = ( algo->getProperty( "ShortCircuit" ).toString() == "True" );
+    isInverted     = ( algo->getProperty( "Invert" ).toString() == "True" );
     if ( allPass ) promptDecision = false; // standard GaudiSequencer behavior on all pass is to execute everything
     isSequential = ( algo->hasProperty( "Sequential" ) && ( algo->getProperty( "Sequential" ).toString() == "True" ) );
   } else if ( isAthSequencer ) {
@@ -171,8 +170,7 @@ StatusCode PrecedenceSvc::assembleCFRules( Gaudi::Algorithm* algo, const std::st
 }
 
 // ============================================================================
-StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
-{
+StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause ) {
 
   if ( LIKELY( Cause::source::Task == cause.m_source ) ) {
     ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '" << cause.m_sourceName << "'" << endmsg;
@@ -196,8 +194,7 @@ StatusCode PrecedenceSvc::iterate( EventSlot& slot, const Cause& cause )
 }
 
 // ============================================================================
-StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const
-{
+StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const {
 
   Cause cs      = {Cause::source::Root, "RootDecisionHub"};
   auto  visitor = concurrency::RunSimulator( slot, cs );
@@ -242,28 +239,24 @@ StatusCode PrecedenceSvc::simulate( EventSlot& slot ) const
 }
 
 // ============================================================================
-bool PrecedenceSvc::CFRulesResolved( EventSlot& slot ) const
-{
+bool PrecedenceSvc::CFRulesResolved( EventSlot& slot ) const {
   return ( -1 != slot.controlFlowState[m_PRGraph.getHeadNode()->getNodeIndex()] ? true : false );
 }
 
 // ============================================================================
-void PrecedenceSvc::dumpControlFlow() const
-{
+void PrecedenceSvc::dumpControlFlow() const {
 
   info() << std::endl << "==================== Control Flow Configuration ==================" << std::endl << std::endl;
   info() << m_PRGraph.dumpControlFlow() << endmsg;
 }
 // ============================================================================
-void PrecedenceSvc::dumpDataFlow() const
-{
+void PrecedenceSvc::dumpDataFlow() const {
   info() << std::endl << "===================== Data Flow Configuration ====================" << std::endl;
   info() << m_PRGraph.dumpDataFlow() << endmsg;
 }
 
 // ============================================================================
-const std::string PrecedenceSvc::printState( EventSlot& slot ) const
-{
+const std::string PrecedenceSvc::printState( EventSlot& slot ) const {
 
   std::stringstream ss;
   m_PRGraph.printState( ss, slot.algsStates, slot.controlFlowState, 0 );
@@ -271,8 +264,7 @@ const std::string PrecedenceSvc::printState( EventSlot& slot ) const
 }
 
 // ============================================================================
-void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot )
-{
+void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot ) {
 
   if ( !m_dumpPrecRules ) {
     warning() << "To trace temporal and topological aspects of execution flow, "
@@ -298,8 +290,7 @@ void PrecedenceSvc::dumpPrecedenceRules( EventSlot& slot )
 }
 
 // ============================================================================
-void PrecedenceSvc::dumpPrecedenceTrace( EventSlot& slot )
-{
+void PrecedenceSvc::dumpPrecedenceTrace( EventSlot& slot ) {
 
   if ( !m_dumpPrecTrace ) {
     warning() << "To trace task precedence patterns, set DumpPrecedenceTrace "

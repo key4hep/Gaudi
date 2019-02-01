@@ -15,10 +15,8 @@
 #include "GaudiExamples/Event.h"
 // ============================================================================
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
     // Forward declarations
     class MyVertex;
@@ -126,15 +124,13 @@ namespace Gaudi
 #else
     typedef KeyedContainer<MyTrack> MyTrackVector;
 #endif
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 
 #include "MyVertex.h"
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
     /// Origin vertex
     inline const MyVertex* MyTrack::originVertex() const { return m_originVertex; }
@@ -149,8 +145,7 @@ namespace Gaudi
     inline void MyTrack::addDecayVertex( MyVertex* vtx ) { m_decayVertices.push_back( SmartRef<MyVertex>( vtx ) ); }
 
     /// Remove decay vertex
-    inline void MyTrack::removeDecayVertex( MyVertex* vtx )
-    {
+    inline void MyTrack::removeDecayVertex( MyVertex* vtx ) {
       SmartRefVector<MyVertex>::iterator i;
       for ( i = m_decayVertices.begin(); i != m_decayVertices.end(); ++i ) {
         if ( i->target() == vtx ) {
@@ -161,8 +156,7 @@ namespace Gaudi
     }
 
     /// Serialize the object for writing
-    inline StreamBuffer& MyTrack::serialize( StreamBuffer& s ) const
-    {
+    inline StreamBuffer& MyTrack::serialize( StreamBuffer& s ) const {
 #ifdef __PLAIN_GAUDI
       ContainedObject::serialize( s );
 #else
@@ -172,8 +166,7 @@ namespace Gaudi
     }
 
     /// Serialize the object for reading
-    inline StreamBuffer& MyTrack::serialize( StreamBuffer& s )
-    {
+    inline StreamBuffer& MyTrack::serialize( StreamBuffer& s ) {
 #ifdef __PLAIN_GAUDI
       ContainedObject::serialize( s );
 #else
@@ -181,7 +174,7 @@ namespace Gaudi
 #endif
       return s >> m_event( this ) >> m_originVertex( this ) >> m_decayVertices( this ) >> m_px >> m_py >> m_pz;
     }
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 
 #endif // GAUDIPOOLDB_TEST_MYTRACK_H

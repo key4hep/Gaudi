@@ -1,5 +1,4 @@
 #!/usr/bin/env gaudirun.py
-
 '''
 A deliberately badly-configured job to demonstrate a crash in
 sub-event scheduling.
@@ -18,8 +17,8 @@ surprising CF behaviour.
 '''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher, GaudiSequencer, Test__ViewTester)
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -83,32 +82,35 @@ for algo in [filter_alg, filter_alg2, view_make_alg, view_test_alg]:
     algo.Cardinality = cardinality
     algo.OutputLevel = INFO
 
-view_test_node = GaudiSequencer("view_test_node",
-                                Members=[view_test_alg],
-                                Sequential=False,
-                                OutputLevel=INFO)
+view_test_node = GaudiSequencer(
+    "view_test_node",
+    Members=[view_test_alg],
+    Sequential=False,
+    OutputLevel=INFO)
 
-view_make_node = GaudiSequencer("view_make_node",
-                                Members=[filter_alg,
-                                         view_make_alg, view_test_node],
-                                Sequential=True,
-                                OutputLevel=INFO)
+view_make_node = GaudiSequencer(
+    "view_make_node",
+    Members=[filter_alg, view_make_alg, view_test_node],
+    Sequential=True,
+    OutputLevel=INFO)
 
-hltStep = GaudiSequencer("hltStep",
-                         Members=[filter_alg, filter_alg2, view_make_node],
-                         Sequential=True,
-                         ShortCircuit=True,
-                         ModeOR=False,
-                         OutputLevel=INFO)
+hltStep = GaudiSequencer(
+    "hltStep",
+    Members=[filter_alg, filter_alg2, view_make_node],
+    Sequential=True,
+    ShortCircuit=True,
+    ModeOR=False,
+    OutputLevel=INFO)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[hltStep],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[hltStep],
+    MessageSvcType="InertMessageSvc")
 
 # -------------------------------------------------------------------------------

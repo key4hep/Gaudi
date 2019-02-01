@@ -47,11 +47,9 @@
    @author Markus Frank
    @version 1.0
 */
-class PersistencySvc : public extends<Service, IConversionSvc, IPersistencySvc, IAddressCreator>
-{
+class PersistencySvc : public extends<Service, IConversionSvc, IPersistencySvc, IAddressCreator> {
 protected:
-  class ServiceEntry final
-  {
+  class ServiceEntry final {
     long                             m_serviceType;
     mutable SmartIF<IService>        m_service;
     mutable SmartIF<IConversionSvc>  m_cnvService;
@@ -62,11 +60,8 @@ protected:
         : m_serviceType( type )
         , m_service( std::move( svc ) )
         , m_cnvService( std::move( cnv ) )
-        , m_addrCreator( std::move( cr ) )
-    {
-    }
-    ServiceEntry( long type, IService* svc, IConversionSvc* cnv, IAddressCreator* cr )
-    {
+        , m_addrCreator( std::move( cr ) ) {}
+    ServiceEntry( long type, IService* svc, IConversionSvc* cnv, IAddressCreator* cr ) {
       m_serviceType = type;
       m_addrCreator = cr;
       m_cnvService  = cnv;

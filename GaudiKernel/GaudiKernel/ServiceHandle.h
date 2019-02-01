@@ -28,8 +28,7 @@ class ServiceHandleProperty;
     @author Martin.Woudstra@cern.ch
 */
 template <class T>
-class ServiceHandle : public GaudiHandle<T>
-{
+class ServiceHandle : public GaudiHandle<T> {
 public:
   //
   // Constructors etc.
@@ -42,30 +41,24 @@ public:
              a thread-dependent service (if applicable)
   */
   ServiceHandle( const std::string& serviceName, const std::string& theParentName )
-      : GaudiHandle<T>( serviceName, "Service", theParentName )
-  {
-  }
+      : GaudiHandle<T>( serviceName, "Service", theParentName ) {}
 
   /** Copy constructor from a non const T to const T service handle */
   template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
   ServiceHandle( const ServiceHandle<NCT>& other,
                  typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
-      : GaudiHandle<CT>( other )
-  {
-  }
+      : GaudiHandle<CT>( other ) {}
 
   /// Autodeclaring constructor with property name, service type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
   inline ServiceHandle( OWNER* owner, std::string PropName, std::string svcName, std::string doc = "" )
-      : ServiceHandle( svcName, owner->name() )
-  {
+      : ServiceHandle( svcName, owner->name() ) {
     auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( PropName ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
 
-  StatusCode initialize( const std::string& serviceName, const std::string& theParentName )
-  {
+  StatusCode initialize( const std::string& serviceName, const std::string& theParentName ) {
 
     GaudiHandleBase::setTypeAndName( serviceName );
     GaudiHandleBase::setParentName( theParentName );
@@ -75,8 +68,7 @@ public:
 
   /** Retrieve the Service. Release existing Service if needed.
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */
-  StatusCode retrieve() const
-  { // not really const, because it updates m_pObject
+  StatusCode retrieve() const { // not really const, because it updates m_pObject
     return GaudiHandle<T>::retrieve();
   }
 
@@ -95,8 +87,7 @@ public:
 
 protected:
   /** Do the real retrieval of the Service. */
-  StatusCode retrieve( T*& service ) const override
-  {
+  StatusCode retrieve( T*& service ) const override {
     const ServiceLocatorHelper helper( *serviceLocator(), GaudiHandleBase::messageName(), this->parentName() );
     return helper.getService( GaudiHandleBase::typeAndName(), true, T::interfaceID(), (void**)&service );
   }
@@ -110,8 +101,7 @@ private:
   //
   // Private helper functions
   //
-  SmartIF<ISvcLocator>& serviceLocator() const
-  { // not really const, because it may change m_pSvcLocator
+  SmartIF<ISvcLocator>& serviceLocator() const { // not really const, because it may change m_pSvcLocator
     if ( !m_pSvcLocator ) {
       m_pSvcLocator = Gaudi::svcLocator();
       if ( !m_pSvcLocator ) {
@@ -121,8 +111,7 @@ private:
     return m_pSvcLocator;
   }
 
-  SmartIF<IMessageSvc>& messageSvc() const
-  { // not really const, because it may change m_pMessageSvc
+  SmartIF<IMessageSvc>& messageSvc() const { // not really const, because it may change m_pMessageSvc
     if ( !m_pMessageSvc ) {
       m_pMessageSvc = serviceLocator(); // default message service
       if ( !m_pMessageSvc ) {
@@ -149,8 +138,7 @@ private:
 */
 
 template <class T>
-class ServiceHandleArray : public GaudiHandleArray<ServiceHandle<T>>
-{
+class ServiceHandleArray : public GaudiHandleArray<ServiceHandle<T>> {
 public:
   //
   // Constructors
@@ -159,18 +147,14 @@ public:
    **/
   ServiceHandleArray( const std::vector<std::string>& myTypesAndNamesList, const std::string& myComponentType,
                       const std::string& myParentName )
-      : GaudiHandleArray<ServiceHandle<T>>( myTypesAndNamesList, myComponentType, myParentName )
-  {
-  }
+      : GaudiHandleArray<ServiceHandle<T>>( myTypesAndNamesList, myComponentType, myParentName ) {}
 
   virtual ~ServiceHandleArray() {}
 
-  ServiceHandleArray( const std::string& myParentName ) : GaudiHandleArray<ServiceHandle<T>>( "Service", myParentName )
-  {
-  }
+  ServiceHandleArray( const std::string& myParentName )
+      : GaudiHandleArray<ServiceHandle<T>>( "Service", myParentName ) {}
 
-  virtual bool push_back( const std::string& serviceTypeAndName )
-  {
+  virtual bool push_back( const std::string& serviceTypeAndName ) {
     ServiceHandle<T> handle( serviceTypeAndName, GaudiHandleInfo::parentName() );
     GaudiHandleArray<ServiceHandle<T>>::push_back( handle );
     return true;
@@ -180,14 +164,12 @@ public:
 };
 
 template <class T>
-inline std::ostream& operator<<( std::ostream& os, const ServiceHandle<T>& handle )
-{
+inline std::ostream& operator<<( std::ostream& os, const ServiceHandle<T>& handle ) {
   return operator<<( os, static_cast<const GaudiHandleInfo&>( handle ) );
 }
 
 template <class T>
-inline std::ostream& operator<<( std::ostream& os, const ServiceHandleArray<T>& handle )
-{
+inline std::ostream& operator<<( std::ostream& os, const ServiceHandleArray<T>& handle ) {
   return operator<<( os, static_cast<const GaudiHandleInfo&>( handle ) );
 }
 

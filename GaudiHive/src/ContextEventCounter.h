@@ -6,13 +6,12 @@
 #include "GaudiKernel/ContextSpecificPtr.h"
 
 /** @class ContextEventCounter ContextEventCounter.h src/ContextEventCounter.h
-  *
-  *
-  * @author Marco Clemencic
-  * @date 27/10/2013
-  */
-class ContextEventCounterPtr final : public Algorithm
-{
+ *
+ *
+ * @author Marco Clemencic
+ * @date 27/10/2013
+ */
+class ContextEventCounterPtr final : public Algorithm {
 public:
   using Algorithm::Algorithm;     /// Standard constructor
   StatusCode execute() override;  ///< Algorithm execution
@@ -21,8 +20,7 @@ private:
   Gaudi::Hive::ContextSpecificPtr<int> m_ctxtSpecCounter;
 };
 
-class ContextEventCounterData final : public Algorithm
-{
+class ContextEventCounterData final : public Algorithm {
 public:
   using Algorithm::Algorithm;     /// Standard constructor
   StatusCode execute() override;  ///< Algorithm execution

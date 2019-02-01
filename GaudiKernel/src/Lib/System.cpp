@@ -27,11 +27,11 @@
 
 // Platform specific include(s):
 #ifdef __linux__
-#include "Platform/SystemLinux.h"
+#  include "Platform/SystemLinux.h"
 #elif defined( __APPLE__ )
-#include "Platform/SystemMacOS.h"
+#  include "Platform/SystemMacOS.h"
 #elif defined( _WIN32 )
-#include "Platform/SystemWin32.h"
+#  include "Platform/SystemWin32.h"
 #endif
 
 #define VCL_NAMESPACE Gaudi
@@ -39,67 +39,66 @@
 #undef VCL_NAMESPACE
 
 #ifdef _WIN32
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define getpid _getpid
-#define NOMSG
-#define NOGDI
-#include "process.h"
-#include "windows.h"
-#undef NOMSG
-#undef NOGDI
+#  define strcasecmp _stricmp
+#  define strncasecmp _strnicmp
+#  define getpid _getpid
+#  define NOMSG
+#  define NOGDI
+#  include "process.h"
+#  include "windows.h"
+#  undef NOMSG
+#  undef NOGDI
 static const std::array<const char*, 1> SHLIB_SUFFIXES = {".dll"};
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
-#include "libgen.h"
-#include "sys/times.h"
-#include "unistd.h"
-#include <cstdio>
-#include <cxxabi.h>
-#include <errno.h>
-#include <string.h>
-#if defined( __linux ) || defined( __APPLE__ )
-#include "dlfcn.h"
-#include <sys/utsname.h>
-#include <unistd.h>
-#elif __hpux
-#include "dl.h"
+#  include "libgen.h"
+#  include "sys/times.h"
+#  include "unistd.h"
+#  include <cstdio>
+#  include <cxxabi.h>
+#  include <errno.h>
+#  include <string.h>
+#  if defined( __linux ) || defined( __APPLE__ )
+#    include "dlfcn.h"
+#    include <sys/utsname.h>
+#    include <unistd.h>
+#  elif __hpux
+#    include "dl.h"
 struct HMODULE {
   shl_descriptor dsc;
   long           numSym;
   shl_symbol*    sym;
 };
-#endif // HPUX or not...
+#  endif // HPUX or not...
 
-#ifdef __APPLE__
+#  ifdef __APPLE__
 static const std::array<const char*, 2> SHLIB_SUFFIXES = {".dylib", ".so"};
-#else
+#  else
 static const std::array<const char*, 1> SHLIB_SUFFIXES = {".so"};
-#endif // __APPLE__
+#  endif // __APPLE__
 
 #endif // Windows or Unix...
 
 // Note: __attribute__ is a GCC keyword available since GCC 3.4
 #ifdef __GNUC__
-#if __GNUC__ < 3 || ( __GNUC__ == 3 && ( __GNUC_MINOR__ < 4 ) )
+#  if __GNUC__ < 3 || ( __GNUC__ == 3 && ( __GNUC_MINOR__ < 4 ) )
 // GCC < 3.4
-#define __attribute__( x )
-#endif
+#    define __attribute__( x )
+#  endif
 #else
 // non-GCC
-#define __attribute__( x )
+#  define __attribute__( x )
 #endif
 
-static unsigned long doLoad( const std::string& name, System::ImageHandle* handle )
-{
+static unsigned long doLoad( const std::string& name, System::ImageHandle* handle ) {
 #ifdef _WIN32
   void* mh = ::LoadLibrary( name.length() == 0 ? System::exeName().c_str() : name.c_str() );
   *handle  = mh;
 #else
   const char* path = name.c_str();
-#if defined( __linux ) || defined( __APPLE__ )
+#  if defined( __linux ) || defined( __APPLE__ )
   void*       mh   = ::dlopen( name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL );
   *handle          = mh;
-#elif __hpux
+#  elif __hpux
   shl_t    mh  = ::shl_load( name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0 );
   HMODULE* mod = new HMODULE;
   if ( 0 != mh ) {
@@ -112,21 +111,16 @@ static unsigned long doLoad( const std::string& name, System::ImageHandle* handl
       *handle       = mod;
     }
   }
+#  endif
 #endif
-#endif
-  if ( !*handle ) {
-    return System::getLastError();
-  }
+  if ( !*handle ) { return System::getLastError(); }
   return 1;
 }
 
-static unsigned long loadWithoutEnvironment( const std::string& name, System::ImageHandle* handle )
-{
+static unsigned long loadWithoutEnvironment( const std::string& name, System::ImageHandle* handle ) {
 
   // If the name is empty, don't do anything complicated.
-  if ( name.length() == 0 ) {
-    return doLoad( name, handle );
-  }
+  if ( name.length() == 0 ) { return doLoad( name, handle ); }
 
   // Check if the specified name has a shared library suffix already. If it
   // does, don't bother the name any more.
@@ -142,17 +136,14 @@ static unsigned long loadWithoutEnvironment( const std::string& name, System::Im
 
   // If it doesn't have a shared library suffix on it, add the "default" shared
   // library suffix to the name.
-  if ( !hasShlibSuffix ) {
-    dllName += SHLIB_SUFFIXES[0];
-  }
+  if ( !hasShlibSuffix ) { dllName += SHLIB_SUFFIXES[0]; }
 
   // Load the library.
   return doLoad( dllName, handle );
 }
 
 /// Load dynamic link library
-unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* handle )
-{
+unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* handle ) {
   unsigned long res = 0;
   // if name is empty, just load it
   if ( name.length() == 0 ) {
@@ -179,15 +170,11 @@ unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* hand
         // Add the suffix if necessary.
         std::string  libName = dllName;
         const size_t len     = strlen( suffix );
-        if ( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) {
-          libName += suffix;
-        }
+        if ( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) { libName += suffix; }
         // Try to load the library.
         res = loadWithoutEnvironment( libName, handle );
         // If the load succeeded, stop here.
-        if ( res == 1 ) {
-          break;
-        }
+        if ( res == 1 ) { break; }
       }
     }
     if ( res != 1 ) {
@@ -201,8 +188,7 @@ unsigned long System::loadDynamicLib( const std::string& name, ImageHandle* hand
 }
 
 /// unload dynamic link library
-unsigned long System::unloadDynamicLib( ImageHandle handle )
-{
+unsigned long System::unloadDynamicLib( ImageHandle handle ) {
 #ifdef _WIN32
   if ( !::FreeLibrary( (HINSTANCE)handle ) ) {
 #elif defined( __linux ) || defined( __APPLE__ )
@@ -211,9 +197,7 @@ unsigned long System::unloadDynamicLib( ImageHandle handle )
 #elif __hpux
   // On HP we have to run finalization ourselves.....
   Creator pFinalize = 0;
-  if ( getProcedureByName( handle, "_fini", &pFinalize ) ) {
-    pFinalize();
-  }
+  if ( getProcedureByName( handle, "_fini", &pFinalize ) ) { pFinalize(); }
   HMODULE* mod = (HMODULE*)handle;
   if ( 0 == ::shl_unload( mod->dsc.handle ) ) {
     delete mod;
@@ -227,16 +211,13 @@ unsigned long System::unloadDynamicLib( ImageHandle handle )
 }
 
 /// Get a specific function defined in the DLL
-unsigned long System::getProcedureByName( ImageHandle handle, const std::string& name, EntryPoint* pFunction )
-{
+unsigned long System::getProcedureByName( ImageHandle handle, const std::string& name, EntryPoint* pFunction ) {
 #ifdef _WIN32
   *pFunction = ( EntryPoint )::GetProcAddress( (HINSTANCE)handle, name.data() );
-  if ( 0 == *pFunction ) {
-    return System::getLastError();
-  }
+  if ( 0 == *pFunction ) { return System::getLastError(); }
   return 1;
 #elif defined( __linux )
-  *pFunction = reinterpret_cast<EntryPoint>(::dlsym( handle, name.c_str() ) );
+  *pFunction = reinterpret_cast<EntryPoint>( ::dlsym( handle, name.c_str() ) );
   if ( !*pFunction ) {
     errno = 0xAFFEDEAD;
     // std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
@@ -274,14 +255,12 @@ unsigned long System::getProcedureByName( ImageHandle handle, const std::string&
 }
 
 /// Get a specific function defined in the DLL
-unsigned long System::getProcedureByName( ImageHandle handle, const std::string& name, Creator* pFunction )
-{
+unsigned long System::getProcedureByName( ImageHandle handle, const std::string& name, Creator* pFunction ) {
   return getProcedureByName( handle, name, (EntryPoint*)pFunction );
 }
 
 /// Retrieve last error code
-unsigned long System::getLastError()
-{
+unsigned long System::getLastError() {
 #ifdef _WIN32
   return ::GetLastError();
 #else
@@ -291,15 +270,13 @@ unsigned long System::getLastError()
 }
 
 /// Retrieve last error code as string
-const std::string System::getLastErrorString()
-{
+const std::string System::getLastErrorString() {
   const std::string errString = getErrorString( getLastError() );
   return errString;
 }
 
 /// Retrieve error code as string for a given error
-const std::string System::getErrorString( unsigned long error )
-{
+const std::string System::getErrorString( unsigned long error ) {
   std::string errString = "";
 #ifdef _WIN32
   LPVOID lpMessageBuffer;
@@ -313,7 +290,7 @@ const std::string System::getErrorString( unsigned long error )
   char* cerrString( nullptr );
   // Remember: for linux dl* routines must be handled differently!
   if ( error == 0xAFFEDEAD ) {
-    cerrString                    = ::dlerror();
+    cerrString = ::dlerror();
     if ( !cerrString ) cerrString = ::strerror( error );
     if ( !cerrString ) {
       cerrString = (char*)"Unknown error. No information found in strerror()!";
@@ -334,42 +311,36 @@ const std::string System::typeinfoName( const std::type_info& tinfo ) { return t
 const std::string System::typeinfoName( const char* class_name ) { return Platform::typeinfoName( class_name ); }
 
 /// Host name
-const std::string& System::hostName()
-{
+const std::string& System::hostName() {
   static const std::string host = Platform::hostName();
   return host;
 }
 
 /// OS name
-const std::string& System::osName()
-{
+const std::string& System::osName() {
   static const std::string osname = Platform::osName();
   return osname;
 }
 
 /// OS version
-const std::string& System::osVersion()
-{
+const std::string& System::osVersion() {
   static const std::string osver = Platform::osVersion();
   return osver;
 }
 
 /// Machine type
-const std::string& System::machineType()
-{
+const std::string& System::machineType() {
   static const std::string mach = Platform::machineType();
   return mach;
 }
 
-int System::instructionsetLevel()
-{
+int System::instructionsetLevel() {
   using namespace Gaudi;
   return instrset_detect();
 }
 
 /// User login name
-const std::string& System::accountName()
-{
+const std::string& System::accountName() {
   static const std::string account = Platform::accountName();
   return account;
 }
@@ -381,15 +352,13 @@ long System::numCmdLineArgs() { return cmdLineArgs().size(); }
 long System::argc() { return cmdLineArgs().size(); }
 
 /// Const char** command line arguments including executable name as arg[0]
-const std::vector<std::string> System::cmdLineArgs()
-{
+const std::vector<std::string> System::cmdLineArgs() {
   static const std::vector<std::string> args = Platform::cmdLineArgs();
   return args;
 }
 
 /// Const char** command line arguments including executable name as arg[0]
-char** System::argv()
-{
+char** System::argv() {
   auto helperFunc = []( const std::vector<std::string>& args ) -> std::vector<const char*> {
     std::vector<const char*> result;
     std::transform( args.begin(), args.end(), std::back_inserter( result ),
@@ -404,12 +373,11 @@ char** System::argv()
 #ifdef WIN32
 // disable warning
 //   C4996: 'getenv': This function or variable may be unsafe.
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 
 /// get a particular env var, return "UNKNOWN" if not defined
-std::string System::getEnv( const char* var )
-{
+std::string System::getEnv( const char* var ) {
   char* env;
   if ( ( env = getenv( var ) ) != nullptr ) {
     return env;
@@ -419,8 +387,7 @@ std::string System::getEnv( const char* var )
 }
 
 /// get a particular env var, storing the value in the passed string (if set)
-bool System::getEnv( const char* var, std::string& value )
-{
+bool System::getEnv( const char* var, std::string& value ) {
   char* env;
   if ( ( env = getenv( var ) ) != nullptr ) {
     value = env;
@@ -435,19 +402,16 @@ bool System::isEnvSet( const char* var ) { return getenv( var ) != nullptr; }
 /// get all defined environment vars
 #if defined( __APPLE__ )
 // Needed for _NSGetEnviron(void)
-#include "crt_externs.h"
+#  include "crt_externs.h"
 #endif
-std::vector<std::string> System::getEnv()
-{
+std::vector<std::string> System::getEnv() {
 #if defined( _WIN32 )
-#define environ _environ
+#  define environ _environ
 #elif defined( __APPLE__ )
   static char** environ = *_NSGetEnviron();
 #endif
   std::vector<std::string> vars;
-  for ( int i = 0; environ[i] != nullptr; ++i ) {
-    vars.push_back( environ[i] );
-  }
+  for ( int i = 0; environ[i] != nullptr; ++i ) { vars.push_back( environ[i] ); }
   return vars;
 }
 
@@ -455,11 +419,10 @@ std::vector<std::string> System::getEnv()
 // backtrace utilities
 // -----------------------------------------------------------------------------
 #ifdef __linux
-#include <execinfo.h>
+#  include <execinfo.h>
 #endif
 
-int System::backTrace( void** addresses __attribute__( ( unused ) ), const int depth __attribute__( ( unused ) ) )
-{
+int System::backTrace( void** addresses __attribute__( ( unused ) ), const int depth __attribute__( ( unused ) ) ) {
 
 #ifdef __linux
 
@@ -471,8 +434,7 @@ int System::backTrace( void** addresses __attribute__( ( unused ) ), const int d
 #endif
 }
 
-bool System::backTrace( std::string& btrace, const int depth, const int offset )
-{
+bool System::backTrace( std::string& btrace, const int depth, const int offset ) {
   try {
     // Always hide the first two levels of the stack trace (that's us)
     const int totalOffset = offset + 2;
@@ -493,14 +455,12 @@ bool System::backTrace( std::string& btrace, const int depth, const int offset )
       }
     }
     return true;
-  } catch ( const std::bad_alloc& e ) {
-    return false;
-  }
+  } catch ( const std::bad_alloc& e ) { return false; }
 }
 
 bool System::getStackLevel( void* addresses __attribute__( ( unused ) ), void*& addr __attribute__( ( unused ) ),
-                            std::string& fnc __attribute__( ( unused ) ), std::string& lib __attribute__( ( unused ) ) )
-{
+                            std::string& fnc __attribute__( ( unused ) ),
+                            std::string& lib __attribute__( ( unused ) ) ) {
 
 #ifdef __linux
 
@@ -531,8 +491,7 @@ bool System::getStackLevel( void* addresses __attribute__( ( unused ) ), void*& 
 }
 
 /// set an environment variables. @return 0 if successful, -1 if not
-int System::setEnv( const std::string& name, const std::string& value, int overwrite )
-{
+int System::setEnv( const std::string& name, const std::string& value, int overwrite ) {
 #ifndef WIN32
   // UNIX version
   return value.empty() ?

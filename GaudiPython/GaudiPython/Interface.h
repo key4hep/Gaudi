@@ -18,8 +18,7 @@
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================
 
-namespace GaudiPython
-{
+namespace GaudiPython {
   /** @struct Interface Interface.h GaudiPython/Interface.h
    *
    *  Minor mofidication of original Pere's structure
@@ -36,8 +35,7 @@ namespace GaudiPython
      *   @param in  input interface
      *   @return resutl of "cast"
      */
-    TYPE* operator()( const IInterface* in ) const
-    {
+    TYPE* operator()( const IInterface* in ) const {
       return SmartIF<TYPE>( TYPE::interfaceID(), const_cast<IInterface*>( in ) );
     }
 
@@ -52,8 +50,7 @@ namespace GaudiPython
      *   @param in  input interface
      *   @return resutl of "cast"
      */
-    static TYPE* cast( const InterfaceID& iid, const IInterface* in )
-    {
+    static TYPE* cast( const InterfaceID& iid, const IInterface* in ) {
       return SmartIF<TYPE>( iid, const_cast<IInterface*>( in ) );
     }
   };
@@ -78,8 +75,7 @@ namespace GaudiPython
      *   @param in  input interface
      *   @return resutl of "cast"
      */
-    static TYPE* cast( const InterfaceID& /* iid */, const IInterface* in )
-    {
+    static TYPE* cast( const InterfaceID& /* iid */, const IInterface* in ) {
       return SmartIF<TYPE>( const_cast<IInterface*>( in ) );
     }
   };

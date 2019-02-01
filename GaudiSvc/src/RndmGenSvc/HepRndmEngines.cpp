@@ -47,18 +47,14 @@
 #include "CLHEP/Random/TripleRand.h"
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
-namespace HepRndm
-{
+namespace HepRndm {
 
   // Initialize engine
   template <class TYPE>
-  StatusCode Engine<TYPE>::initialize()
-  {
+  StatusCode Engine<TYPE>::initialize() {
     auto& seeds = m_seeds.value();
     seeds.clear();
     StatusCode status = RndmEngine::initialize();
@@ -97,23 +93,19 @@ namespace HepRndm
 
   // Finalize engine
   template <class TYPE>
-  StatusCode Engine<TYPE>::finalize()
-  {
+  StatusCode Engine<TYPE>::finalize() {
     m_seeds.value().clear();
     return BaseEngine::finalize();
   }
 
   // Retrieve seeds
   template <class TYPE>
-  StatusCode Engine<TYPE>::setSeeds( const std::vector<long>& seed )
-  {
+  StatusCode Engine<TYPE>::setSeeds( const std::vector<long>& seed ) {
     auto& seeds = m_seeds.value();
     seeds.clear();
     std::copy( seed.begin(), seed.end(), std::back_inserter( seeds ) );
     if ( !seeds.empty() ) {
-      if ( seeds.back() != 0 ) {
-        seeds.push_back( 0 );
-      }
+      if ( seeds.back() != 0 ) { seeds.push_back( 0 ); }
       hepEngine()->setSeeds( &seeds[0], m_lux );
       return StatusCode::SUCCESS;
     }
@@ -122,8 +114,7 @@ namespace HepRndm
 
   // Retrieve seeds
   template <class TYPE>
-  StatusCode Engine<TYPE>::seeds( std::vector<long>& seed ) const
-  {
+  StatusCode Engine<TYPE>::seeds( std::vector<long>& seed ) const {
     /*
     const long *s = hepEngine()->getSeeds();
     for ( size_t i = 0; i < NUMBER_OF_SEEDS; i++ )   {
@@ -140,74 +131,63 @@ namespace HepRndm
 
   // Specialized create function for DualRand engine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<DualRand>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<DualRand>::createEngine() {
     return m_useTable ? std::make_unique<DualRand>( m_row, m_col ) : std::make_unique<DualRand>( m_seeds[0] );
   }
   // Specialized create function for TripleRand engine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<TripleRand>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<TripleRand>::createEngine() {
     return m_useTable ? std::make_unique<TripleRand>( m_row, m_col ) : std::make_unique<TripleRand>( m_seeds[0] );
   }
   // Specialized create function for DRand48Engine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<DRand48Engine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<DRand48Engine>::createEngine() {
     return m_useTable ? std::make_unique<DRand48Engine>( m_row, m_col ) : std::make_unique<DRand48Engine>( m_seeds[0] );
   }
   // Specialized create function for Hurd160Engine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<Hurd160Engine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<Hurd160Engine>::createEngine() {
     return m_useTable ? std::make_unique<Hurd160Engine>( m_row, m_col ) : std::make_unique<Hurd160Engine>( m_seeds[0] );
   }
   // Specialized create function for Hurd288Engine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<Hurd288Engine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<Hurd288Engine>::createEngine() {
     return m_useTable ? std::make_unique<Hurd288Engine>( m_row, m_col ) : std::make_unique<Hurd288Engine>( m_seeds[0] );
   }
   // Specialized create function for RanecuEngine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<RanecuEngine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<RanecuEngine>::createEngine() {
     return m_useTable ? std::make_unique<RanecuEngine>( m_row ) : std::make_unique<RanecuEngine>( m_seeds[0] );
   }
   // Specialized create function for RanshiEngine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<RanshiEngine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<RanshiEngine>::createEngine() {
     return m_useTable ? std::make_unique<RanshiEngine>( m_row, m_col ) : std::make_unique<RanshiEngine>( m_seeds[0] );
   }
   // Specialized create function for RanluxEngine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<RanluxEngine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<RanluxEngine>::createEngine() {
     return m_useTable ? std::make_unique<RanluxEngine>( m_row, m_col, m_lux )
                       : std::make_unique<RanluxEngine>( m_seeds[0], m_lux );
   }
   // Specialized create function for Ranlux64Engine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<Ranlux64Engine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<Ranlux64Engine>::createEngine() {
     return m_useTable ? std::make_unique<Ranlux64Engine>( m_row, m_col, m_lux )
                       : std::make_unique<Ranlux64Engine>( m_seeds[0], m_lux );
   }
   // Specialized create function for MTwistEngine
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<MTwistEngine>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<MTwistEngine>::createEngine() {
     return m_useTable ? std::make_unique<MTwistEngine>( m_row, m_col ) : std::make_unique<MTwistEngine>( m_seeds[0] );
   }
   // Specialized create function for HepJamesRandom
   template <>
-  std::unique_ptr<CLHEP::HepRandomEngine> Engine<HepJamesRandom>::createEngine()
-  {
+  std::unique_ptr<CLHEP::HepRandomEngine> Engine<HepJamesRandom>::createEngine() {
     return m_useTable ? std::make_unique<HepJamesRandom>( m_row, m_col )
                       : std::make_unique<HepJamesRandom>( m_seeds[0] );
   }
-}
+} // namespace HepRndm
 
 typedef HepRndm::Engine<DualRand> e1;
 DECLARE_COMPONENT( e1 )

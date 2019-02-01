@@ -25,19 +25,18 @@
 #define __PFMLIB_COMP_I386_P6_H__
 
 #ifndef __PFMLIB_COMP_H__
-#error "you should never include this file directly, use pfmlib_comp.h"
+#  error "you should never include this file directly, use pfmlib_comp.h"
 #endif
 
 #ifndef __i386__
-#error "you should not be including this file"
+#  error "you should not be including this file"
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline unsigned long pfmlib_popcnt( unsigned long v )
-{
+static inline unsigned long pfmlib_popcnt( unsigned long v ) {
   unsigned long sum = 0;
 
   for ( ; v; v >>= 1 ) {

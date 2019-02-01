@@ -12,8 +12,7 @@
 
     @author Pere Mato
 */
-class GAUDI_API IAuditorSvc : virtual public extend_interfaces<IService, IAuditor>
-{
+class GAUDI_API IAuditorSvc : virtual public extend_interfaces<IService, IAuditor> {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAuditorSvc, 3, 0 );

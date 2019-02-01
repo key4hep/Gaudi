@@ -24,8 +24,7 @@ DECLARE_COMPONENT( SequencerTimerTool )
 // Standard constructor, initializes variables
 //=============================================================================
 SequencerTimerTool::SequencerTimerTool( const std::string& type, const std::string& name, const IInterface* parent )
-    : GaudiHistoTool( type, name, parent )
-{
+    : GaudiHistoTool( type, name, parent ) {
   declareInterface<ISequencerTimerTool>( this );
 
   // Histograms are disabled by default in this tool.
@@ -34,8 +33,7 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type, const std::stri
 //=========================================================================
 //
 //=========================================================================
-StatusCode SequencerTimerTool::initialize()
-{
+StatusCode SequencerTimerTool::initialize() {
   const StatusCode sc = GaudiHistoTool::initialize();
   if ( sc.isFailure() ) return sc;
   double            sum = 0;
@@ -46,9 +44,7 @@ StatusCode SequencerTimerTool::initialize()
     Rndm::Numbers gauss;
     gauss.initialize( rsvc, Rndm::Gauss( 0., 1.0 ) ).ignore();
     unsigned int shots = m_shots;
-    while ( 0 < --shots ) {
-      sum += gauss() * sum;
-    }
+    while ( 0 < --shots ) { sum += gauss() * sum; }
   }
   norm.stop();
   double time  = norm.lastCpu();
@@ -62,8 +58,7 @@ StatusCode SequencerTimerTool::initialize()
 //=========================================================================
 //  Finalize : Report timers
 //=========================================================================
-StatusCode SequencerTimerTool::finalize()
-{
+StatusCode SequencerTimerTool::finalize() {
 
   std::string line( m_headerSize + 68, '-' );
   info() << line << endmsg << "This machine has a speed about " << format( "%6.2f", 1000. * m_speedRatio )
@@ -85,8 +80,7 @@ StatusCode SequencerTimerTool::finalize()
 //=========================================================================
 //  Return the index of a specified name. Trailing and leading spaces ignored
 //=========================================================================
-int SequencerTimerTool::indexByName( const std::string& name )
-{
+int SequencerTimerTool::indexByName( const std::string& name ) {
   auto beg  = name.find_first_not_of( " \t" );
   auto end  = name.find_last_not_of( " \t" );
   auto temp = name.substr( beg, end - beg + 1 );
@@ -101,8 +95,7 @@ int SequencerTimerTool::indexByName( const std::string& name )
 //=========================================================================
 //  Build and save the histograms
 //=========================================================================
-void SequencerTimerTool::saveHistograms()
-{
+void SequencerTimerTool::saveHistograms() {
   if ( produceHistos() ) {
     info() << "Saving Timing histograms" << endmsg;
     const size_t        bins       = m_timerList.size();
@@ -123,13 +116,10 @@ void SequencerTimerTool::saveHistograms()
 //=============================================================================
 // Add a timer
 //=============================================================================
-int SequencerTimerTool::addTimer( const std::string& name )
-{
+int SequencerTimerTool::addTimer( const std::string& name ) {
   std::string myName( 2 * m_indent, ' ' );
   myName += name;
-  if ( myName.size() < m_headerSize ) {
-    myName += std::string( m_headerSize - myName.size(), ' ' );
-  }
+  if ( myName.size() < m_headerSize ) { myName += std::string( m_headerSize - myName.size(), ' ' ); }
   m_timerList.emplace_back( std::move( myName ), m_headerSize, m_normFactor );
   return m_timerList.size() - 1;
 }

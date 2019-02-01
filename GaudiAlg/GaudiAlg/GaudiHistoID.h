@@ -30,8 +30,7 @@
  *  @date   2004-01-23
  */
 // ============================================================================
-namespace GaudiAlg
-{
+namespace GaudiAlg {
   // ==========================================================================
   /** @class ID GaudiHistoID.h GaudiAlg/GaudiHistoID.h
    *
@@ -41,8 +40,7 @@ namespace GaudiAlg
    *  @author Chris Jones  Christopher.Rob.Jones@cern.ch
    *  @date   2005-08-12
    */
-  class GAUDI_API ID
-  {
+  class GAUDI_API ID {
   public:
     // ========================================================================
     /// type for internal numeric ID
@@ -80,8 +78,7 @@ namespace GaudiAlg
      *  Implementation depends on type of ID
      *  @return boolean indicating if the IDs are equal
      */
-    inline bool operator==( const ID& id ) const noexcept
-    {
+    inline bool operator==( const ID& id ) const noexcept {
       return hash() != id.hash()
                  ? false
                  : numeric() && id.numeric()
@@ -94,8 +91,7 @@ namespace GaudiAlg
      *  Implementation depends on type of ID
      *  @return boolean indicating the order of the IDs
      */
-    inline bool operator<( const ID& id ) const noexcept
-    {
+    inline bool operator<( const ID& id ) const noexcept {
       return
           // hash () < id.hash () ? true  :
           // hash () > id.hash () ? false :
@@ -137,13 +133,11 @@ namespace GaudiAlg
   // ==========================================================================
 } //                                                  end of namespace GaudiAlg
 // ============================================================================
-namespace GaudiUtils
-{
+namespace GaudiUtils {
   // ==========================================================================
   /// Hash-function for class GaudiAlg::ID
   template <>
-  inline size_t Hash<GaudiAlg::ID>::operator()( const GaudiAlg::ID& key ) const
-  {
+  inline size_t Hash<GaudiAlg::ID>::operator()( const GaudiAlg::ID& key ) const {
     return key.hash();
   }
   // ==========================================================================

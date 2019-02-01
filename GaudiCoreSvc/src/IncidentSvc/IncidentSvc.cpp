@@ -2,8 +2,8 @@
 // ============================================================================
 // Avoid conflicts between windows and the message service.
 // ============================================================================
-#define NOMSG
-#define NOGDI
+#  define NOMSG
+#  define NOGDI
 #endif
 // ============================================================================
 // Include Files
@@ -26,23 +26,21 @@
 //  instances of this service
 DECLARE_COMPONENT( IncidentSvc )
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   static const std::string s_unknown = "<unknown>";
   // Helper to get the name of the listener
-  inline const std::string& getListenerName( IIncidentListener* lis )
-  {
+  inline const std::string& getListenerName( IIncidentListener* lis ) {
     SmartIF<INamedInterface> iNamed( lis );
     return iNamed ? iNamed->name() : s_unknown;
   }
   // ==========================================================================
-}
+} // namespace
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
 // ============================================================================
@@ -54,8 +52,7 @@ IncidentSvc::~IncidentSvc() { std::unique_lock<std::recursive_mutex> lock( m_lis
 // ============================================================================
 // Inherited Service overrides:
 // ============================================================================
-StatusCode IncidentSvc::initialize()
-{
+StatusCode IncidentSvc::initialize() {
   // initialize the Service Base class
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
@@ -71,8 +68,7 @@ StatusCode IncidentSvc::initialize()
   return sc;
 }
 // ============================================================================
-StatusCode IncidentSvc::finalize()
-{
+StatusCode IncidentSvc::finalize() {
   DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] ", System::milliSec )
          << m_timer.outputUserTime( "Total:%2%[s]", System::Sec ) << endmsg;
 
@@ -93,8 +89,7 @@ StatusCode IncidentSvc::finalize()
 // Inherited IIncidentSvc overrides:
 // ============================================================================
 void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, long prio, bool rethrow,
-                               bool singleShot )
-{
+                               bool singleShot ) {
   static const std::string               all{"ALL"};
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
@@ -120,9 +115,8 @@ void IncidentSvc::addListener( IIncidentListener* lis, const std::string& type, 
   llist.emplace( i, lis, prio, rethrow, singleShot );
 }
 // ============================================================================
-IncidentSvc::ListenerMap::iterator IncidentSvc::removeListenerFromList( ListenerMap::iterator i,
-                                                                        IIncidentListener* item, bool scheduleRemoval )
-{
+IncidentSvc::ListenerMap::iterator
+IncidentSvc::removeListenerFromList( ListenerMap::iterator i, IIncidentListener* item, bool scheduleRemoval ) {
   auto match = [&]( ListenerList::const_reference j ) { return !item || item == j.iListener; };
 
   auto& c = *( i->second );
@@ -140,32 +134,27 @@ IncidentSvc::ListenerMap::iterator IncidentSvc::removeListenerFromList( Listener
   return c.empty() ? m_listenerMap.erase( i ) : std::next( i );
 }
 // ============================================================================
-void IncidentSvc::removeListener( IIncidentListener* lis, const std::string& type )
-{
+void IncidentSvc::removeListener( IIncidentListener* lis, const std::string& type ) {
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
   bool scheduleForRemoval = ( m_currentIncidentType && type == *m_currentIncidentType );
   if ( type.empty() ) {
     auto i = std::begin( m_listenerMap );
-    while ( i != std::end( m_listenerMap ) ) {
-      i = removeListenerFromList( i, lis, scheduleForRemoval );
-    }
+    while ( i != std::end( m_listenerMap ) ) { i = removeListenerFromList( i, lis, scheduleForRemoval ); }
   } else {
     auto i = m_listenerMap.find( type );
     if ( i != m_listenerMap.end() ) removeListenerFromList( i, lis, scheduleForRemoval );
   }
 }
 // ============================================================================
-namespace
-{
+namespace {
   /// Helper class to identify a singleShot Listener
   constexpr struct isSingleShot_t {
     bool operator()( const IncidentSvc::Listener& l ) const { return l.singleShot; }
   } isSingleShot{};
-}
+} // namespace
 // ============================================================================
-void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& listenerType )
-{
+void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& listenerType ) {
 
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
@@ -202,28 +191,23 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
     try {
       listener.iListener->handle( incident );
     } catch ( const GaudiException& exc ) {
-      error() << "Exception with tag=" << exc.tag() << " is caught"
-                                                       " handling incident "
+      error() << "Exception with tag=" << exc.tag()
+              << " is caught"
+                 " handling incident "
               << *m_currentIncidentType << endmsg;
       error() << exc << endmsg;
-      if ( listener.rethrow ) {
-        throw exc;
-      }
+      if ( listener.rethrow ) { throw exc; }
     } catch ( const std::exception& exc ) {
       error() << "Standard std::exception is caught"
                  " handling incident "
               << *m_currentIncidentType << endmsg;
       error() << exc.what() << endmsg;
-      if ( listener.rethrow ) {
-        throw exc;
-      }
+      if ( listener.rethrow ) { throw exc; }
     } catch ( ... ) {
       error() << "UNKNOWN Exception is caught"
                  " handling incident "
               << *m_currentIncidentType << endmsg;
-      if ( listener.rethrow ) {
-        throw;
-      }
+      if ( listener.rethrow ) { throw; }
     }
     // check wheter one of the listeners is singleShot
     firedSingleShot |= listener.singleShot;
@@ -238,8 +222,7 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
   m_currentIncidentType = nullptr;
 }
 // ============================================================================
-void IncidentSvc::fireIncident( const Incident& incident )
-{
+void IncidentSvc::fireIncident( const Incident& incident ) {
 
   Gaudi::Utils::LockedChrono timer( m_timer, m_timerLock );
 
@@ -251,8 +234,7 @@ void IncidentSvc::fireIncident( const Incident& incident )
   }
 }
 // ============================================================================
-void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident )
-{
+void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident ) {
 
   DEBMSG << "Async incident '" << incident->type() << "' fired on context " << incident->context() << endmsg;
   auto ctx = incident->context();
@@ -261,8 +243,7 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident )
 }
 // ============================================================================
 
-void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::string& type ) const
-{
+void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::string& type ) const {
   static const std::string               ALL{"ALL"};
   std::unique_lock<std::recursive_mutex> lock( m_listenerMapMutex );
 
@@ -279,8 +260,7 @@ void IncidentSvc::getListeners( std::vector<IIncidentListener*>& l, const std::s
 
 // ============================================================================
 
-IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx )
-{
+IIncidentSvc::IncidentPack IncidentSvc::getIncidents( const EventContext* ctx ) {
   IIncidentSvc::IncidentPack p;
   if ( ctx ) {
     auto incs = m_firedIncidents.find( *ctx );

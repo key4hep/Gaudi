@@ -14,8 +14,7 @@
 #include "GaudiKernel/DataObject.h"
 // ============================================================================
 
-namespace GaudiPython
-{
+namespace GaudiPython {
   /** @struct Printer Printer.h GaudiPython/Printer.h
    *
    *
@@ -24,8 +23,7 @@ namespace GaudiPython
    */
   template <class TYPE>
   struct Printer {
-    static std::string print( const TYPE& object )
-    {
+    static std::string print( const TYPE& object ) {
       std::stringstream stream;
       stream << object << std::endl;
       return stream.str();
@@ -33,8 +31,7 @@ namespace GaudiPython
   };
   template <>
   struct Printer<ContainedObject> {
-    static std::string print( const ContainedObject& object )
-    {
+    static std::string print( const ContainedObject& object ) {
       std::ostringstream stream;
       object.fillStream( stream );
       return stream.str();
@@ -42,8 +39,7 @@ namespace GaudiPython
   };
   template <>
   struct Printer<DataObject> {
-    static std::string print( const DataObject& type )
-    {
+    static std::string print( const DataObject& type ) {
       std::ostringstream stream;
       type.fillStream( stream );
       return stream.str();

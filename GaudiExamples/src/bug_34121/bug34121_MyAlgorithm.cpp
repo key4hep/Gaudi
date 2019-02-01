@@ -7,11 +7,9 @@
 
 #include "../AlgTools/IMyTool.h"
 
-namespace bug_34121
-{
+namespace bug_34121 {
 
-  class MyAlgorithm : public Algorithm
-  {
+  class MyAlgorithm : public Algorithm {
   public:
     /// Constructor of this form must be provided
     using Algorithm::Algorithm;
@@ -27,8 +25,7 @@ namespace bug_34121
   };
 
   //------------------------------------------------------------------------------
-  StatusCode MyAlgorithm::initialize()
-  {
+  StatusCode MyAlgorithm::initialize() {
     //------------------------------------------------------------------------------
 
     StatusCode sc;
@@ -45,8 +42,7 @@ namespace bug_34121
   }
 
   //------------------------------------------------------------------------------
-  StatusCode MyAlgorithm::execute()
-  {
+  StatusCode MyAlgorithm::execute() {
     //------------------------------------------------------------------------------
     info() << "executing...." << endmsg;
 
@@ -56,8 +52,7 @@ namespace bug_34121
   }
 
   //------------------------------------------------------------------------------
-  StatusCode MyAlgorithm::finalize()
-  {
+  StatusCode MyAlgorithm::finalize() {
     //------------------------------------------------------------------------------
     info() << "finalizing...." << endmsg;
 

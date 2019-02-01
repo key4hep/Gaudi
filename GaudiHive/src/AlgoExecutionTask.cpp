@@ -12,22 +12,17 @@
 
 #include <functional>
 
-namespace Gaudi
-{
-  namespace Concurrency
-  {
+namespace Gaudi {
+  namespace Concurrency {
     extern thread_local bool ThreadInitDone;
   }
-}
+} // namespace Gaudi
 
-tbb::task* AlgoExecutionTask::execute()
-{
+tbb::task* AlgoExecutionTask::execute() {
 
   IAlgorithm*       ialg      = m_algorithm.get();
   Gaudi::Algorithm* this_algo = dynamic_cast<Gaudi::Algorithm*>( ialg );
-  if ( !this_algo ) {
-    throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE );
-  }
+  if ( !this_algo ) { throw GaudiException( "Cast to Algorithm failed!", "AlgoExecutionTask", StatusCode::FAILURE ); }
 
   bool eventfailed = false;
   Gaudi::Hive::setCurrentContext( m_evtCtx );

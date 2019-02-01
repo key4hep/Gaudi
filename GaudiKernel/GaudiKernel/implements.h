@@ -17,8 +17,7 @@ public:
   /**Implementation of IInterface::i_cast. */
   void* i_cast( const InterfaceID& tid ) const override { return Gaudi::iid_cast( tid, iids{}, this ); }
   /** Implementation of IInterface::queryInterface. */
-  StatusCode queryInterface( const InterfaceID& ti, void** pp ) override
-  {
+  StatusCode queryInterface( const InterfaceID& ti, void** pp ) override {
     if ( !pp ) return StatusCode::FAILURE;
     *pp = Gaudi::iid_cast( ti, iids{}, this );
     if ( !*pp ) return StatusCode::FAILURE; /* cast failed */
@@ -38,8 +37,7 @@ public:
   /** Reference Interface instance               */
   unsigned long addRef() override { return ++m_refCount; }
   /** Release Interface instance                 */
-  unsigned long release() override
-  {
+  unsigned long release() override {
     /* Avoid to decrement 0 */
     auto count = ( m_refCount ? --m_refCount : m_refCount.load() );
     if ( count == 0 ) delete this;

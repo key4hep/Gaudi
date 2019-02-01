@@ -17,8 +17,7 @@ struct IDataManagerSvc;
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class RootStatCnv RootStatCnv.h Root/RootStatCnv.h
    *
@@ -28,8 +27,7 @@ namespace Gaudi
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootStatCnv : public RootConverter
-  {
+  class GAUDI_API RootStatCnv : public RootConverter {
   protected:
     /// Reference to data manager service to manipulate the TES
     SmartIF<IDataManagerSvc> m_dataMgr;
@@ -98,5 +96,5 @@ namespace Gaudi
      */
     RootStatCnv( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr );
   };
-}
+} // namespace Gaudi
 #endif // ROOT_RootStatCnv_H

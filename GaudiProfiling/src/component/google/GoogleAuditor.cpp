@@ -18,17 +18,16 @@
 #include "boost/assign/list_of.hpp"
 
 #ifdef TCMALLOC_OLD_GOOGLE_HEADERS
-#include "google/heap-checker.h"
-#include "google/heap-profiler.h"
-#include "google/profiler.h"
+#  include "google/heap-checker.h"
+#  include "google/heap-profiler.h"
+#  include "google/profiler.h"
 #else
-#include "gperftools/heap-checker.h"
-#include "gperftools/heap-profiler.h"
-#include "gperftools/profiler.h"
+#  include "gperftools/heap-checker.h"
+#  include "gperftools/heap-profiler.h"
+#  include "gperftools/profiler.h"
 #endif
 
-namespace Google
-{
+namespace Google {
 
   /** @class AuditorBase GoogleAuditor.cpp
    *
@@ -37,16 +36,14 @@ namespace Google
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class AuditorBase : public extends<Auditor, IIncidentListener>
-  {
+  class AuditorBase : public extends<Auditor, IIncidentListener> {
 
   public:
     /// Constructor
     using extends::extends;
 
     /// Initialize the auditor base
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       info() << "Initialised" << endmsg;
 
       // add a listener for begin event
@@ -63,16 +60,14 @@ namespace Google
     }
 
     /// Finalize the auditor base
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       if ( alreadyRunning() ) stopAudit();
       return StatusCode::SUCCESS;
     }
 
   private:
     /// Start a full event audit
-    inline void startAudit()
-    {
+    inline void startAudit() {
       info() << " -> Starting full audit from event " << m_nEvts << " to " << m_nEvts + m_nSampleEvents << endmsg;
       m_inFullAudit      = true;
       m_sampleEventCount = 1;
@@ -82,8 +77,7 @@ namespace Google
     }
 
     /// stop a full event audit
-    inline void stopAudit()
-    {
+    inline void stopAudit() {
       info() << " -> Stopping full audit" << endmsg;
       std::ostringstream t;
       t << "FULL-Events" << m_nEvts << "To" << m_nEvts + m_nSampleEvents;
@@ -94,27 +88,23 @@ namespace Google
 
     /** Check if the component in question is a GaudiSequencer or
      *  a Sequencer */
-    inline bool isSequencer( INamedInterface* i ) const
-    {
+    inline bool isSequencer( INamedInterface* i ) const {
       return ( dynamic_cast<GaudiSequencer*>( i ) != NULL || dynamic_cast<Sequencer*>( i ) != NULL );
     }
 
     /// Check if auditing is enabled for the current processing phase
-    inline bool isPhaseEnabled( CustomEventTypeRef type ) const
-    {
+    inline bool isPhaseEnabled( CustomEventTypeRef type ) const {
       return ( std::find( m_when.begin(), m_when.end(), type ) != m_when.end() );
     }
 
     /// Check if auditing is enabled for the given component
-    inline bool isComponentEnabled( const std::string& name ) const
-    {
+    inline bool isComponentEnabled( const std::string& name ) const {
       return ( std::find( m_veto.begin(), m_veto.end(), name ) == m_veto.end() &&
                ( m_list.empty() || std::find( m_list.begin(), m_list.end(), name ) != m_list.end() ) );
     }
 
     // Construct the dump name based on processing phase and component name
-    std::string getDumpName( CustomEventTypeRef type, const std::string& name ) const
-    {
+    std::string getDumpName( CustomEventTypeRef type, const std::string& name ) const {
       std::ostringstream t;
       t << name << "-" << type;
       if ( type == "Execute" ) t << "-Event" << m_nEvts;
@@ -127,8 +117,7 @@ namespace Google
      *
      *  @param incident The incident identifier
      */
-    void handle( const Incident& incident ) override
-    {
+    void handle( const Incident& incident ) override {
       if ( IncidentType::BeginEvent == incident.type() ) {
         ++m_nEvts;
         m_audit = ( m_nEvts > m_eventsToSkip && ( m_freq < 0 || m_nEvts == 1 || m_nEvts % m_freq == 0 ) );
@@ -141,37 +130,27 @@ namespace Google
               ++m_sampleEventCount;
             }
           }
-          if ( m_audit && !m_inFullAudit && !alreadyRunning() ) {
-            startAudit();
-          }
+          if ( m_audit && !m_inFullAudit && !alreadyRunning() ) { startAudit(); }
         }
       }
     }
 
   public:
-    void before( StandardEventType type, INamedInterface* i ) override
-    {
-      if ( !m_skipSequencers || !isSequencer( i ) ) {
-        before( type, i->name() );
-      }
+    void before( StandardEventType type, INamedInterface* i ) override {
+      if ( !m_skipSequencers || !isSequencer( i ) ) { before( type, i->name() ); }
     }
 
-    void before( CustomEventTypeRef type, INamedInterface* i ) override
-    {
-      if ( !m_skipSequencers || !isSequencer( i ) ) {
-        before( type, i->name() );
-      }
+    void before( CustomEventTypeRef type, INamedInterface* i ) override {
+      if ( !m_skipSequencers || !isSequencer( i ) ) { before( type, i->name() ); }
     }
 
-    void before( StandardEventType type, const std::string& s ) override
-    {
+    void before( StandardEventType type, const std::string& s ) override {
       std::ostringstream t;
       t << type;
       before( t.str(), s );
     }
 
-    void before( CustomEventTypeRef type, const std::string& s ) override
-    {
+    void before( CustomEventTypeRef type, const std::string& s ) override {
       if ( !m_fullEventAudit && m_audit && isPhaseEnabled( type ) && isComponentEnabled( s ) ) {
         if ( !alreadyRunning() ) {
           info() << "Starting Auditor for " << s << ":" << type << endmsg;
@@ -183,8 +162,7 @@ namespace Google
       }
     }
 
-    void after( StandardEventType type, INamedInterface* i, const StatusCode& sc ) override
-    {
+    void after( StandardEventType type, INamedInterface* i, const StatusCode& sc ) override {
       if ( !m_skipSequencers || !isSequencer( i ) ) {
         std::ostringstream t;
         t << type;
@@ -192,26 +170,19 @@ namespace Google
       }
     }
 
-    void after( CustomEventTypeRef type, INamedInterface* i, const StatusCode& sc ) override
-    {
-      if ( !m_skipSequencers || !isSequencer( i ) ) {
-        after( type, i->name(), sc );
-      }
+    void after( CustomEventTypeRef type, INamedInterface* i, const StatusCode& sc ) override {
+      if ( !m_skipSequencers || !isSequencer( i ) ) { after( type, i->name(), sc ); }
     }
 
-    void after( StandardEventType type, const std::string& s, const StatusCode& sc ) override
-    {
+    void after( StandardEventType type, const std::string& s, const StatusCode& sc ) override {
       std::ostringstream t;
       t << type;
       after( t.str(), s, sc );
     }
 
-    void after( CustomEventTypeRef type, const std::string& s, const StatusCode& ) override
-    {
+    void after( CustomEventTypeRef type, const std::string& s, const StatusCode& ) override {
       if ( !m_fullEventAudit && m_audit && isPhaseEnabled( type ) && isComponentEnabled( s ) ) {
-        if ( s == m_startedBy ) {
-          google_after( getDumpName( type, s ) );
-        }
+        if ( s == m_startedBy ) { google_after( getDumpName( type, s ) ); }
       }
     }
 
@@ -223,12 +194,10 @@ namespace Google
     void beforeEndRun( INamedInterface* i ) override { return before( IAuditor::EndRun, i ); }
     void beforeFinalize( INamedInterface* i ) override { return before( IAuditor::Finalize, i ); }
 
-    void afterInitialize( INamedInterface* i ) override
-    {
+    void afterInitialize( INamedInterface* i ) override {
       return after( IAuditor::Initialize, i, StatusCode::SUCCESS );
     }
-    void afterReinitialize( INamedInterface* i ) override
-    {
+    void afterReinitialize( INamedInterface* i ) override {
       return after( IAuditor::ReInitialize, i, StatusCode::SUCCESS );
     }
     void afterExecute( INamedInterface* i, const StatusCode& s ) override { return after( IAuditor::Execute, i, s ); }
@@ -264,7 +233,7 @@ namespace Google
         this, "FullEventNSampleEvents", 1, "The number of events to include in a full event audit,  if enabled"};
     Gaudi::Property<unsigned long long> m_eventsToSkip{this, "SkipEvents", 0,
                                                        "Number of events to skip before activating the auditing"};
-    Gaudi::Property<bool> m_skipSequencers{this, "SkipSequencers", true,
+    Gaudi::Property<bool>               m_skipSequencers{this, "SkipSequencers", true,
                                            "If true,  auditing will be skipped for Sequencer objects."};
 
     bool               m_audit = true; ///< Internal flag to say if auditing is enabled or not for the current event
@@ -288,8 +257,7 @@ namespace Google
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class HeapProfiler : public AuditorBase
-  {
+  class HeapProfiler : public AuditorBase {
 
   public:
     /// Constructor
@@ -298,11 +266,8 @@ namespace Google
   protected:
     void google_before( const std::string& s ) override { HeapProfilerStart( s.c_str() ); }
 
-    void google_after( const std::string& s ) override
-    {
-      if ( m_dumpProfileHeaps ) {
-        HeapProfilerDump( s.c_str() );
-      }
+    void google_after( const std::string& s ) override {
+      if ( m_dumpProfileHeaps ) { HeapProfilerDump( s.c_str() ); }
       if ( m_printProfilesToLog ) {
         const char* profile = GetHeapProfile();
         info() << profile << endmsg;
@@ -331,15 +296,13 @@ namespace Google
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class HeapChecker : public AuditorBase
-  {
+  class HeapChecker : public AuditorBase {
 
   public:
     /// Constructor
     using AuditorBase::AuditorBase;
 
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       const StatusCode sc = AuditorBase::initialize();
       if ( sc.isFailure() ) return sc;
 
@@ -358,19 +321,13 @@ namespace Google
     }
 
   protected:
-    void google_before( const std::string& s ) override
-    {
-      if ( m_enabled && !m_checker ) {
-        m_checker.reset( new HeapLeakChecker( s.c_str() ) );
-      }
+    void google_before( const std::string& s ) override {
+      if ( m_enabled && !m_checker ) { m_checker.reset( new HeapLeakChecker( s.c_str() ) ); }
     }
 
-    void google_after( const std::string& s ) override
-    {
+    void google_after( const std::string& s ) override {
       if ( m_enabled && m_checker ) {
-        if ( !m_checker->NoLeaks() ) {
-          warning() << "Leak detected for " << s << endmsg;
-        }
+        if ( !m_checker->NoLeaks() ) { warning() << "Leak detected for " << s << endmsg; }
         m_checker.reset();
       }
     }
@@ -395,23 +352,20 @@ namespace Google
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class CPUProfiler : public AuditorBase
-  {
+  class CPUProfiler : public AuditorBase {
 
   public:
     using AuditorBase::AuditorBase;
 
   protected:
-    void google_before( const std::string& s ) override
-    {
+    void google_before( const std::string& s ) override {
       if ( !m_running ) {
         m_running = true;
         ProfilerStart( ( s + ".prof" ).c_str() );
       }
     }
 
-    void google_after( const std::string& ) override
-    {
+    void google_after( const std::string& ) override {
       if ( m_running ) {
         ProfilerStop();
         m_running = false;
@@ -427,4 +381,4 @@ namespace Google
   DECLARE_COMPONENT( HeapProfiler )
   DECLARE_COMPONENT( HeapChecker )
   DECLARE_COMPONENT( CPUProfiler )
-}
+} // namespace Google

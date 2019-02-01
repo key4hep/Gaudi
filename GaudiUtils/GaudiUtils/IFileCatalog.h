@@ -12,20 +12,18 @@ class IMessageSvc;
 /*
  *   Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class IFileCatalog IFileCatalog.h GaudiUtils/IFileCatalog.h
-    *
-    *  File catalog interface.
-    *  Resolve file ids, physical and logical file names.
-    *
-    *  @author  M.Frank
-    *  @version 1.0
-    *  @date    20/10/2007
-    */
-  class GAUDI_API IFileCatalog : virtual public IInterface
-  {
+   *
+   *  File catalog interface.
+   *  Resolve file ids, physical and logical file names.
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    20/10/2007
+   */
+  class GAUDI_API IFileCatalog : virtual public IInterface {
 
   public:
     /// InterfaceID
@@ -35,9 +33,9 @@ namespace Gaudi
 
     /// Public type definitions
     typedef std::pair<std::string, std::string> NamedItem;
-    typedef std::vector<NamedItem>   Attributes;
-    typedef std::vector<NamedItem>   Files;
-    typedef std::vector<std::string> Strings;
+    typedef std::vector<NamedItem>              Attributes;
+    typedef std::vector<NamedItem>              Files;
+    typedef std::vector<std::string>            Strings;
 
     /** Catalog interface                                               */
     /// Create file identifier using UUID mechanism

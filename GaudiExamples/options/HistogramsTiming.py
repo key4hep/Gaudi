@@ -17,7 +17,5 @@ for alg in seq.Members:
     alg.NumHistos = 30
     alg.OutputLevel = DEBUG
 
-ApplicationMgr(EvtMax=50000,
-               EvtSel='NONE',
-               HistogramPersistency='ROOT',
-               TopAlg=[seq])
+ApplicationMgr(
+    EvtMax=50000, EvtSel='NONE', HistogramPersistency='ROOT', TopAlg=[seq])

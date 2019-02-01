@@ -14,6 +14,7 @@ class BootstrapHelper(object):
 
         def __bool__(self):
             return self.value
+
         __nonzero__ = __bool__
 
         def isSuccess(self):
@@ -31,6 +32,7 @@ class BootstrapHelper(object):
 
         def __str__(self):
             return str(self.value)
+
         toString = __str__
 
     class AppMgr(object):
@@ -40,34 +42,43 @@ class BootstrapHelper(object):
             self._as_parameter_ = ptr
 
         def configure(self):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_configure(self.ptr))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_configure(self.ptr))
 
         def initialize(self):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_initialize(self.ptr))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_initialize(self.ptr))
 
         def start(self):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_start(self.ptr))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_start(self.ptr))
 
         def run(self, nevt):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_app_run(self.ptr, nevt))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_app_run(self.ptr, nevt))
 
         def stop(self):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_stop(self.ptr))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_stop(self.ptr))
 
         def finalize(self):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_finalize(self.ptr))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_finalize(self.ptr))
 
         def terminate(self):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_terminate(self.ptr))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_terminate(self.ptr))
 
         def getService(self, name):
             return self.lib.py_bootstrap_getService(self.ptr, name)
 
         def setProperty(self, name, value):
-            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_setProperty(self.ptr, name, value))
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_setProperty(self.ptr, name, value))
 
         def getProperty(self, name):
-            return BootstrapHelper.Property(self.lib.py_bootstrap_getProperty(self.ptr, name))
+            return BootstrapHelper.Property(
+                self.lib.py_bootstrap_getProperty(self.ptr, name))
 
         def printAlgsSequences(self):
             return self.lib.py_helper_printAlgsSequences(self.ptr)
@@ -75,13 +86,15 @@ class BootstrapHelper(object):
     def __init__(self):
         from ctypes import (PyDLL, util, c_void_p, c_bool, c_char_p, c_int,
                             RTLD_GLOBAL)
+
         # Helper class to avoid void* to int conversion
         # (see http://stackoverflow.com/questions/17840144)
 
         class IInterface_p(c_void_p):
             def __repr__(self):
-                return "IInterface_p(0x%x)" % (0 if self.value is None
-                                               else self.value)
+                return "IInterface_p(0x%x)" % (0 if self.value is None else
+                                               self.value)
+
         self.log = logging.getLogger('BootstrapHelper')
         libname = util.find_library('GaudiKernel') or 'libGaudiKernel.so'
         self.log.debug('loading GaudiKernel (%s)', libname)
@@ -90,15 +103,15 @@ class BootstrapHelper(object):
         #        Python functions are not protected with the GIL.
         self.lib = gkl = PyDLL(libname, mode=RTLD_GLOBAL)
 
-        functions = [('createApplicationMgr', IInterface_p, []),
-                     ('getService', IInterface_p, [IInterface_p, c_char_p]),
-                     ('setProperty', c_bool, [
-                      IInterface_p, c_char_p, c_char_p]),
-                     ('getProperty', c_char_p, [IInterface_p, c_char_p]),
-                     ('addPropertyToCatalogue', c_bool, [
-                      IInterface_p, c_char_p, c_char_p, c_char_p]),
-                     ('ROOT_VERSION_CODE', c_int, []),
-                     ]
+        functions = [
+            ('createApplicationMgr', IInterface_p, []),
+            ('getService', IInterface_p, [IInterface_p, c_char_p]),
+            ('setProperty', c_bool, [IInterface_p, c_char_p, c_char_p]),
+            ('getProperty', c_char_p, [IInterface_p, c_char_p]),
+            ('addPropertyToCatalogue', c_bool,
+             [IInterface_p, c_char_p, c_char_p, c_char_p]),
+            ('ROOT_VERSION_CODE', c_int, []),
+        ]
 
         for name, restype, argtypes in functions:
             f = getattr(gkl, 'py_bootstrap_%s' % name)
@@ -108,8 +121,8 @@ class BootstrapHelper(object):
             if name not in self.__class__.__dict__:
                 setattr(self, name, f)
 
-        for name in ('configure', 'initialize', 'start',
-                     'stop', 'finalize', 'terminate'):
+        for name in ('configure', 'initialize', 'start', 'stop', 'finalize',
+                     'terminate'):
             f = getattr(gkl, 'py_bootstrap_fsm_%s' % name)
             f.restype, f.argtypes = c_bool, [IInterface_p]
         gkl.py_bootstrap_app_run.restype = c_bool
@@ -153,8 +166,9 @@ def toOpt(value):
     if isinstance(value, basestring):
         return '"{0}"'.format(value.replace('"', '\\"'))
     elif isinstance(value, dict):
-        return '{{{0}}}'.format(', '.join('{0}: {1}'.format(toOpt(k), toOpt(v))
-                                          for k, v in value.iteritems()))
+        return '{{{0}}}'.format(', '.join(
+            '{0}: {1}'.format(toOpt(k), toOpt(v))
+            for k, v in value.iteritems()))
     elif hasattr(value, '__iter__'):
         return '[{0}]'.format(', '.join(map(toOpt, value)))
     else:
@@ -261,8 +275,8 @@ class gaudimain(object):
         if ext in write:
             write[ext](filename, all)
         else:
-            log.error("Unknown file type '%s'. Must be any of %r.",
-                      ext, write.keys())
+            log.error("Unknown file type '%s'. Must be any of %r.", ext,
+                      write.keys())
             sys.exit(1)
 
     # Instantiate and run the application.
@@ -279,8 +293,9 @@ class gaudimain(object):
     def hookDebugger(self, debugger='gdb'):
         import os
         self.log.info('attaching debugger to PID ' + str(os.getpid()))
-        pid = os.spawnvp(os.P_NOWAIT,
-                         debugger, [debugger, '-q', 'python', str(os.getpid())])
+        pid = os.spawnvp(os.P_NOWAIT, debugger,
+                         [debugger, '-q', 'python',
+                          str(os.getpid())])
 
         # give debugger some time to attach to the python process
         import time
@@ -299,7 +314,8 @@ class gaudimain(object):
             from GaudiKernel.Proxy.Configurable import expandvars
         except ImportError:
             # pass-through implementation if expandvars is not defined (AthenaCommon)
-            def expandvars(data): return data
+            def expandvars(data):
+                return data
 
         from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
@@ -355,7 +371,8 @@ class gaudimain(object):
             for p, v in c.getValuedProperties().items():
                 v = expandvars(v)
                 # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
-                if hasattr(Configurable, "PropertyReference") and type(v) == Configurable.PropertyReference:
+                if hasattr(Configurable, "PropertyReference") and type(
+                        v) == Configurable.PropertyReference:
                     # this is done in "getFullName", but the exception is ignored,
                     # so we do it again to get it
                     v = v.__resolve__()
@@ -381,8 +398,7 @@ class gaudimain(object):
 
     def runSerial(self, attach_debugger):
         # --- Instantiate the ApplicationMgr------------------------------
-        if (self.mainLoop or
-                os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
+        if (self.mainLoop or os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
             self.gaudiPythonInit()
         else:
             self.basicInit()
@@ -395,6 +411,7 @@ class gaudimain(object):
         if self.mainLoop:
             runner = self.mainLoop
         else:
+
             def runner(app, nevt):
                 self.log.debug('initialize')
                 sc = app.initialize()
@@ -424,8 +441,8 @@ class gaudimain(object):
             self.hookDebugger()
 
         try:
-            statuscode = runner(self.g, int(
-                self.ip.getProperty('EvtMax').toString()))
+            statuscode = runner(self.g,
+                                int(self.ip.getProperty('EvtMax').toString()))
         except SystemError:
             # It may not be 100% correct, but usually it means a segfault in C++
             self.ip.setProperty('ReturnCode', str(128 + 11))
@@ -445,15 +462,16 @@ class gaudimain(object):
             self.ip.setProperty('ReturnCode', '1')
         sysTime = time() - sysStart
         self.log.debug('-' * 80)
-        self.log.debug(
-            '%s: serial system finished, time taken: %5.4fs', __name__, sysTime)
+        self.log.debug('%s: serial system finished, time taken: %5.4fs',
+                       __name__, sysTime)
         self.log.debug('-' * 80)
         return int(self.ip.getProperty('ReturnCode').toString())
 
     def runParallel(self, ncpus):
         if self.mainLoop:
             self.log.fatal(
-                "Cannot use custom main loop in multi-process mode, check your options")
+                "Cannot use custom main loop in multi-process mode, check your options"
+            )
             return 1
         self.setupParallelLogging()
         from Gaudi.Configuration import Configurable
@@ -461,14 +479,15 @@ class gaudimain(object):
         c = Configurable.allConfigurables
         self.log.info('-' * 80)
         self.log.info('%s: Parallel Mode : %i ', __name__, ncpus)
-        for name, value in [('platrofm', ' '.join(os.uname())),
-                            ('config', os.environ.get('BINARY_TAG') or
-                             os.environ.get('CMTCONFIG')),
-                            ('app. name', os.environ.get('GAUDIAPPNAME')),
-                            ('app. version', os.environ.get('GAUDIAPPVERSION')),
-                            ]:
-            self.log.info('%s: %30s : %s ', __name__,
-                          name, value or 'Undefined')
+        for name, value in [
+            ('platrofm', ' '.join(os.uname())),
+            ('config', os.environ.get('BINARY_TAG')
+             or os.environ.get('CMTCONFIG')),
+            ('app. name', os.environ.get('GAUDIAPPNAME')),
+            ('app. version', os.environ.get('GAUDIAPPVERSION')),
+        ]:
+            self.log.info('%s: %30s : %s ', __name__, name, value
+                          or 'Undefined')
         try:
             events = str(c['ApplicationMgr'].EvtMax)
         except:
@@ -485,7 +504,7 @@ class gaudimain(object):
         sysTime = time() - sysStart
         self.log.name = 'Gaudi/Main.py Logger'
         self.log.info('-' * 80)
-        self.log.info(
-            '%s: parallel system finished, time taken: %5.4fs', __name__, sysTime)
+        self.log.info('%s: parallel system finished, time taken: %5.4fs',
+                      __name__, sysTime)
         self.log.info('-' * 80)
         return 0

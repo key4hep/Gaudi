@@ -26,14 +26,12 @@ def _fillConfDict():
         log.warning("Found %d duplicates among the %d genConfDb files :",
                     len(cfgDb.duplicates()), nFiles)
         log.warning("--------------------------------------------------")
-        log.warning("  -%s: %s - %s",
-                    "<component name>", "<module>", "[ <duplicates> ]")
+        log.warning("  -%s: %s - %s", "<component name>", "<module>",
+                    "[ <duplicates> ]")
         log.warning("--------------------------------------------------")
         dups = cfgDb.duplicates()
         for cfgName in dups.keys():
-            log.warning("  -%s: %s - %s",
-                        cfgName,
-                        cfgDb[cfgName]['module'],
+            log.warning("  -%s: %s - %s", cfgName, cfgDb[cfgName]['module'],
                         str([d['module'] for d in dups[cfgName]]))
             pass
         del dups
@@ -134,21 +132,22 @@ class GaudiPersistency(ConfigurableUser):
 
     def __apply_configuration__(self):
         """Apply low-level configuration"""
-        from Configurables import (ApplicationMgr,
-                                   PersistencySvc,
-                                   FileRecordDataSvc,
-                                   EventPersistencySvc,
-                                   )
+        from Configurables import (
+            ApplicationMgr,
+            PersistencySvc,
+            FileRecordDataSvc,
+            EventPersistencySvc,
+        )
         # aliased names
-        from Configurables import (RootCnvSvc,
-                                   RootEvtSelector,
-                                   IODataManager,
-                                   FileCatalog,
-                                   )
+        from Configurables import (
+            RootCnvSvc,
+            RootEvtSelector,
+            IODataManager,
+            FileCatalog,
+        )
         cnvSvcs = [RootCnvSvc()]
         EventPersistencySvc().CnvServices += cnvSvcs
         PersistencySvc("FileRecordPersistencySvc").CnvServices += cnvSvcs
         app = ApplicationMgr()
-        app.SvcOptMapping += [FileCatalog(), IODataManager(),
-                              RootCnvSvc()]
+        app.SvcOptMapping += [FileCatalog(), IODataManager(), RootCnvSvc()]
         app.ExtSvc += [FileRecordDataSvc()]

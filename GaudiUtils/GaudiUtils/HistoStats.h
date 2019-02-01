@@ -13,16 +13,13 @@
 // ============================================================================
 // forward declarations
 // ============================================================================
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D;
   class IProfile1D;
-}
+} // namespace AIDA
 // ============================================================================
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** @class HistoStats HistoStats.h GaudiUtils/HistoStats.h
      *  The collection of trivial functions to access  the
@@ -30,8 +27,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-08-06
      */
-    class GAUDI_API HistoStats
-    {
+    class GAUDI_API HistoStats {
     public: // 1D Histograms
       // ======================================================================
       /** get the "bin-by-bin"-moment around the specified  "value"
@@ -135,8 +131,8 @@ namespace Gaudi
        *  @param number of entries
        */
       static long nEntries( const AIDA::IHistogram1D* histo,
-                            const int                 imin,   // minimal bin number (included)
-                            const int                 imax ); // maximal bin number (not included)
+                            const int                 imin, // minimal bin number (included)
+                            const int                 imax );               // maximal bin number (not included)
       // ======================================================================
       /** get the fraction of entries in histogram up to
        *  the certain bin (not-included)
@@ -275,8 +271,8 @@ namespace Gaudi
        *  @param number of entries
        */
       static long nEntries( const AIDA::IProfile1D* histo,
-                            const int               imin,   // minimal bin number (included)
-                            const int               imax ); // maximal bin number (not included)
+                            const int               imin, // minimal bin number (included)
+                            const int               imax );             // maximal bin number (not included)
       // ======================================================================
       /** get the fraction of entries in profile histogram up to
        *  the certain bin (not-included)
@@ -314,7 +310,7 @@ namespace Gaudi
       // ======================================================================
     };
     // ========================================================================
-  } // end of namespace Gaudi::Utils
+  } // namespace Utils
   // ==========================================================================
 } // end of namespace Gaudi
 // ============================================================================

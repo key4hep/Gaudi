@@ -18,8 +18,7 @@ using AIDA::IHistogram1D;
 // Example related include files
 #include "RandomNumberAlg.h"
 
-namespace
-{
+namespace {
   namespace QuasiRandom = Gaudi::Utils::QuasiRandom;
 }
 
@@ -28,13 +27,11 @@ DECLARE_COMPONENT( RandomNumberAlg )
 /**  Algorithm parameters which can be set at run time must be declared.
      This should be done in the constructor.
 */
-RandomNumberAlg::RandomNumberAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
-}
+RandomNumberAlg::RandomNumberAlg( const std::string& name, ISvcLocator* pSvcLocator )
+    : Algorithm( name, pSvcLocator ) {}
 
 // Standard destructor
-RandomNumberAlg::~RandomNumberAlg()
-{
+RandomNumberAlg::~RandomNumberAlg() {
   // do not print messages if we are created in genconf
   const std::string cmd = System::cmdLineArgs()[0];
   if ( cmd.find( "genconf" ) != std::string::npos ) return;
@@ -44,8 +41,7 @@ RandomNumberAlg::~RandomNumberAlg()
 
 // The "functional" part of the class: For the EmptyAlgorithm example they do
 //  nothing apart from print out info messages.
-StatusCode RandomNumberAlg::initialize()
-{
+StatusCode RandomNumberAlg::initialize() {
   // Use the Job options service to set the Algorithm's parameters
   StatusCode status = setProperties();
   //
@@ -80,9 +76,7 @@ StatusCode RandomNumberAlg::initialize()
   // - Initialize the wrapper allocated in the header file
   //
   status = m_numbers.initialize( randSvc(), Rndm::Poisson( 0.3 ) );
-  if ( !status.isSuccess() ) {
-    return status;
-  }
+  if ( !status.isSuccess() ) { return status; }
 
   // The GLOBAL wrapper is now initialized and ready for use.
   // The code below could go anywhere. It is only for simplicity
@@ -117,8 +111,7 @@ StatusCode RandomNumberAlg::initialize()
   return status;
 }
 
-StatusCode RandomNumberAlg::execute()
-{
+StatusCode RandomNumberAlg::execute() {
   StatusCode status;
   static int count = 0;
 
@@ -139,14 +132,11 @@ StatusCode RandomNumberAlg::execute()
   m_poisson     = (float)poisson();
 
   status = m_ntuple->write();
-  if ( !status.isSuccess() ) {
-    error() << "Cannot fill NTuple" << endmsg;
-  }
+  if ( !status.isSuccess() ) { error() << "Cannot fill NTuple" << endmsg; }
   return StatusCode::SUCCESS;
 }
 
-StatusCode RandomNumberAlg::finalize()
-{
+StatusCode RandomNumberAlg::finalize() {
   m_numbers.finalize().ignore();
   return StatusCode::SUCCESS;
 }

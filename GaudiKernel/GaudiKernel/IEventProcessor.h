@@ -13,8 +13,7 @@ class IEventProcessor;
  *  @author Markus Frank
  *   @version 2
  */
-class GAUDI_API IEventProcessor : virtual public IInterface
-{
+class GAUDI_API IEventProcessor : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IEventProcessor, 3, 0 );

@@ -14,8 +14,7 @@ using namespace Gaudi::Examples;
 
 //------------------------------------------------------------------------------
 
-class WriteHandleAlg : public GaudiAlgorithm
-{
+class WriteHandleAlg : public GaudiAlgorithm {
 public:
   WriteHandleAlg( const std::string& n, ISvcLocator* l ) : GaudiAlgorithm( n, l ) {}
 

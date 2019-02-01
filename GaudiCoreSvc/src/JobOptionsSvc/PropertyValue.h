@@ -14,28 +14,21 @@
 // ============================================================================
 #include "Position.h"
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
-    class PropertyValue final
-    {
+    class PropertyValue final {
       // ----------------------------------------------------------------------------
     public:
       typedef boost::variant<std::string, std::vector<std::string>, std::map<std::string, std::string>> Value;
-      typedef std::vector<std::string> VectorOfStrings;
-      typedef std::map<std::string, std::string> MapOfStrings;
+      typedef std::vector<std::string>                                                                  VectorOfStrings;
+      typedef std::map<std::string, std::string>                                                        MapOfStrings;
 
       // ----------------------------------------------------------------------------
       explicit PropertyValue( Value value, bool is_reference = false )
-          : value_( std::move( value ) ), is_reference_( is_reference )
-      {
-      }
+          : value_( std::move( value ) ), is_reference_( is_reference ) {}
       PropertyValue( Value value, const Position& position, bool is_reference = false )
-          : value_( std::move( value ) ), position_( position ), is_reference_( is_reference )
-      {
-      }
+          : value_( std::move( value ) ), position_( position ), is_reference_( is_reference ) {}
       // ----------------------------------------------------------------------------
       const Position& position() const { return position_; }
       // ----------------------------------------------------------------------------
@@ -58,9 +51,9 @@ namespace Gaudi
       // Operators:
       // ----------------------------------------------------------------------------
 
-      PropertyValue& operator+=( const PropertyValue& right );
+      PropertyValue&      operator+=( const PropertyValue& right );
       const PropertyValue operator+( const PropertyValue& right );
-      PropertyValue& operator-=( const PropertyValue& right );
+      PropertyValue&      operator-=( const PropertyValue& right );
       const PropertyValue operator-( const PropertyValue& right );
       // bool operator == (const PropertyValue& right) const;
     private:
@@ -70,42 +63,34 @@ namespace Gaudi
       // ----------------------------------------------------------------------------
     }; //  class PropertyValue
     // ============================================================================
-    class PropertyValueException : public std::runtime_error
-    {
+    class PropertyValueException : public std::runtime_error {
     public:
       PropertyValueException( const std::string& message ) : std::runtime_error( message ) {}
-      static PropertyValueException              WrongLValue()
-      {
+      static PropertyValueException WrongLValue() {
         return PropertyValueException( "Cannot apply +=/-= operation to left value." );
       }
 
-      static PropertyValueException WrongRValue()
-      {
+      static PropertyValueException WrongRValue() {
         return PropertyValueException( "Cannot apply +=/-= operation to right value." );
       }
     };
 
-    class PositionalPropertyValueException : public std::runtime_error
-    {
+    class PositionalPropertyValueException : public std::runtime_error {
     public:
       PositionalPropertyValueException( const Position& position, const std::string& message )
-          : std::runtime_error( message ), position_( position )
-      {
-      }
+          : std::runtime_error( message ), position_( position ) {}
       const Position& position() const { return position_; }
 
-      static PositionalPropertyValueException CouldNotFind( const Position& position, const std::string& name )
-      {
+      static PositionalPropertyValueException CouldNotFind( const Position& position, const std::string& name ) {
         return PositionalPropertyValueException( position, "Could not find property " + name + "." );
       }
 
-      static PositionalPropertyValueException CouldNotFindProperty( const Position& position, const std::string& name )
-      {
+      static PositionalPropertyValueException CouldNotFindProperty( const Position&    position,
+                                                                    const std::string& name ) {
         return PositionalPropertyValueException( position, "Could not find property '" + name + "'." );
       }
 
-      static PositionalPropertyValueException CouldNotFindUnit( const Position& position, const std::string& name )
-      {
+      static PositionalPropertyValueException CouldNotFindUnit( const Position& position, const std::string& name ) {
         return PositionalPropertyValueException( position, "Could not find unit '" + name + "'." );
       }
 
@@ -115,7 +100,7 @@ namespace Gaudi
       Position position_;
     };
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 #endif // JOBOPTIONSVC_PROPERTY_VALUE_H_

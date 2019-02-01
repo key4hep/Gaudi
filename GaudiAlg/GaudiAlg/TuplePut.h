@@ -23,8 +23,7 @@
  *  @date 2007-04-08
  */
 // =============================================================================
-namespace Tuples
-{
+namespace Tuples {
   /** @class ItemStore TuplePut.h GaudiAlg/TuplePut.h
    *
    *  Simple class, which represents the local storage of N-tuple items
@@ -35,8 +34,7 @@ namespace Tuples
    *  @date   2007-04-08
    */
   template <class VALUE>
-  class ItemStore final
-  {
+  class ItemStore final {
     friend class TupleObj;
 
   private:
@@ -48,8 +46,7 @@ namespace Tuples
 
   private:
     /// the only one method:
-    inline NTuple::Item<VALUE>* getItem( const std::string& key, Tuples::TupleObj* tuple )
-    {
+    inline NTuple::Item<VALUE>* getItem( const std::string& key, Tuples::TupleObj* tuple ) {
       // find the item by name
       auto ifound = m_map.find( key );
       // existing item?
@@ -113,14 +110,9 @@ namespace Tuples
  */
 // =============================================================================
 template <class TYPE>
-inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* obj )
-{
-  if ( invalid() ) {
-    return ErrorCodes::InvalidTuple;
-  } // RETURN
-  if ( !evtColType() ) {
-    return ErrorCodes::InvalidOperation;
-  } // RETURN
+inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* obj ) {
+  if ( invalid() ) { return ErrorCodes::InvalidTuple; }         // RETURN
+  if ( !evtColType() ) { return ErrorCodes::InvalidOperation; } // RETURN
 
   // static block: The type description & the flag
   static bool    s_fail = false;   // STATIC
@@ -141,9 +133,7 @@ inline StatusCode Tuples::TupleObj::put( const std::string& name, const TYPE* ob
   static Tuples::ItemStore<TYPE*> s_map;
   // get the variable by name:
   auto item = s_map.getItem( name, this );
-  if ( !item ) {
-    return Error( " put('" + name + "'): invalid item detected", ErrorCodes::InvalidItem );
-  }
+  if ( !item ) { return Error( " put('" + name + "'): invalid item detected", ErrorCodes::InvalidItem ); }
   // assign the item!
   ( *item ) = const_cast<TYPE*>( obj ); // THATS ALL!!
   //

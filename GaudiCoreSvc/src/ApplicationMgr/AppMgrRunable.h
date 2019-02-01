@@ -25,8 +25,7 @@ class IAppMgrUI;
    @author Markus Frank
    @version 1.0
 */
-class AppMgrRunable : public extends<Service, IRunable>
-{
+class AppMgrRunable : public extends<Service, IRunable> {
 protected:
   /// Reference to application manager UI
   IAppMgrUI*           m_appMgrUI = nullptr;

@@ -33,33 +33,29 @@
 #include "GaudiKernel/System.h"
 
 #ifdef __CLING__
-#define WARN_UNUSED
+#  define WARN_UNUSED
 #elif __cplusplus > 201402L
-#define WARN_UNUSED [[nodiscard]]
+#  define WARN_UNUSED [[nodiscard]]
 #else
-#define WARN_UNUSED [[gnu::warn_unused_result]]
+#  define WARN_UNUSED [[gnu::warn_unused_result]]
 #endif
 
 // ============================================================================
 // forward declarations
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   class Algorithm; // GaudiKernel
 }
 class AlgTool; // GaudiKernel
 class ISvcLocator;
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     template <class TYPE>
     struct GetData;
   }
-}
+} // namespace Gaudi
 
-namespace GaudiCommon_details
-{
+namespace GaudiCommon_details {
   constexpr const struct svc_eq_t {
     bool operator()( const std::string& n, const SmartIF<IService>& s ) const { return n == s->name(); };
     bool operator()( const SmartIF<IService>& s, const std::string& n ) const { return s->name() == n; };
@@ -70,7 +66,7 @@ namespace GaudiCommon_details
     bool operator()( const SmartIF<IService>& s, const std::string& n ) const { return s->name() < n; };
     bool operator()( const SmartIF<IService>& s, const SmartIF<IService>& n ) const { return s->name() < n->name(); };
   } svc_lt{};
-}
+} // namespace GaudiCommon_details
 // ============================================================================
 /*  @file GaudiCommon.h
  *
@@ -93,8 +89,7 @@ namespace GaudiCommon_details
  */
 // ============================================================================
 template <class PBASE>
-class GAUDI_API GaudiCommon : public PBASE
-{
+class GAUDI_API GaudiCommon : public PBASE {
 protected: // definitions
   using base_class = PBASE;
 
@@ -183,31 +178,31 @@ public:
   typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( IDataProviderSvc* svc, const std::string& location,
                                                                  const bool useRootInTES = true ) const;
   /** @brief Check the existence of a data object or container
- *         in the Gaudi Transient Event Store
- *
- *  @code
- *
- *  bool a1 = exist<DataObject>( evtSvc() , "/Event/MyObject" ) ;
- *  bool a2 = exist<MyHits>    ( evtSvc() , "/Event/MyHits" ) ;
- *
- *  @endcode
- *
- *  @attention The method respects the setting of the job option
- *             RootInTES by prepending the value of this to the
- *             data location that is passed.
- *             The default setting for RootInTES is "" so has no effect.
- *             This behavior can be suppressed by passing the argument
- *             useRootInTES = false
- *
- *  @param  svc      Pointer to data provider service
- *  @param  location Address in Gaudi Transient Store
- *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
- *                      the RootInTES location property
- *
- *  @return          Boolean indicating status of the request
- *  @retval true     Data object or container exists and implements a proper interface
- *  @retval true     Failed to locate the data object or container
- */
+   *         in the Gaudi Transient Event Store
+   *
+   *  @code
+   *
+   *  bool a1 = exist<DataObject>( evtSvc() , "/Event/MyObject" ) ;
+   *  bool a2 = exist<MyHits>    ( evtSvc() , "/Event/MyHits" ) ;
+   *
+   *  @endcode
+   *
+   *  @attention The method respects the setting of the job option
+   *             RootInTES by prepending the value of this to the
+   *             data location that is passed.
+   *             The default setting for RootInTES is "" so has no effect.
+   *             This behavior can be suppressed by passing the argument
+   *             useRootInTES = false
+   *
+   *  @param  svc      Pointer to data provider service
+   *  @param  location Address in Gaudi Transient Store
+   *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
+   *                      the RootInTES location property
+   *
+   *  @return          Boolean indicating status of the request
+   *  @retval true     Data object or container exists and implements a proper interface
+   *  @retval true     Failed to locate the data object or container
+   */
   template <class TYPE>
   bool exist( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const;
   /** @brief Get the existing data object from Gaudi Event Transient store.
@@ -269,8 +264,7 @@ public:
                    const bool useRootInTES = true ) const;
   // [[deprecated( "please pass std::unique_ptr as 2nd argument" )]]
   DataObject* put( IDataProviderSvc* svc, DataObject* object, const std::string& location,
-                   const bool useRootInTES = true ) const
-  {
+                   const bool useRootInTES = true ) const {
     return put( svc, std::unique_ptr<DataObject>( object ), location, useRootInTES );
   }
   /** Useful method for the easy location of tools.
@@ -489,6 +483,7 @@ public:
 private:
   /// accessor to all owned counters
   inline StatisticsOwn countersOwn() const { return m_countersOwn; }
+
 public:
   /** accessor to certain counter by name
    *
@@ -509,12 +504,10 @@ public:
    *  @return the counter itself
    */
   //[[deprecated( "see LHCBPS-1758" )]]
-  inline StatEntity& counter( const std::string& tag ) const
-  {
+  inline StatEntity& counter( const std::string& tag ) const {
     return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag );
   }
-  inline StatEntity& counter( const std::string& tag )
-  {
+  inline StatEntity& counter( const std::string& tag ) {
     // Return referenced StatEntity if it already exists, else create it
     auto p = this->findCounter( tag );
     if ( !p ) {
@@ -567,8 +560,7 @@ public:
    *  @endcode
    */
   template <class CallerClass>
-  inline void registerCondition( const std::string& condition, StatusCode ( CallerClass::*mf )() = nullptr )
-  {
+  inline void registerCondition( const std::string& condition, StatusCode ( CallerClass::*mf )() = nullptr ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), condition, mf );
   }
   /** register the current instance to the UpdateManagerSvc as a consumer for a condition.
@@ -603,14 +595,12 @@ public:
    */
   template <class CallerClass, class CondType>
   inline void registerCondition( const std::string& condition, CondType*& condPtrDest,
-                                 StatusCode ( CallerClass::*mf )() = NULL )
-  {
+                                 StatusCode ( CallerClass::*mf )() = NULL ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), condition, mf, condPtrDest );
   }
   /// just to avoid conflicts with the version using a pointer to a template class.
   template <class CallerClass>
-  inline void registerCondition( char* condition, StatusCode ( CallerClass::*mf )() = NULL )
-  {
+  inline void registerCondition( char* condition, StatusCode ( CallerClass::*mf )() = NULL ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), std::string( condition ), mf );
   }
   /** register the current instance to the UpdateManagerSvc as a consumer for a condition.
@@ -629,8 +619,7 @@ public:
    *  @endcode
    */
   template <class CallerClass, class TargetClass>
-  inline void registerCondition( TargetClass* condition, StatusCode ( CallerClass::*mf )() = NULL )
-  {
+  inline void registerCondition( TargetClass* condition, StatusCode ( CallerClass::*mf )() = NULL ) {
     updMgrSvc()->registerCondition( dynamic_cast<CallerClass*>( this ), condition, mf );
   }
   /** asks the UpdateManagerSvc to perform an update of the instance (if needed) without waiting the
@@ -650,16 +639,14 @@ public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from Algorithm
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Gaudi::Algorithm, PBASE>::value, U>>
-  GaudiCommon( const std::string& name, ISvcLocator* pSvcLocator ) : base_class( name, pSvcLocator )
-  {
+  GaudiCommon( const std::string& name, ISvcLocator* pSvcLocator ) : base_class( name, pSvcLocator ) {
     initGaudiCommonConstructor();
   }
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<AlgTool, PBASE>::value, U>>
   GaudiCommon( const std::string& type, const std::string& name, const IInterface* ancestor )
-      : base_class( type, name, ancestor )
-  {
+      : base_class( type, name, ancestor ) {
     initGaudiCommonConstructor( this->parent() );
   }
 

@@ -15,10 +15,8 @@ struct GaudiTupleAlg;
 class GaudiSequencer;
 class Sequencer;
 // ============================================================================
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** simple function to extract the last active
      *   GaudiAlgorithm from the context
@@ -123,7 +121,7 @@ namespace Gaudi
      */
     GAUDI_API IAlgorithm* getSequencer( const IAlgContextSvc* svc );
     // ========================================================================
-  } // end of namespace Gaudi::Utils
+  } // namespace Utils
 } // end of namespace Gaudi
 // ============================================================================
 // The END

@@ -6,8 +6,7 @@ using namespace boost::python;
 
 //-----------------------------------------------------------------------------
 StatusCode PythonConfig::evaluateConfig( const std::string& filename, const std::string& preAction,
-                                         const std::string& postAction )
-{
+                                         const std::string& postAction ) {
   try {
     // Prepare a Python environment
     Py_Initialize();

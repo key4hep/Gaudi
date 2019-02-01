@@ -16,8 +16,7 @@ class IConversionSvc;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API IPersistencySvc : virtual public IInterface
-{
+class GAUDI_API IPersistencySvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IPersistencySvc, 2, 0 );

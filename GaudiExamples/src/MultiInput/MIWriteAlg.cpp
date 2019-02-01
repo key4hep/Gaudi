@@ -21,8 +21,7 @@ DECLARE_COMPONENT( WriteAlg )
 //--------------------------------------------------------------------
 // Initialize
 //--------------------------------------------------------------------
-StatusCode WriteAlg::initialize()
-{
+StatusCode WriteAlg::initialize() {
   StatusCode sc = Algorithm::initialize();
   if ( sc.isFailure() ) return sc;
   m_evtnum = 0;
@@ -39,8 +38,7 @@ StatusCode WriteAlg::finalize() { return StatusCode::SUCCESS; }
 //--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
-StatusCode WriteAlg::execute()
-{
+StatusCode WriteAlg::execute() {
   StatusCode sc;
 
   Rndm::Numbers rndmflat( randSvc(), Rndm::Flat( 0., 1. ) );

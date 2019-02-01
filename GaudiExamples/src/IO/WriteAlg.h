@@ -12,8 +12,7 @@
     @author Markus Frank
 */
 
-class WriteAlg : public Algorithm
-{
+class WriteAlg : public Algorithm {
 protected:
   /// Reference to run records data service
   SmartIF<IDataProviderSvc> m_recordSvc;

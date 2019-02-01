@@ -15,13 +15,11 @@
 // Forward decalrations
 // ============================================================================
 class IHistogramSvc; ///< GaudiKernel
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D;
-} ///< AIDA
+} // namespace AIDA
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
   /** @class Histo1DDef HistoDef.h GaudiKernel/HistoDef.h
    *  Simple helper class for description of 1D-histogram
@@ -30,8 +28,7 @@ namespace Gaudi
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2007-09-17
    */
-  class GAUDI_API Histo1DDef final
-  {
+  class GAUDI_API Histo1DDef final {
   public:
     // ========================================================================
     /** full constructor from edges, #bins and the title
@@ -112,8 +109,7 @@ namespace Gaudi
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2007-09-17
    */
-  namespace Histos
-  {
+  namespace Histos {
     // ========================================================================
     /** helper function to book 1D-histogram
      *  @param svc pointer to Histogram Service
@@ -140,7 +136,7 @@ namespace Gaudi
     GAUDI_API AIDA::IHistogram1D* book( IHistogramSvc* svc, const std::string& dir, const int id,
                                         const Gaudi::Histo1DDef& hist );
     // ========================================================================
-  } // end of namespace Gaudi::Histos
+  } // namespace Histos
   // ==========================================================================
 } // end of namespace Gaudi
 // ============================================================================

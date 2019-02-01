@@ -33,17 +33,14 @@
 // provides macros for the tests
 #include <cppunit/extensions/HelperMacros.h>
 
-namespace GaudiKernelTest
-{
+namespace GaudiKernelTest {
 
   template <class M = std::mutex>
-  class Hist
-  {
+  class Hist {
   public:
     Hist( const std::string& id ) : m_id( id ) {}
-    const std::string&       id() const { return m_id; }
-    void                     acc()
-    {
+    const std::string& id() const { return m_id; }
+    void               acc() {
       std::cout << "in Hist::access\n";
       m_i++;
     }
@@ -59,21 +56,17 @@ namespace GaudiKernelTest
   };
 
   template <class T>
-  void Task( T* lh, int i, size_t nIter )
-  {
+  void Task( T* lh, int i, size_t nIter ) {
 
     std::cout << "spawn Task " << i << "\n";
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    for ( size_t j = 0; j < nIter; ++j ) {
-      ( *lh )->incr();
-    }
+    for ( size_t j = 0; j < nIter; ++j ) { ( *lh )->incr(); }
     std::this_thread::sleep_for( std::chrono::milliseconds( 40 ) );
     std::cout << "done Task " << i << "\n";
   }
 
-  class LockedHandleTest : public CppUnit::TestFixture
-  {
+  class LockedHandleTest : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE( LockedHandleTest );
 
@@ -85,8 +78,7 @@ namespace GaudiKernelTest
     LockedHandleTest() {}
     virtual ~LockedHandleTest() {}
 
-    void test_handle()
-    {
+    void test_handle() {
 
       // test default template args
       auto                 h1 = std::make_unique<Hist<>>( "first" );
@@ -94,14 +86,14 @@ namespace GaudiKernelTest
       lh1->acc();
 
       // test explicit mutex type
-      typedef std::mutex mut_t;
-      auto               h2 = std::make_unique<Hist<mut_t>>( "first" );
+      typedef std::mutex               mut_t;
+      auto                             h2 = std::make_unique<Hist<mut_t>>( "first" );
       LockedHandle<Hist<mut_t>, mut_t> lh2( h2.get(), h2->mut() );
       lh2->acc();
 
       // // test a different mutex type
-      typedef boost::mutex mut_b_t;
-      auto                 h3 = std::make_unique<Hist<mut_b_t>>( "first" );
+      typedef boost::mutex                 mut_b_t;
+      auto                                 h3 = std::make_unique<Hist<mut_b_t>>( "first" );
       LockedHandle<Hist<mut_b_t>, mut_b_t> lh3( h3.get(), h3->mut() );
       lh3->acc();
 
@@ -113,9 +105,7 @@ namespace GaudiKernelTest
         threads.push_back( std::thread{Task<LockedHandle<Hist<>>>, &lh1, i, nIter} );
       }
 
-      for ( auto& t : threads ) {
-        t.join();
-      }
+      for ( auto& t : threads ) { t.join(); }
 
       CPPUNIT_ASSERT_EQUAL( int( 1 + ( nthreads * nIter ) ), int( h1->val() ) );
     }
@@ -137,8 +127,7 @@ namespace GaudiKernelTest
    *  @author Marco Clemencic
    *  @date   2006-11-13
    */
-  class ProgressListener : public CppUnit::TestListener
-  {
+  class ProgressListener : public CppUnit::TestListener {
 
   public:
     /// Default constructor.
@@ -147,21 +136,18 @@ namespace GaudiKernelTest
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test* test ) override
-    {
+    void startTest( CppUnit::Test* test ) override {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure& failure ) override
-    {
+    void addFailure( const CppUnit::TestFailure& failure ) override {
       std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
       m_lastTestFailed = true;
     }
 
-    void endTest( CppUnit::Test* /*test*/ ) override
-    {
+    void endTest( CppUnit::Test* /*test*/ ) override {
       if ( !m_lastTestFailed ) std::cout << " : OK";
       std::cout << std::endl;
     }
@@ -169,12 +155,11 @@ namespace GaudiKernelTest
   private:
     bool m_lastTestFailed;
   };
-}
+} // namespace GaudiKernelTest
 
 // Copied from the COOL implementation
 #include <stdexcept>
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   // Retrieve test path from command line first argument.
   // Default to "" which resolve to the top level suite.
   std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );

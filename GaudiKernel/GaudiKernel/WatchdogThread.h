@@ -11,8 +11,7 @@
 #include "GaudiKernel/Kernel.h"
 
 // forward declaration
-namespace boost
-{
+namespace boost {
   class thread;
 }
 
@@ -25,8 +24,7 @@ namespace boost
  *  @author Marco Clemencic
  *  @date   2010-02-23
  */
-class GAUDI_API WatchdogThread
-{
+class GAUDI_API WatchdogThread {
 public:
   /// Constructor.
   //  @param timeout the time span that can occur between two pings.
@@ -45,8 +43,7 @@ public:
   void stop();
 
   /// Function to call to notify the watchdog thread that we are still alive.
-  inline void ping()
-  {
+  inline void ping() {
     boost::mutex::scoped_lock lock( m_lastPingMutex );
     m_lastPing = boost::get_system_time();
     onPing();
@@ -59,8 +56,7 @@ public:
   inline boost::posix_time::time_duration getTimeout() const { return m_timeout; }
 
   /// Get the time of latest ping.
-  inline boost::system_time getLastPing() const
-  {
+  inline boost::system_time getLastPing() const {
     boost::mutex::scoped_lock lock( m_lastPingMutex );
     return m_lastPing;
   }

@@ -7,14 +7,12 @@
 #include <algorithm>
 #include <map>
 
-namespace Containers
-{
+namespace Containers {
   struct hashmap {
     typedef GaudiUtils::HashMap<long, void*> map_type;
-    map_type           m;
-    std::vector<void*> v;
-    bool insert( void* obj, long key )
-    {
+    map_type                                 m;
+    std::vector<void*>                       v;
+    bool                                     insert( void* obj, long key ) {
       auto p = m.insert( map_type::value_type( key, obj ) );
       return p.second;
     }
@@ -23,10 +21,9 @@ namespace Containers
   };
   struct map {
     typedef std::map<long, void*> map_type;
-    map_type           m;
-    std::vector<void*> v;
-    bool insert( void* obj, long key )
-    {
+    map_type                      m;
+    std::vector<void*>            v;
+    bool                          insert( void* obj, long key ) {
       auto p = m.insert( map_type::value_type( key, obj ) );
       return p.second;
     }
@@ -42,8 +39,7 @@ namespace Containers
     struct decrement {
       long m_min;
       decrement( long m ) : m_min( m ) {}
-      bool operator()( long& j ) const
-      {
+      bool operator()( long& j ) const {
         if ( j > m_min ) --j;
         return true;
       }
@@ -60,8 +56,7 @@ namespace Containers
   };
 
   template <class CONT>
-  class find
-  {
+  class find {
     const void*                       m_obj;
     typedef typename CONT::value_type v_type;
 
@@ -70,32 +65,27 @@ namespace Containers
     bool operator()( const void* cmp ) const { return cmp == m_obj; }
     bool operator()( const v_type& cmp ) const { return ( *this )( cmp.second ); }
   };
-}
-void Containers::cannotAssignObjectKey()
-{
+} // namespace Containers
+void Containers::cannotAssignObjectKey() {
   throw GaudiException( "Cannot assign key to keyed object! Object already has a key.", "KeyedObject",
                         StatusCode::FAILURE );
 }
-void Containers::cannotInsertToContainer()
-{
+void Containers::cannotInsertToContainer() {
   throw GaudiException( "Cannot insert element to Keyed Container!", "KeyedContainer", StatusCode::FAILURE );
 }
 
-void Containers::containerIsInconsistent()
-{
+void Containers::containerIsInconsistent() {
   throw GaudiException( "Keyed Container structures are inconsistent - severe problem!", "KeyedContainer",
                         StatusCode::FAILURE );
 }
 
-void Containers::invalidContainerOperation()
-{
+void Containers::invalidContainerOperation() {
   throw GaudiException( "Keyed Container cannot satisfy request - severe problem!", "KeyedContainer",
                         StatusCode::FAILURE );
 }
 
 template <class T>
-Containers::KeyedObjectManager<T>::KeyedObjectManager() : m_seq( nullptr ), m_direct( 0 )
-{
+Containers::KeyedObjectManager<T>::KeyedObjectManager() : m_seq( nullptr ), m_direct( 0 ) {
   if ( sizeof( typename T::map_type ) > sizeof( m_setup.buffer ) ) {
     throw GaudiException( "Basic STL contaier sizes are incompatible", "KeyedContainer", StatusCode::FAILURE );
   }
@@ -105,8 +95,7 @@ Containers::KeyedObjectManager<T>::KeyedObjectManager() : m_seq( nullptr ), m_di
 
 template <class T>
 Containers::KeyedObjectManager<T>::KeyedObjectManager( KeyedObjectManager&& other )
-    : m_seq( nullptr ), m_direct( other.m_direct ), m_keyCtxt( other.m_keyCtxt )
-{
+    : m_seq( nullptr ), m_direct( other.m_direct ), m_keyCtxt( other.m_keyCtxt ) {
   m_setup.s = ::new ( m_setup.buffer + sizeof( m_setup.s ) ) T( std::move( *other.m_setup.s ) );
 
   other.m_keyCtxt = -1;
@@ -115,22 +104,19 @@ Containers::KeyedObjectManager<T>::KeyedObjectManager( KeyedObjectManager&& othe
 }
 
 template <class T>
-Containers::KeyedObjectManager<T>::~KeyedObjectManager()
-{
+Containers::KeyedObjectManager<T>::~KeyedObjectManager() {
   m_setup.s->~T();
 }
 
 /// Setup of the Map and the parent object
 template <class T>
-void Containers::KeyedObjectManager<T>::setup( void* seq, void** rndm )
-{
+void Containers::KeyedObjectManager<T>::setup( void* seq, void** rndm ) {
   m_seq = (seq_type*)seq;
   *rndm = &m_setup.s->v;
 }
 
 template <class T>
-void Containers::KeyedObjectManager<T>::onDirty() const
-{
+void Containers::KeyedObjectManager<T>::onDirty() const {
   m_direct = 1;
   auto& s  = *m_setup.s;
   long  i  = 0;
@@ -140,33 +126,25 @@ void Containers::KeyedObjectManager<T>::onDirty() const
 
 template <class T>
 long Containers::KeyedObjectManager<T>::insert( ObjectContainerBase* pBase, ContainedObject* pObject, void* obj,
-                                                long* key )
-{
+                                                long* key ) {
   *key = ++m_keyCtxt;
   return insert( pBase, pObject, obj, *key );
 }
 
 template <class T>
 long Containers::KeyedObjectManager<T>::insert( ObjectContainerBase* pBase, ContainedObject* pObject, void* obj,
-                                                long key )
-{
+                                                long key ) {
   /// Keep major key value
-  if ( key > m_keyCtxt ) {
-    m_keyCtxt = key;
-  }
+  if ( key > m_keyCtxt ) { m_keyCtxt = key; }
   if ( 1 == m_direct ) {
     if ( m_setup.s->insert( obj, key ) ) {
-      if ( !pObject->parent() ) {
-        pObject->setParent( pBase );
-      }
+      if ( !pObject->parent() ) { pObject->setParent( pBase ); }
       m_seq->push_back( obj );
       return OBJ_INSERTED;
     }
   } else if ( key == long( m_setup.s->v.size() ) ) {
     m_setup.s->v.push_back( obj );
-    if ( !pObject->parent() ) {
-      pObject->setParent( pBase );
-    }
+    if ( !pObject->parent() ) { pObject->setParent( pBase ); }
     m_seq->push_back( obj );
     return OBJ_INSERTED;
   } else {
@@ -181,24 +159,17 @@ long Containers::KeyedObjectManager<T>::insert( ObjectContainerBase* pBase, Cont
 
 template <class T>
 long Containers::KeyedObjectManager<T>::insertDirect( ObjectContainerBase* pBase, ContainedObject* pObject, void* obj,
-                                                      long key )
-{
+                                                      long key ) {
   /// Keep major key value
-  if ( key > m_keyCtxt ) {
-    m_keyCtxt = key;
-  }
+  if ( key > m_keyCtxt ) { m_keyCtxt = key; }
   if ( 1 == m_direct ) {
     if ( m_setup.s->insert( obj, key ) ) {
-      if ( !pObject->parent() ) {
-        pObject->setParent( pBase );
-      }
+      if ( !pObject->parent() ) { pObject->setParent( pBase ); }
       return OBJ_INSERTED;
     }
   } else if ( key == long( m_setup.s->v.size() ) ) {
     m_setup.s->v.push_back( obj );
-    if ( !pObject->parent() ) {
-      pObject->setParent( pBase );
-    }
+    if ( !pObject->parent() ) { pObject->setParent( pBase ); }
     return OBJ_INSERTED;
   } else {
     // Document is dirty now...
@@ -212,8 +183,7 @@ long Containers::KeyedObjectManager<T>::insertDirect( ObjectContainerBase* pBase
 
 // Remove object from container
 template <class T>
-void* Containers::KeyedObjectManager<T>::erase( long key, const void* obj )
-{
+void* Containers::KeyedObjectManager<T>::erase( long key, const void* obj ) {
   typedef typename T::map_type MTYP;
   typedef find<MTYP>           FND;
   if ( 1 == m_direct ) {
@@ -235,8 +205,7 @@ void* Containers::KeyedObjectManager<T>::erase( long key, const void* obj )
 }
 
 template <class T>
-void* Containers::KeyedObjectManager<T>::object( long key ) const
-{
+void* Containers::KeyedObjectManager<T>::object( long key ) const {
   if ( 0 == m_direct ) onDirty();
   auto i = m_setup.s->m.find( key );
   if ( i != m_setup.s->m.end() ) return ( *i ).second;
@@ -244,8 +213,7 @@ void* Containers::KeyedObjectManager<T>::object( long key ) const
 }
 
 template <class T>
-void Containers::KeyedObjectManager<T>::reserve( long len )
-{
+void Containers::KeyedObjectManager<T>::reserve( long len ) {
   switch ( m_direct ) {
   case 1:
     break;
@@ -259,15 +227,13 @@ void Containers::KeyedObjectManager<T>::reserve( long len )
 }
 
 template <class T>
-void Containers::KeyedObjectManager<T>::clear()
-{
+void Containers::KeyedObjectManager<T>::clear() {
   clearDirect();
   m_seq->clear();
 }
 
 template <class T>
-void Containers::KeyedObjectManager<T>::clearDirect()
-{
+void Containers::KeyedObjectManager<T>::clearDirect() {
   switch ( m_direct ) {
   case 1:
     m_setup.s->m.clear();
@@ -284,8 +250,7 @@ void Containers::KeyedObjectManager<T>::clearDirect()
 
 // Remove object by sequential iterators
 template <class T>
-long Containers::KeyedObjectManager<T>::erase( seq_type::iterator beg, seq_type::iterator end )
-{
+long Containers::KeyedObjectManager<T>::erase( seq_type::iterator beg, seq_type::iterator end ) {
   typedef typename T::map_type MTYP;
   typedef find<MTYP>           FND;
   if ( 0 == m_direct ) {
@@ -309,26 +274,23 @@ long Containers::KeyedObjectManager<T>::erase( seq_type::iterator beg, seq_type:
   return OBJ_ERASED;
 }
 
-namespace Containers
-{
+namespace Containers {
 
   /*  First specialize static methods and then instantiate templated class to appear as symbols in the library
       This order in needed for gcc 4.0 (MacOSX) */
 
   template <>
-  CLID KeyedObjectManager<Containers::map>::classID()
-  {
+  CLID KeyedObjectManager<Containers::map>::classID() {
     return CLID_ObjectVector + 0x00030000;
   }
   template <>
-  CLID KeyedObjectManager<Containers::hashmap>::classID()
-  {
+  CLID KeyedObjectManager<Containers::hashmap>::classID() {
     return CLID_ObjectVector + 0x00040000;
   }
 
   template class KeyedObjectManager<Containers::hashmap>;
   template class KeyedObjectManager<Containers::map>;
-}
+} // namespace Containers
 
 /*
  *
@@ -338,20 +300,16 @@ namespace Containers
  */
 typedef Containers::array __A;
 
-namespace Containers
-{
+namespace Containers {
 
   //__forceinline
   template <>
-  void* KeyedObjectManager<__A>::object( long value ) const
-  {
+  void* KeyedObjectManager<__A>::object( long value ) const {
 #ifdef CHECK_KEYED_CONTAINER
     unsigned long siz = m_setup.s->m_idx.size();
     if ( value >= 0 && size_t( value ) < siz ) {
       long ent = *( m_setup.s->m_idx.begin() + value );
-      if ( ent >= 0 ) {
-        return *( m_setup.s->v.begin() + ent );
-      }
+      if ( ent >= 0 ) { return *( m_setup.s->v.begin() + ent ); }
     }
     return nullptr;
 #else
@@ -360,22 +318,18 @@ namespace Containers
   }
 
   template <>
-  void KeyedObjectManager<__A>::onDirty() const
-  {
+  void KeyedObjectManager<__A>::onDirty() const {
     m_direct = 1;
     m_setup.s->m_idx.reserve( m_setup.s->v.size() + 1 );
     for ( int i = 0, stop = m_setup.s->v.size(); i < stop; ++i ) {
-      if ( !m_setup.s->v[i] ) {
-        containerIsInconsistent();
-      }
+      if ( !m_setup.s->v[i] ) { containerIsInconsistent(); }
       m_setup.s->m_idx.push_back( i );
     }
   }
 
   // Insert new object into container
   template <>
-  long KeyedObjectManager<__A>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long* k )
-  {
+  long KeyedObjectManager<__A>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long* k ) {
     // auto key creation only possible for direct access!
     if ( 0 == m_direct ) {
       m_seq->push_back( o );
@@ -390,21 +344,16 @@ namespace Containers
 
   // Insert new object into container
   template <>
-  long KeyedObjectManager<__A>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long k )
-  {
+  long KeyedObjectManager<__A>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long k ) {
     if ( 0 == m_direct ) {
-      if ( k == m_keyCtxt + 1 ) {
-        return insert( b, c, o, &k );
-      }
+      if ( k == m_keyCtxt + 1 ) { return insert( b, c, o, &k ); }
       onDirty();
       return insert( b, c, o, k );
     }
     /// Keep major key value
     if ( k > m_keyCtxt ) m_keyCtxt = k;
     /// Extend redirection array and insert
-    if ( k + 1 > long( m_setup.s->m_idx.size() ) ) {
-      m_setup.s->m_idx.resize( k + 1, -1 );
-    }
+    if ( k + 1 > long( m_setup.s->m_idx.size() ) ) { m_setup.s->m_idx.resize( k + 1, -1 ); }
     auto idx = m_setup.s->m_idx.begin() + k;
     if ( *idx == -1 ) {
       *idx = m_setup.s->v.size();
@@ -419,8 +368,7 @@ namespace Containers
 
   // Insert new object into container
   template <>
-  long KeyedObjectManager<__A>::insertDirect( ObjectContainerBase* b, ContainedObject* c, void* o, long k )
-  {
+  long KeyedObjectManager<__A>::insertDirect( ObjectContainerBase* b, ContainedObject* c, void* o, long k ) {
     if ( 0 == m_direct ) {
       if ( k == m_keyCtxt + 1 ) {
         m_setup.s->v.push_back( o );
@@ -434,9 +382,7 @@ namespace Containers
     /// Keep major key value
     if ( k > m_keyCtxt ) m_keyCtxt = k;
     /// Extend redirection array and insert
-    if ( k + 1 > long( m_setup.s->m_idx.size() ) ) {
-      m_setup.s->m_idx.resize( k + 1, -1 );
-    }
+    if ( k + 1 > long( m_setup.s->m_idx.size() ) ) { m_setup.s->m_idx.resize( k + 1, -1 ); }
     auto idx = m_setup.s->m_idx.begin() + k;
     if ( *idx == -1 ) {
       *idx = m_setup.s->v.size();
@@ -450,8 +396,7 @@ namespace Containers
 
   // Clear content of the vector
   template <>
-  void KeyedObjectManager<__A>::clearDirect()
-  {
+  void KeyedObjectManager<__A>::clearDirect() {
     m_setup.s->v.clear();
     m_setup.s->m_idx.clear();
     m_direct  = 0;
@@ -460,8 +405,7 @@ namespace Containers
 
   // Remove object from container (very inefficient if key is invalid)
   template <>
-  void* KeyedObjectManager<__A>::erase( long key, const void* obj )
-  {
+  void* KeyedObjectManager<__A>::erase( long key, const void* obj ) {
     if ( 0 == m_direct ) {
       onDirty();
       return erase( key, obj );
@@ -484,14 +428,10 @@ namespace Containers
       auto idx = m_setup.s->m_idx.begin() + key;
       if ( *idx != -1 ) {
         auto i = m_setup.s->v.begin() + ( *idx );
-        if ( i == m_setup.s->v.end() ) {
-          containerIsInconsistent();
-        }
+        if ( i == m_setup.s->v.end() ) { containerIsInconsistent(); }
         void* o = *i;
         auto  j = std::find( m_seq->begin(), m_seq->end(), o );
-        if ( j == m_seq->end() ) {
-          containerIsInconsistent();
-        }
+        if ( j == m_seq->end() ) { containerIsInconsistent(); }
         m_seq->erase( j );
         m_setup.s->v.erase( i );
         std::for_each( m_setup.s->m_idx.begin(), m_setup.s->m_idx.end(), array::decrement( *idx ) );
@@ -505,8 +445,7 @@ namespace Containers
 
   // Remove object by sequential iterators
   template <>
-  long KeyedObjectManager<__A>::erase( seq_type::iterator beg, seq_type::iterator end )
-  {
+  long KeyedObjectManager<__A>::erase( seq_type::iterator beg, seq_type::iterator end ) {
     if ( beg == m_seq->begin() && end == m_seq->end() ) {
       clear();
       return OBJ_ERASED;
@@ -528,50 +467,43 @@ namespace Containers
         }
       }
       m_seq->erase( beg, end );
-      if ( cnt != nobj ) {
-        containerIsInconsistent();
-      }
+      if ( cnt != nobj ) { containerIsInconsistent(); }
       return OBJ_ERASED;
     }
     // cannot reach this point
   }
 
   template <>
-  CLID KeyedObjectManager<__A>::classID()
-  {
+  CLID KeyedObjectManager<__A>::classID() {
     return CLID_ObjectVector + 0x00050000;
   }
-}
+} // namespace Containers
 template class Containers::KeyedObjectManager<__A>;
 /*
-  *
-  *
-  *  Implementation for objects with vector like access
-  *
-  *
-  **/
+ *
+ *
+ *  Implementation for objects with vector like access
+ *
+ *
+ **/
 typedef Containers::vector __V;
 
-namespace Containers
-{
+namespace Containers {
   // Access single entry by long(integer) key
   template <>
-  void* KeyedObjectManager<__V>::object( long /* value */ ) const
-  {
+  void* KeyedObjectManager<__V>::object( long /* value */ ) const {
     invalidContainerOperation();
     return nullptr;
   }
 
   template <>
-  void KeyedObjectManager<__V>::onDirty() const
-  {
+  void KeyedObjectManager<__V>::onDirty() const {
     invalidContainerOperation();
   }
 
   // Insert new object into container
   template <>
-  long KeyedObjectManager<__V>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long* k )
-  {
+  long KeyedObjectManager<__V>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long* k ) {
     m_seq->push_back( o );
     m_setup.s->v.push_back( o );
     if ( !c->parent() ) c->setParent( b );
@@ -581,19 +513,15 @@ namespace Containers
 
   // Insert new object into container
   template <>
-  long KeyedObjectManager<__V>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long k )
-  {
-    if ( k == long( m_setup.s->v.size() ) ) {
-      return insert( b, c, o, &k );
-    }
+  long KeyedObjectManager<__V>::insert( ObjectContainerBase* b, ContainedObject* c, void* o, long k ) {
+    if ( k == long( m_setup.s->v.size() ) ) { return insert( b, c, o, &k ); }
     cannotInsertToContainer();
     return OBJ_CANNOT_INSERT;
   }
 
   // Insert new object into container
   template <>
-  long KeyedObjectManager<__V>::insertDirect( ObjectContainerBase* b, ContainedObject* c, void* o, long k )
-  {
+  long KeyedObjectManager<__V>::insertDirect( ObjectContainerBase* b, ContainedObject* c, void* o, long k ) {
     if ( k == long( m_setup.s->v.size() ) ) {
       m_setup.s->v.push_back( o );
       if ( !c->parent() ) c->setParent( b );
@@ -605,8 +533,7 @@ namespace Containers
 
   // Clear content of the vector
   template <>
-  void KeyedObjectManager<__V>::clearDirect()
-  {
+  void KeyedObjectManager<__V>::clearDirect() {
     m_setup.s->v.clear();
     m_direct  = 0;
     m_keyCtxt = -1;
@@ -614,16 +541,14 @@ namespace Containers
 
   // Remove object from container (very inefficient if key is invalid)
   template <>
-  void* KeyedObjectManager<__V>::erase( long /* key */, const void* /* obj */ )
-  {
+  void* KeyedObjectManager<__V>::erase( long /* key */, const void* /* obj */ ) {
     invalidContainerOperation();
     return nullptr;
   }
 
   // Remove object by sequential iterators
   template <>
-  long KeyedObjectManager<__V>::erase( seq_type::iterator beg, seq_type::iterator end )
-  {
+  long KeyedObjectManager<__V>::erase( seq_type::iterator beg, seq_type::iterator end ) {
     if ( beg == m_seq->begin() && end == m_seq->end() ) {
       clear();
       return OBJ_ERASED;
@@ -633,9 +558,8 @@ namespace Containers
   }
 
   template <>
-  CLID KeyedObjectManager<__V>::classID()
-  {
+  CLID KeyedObjectManager<__V>::classID() {
     return CLID_ObjectVector + 0x00060000;
   }
-}
+} // namespace Containers
 template class Containers::KeyedObjectManager<__V>;

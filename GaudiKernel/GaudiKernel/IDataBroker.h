@@ -11,8 +11,7 @@
 #include <vector>
 
 // Forward class declaration
-namespace Gaudi
-{
+namespace Gaudi {
   class Algorithm;
 }
 

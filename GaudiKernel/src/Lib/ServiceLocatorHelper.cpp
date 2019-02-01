@@ -5,8 +5,7 @@
 #include "GaudiKernel/MsgStream.h"
 
 StatusCode ServiceLocatorHelper::locateService( const std::string& name, const InterfaceID& iid, void** ppSvc,
-                                                bool quiet ) const
-{
+                                                bool quiet ) const {
   auto theSvc = service( name, quiet, false );
   if ( !theSvc ) return StatusCode::FAILURE;
   StatusCode sc = theSvc->queryInterface( iid, ppSvc );
@@ -19,8 +18,7 @@ StatusCode ServiceLocatorHelper::locateService( const std::string& name, const I
   return sc;
 }
 
-StatusCode ServiceLocatorHelper::createService( const std::string& name, const InterfaceID& iid, void** ppSvc ) const
-{
+StatusCode ServiceLocatorHelper::createService( const std::string& name, const InterfaceID& iid, void** ppSvc ) const {
   auto theSvc = service( name, false, true );
   if ( !theSvc ) return StatusCode::FAILURE;
   StatusCode sc = theSvc->queryInterface( iid, ppSvc );
@@ -33,13 +31,12 @@ StatusCode ServiceLocatorHelper::createService( const std::string& name, const I
 }
 
 StatusCode ServiceLocatorHelper::createService( const std::string& type, const std::string& name,
-                                                const InterfaceID& iid, void** ppSvc ) const
-{
+                                                const InterfaceID& iid, void** ppSvc ) const {
   return createService( type + "/" + name, iid, ppSvc );
 }
 
-SmartIF<IService> ServiceLocatorHelper::service( const std::string& name, const bool quiet, const bool createIf ) const
-{
+SmartIF<IService> ServiceLocatorHelper::service( const std::string& name, const bool quiet,
+                                                 const bool createIf ) const {
   SmartIF<IService> theSvc = serviceLocator()->service( name, createIf );
 
   if ( theSvc ) {
@@ -49,9 +46,7 @@ SmartIF<IService> ServiceLocatorHelper::service( const std::string& name, const 
     }
   } else {
     // if not return an error
-    if ( !quiet ) {
-      log() << MSG::ERROR << "ServiceLocatorHelper::service: can not locate service " << name << endmsg;
-    }
+    if ( !quiet ) { log() << MSG::ERROR << "ServiceLocatorHelper::service: can not locate service " << name << endmsg; }
   }
   return theSvc;
 }

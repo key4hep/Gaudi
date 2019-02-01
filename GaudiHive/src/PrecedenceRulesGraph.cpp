@@ -9,12 +9,10 @@
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-namespace
-{
+namespace {
   //---------------------------------------------------------------------------
   /// Translation between state id and name
-  const char* stateToString( const int& stateId )
-  {
+  const char* stateToString( const int& stateId ) {
     switch ( stateId ) {
     case 0:
       return "FALSE";
@@ -24,29 +22,25 @@ namespace
       return "UNDEFINED";
     }
   }
-}
+} // namespace
 
-namespace concurrency
-{
+namespace concurrency {
 
   //---------------------------------------------------------------------------
-  void DecisionNode::addParentNode( DecisionNode* node )
-  {
+  void DecisionNode::addParentNode( DecisionNode* node ) {
 
     if ( std::find( m_parents.begin(), m_parents.end(), node ) == m_parents.end() ) m_parents.push_back( node );
   }
 
   //--------------------------------------------------------------------------
-  void DecisionNode::addDaughterNode( ControlFlowNode* node )
-  {
+  void DecisionNode::addDaughterNode( ControlFlowNode* node ) {
 
     if ( std::find( m_children.begin(), m_children.end(), node ) == m_children.end() ) m_children.push_back( node );
   }
 
   //---------------------------------------------------------------------------
   void DecisionNode::printState( std::stringstream& output, AlgsExecutionStates& states,
-                                 const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
-  {
+                                 const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const {
 
     output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
            << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
@@ -56,8 +50,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool DecisionNode::accept( IGraphVisitor& visitor )
-  {
+  bool DecisionNode::accept( IGraphVisitor& visitor ) {
 
     if ( visitor.visitEnter( *this ) ) {
       // try to aggregate a decision
@@ -70,8 +63,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
-                                  const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
-  {
+                                  const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const {
     output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
            << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
            << ")"
@@ -79,8 +71,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::accept( IGraphVisitor& visitor )
-  {
+  bool AlgorithmNode::accept( IGraphVisitor& visitor ) {
 
     if ( visitor.visitEnter( *this ) ) {
       visitor.visit( *this );
@@ -91,29 +82,25 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::addParentNode( DecisionNode* node )
-  {
+  void AlgorithmNode::addParentNode( DecisionNode* node ) {
 
     if ( std::find( m_parents.begin(), m_parents.end(), node ) == m_parents.end() ) m_parents.push_back( node );
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::addOutputDataNode( DataNode* node )
-  {
+  void AlgorithmNode::addOutputDataNode( DataNode* node ) {
 
     if ( std::find( m_outputs.begin(), m_outputs.end(), node ) == m_outputs.end() ) m_outputs.push_back( node );
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::addInputDataNode( DataNode* node )
-  {
+  void AlgorithmNode::addInputDataNode( DataNode* node ) {
 
     if ( std::find( m_inputs.begin(), m_inputs.end(), node ) == m_inputs.end() ) m_inputs.push_back( node );
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::initialize()
-  {
+  StatusCode PrecedenceRulesGraph::initialize() {
     if ( serviceLocator()->existsService( "CondSvc" ) ) {
       SmartIF<ICondSvc> condSvc{serviceLocator()->service( "CondSvc" )};
       if ( condSvc.isValid() ) {
@@ -156,16 +143,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::registerIODataObjects( const Gaudi::Algorithm* algo )
-  {
+  void PrecedenceRulesGraph::registerIODataObjects( const Gaudi::Algorithm* algo ) {
 
     const std::string& algoName = algo->name();
 
     m_algoNameToAlgoInputsMap[algoName]  = algo->inputDataObjs();
     m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
 
-    ON_VERBOSE
-    {
+    ON_VERBOSE {
       verbose() << "    Inputs of " << algoName << ": ";
       for ( auto tag : algo->inputDataObjs() ) verbose() << tag << " | ";
       verbose() << endmsg;
@@ -177,8 +162,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::buildDataDependenciesRealm()
-  {
+  StatusCode PrecedenceRulesGraph::buildDataDependenciesRealm() {
 
     StatusCode global_sc( StatusCode::SUCCESS, true );
 
@@ -227,8 +211,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addAlgorithmNode( Gaudi::Algorithm* algo, const std::string& parentName,
-                                                     bool inverted, bool allPass )
-  {
+                                                     bool inverted, bool allPass ) {
 
     StatusCode sc = StatusCode::SUCCESS;
 
@@ -280,8 +263,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::addDataNode( const DataObjID& dataPath )
-  {
+  StatusCode PrecedenceRulesGraph::addDataNode( const DataObjID& dataPath ) {
 
     auto itD = m_dataPathToDataNodeMap.find( dataPath );
     if ( itD != m_dataPathToDataNodeMap.end() ) return StatusCode::SUCCESS;
@@ -313,8 +295,7 @@ namespace concurrency
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDecisionHubNode( Gaudi::Algorithm* decisionHubAlgo, const std::string& parentName,
                                                        Concurrent modeConcurrent, PromptDecision modePromptDecision,
-                                                       ModeOr modeOR, AllPass allPass, Inverted isInverted )
-  {
+                                                       ModeOr modeOR, AllPass allPass, Inverted isInverted ) {
 
     StatusCode sc = StatusCode::SUCCESS;
 
@@ -367,8 +348,7 @@ namespace concurrency
   //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::addHeadNode( const std::string& headName, concurrency::Concurrent modeConcurrent,
                                           concurrency::PromptDecision modePromptDecision, concurrency::ModeOr modeOR,
-                                          concurrency::AllPass allPass, concurrency::Inverted isInverted )
-  {
+                                          concurrency::AllPass allPass, concurrency::Inverted isInverted ) {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
     if ( itH != m_decisionNameToDecisionHubMap.end() ) {
@@ -391,8 +371,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  PRVertexDesc PrecedenceRulesGraph::node( const std::string& name ) const
-  {
+  PRVertexDesc PrecedenceRulesGraph::node( const std::string& name ) const {
     auto vp = vertices( m_PRGraph );
     auto i  = std::find_if( vp.first, vp.second, [&]( const PRVertexDesc& v ) {
       return boost::apply_visitor( precedence::VertexName(), m_PRGraph[v] ) == name;
@@ -401,8 +380,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::accept( IGraphVisitor& visitor ) const
-  {
+  void PrecedenceRulesGraph::accept( IGraphVisitor& visitor ) const {
     // iterate through Algorithm nodes
     for ( auto& pr : m_algoNameToAlgoNodeMap ) pr.second->accept( visitor );
 
@@ -414,8 +392,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::rankAlgorithms( IGraphVisitor& ranker ) const
-  {
+  void PrecedenceRulesGraph::rankAlgorithms( IGraphVisitor& ranker ) const {
 
     info() << "Starting ranking by data outputs .. " << endmsg;
     for ( auto& pair : m_algoNameToAlgoNodeMap ) {
@@ -425,15 +402,14 @@ namespace concurrency
     }
   }
 
-  std::string PrecedenceRulesGraph::dumpControlFlow() const
-  {
+  std::string PrecedenceRulesGraph::dumpControlFlow() const {
     std::ostringstream ost;
     dumpControlFlow( ost, m_headNode, 0 );
     return ost.str();
   }
 
-  void PrecedenceRulesGraph::dumpControlFlow( std::ostringstream& ost, ControlFlowNode* node, const int& indent ) const
-  {
+  void PrecedenceRulesGraph::dumpControlFlow( std::ostringstream& ost, ControlFlowNode* node,
+                                              const int& indent ) const {
     ost << std::string( indent * 2, ' ' );
     DecisionNode*  dn = dynamic_cast<DecisionNode*>( node );
     AlgorithmNode* an = dynamic_cast<AlgorithmNode*>( node );
@@ -459,8 +435,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  std::string PrecedenceRulesGraph::dumpDataFlow() const
-  {
+  std::string PrecedenceRulesGraph::dumpDataFlow() const {
 
     const char         idt[] = "      ";
     std::ostringstream ost;
@@ -487,8 +462,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
 
-  void PrecedenceRulesGraph::dumpPrecRules( const boost::filesystem::path& fileName, const EventSlot& slot )
-  {
+  void PrecedenceRulesGraph::dumpPrecRules( const boost::filesystem::path& fileName, const EventSlot& slot ) {
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
@@ -500,11 +474,11 @@ namespace concurrency
                                boost::get( boost::vertex_bundle, m_PRGraph ) ) );
 
     auto add_prop = [&]( auto name, auto&& vis ) {
-      dp.property( name,
-                   boost::make_transform_value_property_map( [vis = std::forward<decltype( vis )>( vis )](
-                                                                 const VariantVertexProps&
-                                                                     v ) { return boost::apply_visitor( vis, v ); },
-                                                             boost::get( boost::vertex_bundle, m_PRGraph ) ) );
+      dp.property( name, boost::make_transform_value_property_map(
+                             [vis = std::forward<decltype( vis )>( vis )]( const VariantVertexProps& v ) {
+                               return boost::apply_visitor( vis, v );
+                             },
+                             boost::get( boost::vertex_bundle, m_PRGraph ) ) );
     };
 
     add_prop( "Name", precedence::VertexName() );
@@ -526,8 +500,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::dumpPrecTrace( const boost::filesystem::path& fileName )
-  {
+  void PrecedenceRulesGraph::dumpPrecTrace( const boost::filesystem::path& fileName ) {
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
@@ -560,8 +533,7 @@ namespace concurrency
     myfile.close();
   }
 
-  void PrecedenceRulesGraph::addEdgeToPrecTrace( const AlgorithmNode* u, const AlgorithmNode* v )
-  {
+  void PrecedenceRulesGraph::addEdgeToPrecTrace( const AlgorithmNode* u, const AlgorithmNode* v ) {
 
     std::string u_name = u == nullptr ? "ENTRY" : u->getNodeName();
     std::string v_name = v->getNodeName();
@@ -605,4 +577,4 @@ namespace concurrency
     ON_DEBUG debug() << u_name << "-->" << v_name << " precedence trait added" << endmsg;
   }
 
-} // namespace
+} // namespace concurrency

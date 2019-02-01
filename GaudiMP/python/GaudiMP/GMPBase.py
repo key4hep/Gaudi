@@ -33,7 +33,6 @@ from ROOT import TParallelMergingFile
 # Also, there needs to be proper Termination flags and criteria
 # The System should be error proof.
 
-
 # Constants -------------------------------------------------------------------
 NAP = 0.001
 MB = 1024.0 * 1024.0
@@ -58,25 +57,23 @@ aida2root = gbl.Gaudi.Utils.Aida2ROOT.aida2root
 
 # used to check which type of histo we are dealing with
 # i.e. if currentHisto in aidatypes : pass
-aidatypes = (gbl.AIDA.IHistogram,
-             gbl.AIDA.IHistogram1D,
-             gbl.AIDA.IHistogram2D,
-             gbl.AIDA.IHistogram3D,
-             gbl.AIDA.IProfile1D,
-             gbl.AIDA.IProfile2D,
+aidatypes = (gbl.AIDA.IHistogram, gbl.AIDA.IHistogram1D, gbl.AIDA.IHistogram2D,
+             gbl.AIDA.IHistogram3D, gbl.AIDA.IProfile1D, gbl.AIDA.IProfile2D,
              gbl.AIDA.IBaseHistogram)  # extra?
 
 # similar to aidatypes
 thtypes = (gbl.TH1D, gbl.TH2D, gbl.TH3D, gbl.TProfile, gbl.TProfile2D)
 
 # Types of OutputStream in Gaudi
-WRITERTYPES = {'EvtCollectionStream': "tuples",
-               'InputCopyStream': "events",
-               'OutputStream': "events",
-               'RecordStream': "records",
-               'RunRecordStream': "records",
-               'SequentialOutputStream': "events",
-               'TagCollectionStream': "tuples"}
+WRITERTYPES = {
+    'EvtCollectionStream': "tuples",
+    'InputCopyStream': "events",
+    'OutputStream': "events",
+    'RecordStream': "records",
+    'RunRecordStream': "records",
+    'SequentialOutputStream': "events",
+    'TagCollectionStream': "tuples"
+}
 
 # =============================================================================
 
@@ -181,6 +178,7 @@ class MiniWriter(object):
         s += (line + '\n')
         return s
 
+
 # =============================================================================
 
 
@@ -204,8 +202,8 @@ class CollectHistograms(PyAlgorithm):
         return SUCCESS
 
     def finalize(self):
-        self.log.info('CollectHistograms Finalise (%s)' %
-                      (self._gmpc.nodeType))
+        self.log.info(
+            'CollectHistograms Finalise (%s)' % (self._gmpc.nodeType))
         self._gmpc.hDict = self._gmpc.dumpHistograms()
         ks = self._gmpc.hDict.keys()
         self.log.info('%i Objects in Histogram Store' % (len(ks)))
@@ -216,7 +214,7 @@ class CollectHistograms(PyAlgorithm):
         chunk = 100
         reps = len(ks) / chunk + 1
         for i in xrange(reps):
-            someKeys = ks[i * chunk: (i + 1) * chunk]
+            someKeys = ks[i * chunk:(i + 1) * chunk]
             smalld = dict([(key, self._gmpc.hDict[key]) for key in someKeys])
             self._gmpc.hq.put((self._gmpc.nodeID, smalld))
         # "finished" Notification
@@ -230,6 +228,7 @@ class CollectHistograms(PyAlgorithm):
         setOwnership(root, False)
         self._gmpc.hvt.setRoot('/stat', root)
         return SUCCESS
+
 
 # =============================================================================
 
@@ -252,12 +251,12 @@ class EventCommunicator(object):
         self.allrecv = False
 
         # statistics storage
-        self.nSent = 0    # counter : items sent
-        self.nRecv = 0    # counter : items received
-        self.sizeSent = 0    # measure : size of events sent ( tbuf.Length() )
-        self.sizeRecv = 0    # measure : size of events in   ( tbuf.Length() )
-        self.qinTime = 0    # time    : receiving from self.qin
-        self.qoutTime = 0    # time    : sending on qout
+        self.nSent = 0  # counter : items sent
+        self.nRecv = 0  # counter : items received
+        self.sizeSent = 0  # measure : size of events sent ( tbuf.Length() )
+        self.sizeRecv = 0  # measure : size of events in   ( tbuf.Length() )
+        self.qinTime = 0  # time    : receiving from self.qin
+        self.qoutTime = 0  # time    : sending on qout
 
     def send(self, item):
         # This class manages the sending of a TBufferFile Event to a Queue
@@ -290,8 +289,8 @@ class EventCommunicator(object):
         try:
             self.qin.task_done()
         except:
-            self._gmpc.log.warning('TASK_DONE called too often by : %s'
-                                   % (self._gmpc.nodeType))
+            self._gmpc.log.warning(
+                'TASK_DONE called too often by : %s' % (self._gmpc.nodeType))
         return itemIn
 
     def finalize(self):
@@ -324,12 +323,12 @@ class EventCommunicator(object):
         self.log.info('Q-out Time     : %5.2f' % (self.qoutTime))
         self.log.info('Q-in  Time     : %5.2f' % (self.qinTime))
 
+
 # =============================================================================
 
 
 class TESSerializer(object):
-    def __init__(self, gaudiTESSerializer, evtDataSvc,
-                 nodeType, nodeID, log):
+    def __init__(self, gaudiTESSerializer, evtDataSvc, nodeType, nodeID, log):
         self.T = gaudiTESSerializer
         self.evt = evtDataSvc
         self.buffersIn = []
@@ -407,6 +406,7 @@ class TESSerializer(object):
             self.log.info(line)
         self.log.name = "%s-%i" % (self.nodeType, self.nodeID)
 
+
 # =============================================================================
 
 
@@ -432,7 +432,7 @@ class GMPComponent(object):
 
         # Synchronisation Event() objects for keeping track of the system
         self.initEvent, eventLoopSyncer, self.finalEvent = events
-        self.eventLoopSyncer, self.lastEvent = eventLoopSyncer   # unpack tuple
+        self.eventLoopSyncer, self.lastEvent = eventLoopSyncer  # unpack tuple
 
         # necessary for knowledge of the system
         self.nWorkers, self.sEvent, self.config, self.log = params
@@ -523,8 +523,8 @@ class GMPComponent(object):
         self.inc = self.a.service('IncidentSvc', 'IIncidentSvc')
         self.pers = self.a.service('EventPersistencySvc', 'IAddressCreator')
         self.ts = gbl.GaudiMP.TESSerializer(self.evt._idp, self.pers)
-        self.TS = TESSerializer(self.ts, self.evt,
-                                self.nodeType, self.nodeID, self.log)
+        self.TS = TESSerializer(self.ts, self.evt, self.nodeType, self.nodeID,
+                                self.log)
         return SUCCESS
 
     def StartGaudiPython(self):
@@ -545,8 +545,7 @@ class GMPComponent(object):
             # time... try to build a set of Header paths??
 
             # First Attempt : Unpacked Event Data
-            lst = ['/Event/Gen/Header',
-                   '/Event/Rec/Header']
+            lst = ['/Event/Gen/Header', '/Event/Rec/Header']
             for l in lst:
                 path = l
                 try:
@@ -579,9 +578,9 @@ class GMPComponent(object):
                 return self.num
 
     def IdentifyWriters(self):
-            #
-            # Identify Writers in the Configuration
-            #
+        #
+        # Identify Writers in the Configuration
+        #
         d = {}
         keys = ["events", "records", "tuples", "histos"]
         for k in keys:
@@ -664,13 +663,14 @@ class GMPComponent(object):
         # and report from the TESSerializer
         self.TS.Report()
 
+
 # =============================================================================
 
 
 class Reader(GMPComponent):
     def __init__(self, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Reader', -1, queues,
-                              events, params, subworkers)
+        GMPComponent.__init__(self, 'Reader', -1, queues, events, params,
+                              subworkers)
 
     def processConfiguration(self):
         # Reader :
@@ -719,8 +719,8 @@ class Reader(GMPComponent):
                             daqnode = self.evt.retrieveObject(
                                 '/Event/DAQ').registry()
                             setOwnership(daqnode, False)
-                            self.evt.getList(
-                                daqnode, lst, daqnode.address().par())
+                            self.evt.getList(daqnode, lst,
+                                             daqnode.address().par())
                     except:
                         self.log.critical('Reader could not acquire TES List!')
                         self.lastEvent.set()
@@ -797,13 +797,14 @@ class Reader(GMPComponent):
         self.tTime = time.time() - startEngine
         self.Report()
 
+
 # =============================================================================
 
 
 class Subworker(GMPComponent):
     def __init__(self, workerID, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Worker', workerID,
-                              queues, events, params, subworkers)
+        GMPComponent.__init__(self, 'Worker', workerID, queues, events, params,
+                              subworkers)
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters()
         # Identify the accept/veto checks for each event
@@ -822,15 +823,15 @@ class Subworker(GMPComponent):
         self.initEvent.set()
         startEngine = time.time()
         msg = self.a.service('MessageSvc')
-        msg.Format = '%-13s ' % ('['+self.log.name+']') + self.msgFormat
+        msg.Format = '%-13s ' % ('[' + self.log.name + ']') + self.msgFormat
 
         self.log.name = "Worker-%i" % (self.nodeID)
         self.log.info("Subworker %i starting Engine" % (self.nodeID))
         self.filerecordsAgent = FileRecordsAgent(self)
 
         # populate the TESSerializer itemlist
-        self.log.info('EVT WRITERS ON WORKER : %i'
-                      % (len(self.writerDict['events'])))
+        self.log.info(
+            'EVT WRITERS ON WORKER : %i' % (len(self.writerDict['events'])))
 
         nEventWriters = len(self.writerDict["events"])
         self.a.addAlgorithm(CollectHistograms(self))
@@ -845,7 +846,7 @@ class Subworker(GMPComponent):
                 continue
             if packet == 'FINISHED':
                 break
-            evtNumber, tbin = packet    # unpack
+            evtNumber, tbin = packet  # unpack
             if self.cntr != None:
 
                 self.cntr.setEventCounter(evtNumber)
@@ -905,8 +906,8 @@ class Subworker(GMPComponent):
         self.pers = pers
         self.ts = ts
         self.cntr = cntr
-        self.TS = TESSerializer(self.ts, self.evt,
-                                self.nodeType, self.nodeID, self.log)
+        self.TS = TESSerializer(self.ts, self.evt, self.nodeType, self.nodeID,
+                                self.log)
 
     def getCheckAlgs(self):
         '''
@@ -968,13 +969,14 @@ class Subworker(GMPComponent):
                 passed = False
         return passed
 
+
 # =============================================================================
 
 
 class Worker(GMPComponent):
     def __init__(self, workerID, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Worker', workerID,
-                              queues, events, params, subworkers)
+        GMPComponent.__init__(self, 'Worker', workerID, queues, events, params,
+                              subworkers)
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters()
         # Identify the accept/veto checks for each event
@@ -1039,8 +1041,8 @@ class Worker(GMPComponent):
         self.filerecordsAgent = FileRecordsAgent(self)
 
         # populate the TESSerializer itemlist
-        self.log.info('EVT WRITERS ON WORKER : %i'
-                      % (len(self.writerDict['events'])))
+        self.log.info(
+            'EVT WRITERS ON WORKER : %i' % (len(self.writerDict['events'])))
 
         nEventWriters = len(self.writerDict["events"])
         if nEventWriters:
@@ -1079,7 +1081,7 @@ class Worker(GMPComponent):
                 continue
             if packet == 'FINISHED':
                 break
-            evtNumber, tbin = packet    # unpack
+            evtNumber, tbin = packet  # unpack
             if self.cntr != None:
                 self.cntr.setEventCounter(evtNumber)
 
@@ -1204,13 +1206,14 @@ class Worker(GMPComponent):
                 passed = False
         return passed
 
+
 # =============================================================================
 
 
 class Writer(GMPComponent):
     def __init__(self, queues, events, params, subworkers):
-        GMPComponent.__init__(self, 'Writer', -2, queues,
-                              events, params, subworkers)
+        GMPComponent.__init__(self, 'Writer', -2, queues, events, params,
+                              subworkers)
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters()
         # This keeps track of workers as they finish
@@ -1249,8 +1252,8 @@ class Writer(GMPComponent):
         # FileRecords Writers
         for m in self.writerDict["records"]:
             self.log.debug('Processing FileRecords Writer: %s' % (m))
-            newName = m.getNewName('.', '.p%i.' % self.nWorkers,
-                                   extra=" OPT='RECREATE'")
+            newName = m.getNewName(
+                '.', '.p%i.' % self.nWorkers, extra=" OPT='RECREATE'")
             self.config[m.key].Output = newName
 
         # same for histos
@@ -1259,8 +1262,8 @@ class Writer(GMPComponent):
         if hs in self.config.keys():
             n = self.config[hs].OutputFile
         if n:
-            newName = self.config[hs].OutputFile.replace('.',
-                                                         '.p%i.' % (self.nWorkers))
+            newName = self.config[hs].OutputFile.replace(
+                '.', '.p%i.' % (self.nWorkers))
             self.config[hs].OutputFile = newName
 
     def Engine(self):
@@ -1295,8 +1298,8 @@ class Writer(GMPComponent):
                     break
                 continue
             # otherwise, continue as normal
-            self.nIn += 1    # update central count (maybe needed by FSR store)
-            evtNumber, tbin = packet    # unpack
+            self.nIn += 1  # update central count (maybe needed by FSR store)
+            evtNumber, tbin = packet  # unpack
             self.TS.Load(tbin)
             t = time.time()
             self.a.executeEvent()
@@ -1325,10 +1328,11 @@ class Writer(GMPComponent):
         #self.rTime = time.time()-startEngine
         self.Report()
 
-# =============================================================================
-
 
 # =============================================================================
+
+# =============================================================================
+
 
 class Coord(object):
     def __init__(self, nWorkers, config, log):
@@ -1345,22 +1349,25 @@ class Coord(object):
         else:
             self.nWorkers = nWorkers
 
-        self.qs = self.SetupQueues()    # a dictionary of queues (for Events)
-        self.hq = JoinableQueue()       # for Histogram data
-        self.fq = JoinableQueue()       # for FileRecords data
+        self.qs = self.SetupQueues()  # a dictionary of queues (for Events)
+        self.hq = JoinableQueue()  # for Histogram data
+        self.fq = JoinableQueue()  # for FileRecords data
 
         # Make a Syncer for Initalise, Run, and Finalise
-        self.sInit = Syncer(self.nWorkers, self.log,
-                            limit=WAIT_INITIALISE,
-                            step=STEP_INITIALISE)
-        self.sRun = Syncer(self.nWorkers, self.log,
-                           manyEvents=True,
-                           limit=WAIT_SINGLE_EVENT,
-                           step=STEP_EVENT,
-                           firstEvent=WAIT_FIRST_EVENT)
-        self.sFin = Syncer(self.nWorkers, self.log,
-                           limit=WAIT_FINALISE,
-                           step=STEP_FINALISE)
+        self.sInit = Syncer(
+            self.nWorkers,
+            self.log,
+            limit=WAIT_INITIALISE,
+            step=STEP_INITIALISE)
+        self.sRun = Syncer(
+            self.nWorkers,
+            self.log,
+            manyEvents=True,
+            limit=WAIT_SINGLE_EVENT,
+            step=STEP_EVENT,
+            firstEvent=WAIT_FIRST_EVENT)
+        self.sFin = Syncer(
+            self.nWorkers, self.log, limit=WAIT_FINALISE, step=STEP_FINALISE)
         # and one final one for Histogram Transfer
         self.histSyncEvent = Event()
 
@@ -1370,16 +1377,18 @@ class Coord(object):
         self.subworkers = []
         # Declare SubProcesses!
         for i in range(1, self.nWorkers):
-            sub = Subworker(i, self.getQueues(
-                i), self.getSyncEvents(i), params, self.subworkers)
+            sub = Subworker(i, self.getQueues(i), self.getSyncEvents(i),
+                            params, self.subworkers)
             self.subworkers.append(sub)
-        self.reader = Reader(self.getQueues(-1),
-                             self.getSyncEvents(-1), params, self.subworkers)
+        self.reader = Reader(
+            self.getQueues(-1), self.getSyncEvents(-1), params,
+            self.subworkers)
         self.workers = []
-        wk = Worker(0, self.getQueues(0), self.getSyncEvents(0),
-                    params, self.subworkers)
-        self.writer = Writer(self.getQueues(-2),
-                             self.getSyncEvents(-2), params, self.subworkers)
+        wk = Worker(0, self.getQueues(0), self.getSyncEvents(0), params,
+                    self.subworkers)
+        self.writer = Writer(
+            self.getQueues(-2), self.getSyncEvents(-2), params,
+            self.subworkers)
 
         self.system = []
         self.system.append(self.writer)
@@ -1470,10 +1479,11 @@ class Coord(object):
         # one queue from each worker to writer
         workersWriter = [JoinableQueue() for i in xrange(self.nWorkers)]
         d = {}
-        d[-1] = (None, rwk)              # Reader
-        d[-2] = (workersWriter, None)    # Writer
+        d[-1] = (None, rwk)  # Reader
+        d[-2] = (workersWriter, None)  # Writer
         for i in xrange(self.nWorkers):
             d[i] = (rwk, workersWriter[i])
         return d
+
 
 # ============================= EOF ===========================================

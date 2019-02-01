@@ -20,8 +20,7 @@ struct IFuncMinimum;
  */
 //-----------------------------------------------------------------------------
 
-class FuncMinimumPAlg : public Algorithm
-{
+class FuncMinimumPAlg : public Algorithm {
 
 public:
   using Algorithm::Algorithm;

@@ -9,8 +9,7 @@
 #include <set>
 #include <string>
 
-class StatusCodeSvc : public extends<Service, IStatusCodeSvc>
-{
+class StatusCodeSvc : public extends<Service, IStatusCodeSvc> {
 public:
   using extends::extends;
   StatusCode initialize() override;
@@ -38,7 +37,7 @@ private:
   Gaudi::Property<bool>                     m_dict{this, "IgnoreDicts", true};
 
   std::map<std::string, StatCodeDat> m_dat;
-  std::set<std::string> m_filterfnc, m_filterlib;
+  std::set<std::string>              m_filterfnc, m_filterlib;
 };
 
 #endif

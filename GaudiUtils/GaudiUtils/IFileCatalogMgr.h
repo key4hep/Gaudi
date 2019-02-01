@@ -8,23 +8,21 @@
 /*
  *   Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // Forward declarations
   class IFileCatalog;
 
   /** @class IFileCatalogMgr IFileCatalogMgr.h GaudiUtils/IFileCatalogMgr.h
-    *
-    *  File catalog manager.
-    *  Interface to add/remove file catalogs from the multi catalog.
-    *
-    *  @author  M.Frank
-    *  @version 1.0
-    *  @date    20/10/2007
-    */
-  class GAUDI_API IFileCatalogMgr : virtual public IInterface
-  {
+   *
+   *  File catalog manager.
+   *  Interface to add/remove file catalogs from the multi catalog.
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    20/10/2007
+   */
+  class GAUDI_API IFileCatalogMgr : virtual public IInterface {
   public:
     /// InterfaceID
     DeclareInterfaceID( IFileCatalogMgr, 2, 0 );

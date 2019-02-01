@@ -25,8 +25,7 @@ class IMessageSvc;
 //
 // Author:      Pere Mato
 //
-class DLLClassManager : public implements<IClassManager>
-{
+class DLLClassManager : public implements<IClassManager> {
 public:
   // default creator
   DLLClassManager( IInterface* iface );

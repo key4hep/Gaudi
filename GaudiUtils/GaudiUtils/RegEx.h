@@ -9,10 +9,8 @@
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** RegeEx: nemspace to hold gaudi regular expression checking
      *
@@ -22,28 +20,23 @@ namespace Gaudi
      *  @author Rob Lambert Rob.Lambert@cern.ch
      *  @date   2009-07-29
      */
-    namespace RegEx
-    {
-      class matchList
-      {
+    namespace RegEx {
+      class matchList {
         std::vector<boost::regex> m_regs;
 
       public:
         template <typename C>
-        matchList( const C& c )
-        {
+        matchList( const C& c ) {
           m_regs.reserve( c.size() );
           std::transform( std::begin( c ), std::end( c ), std::back_inserter( m_regs ),
                           []( typename C::const_reference i ) { return boost::regex{i}; } );
         }
 
-        bool Or( const std::string& test ) const
-        {
+        bool Or( const std::string& test ) const {
           return std::any_of( std::begin( m_regs ), std::end( m_regs ),
                               [&]( const boost::regex& r ) { return boost::regex_match( test, r ); } );
         }
-        bool And( const std::string& test ) const
-        {
+        bool And( const std::string& test ) const {
           return std::all_of( std::begin( m_regs ), std::end( m_regs ),
                               [&]( const boost::regex& r ) { return boost::regex_match( test, r ); } );
         }
@@ -58,8 +51,7 @@ namespace Gaudi
        *  object, and then invoke its Or method.
        */
       template <typename T>
-      bool matchOr( const std::string& test, const T& regexps )
-      {
+      bool matchOr( const std::string& test, const T& regexps ) {
         // compares the string in test, to the regexps in a container
         //
         return std::any_of( std::begin( regexps ), std::end( regexps ), [&]( typename T::const_reference i ) {
@@ -76,15 +68,14 @@ namespace Gaudi
        *  object, and then invoke its And method.
        */
       template <typename T>
-      bool matchAnd( const std::string& test, const T& regexps )
-      {
+      bool matchAnd( const std::string& test, const T& regexps ) {
         // compares the string in test, to the regexps in a container
         //
         return std::all_of( std::begin( regexps ), std::end( regexps ), [&]( typename T::const_reference i ) {
           return boost::regex_match( test, boost::regex{i} );
         } );
       }
-    }
-  }
-}
+    } // namespace RegEx
+  }   // namespace Utils
+} // namespace Gaudi
 #endif

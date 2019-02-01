@@ -52,8 +52,7 @@
     Version: 1.0
 */
 template <class TYPE>
-class SmartRefVector : public std::vector<SmartRef<TYPE>>
-{
+class SmartRefVector : public std::vector<SmartRef<TYPE>> {
 protected:
   /// That's the type of crap I am hosting
   typedef SmartRef<TYPE> _Entry;
@@ -68,28 +67,22 @@ protected:
   mutable const ContainedObject* m_contd;
 
   /// Set the environment for the vector and all contained objects references
-  void _setEnvironment( const DataObject* pObj, const ContainedObject* pContd ) const
-  {
+  void _setEnvironment( const DataObject* pObj, const ContainedObject* pContd ) const {
     m_data  = pObj;
     m_contd = pContd;
-    for ( _BaseConstIter i = _Base::begin(); i != _Base::end(); i++ ) {
-      ( *i )._setEnvironment( pObj, pContd );
-    }
+    for ( _BaseConstIter i = _Base::begin(); i != _Base::end(); i++ ) { ( *i )._setEnvironment( pObj, pContd ); }
   }
 
 public:
   /// Standard Constructor
-  SmartRefVector()
-  {
+  SmartRefVector() {
     m_contd = 0;
     m_data  = 0;
   }
   /// templated Constructor
   template <class ITERATOR>
   SmartRefVector( ITERATOR first, ITERATOR last )
-      : std::vector<SmartRef<TYPE>>( first, last ), m_data( 0 ), m_contd( 0 )
-  {
-  }
+      : std::vector<SmartRef<TYPE>>( first, last ), m_data( 0 ), m_contd( 0 ) {}
   /// Copy Constructor
   SmartRefVector( const SmartRefVector& copy ) : std::vector<SmartRef<TYPE>>( copy ) { *this = copy; }
   /// Standard destructor
@@ -97,32 +90,27 @@ public:
   //}
 
   /// operator(): assigns parent object for serialisation
-  SmartRefVector<TYPE>& operator()( ContainedObject* pObj )
-  {
+  SmartRefVector<TYPE>& operator()( ContainedObject* pObj ) {
     _setEnvironment( ( 0 == pObj ) ? 0 : pObj->parent(), pObj );
     return *this;
   }
   /// operator() const: assigns parent object for serialisation
-  const SmartRefVector<TYPE>& operator()( const ContainedObject* pObj ) const
-  {
+  const SmartRefVector<TYPE>& operator()( const ContainedObject* pObj ) const {
     _setEnvironment( ( 0 == pObj ) ? 0 : pObj->parent(), pObj );
     return *this;
   }
   /// operator(): assigns parent object for serialisation
-  SmartRefVector<TYPE>& operator()( DataObject* pObj )
-  {
+  SmartRefVector<TYPE>& operator()( DataObject* pObj ) {
     _setEnvironment( pObj, 0 );
     return *this;
   }
   /// operator() const: assigns parent object for serialisation
-  const SmartRefVector<TYPE>& operator()( const DataObject* pObj ) const
-  {
+  const SmartRefVector<TYPE>& operator()( const DataObject* pObj ) const {
     _setEnvironment( pObj, 0 );
     return *this;
   }
   /// Assignment
-  SmartRefVector<TYPE>& operator=( const SmartRefVector<TYPE>& copy )
-  {
+  SmartRefVector<TYPE>& operator=( const SmartRefVector<TYPE>& copy ) {
     _Base::operator=( copy );
     // Harms.... MF
     // on copy we MUST make a 1 to 1 copy
@@ -147,8 +135,7 @@ public:
 };
 
 template <class TYPE>
-inline StreamBuffer& SmartRefVector<TYPE>::writeRefs( StreamBuffer& s ) const
-{
+inline StreamBuffer& SmartRefVector<TYPE>::writeRefs( StreamBuffer& s ) const {
   long len = _Base::size();
   s << len;
   for ( _BaseConstIter i = _Base::begin(); i != _Base::end(); i++ ) {
@@ -159,8 +146,7 @@ inline StreamBuffer& SmartRefVector<TYPE>::writeRefs( StreamBuffer& s ) const
 }
 
 template <class TYPE>
-inline StreamBuffer& SmartRefVector<TYPE>::readRefs( StreamBuffer& s )
-{
+inline StreamBuffer& SmartRefVector<TYPE>::readRefs( StreamBuffer& s ) {
   long len;
   _Base::erase( _Base::begin(), _Base::end() );
   s >> len;

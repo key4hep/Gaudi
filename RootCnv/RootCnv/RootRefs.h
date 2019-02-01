@@ -18,8 +18,7 @@
 /*
  *   Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @struct RootRef RootRefs.h RootCnv/RootRefs.h
    *
@@ -38,8 +37,7 @@ namespace Gaudi
     /// Assignment operator
     RootRef& operator=( const RootRef& c ) = default;
     /// Reset data content
-    void reset()
-    {
+    void reset() {
       dbase     = -1;
       container = -1;
       link      = -1;
@@ -90,6 +88,6 @@ namespace Gaudi
     /// Standard destructor
     virtual ~RootNTupleDescriptor() = default;
   };
-}
+} // namespace Gaudi
 
 #endif // GAUDIROOTCNV_ROOTREFS_H

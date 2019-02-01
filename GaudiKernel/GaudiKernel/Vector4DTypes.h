@@ -22,8 +22,7 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // NB : Please remember to give a simple doxygen comment for each typedef
 
@@ -32,5 +31,5 @@ namespace Gaudi
   typedef ROOT::Math::XYZTVectorF     XYZTVectorF;     ///< Cartesian 4 Vector (float)
   typedef ROOT::Math::XYZTVectorF     LorentzVectorF;  ///< Cartesian 4 Vector (float)
   typedef ROOT::Math::PtEtaPhiEVector PtEtaPhiEVector; ///< Polar 4 Vector
-}
+} // namespace Gaudi
 #endif // EVENT_VECTOR4DTYPES_H

@@ -13,16 +13,16 @@ class Tests(CMakeTestScripts):
     def setup(self):
         # There is no 'projects_cmt' directory, but it helps testing the priorities
         # of CMAKE_PREFIX_PATH and CMTPROJECTPATH
-        os.environ['CMTPROJECTPATH'] = join(
-            self.base_dir, 'data', 'projects_cmt')
-        os.environ['CMAKE_PREFIX_PATH'] = join(
-            self.base_dir, 'data', 'projects')
+        os.environ['CMTPROJECTPATH'] = join(self.base_dir, 'data',
+                                            'projects_cmt')
+        os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data',
+                                               'projects')
         #os.environ['CMTPROJECTPATH'] = ''
         #os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data', 'projects')
         os.environ['BINARY_TAG'] = 'x86_64-slc0-gcc99-opt'
 
-    tests = ['no_use', 'simple_use', 'chain', 'diamond',
-             'with_tools', 'with_chained_tools',
-             'version_selection',
-             'atlas_convention', 'special_conventions',
-             'guess_toolchain']
+    tests = [
+        'no_use', 'simple_use', 'chain', 'diamond', 'with_tools',
+        'with_chained_tools', 'version_selection', 'atlas_convention',
+        'special_conventions', 'guess_toolchain'
+    ]

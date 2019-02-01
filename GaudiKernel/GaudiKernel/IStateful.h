@@ -13,14 +13,13 @@
  * @author Marco Clemencic
  * @date   2008-05-15
  */
-class GAUDI_API IStateful : virtual public IInterface
-{
+class GAUDI_API IStateful : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IStateful, 1, 0 );
 
   /** Configuration (from OFFLINE to CONFIGURED).
-  */
+   */
   virtual StatusCode configure() = 0;
 
   /** Initialization (from CONFIGURED to INITIALIZED).
@@ -28,27 +27,27 @@ public:
   virtual StatusCode initialize() = 0;
 
   /** Start (from INITIALIZED to RUNNING).
-  */
+   */
   virtual StatusCode start() = 0;
 
   /** Stop (from RUNNING to INITIALIZED).
-  */
+   */
   virtual StatusCode stop() = 0;
 
   /** Finalize (from INITIALIZED to CONFIGURED).
-  */
+   */
   virtual StatusCode finalize() = 0;
 
   /** Initialization (from CONFIGURED to OFFLINE).
-  */
+   */
   virtual StatusCode terminate() = 0;
 
   /** Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
-  */
+   */
   virtual StatusCode reinitialize() = 0;
 
   /** Initialization (from RUNNING to RUNNING, via INITIALIZED).
-  */
+   */
   virtual StatusCode restart() = 0;
 
   /** Get the current state.

@@ -14,9 +14,7 @@ DECLARE_COMPONENT( MyAudTool )
 //------------------------------------------------------------------------------
 MyAudTool::MyAudTool( const std::string& type, const std::string& name, const IInterface* parent )
     //------------------------------------------------------------------------------
-    : base_class( type, name, parent )
-{
-}
+    : base_class( type, name, parent ) {}
 
 //------------------------------------------------------------------------------
 const std::string& MyAudTool::message() const

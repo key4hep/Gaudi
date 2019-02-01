@@ -12,10 +12,10 @@
 #include "GaudiKernel/Timing.h"
 
 #ifdef __linux
-#include <pthread.h>
-#ifndef __APPLE__
-#include <execinfo.h>
-#endif
+#  include <pthread.h>
+#  ifndef __APPLE__
+#    include <execinfo.h>
+#  endif
 #endif
 
 /** Note: OS specific details as well as Gaudi details may not occur
@@ -26,8 +26,7 @@
 
     @author M.Frank
 */
-namespace System
-{
+namespace System {
   /// Definition of an image handle
   typedef void* ImageHandle;
   /// Definition of the process handle
@@ -88,7 +87,7 @@ namespace System
   /// get a particular environment variable, storing the value in the passed string if the
   /// variable is set. Returns true if the variable is set, false otherwise.
   GAUDI_API bool getEnv( const char* var, std::string& value );
-  inline bool getEnv( const std::string& var, std::string& value ) { return getEnv( var.c_str(), value ); }
+  inline bool    getEnv( const std::string& var, std::string& value ) { return getEnv( var.c_str(), value ); }
   /// get all environment variables
   GAUDI_API std::vector<std::string> getEnv();
   /// Set an environment variables.
@@ -110,8 +109,8 @@ namespace System
   /// thread handle "accessor"
   inline ThreadHandle threadSelf() { return (void*)0; }
 #endif
-  GAUDI_API int backTrace( void** addresses, const int depth );
+  GAUDI_API int  backTrace( void** addresses, const int depth );
   GAUDI_API bool backTrace( std::string& btrace, const int depth, const int offset = 0 );
   GAUDI_API bool getStackLevel( void* addresses, void*& addr, std::string& fnc, std::string& lib );
-}
+} // namespace System
 #endif // SYSTEM_SYSTEM_H

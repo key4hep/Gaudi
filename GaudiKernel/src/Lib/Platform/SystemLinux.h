@@ -6,11 +6,9 @@
 #include <string>
 #include <vector>
 
-namespace System
-{
+namespace System {
   /// Namespace holding Linux specific functions
-  namespace Linux
-  {
+  namespace Linux {
 
     /// Get the command line arguments of the process
     std::vector<std::string> cmdLineArgs();

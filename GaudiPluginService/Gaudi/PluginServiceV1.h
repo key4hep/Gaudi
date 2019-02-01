@@ -37,47 +37,40 @@
 #define _PS_V1_DECLARE_COMPONENT_WITH_ID( type, id ) _PS_V1_DECLARE_FACTORY_WITH_ID( type, id, type::Factory )
 
 #if !GAUDI_PLUGIN_SERVICE_USE_V2
-#define DECLARE_FACTORY_WITH_ID( type, id, factory ) _PS_V1_DECLARE_FACTORY_WITH_ID( type, id, factory )
-#define DECLARE_FACTORY( type, factory ) _PS_V1_DECLARE_FACTORY( type, factory )
-#define DECLARE_FACTORY_WITH_CREATOR_AND_ID( type, typecreator, id, factory )                                          \
-  _PS_V1_DECLARE_FACTORY_WITH_CREATOR_AND_ID( type, typecreator, id, factory )
-#define DECLARE_FACTORY_WITH_CREATOR( type, typecreator, factory )                                                     \
-  _PS_V1_DECLARE_FACTORY_WITH_CREATOR( type, typecreator, factory )
-#define DECLARE_COMPONENT( type ) _PS_V1_DECLARE_COMPONENT( type )
-#define DECLARE_COMPONENT_WITH_ID( type, id ) _PS_V1_DECLARE_COMPONENT_WITH_ID( type, id )
+#  define DECLARE_FACTORY_WITH_ID( type, id, factory ) _PS_V1_DECLARE_FACTORY_WITH_ID( type, id, factory )
+#  define DECLARE_FACTORY( type, factory ) _PS_V1_DECLARE_FACTORY( type, factory )
+#  define DECLARE_FACTORY_WITH_CREATOR_AND_ID( type, typecreator, id, factory )                                        \
+    _PS_V1_DECLARE_FACTORY_WITH_CREATOR_AND_ID( type, typecreator, id, factory )
+#  define DECLARE_FACTORY_WITH_CREATOR( type, typecreator, factory )                                                   \
+    _PS_V1_DECLARE_FACTORY_WITH_CREATOR( type, typecreator, factory )
+#  define DECLARE_COMPONENT( type ) _PS_V1_DECLARE_COMPONENT( type )
+#  define DECLARE_COMPONENT_WITH_ID( type, id ) _PS_V1_DECLARE_COMPONENT_WITH_ID( type, id )
 #endif
 
-namespace Gaudi
-{
-  namespace PluginService
-  {
-    GAUDI_PLUGIN_SERVICE_V1_INLINE namespace v1
-    {
+namespace Gaudi {
+  namespace PluginService {
+    GAUDI_PLUGIN_SERVICE_V1_INLINE namespace v1 {
       /// Class wrapping the signature for a factory with any number of arguments.
       template <typename R, typename... Args>
-      class Factory
-      {
+      class Factory {
       public:
         typedef R ReturnType;
         typedef R ( *FuncType )( Args&&... );
 
-        static ReturnType create( const std::string& id, Args... args )
-        {
+        static ReturnType create( const std::string& id, Args... args ) {
           const FuncType c = Details::getCreator<FuncType>( id );
           return c ? ( *c )( std::forward<Args>( args )... ) : 0;
         }
 
         template <typename T>
-        static ReturnType create( const T& id, Args... args )
-        {
+        static ReturnType create( const T& id, Args... args ) {
           std::ostringstream o;
           o << id;
           return create( o.str(), std::forward<Args>( args )... );
         }
       };
 
-      class GAUDIPS_EXPORT Exception : public std::exception
-      {
+      class GAUDIPS_EXPORT Exception : public std::exception {
       public:
         Exception( std::string msg );
         ~Exception() throw() override;
@@ -87,7 +80,7 @@ namespace Gaudi
         std::string m_msg;
       };
     }
-  }
-}
+  } // namespace PluginService
+} // namespace Gaudi
 
 #endif //_GAUDI_PLUGIN_SERVICE_H_

@@ -11,8 +11,7 @@ inline void toupper( std::string& s ) { std::transform( s.begin(), s.end(), s.be
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode StatusCodeSvc::initialize()
-{
+StatusCode StatusCodeSvc::initialize() {
 
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() ) return sc;
@@ -41,8 +40,7 @@ StatusCode StatusCodeSvc::initialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode StatusCodeSvc::reinitialize()
-{
+StatusCode StatusCodeSvc::reinitialize() {
 
   info() << "reinitialize" << endmsg;
 
@@ -50,8 +48,7 @@ StatusCode StatusCodeSvc::reinitialize()
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-StatusCode StatusCodeSvc::finalize()
-{
+StatusCode StatusCodeSvc::finalize() {
 
   if ( !m_dat.empty() ) {
 
@@ -70,12 +67,9 @@ StatusCode StatusCodeSvc::finalize()
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib )
-{
+void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib ) {
 
-  if ( m_state == Gaudi::StateMachine::OFFLINE || m_state == Gaudi::StateMachine::CONFIGURED ) {
-    return;
-  }
+  if ( m_state == Gaudi::StateMachine::OFFLINE || m_state == Gaudi::StateMachine::CONFIGURED ) { return; }
 
   // A StatusCode instance may be create internally by ROOT dictionaries and,
   // of course, it's not checked, so here we whitelist a few library names
@@ -102,9 +96,7 @@ void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib )
   {
     const string rlib = lib.substr( lib.rfind( "/" ) + 1 );
 
-    if ( m_filterfnc.find( fnc ) != m_filterfnc.end() || m_filterlib.find( rlib ) != m_filterlib.end() ) {
-      return;
-    }
+    if ( m_filterfnc.find( fnc ) != m_filterfnc.end() || m_filterlib.find( rlib ) != m_filterlib.end() ) { return; }
   }
 
   if ( m_abort ) {
@@ -133,8 +125,7 @@ void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void StatusCodeSvc::list() const
-{
+void StatusCodeSvc::list() const {
 
   std::ostringstream os;
   os << "Num | Function                       | Source Library" << endl;
@@ -164,8 +155,7 @@ void StatusCodeSvc::list() const
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void StatusCodeSvc::filterFnc( const std::string& str )
-{
+void StatusCodeSvc::filterFnc( const std::string& str ) {
 
   auto itr = std::find_if( m_dat.begin(), m_dat.end(),
                            [&]( const std::pair<std::string, StatCodeDat>& d ) { return d.second.fnc == str; } );
@@ -173,8 +163,7 @@ void StatusCodeSvc::filterFnc( const std::string& str )
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void StatusCodeSvc::filterLib( const std::string& str )
-{
+void StatusCodeSvc::filterLib( const std::string& str ) {
 
   auto itr = std::find_if( m_dat.begin(), m_dat.end(),
                            [&]( const std::pair<std::string, StatCodeDat>& d ) { return d.second.lib == str; } );
@@ -183,8 +172,7 @@ void StatusCodeSvc::filterLib( const std::string& str )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void StatusCodeSvc::parseFilter( const string& str, string& fnc, string& lib )
-{
+void StatusCodeSvc::parseFilter( const string& str, string& fnc, string& lib ) {
 
   auto loc = str.find( "=" );
   if ( loc == std::string::npos ) {

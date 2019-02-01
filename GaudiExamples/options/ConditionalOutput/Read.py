@@ -18,13 +18,15 @@ FileCatalog(Catalogs=["xmlcatalog_file:ConditionalOutput.xml"])
 
 esel = EventSelector(OutputLevel=INFO, PrintFreq=1, FirstEvent=1)
 esel.Input = [
-    "DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
+    "DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"
+]
 
 # Application setup
 app = ApplicationMgr()
 # - Algorithms
-app.TopAlg = [DataReader('DataReader', Paths=['A', 'B', 'C', 'D'],
-                         IgnoreMissing=True)]
+app.TopAlg = [
+    DataReader('DataReader', Paths=['A', 'B', 'C', 'D'], IgnoreMissing=True)
+]
 # - Events
 app.EvtMax = -1
 app.EvtSel = esel

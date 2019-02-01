@@ -37,9 +37,9 @@ def _get_filename():
     name = platform.system()
 
     fname = {
-        'Darwin':  "libGaudiPluginService.dylib",
+        'Darwin': "libGaudiPluginService.dylib",
         'Windows': "libGaudiPluginService.dll",
-        'Linux':   "libGaudiPluginService.so",
+        'Linux': "libGaudiPluginService.so",
     }[name]
     return fname
 
@@ -61,6 +61,7 @@ class Registry(ctypes.Structure):
             f = _lib.cgaudi_pluginsvc_get_factory_at(self, i)
             facts[f.name] = f
         return facts
+
     pass
 
 
@@ -137,6 +138,7 @@ class Factory(ctypes.Structure):
             self.classname,
             len(self.properties),
         )
+
     pass
 
 
@@ -162,57 +164,47 @@ class Property(ctypes.Structure):
     pass
 
 
-_functions_list = [
-    ("cgaudi_pluginsvc_instance",
-     [],
-     Registry,
-     ),
-
-    ("cgaudi_pluginsvc_get_factory_size",
-     [Registry],
-     ctypes.c_int,
-     ),
-
-    ("cgaudi_pluginsvc_get_factory_at",
-     [Registry, ctypes.c_int],
-     Factory,
-     ),
-
-    ("cgaudi_factory_get_library",
-     [Factory],
-     ctypes.c_char_p,
-     ),
-
-    ("cgaudi_factory_get_type",
-     [Factory],
-     ctypes.c_char_p,
-     ),
-
-    ("cgaudi_factory_get_classname",
-     [Factory],
-     ctypes.c_char_p,
-     ),
-
-    ("cgaudi_factory_get_property_size",
-     [Factory],
-     ctypes.c_int,
-     ),
-
-    ("cgaudi_factory_get_property_at",
-     [Factory, ctypes.c_int],
-     Property,
-     ),
-
-    ("cgaudi_property_get_key",
-     [Property],
-     ctypes.c_char_p,
-     ),
-
-    ("cgaudi_property_get_value",
-     [Property],
-     ctypes.c_char_p,
-     )
-]
+_functions_list = [(
+    "cgaudi_pluginsvc_instance",
+    [],
+    Registry,
+), (
+    "cgaudi_pluginsvc_get_factory_size",
+    [Registry],
+    ctypes.c_int,
+), (
+    "cgaudi_pluginsvc_get_factory_at",
+    [Registry, ctypes.c_int],
+    Factory,
+), (
+    "cgaudi_factory_get_library",
+    [Factory],
+    ctypes.c_char_p,
+), (
+    "cgaudi_factory_get_type",
+    [Factory],
+    ctypes.c_char_p,
+), (
+    "cgaudi_factory_get_classname",
+    [Factory],
+    ctypes.c_char_p,
+), (
+    "cgaudi_factory_get_property_size",
+    [Factory],
+    ctypes.c_int,
+), (
+    "cgaudi_factory_get_property_at",
+    [Factory, ctypes.c_int],
+    Property,
+), (
+    "cgaudi_property_get_key",
+    [Property],
+    ctypes.c_char_p,
+), (
+    "cgaudi_property_get_value",
+    [Property],
+    ctypes.c_char_p,
+)]
 
 for f in _functions_list:
     n = f[0]
@@ -223,19 +215,18 @@ for f in _functions_list:
         func.errcheck = f[3]
     pass
 
-
 if __name__ == "__main__":
-    print ("instance: %s" % registry())
-    print ("factories: %d" % len(factories()))
+    print("instance: %s" % registry())
+    print("factories: %d" % len(factories()))
     for _, f in factories().items():
         try:
             f.load()
         except Exception:
-            print (
-                "** could not load [%s] for factory [%s]" % (f.library, f.name))
+            print("** could not load [%s] for factory [%s]" % (f.library,
+                                                               f.name))
             continue
         print f
         for k, v in f.properties.items():
-            print ("\t%s: %s" % (k, v))
+            print("\t%s: %s" % (k, v))
 
 # EOF

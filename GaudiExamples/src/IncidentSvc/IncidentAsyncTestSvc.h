@@ -16,8 +16,7 @@ class IIncidentSvc;
 /** @class IncidentRegistryTestListener IncidentListenerTest.h
  *
  */
-class IncidentAsyncTestSvc final : public extends<Service, IIncidentListener, IIncidentAsyncTestSvc>
-{
+class IncidentAsyncTestSvc final : public extends<Service, IIncidentListener, IIncidentAsyncTestSvc> {
 
 public:
   /// Constructor
@@ -38,7 +37,7 @@ private:
   SmartIF<IMessageSvc>                      m_msgSvc;
   SmartIF<IIncidentSvc>                     m_incSvc;
   tbb::concurrent_unordered_map<EventContext, uint64_t, EventContextHash, EventContextHash> m_ctxData;
-  std::mutex m_eraseMutex;
+  std::mutex                                                                                m_eraseMutex;
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENREGISTRYTESTLISTENER_H_*/

@@ -33,7 +33,9 @@ atexit.register(update_coverage)
 
 def cmake_script(name, cwd=None):
     proc = Popen(['cmake', '--trace', '-P', name],
-                 stdout=PIPE, stderr=PIPE, cwd=cwd)
+                 stdout=PIPE,
+                 stderr=PIPE,
+                 cwd=cwd)
     out, err = proc.communicate()
     trace_line = re.compile(r'^(/.*)\(([0-9]+)\): ')
     new_err = []
@@ -54,8 +56,8 @@ def get_ranges(numbers):
     '''
     from itertools import groupby
     from operator import itemgetter
-    for _key, group in groupby(enumerate(numbers),
-                               lambda (index, number): number - index):
+    for _key, group in groupby(
+            enumerate(numbers), lambda (index, number): number - index):
         group = map(itemgetter(1), group)
         yield group[0], group[-1]
 
@@ -88,13 +90,14 @@ if __name__ == '__main__':
         active_lines = set(get_active_lines(filename))
         touched_lines = set(lines[filename])
         missed_lines = active_lines.difference(touched_lines)
-        ranges = [str(a) if a == b else '%d-%d' % (a, b)
-                  for a, b in get_ranges(sorted(missed_lines))]
+        ranges = [
+            str(a) if a == b else '%d-%d' % (a, b)
+            for a, b in get_ranges(sorted(missed_lines))
+        ]
         touched_count = len(touched_lines)
         active_count = len(active_lines)
         if touched_count == active_count:
             print '   coverage 100%'
         else:
-            print ('   coverage %3d%%, missed: %s' %
-                   (float(touched_count) / active_count * 100,
-                    ', '.join(ranges)))
+            print('   coverage %3d%%, missed: %s' % (
+                float(touched_count) / active_count * 100, ', '.join(ranges)))

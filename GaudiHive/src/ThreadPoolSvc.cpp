@@ -11,27 +11,23 @@
 
 using namespace tbb;
 
-namespace Gaudi
-{
-  namespace Concurrency
-  {
+namespace Gaudi {
+  namespace Concurrency {
     extern thread_local bool ThreadInitDone;
   }
-}
+} // namespace Gaudi
 
 DECLARE_COMPONENT( ThreadPoolSvc )
 
 //=============================================================================
 
-ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ) : extends( name, svcLoc )
-{
+ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ) : extends( name, svcLoc ) {
   declareProperty( "ThreadInitTools", m_threadInitTools, "ToolHandleArray of IThreadInitTools" );
 }
 
 //-----------------------------------------------------------------------------
 
-StatusCode ThreadPoolSvc::initialize()
-{
+StatusCode ThreadPoolSvc::initialize() {
 
   // Initialise mother class (read properties, ...)
   StatusCode sc( Service::initialize() );
@@ -56,8 +52,7 @@ StatusCode ThreadPoolSvc::initialize()
 
 //-----------------------------------------------------------------------------
 
-StatusCode ThreadPoolSvc::finalize()
-{
+StatusCode ThreadPoolSvc::finalize() {
 
   if ( !m_init ) {
     warning() << "Looks like the ThreadPoolSvc was created, but thread pool "
@@ -69,8 +64,7 @@ StatusCode ThreadPoolSvc::finalize()
 
 //-----------------------------------------------------------------------------
 
-StatusCode ThreadPoolSvc::initPool( const int& poolSize )
-{
+StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
   tbb::spin_mutex::scoped_lock lock( m_initMutex );
 
@@ -103,9 +97,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize )
       thePoolSize      = m_tbbSchedInit->default_num_threads();
       m_threadPoolSize = thePoolSize;
     }
-    if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "creating barrier of size " << thePoolSize << endmsg;
-    }
+    if ( msgLevel( MSG::DEBUG ) ) { debug() << "creating barrier of size " << thePoolSize << endmsg; }
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( thePoolSize );
 
     m_barrier = std::make_unique<boost::barrier>( thePoolSize );
@@ -127,8 +119,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize )
 
 //-----------------------------------------------------------------------------
 
-StatusCode ThreadPoolSvc::terminatePool()
-{
+StatusCode ThreadPoolSvc::terminatePool() {
   tbb::spin_mutex::scoped_lock lock( m_initMutex );
   if ( msgLevel( MSG::DEBUG ) ) debug() << "ThreadPoolSvc::terminatePool()" << endmsg;
 
@@ -148,8 +139,7 @@ StatusCode ThreadPoolSvc::terminatePool()
 
 //-----------------------------------------------------------------------------
 
-StatusCode ThreadPoolSvc::launchTasks( bool terminate )
-{
+StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
   const std::string taskType = terminate ? "termination" : "initialization";
 
@@ -221,8 +211,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate )
 // activate them late. This method is used to initialize one of these threads
 // when it is detected
 
-void ThreadPoolSvc::initThisThread()
-{
+void ThreadPoolSvc::initThisThread() {
 
   if ( Gaudi::Concurrency::ThreadInitDone ) {
     // this should never happen

@@ -23,8 +23,7 @@ class IAlgorithm;
     @author Benedikt Hegner
     @version 1.0
 */
-class GAUDI_API IAlgResourcePool : virtual public IInterface
-{
+class GAUDI_API IAlgResourcePool : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAlgResourcePool, 1, 0 );

@@ -19,40 +19,34 @@
 #include "TLeafI.h"
 #include "TTree.h"
 
-namespace
-{
+namespace {
   template <typename T>
-  size_t saveItem( char* target, const NTuple::_Data<T>& src )
-  {
+  size_t saveItem( char* target, const NTuple::_Data<T>& src ) {
     static_assert( std::is_trivially_copyable<T>::value, "T must be trivally copyable" );
     std::memcpy( target, src.buffer(), sizeof( T ) * src.length() );
     return sizeof( T ) * src.length();
   }
 
   template <typename T>
-  size_t loadItem( const char* src, NTuple::_Data<T>& target )
-  {
+  size_t loadItem( const char* src, NTuple::_Data<T>& target ) {
     static_assert( std::is_trivially_copyable<T>::value, "T must be trivally copyable" );
     std::memcpy( const_cast<void*>( target.buffer() ), src, sizeof( T ) * target.length() );
     return sizeof( T ) * target.length();
   }
 
   template <typename POD>
-  decltype( auto ) downcast_item( const INTupleItem& i )
-  {
+  decltype( auto ) downcast_item( const INTupleItem& i ) {
     return dynamic_cast<const NTuple::_Data<POD>&>( i );
   }
   template <typename POD>
-  decltype( auto ) downcast_item( INTupleItem& i )
-  {
+  decltype( auto ) downcast_item( INTupleItem& i ) {
     return dynamic_cast<NTuple::_Data<POD>&>( i );
   }
   template <typename POD, typename T>
   void downcast_item( T&& ) = delete;
 
   template <typename Item, typename F>
-  decltype( auto ) visit( Item& i, F&& f )
-  {
+  decltype( auto ) visit( Item& i, F&& f ) {
     switch ( i.type() ) {
     case DataTypeInfo::INT:
       return f( downcast_item<int>( i ) );
@@ -98,9 +92,7 @@ namespace
     long dimension = it->length();
     long ndim      = it->ndim() - 1;
     desc += var_name;
-    if ( it->hasIndex() || it->length() > 1 ) {
-      desc += '[';
-    }
+    if ( it->hasIndex() || it->length() > 1 ) { desc += '['; }
     if ( it->hasIndex() ) {
       std::string ind_blk, ind_var;
       RootHistCnv::parseName( it->index(), ind_blk, ind_var );
@@ -117,9 +109,7 @@ namespace
       desc += "][";
       desc += std::to_string( it->dim( i ) );
     }
-    if ( it->hasIndex() || it->length() > 1 ) {
-      desc += ']';
-    }
+    if ( it->hasIndex() || it->length() > 1 ) { desc += ']'; }
 
     if ( it->range().lower() != it->range().min() && it->range().upper() != it->range().max() ) {
       lowerRange = it->range().lower();
@@ -131,7 +121,7 @@ namespace
     desc += typ;
     size += item_size * dimension;
   }
-}
+} // namespace
 
 //-----------------------------------------------------------------------------
 StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt, TTree*& rtree )
@@ -150,8 +140,8 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
   long                     cursize, oldsize = 0;
   std::vector<std::string> item_fullname;
   //    std::vector<long> item_size,item_size2;
-  std::vector<long> item_buf_pos, item_buf_len, item_buf_end;
-  std::vector<long> item_range_lower, item_range_upper;
+  std::vector<long>                                item_buf_pos, item_buf_len, item_buf_end;
+  std::vector<long>                                item_range_lower, item_range_upper;
   std::vector<std::pair<std::string, std::string>> item_name;
 
   for ( const auto& i : nt->items() ) {
@@ -196,12 +186,12 @@ StatusCode RootHistCnv::RCWNTupleCnv::book( const std::string& desc, INTuple* nt
 
     buf_pos = buff + item_buf_pos[i_item];
 
-//      log << MSG::WARNING << "adding TBranch " << i_item << "  "
-//  	<< item_fullname[i_item]
-//    	<< "  format: " << itr->second.c_str() << "  at "
-//    	<< (void*) buf_pos << " (" << (void*) buff << "+"
-//  	<< (void*)item_buf_pos[i_item] << ")"
-//  	<< endmsg;
+    //      log << MSG::WARNING << "adding TBranch " << i_item << "  "
+    //  	<< item_fullname[i_item]
+    //    	<< "  format: " << itr->second.c_str() << "  at "
+    //    	<< (void*) buf_pos << " (" << (void*) buff << "+"
+    //  	<< (void*)item_buf_pos[i_item] << ")"
+    //  	<< endmsg;
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 15, 0 )
     auto br = new TBranch( rtree,
@@ -308,7 +298,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
 
   std::string itemName, indexName, item_type, itemTitle, blockName;
   // long numEnt, numVar;
-  long size, totsize = 0;
+  long                                size, totsize = 0;
   std::vector<std::pair<TLeaf*, int>> itemList;
 
   // numEnt = (int)tree->GetEntries();
@@ -356,9 +346,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
       int    arraySize;
       TLeaf* indexLeaf = tl->GetLeafCounter( arraySize );
 
-      if ( arraySize == 0 ) {
-        log << MSG::ERROR << "TLeaf counter size = 0. This should not happen!" << endmsg;
-      }
+      if ( arraySize == 0 ) { log << MSG::ERROR << "TLeaf counter size = 0. This should not happen!" << endmsg; }
 
       if ( indexLeaf ) {
         // index Arrays and Matrices
@@ -371,9 +359,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
         log << "[" << indexName;
 
         // Just for Matrices
-        if ( arraySize != 1 ) {
-          log << "][" << arraySize;
-        }
+        if ( arraySize != 1 ) { log << "][" << arraySize; }
         log << "]";
 
       } else {
@@ -491,9 +477,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load( TTree* tree, INTuple*& refpObject )
     bufpos += isize;
   }
 
-  if ( totsize != ts ) {
-    log << MSG::ERROR << "buffer size mismatch: " << ts << "  " << totsize << endmsg;
-  }
+  if ( totsize != ts ) { log << MSG::ERROR << "buffer size mismatch: " << ts << "  " << totsize << endmsg; }
 
   refpObject = ntup;
 

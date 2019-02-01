@@ -2,19 +2,14 @@
 // book the 1D profile histogram (book on demand)
 // ============================================================================
 template <class PBASE>
-AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const std::string& title, const HistoBinEdges& edges ) const
-{
+AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const std::string& title, const HistoBinEdges& edges ) const {
   //
-  if ( !produceHistos() ) {
-    return nullptr;
-  } // RETURN
+  if ( !produceHistos() ) { return nullptr; } // RETURN
   //
   // exist?
   auto hist = profile1D( title );
   // histogram is already booked
-  if ( hist ) {
-    return hist;
-  } // RETURN !!
+  if ( hist ) { return hist; } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
@@ -28,12 +23,9 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const std::string& title, c
 // ============================================================================
 template <class PBASE>
 AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const HistoID& ID, const std::string& title,
-                                                     const HistoBinEdges& edges ) const
-{
+                                                     const HistoBinEdges& edges ) const {
   //
-  if ( !produceHistos() ) {
-    return nullptr;
-  } // RETURN
+  if ( !produceHistos() ) { return nullptr; } // RETURN
   //
   // Check ID
   if ( ID.undefined() ) {
@@ -44,9 +36,7 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const HistoID& ID, const st
   // exist?
   auto hist = profile1D( ID );
   // histogram is already booked
-  if ( hist ) {
-    return hist;
-  } // RETURN !!
+  if ( hist ) { return hist; } // RETURN !!
 
   // Histogram title
   const std::string& htitle = ( title.empty() ? "Unnamed 1D Profile Histogram ID=" + ID.idAsString() : title );
@@ -83,15 +73,12 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::bookProfile1D( const HistoID& ID, const st
 // ============================================================================
 template <class PBASE>
 AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D( const double valueX, const double valueY, const std::string& title,
-                                                 const HistoBinEdges& edges, const double weight ) const
-{
+                                                 const HistoBinEdges& edges, const double weight ) const {
   AIDA::IProfile1D* h( nullptr );
   if ( produceHistos() ) {
     // retrieve or book the histogram
     h = profile1D( title );
-    if ( !h ) {
-      h = bookProfile1D( title, edges );
-    }
+    if ( !h ) { h = bookProfile1D( title, edges ); }
     // fill the histogram
     h = fill( h, valueX, valueY, weight, title );
   }
@@ -103,15 +90,12 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D( const double valueX, const doub
 template <class PBASE>
 AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D( const double valueX, const double valueY, const HistoID& ID,
                                                  const std::string& title, const HistoBinEdges& edges,
-                                                 const double weight ) const
-{
+                                                 const double weight ) const {
   AIDA::IProfile1D* h( nullptr );
   if ( produceHistos() ) {
     // retrieve or book the histogram
     h = profile1D( ID );
-    if ( !h ) {
-      h = bookProfile1D( ID, title, edges );
-    }
+    if ( !h ) { h = bookProfile1D( ID, title, edges ); }
     // fill the histogram
     h = fill( h, valueX, valueY, weight, title );
   }

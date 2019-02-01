@@ -26,8 +26,7 @@
 
     @author Benedikt Hegner
 */
-class AlgResourcePool : public extends<Service, IAlgResourcePool>
-{
+class AlgResourcePool : public extends<Service, IAlgResourcePool> {
 public:
   // Standard constructor
   using extends::extends;
@@ -57,7 +56,7 @@ private:
 
   std::mutex m_resource_mutex;
 
-  state_type m_available_resources{0};
+  state_type                                m_available_resources{0};
   std::map<size_t, concurrentQueueIAlgPtr*> m_algqueue_map;
   std::map<size_t, state_type>              m_resource_requirements;
   std::map<size_t, size_t>                  m_n_of_allowed_instances;

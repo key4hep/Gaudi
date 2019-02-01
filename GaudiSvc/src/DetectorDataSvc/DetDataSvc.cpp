@@ -10,13 +10,13 @@
 #include "GaudiKernel/IValidity.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
-using System::isEnvSet;
 using System::getEnv;
+using System::isEnvSet;
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
 // Instantiation of a static factory class used by clients to create
@@ -24,8 +24,7 @@ using System::getEnv;
 DECLARE_COMPONENT( DetDataSvc )
 
 // Service initialization
-StatusCode DetDataSvc::initialize()
-{
+StatusCode DetDataSvc::initialize() {
   // Call base class initialization
   StatusCode sc = TsDataSvc::initialize();
   if ( UNLIKELY( sc.isFailure() ) ) return sc;
@@ -53,11 +52,9 @@ StatusCode DetDataSvc::initialize()
   return setupDetectorDescription();
 }
 
-StatusCode DetDataSvc::setupDetectorDescription()
-{
+StatusCode DetDataSvc::setupDetectorDescription() {
   // Initialize the detector data transient store
-  ON_DEBUG
-  {
+  ON_DEBUG {
     debug() << "Storage type used is: " << m_detStorageType << endmsg;
     debug() << "Setting DetectorDataSvc root node... " << endmsg;
   }
@@ -107,8 +104,7 @@ StatusCode DetDataSvc::setupDetectorDescription()
 }
 
 // Service initialisation
-StatusCode DetDataSvc::reinitialize()
-{
+StatusCode DetDataSvc::reinitialize() {
   // The DetectorDataSvc does not need to be re-initialized. If it is done
   // all the Algorithms having references to DetectorElements will become
   // invalid and crash the program.  (Pere Mato)
@@ -126,8 +122,7 @@ StatusCode DetDataSvc::reinitialize()
 }
 
 /// Finalize the service.
-StatusCode DetDataSvc::finalize()
-{
+StatusCode DetDataSvc::finalize() {
   DEBMSG << "Finalizing" << endmsg;
 
   // clears the store
@@ -145,8 +140,7 @@ StatusCode DetDataSvc::finalize()
 }
 
 /// Remove all data objects in the data store.
-StatusCode DetDataSvc::clearStore()
-{
+StatusCode DetDataSvc::clearStore() {
 
   TsDataSvc::clearStore().ignore();
 
@@ -159,9 +153,7 @@ StatusCode DetDataSvc::clearStore()
     // Set detector data store root
     if ( sc.isSuccess() ) {
       sc = i_setRoot( rootAddr );
-      if ( sc.isFailure() ) {
-        error() << "Unable to set detector data store root" << endmsg;
-      }
+      if ( sc.isFailure() ) { error() << "Unable to set detector data store root" << endmsg; }
     } else {
       error() << "Unable to create address for  /dd" << endmsg;
     }
@@ -171,14 +163,12 @@ StatusCode DetDataSvc::clearStore()
 }
 
 /// Standard Constructor
-DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : extends( name, svc )
-{
+DetDataSvc::DetDataSvc( const std::string& name, ISvcLocator* svc ) : extends( name, svc ) {
   setProperty( "RootCLID", CLID_Catalog );
 }
 
 /// Set the new event time
-void DetDataSvc::setEventTime( const Gaudi::Time& time )
-{
+void DetDataSvc::setEventTime( const Gaudi::Time& time ) {
   m_eventTime = time;
   DEBMSG << "Event Time set to " << eventTime() << endmsg;
 }
@@ -190,10 +180,8 @@ bool DetDataSvc::validEventTime() const { return true; }
 const Gaudi::Time& DetDataSvc::eventTime() const { return m_eventTime; }
 
 /// Inform that a new incident has occurred
-void DetDataSvc::handle( const Incident& inc )
-{
-  ON_DEBUG
-  {
+void DetDataSvc::handle( const Incident& inc ) {
+  ON_DEBUG {
     debug() << "New incident received" << endmsg;
     debug() << "Incident source: " << inc.source() << endmsg;
     debug() << "Incident type: " << inc.type() << endmsg;
@@ -202,8 +190,7 @@ void DetDataSvc::handle( const Incident& inc )
 
 /// Update object
 /// @todo update also its ancestors in the data store if necessary
-StatusCode DetDataSvc::updateObject( DataObject* toUpdate )
-{
+StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
 
   DEBMSG << "Method updateObject starting" << endmsg;
 

@@ -13,8 +13,7 @@ ReEntAlg::ReEntAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Gaudi:
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ReEntAlg::initialize()
-{
+StatusCode ReEntAlg::initialize() {
   auto sc = Gaudi::Algorithm::initialize();
   if ( !sc ) return sc;
   info() << "initialize()" << endmsg;
@@ -23,8 +22,7 @@ StatusCode ReEntAlg::initialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ReEntAlg::execute( const EventContext& ctx ) const
-{
+StatusCode ReEntAlg::execute( const EventContext& ctx ) const {
   // wait a little bit to make sure the printouts are in a stable order
   std::this_thread::sleep_for( std::chrono::milliseconds( 50 * ctx.slot() ) );
 
@@ -41,8 +39,7 @@ StatusCode ReEntAlg::execute( const EventContext& ctx ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ReEntAlg::finalize()
-{
+StatusCode ReEntAlg::finalize() {
   info() << "finalize()" << endmsg;
   return Gaudi::Algorithm::finalize();
 }

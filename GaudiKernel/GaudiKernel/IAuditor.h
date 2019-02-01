@@ -15,8 +15,7 @@
     @author Marjorie Shapiro, LBNL
     @author Marco Clemencic <marco.clemencic@cern.ch>
 */
-class GAUDI_API IAuditor : virtual public INamedInterface
-{
+class GAUDI_API IAuditor : virtual public INamedInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAuditor, 3, 0 );
@@ -97,8 +96,7 @@ public:
 };
 
 /// Simple mapping function from IAuditor::StandardEventType to string.
-inline const char* toStr( IAuditor::StandardEventType e )
-{
+inline const char* toStr( IAuditor::StandardEventType e ) {
   static const std::array<const char*, IAuditor::StandardEventType::ReStart + 1> s_tbl = {
       {"Initialize", "ReInitialize", "Execute", "BeginRun", "EndRun", "Finalize", "Start", "Stop", "ReStart"}};
   return e <= IAuditor::StandardEventType::ReStart ? s_tbl[e] : nullptr;

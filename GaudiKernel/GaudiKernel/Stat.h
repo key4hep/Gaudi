@@ -43,8 +43,7 @@
  *   @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *   @date 2007-08-02
  */
-class GAUDI_API Stat
-{
+class GAUDI_API Stat {
 public:
   /**  constructor from StatEntity, name and group :
    *
@@ -63,9 +62,7 @@ public:
    *   @param group (optional) group of the object, for printout
    */
   Stat( StatEntity* entity = 0, const std::string& name = "", const std::string& group = "" )
-      : m_entity( entity ), m_tag( name ), m_group( group )
-  {
-  }
+      : m_entity( entity ), m_tag( name ), m_group( group ) {}
   /**  constructor from StatEntity, name and group :
    *
    *   @code
@@ -81,9 +78,7 @@ public:
    *   @param group (optional) group of the object, for printout
    */
   Stat( StatEntity& entity, const std::string& name = "", const std::string& group = "" )
-      : m_entity( &entity ), m_tag( name ), m_group( group )
-  {
-  }
+      : m_entity( &entity ), m_tag( name ), m_group( group ) {}
   /**  constructor from IStatSvc, tag and value
    *
    *   @code
@@ -153,11 +148,8 @@ public:
    *  @param f value to be added to the counter
    *  @return selfreference
    */
-  Stat& operator+=( const double f )
-  {
-    if ( m_entity ) {
-      ( *m_entity ) += f;
-    }
+  Stat& operator+=( const double f ) {
+    if ( m_entity ) { ( *m_entity ) += f; }
     return *this;
   }
   /** Pre-increment operator for the counter
@@ -173,11 +165,8 @@ public:
    *  @see StatEntity
    *  @return selfreference
    */
-  Stat& operator++()
-  {
-    if ( m_entity ) {
-      ++( *m_entity );
-    }
+  Stat& operator++() {
+    if ( m_entity ) { ++( *m_entity ); }
     return *this;
   }
   /** Post-increment operator for the counter
@@ -192,11 +181,8 @@ public:
    *  @see StatEntity
    *  @return self-reference
    */
-  Stat& operator++( int )
-  {
-    if ( m_entity ) {
-      ( *m_entity )++;
-    }
+  Stat& operator++( int ) {
+    if ( m_entity ) { ( *m_entity )++; }
     return *this;
   }
   /** General decrement operator for the counter
@@ -204,43 +190,28 @@ public:
    *  @return self-reference
    *  @param f counter decrement
    */
-  Stat& operator-=( const double f )
-  {
-    if ( m_entity ) {
-      ( *m_entity ) -= f;
-    }
+  Stat& operator-=( const double f ) {
+    if ( m_entity ) { ( *m_entity ) -= f; }
     return *this;
   }
   /// Pre-decrement operator for the flag
-  Stat& operator--()
-  {
-    if ( m_entity ) {
-      --( *m_entity );
-    }
+  Stat& operator--() {
+    if ( m_entity ) { --( *m_entity ); }
     return *this;
   }
   /// Post-decrement operator for the flag
-  Stat& operator--( int )
-  {
-    if ( m_entity ) {
-      ( *m_entity )--;
-    }
+  Stat& operator--( int ) {
+    if ( m_entity ) { ( *m_entity )--; }
     return *this;
   }
   /// increment with StatEntity object
-  Stat& operator+=( const StatEntity& right )
-  {
-    if ( m_entity ) {
-      ( *m_entity ) += right;
-    }
+  Stat& operator+=( const StatEntity& right ) {
+    if ( m_entity ) { ( *m_entity ) += right; }
     return *this;
   }
   /// increment with  other stat objects
-  Stat& operator+=( const Stat& right )
-  {
-    if ( 0 != right.entity() ) {
-      ( *this ) += *right.entity();
-    }
+  Stat& operator+=( const Stat& right ) {
+    if ( 0 != right.entity() ) { ( *this ) += *right.entity(); }
     return *this;
   }
   // ==========================================================================

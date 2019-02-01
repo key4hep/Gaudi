@@ -22,13 +22,12 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** 4D point (space-time)
    *  @todo use Point4D from MathCore
    */
   typedef LorentzVector XYZTPoint;
-}
+} // namespace Gaudi
 
 #endif // KERNEL_POINT4DTYPES_H

@@ -7,8 +7,7 @@
 // ============================================================================
 // forward declarations from AIDA
 // ============================================================================
-namespace AIDA
-{
+namespace AIDA {
   class IBaseHistogram;
   class IHistogram;
   class IHistogram1D;
@@ -17,17 +16,14 @@ namespace AIDA
   class IProfile;
   class IProfile1D;
   class IProfile2D;
-}
+} // namespace AIDA
 #include "GaudiKernel/Kernel.h"
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Utils
-  {
+  namespace Utils {
     // ========================================================================
-    namespace Histos
-    {
+    namespace Histos {
       // ======================================================================
       /** simple function to fill AIDA::IHistogram1D objects
        *  @see AIDA::IHistogram1D
@@ -123,8 +119,8 @@ namespace Gaudi
       // ======================================================================
       GAUDI_API AIDA::IBaseHistogram* toBase( AIDA::IProfile2D* histo );
       // ======================================================================
-    } // end of namespace Gaudi::Utils::Histos
-  }   // end of namespace Gaudi::Utils
+    } // namespace Histos
+  }   // namespace Utils
 } // end of namespace Gaudi
 // ============================================================================
 // The END

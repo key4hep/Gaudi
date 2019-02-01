@@ -22,45 +22,38 @@
 #include "GaudiKernel/MsgStream.h"
 
 // Output friend
-MsgStream& operator<<( MsgStream& s, const EventSelectorDataStream& obj )
-{
+MsgStream& operator<<( MsgStream& s, const EventSelectorDataStream& obj ) {
   return s << "Stream:" << obj.name() << " Def:" << obj.definition();
 }
 
 // Output friend
-std::ostream& operator<<( std::ostream& s, const EventSelectorDataStream& obj )
-{
+std::ostream& operator<<( std::ostream& s, const EventSelectorDataStream& obj ) {
   return s << "Stream:" << obj.name() << " Def:" << obj.definition();
 }
 
 // Standard Constructor
 EventSelectorDataStream::EventSelectorDataStream( std::string nam, std::string def, ISvcLocator* svcloc )
-    : m_name{std::move( nam )}, m_definition{std::move( def )}, m_pSvcLocator( svcloc )
-{
-}
+    : m_name{std::move( nam )}, m_definition{std::move( def )}, m_pSvcLocator( svcloc ) {}
 
 // Set selector
 void EventSelectorDataStream::setSelector( IEvtSelector* pSelector ) { m_pSelector = pSelector; }
 
 // Allow access to individual properties by name
-Gaudi::Property<std::string>* EventSelectorDataStream::property( const std::string& nam )
-{
+Gaudi::Property<std::string>* EventSelectorDataStream::property( const std::string& nam ) {
   auto i = std::find_if( std::begin( m_properties ), std::end( m_properties ),
                          [&]( const Gaudi::Property<std::string>& j ) { return j.name() == nam; } );
   return i != std::end( m_properties ) ? &( *i ) : nullptr;
 }
 
 // Allow access to individual properties by name
-const Gaudi::Property<std::string>* EventSelectorDataStream::property( const std::string& nam ) const
-{
+const Gaudi::Property<std::string>* EventSelectorDataStream::property( const std::string& nam ) const {
   auto i = std::find_if( std::begin( m_properties ), std::end( m_properties ),
                          [&]( const Gaudi::Property<std::string>& j ) { return j.name() == nam; } );
   return i != std::end( m_properties ) ? &( *i ) : nullptr;
 }
 
 // Parse input criteria
-StatusCode EventSelectorDataStream::initialize()
-{
+StatusCode EventSelectorDataStream::initialize() {
   bool        isData = true;
   std::string auth, dbtyp, collsvc, item, crit, sel, svc, stmt;
   std::string cnt = "/Event";
@@ -79,7 +72,7 @@ StatusCode EventSelectorDataStream::initialize()
   using Parser = Gaudi::Utils::AttribStringParser;
   for ( auto attrib : Parser( m_definition ) ) {
     long hash = -1;
-    switch (::toupper( attrib.tag[0] ) ) {
+    switch ( ::toupper( attrib.tag[0] ) ) {
     case 'A':
       auth = std::move( attrib.value );
       break;
@@ -102,7 +95,7 @@ StatusCode EventSelectorDataStream::initialize()
       m_dbName   = std::move( attrib.value );
       break;
     case 'F':
-      switch (::toupper( attrib.tag[1] ) ) {
+      switch ( ::toupper( attrib.tag[1] ) ) {
       case 'I':
         m_criteria = "FILE " + attrib.value;
         m_dbName   = std::move( attrib.value );
@@ -120,7 +113,7 @@ StatusCode EventSelectorDataStream::initialize()
       dbtyp      = "SICB";
       break;
     case 'T':
-      switch (::toupper( attrib.tag[1] ) ) {
+      switch ( ::toupper( attrib.tag[1] ) ) {
       case 'Y':
         dbtyp = std::move( attrib.value );
         break;
@@ -129,7 +122,7 @@ StatusCode EventSelectorDataStream::initialize()
       }
       break;
     case 'S':
-      switch (::toupper( attrib.tag[1] ) ) {
+      switch ( ::toupper( attrib.tag[1] ) ) {
       case 'E':
         sel = std::move( attrib.value );
         break;
@@ -163,7 +156,7 @@ StatusCode EventSelectorDataStream::initialize()
       IConversionSvc* icnvSvc = nullptr;
       status                  = ipers->getService( dbtyp, icnvSvc );
       if ( status.isSuccess() ) {
-        auto isvc       = SmartIF<INamedInterface>{icnvSvc};
+        auto isvc = SmartIF<INamedInterface>{icnvSvc};
         if ( isvc ) svc = isvc->name();
       }
     }
@@ -176,17 +169,14 @@ StatusCode EventSelectorDataStream::initialize()
   m_properties.emplace_back( "Criteria", sel );
   m_properties.emplace_back( "DbType", dbtyp );
   m_properties.emplace_back( "DB", m_criteria );
-  if ( !isData && !collsvc.empty() ) {
-    m_properties.emplace_back( "DbService", collsvc );
-  }
+  if ( !isData && !collsvc.empty() ) { m_properties.emplace_back( "DbService", collsvc ); }
 
   m_initialized = status.isSuccess();
   return status;
 }
 
 // Parse input criteria
-StatusCode EventSelectorDataStream::finalize()
-{
+StatusCode EventSelectorDataStream::finalize() {
   setSelector( nullptr );
   m_properties.clear();
   m_initialized = false;

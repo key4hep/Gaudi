@@ -7,8 +7,7 @@
 #include <iostream>
 
 //--- Example main program
-int main( int argc, char** argv )
-{
+int main( int argc, char** argv ) {
   StatusCode status = StatusCode::SUCCESS;
   // Create an instance of an application manager
   IInterface*        iface = Gaudi::createApplicationMgr();

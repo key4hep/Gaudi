@@ -50,8 +50,7 @@
     @author:  M.Frank
     @version: 1.0
 */
-namespace System
-{
+namespace System {
   /// Unit of memory
   enum MemoryUnit { Byte, kByte, MByte, GByte, TByte, PByte, EByte };
   /// Convert time from kByte to requested representation (Experts only)
@@ -106,5 +105,5 @@ namespace System
   GAUDI_API long virtualMemoryPeak( MemoryUnit unit = kByte, InfoType fetch = Memory, long pid = -1 );
   /// System Process Limits: Maximum amount of the page file this process is allowed to use
   GAUDI_API long virtualMemoryLimit( MemoryUnit unit = kByte, InfoType fetch = Quota, long pid = -1 );
-}
+} // namespace System
 #endif // GAUDIKERNEL_MEMORY_H

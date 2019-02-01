@@ -1,4 +1,3 @@
-
 from Gaudi.Configuration import *
 from GaudiPython import AppMgr, gbl
 from ROOT import TFile, TBufferFile, TBuffer
@@ -23,14 +22,12 @@ importOptions('$STDOPTS/LHCbApplication.opts')
 #importOptions( '$GAUDIPOOLDBROOT/options/GaudiPoolDbRoot.opts' )
 importOptions('$GAUDICNVROOT/options/Setup.opts')
 
-
 OutputStream("DstWriter").Output = ''
 HistogramPersistencySvc().OutputFile = ''
 MessageSvc(OutputLevel=ERROR)
 EventSelector().PrintFreq = 100
 
-ApplicationMgr(OutputLevel=ERROR,
-               AppName='File Check - Serial vs Parallel')
+ApplicationMgr(OutputLevel=ERROR, AppName='File Check - Serial vs Parallel')
 # TopAlg = ['UnpackMCParticle', 'UnpackMCVertex'] )
 
 PAR = 'PARALLEL'
@@ -318,7 +315,8 @@ def CheckFileRecords(par, ser):
         diff4 = set(parFSR[k]["incr"]) - set(serFSR[k]["incr"])
         diff5 = set(parFSR[k]["integral"]) - set(serFSR[k]["integral"])
         print "Different entries in " + str(k) + ": \tkey: " + str(
-            len(diff3)) + " increment: " + str(len(diff4)) + " integral: " + str(len(diff5))
+            len(diff3)) + " increment: " + str(
+                len(diff4)) + " integral: " + str(len(diff5))
 
 
 def LumiFSR(lumi):
@@ -351,12 +349,37 @@ def LumiFSR(lumi):
 
 def GetFSRdict(filename, queue):
 
-    FSR = {"TimeSpanFSR":  {'earliest': 0, 'latest': 0},
-           "LumiFSRBeamCrossing":  {'key': 0, 'incr': 0, 'integral': 0},
-           "LumiFSRBeam1":  {'key': 0, 'incr': 0, 'integral': 0},
-           "LumiFSRBeam2":  {'key': 0, 'incr': 0, 'integral': 0},
-           "LumiFSRNoBeam":  {'key': 0, 'incr': 0, 'integral': 0},
-           "EventCountFSR":  {'input': 0, 'output': 0, 'statusFlag': 0}}
+    FSR = {
+        "TimeSpanFSR": {
+            'earliest': 0,
+            'latest': 0
+        },
+        "LumiFSRBeamCrossing": {
+            'key': 0,
+            'incr': 0,
+            'integral': 0
+        },
+        "LumiFSRBeam1": {
+            'key': 0,
+            'incr': 0,
+            'integral': 0
+        },
+        "LumiFSRBeam2": {
+            'key': 0,
+            'incr': 0,
+            'integral': 0
+        },
+        "LumiFSRNoBeam": {
+            'key': 0,
+            'incr': 0,
+            'integral': 0
+        },
+        "EventCountFSR": {
+            'input': 0,
+            'output': 0,
+            'statusFlag': 0
+        }
+    }
 
     options = "from LumiAlgs.LumiFsrReaderConf import LumiFsrReaderConf as LumiFsrReader; LumiFsrReader().OutputLevel =  INFO; LumiFsrReader().inputFiles = ['%s'] ;" % filename
     options += "LumiFsrReader().Persistency='ROOT'; LumiFsrReader().EvtMax = 1; from Configurables import LHCbApp; LHCbApp().Persistency='ROOT';  from Configurables import CondDB, DDDBConf;"
@@ -424,7 +447,8 @@ def CompareFSR(pout, sout):
         diff4 = set(parFSR[k]['incr']) - set(serFSR[k]['incr'])
         diff5 = set(parFSR[k]['integral']) - set(serFSR[k]["integral"])
         print "Different entries in " + str(k) + ": \tkey: " + str(
-            len(diff3)) + " increment: " + str(len(diff4)) + " integral: " + str(len(diff5))
+            len(diff3)) + " increment: " + str(
+                len(diff4)) + " integral: " + str(len(diff5))
 
     print "\nParallel: \n" + str(parFSR)
     print "\nSerial: \n" + str(serFSR)

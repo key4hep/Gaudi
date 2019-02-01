@@ -14,8 +14,7 @@
  * @brief search for files in a list of directories
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
  */
-class GAUDI_API DirSearchPath
-{
+class GAUDI_API DirSearchPath {
 public:
   typedef boost::filesystem::path path;
 
@@ -75,6 +74,6 @@ private:
   //  typedef std::set<path, lessPath> PathSet; ///<a set ordered by path name
   //  PathSet m_dirs;   ///<the dir container
   //
-  std::vector<path> m_dirs; ///<the dir container
+  std::vector<path> m_dirs; ///< the dir container
 };
 #endif // JOBOPTIONS_DIRSEARCHPATH_H

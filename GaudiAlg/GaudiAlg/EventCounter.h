@@ -1,8 +1,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Property.h"
 
-class GAUDI_API EventCounter : public Algorithm
-{
+class GAUDI_API EventCounter : public Algorithm {
 public:
   /**
    ** Constructor(s)

@@ -5,11 +5,9 @@
 #include "IGraphVisitor.h"
 #include "PrecedenceRulesGraph.h"
 
-namespace concurrency
-{
+namespace concurrency {
 
-  class DataReadyPromoter : public IGraphVisitor
-  {
+  class DataReadyPromoter : public IGraphVisitor {
   public:
     /// Constructor
     DataReadyPromoter( EventSlot& slot, const Cause& cause, bool ifTrace = false )
@@ -35,8 +33,7 @@ namespace concurrency
     bool       m_trace;
   };
 
-  class DecisionUpdater : public IGraphVisitor
-  {
+  class DecisionUpdater : public IGraphVisitor {
   public:
     /// Constructor
     DecisionUpdater( EventSlot& slot, const Cause& cause, bool ifTrace = false )
@@ -51,8 +48,7 @@ namespace concurrency
     bool       m_trace;
   };
 
-  class Supervisor : public IGraphVisitor
-  {
+  class Supervisor : public IGraphVisitor {
   public:
     /// Constructor
     Supervisor( EventSlot& slot, const Cause& cause, bool ifTrace = false )
@@ -74,16 +70,14 @@ namespace concurrency
     bool       m_trace;
   };
 
-  class RankerByProductConsumption : public IGraphVisitor
-  {
+  class RankerByProductConsumption : public IGraphVisitor {
   public:
     using IGraphVisitor::visit;
 
     bool visit( AlgorithmNode& ) override;
   };
 
-  class RankerByCummulativeOutDegree : public IGraphVisitor
-  {
+  class RankerByCummulativeOutDegree : public IGraphVisitor {
   public:
     using IGraphVisitor::visit;
 
@@ -95,31 +89,27 @@ namespace concurrency
     int m_nodesSucceeded{0};
   };
 
-  class RankerByTiming : public IGraphVisitor
-  {
+  class RankerByTiming : public IGraphVisitor {
   public:
     using IGraphVisitor::visit;
 
     bool visit( AlgorithmNode& ) override;
   };
 
-  class RankerByEccentricity : public IGraphVisitor
-  {
+  class RankerByEccentricity : public IGraphVisitor {
   public:
     using IGraphVisitor::visit;
 
     bool visit( AlgorithmNode& ) override;
   };
 
-  class RankerByDataRealmEccentricity : public IGraphVisitor
-  {
+  class RankerByDataRealmEccentricity : public IGraphVisitor {
   public:
     using IGraphVisitor::visit;
 
     bool visit( AlgorithmNode& ) override;
 
-    void reset() override
-    {
+    void reset() override {
       m_currentDepth  = 0;
       m_maxKnownDepth = 0;
     }
@@ -132,8 +122,7 @@ namespace concurrency
     uint m_maxKnownDepth{0};
   };
 
-  class RunSimulator : public IGraphVisitor
-  {
+  class RunSimulator : public IGraphVisitor {
   public:
     /// Constructor
     RunSimulator( EventSlot& slot, const Cause& cause ) : m_slot( &slot ), m_cause( cause ){};
@@ -155,6 +144,6 @@ namespace concurrency
     Cause      m_cause;
     int        m_nodesSucceeded{0};
   };
-}
+} // namespace concurrency
 
 #endif /* PRGRAPHVISITORS_H_ */

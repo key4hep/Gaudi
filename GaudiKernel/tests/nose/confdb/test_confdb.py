@@ -59,9 +59,7 @@ def test_regular():
     with fixLibPath([join(data_root, 'regular', n) for n in ['dir1', 'dir2']]):
         from GaudiKernel.ConfigurableDb import loadConfigurableDb, cfgDb
         loadConfigurableDb()
-        for c in [t + n
-                  for t in ['Alg', 'Svc']
-                  for n in ['1a', '1b', '2']]:
+        for c in [t + n for t in ['Alg', 'Svc'] for n in ['1a', '1b', '2']]:
             assert c in cfgDb, 'missing entry for ' + c
 
 
@@ -74,9 +72,7 @@ def test_merged():
     with fixLibPath([join(data_root, 'merged', n) for n in ['dir1', 'dir2']]):
         from GaudiKernel.ConfigurableDb import loadConfigurableDb, cfgDb
         loadConfigurableDb()
-        for c in [t + n
-                  for t in ['Alg', 'Svc']
-                  for n in ['M', '2']]:
+        for c in [t + n for t in ['Alg', 'Svc'] for n in ['M', '2']]:
             assert c in cfgDb, 'missing entry for ' + c
         for c in ['Alg1', 'Svc1']:
             assert c not in cfgDb, 'unwanted entry for ' + c

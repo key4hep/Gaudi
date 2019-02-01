@@ -16,8 +16,7 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
   /** @class StringKey GaudiKernel/StringKey.h
    *  The helper class to represent the efficient "key" for access.
@@ -32,8 +31,7 @@ namespace Gaudi
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date   2009-04-08
    */
-  class GAUDI_API StringKey
-  {
+  class GAUDI_API StringKey {
   public:
     // ========================================================================
     /// constructor from plain C-string, perform hashing
@@ -147,8 +145,7 @@ namespace Gaudi
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator==( const Gaudi::StringKey& key1, const char ( &key2 )[N] )
-  {
+  inline bool operator==( const Gaudi::StringKey& key1, const char ( &key2 )[N] ) {
     return key1.str().size() == N && std::equal( key2, key2 + N, key1.str().begin() );
   }
   // ==========================================================================
@@ -157,8 +154,7 @@ namespace Gaudi
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator!=( const Gaudi::StringKey& key1, const char ( &key2 )[N] )
-  {
+  inline bool operator!=( const Gaudi::StringKey& key1, const char ( &key2 )[N] ) {
     return !( key1 == key2 );
   }
   // ==========================================================================
@@ -173,8 +169,7 @@ namespace Gaudi
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator==( const char ( &key1 )[N], const Gaudi::StringKey& key2 )
-  {
+  inline bool operator==( const char ( &key1 )[N], const Gaudi::StringKey& key2 ) {
     return key2 == key1;
   }
   // ==========================================================================
@@ -189,8 +184,7 @@ namespace Gaudi
    *  @date 2009-10-07
    */
   template <unsigned int N>
-  inline bool operator!=( const char ( &key1 )[N], const Gaudi::StringKey& key2 )
-  {
+  inline bool operator!=( const char ( &key1 )[N], const Gaudi::StringKey& key2 ) {
     return key2 != key1;
   }
   // ==========================================================================
@@ -215,11 +209,9 @@ inline std::string operator+( const Gaudi::StringKey& lhs, const char* rhs ) { r
 // ============================================================================
 // Streaming  value -> string
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Utils
-  {
+  namespace Utils {
     // ========================================================================
     /** send the object to stream (needed to use it as property)
      *  @see Gaudi::StringKey
@@ -233,7 +225,7 @@ namespace Gaudi
      */
     GAUDI_API std::ostream& toStream( const Gaudi::StringKey& key, std::ostream& s );
     // ========================================================================
-  } //                                            end of namespace Gaudi::Utils
+  } // namespace Utils
   // ==========================================================================
   /** printout of the object
    *  reply on the native printout for the string
@@ -246,11 +238,9 @@ namespace Gaudi
 // ============================================================================
 // Parsing : string -> value
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Parsers
-  {
+  namespace Parsers {
     // ========================================================================
     /** parse the key from the string
      *  @see Gaudi::Parsers
@@ -274,12 +264,11 @@ namespace Gaudi
      */
     GAUDI_API StatusCode parse( std::vector<Gaudi::StringKey>& result, const std::string& input );
     // ========================================================================
-  } //                                          end of namespace Gaudi::Parsers
+  } // namespace Parsers
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-namespace std
-{
+namespace std {
   /// specialization of hash function used in C++11 collections like
   /// std::unordered_map
   /// \see https://its.cern.ch/jira/browse/GAUDI-973
@@ -287,6 +276,6 @@ namespace std
   struct hash<Gaudi::StringKey> {
     inline std::size_t operator()( Gaudi::StringKey const& s ) const { return hash_value( s ); }
   };
-}
+} // namespace std
 // ============================================================================
 #endif // GAUDIKERNEL_STRINGKEY_H

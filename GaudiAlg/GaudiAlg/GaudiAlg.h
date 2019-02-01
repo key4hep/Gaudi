@@ -16,8 +16,6 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *  @date   2005-08-06
  */
-namespace GaudiAlg
-{
-} // end of namespace GaudiAlg
+namespace GaudiAlg {} // end of namespace GaudiAlg
 
 #endif // GAUDIALG_GAUDIALG_H

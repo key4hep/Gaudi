@@ -32,11 +32,8 @@
  *  @date 2007-10-02
  */
 // ============================================================================
-void Gaudi::Utils::Histos::fill( AIDA::IHistogram1D* histo, const double value, const double weight )
-{
-  if ( histo ) {
-    histo->fill( value, weight );
-  }
+void Gaudi::Utils::Histos::fill( AIDA::IHistogram1D* histo, const double value, const double weight ) {
+  if ( histo ) { histo->fill( value, weight ); }
 }
 // ============================================================================
 /* simple function to fill AIDA::IHistogram2D objects
@@ -50,11 +47,8 @@ void Gaudi::Utils::Histos::fill( AIDA::IHistogram1D* histo, const double value, 
  */
 // ============================================================================
 void Gaudi::Utils::Histos::fill( AIDA::IHistogram2D* histo, const double valueX, const double valueY,
-                                 const double weight )
-{
-  if ( histo ) {
-    histo->fill( valueX, valueY, weight );
-  }
+                                 const double weight ) {
+  if ( histo ) { histo->fill( valueX, valueY, weight ); }
 }
 // ============================================================================
 /*  simple function to fill AIDA::IHistogram3D objects
@@ -69,11 +63,8 @@ void Gaudi::Utils::Histos::fill( AIDA::IHistogram2D* histo, const double valueX,
  */
 // ============================================================================
 void Gaudi::Utils::Histos::fill( AIDA::IHistogram3D* histo, const double valueX, const double valueY,
-                                 const double valueZ, const double weight )
-{
-  if ( histo ) {
-    histo->fill( valueX, valueY, valueZ, weight );
-  }
+                                 const double valueZ, const double weight ) {
+  if ( histo ) { histo->fill( valueX, valueY, valueZ, weight ); }
 }
 // ============================================================================
 /*  simple function to fill AIDA::IProfile1D objects
@@ -87,11 +78,8 @@ void Gaudi::Utils::Histos::fill( AIDA::IHistogram3D* histo, const double valueX,
  */
 // ============================================================================
 void Gaudi::Utils::Histos::fill( AIDA::IProfile1D* histo, const double valueX, const double valueY,
-                                 const double weight )
-{
-  if ( histo ) {
-    histo->fill( valueX, valueY, weight );
-  }
+                                 const double weight ) {
+  if ( histo ) { histo->fill( valueX, valueY, weight ); }
 }
 // ============================================================================
 /*  simple function to fill AIDA::IProfile2D objects
@@ -106,74 +94,61 @@ void Gaudi::Utils::Histos::fill( AIDA::IProfile1D* histo, const double valueX, c
  */
 // ============================================================================
 void Gaudi::Utils::Histos::fill( AIDA::IProfile2D* histo, const double valueX, const double valueY, const double valueZ,
-                                 const double weight )
-{
-  if ( histo ) {
-    histo->fill( valueX, valueY, valueZ, weight );
-  }
+                                 const double weight ) {
+  if ( histo ) { histo->fill( valueX, valueY, valueZ, weight ); }
 }
 // ============================================================================
-namespace
-{
-  inline std::string htitle_( const AIDA::IBaseHistogram* histo, const std::string& title )
-  {
+namespace {
+  inline std::string htitle_( const AIDA::IBaseHistogram* histo, const std::string& title ) {
     return ( histo && title.empty() ) ? histo->title() : title;
   }
-}
+} // namespace
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IBaseHistogram* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IBaseHistogram* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram1D* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram1D* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram2D* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram2D* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram3D* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IHistogram3D* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IProfile* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IProfile* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IProfile1D* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IProfile1D* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================
 // get the title
 // ======================================================================
-std::string Gaudi::Utils::Histos::htitle( const AIDA::IProfile2D* histo, const std::string& title )
-{
+std::string Gaudi::Utils::Histos::htitle( const AIDA::IProfile2D* histo, const std::string& title ) {
   return htitle_( histo, title );
 }
 // ======================================================================

@@ -23,28 +23,22 @@
 #include <range/v3/view/const.hpp>
 #include <range/v3/view/zip.hpp>
 
-namespace Gaudi
-{
-  namespace Functional
-  {
-    namespace details
-    {
+namespace Gaudi {
+  namespace Functional {
+    namespace details {
 
       // CRJ : Stuff for zipping
-      namespace zip
-      {
+      namespace zip {
 
         /// Print the parameter
         template <typename OS, typename Arg>
-        void printSizes( OS& out, Arg&& arg )
-        {
+        void printSizes( OS& out, Arg&& arg ) {
           out << "SizeOf'" << System::typeinfoName( typeid( Arg ) ) << "'=" << std::forward<Arg>( arg ).size();
         }
 
         /// Print the parameters
         template <typename OS, typename Arg, typename... Args>
-        void printSizes( OS& out, Arg&& arg, Args&&... args )
-        {
+        void printSizes( OS& out, Arg&& arg, Args&&... args ) {
           printSizes( out, arg );
           out << ", ";
           printSizes( out, args... );
@@ -52,29 +46,25 @@ namespace Gaudi
 
         /// Resolve case there is only one container in the range
         template <typename A>
-        inline bool check_sizes( const A& ) noexcept
-        {
+        inline bool check_sizes( const A& ) noexcept {
           return true;
         }
 
         /// Compare sizes of two containers
         template <typename A, typename B>
-        inline bool check_sizes( const A& a, const B& b ) noexcept
-        {
+        inline bool check_sizes( const A& a, const B& b ) noexcept {
           return a.size() == b.size();
         }
 
         /// Compare sizes of 3 or more containers
         template <typename A, typename B, typename... C>
-        inline bool check_sizes( const A& a, const B& b, const C&... c ) noexcept
-        {
+        inline bool check_sizes( const A& a, const B& b, const C&... c ) noexcept {
           return ( check_sizes( a, b ) && check_sizes( b, c... ) );
         }
 
         /// Verify the data container sizes have the same sizes
         template <typename... Args>
-        inline decltype( auto ) verifySizes( Args&... args )
-        {
+        inline decltype( auto ) verifySizes( Args&... args ) {
           if ( UNLIKELY( !check_sizes( args... ) ) ) {
             std::ostringstream mess;
             mess << "Zipped containers have different sizes : ";
@@ -85,8 +75,7 @@ namespace Gaudi
 
         /// Zips multiple containers together to form a single range
         template <typename... Args>
-        inline decltype( auto ) range( Args&&... args )
-        {
+        inline decltype( auto ) range( Args&&... args ) {
 #ifndef NDEBUG
           verifySizes( args... );
 #endif
@@ -95,20 +84,18 @@ namespace Gaudi
 
         /// Zips multiple containers together to form a single const range
         template <typename... Args>
-        inline decltype( auto ) const_range( Args&&... args )
-        {
+        inline decltype( auto ) const_range( Args&&... args ) {
 #ifndef NDEBUG
           verifySizes( args... );
 #endif
           return ranges::view::const_( ranges::view::zip( std::forward<Args>( args )... ) );
         }
-      }
+      } // namespace zip
 
 #if __cplusplus < 201703L
       // implementation of C++17 std::as_const, see http://en.cppreference.com/w/cpp/utility/as_const
       template <typename T>
-      constexpr std::add_const_t<T>& as_const( T& t ) noexcept
-      {
+      constexpr std::add_const_t<T>& as_const( T& t ) noexcept {
         return t;
       }
 
@@ -116,27 +103,23 @@ namespace Gaudi
       void as_const( T&& t ) = delete;
 
       template <class...>
-      struct disjunction : std::false_type {
-      };
+      struct disjunction : std::false_type {};
       template <class B1>
-      struct disjunction<B1> : B1 {
-      };
+      struct disjunction<B1> : B1 {};
       template <class B1, class... Bn>
-      struct disjunction<B1, Bn...> : std::conditional_t<bool( B1::value ), B1, disjunction<Bn...>> {
-      };
+      struct disjunction<B1, Bn...> : std::conditional_t<bool( B1::value ), B1, disjunction<Bn...>> {};
 
 #else
       using std::as_const;
       using std::disjunction;
 #endif
       /////////////////////////////////////////
-      namespace details2
-      {
+      namespace details2 {
         // note: boost::optional in boost 1.66 does not have 'has_value()'...
         // that requires boost 1.68 or later... so for now, use operator bool() instead ;-(
         template <typename T>
         using is_optional_ = decltype( bool( std::declval<T>() ), std::declval<T>().value() );
-      }
+      } // namespace details2
       template <typename Arg>
       using is_optional = typename Gaudi::cpp17::is_detected<details2::is_optional_, Arg>;
 
@@ -146,8 +129,7 @@ namespace Gaudi
       template <typename Arg>
       using require_is_not_optional = std::enable_if_t<!is_optional<Arg>::value>;
 
-      namespace details2
-      {
+      namespace details2 {
         template <typename T, typename = void>
         struct remove_optional {
           using type = T;
@@ -157,42 +139,38 @@ namespace Gaudi
         struct remove_optional<T, std::enable_if_t<is_optional<T>::value>> {
           using type = typename T::value_type;
         };
-      }
+      } // namespace details2
 
       template <typename T>
       using remove_optional_t = typename details2::remove_optional<T>::type;
 
       constexpr struct invoke_optionally_t {
         template <typename F, typename Arg, typename = require_is_not_optional<Arg>>
-        decltype( auto ) operator()( F&& f, Arg&& arg ) const
-        {
+        decltype( auto ) operator()( F&& f, Arg&& arg ) const {
           return Gaudi::invoke( std::forward<F>( f ), std::forward<Arg>( arg ) );
         }
         template <typename F, typename Arg, typename = require_is_optional<Arg>>
-        void operator()( F&& f, Arg&& arg ) const
-        {
+        void operator()( F&& f, Arg&& arg ) const {
           if ( arg ) Gaudi::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
         }
       } invoke_optionally{};
       /////////////////////////////////////////
 
-      template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value &&
-                                                                          std::is_base_of<DataObject, Out1>::value>>
-      Out1* put( DataObjectHandle<Out1>& out_handle, Out2&& out )
-      {
+      template <typename Out1, typename Out2,
+                typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value &&
+                                            std::is_base_of<DataObject, Out1>::value>>
+      Out1* put( DataObjectHandle<Out1>& out_handle, Out2&& out ) {
         return out_handle.put( std::make_unique<Out1>( std::forward<Out2>( out ) ) );
       }
 
       template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
-      void put( DataObjectHandle<AnyDataWrapper<Out1>>& out_handle, Out2&& out )
-      {
+      void put( DataObjectHandle<AnyDataWrapper<Out1>>& out_handle, Out2&& out ) {
         out_handle.put( std::forward<Out2>( out ) );
       }
 
       // optional put
       template <typename OutHandle, typename OptOut, typename = require_is_optional<OptOut>>
-      void put( OutHandle& out_handle, OptOut&& out )
-      {
+      void put( OutHandle& out_handle, OptOut&& out ) {
         if ( out ) put( out_handle, *std::forward<OptOut>( out ) );
       }
       /////////////////////////////////////////
@@ -206,22 +184,19 @@ namespace Gaudi
         using c_remove_ptr_t = std::remove_pointer_t<typename Container::value_type>;
 
         template <typename Container, typename Value>
-        auto operator()( Container& c, Value&& v ) const -> decltype( c.push_back( v ) )
-        {
+        auto operator()( Container& c, Value&& v ) const -> decltype( c.push_back( v ) ) {
           return c.push_back( std::forward<Value>( v ) );
         }
 
         template <typename Container, typename Value>
-        auto operator()( Container& c, Value&& v ) const -> decltype( c.insert( v ) )
-        {
+        auto operator()( Container& c, Value&& v ) const -> decltype( c.insert( v ) ) {
           return c.insert( std::forward<Value>( v ) );
         }
 
         // Container<T*> with T&& as argument
         template <typename Container,
                   typename = std::enable_if_t<std::is_pointer<typename Container::value_type>::value>>
-        auto operator()( Container& c, c_remove_ptr_t<Container>&& v ) const
-        {
+        auto operator()( Container& c, c_remove_ptr_t<Container>&& v ) const {
           return operator()( c, new c_remove_ptr_t<Container>{std::move( v )} );
         }
 
@@ -231,14 +206,12 @@ namespace Gaudi
 
       constexpr struct deref_t {
         template <typename In, typename = std::enable_if_t<!std::is_pointer<In>::value>>
-        const In& operator()( const In& in ) const
-        {
+        const In& operator()( const In& in ) const {
           return in;
         }
 
         template <typename In>
-        const In& operator()( const In* in ) const
-        {
+        const In& operator()( const In* in ) const {
           assert( in != nullptr );
           return *in;
         }
@@ -246,16 +219,13 @@ namespace Gaudi
 
       /////////////////////////////////////////
       // if Container is a pointer, then we're optional items
-      namespace details2
-      {
+      namespace details2 {
         template <typename Container, typename Value>
-        void push_back( Container& c, const Value& v, std::true_type )
-        {
+        void push_back( Container& c, const Value& v, std::true_type ) {
           c.push_back( v );
         }
         template <typename Container, typename Value>
-        void push_back( Container& c, const Value& v, std::false_type )
-        {
+        void push_back( Container& c, const Value& v, std::false_type ) {
           c.push_back( &v );
         }
 
@@ -263,33 +233,28 @@ namespace Gaudi
         struct get_from_handle {
           template <template <typename> class Handle, typename I,
                     typename = std::enable_if_t<std::is_convertible<I, In>::value>>
-          auto operator()( const Handle<I>& h ) -> const In&
-          {
+          auto operator()( const Handle<I>& h ) -> const In& {
             return *h.get();
           }
           template <template <typename> class Handle, typename I,
                     typename = std::enable_if_t<std::is_convertible<I*, In>::value>>
-          auto operator()( const Handle<I>& h ) -> const In
-          {
+          auto operator()( const Handle<I>& h ) -> const In {
             return h.getIfExists();
           } // In is-a pointer
         };
 
         template <typename T>
-        T* deref_if( T* const t, std::false_type )
-        {
+        T* deref_if( T* const t, std::false_type ) {
           return t;
         }
         template <typename T>
-        T& deref_if( T* const t, std::true_type )
-        {
+        T& deref_if( T* const t, std::true_type ) {
           return *t;
         }
-      }
+      } // namespace details2
 
       template <typename Container>
-      class vector_of_const_
-      {
+      class vector_of_const_ {
         static constexpr bool is_pointer = std::is_pointer<Container>::value;
         using val_t                      = std::add_const_t<std::remove_pointer_t<Container>>;
         using ptr_t                      = std::add_pointer_t<val_t>;
@@ -300,8 +265,7 @@ namespace Gaudi
       public:
         using value_type = std::conditional_t<is_pointer, ptr_t, val_t>;
         using size_type  = typename ContainerVector::size_type;
-        class iterator
-        {
+        class iterator {
           typename ContainerVector::const_iterator m_i;
           friend class vector_of_const_;
           iterator( typename ContainerVector::const_iterator iter ) : m_i( iter ) {}
@@ -310,24 +274,21 @@ namespace Gaudi
         public:
           friend bool operator!=( const iterator& lhs, const iterator& rhs ) { return lhs.m_i != rhs.m_i; }
           ret_t operator*() const { return details2::deref_if( *m_i, std::integral_constant<bool, !is_pointer>{} ); }
-          iterator& operator++()
-          {
+          iterator& operator++() {
             ++m_i;
             return *this;
           }
-          iterator& operator--()
-          {
+          iterator& operator--() {
             --m_i;
             return *this;
           }
-          bool is_null() const { return !*m_i; }
+          bool     is_null() const { return !*m_i; }
           explicit operator bool() const { return !is_null(); }
         };
         vector_of_const_() = default;
         void reserve( size_type size ) { m_containers.reserve( size ); }
         template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_pointer,ptr_t,val_t>>
-        void push_back( T&& container )
-        {
+        void push_back( T&& container ) {
           details2::push_back( m_containers, std::forward<T>( container ), std::integral_constant<bool, is_pointer>{} );
         } // note: does not copy its argument, so we're not really a container...
         iterator  begin() const { return m_containers.begin(); }
@@ -335,26 +296,22 @@ namespace Gaudi
         size_type size() const { return m_containers.size(); }
 
         template <typename X = Container>
-        std::enable_if_t<!std::is_pointer<X>::value, ref_t> operator[]( size_type i ) const
-        {
+        std::enable_if_t<!std::is_pointer<X>::value, ref_t> operator[]( size_type i ) const {
           return *m_containers[i];
         }
 
         template <typename X = Container>
-        std::enable_if_t<std::is_pointer<X>::value, ptr_t> operator[]( size_type i ) const
-        {
+        std::enable_if_t<std::is_pointer<X>::value, ptr_t> operator[]( size_type i ) const {
           return m_containers[i];
         }
 
         template <typename X = Container>
-        std::enable_if_t<!std::is_pointer<X>::value, ref_t> at( size_type i ) const
-        {
+        std::enable_if_t<!std::is_pointer<X>::value, ref_t> at( size_type i ) const {
           return *m_containers[i];
         }
 
         template <typename X = Container>
-        std::enable_if_t<std::is_pointer<X>::value, ptr_t> at( size_type i ) const
-        {
+        std::enable_if_t<std::is_pointer<X>::value, ptr_t> at( size_type i ) const {
           return m_containers[i];
         }
 
@@ -362,15 +319,14 @@ namespace Gaudi
       };
 
       /////////////////////////////////////////
-      namespace detail2
-      { // utilities for detected_or_t{,_} usage
+      namespace detail2 { // utilities for detected_or_t{,_} usage
         template <typename Tr>
         using BaseClass_t = typename Tr::BaseClass;
         template <typename Tr, typename T>
         using OutputHandle_t = typename Tr::template OutputHandle<T>;
         template <typename Tr, typename T>
         using InputHandle_t = typename Tr::template InputHandle<T>;
-      }
+      } // namespace detail2
 
       // check whether Traits::BaseClass is a valid type,
       // if so, define BaseClass_t<Traits> as being Traits::BaseClass
@@ -389,12 +345,11 @@ namespace Gaudi
       /////////
 
       template <typename Handles>
-      Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<std::string>& init )
-      {
+      Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<std::string>& init ) {
         Handles handles;
         handles.reserve( init.size() );
-        std::transform( init.begin(), init.end(), std::back_inserter( handles ),
-                        [&]( const std::string& loc ) -> typename Handles::value_type {
+        std::transform( init.begin(), init.end(),
+                        std::back_inserter( handles ), [&]( const std::string& loc ) -> typename Handles::value_type {
                           return {loc, owner};
                         } );
         return handles;
@@ -410,8 +365,7 @@ namespace Gaudi
                        "EventContext can only appear as first argument" );
 
         template <typename Algorithm, typename Handles>
-        static auto apply( const Algorithm& algo, Handles& handles )
-        {
+        static auto apply( const Algorithm& algo, Handles& handles ) {
           return Gaudi::apply( [&]( const auto&... handle ) { return algo( details::deref( handle.get() )... ); },
                                handles );
         }
@@ -426,8 +380,7 @@ namespace Gaudi
                        "EventContext can only appear as first argument" );
 
         template <typename Algorithm, typename Handles>
-        static auto apply( const Algorithm& algo, Handles& handles )
-        {
+        static auto apply( const Algorithm& algo, Handles& handles ) {
           return Gaudi::apply(
               [&]( const auto&... handle ) {
                 return algo( Gaudi::Hive::currentContext(), details::deref( handle.get() )... );
@@ -443,8 +396,7 @@ namespace Gaudi
       class DataHandleMixin;
 
       template <typename... Out, typename... In, typename Traits_>
-      class DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_>
-      {
+      class DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_> {
         static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
                        "BaseClass must inherit from Algorithm" );
 
@@ -453,8 +405,7 @@ namespace Gaudi
                          std::index_sequence<I...>, const OArgs& outputs, std::index_sequence<J...> )
             : BaseClass_t<Traits_>( name, pSvcLocator )
             , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
-            , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... )
-        {
+            , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
           // make sure this algorithm is seen as reentrant by Gaudi
           this->setProperty( "Cardinality", 0 );
         }
@@ -468,39 +419,29 @@ namespace Gaudi
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs,
                          const std::array<KeyValue, N_out>& outputs )
             : DataHandleMixin( name, pSvcLocator, inputs, std::index_sequence_for<In...>{}, outputs,
-                               std::index_sequence_for<Out...>{} )
-        {
-        }
+                               std::index_sequence_for<Out...>{} ) {}
 
         // special cases: forward to the generic case...
         // 1 -> 1
         DataHandleMixin( const std::string& name, ISvcLocator* locator, const KeyValue& input, const KeyValue& output )
-            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{input}, std::array<KeyValue, 1>{output} )
-        {
-        }
+            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{input}, std::array<KeyValue, 1>{output} ) {}
         // 1 -> N
         DataHandleMixin( const std::string& name, ISvcLocator* locator, const KeyValue& input,
                          const std::array<KeyValue, N_out>& outputs )
-            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{input}, outputs )
-        {
-        }
+            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{input}, outputs ) {}
         // N -> 1
         DataHandleMixin( const std::string& name, ISvcLocator* locator, const std::array<KeyValue, N_in>& inputs,
                          const KeyValue& output )
-            : DataHandleMixin( name, locator, inputs, std::array<KeyValue, 1>{output} )
-        {
-        }
+            : DataHandleMixin( name, locator, inputs, std::array<KeyValue, 1>{output} ) {}
 
         template <std::size_t N = 0>
-        const std::string&    inputLocation() const
-        {
+        const std::string& inputLocation() const {
           return std::get<N>( m_inputs ).objKey();
         }
         constexpr unsigned int inputLocationSize() const { return N_in; }
 
         template <std::size_t N = 0>
-        const std::string&    outputLocation() const
-        {
+        const std::string& outputLocation() const {
           return std::get<N>( m_outputs ).objKey();
         }
         constexpr unsigned int outputLocationSize() const { return N_out; }
@@ -513,14 +454,13 @@ namespace Gaudi
       };
 
       template <typename Traits_>
-      class DataHandleMixin<void, std::tuple<>, Traits_> : public BaseClass_t<Traits_>
-      {
+      class DataHandleMixin<void, std::tuple<>, Traits_> : public BaseClass_t<Traits_> {
         static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
                        "BaseClass must inherit from Algorithm" );
 
       public:
-        DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator ) : BaseClass_t<Traits_>( name, pSvcLocator )
-        {
+        DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator )
+            : BaseClass_t<Traits_>( name, pSvcLocator ) {
           // make sure this algorithm is seen as reentrant by Gaudi
           this->setProperty( "Cardinality", 0 );
         }
@@ -532,8 +472,7 @@ namespace Gaudi
       };
 
       template <typename... In, typename Traits_>
-      class DataHandleMixin<void, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_>
-      {
+      class DataHandleMixin<void, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_> {
         static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
                        "BaseClass must inherit from Algorithm" );
 
@@ -541,8 +480,7 @@ namespace Gaudi
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const IArgs& inputs,
                          std::index_sequence<I...> )
             : BaseClass_t<Traits_>( name, pSvcLocator )
-            , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
-        {
+            , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... ) {
           // make sure this algorithm is seen as reentrant by Gaudi
           this->setProperty( "Cardinality", 0 );
         }
@@ -553,20 +491,15 @@ namespace Gaudi
 
         // generic constructor:  N -> 0
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_in>& inputs )
-            : DataHandleMixin( name, pSvcLocator, inputs, std::index_sequence_for<In...>{} )
-        {
-        }
+            : DataHandleMixin( name, pSvcLocator, inputs, std::index_sequence_for<In...>{} ) {}
 
         // special cases: forward to the generic case...
         // 1 -> 0
         DataHandleMixin( const std::string& name, ISvcLocator* locator, const KeyValue& input )
-            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{input} )
-        {
-        }
+            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{input} ) {}
 
         template <std::size_t N = 0>
-        const std::string&    inputLocation() const
-        {
+        const std::string& inputLocation() const {
           return std::get<N>( m_inputs ).objKey();
         }
         constexpr unsigned int inputLocationSize() const { return N_in; }
@@ -578,8 +511,7 @@ namespace Gaudi
       };
 
       template <typename... Out, typename Traits_>
-      class DataHandleMixin<std::tuple<Out...>, void, Traits_> : public BaseClass_t<Traits_>
-      {
+      class DataHandleMixin<std::tuple<Out...>, void, Traits_> : public BaseClass_t<Traits_> {
         static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
                        "BaseClass must inherit from Algorithm" );
 
@@ -587,8 +519,7 @@ namespace Gaudi
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const OArgs& outputs,
                          std::index_sequence<J...> )
             : BaseClass_t<Traits_>( name, pSvcLocator )
-            , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... )
-        {
+            , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
           // make sure this algorithm is seen as reentrant by Gaudi
           this->setProperty( "Cardinality", 0 );
         }
@@ -599,19 +530,14 @@ namespace Gaudi
 
         // generic constructor:  0 -> N
         DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const std::array<KeyValue, N_out>& outputs )
-            : DataHandleMixin( name, pSvcLocator, outputs, std::index_sequence_for<Out...>{} )
-        {
-        }
+            : DataHandleMixin( name, pSvcLocator, outputs, std::index_sequence_for<Out...>{} ) {}
 
         // 0 -> 1
         DataHandleMixin( const std::string& name, ISvcLocator* locator, const KeyValue& output )
-            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{output} )
-        {
-        }
+            : DataHandleMixin( name, locator, std::array<KeyValue, 1>{output} ) {}
 
         template <std::size_t N = 0>
-        const std::string&    outputLocation() const
-        {
+        const std::string& outputLocation() const {
           return std::get<N>( m_outputs ).objKey();
         }
         constexpr unsigned int outputLocationSize() const { return N_out; }
@@ -624,20 +550,18 @@ namespace Gaudi
 
       /////////////////
       template <typename Fun, typename Container, typename... Args>
-      constexpr void applyPostProcessing( const Fun&, Container&, Args... )
-      {
+      constexpr void applyPostProcessing( const Fun&, Container&, Args... ) {
         static_assert( sizeof...( Args ) == 0, "Args should not be used!" );
       }
 
       template <typename Fun, typename Container>
-      auto applyPostProcessing( const Fun& fun, Container& c ) -> decltype( fun.postprocess( c ), void() )
-      {
+      auto applyPostProcessing( const Fun& fun, Container& c ) -> decltype( fun.postprocess( c ), void() ) {
         fun.postprocess( c );
       }
 
       /////////////////
-    }
-  }
-}
+    } // namespace details
+  }   // namespace Functional
+} // namespace Gaudi
 
 #endif

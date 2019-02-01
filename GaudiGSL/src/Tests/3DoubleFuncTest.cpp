@@ -24,8 +24,7 @@
 
 double sum( double x, double y, double z ) { return 3 * x * x - 5 * y * y + 3 * z * z; }
 
-int main()
-{
+int main() {
   const GaudiMath::Function& mysum = GaudiMath::adapter( sum );
   Genfun::Argument           arg( 3 );
 

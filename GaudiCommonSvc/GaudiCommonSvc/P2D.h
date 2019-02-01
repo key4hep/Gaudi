@@ -6,21 +6,18 @@
 #include <GaudiKernel/DataObject.h>
 #include <TProfile2D.h>
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /**@class Profile2D
-    *
-    * AIDA implementation for 2 D profiles using ROOT TProfile2D
-    *
-    * @author  M.Frank
-    */
-  class GAUDI_API Profile2D : public DataObject, public Generic2D<AIDA::IProfile2D, TProfile2D>
-  {
+   *
+   * AIDA implementation for 2 D profiles using ROOT TProfile2D
+   *
+   * @author  M.Frank
+   */
+  class GAUDI_API Profile2D : public DataObject, public Generic2D<AIDA::IProfile2D, TProfile2D> {
   public:
     /// Default Constructor
-    Profile2D() : Base( new TProfile2D() )
-    {
+    Profile2D() : Base( new TProfile2D() ) {
       m_classType = "IProfile2D";
       m_rep->SetErrorOption( "s" );
       m_rep->SetDirectory( nullptr );
@@ -29,8 +26,7 @@ namespace Gaudi
     Profile2D( TProfile2D* rep );
 
     /// Fill bin content
-    bool fill( double x, double y, double z, double weight ) override
-    {
+    bool fill( double x, double y, double z, double weight ) override {
       // avoid race conditions when filling the profile
       std::lock_guard<std::mutex> guard( m_fillSerialization );
       m_rep->Fill( x, y, z, weight );
@@ -43,6 +39,6 @@ namespace Gaudi
   private:
     std::mutex m_fillSerialization;
   };
-}
+} // namespace Gaudi
 
 #endif

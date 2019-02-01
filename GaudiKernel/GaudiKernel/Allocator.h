@@ -59,16 +59,14 @@
 #include "GaudiKernel/AllocatorPool.h"
 // ============================================================================
 
-namespace GaudiUtils
-{
+namespace GaudiUtils {
   /** @class Allocator Allocator.h GaudiKernel/Allocator.h
    *  Allocator.
    *  The class is imported from Geant4 project
    *  @date 2006-02-10
    */
   template <class Type>
-  class Allocator
-  {
+  class Allocator {
   public: // with description
     /// Constructor
     Allocator() throw();
@@ -79,7 +77,7 @@ namespace GaudiUtils
      *  new and delete operators in the client &lt;Type&gt; object
      */
     inline Type* MallocSingle();
-    inline void FreeSingle( Type* anElement );
+    inline void  FreeSingle( Type* anElement );
 
     /** Returns allocated storage to the free store, resets
      *  allocator and page sizes.
@@ -109,30 +107,26 @@ namespace GaudiUtils
 
     /// Copy constructor
     template <class U>
-    Allocator( const Allocator<U>& right ) throw() : mem( right.mem )
-    {
-    }
+    Allocator( const Allocator<U>& right ) throw() : mem( right.mem ) {}
 
     /// Returns the address of values
-    pointer address( reference r ) const { return &r; }
+    pointer       address( reference r ) const { return &r; }
     const_pointer address( const_reference r ) const { return &r; }
 
     /// Allocates space for n elements of type Type, but does not initialise
-    pointer allocate( size_type n, void* /*hint*/ = 0 )
-    {
+    pointer allocate( size_type n, void* /*hint*/ = 0 ) {
       // Allocates space for n elements of type Type, but does not initialise
       //
       Type* mem_alloc = 0;
       if ( n == 1 )
         mem_alloc = MallocSingle();
       else
-        mem_alloc = static_cast<Type*>(::operator new( n * sizeof( Type ) ) );
+        mem_alloc = static_cast<Type*>( ::operator new( n * sizeof( Type ) ) );
       return mem_alloc;
     }
 
     /// Deallocates n elements of type Type, but doesn't destroy
-    void deallocate( pointer p, size_type n )
-    {
+    void deallocate( pointer p, size_type n ) {
       // Deallocates n elements of type Type, but doesn't destroy
       //
       if ( n == 1 )
@@ -148,8 +142,7 @@ namespace GaudiUtils
     void destroy( pointer p ) { p->~Type(); }
 
     /// Returns the maximum number of elements that can be allocated
-    size_type max_size() const throw()
-    {
+    size_type max_size() const throw() {
       // Returns the maximum number of elements that can be allocated
       //
       return 2147483647 / sizeof( Type );
@@ -166,7 +159,7 @@ namespace GaudiUtils
     // Pool of elements of sizeof(Type)
   };
 
-} // end of the namespace GaudiUtils
+} // namespace GaudiUtils
 
 // ------------------------------------------------------------
 // Inline implementation
@@ -181,26 +174,21 @@ namespace GaudiUtils
 // ************************************************************
 //
 template <class Type>
-GaudiUtils::Allocator<Type>::Allocator() throw() : mem( sizeof( Type ) )
-{
-}
+GaudiUtils::Allocator<Type>::Allocator() throw() : mem( sizeof( Type ) ) {}
 
 // ************************************************************
 // G4Allocator destructor
 // ************************************************************
 //
 template <class Type>
-GaudiUtils::Allocator<Type>::~Allocator() throw()
-{
-}
+GaudiUtils::Allocator<Type>::~Allocator() throw() {}
 
 // ************************************************************
 // MallocSingle
 // ************************************************************
 //
 template <class Type>
-Type* GaudiUtils::Allocator<Type>::MallocSingle()
-{
+Type* GaudiUtils::Allocator<Type>::MallocSingle() {
   return static_cast<Type*>( mem.Alloc() );
 }
 
@@ -209,8 +197,7 @@ Type* GaudiUtils::Allocator<Type>::MallocSingle()
 // ************************************************************
 //
 template <class Type>
-void GaudiUtils::Allocator<Type>::FreeSingle( Type* anElement )
-{
+void GaudiUtils::Allocator<Type>::FreeSingle( Type* anElement ) {
   mem.Free( anElement );
   return;
 }
@@ -220,8 +207,7 @@ void GaudiUtils::Allocator<Type>::FreeSingle( Type* anElement )
 // ************************************************************
 //
 template <class Type>
-void GaudiUtils::Allocator<Type>::ResetStorage()
-{
+void GaudiUtils::Allocator<Type>::ResetStorage() {
   // Clear all allocated storage and return it to the free store
   //
   mem.Reset();
@@ -233,8 +219,7 @@ void GaudiUtils::Allocator<Type>::ResetStorage()
 // ************************************************************
 //
 template <class Type>
-size_t GaudiUtils::Allocator<Type>::GetAllocatedSize() const
-{
+size_t GaudiUtils::Allocator<Type>::GetAllocatedSize() const {
   return mem.Size();
 }
 
@@ -243,8 +228,7 @@ size_t GaudiUtils::Allocator<Type>::GetAllocatedSize() const
 // ************************************************************
 //
 template <class T1, class T2>
-bool operator==( const GaudiUtils::Allocator<T1>&, const GaudiUtils::Allocator<T2>& ) throw()
-{
+bool operator==( const GaudiUtils::Allocator<T1>&, const GaudiUtils::Allocator<T2>& ) throw() {
   return true;
 }
 
@@ -253,8 +237,7 @@ bool operator==( const GaudiUtils::Allocator<T1>&, const GaudiUtils::Allocator<T
 // ************************************************************
 //
 template <class T1, class T2>
-bool operator!=( const GaudiUtils::Allocator<T1>&, const GaudiUtils::Allocator<T2>& ) throw()
-{
+bool operator!=( const GaudiUtils::Allocator<T1>&, const GaudiUtils::Allocator<T2>& ) throw() {
   return false;
 }
 

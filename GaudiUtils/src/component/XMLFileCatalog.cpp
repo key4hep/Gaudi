@@ -30,25 +30,22 @@ using namespace std;
 
 #if _XERCES_VERSION <= 30000
 // API change between XercesC 2 and 3
-#define setIdAttribute( a, b ) setIdAttribute( a )
+#  define setIdAttribute( a, b ) setIdAttribute( a )
 #endif
 
 DECLARE_FACTORY( XMLFileCatalog, IFileCatalog::Factory )
 
-namespace
-{
+namespace {
 
   typedef const string& CSTR;
-  inline string _toString( const XMLCh* toTranscode )
-  {
+  inline string         _toString( const XMLCh* toTranscode ) {
     char*  buff = XMLString::transcode( toTranscode );
     string tmp( buff == 0 ? "" : buff );
     XMLString::release( &buff );
     return tmp;
   }
   struct __Init {
-    __Init()
-    {
+    __Init() {
       try {
         XMLPlatformUtils::Initialize();
       } catch ( const XMLException& e ) {
@@ -62,8 +59,7 @@ namespace
   struct XMLStr {
     XMLCh* m_xml;
     XMLStr( CSTR c ) { m_xml = XMLString::transcode( c.c_str() ); }
-    ~XMLStr()
-    {
+    ~XMLStr() {
       if ( m_xml ) XMLString::release( &m_xml );
     }
     operator const XMLCh*() const { return m_xml; }
@@ -78,27 +74,23 @@ namespace
   bool operator==( CSTR c, const XMLTag& b ) { return c == b.m_str; }
   struct XMLCollection {
     DOMElement* m_node;
-    XMLCollection( DOMNode* n, bool use_children = true ) : m_node( (DOMElement*)n )
-    {
+    XMLCollection( DOMNode* n, bool use_children = true ) : m_node( (DOMElement*)n ) {
       if ( use_children ) {
         if ( m_node ) m_node = (DOMElement*)m_node->getFirstChild();
         if ( m_node && m_node->getNodeType() != DOMNode::ELEMENT_NODE ) ++( *this );
       }
     }
-    operator bool() const { return m_node; }
-    operator DOMNode*() const { return m_node; }
-    operator DOMElement*() const { return m_node; }
+                operator bool() const { return m_node; }
+                operator DOMNode*() const { return m_node; }
+                operator DOMElement*() const { return m_node; }
     DOMElement* operator->() const { return m_node; }
-    string attr( const XMLTag& tag ) const { return _toString( m_node->getAttribute( tag ) ); }
-    string attr( CSTR tag ) const { return attr( XMLTag( tag ) ); }
-    string            tag() const { return _toString( m_node->getTagName() ); }
-    void operator++()
-    {
+    string      attr( const XMLTag& tag ) const { return _toString( m_node->getAttribute( tag ) ); }
+    string      attr( CSTR tag ) const { return attr( XMLTag( tag ) ); }
+    string      tag() const { return _toString( m_node->getTagName() ); }
+    void        operator++() {
       while ( m_node ) {
         m_node = (DOMElement*)m_node->getNextSibling();
-        if ( m_node && m_node->getNodeType() == DOMNode::ELEMENT_NODE ) {
-          return;
-        }
+        if ( m_node && m_node->getNodeType() == DOMNode::ELEMENT_NODE ) { return; }
       }
     }
   };
@@ -117,8 +109,7 @@ namespace
     void fatalError( const SAXParseException& e ) override;
   };
   struct DTDRedirect : public EntityResolver {
-    InputSource* resolveEntity( const XMLCh* const /* pubId */, const XMLCh* const /* sysId */ ) override
-    {
+    InputSource* resolveEntity( const XMLCh* const /* pubId */, const XMLCh* const /* sysId */ ) override {
       static const char*  dtdID = "redirectinmem.dtd";
       static const char*  dtd   = "\
         <!ELEMENT POOLFILECATALOG (META*,File*)>\
@@ -144,8 +135,7 @@ namespace
     }
   };
 
-  void ErrHandler::error( const SAXParseException& e )
-  {
+  void ErrHandler::error( const SAXParseException& e ) {
     string m( _toString( e.getMessage() ) );
     if ( m.find( "The values for attribute 'name' must be names or name tokens" ) != string::npos ||
          m.find( "The values for attribute 'ID' must be names or name tokens" ) != string::npos ||
@@ -159,8 +149,7 @@ namespace
     log << MSG::ERROR << "Error at file \"" << sys << "\", line " << e.getLineNumber() << ", column "
         << e.getColumnNumber() << endmsg << "Message: " << m << endmsg;
   }
-  void ErrHandler::fatalError( const SAXParseException& e )
-  {
+  void ErrHandler::fatalError( const SAXParseException& e ) {
     MsgStream log( m_msg, "XMLCatalog" );
     string    m( _toString( e.getMessage() ) );
     string    sys( _toString( e.getSystemId() ) );
@@ -184,7 +173,7 @@ namespace
   const XMLTag MetaNode( "metadata" );
   const XMLTag Attr_metaName( "att_name" );
   const XMLTag Attr_metaValue( "att_value" );
-}
+} // namespace
 
 // ----------------------------------------------------------------------------
 XMLFileCatalog::XMLFileCatalog( CSTR uri, IMessageSvc* m ) : m_file( uri ), m_msgSvc( m ) {}
@@ -192,21 +181,18 @@ XMLFileCatalog::XMLFileCatalog( CSTR uri, IMessageSvc* m ) : m_file( uri ), m_ms
 /// Create file identifier using UUID mechanism
 std::string XMLFileCatalog::createFID() const { return createGuidAsString(); }
 // ----------------------------------------------------------------------------
-DOMDocument* XMLFileCatalog::getDoc( bool throw_if_no_exists ) const
-{
+DOMDocument* XMLFileCatalog::getDoc( bool throw_if_no_exists ) const {
   if ( !m_doc && throw_if_no_exists ) printError( "The XML catalog was not started.", true );
   return m_doc;
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::printError( CSTR msg, bool rethrow ) const
-{
+void XMLFileCatalog::printError( CSTR msg, bool rethrow ) const {
   MsgStream log( m_msgSvc, "XMLCatalog" );
   log << MSG::FATAL << msg << endmsg;
   if ( rethrow ) throw runtime_error( "XMLFileCatalog> " + msg );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::init()
-{
+void XMLFileCatalog::init() {
   string xmlFile = getfile( false );
   try {
     m_parser = std::make_unique<XercesDOMParser>();
@@ -228,20 +214,17 @@ void XMLFileCatalog::init()
     printError( "XML parse error[" + xmlFile + "]: " + _toString( e.getMessage() ) );
   } catch ( const DOMException& e ) {
     printError( "XML parse error[" + xmlFile + "]: " + _toString( e.getMessage() ) );
-  } catch ( ... ) {
-    printError( "UNKNOWN XML parse error in file " + xmlFile );
-  }
+  } catch ( ... ) { printError( "UNKNOWN XML parse error in file " + xmlFile ); }
 }
 // ----------------------------------------------------------------------------
-string XMLFileCatalog::lookupFID( const std::string& fid ) const
-{
+string XMLFileCatalog::lookupFID( const std::string& fid ) const {
   std::string result;
   DOMNode*    e = element( fid, false );
   e             = e ? e->getParentNode() : 0; // Mode up to <logical>
   e             = e ? e->getParentNode() : 0; // Mode up to <File>
   if ( e ) {
     if ( e->getAttributes() ) { // Need to check this. The node may be no DOMElement
-      char* nam         = XMLString::transcode( ( (DOMElement*)e )->getAttribute( Attr_ID ) );
+      char* nam = XMLString::transcode( ( (DOMElement*)e )->getAttribute( Attr_ID ) );
       if ( nam ) result = nam;
       XMLString::release( &nam );
     }
@@ -249,37 +232,32 @@ string XMLFileCatalog::lookupFID( const std::string& fid ) const
   return result;
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::getFID( Strings& fids ) const
-{
+void XMLFileCatalog::getFID( Strings& fids ) const {
   fids.clear();
   DOMNode* fde = getDoc( true )->getElementsByTagName( XMLStr( "*" ) )->item( 0 );
   for ( XMLCollection c( child( fde, "File" ), false ); c; ++c ) fids.push_back( c.attr( Attr_ID ) );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::getPFN( CSTR fid, Files& files ) const
-{
+void XMLFileCatalog::getPFN( CSTR fid, Files& files ) const {
   files.clear();
   for ( XMLCollection c( child( child( element( fid, false ), PFNCOLL ), PFNNODE ), false ); c; ++c )
     files.emplace_back( c.attr( Attr_name ), c.attr( Attr_ftype ) );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::getLFN( CSTR fid, Files& files ) const
-{
+void XMLFileCatalog::getLFN( CSTR fid, Files& files ) const {
   files.clear();
   for ( XMLCollection c( child( child( element( fid, false ), LFNCOLL ), LFNNODE ), false ); c; ++c )
     files.emplace_back( c.attr( Attr_name ), fid );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::getMetaData( CSTR fid, Attributes& attr ) const
-{
+void XMLFileCatalog::getMetaData( CSTR fid, Attributes& attr ) const {
   attr.clear();
   for ( XMLCollection c( child( element( fid ), MetaNode ), false ); c; ++c )
     attr.emplace_back( c.attr( Attr_metaName ), c.attr( Attr_metaValue ) );
   if ( attr.size() > 0 ) attr.emplace_back( "guid", fid );
 }
 // ----------------------------------------------------------------------------
-DOMNode* XMLFileCatalog::child( DOMNode* par, CSTR tag, CSTR attr, CSTR val ) const
-{
+DOMNode* XMLFileCatalog::child( DOMNode* par, CSTR tag, CSTR attr, CSTR val ) const {
   for ( XMLCollection c( par ); c; ++c ) {
     if ( c.tag() == tag ) {
       if ( !attr.empty() && c.attr( attr ) != val ) continue;
@@ -289,8 +267,7 @@ DOMNode* XMLFileCatalog::child( DOMNode* par, CSTR tag, CSTR attr, CSTR val ) co
   return 0;
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::setMetaData( CSTR fid, CSTR attr, CSTR val ) const
-{
+void XMLFileCatalog::setMetaData( CSTR fid, CSTR attr, CSTR val ) const {
   if ( !readOnly() ) {
     DOMNode*    node = element( fid );
     DOMElement* mnod = (DOMElement*)child( node, MetaNode, Attr_metaName, attr );
@@ -306,14 +283,12 @@ void XMLFileCatalog::setMetaData( CSTR fid, CSTR attr, CSTR val ) const
   printError( "Cannot update readonly catalog!" );
 }
 // ----------------------------------------------------------------------------
-string XMLFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const
-{
+string XMLFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const {
   XMLCollection c( child( getDoc( true )->getElementById( XMLStr( fid ) ), MetaNode, Attr_metaName, attr ) );
   return c ? c.attr( attr ) : string( "" );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::dropMetaData( CSTR fid, CSTR attr ) const
-{
+void XMLFileCatalog::dropMetaData( CSTR fid, CSTR attr ) const {
   vector<DOMNode*> gbc;
   DOMNode*         fn = getDoc( true )->getElementById( XMLStr( fid ) );
   for ( XMLCollection c{child( fn, MetaNode )}; c; ++c )
@@ -321,34 +296,28 @@ void XMLFileCatalog::dropMetaData( CSTR fid, CSTR attr ) const
   for ( const auto& i : gbc ) fn->removeChild( i );
 }
 // ----------------------------------------------------------------------------
-DOMNode* XMLFileCatalog::element( CSTR element_name, bool print_err ) const
-{
+DOMNode* XMLFileCatalog::element( CSTR element_name, bool print_err ) const {
   DOMNode* node = getDoc( true )->getElementById( XMLStr( element_name ) );
   if ( !node && print_err ) printError( "Cannot find element:" + element_name );
   return node;
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::deleteFID( CSTR fid ) const
-{
+void XMLFileCatalog::deleteFID( CSTR fid ) const {
   DOMNode *pn = nullptr, *fn = element( fid );
   if ( fn ) pn = fn->getParentNode();
   if ( pn ) pn->removeChild( fn );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::registerFID( CSTR fid ) const
-{
+void XMLFileCatalog::registerFID( CSTR fid ) const {
   if ( !fid.empty() ) {
     std::pair<DOMElement*, DOMElement*> res = i_registerFID( fid );
-    if ( res.first == 0 || res.second == 0 ) {
-      printError( "Failed to register FID:" + fid );
-    }
+    if ( res.first == 0 || res.second == 0 ) { printError( "Failed to register FID:" + fid ); }
     return;
   }
   throw runtime_error( "XMLFileCatalog> Cannot register LFN for invalid FID:" + fid );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::renamePFN( CSTR pfn, CSTR new_pfn ) const
-{
+void XMLFileCatalog::renamePFN( CSTR pfn, CSTR new_pfn ) const {
   DOMNode* node = getDoc( true )->getElementById( XMLStr( pfn ) );
   if ( node && node->getNodeType() == DOMNode::ELEMENT_NODE ) {
     ( (DOMElement*)node )->setAttribute( Attr_name, XMLStr( new_pfn ) );
@@ -356,8 +325,7 @@ void XMLFileCatalog::renamePFN( CSTR pfn, CSTR new_pfn ) const
   }
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::deletePFN( CSTR pfn ) const
-{
+void XMLFileCatalog::deletePFN( CSTR pfn ) const {
   DOMNode* node = getDoc( true )->getElementById( XMLStr( pfn ) );
   if ( node ) {
     DOMNode* pcoll_node = node->getParentNode();
@@ -372,15 +340,14 @@ void XMLFileCatalog::deletePFN( CSTR pfn ) const
   }
 }
 // ----------------------------------------------------------------------------
-std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) const
-{
+std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) const {
   if ( readOnly() ) {
     printError( "Cannot update readonly catalog!" );
     return {nullptr, nullptr};
   }
 
   /// It creates a new node File with name = fid in the XML file catalog
-  DOMElement * file = (DOMElement *)element( fid, false ), *phyelem = 0, *logelem = 0;
+  DOMElement * file = (DOMElement*)element( fid, false ), *phyelem = 0, *logelem = 0;
   DOMDocument* doc = getDoc( true );
   if ( !file ) {
     DOMNode* fde = doc->getElementsByTagName( XMLStr( "*" ) )->item( 0 );
@@ -391,7 +358,7 @@ std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) co
     m_update = true;
   }
   for ( XMLCollection c1( file ); c1; ++c1 ) {
-    char* nam                     = XMLString::transcode( c1->getNodeName() );
+    char* nam = XMLString::transcode( c1->getNodeName() );
     if ( nam == PFNCOLL ) phyelem = c1;
     if ( nam == LFNCOLL ) logelem = c1;
     XMLString::release( &nam );
@@ -409,11 +376,10 @@ std::pair<DOMElement*, DOMElement*> XMLFileCatalog::i_registerFID( CSTR fid ) co
   return {logelem, phyelem};
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::registerPFN( CSTR fid, CSTR pfn, CSTR ftype ) const
-{
+void XMLFileCatalog::registerPFN( CSTR fid, CSTR pfn, CSTR ftype ) const {
   if ( !fid.empty() ) {
-    std::pair<DOMElement*, DOMElement*> res = i_registerFID( fid );
-    DOMElement *phyelem = res.second, *fnelem = 0;
+    std::pair<DOMElement*, DOMElement*> res     = i_registerFID( fid );
+    DOMElement *                        phyelem = res.second, *fnelem = 0;
     for ( XMLCollection c( phyelem ); c; ++c ) {
       char* nam = XMLString::transcode( c->getNodeName() );
       if ( nam == PFNNODE ) {
@@ -440,11 +406,10 @@ void XMLFileCatalog::registerPFN( CSTR fid, CSTR pfn, CSTR ftype ) const
   throw runtime_error( "XMLFileCatalog> Cannot register PFN for invalid FID:" + fid );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::registerLFN( CSTR fid, CSTR lfn ) const
-{
+void XMLFileCatalog::registerLFN( CSTR fid, CSTR lfn ) const {
   if ( !fid.empty() ) {
-    std::pair<DOMElement*, DOMElement*> res = i_registerFID( fid );
-    DOMElement *logelem = res.first, *fnelem = 0;
+    std::pair<DOMElement*, DOMElement*> res     = i_registerFID( fid );
+    DOMElement *                        logelem = res.first, *fnelem = 0;
     for ( XMLCollection c( logelem ); c; ++c ) {
       char* nam = XMLString::transcode( c->getNodeName() );
       if ( nam == LFNNODE ) {
@@ -469,8 +434,7 @@ void XMLFileCatalog::registerLFN( CSTR fid, CSTR lfn ) const
   throw runtime_error( "XMLFileCatalog> Cannot register LFN for invalid FID:" + fid );
 }
 // ----------------------------------------------------------------------------
-void XMLFileCatalog::commit()
-{
+void XMLFileCatalog::commit() {
   try {
     if ( dirty() && !readOnly() ) {
       string             xmlfile = getfile( true );
@@ -492,24 +456,19 @@ void XMLFileCatalog::commit()
       wr->release();
 #endif
     }
-  } catch ( exception& e ) {
-    printError( string( "Cannot open output file:" ) + e.what() );
-  } catch ( ... ) {
+  } catch ( exception& e ) { printError( string( "Cannot open output file:" ) + e.what() ); } catch ( ... ) {
     printError( "Unknown IO rrror." );
   }
 }
 // ----------------------------------------------------------------------------
-string XMLFileCatalog::getfile( bool create )
-{
+string XMLFileCatalog::getfile( bool create ) {
   string protocol, path;
   XMLURL xerurl;
   try {
     xerurl   = (const XMLCh*)XMLStr( m_file );
     protocol = _toString( xerurl.getProtocolName() );
     path     = _toString( xerurl.getPath() );
-  } catch ( const XMLException& e ) {
-    printError( _toString( e.getMessage() ) );
-  }
+  } catch ( const XMLException& e ) { printError( _toString( e.getMessage() ) ); }
   if ( protocol.empty() ) {
     printError( "Missing protocol." );
   } else if ( protocol == "http" || protocol == "ftp" ) {

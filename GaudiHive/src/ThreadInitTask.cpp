@@ -7,18 +7,15 @@
 #include "GaudiKernel/ToolHandle.h"
 #include <thread>
 
-namespace Gaudi
-{
-  namespace Concurrency
-  {
+namespace Gaudi {
+  namespace Concurrency {
     thread_local bool ThreadInitDone{false};
   }
-}
+} // namespace Gaudi
 
 std::atomic<bool> ThreadInitTask::m_execFailed( false );
 
-tbb::task* ThreadInitTask::execute()
-{
+tbb::task* ThreadInitTask::execute() {
 
   SmartIF<IMessageSvc> messageSvc( m_serviceLocator );
   MsgStream            log( messageSvc, "ThreadInitTask" );
@@ -41,9 +38,7 @@ tbb::task* ThreadInitTask::execute()
 
     if ( m_tools.size() == 0 ) {
       log << MSG::DEBUG << "no entries in Tool Array" << endmsg;
-      if ( !m_terminate ) {
-        Gaudi::Concurrency::ThreadInitDone = true;
-      }
+      if ( !m_terminate ) { Gaudi::Concurrency::ThreadInitDone = true; }
     } else {
       if ( debug ) log << MSG::DEBUG << "executing in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env gaudirun.py
-
 '''
 A test for issue 13 in gitlab.
 Two different sets of sub-event contexts are created, and the
@@ -18,8 +17,8 @@ Five instances of ViewTester are used as follows:
 '''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher, GaudiSequencer, Test__ViewTester)
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -87,34 +86,30 @@ for algo in [a1, a2, a3, a4, a5]:
     algo.Cardinality = cardinality
     algo.OutputLevel = INFO
 
-extraNode = GaudiSequencer("extraNode",
-                           Members=[a2, a3],
-                           Sequential=True,
-                           OutputLevel=INFO)
+extraNode = GaudiSequencer(
+    "extraNode", Members=[a2, a3], Sequential=True, OutputLevel=INFO)
 
-viewNodeOne = GaudiSequencer("viewNodeOne",
-                             Members=[extraNode],
-                             Sequential=False,
-                             OutputLevel=INFO)
+viewNodeOne = GaudiSequencer(
+    "viewNodeOne", Members=[extraNode], Sequential=False, OutputLevel=INFO)
 
-viewNodeTwo = GaudiSequencer("viewNodeTwo",
-                             Members=[extraNode],
-                             Sequential=False,
-                             OutputLevel=INFO)
+viewNodeTwo = GaudiSequencer(
+    "viewNodeTwo", Members=[extraNode], Sequential=False, OutputLevel=INFO)
 
-createViewSeq = GaudiSequencer("createViewSeq",
-                               Members=[a1, viewNodeOne, a4, viewNodeTwo, a5],
-                               Sequential=True,
-                               OutputLevel=INFO)
+createViewSeq = GaudiSequencer(
+    "createViewSeq",
+    Members=[a1, viewNodeOne, a4, viewNodeTwo, a5],
+    Sequential=True,
+    OutputLevel=INFO)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[createViewSeq],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[createViewSeq],
+    MessageSvcType="InertMessageSvc")
 
 # -------------------------------------------------------------------------------

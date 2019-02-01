@@ -34,14 +34,13 @@
 #include "GaudiKernel/HistoProperty.h"
 // ============================================================================
 // Forward declarations
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D;
   class IHistogram2D;
   class IHistogram3D;
   class IProfile1D;
   class IProfile2D;
-}
+} // namespace AIDA
 // ============================================================================
 /** @class GaudiHistos GaudiHistos.h GaudiAlg/GaudiHistos.h
  *
@@ -53,8 +52,7 @@ namespace AIDA
  *  @date   2005-08-08
  */
 template <class PBASE>
-class GAUDI_API GaudiHistos : public PBASE
-{
+class GAUDI_API GaudiHistos : public PBASE {
 public:
   // ==========================================================================
   /// the actual type for histogram identifier
@@ -152,8 +150,7 @@ public:
    *  @return pointer to AIDA 1D histogram
    */
   inline AIDA::IHistogram1D* plot( const double value, const std::string& title, const double low, const double high,
-                                   const unsigned long bins = 100, const double weight = 1.0 ) const
-  {
+                                   const unsigned long bins = 100, const double weight = 1.0 ) const {
     return plot1D( value, title, low, high, bins, weight );
   }
   // ==========================================================================
@@ -193,8 +190,8 @@ public:
    *  @param weight weight
    *  @return pointer to AIDA 1D histogram
    */
-  inline AIDA::IHistogram1D* plot( const double value, const Gaudi::Histo1DDef& hdef, const double weight = 1.0 ) const
-  {
+  inline AIDA::IHistogram1D* plot( const double value, const Gaudi::Histo1DDef& hdef,
+                                   const double weight = 1.0 ) const {
     return plot1D( value, hdef, weight );
   }
   // ==========================================================================
@@ -281,8 +278,8 @@ public:
    *  @return pointer to AIDA 1D histogram
    */
   inline AIDA::IHistogram1D* plot( const double value, const HistoID& ID, const std::string& title, const double low,
-                                   const double high, const unsigned long bins = 100, const double weight = 1.0 ) const
-  {
+                                   const double high, const unsigned long bins = 100,
+                                   const double weight = 1.0 ) const {
     return plot1D( value, ID, title, low, high, bins, weight );
   }
   // ==========================================================================
@@ -315,19 +312,18 @@ public:
                               const double weight = 1.0 ) const;
   // ==========================================================================
   /** fill the 1D histogram (book on demand)
-    *
-    *  Wrapper method for the equivalent plot1D method.
-    *  Retained for backwards compatibility, please use plot1D instead.
-    *
-    *  @param value value to be filled
-    *  @param ID histogram identifier
-    *  @param hdef histogram descriptor
-    *  @param weight weight
-    *  @return pointer to AIDA 1D histogram
-    */
+   *
+   *  Wrapper method for the equivalent plot1D method.
+   *  Retained for backwards compatibility, please use plot1D instead.
+   *
+   *  @param value value to be filled
+   *  @param ID histogram identifier
+   *  @param hdef histogram descriptor
+   *  @param weight weight
+   *  @return pointer to AIDA 1D histogram
+   */
   inline AIDA::IHistogram1D* plot( const double value, const HistoID& ID, const Gaudi::Histo1DDef& hdef,
-                                   const double weight = 1.0 ) const
-  {
+                                   const double weight = 1.0 ) const {
     return plot1D( value, ID, hdef, weight );
   }
   /** fill the 1D histogram with information from
@@ -395,15 +391,12 @@ public:
    */
   template <class FUNCTION, class OBJECT>
   inline AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const std::string& title,
-                                   const double low, const double high, const unsigned long bins = 100 ) const
-  {
+                                   const double low, const double high, const unsigned long bins = 100 ) const {
     AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() ) {
       // retrieve or book the histogram
       h = histo1D( title );
-      if ( !h ) {
-        h = book1D( title, low, high, bins );
-      }
+      if ( !h ) { h = book1D( title, low, high, bins ); }
       // fill histogram
       while ( first != last && h ) {
         h = fill( h, func( *first ), 1.0, title );
@@ -471,15 +464,12 @@ public:
   template <class FUNCTION, class OBJECT>
   inline AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const HistoID& ID,
                                    const std::string& title, const double low, const double high,
-                                   const unsigned long bins = 100 ) const
-  {
+                                   const unsigned long bins = 100 ) const {
     AIDA::IHistogram1D* h( 0 );
     if ( produceHistos() ) {
       // retrieve or book the histogram
       h = histo1D( ID );
-      if ( !h ) {
-        h = book1D( ID, title, low, high, bins );
-      }
+      if ( !h ) { h = book1D( ID, title, low, high, bins ); }
       // fill histogram
       while ( first != last && h ) {
         h = fill( h, func( *first ), 1.0, title );
@@ -560,15 +550,12 @@ public:
   template <class FUNCTION, class OBJECT, class WEIGHT>
   inline AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const std::string& title,
                                    const double low, const double high, const unsigned long bins,
-                                   const WEIGHT& weight ) const
-  {
+                                   const WEIGHT& weight ) const {
     AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() ) {
       // retrieve or book the histogram
       h = histo1D( title );
-      if ( !h ) {
-        h = book1D( title, low, high, bins );
-      }
+      if ( !h ) { h = book1D( title, low, high, bins ); }
       // fill histogram
       while ( first != last && h ) {
         h = fill( h, func( *first ), weight( *first ), title );
@@ -647,15 +634,12 @@ public:
   template <class FUNCTION, class OBJECT, class WEIGHT>
   inline AIDA::IHistogram1D* plot( const FUNCTION& func, OBJECT first, OBJECT last, const HistoID& ID,
                                    const std::string& title, const double low, const double high,
-                                   const unsigned long bins, const WEIGHT& weight ) const
-  {
+                                   const unsigned long bins, const WEIGHT& weight ) const {
     AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() ) {
       // retrieve or book the histogram
       h = histo1D( ID );
-      if ( !h ) {
-        h = book1D( ID, title, low, high, bins );
-      }
+      if ( !h ) { h = book1D( ID, title, low, high, bins ); }
       // fill histogram
       while ( first != last && h ) {
         h = fill( h, func( *first ), weight( *first ), title );
@@ -1863,8 +1847,7 @@ public: // 1D Fixed
    *  @return pointer to AIDA 1D histogram
    */
   inline AIDA::IHistogram1D* book( const std::string& title, const double low = 0, const double high = 100,
-                                   const unsigned long bins = 100 ) const
-  {
+                                   const unsigned long bins = 100 ) const {
     return book1D( title, low, high, bins );
   }
   // ==========================================================================
@@ -1905,8 +1888,7 @@ public: // 1D Fixed
    *  @return pointer to AIDA histogram
    */
   inline AIDA::IHistogram1D* book( const HistoID& ID, const std::string& title, const double low = 0,
-                                   const double high = 100, const unsigned long bins = 100 ) const
-  {
+                                   const double high = 100, const unsigned long bins = 100 ) const {
     return book1D( ID, title, low, high, bins );
   }
   // ==========================================================================
@@ -2285,8 +2267,7 @@ public:
   /** access the EXISTING 1D histogram by title
    *  return the pointer to existing 1D histogram or NULL
    */
-  inline AIDA::IHistogram1D* histo1D( const std::string& title ) const
-  {
+  inline AIDA::IHistogram1D* histo1D( const std::string& title ) const {
     auto found = histo1DMapTitle().find( title );
     return found != histo1DMapTitle().end() ? found->second : nullptr;
   }
@@ -2303,8 +2284,7 @@ public:
   /** access the EXISTING 2D histogram by title
    *  return the pointer to existing 2D histogram or NULL
    */
-  inline AIDA::IHistogram2D* histo2D( const std::string& title ) const
-  {
+  inline AIDA::IHistogram2D* histo2D( const std::string& title ) const {
     auto found = histo2DMapTitle().find( title );
     return histo2DMapTitle().end() != found ? found->second : nullptr;
   }
@@ -2312,8 +2292,7 @@ public:
   /** access the EXISTING 3D histogram by title
    *  return the pointer to existing 3D histogram or NULL
    */
-  inline AIDA::IHistogram3D* histo3D( const std::string& title ) const
-  {
+  inline AIDA::IHistogram3D* histo3D( const std::string& title ) const {
     auto found = histo3DMapTitle().find( title );
     return histo3DMapTitle().end() != found ? found->second : nullptr;
   }
@@ -2321,8 +2300,7 @@ public:
   /** access the EXISTING 1D profile histogram by title
    *  return the pointer to existing 1D profile histogram or NULL
    */
-  inline AIDA::IProfile1D* profile1D( const std::string& title ) const
-  {
+  inline AIDA::IProfile1D* profile1D( const std::string& title ) const {
     auto found = profile1DMapTitle().find( title );
     return profile1DMapTitle().end() != found ? found->second : nullptr;
   }
@@ -2330,8 +2308,7 @@ public:
   /** access the EXISTING 2D profile histogram by title
    *  return the pointer to existing 2D profile histogram or NULL
    */
-  inline AIDA::IProfile2D* profile2D( const std::string& title ) const
-  {
+  inline AIDA::IProfile2D* profile2D( const std::string& title ) const {
     auto found = profile2DMapTitle().find( title );
     return profile2DMapTitle().end() != found ? found->second : nullptr;
   }
@@ -2375,15 +2352,13 @@ public:
 public:
   // ==========================================================================
   /// check the existence AND validity of the histogram with given title
-  inline bool histoExists( const std::string& title ) const
-  {
+  inline bool histoExists( const std::string& title ) const {
     return ( 0 != histo( title ) || 0 != histo2D( title ) || 0 != histo3D( title ) || 0 != profile1D( title ) ||
              0 != profile2D( title ) );
   }
   // ==========================================================================
   /// check the existence AND validity of the histogram with given title
-  inline bool histoExists( const HistoID& ID ) const
-  {
+  inline bool histoExists( const HistoID& ID ) const {
     return ( 0 != histo( ID ) || 0 != histo2D( ID ) || 0 != histo3D( ID ) || 0 != profile1D( ID ) ||
              0 != profile2D( ID ) );
   }
@@ -2700,17 +2675,13 @@ public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from GaudiAlgorithm
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<Gaudi::Algorithm, PBASE>::value, U>>
-  GaudiHistos( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator )
-  {
-  }
+  GaudiHistos( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator ) {}
   // ==========================================================================
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from GaudiTool.
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiTool, PBASE>::value, U>>
   GaudiHistos( const std::string& type, const std::string& name, const IInterface* parent )
-      : PBASE( type, name, parent )
-  {
-  }
+      : PBASE( type, name, parent ) {}
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -2793,7 +2764,7 @@ private:
   Gaudi::Property<std::string> m_histo1DTableHeader{this, "HeaderFor1DHistoTable",
                                                     Gaudi::Utils::Histos::Formats::header(),
                                                     "The table header for printout of 1D histograms "};
-  Gaudi::Property<bool> m_useNumericAutoIDs{
+  Gaudi::Property<bool>        m_useNumericAutoIDs{
       this, "UseSequencialNumericAutoIDs", false,
       "Flag to allow users to switch back to the old style of creating numerical automatic IDs"};
   Gaudi::Property<std::map<std::string, std::string>> m_idReplaceInfo{

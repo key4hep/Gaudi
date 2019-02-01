@@ -15,8 +15,8 @@
 
 #include <iostream>
 
-using std::ostream;
 using std::endl;
+using std::ostream;
 
 AlgToolHistory::AlgToolHistory( const AlgTool& alg, const JobHistory* job )
     : m_type( alg.type() )
@@ -24,9 +24,7 @@ AlgToolHistory::AlgToolHistory( const AlgTool& alg, const JobHistory* job )
     , m_name( alg.name() )
     , m_tool( &alg )
     , m_properties( alg.getProperties() )
-    , m_jobHistory( job )
-{
-}
+    , m_jobHistory( job ) {}
 
 //**********************************************************************
 
@@ -39,14 +37,11 @@ AlgToolHistory::AlgToolHistory( const std::string& algVersion, const std::string
     , m_name( algName )
     , m_tool( tool )
     , m_properties( props )
-    , m_jobHistory( job )
-{
-}
+    , m_jobHistory( job ) {}
 
 //**********************************************************************
 
-const CLID& AlgToolHistory::classID()
-{
+const CLID& AlgToolHistory::classID() {
 
   static const CLID CLID_AlgToolHistory = 171959758; // from `clid AlgToolHistory`
   return CLID_AlgToolHistory;
@@ -54,8 +49,7 @@ const CLID& AlgToolHistory::classID()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void AlgToolHistory::dump( std::ostream& ost, const bool isXML, int ind ) const
-{
+void AlgToolHistory::dump( std::ostream& ost, const bool isXML, int ind ) const {
 
   if ( !isXML ) {
 
@@ -95,8 +89,7 @@ void AlgToolHistory::dump( std::ostream& ost, const bool isXML, int ind ) const
 
 //**********************************************************************
 
-ostream& operator<<( ostream& lhs, const AlgToolHistory& rhs )
-{
+ostream& operator<<( ostream& lhs, const AlgToolHistory& rhs ) {
 
   rhs.dump( lhs, false );
 

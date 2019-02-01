@@ -29,12 +29,12 @@ from GaudiPython.GaudiAlgs import GaudiAlgo, SUCCESS
 
 
 class SimpleAlgo(GaudiAlgo):
-
     def execute(self):
 
         print 'I am SimpleAlgo.execute!  ', self.name()
 
         return SUCCESS
+
 
 # =============================================================================
 # configure the application :
@@ -47,14 +47,14 @@ def configure():
     ApplicationMgr(
         TopAlg=[
             HelloWorld(),
-            GaudiSequencer('MySequencer',
-                           MeasureTime=True,
-                           Members=[HelloWorld('Hello1'),
-                                    HelloWorld('Hello2')])
+            GaudiSequencer(
+                'MySequencer',
+                MeasureTime=True,
+                Members=[HelloWorld('Hello1'),
+                         HelloWorld('Hello2')])
         ],
         # do not use any event input
-        EvtSel='NONE'
-    )
+        EvtSel='NONE')
 
     gaudi = AppMgr()
 
@@ -102,7 +102,6 @@ if '__main__' == __name__:
     seq.Members += [myAlg3.name()]
 
     gaudi.run(3)
-
 
 # =============================================================================
 # The END

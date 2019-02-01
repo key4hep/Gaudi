@@ -44,8 +44,7 @@
  * @author Markus Frank
  * @version 1.0
  */
-class HistogramPersistencySvc : virtual public PersistencySvc
-{
+class HistogramPersistencySvc : virtual public PersistencySvc {
 public:
   /**@name PersistencySvc overrides    */
   //@{

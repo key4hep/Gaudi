@@ -9,28 +9,25 @@
 #include <Gaudi/Algorithm.h>
 #include <iostream>
 #ifndef _WIN32
-#include <errno.h>
+#  include <errno.h>
 #endif
 
 /// needed when no algorithm is found or could be returned
 static SmartIF<IAlgorithm> no_algorithm;
 
 // constructor
-AlgorithmManager::AlgorithmManager( IInterface* application ) : base_class( application, IAlgorithm::interfaceID() )
-{
+AlgorithmManager::AlgorithmManager( IInterface* application ) : base_class( application, IAlgorithm::interfaceID() ) {
   addRef(); // Initial count set to 1
 }
 
 // addAlgorithm
-StatusCode AlgorithmManager::addAlgorithm( IAlgorithm* alg )
-{
+StatusCode AlgorithmManager::addAlgorithm( IAlgorithm* alg ) {
   m_algs.push_back( alg );
   return StatusCode::SUCCESS;
 }
 
 // removeAlgorithm
-StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg )
-{
+StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg ) {
   auto it = std::find( m_algs.begin(), m_algs.end(), alg );
   if ( it != m_algs.end() ) {
     m_algs.erase( it );
@@ -41,8 +38,7 @@ StatusCode AlgorithmManager::removeAlgorithm( IAlgorithm* alg )
 
 // createService
 StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const std::string& algname,
-                                              IAlgorithm*& algorithm, bool managed, bool checkIfExists )
-{
+                                              IAlgorithm*& algorithm, bool managed, bool checkIfExists ) {
   // Check is the algorithm is already existing
   if ( checkIfExists ) {
     if ( existsAlgorithm( algname ) ) {
@@ -56,9 +52,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
     actualalgtype = actualalgtype.substr( 8 );
   } else {
     auto typeAlias = m_algTypeAliases.find( algtype );
-    if ( typeAlias != m_algTypeAliases.end() ) {
-      actualalgtype = typeAlias->second;
-    }
+    if ( typeAlias != m_algTypeAliases.end() ) { actualalgtype = typeAlias->second; }
   }
   algorithm = Gaudi::Algorithm::Factory::create( actualalgtype, algname, serviceLocator().get() ).release();
   if ( !algorithm ) {
@@ -89,19 +83,14 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype, const 
     // Bring the created algorithm to the target state of the ApplicationMgr
     if ( targetFSMState() >= Gaudi::StateMachine::INITIALIZED ) {
       rc = algorithm->sysInitialize();
-      if ( rc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING ) {
-        rc = algorithm->sysStart();
-      }
+      if ( rc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING ) { rc = algorithm->sysStart(); }
     }
-    if ( !rc.isSuccess() ) {
-      this->error() << "Failed to initialize algorithm: [" << algname << "]" << endmsg;
-    }
+    if ( !rc.isSuccess() ) { this->error() << "Failed to initialize algorithm: [" << algname << "]" << endmsg; }
   }
   return rc;
 }
 
-SmartIF<IAlgorithm>& AlgorithmManager::algorithm( const Gaudi::Utils::TypeNameString& typeName, const bool createIf )
-{
+SmartIF<IAlgorithm>& AlgorithmManager::algorithm( const Gaudi::Utils::TypeNameString& typeName, const bool createIf ) {
   auto it = std::find( m_algs.begin(), m_algs.end(), typeName.name() );
   if ( it != m_algs.end() ) { // found
     return it->algorithm;
@@ -116,14 +105,12 @@ SmartIF<IAlgorithm>& AlgorithmManager::algorithm( const Gaudi::Utils::TypeNameSt
 }
 
 // existsAlgorithm
-bool AlgorithmManager::existsAlgorithm( const std::string& name ) const
-{
+bool AlgorithmManager::existsAlgorithm( const std::string& name ) const {
   return m_algs.end() != std::find( m_algs.begin(), m_algs.end(), name );
 }
 
 // Return the list of Algorithms
-const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
-{
+const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const {
   m_listOfPtrs.clear();
   m_listOfPtrs.reserve( m_algs.size() );
   std::transform( std::begin( m_algs ), std::end( m_algs ), std::back_inserter( m_listOfPtrs ),
@@ -131,8 +118,7 @@ const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
   return m_listOfPtrs;
 }
 
-StatusCode AlgorithmManager::initialize()
-{
+StatusCode AlgorithmManager::initialize() {
   StatusCode rc;
   for ( auto& it : m_algs ) {
     if ( !it.managed || it.algorithm->FSMState() >= Gaudi::StateMachine::INITIALIZED ) continue;
@@ -142,8 +128,7 @@ StatusCode AlgorithmManager::initialize()
   return rc;
 }
 
-StatusCode AlgorithmManager::start()
-{
+StatusCode AlgorithmManager::start() {
   StatusCode rc;
   for ( auto& it : m_algs ) {
     if ( !it.managed || it.algorithm->FSMState() >= Gaudi::StateMachine::RUNNING ) continue;
@@ -153,8 +138,7 @@ StatusCode AlgorithmManager::start()
   return rc;
 }
 
-StatusCode AlgorithmManager::stop()
-{
+StatusCode AlgorithmManager::stop() {
   StatusCode rc;
   for ( auto& it : m_algs ) {
     if ( !it.managed ) continue;
@@ -164,8 +148,7 @@ StatusCode AlgorithmManager::stop()
   return rc;
 }
 
-StatusCode AlgorithmManager::finalize()
-{
+StatusCode AlgorithmManager::finalize() {
   StatusCode rc;
   auto       it = m_algs.begin();
   while ( it != m_algs.end() ) { // finalize and remove from the list the managed algorithms
@@ -180,8 +163,7 @@ StatusCode AlgorithmManager::finalize()
   return rc;
 }
 
-StatusCode AlgorithmManager::reinitialize()
-{
+StatusCode AlgorithmManager::reinitialize() {
   StatusCode rc;
   for ( auto& it : m_algs ) {
     if ( !it.managed ) continue;
@@ -194,8 +176,7 @@ StatusCode AlgorithmManager::reinitialize()
   return rc;
 }
 
-StatusCode AlgorithmManager::restart()
-{
+StatusCode AlgorithmManager::restart() {
   SmartIF<IAlgExecStateSvc> m_aess;
   m_aess = serviceLocator()->service( "AlgExecStateSvc" );
   if ( !m_aess.isValid() ) {
@@ -217,8 +198,7 @@ StatusCode AlgorithmManager::restart()
   return rc;
 }
 
-void AlgorithmManager::outputLevelUpdate()
-{
+void AlgorithmManager::outputLevelUpdate() {
   resetMessaging();
   for ( auto& algItem : m_algs ) {
     const auto alg = dynamic_cast<Gaudi::Algorithm*>( algItem.algorithm.get() );

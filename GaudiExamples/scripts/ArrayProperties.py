@@ -23,14 +23,10 @@ from Configurables import ApplicationMgr
 
 from Configurables import Gaudi__Examples__ArrayProperties as AP
 
-
 ap = AP(
-    'ArrayProps', Strings=('a', 'bb', 'ccc', 'dddd'), Doubles=(1, 2, 3, 4, 5)
-)
+    'ArrayProps', Strings=('a', 'bb', 'ccc', 'dddd'), Doubles=(1, 2, 3, 4, 5))
 
-ApplicationMgr(
-    EvtSel="NONE", TopAlg=[ap], EvtMax=10
-)
+ApplicationMgr(EvtSel="NONE", TopAlg=[ap], EvtMax=10)
 
 # =============================================================================
 # The actual job excution
@@ -58,7 +54,6 @@ if '__main__' == __name__:
     ap.Doubles = [0, -1, 2, -3, 4]
 
     ap.PropertiesPrint = True
-
 
 # =============================================================================
 # The END

@@ -19,15 +19,14 @@
 // ============================================================================
 // forward declarations
 // ============================================================================
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram;
   class IHistogram1D;
   class IHistogram2D;
   class IHistogram3D;
   class IProfile1D;
   class IProfile2D;
-}
+} // namespace AIDA
 class StatEntity;
 class INTuple;
 // ============================================================================
@@ -39,8 +38,7 @@ class INTuple;
  *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *  @date 2005-08-04
  */
-namespace GaudiAlg
-{
+namespace GaudiAlg {
   /** @class  Print Print.h GaudiAlg/Print.h
    *  collection of useful utilities to print IHistogram1D
    *  (currently used for implementation of class
@@ -49,8 +47,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API Print
-  {
+  class GAUDI_API Print {
   public:
     static const std::string& location( const AIDA::IHistogram* aida );
   };
@@ -62,8 +59,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API Print1D
-  {
+  class GAUDI_API Print1D {
   public:
     static void print( MsgStream& stream, const AIDA::IHistogram1D* aida, const GaudiAlg::HistoID& ID );
     //
@@ -77,8 +73,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API Print2D
-  {
+  class GAUDI_API Print2D {
   public:
     //
     static void print( MsgStream& stream, const AIDA::IHistogram2D* aida, const GaudiAlg::HistoID& ID );
@@ -93,8 +88,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API Print3D
-  {
+  class GAUDI_API Print3D {
   public:
     //
     static void print( MsgStream& stream, const AIDA::IHistogram3D* aida, const GaudiAlg::HistoID& ID );
@@ -109,8 +103,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API Print1DProf
-  {
+  class GAUDI_API Print1DProf {
   public:
     //
     static void print( MsgStream& stream, const AIDA::IProfile1D* aida, const GaudiAlg::HistoID& ID );
@@ -125,8 +118,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API Print2DProf
-  {
+  class GAUDI_API Print2DProf {
   public:
     //
     static void print( MsgStream& stream, const AIDA::IProfile2D* aida, const GaudiAlg::HistoID& ID );
@@ -142,8 +134,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API PrintTuple
-  {
+  class GAUDI_API PrintTuple {
   public:
     //
     static std::string print( const INTuple* tuple, const GaudiAlg::TupleID& ID );
@@ -159,8 +150,7 @@ namespace GaudiAlg
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date 2005-08-04
    */
-  class GAUDI_API PrintStat
-  {
+  class GAUDI_API PrintStat {
   public:
     static std::string print( const StatEntity& stat, const std::string& tag );
   };

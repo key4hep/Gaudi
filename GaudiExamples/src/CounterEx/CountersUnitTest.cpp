@@ -3,8 +3,7 @@
 
 using namespace Gaudi::Accumulators;
 
-int main()
-{
+int main() {
 
   // Testing Buffer moving
   {

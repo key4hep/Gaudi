@@ -4,8 +4,7 @@
 #include "GaudiKernel/Kernel.h"
 #include <string>
 
-namespace System
-{
+namespace System {
 
   class GAUDI_API PathResolver
 
@@ -75,6 +74,6 @@ namespace System
 
   GAUDI_API std::string PathResolverFindXMLFile( const std::string& logical_file_name );
   GAUDI_API std::string PathResolverFindDataFile( const std::string& logical_file_name );
-}
+} // namespace System
 
 #endif

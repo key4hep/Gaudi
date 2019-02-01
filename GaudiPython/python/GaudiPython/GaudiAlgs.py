@@ -115,12 +115,7 @@ TupleDecorator = cpp.GaudiPython.TupleDecorator
 #  @date 2006-11-26
 
 
-def _tool_(self,
-           interface,
-           typename,
-           name=None,
-           parent=None,
-           create=True):
+def _tool_(self, interface, typename, name=None, parent=None, create=True):
     """
     Useful method to locate the tool a certain
 
@@ -155,6 +150,7 @@ def _tool_(self,
         return None
     return _tool
 
+
 # =============================================================================
 # Useful method to locate a service:
 #
@@ -170,10 +166,7 @@ def _tool_(self,
 #  @date 2006-11-26
 
 
-def _service_(self,
-              interface,
-              name,
-              create=True):
+def _service_(self, interface, name, create=True):
     """
     Useful method to locate a service:
 
@@ -192,6 +185,7 @@ def _service_(self,
         self.Warning('Invalid cast to interface %s' % interface)
         return None
     return _svc
+
 
 # =============================================================================
 # The constructor from unique algorithm instance name,
@@ -217,6 +211,7 @@ def _init_(self, name, **args):
     if not appMgr.__dict__.has_key('GaudiPythonAlgos'):
         appMgr.__dict__['GaudiPythonAlgos'] = []
     appMgr.__dict__['GaudiPythonAlgos'].append(self)
+
 
 # =============================================================================
 # The default initialization (initialization of base C++ class + data
@@ -244,6 +239,7 @@ def _initialize_(self):
 
     return status
 
+
 # =============================================================================
 # The default initialization (initialization of base C++ class + data members)
 #
@@ -265,6 +261,7 @@ def _initialize_histo_(self):
     self._histoSvc_ = iHistogramSvc(_s.name(), _h)
 
     return status
+
 
 # =============================================================================
 # The default initialization (initialization of base C++ class + data members)
@@ -293,6 +290,7 @@ def _initialize_tuple_(self):
         self._evtcolSvc_ = iNTupleSvc(_s.name(), _n)
 
     return status
+
 
 # =============================================================================
 # Trivial helper function to access Event Data and Event Data Service
@@ -329,6 +327,7 @@ def _evtSvc(self, location=None):
         return self._evtSvc_
     return self._evtSvc_[location]
 
+
 # =============================================================================
 # Trivial helper function to access Detector Data and Detector  Data Service
 #
@@ -362,6 +361,7 @@ def _detSvc(self):
     if not location:
         return self._detSvc_
     return self._detSvc_[location]
+
 
 # =============================================================================
 # Trivial helper function to access Histogram  Data and Histogram  Data Service
@@ -398,6 +398,7 @@ def _histoSvc(self, address=None):
         return self._histoSvc_
     return self._histoSvc_[address]
 
+
 # =============================================================================
 # Trivial function to access the data in TES
 
@@ -407,6 +408,7 @@ def _get(self, location):
     Trivial function to access the data in TES using the data service
     """
     return self._evtSvc_[location]
+
 
 # =============================================================================
 # Trivial function to access the data in TDS
@@ -418,6 +420,7 @@ def _getDet(self, location):
     """
     return self._detSvc_[location]
 
+
 # =============================================================================
 # get the data from TES using GaudiCommon methods, respecting RootInTES
 
@@ -428,6 +431,8 @@ def _get_(self, location, rootInTES=True):
     respecting RootInTES behaviour
     """
     return AlgDecorator.get_(self, location, rootInTES)
+
+
 # =============================================================================
 # check the data from TES using GaudiCommon methods, respecting RootInTES
 
@@ -439,6 +444,7 @@ def _exist_(self, location, rootInTES=True):
     """
     return AlgDecorator.exist_(self, location, rootInTES)
 
+
 # =============================================================================
 # Trivial helper function to access NTuple Service
 
@@ -448,6 +454,7 @@ def _ntupleSvc(self):
     Trivial function to access N-Tuple Service
     """
     return self._ntupleSvc_
+
 
 # =============================================================================
 # Trivial helper function to access Event Collection Service
@@ -468,11 +475,14 @@ def _finalize_(self):
     """
     status = self._Base.finalize_(self)
     return status
+
+
 # =============================================================================
 # Dummy method returning success
 
 
-def _success_(self): return SUCCESS
+def _success_(self):
+    return SUCCESS
 
 
 # =============================================================================
@@ -482,6 +492,7 @@ def _hasProperty_(self, pname):
     The trivial function which checks the existence of the property with given name
     """
     return cpp.Gaudi.Utils.hasProperty(self, pname)
+
 
 # =============================================================================
 # get the value of the given property
@@ -495,6 +506,7 @@ def _getProperty_(self, pname):
         raise AttributeError, 'property %s does not exist' % pname
     return iAlgorithm.__getattr__(self, pname)
 
+
 # =============================================================================
 # set the value for the given property
 
@@ -506,6 +518,7 @@ def _setProperty_(self, pname, pvalue):
     if not self.hasProperty(pname):
         raise AttributeError, 'property %s does not exist' % pname
     return iAlgorithm.__setattr__(self, pname, pvalue)
+
 
 # =============================================================================
 # get the attribute or property
@@ -519,6 +532,7 @@ def _get_attr_(self, pname):
     if self.hasProperty(pname):
         return iAlgorithm.__getattr__(self, pname)
     raise AttributeError, 'attribute/property %s does not exist' % pname
+
 
 # =============================================================================
 # set the attribute or property
@@ -604,7 +618,7 @@ _GaudiTupleAlg = cpp.GaudiPython.PyAlg('GaudiTupleAlg')
 #  @date 2006-11-26
 
 
-class GaudiAlgo (_GaudiAlgorithm, iAlgorithm):
+class GaudiAlgo(_GaudiAlgorithm, iAlgorithm):
     """
 *******************************************************************************
 *                                                * 'Physisics do not like it, *
@@ -660,6 +674,7 @@ class GaudiAlgo (_GaudiAlgorithm, iAlgorithm):
 *******************************************************************************
     """
     pass
+
 
 # =============================================================================
 # @class HistoAlgo
@@ -732,7 +747,7 @@ class GaudiAlgo (_GaudiAlgorithm, iAlgorithm):
 #  @date 2006-11-26
 
 
-class HistoAlgo (_GaudiHistoAlg, iAlgorithm):
+class HistoAlgo(_GaudiHistoAlg, iAlgorithm):
     """
 *******************************************************************************
 *                                                * 'Physisics do not like it, *
@@ -796,6 +811,7 @@ class HistoAlgo (_GaudiHistoAlg, iAlgorithm):
     """
     pass
 
+
 # =============================================================================
 # @class TupleAlgo
 #  The base class for easy manupulations with N-Tuples
@@ -844,7 +860,7 @@ class HistoAlgo (_GaudiHistoAlg, iAlgorithm):
 #  @date 2006-11-26
 
 
-class TupleAlgo (_GaudiTupleAlg, iAlgorithm):
+class TupleAlgo(_GaudiTupleAlg, iAlgorithm):
     """
 *******************************************************************************
 *                                                * 'Physisics do not like it, *
@@ -926,7 +942,8 @@ def _execute_(self):
     """
     The fictive 'execute' method, which MUST be overwitten by user
     """
-    raise RuntimeError, 'Execute method is not implemented for %s' % self.name()
+    raise RuntimeError, 'Execute method is not implemented for %s' % self.name(
+    )
 
 
 GaudiAlgo.execute = _execute_
@@ -966,6 +983,8 @@ def _plot1D_(s, *a):
 
     """
     return HistoDecorator.plot1D(s, *a)
+
+
 # =============================================================================
 
 
@@ -989,6 +1008,8 @@ def _plot2D_(s, *a):
 
     """
     return HistoDecorator.plot2D(s, *a)
+
+
 # =============================================================================
 
 
@@ -1015,6 +1036,8 @@ def _plot3D_(s, *a):
 
     """
     return HistoDecorator.plot3D(s, *a)
+
+
 # =============================================================================
 
 
@@ -1035,6 +1058,8 @@ def _profile1D_(s, *a):
 
     """
     return HistoDecorator.profile1D(s, *a)
+
+
 # =============================================================================
 
 
@@ -1058,14 +1083,15 @@ def _profile2D_(s, *a):
 
     """
     return HistoDecorator.profile2D(s, *a)
+
+
 # =============================================================================
 
-
-_plot1D_    .__doc__ += '\n' + HistoDecorator.plot1D    .__doc__
-_plot2D_    .__doc__ += '\n' + HistoDecorator.plot2D    .__doc__
-_plot3D_    .__doc__ += '\n' + HistoDecorator.plot3D    .__doc__
-_profile1D_ .__doc__ += '\n' + HistoDecorator.profile1D .__doc__
-_profile2D_ .__doc__ += '\n' + HistoDecorator.profile2D .__doc__
+_plot1D_.__doc__ += '\n' + HistoDecorator.plot1D.__doc__
+_plot2D_.__doc__ += '\n' + HistoDecorator.plot2D.__doc__
+_plot3D_.__doc__ += '\n' + HistoDecorator.plot3D.__doc__
+_profile1D_.__doc__ += '\n' + HistoDecorator.profile1D.__doc__
+_profile2D_.__doc__ += '\n' + HistoDecorator.profile2D.__doc__
 
 
 def _decorate_plots_(klasses):
@@ -1074,12 +1100,12 @@ def _decorate_plots_(klasses):
        not issubclass(t, tuple):
         klasses = [klasses]
     for klass in klasses:
-        klass .plot = _plot1D_
-        klass .plot1D = _plot1D_
-        klass .plot2D = _plot2D_
-        klass .plot3D = _plot3D_
-        klass .profile1D = _profile1D_
-        klass .profile2D = _profile2D_
+        klass.plot = _plot1D_
+        klass.plot1D = _plot1D_
+        klass.plot2D = _plot2D_
+        klass.plot3D = _plot3D_
+        klass.profile1D = _profile1D_
+        klass.profile2D = _profile2D_
 
 
 _decorate_plots_(HistoAlgo)
@@ -1092,6 +1118,8 @@ def _nTuple_(s, *a):
     Retrieve (book-on-demand) N-Tuple object
     """
     return TupleAlgDecorator.nTuple(s, *a)
+
+
 # =============================================================================
 
 
@@ -1112,19 +1140,18 @@ def _decorate_tuples_(klasses):
        not issubclass(t, tuple):
         klasses = [klasses]
     for klass in klasses:
-        klass . nTuple = _nTuple_
-        klass . evtCol = _evtCol_
-        klass . ntupleSvc = _ntupleSvc
-        klass .  tupleSvc = _ntupleSvc
-        klass .   ntupSvc = _ntupleSvc
-        klass .    tupSvc = _ntupleSvc
-        klass . evtColSvc = _evtcolSvc
-        klass . evtcolSvc = _evtcolSvc
+        klass.nTuple = _nTuple_
+        klass.evtCol = _evtCol_
+        klass.ntupleSvc = _ntupleSvc
+        klass.tupleSvc = _ntupleSvc
+        klass.ntupSvc = _ntupleSvc
+        klass.tupSvc = _ntupleSvc
+        klass.evtColSvc = _evtcolSvc
+        klass.evtcolSvc = _evtcolSvc
 
 
 # ==========================================================
 _decorate_tuples_(TupleAlgo)
-
 
 # "decorate N-Tuple object
 Tuple = cpp.Tuples.Tuple
@@ -1241,17 +1268,17 @@ def _t_fmatrix_(s, *a):
     return _Dec.fmatrix(s, *a)
 
 
-_t_nTuple_     . __doc__ += '\n' + _Dec.nTuple     . __doc__
-_t_ntuple_     . __doc__ += '\n' + _Dec.ntuple     . __doc__
-_t_valid_      . __doc__ += '\n' + _Dec.valid      . __doc__
-_t_write_      . __doc__ += '\n' + _Dec.write      . __doc__
-_t_column_     . __doc__ += '\n' + _Dec.column     . __doc__
-_t_column_ll_  . __doc__ += '\n' + _Dec.column_ll  . __doc__
-_t_column_ull_ . __doc__ += '\n' + _Dec.column_ull . __doc__
-_t_array_      . __doc__ += '\n' + _Dec.array      . __doc__
-_t_matrix_     . __doc__ += '\n' + _Dec.matrix     . __doc__
-_t_farray_     . __doc__ += '\n' + _Dec.farray     . __doc__
-_t_fmatrix_    . __doc__ += '\n' + _Dec.fmatrix    . __doc__
+_t_nTuple_.__doc__ += '\n' + _Dec.nTuple.__doc__
+_t_ntuple_.__doc__ += '\n' + _Dec.ntuple.__doc__
+_t_valid_.__doc__ += '\n' + _Dec.valid.__doc__
+_t_write_.__doc__ += '\n' + _Dec.write.__doc__
+_t_column_.__doc__ += '\n' + _Dec.column.__doc__
+_t_column_ll_.__doc__ += '\n' + _Dec.column_ll.__doc__
+_t_column_ull_.__doc__ += '\n' + _Dec.column_ull.__doc__
+_t_array_.__doc__ += '\n' + _Dec.array.__doc__
+_t_matrix_.__doc__ += '\n' + _Dec.matrix.__doc__
+_t_farray_.__doc__ += '\n' + _Dec.farray.__doc__
+_t_fmatrix_.__doc__ += '\n' + _Dec.fmatrix.__doc__
 
 Tuple.nTuple = _t_nTuple_
 Tuple.ntuple = _t_ntuple_
@@ -1282,11 +1309,12 @@ _alg_map_ = {
     'beginRun': _success_,  # dummy function returning success
     'endRun': _success_,  # dummy function returning success
     #
-    'hasProperty': _hasProperty_,  # check the existence of property with given name
+    'hasProperty':
+    _hasProperty_,  # check the existence of property with given name
     'getProperty': _getProperty_,  # get the property value with given name
     'setProperty': _setProperty_,  # set the property with given name
     '__setattr__': _set_attr_,  # set the attribute/property with given name
-    '__getattr__': _get_attr_      # set the attribute/property with given name
+    '__getattr__': _get_attr_  # set the attribute/property with given name
 }
 
 
@@ -1325,6 +1353,8 @@ def mapvct(func, sequence, ovct=None):
         vct.push_back(func(object))
     if not ovct:
         return vct
+
+
 # =============================================================================
 
 
@@ -1344,6 +1374,8 @@ def _get_all_tools_(self, method):
     for _tool in _tools:
         _res += [iAlgTool(_tool.name(), _tool)]
     return _res
+
+
 # =============================================================================
 
 
@@ -1363,6 +1395,8 @@ def _Tools_a_(self):
         self.retrieveInterface()
     _cmp = getattr(self, '_ialg')
     return _get_all_tools_(_cmp, '_tools_a_')
+
+
 # =============================================================================
 
 
@@ -1406,6 +1440,8 @@ def _get_all_counters_(self, method, name=None):
     if not name:
         return _res
     return _res.get(name, None)
+
+
 # =============================================================================
 # get all counters
 
@@ -1432,6 +1468,8 @@ def _Counters_a_(self, name=None):
         self.retrieveInterface()
     _cmp = getattr(self, '_ialg')
     return _get_all_counters_(_cmp, '_counters_a_', name)
+
+
 # =============================================================================
 
 
@@ -1457,6 +1495,8 @@ def _Counters_t_(self, name=None):
         self.retrieveInterface()
     _cmp = getattr(self, '_itool')
     return _get_all_counters_(_cmp, '_counters_t_', name)
+
+
 # =============================================================================
 # get the counter
 # =============================================================================
@@ -1468,6 +1508,8 @@ def _get_counter_(self, method, name):
     """
     _func = getattr(AlgDecorator, method)
     return _func(self, name)
+
+
 # ==============================================================================
 
 
@@ -1485,6 +1527,8 @@ def _Counter_a_(self, name):
         self.retrieveInterface()
     _cmp = getattr(self, '_ialg')
     return _get_counter_(_cmp, '_counter_a_', name)
+
+
 # ==============================================================================
 
 
@@ -1507,10 +1551,11 @@ def _Counter_t_(self, name):
 # =============================================================================
 # get all histos
 # =============================================================================
-cpp.GaudiAlg.ID .__repr__ = cpp.GaudiAlg.ID.idAsString
-cpp.GaudiAlg.ID . __str__ = cpp.GaudiAlg.ID.idAsString
-cpp.StatEntity  .__repr__ = cpp.StatEntity.toString
-cpp.StatEntity  . __str__ = cpp.StatEntity.toString
+cpp.GaudiAlg.ID.__repr__ = cpp.GaudiAlg.ID.idAsString
+cpp.GaudiAlg.ID.__str__ = cpp.GaudiAlg.ID.idAsString
+cpp.StatEntity.__repr__ = cpp.StatEntity.toString
+cpp.StatEntity.__str__ = cpp.StatEntity.toString
+
 # =============================================================================
 
 
@@ -1544,15 +1589,14 @@ def _get_all_histos_(component, method, name):
         return _res  # return the dictionary
 
     id = cpp.GaudiAlg.ID(name)
-    for i in (name,
-              id.literalID(),
-              id.numericID(),
-              id.idAsString(), id):
+    for i in (name, id.literalID(), id.numericID(), id.idAsString(), id):
         h = _res.get(i, None)
         if not not h:
             return h  # return the histogram
 
     return None
+
+
 # =============================================================================
 
 
@@ -1577,6 +1621,8 @@ def _Histos_a_(self, name=None):
         self.retrieveInterface()
     _cmp = getattr(self, '_ialg')
     return _get_all_histos_(_cmp, '_histos_a_', name)
+
+
 # =============================================================================
 
 
@@ -1601,26 +1647,27 @@ def _Histos_t_(self, name=None):
         self.retrieveInterface()
     _cmp = getattr(self, '_itool')
     return _get_all_histos_(_cmp, '_histos_t_', name)
+
+
 # =============================================================================
 
+_Tools_a_.__doc__ += '\n' + AlgDecorator._tools_a_.__doc__
+_Tools_t_.__doc__ += '\n' + AlgDecorator._tools_t_.__doc__
+_Counters_a_.__doc__ += '\n' + AlgDecorator._counters_a_.__doc__
+_Counters_t_.__doc__ += '\n' + AlgDecorator._counters_t_.__doc__
+_Counter_a_.__doc__ += '\n' + AlgDecorator._counter_a_.__doc__
+_Counter_t_.__doc__ += '\n' + AlgDecorator._counter_t_.__doc__
+_Histos_a_.__doc__ += '\n' + HistoDecorator._histos_a_.__doc__
+_Histos_t_.__doc__ += '\n' + HistoDecorator._histos_t_.__doc__
 
-_Tools_a_    . __doc__ += '\n' + AlgDecorator   . _tools_a_    . __doc__
-_Tools_t_    . __doc__ += '\n' + AlgDecorator   . _tools_t_    . __doc__
-_Counters_a_ . __doc__ += '\n' + AlgDecorator   . _counters_a_ . __doc__
-_Counters_t_ . __doc__ += '\n' + AlgDecorator   . _counters_t_ . __doc__
-_Counter_a_  . __doc__ += '\n' + AlgDecorator   . _counter_a_  . __doc__
-_Counter_t_  . __doc__ += '\n' + AlgDecorator   . _counter_t_  . __doc__
-_Histos_a_   . __doc__ += '\n' + HistoDecorator . _histos_a_   . __doc__
-_Histos_t_   . __doc__ += '\n' + HistoDecorator . _histos_t_   . __doc__
-
-iAlgorithm   . Tools = _Tools_a_
-iAlgTool     . Tools = _Tools_t_
-iAlgorithm   . Counters = _Counters_a_
-iAlgTool     . Counters = _Counters_t_
-iAlgorithm   . Counter = _Counter_a_
-iAlgTool     . Counter = _Counter_t_
-iAlgorithm   . Histos = _Histos_a_
-iAlgTool     . Histos = _Histos_t_
+iAlgorithm.Tools = _Tools_a_
+iAlgTool.Tools = _Tools_t_
+iAlgorithm.Counters = _Counters_a_
+iAlgTool.Counters = _Counters_t_
+iAlgorithm.Counter = _Counter_a_
+iAlgTool.Counter = _Counter_t_
+iAlgorithm.Histos = _Histos_a_
+iAlgTool.Histos = _Histos_t_
 
 # finally add some decoration for histograms
 import GaudiPython.HistoUtils

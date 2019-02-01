@@ -17,8 +17,7 @@
  *  @author  Benedikt Hegner
  *  @version 1.1
  */
-class GAUDI_API IScheduler : virtual public IInterface
-{
+class GAUDI_API IScheduler : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IScheduler, 1, 0 );

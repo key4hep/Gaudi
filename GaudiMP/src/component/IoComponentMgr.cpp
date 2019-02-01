@@ -22,15 +22,14 @@
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
 DECLARE_COMPONENT( IoComponentMgr )
 
 using namespace std;
 
-std::ostream& operator<<( std::ostream& os, const IIoComponentMgr::IoMode::Type& m )
-{
+std::ostream& operator<<( std::ostream& os, const IIoComponentMgr::IoMode::Type& m ) {
   switch ( m ) {
   case IIoComponentMgr::IoMode::READ:
     os << "READ";
@@ -51,8 +50,7 @@ std::ostream& operator<<( std::ostream& os, const IIoComponentMgr::IoMode::Type&
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode IoComponentMgr::initialize()
-{
+StatusCode IoComponentMgr::initialize() {
   DEBMSG << "--> initialize()" << endmsg;
 
   if ( Service::initialize().isFailure() ) {
@@ -75,8 +73,7 @@ StatusCode IoComponentMgr::initialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode IoComponentMgr::finalize()
-{
+StatusCode IoComponentMgr::finalize() {
   DEBMSG << "--> finalize()" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -85,13 +82,10 @@ StatusCode IoComponentMgr::finalize()
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /** @brief: check if the registry contains a given @c IIoComponent
-   */
-bool IoComponentMgr::io_hasitem( IIoComponent* iocomponent ) const
-{
+ */
+bool IoComponentMgr::io_hasitem( IIoComponent* iocomponent ) const {
   DEBMSG << "--> io_hasitem()" << endmsg;
-  if ( 0 == iocomponent ) {
-    return false;
-  }
+  if ( 0 == iocomponent ) { return false; }
   const std::string&           ioname = iocomponent->name();
   IoRegistry_t::const_iterator io     = m_ioregistry.find( ioname );
   return io != m_ioregistry.end();
@@ -102,12 +96,9 @@ bool IoComponentMgr::io_hasitem( IIoComponent* iocomponent ) const
 /** @brief: check if the registry contains a given @c IIoComponent and
  *          that component had @param `fname` as a filename
  */
-bool IoComponentMgr::io_contains( IIoComponent* iocomponent, const std::string& fname ) const
-{
+bool IoComponentMgr::io_contains( IIoComponent* iocomponent, const std::string& fname ) const {
   DEBMSG << "--> io_contains()" << endmsg;
-  if ( 0 == iocomponent ) {
-    return false;
-  }
+  if ( 0 == iocomponent ) { return false; }
   const std::string& ioname = iocomponent->name();
 
   DEBMSG << "io_contains:  c: " << ioname << " f: " << fname << endmsg;
@@ -140,8 +131,7 @@ bool IoComponentMgr::io_contains( IIoComponent* iocomponent, const std::string& 
  *          by calling @c IIoComponent::io_reinit on every registered
  *          component)
  */
-StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent )
-{
+StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent ) {
   if ( !iocomponent ) {
     error() << "io_register (component) received a NULL pointer !" << endmsg;
     return StatusCode::FAILURE;
@@ -169,11 +159,8 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent )
  *          component)
  */
 StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentMgr::IoMode::Type iomode,
-                                        const std::string& fname, const std::string& pfn )
-{
-  if ( 0 == iocomponent ) {
-    return StatusCode::FAILURE;
-  }
+                                        const std::string& fname, const std::string& pfn ) {
+  if ( 0 == iocomponent ) { return StatusCode::FAILURE; }
   const std::string& ioname = iocomponent->name();
 
   DEBMSG << "--> io_register(" << ioname << "," << ( ( iomode == IIoComponentMgr::IoMode::READ ) ? "R" : "W" ) << ","
@@ -217,10 +204,9 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
 
 /** @brief: retrieve all registered filenames for a given @c IIoComponent
  */
-std::vector<std::string> IoComponentMgr::io_retrieve( IIoComponent* iocomponent )
-{
+std::vector<std::string> IoComponentMgr::io_retrieve( IIoComponent* iocomponent ) {
   std::vector<std::string> fnames;
-  pair<iodITR, iodITR> pit;
+  pair<iodITR, iodITR>     pit;
 
   // Find component and copy all registered file names
   if ( iocomponent != nullptr && findComp( iocomponent, pit ) ) {
@@ -235,11 +221,8 @@ std::vector<std::string> IoComponentMgr::io_retrieve( IIoComponent* iocomponent 
 /** @brief: retrieve the new filename for a given @c IIoComponent and
  *          @param `fname` filename
  */
-StatusCode IoComponentMgr::io_retrieve( IIoComponent* iocomponent, std::string& fname )
-{
-  if ( 0 == iocomponent ) {
-    return StatusCode::FAILURE;
-  }
+StatusCode IoComponentMgr::io_retrieve( IIoComponent* iocomponent, std::string& fname ) {
+  if ( 0 == iocomponent ) { return StatusCode::FAILURE; }
 
   std::string        ofname = fname;
   const std::string& ioname = iocomponent->name();
@@ -275,10 +258,8 @@ StatusCode IoComponentMgr::io_retrieve( IIoComponent* iocomponent, std::string& 
  *  This effectively calls @c IIoComponent::io_reinit on all the registered
  *  @c IIoComponent.
  */
-StatusCode IoComponentMgr::io_reinitialize()
-{
-  ON_DEBUG
-  {
+StatusCode IoComponentMgr::io_reinitialize() {
+  ON_DEBUG {
     debug() << "--> io_reinitialize()" << endmsg;
     debug() << "reinitializing I/O subsystem..." << endmsg;
     debug() << "Listing all monitored entries: " << std::endl;
@@ -307,8 +288,7 @@ StatusCode IoComponentMgr::io_reinitialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& old_fname, const std::string& new_fname )
-{
+StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& old_fname, const std::string& new_fname ) {
 
   DEBMSG << "--> io_update(" << ioc->name() << "," << old_fname << "," << new_fname << ")" << endmsg;
 
@@ -327,8 +307,7 @@ StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& old_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& work_dir )
-{
+StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& work_dir ) {
 
   DEBMSG << "--> io_update(" << ioc->name() << "," << work_dir << ")" << endmsg;
 
@@ -375,8 +354,7 @@ StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& work
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode IoComponentMgr::io_update_all( const std::string& work_dir )
-{
+StatusCode IoComponentMgr::io_update_all( const std::string& work_dir ) {
   DEBMSG << "-->io_update_all for the directory " << work_dir << endmsg;
   bool allgood = true;
   for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end(); io != ioEnd; ++io ) {
@@ -394,10 +372,8 @@ StatusCode IoComponentMgr::io_update_all( const std::string& work_dir )
  *  Hook to allow to e.g. give a chance to I/O subsystems to merge output
  *  files. Not sure how to do this correctly though...
  */
-StatusCode IoComponentMgr::io_finalize()
-{
-  ON_DEBUG
-  {
+StatusCode IoComponentMgr::io_finalize() {
+  ON_DEBUG {
     debug() << "--> io_finalize()" << endmsg;
     debug() << "finalizing I/O subsystem..." << endmsg;
     debug() << "Listing all monitored entries: " << std::endl;
@@ -419,8 +395,7 @@ StatusCode IoComponentMgr::io_finalize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool IoComponentMgr::findComp( IIoComponent* c, const std::string& f, iodITR& itr ) const
-{
+bool IoComponentMgr::findComp( IIoComponent* c, const std::string& f, iodITR& itr ) const {
 
   pair<iodITR, iodITR> pit;
   if ( !findComp( c, pit ) ) {
@@ -432,8 +407,7 @@ bool IoComponentMgr::findComp( IIoComponent* c, const std::string& f, iodITR& it
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool IoComponentMgr::findComp( IIoComponent* c, std::pair<iodITR, iodITR>& pit ) const
-{
+bool IoComponentMgr::findComp( IIoComponent* c, std::pair<iodITR, iodITR>& pit ) const {
 
   pit = m_cdict.equal_range( c );
   return pit.first != pit.second;
@@ -441,8 +415,7 @@ bool IoComponentMgr::findComp( IIoComponent* c, std::pair<iodITR, iodITR>& pit )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool IoComponentMgr::findComp( const std::string& c, std::pair<iodITR, iodITR>& pit ) const
-{
+bool IoComponentMgr::findComp( const std::string& c, std::pair<iodITR, iodITR>& pit ) const {
 
   pit.first  = m_cdict.end();
   pit.second = m_cdict.end();
@@ -453,23 +426,19 @@ bool IoComponentMgr::findComp( const std::string& c, std::pair<iodITR, iodITR>& 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-std::string IoComponentMgr::list() const
-{
+std::string IoComponentMgr::list() const {
 
   ostringstream ost;
 
   ost << "Listing all IoComponents (" << m_cdict.size() << "): " << endl;
-  for ( const auto& i : m_cdict ) {
-    ost << "  " << i.first->name() << "  " << i.second << endl;
-  }
+  for ( const auto& i : m_cdict ) { ost << "  " << i.first->name() << "  " << i.second << endl; }
 
   return ost.str();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void IoComponentMgr::handle( const Incident& i )
-{
+void IoComponentMgr::handle( const Incident& i ) {
 
   pair<iodITR, iodITR> pit;
 

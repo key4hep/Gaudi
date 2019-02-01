@@ -11,8 +11,7 @@
 
     @author nobody
 */
-class HelloWorld : public Algorithm
-{
+class HelloWorld : public Algorithm {
 public:
   /// Constructor of this form must be provided
   HelloWorld( const std::string& name, ISvcLocator* pSvcLocator );

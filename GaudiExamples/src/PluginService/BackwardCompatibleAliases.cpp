@@ -8,10 +8,8 @@
 #include <string>
 #include <vector>
 
-namespace PluginServiceTest
-{
-  class MyAlg : public Algorithm
-  {
+namespace PluginServiceTest {
+  class MyAlg : public Algorithm {
   public:
     using Algorithm::Algorithm;
 
@@ -19,18 +17,16 @@ namespace PluginServiceTest
   };
 
   template <class T1, class T2>
-  class MyTemplatedAlg : public Algorithm
-  {
+  class MyTemplatedAlg : public Algorithm {
   public:
     using Algorithm::Algorithm;
 
     StatusCode execute() override { return StatusCode::SUCCESS; }
   };
-}
+} // namespace PluginServiceTest
 
 DECLARE_COMPONENT( PluginServiceTest::MyAlg )
-namespace
-{
+namespace {
   typedef PluginServiceTest::MyTemplatedAlg<int&, double*> _dummy;
 }
 DECLARE_COMPONENT( _dummy )

@@ -26,8 +26,7 @@
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::Histos::HistoStrings::toString( const TH1D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::Histos::HistoStrings::toString( const TH1D& histo, const bool asXML ) {
   return Gaudi::Utils::toString( histo, asXML );
 }
 // ============================================================================
@@ -39,8 +38,7 @@ std::string Gaudi::Utils::Histos::HistoStrings::toString( const TH1D& histo, con
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::Histos::HistoStrings::toString( const TH2D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::Histos::HistoStrings::toString( const TH2D& histo, const bool asXML ) {
   return Gaudi::Utils::toString( histo, asXML );
 }
 // ============================================================================
@@ -52,8 +50,7 @@ std::string Gaudi::Utils::Histos::HistoStrings::toString( const TH2D& histo, con
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::Histos::HistoStrings::toString( const AIDA::IHistogram1D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::Histos::HistoStrings::toString( const AIDA::IHistogram1D& histo, const bool asXML ) {
   return Gaudi::Utils::toString( histo, asXML );
 }
 // ============================================================================
@@ -65,8 +62,7 @@ std::string Gaudi::Utils::Histos::HistoStrings::toString( const AIDA::IHistogram
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::Histos::HistoStrings::toString( const AIDA::IHistogram2D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::Histos::HistoStrings::toString( const AIDA::IHistogram2D& histo, const bool asXML ) {
   return Gaudi::Utils::toString( histo, asXML );
 }
 // ============================================================================
@@ -76,8 +72,7 @@ std::string Gaudi::Utils::Histos::HistoStrings::toString( const AIDA::IHistogram
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( TH1D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( TH1D& result, const std::string& input ) {
   return Gaudi::Parsers::parse( result, input );
 }
 // ============================================================================
@@ -87,8 +82,7 @@ StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( TH1D& result, const s
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( TH2D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( TH2D& result, const std::string& input ) {
   return Gaudi::Parsers::parse( result, input );
 }
 // ============================================================================
@@ -98,8 +92,7 @@ StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( TH2D& result, const s
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( AIDA::IHistogram1D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( AIDA::IHistogram1D& result, const std::string& input ) {
   return Gaudi::Parsers::parse( result, input );
 }
 // ============================================================================
@@ -109,25 +102,21 @@ StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( AIDA::IHistogram1D& r
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( AIDA::IHistogram2D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromString( AIDA::IHistogram2D& result, const std::string& input ) {
   return Gaudi::Parsers::parse( result, input );
 }
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   template <class TYPE>
-  std::string _toXml( const TYPE& object )
-  {
+  std::string _toXml( const TYPE& object ) {
     std::ostringstream s;
     Gaudi::Utils::Histos::toXml( object, s );
     return s.str();
   }
   // ==========================================================================
   template <class TYPE>
-  StatusCode _fromXml( TYPE& object, const std::string& input )
-  {
+  StatusCode _fromXml( TYPE& object, const std::string& input ) {
     return Gaudi::Utils::Histos::fromXml( object, input );
   }
   // ==========================================================================
@@ -145,45 +134,35 @@ std::string Gaudi::Utils::Histos::HistoStrings::toXml( const AIDA::IHistogram3D&
 std::string Gaudi::Utils::Histos::HistoStrings::toXml( const AIDA::IProfile1D& histo ) { return _toXml( histo ); }
 std::string Gaudi::Utils::Histos::HistoStrings::toXml( const AIDA::IProfile2D& histo ) { return _toXml( histo ); }
 // ============================================================================
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TH1D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TH1D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TH2D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TH2D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TH3D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TH3D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TProfile& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TProfile& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TProfile2D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( TProfile2D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
 // ============================================================================
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IHistogram1D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IHistogram1D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IHistogram2D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IHistogram2D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IHistogram3D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IHistogram3D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IProfile1D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IProfile1D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
-StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IProfile2D& result, const std::string& input )
-{
+StatusCode Gaudi::Utils::Histos::HistoStrings::fromXml( AIDA::IProfile2D& result, const std::string& input ) {
   return _fromXml( result, input );
 }
 // ============================================================================

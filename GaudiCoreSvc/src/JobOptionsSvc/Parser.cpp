@@ -26,11 +26,9 @@ namespace gp      = Gaudi::Parsers;
 namespace gpu     = Gaudi::Parsers::Utils;
 namespace qi      = boost::spirit::qi;
 // ============================================================================
-namespace
-{
+namespace {
   // ============================================================================
-  void GetLastLineAndColumn( std::ifstream& ifs, int& line, int& column )
-  {
+  void GetLastLineAndColumn( std::ifstream& ifs, int& line, int& column ) {
     int         n = 0;
     std::string str;
     while ( !ifs.eof() ) {
@@ -44,8 +42,7 @@ namespace
   }
 
   template <typename Grammar>
-  bool ParseStream( std::ifstream& stream, const std::string& stream_name, gp::Messages* messages, gp::Node* root )
-  {
+  bool ParseStream( std::ifstream& stream, const std::string& stream_name, gp::Messages* messages, gp::Node* root ) {
 
     int last_line, last_column;
 
@@ -70,9 +67,7 @@ namespace
     bool result = qi::phrase_parse( position_begin, position_end, gr, skipper, *root );
 
     const IteratorPosition& pos = position_begin.get_position();
-    if ( result && ( pos.line == last_line ) && ( pos.column == last_column ) ) {
-      return true;
-    }
+    if ( result && ( pos.line == last_line ) && ( pos.column == last_column ) ) { return true; }
 
     messages->AddError( gp::Position( stream_name, pos.line, pos.column ), "parse error" );
     return false;
@@ -81,8 +76,7 @@ namespace
   // ============================================================================
   template <typename Grammar>
   bool ParseFile( const gp::Position& from, const std::string& filename, const std::string& search_path,
-                  gp::IncludedFiles* included, gp::Messages* messages, gp::Node* root )
-  {
+                  gp::IncludedFiles* included, gp::Messages* messages, gp::Node* root ) {
     std::string search_path_with_current_dir = gpu::replaceEnvironments( search_path );
     if ( !from.filename().empty() ) { // Add current file directory to search_path
       bf::path file_path( from.filename() );
@@ -115,25 +109,22 @@ namespace
     }
   }
   // ============================================================================
-}
+} // namespace
 // ============================================================================
 bool gp::Parse( const std::string& filename, const std::string& search_path, IncludedFiles* included,
-                Messages* messages, Node* root )
-{
+                Messages* messages, Node* root ) {
   return Parse( Position(), filename, search_path, included, messages, root );
 }
 // ============================================================================
 bool gp::Parse( const Position& from, const std::string& filename, const std::string& search_path,
-                IncludedFiles* included, Messages* messages, Node* root )
-{
+                IncludedFiles* included, Messages* messages, Node* root ) {
   using Grammar = FileGrammar<Iterator, SkipperGrammar<Iterator>>;
   return ParseFile<Grammar>( from, filename, search_path, included, messages, root );
 }
 
 // ============================================================================
 bool gp::ParseUnits( const Position& from, const std::string& filename, const std::string& search_path,
-                     IncludedFiles* included, Messages* messages, Node* root )
-{
+                     IncludedFiles* included, Messages* messages, Node* root ) {
   using Grammar = UnitsGrammar<Iterator, SkipperGrammar<Iterator>>;
   return ParseFile<Grammar>( from, filename, search_path, included, messages, root );
 }

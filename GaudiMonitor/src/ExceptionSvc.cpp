@@ -27,12 +27,9 @@ inline void toupper( std::string& s ) { std::transform( s.begin(), s.end(), s.be
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ExceptionSvc::initialize()
-{
+StatusCode ExceptionSvc::initialize() {
   StatusCode status = Service::initialize();
-  if ( status.isFailure() ) {
-    return status;
-  }
+  if ( status.isFailure() ) { return status; }
 
   string key = m_mode_exc_s.value();
 
@@ -139,8 +136,7 @@ StatusCode ExceptionSvc::initialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ExceptionSvc::handleErr( const INamedInterface& alg, const StatusCode& st ) const
-{
+StatusCode ExceptionSvc::handleErr( const INamedInterface& alg, const StatusCode& st ) const {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "Handling Error from " << alg.name() << endmsg;
 
   // is this Alg special?
@@ -171,8 +167,7 @@ StatusCode ExceptionSvc::handleErr( const INamedInterface& alg, const StatusCode
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ExceptionSvc::process( const INamedInterface& alg ) const
-{
+StatusCode ExceptionSvc::process( const INamedInterface& alg ) const {
 
   // is this Alg special?
   auto i = m_retCodesExc.find( alg.name() );
@@ -192,30 +187,25 @@ StatusCode ExceptionSvc::process( const INamedInterface& alg ) const
     }
   }
 
-  if ( m_mode_exc == ALL ) {
-    throw;
-  }
+  if ( m_mode_exc == ALL ) { throw; }
   assert( m_mode_exc == NONE );
   return StatusCode::FAILURE;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ExceptionSvc::handle( const INamedInterface& alg ) const
-{
+StatusCode ExceptionSvc::handle( const INamedInterface& alg ) const {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "Handling unknown exception for " << alg.name() << endmsg;
   return process( alg );
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ExceptionSvc::handle( const INamedInterface& alg, const std::exception& exc ) const
-{
+StatusCode ExceptionSvc::handle( const INamedInterface& alg, const std::exception& exc ) const {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "Handling std:except: \"" << exc.what() << "\" for " << alg.name() << endmsg;
   return process( alg );
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ExceptionSvc::handle( const INamedInterface& alg, const GaudiException& exc ) const
-{
+StatusCode ExceptionSvc::handle( const INamedInterface& alg, const GaudiException& exc ) const {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "Handling GaudiException: \"" << exc << "\" for " << alg.name() << endmsg;
   return process( alg );
 }

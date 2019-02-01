@@ -24,22 +24,18 @@
 
 using namespace std;
 
-namespace GaudiRoot
-{
+namespace GaudiRoot {
   static const DataObject* last_link_object = nullptr;
   static int               last_link_hint   = -1;
-  void                     resetLastLink()
-  {
+  void                     resetLastLink() {
     last_link_object = nullptr;
     last_link_hint   = -1;
   }
-  void pushCurrentDataObject( DataObject** pobjAddr )
-  {
+  void pushCurrentDataObject( DataObject** pobjAddr ) {
     Gaudi::pushCurrentDataObject( pobjAddr );
     resetLastLink();
   }
-  void popCurrentDataObject()
-  {
+  void popCurrentDataObject() {
     Gaudi::popCurrentDataObject();
     resetLastLink();
   }
@@ -53,10 +49,9 @@ namespace GaudiRoot
   };
 
   /**@class IOHandler
-  */
+   */
   template <class T>
-  class IOHandler : public TClassStreamer
-  {
+  class IOHandler : public TClassStreamer {
   protected:
     /// ROOT persistent class description
     TClass* m_root;
@@ -65,8 +60,7 @@ namespace GaudiRoot
     /// Initializing constructor
     IOHandler( TClass* c ) : m_root( c ) {}
     /// ROOT I/O callback
-    void operator()( TBuffer& b, void* obj ) override
-    {
+    void operator()( TBuffer& b, void* obj ) override {
       try {
         if ( b.IsReading() )
           get( b, obj );
@@ -88,8 +82,7 @@ namespace GaudiRoot
   };
 
   template <>
-  void IOHandler<SmartRefBase>::get( TBuffer& b, void* obj )
-  {
+  void IOHandler<SmartRefBase>::get( TBuffer& b, void* obj ) {
     RefAccessor r( obj );
     UInt_t      start, count;
     Version_t   version = b.ReadVersion( &start, &count, m_root );
@@ -108,8 +101,7 @@ namespace GaudiRoot
   }
 
   template <>
-  void IOHandler<SmartRefBase>::put( TBuffer& b, void* obj )
-  {
+  void IOHandler<SmartRefBase>::put( TBuffer& b, void* obj ) {
     RefAccessor      r( obj );
     ContainedObject* p;
     DataObject *     curr, *pDO;
@@ -166,8 +158,7 @@ namespace GaudiRoot
   }
 
   template <>
-  void IOHandler<ContainedObject>::get( TBuffer& b, void* obj )
-  {
+  void IOHandler<ContainedObject>::get( TBuffer& b, void* obj ) {
     UInt_t    start, count;
     Version_t version = b.ReadVersion( &start, &count, m_root );
     m_root->ReadBuffer( b, obj, version, start, count );
@@ -176,14 +167,12 @@ namespace GaudiRoot
   }
 
   template <>
-  void IOHandler<ContainedObject>::put( TBuffer& b, void* obj )
-  {
+  void IOHandler<ContainedObject>::put( TBuffer& b, void* obj ) {
     m_root->WriteBuffer( b, obj );
   }
 
   template <>
-  void IOHandler<pool::Token>::get( TBuffer& b, void* obj )
-  {
+  void IOHandler<pool::Token>::get( TBuffer& b, void* obj ) {
     UInt_t       start, count;
     pool::Token* t = (pool::Token*)obj;
     b.ReadVersion( &start, &count, m_root );
@@ -192,14 +181,12 @@ namespace GaudiRoot
   }
 
   template <>
-  void IOHandler<pool::Token>::put( TBuffer&, void* )
-  {
+  void IOHandler<pool::Token>::put( TBuffer&, void* ) {
     throw runtime_error( "Writing POOL files is not implemented!" );
   }
 
   template <class T>
-  static bool makeStreamer( MsgStream& log )
-  {
+  static bool makeStreamer( MsgStream& log ) {
     string  cl_name = System::typeinfoName( typeid( T ) );
     TClass* c       = gROOT->GetClass( cl_name.c_str() );
     if ( c ) {
@@ -211,8 +198,7 @@ namespace GaudiRoot
     return false;
   }
 
-  bool patchStreamers( MsgStream& s )
-  {
+  bool patchStreamers( MsgStream& s ) {
     static bool first = true;
     if ( first ) {
       first = false;
@@ -238,4 +224,4 @@ namespace GaudiRoot
     }
     return true;
   }
-}
+} // namespace GaudiRoot

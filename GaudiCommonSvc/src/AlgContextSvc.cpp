@@ -28,13 +28,10 @@ DECLARE_COMPONENT( AlgContextSvc )
 // ============================================================================
 // standard initialization of the service
 // ============================================================================
-StatusCode AlgContextSvc::initialize()
-{
+StatusCode AlgContextSvc::initialize() {
   // Initialize the base class
   StatusCode sc = Service::initialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  if ( sc.isFailure() ) { return sc; }
   // Incident Service
   if ( m_inc ) {
     m_inc->removeListener( this );
@@ -69,8 +66,7 @@ StatusCode AlgContextSvc::initialize()
 // needs to be removed once we have a proper service
 // for getting configuration information at initialization time
 // S. Kama
-StatusCode AlgContextSvc::start()
-{
+StatusCode AlgContextSvc::start() {
   auto sc       = Service::start();
   auto numSlots = Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
   numSlots      = ( 1 > numSlots ) ? 1 : numSlots;
@@ -86,8 +82,7 @@ StatusCode AlgContextSvc::start()
 // ============================================================================
 // standard finalization  of the service  @see IService
 // ============================================================================
-StatusCode AlgContextSvc::finalize()
-{
+StatusCode AlgContextSvc::finalize() {
   if ( m_algorithms.get() && !m_algorithms->empty() ) {
     warning() << "Non-empty stack of algorithms #" << m_algorithms->size() << endmsg;
   }
@@ -102,8 +97,7 @@ StatusCode AlgContextSvc::finalize()
 // ============================================================================
 // set     the currently executing algorithm  ("push_back") @see IAlgContextSvc
 // ============================================================================
-StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a, const EventContext& context )
-{
+StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a, const EventContext& context ) {
   if ( !a ) {
     warning() << "IAlgorithm* points to NULL" << endmsg;
     return StatusCode::RECOVERABLE;
@@ -113,9 +107,7 @@ StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a, const EventContext& cont
   }
   // check whether thread-local algorithm list already exists
   // if not, create it
-  if ( !m_algorithms.get() ) {
-    m_algorithms.reset( new IAlgContextSvc::Algorithms() );
-  }
+  if ( !m_algorithms.get() ) { m_algorithms.reset( new IAlgContextSvc::Algorithms() ); }
   if ( a->type() != "IncidentProcAlg" ) m_algorithms->push_back( a );
 
   return StatusCode::SUCCESS;
@@ -123,13 +115,10 @@ StatusCode AlgContextSvc::setCurrentAlg( IAlgorithm* a, const EventContext& cont
 // ============================================================================
 // remove the algorithm                       ("pop_back") @see IAlgContextSvc
 // ============================================================================
-StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a, const EventContext& context )
-{
+StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a, const EventContext& context ) {
   // check whether thread-local algorithm list already exists
   // if not, create it
-  if ( !m_algorithms.get() ) {
-    m_algorithms.reset( new IAlgContextSvc::Algorithms() );
-  }
+  if ( !m_algorithms.get() ) { m_algorithms.reset( new IAlgContextSvc::Algorithms() ); }
 
   if ( !a ) {
     warning() << "IAlgorithm* points to NULL" << endmsg;
@@ -146,9 +135,7 @@ StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a, const EventContext& co
     //   return StatusCode::FAILURE ;
     // }
     if ( !m_algorithms->empty() ) {
-      if ( m_algorithms->back() == a ) {
-        m_algorithms->pop_back();
-      }
+      if ( m_algorithms->back() == a ) { m_algorithms->pop_back(); }
     }
   }
   return StatusCode::SUCCESS;
@@ -156,20 +143,16 @@ StatusCode AlgContextSvc::unSetCurrentAlg( IAlgorithm* a, const EventContext& co
 // ============================================================================
 /// accessor to current algorithm: @see IAlgContextSvc
 // ============================================================================
-IAlgorithm* AlgContextSvc::currentAlg() const
-{
+IAlgorithm* AlgContextSvc::currentAlg() const {
   return ( m_algorithms.get() && !m_algorithms->empty() ) ? m_algorithms->back() : nullptr;
 }
 // ============================================================================
 // handle incident @see IIncidentListener
 // ============================================================================
-void AlgContextSvc::handle( const Incident& inc )
-{
+void AlgContextSvc::handle( const Incident& inc ) {
   // some false sharing is possible but it should be negligable
   auto currSlot = inc.context().slot();
-  if ( currSlot == EventContext::INVALID_CONTEXT_ID ) {
-    currSlot = 0;
-  }
+  if ( currSlot == EventContext::INVALID_CONTEXT_ID ) { currSlot = 0; }
   if ( inc.type() == "BeginEvent" ) {
     m_inEvtLoop[currSlot] = 1;
   } else if ( inc.type() == "EndEvent" ) {

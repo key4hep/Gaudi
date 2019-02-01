@@ -2,11 +2,7 @@ from Gaudi.Configuration import *
 
 
 class MyAlgType(ConfigurableUser):
-    __slots__ = {"Cut": 0.0,
-                 "Tool1": "None",
-                 "Tool2": "None",
-                 "File": "None"
-                 }
+    __slots__ = {"Cut": 0.0, "Tool1": "None", "Tool2": "None", "File": "None"}
 
     def getGaudiType(self):
         return "Test"  # To avoid skipping of ConfigurableUser

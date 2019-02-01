@@ -5,8 +5,7 @@
 #include "GaudiKernel/IInterface.h"
 
 // Forward declarations
-namespace Gaudi
-{
+namespace Gaudi {
   class Time;
 }
 
@@ -20,8 +19,7 @@ namespace Gaudi
     @date August 2001
 */ //--------------------------------------------------------------------------
 
-class GAUDI_API IDetDataSvc : virtual public IInterface
-{
+class GAUDI_API IDetDataSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IDetDataSvc, 2, 0 );

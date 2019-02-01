@@ -19,9 +19,7 @@
 #include "CLHEP/GenericFunctions/Sin.hh"
 // ============================================================================
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 // ============================================================================
@@ -34,8 +32,7 @@ using namespace CLHEP;
  */
 // ============================================================================
 
-int main()
-{
+int main() {
 
   std::cout << " Test for numerical integration of Genfun::Sin(x) " << std::endl;
 

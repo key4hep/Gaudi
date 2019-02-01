@@ -3,11 +3,9 @@
 
 #include <utility> // std::forward, std::move (objects)
 
-namespace Gaudi
-{
+namespace Gaudi {
 
-  namespace details
-  {
+  namespace details {
 
 #if __cplusplus > 201402L
 
@@ -38,20 +36,16 @@ namespace Gaudi
 
       template <typename... lambda_ts>
       overloaded_t( const lambda_t& lambda, lambda_ts&&... more_lambdas )
-          : lambda_t{lambda}, super_t{std::forward<lambda_ts>( more_lambdas )...}
-      {
-      }
+          : lambda_t{lambda}, super_t{std::forward<lambda_ts>( more_lambdas )...} {}
       template <typename... lambda_ts>
       overloaded_t( lambda_t&& lambda, lambda_ts&&... more_lambdas )
-          : lambda_t{std::move( lambda )}, super_t{std::forward<lambda_ts>( more_lambdas )...}
-      {
-      }
+          : lambda_t{std::move( lambda )}, super_t{std::forward<lambda_ts>( more_lambdas )...} {}
 
       using lambda_t::operator();
-      using super_t::operator();
+      using super_t:: operator();
     };
 #endif
-  }
+  } // namespace details
 
   //
   // Create an object with an overloaded call operator by 'composing'/'joining'
@@ -61,21 +55,19 @@ namespace Gaudi
   // for an example of why this is usefull
   //
   template <typename... lambda_ts>
-  auto overload( lambda_ts&&... lambdas )
-  {
+  auto overload( lambda_ts&&... lambdas ) {
 #if __cplusplus > 201402L
     return details::overloaded_t{std::forward<lambda_ts>( lambdas )...};
 #else
     return details::overloaded_t<std::decay_t<lambda_ts>...>{std::forward<lambda_ts>( lambdas )...};
 #endif
   }
-}
+} // namespace Gaudi
 
 // for backwards compatibility
 // [[deprecated("please use Gaudi::overload instead of compose")]]
 template <typename... lambda_ts>
-auto compose( lambda_ts&&... lambdas )
-{
+auto compose( lambda_ts&&... lambdas ) {
   return Gaudi::overload( std::forward<lambda_ts>( lambdas )... );
 }
 

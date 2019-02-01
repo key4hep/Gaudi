@@ -8,15 +8,11 @@
 
 #include <vector>
 
-namespace Gaudi
-{
-  namespace Examples
-  {
-    namespace MultiInput
-    {
+namespace Gaudi {
+  namespace Examples {
+    namespace MultiInput {
       /** Simple algorithm used to read data from two files. */
-      class ReadAlg : public ::Algorithm
-      {
+      class ReadAlg : public ::Algorithm {
       public:
         using Algorithm::Algorithm;
         /// Initialize
@@ -31,7 +27,7 @@ namespace Gaudi
         std::vector<RootAddressArgs> m_addresses;
         size_t                       m_count = 0;
       };
-    }
-  }
-}
+    } // namespace MultiInput
+  }   // namespace Examples
+} // namespace Gaudi
 #endif

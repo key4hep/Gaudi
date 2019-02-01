@@ -15,18 +15,16 @@ class IMessageSvc;
 /*
  *   Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class XMLFileCatalog
-    *
-    *  This class constitutes the core of the
-    *  XML based FileCatalog API for POOL. It uses the DOM model and
-    *  the external XercesC library for parsing.
-    *
-    */
-  class XMLFileCatalog : public implements<IFileCatalog>
-  {
+   *
+   *  This class constitutes the core of the
+   *  XML based FileCatalog API for POOL. It uses the DOM model and
+   *  the external XercesC library for parsing.
+   *
+   */
+  class XMLFileCatalog : public implements<IFileCatalog> {
   protected:
     typedef const std::string& CSTR;
 
@@ -44,8 +42,7 @@ namespace Gaudi
     /// Save DOM catalog to file
     void commit() override;
     /// Save DOM catalog to file
-    void rollback() override
-    {
+    void rollback() override {
       if ( dirty() ) init();
     }
     /// Check if the catalog is read-only
@@ -93,19 +90,19 @@ namespace Gaudi
 
   private:
     xercesc::DOMDocument* getDoc( bool throw_if_no_exists = true ) const;
-    std::string getfile( bool create );
-    void printError( CSTR msg, bool throw_exc = true ) const;
-    std::string lookupFID( CSTR lfn ) const;
-    xercesc::DOMNode* element( CSTR fid, bool print_err = true ) const;
-    xercesc::DOMNode* child( xercesc::DOMNode* par, CSTR tag, CSTR attr = "", CSTR val = "" ) const;
+    std::string           getfile( bool create );
+    void                  printError( CSTR msg, bool throw_exc = true ) const;
+    std::string           lookupFID( CSTR lfn ) const;
+    xercesc::DOMNode*     element( CSTR fid, bool print_err = true ) const;
+    xercesc::DOMNode*     child( xercesc::DOMNode* par, CSTR tag, CSTR attr = "", CSTR val = "" ) const;
     std::pair<xercesc::DOMElement*, xercesc::DOMElement*> i_registerFID( CSTR fid ) const;
-    bool                                      m_rdOnly = false;
-    mutable bool                              m_update = false;
-    xercesc::DOMDocument*                     m_doc    = nullptr;
-    std::unique_ptr<xercesc::XercesDOMParser> m_parser;
-    std::unique_ptr<xercesc::ErrorHandler>    m_errHdlr;
-    std::string                               m_file;
-    IMessageSvc*                              m_msgSvc;
+    bool                                                  m_rdOnly = false;
+    mutable bool                                          m_update = false;
+    xercesc::DOMDocument*                                 m_doc    = nullptr;
+    std::unique_ptr<xercesc::XercesDOMParser>             m_parser;
+    std::unique_ptr<xercesc::ErrorHandler>                m_errHdlr;
+    std::string                                           m_file;
+    IMessageSvc*                                          m_msgSvc;
   };
   /// Create file identifier using UUID mechanism
   std::string createGuidAsString();

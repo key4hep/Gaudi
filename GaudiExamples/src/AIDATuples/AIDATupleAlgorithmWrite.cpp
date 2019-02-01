@@ -10,9 +10,7 @@
 #include "CLHEP/Random/RandGauss.h"
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 //--------------------------------------------------------

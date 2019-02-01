@@ -17,9 +17,8 @@
  *
  * @author Vanya Belyaev
  * @author Sebastien Ponce
-*/
-class GAUDI_API GaudiException : virtual public std::exception
-{
+ */
+class GAUDI_API GaudiException : virtual public std::exception {
   friend class StatusCode;
 
 public:
@@ -59,8 +58,7 @@ public:
   virtual const std::string& message() const { return m_message; }
 
   /// update the error message to be printed
-  virtual const std::string& setMessage( const std::string& newMessage )
-  {
+  virtual const std::string& setMessage( const std::string& newMessage ) {
     m_message = newMessage;
     return message();
   }
@@ -69,8 +67,7 @@ public:
   virtual const std::string& tag() const { return m_tag; }
 
   /// update name tag
-  virtual const std::string& setTag( const std::string& newTag )
-  {
+  virtual const std::string& setTag( const std::string& newTag ) {
     m_tag = newTag;
     return tag();
   }
@@ -79,8 +76,7 @@ public:
   virtual const StatusCode& code() const { return m_code; }
 
   ///  update the status code for the exception
-  virtual const StatusCode& setCode( const StatusCode& newStatus )
-  {
+  virtual const StatusCode& setCode( const StatusCode& newStatus ) {
     m_code = newStatus;
     return code();
   }

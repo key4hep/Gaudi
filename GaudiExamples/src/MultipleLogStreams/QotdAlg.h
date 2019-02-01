@@ -12,11 +12,9 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
 
-namespace GaudiEx
-{
+namespace GaudiEx {
 
-  class QotdAlg : public Algorithm
-  {
+  class QotdAlg : public Algorithm {
 
   public:
     // Constructor of this form must be provided
@@ -32,6 +30,6 @@ namespace GaudiEx
     unsigned int m_evtCnt;
   };
 
-} //> end namespace GaudiEx
+} // namespace GaudiEx
 
 #endif // MULTIPLELOGSTREAMS_QOTDALG_H

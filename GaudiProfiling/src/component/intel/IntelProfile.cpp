@@ -14,8 +14,7 @@ DECLARE_COMPONENT( IntelProfile )
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode IntelProfile::execute()
-{
+StatusCode IntelProfile::execute() {
 
   // Increase event number
   m_eventNumber += 1;

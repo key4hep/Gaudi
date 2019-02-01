@@ -11,20 +11,19 @@ class StatusCode;
 class Message;
 
 /// Print levels enumeration
-namespace MSG
-{
+namespace MSG {
   enum Level { NIL = 0, VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL, ALWAYS, NUM_LEVELS };
   enum Color { BLACK = 0, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE, NUM_COLORS };
-}
+} // namespace MSG
 
 #ifdef _WIN32
 // Avoid (hopefully) conflicts between Windows' headers and MSG.
-#ifndef NOMSG
-#define NOMSG
-#ifndef NOGDI
-#define NOGDI
-#endif
-#endif
+#  ifndef NOMSG
+#    define NOMSG
+#    ifndef NOGDI
+#      define NOGDI
+#    endif
+#  endif
 #endif
 
 /** @class IMessageSvc IMessageSvc.h GaudiKernel/IMessageSvc.h
@@ -35,8 +34,7 @@ namespace MSG
 
     @author Iain Last
 */
-class GAUDI_API IMessageSvc : virtual public IInterface
-{
+class GAUDI_API IMessageSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IMessageSvc, 2, 0 );
@@ -155,8 +153,7 @@ public:
   virtual int messageCount( MSG::Level level ) const = 0;
 };
 
-class GAUDI_API IInactiveMessageCounter : virtual public IInterface
-{
+class GAUDI_API IInactiveMessageCounter : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IInactiveMessageCounter, 1, 0 );

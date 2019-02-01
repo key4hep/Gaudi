@@ -15,20 +15,17 @@ from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel.DataObjectHandleBase import *
 
-from GaudiConfig.ControlFlow import (OrNode, AndNode, OrderedNode,
-                                     ignore, InvertNode,
-                                     ControlFlowLeaf, ControlFlowNode,
-                                     CFTrue, CFFalse)
+from GaudiConfig.ControlFlow import (OrNode, AndNode, OrderedNode, ignore,
+                                     InvertNode, ControlFlowLeaf,
+                                     ControlFlowNode, CFTrue, CFFalse)
 
 # data ---------------------------------------------------------------------
-__all__ = ['Configurable',
-           'ConfigurableAlgorithm',
-           'ConfigurableAlgTool',
-           'ConfigurableAuditor',
-           'ConfigurableService',
-           'ConfigurableUser',
-           'VERBOSE', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL',
-           'appendPostConfigAction', 'removePostConfigAction']
+__all__ = [
+    'Configurable', 'ConfigurableAlgorithm', 'ConfigurableAlgTool',
+    'ConfigurableAuditor', 'ConfigurableService', 'ConfigurableUser',
+    'VERBOSE', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL',
+    'appendPostConfigAction', 'removePostConfigAction'
+]
 
 # for messaging
 import logging
@@ -64,6 +61,7 @@ class Error(RuntimeError):
     """
     pass
 
+
 # Allow references to options  as in old style
 
 
@@ -84,8 +82,8 @@ class PropertyReference(object):
             if hasattr(retval, "getFullName"):
                 retval = retval.getFullName()
         else:
-            raise NameError("name '%s' not found resolving '%s'" %
-                            (refname, self))
+            raise NameError(
+                "name '%s' not found resolving '%s'" % (refname, self))
         return retval
 
     def getFullName(self):
@@ -100,6 +98,7 @@ class PropertyReference(object):
         except AttributeError:
             # ignore the error if we cannot resolve the attribute yet
             return self
+
 
 # base class for configurable Gaudi algorithms/services/algtools/etc. ======
 
@@ -122,17 +121,19 @@ class Configurable(object):
     __metaclass__ = ConfigurableMeta.ConfigurableMeta
 
     __slots__ = (
-        '__children',           # controlled components, e.g. private AlgTools
-        '__tools',              # private AlgTools  (#PM-->)
-        '_name',                # the (unqualified) component name
-        '_inSetDefaults',       # currently setting default values
-        '_initok',              # used to enforce base class init
-        '_setupok',             # for debugging purposes (temporary)
-        '_unpickling',          # flag for actions done during unpickling
+        '__children',  # controlled components, e.g. private AlgTools
+        '__tools',  # private AlgTools  (#PM-->)
+        '_name',  # the (unqualified) component name
+        '_inSetDefaults',  # currently setting default values
+        '_initok',  # used to enforce base class init
+        '_setupok',  # for debugging purposes (temporary)
+        '_unpickling',  # flag for actions done during unpickling
     )
 
-    allConfigurables = {}      # just names would do, but currently refs to the actual
-    configurableServices = {}  # just names would do, but currently refs to the actual
+    allConfigurables = {
+    }  # just names would do, but currently refs to the actual
+    configurableServices = {
+    }  # just names would do, but currently refs to the actual
     # configurables is needed  for (temporary) backwards
     # compatibility; will change in the future
     _configurationLocked = False
@@ -151,18 +152,18 @@ class Configurable(object):
             # either positional in args, or default
             index = list(cls.__init__.func_code.co_varnames).index('name')
             try:
-             # var names index is offset by one as __init__ is to be called with self
+                # var names index is offset by one as __init__ is to be called with self
                 name = args[index - 1]
             except IndexError:
-             # retrieve default value, then
+                # retrieve default value, then
                 name = cls.__init__.func_defaults[index - (len(args) + 1)]
         else:
             # positional index is assumed (will work most of the time)
             try:
-                name = args[1]    # '0' is for self
+                name = args[1]  # '0' is for self
             except (IndexError, TypeError):
-                raise TypeError(
-                    'no "name" argument while instantiating "%s"' % cls.__name__)
+                raise TypeError('no "name" argument while instantiating "%s"' %
+                                cls.__name__)
 
         argname = name
         if name == Configurable.DefaultName:
@@ -173,7 +174,8 @@ class Configurable(object):
         elif not name or type(name) != str:
             # unnamed, highly specialized user code, etc. ... unacceptable
             raise TypeError(
-                'could not retrieve name from %s.__init__ arguments' % cls.__name__)
+                'could not retrieve name from %s.__init__ arguments' %
+                cls.__name__)
 
         # Handle the case of global tools to prepend ToolSvc in the name.
         # This is needed for compatibility with old JobOptions files being read
@@ -190,13 +192,14 @@ class Configurable(object):
         # ordinary recycle case
         if name in cls.configurables:
             conf = cls.configurables[name]
-            if name != argname:      # special case: user derived <-> real ... make same
+            if name != argname:  # special case: user derived <-> real ... make same
                 cls.configurables[conf.getType()] = conf
             # ---PM: Initialize additional properties
             for n, v in kwargs.items():
                 if n != "name":  # it should not be confused with a normal property
                     setattr(conf, n, v)
-            if not cls._configurationLocked and not "_enabled" in kwargs and isinstance(conf, ConfigurableUser):
+            if not cls._configurationLocked and not "_enabled" in kwargs and isinstance(
+                    conf, ConfigurableUser):
                 # Ensure that the ConfigurableUser gets enabled if nothing is
                 # specified in the constructor.
                 setattr(conf, "_enabled", True)
@@ -223,7 +226,7 @@ class Configurable(object):
             (spos < 0 and cls.allConfigurables.get(ti_name, None)) or\
             (spos > 0 and i_name == name[spos + 1:]
              and cls.allConfigurables.get(i_name, None))
-        if conf:                    # wrong type used?
+        if conf:  # wrong type used?
             if conf.__class__ is ConfigurableGeneric:
                 #  If the instance found is ConfigurableGeneric then
                 #  we create a new one with the proper type and fill with
@@ -238,8 +241,9 @@ class Configurable(object):
                     names[n.lower()] = n
                 for n in conf._properties:
                     if names[n.lower()] != n:
-                        log.warning("Option '%s' was used for %s, but the correct spelling is '%s'" % (
-                            n, name, names[n.lower()]))
+                        log.warning(
+                            "Option '%s' was used for %s, but the correct spelling is '%s'"
+                            % (n, name, names[n.lower()]))
                     setattr(newconf, names[n.lower()], getattr(conf, n))
                 for n, v in kwargs.items():
                     setattr(newconf, n, v)
@@ -248,8 +252,10 @@ class Configurable(object):
                 return newconf
             else:
                 #  will be an actual error in the future (now only report as such)
-                log.error('attempt to redefine type of "%s" (was: %s, new: %s)%s',
-                          name, conf.__class__.__name__, cls.__name__, error_explanation)
+                log.error(
+                    'attempt to redefine type of "%s" (was: %s, new: %s)%s',
+                    name, conf.__class__.__name__, cls.__name__,
+                    error_explanation)
                 #  in the future:
                 #  return None             # will bomb on use (or go unharmed on non-use)
                 #  for now, allow use through allConfigurables lookup
@@ -287,10 +293,12 @@ class Configurable(object):
 
         # the following methods require overloading
         # NOT YET  meths = { 'getServices'   : 1,    # retrieve list of services to configure
-        meths = {'getDlls': 1,    # provide list of Dlls to load
-                 'getGaudiType': 1,    # return string describing component class
-                 'getHandle': 1}   # provide access to C++ side component instance
-#                'getType'       : 1 }   # return the type of the actual C++ component
+        meths = {
+            'getDlls': 1,  # provide list of Dlls to load
+            'getGaudiType': 1,  # return string describing component class
+            'getHandle': 1
+        }  # provide access to C++ side component instance
+        #                'getType'       : 1 }   # return the type of the actual C++ component
 
         for meth, nArgs in meths.items():
             try:
@@ -346,7 +354,7 @@ class Configurable(object):
         return dict
 
     def __getnewargs__(self):
-        return (self._name,)
+        return (self._name, )
 
     def __setstate__(self, dict):
         self._initok = True
@@ -359,6 +367,7 @@ class Configurable(object):
                 yield
             finally:
                 self._unpickling = False
+
         with unpickling():
             for n, v in dict.items():
                 setattr(self, n, v)
@@ -379,10 +388,10 @@ class Configurable(object):
             try:
                 proxy.__set__(newconf, proxy.__get__(self))
             except AttributeError:
-                pass                   # means property was not set for self
+                pass  # means property was not set for self
 
         for c in self.__children:
-            newconf += c              # processes proper copy semantics
+            newconf += c  # processes proper copy semantics
 
         return newconf
 
@@ -404,19 +413,19 @@ class Configurable(object):
             ccjo = cc.getJobOptName()
             for c in self.__children:
                 if c.getJobOptName() == ccjo:
-                    log.error(
-                        'attempt to add a duplicate ... dupe ignored%s', error_explanation)
+                    log.error('attempt to add a duplicate ... dupe ignored%s',
+                              error_explanation)
                     break
             else:
                 self.__children.append(cc)
 
             try:
-                if descr:         # support for tool properties
+                if descr:  # support for tool properties
                     descr.__set__(self, cc)
                 else:
                     setattr(self, cc.getName(), cc)
             except AttributeError:
-                pass              # to allow free addition of tools/subalgorithms
+                pass  # to allow free addition of tools/subalgorithms
 
         return self
 
@@ -426,7 +435,8 @@ class Configurable(object):
             return self.__tools[attr]
 
         if attr in self._properties:
-            if isinstance(self._properties[attr].__get__(self), DataObjectHandleBase):
+            if isinstance(self._properties[attr].__get__(self),
+                          DataObjectHandleBase):
                 return self._properties[attr].__get__(self)
 
         for c in self.__children:
@@ -439,12 +449,14 @@ class Configurable(object):
     def __setattr__(self, name, value):
         if self._configurationLocked:
             raise RuntimeError(
-                "%s: Configuration cannot be modified after the ApplicationMgr has been started." % self.name())
+                "%s: Configuration cannot be modified after the ApplicationMgr has been started."
+                % self.name())
         try:
             super(Configurable, self).__setattr__(name, value)
         except AttributeError:
-            raise AttributeError("Configurable '%s' does not have property '%s'."
-                                 % (self.__class__.__name__, name))
+            raise AttributeError(
+                "Configurable '%s' does not have property '%s'." %
+                (self.__class__.__name__, name))
 
     def __delattr__(self, attr):
         # remove as property, otherwise try as child
@@ -453,7 +465,7 @@ class Configurable(object):
             prop = self._properties[attr]
             prop.__delete__(self)
             prop.__set__(self, prop.default)
-            return               # reaches here? was property: done now
+            return  # reaches here? was property: done now
         except KeyError:
             pass
         # otherwise, remove the private tool
@@ -517,17 +529,19 @@ class Configurable(object):
         return cc
 
     def getChildren(self):
-        return self.__children[:]    # read only
+        return self.__children[:]  # read only
 
     def getTools(self):
-        return self.__tools.values()    # read only
+        return self.__tools.values()  # read only
 
     def children(self):
         log.error(
-            "children() is deprecated, use getChildren() instead for consistency")
-        log.error("getChildren() returns a copy; to add a child, use 'parent += child'%s",
-                  error_explanation)
-        return self.__children       # by ref, for compatibility
+            "children() is deprecated, use getChildren() instead for consistency"
+        )
+        log.error(
+            "getChildren() returns a copy; to add a child, use 'parent += child'%s",
+            error_explanation)
+        return self.__children  # by ref, for compatibility
 
     def getAllChildren(self):
         """Get all (private) configurable children, both explicit ones (added with +=)
@@ -583,7 +597,7 @@ class Configurable(object):
 
 #      log.debug("calling setup() on " + self.getFullJobOptName())
 
-        # setup self: this collects all values on the python side
+# setup self: this collects all values on the python side
         self.__setupServices()
         self.__setupDlls()
         self.__setupDefaults()
@@ -595,12 +609,14 @@ class Configurable(object):
         # now get handle to work with for moving properties into the catalogue
         handle = self.getHandle()
         if not handle:
-            log.debug('no handle for %s: not transporting properties', self._name)
-            return                    # allowed, done early
+            log.debug('no handle for %s: not transporting properties',
+                      self._name)
+            return  # allowed, done early
 
         # pass final set of properties on to handle on the C++ side or JobOptSvc
         for name in self._properties.keys():
-            if hasattr(self, name):  # means property has python-side value/default
+            if hasattr(self,
+                       name):  # means property has python-side value/default
                 setattr(handle, name, getattr(self, name))
 
         # for debugging purposes
@@ -654,7 +670,7 @@ class Configurable(object):
         return props
 
     def properties(self):
-        return self.getProperties()           # compatibility
+        return self.getProperties()  # compatibility
 
     @classmethod
     def getDefaultProperties(cls):
@@ -731,7 +747,7 @@ class Configurable(object):
     def name(self):
         return self.getName()
 
-    def getJobOptName(self):               # full hierachical name
+    def getJobOptName(self):  # full hierachical name
         return self.getName()
 
     def isPublic(self):
@@ -739,15 +755,17 @@ class Configurable(object):
 
     # for a couple of existing uses out there
     def jobOptName(self):
-        log.error("jobOptName() is deprecated, use getJobOptName() instead for consistency%s",
-                  error_explanation)
-        return self.getJobOptName()           # compatibility
+        log.error(
+            "jobOptName() is deprecated, use getJobOptName() instead for consistency%s",
+            error_explanation)
+        return self.getJobOptName()  # compatibility
 
     def getFullName(self):
         return str(self.getType() + '/' + self.getName())
 
     def getFullJobOptName(self):
-        return "%s/%s" % (self.getType(), self.getJobOptName() or self.getName())
+        return "%s/%s" % (self.getType(), self.getJobOptName()
+                          or self.getName())
 
     def getPrintTitle(self):
         return self.getGaudiType() + ' ' + self.getTitleName()
@@ -782,7 +800,7 @@ class Configurable(object):
                 pass
 
         for c in self.__children:
-            newconf += c              # processes proper copy semantics
+            newconf += c  # processes proper copy semantics
 
         for n, t in self.__tools.items():
             newconf.addTool(t, n)
@@ -882,7 +900,8 @@ class Configurable(object):
         postLen = Configurable.printHeaderWidth - \
             preLen - 12 - len(title)  # - len(indentStr)
         postLen = max(preLen, postLen)
-        return indentStr + '\\%s (End of %s) %s' % (preLen * '-', title, postLen * '-')
+        return indentStr + '\\%s (End of %s) %s' % (preLen * '-', title,
+                                                    postLen * '-')
 
     def __repr__(self):
         return '{0}({1!r})'.format(self.__class__.__name__, self.name())
@@ -932,7 +951,8 @@ class Configurable(object):
                         vv = v.getGaudiHandle()
                     else:
                         vv = v
-                    if isinstance(vv, GaudiHandle) or isinstance(vv, GaudiHandleArray):
+                    if isinstance(vv, GaudiHandle) or isinstance(
+                            vv, GaudiHandleArray):
                         strVal = repr(vv)
                         # the default may not be a GaudiHandle (?)
                         if hasattr(default, "toStringProperty"):
@@ -952,7 +972,7 @@ class Configurable(object):
                     if len(line) + len(strDef) > Configurable.printHeaderWidth:
                         line += os.linesep + indentStr + '| ' + \
                             (len(prefix) - len(indentStr) - 3) * ' '
-                    line += '  (default: %s)' % (strDef,)
+                    line += '  (default: %s)' % (strDef, )
                 # add the line to the total string
                 rep += line + os.linesep
                 # print out full private configurables
@@ -963,7 +983,7 @@ class Configurable(object):
 # if isinstance(vi,Configurable) and not vi.isPublic():
 ##                         rep += vi.__str__( indent + 1 ) + os.linesep
 
-        # print configurables + their properties, or loop over sequence
+# print configurables + their properties, or loop over sequence
 # for cfg in self.__children:
         for cfg in self.getAllChildren():
             rep += cfg.__str__(indent + 1, '|=') + os.linesep
@@ -980,12 +1000,13 @@ class Configurable(object):
         '''
         return False
 
+
 # classes for generic Gaudi component ===========
 
 
 class DummyDescriptor(object):
     def __init__(self, name):
-        self.__name__ = name        # conventional
+        self.__name__ = name  # conventional
 
     def __get__(self, obj, type=None):
         return getattr(obj, self.__name__)
@@ -1003,13 +1024,16 @@ class ConfigurableGeneric(Configurable):
         self._properties = {}
 
     def __deepcopy__(self, memo):
-        return self                 # algorithms are always shared
+        return self  # algorithms are always shared
 
-    def getGaudiType(self): return 'GenericComponent'
+    def getGaudiType(self):
+        return 'GenericComponent'
 
-    def getDlls(self): pass
+    def getDlls(self):
+        pass
 
-    def getHandle(self): pass
+    def getHandle(self):
+        pass
 
     def __setattr__(self, name, value):
         # filter private (user) variables
@@ -1027,23 +1051,34 @@ class ConfigurableGeneric(Configurable):
             self._properties[name] = PropertyProxy(DummyDescriptor(name))
         self._properties[name].__set__(self, value)
 
-    def getJobOptName(self): return None
+    def getJobOptName(self):
+        return None
 
 
 # base classes for individual Gaudi algorithms/services/algtools ===========
 class ConfigurableAlgorithm(Configurable):
-    __slots__ = {'_jobOptName': 0, 'OutputLevel': 0,
-                 'Enable': 1, 'ErrorMax': 1, 'ErrorCount': 0, 'AuditAlgorithms': 0,
-                 'AuditInitialize': 0, 'AuditReinitialize': 0, 'AuditExecute': 0,
-                 'AuditFinalize': 0, 'AuditBeginRun': 0, 'AuditEndRun': 0}
+    __slots__ = {
+        '_jobOptName': 0,
+        'OutputLevel': 0,
+        'Enable': 1,
+        'ErrorMax': 1,
+        'ErrorCount': 0,
+        'AuditAlgorithms': 0,
+        'AuditInitialize': 0,
+        'AuditReinitialize': 0,
+        'AuditExecute': 0,
+        'AuditFinalize': 0,
+        'AuditBeginRun': 0,
+        'AuditEndRun': 0
+    }
 
     def __init__(self, name=Configurable.DefaultName):
         super(ConfigurableAlgorithm, self).__init__(name)
         name = self.getName()
-        self._jobOptName = name[name.find('/') + 1:]   # strips class
+        self._jobOptName = name[name.find('/') + 1:]  # strips class
 
     def __deepcopy__(self, memo):
-        return self                 # algorithms are always shared
+        return self  # algorithms are always shared
 
     def getHandle(self):
         return iAlgorithm(self.getJobOptName())
@@ -1088,14 +1123,18 @@ class ConfigurableAlgorithm(Configurable):
 
 
 class ConfigurableService(Configurable):
-    __slots__ = {'OutputLevel': 0,
-                 'AuditServices': 0, 'AuditInitialize': 0, 'AuditFinalize': 0}
+    __slots__ = {
+        'OutputLevel': 0,
+        'AuditServices': 0,
+        'AuditInitialize': 0,
+        'AuditFinalize': 0
+    }
 
     def __deepcopy__(self, memo):
-        return self                 # services are always shared
+        return self  # services are always shared
 
     def copyChild(self, child):
-        return child                # full sharing
+        return child  # full sharing
 
     def getHandle(self):
         return iService(self._name)
@@ -1112,8 +1151,13 @@ class ConfigurableService(Configurable):
 
 
 class ConfigurableAlgTool(Configurable):
-    __slots__ = {'_jobOptName': '', 'OutputLevel': 0,
-                 'AuditTools': 0, 'AuditInitialize': 0, 'AuditFinalize': 0}
+    __slots__ = {
+        '_jobOptName': '',
+        'OutputLevel': 0,
+        'AuditTools': 0,
+        'AuditInitialize': 0,
+        'AuditFinalize': 0
+    }
 
     def __init__(self, name=Configurable.DefaultName):
         super(ConfigurableAlgTool, self).__init__(name)
@@ -1121,7 +1165,7 @@ class ConfigurableAlgTool(Configurable):
             # Public tools must have ToolSvc as parent
             self._name = "ToolSvc." + self._name
         name = self.getName()
-        name = name[name.find('/') + 1:]   # strips class, if any
+        name = name[name.find('/') + 1:]  # strips class, if any
         self._jobOptName = name
 
     def getHandle(self):
@@ -1195,13 +1239,12 @@ class ConfigurableAlgTool(Configurable):
 # It is sufficient to get us going... (and import a PkgConf which
 # happens to contain an Auditor...)
 class ConfigurableAuditor(Configurable):
-    __slots__ = {'_jobOptName': 0, 'OutputLevel': 0,
-                 'Enable': 1}
+    __slots__ = {'_jobOptName': 0, 'OutputLevel': 0, 'Enable': 1}
 
     def __init__(self, name=Configurable.DefaultName):
         super(ConfigurableAuditor, self).__init__(name)
         name = self.getName()
-        name = name[name.find('/') + 1:]   # strips class, if any
+        name = name[name.find('/') + 1:]  # strips class, if any
         self._jobOptName = name
 
     def getHandle(self):
@@ -1220,10 +1263,12 @@ class ConfigurableAuditor(Configurable):
 
 
 class ConfigurableUser(Configurable):
-    __slots__ = {"__users__": [],
-                 "__used_instances__": [],
-                 "_enabled": True,
-                 "_applied": False}
+    __slots__ = {
+        "__users__": [],
+        "__used_instances__": [],
+        "_enabled": True,
+        "_applied": False
+    }
     # list of ConfigurableUser classes this one is going to modify in the
     #  __apply_configuration__ method.
     #  The list may contain class objects, strings representing class objects or
@@ -1299,8 +1344,9 @@ class ConfigurableUser(Configurable):
         ConfigurableUser 'other' in our __apply_configuration__.
         """
         if not isinstance(other, ConfigurableUser):
-            raise Error("'%s': Cannot make passive use of '%s', it is not a ConfigurableUser" % (
-                self.name(), other.name()))
+            raise Error(
+                "'%s': Cannot make passive use of '%s', it is not a ConfigurableUser"
+                % (self.name(), other.name()))
         other.__addActiveUseOf(self)
 
     def getGaudiType(self):
@@ -1318,7 +1364,8 @@ class ConfigurableUser(Configurable):
         instances.
         """
         for used in self.__used_instances__:
-            if hasattr(used, "__users__"):  # allow usage of plain Configurables
+            if hasattr(used,
+                       "__users__"):  # allow usage of plain Configurables
                 used.__users__.remove(self)
 
     def propagateProperty(self, name, others=None, force=True):
@@ -1352,10 +1399,13 @@ class ConfigurableUser(Configurable):
             # If self property is set, use it
             if local_is_set:
                 if other.isPropertySet(name):
-                    log.warning("Property '%(prop)s' is set in both '%(self)s' and '%(other)s', using '%(self)s.%(prop)s'" %
-                                {"self": self.name(),
-                                 "other": other.name(),
-                                 "prop": name})
+                    log.warning(
+                        "Property '%(prop)s' is set in both '%(self)s' and '%(other)s', using '%(self)s.%(prop)s'"
+                        % {
+                            "self": self.name(),
+                            "other": other.name(),
+                            "prop": name
+                        })
                 other.setProp(name, value)
             # If not, and other property also not set, propagate the default
             elif not other.isPropertySet(name):
@@ -1504,14 +1554,14 @@ def applyConfigurableUsers():
             c.__detach_used__()
 
     # check for dependency loops
-    leftConfUsers = [c for c in Configurable.allConfigurables.values()
-                     if hasattr(c, '__apply_configuration__') and
-                     c._enabled and not c._applied]
+    leftConfUsers = [
+        c for c in Configurable.allConfigurables.values() if
+        hasattr(c, '__apply_configuration__') and c._enabled and not c._applied
+    ]
     # if an enabled configurable has not been applied, there must be a dependency loop
     if leftConfUsers:
         raise Error("Detected loop in the ConfigurableUser"
-                    " dependencies: %r" % [c.name()
-                                           for c in leftConfUsers])
+                    " dependencies: %r" % [c.name() for c in leftConfUsers])
     # ensure that all the Handles have been triggered
     known = set()
     unknown = set(Configurable.allConfigurables)
@@ -1543,9 +1593,10 @@ def applyConfigurableUsers_old():
     _appliedConfigurableUsers_ = True
 
     debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
-    confUsers = [c
-                 for c in Configurable.allConfigurables.values()
-                 if hasattr(c, "__apply_configuration__")]
+    confUsers = [
+        c for c in Configurable.allConfigurables.values()
+        if hasattr(c, "__apply_configuration__")
+    ]
     applied = True  # needed to detect dependency loops
     while applied and confUsers:
         newConfUsers = []  # list of conf users that cannot be applied yet
@@ -1573,8 +1624,7 @@ def applyConfigurableUsers_old():
     if confUsers:
         # this means that some C.U.s could not be applied because of a dependency loop
         raise Error("Detected loop in the ConfigurableUser "
-                    " dependencies: %r" % [c.name()
-                                           for c in confUsers])
+                    " dependencies: %r" % [c.name() for c in confUsers])
     # ensure that all the Handles have been triggered
     known = set()
     unknown = set(Configurable.allConfigurables)
@@ -1598,9 +1648,10 @@ def getNeededConfigurables():
     This is needed because in Athena the implementation have to be different (the
     configuration is used in a different moment).
     """
-    return [k
-            for k, v in Configurable.allConfigurables.items()
-            if v.getGaudiType() != "User"]  # Exclude ConfigurableUser instances
+    return [
+        k for k, v in Configurable.allConfigurables.items()
+        if v.getGaudiType() != "User"
+    ]  # Exclude ConfigurableUser instances
 
 
 def purge():
@@ -1646,8 +1697,7 @@ class CreateSequencesVisitor(object):
 
     def _newSeq(self, prefix='seq_', **kwargs):
         from Configurables import GaudiSequencer
-        return GaudiSequencer(self._getUniqueName('seq_'),
-                              **kwargs)
+        return GaudiSequencer(self._getUniqueName('seq_'), **kwargs)
 
     def leave(self, visitee):
         stack = self.stack
@@ -1658,24 +1708,24 @@ class CreateSequencesVisitor(object):
         elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
             b = stack.pop()
             a = stack.pop()
-            seq = self._newSeq(Members=[a, b],
-                               ModeOR=isinstance(visitee, OrNode),
-                               ShortCircuit=not isinstance(
-                                   visitee, OrderedNode),
-                               MeasureTime=True)
+            seq = self._newSeq(
+                Members=[a, b],
+                ModeOR=isinstance(visitee, OrNode),
+                ShortCircuit=not isinstance(visitee, OrderedNode),
+                MeasureTime=True)
             stack.append(seq)
         elif isinstance(visitee, ignore):
             if hasattr(stack[-1], 'IgnoreFilterPassed'):
                 stack[-1].IgnoreFilterPassed = True
             else:
-                stack.append(self._newSeq(Members=[stack.pop()],
-                                          IgnoreFilterPassed=True))
+                stack.append(
+                    self._newSeq(
+                        Members=[stack.pop()], IgnoreFilterPassed=True))
         elif isinstance(visitee, InvertNode):
             if hasattr(stack[-1], 'Invert'):
                 stack[-1].Invert = True
             else:
-                stack.append(self._newSeq(Members=[stack.pop()],
-                                          Invert=True))
+                stack.append(self._newSeq(Members=[stack.pop()], Invert=True))
 
 
 def makeSequences(expression):
@@ -1695,6 +1745,7 @@ class SuperAlgorithm(ControlFlowNode):
     Helper class to use a ControlFlowNode as an algorithm configurable
     instance.
     '''
+
     def __new__(cls, name=None, **kwargs):
         if name is None:
             name = cls.__name__

@@ -29,7 +29,7 @@ def _inheritsfrom(derived, basenames):
     'basenames' can be a string or an iterable (of strings).
     """
     if isinstance(basenames, basestring):
-        basenames = (basenames,)
+        basenames = (basenames, )
     for b in derived.__bases__:
         if b.__name__ in basenames:
             return True
@@ -50,13 +50,19 @@ def loadConfigurableDb():
     #  - CMake builds
     confDbFiles = []
     for path in sys.path:
-        confDbFiles += [f for f in glob(path_join(path, '*', '*.confdb'))
-                        if os.path.isfile(f)]
+        confDbFiles += [
+            f for f in glob(path_join(path, '*', '*.confdb'))
+            if os.path.isfile(f)
+        ]
     #  - used projects and local merged file
     pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
     for path in filter(os.path.isdir, pathlist):
-        confDbFiles += [f for f in [path_join(path, f) for f in os.listdir(path)
-                                    if f.endswith('.confdb')]]
+        confDbFiles += [
+            f for f in [
+                path_join(path, f) for f in os.listdir(path)
+                if f.endswith('.confdb')
+            ]
+        ]
     #  - load the confdb files
     for confDb in confDbFiles:
         log.debug("\t-loading [%s]..." % confDb)
@@ -120,12 +126,12 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
         cfg = cfgDb.get(name)
         if cfg and cfg["module"] != modulename:
             # This name comes from another module
-            logging.verbose(
-                "Object %r already found in module %r", name, cfg["module"])
+            logging.verbose("Object %r already found in module %r", name,
+                            cfg["module"])
             continue
         t = getattr(mod, name)
-        if isinstance(t, type) and _inheritsfrom(t, ('ConfigurableUser',
-                                                     'SuperAlgorithm')):
+        if isinstance(t, type) and _inheritsfrom(
+                t, ('ConfigurableUser', 'SuperAlgorithm')):
             result.append(name)
     logging.verbose("Found %r", result)
     return result
@@ -133,16 +139,32 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
 
 def main():
     from optparse import OptionParser
-    parser = OptionParser(prog=os.path.basename(sys.argv[0]),
-                          usage="%prog [options] <PackageName> [<Module1> ...]")
-    parser.add_option("-o", "--output", action="store", type="string",
-                      help="output file for confDb data [default = '../genConf/<PackageName>_user_confDb.py'].")
-    parser.add_option("-r", "--root", action="store", type="string",
-                      help="root directory of the python modules [default = '../python'].")
-    parser.add_option("-v", "--verbose", action="store_true",
-                      help="print some debugging information")
-    parser.add_option("--debug", action="store_true",
-                      help="print more debugging information")
+    parser = OptionParser(
+        prog=os.path.basename(sys.argv[0]),
+        usage="%prog [options] <PackageName> [<Module1> ...]")
+    parser.add_option(
+        "-o",
+        "--output",
+        action="store",
+        type="string",
+        help=
+        "output file for confDb data [default = '../genConf/<PackageName>_user_confDb.py']."
+    )
+    parser.add_option(
+        "-r",
+        "--root",
+        action="store",
+        type="string",
+        help="root directory of the python modules [default = '../python'].")
+    parser.add_option(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="print some debugging information")
+    parser.add_option(
+        "--debug",
+        action="store_true",
+        help="print more debugging information")
     parser.set_defaults(root=os.path.join("..", "python"))
 
     opts, args = parser.parse_args()
@@ -154,9 +176,10 @@ def main():
     else:
         log_level = logging.INFO if os.environ.get(
             'VERBOSE') else logging.WARNING
-    logging.basicConfig(format="%(levelname)s: %(message)s",
-                        stream=sys.stdout,
-                        level=log_level)
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s",
+        stream=sys.stdout,
+        level=log_level)
 
     if len(args) < 1:
         parser.error("PackageName is required")
@@ -193,8 +216,8 @@ def main():
         # configurables
         sys.path.insert(0, genConfDir)
         sys.path.insert(0, os.path.join("..", "python"))
-        localConfDb = os.path.join(
-            genConfDir, package_name, package_name + '.confdb')
+        localConfDb = os.path.join(genConfDir, package_name,
+                                   package_name + '.confdb')
         if os.path.exists(localConfDb):
             cfgDb._loadModule(localConfDb)
             # Extend the search path of the package module to find the configurables
@@ -213,20 +236,20 @@ def main():
                 mod, root=opts.root, mayNotExist=usingConvention)
         except ImportError:
             import traceback
-            logging.error("Cannot import module %r:\n%s", mod,
-                          traceback.format_exc().rstrip())  # I remove the trailing '\n'
+            logging.error(
+                "Cannot import module %r:\n%s", mod,
+                traceback.format_exc().rstrip())  # I remove the trailing '\n'
             return 2
         if lst:
             cus[mod] = lst
             # Add the configurables to the database as fake entries to avoid duplicates
             for m in lst:
-                cfgDb.add(configurable=m,
-                          package='None',
-                          module='None',
-                          lib='None')
+                cfgDb.add(
+                    configurable=m, package='None', module='None', lib='None')
         elif not usingConvention:
             logging.warning(
-                "Specified module %r does not contain ConfigurableUser specializations", mod)
+                "Specified module %r does not contain ConfigurableUser specializations",
+                mod)
 
     if cus:
         logging.info("ConfigurableUser found:\n%s", pformat(cus))
@@ -244,7 +267,8 @@ def main():
     elif usingConvention:
         logging.info("No ConfigurableUser found")
         output = ("# db file automatically generated by %s on: %s\n"
-                  "# No ConfigurableUser specialization in %s\n") % (parser.prog, time.asctime(), package_name)
+                  "# No ConfigurableUser specialization in %s\n") % (
+                      parser.prog, time.asctime(), package_name)
     else:
         logging.error("No ConfigurableUser specialization found")
         return 1

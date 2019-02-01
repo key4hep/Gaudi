@@ -22,8 +22,7 @@ DECLARE_COMPONENT( ReadAlg )
 //--------------------------------------------------------------------
 // Initialize
 //--------------------------------------------------------------------
-StatusCode ReadAlg::initialize()
-{
+StatusCode ReadAlg::initialize() {
   StatusCode sc = Algorithm::initialize();
   if ( sc.isFailure() ) return sc;
 
@@ -46,8 +45,7 @@ StatusCode ReadAlg::initialize()
 //--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
-StatusCode ReadAlg::execute()
-{
+StatusCode ReadAlg::execute() {
 
   if ( m_count < m_addresses.size() ) {
     // register the entry "Extra/Tracks" in the TES so that it is loaded

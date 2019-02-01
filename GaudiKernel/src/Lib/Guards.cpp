@@ -21,8 +21,7 @@
 // ============================================================================
 // Local handle (print) of GaudiException
 // ============================================================================
-void Gaudi::Guards::ExceptionGuard::handle( const GaudiException& exc, MsgStream& log )
-{
+void Gaudi::Guards::ExceptionGuard::handle( const GaudiException& exc, MsgStream& log ) {
   // the general printout
   log << MSG::FATAL << System::typeinfoName( typeid( exc ) ) << "('" << exc.tag() << "') is caught!" << endmsg;
   // print the detailes about the exception:
@@ -33,8 +32,7 @@ void Gaudi::Guards::ExceptionGuard::handle( const GaudiException& exc, MsgStream
 // ============================================================================
 // Local handle (print) of std::exception
 // ============================================================================
-void Gaudi::Guards::ExceptionGuard::handle( const std::exception& exc, MsgStream& log )
-{
+void Gaudi::Guards::ExceptionGuard::handle( const std::exception& exc, MsgStream& log ) {
   // the general printout
   log << MSG::FATAL << System::typeinfoName( typeid( exc ) ) << " is caught!" << endmsg;
   // print the detailes abotu the exception:
@@ -43,8 +41,7 @@ void Gaudi::Guards::ExceptionGuard::handle( const std::exception& exc, MsgStream
 // ============================================================================
 // Local handle (print) of unknown exception
 // ============================================================================
-void Gaudi::Guards::ExceptionGuard::handle( MsgStream& log )
-{
+void Gaudi::Guards::ExceptionGuard::handle( MsgStream& log ) {
   // the general printout
   log << MSG::FATAL << "UNKNOWN exception is caught!" << endmsg;
 }
@@ -56,8 +53,7 @@ Gaudi::Guards::ExceptionGuard::~ExceptionGuard() { m_sc.ignore(); }
 // constructor with standard post-action
 // ============================================================================
 Gaudi::Guards::AuditorGuard::AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::StandardEventType evt )
-    : m_obj( obj ), m_svc( svc ), m_evt( evt )
-{
+    : m_obj( obj ), m_svc( svc ), m_evt( evt ) {
   i_before();
 }
 Gaudi::Guards::AuditorGuard::AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::CustomEventTypeRef evt )
@@ -66,14 +62,12 @@ Gaudi::Guards::AuditorGuard::AuditorGuard( INamedInterface* obj, IAuditor* svc, 
     , m_evt( IAuditor::Initialize )
     , // Windows needs an explicit value
     m_cevt( std::move( evt ) )
-    , m_customEvtType( true )
-{
+    , m_customEvtType( true ) {
   i_before();
 }
 Gaudi::Guards::AuditorGuard::AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::StandardEventType evt,
                                            const StatusCode& sc )
-    : m_obj( obj ), m_svc( svc ), m_evt( evt ), m_sc( &sc ), m_customEvtType( false )
-{
+    : m_obj( obj ), m_svc( svc ), m_evt( evt ), m_sc( &sc ), m_customEvtType( false ) {
   i_before();
 }
 Gaudi::Guards::AuditorGuard::AuditorGuard( INamedInterface* obj, IAuditor* svc, IAuditor::CustomEventTypeRef evt,
@@ -84,13 +78,11 @@ Gaudi::Guards::AuditorGuard::AuditorGuard( INamedInterface* obj, IAuditor* svc, 
     , // Windows needs an explicit value
     m_cevt( std::move( evt ) )
     , m_sc( &sc )
-    , m_customEvtType( true )
-{
+    , m_customEvtType( true ) {
   i_before();
 }
 Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, IAuditor::StandardEventType evt )
-    : m_objName( std::move( name ) ), m_svc( svc ), m_evt( evt ), m_customEvtType( false )
-{
+    : m_objName( std::move( name ) ), m_svc( svc ), m_evt( evt ), m_customEvtType( false ) {
   i_before();
 }
 Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, IAuditor::CustomEventTypeRef evt )
@@ -99,14 +91,12 @@ Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, IAud
     , m_evt( IAuditor::Initialize )
     , // Windows needs an explicit value
     m_cevt( std::move( evt ) )
-    , m_customEvtType( true )
-{
+    , m_customEvtType( true ) {
   i_before();
 }
 Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, IAuditor::StandardEventType evt,
                                            const StatusCode& sc )
-    : m_objName( std::move( name ) ), m_svc( svc ), m_evt( evt ), m_sc( &sc ), m_customEvtType( false )
-{
+    : m_objName( std::move( name ) ), m_svc( svc ), m_evt( evt ), m_sc( &sc ), m_customEvtType( false ) {
   i_before();
 }
 Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, IAuditor::CustomEventTypeRef evt,
@@ -117,8 +107,7 @@ Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, IAud
     , // Windows needs an explicit value
     m_cevt( std::move( evt ) )
     , m_sc( &sc )
-    , m_customEvtType( true )
-{
+    , m_customEvtType( true ) {
   i_before();
 }
 // ============================================================================

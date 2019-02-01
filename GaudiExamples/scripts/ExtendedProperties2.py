@@ -26,13 +26,9 @@ from Configurables import Gaudi__Examples__ExtendedProperties2 as EP2
 import sys
 isWin = sys.platform.startswith("win")
 
-ep2 = EP2(
-    "xProps2", Point3D=(10, 40, 55), Points3D=[(10, 40, 55), (1, 2, 3)]
-)
+ep2 = EP2("xProps2", Point3D=(10, 40, 55), Points3D=[(10, 40, 55), (1, 2, 3)])
 
-ApplicationMgr(
-    EvtSel="NONE", TopAlg=[ep2], EvtMax=10
-)
+ApplicationMgr(EvtSel="NONE", TopAlg=[ep2], EvtMax=10)
 
 # =============================================================================
 # The actual job excution
@@ -90,7 +86,6 @@ if '__main__' == __name__:
         xp2.Vectors4D = ((1, 2, 3, 4), [4, 5, 6, 7])
 
     xp2.PropertiesPrint = True
-
 
 # =============================================================================
 # The END

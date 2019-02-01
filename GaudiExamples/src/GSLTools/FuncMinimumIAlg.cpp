@@ -14,15 +14,13 @@
 // disable warning about nullptr dereferencing (icc and clang)
 //   It's a real problem, but here it is used for test purposes
 #ifdef __ICC
-#pragma warning( disable : 327 )
+#  pragma warning( disable : 327 )
 #elif __clang__
-#pragma clang diagnostic ignored "-Wnull-dereference"
+#  pragma clang diagnostic ignored "-Wnull-dereference"
 #endif
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 //-----------------------------------------------------------------------------
@@ -44,13 +42,12 @@ public:
 
 public:
   Function() { m_gradient.resize( 2 ); }
-  double value( const std::vector<double>& x ) const override { return 10 * x[0] * x[0] + 20 * x[1] * x[1]; }
-  int                                      dimension() const override { return 2; }
-  bool                                     setTitle( const std::string& ) override { return false; }
-  std::string                              title( void ) const override { return ""; }
-  bool                                     isEqual( const AIDA::IFunction& ) const override { return false; }
-  const std::vector<double>& gradient( const std::vector<double>& x ) const override
-  {
+  double      value( const std::vector<double>& x ) const override { return 10 * x[0] * x[0] + 20 * x[1] * x[1]; }
+  int         dimension() const override { return 2; }
+  bool        setTitle( const std::string& ) override { return false; }
+  std::string title( void ) const override { return ""; }
+  bool        isEqual( const AIDA::IFunction& ) const override { return false; }
+  const std::vector<double>& gradient( const std::vector<double>& x ) const override {
     m_gradient[0] = 20 * x[0];
     m_gradient[1] = 40 * x[1];
     return m_gradient;
@@ -83,21 +80,16 @@ private:
 //=============================================================================
 // Initialization. Check parameters
 //=============================================================================
-StatusCode FuncMinimumIAlg::initialize()
-{
+StatusCode FuncMinimumIAlg::initialize() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Initialize" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_publicTool );
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { log << MSG::ERROR << "Error retrieving the public tool" << endmsg; }
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_privateTool, this );
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { log << MSG::ERROR << "Error retrieving the private tool" << endmsg; }
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -106,8 +98,7 @@ StatusCode FuncMinimumIAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode FuncMinimumIAlg::execute()
-{
+StatusCode FuncMinimumIAlg::execute() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Execute" << endmsg;
@@ -162,9 +153,7 @@ StatusCode FuncMinimumIAlg::execute()
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
     log << endmsg;
 
-    for ( unsigned int j = 0; j < arg.dimension(); j++ ) {
-      log << matrix_error( i + 1, j + 1 ) << " ";
-    }
+    for ( unsigned int j = 0; j < arg.dimension(); j++ ) { log << matrix_error( i + 1, j + 1 ) << " "; }
   }
   log << endmsg;
 
@@ -174,8 +163,7 @@ StatusCode FuncMinimumIAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode FuncMinimumIAlg::finalize()
-{
+StatusCode FuncMinimumIAlg::finalize() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Finalize" << endmsg;

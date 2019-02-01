@@ -1,7 +1,7 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #endif
 
 // ============================================================================
@@ -40,8 +40,7 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2007-01-24
  */
-class Aida2Root : public GaudiHistoAlg
-{
+class Aida2Root : public GaudiHistoAlg {
 public:
   /// execution of the algorithm
   StatusCode execute() override { return StatusCode::SUCCESS; };
@@ -50,8 +49,7 @@ public:
 
 public:
   // standard constructor
-  Aida2Root( const std::string& name, ISvcLocator* pSvc ) : GaudiHistoAlg( name, pSvc )
-  {
+  Aida2Root( const std::string& name, ISvcLocator* pSvc ) : GaudiHistoAlg( name, pSvc ) {
     setProperty( "PropertiesPrint", "True" ).ignore();
   }
 
@@ -83,20 +81,17 @@ private:
 // ============================================================================
 DECLARE_COMPONENT( Aida2Root )
 // ============================================================================
-namespace
-{
-  inline std::string print( const double aida, const double root, const std::string& name, const std::string& format )
-  {
+namespace {
+  inline std::string print( const double aida, const double root, const std::string& name, const std::string& format ) {
     boost::format fmt( format );
     fmt % name % aida % root % ( aida - root );
     return fmt.str();
   }
-}
+} // namespace
 // ============================================================================
 /// finalize the algorithm
 // ============================================================================
-StatusCode Aida2Root::finalize()
-{
+StatusCode Aida2Root::finalize() {
 
   always() << "Get the native ROOT representation of histograms!" << endmsg;
 
@@ -105,14 +100,10 @@ StatusCode Aida2Root::finalize()
       /// retrieve the historam by full path:
       AIDA::IHistogram1D* aida = 0;
       StatusCode          sc   = histoSvc()->retrieveObject( path, aida );
-      if ( sc.isFailure() || 0 == aida ) {
-        return Error( "Unable to retrieve 1D-histogram '" + ( path ) + "'" );
-      }
+      if ( sc.isFailure() || 0 == aida ) { return Error( "Unable to retrieve 1D-histogram '" + ( path ) + "'" ); }
       /// convert it to ROOT
       TH1D* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
-      if ( 0 == root ) {
-        return Error( "Unable to convert to ROOT the 1D-histogram '" + ( path ) + "'" );
-      }
+      if ( 0 == root ) { return Error( "Unable to convert to ROOT the 1D-histogram '" + ( path ) + "'" ); }
       /// use the native printout from ROOT
       info() << "The native ROOT printout for 1D-histogram '" << ( path ) << "':" << endmsg;
       root->Print();
@@ -139,14 +130,10 @@ StatusCode Aida2Root::finalize()
       /// retrieve the historam by full path:
       AIDA::IHistogram2D* aida = 0;
       StatusCode          sc   = histoSvc()->retrieveObject( path, aida );
-      if ( sc.isFailure() || 0 == aida ) {
-        return Error( "Unable to retrieve 2D-histogram '" + ( path ) + "'" );
-      }
+      if ( sc.isFailure() || 0 == aida ) { return Error( "Unable to retrieve 2D-histogram '" + ( path ) + "'" ); }
       /// convert it to ROOT
       TH2D* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
-      if ( 0 == root ) {
-        return Error( "Unable to convert to ROOT the 2D-histogram '" + ( path ) + "'" );
-      }
+      if ( 0 == root ) { return Error( "Unable to convert to ROOT the 2D-histogram '" + ( path ) + "'" ); }
       /// use the native printout from ROOT
       info() << "The native ROOT printout for 2D-histogram '" << ( path ) << "':" << endmsg;
       root->Print();
@@ -158,14 +145,10 @@ StatusCode Aida2Root::finalize()
       /// retrieve the historam by full path:
       AIDA::IHistogram3D* aida = 0;
       StatusCode          sc   = histoSvc()->retrieveObject( path, aida );
-      if ( sc.isFailure() || 0 == aida ) {
-        return Error( "Unable to retrieve 3D-histogram '" + ( path ) + "'" );
-      }
+      if ( sc.isFailure() || 0 == aida ) { return Error( "Unable to retrieve 3D-histogram '" + ( path ) + "'" ); }
       /// convert it to ROOT
       TH3D* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
-      if ( 0 == root ) {
-        return Error( "Unable to convert to ROOT the 3D-histogram '" + ( path ) + "'" );
-      }
+      if ( 0 == root ) { return Error( "Unable to convert to ROOT the 3D-histogram '" + ( path ) + "'" ); }
       /// use the native printout from ROOT
       info() << "The native ROOT printout for 3D-histogram '" << ( path ) << "':" << endmsg;
       root->Print();
@@ -177,14 +160,10 @@ StatusCode Aida2Root::finalize()
       /// retrieve the historam by full path:
       AIDA::IProfile1D* aida = 0;
       StatusCode        sc   = histoSvc()->retrieveObject( path, aida );
-      if ( sc.isFailure() || 0 == aida ) {
-        return Error( "Unable to retrieve 1D-profile '" + ( path ) + "'" );
-      }
+      if ( sc.isFailure() || 0 == aida ) { return Error( "Unable to retrieve 1D-profile '" + ( path ) + "'" ); }
       /// convert it to ROOT
       TProfile* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
-      if ( 0 == root ) {
-        return Error( "Unable to convert to ROOT the 1D-profile '" + ( path ) + "'" );
-      }
+      if ( 0 == root ) { return Error( "Unable to convert to ROOT the 1D-profile '" + ( path ) + "'" ); }
       /// use the native printout from ROOT
       info() << "The native ROOT printout for 1D-profile '" << ( path ) << "':" << endmsg;
       root->Print();
@@ -196,14 +175,10 @@ StatusCode Aida2Root::finalize()
       /// retrieve the historam by full path:
       AIDA::IProfile2D* aida = 0;
       StatusCode        sc   = histoSvc()->retrieveObject( path, aida );
-      if ( sc.isFailure() || 0 == aida ) {
-        Error( "Unable to retrieve 2D-profile '" + ( path ) + "'" ).ignore();
-      }
+      if ( sc.isFailure() || 0 == aida ) { Error( "Unable to retrieve 2D-profile '" + ( path ) + "'" ).ignore(); }
       /// convert it to ROOT
       TProfile2D* root = Gaudi::Utils::Aida2ROOT::aida2root( aida );
-      if ( 0 == root ) {
-        Error( "Unable to convert to ROOT the 2D-profile '" + ( path ) + "'" ).ignore();
-      }
+      if ( 0 == root ) { Error( "Unable to convert to ROOT the 2D-profile '" + ( path ) + "'" ).ignore(); }
       /// use the native printout from ROOT
       info() << "The native ROOT printout for 2D-profile '" << ( path ) << "':" << endmsg;
       root->Print();

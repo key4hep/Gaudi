@@ -11,8 +11,7 @@
     @author David Quarrie
     @author Marco Clemencic
 */
-class ChronoAuditor : public CommonAuditor
-{
+class ChronoAuditor : public CommonAuditor {
 public:
   using CommonAuditor::CommonAuditor;
 

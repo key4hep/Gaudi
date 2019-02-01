@@ -40,8 +40,7 @@
  */
 // ============================================================================
 template <class PBASE>
-class GAUDI_API GaudiTuples : public PBASE
-{
+class GAUDI_API GaudiTuples : public PBASE {
 public:
   // ==========================================================================
   /// the actual type for histogram identifier
@@ -275,16 +274,12 @@ public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from GaudiHistoAlg
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiHistoAlg, PBASE>::value, U>>
-  GaudiTuples( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator )
-  {
-  }
+  GaudiTuples( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator ) {}
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
   template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiHistoTool, PBASE>::value, U>>
   GaudiTuples( const std::string& type, const std::string& name, const IInterface* parent )
-      : PBASE( type, name, parent )
-  {
-  }
+      : PBASE( type, name, parent ) {}
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -348,17 +343,14 @@ private:
   Gaudi::Property<std::string> m_evtColDir{this, "EvtColDir",
                                            boost::algorithm::replace_all_copy( this->name(), ":", "_" ),
                                            "Subdirectory for Event Tag Collections"};
-  struct nTupleMapItem final {
+  struct nTupleMapItem         final {
     std::string                       title;
     TupleID                           id;
     std::shared_ptr<Tuples::TupleObj> tuple;
   };
-  struct title_t {
-  };
-  struct id_t {
-  };
-  struct order_t {
-  };
+  struct title_t {};
+  struct id_t {};
+  struct order_t {};
   template <typename... Ts>
   using indexed_by = boost::multi_index::indexed_by<Ts...>;
   template <typename... Ts>

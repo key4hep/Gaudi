@@ -19,23 +19,13 @@ xProps.VectorOfPairsDD += [(0, 1), (1, 2), (2, 3), (3, 4)]
 xProps.VectorOfPairsDD += [(4, 5), (5, 6), (6, 7), (7, 8)]
 
 # std::vector<std::vector<std::string> >
-xProps.VectorOfVectorsString = [
-    ["a", "b", "c"],
-    ["A", "B", "C"]
-]
+xProps.VectorOfVectorsString = [["a", "b", "c"], ["A", "B", "C"]]
 
 # std::vector<std::vector<double> >
-xProps.VectorOfVectorsDouble = [
-    [0, 1, 2],
-    [0, -0.5, -0.25]
-]
+xProps.VectorOfVectorsDouble = [[0, 1, 2], [0, -0.5, -0.25]]
 
 # std::map<int,double>
-xProps.MapIntDouble = {
-    1: 0.1,
-    2: 0.2,
-    3: 0.3
-}
+xProps.MapIntDouble = {1: 0.1, 2: 0.2, 3: 0.3}
 
 # std::map<std::string,std::string>
 xProps.MapStringString = {
@@ -45,18 +35,10 @@ xProps.MapStringString = {
 }
 
 # std::map<std::string,int>
-xProps.MapStringInt = {
-    'a': 1,
-    'b': 2,
-    "c": 3
-}
+xProps.MapStringInt = {'a': 1, 'b': 2, "c": 3}
 
 # std::map<std::string,int>
-xProps.MapStringDouble = {
-    'aa': 0.1,
-    'bb': 0.2,
-    "cc": 3
-}
+xProps.MapStringDouble = {'aa': 0.1, 'bb': 0.2, "cc": 3}
 
 # std::map<std::string,std::vector<std::string> >
 xProps.MapStringVectorOfStrings = {
@@ -80,29 +62,16 @@ xProps.MapStringVectorOfInts = {
 }
 
 # std::map<int,int>
-xProps.MapIntInt = {
-    1: 10,
-    2: 20,
-    3: 30
-}
+xProps.MapIntInt = {1: 10, 2: 20, 3: 30}
 
 # std::vector<std::pair<int,int> >
 xProps.VectorOfPairsII = [(1, 1), (2, 1), (3, 2), (4, 3), (5, 5)]
 
-
 # std::map<int,std::string>
-xProps.MapIntString = {
-    0: "zero",
-    2: "two",
-    -1: "minus one"
-}
+xProps.MapIntString = {0: "zero", 2: "two", -1: "minus one"}
 
 # std::map<unsigned int,std::string>
-xProps.MapUIntString = {
-    0: "UZero",
-    2: "UTwo",
-    1: "UOne"
-}
+xProps.MapUIntString = {0: "UZero", 2: "UTwo", 1: "UOne"}
 
 xProps.EmptyMap = {}
 xProps.EmptyVector = []
@@ -114,7 +83,5 @@ xProps.GaudiMapSS = {'a': '1', 'b': '2'}
 
 # END of xProp configuration
 
-app = ApplicationMgr(TopAlg=[xProps],
-                     EvtMax=1,
-                     EvtSel="NONE",
-                     HistogramPersistency="NONE")
+app = ApplicationMgr(
+    TopAlg=[xProps], EvtMax=1, EvtSel="NONE", HistogramPersistency="NONE")

@@ -31,12 +31,9 @@
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/ToolHandle.h"
 
-namespace Gaudi
-{
-  namespace Details
-  {
-    bool getDefaultAuditorValue( ISvcLocator* loc )
-    {
+namespace Gaudi {
+  namespace Details {
+    bool getDefaultAuditorValue( ISvcLocator* loc ) {
       assert( loc != nullptr );
       Gaudi::Property<bool> audit{false};
       auto                  appMgr = loc->service<IProperty>( "ApplicationMgr" );
@@ -45,20 +42,17 @@ namespace Gaudi
       }
       return audit.value();
     }
-  }
+  } // namespace Details
 
   // Constructor
   Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const std::string& version )
       : m_name( name )
       , m_version( version )
       , // incremented by AlgResourcePool
-      m_pSvcLocator( pSvcLocator )
-  {
-  }
+      m_pSvcLocator( pSvcLocator ) {}
 
   // IAlgorithm implementation
-  StatusCode Algorithm::sysInitialize()
-  {
+  StatusCode Algorithm::sysInitialize() {
 
     // Bypass the initialization if the algorithm
     // has already been initialized.
@@ -126,9 +120,7 @@ namespace Gaudi
     //
 
     // ignore this step if we're a Sequence
-    if ( this->isSequence() ) {
-      return sc;
-    }
+    if ( this->isSequence() ) { return sc; }
 
     if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
       debug() << "input handles: " << inputHandles().size() << endmsg;
@@ -186,18 +178,10 @@ namespace Gaudi
       };
       // Logging
       debug() << "Data Deps for " << name();
-      for ( auto h : orderset( m_inputDataObjs ) ) {
-        debug() << "\n  + INPUT  " << h;
-      }
-      for ( auto id : orderset( avis.ignoredInpKeys() ) ) {
-        debug() << "\n  + INPUT IGNORED " << id;
-      }
-      for ( auto h : orderset( m_outputDataObjs ) ) {
-        debug() << "\n  + OUTPUT " << h;
-      }
-      for ( auto id : orderset( avis.ignoredOutKeys() ) ) {
-        debug() << "\n  + OUTPUT IGNORED " << id;
-      }
+      for ( auto h : orderset( m_inputDataObjs ) ) { debug() << "\n  + INPUT  " << h; }
+      for ( auto id : orderset( avis.ignoredInpKeys() ) ) { debug() << "\n  + INPUT IGNORED " << id; }
+      for ( auto h : orderset( m_outputDataObjs ) ) { debug() << "\n  + OUTPUT " << h; }
+      for ( auto id : orderset( avis.ignoredOutKeys() ) ) { debug() << "\n  + OUTPUT IGNORED " << id; }
       debug() << endmsg;
     }
 
@@ -207,8 +191,7 @@ namespace Gaudi
     return sc;
   }
 
-  void Algorithm::acceptDHVisitor( IDataHandleVisitor* vis ) const
-  {
+  void Algorithm::acceptDHVisitor( IDataHandleVisitor* vis ) const {
     vis->visit( this );
 
     // loop through tools
@@ -216,8 +199,7 @@ namespace Gaudi
   }
 
   // IAlgorithm implementation
-  StatusCode Algorithm::sysStart()
-  {
+  StatusCode Algorithm::sysStart() {
 
     // Bypass the startup if already running or disabled.
     if ( Gaudi::StateMachine::RUNNING == FSMState() || !isEnabled() ) return StatusCode::SUCCESS;
@@ -261,8 +243,7 @@ namespace Gaudi
   }
 
   // IAlgorithm implementation
-  StatusCode Algorithm::sysReinitialize()
-  {
+  StatusCode Algorithm::sysReinitialize() {
 
     // Bypass the initialization if the algorithm is disabled.
     if ( !isEnabled() ) return StatusCode::SUCCESS;
@@ -308,8 +289,7 @@ namespace Gaudi
   }
 
   // IAlgorithm implementation
-  StatusCode Algorithm::sysRestart()
-  {
+  StatusCode Algorithm::sysRestart() {
 
     // Bypass the initialization if the algorithm is disabled.
     if ( !isEnabled() ) return StatusCode::SUCCESS;
@@ -351,8 +331,7 @@ namespace Gaudi
   }
 
   // IAlgorithm implementation
-  StatusCode Algorithm::sysBeginRun()
-  {
+  StatusCode Algorithm::sysBeginRun() {
 
     // Bypass the beginRun if the algorithm is disabled.
     if ( !isEnabled() ) return StatusCode::SUCCESS;
@@ -398,16 +377,14 @@ namespace Gaudi
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  StatusCode           Algorithm::beginRun()
-  {
+  StatusCode Algorithm::beginRun() {
     m_beginRunCalled = false;
     return StatusCode::SUCCESS;
   }
 #pragma GCC diagnostic pop
 
   // IAlgorithm implementation
-  StatusCode Algorithm::sysEndRun()
-  {
+  StatusCode Algorithm::sysEndRun() {
 
     // Bypass the endRun if the algorithm is disabled.
     if ( !isEnabled() ) return StatusCode::SUCCESS;
@@ -452,19 +429,15 @@ namespace Gaudi
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  StatusCode           Algorithm::endRun()
-  {
+  StatusCode Algorithm::endRun() {
     m_endRunCalled = false;
     return StatusCode::SUCCESS;
   }
 #pragma GCC diagnostic pop
 
-  StatusCode Algorithm::sysExecute( const EventContext& ctx )
-  {
+  StatusCode Algorithm::sysExecute( const EventContext& ctx ) {
     if ( !isEnabled() ) {
-      if ( msgLevel( MSG::VERBOSE ) ) {
-        verbose() << ".sysExecute(): is not enabled. Skip execution" << endmsg;
-      }
+      if ( msgLevel( MSG::VERBOSE ) ) { verbose() << ".sysExecute(): is not enabled. Skip execution" << endmsg; }
       return StatusCode::SUCCESS;
     }
 
@@ -485,15 +458,11 @@ namespace Gaudi
 
     try {
       ITimelineSvc::TimelineRecorder timelineRecoder;
-      if ( UNLIKELY( m_doTimeline ) ) {
-        timelineRecoder = timelineSvc()->getRecorder( name(), ctx );
-      }
+      if ( UNLIKELY( m_doTimeline ) ) { timelineRecoder = timelineSvc()->getRecorder( name(), ctx ); }
 
       status = execute( ctx );
 
-      if ( status.isFailure() ) {
-        status = exceptionSvc()->handleErr( *this, status );
-      }
+      if ( status.isFailure() ) { status = exceptionSvc()->handleErr( *this, status ); }
 
     } catch ( const GaudiException& Exception ) {
 
@@ -542,8 +511,7 @@ namespace Gaudi
   }
 
   // IAlgorithm implementation
-  StatusCode Algorithm::sysStop()
-  {
+  StatusCode Algorithm::sysStop() {
 
     // Bypass the startup if already running or disabled.
     if ( Gaudi::StateMachine::INITIALIZED == FSMState() || !isEnabled() ) return StatusCode::SUCCESS;
@@ -587,8 +555,7 @@ namespace Gaudi
     return sc;
   }
 
-  StatusCode Algorithm::sysFinalize()
-  {
+  StatusCode Algorithm::sysFinalize() {
 
     // Bypass the finalialization if the algorithm hasn't been initilized.
     if ( Gaudi::StateMachine::CONFIGURED == FSMState() || !isEnabled() ) return StatusCode::SUCCESS;
@@ -630,8 +597,7 @@ namespace Gaudi
     return sc;
   }
 
-  StatusCode Algorithm::reinitialize()
-  {
+  StatusCode Algorithm::reinitialize() {
     /* @TODO
      * MCl 2008-10-23: the implementation of reinitialize as finalize+initialize
      *                 is causing too many problems
@@ -651,8 +617,7 @@ namespace Gaudi
     return StatusCode::SUCCESS;
   }
 
-  StatusCode Algorithm::restart()
-  {
+  StatusCode Algorithm::restart() {
     // Default implementation is stop+start
     StatusCode sc = stop();
     if ( sc.isFailure() ) {
@@ -679,14 +644,12 @@ namespace Gaudi
 
   bool Algorithm::isEnabled() const { return m_isEnabled; }
 
-  AlgExecState& Algorithm::execState( const EventContext& ctx ) const
-  {
+  AlgExecState& Algorithm::execState( const EventContext& ctx ) const {
     return algExecStateSvc()->algExecState( const_cast<IAlgorithm*>( (const IAlgorithm*)this ), ctx );
   }
 
   template <typename IFace>
-  SmartIF<IFace>& Algorithm::get_svc_( SmartIF<IFace>& p, const char* service_name ) const
-  {
+  SmartIF<IFace>& Algorithm::get_svc_( SmartIF<IFace>& p, const char* service_name ) const {
     if ( UNLIKELY( !p ) ) {
       p = this->service( service_name );
       if ( !p ) {
@@ -713,14 +676,12 @@ namespace Gaudi
   SmartIF<ITimelineSvc>&     Algorithm::timelineSvc() const { return get_svc_( m_timelineSvc, "TimelineSvc" ); }
   SmartIF<IHiveWhiteBoard>&  Algorithm::whiteboard() const { return get_svc_( m_WB, "EventDataSvc" ); }
 
-  SmartIF<ISvcLocator>& Algorithm::serviceLocator() const
-  {
+  SmartIF<ISvcLocator>& Algorithm::serviceLocator() const {
     return *const_cast<SmartIF<ISvcLocator>*>( &m_pSvcLocator );
   }
 
   // Use the job options service to set declared properties
-  StatusCode Algorithm::setProperties()
-  {
+  StatusCode Algorithm::setProperties() {
     if ( !m_pSvcLocator ) return StatusCode::FAILURE;
     auto jos = m_pSvcLocator->service<IJobOptionsSvc>( "JobOptionsSvc" );
     if ( !jos ) return StatusCode::FAILURE;
@@ -732,8 +693,7 @@ namespace Gaudi
     return jos->setMyProperties( name(), this );
   }
 
-  void Algorithm::initToolHandles() const
-  {
+  void Algorithm::initToolHandles() const {
 
     IAlgTool* tool = nullptr;
     for ( auto thArr : m_toolHandleArrays ) {
@@ -804,14 +764,12 @@ namespace Gaudi
     m_toolHandlesInit = true;
   }
 
-  const std::vector<IAlgTool*>& Algorithm::tools() const
-  {
+  const std::vector<IAlgTool*>& Algorithm::tools() const {
     if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
     return m_tools;
   }
 
-  std::vector<IAlgTool*>& Algorithm::tools()
-  {
+  std::vector<IAlgTool*>& Algorithm::tools() {
     if ( UNLIKELY( !m_toolHandlesInit ) ) initToolHandles();
     return m_tools;
   }
@@ -821,35 +779,28 @@ namespace Gaudi
    **/
 
   StatusCode Algorithm::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid,
-                                   void** ppSvc ) const
-  {
+                                   void** ppSvc ) const {
     const ServiceLocatorHelper helper( *serviceLocator(), *this );
     return helper.getService( svcName, createIf, iid, ppSvc );
   }
 
   StatusCode Algorithm::service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
-                                   void** ppSvc ) const
-  {
+                                   void** ppSvc ) const {
     const ServiceLocatorHelper helper( *serviceLocator(), *this );
     return helper.createService( svcType, svcName, iid, ppSvc );
   }
 
-  SmartIF<IService> Algorithm::service( const std::string& name, const bool createIf, const bool quiet ) const
-  {
+  SmartIF<IService> Algorithm::service( const std::string& name, const bool createIf, const bool quiet ) const {
     const ServiceLocatorHelper helper( *serviceLocator(), *this );
     return helper.service( name, quiet, createIf );
   }
 
-  void Algorithm::registerTool( IAlgTool* tool ) const
-  {
-    if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "Registering tool " << tool->name() << endmsg;
-    }
+  void Algorithm::registerTool( IAlgTool* tool ) const {
+    if ( msgLevel( MSG::DEBUG ) ) { debug() << "Registering tool " << tool->name() << endmsg; }
     m_tools.push_back( tool );
   }
 
-  void Algorithm::deregisterTool( IAlgTool* tool ) const
-  {
+  void Algorithm::deregisterTool( IAlgTool* tool ) const {
     std::vector<IAlgTool*>::iterator it = std::find( m_tools.begin(), m_tools.end(), tool );
     if ( it != m_tools.end() ) {
       if ( msgLevel( MSG::DEBUG ) ) debug() << "De-Registering tool " << tool->name() << endmsg;
@@ -859,10 +810,9 @@ namespace Gaudi
     }
   }
 
-  std::ostream& Algorithm::toControlFlowExpression( std::ostream& os ) const
-  {
+  std::ostream& Algorithm::toControlFlowExpression( std::ostream& os ) const {
     return os << type() << "('" << name() << "')";
   }
 
   unsigned int Algorithm::errorCount() const { return m_aess->algErrorCount( static_cast<const IAlgorithm*>( this ) ); }
-}
+} // namespace Gaudi

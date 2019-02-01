@@ -57,15 +57,12 @@ class IOpaqueAddress;
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date   2004-01-23
  */
-namespace Tuples
-{
-  namespace detail
-  {
+namespace Tuples {
+  namespace detail {
     template <typename T>
     struct to_ {
       template <typename Arg>
-      T operator()( Arg&& i ) const
-      {
+      T operator()( Arg&& i ) const {
         return T( std::forward<Arg>( i ) );
       }
     };
@@ -73,7 +70,7 @@ namespace Tuples
 
     template <typename Iterator>
     using const_ref_t = std::add_const_t<typename std::iterator_traits<Iterator>::reference>;
-  }
+  } // namespace detail
   // ==========================================================================
   /** @enum Type
    *  the list of available types for ntuples
@@ -100,12 +97,11 @@ namespace Tuples
     InvalidItem,
     TruncateValue = 200
   };
-}
+} // namespace Tuples
 
 STATUSCODE_ENUM_DECL( Tuples::ErrorCodes )
 
-namespace Tuples
-{
+namespace Tuples {
   // ==========================================================================
   /** @class TupleObj TupleObj.h GaudiAlg/TupleObj.h
    *
@@ -201,8 +197,7 @@ namespace Tuples
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2004-01-23
    */
-  class GAUDI_API TupleObj
-  {
+  class GAUDI_API TupleObj {
   public:
     // ========================================================================
     /// basic type for int items
@@ -706,8 +701,7 @@ namespace Tuples
      *  @param value  the value of tve variable
      *  @return status code
      */
-    StatusCode column( const std::string& name, signed char value )
-    {
+    StatusCode column( const std::string& name, signed char value ) {
       return column( name, value, std::numeric_limits<signed char>::min(), std::numeric_limits<signed char>::max() );
     }
     // ========================================================================
@@ -791,8 +785,7 @@ namespace Tuples
      */
 
     template <typename Value, typename... Args>
-    StatusCode columns( Value&& value, Args&&... args )
-    {
+    StatusCode columns( Value&& value, Args&&... args ) {
       if ( sizeof...( Args ) == 0 ) return StatusCode::SUCCESS;
       std::initializer_list<StatusCode> scs{
           this->column( std::get<0>( args ), Gaudi::invoke( std::get<1>( args ), value ) )...};
@@ -882,8 +875,7 @@ namespace Tuples
      */
     template <typename ITERATOR1, typename ITERATOR2>
     StatusCode farray( const std::string& name, ITERATOR1&& first, ITERATOR2&& last, const std::string& length,
-                       size_t maxv )
-    {
+                       size_t maxv ) {
       return farray( name, detail::to_float, std::forward<ITERATOR1>( first ), std::forward<ITERATOR2>( last ), length,
                      maxv );
     }
@@ -931,8 +923,7 @@ namespace Tuples
      *  @param maxv   maximal length of array
      */
     template <class DATA>
-    StatusCode farray( const std::string& name, const DATA& data, const std::string& length, const size_t maxv )
-    {
+    StatusCode farray( const std::string& name, const DATA& data, const std::string& length, const size_t maxv ) {
       return farray( name, std::begin( data ), std::end( data ), length, maxv );
     }
     // =======================================================================
@@ -1000,8 +991,7 @@ namespace Tuples
      */
     template <class FUNCTION, class ITERATOR>
     StatusCode farray( const std::string& name, const FUNCTION& function, ITERATOR first, ITERATOR last,
-                       const std::string& length, size_t maxv )
-    {
+                       const std::string& length, size_t maxv ) {
       if ( invalid() ) return ErrorCodes::InvalidTuple;
       if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
@@ -1058,8 +1048,7 @@ namespace Tuples
 
     template <typename FunIterator, typename DataIterator>
     StatusCode farray_impl( FunIterator first_item, FunIterator last_item, DataIterator first, DataIterator last,
-                            const std::string& length, size_t maxv )
-    {
+                            const std::string& length, size_t maxv ) {
       if ( invalid() ) return ErrorCodes::InvalidTuple;
       if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
@@ -1092,9 +1081,7 @@ namespace Tuples
       // fill the array
       for ( size_t index = 0; first != last; ++first, ++index ) {
         auto item = first_item;
-        for ( auto& var : vars ) {
-          ( *var )[index] = Gaudi::invoke( ( item++ )->second, *first );
-        }
+        for ( auto& var : vars ) { ( *var )[index] = Gaudi::invoke( ( item++ )->second, *first ); }
       }
 
       return StatusCode::SUCCESS;
@@ -1105,8 +1092,7 @@ namespace Tuples
         typename NamedFunction = std::pair<std::string, std::function<float( detail::const_ref_t<DataIterator> )>>,
         typename               = std::enable_if_t<!std::is_convertible<Container<NamedFunction>, std::string>::value>>
     StatusCode farray( const Container<NamedFunction>& funs, DataIterator first, DataIterator last,
-                       const std::string& length, size_t maxv )
-    {
+                       const std::string& length, size_t maxv ) {
       return farray_impl( funs.begin(), funs.end(), std::forward<DataIterator>( first ),
                           std::forward<DataIterator>( last ), length, maxv );
     }
@@ -1114,8 +1100,7 @@ namespace Tuples
     template <typename NamedFunctions, typename DataIterator,
               typename = std::enable_if_t<!std::is_convertible<NamedFunctions, std::string>::value>>
     StatusCode farray( const NamedFunctions& funs, DataIterator first, DataIterator last, const std::string& length,
-                       size_t maxv )
-    {
+                       size_t maxv ) {
       return farray_impl( funs.begin(), funs.end(), std::forward<DataIterator>( first ),
                           std::forward<DataIterator>( last ), length, maxv );
     }
@@ -1153,8 +1138,7 @@ namespace Tuples
      */
     template <class FUNC1, class FUNC2, class Iterator>
     StatusCode farray( const std::string& name1, const FUNC1& func1, const std::string& name2, const FUNC2& func2,
-                       Iterator&& first, Iterator&& last, const std::string& length, size_t maxv )
-    {
+                       Iterator&& first, Iterator&& last, const std::string& length, size_t maxv ) {
       return farray( {{name1, std::cref( func1 )}, {name2, std::cref( func2 )}}, std::forward<Iterator>( first ),
                      std::forward<Iterator>( last ), length, maxv );
     }
@@ -1198,8 +1182,7 @@ namespace Tuples
     template <class FUNC1, class FUNC2, class FUNC3, class Iterator>
     StatusCode farray( const std::string& name1, const FUNC1& func1, const std::string& name2, const FUNC2& func2,
                        const std::string& name3, const FUNC3& func3, Iterator&& first, Iterator&& last,
-                       const std::string& length, size_t maxv )
-    {
+                       const std::string& length, size_t maxv ) {
       return farray( {{name1, std::cref( func1 )}, {name2, std::cref( func2 )}, {name3, std::cref( func3 )}},
                      std::forward<Iterator>( first ), std::forward<Iterator>( last ), length, maxv );
     }
@@ -1246,8 +1229,7 @@ namespace Tuples
     template <class FUNC1, class FUNC2, class FUNC3, class FUNC4, class Iterator>
     StatusCode farray( const std::string& name1, const FUNC1& func1, const std::string& name2, const FUNC2& func2,
                        const std::string& name3, const FUNC3& func3, const std::string& name4, const FUNC4& func4,
-                       Iterator&& first, Iterator&& last, const std::string& length, size_t maxv )
-    {
+                       Iterator&& first, Iterator&& last, const std::string& length, size_t maxv ) {
       return farray( {{name1, std::cref( func1 )},
                       {name2, std::cref( func2 )},
                       {name3, std::cref( func3 )},
@@ -1309,8 +1291,7 @@ namespace Tuples
      */
     template <class MATRIX>
     StatusCode fmatrix( const std::string& name, const MATRIX& data, size_t rows, const MIndex& cols,
-                        const std::string& length, size_t maxv )
-    {
+                        const std::string& length, size_t maxv ) {
       if ( invalid() ) return ErrorCodes::InvalidTuple;
       if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
@@ -1333,9 +1314,7 @@ namespace Tuples
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < cols; ++iCol ) {
-        for ( MIndex iRow = 0; iRow < rows; ++iRow ) {
-          ( *var )[iRow][iCol] = data[iRow][iCol];
-        }
+        for ( MIndex iRow = 0; iRow < rows; ++iRow ) { ( *var )[iRow][iCol] = data[iRow][iCol]; }
       }
 
       return StatusCode::SUCCESS;
@@ -1379,8 +1358,7 @@ namespace Tuples
      */
     template <class DATA>
     StatusCode fmatrix( const std::string& name, DATA first, DATA last, const MIndex& cols, const std::string& length,
-                        size_t maxv )
-    {
+                        size_t maxv ) {
       if ( invalid() ) return ErrorCodes::InvalidTuple;
       if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
@@ -1405,9 +1383,7 @@ namespace Tuples
       size_t iRow = 0;
       for ( ; first != last; ++first ) {
         //
-        for ( MIndex iCol = 0; iCol < cols; ++iCol ) {
-          ( *var )[iRow][iCol] = ( *first )[iCol];
-        }
+        for ( MIndex iCol = 0; iCol < cols; ++iCol ) { ( *var )[iRow][iCol] = ( *first )[iCol]; }
         //
         ++iRow;
       }
@@ -1495,8 +1471,7 @@ namespace Tuples
      */
     template <class FUN, class DATA>
     StatusCode fmatrix( const std::string& name, FUN funF, FUN funL, DATA first, DATA last, const std::string& length,
-                        size_t maxv )
-    {
+                        size_t maxv ) {
       if ( invalid() ) return ErrorCodes::InvalidTuple;
       if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
@@ -1523,9 +1498,7 @@ namespace Tuples
       size_t iRow = 0;
       for ( ; first != last; ++first ) {
         //
-        for ( FUN fun = funF; fun < funL; ++fun ) {
-          ( *var )[iRow][fun - funF] = Gaudi::invoke( *fun, *first );
-        }
+        for ( FUN fun = funF; fun < funL; ++fun ) { ( *var )[iRow][fun - funF] = Gaudi::invoke( *fun, *first ); }
         //
         ++iRow;
       }
@@ -1616,8 +1589,7 @@ namespace Tuples
      *  @date 2005-05-01
      */
     template <class ARRAY>
-    StatusCode array( const std::string& name, const ARRAY& data, const MIndex& length )
-    {
+    StatusCode array( const std::string& name, const ARRAY& data, const MIndex& length ) {
       using std::begin; // allow data to be eg. CLHEP::HepVector (which does not define HepVector::begin()!,
                         // in which case ADL prefers CLHEP::begin (yah! at least they (now) use a namespace)
                         // so one just to insure  double* CLHEP::begin(CLHEP::HepVector& v) { return &v[0]; }
@@ -1657,8 +1629,7 @@ namespace Tuples
      *  @date 2005-05-01
      */
     template <class ARRAY>
-    StatusCode array( const std::string& name, const ARRAY& data )
-    {
+    StatusCode array( const std::string& name, const ARRAY& data ) {
       using std::begin;
       using std::end;
       return array( name, begin( data ), end( data ) );
@@ -1715,8 +1686,7 @@ namespace Tuples
      *  @date 2005-05-01
      */
     template <class MATRIX>
-    StatusCode matrix( const std::string& name, const MATRIX& data, const MIndex& rows, const MIndex& cols )
-    {
+    StatusCode matrix( const std::string& name, const MATRIX& data, const MIndex& rows, const MIndex& cols ) {
       if ( invalid() ) return ErrorCodes::InvalidTuple;
       if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
@@ -1726,9 +1696,7 @@ namespace Tuples
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < cols; ++iCol ) {
-        for ( size_t iRow = 0; iRow < rows; ++iRow ) {
-          ( *var )[iRow][iCol] = data[iRow][iCol];
-        }
+        for ( size_t iRow = 0; iRow < rows; ++iRow ) { ( *var )[iRow][iCol] = data[iRow][iCol]; }
       };
       return StatusCode::SUCCESS;
     }
@@ -1752,8 +1720,7 @@ namespace Tuples
      *  @date 2006-11-26
      */
     template <class TYPE>
-    StatusCode column( const std::string& name, const ROOT::Math::LorentzVector<TYPE>& v )
-    {
+    StatusCode column( const std::string& name, const ROOT::Math::LorentzVector<TYPE>& v ) {
       return columns( v, std::make_pair( name + "E", &ROOT::Math::LorentzVector<TYPE>::E ),
                       std::make_pair( name + "X", &ROOT::Math::LorentzVector<TYPE>::Px ),
                       std::make_pair( name + "Y", &ROOT::Math::LorentzVector<TYPE>::Py ),
@@ -1777,8 +1744,7 @@ namespace Tuples
      *  @date 2006-11-26
      */
     template <class TYPE, class TAG>
-    StatusCode column( const std::string& name, const ROOT::Math::DisplacementVector3D<TYPE, TAG>& v )
-    {
+    StatusCode column( const std::string& name, const ROOT::Math::DisplacementVector3D<TYPE, TAG>& v ) {
       return this->columns( v, std::make_pair( name + "X", &ROOT::Math::DisplacementVector3D<TYPE, TAG>::X ),
                             std::make_pair( name + "Y", &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Y ),
                             std::make_pair( name + "Z", &ROOT::Math::DisplacementVector3D<TYPE, TAG>::Z ) );
@@ -1801,8 +1767,7 @@ namespace Tuples
      *  @date 2006-11-26
      */
     template <class TYPE, class TAG>
-    StatusCode column( const std::string& name, const ROOT::Math::PositionVector3D<TYPE, TAG>& v )
-    {
+    StatusCode column( const std::string& name, const ROOT::Math::PositionVector3D<TYPE, TAG>& v ) {
       return this->columns( v, std::make_pair( name + "X", &ROOT::Math::PositionVector3D<TYPE, TAG>::X ),
                             std::make_pair( name + "Y", &ROOT::Math::PositionVector3D<TYPE, TAG>::Y ),
                             std::make_pair( name + "Z", &ROOT::Math::PositionVector3D<TYPE, TAG>::Z ) );
@@ -1817,8 +1782,7 @@ namespace Tuples
      *  @date 2006-11-26
      */
     template <class TYPE, unsigned int D1, unsigned int D2, class REP>
-    StatusCode matrix( const std::string& name, const ROOT::Math::SMatrix<TYPE, D1, D2, REP>& mtrx )
-    {
+    StatusCode matrix( const std::string& name, const ROOT::Math::SMatrix<TYPE, D1, D2, REP>& mtrx ) {
       if ( invalid() ) return ErrorCodes::InvalidTuple;
       if ( rowWise() ) return ErrorCodes::InvalidOperation;
 
@@ -1828,9 +1792,7 @@ namespace Tuples
 
       /// fill the matrix
       for ( size_t iCol = 0; iCol < D2; ++iCol ) {
-        for ( size_t iRow = 0; iRow < D1; ++iRow ) {
-          ( *var )[iRow][iCol] = mtrx( iRow, iCol );
-        }
+        for ( size_t iRow = 0; iRow < D1; ++iRow ) { ( *var )[iRow][iCol] = mtrx( iRow, iCol ); }
       };
 
       return StatusCode::SUCCESS;
@@ -1855,9 +1817,8 @@ namespace Tuples
      */
     template <class KEY, class VALUE>
     StatusCode fmatrix( const std::string& name, const GaudiUtils::VectorMap<KEY, VALUE>& info,
-                        const std::string& length, const size_t maxv = 100 )
-    {
-      using Info = std::pair<KEY, VALUE>;
+                        const std::string& length, const size_t maxv = 100 ) {
+      using Info                                                 = std::pair<KEY, VALUE>;
       static const std::array<float ( * )( const Info& ), 2> fns = {
           {[]( const Info& i ) -> float { return i.first; }, []( const Info& i ) -> float { return i.second; }}};
       return fmatrix( name, begin( fns ), end( fns ), begin( info ), end( info ), length, maxv );
@@ -1923,8 +1884,7 @@ namespace Tuples
      *  @param type the type of the item
      *  @return true if the name is indeed added
      */
-    bool addItem( std::string name, std::string type )
-    {
+    bool addItem( std::string name, std::string type ) {
       return m_items.emplace( std::move( name ), std::move( type ) ).second;
     }
     // =======================================================================

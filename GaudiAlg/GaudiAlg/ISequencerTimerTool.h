@@ -11,13 +11,12 @@
  *  @date   2004-05-19
  */
 
-class GAUDI_API ISequencerTimerTool : public virtual IAlgTool
-{
+class GAUDI_API ISequencerTimerTool : public virtual IAlgTool {
 
 public:
+  using IAlgTool::name;
   using IAlgTool::start;
   using IAlgTool::stop;
-  using IAlgTool::name;
 
 public:
   /// InterfaceID

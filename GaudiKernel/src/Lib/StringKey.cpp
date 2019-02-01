@@ -17,16 +17,16 @@
 // constructor from the string: perform hashing
 // ============================================================================
 Gaudi::StringKey::StringKey( std::string key )
-    : m_str( std::move( key ) ), m_hash( std::hash<std::string>()( m_str ) ) // NB! hashing here!!!
-{
-}
+    : m_str( std::move( key ) )
+    , m_hash( std::hash<std::string>()( m_str ) ) // NB! hashing here!!!
+{}
 // ============================================================================
 // constructor from the string: perform hashing
 // ============================================================================
 Gaudi::StringKey::StringKey( const char* key )
-    : m_str( key ), m_hash( std::hash<std::string>()( m_str ) ) // NB! hashing here!!!
-{
-}
+    : m_str( key )
+    , m_hash( std::hash<std::string>()( m_str ) ) // NB! hashing here!!!
+{}
 // ============================================================================
 // the representation of the object
 // ============================================================================
@@ -60,8 +60,7 @@ bool Gaudi::StringKey::__neq__( const std::string& right ) const { return *this 
  *  @see Gaudi::Utils::toStream
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::toStream( const Gaudi::StringKey& key, std::ostream& s )
-{
+std::ostream& Gaudi::Utils::toStream( const Gaudi::StringKey& key, std::ostream& s ) {
   return Gaudi::Utils::toStream( key.str(), s );
 }
 // ============================================================================
@@ -72,8 +71,7 @@ std::ostream& Gaudi::Utils::toStream( const Gaudi::StringKey& key, std::ostream&
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& input ) {
   std::string _result;
   StatusCode  sc = parse( _result, input );
   result         = Gaudi::StringKey( _result );
@@ -90,15 +88,12 @@ StatusCode Gaudi::Parsers::parse( Gaudi::StringKey& result, const std::string& i
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( std::vector<Gaudi::StringKey>& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( std::vector<Gaudi::StringKey>& result, const std::string& input ) {
   result.clear();
   typedef std::vector<std::string> Strings;
   Strings                          _result;
   StatusCode                       sc = parse( _result, input );
-  if ( sc.isFailure() ) {
-    return sc;
-  } // RETURN
+  if ( sc.isFailure() ) { return sc; } // RETURN
   result.reserve( _result.size() );
   //
   std::copy( _result.begin(), _result.end(), std::back_inserter( result ) );

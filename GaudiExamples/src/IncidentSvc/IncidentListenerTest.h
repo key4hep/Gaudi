@@ -11,8 +11,7 @@ class IIncidentSvc;
 /** @class IncidentListenerTest IncidentListenerTest.h
  *
  */
-class IncidentListenerTest : public implements<IIncidentListener>
-{
+class IncidentListenerTest : public implements<IIncidentListener> {
 
 public:
   /// Constructor

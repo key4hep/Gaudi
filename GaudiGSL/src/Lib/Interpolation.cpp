@@ -3,23 +3,19 @@
 #include <cassert>
 #include <iomanip>
 
-namespace
-{
+namespace {
   const char* table[] = {"Linear", "Polynomial", "Cspline", "Cspline_Periodic", "Akima", "Akima_Periodic"};
 }
 
 using namespace GaudiMath::Interpolation;
 
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
 
     template <typename Iterator, typename Skipper>
     struct InterpolGrammar : qi::grammar<Iterator, GaudiMath::Interpolation::Type(), Skipper> {
       typedef GaudiMath::Interpolation::Type ResultT;
-      InterpolGrammar() : InterpolGrammar::base_type( literal )
-      {
+      InterpolGrammar() : InterpolGrammar::base_type( literal ) {
         literal = ( qi::lit( table[Linear] ) )[qi::_val = Linear] |
                   ( qi::lit( table[Polynomial] ) )[qi::_val = Polynomial] |
                   ( qi::lit( table[Cspline] ) )[qi::_val = Cspline] |
@@ -30,20 +26,17 @@ namespace Gaudi
       qi::rule<Iterator, ResultT(), Skipper> literal;
     };
     REGISTER_GRAMMAR( GaudiMath::Interpolation::Type, InterpolGrammar );
-  }
-}
+  } // namespace Parsers
+} // namespace Gaudi
 
-namespace GaudiMath
-{
-  namespace Interpolation
-  {
+namespace GaudiMath {
+  namespace Interpolation {
 
-    StatusCode parse( Type& t, const std::string& in ) { return Gaudi::Parsers::parse_( t, in ); }
-    std::string toString( const Type& t )
-    {
+    StatusCode  parse( Type& t, const std::string& in ) { return Gaudi::Parsers::parse_( t, in ); }
+    std::string toString( const Type& t ) {
       assert( 0 <= t && t <= Type::Akima_Periodic );
       return table[t];
     }
     std::ostream& toStream( const Type& t, std::ostream& os ) { return os << std::quoted( toString( t ), '\'' ); }
-  }
-}
+  } // namespace Interpolation
+} // namespace GaudiMath

@@ -20,8 +20,7 @@
 #define cpuid( func, eax, ebx, ecx, edx )                                                                              \
   __asm__ __volatile__( "cpuid" : "=a"( eax ), "=b"( ebx ), "=c"( ecx ), "=d"( edx ) : "a"( func ) );
 
-class PfmCodeAnalyser
-{
+class PfmCodeAnalyser {
 private:
   int                       used_counters_number;
   int                       nehalem;
@@ -57,15 +56,14 @@ public:
                                     bool inv_v1 = false, const char* event2 = "", unsigned int cmask_v2 = 0,
                                     bool inv_v2 = false, const char* event3 = "", unsigned int cmask_v3 = 0,
                                     bool inv_v3 = false );
-  void start();
-  void stop();
-  void stop_init();
+  void                    start();
+  void                    stop();
+  void                    stop_init();
 };
 
 PfmCodeAnalyser::PfmCodeAnalyser( const char* event0, unsigned int cmask_v0, bool inv_v0, const char* event1,
                                   unsigned int cmask_v1, bool inv_v1, const char* event2, unsigned int cmask_v2,
-                                  bool inv_v2, const char* event3, unsigned int cmask_v3, bool inv_v3 )
-{
+                                  bool inv_v2, const char* event3, unsigned int cmask_v3, bool inv_v3 ) {
   int ax, bx, cx, dx;
   cpuid( 1, ax, bx, cx, dx );
   int sse4_2_mask = 1 << 20;
@@ -99,9 +97,7 @@ PfmCodeAnalyser::PfmCodeAnalyser( const char* event0, unsigned int cmask_v0, boo
     start();
     stop_init();
   }
-  for ( int i = 0; i < used_counters_number; i++ ) {
-    sum[i] = 0;
-  }
+  for ( int i = 0; i < used_counters_number; i++ ) { sum[i] = 0; }
   count = 0;
   while ( count < 10 ) {
     start();
@@ -117,8 +113,7 @@ PfmCodeAnalyser::PfmCodeAnalyser( const char* event0, unsigned int cmask_v0, boo
 PfmCodeAnalyser& PfmCodeAnalyser::Instance( const char* event0, unsigned int cmask_v0, bool inv_v0, const char* event1,
                                             unsigned int cmask_v1, bool inv_v1, const char* event2,
                                             unsigned int cmask_v2, bool inv_v2, const char* event3,
-                                            unsigned int cmask_v3, bool inv_v3 )
-{
+                                            unsigned int cmask_v3, bool inv_v3 ) {
   static PfmCodeAnalyser theSingleton( event0, cmask_v0, inv_v0, event1, cmask_v1, inv_v1, event2, cmask_v2, inv_v2,
                                        event3, cmask_v3, inv_v3 );
   return theSingleton;
@@ -126,8 +121,7 @@ PfmCodeAnalyser& PfmCodeAnalyser::Instance( const char* event0, unsigned int cma
 
 // start()
 // initializes all the necessary structures to start the actual counting, calling pfm_start()
-void PfmCodeAnalyser::start()
-{
+void PfmCodeAnalyser::start() {
   memset( &ctx, 0, sizeof( ctx ) );
   memset( &inp, 0, sizeof( inp ) );
   memset( &outp, 0, sizeof( outp ) );
@@ -196,38 +190,31 @@ void PfmCodeAnalyser::start()
 // const ModuleDescription& desc : description of the module that just finished its execution (we are only interested in
 // its name)
 // stops the counting calling pfm_stop() and stores the counting results into the "results" map
-void PfmCodeAnalyser::stop()
-{
+void PfmCodeAnalyser::stop() {
   pfm_stop( fd );
   if ( pfm_read_pmds( fd, pd, inp.pfp_event_count ) == -1 ) {
     fprintf( stderr, "ERROR: Could not read pmds\naborting...\n" );
     exit( 1 );
   }
 
-  for ( int i = 0; i < used_counters_number; i++ ) {
-    sum[i] += ( pd[i].reg_value - overhead_avg[i] );
-  }
+  for ( int i = 0; i < used_counters_number; i++ ) { sum[i] += ( pd[i].reg_value - overhead_avg[i] ); }
   count++;
   close( fd );
 }
 
-void PfmCodeAnalyser::stop_init()
-{
+void PfmCodeAnalyser::stop_init() {
   pfm_stop( fd );
   if ( pfm_read_pmds( fd, pd, inp.pfp_event_count ) == -1 ) {
     fprintf( stderr, "ERROR: Could not read pmds\naborting...\n" );
     exit( 1 );
   }
 
-  for ( int i = 0; i < used_counters_number; i++ ) {
-    sum[i] += ( pd[i].reg_value );
-  }
+  for ( int i = 0; i < used_counters_number; i++ ) { sum[i] += ( pd[i].reg_value ); }
   count++;
   close( fd );
 }
 
-PfmCodeAnalyser::~PfmCodeAnalyser()
-{
+PfmCodeAnalyser::~PfmCodeAnalyser() {
   for ( int i = 0; i < used_counters_number; i++ ) {
     printf( "Event: %s\nTotal count:%lu\nNumber of counts:%u\nAverage count:%f\nOverhead removed:%u\n", event_str[i],
             sum[i], count, (double)sum[i] / count, overhead_avg[i] );

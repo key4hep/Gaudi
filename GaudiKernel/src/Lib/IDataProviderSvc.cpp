@@ -1,15 +1,13 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/StatusCode.h"
 
-namespace
-{
+namespace {
   struct IDataProviderSvcCategory : StatusCode::Category {
     const char* name() const override { return "IDataProviderSvc"; }
 
     bool isRecoverable( StatusCode::code_t ) const override { return false; }
 
-    std::string message( StatusCode::code_t code ) const override
-    {
+    std::string message( StatusCode::code_t code ) const override {
       switch ( static_cast<IDataProviderSvc::Status>( code ) ) {
       case IDataProviderSvc::Status::DOUBL_OBJ_PATH:
         return "DOUBL_OBJ_PATH";
@@ -38,6 +36,6 @@ namespace
       }
     }
   };
-}
+} // namespace
 
 STATUSCODE_ENUM_IMPL( IDataProviderSvc::Status, IDataProviderSvcCategory )

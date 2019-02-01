@@ -1,7 +1,7 @@
 #ifdef __ICC
 // disable icc warning #654: overloaded virtual function "B::Y" is only partially overridden in class "C"
 //   TODO: there is only a partial overload of IAuditor::before and IAuditor::after
-#pragma warning( disable : 654 )
+#  pragma warning( disable : 654 )
 #endif
 
 #include "GaudiKernel/IChronoStatSvc.h"
@@ -15,8 +15,7 @@
 
 DECLARE_COMPONENT( MemStatAuditor )
 
-StatusCode MemStatAuditor::initialize()
-{
+StatusCode MemStatAuditor::initialize() {
   StatusCode sc = CommonAuditor::initialize();
   if ( UNLIKELY( sc.isFailure() ) ) return sc;
 
@@ -28,13 +27,11 @@ StatusCode MemStatAuditor::initialize()
   return StatusCode::SUCCESS;
 }
 
-void MemStatAuditor::i_before( CustomEventTypeRef /*evt*/, const std::string& /*caller*/ )
-{
+void MemStatAuditor::i_before( CustomEventTypeRef /*evt*/, const std::string& /*caller*/ ) {
   // It's not interesting to monitor the memory usage before the methods.
 }
 
-void MemStatAuditor::i_printinfo( const std::string& msg, CustomEventTypeRef evt, const std::string& caller )
-{
+void MemStatAuditor::i_printinfo( const std::string& msg, CustomEventTypeRef evt, const std::string& caller ) {
   // cannot be exactly 0
   double deltaVSize = 0.00001;
 
@@ -42,9 +39,7 @@ void MemStatAuditor::i_printinfo( const std::string& msg, CustomEventTypeRef evt
   if ( getProcInfo( pInfo ) ) {
 
     if ( pInfo.vsize > 0 ) {
-      if ( m_vSize > 0 ) {
-        deltaVSize = pInfo.vsize - m_vSize;
-      }
+      if ( m_vSize > 0 ) { deltaVSize = pInfo.vsize - m_vSize; }
       // store the current VSize to be able to monitor the increment
       m_vSize = pInfo.vsize;
     }

@@ -13,8 +13,7 @@ class TObject;
 class TTree;
 class TFile;
 
-class GlobalDirectoryRestore
-{
+class GlobalDirectoryRestore {
   TDirectory* m_current;
 
 public:
@@ -22,16 +21,14 @@ public:
   virtual ~GlobalDirectoryRestore() { gDirectory = m_current; }
 };
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RootHistCnv::RConverter RConverter.h
 
     Root Converter
     @author Charles Leggett
   */
-  class RConverter : public Converter
-  {
+  class RConverter : public Converter {
   public:
     /// Convert the transient object to the requested representation.
     StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override;
@@ -45,10 +42,10 @@ namespace RootHistCnv
 
     std::string diskDirectory( const std::string& loc );
     std::string directory( const std::string& loc );
-    void setDirectory( const std::string& loc );
-    void setDiskDirectory( const std::string& loc );
-    StatusCode createDirectory( const std::string& loc );
-    StatusCode createDiskDirectory( const std::string& loc );
+    void        setDirectory( const std::string& loc );
+    void        setDiskDirectory( const std::string& loc );
+    StatusCode  createDirectory( const std::string& loc );
+    StatusCode  createDiskDirectory( const std::string& loc );
     std::string getDirectory();
 
     std::string convertId( const std::string& ) const;

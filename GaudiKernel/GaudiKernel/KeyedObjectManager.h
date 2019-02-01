@@ -14,9 +14,8 @@ class ObjectContainerBase;
 class ContainedObject;
 
 /** Containers namespace
-*/
-namespace Containers
-{
+ */
+namespace Containers {
 
   /// Object manipulator type definition
   typedef long ( *MANIPULATOR )( void* );
@@ -43,8 +42,7 @@ namespace Containers
    *
    */
   template <class SETUP>
-  class GAUDI_API KeyedObjectManager
-  {
+  class GAUDI_API KeyedObjectManager {
   private:
     typedef std::vector<void*> seq_type;
     /// Container holding array like container
@@ -101,5 +99,5 @@ namespace Containers
   typedef KeyedObjectManager<vector> Vector;
   /// Forward declaration of specialized redirection array object manager
   typedef KeyedObjectManager<array> Array;
-}
+} // namespace Containers
 #endif // GAUDIKERNEL_KEYEDOBJECTMANAGER_H

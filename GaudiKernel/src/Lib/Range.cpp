@@ -27,8 +27,7 @@
  *  @param size  range size
  */
 // ============================================================================
-void Gaudi::details::rangeException( const long /* index */, const size_t /* size  */ )
-{
+void Gaudi::details::rangeException( const long /* index */, const size_t /* size  */ ) {
   throw GaudiException( "Out-of-Range for class Gaudi::Range_", "RangeError", StatusCode::FAILURE );
 }
 // ============================================================================

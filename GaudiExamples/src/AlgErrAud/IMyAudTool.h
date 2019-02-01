@@ -8,9 +8,8 @@
  *  Example of an Interface of a Algorithm Tool
  *
  *  @author Pere Mato
-*/
-class IMyAudTool : virtual public IAlgTool
-{
+ */
+class IMyAudTool : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( IMyAudTool, 2, 0 );

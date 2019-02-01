@@ -8,12 +8,10 @@
 
 // Class to translate between Python and C++ worlds
 // It will be exposed to Python via Boost (see .cpp file)
-class PythonAdaptor
-{
+class PythonAdaptor {
 public:
   PythonAdaptor( IJobOptionsSvc* jos ) : m_IJobOptionsSvc( jos ) {}
-  void addPropertyToJobOptions( const std::string& client, const std::string& name, const std::string& value )
-  {
+  void addPropertyToJobOptions( const std::string& client, const std::string& name, const std::string& value ) {
     m_IJobOptionsSvc->addPropertyToCatalogue( client, Gaudi::Property<std::string>( name, value ) );
   }
 
@@ -22,8 +20,7 @@ private:
 };
 
 // Helper class to be invoked by JobOptionsSvc
-class PythonConfig
-{
+class PythonConfig {
 public:
   PythonConfig( IJobOptionsSvc* jos ) : m_IJobOptionsSvc( jos ){};
   StatusCode evaluateConfig( const std::string& filename, const std::string& preAction, const std::string& postAction );

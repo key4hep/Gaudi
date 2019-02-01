@@ -32,8 +32,7 @@ class IRndmGenFactory;
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API IRndmGenSvc : virtual public IService
-{
+class GAUDI_API IRndmGenSvc : virtual public IService {
 public:
   /// InterfaceID
   DeclareInterfaceID( IRndmGenSvc, 2, 1 );
@@ -48,15 +47,12 @@ public:
   */
   virtual StatusCode generator( const IRndmGen::Param& par, IRndmGen*& refpGen ) = 0;
 
-  SmartIF<IRndmGen> generator( const IRndmGen::Param& par )
-  {
+  SmartIF<IRndmGen> generator( const IRndmGen::Param& par ) {
     IRndmGen* gen = nullptr;
     ;
     generator( par, gen ).ignore();
     auto r = SmartIF<IRndmGen>{gen};
-    if ( gen ) {
-      gen->release();
-    }
+    if ( gen ) { gen->release(); }
     return r;
   }
 };

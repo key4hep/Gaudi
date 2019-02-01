@@ -14,8 +14,7 @@
 
     @author Iain Last
 */
-class GAUDI_API Message final
-{
+class GAUDI_API Message final {
 public:
   /// Default constructor
   Message() = default;

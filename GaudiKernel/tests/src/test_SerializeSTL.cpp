@@ -22,10 +22,8 @@
 
 #include <memory>
 
-namespace GaudiKernelTest
-{
-  class SerializeSTL : public CppUnit::TestFixture
-  {
+namespace GaudiKernelTest {
+  class SerializeSTL : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE( SerializeSTL );
 
@@ -49,8 +47,7 @@ namespace GaudiKernelTest
     CPPUNIT_ASSERT_EQUAL( std::string( exp ), __o.str() );                                                             \
   }
 
-    void test_vector()
-    {
+    void test_vector() {
       using namespace GaudiUtils;
 
       std::vector<int> v_i;
@@ -71,8 +68,7 @@ namespace GaudiKernelTest
       CHECK_SERIALIZATION( "[a, bc, def, Hello World!]", v_s )
     }
 
-    void test_list()
-    {
+    void test_list() {
       using namespace GaudiUtils;
 
       std::list<int> l_i;
@@ -93,8 +89,7 @@ namespace GaudiKernelTest
       CHECK_SERIALIZATION( "[a, bc, def, Hello World!]", l_s )
     }
 
-    void test_pair()
-    {
+    void test_pair() {
       using namespace GaudiUtils;
 
       std::pair<int, int> p1( 20, 11 );
@@ -115,8 +110,7 @@ namespace GaudiKernelTest
       CHECK_SERIALIZATION( "(x, [1, 2, 3])", p4 )
     }
 
-    void test_map()
-    {
+    void test_map() {
       using namespace GaudiUtils;
 
       std::map<int, int> m1;
@@ -135,8 +129,7 @@ namespace GaudiKernelTest
       CHECK_SERIALIZATION( "{a: 1, b: 4, c: 9}", m2 )
     }
 
-    void test_gaudiutils_map()
-    {
+    void test_gaudiutils_map() {
       // using namespace GaudiUtils;
       GaudiUtils::Map<std::string, int> m1;
       CHECK_SERIALIZATION( "{}", m1 )
@@ -147,8 +140,7 @@ namespace GaudiKernelTest
       CHECK_SERIALIZATION( "{a: 1, b: 4, c: 9}", m1 )
     }
 
-    void test_gaudiutils_hashmap()
-    {
+    void test_gaudiutils_hashmap() {
       // using namespace GaudiUtils;
       GaudiUtils::HashMap<std::string, int> m1;
       CHECK_SERIALIZATION( "{}", m1 )
@@ -177,8 +169,7 @@ namespace GaudiKernelTest
    *  @author Marco Clemencic
    *  @date   2006-11-13
    */
-  class ProgressListener : public CppUnit::TestListener
-  {
+  class ProgressListener : public CppUnit::TestListener {
 
   public:
     /// Default constructor.
@@ -187,21 +178,18 @@ namespace GaudiKernelTest
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test* test ) override
-    {
+    void startTest( CppUnit::Test* test ) override {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure& failure ) override
-    {
+    void addFailure( const CppUnit::TestFailure& failure ) override {
       std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
       m_lastTestFailed = true;
     }
 
-    void endTest( CppUnit::Test* /*test*/ ) override
-    {
+    void endTest( CppUnit::Test* /*test*/ ) override {
       if ( !m_lastTestFailed ) std::cout << " : OK";
       std::cout << std::endl;
     }
@@ -209,12 +197,11 @@ namespace GaudiKernelTest
   private:
     bool m_lastTestFailed;
   };
-}
+} // namespace GaudiKernelTest
 
 // Copied from the COOL implementation
 #include <stdexcept>
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   // Retrieve test path from command line first argument.
   // Default to "" which resolve to the top level suite.
   std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );

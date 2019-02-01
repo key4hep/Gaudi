@@ -14,10 +14,8 @@
 // ============================================================================
 #include "Position.h"
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
     // Forward declarations:
     // ============================================================================
@@ -35,7 +33,7 @@ namespace Gaudi
     bool ParseUnits( const Position& from, const std::string& filename, const std::string& search_path,
                      IncludedFiles* included, Messages* messages, Node* root );
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 #endif // JOBOPTIONSVC_FILE_PARSER_H_

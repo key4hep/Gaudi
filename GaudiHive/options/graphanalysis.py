@@ -55,8 +55,8 @@ def analyze_connected_componets(gr):
     for k, v in cc.iteritems():
         cc_size[v] = cc_size[v] + 1
     print "Connected components have the following size:"
-#    for k,v in cc_size.iteritems():
-#      print "%i : %i" %(k,v)
+    #    for k,v in cc_size.iteritems():
+    #      print "%i : %i" %(k,v)
     print "NUMBER OF CONNECTED COMPONENTS: %i" % (len(cc_size.keys()))
 
 
@@ -92,19 +92,21 @@ def print_graph_to_json(gr, filename):
             reading = True
 
         if algoname not in known_names:
-            algorithms[algoname] = {"name":    algoname,
-                                    "inputs":  [],
-                                    "outputs": [],
-                                    "runtimes": [1000],  # TODO dummy
-                                    "runtimes_wall": [1000]  # TODO dummy
-                                    }
+            algorithms[algoname] = {
+                "name": algoname,
+                "inputs": [],
+                "outputs": [],
+                "runtimes": [1000],  # TODO dummy
+                "runtimes_wall": [1000]  # TODO dummy
+            }
             known_names.add(algoname)
         if reading:
             algorithms[algoname]["inputs"].append(product)
         else:
             algorithms[algoname]["outputs"].append(product)
             algorithms[algoname]["runtimes_wall"] = [
-                gr.edge_weight(edge) / 100, ]
+                gr.edge_weight(edge) / 100,
+            ]
     out = open(filename, "w")
     algorithm_list = [item for item in algorithms.values()]
     workflow = {"algorithms": algorithm_list}

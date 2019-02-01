@@ -13,8 +13,7 @@
  *  @author Vanya Belyaev Ivan.Belyaev
  *  @date   29/04/2002
  */
-class GAUDI_API GslError
-{
+class GAUDI_API GslError {
 public:
   /// error message ('reason')
   std::string reason;
@@ -28,8 +27,7 @@ public:
   GslError( std::string r = "", std::string f = "", const int l = 0, const int c = 0 )
       : reason( std::move( r ) ), file( std::move( f ) ), line( l ), code( c ){};
   /// comparison (ordering) criteria
-  friend bool operator<( const GslError& left, const GslError& right )
-  {
+  friend bool operator<( const GslError& left, const GslError& right ) {
     return std::tie( left.code, left.reason, left.file, left.line ) <
            std::tie( right.code, right.reason, right.file, right.line );
   };

@@ -23,10 +23,8 @@
 template <class BASE>
 class GaudiCommon; // GaudiAlg
 // ============================================================================
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     // ========================================================================
     /** @struct _GetType
      *  Helper structure to define the proper return type for
@@ -68,8 +66,7 @@ namespace Gaudi
      *  This version is dealing with the general case, where AnyDataWrapper cannot be used
      */
     template <class TYPE, std::enable_if_t<!std::is_constructible<TYPE>::value, void*> = nullptr>
-    inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location )
-    {
+    inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location ) {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
       StatusCode sc = service->retrieveObject( location, obj );
@@ -87,8 +84,7 @@ namespace Gaudi
      *  where TYPE is constructible
      */
     template <class TYPE, std::enable_if_t<std::is_constructible<TYPE>::value, void*> = nullptr>
-    inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location )
-    {
+    inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location ) {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
       StatusCode sc = service->retrieveObject( location, obj );
@@ -97,9 +93,7 @@ namespace Gaudi
         if ( !tobj ) {
           // try with AnyDataWrapper
           AnyDataWrapper<TYPE>* tobj2 = dynamic_cast<AnyDataWrapper<TYPE>*>( obj );
-          if ( tobj2 ) {
-            tobj = &( tobj2->getData() );
-          }
+          if ( tobj2 ) { tobj = &( tobj2->getData() ); }
         }
         return tobj;
       } else {
@@ -134,8 +128,7 @@ namespace Gaudi
        */
       template <class COMMON>
       inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const bool checkData = true ) const
-      {
+                                     const bool checkData = true ) const {
         // use Data Provider Service
         return_type obj = getFromTS<Type>( service, location );
         if ( checkData ) { // check the data
@@ -173,8 +166,7 @@ namespace Gaudi
        */
       template <class COMMON>
       inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const bool checkData = true ) const
-      {
+                                     const bool checkData = true ) const {
         /// try to be efficient:
         /// 1. load object only once:
         DataObject* object = this->getData( service, location );
@@ -211,13 +203,11 @@ namespace Gaudi
     public:
       // ======================================================================
       // create the range from the container
-      return_type make_range( const typename TYPE::Container* cnt ) const
-      {
+      return_type make_range( const typename TYPE::Container* cnt ) const {
         return 0 == cnt ? return_type() : make_range( cnt->begin(), cnt->end() );
       }
       // create the range from the selection
-      return_type make_range( const typename TYPE::Selection* cnt ) const
-      {
+      return_type make_range( const typename TYPE::Selection* cnt ) const {
         return 0 == cnt ? return_type() : return_type( cnt->begin(), cnt->end() );
       }
       // ======================================================================
@@ -226,8 +216,7 @@ namespace Gaudi
        *  @param location  the location
        *  @return the object for TES
        */
-      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const
-      {
+      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const {
         /// Try to be efficient
         SmartDataObjectPtr getter( SmartDataObjectPtr::ObjectLoader::access(), service, nullptr, location );
         return getter.accessData();
@@ -236,8 +225,7 @@ namespace Gaudi
     private:
       // ======================================================================
       template <class ITERATOR>
-      return_type make_range( ITERATOR first, ITERATOR last ) const
-      {
+      return_type make_range( ITERATOR first, ITERATOR last ) const {
         auto _begin = reinterpret_cast<typename return_type::const_iterator*>( &first );
         auto _end   = reinterpret_cast<typename return_type::const_iterator*>( &last );
         return return_type( *_begin, *_end );
@@ -265,29 +253,22 @@ namespace Gaudi
        */
       template <class COMMON>
       inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const bool checkData = true ) const
-      {
+                                     const bool checkData = true ) const {
         return return_type( m_range( common, service, location, checkData ), location );
       }
       // ======================================================================
     public:
       // ======================================================================
       // create the range from the container
-      return_type make_range( const typename TYPE::Container* cnt ) const
-      {
-        if ( !cnt ) {
-          return return_type();
-        }
+      return_type make_range( const typename TYPE::Container* cnt ) const {
+        if ( !cnt ) { return return_type(); }
         static const std::string s_empty = "";
         const IRegistry*         reg     = cnt->registry();
         return return_type( m_range.make_range( cnt ), reg ? reg->identifier() : s_empty );
       }
       // create the range from the selection
-      return_type make_range( const typename TYPE::Selection* cnt ) const
-      {
-        if ( !cnt ) {
-          return return_type();
-        }
+      return_type make_range( const typename TYPE::Selection* cnt ) const {
+        if ( !cnt ) { return return_type(); }
         static const std::string s_empty = "";
         const IRegistry*         reg     = cnt->registry();
         return return_type( m_range.make_range( cnt ), reg ? reg->identifier() : s_empty );
@@ -298,8 +279,7 @@ namespace Gaudi
        *  @param location  the location
        *  @return the object for TES
        */
-      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const
-      {
+      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const {
         return m_range.getData( service, location );
       }
       // ======================================================================
@@ -312,18 +292,15 @@ namespace Gaudi
     // ========================================================================
     /// the template specialization for const types
     template <class TYPE>
-    struct GetData<const TYPE> : public GetData<TYPE> {
-    };
+    struct GetData<const TYPE> : public GetData<TYPE> {};
     // ========================================================================
     /// the template specialization for pointer types
     template <class TYPE>
-    struct GetData<TYPE*> : public GetData<TYPE> {
-    };
+    struct GetData<TYPE*> : public GetData<TYPE> {};
     // ========================================================================
     /// the template specialization for reference types
     template <class TYPE>
-    struct GetData<TYPE&> : public GetData<TYPE> {
-    };
+    struct GetData<TYPE&> : public GetData<TYPE> {};
     // ========================================================================
     /** @struct CheckData  GaudiAlg/GetData.h
      *
@@ -343,8 +320,7 @@ namespace Gaudi
        *  @param location location of objects in TES
        *  @return true for valid data
        */
-      inline bool operator()( IDataProviderSvc* service, const std::string& location ) const
-      {
+      inline bool operator()( IDataProviderSvc* service, const std::string& location ) const {
         /// use Data Provider Service
         return getFromTS<TYPE>( service, location );
       }
@@ -362,12 +338,9 @@ namespace Gaudi
        *  @param location location of objects in TES
        *  @return true for valid data
        */
-      inline bool operator()( IDataProviderSvc* service, const std::string& location ) const
-      {
+      inline bool operator()( IDataProviderSvc* service, const std::string& location ) const {
         DataObject* object = this->getData( service, location );
-        if ( !object ) {
-          return false;
-        }
+        if ( !object ) { return false; }
         return dynamic_cast<typename TYPE::Selection*>( object ) || dynamic_cast<typename TYPE::Container*>( object );
       }
       // ======================================================================
@@ -378,8 +351,7 @@ namespace Gaudi
        *  @param location  the location
        *  @return the object for TES
        */
-      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const
-      {
+      DataObject* getData( IDataProviderSvc* service, const std::string& location ) const {
         /// Try to be efficient
         SmartDataObjectPtr getter( SmartDataObjectPtr::ObjectLoader::access(), service, nullptr, location );
         return getter.accessData();
@@ -390,23 +362,19 @@ namespace Gaudi
     /// the template specialization for ranges
     template <class TYPE>
     struct CheckData<Gaudi::NamedRange_<std::vector<const TYPE*>>>
-        : public CheckData<Gaudi::Range_<std::vector<const TYPE*>>> {
-    };
+        : public CheckData<Gaudi::Range_<std::vector<const TYPE*>>> {};
     // ========================================================================
     /// the template specialization for pointer types
     template <class TYPE>
-    struct CheckData<TYPE*> : public CheckData<TYPE> {
-    };
+    struct CheckData<TYPE*> : public CheckData<TYPE> {};
     // ========================================================================
     /// the template specialization for reference types
     template <class TYPE>
-    struct CheckData<TYPE&> : public CheckData<TYPE> {
-    };
+    struct CheckData<TYPE&> : public CheckData<TYPE> {};
     // ========================================================================
     /// the template specialization for 'const'-type
     template <class TYPE>
-    struct CheckData<const TYPE> : public CheckData<TYPE> {
-    };
+    struct CheckData<const TYPE> : public CheckData<TYPE> {};
     // ========================================================================
     /** @struct GetOrCreateData GaudiUtils/GetData.h
      *
@@ -439,8 +407,7 @@ namespace Gaudi
        */
       template <class COMMON>
       inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const std::string& location2 ) const
-      {
+                                     const std::string& location2 ) const {
         SmartDataPtr<TYPE> obj( service, location );
         if ( !obj ) {
           auto o = std::make_unique<TYPE2>();
@@ -491,8 +458,7 @@ namespace Gaudi
        */
       template <class COMMON>
       inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const std::string& location2 ) const
-      {
+                                     const std::string& location2 ) const {
         DataObject* obj = m_getter.getData( service, location );
         if ( !obj ) {
           common.put( service, std::make_unique<TYPE2>(), location2 );
@@ -518,7 +484,7 @@ namespace Gaudi
       // ======================================================================
       typedef Gaudi::NamedRange_<std::vector<const TYPE*>> Range;
       typedef Gaudi::Range_<std::vector<const TYPE*>>      Range_;
-      typedef GetOrCreateData<Range_, TYPE2> Helper;
+      typedef GetOrCreateData<Range_, TYPE2>               Helper;
       /// the actual data getter
       typedef GetData<Range> Getter; //  the actual data getter
       // ======================================================================
@@ -538,8 +504,7 @@ namespace Gaudi
        */
       template <class COMMON>
       inline return_type operator()( const COMMON& common, IDataProviderSvc* service, const std::string& location,
-                                     const std::string& location2 ) const
-      {
+                                     const std::string& location2 ) const {
         return return_type( m_range( common, service, location, location2 ), location );
       }
       // ======================================================================
@@ -551,36 +516,27 @@ namespace Gaudi
     };
     // ========================================================================
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<TYPE, TYPE2*> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<TYPE, TYPE2*> : public GetOrCreateData<TYPE, TYPE2> {};
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<TYPE*, TYPE2> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<TYPE*, TYPE2> : public GetOrCreateData<TYPE, TYPE2> {};
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<TYPE*, TYPE2*> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<TYPE*, TYPE2*> : public GetOrCreateData<TYPE, TYPE2> {};
     // ========================================================================
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<TYPE, const TYPE2> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<TYPE, const TYPE2> : public GetOrCreateData<TYPE, TYPE2> {};
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<const TYPE, TYPE2> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<const TYPE, TYPE2> : public GetOrCreateData<TYPE, TYPE2> {};
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<const TYPE, const TYPE2> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<const TYPE, const TYPE2> : public GetOrCreateData<TYPE, TYPE2> {};
     // ========================================================================
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<TYPE, TYPE2&> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<TYPE, TYPE2&> : public GetOrCreateData<TYPE, TYPE2> {};
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<TYPE&, TYPE2> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<TYPE&, TYPE2> : public GetOrCreateData<TYPE, TYPE2> {};
     template <class TYPE, class TYPE2>
-    struct GetOrCreateData<TYPE&, TYPE2&> : public GetOrCreateData<TYPE, TYPE2> {
-    };
+    struct GetOrCreateData<TYPE&, TYPE2&> : public GetOrCreateData<TYPE, TYPE2> {};
     // ========================================================================
-  } //                                            end of namespace Gaudi::Utils
+  } // namespace Utils
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================

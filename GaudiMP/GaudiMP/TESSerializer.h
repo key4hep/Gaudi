@@ -27,10 +27,8 @@ class IAddressCreator;
     Version: 1.1
 */
 
-namespace GaudiMP
-{
-  class GAUDI_API TESSerializer : virtual public IDataStoreAgent
-  {
+namespace GaudiMP {
+  class GAUDI_API TESSerializer : virtual public IDataStoreAgent {
     typedef std::vector<DataStoreItem*> Items;
     typedef std::vector<std::string>    ItemNames;
     typedef std::vector<DataObject*>    Objects;
@@ -93,5 +91,5 @@ namespace GaudiMP
     /// IAddress Creator for Opaque Addresses
     IAddressCreator* m_addressCreator;
   };
-}
+} // namespace GaudiMP
 #endif

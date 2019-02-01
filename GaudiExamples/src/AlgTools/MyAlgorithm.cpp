@@ -11,8 +11,7 @@
 DECLARE_COMPONENT( MyAlgorithm )
 
 //------------------------------------------------------------------------------
-StatusCode MyAlgorithm::initialize()
-{
+StatusCode MyAlgorithm::initialize() {
   //------------------------------------------------------------------------------
 
   StatusCode sc;
@@ -61,8 +60,7 @@ StatusCode MyAlgorithm::initialize()
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyAlgorithm::execute()
-{
+StatusCode MyAlgorithm::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
 
@@ -79,8 +77,7 @@ StatusCode MyAlgorithm::execute()
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyAlgorithm::finalize()
-{
+StatusCode MyAlgorithm::finalize() {
   //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
 

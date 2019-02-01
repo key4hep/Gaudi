@@ -1,16 +1,16 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
 #ifdef WIN32
 // Disable warning
 //   warning C4996: 'sprintf': This function or variable may be unsafe.
 // coming from TString.h
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 // ============================================================================
 // Include files
@@ -51,8 +51,7 @@
 #include "GaudiUtils/HistoStats.h"
 #include "GaudiUtils/HistoTableFormat.h"
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   /** @struct Histo
    *  helper structure to keep the representation of the histogram
@@ -79,8 +78,7 @@ namespace
       /// lower edge
       double lower; //  lower edge
       // ======================================================================
-      Bin& operator+=( const Bin& right )
-      {
+      Bin& operator+=( const Bin& right ) {
         height += right.height;
         const double e2 = error * error + right.error * right.error;
         error           = std::sqrt( e2 );
@@ -90,22 +88,19 @@ namespace
     };
     // ========================================================================
     /// get Y-max
-    double maxY( const bool withErr ) const
-    {
+    double maxY( const bool withErr ) const {
       return std::accumulate(
           std::begin( bins ), std::end( bins ), std::max( under.height, over.height ),
           [&]( double m, const Bin& b ) { return std::max( m, withErr ? b.height + b.error : b.height ); } );
     }
     /// get Y-min
-    double minY( const bool withErr ) const
-    {
+    double minY( const bool withErr ) const {
       return std::accumulate(
           std::begin( bins ), std::end( bins ), std::min( under.height, over.height ),
           [&]( double m, const Bin& b ) { return std::min( m, withErr ? b.height - b.error : b.height ); } );
     }
     /// rebin the histogram
-    Histo rebin( const unsigned int bin ) const
-    {
+    Histo rebin( const unsigned int bin ) const {
       // create new histogram
       Histo nh;
       // copy overflow & underflow bins
@@ -125,12 +120,9 @@ namespace
       return nh;
     }
     // find "null-bin", if any
-    int nullBin() const
-    {
+    int nullBin() const {
       for ( auto ib = bins.cbegin(); bins.cend() != ib + 1; ++ib ) {
-        if ( ib->lower <= 0 && 0 < ( ib + 1 )->lower ) {
-          return ib - bins.cbegin();
-        }
+        if ( ib->lower <= 0 && 0 < ( ib + 1 )->lower ) { return ib - bins.cbegin(); }
       }
       return -1;
     }
@@ -153,22 +145,15 @@ namespace
    *   @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
    *   @date 2009-09-19
    */
-  StatusCode _getHisto( const TH1* root, Histo& hist )
-  {
+  StatusCode _getHisto( const TH1* root, Histo& hist ) {
     // clear the histogram
     hist.bins.clear();
     //
-    if ( !root ) {
-      return StatusCode::FAILURE;
-    } // RETURN
+    if ( !root ) { return StatusCode::FAILURE; } // RETURN
     const TAxis* axis = root->GetXaxis();
-    if ( !axis ) {
-      return StatusCode::FAILURE;
-    } // RETURN
+    if ( !axis ) { return StatusCode::FAILURE; } // RETURN
     const int nbins = axis->GetNbins();
-    if ( 0 == nbins ) {
-      return StatusCode::FAILURE;
-    } // RETURN
+    if ( 0 == nbins ) { return StatusCode::FAILURE; } // RETURN
 
     // underflow bin
     hist.under = Histo::Bin( root->GetBinContent( 0 ), root->GetBinError( 0 ), axis->GetXmin() );
@@ -190,8 +175,7 @@ namespace
    *   @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
    *   @date 2009-09-19
    */
-  StatusCode _getHisto( const TProfile* root, Histo& hist, const bool /* spread */ )
-  {
+  StatusCode _getHisto( const TProfile* root, Histo& hist, const bool /* spread */ ) {
     const TH1* histo = root;
     return _getHisto( histo, hist );
   }
@@ -203,14 +187,11 @@ namespace
    *   @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *   @date 2009-09-19
    */
-  StatusCode _getHisto( const AIDA::IHistogram1D* aida, Histo& hist )
-  {
+  StatusCode _getHisto( const AIDA::IHistogram1D* aida, Histo& hist ) {
     // clear the histogram
     hist.bins.clear();
     //
-    if ( !aida ) {
-      return StatusCode::FAILURE;
-    } // RETURN
+    if ( !aida ) { return StatusCode::FAILURE; } // RETURN
     //
     const AIDA::IAxis& axis  = aida->axis();
     const int          nbins = axis.bins();
@@ -236,14 +217,11 @@ namespace
    *   @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
    *   @date 2009-09-19
    */
-  StatusCode _getHisto( const AIDA::IProfile1D* aida, Histo& hist, const bool spread )
-  {
+  StatusCode _getHisto( const AIDA::IProfile1D* aida, Histo& hist, const bool spread ) {
     // clear the histogram
     hist.bins.clear();
     //
-    if ( !aida ) {
-      return StatusCode::FAILURE;
-    } // RETURN
+    if ( !aida ) { return StatusCode::FAILURE; } // RETURN
     //
     const AIDA::IAxis& axis  = aida->axis();
     const int          nbins = axis.bins();
@@ -272,15 +250,10 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline unsigned int rebin( const unsigned int bins, const unsigned int imax )
-  {
-    if ( 0 == imax ) {
-      return 1;
-    } // RETURN
+  inline unsigned int rebin( const unsigned int bins, const unsigned int imax ) {
+    if ( 0 == imax ) { return 1; } // RETURN
     unsigned int ibin = 1;
-    while ( bins > imax * ibin ) {
-      ++ibin;
-    }
+    while ( bins > imax * ibin ) { ++ibin; }
     return ibin; // RETURN
   }
   // ==========================================================================
@@ -289,8 +262,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  std::pair<double, int> decompose( double v )
-  {
+  std::pair<double, int> decompose( double v ) {
     if ( 0 == v ) {
       return {0.0, 0};
     } // RETURN
@@ -322,14 +294,11 @@ namespace
    *  @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double _pow( double x, unsigned long n )
-  {
+  inline double _pow( double x, unsigned long n ) {
     double y = n % 2 ? x : 1;
     while ( n >>= 1 ) {
       x = x * x;
-      if ( n % 2 ) {
-        y *= x;
-      }
+      if ( n % 2 ) { y *= x; }
     }
     return y;
   }
@@ -340,8 +309,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double rValMax( double v )
-  {
+  inline double rValMax( double v ) {
     if ( 0 == v ) {
       return 0;
     } // RETURN
@@ -360,8 +328,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double rValMin( double v )
-  {
+  inline double rValMin( double v ) {
     if ( 0 == v ) {
       return 0;
     } // RETURN
@@ -370,8 +337,8 @@ namespace
     } // RETURN
     // decompose the double value into decimal significand and mantissa
     std::pair<double, int> r = decompose( v );
-    const double f = std::floor( 20 * r.first ) / 2; // - 1 ;
-    const int    l = r.second - 1;
+    const double           f = std::floor( 20 * r.first ) / 2; // - 1 ;
+    const int              l = r.second - 1;
     return 0 < l ? f * _pow( 10, l ) : f / _pow( 10, -l );
   }
   // ==========================================================================
@@ -379,8 +346,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string yLabel( double value )
-  {
+  inline std::string yLabel( double value ) {
     boost::format fmt( "%10.3g" );
     fmt % value;
     return fmt.str();
@@ -390,16 +356,14 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string xLabel( const double value )
-  {
+  inline std::string xLabel( const double value ) {
     boost::format fmt( "%9.3g" );
     fmt % value;
     return fmt.str();
   }
   // ==========================================================================
   /// get "correct" symbol
-  char symbBin( const Histo::Bin& bin, const double yLow, const double yHigh, const bool yNull, const bool errors )
-  {
+  char symbBin( const Histo::Bin& bin, const double yLow, const double yHigh, const bool yNull, const bool errors ) {
     if ( errors && yLow <= bin.height && bin.height < yHigh ) {
       return '*';
     } // O
@@ -426,23 +390,12 @@ namespace
    *  @date 2009-09-19
    */
   std::ostream& dumpText( const Histo& histo, const std::size_t width, const std::size_t height, const bool errors,
-                          std::ostream& stream )
-  {
-    if ( 40 > width ) {
-      return dumpText( histo, 40, height, errors, stream );
-    }
-    if ( 200 < width ) {
-      return dumpText( histo, 200, height, errors, stream );
-    }
-    if ( 150 < height ) {
-      return dumpText( histo, width, 150, errors, stream );
-    }
-    if ( 20 > height ) {
-      return dumpText( histo, width, 20, errors, stream );
-    }
-    if ( height > width ) {
-      return dumpText( histo, width, width, errors, stream );
-    }
+                          std::ostream& stream ) {
+    if ( 40 > width ) { return dumpText( histo, 40, height, errors, stream ); }
+    if ( 200 < width ) { return dumpText( histo, 200, height, errors, stream ); }
+    if ( 150 < height ) { return dumpText( histo, width, 150, errors, stream ); }
+    if ( 20 > height ) { return dumpText( histo, width, 20, errors, stream ); }
+    if ( height > width ) { return dumpText( histo, width, width, errors, stream ); }
     //
     const unsigned int nBins = histo.bins.size();
     if ( nBins > width ) {
@@ -455,21 +408,15 @@ namespace
     double yMax = std::max( rValMax( histo.maxY( errors ) ), 0.0 );
     double yMin = std::min( rValMin( histo.minY( errors ) ), 0.0 );
 
-    if ( yMin == yMax ) {
-      yMax = yMin + 1;
-    }
+    if ( yMin == yMax ) { yMax = yMin + 1; }
     /// try to define the proper "Y-binning"
-    std::pair<double, int> r = decompose( yMax - yMin );
-    double _ny = std::ceil( 10 * r.first ); //   1 <= ny < 10
-    if ( 1 >= _ny ) {
-      _ny = 10;
-    }
+    std::pair<double, int> r   = decompose( yMax - yMin );
+    double                 _ny = std::ceil( 10 * r.first ); //   1 <= ny < 10
+    if ( 1 >= _ny ) { _ny = 10; }
     int yBins = (int)std::max( 1., std::ceil( height / _ny ) );
 
     yBins *= (int)_ny;
-    if ( 20 > yBins ) {
-      yBins = 20;
-    }
+    if ( 20 > yBins ) { yBins = 20; }
     const double yScale = ( yMax - yMin ) / yBins;
 
     //
@@ -566,9 +513,7 @@ namespace
 
     // get x-labels
     std::vector<std::string> xlabels;
-    for ( auto ib = histo.bins.cbegin(); histo.bins.cend() != ib; ++ib ) {
-      xlabels.push_back( xLabel( ib->lower ) );
-    }
+    for ( auto ib = histo.bins.cbegin(); histo.bins.cend() != ib; ++ib ) { xlabels.push_back( xLabel( ib->lower ) ); }
     // overflow& underflow  label
     const std::string oLabel = xLabel( histo.over.lower );
     const std::string uLabel = xLabel( histo.under.lower );
@@ -623,7 +568,7 @@ namespace
     //
     return stream; // RETURN
   }
-}
+} // namespace
 // ============================================================================
 /*  dump the text representation of the histogram
  *  @param histo  (INPUT) the histogram
@@ -637,17 +582,12 @@ namespace
  */
 // ============================================================================
 std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IHistogram1D* histo, std::ostream& stream,
-                                                const std::size_t width, const std::size_t height, const bool errors )
-{
+                                                const std::size_t width, const std::size_t height, const bool errors ) {
   stream << std::endl;
-  if ( !histo ) {
-    return stream;
-  } // RETURN
+  if ( !histo ) { return stream; } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
-  if ( sc.isFailure() ) {
-    return stream;
-  } // RETURN
+  if ( sc.isFailure() ) { return stream; } // RETURN
   //
   stream << boost::format( " Histo TES   : \"%s\"" ) % path( histo ) << std::endl
          << boost::format( " Histo Title : \"%s\"" ) % histo->title() << std::endl
@@ -701,8 +641,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IHistogram1D* histo,
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::histoDump( const AIDA::IHistogram1D* histo, const std::size_t width,
-                                             const std::size_t height, const bool errors )
-{
+                                             const std::size_t height, const bool errors ) {
   std::ostringstream stream;
   histoDump_( histo, stream, width, height, errors );
   return stream.str();
@@ -720,17 +659,12 @@ std::string Gaudi::Utils::Histos::histoDump( const AIDA::IHistogram1D* histo, co
  */
 // ============================================================================
 std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IProfile1D* histo, std::ostream& stream,
-                                                const std::size_t width, const std::size_t height, const bool spread )
-{
+                                                const std::size_t width, const std::size_t height, const bool spread ) {
   stream << std::endl;
-  if ( !histo ) {
-    return stream;
-  } // RETURN
+  if ( !histo ) { return stream; } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist, spread );
-  if ( sc.isFailure() ) {
-    return stream;
-  } // RETURN
+  if ( sc.isFailure() ) { return stream; } // RETURN
   //
   stream << boost::format( " Histo TES   : \"%s\"" ) % path( histo ) << std::endl
          << boost::format( " Histo Title : \"%s\"" ) % histo->title() << std::endl
@@ -741,7 +675,8 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IProfile1D* histo, s
          << std::endl;
   //
   stream << boost::format( " Entries     :\n | %=9s | %=9s | %=9s | %9s | %=11s | %=11s |" ) % "All" % "In Range" %
-                "Underflow" % "Overflow"
+                "Underflow" %
+                "Overflow"
                 // % "#Equivalent"
                 % "Integral" % "Total"
          << std::endl
@@ -775,8 +710,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const AIDA::IProfile1D* histo, s
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::histoDump( const AIDA::IProfile1D* histo, const std::size_t width,
-                                             const std::size_t height, const bool spread )
-{
+                                             const std::size_t height, const bool spread ) {
   std::ostringstream stream;
   histoDump_( histo, stream, width, height, spread );
   return stream.str();
@@ -793,22 +727,15 @@ std::string Gaudi::Utils::Histos::histoDump( const AIDA::IProfile1D* histo, cons
  */
 // ============================================================================
 std::ostream& Gaudi::Utils::Histos::histoDump_( const TH1* histo, std::ostream& stream, const std::size_t width,
-                                                const std::size_t height, const bool errors )
-{
+                                                const std::size_t height, const bool errors ) {
   const TProfile* profile = dynamic_cast<const TProfile*>( histo );
-  if ( profile ) {
-    return histoDump_( profile, stream, width, height );
-  }
+  if ( profile ) { return histoDump_( profile, stream, width, height ); }
   //
   stream << std::endl;
-  if ( !histo ) {
-    return stream;
-  } // RETURN
+  if ( !histo ) { return stream; } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist );
-  if ( sc.isFailure() ) {
-    return stream;
-  } // RETURN
+  if ( sc.isFailure() ) { return stream; } // RETURN
   //
   stream << boost::format( " Histo Name  : \"%s\"" ) % histo->GetName() << std::endl
          << boost::format( " Histo Title : \"%s\"" ) % histo->GetTitle() << std::endl
@@ -843,17 +770,12 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TH1* histo, std::ostream& 
  */
 // ============================================================================
 std::ostream& Gaudi::Utils::Histos::histoDump_( const TProfile* histo, std::ostream& stream, const std::size_t width,
-                                                const std::size_t height )
-{
+                                                const std::size_t height ) {
   stream << std::endl;
-  if ( !histo ) {
-    return stream;
-  } // RETURN
+  if ( !histo ) { return stream; } // RETURN
   Histo      hist;
   StatusCode sc = _getHisto( histo, hist, true );
-  if ( sc.isFailure() ) {
-    return stream;
-  } // RETURN
+  if ( sc.isFailure() ) { return stream; } // RETURN
   //
   stream << boost::format( " Profile Name  : \"%s\"" ) % histo->GetName() << std::endl
          << boost::format( " Profile Title : \"%s\"" ) % histo->GetTitle() << std::endl
@@ -884,8 +806,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_( const TProfile* histo, std::ostr
  */
 // ============================================================================
 std::string Gaudi::Utils::Histos::histoDump( const TH1* histo, const std::size_t width, const std::size_t height,
-                                             const bool errors )
-{
+                                             const bool errors ) {
   std::ostringstream stream;
   histoDump_( histo, stream, width, height, errors );
   return stream.str();
@@ -900,8 +821,8 @@ std::string Gaudi::Utils::Histos::histoDump( const TH1* histo, const std::size_t
  *  @date 2009-09-19
  */
 // ============================================================================
-std::string Gaudi::Utils::Histos::histoDump( const TProfile* histo, const std::size_t width, const std::size_t height )
-{
+std::string Gaudi::Utils::Histos::histoDump( const TProfile* histo, const std::size_t width,
+                                             const std::size_t height ) {
   std::ostringstream stream;
   histoDump_( histo, stream, width, height );
   return stream.str();

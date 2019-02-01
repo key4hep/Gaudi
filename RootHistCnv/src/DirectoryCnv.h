@@ -14,10 +14,8 @@
 // Author:      Charles Leggett
 //
 //------------------------------------------------------------------------------
-namespace RootHistCnv
-{
-  class DirectoryCnv : public RConverter
-  {
+namespace RootHistCnv {
+  class DirectoryCnv : public RConverter {
   public:
     /// Create the transient representation of an object.
     StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;

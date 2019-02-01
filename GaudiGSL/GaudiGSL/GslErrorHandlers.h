@@ -13,8 +13,7 @@
  *  @date   29/04/2002
  */
 
-namespace GslErrorHandlers
-{
+namespace GslErrorHandlers {
 
   /** The simplest Gsl Error handler,
    *  It simply ingnores the error
@@ -61,7 +60,7 @@ namespace GslErrorHandlers
    *  @date   29/04/2002
    */
   GAUDI_API void throwException( const char* reason, const char* file, int line, int code );
-}
+} // namespace GslErrorHandlers
 
 // ============================================================================
 // The END

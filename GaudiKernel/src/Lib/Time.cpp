@@ -16,30 +16,30 @@ using namespace Gaudi;
 #ifdef WIN32
 
 // this turns off a lot of useless Win stuff which conflicts with Gaudi. (found empirically)
-#define NOATOM
-#define NOGDI
-#define NOGDICAPMASKS
-#define NOMETAFILE
-#define NOMINMAX
-#define NOMSG
-#define NOOPENFILE
-#define NORASTEROPS
-#define NOSCROLL
-#define NOSOUND
-#define NOSYSMETRICS
-#define NOTEXTMETRIC
-#define NOWH
-#define NOCOMM
-#define NOKANJI
-#define NOCRYPT
-#define NOMCX
+#  define NOATOM
+#  define NOGDI
+#  define NOGDICAPMASKS
+#  define NOMETAFILE
+#  define NOMINMAX
+#  define NOMSG
+#  define NOOPENFILE
+#  define NORASTEROPS
+#  define NOSCROLL
+#  define NOSOUND
+#  define NOSYSMETRICS
+#  define NOTEXTMETRIC
+#  define NOWH
+#  define NOCOMM
+#  define NOKANJI
+#  define NOCRYPT
+#  define NOMCX
 
-#include <windows.h>
+#  include <windows.h>
 
 #else
 // Linux
 
-#include <sys/time.h>
+#  include <sys/time.h>
 
 #endif
 
@@ -60,12 +60,11 @@ using namespace Gaudi;
     bias this needs to be multiplied by 10000000 since Windows time
     uses 100ns resolution, not seconds.  */
 //# define SECS_1601_TO_1970	((369 * 365 + 89) * SECS_PER_DAY)
-#define SECS_1601_TO_1970 ( ( 369 * 365 + 89 ) * 86400ui64 )
+#  define SECS_1601_TO_1970 ( ( 369 * 365 + 89 ) * 86400ui64 )
 #endif
 
 #ifdef WIN32
-static time_t timegm( struct tm* t )
-{
+static time_t timegm( struct tm* t ) {
   // This code is adapted from wine, samba
   time_t    t1 = mktime( t );
   struct tm gmt;
@@ -78,8 +77,7 @@ static time_t timegm( struct tm* t )
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
-Time::Time( int year, int month, int day, int hour, int min, int sec, ValueType nsecs, bool local /* = true */ )
-{
+Time::Time( int year, int month, int day, int hour, int min, int sec, ValueType nsecs, bool local /* = true */ ) {
   tm val;
   memset( &val, 0, sizeof( val ) );
   val.tm_sec   = sec;
@@ -96,8 +94,7 @@ Time::Time( int year, int month, int day, int hour, int min, int sec, ValueType 
 #ifdef WIN32
 /** Windows-specific function to convert system time representation
     to a #Time class.  */
-Time Time::from( const FILETIME* systime )
-{
+Time Time::from( const FILETIME* systime ) {
   ValueType t = ( (ValueType)systime->dwHighDateTime << 32 ) + (ValueType)systime->dwLowDateTime;
 
   if ( t )
@@ -109,8 +106,7 @@ Time Time::from( const FILETIME* systime )
 #endif
 
 /** Return the current system time.  */
-Time Time::current( void )
-{
+Time Time::current( void ) {
 #ifdef WIN32
   FILETIME ftime;
   GetSystemTimeAsFileTime( &ftime );
@@ -133,8 +129,7 @@ Time Time::current( void )
 }
 
 /** Construct a time from local time @a base and a delta @a diff. */
-Time Time::build( bool local, const tm& base, TimeSpan diff /* = 0 */ )
-{
+Time Time::build( bool local, const tm& base, TimeSpan diff /* = 0 */ ) {
   tm tmp( base );
   return Time( local ? mktime( &tmp ) : timegm( &tmp ), 0 ) + diff;
 }
@@ -143,8 +138,7 @@ Time Time::build( bool local, const tm& base, TimeSpan diff /* = 0 */ )
     (if @a local is @c false) or local time (if @a local is @c true).
     If @a nsecpart is non-null, it is set to the nanosecond part that
     cannot be stored into @c tm.  */
-tm Time::split( bool local, int* nsecpart /* = 0 */ ) const
-{
+tm Time::split( bool local, int* nsecpart /* = 0 */ ) const {
   if ( nsecpart ) *nsecpart = (int)( m_nsecs % SEC_NSECS );
 
   time_t val = ( time_t )( m_nsecs / SEC_NSECS );
@@ -207,13 +201,12 @@ bool Time::isdst( bool local ) const { return split( local ).tm_isdst > 0; }
     settings of the local time as of the current value.  If
     @a daylight is non-null, it is set to indicate daylight savings
     status (that is, tm.tm_isdst for the effective local time).  */
-Time::ValueType Time::utcoffset( int* daylight /* = 0 */ ) const
-{
+Time::ValueType Time::utcoffset( int* daylight /* = 0 */ ) const {
   ValueType n = 0;
 
 #ifndef WIN32
-  tm localtm                = local();
-  n                         = localtm.tm_gmtoff;
+  tm localtm = local();
+  n          = localtm.tm_gmtoff;
   if ( daylight ) *daylight = localtm.tm_isdst;
 #else
   // Adapted from WINE.
@@ -235,30 +228,28 @@ Time::ValueType Time::utcoffset( int* daylight /* = 0 */ ) const
 #ifdef WIN32
 // disable warning
 // C4996: 'tzname': This function or variable may be unsafe.
-#pragma warning( push )
-#pragma warning( disable : 4996 )
+#  pragma warning( push )
+#  pragma warning( disable : 4996 )
 #endif
 /** Return the local timezone name that applies at this time value.
     On some platforms returns the most recent timezone name (dst or
     non-dst one depending on the time value), not the one that applies
     at the time value.  */
-const char* Time::timezone( int* daylight /* = 0 */ ) const
-{
-  tm localtm                = local();
+const char* Time::timezone( int* daylight /* = 0 */ ) const {
+  tm localtm = local();
   if ( daylight ) *daylight = localtm.tm_isdst;
   // extern "C" { extern char *tzname [2]; }
   return tzname[localtm.tm_isdst > 0 ? 1 : 0];
 }
 #ifdef WIN32
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif
 
 /** Format the time using @c strftime.
  *  The additional conversion specifier %f can be used to display
  *  milliseconds (extension for compatibility with MessageSvc time format).
  */
-std::string Time::format( bool local, std::string spec ) const
-{
+std::string Time::format( bool local, std::string spec ) const {
   /// @FIXME: This doesn't account for nsecs part!
   std::string            result;
   tm                     time   = split( local );
@@ -271,9 +262,7 @@ std::string Time::format( bool local, std::string spec ) const
     std::string ms = nanoformat( 3, 3 );
     // Replace all the occurrences of '%f' (if not preceded by '%')
     while ( std::string::npos != pos ) {
-      if ( pos != 0 && spec[pos - 1] != '%' ) {
-        spec.replace( pos, 2, ms );
-      }
+      if ( pos != 0 && spec[pos - 1] != '%' ) { spec.replace( pos, 2, ms ); }
       pos = spec.find( "%f", pos + 1 ); // search for the next occurrence
     }
   }
@@ -300,8 +289,7 @@ std::string Time::format( bool local, std::string spec ) const
     have at most that many digits.  Both @a minwidth and @a maxwidth
     must be between one and nine inclusive and @a minwidth must be
     less or equal to @a maxwidth.  */
-std::string Time::nanoformat( size_t minwidth /* = 1 */, size_t maxwidth /* = 9 */ ) const
-{
+std::string Time::nanoformat( size_t minwidth /* = 1 */, size_t maxwidth /* = 9 */ ) const {
   TimeAssert( ( minwidth >= 1 ) && ( minwidth <= maxwidth ) && ( maxwidth <= 9 ),
               "nanoformat options do not satisfy: 1 <= minwidth <= maxwidth <= 9" );
 
@@ -324,8 +312,7 @@ std::string Time::nanoformat( size_t minwidth /* = 1 */, size_t maxwidth /* = 9 
 
 //////////////////////////////////////////////////////////////////////
 /** Convert the #Time @a t into a MS-DOS date format.  */
-unsigned Time::toDosDate( Time time )
-{
+unsigned Time::toDosDate( Time time ) {
   // Use local time since DOS does too.
   struct tm localtm = time.local();
 
@@ -339,8 +326,7 @@ unsigned Time::toDosDate( Time time )
 }
 
 /** Convert the MS-DOS date @a dosDate into a #Time.  */
-Time Time::fromDosDate( unsigned dosDate )
-{
+Time Time::fromDosDate( unsigned dosDate ) {
   // DOS times are generally local; treat it as UTC.  This avoids
   // any round-trip conversion and leaves only a presentation as an
   // issue.  Since not much can be known about the origin of the DOS

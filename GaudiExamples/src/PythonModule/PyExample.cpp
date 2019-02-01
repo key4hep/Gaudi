@@ -15,8 +15,7 @@
 
 #include <boost/python.hpp>
 
-BOOST_PYTHON_MODULE( PyExample )
-{
+BOOST_PYTHON_MODULE( PyExample ) {
   using namespace boost::python;
   def( "greet", greet );
 }

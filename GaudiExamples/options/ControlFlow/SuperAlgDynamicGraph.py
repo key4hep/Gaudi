@@ -55,17 +55,17 @@ top = s1 >> s2
 
 MySuperAlg('s2', PercentPass=75, OutputLevel=DEBUG, UseHelloWorld=False)
 
-
 print '# --- Configured Control Flow Expression:'
 print '#', top
 print '# ---'
 EventLoopMgr(PrintControlFlowExpression=True)
 
 # -----------------------------------------------------------------
-ApplicationMgr(TopAlg=[top],
-               EvtMax=10,      # events to be processed (default is 10)
-               EvtSel='NONE',  # do not use any event input
-               ExtSvc=['ToolSvc', 'AuditorSvc'],
-               AuditAlgorithms=True)
+ApplicationMgr(
+    TopAlg=[top],
+    EvtMax=10,  # events to be processed (default is 10)
+    EvtSel='NONE',  # do not use any event input
+    ExtSvc=['ToolSvc', 'AuditorSvc'],
+    AuditAlgorithms=True)
 
 AuditorSvc().Auditors.append(TimingAuditor("TIMER"))

@@ -28,16 +28,12 @@
  */
 // ============================================================================
 
-class TupleAlg3 : public GaudiTupleAlg
-{
+class TupleAlg3 : public GaudiTupleAlg {
 public:
   /// initialize the algorithm
-  StatusCode initialize() override
-  {
+  StatusCode initialize() override {
     StatusCode sc = GaudiTupleAlg::initialize();
-    if ( sc.isFailure() ) {
-      return sc;
-    }
+    if ( sc.isFailure() ) { return sc; }
     // check for random numbers service
     Assert( randSvc() != 0, "Random Service is not available!" );
     //
@@ -66,8 +62,7 @@ DECLARE_COMPONENT( TupleAlg3 )
  *  @see IAlgoruthm
  */
 // ============================================================================
-StatusCode TupleAlg3::execute()
-{
+StatusCode TupleAlg3::execute() {
   /// avoid long names
   using namespace Tuples;
   using namespace Gaudi::Units;
@@ -92,10 +87,10 @@ StatusCode TupleAlg3::execute()
     lv.SetPx( gauss() );
     lv.SetPy( gauss() );
     lv.SetPz( flat() );
-    lv.SetE(::sqrt( lv.P2() + 1 * GeV * GeV ) );
+    lv.SetE( ::sqrt( lv.P2() + 1 * GeV * GeV ) );
 
     LV lv2 = lv;
-    lv2.SetE(::sqrt( lv.P2() + 4 * GeV * GeV ) );
+    lv2.SetE( ::sqrt( lv.P2() + 4 * GeV * GeV ) );
 
     tuple->column( "lv1", lv );
     tuple->column( "lv2", lv2 );
@@ -156,8 +151,8 @@ StatusCode TupleAlg3::execute()
 
     Tuple tuple = nTuple( "S-matrices", "Tuple with S-matrices" );
 
-    ROOT::Math::SMatrix<float, 4> v1;
-    ROOT::Math::SMatrix<double, 3, 15> v2;
+    ROOT::Math::SMatrix<float, 4>                                                 v1;
+    ROOT::Math::SMatrix<double, 3, 15>                                            v2;
     ROOT::Math::SMatrix<long double, 5, 5, ROOT::Math::MatRepSym<long double, 5>> v3;
 
     std::generate( v1.begin(), v1.end(), gauss );

@@ -10,16 +10,14 @@
 //
 // 2008-05-23 : Marco CLEMENCIC
 //-----------------------------------------------------------------------------
-namespace GaudiExamples
-{
+namespace GaudiExamples {
   // Declaration of the Algorithm Factory
   DECLARE_COMPONENT( GaudiPPS )
 
   //=============================================================================
   // Initialization
   //=============================================================================
-  StatusCode GaudiPPS::initialize()
-  {
+  StatusCode GaudiPPS::initialize() {
     StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
     if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -33,8 +31,7 @@ namespace GaudiExamples
   //=============================================================================
   // Main execution
   //=============================================================================
-  StatusCode GaudiPPS::execute()
-  {
+  StatusCode GaudiPPS::execute() {
 
     if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 

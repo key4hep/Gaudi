@@ -34,8 +34,7 @@
 struct DataObjID_Hasher;
 class IClassIDSvc;
 
-class DataObjID
-{
+class DataObjID {
 public:
   friend DataObjID_Hasher;
 
@@ -59,7 +58,7 @@ public:
   friend bool operator==( const DataObjID& lhs, const DataObjID& rhs ) { return lhs.m_hash == rhs.m_hash; }
   friend bool operator!=( const DataObjID& lhs, const DataObjID& rhs ) { return !( lhs == rhs ); }
 
-  friend StatusCode parse( DataObjID& dest, const std::string& src );
+  friend StatusCode    parse( DataObjID& dest, const std::string& src );
   friend std::ostream& toStream( const DataObjID& v, std::ostream& o );
   friend std::ostream& operator<<( std::ostream& os, const DataObjID& d ) { return toStream( d, os ); }
 
@@ -80,21 +79,18 @@ private:
 
 inline DataObjID::DataObjID( const std::string& key ) : m_key( key ) { hashGen(); }
 
-inline DataObjID::DataObjID( const CLID& clid, const std::string& key ) : m_clid( clid ), m_key( key )
-{
+inline DataObjID::DataObjID( const CLID& clid, const std::string& key ) : m_clid( clid ), m_key( key ) {
   setClassName();
   hashGen();
 }
 
 inline DataObjID::DataObjID( const std::string& className, const std::string& key )
-    : m_key( key ), m_className( className )
-{
+    : m_key( key ), m_className( className ) {
   setClid();
   hashGen();
 }
 
-inline void DataObjID::updateKey( const std::string& key )
-{
+inline void DataObjID::updateKey( const std::string& key ) {
   m_key = key;
   hashGen();
 }
@@ -105,22 +101,19 @@ struct DataObjID_Hasher {
 
 using DataObjIDColl = std::unordered_set<DataObjID, DataObjID_Hasher>;
 
-namespace Gaudi
-{
-  namespace Details
-  {
-    namespace Property
-    {
+namespace Gaudi {
+  namespace Details {
+    namespace Property {
       template <typename T>
       struct StringConverter;
 
       template <>
       struct StringConverter<DataObjIDColl> {
-        std::string toString( const DataObjIDColl& v );
+        std::string   toString( const DataObjIDColl& v );
         DataObjIDColl fromString( const DataObjIDColl&, const std::string& );
       };
-    }
-  }
-}
+    } // namespace Property
+  }   // namespace Details
+} // namespace Gaudi
 
 #endif

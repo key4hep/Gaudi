@@ -55,13 +55,15 @@ class FdsDict(dict):
         if dir == "" and self.curdir is not None:
             dir = self.curdir
         msg.debug("get_fds_in_dir(%s)" % dir)
-        return [i for i in self.keys()
-                if os.path.samefile(os.path.dirname(self[i][0]), dir)]
+        return [
+            i for i in self.keys()
+            if os.path.samefile(os.path.dirname(self[i][0]), dir)
+        ]
 
     def create_symlinks(self, wkdir=""):
         """
         create necessary symlinks in worker's dir if the fd is <INPUT>
-        otherwise copy <OUTPUT> file 
+        otherwise copy <OUTPUT> file
         """
         import os
         import shutil
@@ -75,15 +77,17 @@ class FdsDict(dict):
                 if os.path.exists(dst):
                     # update_io_registry took care of this
                     msg.debug(
-                        "fds_dict.create_symlink:update_io_registry took care of src=%s" % src)
+                        "fds_dict.create_symlink:update_io_registry took care of src=%s"
+                        % src)
                     pass
                 else:
                     msg.debug(
-                        "fds_dict.create_symlink:(symlink) src=%s, iomode=%s" % (src, iomode))
+                        "fds_dict.create_symlink:(symlink) src=%s, iomode=%s" %
+                        (src, iomode))
                     os.symlink(src, dst)
             else:
-                msg.debug(
-                    "fds_dict.create_symlink: (copy) src=%s, dst=%s" % (src, dst))
+                msg.debug("fds_dict.create_symlink: (copy) src=%s, dst=%s" %
+                          (src, dst))
                 shutil.copy(src, dst)
                 pass
         return
@@ -93,14 +97,15 @@ class FdsDict(dict):
         """
         import os
         import fcntl
-        msg.info("extract_fds: making snapshot of parent process file descriptors")
+        msg.info(
+            "extract_fds: making snapshot of parent process file descriptors")
         self.curdir = os.path.abspath(os.curdir)
         iomode = '<INPUT>'
 
         procfd = '/proc/self/fd'
         fds = os.listdir(procfd)
         for i in fds:
-            fd = int(i)       # spurious entries should raise at this point
+            fd = int(i)  # spurious entries should raise at this point
             if (fd == 1 or fd == 2):
                 # leave stdout and stderr to redirect_log
                 continue

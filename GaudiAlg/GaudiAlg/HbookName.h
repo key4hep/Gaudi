@@ -13,8 +13,7 @@
  *  @date   2002-07-25
  */
 
-namespace
-{
+namespace {
   /** Simple function to convert any valid Gaudi address
    *  (name in Transient Store)
    *  to address, which is simultaneously valid for Hbook directory
@@ -29,12 +28,9 @@ namespace
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   06/07/2001
    */
-  inline std::string dirHbookName( const std::string& addr, const int maxLen = 16 )
-  {
+  inline std::string dirHbookName( const std::string& addr, const int maxLen = 16 ) {
     // ignore empty locations
-    if ( addr.empty() ) {
-      return std::string();
-    }
+    if ( addr.empty() ) { return std::string(); }
     //
     std::string old( addr );
     // remove long names

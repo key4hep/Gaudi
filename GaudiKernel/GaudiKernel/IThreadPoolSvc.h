@@ -20,8 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-class GAUDI_API IThreadPoolSvc : virtual public IInterface
-{
+class GAUDI_API IThreadPoolSvc : virtual public IInterface {
 
 public:
   /// InterfaceID

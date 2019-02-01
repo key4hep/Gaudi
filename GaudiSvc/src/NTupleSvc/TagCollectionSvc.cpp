@@ -46,8 +46,7 @@ DECLARE_COMPONENT( TagCollectionSvc )
 TagCollectionSvc::TagCollectionSvc( const std::string& name, ISvcLocator* svc ) : NTupleSvc( name, svc ) {}
 
 /// Add file to list I/O list
-StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& logname )
-{
+StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& logname ) {
   DataObject* pO     = nullptr;
   StatusCode  status = findObject( m_rootName.value(), pO );
   if ( status.isSuccess() ) {
@@ -62,7 +61,7 @@ StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& log
       // we assume that there is always a " "
       // (but if it is not there, we probably will not match the pattern)
       for ( auto attrib : Parser( ident.substr( loc + 1 ) ) ) {
-        switch (::toupper( attrib.tag[0] ) ) {
+        switch ( ::toupper( attrib.tag[0] ) ) {
         case 'A':
           props.emplace_back( "Server", attrib.value );
           break;
@@ -71,7 +70,7 @@ StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& log
           filename = std::move( attrib.value );
           break;
         case 'O': /* OPT='<NEW<CREATE,WRITE>, UPDATE, READ>' */
-          switch (::toupper( attrib.value[0] ) ) {
+          switch ( ::toupper( attrib.value[0] ) ) {
           case 'C':
           case 'N':
           case 'W':
@@ -82,7 +81,7 @@ StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& log
             break;
           case 'O':
           case 'R':
-            switch (::toupper( attrib.value[2] ) ) {
+            switch ( ::toupper( attrib.value[2] ) ) {
             case 'C': /* RECREATE */
               typ = 'R';
               break;
@@ -98,12 +97,12 @@ StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& log
           }
           break;
         case 'S': // SVC='<service type>'
-          switch (::toupper( attrib.tag[1] ) ) {
+          switch ( ::toupper( attrib.tag[1] ) ) {
           case 'V':
             svc = std::move( attrib.value );
             break;
           case 'H':
-            switch (::toupper( attrib.value[0] ) ) {
+            switch ( ::toupper( attrib.value[0] ) ) {
             case 'Y':
               props.emplace_back( "ShareFiles", attrib.value );
               break;
@@ -112,7 +111,7 @@ StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& log
           }
           break;
         case 'T': // TYP='<HBOOK,ROOT,OBJY,...>'
-          switch (::toupper( attrib.value[0] ) ) {
+          switch ( ::toupper( attrib.value[0] ) ) {
           case 'H':
             svc = "HbookCnv::ConvSvc";
             break;
@@ -150,8 +149,7 @@ StatusCode TagCollectionSvc::connect( const std::string& ident, std::string& log
 
 /// Create conversion service
 StatusCode TagCollectionSvc::createService( const std::string& nam, const std::string& typ,
-                                            const std::vector<Prop>& props, IConversionSvc*& pSvc )
-{
+                                            const std::vector<Prop>& props, IConversionSvc*& pSvc ) {
   pSvc = nullptr;
   using Gaudi::Utils::TypeNameString;
   auto mgr = serviceLocator()->as<ISvcManager>();
@@ -165,9 +163,7 @@ StatusCode TagCollectionSvc::createService( const std::string& nam, const std::s
       if ( icsvc ) {
         auto iprop = isvc.as<IProperty>();
         if ( iprop ) {
-          for ( const auto& p : props ) {
-            iprop->setProperty( p.first, p.second ).ignore();
-          }
+          for ( const auto& p : props ) { iprop->setProperty( p.first, p.second ).ignore(); }
           // NTupleSvc has to directly create a ConversionSvc to manage it directly.
           status = isvc->sysInitialize();
           if ( status.isSuccess() ) {

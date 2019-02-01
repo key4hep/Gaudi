@@ -3,21 +3,16 @@
 #include <GaudiAlg/Producer.h>
 #include <GaudiKernel/MsgStream.h>
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<::Algorithm>;
 
     struct THDataProducer : Gaudi::Functional::Producer<int(), BaseClass_t> {
 
       THDataProducer( const std::string& name, ISvcLocator* svcLoc )
-          : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyInt" ) )
-      {
-      }
+          : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyInt" ) ) {}
 
-      int operator()() const override
-      {
+      int operator()() const override {
         info() << "executing IntDataProducer, storing 7 into " << outputLocation() << endmsg;
         return 7;
       }
@@ -28,12 +23,9 @@ namespace Gaudi
     struct THDataProducer2 : Gaudi::Functional::Producer<float(), BaseClass_t> {
 
       THDataProducer2( const std::string& name, ISvcLocator* svcLoc )
-          : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyFloat" ) )
-      {
-      }
+          : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyFloat" ) ) {}
 
-      float operator()() const override
-      {
+      float operator()() const override {
         info() << "executing IntDataProducer, storing 7.0 into " << outputLocation() << endmsg;
         return 7.0;
       }
@@ -44,12 +36,9 @@ namespace Gaudi
     struct THDataConsumer : Gaudi::Functional::Consumer<void( const int& ), BaseClass_t> {
 
       THDataConsumer( const std::string& name, ISvcLocator* svcLoc )
-          : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ) )
-      {
-      }
+          : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ) ) {}
 
-      void operator()( const int& input ) const override
-      {
+      void operator()( const int& input ) const override {
         info() << "executing IntDataConsumer, checking " << input << " from " << inputLocation() << " and "
                << m_floatTool->getFloat() << " from FloatTool are matching" << endmsg;
       }
@@ -58,5 +47,5 @@ namespace Gaudi
     };
 
     DECLARE_COMPONENT( THDataConsumer )
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi

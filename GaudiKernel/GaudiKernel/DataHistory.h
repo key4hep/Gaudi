@@ -20,15 +20,12 @@ class AlgorithmHistory;
  *  @author: Charles Leggett
  *
  */
-class GAUDI_API DataHistory : public HistoryObj
-{
+class GAUDI_API DataHistory : public HistoryObj {
 
 public:
-  class DataHistoryOrder final
-  {
+  class DataHistoryOrder final {
   public:
-    bool operator()( const DataHistory& lhs, const DataHistory& rhs ) const
-    {
+    bool operator()( const DataHistory& lhs, const DataHistory& rhs ) const {
       return std::tie( lhs.m_dataClassID, lhs.m_dataKey, lhs.m_algHist ) <
              std::tie( rhs.m_dataClassID, rhs.m_dataKey, rhs.m_algHist );
     }

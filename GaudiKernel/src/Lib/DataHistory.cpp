@@ -13,8 +13,8 @@
 #include "GaudiKernel/AlgorithmHistory.h"
 #include <iostream>
 
-using std::ostream;
 using std::endl;
+using std::ostream;
 
 //**********************************************************************
 // Member functions.
@@ -23,14 +23,11 @@ using std::endl;
 // Default constructor.
 
 DataHistory::DataHistory( const CLID& id, std::string key, AlgorithmHistory* alg )
-    : m_dataClassID( id ), m_dataKey( std::move( key ) ), m_algHist( alg )
-{
-}
+    : m_dataClassID( id ), m_dataKey( std::move( key ) ), m_algHist( alg ) {}
 
 //**********************************************************************
 
-const CLID& DataHistory::classID()
-{
+const CLID& DataHistory::classID() {
   static const CLID CLID_DataHistory = 83814411; // from `clid DataHistory`
 
   return CLID_DataHistory;
@@ -38,8 +35,7 @@ const CLID& DataHistory::classID()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void DataHistory::dump( std::ostream& ost, const bool /*isXML*/, int /*ind*/ ) const
-{
+void DataHistory::dump( std::ostream& ost, const bool /*isXML*/, int /*ind*/ ) const {
   ost << "ClassID: " << dataClassID() << endl
       << "Key: " << dataKey() << endl
       << "AlgorithmHistory: " << (void*)algorithmHistory() << endl;
@@ -47,8 +43,7 @@ void DataHistory::dump( std::ostream& ost, const bool /*isXML*/, int /*ind*/ ) c
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-ostream& operator<<( ostream& lhs, const DataHistory& rhs )
-{
+ostream& operator<<( ostream& lhs, const DataHistory& rhs ) {
 
   rhs.dump( lhs, false );
   return lhs;

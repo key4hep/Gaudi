@@ -19,8 +19,7 @@ class IDataProviderSvc;
     a light-weight interface to differing registry mechanism.
 
 */
-class GAUDI_API IRegistry
-{
+class GAUDI_API IRegistry {
 public:
   /// Type definitions
   /// Name type

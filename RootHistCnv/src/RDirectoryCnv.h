@@ -5,8 +5,7 @@
 #include "GaudiKernel/NTuple.h"
 #include "RConverter.h"
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RootHistCnv::RDirectoryCnv RDirectoryCnv.h
 
@@ -14,8 +13,7 @@ namespace RootHistCnv
         data store directories
       @author Charles Leggett
   */
-  class RDirectoryCnv : public RConverter
-  {
+  class RDirectoryCnv : public RConverter {
   public:
     /// Create the transient representation of an object.
     StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override;

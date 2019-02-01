@@ -13,23 +13,19 @@ DECLARE_COMPONENT( MyAudAlgorithm )
 
 // Constructor
 //------------------------------------------------------------------------------
-MyAudAlgorithm::MyAudAlgorithm( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc ), m_i( 0 )
-{
+MyAudAlgorithm::MyAudAlgorithm( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc ), m_i( 0 ) {
   //------------------------------------------------------------------------------
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyAudAlgorithm::initialize()
-{
+StatusCode MyAudAlgorithm::initialize() {
   //------------------------------------------------------------------------------
 
   StatusCode sc;
   info() << "initializing...." << endmsg;
 
   sc = toolSvc()->retrieveTool( "MyAudTool", m_tool );
-  if ( sc.isFailure() ) {
-    error() << "Error retrieving the tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { error() << "Error retrieving the tool" << endmsg; }
 
   info() << "....initialization done" << endmsg;
 
@@ -39,8 +35,7 @@ StatusCode MyAudAlgorithm::initialize()
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyAudAlgorithm::execute()
-{
+StatusCode MyAudAlgorithm::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
 
@@ -56,16 +51,13 @@ StatusCode MyAudAlgorithm::execute()
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyAudAlgorithm::finalize()
-{
+StatusCode MyAudAlgorithm::finalize() {
   //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
 
   always() << "none of the following 10 messages should be suppressed" << endmsg;
 
-  for ( int i = 0; i < 10; ++i ) {
-    m_tool->doErr();
-  }
+  for ( int i = 0; i < 10; ++i ) { m_tool->doErr(); }
 
   toolSvc()->releaseTool( m_tool ).ignore();
 

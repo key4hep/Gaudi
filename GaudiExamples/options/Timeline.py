@@ -15,16 +15,17 @@ app = ApplicationMgr()
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
 OtherIntDataProducer.OutputLocation = "/Event/MyOtherInt"
-app.TopAlg = [IntDataProducer("IntDataProducer"),
-              OtherIntDataProducer,
-              IntDataConsumer("IntDataConsumer"),
-              IntToFloatData("IntToFloatData"),
-              IntIntToFloatFloatData("IntIntToFloatFloatData"),
-              FloatDataConsumer("FloatDataConsumer")]
+app.TopAlg = [
+    IntDataProducer("IntDataProducer"), OtherIntDataProducer,
+    IntDataConsumer("IntDataConsumer"),
+    IntToFloatData("IntToFloatData"),
+    IntIntToFloatFloatData("IntIntToFloatFloatData"),
+    FloatDataConsumer("FloatDataConsumer")
+]
 # - Events
 app.EvtMax = 2
 app.EvtSel = "NONE"
 app.HistogramPersistency = "NONE"
 # - Activate timeline service
-TimelineSvc(RecordTimeline=True,
-            DumpTimeline=True, TimelineFile='myTimeline.csv')
+TimelineSvc(
+    RecordTimeline=True, DumpTimeline=True, TimelineFile='myTimeline.csv')

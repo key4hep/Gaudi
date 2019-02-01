@@ -6,8 +6,7 @@
 #include <string>
 
 // forward declaration
-namespace AIDA
-{
+namespace AIDA {
   class IBaseHistogram;
 }
 class StatEntity;
@@ -21,8 +20,7 @@ class StatEntity;
     @author Pere Mato
 */
 
-class GAUDI_API IMonitorSvc : virtual public IInterface
-{
+class GAUDI_API IMonitorSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IMonitorSvc, 4, 1 );
@@ -35,21 +33,21 @@ public:
                    clean up
   */
   virtual void declareInfo( const std::string& name, const bool& var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const int& var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const long& var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const double& var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const std::string& var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const std::pair<double, double>& var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const AIDA::IBaseHistogram* var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const StatEntity& var, const std::string& desc,
-                            const IInterface* owner ) = 0;
+                            const IInterface* owner )                          = 0;
   virtual void declareInfo( const std::string& name, const std::string& format, const void* var, int size,
                             const std::string& desc, const IInterface* owner ) = 0;
 

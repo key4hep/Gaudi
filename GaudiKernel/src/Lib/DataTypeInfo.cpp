@@ -21,8 +21,7 @@
 #include "GaudiKernel/System.h"
 
 // Access to type information
-DataTypeInfo::Type DataTypeInfo::idByName( const std::string& typ )
-{
+DataTypeInfo::Type DataTypeInfo::idByName( const std::string& typ ) {
   if ( typ == "unsigned char" || typ == "const unsigned char" )
     return UCHAR;
   else if ( typ == "unsigned short" || typ == "const unsigned short" )
@@ -62,8 +61,7 @@ DataTypeInfo::Type DataTypeInfo::idByName( const std::string& typ )
 }
 
 // Access to type information
-const std::type_info& DataTypeInfo::typeByName( const std::string& typ )
-{
+const std::type_info& DataTypeInfo::typeByName( const std::string& typ ) {
   if ( typ == "unsigned char" || typ == "const unsigned char" )
     return typeid( unsigned char );
   else if ( typ == "unsigned short" || typ == "const unsigned short" )
@@ -101,8 +99,7 @@ const std::type_info& DataTypeInfo::typeByName( const std::string& typ )
 }
 
 // Access the type name by type ID
-std::string DataTypeInfo::name( long typ )
-{
+std::string DataTypeInfo::name( long typ ) {
   switch ( typ ) {
   case UCHAR:
     return System::typeinfoName( typeid( unsigned char ) );
@@ -149,8 +146,7 @@ std::string DataTypeInfo::name( long typ )
 }
 
 // Access the type name by type_info
-std::string DataTypeInfo::name( const std::type_info& typ )
-{
+std::string DataTypeInfo::name( const std::type_info& typ ) {
   if ( typ == typeid( unsigned char ) )
     return DataTypeInfo::name( UCHAR );
   else if ( typ == typeid( unsigned short ) )

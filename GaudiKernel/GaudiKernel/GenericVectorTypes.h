@@ -22,8 +22,7 @@
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // NB : Please remember to give a simple doxygen comment for each typedef
 
@@ -46,5 +45,5 @@ namespace Gaudi
   typedef ROOT::Math::SVector<float, 7> Vector7F; ///< 7D Vector (float)
   typedef ROOT::Math::SVector<float, 8> Vector8F; ///< 8D Vector (float)
   typedef ROOT::Math::SVector<float, 9> Vector9F; ///< 9D Vector (float)
-}
+} // namespace Gaudi
 #endif // KERNEL_GENERICVECTORTYPES_H

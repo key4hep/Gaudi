@@ -18,11 +18,11 @@
 #include <climits>
 #include <ctime>
 #ifdef _WIN32
-#include <windows.h>
+#  include <windows.h>
 #else
-#include <sys/time.h>
-#include <sys/times.h>
-#include <unistd.h>
+#  include <sys/time.h>
+#  include <sys/times.h>
+#  include <unistd.h>
 #endif
 
 #ifdef _WIN32
@@ -34,8 +34,7 @@ static const long long UNIX_BASE_TIME = 0;
 // convert time from internal representation to the appropriate type
 // Internal representation for WIN32: 100 nanosecond intervals
 //                             Unix:    1 clock tick (usually 10 milliseconds)
-long long System::adjustTime( TimeType typ, long long t )
-{
+long long System::adjustTime( TimeType typ, long long t ) {
   if ( t != -1 ) {
 #ifndef _WIN32
 /////////    t *= 10000000;           // in 100 nanosecond intervals
@@ -75,13 +74,12 @@ long long System::adjustTime( TimeType typ, long long t )
 }
 
 /// Retrieve the number of ticks since system startup
-long long System::tickCount()
-{
+long long System::tickCount() {
   long long count = 10000;
 #ifdef _WIN32
   count *= ::GetTickCount(); // Number of milliSec since system startup
 #else
-  struct tms           buf;
+  struct tms buf;
   count *= 10 * times( &buf );
 #endif
   return count;
@@ -90,8 +88,7 @@ long long System::tickCount()
 #include <iostream>
 
 /// Retrieve current system time
-long long System::currentTime( TimeType typ )
-{
+long long System::currentTime( TimeType typ ) {
   switch ( typ ) {
   case Year:
     return currentTime<Year>();
@@ -118,8 +115,7 @@ long long System::currentTime( TimeType typ )
 }
 
 /// Units of time since system startup and begin of epoche
-long long System::systemStart( TimeType typ )
-{
+long long System::systemStart( TimeType typ ) {
   static long long sys_start = 0;
   if ( 0 == sys_start ) {
     long long c = currentTime( microSec );
@@ -130,15 +126,13 @@ long long System::systemStart( TimeType typ )
 }
 
 /// Units of time since system startup in requested units
-long long System::upTime( TimeType typ )
-{
+long long System::upTime( TimeType typ ) {
   static long long sys_start = 10 * systemStart( microSec );
   return adjustTime( typ, 10 * currentTime( microSec ) - sys_start );
 }
 
 /// Units of time between process creation and begin of epoche
-long long System::creationTime( TimeType typ, InfoType fetch, long pid )
-{
+long long System::creationTime( TimeType typ, InfoType fetch, long pid ) {
   long long         created = 0;
   KERNEL_USER_TIMES info;
   if ( fetch != NoFetch && getProcess()->query( pid, fetch, &info ) ) {
@@ -148,8 +142,7 @@ long long System::creationTime( TimeType typ, InfoType fetch, long pid )
 }
 
 /// System Process Limits: Maximum processing time left for this process
-long long System::remainingTime( TimeType typ, InfoType fetch, long pid )
-{
+long long System::remainingTime( TimeType typ, InfoType fetch, long pid ) {
   long long    left = 0;
   QUOTA_LIMITS quota;
   if ( fetch != NoFetch && getProcess()->query( pid, fetch, &quota ) ) {
@@ -163,8 +156,7 @@ long long System::remainingTime( TimeType typ, InfoType fetch, long pid )
 }
 
 /// Ellapsed time since start of process in milliseconds
-long long System::ellapsedTime( TimeType typ, InfoType fetch, long pid )
-{
+long long System::ellapsedTime( TimeType typ, InfoType fetch, long pid ) {
   KERNEL_USER_TIMES info;
   long long         ellapsed = currentTime( microSec ) * 10;
   getProcess()->query( pid, fetch, &info );
@@ -173,8 +165,7 @@ long long System::ellapsedTime( TimeType typ, InfoType fetch, long pid )
 }
 
 /// CPU kernel time of process in milliseconds
-long long System::kernelTime( TimeType typ, InfoType fetch, long pid )
-{
+long long System::kernelTime( TimeType typ, InfoType fetch, long pid ) {
   KERNEL_USER_TIMES info;
   long long         kerneltime = 0;
   if ( fetch != NoFetch && getProcess()->query( pid, fetch, &info ) ) {
@@ -184,19 +175,15 @@ long long System::kernelTime( TimeType typ, InfoType fetch, long pid )
 }
 
 /// CPU kernel time of process in milliseconds
-long long System::userTime( TimeType typ, InfoType fetch, long pid )
-{
+long long System::userTime( TimeType typ, InfoType fetch, long pid ) {
   long long         usertime = 0;
   KERNEL_USER_TIMES info;
-  if ( fetch != NoFetch && getProcess()->query( pid, fetch, &info ) ) {
-    usertime = adjustTime( typ, info.UserTime );
-  }
+  if ( fetch != NoFetch && getProcess()->query( pid, fetch, &info ) ) { usertime = adjustTime( typ, info.UserTime ); }
   return usertime;
 }
 
 /// CPU kernel time of process in milliseconds
-long long System::cpuTime( TimeType typ, InfoType fetch, long pid )
-{
+long long System::cpuTime( TimeType typ, InfoType fetch, long pid ) {
   long long         cputime = 0;
   KERNEL_USER_TIMES info;
   if ( fetch != NoFetch && getProcess()->query( pid, fetch, &info ) ) {
@@ -205,14 +192,12 @@ long long System::cpuTime( TimeType typ, InfoType fetch, long pid )
   return cputime;
 }
 
-namespace System
-{
-  ProcessTime getProcessTime( long pid )
-  {
+namespace System {
+  ProcessTime getProcessTime( long pid ) {
     KERNEL_USER_TIMES info;
     if ( getProcess()->query( pid, Times, &info ) ) {
       return ProcessTime( info.KernelTime, info.UserTime, currentTime<Native>() - info.CreateTime );
     }
     return ProcessTime(); // return 0s in case of problems
   }
-}
+} // namespace System

@@ -16,8 +16,7 @@
 #include "CLHEP/GenericFunctions/AbsFunctional.hh"
 // ============================================================================
 
-namespace GaudiMath
-{
+namespace GaudiMath {
 
   GAUDI_API double Integral( const Genfun::AbsFunction& function, const double a, const double b,
                              const GaudiMath::Integration::Type        type = GaudiMath::Integration::Adaptive,
@@ -39,7 +38,7 @@ namespace GaudiMath
                              const GaudiMath::Integration::Inf a = GaudiMath::Integration::Infinity,
                              const GaudiMath::Integration::Inf b = GaudiMath::Integration::Infinity,
                              const double epsabs = 1e-9, const double epsrel = 1.e-6, const size_t size = 1000 );
-}
+} // namespace GaudiMath
 
 // ============================================================================
 // The END

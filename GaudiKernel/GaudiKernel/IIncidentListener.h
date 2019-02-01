@@ -12,8 +12,7 @@ class EventContext;
     The interface implemented by any class wanting to listen to Incidents.
     @author Pere Mato
 */
-class GAUDI_API IIncidentListener : virtual public IInterface
-{
+class GAUDI_API IIncidentListener : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IIncidentListener, 2, 0 );

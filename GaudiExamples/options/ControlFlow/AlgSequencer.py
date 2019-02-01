@@ -47,10 +47,11 @@ print '#', all
 print '# ---'
 EventLoopMgr(PrintControlFlowExpression=True)
 # -----------------------------------------------------------------
-ApplicationMgr(TopAlg=[all],
-               EvtMax=10,     # events to be processed (default is 10)
-               EvtSel='NONE',  # do not use any event input
-               ExtSvc=['ToolSvc', 'AuditorSvc'],
-               AuditAlgorithms=True)
+ApplicationMgr(
+    TopAlg=[all],
+    EvtMax=10,  # events to be processed (default is 10)
+    EvtSel='NONE',  # do not use any event input
+    ExtSvc=['ToolSvc', 'AuditorSvc'],
+    AuditAlgorithms=True)
 
 AuditorSvc().Auditors += [TimingAuditor("TIMER")]

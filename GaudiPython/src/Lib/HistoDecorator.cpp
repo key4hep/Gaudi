@@ -29,8 +29,7 @@
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const double data,
                                                          const std::string& title, const double low, const double high,
-                                                         const unsigned long bins )
-{
+                                                         const unsigned long bins ) {
   return algo.plot1D( data, title, low, high, bins );
 }
 // ============================================================================
@@ -47,8 +46,8 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const double data,
                                                          const GaudiAlg::HistoID& ID, const std::string& title,
-                                                         const double low, const double high, const unsigned long bins )
-{
+                                                         const double low, const double high,
+                                                         const unsigned long bins ) {
   return algo.plot1D( data, ID, title, low, high, bins );
 }
 // ============================================================================
@@ -65,8 +64,7 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const double data, const long ID,
                                                          const std::string& title, const double low, const double high,
-                                                         const unsigned long bins )
-{
+                                                         const unsigned long bins ) {
   return algo.plot1D( data, ID, title, low, high, bins );
 }
 // ============================================================================
@@ -83,8 +81,8 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const double data,
                                                          const std::string& ID, const std::string& title,
-                                                         const double low, const double high, const unsigned long bins )
-{
+                                                         const double low, const double high,
+                                                         const unsigned long bins ) {
   return algo.plot1D( data, ID, title, low, high, bins );
 }
 // ============================================================================
@@ -100,8 +98,7 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data,
                                                          const std::string& title, const double low, const double high,
-                                                         const unsigned long bins )
-{
+                                                         const unsigned long bins ) {
   return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), title, low, high, bins );
 }
 // ============================================================================
@@ -118,8 +115,8 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data,
                                                          const GaudiAlg::HistoID& ID, const std::string& title,
-                                                         const double low, const double high, const unsigned long bins )
-{
+                                                         const double low, const double high,
+                                                         const unsigned long bins ) {
   return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), ID, title, low, high, bins );
 }
 // ============================================================================
@@ -136,8 +133,7 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data,
                                                          const long ID, const std::string& title, const double low,
-                                                         const double high, const unsigned long bins )
-{
+                                                         const double high, const unsigned long bins ) {
   return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), ID, title, low, high, bins );
 }
 // ============================================================================
@@ -154,8 +150,8 @@ AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& al
 // ============================================================================
 AIDA::IHistogram1D* GaudiPython::HistoDecorator::plot1D( const GaudiHistoAlg& algo, const GaudiPython::Vector& data,
                                                          const std::string& ID, const std::string& title,
-                                                         const double low, const double high, const unsigned long bins )
-{
+                                                         const double low, const double high,
+                                                         const unsigned long bins ) {
   return algo.plot( GaudiPython::_identity(), data.begin(), data.end(), ID, title, low, high, bins );
 }
 // ============================================================================
@@ -177,8 +173,7 @@ AIDA::IHistogram2D* GaudiPython::HistoDecorator::plot2D( const GaudiHistoAlg& al
                                                          const double valueY, const std::string& title,
                                                          const double lowX, const double highX, const double lowY,
                                                          const double highY, const unsigned long binsX,
-                                                         const unsigned long binsY, const double weight )
-{
+                                                         const unsigned long binsY, const double weight ) {
   return algo.plot2D( valueX, valueY, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ============================================================================
@@ -202,8 +197,7 @@ AIDA::IHistogram2D* GaudiPython::HistoDecorator::plot2D( const GaudiHistoAlg& al
                                                          const std::string& title, const double lowX,
                                                          const double highX, const double lowY, const double highY,
                                                          const unsigned long binsX, const unsigned long binsY,
-                                                         const double weight )
-{
+                                                         const double weight ) {
   return algo.plot2D( valueX, valueY, ID, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ============================================================================
@@ -226,8 +220,7 @@ AIDA::IHistogram2D* GaudiPython::HistoDecorator::plot2D( const GaudiHistoAlg& al
                                                          const double valueY, const long ID, const std::string& title,
                                                          const double lowX, const double highX, const double lowY,
                                                          const double highY, const unsigned long binsX,
-                                                         const unsigned long binsY, const double weight )
-{
+                                                         const unsigned long binsY, const double weight ) {
   return algo.plot2D( valueX, valueY, ID, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ============================================================================
@@ -251,8 +244,7 @@ AIDA::IHistogram2D* GaudiPython::HistoDecorator::plot2D( const GaudiHistoAlg& al
                                                          const std::string& title, const double lowX,
                                                          const double highX, const double lowY, const double highY,
                                                          const unsigned long binsX, const unsigned long binsY,
-                                                         const double weight )
-{
+                                                         const double weight ) {
   return algo.plot2D( valueX, valueY, ID, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ============================================================================
@@ -277,8 +269,7 @@ AIDA::IHistogram2D* GaudiPython::HistoDecorator::plot2D( const GaudiHistoAlg& al
 AIDA::IHistogram3D* GaudiPython::HistoDecorator::plot3D(
     const GaudiHistoAlg& algo, const double valueX, const double valueY, const double valueZ, const std::string& title,
     const double lowX, const double highX, const double lowY, const double highY, const double lowZ, const double highZ,
-    const unsigned long binsX, const unsigned long binsY, const unsigned long binsZ, const double weight )
-{
+    const unsigned long binsX, const unsigned long binsY, const unsigned long binsZ, const double weight ) {
   return algo.plot3D( valueX, valueY, valueZ, title, lowX, highX, lowY, highY, lowZ, highZ, binsX, binsY, binsZ,
                       weight );
 }
@@ -307,8 +298,7 @@ AIDA::IHistogram3D* GaudiPython::HistoDecorator::plot3D( const GaudiHistoAlg& al
                                                          const double lowX, const double highX, const double lowY,
                                                          const double highY, const double lowZ, const double highZ,
                                                          const unsigned long binsX, const unsigned long binsY,
-                                                         const unsigned long binsZ, const double weight )
-{
+                                                         const unsigned long binsZ, const double weight ) {
   return algo.plot3D( valueX, valueY, valueZ, ID, title, lowX, highX, lowY, highY, lowZ, highZ, binsX, binsY, binsZ,
                       weight );
 }
@@ -337,8 +327,7 @@ AIDA::IHistogram3D* GaudiPython::HistoDecorator::plot3D( const GaudiHistoAlg& al
                                                          const double highX, const double lowY, const double highY,
                                                          const double lowZ, const double highZ,
                                                          const unsigned long binsX, const unsigned long binsY,
-                                                         const unsigned long binsZ, const double weight )
-{
+                                                         const unsigned long binsZ, const double weight ) {
   return algo.plot3D( valueX, valueY, valueZ, ID, title, lowX, highX, lowY, highY, lowZ, highZ, binsX, binsY, binsZ,
                       weight );
 }
@@ -367,8 +356,7 @@ AIDA::IHistogram3D* GaudiPython::HistoDecorator::plot3D( const GaudiHistoAlg& al
                                                          const double lowX, const double highX, const double lowY,
                                                          const double highY, const double lowZ, const double highZ,
                                                          const unsigned long binsX, const unsigned long binsY,
-                                                         const unsigned long binsZ, const double weight )
-{
+                                                         const unsigned long binsZ, const double weight ) {
   return algo.plot3D( valueX, valueY, valueZ, ID, title, lowX, highX, lowY, highY, lowZ, highZ, binsX, binsY, binsZ,
                       weight );
 }
@@ -379,8 +367,7 @@ AIDA::IProfile1D* GaudiPython::HistoDecorator::profile1D( const GaudiHistoAlg& a
                                                           const double valueY, const std::string& title,
                                                           const double lowX, const double highX,
                                                           const unsigned long binsX, const std::string& opt,
-                                                          const double lowY, const double highY, const double weight )
-{
+                                                          const double lowY, const double highY, const double weight ) {
   return algo.profile1D( valueX, valueY, title, lowX, highX, binsX, opt, lowY, highY, weight );
 }
 // ========================================================================
@@ -391,8 +378,7 @@ AIDA::IProfile1D* GaudiPython::HistoDecorator::profile1D( const GaudiHistoAlg& a
                                                           const std::string& title, const double lowX,
                                                           const double highX, const unsigned long binsX,
                                                           const std::string& opt, const double lowY, const double highY,
-                                                          const double weight )
-{
+                                                          const double weight ) {
   return algo.profile1D( valueX, valueY, ID, title, lowX, highX, binsX, opt, lowY, highY, weight );
 }
 // ========================================================================
@@ -402,8 +388,7 @@ AIDA::IProfile1D* GaudiPython::HistoDecorator::profile1D( const GaudiHistoAlg& a
                                                           const double valueY, const long ID, const std::string& title,
                                                           const double lowX, const double highX,
                                                           const unsigned long binsX, const std::string& opt,
-                                                          const double lowY, const double highY, const double weight )
-{
+                                                          const double lowY, const double highY, const double weight ) {
   return algo.profile1D( valueX, valueY, ID, title, lowX, highX, binsX, opt, lowY, highY, weight );
 }
 // ========================================================================
@@ -414,8 +399,7 @@ AIDA::IProfile1D* GaudiPython::HistoDecorator::profile1D( const GaudiHistoAlg& a
                                                           const std::string& title, const double lowX,
                                                           const double highX, const unsigned long binsX,
                                                           const std::string& opt, const double lowY, const double highY,
-                                                          const double weight )
-{
+                                                          const double weight ) {
   return algo.profile1D( valueX, valueY, ID, title, lowX, highX, binsX, opt, lowY, highY, weight );
 }
 // ========================================================================
@@ -426,8 +410,7 @@ AIDA::IProfile2D* GaudiPython::HistoDecorator::profile2D( const GaudiHistoAlg& a
                                                           const std::string& title, const double lowX,
                                                           const double highX, const double lowY, const double highY,
                                                           const unsigned long binsX, const unsigned long binsY,
-                                                          const double weight )
-{
+                                                          const double weight ) {
   return algo.profile2D( valueX, valueY, valueZ, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ========================================================================
@@ -438,8 +421,7 @@ AIDA::IProfile2D* GaudiPython::HistoDecorator::profile2D( const GaudiHistoAlg& a
                                                           const GaudiAlg::HistoID& ID, const std::string& title,
                                                           const double lowX, const double highX, const double lowY,
                                                           const double highY, const unsigned long binsX,
-                                                          const unsigned long binsY, const double weight )
-{
+                                                          const unsigned long binsY, const double weight ) {
   return algo.profile2D( valueX, valueY, valueZ, ID, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ========================================================================
@@ -450,8 +432,7 @@ AIDA::IProfile2D* GaudiPython::HistoDecorator::profile2D( const GaudiHistoAlg& a
                                                           const std::string& title, const double lowX,
                                                           const double highX, const double lowY, const double highY,
                                                           const unsigned long binsX, const unsigned long binsY,
-                                                          const double weight )
-{
+                                                          const double weight ) {
   return algo.profile2D( valueX, valueY, valueZ, ID, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ========================================================================
@@ -462,37 +443,31 @@ AIDA::IProfile2D* GaudiPython::HistoDecorator::profile2D( const GaudiHistoAlg& a
                                                           const std::string& ID, const std::string& title,
                                                           const double lowX, const double highX, const double lowY,
                                                           const double highY, const unsigned long binsX,
-                                                          const unsigned long binsY, const double weight )
-{
+                                                          const unsigned long binsY, const double weight ) {
   return algo.profile2D( valueX, valueY, valueZ, ID, title, lowX, highX, lowY, highY, binsX, binsY, weight );
 }
 // ============================================================================
 // get all histograms
 // ============================================================================
-namespace
-{
+namespace {
   /// collect the histograms
   // =========================================================================
   template <typename Container, typename HISTO>
-  size_t fromMap( const Container& a, std::vector<GaudiAlg::ID>& b, std::vector<HISTO>& c )
-  {
+  size_t fromMap( const Container& a, std::vector<GaudiAlg::ID>& b, std::vector<HISTO>& c ) {
     b.clear();
     c.clear();
     for ( const auto& i : a ) {
-      if ( !i.second ) {
-        continue;
-      }
+      if ( !i.second ) { continue; }
       b.push_back( i.first );
       c.push_back( i.second );
     }
     return b.size();
   }
   // ==========================================================================
-}
+} // namespace
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos1D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->histo1DMapID(), ids, histos ) : 0;
@@ -500,8 +475,7 @@ size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiP
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos1D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->histo1DMapID(), ids, histos ) : 0;
@@ -509,16 +483,14 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, Gaudi
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const IAlgorithm* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos1D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_a_( dynamic_cast<const GaudiHistoAlg*>( cmp ), ids, histos ) : 0;
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos1D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_t_( dynamic_cast<const GaudiHistoTool*>( cmp ), ids, histos ) : 0;
@@ -527,8 +499,7 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython
 //                                                                2D-histograms
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos2D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->histo2DMapID(), ids, histos ) : 0;
@@ -536,8 +507,7 @@ size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiP
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos2D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->histo2DMapID(), ids, histos ) : 0;
@@ -545,16 +515,14 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, Gaudi
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const IAlgorithm* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos2D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_a_( dynamic_cast<const GaudiHistoAlg*>( cmp ), ids, histos ) : 0;
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos2D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_t_( dynamic_cast<const GaudiHistoTool*>( cmp ), ids, histos ) : 0;
@@ -563,8 +531,7 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython
 //                                                                3D-histograms
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos3D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos3D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->histo3DMapID(), ids, histos ) : 0;
@@ -572,8 +539,7 @@ size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiP
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos3D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos3D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->histo3DMapID(), ids, histos ) : 0;
@@ -581,16 +547,14 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, Gaudi
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const IAlgorithm* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos3D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos3D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_a_( dynamic_cast<const GaudiHistoAlg*>( cmp ), ids, histos ) : 0;
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Histos3D& histos )
-{
+                                                GaudiPython::HistoDecorator::Histos3D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_t_( dynamic_cast<const GaudiHistoTool*>( cmp ), ids, histos ) : 0;
@@ -599,8 +563,7 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython
 //                                                                  1D-profiles
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles1D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->profile1DMapID(), ids, histos ) : 0;
@@ -608,8 +571,7 @@ size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiP
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles1D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->profile1DMapID(), ids, histos ) : 0;
@@ -617,16 +579,14 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, Gaudi
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const IAlgorithm* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles1D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_a_( dynamic_cast<const GaudiHistoAlg*>( cmp ), ids, histos ) : 0;
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles1D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles1D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_t_( dynamic_cast<const GaudiHistoTool*>( cmp ), ids, histos ) : 0;
@@ -635,8 +595,7 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython
 //                                                                  2D-profiles
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles2D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->profile2DMapID(), ids, histos ) : 0;
@@ -644,8 +603,7 @@ size_t GaudiPython::HistoDecorator::_histos_a_( const GaudiHistoAlg* cmp, GaudiP
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles2D& histos ) {
   histos.clear();
   ids.clear();
   return cmp ? fromMap( cmp->profile2DMapID(), ids, histos ) : 0;
@@ -653,16 +611,14 @@ size_t GaudiPython::HistoDecorator::_histos_t_( const GaudiHistoTool* cmp, Gaudi
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_a_( const IAlgorithm* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles2D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_a_( dynamic_cast<const GaudiHistoAlg*>( cmp ), ids, histos ) : 0;
 }
 // ============================================================================
 size_t GaudiPython::HistoDecorator::_histos_t_( const IAlgTool* cmp, GaudiPython::HistoDecorator::IDs& ids,
-                                                GaudiPython::HistoDecorator::Profiles2D& histos )
-{
+                                                GaudiPython::HistoDecorator::Profiles2D& histos ) {
   ids.clear();
   histos.clear();
   return cmp ? _histos_t_( dynamic_cast<const GaudiHistoTool*>( cmp ), ids, histos ) : 0;

@@ -17,5 +17,5 @@ def test():
     found = set(l.strip() for l in out.splitlines())
     # FIXME: these seem not to be reported by Linux
     found -= set(['sse3', 'avx512f'])
-    assert expected == found, ('expected: {0}, found: {1}'
-                               .format(sorted(expected), sorted(found)))
+    assert expected == found, ('expected: {0}, found: {1}'.format(
+        sorted(expected), sorted(found)))

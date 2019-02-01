@@ -55,8 +55,7 @@ class SmartIF;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API IConverter : virtual public IInterface
-{
+class GAUDI_API IConverter : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IConverter, 3, 0 );

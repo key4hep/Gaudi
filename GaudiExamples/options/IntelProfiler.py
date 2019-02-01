@@ -12,8 +12,8 @@ alg4 = CpuHungryAlg("Alg4")
 
 alg1.Loops = alg2.Loops = alg3.Loops = alg4.Loops = 5000000
 
-subtop = Sequencer('SubSequence', Members=[
-                   alg1, alg2, alg3], StopOverride=True)
+subtop = Sequencer(
+    'SubSequence', Members=[alg1, alg2, alg3], StopOverride=True)
 top = Sequencer('TopSequence', Members=[subtop, alg4], StopOverride=True)
 
 profiler = IntelProfilerAuditor()
@@ -25,8 +25,9 @@ profiler.IncludeAlgorithms = ["SubSequence"]
 profiler.ExcludeAlgorithms = ["Alg2"]
 AuditorSvc().Auditors += [profiler]
 
-ApplicationMgr(EvtMax=3,
-               EvtSel='NONE',
-               HistogramPersistency='NONE',
-               TopAlg=[top],
-               AuditAlgorithms=True)
+ApplicationMgr(
+    EvtMax=3,
+    EvtSel='NONE',
+    HistogramPersistency='NONE',
+    TopAlg=[top],
+    AuditAlgorithms=True)

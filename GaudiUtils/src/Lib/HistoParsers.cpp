@@ -35,11 +35,9 @@
 // ============================================================================
 #include "H1.h"
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Parsers
-  {
+  namespace Parsers {
     // ========================================================================
     /** @class EdgeGrammar
      *
@@ -47,8 +45,7 @@ namespace Gaudi
      *  @date 2009-09-26
      */
     template <typename Iterator, typename Skipper>
-    class EdgeGrammar : public qi::grammar<Iterator, Edges(), qi::locals<char>, Skipper>
-    {
+    class EdgeGrammar : public qi::grammar<Iterator, Edges(), qi::locals<char>, Skipper> {
       // ======================================================================
     public:
       // ======================================================================
@@ -56,8 +53,7 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      EdgeGrammar() : EdgeGrammar::base_type( result )
-      {
+      EdgeGrammar() : EdgeGrammar::base_type( result ) {
         inner = ( ( qi::lit( "edges" ) | "'edges'" | "\"edges\"" ) >> ":" >> edges[qi::_val *= qi::_1] ) |
                 inner_pairs[qi::_val = qi::_1];
         inner_pairs = ( ( ( qi::lit( "nbins" ) | "'nbins'" | "\"nbins\"" ) >> ":" >> nbins[qi::_val /= qi::_1] ) |
@@ -70,20 +66,19 @@ namespace Gaudi
         end    = enc::char_( qi::_r1 );
         result = begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a );
       }
-      VectorGrammar<Iterator, std::vector<double>, Skipper> edges;
-      RealGrammar<Iterator, double, Skipper>                low, high;
-      IntGrammar<Iterator, unsigned int, Skipper>           nbins;
+      VectorGrammar<Iterator, std::vector<double>, Skipper>  edges;
+      RealGrammar<Iterator, double, Skipper>                 low, high;
+      IntGrammar<Iterator, unsigned int, Skipper>            nbins;
       qi::rule<Iterator, Edges(), qi::locals<char>, Skipper> result;
-      qi::rule<Iterator, Edges(), Skipper> inner, inner_pairs;
-      qi::rule<Iterator, char()>       begin;
-      qi::rule<Iterator, void( char )> end;
+      qi::rule<Iterator, Edges(), Skipper>                   inner, inner_pairs;
+      qi::rule<Iterator, char()>                             begin;
+      qi::rule<Iterator, void( char )>                       end;
       // ======================================================================
     };
     REGISTER_GRAMMAR( Edges, EdgeGrammar );
     // ========================================================================
     template <typename Iterator, typename Skipper>
-    class H1Grammar : public qi::grammar<Iterator, H1(), qi::locals<char>, Skipper>
-    {
+    class H1Grammar : public qi::grammar<Iterator, H1(), qi::locals<char>, Skipper> {
       // ======================================================================
     public:
       // ======================================================================
@@ -91,8 +86,7 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      H1Grammar() : H1Grammar::base_type( result )
-      {
+      H1Grammar() : H1Grammar::base_type( result ) {
         inner = ( ( ( qi::lit( "name" ) | "'name'" | "\"name\"" ) >> ":" >> name[qi::_val *= qi::_1] ) |
                   ( ( qi::lit( "title" ) | "'title'" | "\"title\"" ) >> ":" >> title[qi::_val /= qi::_1] ) |
                   ( -( ( qi::lit( "X" ) | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':' ) >>
@@ -109,22 +103,21 @@ namespace Gaudi
         result = ( begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a ) ) | inner;
       }
 
-      StringGrammar<Iterator, Skipper> name, title;
-      EdgeGrammar<Iterator, Skipper>   edges;
+      StringGrammar<Iterator, Skipper>            name, title;
+      EdgeGrammar<Iterator, Skipper>              edges;
       RealGrammar<Iterator, double, Skipper>      low, high;
       IntGrammar<Iterator, unsigned int, Skipper> nbins;
 
       VectorGrammar<Iterator, std::vector<std::pair<double, double>>, Skipper> bins;
       qi::rule<Iterator, H1(), qi::locals<char>, Skipper>                      result;
-      qi::rule<Iterator, H1(), Skipper> inner;
-      qi::rule<Iterator, char()>       begin;
-      qi::rule<Iterator, void( char )> end;
+      qi::rule<Iterator, H1(), Skipper>                                        inner;
+      qi::rule<Iterator, char()>                                               begin;
+      qi::rule<Iterator, void( char )>                                         end;
     };
     REGISTER_GRAMMAR( H1, H1Grammar );
     // ========================================================================
     template <typename Iterator, typename Skipper>
-    class H2Grammar : public qi::grammar<Iterator, H2(), qi::locals<char>, Skipper>
-    {
+    class H2Grammar : public qi::grammar<Iterator, H2(), qi::locals<char>, Skipper> {
       // ======================================================================
     public:
       // ======================================================================
@@ -132,8 +125,7 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      H2Grammar() : H2Grammar::base_type( result )
-      {
+      H2Grammar() : H2Grammar::base_type( result ) {
         inner = ( ( ( qi::lit( "name" ) | "'name'" | "\"name\"" ) >> ":" >> name[qi::_val *= qi::_1] ) |
                   ( ( qi::lit( "title" ) | "'title'" | "\"title\"" ) >> ":" >> title[qi::_val /= qi::_1] ) |
                   ( ( qi::lit( "X" ) | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':' >> edges[qi::_val &= qi::_1] ) |
@@ -147,50 +139,42 @@ namespace Gaudi
         result = ( begin[qi::_a = qi::_1] >> inner[qi::_val = qi::_1] >> end( qi::_a ) ) | inner[qi::_val = qi::_1];
       }
 
-      StringGrammar<Iterator, Skipper> name, title;
-      EdgeGrammar<Iterator, Skipper>   edges;
+      StringGrammar<Iterator, Skipper>                                         name, title;
+      EdgeGrammar<Iterator, Skipper>                                           edges;
       VectorGrammar<Iterator, std::vector<std::pair<double, double>>, Skipper> bins;
       qi::rule<Iterator, H2(), qi::locals<char>, Skipper>                      result;
-      qi::rule<Iterator, H2(), Skipper> inner;
-      qi::rule<Iterator, char()>       begin;
-      qi::rule<Iterator, void( char )> end;
+      qi::rule<Iterator, H2(), Skipper>                                        inner;
+      qi::rule<Iterator, char()>                                               begin;
+      qi::rule<Iterator, void( char )>                                         end;
 
       // ======================================================================
     };
     REGISTER_GRAMMAR( H2, H2Grammar );
     // ========================================================================
-  } //                                          end of namespace Gaudi::Parsers
+  } // namespace Parsers
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   /// parse the histogram
-  StatusCode _parse( H1& h1, const std::string& input )
-  {
+  StatusCode _parse( H1& h1, const std::string& input ) {
     // check the parsing
     StatusCode sc = Gaudi::Parsers::parse_( h1, input );
-    if ( sc.isFailure() ) {
-      return sc;
-    } // RETURN
+    if ( sc.isFailure() ) { return sc; } // RETURN
     return h1.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
   // ==========================================================================
   /// parse the histogram
-  StatusCode _parse( H2& h2, const std::string& input )
-  {
+  StatusCode _parse( H2& h2, const std::string& input ) {
     // check the parsing
     StatusCode sc = Gaudi::Parsers::parse_( h2, input );
-    if ( sc.isFailure() ) {
-      return sc;
-    } // RETURN
+    if ( sc.isFailure() ) { return sc; } // RETURN
     return h2.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
   // ==========================================================================
   template <class HISTO1>
-  std::unique_ptr<HISTO1> _parse_1D( const std::string& input, std::string& name )
-  {
+  std::unique_ptr<HISTO1> _parse_1D( const std::string& input, std::string& name ) {
     //
     typedef std::unique_ptr<HISTO1> H1P;
     // ==========================================================================
@@ -198,9 +182,7 @@ namespace
     //
     H1         h1;
     StatusCode sc = _parse( h1, input );
-    if ( sc.isFailure() || !h1.ok() ) {
-      return H1P();
-    } // RETURN
+    if ( sc.isFailure() || !h1.ok() ) { return H1P(); } // RETURN
     //
     // 2) create the histogram
     //
@@ -228,17 +210,14 @@ namespace
   }
   // ==========================================================================
   template <class HISTO2>
-  std::unique_ptr<HISTO2> _parse_2D( const std::string& input, std::string& name )
-  {
+  std::unique_ptr<HISTO2> _parse_2D( const std::string& input, std::string& name ) {
     //
     typedef std::unique_ptr<HISTO2> H2P;
     // 1) parse the custom format
     //
     H2         h2;
     StatusCode sc = _parse( h2, input );
-    if ( sc.isFailure() || !h2.ok() ) {
-      return H2P();
-    } // RETURN
+    if ( sc.isFailure() || !h2.ok() ) { return H2P(); } // RETURN
     //
     // 2) create the histogram
     //
@@ -302,8 +281,7 @@ namespace
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH1D& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( TH1D& result, const std::string& input ) {
   // 1) check the parsing
   std::string name;
   //
@@ -326,8 +304,7 @@ StatusCode Gaudi::Parsers::parse( TH1D& result, const std::string& input )
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH1F& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( TH1F& result, const std::string& input ) {
   // 1) check the parsing
   std::string name;
   //
@@ -350,8 +327,7 @@ StatusCode Gaudi::Parsers::parse( TH1F& result, const std::string& input )
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH2D& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( TH2D& result, const std::string& input ) {
   // 1) check the parsing
   std::string name;
   auto        h2 = _parse_2D<TH2D>( input, name );
@@ -373,8 +349,7 @@ StatusCode Gaudi::Parsers::parse( TH2D& result, const std::string& input )
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input ) {
   // 1) check the parsing
   std::string name;
   auto        h2 = _parse_2D<TH2F>( input, name );
@@ -386,9 +361,7 @@ StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input )
   }
   //
   // XML-like text?
-  if ( std::string::npos != input.find( '<' ) ) {
-    return Gaudi::Utils::Histos::fromXml( result, input );
-  }
+  if ( std::string::npos != input.find( '<' ) ) { return Gaudi::Utils::Histos::fromXml( result, input ); }
   //
   return StatusCode::FAILURE;
 }
@@ -399,11 +372,8 @@ StatusCode Gaudi::Parsers::parse( TH2F& result, const std::string& input )
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input )
-{
-  if ( result ) {
-    return parse( *result, input );
-  } // RETURN
+StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input ) {
+  if ( result ) { return parse( *result, input ); } // RETURN
 
   // 1) check the parsing
   std::string name;
@@ -425,11 +395,8 @@ StatusCode Gaudi::Parsers::parse( TH1D*& result, const std::string& input )
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input )
-{
-  if ( result ) {
-    return parse( *result, input );
-  } // RETURN
+StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input ) {
+  if ( result ) { return parse( *result, input ); } // RETURN
 
   // 1) check the parsing
   std::string name;
@@ -451,8 +418,7 @@ StatusCode Gaudi::Parsers::parse( TH2D*& result, const std::string& input )
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, const std::string& input ) {
   // 1) convert to ROOT
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram
@@ -465,8 +431,7 @@ StatusCode Gaudi::Parsers::parse( AIDA::IHistogram1D& result, const std::string&
  *  @return status code
  */
 // ============================================================================
-StatusCode Gaudi::Parsers::parse( AIDA::IHistogram2D& result, const std::string& input )
-{
+StatusCode Gaudi::Parsers::parse( AIDA::IHistogram2D& result, const std::string& input ) {
   // 1) convert to ROOT
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &result );
   // 2) read ROOT histogram

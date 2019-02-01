@@ -19,8 +19,7 @@
  *  @date   2005-08-12
  */
 
-class HistoTimingAlg : public GaudiHistoAlg
-{
+class HistoTimingAlg : public GaudiHistoAlg {
 
 public:
   /// Standard constructor

@@ -16,15 +16,14 @@
 #include "GaudiKernel/compose.h"
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-namespace detail
-{
+namespace detail {
 
   auto dispatch_variant = []( auto&& variant, auto&&... lambdas ) -> decltype( auto ) {
     return boost::apply_visitor( compose( std::forward<decltype( lambdas )>( lambdas )... ),
@@ -32,15 +31,12 @@ namespace detail
   };
 }
 
-namespace AIDA
-{
+namespace AIDA {
   class IFunction;
 }
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     // ========================================================================
     /** @class AdapterIFunction Adapters.h GaudiMath/Adapters.h
      *  constructor from the IFunction ( see AIDA/IFunction.h)
@@ -50,8 +46,7 @@ namespace Genfun
      */
     // =========================================================================
 
-    class GAUDI_API AdapterIFunction : public AbsFunction
-    {
+    class GAUDI_API AdapterIFunction : public AbsFunction {
     public:
       /// mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( AdapterIFunction )
@@ -108,8 +103,7 @@ namespace Genfun
      *  @date   2003-08-03
      */
     // ========================================================================
-    class GAUDI_API Adapter2DoubleFunction : public AbsFunction
-    {
+    class GAUDI_API Adapter2DoubleFunction : public AbsFunction {
     public:
       /// the actual type of the function "to be adapted"
       typedef double ( *Function )( const double, const double );
@@ -171,8 +165,7 @@ namespace Genfun
      *  @date   2003-08-03
      */
     // ========================================================================
-    class GAUDI_API Adapter3DoubleFunction : public AbsFunction
-    {
+    class GAUDI_API Adapter3DoubleFunction : public AbsFunction {
     public:
       /// the actual type of the function "to be adapted"
       typedef double ( *Function )( const double, const double, const double );
@@ -217,8 +210,7 @@ namespace Genfun
      *  @date   2003-08-31
      */
     // ========================================================================
-    class GAUDI_API SimpleFunction : public AbsFunction
-    {
+    class GAUDI_API SimpleFunction : public AbsFunction {
     public:
       typedef double ( *Function1 )( const double );
       typedef double ( *Function2 )( const double* );
@@ -248,8 +240,7 @@ namespace Genfun
 
     public:
       /// dimensionality of the problem
-      unsigned int dimensionality() const override
-      {
+      unsigned int dimensionality() const override {
         return detail::dispatch_variant( m_func, []( Function1 ) { return 1ul; },
                                          [&]( auto ) { return m_arg.size(); } );
       }
@@ -264,18 +255,18 @@ namespace Genfun
 
     private:
       boost::variant<Function1, Function2, Function3> m_func;
-      mutable std::vector<double> m_arg;
+      mutable std::vector<double>                     m_arg;
     };
     /// From CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( SimpleFunction )
 
-  } // end of namespace GaudiMathImeplementation
+  } // namespace GaudiMathImplementation
 } // end of namespace Genfun
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 #endif // GAUDIMATH_FUNADAPTERS_H

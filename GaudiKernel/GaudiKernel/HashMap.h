@@ -6,15 +6,14 @@
 #include "GaudiKernel/Map.h"
 #include <unordered_map>
 
-namespace GaudiUtils
-{
+namespace GaudiUtils {
   // ==========================================================================
   /** @class HashMap HashMap.h GaudiKernel/HashMap.h
    *
    * Common class providing an architecture-independent hash map.
    *
    *
-    *  Due to helper base class Gaudi::Utils::MapBase, this class
+   *  Due to helper base class Gaudi::Utils::MapBase, this class
    *  is "python-friendly", and one can perform all python
    *  manipulaitons
    *  in intuitive way:
@@ -71,8 +70,7 @@ namespace GaudiUtils
    */
 
   template <typename K, typename T, typename H = Hash<K>, typename M = std::unordered_map<K, T, H>>
-  class HashMap : public Map<K, T, M>
-  {
+  class HashMap : public Map<K, T, M> {
   public:
     typedef H     hasher;
     inline hasher hash_funct() const { return this->m_map.hash_funct(); }

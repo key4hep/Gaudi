@@ -15,14 +15,12 @@
     @author C. Cioffi
     @date   14/11/2003
 */
-class GAUDI_API IEvtSelector : virtual public IInterface
-{
+class GAUDI_API IEvtSelector : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IEvtSelector, 2, 0 );
 
-  class Context
-  {
+  class Context {
   public:
     virtual ~Context()               = default;
     virtual void* identifier() const = 0;
@@ -67,37 +65,37 @@ public:
   virtual StatusCode previous( Context& c, int jump ) const = 0;
 
   /** Access last item in the iteration
-    * @param refContext [IN/OUT] Reference to the Context object.
-    */
+   * @param refContext [IN/OUT] Reference to the Context object.
+   */
   virtual StatusCode last( Context& refContext ) const = 0;
 
   /** Will set the state of the context in a way that the next event read
-    * is the first of the list.
-    *
-    * @param c Reference to the Context object.
-    */
+   * is the first of the list.
+   *
+   * @param c Reference to the Context object.
+   */
   virtual StatusCode rewind( Context& c ) const = 0;
 
   /** Create an IOpaqueAddress object from the event fetched.
-    *
-    * @param c Reference to the Context object.
-    * @param iop Refernce pointer to a IOpaqueAddress object
-    *
-    */
+   *
+   * @param c Reference to the Context object.
+   * @param iop Refernce pointer to a IOpaqueAddress object
+   *
+   */
   virtual StatusCode createAddress( const Context& c, IOpaqueAddress*& iop ) const = 0;
 
   /** Release the Context object.
-    *
-    * @param c Reference pointer to the Context object.
-    */
+   *
+   * @param c Reference pointer to the Context object.
+   */
   virtual StatusCode releaseContext( Context*& ) const = 0;
 
   /** Will set a new criteria for the selection of the next list of events and will change
-    * the state of the context in a way to point to the new list.
-    *
-    * @param cr The new criteria string.
-    * @param c Reference pointer to the Context object.
-    */
+   * the state of the context in a way to point to the new list.
+   *
+   * @param cr The new criteria string.
+   * @param c Reference pointer to the Context object.
+   */
   virtual StatusCode resetCriteria( const std::string& cr, Context& c ) const = 0;
 };
 

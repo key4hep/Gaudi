@@ -21,8 +21,7 @@
  * @author M.Frank
  * @author Sebastien Ponce
  */
-class MsgStream
-{
+class MsgStream {
 private:
   /** Error return code in case ios modification is requested for inactive
    *  streams
@@ -65,18 +64,15 @@ public:
       , m_level( msg.m_level )
       , m_currLevel( msg.m_currLevel )
       , m_useColors( msg.m_useColors )
-      , m_inactCounter( msg.m_inactCounter )
-  {
+      , m_inactCounter( msg.m_inactCounter ) {
     try { // ignore exception if we cannot copy the string
       m_source = msg.m_source;
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
   }
   /// Standard destructor
   GAUDI_API virtual ~MsgStream() = default;
   /// Initialize report of new message: activate if print level is sufficient.
-  MsgStream& report( int lvl )
-  {
+  MsgStream& report( int lvl ) {
     lvl = ( lvl >= MSG::NUM_LEVELS ) ? MSG::ALWAYS : ( lvl < MSG::NIL ) ? MSG::NIL : lvl;
     if ( ( m_currLevel = MSG::Level( lvl ) ) >= level() ) {
       activate();
@@ -99,8 +95,7 @@ public:
   /// Update @c IMessageSvc pointer
   void setMsgSvc( IMessageSvc* svc ) { m_service = svc; }
   /// Update outputlevel
-  void setLevel( int level )
-  {
+  void setLevel( int level ) {
     level   = ( level >= MSG::NUM_LEVELS ) ? MSG::ALWAYS : ( level < MSG::NIL ) ? MSG::NIL : level;
     m_level = MSG::Level( level );
   }
@@ -115,52 +110,42 @@ public:
   /// Accessor: is MsgStream active
   bool isActive() const { return m_active; }
   // oMsgStream flush emulation
-  MsgStream& flush()
-  {
+  MsgStream& flush() {
     if ( isActive() ) m_stream.flush();
     return *this;
   }
   // oMsgStream write emulation
-  MsgStream& write( const char* buff, int len )
-  {
+  MsgStream& write( const char* buff, int len ) {
     if ( isActive() ) m_stream.write( buff, len );
     return *this;
   }
   /// Accept MsgStream modifiers
-  MsgStream& operator<<( MsgStream& ( *_f )(MsgStream&))
-  {
+  MsgStream& operator<<( MsgStream& ( *_f )(MsgStream&)) {
     if ( isActive() ) _f( *this );
     return *this;
   }
   /// Accept oMsgStream modifiers
-  MsgStream& operator<<( std::ostream& ( *_f )(std::ostream&))
-  {
+  MsgStream& operator<<( std::ostream& ( *_f )(std::ostream&)) {
     if ( isActive() ) _f( m_stream );
     return *this;
   }
   /// Accept ios modifiers
-  MsgStream& operator<<( std::ios& ( *_f )(std::ios&))
-  {
+  MsgStream& operator<<( std::ios& ( *_f )(std::ios&)) {
     if ( isActive() ) _f( m_stream );
     return *this;
   }
   /// Accept MsgStream activation using MsgStreamer operator
   MsgStream& operator<<( MSG::Level level ) { return report( level ); }
-  MsgStream& operator<<( long long arg )
-  {
+  MsgStream& operator<<( long long arg ) {
     try {
       // this may throw, and we cannot afford it if the stream is used in a catch block
-      if ( isActive() ) {
-        m_stream << arg;
-      }
-    } catch ( ... ) {
-    }
+      if ( isActive() ) { m_stream << arg; }
+    } catch ( ... ) {}
     return *this;
   }
 
   /// Accept ios base class modifiers
-  MsgStream& operator<<( std::ios_base& ( *_f )(std::ios_base&))
-  {
+  MsgStream& operator<<( std::ios_base& ( *_f )(std::ios_base&)) {
     if ( isActive() ) _f( m_stream );
     return *this;
   }
@@ -169,23 +154,21 @@ public:
   long flags() const { return isActive() ? m_stream.flags() : 0; }
   long flags( FLAG_TYPE v ) { return isActive() ? m_stream.flags( v ) : 0; }
   long setf( FLAG_TYPE v ) { return isActive() ? m_stream.setf( v ) : 0; }
-  int                  width() const { return isActive() ? m_stream.width() : 0; }
-  int width( int v ) { return isActive() ? m_stream.width( v ) : 0; }
-  char           fill() const { return isActive() ? m_stream.fill() : (char)-1; }
+  int  width() const { return isActive() ? m_stream.width() : 0; }
+  int  width( int v ) { return isActive() ? m_stream.width( v ) : 0; }
+  char fill() const { return isActive() ? m_stream.fill() : (char)-1; }
   char fill( char v ) { return isActive() ? m_stream.fill( v ) : (char)-1; }
-  int             precision() const { return isActive() ? m_stream.precision() : 0; }
-  int precision( int v ) { return isActive() ? m_stream.precision( v ) : 0; }
-  int                rdstate() const { return isActive() ? m_stream.rdstate() : std::ios_base::failbit; }
-  int                good() const { return isActive() ? m_stream.good() : 0; }
-  int                eof() const { return isActive() ? m_stream.eof() : 0; }
-  int                bad() const { return isActive() ? m_stream.bad() : 0; }
+  int  precision() const { return isActive() ? m_stream.precision() : 0; }
+  int  precision( int v ) { return isActive() ? m_stream.precision( v ) : 0; }
+  int  rdstate() const { return isActive() ? m_stream.rdstate() : std::ios_base::failbit; }
+  int  good() const { return isActive() ? m_stream.good() : 0; }
+  int  eof() const { return isActive() ? m_stream.eof() : 0; }
+  int  bad() const { return isActive() ? m_stream.bad() : 0; }
   long setf( FLAG_TYPE _f, FLAG_TYPE _m ) { return isActive() ? m_stream.setf( _f, _m ) : 0; }
-  void unsetf( FLAG_TYPE _l )
-  {
+  void unsetf( FLAG_TYPE _l ) {
     if ( isActive() ) m_stream.unsetf( _l );
   }
-  void clear( STATE_TYPE _i = std::ios_base::failbit )
-  {
+  void clear( STATE_TYPE _i = std::ios_base::failbit ) {
     if ( isActive() ) m_stream.clear( _i );
   }
 
@@ -213,136 +196,113 @@ GAUDI_API std::string format( const char*, ... );
 
 #ifdef _WIN32
 template <class _E>
-inline MsgStream& operator<<( MsgStream& s, const std::_Fillobj<_E>& obj )
-{
-#if _MSC_VER > 1300
+inline MsgStream& operator<<( MsgStream& s, const std::_Fillobj<_E>& obj ) {
+#  if _MSC_VER > 1300
   if ( s.isActive() ) s.stream().fill( obj._Fill );
-#else
+#  else
   if ( s.isActive() ) s.stream().fill( obj._Ch );
-#endif
+#  endif
   return s;
 }
 template <class _Tm>
-inline MsgStream& operator<<( MsgStream& s, const std::_Smanip<_Tm>& manip )
-{
-#if _MSC_VER > 1300
+inline MsgStream& operator<<( MsgStream& s, const std::_Smanip<_Tm>& manip ) {
+#  if _MSC_VER > 1300
   if ( s.isActive() ) ( *manip._Pfun )( s.stream(), manip._Manarg );
-#else
+#  else
   if ( s.isActive() ) ( *manip._Pf )( s.stream(), manip._Manarg );
-#endif
+#  endif
   return s;
 }
 #elif defined( __GNUC__ )
-#ifndef __APPLE__
-inline MsgStream& operator<<( MsgStream& s, const std::_Setiosflags& manip )
-{
+#  ifndef __APPLE__
+inline MsgStream& operator<<( MsgStream& s, const std::_Setiosflags& manip ) {
   try {
     // this may throw, and we cannot afford it if the stream is used in a catch block
     if ( s.isActive() ) s.stream() << manip;
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return s;
 }
-inline MsgStream& operator<<( MsgStream& s, const std::_Resetiosflags& manip )
-{
+inline MsgStream& operator<<( MsgStream& s, const std::_Resetiosflags& manip ) {
   try {
     // this may throw, and we cannot afford it if the stream is used in a catch block
     if ( s.isActive() ) s.stream() << manip;
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return s;
 }
-inline MsgStream& operator<<( MsgStream& s, const std::_Setbase& manip )
-{
+inline MsgStream& operator<<( MsgStream& s, const std::_Setbase& manip ) {
   try {
     // this may throw, and we cannot afford it if the stream is used in a catch block
     if ( s.isActive() ) s.stream() << manip;
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return s;
 }
-inline MsgStream& operator<<( MsgStream& s, const std::_Setprecision& manip )
-{
+inline MsgStream& operator<<( MsgStream& s, const std::_Setprecision& manip ) {
   try {
     // this may throw, and we cannot afford it if the stream is used in a catch block
     if ( s.isActive() ) s.stream() << manip;
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return s;
 }
-inline MsgStream& operator<<( MsgStream& s, const std::_Setw& manip )
-{
+inline MsgStream& operator<<( MsgStream& s, const std::_Setw& manip ) {
   try {
     // this may throw, and we cannot afford it if the stream is used in a catch block
     if ( s.isActive() ) s.stream() << manip;
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return s;
 }
-#endif // not __APPLE__
-#else  // GCC, version << 3
+#  endif // not __APPLE__
+#else    // GCC, version << 3
 /// I/O Manipulator for setfill
 template <class _Tm>
-inline MsgStream& operator<<( MsgStream& s, const std::smanip<_Tm>& manip )
-{
+inline MsgStream& operator<<( MsgStream& s, const std::smanip<_Tm>& manip ) {
   try {
     // this may throw, and we cannot afford it if the stream is used in a catch block
     if ( s.isActive() ) s.stream() << manip;
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return s;
 }
-#endif // WIN32 or (__GNUC__)
+#endif   // WIN32 or (__GNUC__)
 
-namespace MSG
-{
-  inline MsgStream& dec( MsgStream& log )
-  {
+namespace MSG {
+  inline MsgStream& dec( MsgStream& log ) {
     log << std::dec;
     return log;
   }
-  inline MsgStream& hex( MsgStream& log )
-  {
+  inline MsgStream& hex( MsgStream& log ) {
     log << std::hex;
     return log;
   }
-}
+} // namespace MSG
 
 /// Specialization to avoid the generation of implementations for char[].
 /// \see {<a href="https://savannah.cern.ch/bugs/?87340">bug #87340</a>}
-inline MsgStream& operator<<( MsgStream& s, const char* arg )
-{
+inline MsgStream& operator<<( MsgStream& s, const char* arg ) {
   try {
     // this may throw, and we cannot afford it if the stream is used in a catch block
     if ( s.isActive() ) s.stream() << arg;
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return s;
 }
 
 /// General templated stream operator
 template <typename T>
-MsgStream& operator<<( MsgStream& lhs, const T& arg )
-{
+MsgStream& operator<<( MsgStream& lhs, const T& arg ) {
   using namespace GaudiUtils;
   if ( lhs.isActive() ) try {
       // this may throw, and we cannot afford it if the stream is used in a catch block
       lhs.stream() << arg;
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
   return lhs;
 }
 
 #if defined( __GNUC__ ) and not defined( __APPLE__ )
 /// compiler is stupid. Must specialize
 template <typename T>
-MsgStream& operator<<( MsgStream& lhs, const std::_Setfill<T>& manip )
-{
+MsgStream& operator<<( MsgStream& lhs, const std::_Setfill<T>& manip ) {
   if ( lhs.isActive() ) try {
       // this may throw, and we cannot afford it if the stream is used in a catch block
       lhs.stream() << manip;
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
   return lhs;
 }
 #endif

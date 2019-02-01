@@ -23,36 +23,36 @@
 #define __PFMLIB_OS_H__
 
 #ifdef __linux__
-#ifdef __ia64__
-#include <perfmon/pfmlib_os_ia64.h>
-#endif
+#  ifdef __ia64__
+#    include <perfmon/pfmlib_os_ia64.h>
+#  endif
 
-#ifdef __x86_64__
-#include <perfmon/pfmlib_os_x86_64.h>
-#endif
+#  ifdef __x86_64__
+#    include <perfmon/pfmlib_os_x86_64.h>
+#  endif
 
-#ifdef __i386__
-#include <perfmon/pfmlib_os_i386.h>
-#endif
+#  ifdef __i386__
+#    include <perfmon/pfmlib_os_i386.h>
+#  endif
 
-#if defined( __mips__ )
-#include <perfmon/pfmlib_os_mips64.h>
-#endif
+#  if defined( __mips__ )
+#    include <perfmon/pfmlib_os_mips64.h>
+#  endif
 
-#ifdef __powerpc__
-#include <perfmon/pfmlib_os_powerpc.h>
-#endif
+#  ifdef __powerpc__
+#    include <perfmon/pfmlib_os_powerpc.h>
+#  endif
 
-#ifdef __sparc__
-#include <perfmon/pfmlib_os_sparc.h>
-#endif
+#  ifdef __sparc__
+#    include <perfmon/pfmlib_os_sparc.h>
+#  endif
 
-#ifdef __cell__
-#include <perfmon/pfmlib_os_powerpc.h>
-#endif
+#  ifdef __cell__
+#    include <perfmon/pfmlib_os_powerpc.h>
+#  endif
 
-#ifdef __crayx2
-#include <perfmon/pfmlib_os_crayx2.h>
-#endif
+#  ifdef __crayx2
+#    include <perfmon/pfmlib_os_crayx2.h>
+#  endif
 #endif /* __linux__ */
 #endif /* __PFMLIB_OS_H__ */

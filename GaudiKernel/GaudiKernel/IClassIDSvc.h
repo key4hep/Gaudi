@@ -10,8 +10,7 @@
 #include "GaudiKernel/StatusCode.h"
 
 //<<<<<< FORWARD DECLARATIONS                                           >>>>>>
-namespace Athena
-{
+namespace Athena {
   class PackageInfo;
 }
 //<<<<<< CLASS DECLARATIONS                                             >>>>>>
@@ -20,8 +19,7 @@ namespace Athena
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
  */
 
-class IClassIDSvc : virtual public IService
-{
+class IClassIDSvc : virtual public IService {
 public:
   /// get next available CLID
   /// @throws std::runtime_error if no CLID can be allocated
@@ -48,8 +46,7 @@ public:
 };
 
 //<<<<<< INLINE MEMBER FUNCTIONS                                        >>>>>>
-inline const InterfaceID& IClassIDSvc::interfaceID()
-{
+inline const InterfaceID& IClassIDSvc::interfaceID() {
   static const InterfaceID _IID( "IClassIDSvc", 1, 0 );
   return _IID;
 }

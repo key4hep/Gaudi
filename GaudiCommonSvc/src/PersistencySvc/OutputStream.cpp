@@ -25,18 +25,15 @@ DECLARE_COMPONENT( OutputStream )
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 
-namespace
-{
-  bool passed( const Gaudi::Algorithm* alg )
-  {
+namespace {
+  bool passed( const Gaudi::Algorithm* alg ) {
     const auto& algState = alg->execState( Gaudi::Hive::currentContext() );
     return algState.state() == AlgExecState::State::Done && algState.filterPassed();
   }
-}
+} // namespace
 
 // initialize data writer
-StatusCode OutputStream::initialize()
-{
+StatusCode OutputStream::initialize() {
 
   // Reset the number of events written
   m_events = 0;
@@ -123,8 +120,7 @@ StatusCode OutputStream::initialize()
 }
 
 // terminate data writer
-StatusCode OutputStream::finalize()
-{
+StatusCode OutputStream::finalize() {
   info() << "Events output: " << m_events << endmsg;
   if ( m_fireIncidents ) m_incidentSvc->fireIncident( Incident( m_outputName, IncidentType::EndOutputFile ) );
   m_incidentSvc.reset();
@@ -137,8 +133,7 @@ StatusCode OutputStream::finalize()
 }
 
 // Work entry point
-StatusCode OutputStream::execute()
-{
+StatusCode OutputStream::execute() {
   // Clear any previously existing item list
   clearSelection();
   // Test whether this event should be output
@@ -157,8 +152,7 @@ StatusCode OutputStream::execute()
 }
 
 // Select the different objects and write them to file
-StatusCode OutputStream::writeObjects()
-{
+StatusCode OutputStream::writeObjects() {
   // Connect the output file to the service
   StatusCode status = collectObjects();
   if ( status.isSuccess() ) {
@@ -187,8 +181,8 @@ StatusCode OutputStream::writeObjects()
         }
         for ( auto& j : *sel ) {
           try {
-            IRegistry*       pReg           = j->registry();
-            const StatusCode iret           = m_pConversionSvc->fillRepRefs( pReg->address(), j );
+            IRegistry*       pReg = j->registry();
+            const StatusCode iret = m_pConversionSvc->fillRepRefs( pReg->address(), j );
             if ( !iret.isSuccess() ) status = iret;
           } catch ( const std::exception& excpt ) {
             const std::string loc = ( j->registry() ? j->registry()->identifier() : "UnRegistered" );
@@ -211,8 +205,7 @@ StatusCode OutputStream::writeObjects()
 }
 
 // Place holder to create configurable data store agent
-bool OutputStream::collect( IRegistry* dir, int level )
-{
+bool OutputStream::collect( IRegistry* dir, int level ) {
   if ( level < m_currentItem->depth() ) {
     if ( dir->object() ) {
       /*
@@ -230,8 +223,7 @@ bool OutputStream::collect( IRegistry* dir, int level )
 }
 
 /// Collect all objects to be written to the output stream
-StatusCode OutputStream::collectObjects()
-{
+StatusCode OutputStream::collectObjects() {
   StatusCode status = StatusCode::SUCCESS;
 
   // Traverse the tree and collect the requested objects
@@ -240,7 +232,7 @@ StatusCode OutputStream::collectObjects()
     m_currentItem   = i;
     StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
     if ( iret.isSuccess() ) {
-      iret                            = collectFromSubTree( obj );
+      iret = collectFromSubTree( obj );
       if ( !iret.isSuccess() ) status = iret;
     } else {
       error() << "Cannot write mandatory object(s) (Not found) " << m_currentItem->path() << endmsg;
@@ -250,9 +242,9 @@ StatusCode OutputStream::collectObjects()
 
   // Traverse the tree and collect the requested objects (tolerate missing items here)
   for ( auto& i : m_optItemList ) {
-    DataObject* obj              = nullptr;
-    m_currentItem                = i;
-    StatusCode iret              = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
+    DataObject* obj = nullptr;
+    m_currentItem   = i;
+    StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
     if ( iret.isSuccess() ) iret = collectFromSubTree( obj );
     if ( !iret.isSuccess() ) {
       ON_DEBUG
@@ -272,7 +264,7 @@ StatusCode OutputStream::collectObjects()
         m_currentItem   = i;
         StatusCode iret = m_pDataProvider->retrieveObject( m_currentItem->path(), obj );
         if ( iret.isSuccess() ) {
-          iret                            = collectFromSubTree( obj );
+          iret = collectFromSubTree( obj );
           if ( !iret.isSuccess() ) status = iret;
         } else {
           error() << "Cannot write mandatory (algorithm dependent) object(s) (Not found) " << m_currentItem->path()
@@ -305,17 +297,15 @@ StatusCode OutputStream::collectObjects()
 void OutputStream::clearSelection() { m_objects.clear(); }
 
 // Remove all items from the output streamer list;
-void OutputStream::clearItems( Items& itms )
-{
+void OutputStream::clearItems( Items& itms ) {
   for ( auto& i : itms ) delete i;
   itms.clear();
 }
 
 // Find single item identified by its path (exact match)
-DataStoreItem* OutputStream::findItem( const std::string& path )
-{
-  auto matchPath                               = [&]( const DataStoreItem* i ) { return i->path() == path; };
-  auto                                       i = std::find_if( m_itemList.begin(), m_itemList.end(), matchPath );
+DataStoreItem* OutputStream::findItem( const std::string& path ) {
+  auto matchPath = [&]( const DataStoreItem* i ) { return i->path() == path; };
+  auto i         = std::find_if( m_itemList.begin(), m_itemList.end(), matchPath );
   if ( i == m_itemList.end() ) {
     i = std::find_if( m_optItemList.begin(), m_optItemList.end(), matchPath );
     if ( i == m_optItemList.end() ) return nullptr;
@@ -324,8 +314,7 @@ DataStoreItem* OutputStream::findItem( const std::string& path )
 }
 
 // Add item to output streamer list
-void OutputStream::addItem( Items& itms, const std::string& descriptor )
-{
+void OutputStream::addItem( Items& itms, const std::string& descriptor ) {
   int         level    = 0;
   auto        sep      = descriptor.rfind( "#" );
   std::string obj_path = descriptor.substr( 0, sep );
@@ -348,15 +337,14 @@ void OutputStream::addItem( Items& itms, const std::string& descriptor )
 }
 
 // Connect to proper conversion service
-StatusCode OutputStream::connectConversionSvc()
-{
+StatusCode OutputStream::connectConversionSvc() {
   StatusCode status = StatusCode( StatusCode::FAILURE, true );
   // Get output file from input
   std::string dbType, svc, shr;
   for ( auto attrib : Gaudi::Utils::AttribStringParser( m_output ) ) {
     const std::string& tag = attrib.tag;
     const std::string& val = attrib.value;
-    switch (::toupper( tag[0] ) ) {
+    switch ( ::toupper( tag[0] ) ) {
     case 'D':
       m_outputName = val;
       break;
@@ -364,7 +352,7 @@ StatusCode OutputStream::connectConversionSvc()
       dbType = val;
       break;
     case 'S':
-      switch (::toupper( tag[1] ) ) {
+      switch ( ::toupper( tag[1] ) ) {
       case 'V':
         svc = val;
         break;
@@ -374,11 +362,11 @@ StatusCode OutputStream::connectConversionSvc()
       }
       break;
     case 'O': // OPT='<NEW<CREATE,WRITE,RECREATE>, UPDATE>'
-      switch (::toupper( val[0] ) ) {
+      switch ( ::toupper( val[0] ) ) {
       case 'R':
-        if (::strncasecmp( val.c_str(), "RECREATE", 3 ) == 0 )
+        if ( ::strncasecmp( val.c_str(), "RECREATE", 3 ) == 0 )
           m_outputType = "RECREATE";
-        else if (::strncasecmp( val.c_str(), "READ", 3 ) == 0 )
+        else if ( ::strncasecmp( val.c_str(), "READ", 3 ) == 0 )
           m_outputType = "READ";
         break;
       case 'C':
@@ -427,8 +415,7 @@ StatusCode OutputStream::connectConversionSvc()
   return StatusCode::SUCCESS;
 }
 
-Gaudi::Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
-{
+Gaudi::Algorithm* OutputStream::decodeAlgorithm( const std::string& theName ) {
   Gaudi::Algorithm* theAlgorithm = nullptr;
 
   auto theAlgMgr = serviceLocator()->as<IAlgManager>();
@@ -447,16 +434,13 @@ Gaudi::Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
     fatal() << "Can't locate ApplicationMgr!!!" << endmsg;
   }
 
-  if ( !theAlgorithm ) {
-    warning() << "Failed to decode Algorithm name " << theName << endmsg;
-  }
+  if ( !theAlgorithm ) { warning() << "Failed to decode Algorithm name " << theName << endmsg; }
 
   return theAlgorithm;
 }
 
 void OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
-                                     std::vector<Gaudi::Algorithm*>&            theAlgs )
-{
+                                     std::vector<Gaudi::Algorithm*>&            theAlgs ) {
   // Reset the list of Algorithms
   theAlgs.clear();
 
@@ -476,8 +460,7 @@ void OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& 
   }
 }
 
-bool OutputStream::isEventAccepted() const
-{
+bool OutputStream::isEventAccepted() const {
   // Loop over all Algorithms in the accept list to see
   // whether any have been executed and have their filter
   // passed flag set. Any match causes the event to be
@@ -502,13 +485,11 @@ bool OutputStream::isEventAccepted() const
   return result;
 }
 
-bool OutputStream::hasInput() const
-{
+bool OutputStream::hasInput() const {
   return !( m_itemNames.empty() && m_optItemNames.empty() && m_algDependentItemList.empty() );
 }
 
-StatusCode OutputStream::collectFromSubTree( DataObject* pObj )
-{
+StatusCode OutputStream::collectFromSubTree( DataObject* pObj ) {
   return m_pDataManager->traverseSubTree( pObj,
                                           [this]( IRegistry* r, int level ) { return this->collect( r, level ); } );
 }

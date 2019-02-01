@@ -15,8 +15,7 @@
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class RootDirectoryCnv RootDirectoryCnv.h src/RootDirectoryCnv.h
    *
@@ -28,8 +27,7 @@ namespace Gaudi
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootDirectoryCnv : public RootStatCnv
-  {
+  class GAUDI_API RootDirectoryCnv : public RootStatCnv {
   public:
     /** Initializing Constructor
      * @param      typ      [IN]     Concrete storage type of the converter
@@ -114,5 +112,5 @@ namespace Gaudi
      */
     StatusCode updateRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override;
   };
-}
+} // namespace Gaudi
 #endif // POOLDB_POOLDBDIRECTORYCNV_H

@@ -1,13 +1,13 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #endif
 #ifdef WIN32
 // Disable warning
 //   warning C4996: 'sprintf': This function or variable may be unsafe.
 // coming from TString.h
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 #include "GaudiPI.h"
 #include <GaudiCommonSvc/H1D.h>
@@ -16,67 +16,56 @@
 #include <GaudiKernel/StreamBuffer.h>
 
 std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string& title, int nBins, double xlow,
-                                                              double xup )
-{
+                                                              double xup ) {
   auto p = new Histogram1D( new TH1D( title.c_str(), title.c_str(), nBins, xlow, xup ) );
   return {p, p};
 }
 
-std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string& title, const Edges& e )
-{
+std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const std::string& title, const Edges& e ) {
   auto p = new Histogram1D( new TH1D( title.c_str(), title.c_str(), e.size() - 1, &e.front() ) );
   return {p, p};
 }
 
-std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const AIDA::IHistogram1D& hist )
-{
+std::pair<DataObject*, AIDA::IHistogram1D*> Gaudi::createH1D( const AIDA::IHistogram1D& hist ) {
   TH1D* h = getRepresentation<AIDA::IHistogram1D, TH1D>( hist );
   auto  n = ( h ? new Histogram1D( new TH1D( *h ) ) : nullptr );
   return {n, n};
 }
-namespace Gaudi
-{
+namespace Gaudi {
 
   template <>
-  void* Generic1D<AIDA::IHistogram1D, TH1D>::cast( const std::string& className ) const
-  {
+  void* Generic1D<AIDA::IHistogram1D, TH1D>::cast( const std::string& className ) const {
     if ( className == "AIDA::IHistogram1D" ) return const_cast<AIDA::IHistogram1D*>( (AIDA::IHistogram1D*)this );
     if ( className == "AIDA::IHistogram" ) return const_cast<AIDA::IHistogram*>( (AIDA::IHistogram*)this );
     return nullptr;
   }
 
   template <>
-  int Generic1D<AIDA::IHistogram1D, TH1D>::binEntries( int index ) const
-  {
+  int Generic1D<AIDA::IHistogram1D, TH1D>::binEntries( int index ) const {
     if ( binHeight( index ) <= 0 ) return 0;
     double xx = binHeight( index ) / binError( index );
     return int( xx * xx + 0.5 );
   }
 
   template <>
-  void Generic1D<AIDA::IHistogram1D, TH1D>::adoptRepresentation( TObject* rep )
-  {
+  void Generic1D<AIDA::IHistogram1D, TH1D>::adoptRepresentation( TObject* rep ) {
     TH1D* imp = dynamic_cast<TH1D*>( rep );
     if ( !imp ) throw std::runtime_error( "Cannot adopt native histogram representation." );
     m_rep.reset( imp );
   }
-}
+} // namespace Gaudi
 
 Gaudi::Histogram1D::Histogram1D() : Base( new TH1D() ) { init( "", false ); }
 
-Gaudi::Histogram1D::Histogram1D( TH1D* rep )
-{
+Gaudi::Histogram1D::Histogram1D( TH1D* rep ) {
   m_rep.reset( rep );
   init( m_rep->GetTitle() );
   initSums();
 }
 
-void Gaudi::Histogram1D::init( const std::string& title, bool initialize_axis )
-{
+void Gaudi::Histogram1D::init( const std::string& title, bool initialize_axis ) {
   m_classType = "IHistogram1D";
-  if ( initialize_axis ) {
-    m_axis.initialize( m_rep->GetXaxis(), false );
-  }
+  if ( initialize_axis ) { m_axis.initialize( m_rep->GetXaxis(), false ); }
   const TArrayD* a = m_rep->GetSumw2();
   if ( !a || ( a && a->GetSize() == 0 ) ) m_rep->Sumw2();
   setTitle( title );
@@ -85,8 +74,7 @@ void Gaudi::Histogram1D::init( const std::string& title, bool initialize_axis )
   m_sumwx      = 0;
 }
 
-void Gaudi::Histogram1D::initSums()
-{
+void Gaudi::Histogram1D::initSums() {
   m_sumwx      = 0;
   m_sumEntries = 0;
   for ( int i = 1, n = m_rep->GetNbinsX(); i <= n; ++i ) {
@@ -95,16 +83,14 @@ void Gaudi::Histogram1D::initSums()
   }
 }
 
-bool Gaudi::Histogram1D::reset()
-{
+bool Gaudi::Histogram1D::reset() {
   m_sumwx      = 0;
   m_sumEntries = 0;
   return Base::reset();
 }
 
 /// Adopt ROOT histogram representation
-void Gaudi::Histogram1D::adoptRepresentation( TObject* rep )
-{
+void Gaudi::Histogram1D::adoptRepresentation( TObject* rep ) {
   Gaudi::Generic1D<AIDA::IHistogram1D, TH1D>::adoptRepresentation( rep );
   if ( m_rep ) {
     init( m_rep->GetTitle() );
@@ -112,8 +98,7 @@ void Gaudi::Histogram1D::adoptRepresentation( TObject* rep )
   }
 }
 
-bool Gaudi::Histogram1D::setBinContents( int i, int entries, double height, double error, double centre )
-{
+bool Gaudi::Histogram1D::setBinContents( int i, int entries, double height, double error, double centre ) {
   m_rep->SetBinContent( rIndex( i ), height );
   m_rep->SetBinError( rIndex( i ), error );
   // accumulate sumwx for in range bins
@@ -125,35 +110,33 @@ bool Gaudi::Histogram1D::setBinContents( int i, int entries, double height, doub
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( push )
-#pragma warning( disable : 1572 )
+#  pragma warning( push )
+#  pragma warning( disable : 1572 )
 #endif
-bool Gaudi::Histogram1D::setRms( double rms )
-{
+bool Gaudi::Histogram1D::setRms( double rms ) {
   m_rep->SetEntries( m_sumEntries );
   std::vector<double> stat( 11 );
   // sum weights
-  stat[0]                                    = sumBinHeights();
-  stat[1]                                    = 0;
+  stat[0] = sumBinHeights();
+  stat[1] = 0;
   if ( equivalentBinEntries() != 0 ) stat[1] = ( sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
-  stat[2]                                    = m_sumwx;
-  double mean                                = 0;
-  if ( sumBinHeights() != 0 ) mean           = m_sumwx / sumBinHeights();
-  stat[3]                                    = ( mean * mean + rms * rms ) * sumBinHeights();
+  stat[2]     = m_sumwx;
+  double mean = 0;
+  if ( sumBinHeights() != 0 ) mean = m_sumwx / sumBinHeights();
+  stat[3] = ( mean * mean + rms * rms ) * sumBinHeights();
   m_rep->PutStats( &stat.front() );
   return true;
 }
 
 // set histogram statistics
-bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, double mean, double rms )
-{
+bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, double mean, double rms ) {
   m_rep->SetEntries( allEntries );
   // fill statistcal vector for Root
   std::vector<double> stat( 11 );
   // sum weights
   stat[0] = sumBinHeights();
   // sum weights **2
-  stat[1]                          = 0;
+  stat[1] = 0;
   if ( eqBinEntries != 0 ) stat[1] = ( sumBinHeights() * sumBinHeights() ) / eqBinEntries;
   // sum weights * x
   stat[2] = mean * sumBinHeights();
@@ -163,16 +146,14 @@ bool Gaudi::Histogram1D::setStatistics( int allEntries, double eqBinEntries, dou
   return true;
 }
 
-bool Gaudi::Histogram1D::fill( double x, double weight )
-{
+bool Gaudi::Histogram1D::fill( double x, double weight ) {
   // avoid race conditions when filling the histogram
   std::lock_guard<std::mutex> guard( m_fillSerialization );
   ( weight == 1. ) ? m_rep->Fill( x ) : m_rep->Fill( x, weight );
   return true;
 }
 
-void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
-{
+void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h ) {
   // implement here the copy
   std::string title = h.title() + "Copy";
   if ( h.axis().isFixedBinning() ) {
@@ -180,9 +161,7 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
         new TH1D( title.c_str(), title.c_str(), h.axis().bins(), h.axis().lowerEdge(), h.axis().upperEdge() ) );
   } else {
     Edges e;
-    for ( int i = 0; i < h.axis().bins(); ++i ) {
-      e.push_back( h.axis().binLowerEdge( i ) );
-    }
+    for ( int i = 0; i < h.axis().bins(); ++i ) { e.push_back( h.axis().binLowerEdge( i ) ); }
     // add also upperedges at the end
     e.push_back( h.axis().upperEdge() );
     m_rep.reset( new TH1D( title.c_str(), title.c_str(), e.size() - 1, &e.front() ) );
@@ -194,7 +173,7 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
   // sumw
   double sumw = h.sumBinHeights();
   // sumw2
-  double sumw2                               = 0;
+  double sumw2 = 0;
   if ( h.equivalentBinEntries() != 0 ) sumw2 = ( sumw * sumw ) / h.equivalentBinEntries();
 
   double sumwx  = h.mean() * h.sumBinHeights();
@@ -220,11 +199,10 @@ void Gaudi::Histogram1D::copyFromAida( const AIDA::IHistogram1D& h )
 
 #ifdef __ICC
 // re-enable icc remark #1572
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif
 
-StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
-{
+StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s ) {
   // DataObject::serialize(s);
   std::string title;
   int         size;
@@ -233,9 +211,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
     std::string key, value;
     s >> key >> value;
     annotation().addItem( key, value );
-    if ( "Title" == key ) {
-      title = value;
-    }
+    if ( "Title" == key ) { title = value; }
   }
   double lowerEdge, upperEdge, binHeight, binError;
   int    isFixedBinning, bins;
@@ -269,8 +245,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s )
   return s;
 }
 
-StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s ) const
-{
+StreamBuffer& Gaudi::Histogram1D::serialize( StreamBuffer& s ) const {
   // DataObject::serialize(s);
   s << static_cast<int>( annotation().size() );
   for ( int i = 0; i < annotation().size(); i++ ) {

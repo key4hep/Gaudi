@@ -43,120 +43,105 @@
 #include "CLHEP/Random/RandomEngine.h"
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
-namespace HepRndm
-{
+namespace HepRndm {
 
   // Specialized shoot function for flat distributed random number generation
   template <>
-  double Generator<Rndm::Flat>::shoot() const
-  {
+  double Generator<Rndm::Flat>::shoot() const {
     return RandFlat::shoot( m_hepEngine, m_specs->minimum(), m_specs->maximum() );
   }
 
   // Specialized shoot function
   template <>
-  double Generator<Rndm::Bit>::shoot() const
-  {
+  double Generator<Rndm::Bit>::shoot() const {
     return RandFlat::shootBit( m_hepEngine );
   }
 
   // Specialized shoot function for Gauss distributed random number generation
   template <>
-  double Generator<Rndm::Gauss>::shoot() const
-  {
+  double Generator<Rndm::Gauss>::shoot() const {
     return RandGaussQ::shoot( m_hepEngine, m_specs->mean(), m_specs->sigma() );
   }
 
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   Mandatory because RandPoisson::shoot returns "long"
-#pragma warning( push )
-#pragma warning( disable : 2259 )
+#  pragma warning( push )
+#  pragma warning( disable : 2259 )
 #endif
   // Specialized shoot function for Poisson distributed random number generation
   template <>
-  double Generator<Rndm::Poisson>::shoot() const
-  {
+  double Generator<Rndm::Poisson>::shoot() const {
     return RandPoisson::shoot( m_hepEngine, m_specs->mean() );
   }
 
 #ifdef __ICC
 // re-enable icc remark #2259
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif
 
   // Specialized shoot function
   template <>
-  double Generator<Rndm::Exponential>::shoot() const
-  {
+  double Generator<Rndm::Exponential>::shoot() const {
     return RandExponential::shoot( m_hepEngine, m_specs->mean() );
   }
 
   // Specialized shoot function
   template <>
-  double Generator<Rndm::BreitWigner>::shoot() const
-  {
+  double Generator<Rndm::BreitWigner>::shoot() const {
     return RandBreitWigner::shoot( m_hepEngine, m_specs->mean(), m_specs->gamma() );
   }
 
   // Specialized shoot function
   template <>
-  double Generator<Rndm::BreitWignerCutOff>::shoot() const
-  {
+  double Generator<Rndm::BreitWignerCutOff>::shoot() const {
     return RandBreitWigner::shoot( m_hepEngine, m_specs->mean(), m_specs->gamma(), m_specs->cutOff() );
   }
 
   // Specialized shoot function
   template <>
-  double Generator<Rndm::Chi2>::shoot() const
-  {
+  double Generator<Rndm::Chi2>::shoot() const {
     return RandChiSquare::shoot( m_hepEngine, m_specs->nDOF() );
   }
 
   // Specialized shoot function
   template <>
-  double Generator<Rndm::StudentT>::shoot() const
-  {
+  double Generator<Rndm::StudentT>::shoot() const {
     return RandStudentT::shoot( m_hepEngine, m_specs->aValue() );
   }
 
   template <>
-  double Generator<Rndm::Gamma>::shoot() const
-  {
+  double Generator<Rndm::Gamma>::shoot() const {
     return RandGamma::shoot( m_hepEngine, m_specs->kValue(), m_specs->lambda() );
   }
 
   // Specialized shoot function
   template <>
-  double Generator<Rndm::Binomial>::shoot() const
-  {
+  double Generator<Rndm::Binomial>::shoot() const {
     return RandBinomial::shoot( m_hepEngine, m_specs->nEvent(), m_specs->probability() );
   }
 
   /************************************************************************
-  * Copyright(c) 1995-1999, The ROOT System, All rights reserved.         *
-  * Authors: Rene Brun, Fons Rademakers.                                  *
-  * For list of contributors see $ROOTSYS/AA_CREDITS.                     *
-  *                                                                       *
-  * Permission to use, copy, modify and distribute this software and its  *
-  * documentation for non-commercial purposes is hereby granted without   *
-  * fee, provided that the above copyright notice appears in all copies   *
-  * and that both the copyright notice and this permission notice appear  *
-  * in the supporting documentation. The authors make no claims about the *
-  * suitability of this software for any purpose. It is provided "as is"  *
-  * without express or implied warranty.                                  *
-  ************************************************************************/
+   * Copyright(c) 1995-1999, The ROOT System, All rights reserved.         *
+   * Authors: Rene Brun, Fons Rademakers.                                  *
+   * For list of contributors see $ROOTSYS/AA_CREDITS.                     *
+   *                                                                       *
+   * Permission to use, copy, modify and distribute this software and its  *
+   * documentation for non-commercial purposes is hereby granted without   *
+   * fee, provided that the above copyright notice appears in all copies   *
+   * and that both the copyright notice and this permission notice appear  *
+   * in the supporting documentation. The authors make no claims about the *
+   * suitability of this software for any purpose. It is provided "as is"  *
+   * without express or implied warranty.                                  *
+   ************************************************************************/
   // Specialized shoot function. The Landau distribution is not covered by
   // CLHEP yet. This is hacked up version from ROOT. The above copyright notice
   // should give the guys credit.
   template <>
-  double Generator<Rndm::Landau>::shoot() const
-  {
+  double Generator<Rndm::Landau>::shoot() const {
     //  Generate a random number following a Landau distribution
     //  with average value mean and rms
     //  Converted by Rene Brun from CERNLIB routine ranlan(G110)
@@ -296,8 +281,7 @@ namespace HepRndm
   }
 
   template <>
-  class Generator<Rndm::DefinedPdf> : public RndmGen
-  {
+  class Generator<Rndm::DefinedPdf> : public RndmGen {
   protected:
     std::unique_ptr<RandGeneral> m_generator;
     HepRandomEngine*             m_hepEngine = nullptr;
@@ -306,8 +290,7 @@ namespace HepRndm
     /// Standard Constructor
     Generator( IInterface* engine ) : RndmGen( engine ) {}
     /// Initialize the generator
-    StatusCode initialize( const IRndmGen::Param& par ) override
-    {
+    StatusCode initialize( const IRndmGen::Param& par ) override {
       StatusCode status = RndmGen::initialize( par );
       if ( status.isSuccess() ) {
         try {
@@ -317,19 +300,15 @@ namespace HepRndm
             BaseEngine* engine = dynamic_cast<BaseEngine*>( m_engine.get() );
             if ( engine ) {
               m_hepEngine = engine->hepEngine();
-              if ( m_hepEngine ) {
-                return StatusCode::SUCCESS;
-              }
+              if ( m_hepEngine ) { return StatusCode::SUCCESS; }
             }
           }
-        } catch ( ... ) {
-        }
+        } catch ( ... ) {}
       }
       return StatusCode::FAILURE;
     }
     /// Finalize the generator
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       m_generator.reset();
       return RndmGen::finalize();
     }
@@ -340,13 +319,12 @@ namespace HepRndm
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison is meant
-#pragma warning( push )
-#pragma warning( disable : 1572 )
+#  pragma warning( push )
+#  pragma warning( disable : 1572 )
 #endif
   // Specialized shoot function
   template <>
-  double Generator<Rndm::GaussianTail>::shoot() const
-  {
+  double Generator<Rndm::GaussianTail>::shoot() const {
     /* Code obtained and adapted from GSL
      gsl_ran_gaussian_tail (const gsl_rng * r, const double a, const double sigma)
      Returns a gaussian random variable larger than a
@@ -384,10 +362,10 @@ namespace HepRndm
     }
 #ifdef __ICC
 // re-enable icc remark #1572
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif
   }
-}
+} // namespace HepRndm
 
 using namespace Rndm;
 #define DECLARE_GENERATOR_FACTORY( x, i )                                                                              \

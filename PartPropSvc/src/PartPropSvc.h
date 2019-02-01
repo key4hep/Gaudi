@@ -26,8 +26,7 @@
 //
 //------------------------------------------------------------------
 
-class PartPropSvc : public extends<Service, IPartPropSvc>
-{
+class PartPropSvc : public extends<Service, IPartPropSvc> {
 public:
   using extends::extends;
 
@@ -42,7 +41,7 @@ public:
 private:
   using inputFunPtr = bool ( * )( std::istream&, HepPDT::TableBuilder& );
 
-  StatusCode createTable();
+  StatusCode                                       createTable();
   std::vector<std::pair<std::string, inputFunPtr>> m_inputs;
 
   Gaudi::Property<std::string> m_pdtFiles{this, "InputFile", "PDGTABLE.MeV"};

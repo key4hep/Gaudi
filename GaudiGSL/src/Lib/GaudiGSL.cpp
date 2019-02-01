@@ -16,8 +16,7 @@
 /** define the initial value for static variable
  */
 // ============================================================================
-namespace
-{
+namespace {
   static const IGslSvc* s_gslSvc = nullptr;
 }
 // ============================================================================
@@ -35,8 +34,7 @@ const IGslSvc* GaudiGSL::gslSvc() { return s_gslSvc; }
  *  @return (const) pointer to Gaudi GSL Service
  */
 // ============================================================================
-const IGslSvc* GaudiGSL::setGslSvc( const IGslSvc* value )
-{
+const IGslSvc* GaudiGSL::setGslSvc( const IGslSvc* value ) {
   s_gslSvc = value;
   return gslSvc();
 }

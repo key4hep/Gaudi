@@ -6,18 +6,15 @@
 
 using Gaudi::Sequence;
 
-namespace
-{
+namespace {
   template <StatusCode ( Gaudi::Algorithm::*f )(), typename C>
-  bool for_algorithms( C& c )
-  {
+  bool for_algorithms( C& c ) {
     return std::accumulate( std::begin( c ), std::end( c ), true,
                             []( bool b, Gaudi::Algorithm* a ) { return ( a->*f )().isSuccess() && b; } );
   }
-}
+} // namespace
 
-StatusCode Sequence::initialize()
-{
+StatusCode Sequence::initialize() {
   if ( !Algorithm::initialize() ) return StatusCode::FAILURE;
 
   // initialize sub-algorithms
@@ -29,8 +26,7 @@ StatusCode Sequence::initialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode Sequence::finalize()
-{
+StatusCode Sequence::finalize() {
   // Bypass the finalialization if the algorithm hasn't been initilized.
   // Note: this check is also in Gaudi::Algorithm::sysFinalize
   if ( Gaudi::StateMachine::CONFIGURED == FSMState() || !isEnabled() ) return StatusCode::SUCCESS;
@@ -48,8 +44,7 @@ StatusCode Sequence::finalize()
   return Algorithm::finalize();
 }
 
-StatusCode Sequence::start()
-{
+StatusCode Sequence::start() {
   if ( !Algorithm::start() ) return StatusCode::FAILURE;
 
   // start sub-algorithms
@@ -61,8 +56,7 @@ StatusCode Sequence::start()
   return StatusCode::SUCCESS;
 }
 
-StatusCode Sequence::stop()
-{
+StatusCode Sequence::stop() {
   // stop sub-algorithms
   if ( !for_algorithms<&Algorithm::sysStop>( m_subAlgms ) ) {
     error() << "error stopping one or several sub-algorithms of Sequence " << name() << endmsg;
@@ -72,8 +66,7 @@ StatusCode Sequence::stop()
   return Algorithm::stop();
 }
 
-StatusCode Sequence::reinitialize()
-{
+StatusCode Sequence::reinitialize() {
   // re-initialize sub-algorithms
   if ( !for_algorithms<&Algorithm::sysReinitialize>( m_subAlgms ) ) {
     error() << "error re-initializing one or several sub-algorithms of Sequence " << name() << endmsg;
@@ -83,8 +76,7 @@ StatusCode Sequence::reinitialize()
   return Algorithm::reinitialize();
 }
 
-StatusCode Sequence::restart()
-{
+StatusCode Sequence::restart() {
   // re-start sub-algorithms
   if ( !for_algorithms<&Algorithm::sysRestart>( m_subAlgms ) ) {
     error() << "error re-restarting one or several sub-algorithms of Sequence " << name() << endmsg;
@@ -94,8 +86,7 @@ StatusCode Sequence::restart()
   return Algorithm::restart();
 }
 
-StatusCode Sequence::beginRun()
-{
+StatusCode Sequence::beginRun() {
   if ( !Algorithm::beginRun() ) return StatusCode::FAILURE;
 
   // call beginRun for sub-algorithms
@@ -107,8 +98,7 @@ StatusCode Sequence::beginRun()
   return StatusCode::SUCCESS;
 }
 
-StatusCode Sequence::endRun()
-{
+StatusCode Sequence::endRun() {
   // call endRun for sub-algorithms
   if ( !for_algorithms<&Algorithm::sysEndRun>( m_subAlgms ) ) {
     error() << "error calling endRun for one or several sub-algorithms of Sequence " << name() << endmsg;
@@ -118,8 +108,7 @@ StatusCode Sequence::endRun()
   return Algorithm::endRun();
 }
 
-void Sequence::acceptDHVisitor( IDataHandleVisitor* vis ) const
-{
+void Sequence::acceptDHVisitor( IDataHandleVisitor* vis ) const {
   Algorithm::acceptDHVisitor( vis );
 
   // loop through sub-algs
@@ -130,8 +119,7 @@ const std::vector<Gaudi::Algorithm*>* Sequence::subAlgorithms() const { return &
 
 std::vector<Gaudi::Algorithm*>* Sequence::subAlgorithms() { return &m_subAlgms; }
 
-StatusCode Sequence::createSubAlgorithm( const std::string& type, const std::string& name, Algorithm*& pSubAlgorithm )
-{
+StatusCode Sequence::createSubAlgorithm( const std::string& type, const std::string& name, Algorithm*& pSubAlgorithm ) {
   SmartIF<IAlgManager> am( serviceLocator() );
   if ( !am ) return StatusCode::FAILURE;
 
@@ -143,8 +131,6 @@ StatusCode Sequence::createSubAlgorithm( const std::string& type, const std::str
   try {
     pSubAlgorithm = dynamic_cast<Algorithm*>( tmp );
     m_subAlgms.push_back( pSubAlgorithm );
-  } catch ( ... ) {
-    sc = StatusCode::FAILURE;
-  }
+  } catch ( ... ) { sc = StatusCode::FAILURE; }
   return sc;
 }

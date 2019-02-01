@@ -19,8 +19,7 @@ class IDataProviderSvc;
 class IOpaqueAddress;
 class IDataStoreAgent;
 
-namespace DataSvcHelpers
-{
+namespace DataSvcHelpers {
   /**
    * @class RegistryEntry RegistryEntry.h GaudiKernel/RegistryEntry.h
    *
@@ -34,8 +33,7 @@ namespace DataSvcHelpers
    * @author Markus Frank
    * @author Sebastien Ponce
    */
-  class GAUDI_API RegistryEntry final : public IRegistry
-  {
+  class GAUDI_API RegistryEntry final : public IRegistry {
   private:
     /// Definition of datastore type
     typedef std::vector<IRegistry*> Store;
@@ -161,5 +159,5 @@ namespace DataSvcHelpers
     /// traverse data tree
     StatusCode traverseTree( IDataStoreAgent* pAgent, int level = 0 );
   };
-}
+} // namespace DataSvcHelpers
 #endif // GAUDIKERNEL_REGISTRYENTRY_H

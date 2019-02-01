@@ -16,18 +16,17 @@
 
 #include <csignal>
 
-namespace
-{
+namespace {
   /// Specialized watchdog to monitor the event loop and spot possible infinite loops.
-  class EventWatchdog : public WatchdogThread
-  {
+  class EventWatchdog : public WatchdogThread {
   public:
     EventWatchdog( const SmartIF<IMessageSvc>& msgSvc, const std::string& name,
                    boost::posix_time::time_duration timeout, bool stackTrace = false, long maxCount = 0,
                    bool autostart = false )
-        : WatchdogThread( timeout, autostart ), log( msgSvc, name ), m_maxCount( maxCount ), m_stackTrace( stackTrace )
-    {
-    }
+        : WatchdogThread( timeout, autostart )
+        , log( msgSvc, name )
+        , m_maxCount( maxCount )
+        , m_stackTrace( stackTrace ) {}
 
   private:
     /// message stream used to report problems
@@ -39,18 +38,19 @@ namespace
     /// whether to dump a stack trace when the timeout is reached
     bool m_stackTrace = false;
     /// main watchdog function
-    void action() override
-    {
+    void action() override {
       if ( !m_counter ) {
         log << MSG::WARNING << "More than " << getTimeout().total_seconds() << "s since the last "
             << IncidentType::BeginEvent << endmsg;
       } else {
         log << MSG::WARNING << "Other " << getTimeout().total_seconds() << "s passed" << endmsg;
       }
-      log << MSG::INFO << "Current memory usage is"
-                          " virtual size = "
-          << System::virtualMemory() / 1024. << " MB"
-                                                ", resident set size = "
+      log << MSG::INFO
+          << "Current memory usage is"
+             " virtual size = "
+          << System::virtualMemory() / 1024.
+          << " MB"
+             ", resident set size = "
           << System::pagedMemory() / 1024. << " MB" << endmsg;
       if ( m_stackTrace && gSystem ) {
         // TSystem::StackTrace() prints on the standard error, so we
@@ -63,8 +63,7 @@ namespace
         std::raise( SIGABRT );
       }
     }
-    void onPing() override
-    {
+    void onPing() override {
       if ( m_counter ) {
         if ( m_counter >= 3 )
           log << MSG::INFO << "Starting a new event after ~" << m_counter * getTimeout().total_seconds() << "s"
@@ -72,17 +71,15 @@ namespace
         m_counter = 0;
       }
     }
-    void onStop() override
-    {
+    void onStop() override {
       if ( m_counter >= 3 )
         log << MSG::INFO << "The last event took ~" << m_counter * getTimeout().total_seconds() << "s" << endmsg;
     }
   };
-}
+} // namespace
 
 // Initialization of the service.
-StatusCode StalledEventMonitor::initialize()
-{
+StatusCode StalledEventMonitor::initialize() {
   StatusCode sc = base_class::initialize();
   if ( sc.isFailure() ) return sc;
 
@@ -109,28 +106,24 @@ StatusCode StalledEventMonitor::initialize()
 }
 
 // Start the monitoring.
-StatusCode StalledEventMonitor::start()
-{
+StatusCode StalledEventMonitor::start() {
   if ( m_watchdog ) m_watchdog->start();
   return StatusCode::SUCCESS;
 }
 
 // Notify the watchdog that a new event has been started
-void StalledEventMonitor::handle( const Incident& /* incident */ )
-{
+void StalledEventMonitor::handle( const Incident& /* incident */ ) {
   if ( m_watchdog ) m_watchdog->ping();
 }
 
 // Start the monitoring.
-StatusCode StalledEventMonitor::stop()
-{
+StatusCode StalledEventMonitor::stop() {
   if ( m_watchdog ) m_watchdog->stop();
   return StatusCode::SUCCESS;
 }
 
 // Finalization of the service.
-StatusCode StalledEventMonitor::finalize()
-{
+StatusCode StalledEventMonitor::finalize() {
   // destroy the watchdog thread (if any)
   m_watchdog.reset();
   // unregistering from the IncidentSvc

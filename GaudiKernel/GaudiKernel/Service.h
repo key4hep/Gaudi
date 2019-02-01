@@ -33,8 +33,7 @@ class ServiceManager;
  *  @author Pere Mato
  *  @author Marco Clemencic
  */
-class GAUDI_API Service : public PropertyHolder<CommonMessaging<implements<IService, IProperty, IStateful>>>
-{
+class GAUDI_API Service : public PropertyHolder<CommonMessaging<implements<IService, IProperty, IStateful>>> {
 public:
   using Factory = Gaudi::PluginService::Factory<IService*( const std::string&, ISvcLocator* )>;
 
@@ -79,10 +78,9 @@ public:
   StatusCode setProperties();
 
   /** Access a service by name, creating it if it doesn't already exist.
-  */
+   */
   template <class T>
-  StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const
-  {
+  StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const {
     ISvcLocator& svcLoc = *serviceLocator();
     auto         ptr    = ServiceLocatorHelper( svcLoc, *this )
                    .service<T>( name, !createIf, // quiet
@@ -98,8 +96,7 @@ public:
   }
 
   template <class T>
-  StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const
-  {
+  StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
     auto ptr = service<T>( name, createIf );
     psvc     = ( ptr ? ptr.get() : nullptr );
     if ( psvc ) {
@@ -110,18 +107,16 @@ public:
   }
 
   template <typename IFace = IService>
-  SmartIF<IFace> service( const std::string& name, bool createIf = true ) const
-  {
+  SmartIF<IFace> service( const std::string& name, bool createIf = true ) const {
     return ServiceLocatorHelper( *serviceLocator(), *this )
         .service<IFace>( name, !createIf, // quiet
                          createIf );
   }
 
   /** Access a service by name and type, creating it if it doesn't already exist.
-  */
+   */
   template <class T>
-  StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const
-  {
+  StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const {
     return service( svcType + "/" + svcName, psvc );
   }
 
@@ -133,8 +128,7 @@ public:
    *  @param create if necessary, default true
    */
   template <class T>
-  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true )
-  {
+  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true ) {
 
     StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
     if ( UNLIKELY( !sc ) ) {

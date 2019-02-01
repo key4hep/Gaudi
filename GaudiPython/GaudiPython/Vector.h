@@ -13,8 +13,7 @@
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================
 
-namespace GaudiPython
-{
+namespace GaudiPython {
   /// useful type definition for  implicit loos
   typedef std::vector<double> Vector;
   typedef Vector              Row;
@@ -27,8 +26,7 @@ namespace GaudiPython
    */
   struct _identity {
     template <typename T>
-    T operator()( const T& value ) const
-    {
+    T operator()( const T& value ) const {
       return value;
     }
   };

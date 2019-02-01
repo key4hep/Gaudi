@@ -15,16 +15,14 @@
 // ============================================================================
 struct GaudiHistoTool;
 // ============================================================================
-namespace GaudiPython
-{
+namespace GaudiPython {
   /** @class HistoDecorator                        GaudiPython/HistoDecorator.h
    *  Simple decorator class to allow to reuse the functionality of
    *  GaudiHistos<TYPE> class in pythin
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date   2005-08-04
    */
-  class GAUDI_API HistoDecorator
-  {
+  class GAUDI_API HistoDecorator {
   public:
     // ========================================================================
     typedef std::vector<GaudiAlg::ID>        IDs;

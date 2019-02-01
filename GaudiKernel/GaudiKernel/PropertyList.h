@@ -13,8 +13,7 @@
     @author David Quarrie
     @author Pere Mato
 */
-class GAUDI_API PropertyList : public Property
-{
+class GAUDI_API PropertyList : public Property {
 public:
   /// Constructor
   PropertyList();

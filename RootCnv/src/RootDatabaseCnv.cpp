@@ -23,13 +23,10 @@ using namespace std;
 
 // Standard Constructor
 RootDatabaseCnv::RootDatabaseCnv( long typ, const CLID& cl, ISvcLocator* svc, RootCnvSvc* mgr )
-    : RootDirectoryCnv( typ, cl, svc, mgr )
-{
-}
+    : RootDirectoryCnv( typ, cl, svc, mgr ) {}
 
 // Create database object
-StatusCode RootDatabaseCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj )
-{
+StatusCode RootDatabaseCnv::createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) {
   StatusCode status = StatusCode::FAILURE;
   if ( pAddr ) {
     RootDataConnection*  con    = nullptr;

@@ -18,8 +18,7 @@ DECLARE_COMPONENT( TestToolAlgFailure )
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode TestToolAlgFailure::initialize()
-{
+StatusCode TestToolAlgFailure::initialize() {
 
   debug() << "Initialize" << endmsg;
 
@@ -37,9 +36,7 @@ StatusCode TestToolAlgFailure::initialize()
         warning() << "Got exception '" << e.what() << "'" << endmsg;
       } else {
         error() << "Got exception '" << e.what() << "'" << endmsg;
-        if ( m_throwException ) {
-          throw;
-        }
+        if ( m_throwException ) { throw; }
         return StatusCode::FAILURE;
       }
     }
@@ -51,8 +48,7 @@ StatusCode TestToolAlgFailure::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode TestToolAlgFailure::execute()
-{
+StatusCode TestToolAlgFailure::execute() {
 
   info() << "Execute" << endmsg;
 
@@ -62,8 +58,7 @@ StatusCode TestToolAlgFailure::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode TestToolAlgFailure::finalize()
-{
+StatusCode TestToolAlgFailure::finalize() {
 
   info() << "Finalize" << endmsg;
 

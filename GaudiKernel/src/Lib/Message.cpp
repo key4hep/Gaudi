@@ -13,11 +13,9 @@
 
 using namespace MSG;
 
-namespace
-{
+namespace {
   // get the current time from the system and format it according to the format
-  inline std::string formattedTime( const std::string& fmt, bool universal = false )
-  {
+  inline std::string formattedTime( const std::string& fmt, bool universal = false ) {
     return Gaudi::Time::current().format( !universal, fmt );
   }
 } // namespace
@@ -37,9 +35,7 @@ Message::Message( const char* src, int type, const char* msg ) : m_message( msg 
 // ---------------------------------------------------------------------------
 //
 Message::Message( std::string src, int type, std::string msg )
-    : m_message( std::move( msg ) ), m_source( std::move( src ) ), m_type( type )
-{
-}
+    : m_message( std::move( msg ) ), m_source( std::move( src ) ), m_type( type ) {}
 
 //#############################################################################
 // ---------------------------------------------------------------------------
@@ -95,8 +91,7 @@ void Message::setSource( std::string src ) { m_source = std::move( src ); }
 // Purpose:Insert the message into a stream.
 // ---------------------------------------------------------------------------
 //
-std::ostream& operator<<( std::ostream& stream, const Message& msg )
-{
+std::ostream& operator<<( std::ostream& stream, const Message& msg ) {
   msg.makeFormattedMsg( msg.m_format );
   stream << msg.m_formatted_msg;
   return stream;
@@ -108,8 +103,7 @@ std::ostream& operator<<( std::ostream& stream, const Message& msg )
 // Purpose: comparison operator needed for maps
 // ---------------------------------------------------------------------------
 //
-bool Message::operator<( const Message& b )
-{
+bool Message::operator<( const Message& b ) {
   return m_type < b.m_type || m_source < b.m_source || m_message < b.m_message;
 }
 
@@ -119,8 +113,7 @@ bool Message::operator<( const Message& b )
 // Purpose: comparison op.
 // ---------------------------------------------------------------------------
 //
-bool operator==( const Message& a, const Message& b )
-{
+bool operator==( const Message& a, const Message& b ) {
   return a.m_source == b.m_source && a.m_type == b.m_type && a.m_message == b.m_message;
 }
 
@@ -147,8 +140,7 @@ const std::string Message::getDefaultFormat() { return DEFAULT_FORMAT; }
 //          use isFormatted() to check for valid format.
 // ---------------------------------------------------------------------------
 //
-void Message::setFormat( std::string format ) const
-{
+void Message::setFormat( std::string format ) const {
   if ( LIKELY( !format.empty() ) ) {
     m_format = std::move( format );
   } else {
@@ -179,8 +171,7 @@ const std::string Message::getDefaultTimeFormat() { return DEFAULT_TIME_FORMAT; 
 //          use isFormatted() to check for valid format.
 // ---------------------------------------------------------------------------
 //
-void Message::setTimeFormat( std::string timeFormat ) const
-{
+void Message::setTimeFormat( std::string timeFormat ) const {
   m_time_format = ( timeFormat.empty() ? DEFAULT_TIME_FORMAT : std::move( timeFormat ) );
 }
 
@@ -190,8 +181,7 @@ void Message::setTimeFormat( std::string timeFormat ) const
 // Purpose: This formats the message according to the format string.
 // ---------------------------------------------------------------------------
 //
-void Message::makeFormattedMsg( const std::string& format ) const
-{
+void Message::makeFormattedMsg( const std::string& format ) const {
   m_formatted_msg.clear();
   auto i = format.begin();
   while ( i != format.end() ) {
@@ -228,8 +218,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
 // Purpose: This the work horse that checks for a valid format string.
 // ---------------------------------------------------------------------------
 //
-void Message::decodeFormat( const std::string& format ) const
-{
+void Message::decodeFormat( const std::string& format ) const {
   if ( !format.empty() ) {
     const char        FORMAT_TYPE  = format[format.length() - 1];
     const std::string FORMAT_PARAM = format.substr( 0, format.length() - 1 );
@@ -262,25 +251,19 @@ void Message::decodeFormat( const std::string& format ) const
 
     case SLOT: {
       std::ostringstream ost;
-      if ( m_ecSlot != EventContext::INVALID_CONTEXT_ID ) {
-        ost << m_ecSlot;
-      }
+      if ( m_ecSlot != EventContext::INVALID_CONTEXT_ID ) { ost << m_ecSlot; }
       sizeField( ost.str() );
     } break;
 
     case EVTNUM: {
       std::ostringstream ost;
-      if ( m_ecEvt != EventContext::INVALID_CONTEXT_EVT ) {
-        ost << m_ecEvt;
-      }
+      if ( m_ecEvt != EventContext::INVALID_CONTEXT_EVT ) { ost << m_ecEvt; }
       sizeField( ost.str() );
     } break;
 
     case EVENTID: {
       std::ostringstream ost;
-      if ( m_ecEvtId.isValid() ) {
-        ost << m_ecEvtId;
-      }
+      if ( m_ecEvtId.isValid() ) { ost << m_ecEvtId; }
       sizeField( ost.str() );
     } break;
 
@@ -351,21 +334,18 @@ void Message::invalidFormat() const { makeFormattedMsg( DEFAULT_FORMAT ); }
 // Purpose: Sets the minimum width of a stream field.
 // ---------------------------------------------------------------------------
 //
-namespace
-{
+namespace {
   // Check that a container only contains digits.
   constexpr struct all_digit_t {
     template <typename C>
-    bool operator()( const C& c ) const
-    {
+    bool operator()( const C& c ) const {
       return std::all_of( std::begin( c ), std::end( c ),
                           []( typename C::const_reference i ) { return isdigit( i ); } );
     }
   } all_digits{};
 } // namespace
 
-void Message::setWidth( const std::string& formatArg ) const
-{
+void Message::setWidth( const std::string& formatArg ) const {
   // Convert string to int, if string contains digits only...
   if ( all_digits( formatArg ) )
     m_width = std::stoi( formatArg );
@@ -380,8 +360,7 @@ void Message::setWidth( const std::string& formatArg ) const
 // ---------------------------------------------------------------------------
 //
 
-void Message::sizeField( const std::string& text ) const
-{
+void Message::sizeField( const std::string& text ) const {
   std::string newText;
   if ( m_width == 0 || m_width == static_cast<int>( text.length() ) ) {
     newText = text;

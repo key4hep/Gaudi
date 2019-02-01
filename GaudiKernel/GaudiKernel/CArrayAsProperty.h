@@ -1,15 +1,13 @@
 #ifndef NO_C_ARRAY_AS_PROPERTY_WARNING
-#warning deprecated header (will be removed in Gaudi v29r0), think about using std::array<T,N> instead of T[N]
+#  warning deprecated header (will be removed in Gaudi v29r0), think about using std::array<T,N> instead of T[N]
 #endif
 #ifndef GAUDIKERNEL_CARRAYASPROPERTY_H
-#define GAUDIKERNEL_CARRAYASPROPERTY_H
-#include "GaudiKernel/Property.h"
+#  define GAUDIKERNEL_CARRAYASPROPERTY_H
+#  include "GaudiKernel/Property.h"
 
-namespace Gaudi
-{
+namespace Gaudi {
   template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
-  class Property<TYPE[N], VERIFIER, HANDLERS> : public Details::PropertyBase
-  {
+  class Property<TYPE[N], VERIFIER, HANDLERS> : public Details::PropertyBase {
   public:
     // ==========================================================================
     /// Hosted type
@@ -34,8 +32,7 @@ namespace Gaudi
     // ==========================================================================
     /// the constructor with property name, value and documentation.
     inline Property( std::string name, StorageType value, std::string doc = "" )
-        : PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( value )
-    {
+        : PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( value ) {
       m_verifier( m_value );
     }
 
@@ -43,14 +40,12 @@ namespace Gaudi
     using PropertyBase::declareUpdateHandler;
 
     /// set new callback for reading
-    PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) override
-    {
+    PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) override {
       m_handlers.setReadHandler( std::move( fun ) );
       return *this;
     }
     /// set new callback for update
-    PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) override
-    {
+    PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) override {
       m_handlers.setUpdateHandler( std::move( fun ) );
       return *this;
     }
@@ -61,15 +56,13 @@ namespace Gaudi
     const std::function<void( PropertyBase& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
 
     /// manual trigger for callback for update
-    bool useUpdateHandler() override
-    {
+    bool useUpdateHandler() override {
       m_handlers.useUpdateHandler( *this );
       return true;
     }
 
     /// Automatic conversion to value (const reference).
-    operator const ValueType&() const
-    {
+    operator const ValueType&() const {
       m_handlers.useReadHandler( *this );
       return m_value;
     }
@@ -80,12 +73,9 @@ namespace Gaudi
     // }
 
     /// Assignment from value.
-    Property& operator=( const ValueType& v )
-    {
+    Property& operator=( const ValueType& v ) {
       m_verifier( v );
-      for ( size_t i = 0; i != N; ++i ) {
-        m_value[i] = v[i];
-      }
+      for ( size_t i = 0; i != N; ++i ) { m_value[i] = v[i]; }
       m_handlers.useUpdateHandler( *this );
       return *this;
     }
@@ -103,13 +93,11 @@ namespace Gaudi
     /// @{
     const ValueType& value() const { return *this; }
     ValueType&       value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
-    bool setValue( const ValueType& v )
-    {
+    bool             setValue( const ValueType& v ) {
       *this = v;
       return true;
     }
-    bool set( const ValueType& v )
-    {
+    bool set( const ValueType& v ) {
       *this = v;
       return true;
     }
@@ -122,21 +110,18 @@ namespace Gaudi
     inline size_t size() const { return N; }
     inline bool   empty() const { return false; }
     template <class T = const ValueType>
-    inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key ) const
-    {
+    inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key ) const {
       return value()[key];
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key )
-    {
+    inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key ) {
       return value()[key];
     }
     /// @}
     // ==========================================================================
   public:
     /// get the value from another property
-    bool assign( const PropertyBase& source ) override
-    {
+    bool assign( const PropertyBase& source ) override {
       // Is the property of "the same" type?
       const Property* p = dynamic_cast<const Property*>( &source );
       if ( p ) {
@@ -147,14 +132,12 @@ namespace Gaudi
       return true;
     }
     /// set value to another property
-    bool load( PropertyBase& dest ) const override
-    {
+    bool load( PropertyBase& dest ) const override {
       // delegate to the 'opposite' method
       return dest.assign( *this );
     }
     /// string -> value
-    StatusCode fromString( const std::string& source ) override
-    {
+    StatusCode fromString( const std::string& source ) override {
       ValueType tmp;
       if ( Parsers::parse( tmp, source ).isSuccess() ) {
         *this = tmp;
@@ -164,23 +147,20 @@ namespace Gaudi
       return StatusCode::SUCCESS;
     }
     /// value  -> string
-    std::string toString() const override
-    {
+    std::string toString() const override {
       m_handlers.useReadHandler( *this );
       return Utils::toString( m_value );
     }
     /// value  -> stream
-    void toStream( std::ostream& out ) const override
-    {
+    void toStream( std::ostream& out ) const override {
       m_handlers.useReadHandler( *this );
       Utils::toStream( m_value, out );
     }
   };
   template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
-  class Property<TYPE ( & )[N], VERIFIER, HANDLERS> : public Property<TYPE[N], VERIFIER, HANDLERS>
-  {
+  class Property<TYPE ( & )[N], VERIFIER, HANDLERS> : public Property<TYPE[N], VERIFIER, HANDLERS> {
   public:
     using Property<TYPE[N], VERIFIER, HANDLERS>::Property;
   };
-}
+} // namespace Gaudi
 #endif

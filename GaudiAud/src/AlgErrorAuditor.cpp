@@ -5,14 +5,12 @@
 
 DECLARE_COMPONENT( AlgErrorAuditor )
 
-void AlgErrorAuditor::beforeExecute( INamedInterface* )
-{
+void AlgErrorAuditor::beforeExecute( INamedInterface* ) {
   m_error = msgSvc()->messageCount( MSG::ERROR );
   m_fatal = msgSvc()->messageCount( MSG::FATAL );
 }
 
-StatusCode AlgErrorAuditor::initialize()
-{
+StatusCode AlgErrorAuditor::initialize() {
 
   if ( m_abort && m_throw ) {
     info() << "Both \"Throw\" and \"Abort\" options have been set."
@@ -22,8 +20,7 @@ StatusCode AlgErrorAuditor::initialize()
   return StatusCode::SUCCESS;
 }
 
-void AlgErrorAuditor::afterExecute( INamedInterface* alg, const StatusCode& sc )
-{
+void AlgErrorAuditor::afterExecute( INamedInterface* alg, const StatusCode& sc ) {
 
   bool fail( false );
   if ( msgSvc()->messageCount( MSG::ERROR ) != m_error && !sc.isRecoverable() ) {
@@ -38,9 +35,7 @@ void AlgErrorAuditor::afterExecute( INamedInterface* alg, const StatusCode& sc )
     incrMap( alg->name(), 0 );
     fail = true;
 
-    if ( m_throw && !m_abort ) {
-      throw GaudiException( os.str(), "AlgErrorAuditor", StatusCode::FAILURE );
-    }
+    if ( m_throw && !m_abort ) { throw GaudiException( os.str(), "AlgErrorAuditor", StatusCode::FAILURE ); }
   }
 
   if ( msgSvc()->messageCount( MSG::FATAL ) != m_fatal && sc != StatusCode::FAILURE ) {
@@ -55,26 +50,19 @@ void AlgErrorAuditor::afterExecute( INamedInterface* alg, const StatusCode& sc )
     incrMap( alg->name(), 1 );
     fail = true;
 
-    if ( m_throw && !m_abort ) {
-      throw GaudiException( os.str(), "AlgErrorAuditor", StatusCode::FAILURE );
-    }
+    if ( m_throw && !m_abort ) { throw GaudiException( os.str(), "AlgErrorAuditor", StatusCode::FAILURE ); }
   }
 
-  if ( fail && m_abort ) {
-    abort();
-  }
+  if ( fail && m_abort ) { abort(); }
 }
 
-StatusCode AlgErrorAuditor::finalize()
-{
+StatusCode AlgErrorAuditor::finalize() {
 
   if ( m_algMap[0].size() != 0 ) {
     info() << "Found " << m_algMap[0].size() << " instances where an Algorithm::execute() produced an ERROR "
            << "but returned a SUCCESS:" << std::endl;
 
-    for ( const auto& i : m_algMap[0] ) {
-      msgStream() << i.first << ": " << i.second << std::endl;
-    }
+    for ( const auto& i : m_algMap[0] ) { msgStream() << i.first << ": " << i.second << std::endl; }
 
     msgStream() << endmsg;
   }
@@ -83,17 +71,14 @@ StatusCode AlgErrorAuditor::finalize()
     info() << "Found " << m_algMap[1].size() << " instances where an Algorithm::execute() produced a FATAL "
            << "but returned a SUCCESS:" << std::endl;
 
-    for ( const auto& i : m_algMap[1] ) {
-      msgStream() << i.first << ": " << i.second << std::endl;
-    }
+    for ( const auto& i : m_algMap[1] ) { msgStream() << i.first << ": " << i.second << std::endl; }
 
     msgStream() << endmsg;
   }
   return StatusCode::SUCCESS;
 }
 
-void AlgErrorAuditor::incrMap( const std::string& alg, int level )
-{
+void AlgErrorAuditor::incrMap( const std::string& alg, int level ) {
   auto i = m_algMap[level].find( alg );
   if ( i != m_algMap[level].end() ) {
     i->second++;

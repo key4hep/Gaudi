@@ -12,8 +12,7 @@
  *  @author Ben Couturier
  *  @date   2014-08-22
  */
-class CallgrindProfile : public Algorithm
-{
+class CallgrindProfile : public Algorithm {
 public:
   using Algorithm::Algorithm;
 

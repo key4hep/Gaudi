@@ -8,14 +8,12 @@
 class DataObject;
 
 // Functions imported from GaudiKernel
-namespace GaudiRoot
-{
+namespace GaudiRoot {
   void popCurrentDataObject();
   void pushCurrentDataObject( DataObject** pobjAddr );
-}
+} // namespace GaudiRoot
 
-namespace
-{
+namespace {
 
   /** @struct  DataObjectPush RootUtils.h src/RootUtils.h
    *
@@ -34,6 +32,6 @@ namespace
     /// Stnadard destructor. Note: NOT virtual, hence no inheritance!
     ~DataObjectPush() { GaudiRoot::popCurrentDataObject(); }
   };
-}
+} // namespace
 
 #endif // GAUDIROOTCNV_ROOTUTILS_H

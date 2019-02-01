@@ -5,7 +5,6 @@ import sys
 
 
 class TestCase(unittest.TestCase):
-
     def setUp(self):
         unittest.TestCase.setUp(self)
 
@@ -24,5 +23,5 @@ class TestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stdout,
-                                                     verbosity=2))
+    unittest.main(
+        testRunner=unittest.TextTestRunner(stream=sys.stdout, verbosity=2))

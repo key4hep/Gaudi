@@ -21,15 +21,13 @@
 // ============================================================================
 // simple function to get the algorithm from Context Service
 // ============================================================================
-IAlgorithm* Gaudi::Utils::getAlgorithm( const IAlgContextSvc* svc, const AlgSelector& sel )
-{
+IAlgorithm* Gaudi::Utils::getAlgorithm( const IAlgContextSvc* svc, const AlgSelector& sel ) {
   return svc ? getAlgorithm( svc->algorithms(), sel ) : nullptr;
 }
 // ============================================================================
 // simple function to get the algorithm from Context Service
 // ============================================================================
-IAlgorithm* Gaudi::Utils::getAlgorithm( const std::vector<IAlgorithm*>& lst, const AlgSelector& sel )
-{
+IAlgorithm* Gaudi::Utils::getAlgorithm( const std::vector<IAlgorithm*>& lst, const AlgSelector& sel ) {
   auto it = std::find_if( lst.rbegin(), lst.rend(), std::cref( sel ) );
   return it != lst.rend() ? *it : nullptr;
 }

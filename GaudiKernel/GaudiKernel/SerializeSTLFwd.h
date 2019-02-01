@@ -15,8 +15,7 @@
 #include <utility>
 #include <vector>
 
-namespace GaudiUtils
-{
+namespace GaudiUtils {
   /// Serialize an std::vector in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   inline std::ostream& operator<<( std::ostream& s, const std::vector<T, ALLOC>& v );

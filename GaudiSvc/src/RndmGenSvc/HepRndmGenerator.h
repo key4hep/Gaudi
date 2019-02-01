@@ -21,12 +21,10 @@
 
 #include "HepRndmBaseEngine.h"
 
-namespace HepRndm
-{
+namespace HepRndm {
 
   template <class TYPE>
-  class Generator : public RndmGen
-  {
+  class Generator : public RndmGen {
   public:
     typedef TYPE Parameters;
 
@@ -44,8 +42,7 @@ namespace HepRndm
 
   /// Initialize the generator
   template <class TYPE>
-  StatusCode Generator<TYPE>::initialize( const IRndmGen::Param& par )
-  {
+  StatusCode Generator<TYPE>::initialize( const IRndmGen::Param& par ) {
     StatusCode status = RndmGen::initialize( par );
     if ( status.isSuccess() ) {
       try {
@@ -54,16 +51,13 @@ namespace HepRndm
           BaseEngine* engine = dynamic_cast<BaseEngine*>( m_engine.get() );
           if ( engine ) {
             m_hepEngine = engine->hepEngine();
-            if ( m_hepEngine ) {
-              return StatusCode::SUCCESS;
-            }
+            if ( m_hepEngine ) { return StatusCode::SUCCESS; }
           }
         }
-      } catch ( ... ) {
-      }
+      } catch ( ... ) {}
     }
     return StatusCode::FAILURE;
   }
-}
+} // namespace HepRndm
 
 #endif // HEPRNDM_HEPRNDMGENERATOR_H

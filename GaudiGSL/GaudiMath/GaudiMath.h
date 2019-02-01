@@ -19,8 +19,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date   2003-08-31
  */
-namespace GaudiMath
-{
+namespace GaudiMath {
   typedef Genfun::AbsFunction Function;
 
   typedef Genfun::GaudiMathImplementation::Constant                    Constant;
@@ -35,7 +34,7 @@ namespace GaudiMath
   typedef Genfun::GaudiMathImplementation::GSLSplineDeriv2 SplineDeriv2;
   typedef Genfun::GaudiMathImplementation::GSLSplineInteg  SplineInteg;
 
-} // end of namespace
+} // namespace GaudiMath
 
 // ============================================================================
 // The END

@@ -35,12 +35,10 @@
  *   @author  M.Frank
  *   @version 1.0
  */
-class RunRecordDataSvc : public RecordDataSvc
-{
+class RunRecordDataSvc : public RecordDataSvc {
 public:
   /// Standard Constructor
-  RunRecordDataSvc( const std::string& nam, ISvcLocator* svc ) : RecordDataSvc( nam, svc )
-  {
+  RunRecordDataSvc( const std::string& nam, ISvcLocator* svc ) : RecordDataSvc( nam, svc ) {
     m_cnvSvc           = nullptr;
     m_rootName         = "/RunRecords";
     m_incidentName     = "NEW_RUN_RECORD";

@@ -18,22 +18,20 @@ cardinality = 1
 algosInFlight = 4
 algoAvgTime = 0.02
 
-
 InertMessageSvc(OutputLevel=INFO)
 
-whiteboard = HiveWhiteBoard("EventDataSvc",
-                            EventSlots=evtslots,
-                            OutputLevel=INFO,
-                            ForceLeaves=True)
+whiteboard = HiveWhiteBoard(
+    "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO, ForceLeaves=True)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(
     SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
-                                  OutputLevel=DEBUG,
-                                  Optimizer="DRE",
-                                  PreemptiveIOBoundTasks=False,
-                                  DumpIntraEventDynamics=False)
+scheduler = AvalancheSchedulerSvc(
+    ThreadPoolSize=algosInFlight,
+    OutputLevel=DEBUG,
+    Optimizer="DRE",
+    PreemptiveIOBoundTasks=False,
+    DumpIntraEventDynamics=False)
 
 AlgResourcePool(OutputLevel=DEBUG)
 
@@ -43,16 +41,19 @@ ifIObound = precedence.UniformBooleanValue(False)
 # (276 precedence graph algorithms, plus two fake algorithms - DstWriter and Framework)
 #ifIObound = precedence.RndBiasedBoolenValue(pattern = {True: 29, False: 249}, seed=1)
 
+sequencer = precedence.CruncherSequence(
+    timeValue,
+    ifIObound,
+    sleepFraction=0.0,
+    cfgPath="lhcb/reco/cf_dependencies.graphml",
+    dfgPath="lhcb/reco/data_dependencies.graphml",
+    topSequencer='GaudiSequencer/BrunelSequencer').get()
 
-sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
-                                        cfgPath="lhcb/reco/cf_dependencies.graphml",
-                                        dfgPath="lhcb/reco/data_dependencies.graphml",
-                                        topSequencer='GaudiSequencer/BrunelSequencer').get()
-
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[sequencer],
-               MessageSvcType="InertMessageSvc",
-               OutputLevel=INFO)
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[sequencer],
+    MessageSvcType="InertMessageSvc",
+    OutputLevel=INFO)

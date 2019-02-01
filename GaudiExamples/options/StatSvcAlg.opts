@@ -1,4 +1,4 @@
-#!/usr/bin/env Gaudi.exe 
+#!/ usr / bin / env Gaudi.exe
 // ============================================================================
 // Include files
 // ============================================================================
@@ -6,18 +6,17 @@
 // ============================================================================
 /** @file
  *  Simple configuration file to run StatSvcAlg example
- *  @see GaudiExamples::StatSvcAlg 
+ *  @see GaudiExamples::StatSvcAlg
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-07-08
  */
 // ============================================================================
 
-ApplicationMgr.TopAlg += { "GaudiExamples::StatSvcAlg/StatAlg"} ;
+ApplicationMgr.TopAlg += {"GaudiExamples::StatSvcAlg/StatAlg"};
 
-ApplicationMgr.EvtMax   = 10000 ; // events to be processed
-ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
-
+ApplicationMgr.EvtMax = 10000;  // events to be processed
+ApplicationMgr.EvtSel = "NONE"; // do not use any event input
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

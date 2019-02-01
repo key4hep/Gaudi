@@ -27,8 +27,7 @@ static const CLID CLID_DataObject = 1;
 
     @author M.Frank
 */
-class GAUDI_API DataObject
-{
+class GAUDI_API DataObject {
 private:
   /// Reference count
   unsigned long m_refCount = 0;
@@ -80,8 +79,7 @@ public:
   /// Return the refcount
   unsigned long refCount() const { return m_refCount; }
   /// Fill the output stream (ASCII)
-  virtual std::ostream& fillStream( std::ostream& s ) const
-  {
+  virtual std::ostream& fillStream( std::ostream& s ) const {
     s << "DataObject at " << std::hex << this;
     return s;
   }
@@ -91,11 +89,10 @@ public:
 
 // Additional functions to support the Serialization of objects in the transient store
 
-namespace Gaudi
-{
+namespace Gaudi {
   GAUDI_API void pushCurrentDataObject( DataObject** pobjAddr );
   GAUDI_API void popCurrentDataObject();
   GAUDI_API DataObject* getCurrentDataObject();
-}
+} // namespace Gaudi
 
 #endif // GAUDIKERNEL_DATAOBJECT_H

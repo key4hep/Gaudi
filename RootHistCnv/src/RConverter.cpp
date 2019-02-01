@@ -16,8 +16,7 @@
 #include <list>
 #include <string>
 
-namespace
-{
+namespace {
   std::map<std::string, TFile*> s_fileMap;
 }
 
@@ -34,9 +33,7 @@ StatusCode RootHistCnv::RConverter::createDirectory( const std::string& loc )
   TDirectory* gDir = gDirectory;
 
   TFile* tf = nullptr;
-  if ( findTFile( loc, tf ).isSuccess() ) {
-    tf->cd();
-  }
+  if ( findTFile( loc, tf ).isSuccess() ) { tf->cd(); }
 
   std::vector<std::string> lpath;
   int                      i = 1;
@@ -60,9 +57,7 @@ StatusCode RootHistCnv::RConverter::createDirectory( const std::string& loc )
 
   for ( const auto& litr : lpath ) {
     cur = litr;
-    if ( !gDirectory->GetKey( litr.c_str() ) ) {
-      gDirectory->mkdir( litr.c_str() );
-    }
+    if ( !gDirectory->GetKey( litr.c_str() ) ) { gDirectory->mkdir( litr.c_str() ); }
     gDirectory->cd( litr.c_str() );
   }
 
@@ -245,16 +240,14 @@ StatusCode RootHistCnv::RConverter::createRep( DataObject* pObject, IOpaqueAddre
         return createAddress( pObject, pParentDir, nullptr, pAddr );
       }
     }
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   MsgStream log( msgSvc(), "RConverter" );
   log << MSG::ERROR << "Failed to create persistent Object!" << endmsg;
   return StatusCode::FAILURE;
 }
 
 //-----------------------------------------------------------------------------
-StatusCode RootHistCnv::RConverter::readObject( IOpaqueAddress* /* pAddr */, DataObject*& /* refpObj */ )
-{
+StatusCode RootHistCnv::RConverter::readObject( IOpaqueAddress* /* pAddr */, DataObject*& /* refpObj */ ) {
   //    MsgStream log(msgSvc(), "RConverter::readObject");
   //    log << MSG::WARNING << pAddr->par()[0] << " <> " << pAddr->par()[1]
   //        << " <> "
@@ -325,8 +318,7 @@ std::string RootHistCnv::RConverter::convertId( const std::string& id ) const
       Gaudi::Property<bool> tmp;
       tmp.assign( conversionSvc().as<IProperty>()->getProperty( "ForceAlphaIds" ) );
       forced = tmp.value();
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
   }
   if ( forced )
     return "h" + id;

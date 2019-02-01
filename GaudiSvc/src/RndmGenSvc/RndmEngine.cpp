@@ -28,9 +28,8 @@
 #include "RndmEngine.h"
 
 /// Service override: initialization
-StatusCode RndmEngine::initialize()
-{
-  StatusCode status                = Service::initialize();
+StatusCode RndmEngine::initialize() {
+  StatusCode status = Service::initialize();
   if ( status.isSuccess() ) status = setProperties();
   return status;
 }
@@ -51,8 +50,7 @@ double RndmEngine::rndm() const { return DBL_MAX; }
     @param  start    ... starting at position start
     @return StatusCode indicating failure or success.
 */
-StatusCode RndmEngine::rndmArray( std::vector<double>& array, long howmany, long start ) const
-{
+StatusCode RndmEngine::rndmArray( std::vector<double>& array, long howmany, long start ) const {
   array.resize( start + howmany );
   std::generate_n( std::next( array.begin(), start ), howmany, [&]() { return this->rndm(); } );
   return StatusCode::SUCCESS;

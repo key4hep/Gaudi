@@ -14,8 +14,7 @@
  * @author Marco Clemencic
  * @date 13/01/2012
  */
-class IDODAlgMapper : virtual public IAlgTool
-{
+class IDODAlgMapper : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( IDODAlgMapper, 1, 0 );

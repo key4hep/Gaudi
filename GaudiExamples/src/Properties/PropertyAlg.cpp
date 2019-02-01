@@ -13,13 +13,12 @@
 
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
 
 // Read Handler
 //------------------------------------------------------------------------------
-void PropertyAlg::readHandler( Gaudi::Details::PropertyBase& p )
-{
+void PropertyAlg::readHandler( Gaudi::Details::PropertyBase& p ) {
   // do not print messages if we are created in genconf
   const std::string cmd = System::cmdLineArgs()[0];
   if ( cmd.find( "genconf" ) != std::string::npos ) return;
@@ -29,8 +28,7 @@ void PropertyAlg::readHandler( Gaudi::Details::PropertyBase& p )
 
 // Update Handler
 //------------------------------------------------------------------------------
-void PropertyAlg::updateHandler( Gaudi::Details::PropertyBase& p )
-{
+void PropertyAlg::updateHandler( Gaudi::Details::PropertyBase& p ) {
   // avoid the readHandler (which writes to the _same_ MsgStream!) from writing
   // something in the middle of the printout of this message...
   std::ostringstream os;
@@ -40,8 +38,7 @@ void PropertyAlg::updateHandler( Gaudi::Details::PropertyBase& p )
 
 // Constructor
 //------------------------------------------------------------------------------
-PropertyAlg::PropertyAlg( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc )
-{
+PropertyAlg::PropertyAlg( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc ) {
   //------------------------------------------------------------------------------
   // Associate read and update handlers
 
@@ -85,8 +82,7 @@ PropertyAlg::PropertyAlg( const std::string& name, ISvcLocator* ploc ) : Algorit
 }
 
 //------------------------------------------------------------------------------
-StatusCode PropertyAlg::initialize()
-{
+StatusCode PropertyAlg::initialize() {
   //------------------------------------------------------------------------------
 
   //
@@ -152,9 +148,7 @@ StatusCode PropertyAlg::initialize()
          << endmsg;
   try {
     p_int = 255;
-  } catch ( ... ) {
-    info() << "Got an exception when setting a value outside bounds" << endmsg;
-  }
+  } catch ( ... ) { info() << "Got an exception when setting a value outside bounds" << endmsg; }
   info() << "PInt= " << p_int << " [should be 155]" << endmsg;
 
   //
@@ -213,20 +207,14 @@ StatusCode PropertyAlg::initialize()
     p_bool = m_bool = !std::get<1>( c );
     try {
       sc = setProperty( "PBool", std::get<0>( c ) );
-    } catch ( ... ) {
-      sc = StatusCode::FAILURE;
-    }
+    } catch ( ... ) { sc = StatusCode::FAILURE; }
     if ( !sc || ( p_bool != std::get<1>( c ) ) ) {
       error() << "PBool can not be set to " << std::get<0>( c ) << endmsg;
     }
     try {
       sc = setProperty( "Bool", std::get<0>( c ) );
-    } catch ( ... ) {
-      sc = StatusCode::FAILURE;
-    }
-    if ( !sc || ( m_bool != std::get<1>( c ) ) ) {
-      error() << "Bool can not be set to " << std::get<0>( c ) << endmsg;
-    }
+    } catch ( ... ) { sc = StatusCode::FAILURE; }
+    if ( !sc || ( m_bool != std::get<1>( c ) ) ) { error() << "Bool can not be set to " << std::get<0>( c ) << endmsg; }
   }
 
   // Testing the control of the output level directly from MessageSvc
@@ -273,16 +261,14 @@ StatusCode PropertyAlg::initialize()
 }
 
 //------------------------------------------------------------------------------
-StatusCode PropertyAlg::execute()
-{
+StatusCode PropertyAlg::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
   return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
-StatusCode PropertyAlg::finalize()
-{
+StatusCode PropertyAlg::finalize() {
   //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;
