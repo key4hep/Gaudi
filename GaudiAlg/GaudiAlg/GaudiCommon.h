@@ -508,6 +508,7 @@ public:
     return const_cast<GaudiCommon<PBASE>*>( this )->counter( tag );
   }
   inline StatEntity& counter( const std::string& tag ) {
+    std::lock_guard<std::mutex> lock( m_countersOwnMutex );
     // Return referenced StatEntity if it already exists, else create it
     auto p = this->findCounter( tag );
     if ( !p ) {
@@ -738,6 +739,8 @@ private:
   mutable Counter m_exceptions;
   /// General counters
   StatisticsOwn m_countersOwn;
+  /// The mutex for m_countersOwn
+  std::mutex m_countersOwnMutex;
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
