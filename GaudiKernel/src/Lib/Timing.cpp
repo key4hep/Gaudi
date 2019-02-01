@@ -67,6 +67,8 @@ long long System::adjustTime( TimeType typ, long long t )
       return adjustTime<nanoSec>( t );
     case Native:
       return adjustTime<Native>( t );
+    default:
+      return t;
     }
   }
   return t;

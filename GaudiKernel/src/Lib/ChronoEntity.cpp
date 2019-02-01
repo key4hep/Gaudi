@@ -157,14 +157,12 @@ bool ChronoEntity::operator<( const ChronoEntity& e ) const
                          ? false
                          : ( m_user < e.m_user )
                                ? true
-                               : ( e.m_user < m_user ) ? false
-                                                       : ( m_kernel < e.m_kernel )
-                                                             ? true
-                                                             : ( e.m_kernel < m_kernel )
-                                                                   ? false
-                                                                   : ( m_elapsed < e.m_elapsed )
-                                                                         ? true
-                                                                         : ( e.m_elapsed < m_elapsed ) ? false : false;
+                               : ( e.m_user < m_user )
+                                     ? false
+                                     : ( m_kernel < e.m_kernel )
+                                           ? true
+                                           : ( e.m_kernel < m_kernel ) ? false
+                                                                       : ( m_elapsed < e.m_elapsed ) ? true : false;
 }
 // ============================================================================
 // compound assignment operator

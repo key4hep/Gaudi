@@ -49,8 +49,9 @@ namespace Gaudi
         return s << "INITIALIZED";
       case Gaudi::StateMachine::RUNNING:
         return s << "RUNNING";
+      default:
+        return s;
       }
-      return s; // cannot be reached, but make the compiler happy
     }
 
     /// Pretty print of transitions.
@@ -69,8 +70,9 @@ namespace Gaudi
         return s << "FINALIZE";
       case Gaudi::StateMachine::TERMINATE:
         return s << "TERMINATE";
+      default:
+        return s;
       }
-      return s; // cannot be reached, but make the compiler happy
     }
 
   } // namespace StateMachine
