@@ -62,6 +62,7 @@ set(GaudiExamples_srcs
     src/PluginService/*.cpp
     src/ToolHandles/*.cpp
     src/ReEntAlg/*.cpp
+    src/ConditionAccessor/*.cpp
 )
 
 # Add the sources requiring non-standard externals:
@@ -113,7 +114,7 @@ endif()
 # Now set up the libraries:
 gaudi_add_library( GaudiExamplesLib src/Lib/*.cpp
    LINK_LIBRARIES GaudiKernel
-   PUBLIC_HEADERS GaudiExamples )
+   PUBLIC_HEADERS GaudiExamples Gaudi)
 
 gaudi_add_module( GaudiExamples ${GaudiExamples_srcs}
    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} ${extra_includes}
