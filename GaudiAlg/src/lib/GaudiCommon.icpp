@@ -101,13 +101,7 @@ void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
 // Initialise the common functionality
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::
-#ifdef __ICC
-    i_gcInitialize
-#else
-    initialize
-#endif
-    ()
+StatusCode GaudiCommon<PBASE>::initialize()
 {
 
   // initialize base class
@@ -195,18 +189,12 @@ StatusCode GaudiCommon<PBASE>::
 // Finalize the common functionality
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiCommon<PBASE>::
-#ifdef __ICC
-    i_gcFinalize
-#else
-    finalize
-#endif
-    ()
+StatusCode GaudiCommon<PBASE>::finalize()
 {
   StatusCode sc = StatusCode::SUCCESS;
 
   // print the general information about statistical counters
-  if ( this->msgLevel( MSG::DEBUG ) || ( statPrint() && !m_counters.empty() ) ) {
+  if ( this->msgLevel( MSG::DEBUG ) || ( statPrint() && this->nCounters() > 0 ) ) {
     // print general statistical counters
     printStat( statPrint() ? MSG::ALWAYS : MSG::DEBUG );
   }
@@ -259,7 +247,7 @@ StatusCode GaudiCommon<PBASE>::
   }
 
   // clear *ALL* counters explicitly
-  m_counters.clear();    // delete pointers first
+  this->clearCounters();
   m_countersOwn.clear(); // then delete any owned counters
   m_exceptions.clear();
   m_infos.clear();
@@ -516,27 +504,24 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
 {
   // check how many counters think they should be printed or how many
   // we anyway want to print
-  unsigned int nbPrintedCounters = 0;
-  if ( !m_printEmptyCounters && !this->msgLevel( MSG::DEBUG ) ) {
-    nbPrintedCounters = std::accumulate(
-        m_counters.begin(), m_counters.end(), nbPrintedCounters,
-        []( unsigned int& sum, const auto& entry ) { return sum + entry.second.get().toBePrinted(); } );
-  } else {
-    nbPrintedCounters = m_counters.size();
-  }
+  auto countToBePrinted = [&]() {
+    unsigned n = 0;
+    this->forEachCounter( [&n]( const std::string&, const auto& counter ) { n += counter.toBePrinted(); } );
+    return n;
+  };
+  auto nbPrintedCounters =
+      ( ( !m_printEmptyCounters && !this->msgLevel( MSG::DEBUG ) ) ? countToBePrinted() : this->nCounters() );
   // in case nothing should be printed, let's stop here
-  if ( nbPrintedCounters == 0 ) {
-    return 0;
-  }
+  if ( nbPrintedCounters == 0 ) return 0;
   MsgStream& msg = this->msgStream( level );
   msg << "Number of counters : " << nbPrintedCounters << "\n" << m_header.value();
-  for ( const auto& entry : m_counters ) {
-    if ( m_printEmptyCounters || this->msgLevel( MSG::DEBUG ) || entry.second.get().toBePrinted() ) {
+  this->forEachCounter( [&]( const std::string& label, const auto& counter ) {
+    if ( m_printEmptyCounters || this->msgLevel( MSG::DEBUG ) || counter.toBePrinted() ) {
       std::ostringstream ost;
-      entry.second.get().print( ost, entry.first );
+      counter.print( ost, label );
       msg << "\n" << ost.str();
     }
-  }
+  } );
   //
   msg << endmsg;
   //

@@ -490,9 +490,6 @@ private:
   /// accessor to all owned counters
   inline StatisticsOwn countersOwn() const { return m_countersOwn; }
 public:
-  // ==========================================================================
-  /// accessor to all counters
-  inline const Statistics counters() const { return m_counters; }
   /** accessor to certain counter by name
    *
    *  @code
@@ -518,19 +515,14 @@ public:
   }
   inline StatEntity& counter( const std::string& tag )
   {
-    std::lock_guard<std::mutex> lock( m_countersMutex );
     // Return referenced StatEntity if it already exists, else create it
-    auto p = m_counters.find( tag );
-    if ( p == end( m_counters ) ) {
+    auto p = this->findCounter( tag );
+    if ( !p ) {
       auto& counter = m_countersOwn[tag];
-      p             = m_counters.emplace( tag, counter ).first;
+      this->declareCounter( tag, counter );
+      return counter;
     }
     return m_countersOwn[tag];
-  }
-  inline void registerCounter( const std::string& tag, Gaudi::Accumulators::PrintableCounter& r )
-  {
-    std::lock_guard<std::mutex> lock( m_countersMutex );
-    m_counters.emplace( tag, r );
   }
   // ==========================================================================
 public:
@@ -675,25 +667,11 @@ public:
   /** standard initialization method
    *  @return status code
    */
-  StatusCode initialize() override
-#ifdef __ICC
-  {
-    return i_gcInitialize();
-  }
-  StatusCode i_gcInitialize()
-#endif
-      ;
+  StatusCode initialize() override;
   /** standard finalization method
    *  @return status code
    */
-  StatusCode finalize() override
-#ifdef __ICC
-  {
-    return i_gcFinalize();
-  }
-  StatusCode i_gcFinalize()
-#endif
-      ;
+  StatusCode finalize() override;
 
 private:
   GaudiCommon()                     = delete;
@@ -773,9 +751,6 @@ private:
   mutable Counter m_exceptions;
   /// General counters
   StatisticsOwn m_countersOwn;
-  Statistics    m_counters;
-  /// The counters mutex
-  std::mutex m_countersMutex;
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
@@ -813,7 +788,6 @@ private:
 
   Gaudi::Property<std::string> m_context{this, "Context", {}, "note: overridden by parent settings"};
   Gaudi::Property<std::string> m_rootInTES{this, "RootInTES", {}, "note: overridden by parent settings"};
-
   Gaudi::Property<std::string> m_header{this, "StatTableHeader",
                                         " |    Counter                                      |     #     |   "
                                         " sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
