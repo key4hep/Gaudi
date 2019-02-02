@@ -283,7 +283,7 @@ class CruncherSequence(object):
                         self.dupl_algos[n] += 1
 
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
-                
+
                 algo_daughter = CPUCruncher(
                     algo_name,
                     OutputLevel=self.outputLevel,
