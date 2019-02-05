@@ -1,9 +1,9 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 #ifdef __APPLE__
-#include <OpenCL/opencl.h>
+#  include <OpenCL/opencl.h>
 #else
-#include <CL/cl.h>
+#  include <CL/cl.h>
 #endif
 
 // Used to prefer a device type over another one
@@ -22,17 +22,13 @@
     }                                                                                                                  \
   }
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
-    class OpenCLAlg : public GaudiAlgorithm
-    {
+    class OpenCLAlg : public GaudiAlgorithm {
     public:
       using GaudiAlgorithm::GaudiAlgorithm;
-      StatusCode initialize() override
-      {
+      StatusCode initialize() override {
         StatusCode sc = GaudiAlgorithm::initialize();
 
         // Choose platform according to the macro DEVICE_PREFERENCE
@@ -44,15 +40,13 @@ namespace Gaudi
 
         return sc;
       }
-      StatusCode execute() override
-      {
+      StatusCode execute() override {
         info() << "Executing " << name() << endmsg;
         return StatusCode::SUCCESS;
       }
 
     private:
-      void clChoosePlatform( cl_device_id*& devices, cl_platform_id& platform )
-      {
+      void clChoosePlatform( cl_device_id*& devices, cl_platform_id& platform ) {
         // Choose the first available platform
         cl_uint numPlatforms;
         clCheck( clGetPlatformIDs( 0, NULL, &numPlatforms ) );
@@ -103,7 +97,7 @@ namespace Gaudi
         }
       }
     };
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 
 DECLARE_COMPONENT( Gaudi::Examples::OpenCLAlg )

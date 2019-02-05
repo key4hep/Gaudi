@@ -17,21 +17,19 @@
  *  @date 2005-08-06
  */
 // ============================================================================
-namespace Histos
-{
+namespace Histos {
   /// The actual type for histogram identifier
   typedef GaudiAlg::ID HistoID;
-}
+} // namespace Histos
 // ============================================================================
 
 // ============================================================================
-namespace GaudiAlg
-{
+namespace GaudiAlg {
   /// The actual type for histogram identifier
   typedef Histos::HistoID HistoID;
   /// Type for bin edges for variable binning histograms
   typedef std::vector<double> HistoBinEdges;
-}
+} // namespace GaudiAlg
 // ============================================================================
 
 #endif // GAUDIALG_HISTOID_H

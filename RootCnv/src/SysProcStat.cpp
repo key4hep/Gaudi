@@ -16,17 +16,17 @@ SysProcStat::SysProcStat() { update(); }
 /*
  * Update system performance values from /proc/self/stat virtaul file.
  */
-int SysProcStat::update()
-{
+int SysProcStat::update() {
   FILE* file = fopen( "/proc/self/stat", "r" );
-  int   par  = fscanf( file, "%d %s %c %d %d"
-                          "%d %d %d %lu %lu"
-                          "%lu %lu %lu %lu %lu"
-                          "%ld %ld %ld %ld %ld"
-                          "%ld %lu %lu %ld %lu"
-                          "%lu %lu %lu %lu %lu"
-                          "%lu %lu %lu %lu %lu"
-                          "%lu %lu %d %d",
+  int   par  = fscanf( file,
+                    "%d %s %c %d %d"
+                    "%d %d %d %lu %lu"
+                    "%lu %lu %lu %lu %lu"
+                    "%ld %ld %ld %ld %ld"
+                    "%ld %lu %lu %ld %lu"
+                    "%lu %lu %lu %lu %lu"
+                    "%lu %lu %lu %lu %lu"
+                    "%lu %lu %d %d",
                     &pid, comm, &state, &ppid, &pgrp, &session, &tty_nr, &tpgid, &flags, &minflt, &cminflt, &majflt,
                     &cmajflt, &utime, &stime, &cutime, &cstime, &priority, &nice, &num_threads, &itrealvalue, &startime,
                     &vsize, &rss, &rlim, &startcode, &endcode, &startstack, &kstkesp, &kstkeip, &signal, &blocked,

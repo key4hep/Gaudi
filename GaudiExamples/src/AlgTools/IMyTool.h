@@ -9,8 +9,7 @@
  *
  *  @author Pere Mato
  */
-class IMyTool : virtual public IAlgTool
-{
+class IMyTool : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( IMyTool, 2, 0 );
@@ -27,8 +26,7 @@ public:
  *
  *  @author Chris Jones
  */
-class IMyOtherTool : virtual public IAlgTool
-{
+class IMyOtherTool : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( IMyOtherTool, 2, 0 );

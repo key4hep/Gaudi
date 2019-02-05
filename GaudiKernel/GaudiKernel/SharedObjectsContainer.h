@@ -26,8 +26,7 @@
  *  @date   2008-07-23
  */
 template <class TYPE>
-class SharedObjectsContainer : public ObjectContainerBase
-{
+class SharedObjectsContainer : public ObjectContainerBase {
 public:
   // ==========================================================================
   /// the actual container type
@@ -58,9 +57,7 @@ public:
    *  @param last  'last'-iterator of the input sequence
    */
   template <class DATA>
-  SharedObjectsContainer( DATA first, DATA last ) : m_data( first, last )
-  {
-  }
+  SharedObjectsContainer( DATA first, DATA last ) : m_data( first, last ) {}
   /** the templated constructor from the pair of iterators and the predicate.
    *
    *  Only the elements which satisfy the criteria goes into the container
@@ -85,8 +82,7 @@ public:
    *  @param cut   pre predicate
    */
   template <class DATA, class PREDICATE>
-  SharedObjectsContainer( DATA first, DATA last, const PREDICATE& cut )
-  {
+  SharedObjectsContainer( DATA first, DATA last, const PREDICATE& cut ) {
     insert( first, last, cut );
   }
   // ==========================================================================
@@ -95,8 +91,7 @@ public:
   /// Retrieve the unique class ID (virtual)
   const CLID& clID() const override { return SharedObjectsContainer<TYPE>::classID(); }
   /// Retrieve the unuqie class ID (static)
-  static const CLID& classID()
-  {
+  static const CLID& classID() {
     static const CLID s_clid = ( ( static_cast<CLID>( -1 ) << 16 )    // 16 used and 16 empty bits
                                  & !CLID_ObjectVector                 // not an ObjectVector
                                  & !CLID_ObjectList                   // not an ObjectList
@@ -133,8 +128,7 @@ public:
    *  @param last  'end'-iterator for the sequence
    */
   template <class DATA>
-  void insert( DATA first, DATA last )
-  {
+  void insert( DATA first, DATA last ) {
     m_data.insert( end(), first, last );
   }
   /** add the sequence of 'good'objects into the container
@@ -164,8 +158,7 @@ public:
    *  @param cut    the predicate to be applied
    */
   template <class DATA, class PREDICATE>
-  void insert( DATA first, DATA last, const PREDICATE& cut )
-  {
+  void insert( DATA first, DATA last, const PREDICATE& cut ) {
     m_data.reserve( m_data.size() + std::distance( first, last ) );
     std::copy_if( first, last, std::back_inserter( m_data ), std::cref( cut ) );
   }
@@ -194,8 +187,7 @@ public:
    *  @return the current position of the output itrator (almost useless)
    */
   template <class OUTPUT, class PREDICATE>
-  OUTPUT get( const PREDICATE& cut, OUTPUT output ) const
-  {
+  OUTPUT get( const PREDICATE& cut, OUTPUT output ) const {
     return std::copy_if( begin(), end(), output, std::cref( cut ) );
   }
   /// erase the object by iterator
@@ -218,8 +210,7 @@ public:
    *  @param cut predicate
    */
   template <class PREDICATE>
-  void erase( const PREDICATE& cut )
-  {
+  void erase( const PREDICATE& cut ) {
     m_data.erase( std::remove_if( begin(), end(), cut ), end() );
   }
   /** erase the first occurance of the certain element
@@ -240,12 +231,9 @@ public:
    *  @param object the element to be removed
    *  @return true if the element is removed
    */
-  bool erase( const TYPE* object )
-  {
+  bool erase( const TYPE* object ) {
     auto i = std::find( begin(), end(), object );
-    if ( end() == i ) {
-      return false;
-    }
+    if ( end() == i ) { return false; }
     m_data.erase( i );
     return true;
   }
@@ -304,8 +292,7 @@ public:
   /** Distance of a given object from the beginning of its container
    *  @param object the object to be checked
    */
-  long index( const ContainedObject* object ) const override
-  {
+  long index( const ContainedObject* object ) const override {
     auto _i = std::find( begin(), end(), object );
     return end() != _i ? ( _i - begin() ) : -1; // RETURN
   }
@@ -313,11 +300,8 @@ public:
    *  @param index th eindex to be checked
    *  @return the object
    */
-  ContainedObject* containedObject( long index ) const override
-  {
-    if ( 0 > index || !( index < (long)size() ) ) {
-      return nullptr;
-    } // RETURN
+  ContainedObject* containedObject( long index ) const override {
+    if ( 0 > index || !( index < (long)size() ) ) { return nullptr; } // RETURN
     const ContainedObject* co = m_data[index];
     return const_cast<ContainedObject*>( co );
   }
@@ -327,15 +311,10 @@ public:
    *  Add an object to the container. On success the object's index is
    *  returned.
    */
-  long add( ContainedObject* object ) override
-  {
-    if ( !object ) {
-      return -1;
-    } // RETURN
+  long add( ContainedObject* object ) override {
+    if ( !object ) { return -1; } // RETURN
     TYPE* _obj = dynamic_cast<TYPE*>( object );
-    if ( !_obj ) {
-      return -1;
-    } // RETURN
+    if ( !_obj ) { return -1; } // RETURN
     const size_type pos = size();
     push_back( _obj );
     return pos;
@@ -344,12 +323,9 @@ public:
    *  from the container, but the object itself will remain alive).
    *  If the object was found it's index is returned.
    */
-  long remove( ContainedObject* value ) override
-  {
+  long remove( ContainedObject* value ) override {
     auto _i = std::find( begin(), end(), value );
-    if ( end() == _i ) {
-      return -1;
-    } // RETURN
+    if ( end() == _i ) { return -1; } // RETURN
     const size_type pos = _i - begin();
     m_data.erase( _i );
     return pos; // RETURN
@@ -365,4 +341,3 @@ private:
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_SHAREDOBJECTSCONTAINER_H
-// ============================================================================

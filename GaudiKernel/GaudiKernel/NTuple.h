@@ -30,8 +30,7 @@ class NTupleDirectory;
  * @author Markus Frank
  * @author Sebastien Ponce
  */
-namespace NTuple
-{
+namespace NTuple {
   // local forward declarations
   template <class TYP>
   class Range;
@@ -54,8 +53,7 @@ namespace NTuple
   // ==========================================================================
   /// Class defining a range
   template <class TYP>
-  class Range
-  {
+  class Range {
     /// Lower boundary of range
     /*const*/ TYP m_lower;
     /// Upper boundary of range
@@ -67,8 +65,7 @@ namespace NTuple
     /// Copy constructor
     Range( const Range<TYP>& copy ) : m_lower( copy.m_lower ), m_upper( copy.m_upper ) {}
     /// Adjust ranges
-    Range& operator=( const Range<TYP>& copy )
-    {
+    Range& operator=( const Range<TYP>& copy ) {
       m_lower = copy.m_lower;
       m_upper = copy.m_upper;
       return *this;
@@ -88,8 +85,7 @@ namespace NTuple
   };
   // ==========================================================================
   template <>
-  class Range<bool>
-  {
+  class Range<bool> {
   public:
     /// Standard constructor
     Range( const bool /* low */, const bool /* upper */ ) {}
@@ -110,21 +106,18 @@ namespace NTuple
   };
   // ==========================================================================
   template <>
-  inline IOpaqueAddress* Range<IOpaqueAddress*>::min()
-  {
+  inline IOpaqueAddress* Range<IOpaqueAddress*>::min() {
     return (IOpaqueAddress*)0x0;
   }
   template <>
-  inline IOpaqueAddress* Range<IOpaqueAddress*>::max()
-  {
+  inline IOpaqueAddress* Range<IOpaqueAddress*>::max() {
     return (IOpaqueAddress*)0xffffffff;
   }
   // ==========================================================================
   /** Abstract class describing basic data in an Ntuple.
    */
   template <class TYP>
-  class GAUDI_API _Data : virtual public INTupleItem
-  {
+  class GAUDI_API _Data : virtual public INTupleItem {
   protected:
     /// Pointer to data buffer
     TYP* m_buffer = nullptr;
@@ -141,16 +134,14 @@ namespace NTuple
   /** Abstract class describing a column in a N tuple.
    */
   template <class TYP>
-  class GAUDI_API _Item : virtual public _Data<TYP>
-  {
+  class GAUDI_API _Item : virtual public _Data<TYP> {
   public:
     /// Create instance
     static _Item* create( INTuple* tup, const std::string& name, const std::type_info& info, TYP min, TYP max,
                           TYP def );
     /// Assignment operator
     template <class T>
-    _Item<TYP>& operator=( const _Item<T>& copy )
-    {
+    _Item<TYP>& operator=( const _Item<T>& copy ) {
       *this->m_buffer = copy.get();
       return *this;
     }
@@ -163,16 +154,14 @@ namespace NTuple
   /** Abstract class describing a column-array in a N tuple.
    */
   template <class TYP>
-  class GAUDI_API _Array : virtual public _Data<TYP>
-  {
+  class GAUDI_API _Array : virtual public _Data<TYP> {
   public:
     /// Create instance
     static _Array* create( INTuple* tup, const std::string& name, const std::type_info& info, const std::string& index,
                            long len, TYP min, TYP max, TYP def );
     /// Assignment operator
     template <class T>
-    _Array<TYP>& operator=( const _Array<T>& copy )
-    {
+    _Array<TYP>& operator=( const _Array<T>& copy ) {
       long len = this->length();
       if ( len == copy.length() ) {
         const T* source = (const T*)copy.buffer();
@@ -194,8 +183,7 @@ namespace NTuple
   /** Abstract class describing a matrix column in a N tuple.
    */
   template <class TYP>
-  class GAUDI_API _Matrix : virtual public _Data<TYP>
-  {
+  class GAUDI_API _Matrix : virtual public _Data<TYP> {
   protected:
     /// Number of rows per column
     long m_rows;
@@ -206,8 +194,7 @@ namespace NTuple
                             long ncol, long nrow, TYP min, TYP max, TYP def );
     /// Assignment operator
     template <class T>
-    _Matrix<TYP>& operator=( const _Matrix<T>& copy )
-    {
+    _Matrix<TYP>& operator=( const _Matrix<T>& copy ) {
       long len = this->length();
       if ( len == copy.length() ) {
         const T* source = (const T*)copy.buffer();
@@ -226,8 +213,7 @@ namespace NTuple
   /** Class acting as a smart pointer holding a N tuple entry.
    */
   template <class TYP>
-  class _Accessor
-  {
+  class _Accessor {
     friend class Tuple;
 
   private:
@@ -257,8 +243,7 @@ namespace NTuple
   /** Class acting as a smart pointer holding a N tuple _Item.
    */
   template <class TYP>
-  class Item : virtual public _Accessor<_Item<TYP>>
-  {
+  class Item : virtual public _Accessor<_Item<TYP>> {
     typedef Item<TYP> _My;
 
   public:
@@ -276,35 +261,29 @@ namespace NTuple
     Item& operator--() { return *this -= TYP( 1 ); }
     Item& operator--( int ) { return *this -= TYP( 1 ); }
     /// Assignment operator
-    Item& operator=( const TYP data )
-    {
+    Item& operator=( const TYP data ) {
       this->m_ptr->set( data );
       return *this;
     }
     /// Assignment operator
     template <class T>
-    Item& operator=( const Item<T>& data )
-    {
+    Item& operator=( const Item<T>& data ) {
       this->m_ptr->set( data->get() );
       return *this;
     }
-    Item<TYP>& operator+=( const TYP data )
-    {
+    Item<TYP>& operator+=( const TYP data ) {
       this->m_ptr->set( this->m_ptr->get() + data );
       return *this;
     }
-    Item<TYP>& operator-=( const TYP data )
-    {
+    Item<TYP>& operator-=( const TYP data ) {
       this->m_ptr->set( this->m_ptr->get() - data );
       return *this;
     }
-    Item<TYP>& operator*=( const TYP data )
-    {
+    Item<TYP>& operator*=( const TYP data ) {
       this->m_ptr->set( this->m_ptr->get() * data );
       return *this;
     }
-    Item<TYP>& operator/=( const TYP data )
-    {
+    Item<TYP>& operator/=( const TYP data ) {
       this->m_ptr->set( this->m_ptr->get() / data );
       return *this;
     }
@@ -313,8 +292,7 @@ namespace NTuple
   /** Specialization acting as a smart pointer holding a N tuple _Item.
    */
   template <>
-  class Item<bool> : virtual public _Accessor<_Item<bool>>
-  {
+  class Item<bool> : virtual public _Accessor<_Item<bool>> {
     typedef Item<bool> _My;
 
   public:
@@ -323,15 +301,13 @@ namespace NTuple
     /// Automatic type conversion
     operator bool() const { return this->m_ptr->get(); }
     /// Assignment operator
-    Item& operator=( const bool data )
-    {
+    Item& operator=( const bool data ) {
       this->m_ptr->set( data );
       return *this;
     }
     /// Assignment operator
     template <class T>
-    Item& operator=( const Item<T>& data )
-    {
+    Item& operator=( const Item<T>& data ) {
       this->m_ptr->set( data->get() );
       return *this;
     }
@@ -340,28 +316,24 @@ namespace NTuple
   /** Class acting as a smart pointer holding a N tuple _Item.
    */
   template <class TYP>
-  class Array : virtual public _Accessor<_Array<TYP>>
-  {
+  class Array : virtual public _Accessor<_Array<TYP>> {
   public:
     /// Standard Constructor
     Array() = default;
     /// Assignment operator
     template <class T>
-    Array& operator=( const Array<T>& copy )
-    {
+    Array& operator=( const Array<T>& copy ) {
       *( this->m_ptr ) = *( copy.operator->() );
       return *this;
     }
     /// Array operator
     template <class T>
-    TYP& operator[]( const T i )
-    {
+    TYP& operator[]( const T i ) {
       return this->m_ptr->data( i );
     }
     /// Array operator
     template <class T>
-    const TYP& operator[]( const T i ) const
-    {
+    const TYP& operator[]( const T i ) const {
       return this->m_ptr->data( i );
     }
 
@@ -372,28 +344,24 @@ namespace NTuple
   /** Class acting as a smart pointer holding a N tuple _Item.
    */
   template <class TYP>
-  class Matrix : virtual public _Accessor<_Matrix<TYP>>
-  {
+  class Matrix : virtual public _Accessor<_Matrix<TYP>> {
   public:
     /// Standard Constructor
     Matrix() = default;
     /// Assignment operator
     template <class T>
-    Matrix& operator=( const Matrix<T>& copy )
-    {
+    Matrix& operator=( const Matrix<T>& copy ) {
       *( this->m_ptr ) = *( copy.operator->() );
       return *this;
     }
     /// Array operator
     template <class T>
-    TYP* operator[]( const T i )
-    {
+    TYP* operator[]( const T i ) {
       return this->m_ptr->column( i );
     }
     /// Array operator
     template <class T>
-    const TYP* operator[]( const T i ) const
-    {
+    const TYP* operator[]( const T i ) const {
       return this->m_ptr->column( i );
     }
   };
@@ -404,73 +372,53 @@ namespace NTuple
       be instantiated by the compiler at compile time. Otherwise the
       references would be unresolved.
   */
-  class Tuple : public DataObject, virtual public INTuple
-  {
+  class Tuple : public DataObject, virtual public INTuple {
 
   protected:
     /// Locate a _Column of data to the N tuple type safe
     template <class TYPE>
-    StatusCode i_item( const std::string& name, _Item<TYPE>*& result ) const
-    {
+    StatusCode i_item( const std::string& name, _Item<TYPE>*& result ) const {
       try {
         result = dynamic_cast<_Item<TYPE>*>( i_find( name ) );
-      } catch ( ... ) {
-        result = nullptr;
-      }
+      } catch ( ... ) { result = nullptr; }
       return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Column of data to the N tuple type unsafe for objects
     template <class TYPE>
-    StatusCode i_item( const std::string& name, _Item<TYPE*>*& result ) const
-    {
+    StatusCode i_item( const std::string& name, _Item<TYPE*>*& result ) const {
       try {
         _Item<void*>* p = dynamic_cast<_Item<void*>*>( i_find( name ) );
         result          = (_Item<TYPE*>*)p;
-      } catch ( ... ) {
-        result = nullptr;
-      }
+      } catch ( ... ) { result = nullptr; }
       return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Column of data to the N tuple type safe
-    StatusCode i_item( const std::string& name, _Item<IOpaqueAddress*>*& result ) const
-    {
+    StatusCode i_item( const std::string& name, _Item<IOpaqueAddress*>*& result ) const {
       try {
         result = dynamic_cast<_Item<IOpaqueAddress*>*>( i_find( name ) );
-      } catch ( ... ) {
-        result = nullptr;
-      }
+      } catch ( ... ) { result = nullptr; }
       return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Array of data to the N tuple type safe
     template <class TYPE>
-    StatusCode i_item( const std::string& name, _Array<TYPE>*& result ) const
-    {
+    StatusCode i_item( const std::string& name, _Array<TYPE>*& result ) const {
       try {
-        if ( clID() == CLID_ColumnWiseTuple ) {
-          result = dynamic_cast<_Array<TYPE>*>( i_find( name ) );
-        }
-      } catch ( ... ) {
-        result = nullptr;
-      }
+        if ( clID() == CLID_ColumnWiseTuple ) { result = dynamic_cast<_Array<TYPE>*>( i_find( name ) ); }
+      } catch ( ... ) { result = nullptr; }
       return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Matrix of data to the N tuple type safe
     template <class TYPE>
-    StatusCode i_item( const std::string& name, _Matrix<TYPE>*& result ) const
-    {
+    StatusCode i_item( const std::string& name, _Matrix<TYPE>*& result ) const {
       try {
-        if ( clID() == CLID_ColumnWiseTuple ) {
-          result = dynamic_cast<_Matrix<TYPE>*>( i_find( name ) );
-        }
-      } catch ( ... ) {
-        result = nullptr;
-      }
+        if ( clID() == CLID_ColumnWiseTuple ) { result = dynamic_cast<_Matrix<TYPE>*>( i_find( name ) ); }
+      } catch ( ... ) { result = nullptr; }
       return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Add a _Item of data to the N tuple
     template <class TYPE>
-    StatusCode i_addItem( const std::string& name, long, const std::string&, TYPE low, TYPE high, _Item<TYPE>*& result )
-    {
+    StatusCode i_addItem( const std::string& name, long, const std::string&, TYPE low, TYPE high,
+                          _Item<TYPE>*& result ) {
       if ( !i_find( name ) ) {
         TYPE nil;
         nil = 0;
@@ -481,8 +429,7 @@ namespace NTuple
     /// Add a _Item of data to the N tuple
     template <class TYPE>
     StatusCode i_addItem( const std::string& name, long dim, const std::string& index, TYPE low, TYPE high,
-                          _Array<TYPE>*& result )
-    {
+                          _Array<TYPE>*& result ) {
       if ( !i_find( name ) && clID() == CLID_ColumnWiseTuple ) {
         return add( result = _Array<TYPE>::create( this, name, typeid( TYPE ), index, dim, low, high, TYPE( 0 ) ) );
       }
@@ -491,8 +438,7 @@ namespace NTuple
     /// Add a _Item of data to the N tuple
     template <class TYPE>
     StatusCode i_addItem( const std::string& name, long dim1, long dim2, const std::string& index, TYPE low, TYPE high,
-                          _Matrix<TYPE>*& result )
-    {
+                          _Matrix<TYPE>*& result ) {
       if ( !i_find( name ) && clID() == CLID_ColumnWiseTuple ) {
         return add( result =
                         _Matrix<TYPE>::create( this, name, typeid( TYPE ), index, dim1, dim2, low, high, TYPE( 0 ) ) );
@@ -500,8 +446,7 @@ namespace NTuple
       return StatusCode::FAILURE;
     }
     template <class TYPE>
-    StatusCode i_addObject( const std::string& name, _Item<TYPE*>*& result, const std::type_info& /* typ */ )
-    {
+    StatusCode i_addObject( const std::string& name, _Item<TYPE*>*& result, const std::type_info& /* typ */ ) {
       if ( !i_find( name ) && clID() == CLID_ColumnWiseTuple ) {
         return add( result = (_Item<TYPE*>*)_Item<void*>::create( this, name, typeid( TYPE ), 0, 0, 0 ) );
       }
@@ -511,39 +456,33 @@ namespace NTuple
   public:
     /// Locate a scalar Item of data to the N tuple type safe
     template <class TYPE>
-    StatusCode item( const std::string& name, Item<TYPE>& result )
-    {
+    StatusCode item( const std::string& name, Item<TYPE>& result ) {
       return i_item( name, result.m_ptr );
     }
     /// Locate a scalar Item of data to the N tuple type safe (CONST)
     template <class TYPE>
-    StatusCode item( const std::string& name, const Item<TYPE>& result ) const
-    {
+    StatusCode item( const std::string& name, const Item<TYPE>& result ) const {
       return i_item( name, result.m_ptr );
     }
     /// Locate a Array of data to the N tuple type safe
     template <class TYPE>
-    StatusCode item( const std::string& name, Array<TYPE>& result )
-    {
+    StatusCode item( const std::string& name, Array<TYPE>& result ) {
       return i_item( name, result.m_ptr );
     }
     /// Locate a Array of data to the N tuple type safe (CONST)
     template <class TYPE>
-    StatusCode item( const std::string& name, const Array<TYPE>& result ) const
-    {
+    StatusCode item( const std::string& name, const Array<TYPE>& result ) const {
       return i_item( name, result.m_ptr );
     }
     /// Locate a Matrix of data to the N tuple type safe
     template <class TYPE>
-    StatusCode item( const std::string& name, Matrix<TYPE>& result )
-    {
+    StatusCode item( const std::string& name, Matrix<TYPE>& result ) {
       return i_item( name, result.m_ptr );
     }
 
     /// Locate a Matrix of data to the N tuple type safe (CONST)
     template <class TYPE>
-    StatusCode item( const std::string& name, const Matrix<TYPE>& result ) const
-    {
+    StatusCode item( const std::string& name, const Matrix<TYPE>& result ) const {
       return i_item( name, result.m_ptr );
     }
 
@@ -561,8 +500,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE>
-    StatusCode addItem( const std::string& name, Item<TYPE>& itm )
-    {
+    StatusCode addItem( const std::string& name, Item<TYPE>& itm ) {
       typedef Range<TYPE> _R;
       return i_addItem( name, 1, "", _R::min(), _R::max(), itm.m_ptr );
     }
@@ -576,8 +514,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE>
-    StatusCode addItem( const std::string& name, Item<TYPE*>& itm )
-    {
+    StatusCode addItem( const std::string& name, Item<TYPE*>& itm ) {
       return i_addObject( name, itm.m_ptr, typeid( TYPE ) );
     }
 
@@ -589,8 +526,7 @@ namespace NTuple
 
         @return StatusCode indicating success or failure.
     */
-    StatusCode addItem( const std::string& name, Item<IOpaqueAddress*>& itm )
-    {
+    StatusCode addItem( const std::string& name, Item<IOpaqueAddress*>& itm ) {
       typedef Range<IOpaqueAddress*> _R;
       return i_addItem( name, 1, "", _R::min(), _R::max(), itm.m_ptr );
     }
@@ -613,8 +549,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE, class RANGE>
-    StatusCode addItem( const std::string& name, Item<TYPE>& itm, const RANGE low, const RANGE high )
-    {
+    StatusCode addItem( const std::string& name, Item<TYPE>& itm, const RANGE low, const RANGE high ) {
       return i_addItem( name, 1, "", TYPE( low ), TYPE( high ), itm.m_ptr );
     }
 
@@ -632,8 +567,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE>
-    StatusCode addItem( const std::string& name, long dim, Array<TYPE>& array )
-    {
+    StatusCode addItem( const std::string& name, long dim, Array<TYPE>& array ) {
       return i_addItem( name, dim, "", Range<TYPE>::min(), Range<TYPE>::max(), array.m_ptr );
     }
 
@@ -657,8 +591,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE, class RANGE>
-    StatusCode addItem( const std::string& name, long dim, Array<TYPE>& array, const RANGE low, const RANGE high )
-    {
+    StatusCode addItem( const std::string& name, long dim, Array<TYPE>& array, const RANGE low, const RANGE high ) {
       return i_addItem( name, dim, "", TYPE( low ), TYPE( high ), array.m_ptr );
     }
 
@@ -694,8 +627,7 @@ namespace NTuple
     */
     template <class TYPE, class INDEX, class RANGE>
     StatusCode addItem( const std::string& name, Item<INDEX>& index, Array<TYPE>& array, const RANGE low,
-                        const RANGE high )
-    {
+                        const RANGE high ) {
       return i_addItem( name, index->range().distance(), index->name(), TYPE( low ), TYPE( high ), array.m_ptr );
     }
 
@@ -726,8 +658,7 @@ namespace NTuple
     */
     template <class TYPE, class INDEX, class RANGE>
     StatusCode addIndexedItem( const std::string& name, Item<INDEX>& index, Array<TYPE>& array, const RANGE low,
-                               const RANGE high )
-    {
+                               const RANGE high ) {
       return i_addItem( name, index->range().distance(), index->name(), TYPE( low ), TYPE( high ), array.m_ptr );
     }
 
@@ -756,8 +687,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE, class INDEX>
-    StatusCode addItem( const std::string& name, Item<INDEX>& index, Array<TYPE>& array )
-    {
+    StatusCode addItem( const std::string& name, Item<INDEX>& index, Array<TYPE>& array ) {
       return i_addItem( name, index->range().distance(), index->name(), Range<TYPE>::min(), Range<TYPE>::max(),
                         array.m_ptr );
     }
@@ -782,8 +712,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE, class INDEX>
-    StatusCode addIndexedItem( const std::string& name, Item<INDEX>& index, Array<TYPE>& array )
-    {
+    StatusCode addIndexedItem( const std::string& name, Item<INDEX>& index, Array<TYPE>& array ) {
       return i_addItem( name, index->range().distance(), index->name(), Range<TYPE>::min(), Range<TYPE>::max(),
                         array.m_ptr );
     }
@@ -806,8 +735,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE>
-    StatusCode addItem( const std::string& name, long cols, long rows, Matrix<TYPE>& matrix )
-    {
+    StatusCode addItem( const std::string& name, long cols, long rows, Matrix<TYPE>& matrix ) {
       return i_addItem( name, cols, rows, "", Range<TYPE>::min(), Range<TYPE>::max(), matrix.m_ptr );
     }
 
@@ -835,8 +763,7 @@ namespace NTuple
     */
     template <class TYPE, class RANGE>
     StatusCode addItem( const std::string& name, long cols, long rows, Matrix<TYPE>& result, const RANGE low,
-                        const RANGE high )
-    {
+                        const RANGE high ) {
       return i_addItem( name, cols, rows, "", TYPE( low ), TYPE( high ), result.m_ptr );
     }
 
@@ -866,8 +793,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE, class INDEX>
-    StatusCode addItem( const std::string& name, Item<INDEX>& index, Matrix<TYPE>& matrix, long rows )
-    {
+    StatusCode addItem( const std::string& name, Item<INDEX>& index, Matrix<TYPE>& matrix, long rows ) {
       return i_addItem( name, index->range().distance(), rows, index->name(), Range<TYPE>::min(), Range<TYPE>::max(),
                         matrix.m_ptr );
     }
@@ -893,8 +819,7 @@ namespace NTuple
         @return StatusCode indicating success or failure.
     */
     template <class TYPE, class INDEX>
-    StatusCode addIndexedItem( const std::string& name, Item<INDEX>& col_index, long rows, Matrix<TYPE>& matrix )
-    {
+    StatusCode addIndexedItem( const std::string& name, Item<INDEX>& col_index, long rows, Matrix<TYPE>& matrix ) {
       return i_addItem( name, col_index->range().distance(), rows, col_index->name(), Range<TYPE>::min(),
                         Range<TYPE>::max(), matrix.m_ptr );
     }
@@ -933,8 +858,7 @@ namespace NTuple
     */
     template <class TYPE, class INDEX, class RANGE>
     StatusCode addItem( const std::string& name, Item<INDEX>& index, Matrix<TYPE>& matrix, long rows, const RANGE low,
-                        const RANGE high )
-    {
+                        const RANGE high ) {
       return i_addItem( name, index->range().distance(), rows, index->name(), TYPE( low ), TYPE( high ), matrix.m_ptr );
     }
 
@@ -967,14 +891,13 @@ namespace NTuple
     */
     template <class TYPE, class INDEX, class RANGE>
     StatusCode addIndexedItem( const std::string& name, Item<INDEX>& index, long rows, Matrix<TYPE>& matrix,
-                               const RANGE low, const RANGE high )
-    {
+                               const RANGE low, const RANGE high ) {
       return i_addItem( name, index->range().distance(), rows, index->name(), TYPE( low ), TYPE( high ), matrix.m_ptr );
     }
   };
 
   /** Small class representing an N tuple directory in the transient store
-  */
+   */
   struct Directory : DataObject {
     /// class ID of the object
     static const CLID& classID() { return CLID_NTupleDirectory; }
@@ -983,9 +906,8 @@ namespace NTuple
   };
 
   /** Small class representing an N tuple file in the transient store
-  */
-  class File : public Directory
-  {
+   */
+  class File : public Directory {
   protected:
     /// Physical file name
     std::string m_name;
@@ -1000,9 +922,7 @@ namespace NTuple
     File() = default;
     /// Standard constructor
     File( long type, std::string name, std::string logName )
-        : m_name( std::move( name ) ), m_logName( std::move( logName ) ), m_type( type )
-    {
-    }
+        : m_name( std::move( name ) ), m_logName( std::move( logName ) ), m_type( type ) {}
 
     /// class ID of the object
     static const CLID& classID() { return CLID_NTupleFile; }
@@ -1029,8 +949,7 @@ namespace NTuple
   // inhibit certain types by defining specialized templates which do not
   // allow for construction.
   template <>
-  class Array<IOpaqueAddress*>
-  {
+  class Array<IOpaqueAddress*> {
     Array() = delete;
 
   public:
@@ -1038,8 +957,7 @@ namespace NTuple
     virtual void dummy() = 0;
   };
   template <>
-  class Matrix<IOpaqueAddress*>
-  {
+  class Matrix<IOpaqueAddress*> {
     Matrix() = delete;
 
   public:
@@ -1087,8 +1005,7 @@ namespace NTuple
 #endif
 
   template <class T>
-  inline std::ostream& operator<<( std::ostream& s, const Item<T>& obj )
-  {
+  inline std::ostream& operator<<( std::ostream& s, const Item<T>& obj ) {
     return s << T( obj );
   }
 } // end of namespace NTuple

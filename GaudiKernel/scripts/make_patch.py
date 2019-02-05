@@ -16,13 +16,13 @@ def command(cmd, *args, **kwargs):
     d.update(kwargs)
     cmd = [cmd] + list(args)
     logging.debug("Execute command: %r %r", " ".join(cmd), kwargs)
-    proc = apply(Popen, (cmd,), d)
+    proc = apply(Popen, (cmd, ), d)
     return proc.communicate()
 
 
-cmt = lambda *args, **kwargs: apply(command, ("cmt",) + args, kwargs)
-cvs = lambda *args, **kwargs: apply(command, ("cvs",) + args, kwargs)
-svn = lambda *args, **kwargs: apply(command, ("svn",) + args, kwargs)
+cmt = lambda *args, **kwargs: apply(command, ("cmt", ) + args, kwargs)
+cvs = lambda *args, **kwargs: apply(command, ("cvs", ) + args, kwargs)
+svn = lambda *args, **kwargs: apply(command, ("svn", ) + args, kwargs)
 
 
 def broadcast_packages():
@@ -35,8 +35,9 @@ def broadcast_packages():
         pkg_dirs = "[\n" + cmt("broadcast",
                                r'echo "(\"<package>\", \"$PWD\"),"')[0] + ']'
     else:
-        pkg_dirs = "[\n" + cmt("broadcast",
-                               r'echo ("<package>", r"%<package>root%\cmt"),')[0] + ']'
+        pkg_dirs = "[\n" + cmt(
+            "broadcast",
+            r'echo ("<package>", r"%<package>root%\cmt"),')[0] + ']'
     # Clean up a bit the output (actually needed only on Windows because of the newlines)
     pkg_dirs = "\n".join(
         [l.strip() for l in pkg_dirs.splitlines() if not l.startswith("#")])
@@ -83,9 +84,7 @@ def revision_diff_cmd(cwd):
         # special treatment to show new files in a way compatible with CVS
         out, err = svn("status", cwd=cwd)
 
-        newfiles = [l
-                    for l in out.splitlines()
-                    if l.startswith("? ")]
+        newfiles = [l for l in out.splitlines() if l.startswith("? ")]
         out, err = svn("diff", cwd=cwd)
         if newfiles:
             out = "\n".join(newfiles) + "\n" + out
@@ -99,13 +98,11 @@ def diff_pkg(name, cmtdir, exclusions=[]):
     rootdir = os.path.dirname(cmtdir)
     out, err = revision_diff_cmd(cwd=rootdir)
     # extract new files
-    new_files = [l.split(None, 1)[1]
-                 for l in out.splitlines()
-                 if l.startswith("? ")]
+    new_files = [
+        l.split(None, 1)[1] for l in out.splitlines() if l.startswith("? ")
+    ]
     new_files = expand_dirs(new_files, rootdir)
-    new_files = [f
-                 for f in new_files
-                 if not matches(f, exclusions)]
+    new_files = [f for f in new_files if not matches(f, exclusions)]
     # make diff segments for added files
     for f in new_files:
         logging.info("Added file %r", f)
@@ -114,21 +111,17 @@ def diff_pkg(name, cmtdir, exclusions=[]):
         #               cwd = rootdir)[0]
         out += "Index: %s\n" % f
         out += "===================================================================\n"
-        out += command("diff", "-upN", "/dev/null", f,
-                       cwd=rootdir)[0]
+        out += command("diff", "-upN", "/dev/null", f, cwd=rootdir)[0]
     # extract removed files
-    removed_files = [l.split()[-1]
-                     for l in err.splitlines()
-                     if "cannot find" in l]
-    removed_files = [f
-                     for f in removed_files
-                     if not matches(f, exclusions)]
+    removed_files = [
+        l.split()[-1] for l in err.splitlines() if "cannot find" in l
+    ]
+    removed_files = [f for f in removed_files if not matches(f, exclusions)]
     # make diff segments for removed files (more tricky)
     for f in removed_files:
         logging.info("Removed file %r", f)
         # retrieve the original content from CVS
-        orig = cvs("up", "-p", f,
-                   cwd=rootdir)[0]
+        orig = cvs("up", "-p", f, cwd=rootdir)[0]
         out += "diff -u -p -N %s\n" % os.path.basename(f)
         out += "--- %s\t1 Jan 1970 00:00:00 -0000\n" % f
         out += "+++ /dev/null\t1 Jan 1970 00:00:00 -0000\n"
@@ -144,21 +137,36 @@ def diff_pkg(name, cmtdir, exclusions=[]):
 
 def main():
     from optparse import OptionParser
-    parser = OptionParser(description="Produce a patch file from a CMT project. "
-                          "The patch contains the changes with respect "
-                          "to the CVS repository, including new files "
-                          "that are present only locally. Run the script "
-                          "from the cmt directory of a package.")
-    parser.add_option("-x", "--exclude", action="append", type="string",
-                      metavar="PATTERN", dest="exclusions",
-                      help="Pattern to exclude new files from the patch")
-    parser.add_option("-o", "--output", action="store", type="string",
-                      help="Name of the file to send the output to. Standard "
-                           "output is used if not specified")
-    parser.add_option("-v", "--verbose", action="store_true",
-                      help="Print some progress information on standard error")
-    parser.add_option("--debug", action="store_true",
-                      help="Print debug information on standard error")
+    parser = OptionParser(
+        description="Produce a patch file from a CMT project. "
+        "The patch contains the changes with respect "
+        "to the CVS repository, including new files "
+        "that are present only locally. Run the script "
+        "from the cmt directory of a package.")
+    parser.add_option(
+        "-x",
+        "--exclude",
+        action="append",
+        type="string",
+        metavar="PATTERN",
+        dest="exclusions",
+        help="Pattern to exclude new files from the patch")
+    parser.add_option(
+        "-o",
+        "--output",
+        action="store",
+        type="string",
+        help="Name of the file to send the output to. Standard "
+        "output is used if not specified")
+    parser.add_option(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Print some progress information on standard error")
+    parser.add_option(
+        "--debug",
+        action="store_true",
+        help="Print debug information on standard error")
     parser.set_defaults(exclusions=[])
 
     opts, args = parser.parse_args()
@@ -169,37 +177,40 @@ def main():
         logging.basicConfig(level=logging.INFO)
 
     # default exclusions
-    opts.exclusions += ["*.py[co]",
-                        "*.patch",
-                        "cmt/cleanup.*",
-                        "cmt/setup.*",
-                        "cmt/*.make",
-                        "cmt/Makefile",
-                        "cmt/*.nmake",
-                        "cmt/*.nmakesav",
-                        "cmt/NMake",
-                        "cmt/install*.history",
-                        "cmt/build.*.log",
-                        "cmt/version.cmt",
-                        "genConf",
-                        "slc3_ia32_gcc323*",
-                        "slc4_ia32_gcc34*",
-                        "slc4_amd64_gcc34*",
-                        "slc4_amd64_gcc43*",
-                        "win32_vc71*",
-                        "i686-slc[34567]-[ig]cc*",
-                        "i686-slc[34567]-clang*",
-                        "x86_64-slc[34567]-[ig]cc*",
-                        "x86_64-slc[34567]-clang*",
-                        ".eclipse",
-                        ]
+    opts.exclusions += [
+        "*.py[co]",
+        "*.patch",
+        "cmt/cleanup.*",
+        "cmt/setup.*",
+        "cmt/*.make",
+        "cmt/Makefile",
+        "cmt/*.nmake",
+        "cmt/*.nmakesav",
+        "cmt/NMake",
+        "cmt/install*.history",
+        "cmt/build.*.log",
+        "cmt/version.cmt",
+        "genConf",
+        "slc3_ia32_gcc323*",
+        "slc4_ia32_gcc34*",
+        "slc4_amd64_gcc34*",
+        "slc4_amd64_gcc43*",
+        "win32_vc71*",
+        "i686-slc[34567]-[ig]cc*",
+        "i686-slc[34567]-clang*",
+        "x86_64-slc[34567]-[ig]cc*",
+        "x86_64-slc[34567]-clang*",
+        ".eclipse",
+    ]
     if "CMTCONFIG" in os.environ:
         opts.exclusions.append(os.environ["CMTCONFIG"])
 
     # check if we are in the cmt directory before broadcasting
-    if not (os.path.basename(os.getcwd()) == "cmt" and os.path.exists("requirements")):
+    if not (os.path.basename(os.getcwd()) == "cmt"
+            and os.path.exists("requirements")):
         logging.error(
-            "This script must be executed from the cmt directory of a package.")
+            "This script must be executed from the cmt directory of a package."
+        )
         return 1
 
     pkgs = broadcast_packages()
@@ -209,8 +220,8 @@ def main():
     patch = ""
     for name, path in pkgs:
         count += 1
-        logging.info("Processing %s from %s (%d/%d)",
-                     name, os.path.dirname(path), count, num_pkgs)
+        logging.info("Processing %s from %s (%d/%d)", name,
+                     os.path.dirname(path), count, num_pkgs)
         patch += diff_pkg(name, path, opts.exclusions)
 
     if sys.platform.startswith("win"):

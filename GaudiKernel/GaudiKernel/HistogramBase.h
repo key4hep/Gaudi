@@ -9,19 +9,17 @@ class TObject;
 /*
  *    Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /**@class HistogramBase HistogramBase.h HistogramSvc/HistogramBase.h
-    *
-    *   Common base class for all histograms
-    *   Use is solely functional to minimize dynamic_casts inside HistogramSvc
-    *
-    *   @author  M.Frank
-    *   @version 1.0
-    */
-  class GAUDI_API HistogramBase
-  {
+   *
+   *   Common base class for all histograms
+   *   Use is solely functional to minimize dynamic_casts inside HistogramSvc
+   *
+   *   @author  M.Frank
+   *   @version 1.0
+   */
+  class GAUDI_API HistogramBase {
   public:
     /// ROOT object implementation
     virtual TObject* representation() const = 0;

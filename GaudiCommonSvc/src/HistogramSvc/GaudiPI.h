@@ -13,8 +13,7 @@
 class DataObject;
 class TH2D;
 
-namespace Gaudi
-{
+namespace Gaudi {
   typedef std::vector<double> Edges;
 
   /// Copy constructor
@@ -81,5 +80,5 @@ namespace Gaudi
   /// Creator for 2 D profile with variable bins
   std::pair<DataObject*, AIDA::IProfile2D*> createProf2D( const std::string& title, const Edges& eX, const Edges& eY,
                                                           double lowerValue, double upperValue );
-}
+} // namespace Gaudi
 #endif // GAUDIPI_GAUDIPI_H

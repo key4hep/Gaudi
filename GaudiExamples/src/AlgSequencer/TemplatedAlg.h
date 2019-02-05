@@ -12,8 +12,7 @@
     @author nobody
 */
 template <typename T, typename R>
-class TemplatedAlg : public GaudiAlgorithm
-{
+class TemplatedAlg : public GaudiAlgorithm {
 public:
   /// Constructor of this form must be provided
   using GaudiAlgorithm::GaudiAlgorithm;

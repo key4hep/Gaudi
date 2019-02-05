@@ -25,7 +25,7 @@ Rndm = cpp.Rndm
 # =============================================================================
 
 
-class HistoEx2 (HistoAlgo):
+class HistoEx2(HistoAlgo):
     """ Simple algorithm which explicitly book&fill profile histograms """
 
     def __init__(self, name='HistoEx2'):
@@ -35,8 +35,7 @@ class HistoEx2 (HistoAlgo):
     def execute(self):
         """ The major method 'execute', it is invoked for each event """
 
-        gauss = Rndm.Numbers(self.randSvc(),
-                             Rndm.Gauss(0, 1))
+        gauss = Rndm.Numbers(self.randSvc(), Rndm.Gauss(0, 1))
 
         for i in range(0, 10000):
             x = gauss()
@@ -87,9 +86,7 @@ if '__main__' == __name__:
     gaudi.run(20)
 
     # Skip the next part when running within QMTest
-    for alg in ('HistoEx',
-                'HistoEx1',
-                'HistoEx2'):
+    for alg in ('HistoEx', 'HistoEx1', 'HistoEx2'):
         alg = gaudi.algorithm(alg)
         histos = alg.Histos()
         for key in histos:

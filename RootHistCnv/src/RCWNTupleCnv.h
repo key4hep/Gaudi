@@ -9,8 +9,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RootHistCnv::RCWNTupleCnv RCWNTupleCnv.h
    *
@@ -18,8 +17,7 @@ namespace RootHistCnv
    * @author Charles Leggett
    */
 
-  class RCWNTupleCnv : public RNTupleCnv
-  {
+  class RCWNTupleCnv : public RNTupleCnv {
   public:
     /// Inquire class type
     static const CLID& classID() { return CLID_ColumnWiseTuple; }

@@ -9,20 +9,16 @@
 //------------------------------------------------------------------------------
 DECLARE_CONVERTER( RootHistCnv::DirectoryCnv )
 //------------------------------------------------------------------------------
-StatusCode RootHistCnv::DirectoryCnv::createObj( IOpaqueAddress* /* pAddress */, DataObject*& refpObject )
-{
+StatusCode RootHistCnv::DirectoryCnv::createObj( IOpaqueAddress* /* pAddress */, DataObject*& refpObject ) {
   refpObject = new DataObject();
   return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
-StatusCode RootHistCnv::DirectoryCnv::createRep( DataObject* pObj, IOpaqueAddress*& refpAddr )
-{
+StatusCode RootHistCnv::DirectoryCnv::createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) {
   if ( changeDirectory( pObj ) ) {
     const char* d_nam = pObj->name().c_str() + 1;
-    if ( !gDirectory->GetKey( d_nam ) ) {
-      gDirectory->mkdir( d_nam );
-    }
+    if ( !gDirectory->GetKey( d_nam ) ) { gDirectory->mkdir( d_nam ); }
     gDirectory->cd( d_nam );
     return createAddress( pObj, gDirectory, nullptr, refpAddr );
   }

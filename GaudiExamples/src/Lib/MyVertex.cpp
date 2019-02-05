@@ -2,17 +2,15 @@
 
 using namespace Gaudi::Examples;
 
-namespace
-{
+namespace {
   struct InstanceCount {
     long count;
     InstanceCount() : count( 0 ) {}
-    ~InstanceCount()
-    {
+    ~InstanceCount() {
       if ( count ) std::cout << "Number of MyVertex instances:" << count << std::endl;
     }
   };
-}
+} // namespace
 static InstanceCount s_instances;
 
 /// Standard constructor
@@ -25,8 +23,7 @@ MyVertex::MyVertex( float x, float y, float z ) : m_x( x ), m_y( y ), m_z( z ) {
 MyVertex::~MyVertex() { s_instances.count--; }
 
 /// Serialize the object for writing
-inline StreamBuffer& MyVertex::serialize( StreamBuffer& s ) const
-{
+inline StreamBuffer& MyVertex::serialize( StreamBuffer& s ) const {
   KeyedObject<int>::serialize( s );
   s << m_motherParticle( this );
   s << m_decayParticles( this );
@@ -37,8 +34,7 @@ inline StreamBuffer& MyVertex::serialize( StreamBuffer& s ) const
 }
 
 /// Serialize the object for reading
-inline StreamBuffer& MyVertex::serialize( StreamBuffer& s )
-{
+inline StreamBuffer& MyVertex::serialize( StreamBuffer& s ) {
   KeyedObject<int>::serialize( s );
   s >> m_motherParticle( this );
   s >> m_decayParticles( this );

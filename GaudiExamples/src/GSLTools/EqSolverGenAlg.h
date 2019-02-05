@@ -19,8 +19,7 @@ struct IEqSolver;
  */
 //-----------------------------------------------------------------------------
 
-class EqSolverGenAlg : public Algorithm
-{
+class EqSolverGenAlg : public Algorithm {
 
 public:
   using Algorithm::Algorithm;

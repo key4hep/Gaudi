@@ -6,8 +6,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Property.h"
 
-class GAUDI_API IncidentProcAlg : public Algorithm
-{
+class GAUDI_API IncidentProcAlg : public Algorithm {
 public:
   /**
    ** Constructor(s)

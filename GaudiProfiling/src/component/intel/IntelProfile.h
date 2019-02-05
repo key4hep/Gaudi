@@ -11,8 +11,7 @@
  *
  *  @author Ben Couturier Sebastien Ponce
  */
-class IntelProfile : public GaudiAlgorithm
-{
+class IntelProfile : public GaudiAlgorithm {
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
   StatusCode execute() override; ///< Algorithm execution

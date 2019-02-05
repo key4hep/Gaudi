@@ -187,6 +187,7 @@ class TupleEx3(TupleAlgo):
 
         return SUCCESS
 
+
 # =============================================================================
 # job configuration
 #
@@ -213,7 +214,10 @@ def configure(gaudi=None):
 
     gaudi.config()
 
-    gaudi.DLLs = ['GaudiAlg', 'RootHistCnv', ]
+    gaudi.DLLs = [
+        'GaudiAlg',
+        'RootHistCnv',
+    ]
 
     alg = TupleEx3()
     gaudi.setAlgorithms([alg])

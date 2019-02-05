@@ -5,7 +5,7 @@
 // ============================================================================
 // Python must always be the first.
 #ifndef __APPLE__
-#include "Python.h"
+#  include "Python.h"
 #endif // not __APPLE__
 
 #include "GaudiKernel/Algorithm.h"
@@ -24,36 +24,36 @@
 #include "GaudiKernel/VectorMap.h"
 
 #ifdef _WIN32
-#include "GaudiKernel/GaudiHandle.h"
+#  include "GaudiKernel/GaudiHandle.h"
 #endif
 
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
-#pragma warning( disable : 177 )
+#  pragma warning( disable : 177 )
 // disable icc warning #1125: function "C::X()" is hidden by "Y::X" -- virtual function override intended?
-#pragma warning( disable : 1125 )
+#  pragma warning( disable : 1125 )
 #endif
 
 // Force visibility of the classes
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wkeyword-macro"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wkeyword-macro"
 #endif
 #define class class GAUDI_API
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
 #ifdef AIDA_FOUND
-#ifdef _WIN32
-#include "AIDA/IAnnotation.h"
-#endif // _WIN32
-#include "AIDA/IAxis.h"
-#include "AIDA/IHistogram.h"
-#include "AIDA/IHistogram1D.h"
-#include "AIDA/IHistogram2D.h"
-#include "AIDA/IHistogram3D.h"
-#include "AIDA/IProfile1D.h"
-#include "AIDA/IProfile2D.h"
+#  ifdef _WIN32
+#    include "AIDA/IAnnotation.h"
+#  endif // _WIN32
+#  include "AIDA/IAxis.h"
+#  include "AIDA/IHistogram.h"
+#  include "AIDA/IHistogram1D.h"
+#  include "AIDA/IHistogram2D.h"
+#  include "AIDA/IHistogram3D.h"
+#  include "AIDA/IProfile1D.h"
+#  include "AIDA/IProfile2D.h"
 #endif // AIDA_FOUND
 #undef class
 
@@ -64,21 +64,21 @@
 #include "GaudiPython/CallbackStreamBuf.h"
 #include "GaudiPython/GaudiPython.h"
 #ifdef AIDA_FOUND
-#include "GaudiPython/HistoDecorator.h"
+#  include "GaudiPython/HistoDecorator.h"
 #endif // AIDA_FOUND
 #include "GaudiPython/Interface.h"
 #include "GaudiPython/Printer.h"
 #include "GaudiPython/Vector.h"
 #ifdef CLHEP_FOUND
-#include "GaudiPython/TupleDecorator.h"
+#  include "GaudiPython/TupleDecorator.h"
 #endif // CLHEP_FOUND
 
 #ifdef AIDA_FOUND
-#include "GaudiAlg/GaudiHistoAlg.h"
-#include "GaudiAlg/GaudiTupleAlg.h"
-#include "GaudiAlg/Print.h"
+#  include "GaudiAlg/GaudiHistoAlg.h"
+#  include "GaudiAlg/GaudiTupleAlg.h"
+#  include "GaudiAlg/Print.h"
 // Added to avoid warnings about inlined functions never implemented.
-#include "GaudiAlg/GaudiHistos.icpp"
+#  include "GaudiAlg/GaudiHistos.icpp"
 #endif // AIDA_FOUND
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiCommon.h"
@@ -91,10 +91,10 @@
 #include "GaudiAlg/Tuple.h"
 
 #ifdef AIDA_FOUND
-#include "GaudiUtils/Aida2ROOT.h"
-#include "GaudiUtils/HistoDump.h"
-#include "GaudiUtils/HistoStats.h"
-#include "GaudiUtils/HistoStrings.h"
+#  include "GaudiUtils/Aida2ROOT.h"
+#  include "GaudiUtils/HistoDump.h"
+#  include "GaudiUtils/HistoStats.h"
+#  include "GaudiUtils/HistoStrings.h"
 #endif // AIDA_FOUND
 #include "GaudiUtils/IFileCatalog.h"
 #include "GaudiUtils/IFileCatalogMgr.h"
@@ -110,8 +110,7 @@ template class std::basic_stringstream<char>;
 // needed to find operator<< implemented in GaudiUtils.
 using namespace GaudiUtils;
 
-namespace GaudiPython
-{
+namespace GaudiPython {
 
   template <class TYPE>
   struct _Property {
@@ -199,11 +198,11 @@ namespace GaudiPython
     _Property<std::vector<std::string>>        vp_16;
 
     // some extended types
-    _Property<std::pair<int, int>>                    ep_01;
-    _Property<std::pair<double, double>>              ep_02;
-    _Property<std::vector<std::pair<double, double>>> ep_04;
-    _Property<std::vector<std::vector<std::string>>> ep_05;
-    _Property<std::vector<std::vector<double>>>      ep_06;
+    _Property<std::pair<int, int>>                             ep_01;
+    _Property<std::pair<double, double>>                       ep_02;
+    _Property<std::vector<std::pair<double, double>>>          ep_04;
+    _Property<std::vector<std::vector<std::string>>>           ep_05;
+    _Property<std::vector<std::vector<double>>>                ep_06;
     _Property<std::map<int, double>>                           ep_07;
     _Property<std::map<std::string, std::string>>              ep_08;
     _Property<std::map<std::string, int>>                      ep_09;
@@ -218,23 +217,17 @@ namespace GaudiPython
 
 } // end of namespace GaudiPython
 
-namespace __gnu_cxx
-{
-  struct dummy {
-  };
-} // hack to please CINT
+namespace __gnu_cxx {
+  struct dummy {};
+} // namespace __gnu_cxx
 
 #ifdef _WIN32
-#pragma warning( disable : 4345 )
-#pragma warning( disable : 4624 )
+#  pragma warning( disable : 4345 )
+#  pragma warning( disable : 4624 )
 #endif
 
 #ifdef __ICC
 // disable icc warning #191: type qualifier is meaningless on cast type
 // ... a lot of noise produced by the dictionary
-#pragma warning( disable : 191 )
+#  pragma warning( disable : 191 )
 #endif
-
-// ============================================================================
-// The END
-// ============================================================================

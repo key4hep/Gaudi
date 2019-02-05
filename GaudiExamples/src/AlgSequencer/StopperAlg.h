@@ -11,8 +11,7 @@
 
     @author nobody
 */
-class StopperAlg : public GaudiAlgorithm
-{
+class StopperAlg : public GaudiAlgorithm {
 public:
   /// Constructor of this form must be provided
   using GaudiAlgorithm::GaudiAlgorithm;

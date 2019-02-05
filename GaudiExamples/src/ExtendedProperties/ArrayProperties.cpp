@@ -16,14 +16,11 @@
  *  @date 2009-09-15
  */
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Examples
-  {
+  namespace Examples {
     // ========================================================================
-    class ArrayProperties : public GaudiAlgorithm
-    {
+    class ArrayProperties : public GaudiAlgorithm {
     public:
       // ======================================================================
       /// execute it!
@@ -34,10 +31,9 @@ namespace Gaudi
       /** Standard constructor
        *
        */
-      ArrayProperties( const std::string& name,  // algorithm instance name
-                       ISvcLocator*       pSvc ) //         service locator
-          : GaudiAlgorithm( name, pSvc )
-      {
+      ArrayProperties( const std::string& name, // algorithm instance name
+                       ISvcLocator*       pSvc )      //         service locator
+          : GaudiAlgorithm( name, pSvc ) {
         //
         std::fill( std::begin( m_doubles ), std::end( m_doubles ), -10 );
         std::fill( std::begin( m_strings ), std::end( m_strings ), "blah-blah-blah" );
@@ -60,14 +56,13 @@ namespace Gaudi
       // ======================================================================
     };
     // ========================================================================
-  } //                                         end of namespace Gaudi::Examples
+  } // namespace Examples
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
 // execute it!
 // ============================================================================
-StatusCode Gaudi::Examples::ArrayProperties::execute()
-{
+StatusCode Gaudi::Examples::ArrayProperties::execute() {
   propsPrint();
   //
   info() << " Doubles : " << Gaudi::Utils::toString( m_doubles ) << endmsg;

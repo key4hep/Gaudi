@@ -9,8 +9,7 @@
         @author nobody
 */
 
-class MyDataAlgorithm : public GaudiAlgorithm
-{
+class MyDataAlgorithm : public GaudiAlgorithm {
 public:
   /// Constructor of this form must be provided
   MyDataAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );

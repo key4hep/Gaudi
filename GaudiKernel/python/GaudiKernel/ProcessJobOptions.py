@@ -20,8 +20,7 @@ class LogFormatter(logging.Formatter):
             prefix += '%f ' % time.time()
         if record.levelno >= logging.WARNING:
             prefix += record.levelname + ": "
-        s = "\n".join([prefix + line
-                       for line in fmsg.splitlines()])
+        s = "\n".join([prefix + line for line in fmsg.splitlines()])
         return s
 
 
@@ -33,7 +32,8 @@ class LogFilter(logging.Filter):
         self.threshold = logging.WARNING
 
     def filter(self, record):
-        return record.levelno >= self.threshold or (self.enabled and self.printing_level <= 0)
+        return record.levelno >= self.threshold or (self.enabled and
+                                                    self.printing_level <= 0)
 
     def printOn(self, step=1, force=False):
         """
@@ -113,7 +113,10 @@ def GetConsoleHandler(prefix=None, stream=None, with_time=False):
     return _consoleHandler
 
 
-def InstallRootLoggingHandler(prefix=None, level=None, stream=None, with_time=False):
+def InstallRootLoggingHandler(prefix=None,
+                              level=None,
+                              stream=None,
+                              with_time=False):
     root_logger = logging.getLogger()
     if not root_logger.handlers:
         root_logger.addHandler(GetConsoleHandler(prefix, stream, with_time))
@@ -201,7 +204,8 @@ class JobOptsParser:
             l = f.readline()
 
         while l:
-            l = l.rstrip() + '\n'  # normalize EOL chars (to avoid problems with DOS new-line on Unix)
+            l = l.rstrip(
+            ) + '\n'  # normalize EOL chars (to avoid problems with DOS new-line on Unix)
 
             # single line comment
             m = self.comment.search(l)
@@ -326,9 +330,8 @@ class JobOptsParser:
             self.units[unit] = value
 
     def _eval_statement(self, statement):
-        from GaudiKernel.Proxy.Configurable import (ConfigurableGeneric,
-                                                    Configurable,
-                                                    PropertyReference)
+        from GaudiKernel.Proxy.Configurable import (
+            ConfigurableGeneric, Configurable, PropertyReference)
         #statement = statement.replace("\n","").strip()
         _log.info("%s%s", statement, self.statement_sep)
 
@@ -368,7 +371,8 @@ class JobOptsParser:
         value = value.replace('true', 'True').replace('false', 'False')
         if value[0] == '{':
             # Try to guess if the values looks like a dictionary
-            if ':' in value and not (value[:value.index(':')].count('"') % 2 or value[:value.index(':')].count("'") % 2):
+            if ':' in value and not (value[:value.index(':')].count('"') % 2 or
+                                     value[:value.index(':')].count("'") % 2):
                 # for dictionaries, keep the surrounding {}
                 value = '{' + \
                     value[1:-1].replace('{', '[').replace('}', ']') + '}'
@@ -378,9 +382,8 @@ class JobOptsParser:
         # We must escape '\' because eval tends to interpret them
         value = value.replace('\\', '\\\\')
         # Restore special cases ('\n', '\t' and '\"') (see GAUDI-1001)
-        value = (value.replace(r"\\n", r"\n")
-                      .replace(r"\\t", r"\t")
-                      .replace(r'\\"', r'\"'))
+        value = (value.replace(r"\\n", r"\n").replace(r"\\t", r"\t").replace(
+            r'\\"', r'\"'))
         # replace r'\n' and r'\t' that are outside double quoted strings
         value = '"'.join([(v if i % 2 else re.sub(r'\\[nt]', ' ', v))
                           for i, v in enumerate(value.split('"'))])
@@ -402,7 +405,8 @@ class JobOptsParser:
             for p in cfg.__slots__:
                 if lprop == p.lower():
                     _log.warning(
-                        "property '%s' was requested for %s, but the correct spelling is '%s'", property, cfg.name(), p)
+                        "property '%s' was requested for %s, but the correct spelling is '%s'",
+                        property, cfg.name(), p)
                     property = p
                     break
 
@@ -425,15 +429,15 @@ class JobOptsParser:
                         if k in prop:
                             del prop[k]
                         else:
-                            _log.warning("key '%s' not in %s.%s",
-                                         k, cfg.name(), property)
+                            _log.warning("key '%s' not in %s.%s", k,
+                                         cfg.name(), property)
                 else:
                     for k in value:
                         if k in prop:
                             prop.remove(k)
                         else:
-                            _log.warning("value '%s' not in %s.%s",
-                                         k, cfg.name(), property)
+                            _log.warning("value '%s' not in %s.%s", k,
+                                         cfg.name(), property)
         else:
             setattr(cfg, property, value)
 
@@ -487,6 +491,7 @@ def importOptions(optsfile):
             _log.info("<-- End of file '%s'", optsfile)
     else:
         raise ParserError("Unknown file type '%s' ('%s')" % (ext, optsfile))
+
 
 # Import a file containing declaration of units.
 #  It is equivalent to:

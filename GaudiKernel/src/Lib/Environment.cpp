@@ -2,10 +2,8 @@
 #include "GaudiKernel/System.h"
 #include <cstdlib>
 
-namespace
-{
-  std::string i_resolve( std::string& source, int recursions )
-  {
+namespace {
+  std::string i_resolve( std::string& source, int recursions ) {
     if ( recursions > 0 ) {
       int lvl = 0, mx_lvl = 0;
       for ( const char *c = source.c_str(), *beg = nullptr; *c != 0; ++c ) {
@@ -28,9 +26,7 @@ namespace
             if ( rep.length() ) {
               std::string e( beg, c - beg + 1 );
               size_t      idx = std::string::npos;
-              while ( ( idx = source.find( e ) ) != std::string::npos ) {
-                source.replace( idx, e.length(), rep );
-              }
+              while ( ( idx = source.find( e ) ) != std::string::npos ) { source.replace( idx, e.length(), rep ); }
               return i_resolve( source, --recursions );
             } else {
               // error: environment cannot be resolved....
@@ -46,20 +42,16 @@ namespace
     }
     return source;
   }
-}
+} // namespace
 
-StatusCode System::resolveEnv( const std::string& var, std::string& res, int recursions )
-{
+StatusCode System::resolveEnv( const std::string& var, std::string& res, int recursions ) {
   std::string source = var;
   res                = i_resolve( source, recursions );
-  if ( res.find( "${" ) == std::string::npos ) {
-    return StatusCode::SUCCESS;
-  }
+  if ( res.find( "${" ) == std::string::npos ) { return StatusCode::SUCCESS; }
   return StatusCode::FAILURE;
 }
 
-std::string System::homeDirectory()
-{
+std::string System::homeDirectory() {
   // Return the user's home directory.
   std::string home_dir = "./";
   // Try to replace the current value with the content of several
@@ -75,8 +67,7 @@ std::string System::homeDirectory()
   return home_dir;
 }
 
-std::string System::tempDirectory()
-{
+std::string System::tempDirectory() {
   // Return a user configured or systemwide directory to create
   // temporary files in.
   std::string dir;

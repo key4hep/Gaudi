@@ -3,17 +3,14 @@
 
 #include "GaudiAlg/Transformer.h"
 
-namespace Gaudi
-{
-  namespace Functional
-  {
+namespace Gaudi {
+  namespace Functional {
 
     // Scalar->Vector adapted N->1 algorithm
     template <typename ScalarOp, typename TransformerSignature, typename Traits_ = Traits::useDefaults>
     class ScalarTransformer;
     template <typename ScalarOp, typename Out, typename... In, typename Traits_>
-    class ScalarTransformer<ScalarOp, Out( const In&... ), Traits_> : public Transformer<Out( const In&... ), Traits_>
-    {
+    class ScalarTransformer<ScalarOp, Out( const In&... ), Traits_> : public Transformer<Out( const In&... ), Traits_> {
 
       /// Access the scalar operator
       const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>( *this ); }
@@ -22,8 +19,7 @@ namespace Gaudi
       using Transformer<Out( const In&... ), Traits_>::Transformer;
 
       /// The main operator
-      Out operator()( const In&... in ) const override final
-      {
+      Out operator()( const In&... in ) const override final {
         const auto inrange = details::zip::const_range( in... );
         Out        out;
         out.reserve( inrange.size() );
@@ -44,8 +40,7 @@ namespace Gaudi
     class MultiScalarTransformer;
     template <typename ScalarOp, typename... Out, typename... In, typename Traits_>
     class MultiScalarTransformer<ScalarOp, std::tuple<Out...>( const In&... ), Traits_>
-        : public MultiTransformer<std::tuple<Out...>( const In&... ), Traits_>
-    {
+        : public MultiTransformer<std::tuple<Out...>( const In&... ), Traits_> {
 
       /// Access the scalar operator
       const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>( *this ); }
@@ -54,8 +49,7 @@ namespace Gaudi
       using MultiTransformer<std::tuple<Out...>( const In&... ), Traits_>::MultiTransformer;
 
       /// The main operator
-      std::tuple<Out...> operator()( const In&... in ) const override final
-      {
+      std::tuple<Out...> operator()( const In&... in ) const override final {
         const auto         inrange = details::zip::const_range( in... );
         std::tuple<Out...> out;
         Gaudi::apply(
@@ -71,7 +65,6 @@ namespace Gaudi
         for ( const auto&& indata : inrange ) {
           Gaudi::apply(
               [&scalar, &indata]( auto&... out ) {
-
                 /// Call the scalar operator with the objects obtained from the given indata,
                 /// and invoke insert with it (unless the resulting type is an  optional,
                 /// and the optional is not engaged)
@@ -97,7 +90,7 @@ namespace Gaudi
         return out;
       }
     };
-  }
-}
+  } // namespace Functional
+} // namespace Gaudi
 
 #endif

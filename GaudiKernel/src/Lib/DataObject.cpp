@@ -16,8 +16,7 @@ DataObject::DataObject() : m_pLinkMgr{LinkManager::newInstance()} {}
 DataObject::DataObject( const DataObject& rhs ) : m_version{rhs.m_version}, m_pLinkMgr{LinkManager::newInstance()} {}
 
 /// Assignment Operator
-DataObject& DataObject::operator=( const DataObject& rhs )
-{
+DataObject& DataObject::operator=( const DataObject& rhs ) {
   m_version = rhs.m_version;
   m_pLinkMgr.reset( LinkManager::newInstance() );
   return *this;
@@ -25,21 +24,17 @@ DataObject& DataObject::operator=( const DataObject& rhs )
 
 /// Move Constructor
 DataObject::DataObject( DataObject&& rhs )
-    : m_version{std::move( rhs.m_version )}, m_pLinkMgr{std::move( rhs.m_pLinkMgr )}
-{
-}
+    : m_version{std::move( rhs.m_version )}, m_pLinkMgr{std::move( rhs.m_pLinkMgr )} {}
 
 /// Assignment Operator
-DataObject& DataObject::operator=( DataObject&& rhs )
-{
+DataObject& DataObject::operator=( DataObject&& rhs ) {
   m_version  = std::move( rhs.m_version );
   m_pLinkMgr = std::move( rhs.m_pLinkMgr );
   return *this;
 }
 
 /// Standard Destructor
-DataObject::~DataObject()
-{
+DataObject::~DataObject() {
   // Issue a warning if the object is being deleted and the reference
   // count is non-zero.
   if ( m_refCount > 0 ) {
@@ -48,8 +43,7 @@ DataObject::~DataObject()
 }
 
 /// Decrease reference count
-unsigned long DataObject::release()
-{
+unsigned long DataObject::release() {
   unsigned long cnt = --m_refCount;
   if ( 0 == cnt ) delete this;
   return cnt;
@@ -73,23 +67,20 @@ StatusCode DataObject::update() { return StatusCode::SUCCESS; }
 static DataObject*  s_objPtr  = nullptr;
 static DataObject** s_currObj = &s_objPtr;
 
-static std::vector<DataObject**>& objectStack()
-{
+static std::vector<DataObject**>& objectStack() {
   static std::unique_ptr<std::vector<DataObject**>> s_current{new std::vector<DataObject**>()};
   return *s_current;
 }
 
 DataObject* Gaudi::getCurrentDataObject() { return *s_currObj; }
 
-void Gaudi::pushCurrentDataObject( DataObject** pobjAddr )
-{
+void Gaudi::pushCurrentDataObject( DataObject** pobjAddr ) {
   static std::vector<DataObject**>& c = objectStack();
   c.push_back( pobjAddr );
   s_currObj = pobjAddr ? pobjAddr : &s_objPtr;
 }
 
-void Gaudi::popCurrentDataObject()
-{
+void Gaudi::popCurrentDataObject() {
   static std::vector<DataObject**>& c = objectStack();
   if ( !c.empty() ) {
     s_currObj = c.back();

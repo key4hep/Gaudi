@@ -5,8 +5,7 @@
 
 using namespace Gaudi::Hive;
 
-BOOST_AUTO_TEST_CASE( basic_usage )
-{
+BOOST_AUTO_TEST_CASE( basic_usage ) {
   ContextSpecificPtr<int> p;
 
   setCurrentContextId( (ContextIdType)0 );
@@ -45,8 +44,7 @@ BOOST_AUTO_TEST_CASE( basic_usage )
   p.deleteAll();
 }
 
-BOOST_AUTO_TEST_CASE( ctx_data )
-{
+BOOST_AUTO_TEST_CASE( ctx_data ) {
   ContextSpecificData<int> i;
 
   setCurrentContextId( (ContextIdType)0 );
@@ -81,8 +79,7 @@ BOOST_AUTO_TEST_CASE( ctx_data )
   */
 }
 
-BOOST_AUTO_TEST_CASE( ctx_data_with_proto )
-{
+BOOST_AUTO_TEST_CASE( ctx_data_with_proto ) {
   ContextSpecificData<int> i( 123 );
 
   setCurrentContextId( (ContextIdType)0 );
@@ -111,15 +108,13 @@ BOOST_AUTO_TEST_CASE( ctx_data_with_proto )
   BOOST_CHECK( i.accumulate( 1, std::multiplies<>() ) == ( 42 * 23 ) );
 }
 
-class TestClass
-{
+class TestClass {
 public:
   TestClass( int _a = 0, int _b = 0 ) : a( _a ), b( _b ) {}
   int a, b;
 };
 
-BOOST_AUTO_TEST_CASE( ctx_complex_data )
-{
+BOOST_AUTO_TEST_CASE( ctx_complex_data ) {
   ContextSpecificData<TestClass> i;
   ContextSpecificData<TestClass> j( TestClass( 1, 2 ) );
 
@@ -154,20 +149,17 @@ BOOST_AUTO_TEST_CASE( ctx_complex_data )
 #include <iostream>
 #include <thread>
 
-class ThreadingTest
-{
+class ThreadingTest {
 public:
   ContextSpecificData<int> data;
-  void set( int v ) { data = v; }
+  void                     set( int v ) { data = v; }
 };
 
-class Runner
-{
+class Runner {
 public:
   Runner( ThreadingTest& t ) : test( t ) {}
 
-  void operator()( ContextIdType c )
-  {
+  void operator()( ContextIdType c ) {
     setCurrentContextId( c );
     std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
     test.set( c );
@@ -176,8 +168,7 @@ public:
   ThreadingTest& test;
 };
 
-BOOST_AUTO_TEST_CASE( ctx_threaded )
-{
+BOOST_AUTO_TEST_CASE( ctx_threaded ) {
   ThreadingTest test;
   Runner        runner( test );
   std::thread   t1( runner, (ContextIdType)1 );

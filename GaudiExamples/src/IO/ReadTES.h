@@ -15,8 +15,7 @@
  *  @author Marco Cattaneo
  *  @date   2008-11-03
  */
-class ReadTES : public GaudiAlgorithm
-{
+class ReadTES : public GaudiAlgorithm {
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;

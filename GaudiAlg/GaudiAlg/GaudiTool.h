@@ -6,6 +6,7 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/CounterHolder.h"
 #include "GaudiKernel/DataObject.h"
 // ============================================================================
 // GaudiAlg
@@ -23,8 +24,7 @@ class IHistogramSvc;
 class GaudiException;
 class INTupleSvc;
 class IAlgContextSvc;
-namespace std
-{
+namespace std {
   class exception;
 }
 // ============================================================================
@@ -98,8 +98,7 @@ namespace std
  *  @date   2003-07-07
  */
 // ============================================================================
-class GAUDI_API GaudiTool : public GaudiCommon<AlgTool>
-{
+class GAUDI_API GaudiTool : public GaudiCommon<CounterHolder<AlgTool>> {
 public:
   // ==========================================================================
   /** standard initialization method
@@ -187,14 +186,12 @@ public:
    */
   // [[deprecated( "please pass a std::unique_ptr as 2nd argument" )]]
   inline void put( IDataProviderSvc* svc, DataObject* object, const std::string& address,
-                   const bool useRootInTES = true ) const
-  {
+                   const bool useRootInTES = true ) const {
     put( svc, std::unique_ptr<DataObject>( object ), address, useRootInTES );
   }
   inline void put( IDataProviderSvc* svc, std::unique_ptr<DataObject> object, const std::string& address,
-                   const bool useRootInTES = true ) const
-  {
-    GaudiCommon<AlgTool>::put( svc, std::move( object ), address, useRootInTES );
+                   const bool useRootInTES = true ) const {
+    GaudiCommon<CounterHolder<AlgTool>>::put( svc, std::move( object ), address, useRootInTES );
   }
 
   /** @brief Register a data object or container into Gaudi Event Transient Store
@@ -225,14 +222,12 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  inline const DataObject* put( DataObject* object, const std::string& address, const bool useRootInTES = true ) const
-  {
+  inline const DataObject* put( DataObject* object, const std::string& address, const bool useRootInTES = true ) const {
     return put( std::unique_ptr<DataObject>( object ), address, useRootInTES );
   }
   inline const DataObject* put( std::unique_ptr<DataObject> object, const std::string& address,
-                                const bool useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::put( evtSvc(), std::move( object ), address, useRootInTES );
+                                const bool useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::put( evtSvc(), std::move( object ), address, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -268,9 +263,8 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type get( IDataProviderSvc* svc, const std::string& location,
-                                                                const bool useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::get<TYPE>( svc, location, useRootInTES );
+                                                                const bool useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::get<TYPE>( svc, location, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -308,9 +302,8 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getIfExists( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::getIfExists<TYPE>( svc, location, useRootInTES );
+  getIfExists( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::getIfExists<TYPE>( svc, location, useRootInTES );
   }
 
   /** @brief Templated access to the data from Gaudi Event Transient Store
@@ -340,9 +333,8 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type get( const std::string& location,
-                                                                const bool         useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::get<TYPE>( evtSvc(), location, useRootInTES );
+                                                                const bool         useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::get<TYPE>( evtSvc(), location, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -379,9 +371,8 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( const std::string& location,
-                                                                        const bool         useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::getIfExists<TYPE>( evtSvc(), location, useRootInTES );
+                                                                        const bool         useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::getIfExists<TYPE>( evtSvc(), location, useRootInTES );
   }
 
   /** @brief Templated access to the detector data from the
@@ -403,9 +394,8 @@ public:
    *  @return          Pointer to the detector object
    */
   template <class TYPE>
-  inline TYPE* getDet( IDataProviderSvc* svc, const std::string& location ) const
-  {
-    return GaudiCommon<AlgTool>::get<TYPE>( svc, location, false );
+  inline TYPE* getDet( IDataProviderSvc* svc, const std::string& location ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::get<TYPE>( svc, location, false );
   }
 
   /** @brief Templated access to the detector data from the
@@ -432,9 +422,8 @@ public:
    */
   template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc*  svc,
-                                                                           const std::string& location ) const
-  {
-    return GaudiCommon<AlgTool>::getIfExists<TYPE>( svc, location, false );
+                                                                           const std::string& location ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::getIfExists<TYPE>( svc, location, false );
   }
 
   /** @brief Templated access to the detector data from the
@@ -455,9 +444,8 @@ public:
    *  @return          Pointer to the detector object
    */
   template <class TYPE>
-  inline TYPE* getDet( const std::string& location ) const
-  {
-    return GaudiCommon<AlgTool>::get<TYPE>( detSvc(), location, false );
+  inline TYPE* getDet( const std::string& location ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::get<TYPE>( detSvc(), location, false );
   }
 
   /** @brief Templated access to the detector data from the
@@ -482,9 +470,8 @@ public:
    *  @retval NULL If the detector object does not exist.
    */
   template <class TYPE>
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( const std::string& location ) const
-  {
-    return GaudiCommon<AlgTool>::getIfExists<TYPE>( detSvc(), location, false );
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( const std::string& location ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::getIfExists<TYPE>( detSvc(), location, false );
   }
 
   /** @brief Check the existence of a data object or container
@@ -513,9 +500,8 @@ public:
    *  @retval true     Failed to locate the data object or container
    */
   template <class TYPE>
-  inline bool exist( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::exist<TYPE>( svc, location, useRootInTES );
+  inline bool exist( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::exist<TYPE>( svc, location, useRootInTES );
   }
 
   /** @brief Check the existence of a data object or container
@@ -541,9 +527,8 @@ public:
    *  @retval true     Failed to locate the data object or container
    */
   template <class TYPE>
-  inline bool exist( const std::string& location, const bool useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::exist<TYPE>( evtSvc(), location, useRootInTES );
+  inline bool exist( const std::string& location, const bool useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::exist<TYPE>( evtSvc(), location, useRootInTES );
   }
 
   /** @brief Check the existence of detector objects in the Gaudi
@@ -563,9 +548,8 @@ public:
    *  @retval false    Failed to locate the data object
    */
   template <class TYPE>
-  inline bool existDet( IDataProviderSvc* svc, const std::string& location ) const
-  {
-    return GaudiCommon<AlgTool>::exist<TYPE>( svc, location, false );
+  inline bool existDet( IDataProviderSvc* svc, const std::string& location ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::exist<TYPE>( svc, location, false );
   }
 
   /** @brief Check the existence of detector objects in the Gaudi
@@ -584,9 +568,8 @@ public:
    *  @retval false    Failed to locate the data object
    */
   template <class TYPE>
-  inline bool existDet( const std::string& location ) const
-  {
-    return GaudiCommon<AlgTool>::exist<TYPE>( detSvc(), location, false );
+  inline bool existDet( const std::string& location ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::exist<TYPE>( detSvc(), location, false );
   }
 
   /** @brief Get the existing data object from Gaudi Event Transient store.
@@ -617,9 +600,8 @@ public:
    */
   template <class TYPE, class TYPE2>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getOrCreate( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::getOrCreate<TYPE, TYPE2>( svc, location, useRootInTES );
+  getOrCreate( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::getOrCreate<TYPE, TYPE2>( svc, location, useRootInTES );
   }
 
   /** @brief Get the existing data object from Gaudi Event Transient store.
@@ -649,9 +631,8 @@ public:
    */
   template <class TYPE, class TYPE2>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( const std::string& location,
-                                                                        const bool         useRootInTES = true ) const
-  {
-    return GaudiCommon<AlgTool>::getOrCreate<TYPE, TYPE2>( evtSvc(), location, useRootInTES );
+                                                                        const bool         useRootInTES = true ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::getOrCreate<TYPE, TYPE2>( evtSvc(), location, useRootInTES );
   }
   // ==========================================================================
 public:
@@ -680,9 +661,8 @@ public:
    *  @return       StatusCode
    */
   inline StatusCode Error( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
-                           const size_t mx = 10 ) const
-  {
-    return GaudiCommon<AlgTool>::Error( m_isPublic ? msg + getCurrentAlgName() : msg, st, mx );
+                           const size_t mx = 10 ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::Error( m_isPublic ? msg + getCurrentAlgName() : msg, st, mx );
   }
   /** Print the warning message and return with the given StatusCode.
    *
@@ -708,9 +688,8 @@ public:
    *  @return       The given StatusCode
    */
   inline StatusCode Warning( const std::string& msg, const StatusCode st = StatusCode::FAILURE,
-                             const size_t mx = 10 ) const
-  {
-    return GaudiCommon<AlgTool>::Warning( m_isPublic ? msg + getCurrentAlgName() : msg, st, mx );
+                             const size_t mx = 10 ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::Warning( m_isPublic ? msg + getCurrentAlgName() : msg, st, mx );
   }
   /** Print the info message and return with the given StatusCode.
    *
@@ -728,9 +707,8 @@ public:
    *  @return       The given StatusCode
    */
   inline StatusCode Info( const std::string& msg, const StatusCode st = StatusCode::SUCCESS,
-                          const size_t mx = 10 ) const
-  {
-    return GaudiCommon<AlgTool>::Info( m_isPublic ? msg + getCurrentAlgName() : msg, st, mx );
+                          const size_t mx = 10 ) const {
+    return GaudiCommon<CounterHolder<AlgTool>>::Info( m_isPublic ? msg + getCurrentAlgName() : msg, st, mx );
   }
   // ==========================================================================
 public:
@@ -764,8 +742,7 @@ private:
   /// Determines if this tool is public or not (i.e. owned by the ToolSvc).
   bool isPublic() const;
   /// Returns the current active algorithm name via the context service
-  inline std::string getCurrentAlgName() const
-  {
+  inline std::string getCurrentAlgName() const {
     const IAlgContextSvc* asvc    = this->contextSvc();
     const IAlgorithm*     current = ( asvc ? asvc->currentAlg() : NULL );
     return ( current ? " [" + current->name() + "]" : "" );
@@ -813,4 +790,3 @@ private:
 // The END
 // ============================================================================
 #endif // GAUDIALG_GAUDITOOL_H
-// ============================================================================

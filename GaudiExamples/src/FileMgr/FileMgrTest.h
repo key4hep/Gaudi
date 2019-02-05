@@ -15,8 +15,7 @@
 class IFileMgr;
 class TFile;
 
-class FileMgrTest : public Algorithm
-{
+class FileMgrTest : public Algorithm {
 
 public:
   FileMgrTest( const std::string& name, ISvcLocator* pSvcLocator );

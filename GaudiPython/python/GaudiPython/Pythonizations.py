@@ -1,6 +1,5 @@
 # File: GaudiPython/Pythonizations.py
 # Author: Pere Mato (pere.mato@cern.ch)
-
 """ This Pythonizations module provides a number of useful pythonizations
     of adaptation of some classes.
 """
@@ -24,7 +23,8 @@ if not hasattr(gbl, 'stringstream'):
 
 def _printHisto1D(h):
     x = h.axis()
-    return 'Histogram 1D "%s" %d bins [%f,%f]' % (h.title(), x.bins(), x.lowerEdge(), x.upperEdge())
+    return 'Histogram 1D "%s" %d bins [%f,%f]' % (h.title(), x.bins(),
+                                                  x.lowerEdge(), x.upperEdge())
 
 
 def _contentsHisto1D(h):
@@ -100,12 +100,8 @@ def _draw_aida_(self, *args):
 gbl.AIDA.IHistogram1D.__repr__ = _printHisto1D
 gbl.AIDA.IHistogram1D.contents = _contentsHisto1D
 gbl.AIDA.IHistogram2D.__repr__ = _printHisto2D
-for h in (gbl.AIDA.IHistogram,
-          gbl.AIDA.IHistogram1D,
-          gbl.AIDA.IHistogram2D,
-          gbl.AIDA.IHistogram3D,
-          gbl.AIDA.IProfile1D,
-          gbl.AIDA.IProfile2D):
+for h in (gbl.AIDA.IHistogram, gbl.AIDA.IHistogram1D, gbl.AIDA.IHistogram2D,
+          gbl.AIDA.IHistogram3D, gbl.AIDA.IProfile1D, gbl.AIDA.IProfile2D):
     h.Draw = _draw_aida_
     h.plot = _draw_aida_
 
@@ -140,7 +136,6 @@ if hasattr(gbl.Gaudi.StringKey, '__cpp_eq__'):
 if hasattr(gbl.Gaudi.StringKey, '__cpp_ne__'):
     _ne = gbl.Gaudi.StringKey.__cpp_ne__
     setattr(gbl.Gaudi.StringKey, '__ne__', _ne)
-
 
 # ---Enabling Pickle support----------------------------------------------------
 if gbl.gROOT.GetVersionInt() <= 51800:
@@ -183,6 +178,7 @@ def __mapbase_iter__(self):
         yield self.key_at(_index)
         _index += 1
 
+
 # =============================================================================
 # The iterator for MapBase class
 #
@@ -221,6 +217,7 @@ def __mapbase_iteritems__(self):
         yield (_key, self.at(_key))
         _index += 1
 
+
 # ============================================
 # Get the list of keys for the map
 #
@@ -254,6 +251,7 @@ def __mapbase_keys__(self):
     for i in range(0, _size):
         _keys.append(self.key_at(i))
     return _keys
+
 
 # ============================================
 # Get the list of items for the map
@@ -291,6 +289,7 @@ def __mapbase_items__(self):
         _items.append((_key, _value))
     return _items
 
+
 # ============================================
 # Get the list of values for the map
 #
@@ -326,6 +325,7 @@ def __mapbase_values__(self):
         _values.append(_value)
     return _values
 
+
 # ============================================
 # Check if the certain key is in the map
 #
@@ -356,6 +356,7 @@ def __mapbase_contains__(self, key):
     """
     _num = self.count(key)
     return False if 0 == _num else True
+
 
 # ============================================
 # Get the value for certain key,
@@ -389,6 +390,7 @@ def __mapbase_get__(self, key, value=None):
     if key in self:
         return self.at(key)
     return value
+
 
 # ============================================
 # Representation of MapBase-based maps
@@ -426,6 +428,7 @@ def __mapbase_str__(self):
     _result += ' } '
     return _result
 
+
 # ============================================
 # "Setitem" for MapBase-based maps:
 #
@@ -457,6 +460,7 @@ def __mapbase_setitem__(self, key, value):
     _replaced = True if key in self else False
     self.update(key, value)
     return _replaced
+
 
 # ============================================
 # "Del-item" for MapBase-based maps:
@@ -492,18 +496,18 @@ def __mapbase_delitem__(self, key):
     return _erased
 
 
-gbl.Gaudi.Utils.MapBase . __len__ = lambda s: s.size()
-gbl.Gaudi.Utils.MapBase . __iter__ = __mapbase_iter__
-gbl.Gaudi.Utils.MapBase .   keys = __mapbase_keys__
-gbl.Gaudi.Utils.MapBase . __iteritems__ = __mapbase_iteritems__
-gbl.Gaudi.Utils.MapBase .   iteritems = __mapbase_iteritems__
-gbl.Gaudi.Utils.MapBase .   items = __mapbase_items__
-gbl.Gaudi.Utils.MapBase .   values = __mapbase_values__
-gbl.Gaudi.Utils.MapBase . __contains__ = __mapbase_contains__
-gbl.Gaudi.Utils.MapBase .   has_key = __mapbase_contains__
-gbl.Gaudi.Utils.MapBase .   get = __mapbase_get__
-gbl.Gaudi.Utils.MapBase . __str__ = __mapbase_str__
-gbl.Gaudi.Utils.MapBase . __repr__ = __mapbase_str__
-gbl.Gaudi.Utils.MapBase . __setitem__ = __mapbase_setitem__
-gbl.Gaudi.Utils.MapBase . __delitem__ = __mapbase_delitem__
-gbl.Gaudi.Utils.MapBase . __getitem__ = lambda s, key: s.at(key)
+gbl.Gaudi.Utils.MapBase.__len__ = lambda s: s.size()
+gbl.Gaudi.Utils.MapBase.__iter__ = __mapbase_iter__
+gbl.Gaudi.Utils.MapBase.keys = __mapbase_keys__
+gbl.Gaudi.Utils.MapBase.__iteritems__ = __mapbase_iteritems__
+gbl.Gaudi.Utils.MapBase.iteritems = __mapbase_iteritems__
+gbl.Gaudi.Utils.MapBase.items = __mapbase_items__
+gbl.Gaudi.Utils.MapBase.values = __mapbase_values__
+gbl.Gaudi.Utils.MapBase.__contains__ = __mapbase_contains__
+gbl.Gaudi.Utils.MapBase.has_key = __mapbase_contains__
+gbl.Gaudi.Utils.MapBase.get = __mapbase_get__
+gbl.Gaudi.Utils.MapBase.__str__ = __mapbase_str__
+gbl.Gaudi.Utils.MapBase.__repr__ = __mapbase_str__
+gbl.Gaudi.Utils.MapBase.__setitem__ = __mapbase_setitem__
+gbl.Gaudi.Utils.MapBase.__delitem__ = __mapbase_delitem__
+gbl.Gaudi.Utils.MapBase.__getitem__ = lambda s, key: s.at(key)

@@ -23,22 +23,19 @@
 // disable icc warning #1125: function "ISelectStatement::operator()(void *)"
 //           is hidden by "Gaudi::Examples::EvtCollectionSelector::operator()"
 //            -- virtual function override intended?
-#pragma warning( disable : 1125 )
+#  pragma warning( disable : 1125 )
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 #endif
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     /** @class EvtCollectionSelector
      *  Definition of a small class for further pre-selections
      *  when reading an event collection.
      *  @author:  M.Frank
      *  Version: 1.0
      */
-    class EvtCollectionSelector : public NTuple::Selector
-    {
+    class EvtCollectionSelector : public NTuple::Selector {
     protected:
       NTuple::Item<int>    m_ntrack;
       NTuple::Array<float> m_trkMom;
@@ -52,8 +49,7 @@ namespace Gaudi
       using NTuple::Selector::Selector;
 
       /// Initialization
-      StatusCode initialize( NTuple::Tuple* nt ) override
-      {
+      StatusCode initialize( NTuple::Tuple* nt ) override {
         StatusCode sc = StatusCode::SUCCESS;
         sc            = nt->item( "TrkMom", m_trkMom );
         if ( !sc.isSuccess() ) {
@@ -88,23 +84,16 @@ namespace Gaudi
 
       using NTuple::Selector::operator(); // avoid hiding base-class methods
       /// Specialized callback for NTuples
-      bool operator()( NTuple::Tuple* /* nt */ ) override
-      {
+      bool operator()( NTuple::Tuple* /* nt */ ) override {
         const int n = m_ntrack;
         std::cout << System::typeinfoName( typeid( *this ) ) << "\t -> #tracks : " << n << std::endl
                   << System::typeinfoName( typeid( *this ) ) << "\t -> Momenta(Var): ";
-        for ( int i = 0; i < std::min( 5, n ); ++i ) {
-          std::cout << "[" << i << "]=" << m_trkMom[i] << " ";
-        }
+        for ( int i = 0; i < std::min( 5, n ); ++i ) { std::cout << "[" << i << "]=" << m_trkMom[i] << " "; }
 #ifndef NO_TRKMOMFIX
         std::cout << std::endl << System::typeinfoName( typeid( *this ) ) << "\t -> Momenta(Fix): ";
-        for ( int i = 0; i < std::min( 5, n ); ++i ) {
-          std::cout << "[" << i << "]=" << m_trkMomFixed[i] << " ";
-        }
+        for ( int i = 0; i < std::min( 5, n ); ++i ) { std::cout << "[" << i << "]=" << m_trkMomFixed[i] << " "; }
         for ( int i = 5; i < 99; ++i ) {
-          if ( m_trkMomFixed[i] != 0.f ) {
-            std::cout << "[" << i << "]= Error in Fixed momentum" << std::endl;
-          }
+          if ( m_trkMomFixed[i] != 0.f ) { std::cout << "[" << i << "]= Error in Fixed momentum" << std::endl; }
         }
 #endif
         std::cout << std::endl;
@@ -124,7 +113,7 @@ namespace Gaudi
         return selected; // RETURN
       }
     };
-  } // end of namespace Gaudi::Exmaples
+  } // namespace Examples
 } // end of namespace Gaudi
 // ============================================================================
 DECLARE_NAMESPACE_OBJECT_FACTORY( Gaudi::Examples, EvtCollectionSelector )

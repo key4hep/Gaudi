@@ -23,13 +23,10 @@
 // ============================================================================
 // ...
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
-    class Catalog final
-    {
+    class Catalog final {
     public:
       typedef boost::ptr_set<Property, Property::LessThen> PropertySet;
       typedef std::map<std::string, PropertySet>           CatalogSet;
@@ -44,10 +41,10 @@ namespace Gaudi
       const_iterator end() const { return catalog_.end(); }
 
       std::vector<std::string> ClientNames() const;
-      bool Add( Property* property );
+      bool                     Add( Property* property );
       template <typename Value>
-      bool Add( std::string client, std::string property, const Value& value );
-      Property* Find( const std::string& client, const std::string& name );
+      bool        Add( std::string client, std::string property, const Value& value );
+      Property*   Find( const std::string& client, const std::string& name );
       std::string ToString() const;
       /// print the content of the catalogue to std::ostream
       std::ostream& fillStream( std::ostream& out ) const;
@@ -60,12 +57,11 @@ namespace Gaudi
     // ============================================================================
     inline std::ostream& operator<<( std::ostream& o, const Catalog& c ) { return c.fillStream( o ); }
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 
 template <typename Value>
-inline bool Gaudi::Parsers::Catalog::Add( std::string client, std::string property, const Value& value )
-{
+inline bool Gaudi::Parsers::Catalog::Add( std::string client, std::string property, const Value& value ) {
   return Add( new Property( PropertyName( std::move( client ), std::move( property ) ), PropertyValue( value ) ) );
 }
 

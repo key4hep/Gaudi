@@ -20,7 +20,6 @@ mini.ItemList = ["/Event#1"]
 mini.Output = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 mini.OutputLevel = VERBOSE
 
-
 # - File Summary Record
 fsr = RecordStream("FileRecords")
 fsr.ItemList = ["/FileRecords#999"]
@@ -39,26 +38,21 @@ GaudiPersistency()
 
 product_name = "MyCollision"
 
-writer = WriteHandleAlg("Writer",
-                        OutputLevel=DEBUG,
-                        UseHandle=True)
+writer = WriteHandleAlg("Writer", OutputLevel=DEBUG, UseHandle=True)
 writer.Output.Path = "/Event/" + product_name
 
-reader = ReadHandleAlg("Reader",
-                       OutputLevel=DEBUG)
+reader = ReadHandleAlg("Reader", OutputLevel=DEBUG)
 reader.Input.Path = product_name
-
 
 evtslots = 15
 algoparallel = 10
 
-whiteboard = HiveWhiteBoard("EventDataSvc",
-                            EventSlots=evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 slimeventloopmgr = HiveSlimEventLoopMgr()
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algoparallel,
-                                  OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(
+    ThreadPoolSize=algoparallel, OutputLevel=WARNING)
 
 # Application setup
 app = ApplicationMgr()

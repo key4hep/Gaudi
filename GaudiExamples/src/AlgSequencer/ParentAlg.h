@@ -9,8 +9,7 @@
 
     @author nobody
 */
-class ParentAlg : public Gaudi::Sequence
-{
+class ParentAlg : public Gaudi::Sequence {
 public:
   using Gaudi::Sequence::Sequence;
 

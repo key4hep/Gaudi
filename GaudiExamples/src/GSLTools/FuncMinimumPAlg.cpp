@@ -10,9 +10,7 @@
 #include "FuncMinimumPAlg.h"
 
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 //-----------------------------------------------------------------------------
@@ -30,21 +28,16 @@ double function( const std::vector<double>& x ) { return 10 * x[0] * x[0] + 20 *
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode FuncMinimumPAlg::initialize()
-{
+StatusCode FuncMinimumPAlg::initialize() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Initialise" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_publicTool );
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the public tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { log << MSG::ERROR << "Error retrieving the public tool" << endmsg; }
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_privateTool, this );
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the private tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { log << MSG::ERROR << "Error retrieving the private tool" << endmsg; }
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -53,8 +46,7 @@ StatusCode FuncMinimumPAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode FuncMinimumPAlg::execute()
-{
+StatusCode FuncMinimumPAlg::execute() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Execute" << endmsg;
@@ -107,9 +99,7 @@ StatusCode FuncMinimumPAlg::execute()
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
     log << endmsg;
 
-    for ( unsigned int j = 0; j < arg.dimension(); j++ ) {
-      log << matrix_error( i + 1, j + 1 ) << " ";
-    }
+    for ( unsigned int j = 0; j < arg.dimension(); j++ ) { log << matrix_error( i + 1, j + 1 ) << " "; }
   }
   log << endmsg;
 
@@ -119,8 +109,7 @@ StatusCode FuncMinimumPAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode FuncMinimumPAlg::finalize()
-{
+StatusCode FuncMinimumPAlg::finalize() {
 
   MsgStream log( msgSvc(), name() );
   log << MSG::INFO << "==> Finalize" << endmsg;

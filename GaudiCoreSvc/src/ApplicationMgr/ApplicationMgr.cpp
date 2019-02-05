@@ -44,8 +44,7 @@ DECLARE_OBJECT_FACTORY( ApplicationMgr )
 //=======================================================================
 // Constructor
 //=======================================================================
-ApplicationMgr::ApplicationMgr( IInterface* )
-{
+ApplicationMgr::ApplicationMgr( IInterface* ) {
   // IInterface initialization
   addRef(); // Initial count set to 1
 
@@ -82,29 +81,18 @@ ApplicationMgr::ApplicationMgr( IInterface* )
 //============================================================================
 // IInterface implementation: queryInterface::addRef()
 //============================================================================
-StatusCode ApplicationMgr::queryInterface( const InterfaceID& iid, void** ppvi )
-{
-  if ( !ppvi ) {
-    return StatusCode::FAILURE;
-  }
+StatusCode ApplicationMgr::queryInterface( const InterfaceID& iid, void** ppvi ) {
+  if ( !ppvi ) { return StatusCode::FAILURE; }
 
   // try to find own/direct interfaces:
   StatusCode sc = base_class::queryInterface( iid, ppvi );
   if ( sc.isSuccess() ) return sc;
 
   // find indirect interfaces :
-  if ( ISvcLocator::interfaceID().versionMatch( iid ) ) {
-    return serviceLocator()->queryInterface( iid, ppvi );
-  }
-  if ( ISvcManager::interfaceID().versionMatch( iid ) ) {
-    return svcManager()->queryInterface( iid, ppvi );
-  }
-  if ( IAlgManager::interfaceID().versionMatch( iid ) ) {
-    return algManager()->queryInterface( iid, ppvi );
-  }
-  if ( IClassManager::interfaceID().versionMatch( iid ) ) {
-    return m_classManager->queryInterface( iid, ppvi );
-  }
+  if ( ISvcLocator::interfaceID().versionMatch( iid ) ) { return serviceLocator()->queryInterface( iid, ppvi ); }
+  if ( ISvcManager::interfaceID().versionMatch( iid ) ) { return svcManager()->queryInterface( iid, ppvi ); }
+  if ( IAlgManager::interfaceID().versionMatch( iid ) ) { return algManager()->queryInterface( iid, ppvi ); }
+  if ( IClassManager::interfaceID().versionMatch( iid ) ) { return m_classManager->queryInterface( iid, ppvi ); }
   if ( IMessageSvc::interfaceID().versionMatch( iid ) ) {
     *ppvi = m_messageSvc.get();
     if ( m_messageSvc ) m_messageSvc->addRef();
@@ -119,8 +107,7 @@ StatusCode ApplicationMgr::queryInterface( const InterfaceID& iid, void** ppvi )
 //============================================================================
 // ApplicationMgr::i_startup()
 //============================================================================
-StatusCode ApplicationMgr::i_startup()
-{
+StatusCode ApplicationMgr::i_startup() {
 
   StatusCode sc;
 
@@ -230,8 +217,7 @@ StatusCode ApplicationMgr::i_startup()
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::configure()
 //============================================================================
-StatusCode ApplicationMgr::configure()
-{
+StatusCode ApplicationMgr::configure() {
 
   // Check if the state is compatible with the transition
   MsgStream tlog( m_messageSvc, name() );
@@ -250,9 +236,7 @@ StatusCode ApplicationMgr::configure()
 
   StatusCode sc;
   sc = i_startup();
-  if ( !sc.isSuccess() ) {
-    return sc;
-  }
+  if ( !sc.isSuccess() ) { return sc; }
 
   {
     MsgStream log( m_messageSvc, name() );
@@ -302,9 +286,7 @@ StatusCode ApplicationMgr::configure()
     const auto& properties = getProperties();
     log << MSG::ALWAYS << "List of ALL properties of " << System::typeinfoName( typeid( *this ) ) << "/" << this->name()
         << "  #properties = " << properties.size() << endmsg;
-    for ( const auto& property : properties ) {
-      log << "Property ['Name': Value] = " << *property << endmsg;
-    }
+    for ( const auto& property : properties ) { log << "Property ['Name': Value] = " << *property << endmsg; }
   }
 
   // Check if StatusCode need to be checked
@@ -421,8 +403,7 @@ StatusCode ApplicationMgr::configure()
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::initialize()
 //============================================================================
-StatusCode ApplicationMgr::initialize()
-{
+StatusCode ApplicationMgr::initialize() {
   StatusCode sc;
 
   MsgStream log( m_messageSvc, name() );
@@ -481,8 +462,7 @@ StatusCode ApplicationMgr::initialize()
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::start()
 //============================================================================
-StatusCode ApplicationMgr::start()
-{
+StatusCode ApplicationMgr::start() {
 
   MsgStream  log( m_messageSvc, name() );
   StatusCode sc;
@@ -518,8 +498,7 @@ StatusCode ApplicationMgr::start()
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::nextEvent(int)
 //============================================================================
-StatusCode ApplicationMgr::nextEvent( int maxevt )
-{
+StatusCode ApplicationMgr::nextEvent( int maxevt ) {
   if ( m_state != Gaudi::StateMachine::RUNNING ) {
     MsgStream log( m_messageSvc, name() );
     log << MSG::FATAL << "nextEvent: Invalid state \"" << m_state << "\"" << endmsg;
@@ -536,8 +515,7 @@ StatusCode ApplicationMgr::nextEvent( int maxevt )
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::stop()
 //============================================================================
-StatusCode ApplicationMgr::stop()
-{
+StatusCode ApplicationMgr::stop() {
 
   MsgStream  log( m_messageSvc, name() );
   StatusCode sc;
@@ -574,8 +552,7 @@ StatusCode ApplicationMgr::stop()
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::finalize()
 //============================================================================
-StatusCode ApplicationMgr::finalize()
-{
+StatusCode ApplicationMgr::finalize() {
   MsgStream log( m_messageSvc, name() );
   if ( m_state == Gaudi::StateMachine::CONFIGURED ) {
     log << MSG::INFO << "Already Finalized" << endmsg;
@@ -609,9 +586,7 @@ StatusCode ApplicationMgr::finalize()
   // svcManager()->removeService( (IService*) m_processingMgr.get() );
   // svcManager()->removeService( (IService*) m_runable.get() );
 
-  if ( m_codeCheck ) {
-    StatusCode::disableChecking();
-  }
+  if ( m_codeCheck ) { StatusCode::disableChecking(); }
 
   if ( sc.isSuccess() ) {
     log << MSG::INFO << "Application Manager Finalized successfully" << endmsg;
@@ -626,8 +601,7 @@ StatusCode ApplicationMgr::finalize()
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::terminate()
 //============================================================================
-StatusCode ApplicationMgr::terminate()
-{
+StatusCode ApplicationMgr::terminate() {
   MsgStream log( m_messageSvc, name() );
 
   if ( m_state == Gaudi::StateMachine::OFFLINE ) {
@@ -651,15 +625,11 @@ StatusCode ApplicationMgr::terminate()
 
   { // Force a disable the auditing of finalize for MessageSvc
     auto prop = m_messageSvc.as<IProperty>();
-    if ( prop ) {
-      prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore();
-    }
+    if ( prop ) { prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore(); }
   }
   { // Force a disable the auditing of finalize for JobOptionsSvc
     auto prop = m_jobOptionsSvc.as<IProperty>();
-    if ( prop ) {
-      prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore();
-    }
+    if ( prop ) { prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore(); }
   }
 
   // finalize MessageSvc
@@ -685,8 +655,7 @@ StatusCode ApplicationMgr::terminate()
 //============================================================================
 // Reach the required state going through all the needed transitions
 //============================================================================
-StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ignoreFailures )
-{
+StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ignoreFailures ) {
   StatusCode sc = StatusCode( StatusCode::SUCCESS, true );
 
   switch ( state ) {
@@ -701,9 +670,7 @@ StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ign
       break;
     default: // Gaudi::StateMachine::INITIALIZED or Gaudi::StateMachine::RUNNING
       sc = GoToState( Gaudi::StateMachine::CONFIGURED );
-      if ( sc.isSuccess() ) {
-        return terminate();
-      }
+      if ( sc.isSuccess() ) { return terminate(); }
       break;
     }
     break;
@@ -721,9 +688,7 @@ StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ign
       break;
     default: // Gaudi::StateMachine::RUNNING
       sc = GoToState( Gaudi::StateMachine::INITIALIZED );
-      if ( sc.isSuccess() ) {
-        return finalize();
-      }
+      if ( sc.isSuccess() ) { return finalize(); }
       break;
     }
     break;
@@ -741,9 +706,7 @@ StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ign
       break;
     default: // Gaudi::StateMachine::OFFLINE
       sc = GoToState( Gaudi::StateMachine::CONFIGURED );
-      if ( sc.isSuccess() ) {
-        return initialize();
-      }
+      if ( sc.isSuccess() ) { return initialize(); }
       break;
     }
     break;
@@ -758,9 +721,7 @@ StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ign
       break;
     default: // Gaudi::StateMachine::OFFLINE or Gaudi::StateMachine::CONFIGURED
       sc = GoToState( Gaudi::StateMachine::INITIALIZED );
-      if ( sc.isSuccess() ) {
-        return start();
-      }
+      if ( sc.isSuccess() ) { return start(); }
       break;
     }
     break;
@@ -780,8 +741,7 @@ StatusCode ApplicationMgr::GoToState( Gaudi::StateMachine::State state, bool ign
 //============================================================================
 // IAppMgrUI implementation: ApplicationMgr::run()
 //============================================================================
-StatusCode ApplicationMgr::run()
-{
+StatusCode ApplicationMgr::run() {
   StatusCode sc = StatusCode::SUCCESS;
 
   sc = GoToState( Gaudi::StateMachine::RUNNING );
@@ -789,9 +749,7 @@ StatusCode ApplicationMgr::run()
     MsgStream log( m_messageSvc, name() );
     if ( m_runable != 0 ) { // loop over the events
       sc = m_runable->run();
-      if ( !sc.isSuccess() ) {
-        log << MSG::FATAL << "Application execution failed. Ending the job." << endmsg;
-      }
+      if ( !sc.isSuccess() ) { log << MSG::FATAL << "Application execution failed. Ending the job." << endmsg; }
     } else {
       log << MSG::FATAL << "Application has no runable object. Check option:" << m_runableType.name() << endmsg;
     }
@@ -809,13 +767,10 @@ StatusCode ApplicationMgr::run()
 //============================================================================
 // IEventProcessor implementation: executeEvent(void* par)
 //============================================================================
-StatusCode ApplicationMgr::executeEvent( void* par )
-{
+StatusCode ApplicationMgr::executeEvent( void* par ) {
   MsgStream log( m_messageSvc, name() );
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr ) {
-      return m_processingMgr->executeEvent( par );
-    }
+    if ( m_processingMgr ) { return m_processingMgr->executeEvent( par ); }
   }
   log << MSG::FATAL << "executeEvent: Invalid state \"" << FSMState() << "\"" << endmsg;
   return StatusCode::FAILURE;
@@ -824,13 +779,10 @@ StatusCode ApplicationMgr::executeEvent( void* par )
 //============================================================================
 // IEventProcessor implementation: executeRun(int)
 //============================================================================
-StatusCode ApplicationMgr::executeRun( int evtmax )
-{
+StatusCode ApplicationMgr::executeRun( int evtmax ) {
   MsgStream log( m_messageSvc, name() );
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr ) {
-      return m_processingMgr->executeRun( evtmax );
-    }
+    if ( m_processingMgr ) { return m_processingMgr->executeRun( evtmax ); }
     log << MSG::WARNING << "No EventLoop Manager specified " << endmsg;
     return StatusCode::SUCCESS;
   }
@@ -841,13 +793,10 @@ StatusCode ApplicationMgr::executeRun( int evtmax )
 //============================================================================
 // IEventProcessor implementation: stopRun(int)
 //============================================================================
-StatusCode ApplicationMgr::stopRun()
-{
+StatusCode ApplicationMgr::stopRun() {
   MsgStream log( m_messageSvc, name() );
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr ) {
-      return m_processingMgr->stopRun();
-    }
+    if ( m_processingMgr ) { return m_processingMgr->stopRun(); }
     log << MSG::WARNING << "No EventLoop Manager specified " << endmsg;
     return StatusCode::SUCCESS;
   }
@@ -865,20 +814,17 @@ Gaudi::StateMachine::State ApplicationMgr::targetFSMState() const { return m_tar
 //============================================================================
 // implementation of IService::reinitilaize
 //============================================================================
-StatusCode ApplicationMgr::reinitialize()
-{
+StatusCode ApplicationMgr::reinitialize() {
   StatusCode retval = StatusCode::SUCCESS;
   StatusCode sc;
   if ( m_state < Gaudi::StateMachine::INITIALIZED ) {
     throw GaudiException( "Cannot reinitialize application if not INITIALIZED or RUNNING",
                           "ApplicationMgr::reinitialize", StatusCode::FAILURE );
   }
-  if ( m_state == Gaudi::StateMachine::RUNNING ) {
-    retval = GoToState( Gaudi::StateMachine::INITIALIZED );
-  }
-  sc                           = svcManager()->reinitialize();
+  if ( m_state == Gaudi::StateMachine::RUNNING ) { retval = GoToState( Gaudi::StateMachine::INITIALIZED ); }
+  sc = svcManager()->reinitialize();
   if ( sc.isFailure() ) retval = sc;
-  sc                           = algManager()->reinitialize();
+  sc = algManager()->reinitialize();
   if ( sc.isFailure() ) retval = sc;
   return retval;
 }
@@ -886,16 +832,15 @@ StatusCode ApplicationMgr::reinitialize()
 //============================================================================
 // implementation of IService::reinitiaize
 //============================================================================
-StatusCode ApplicationMgr::restart()
-{
+StatusCode ApplicationMgr::restart() {
   StatusCode retval = StatusCode::SUCCESS;
   StatusCode sc;
   if ( m_state != Gaudi::StateMachine::RUNNING ) {
     throw GaudiException( "Cannot restart application if not RUNNING", "ApplicationMgr::restart", StatusCode::FAILURE );
   }
-  sc                           = svcManager()->restart();
+  sc = svcManager()->restart();
   if ( sc.isFailure() ) retval = sc;
-  sc                           = algManager()->restart();
+  sc = algManager()->restart();
   if ( sc.isFailure() ) retval = sc;
   return retval;
 }
@@ -903,8 +848,7 @@ StatusCode ApplicationMgr::restart()
 //============================================================================
 // Handle properties of the event loop manager (Top alg/Output stream list)
 //============================================================================
-void ApplicationMgr::evtLoopPropertyHandler( Gaudi::Details::PropertyBase& p )
-{
+void ApplicationMgr::evtLoopPropertyHandler( Gaudi::Details::PropertyBase& p ) {
   if ( m_processingMgr ) {
     auto props = m_processingMgr.as<IProperty>();
     if ( props ) props->setProperty( p ).ignore();
@@ -914,8 +858,7 @@ void ApplicationMgr::evtLoopPropertyHandler( Gaudi::Details::PropertyBase& p )
 //============================================================================
 // External Service List handler
 //============================================================================
-void ApplicationMgr::createSvcNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
+void ApplicationMgr::createSvcNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeCreateSvcNameList() ).isSuccess() ) {
     throw GaudiException( "Failed to create ext services", "MinimalEventLoopMgr::createSvcNameListHandler",
                           StatusCode::FAILURE );
@@ -924,8 +867,7 @@ void ApplicationMgr::createSvcNameListHandler( Gaudi::Details::PropertyBase& /* 
 //============================================================================
 //  decodeCreateSvcNameList
 //============================================================================
-StatusCode ApplicationMgr::decodeCreateSvcNameList()
-{
+StatusCode ApplicationMgr::decodeCreateSvcNameList() {
   StatusCode  result   = StatusCode::SUCCESS;
   const auto& theNames = m_createSvcNameList.value();
   auto        it       = theNames.begin();
@@ -937,8 +879,7 @@ StatusCode ApplicationMgr::decodeCreateSvcNameList()
       log << MSG::ERROR << "decodeCreateSvcNameList: Cannot create service " << item.type() << "/" << item.name()
           << endmsg;
     } else {
-      ON_DEBUG
-      {
+      ON_DEBUG {
         MsgStream log( m_messageSvc, m_name );
         log << MSG::DEBUG << "decodeCreateSvcNameList: Created service " << item.type() << "/" << item.name() << endmsg;
       }
@@ -950,8 +891,7 @@ StatusCode ApplicationMgr::decodeCreateSvcNameList()
 //============================================================================
 // External Service List handler
 //============================================================================
-void ApplicationMgr::extSvcNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
+void ApplicationMgr::extSvcNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeExtSvcNameList() ).isSuccess() ) {
     throw GaudiException( "Failed to declare ext services", "MinimalEventLoopMgr::extSvcNameListHandler",
                           StatusCode::FAILURE );
@@ -961,8 +901,7 @@ void ApplicationMgr::extSvcNameListHandler( Gaudi::Details::PropertyBase& /* the
 //============================================================================
 //  decodeExtSvcNameList
 //============================================================================
-StatusCode ApplicationMgr::decodeExtSvcNameList()
-{
+StatusCode ApplicationMgr::decodeExtSvcNameList() {
   StatusCode result = StatusCode::SUCCESS;
 
   const auto& theNames = m_extSvcNameList.value();
@@ -991,8 +930,7 @@ StatusCode ApplicationMgr::decodeExtSvcNameList()
 //============================================================================
 // Dll List handler
 //============================================================================
-void ApplicationMgr::dllNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
+void ApplicationMgr::dllNameListHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeDllNameList() ).isSuccess() ) {
     throw GaudiException( "Failed to load DLLs.", "MinimalEventLoopMgr::dllNameListHandler", StatusCode::FAILURE );
   }
@@ -1001,15 +939,14 @@ void ApplicationMgr::dllNameListHandler( Gaudi::Details::PropertyBase& /* thePro
 //============================================================================
 //  decodeDllNameList
 //============================================================================
-StatusCode ApplicationMgr::decodeDllNameList()
-{
+StatusCode ApplicationMgr::decodeDllNameList() {
 
   MsgStream  log( m_messageSvc, m_name );
   StatusCode result = StatusCode::SUCCESS;
 
   // Clean up multiple entries from DLL list
   // -------------------------------------------------------------------------
-  std::vector<std::string> newList;
+  std::vector<std::string>            newList;
   std::map<std::string, unsigned int> dllInList, duplicateList;
   {
     for ( const auto it : m_dllNameList ) {
@@ -1024,8 +961,7 @@ StatusCode ApplicationMgr::decodeDllNameList()
   // m_dllNameList = newList; // update primary list to new, filtered list (do not use the
   // property itself otherwise we get called again infinitely)
   // List modules that were in there twice..
-  ON_DEBUG if ( !duplicateList.empty() )
-  {
+  ON_DEBUG if ( !duplicateList.empty() ) {
     log << MSG::DEBUG << "Removed duplicate entries for modules : ";
     for ( auto it = duplicateList.begin(); it != duplicateList.end(); ++it ) {
       log << it->first << "(" << 1 + it->second << ")";
@@ -1077,10 +1013,7 @@ StatusCode ApplicationMgr::decodeDllNameList()
   return result;
 }
 
-void ApplicationMgr::outputLevelUpdate()
-{
+void ApplicationMgr::outputLevelUpdate() {
   resetMessaging();
-  for ( auto& mgrItem : m_managers ) {
-    mgrItem.second->outputLevelUpdate();
-  }
+  for ( auto& mgrItem : m_managers ) { mgrItem.second->outputLevelUpdate(); }
 }

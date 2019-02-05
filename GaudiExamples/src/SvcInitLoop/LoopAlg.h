@@ -3,8 +3,7 @@
 
 // Include files
 #include "GaudiKernel/Algorithm.h"
-class LoopAlg : public Algorithm
-{
+class LoopAlg : public Algorithm {
 public:
   // Constructor of this form must be provided
   LoopAlg( const std::string& name, ISvcLocator* pSvcLocator );

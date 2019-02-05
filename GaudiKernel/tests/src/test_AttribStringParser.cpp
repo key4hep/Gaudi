@@ -7,17 +7,16 @@
 #include <boost/regex.hpp>
 #include <boost/test/minimal.hpp>
 
-int test_main( int /*argc*/, char** /*argv*/ )
-{
+int test_main( int /*argc*/, char** /*argv*/ ) {
   using Gaudi::Utils::AttribStringParser;
   using Attrib = Gaudi::Utils::AttribStringParser::Attrib;
-  using std::vector;
-  using std::map;
-  using std::string;
   using std::cout;
   using std::endl;
+  using std::map;
+  using std::string;
+  using std::vector;
   typedef map<string, string> toks_t;
-  typedef vector<toks_t> res_t;
+  typedef vector<toks_t>      res_t;
   {
     res_t results;
     for ( string s : {"abc='123'", " abc='123'", "abc='123' ", "abc = '123'", "  k1='v1' k2='v2'   k3='${HOME}' "} ) {
@@ -38,9 +37,7 @@ int test_main( int /*argc*/, char** /*argv*/ )
     };
 
     BOOST_CHECK( results.size() == expected.size() );
-    for ( decltype( results.size() ) i = 0; i < results.size(); ++i ) {
-      BOOST_CHECK( results[i] == expected[i] );
-    }
+    for ( decltype( results.size() ) i = 0; i < results.size(); ++i ) { BOOST_CHECK( results[i] == expected[i] ); }
   }
   {
     // check without variable expansion

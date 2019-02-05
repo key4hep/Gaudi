@@ -16,11 +16,9 @@
  *  @author modified by Vanya BELYAEV ibelyaev@physics.syr.edu
  */
 // ============================================================================
-namespace
-{
+namespace {
   template <StatusCode ( IAlgContextSvc::*fun )( IAlgorithm*, const EventContext& )>
-  void call( IAlgContextSvc* ctx, INamedInterface* a )
-  {
+  void call( IAlgContextSvc* ctx, INamedInterface* a ) {
     if ( ctx ) {
       // make a safe cast using "smart interface"
       SmartIF<IAlgorithm> alg{a};
@@ -28,7 +26,7 @@ namespace
       if ( alg ) ( ctx->*fun )( alg.get(), ectx ).ignore();
     }
   }
-}
+} // namespace
 // ============================================================================
 // mandatory auditor factory, needed for instantiation
 // ============================================================================
@@ -40,13 +38,10 @@ AlgContextAuditor::AlgContextAuditor( const std::string& name, ISvcLocator* pSvc
 // ============================================================================
 // standard initialization, see @IAuditor
 // ============================================================================
-StatusCode AlgContextAuditor::initialize()
-{
+StatusCode AlgContextAuditor::initialize() {
   // initialize the base class
   StatusCode sc = Auditor::initialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  } // RETURN
+  if ( sc.isFailure() ) { return sc; } // RETURN
   m_svc = service( "AlgContextSvc", true );
   if ( !m_svc ) {
     error() << "Invalid pointer to IAlgContextSvc" << endmsg;
@@ -57,8 +52,7 @@ StatusCode AlgContextAuditor::initialize()
 // ============================================================================
 // standard finalization, see @IAuditor
 // ============================================================================
-StatusCode AlgContextAuditor::finalize()
-{
+StatusCode AlgContextAuditor::finalize() {
   m_svc.reset();
   // finalize the base class
   return Auditor::finalize();
@@ -74,8 +68,7 @@ void AlgContextAuditor::afterFinalize( INamedInterface* a ) { call<&IAlgContextS
 // ============================================================================
 void AlgContextAuditor::beforeExecute( INamedInterface* a ) { call<&IAlgContextSvc::setCurrentAlg>( m_svc, a ); }
 // ============================================================================
-void AlgContextAuditor::afterExecute( INamedInterface* a, const StatusCode& /* s */ )
-{
+void AlgContextAuditor::afterExecute( INamedInterface* a, const StatusCode& /* s */ ) {
   call<&IAlgContextSvc::unSetCurrentAlg>( m_svc, a );
 }
 // ============================================================================

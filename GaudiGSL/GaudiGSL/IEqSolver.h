@@ -14,7 +14,7 @@ namespace Genfun /// CLHEP
 {
   class AbsFunction;
   class Argument;
-}
+} // namespace Genfun
 
 /** @class IEqSolver IEqSolver.h GaudiGSL/IEqSolver.h
  *  Interface file for multidimensional root-finding

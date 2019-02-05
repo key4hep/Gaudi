@@ -14,8 +14,7 @@ class IInspectable;
     The IInspectable interface must be implemented by all objects that are to be inspected
 
 */
-class GAUDI_API IInspectable
-{
+class GAUDI_API IInspectable {
 public:
   /// destructor
   virtual ~IInspectable() = default;

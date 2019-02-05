@@ -13,8 +13,7 @@
 /*
  * Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class RootConverter RootConverter.h Root/RootConverter.h
    *
@@ -30,8 +29,7 @@ namespace Gaudi
    * @author  M.Frank
    * @version 1.0
    */
-  class GAUDI_API RootConverter : public Converter
-  {
+  class GAUDI_API RootConverter : public Converter {
   protected:
     /// Conversion service needed for proper operation to forward requests
     RootCnvSvc* m_dbMgr;
@@ -45,9 +43,7 @@ namespace Gaudi
      * @return Reference to RootConverter object
      */
     RootConverter( long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr )
-        : Converter( typ, clid, svc ), m_dbMgr( mgr )
-    {
-    }
+        : Converter( typ, clid, svc ), m_dbMgr( mgr ) {}
 
     /// Retrieve the class type of the data store the converter uses.
     long repSvcType() const override { return i_repSvcType(); }
@@ -59,8 +55,7 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override
-    {
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override {
       return m_dbMgr->i__createObj( pAddr, refpObj );
     }
 
@@ -71,8 +66,7 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override
-    {
+    StatusCode fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override {
       return m_dbMgr->i__fillObjRefs( pAddr, pObj );
     }
 
@@ -84,8 +78,7 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override
-    {
+    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) override {
       return m_dbMgr->i__createRep( pObj, refpAddr );
     }
 
@@ -96,11 +89,10 @@ namespace Gaudi
      *
      * @return Status code indicating success or failure.
      */
-    StatusCode fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override
-    {
+    StatusCode fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj ) override {
       return m_dbMgr->i__fillRepRefs( pAddr, pObj );
     }
   };
-}
+} // namespace Gaudi
 
 #endif // GAUDIROOTCNV_ROOTCONVERTER_H

@@ -16,8 +16,7 @@
  * @author Marco Clemencic
  */
 template <class TYPE>
-class SmartIF
-{
+class SmartIF {
 private:
   /// Pointer to the instance
   TYPE* m_interface = nullptr;
@@ -27,26 +26,22 @@ public:
   /// Default constructor.
   inline SmartIF() = default;
   /// Standard constructor from pointer.
-  inline SmartIF( TYPE* ptr ) : m_interface( ptr )
-  {
+  inline SmartIF( TYPE* ptr ) : m_interface( ptr ) {
     if ( m_interface ) m_interface->addRef();
   }
   /// Standard constructor from any (IInterface-derived) pointer.
   template <class OTHER>
-  inline SmartIF( OTHER* ptr )
-  {
+  inline SmartIF( OTHER* ptr ) {
     if ( ptr ) reset( ptr );
   }
   /// Copy constructor.
-  inline SmartIF( const SmartIF& rhs ) : m_interface( rhs.get() )
-  {
+  inline SmartIF( const SmartIF& rhs ) : m_interface( rhs.get() ) {
     if ( m_interface ) m_interface->addRef();
   }
   /// Move constructor
   inline SmartIF( SmartIF&& rhs ) : m_interface( rhs.m_interface ) { rhs.m_interface = nullptr; }
   /// Move assignement
-  inline SmartIF& operator=( SmartIF&& rhs )
-  {
+  inline SmartIF& operator=( SmartIF&& rhs ) {
     if ( m_interface ) m_interface->release();
     m_interface     = rhs.m_interface;
     rhs.m_interface = nullptr;
@@ -56,8 +51,7 @@ public:
   /// Constructor from another SmartIF, with a different type.
   /// @note it cannot replace the copy constructor.
   template <class T>
-  inline explicit SmartIF( const SmartIF<T>& rhs )
-  {
+  inline explicit SmartIF( const SmartIF<T>& rhs ) {
     reset( rhs.get() );
   }
   /// Standard Destructor.
@@ -68,7 +62,7 @@ public:
   inline bool isValid() const { return m_interface != nullptr; }
 
   inline explicit operator bool() const { return isValid(); }
-  inline bool operator!() const { return !isValid(); }
+  inline bool     operator!() const { return !isValid(); }
 
   // ---------- Pointer access methods ----------
   /// Automatic conversion to pointer.
@@ -89,8 +83,7 @@ public:
   /// Set the internal pointer to the passed one disposing of the old one.
   /// Version for pointers of the same type of the managed ones (no call to
   /// queryInterface needed).
-  inline void reset( TYPE* ptr = nullptr )
-  {
+  inline void reset( TYPE* ptr = nullptr ) {
     if ( ptr == m_interface ) return;
     if ( m_interface ) m_interface->release();
     m_interface = ptr;
@@ -99,8 +92,7 @@ public:
   /// Set the internal pointer to the passed one disposing of the old one.
   /// Version for pointers of types inheriting from IInterface.
   template <class OTHER>
-  inline void reset( OTHER* ptr )
-  {
+  inline void reset( OTHER* ptr ) {
     if ( static_cast<IInterface*>( ptr ) == static_cast<IInterface*>( m_interface ) ) return;
     if ( m_interface ) m_interface->release();
     if ( ptr ) {
@@ -112,8 +104,7 @@ public:
 
   /// return a new SmartIF instance to another interface
   template <typename IFace>
-  SmartIF<IFace> as() const
-  {
+  SmartIF<IFace> as() const {
     return SmartIF<IFace>{*this};
   }
 
@@ -124,22 +115,19 @@ public:
   /// SmartIF<T> x;
   /// x = 0;
   /// </code>
-  inline SmartIF& operator=( IInterface* ptr )
-  {
+  inline SmartIF& operator=( IInterface* ptr ) {
     reset( ptr );
     return *this;
   }
   /// Assignment operator.
-  inline SmartIF& operator=( const SmartIF& rhs )
-  {
+  inline SmartIF& operator=( const SmartIF& rhs ) {
     reset( rhs.get() );
     return *this;
   }
   /// Assignment operator from a different SmartIF.
   /// @note it cannot replace the assignment operator.
   template <class T>
-  inline SmartIF& operator=( const SmartIF<T>& rhs )
-  {
+  inline SmartIF& operator=( const SmartIF<T>& rhs ) {
     reset( rhs.get() );
     return *this;
   }
@@ -149,8 +137,7 @@ public:
 // the corresponding SmartIF -- this avoids having to type
 // the typename twice, and thus insures consistency
 template <typename IFace>
-SmartIF<IFace> make_SmartIF( IFace* iface )
-{
+SmartIF<IFace> make_SmartIF( IFace* iface ) {
   return SmartIF<IFace>{iface};
 }
 

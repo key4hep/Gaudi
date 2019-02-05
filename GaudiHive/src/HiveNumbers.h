@@ -21,13 +21,11 @@ class IRndmGenSvc;
  * random numbers.
  */
 
-namespace HiveRndm
-{
+namespace HiveRndm {
 
   typedef tbb::spin_rw_mutex_v3 HiveNumbersMutex;
 
-  class GAUDI_API HiveNumbers
-  {
+  class GAUDI_API HiveNumbers {
   private:
     unsigned int            m_buffer_index;
     const unsigned int      m_buffer_size;
@@ -64,8 +62,7 @@ namespace HiveRndm
     /// Pop a new number from the buffer
     double pop() { return this->shoot(); }
     /// Pop a new number from the buffer
-    double shoot()
-    {
+    double shoot() {
       if ( 0 != m_generator ) {
         if ( m_buffer_index == 0 ) { // we are out of numbers
           this->shootArray( m_buffer, m_buffer_size );
@@ -78,8 +75,7 @@ namespace HiveRndm
       return -1;
     }
     /// Pop a new number from the buffer
-    StatusCode shootArray( std::vector<double>& array, long num, long start = 0 )
-    {
+    StatusCode shootArray( std::vector<double>& array, long num, long start = 0 ) {
       if ( 0 != m_generator ) {
         StatusCode status;
         {
@@ -92,6 +88,6 @@ namespace HiveRndm
     }
   };
 
-} // end of Rndm namespace
+} // namespace HiveRndm
 
 #endif // GAUDIHIVE_HIVENumbers_H

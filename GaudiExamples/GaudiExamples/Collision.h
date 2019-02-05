@@ -6,10 +6,8 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StreamBuffer.h"
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
     // CLID definition
     static const CLID& CLID_Collision = 111;
@@ -17,8 +15,7 @@ namespace Gaudi
     /** @class Collision
      */
 
-    class GAUDI_API Collision : public DataObject
-    {
+    class GAUDI_API Collision : public DataObject {
     public:
       /// Constructors
       Collision() = default;
@@ -29,7 +26,7 @@ namespace Gaudi
       static const CLID& classID() { return CLID_Collision; }
 
       void setCollision( int num ) { m_collision = num; }
-      int                    collision() const { return m_collision; }
+      int  collision() const { return m_collision; }
       //  std::vector<double, CLHEP::HepGenMatrix::Alloc<double,25> >& matrix() {
       //    return m_matrix;
       //  }
@@ -49,7 +46,7 @@ namespace Gaudi
 
     /// Serialize the object for reading
     inline StreamBuffer& Collision::serialize( StreamBuffer& s ) { return s >> m_collision; }
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 
 #endif // GAUDIEXAMPLES_COLLISION_H

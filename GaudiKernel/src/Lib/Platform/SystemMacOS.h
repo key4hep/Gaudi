@@ -6,11 +6,9 @@
 #include <string>
 #include <vector>
 
-namespace System
-{
+namespace System {
   /// Namespace holding MacOS specific functions
-  namespace MacOS
-  {
+  namespace MacOS {
 
     /// Get the command line arguments of the process
     std::vector<std::string> cmdLineArgs();

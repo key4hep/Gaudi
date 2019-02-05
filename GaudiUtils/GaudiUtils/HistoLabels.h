@@ -7,20 +7,16 @@
 
 #include "GaudiKernel/Kernel.h"
 
-namespace AIDA
-{
+namespace AIDA {
   class IHistogram1D;
   class IHistogram2D;
   class IProfile1D;
   class IProfile2D;
-}
+} // namespace AIDA
 
-namespace Gaudi
-{
-  namespace Utils
-  {
-    namespace Histos
-    {
+namespace Gaudi {
+  namespace Utils {
+    namespace Histos {
       // --------------------------------------------------------------------------
 
       /// Typedef for a list of labels
@@ -211,8 +207,8 @@ namespace Gaudi
       GAUDI_API bool setAxisLabels( AIDA::IProfile2D* hist, const std::string& xAxis, const std::string& yAxis );
 
       // --------------------------------------------------------------------------
-    }
-  }
-}
+    } // namespace Histos
+  }   // namespace Utils
+} // namespace Gaudi
 
 #endif // GAUDIUTILS_HISTOLABELS_H

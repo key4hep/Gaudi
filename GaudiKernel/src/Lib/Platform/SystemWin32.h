@@ -6,11 +6,9 @@
 #include <string>
 #include <vector>
 
-namespace System
-{
+namespace System {
   /// Namespace holding Windows specific functions
-  namespace Win32
-  {
+  namespace Win32 {
 
     /// Get the command line arguments of the process
     std::vector<std::string> cmdLineArgs();
@@ -33,7 +31,7 @@ namespace System
     /// Get the account name of the current user
     std::string accountName();
 
-  } // namespace Linux
+  } // namespace Win32
 
   /// The platform name to use in the "main" functions
   namespace Platform = Win32;

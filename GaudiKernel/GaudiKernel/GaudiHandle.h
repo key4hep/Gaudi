@@ -14,18 +14,15 @@
 #include <type_traits>
 #include <vector>
 
-namespace details
-{
+namespace details {
   /// Cast a pointer to a non const type
   template <class T>
-  std::remove_const_t<T>* nonConst( T* p )
-  {
+  std::remove_const_t<T>* nonConst( T* p ) {
     return const_cast<std::remove_const_t<T>*>( p );
   }
-}
+} // namespace details
 
-class GAUDI_API GaudiHandleInfo
-{
+class GAUDI_API GaudiHandleInfo {
 protected:
   /** Some basic information and helper functions shared between various handles/arrays.
    @param myComponentType: string indicating what type of component the handle is pointing to.
@@ -36,9 +33,7 @@ protected:
    @param myParentName: Name of the parent that has this handle as a member. Used in printout.
   */
   GaudiHandleInfo( std::string myComponentType, std::string myParentName )
-      : m_componentType( std::move( myComponentType ) ), m_parentName( std::move( myParentName ) )
-  {
-  }
+      : m_componentType( std::move( myComponentType ) ), m_parentName( std::move( myParentName ) ) {}
 
 public:
   /** virtual destructor so that derived class destructor is called. */
@@ -91,8 +86,7 @@ private:
     This base class implements common features.
     @author Martin.Woudstra@cern.ch
 */
-class GAUDI_API GaudiHandleBase : public GaudiHandleInfo
-{
+class GAUDI_API GaudiHandleBase : public GaudiHandleInfo {
   //
   // Ctors etc
   //
@@ -109,8 +103,7 @@ protected:
    @param myParentName: Name of the parent that has this handle as a member. Used in printout.
   */
   GaudiHandleBase( std::string myTypeAndName, std::string myComponentType, std::string myParentName )
-      : GaudiHandleInfo( std::move( myComponentType ), std::move( myParentName ) )
-  {
+      : GaudiHandleInfo( std::move( myComponentType ), std::move( myParentName ) ) {
     setTypeAndName( std::move( myTypeAndName ) );
   }
 
@@ -167,31 +160,26 @@ private:
     @author Martin.Woudstra@cern.ch
 */
 template <class T>
-class GAUDI_API GaudiHandle : public GaudiHandleBase
-{
+class GAUDI_API GaudiHandle : public GaudiHandleBase {
   //
   // Constructors etc.
   //
 protected:
   GaudiHandle( std::string myTypeAndName, std::string myComponentType, std::string myParentName )
-      : GaudiHandleBase( std::move( myTypeAndName ), std::move( myComponentType ), std::move( myParentName ) )
-  {
-  }
+      : GaudiHandleBase( std::move( myTypeAndName ), std::move( myComponentType ), std::move( myParentName ) ) {}
 
 public:
   /** Copy constructor needed for correct ref-counting */
   template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
   GaudiHandle( const GaudiHandle<NCT>& other,
                typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
-      : GaudiHandleBase( other )
-  {
+      : GaudiHandleBase( other ) {
     m_pObject = other.get();
     if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
   }
 
   /** Copy constructor needed for correct ref-counting */
-  GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other )
-  {
+  GaudiHandle( const GaudiHandle& other ) : GaudiHandleBase( other ) {
     m_pObject = other.m_pObject;
     if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
   }
@@ -199,8 +187,7 @@ public:
   /** Assignment operator for correct ref-counting */
   template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
   typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value, GaudiHandle&>::type
-  operator=( const GaudiHandle<NCT>& other )
-  {
+  operator=( const GaudiHandle<NCT>& other ) {
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();
@@ -211,8 +198,7 @@ public:
   }
 
   /** Assignment operator for correct ref-counting */
-  GaudiHandle& operator=( const GaudiHandle& other )
-  {
+  GaudiHandle& operator=( const GaudiHandle& other ) {
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();
@@ -223,12 +209,10 @@ public:
   }
 
   /** Retrieve the component. Release existing component if needed. */
-  StatusCode retrieve() const
-  { // not really const, because it updates m_pObject
+  StatusCode retrieve() const {
+    // not really const, because it updates m_pObject
     StatusCode sc = StatusCode::SUCCESS;
-    if ( m_pObject && release().isFailure() ) {
-      sc = StatusCode::FAILURE;
-    }
+    if ( m_pObject && release().isFailure() ) { sc = StatusCode::FAILURE; }
     if ( sc && retrieve( m_pObject ).isFailure() ) {
       m_pObject = nullptr;
       sc        = StatusCode::FAILURE;
@@ -237,8 +221,8 @@ public:
   }
 
   /** Release the component. */
-  StatusCode release() const
-  { // not really const, because it updates m_pObject
+  StatusCode release() const {
+    // not really const, because it updates m_pObject
     StatusCode sc = StatusCode::SUCCESS;
     if ( m_pObject ) {
       sc        = release( m_pObject );
@@ -248,15 +232,15 @@ public:
   }
 
   /// Check if the handle is valid (try to retrive the object is not done yet).
-  bool isValid() const
-  { // not really const, because it may update m_pObject
+  bool isValid() const {
+    // not really const, because it may update m_pObject
     return m_pObject || retrieve().isSuccess();
   }
 
   /** For testing if handle has component. Does retrieve() if needed.
       If this returns false, the component could not be retrieved. */
-  operator bool() const
-  { // not really const, because it may update m_pObject
+  operator bool() const {
+    // not really const, because it may update m_pObject
     return isValid();
   }
 
@@ -269,27 +253,23 @@ public:
   /// True if the wrapped pointer is not null.
   bool isSet() const { return get(); }
 
-  T& operator*()
-  {
+  T& operator*() {
     assertObject();
     return *m_pObject;
   }
 
-  T* operator->()
-  {
+  T* operator->() {
     assertObject();
     return m_pObject;
   }
 
-  typename std::add_const<T>::type& operator*() const
-  {
+  typename std::add_const<T>::type& operator*() const {
     // not really const, because it may update m_pObject
     assertObject();
     return *m_pObject;
   }
 
-  typename std::add_const<T>::type* operator->() const
-  {
+  typename std::add_const<T>::type* operator->() const {
     // not really const, because it may update m_pObject
     assertObject();
     return m_pObject;
@@ -298,8 +278,7 @@ public:
   /** Helper function to get default type string from the class type */
   std::string getDefaultType() { return System::typeinfoName( typeid( T ) ); }
 
-  std::string getDefaultName()
-  {
+  std::string getDefaultName() {
     const auto defName = GaudiHandleBase::type();
     return ( defName.empty() ? getDefaultType() : defName );
   }
@@ -310,8 +289,7 @@ protected:
 
   /** Release the component. Default implementation calls release() on the component.
       Can be overridden by the derived class if something else is needed. */
-  virtual StatusCode release( T* comp ) const
-  { // not really const, because it updates m_pObject
+  virtual StatusCode release( T* comp ) const { // not really const, because it updates m_pObject
     // const cast to support T being a const type
     ::details::nonConst( comp )->release();
     return StatusCode::SUCCESS;
@@ -319,8 +297,7 @@ protected:
 
 private:
   /** Helper function to set default name and type */
-  void setDefaultTypeAndName()
-  {
+  void setDefaultTypeAndName() {
     const std::string& myType = getDefaultType();
     GaudiHandleBase::setTypeAndName( myType + '/' + myType );
   }
@@ -330,8 +307,7 @@ private:
 
   /** Load the pointer to the component. Do a retrieve if needed. Throw an exception if
       retrieval fails. */
-  void assertObject() const
-  { // not really const, because it may update m_pObject
+  void assertObject() const { // not really const, because it may update m_pObject
     if ( UNLIKELY( !isValid() ) ) {
       throw GaudiException( "Failed to retrieve " + componentType() + ": " + typeAndName(),
                             componentType() + " retrieve", StatusCode::FAILURE );
@@ -351,13 +327,10 @@ private:
    This is a non-templated class to one Property can handle all kinds of concrete handles.
 */
 
-class GAUDI_API GaudiHandleArrayBase : public GaudiHandleInfo
-{
+class GAUDI_API GaudiHandleArrayBase : public GaudiHandleInfo {
 protected:
   GaudiHandleArrayBase( std::string myComponentType, std::string myParentName )
-      : GaudiHandleInfo( std::move( myComponentType ), std::move( myParentName ) )
-  {
-  }
+      : GaudiHandleInfo( std::move( myComponentType ), std::move( myParentName ) ) {}
 
 public:
   using PropertyType = GaudiHandleArrayProperty;
@@ -417,8 +390,7 @@ public:
 
 /** T is the concrete handle type, e.g. ToolHandle<IMyTool> */
 template <class T>
-class GAUDI_API GaudiHandleArray : public GaudiHandleArrayBase
-{
+class GAUDI_API GaudiHandleArray : public GaudiHandleArrayBase {
 public:
   //
   // public nested types
@@ -443,8 +415,7 @@ protected:
  */
   GaudiHandleArray( const std::vector<std::string>& myTypesAndNamesList, std::string myComponentType,
                     std::string myParentName )
-      : GaudiHandleArrayBase( std::move( myComponentType ), std::move( myParentName ) )
-  {
+      : GaudiHandleArrayBase( std::move( myComponentType ), std::move( myParentName ) ) {
     setTypesAndNames( myTypesAndNamesList );
   }
 
@@ -453,30 +424,25 @@ protected:
                                  for the list of tools
  */
   GaudiHandleArray( const std::string& myComponentType, const std::string& myParentName )
-      : GaudiHandleArrayBase( myComponentType, myParentName )
-  {
-  }
+      : GaudiHandleArrayBase( myComponentType, myParentName ) {}
 
 public:
   virtual ~GaudiHandleArray() = default;
 
   /**Set the array of GaudiHandles from typeAndNames given in vector of strings. */
-  GaudiHandleArray& operator=( const std::vector<std::string>& myTypesAndNamesList )
-  {
+  GaudiHandleArray& operator=( const std::vector<std::string>& myTypesAndNamesList ) {
     setTypesAndNames( myTypesAndNamesList );
     return *this;
   }
 
-  GaudiHandleArrayBase::BaseHandleArray getBaseArray() override
-  {
+  GaudiHandleArrayBase::BaseHandleArray getBaseArray() override {
     GaudiHandleArrayBase::BaseHandleArray baseArray;
     iterator                              it = begin(), itEnd = end();
     for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
 
-  GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override
-  {
+  GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override {
     GaudiHandleArrayBase::ConstBaseHandleArray baseArray;
     const_iterator                             it = begin(), itEnd = end();
     for ( ; it != itEnd; ++it ) baseArray.push_back( &*it );
@@ -509,15 +475,13 @@ public:
   const T& operator[]( int index ) const { return m_handleArray[index]; }
 
   /** Get pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
-  T* operator[]( const std::string& name )
-  {
+  T* operator[]( const std::string& name ) {
     auto it = std::find_if( begin(), end(), [&]( const_reference r ) { return r.name() == name; } );
     return it != end() ? &*it : nullptr;
   }
 
   /** Get const pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
-  const T* operator[]( const std::string& name ) const
-  {
+  const T* operator[]( const std::string& name ) const {
     auto it = std::find_if( begin(), end(), [&]( const_reference r ) { return r.name() == name; } );
     return it != end() ? &*it : nullptr;
   }
@@ -525,15 +489,13 @@ public:
   /** Add a handle with given type and name. Can be overridden in derived class.
       Return whether addition was successful or not. */
   using GaudiHandleArrayBase::push_back; // avoid compiler warning
-  virtual bool push_back( const T& myHandle )
-  {
+  virtual bool push_back( const T& myHandle ) {
     m_handleArray.push_back( myHandle );
     return true;
   }
 
   /** Retrieve all tools */
-  StatusCode retrieve()
-  {
+  StatusCode retrieve() {
     StatusCode sc = StatusCode::SUCCESS;
     for ( auto& i : *this ) {
       // stop at first failure
@@ -542,15 +504,12 @@ public:
         break;
       }
     }
-    if ( sc ) {
-      m_retrieved = true;
-    }
+    if ( sc ) { m_retrieved = true; }
     return sc;
   }
 
   /** Release all tools */
-  StatusCode release()
-  {
+  StatusCode release() {
     StatusCode sc = StatusCode::SUCCESS;
     for ( auto& i : *this ) {
       // continue trying to release other tools even if we fail...

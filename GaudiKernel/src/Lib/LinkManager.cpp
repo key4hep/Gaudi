@@ -6,14 +6,12 @@
 static LinkManager* ( *s_newInstance )() = nullptr;
 
 /// destructor
-LinkManager::~LinkManager()
-{
+LinkManager::~LinkManager() {
   for ( auto& i : m_linkVector ) delete i;
 }
 
 /// Access to the object's address from the link
-IOpaqueAddress* LinkManager::Link::address()
-{
+IOpaqueAddress* LinkManager::Link::address() {
   if ( m_pObject ) {
     IRegistry* pReg = m_pObject->registry();
     if ( pReg ) return pReg->address();
@@ -28,14 +26,12 @@ void LinkManager::setInstantiator( LinkManager* ( *newInstance )() ) { s_newInst
 LinkManager* LinkManager::newInstance() { return s_newInstance ? ( *s_newInstance )() : new LinkManager(); }
 
 /// Retrieve symbolic link identified by ID
-LinkManager::Link* LinkManager::link( long id )
-{
+LinkManager::Link* LinkManager::link( long id ) {
   return ( 0 <= id && (unsigned)id < m_linkVector.size() ) ? m_linkVector[id] : nullptr;
 }
 
 /// Retrieve symbolic link identified by Object pointer
-LinkManager::Link* LinkManager::link( const DataObject* pObject )
-{
+LinkManager::Link* LinkManager::link( const DataObject* pObject ) {
   if ( pObject ) {
     for ( auto& i : m_linkVector ) {
       if ( i->object() == pObject ) return i;
@@ -45,8 +41,7 @@ LinkManager::Link* LinkManager::link( const DataObject* pObject )
 }
 
 /// Retrieve symbolic link identified by Object path
-LinkManager::Link* LinkManager::link( const std::string& path )
-{
+LinkManager::Link* LinkManager::link( const std::string& path ) {
   if ( 0 != path.length() ) {
     for ( auto& i : m_linkVector ) {
       if ( i->path() == path ) return i;
@@ -56,16 +51,13 @@ LinkManager::Link* LinkManager::link( const std::string& path )
 }
 
 /// Add link by object reference and path string
-long LinkManager::addLink( const std::string& path, const DataObject* pObject ) const
-{
+long LinkManager::addLink( const std::string& path, const DataObject* pObject ) const {
   long n = 0;
   for ( auto& lnk : m_linkVector ) {
     const DataObject* pO = lnk->object();
     if ( pO && pO == pObject ) return n;
     if ( lnk->path() == path ) {
-      if ( pObject && pObject != pO ) {
-        lnk->setObject( const_cast<DataObject*>( pObject ) );
-      }
+      if ( pObject && pObject != pO ) { lnk->setObject( const_cast<DataObject*>( pObject ) ); }
       return n;
     }
     ++n;
@@ -76,8 +68,7 @@ long LinkManager::addLink( const std::string& path, const DataObject* pObject ) 
 }
 
 // Remove a link by object reference
-long LinkManager::removeLink( const DataObject* pObject ) const
-{
+long LinkManager::removeLink( const DataObject* pObject ) const {
   long n = 0;
   for ( auto i = m_linkVector.begin(); i != m_linkVector.end(); i++ ) {
     if ( ( *i )->object() == pObject ) {
@@ -91,8 +82,7 @@ long LinkManager::removeLink( const DataObject* pObject ) const
 }
 
 // Remove a link by object reference
-long LinkManager::removeLink( const std::string& path ) const
-{
+long LinkManager::removeLink( const std::string& path ) const {
   long n = 0;
   for ( auto i = m_linkVector.begin(); i != m_linkVector.end(); i++ ) {
     if ( ( *i )->path() == path ) {
@@ -106,8 +96,7 @@ long LinkManager::removeLink( const std::string& path ) const
 }
 
 // Remove a link by object reference
-long LinkManager::removeLink( long id ) const
-{
+long LinkManager::removeLink( long id ) const {
   auto i = std::next( m_linkVector.begin(), id );
   delete *i;
   m_linkVector.erase( i );
@@ -115,8 +104,7 @@ long LinkManager::removeLink( long id ) const
 }
 
 /// Remove all possibly existing symbolic links
-void LinkManager::clearLinks()
-{
+void LinkManager::clearLinks() {
   for ( auto& i : m_linkVector ) delete i;
   m_linkVector.clear();
 }

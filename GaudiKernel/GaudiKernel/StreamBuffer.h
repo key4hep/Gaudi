@@ -42,8 +42,7 @@ class StreamBuffer /* : public std::string  */
 {
 public:
   /// A small base class to handle generic data streaming
-  class DataIO
-  {
+  class DataIO {
   public:
     /// Standard constructor
     DataIO() = default;
@@ -52,8 +51,7 @@ public:
     /// Throw Exception
     void badStreamMode() { throw( "Not acceptable stream mode!" ); }
     /// Serialization method: loads/dumps streambuffer content
-    virtual void serialize( StreamBuffer& stream )
-    {
+    virtual void serialize( StreamBuffer& stream ) {
       if ( stream.isReading() )
         load( stream );
       else if ( stream.isWriting() )
@@ -68,8 +66,7 @@ public:
   };
 
   /// Reader for standard input streams
-  class Istream : public DataIO
-  {
+  class Istream : public DataIO {
     /// Reference to input stream
     std::istream* m_stream;
 
@@ -78,8 +75,7 @@ public:
     Istream( std::istream& str ) : m_stream( &str ) {}
 
     /// Data load method
-    void load( StreamBuffer& stream ) override
-    {
+    void load( StreamBuffer& stream ) override {
       // Generic implementation for istreams:
       int len;
       ( *m_stream ) >> len;
@@ -89,8 +85,7 @@ public:
     }
   };
   /// Writer for standard output streams
-  class Ostream : public DataIO
-  {
+  class Ostream : public DataIO {
     std::ostream* m_stream;
 
   public:
@@ -100,8 +95,7 @@ public:
     virtual ~Ostream() = default;
 
     /// Output dumper
-    void dump( StreamBuffer& stream ) override
-    {
+    void dump( StreamBuffer& stream ) override {
       // Generic implementation for ostreams:
       ( *m_stream ) << stream.buffPointer();
       m_stream->write( stream.data(), stream.buffPointer() );
@@ -116,8 +110,7 @@ public:
   /// Link state defintions
   enum State { INVALID = -1, VALID };
   /// Definition of the contained link set
-  class ContainedLink
-  {
+  class ContainedLink {
   public:
     ContainedObject* first;
     long             second;
@@ -127,8 +120,7 @@ public:
     ContainedLink( ContainedObject* pObj, long hint, long link ) : first( pObj ), second( hint ), third( link ) {}
   };
   /// Definition of the contained link set
-  class IdentifiedLink
-  {
+  class IdentifiedLink {
   public:
     DataObject* first                            = nullptr;
     long        second                           = INVALID;
@@ -177,8 +169,7 @@ protected:
       This entry resolves identified pointers (= Pointers to DataObject instances.)
   */
   template <class TYPE>
-  StreamBuffer& getObjectPointer( const DataObject* /*pObject*/, TYPE*& refpObject )
-  {
+  StreamBuffer& getObjectPointer( const DataObject* /*pObject*/, TYPE*& refpObject ) {
     IdentifiedLink& link = m_identifiedLinks.back();
     DataObject*     pObj = link.first;
     m_identifiedLinks.pop_back();
@@ -189,8 +180,7 @@ protected:
       This entry resolves contained pointers (= Pointers to ContainedObject instances.)
   */
   template <class TYPE>
-  StreamBuffer& getObjectPointer( const ContainedObject* /*pObject*/, TYPE*& refpObject )
-  {
+  StreamBuffer& getObjectPointer( const ContainedObject* /*pObject*/, TYPE*& refpObject ) {
     ContainedLink&   link = m_containedLinks.back();
     ContainedObject* pObj = link.first;
     m_containedLinks.pop_back();
@@ -210,8 +200,7 @@ public:
   /// Reset the buffer
   void erase() { m_pointer = 0; }
   /// Remove the data buffer and pass it to client. It's the client responsability to free the memory
-  char* adopt() const
-  {
+  char* adopt() const {
     char* ptr = m_buffer;
     m_containedLinks.erase( m_containedLinks.begin(), m_containedLinks.end() );
     m_identifiedLinks.erase( m_identifiedLinks.begin(), m_identifiedLinks.end() );
@@ -221,16 +210,14 @@ public:
     return ptr;
   }
   /// Reserve buffer space; Default: 16 k buffer size
-  void reserve( long len )
-  {
+  void reserve( long len ) {
     if ( len > m_length ) {
       m_length = ( len < 16384 ) ? 16384 : len;
       m_buffer = (char*)::realloc( m_buffer, m_length );
     }
   }
   /// Extend the buffer
-  void extend( long len )
-  {
+  void extend( long len ) {
     if ( len + m_pointer > m_length ) {
       // We have to be a bit generous here in order not to run too often
       // into ::realloc().
@@ -252,8 +239,7 @@ public:
   const IdentifiedLinks& identifiedLinks() const { return m_identifiedLinks; }
 
   /// Set mode of the stream and allocate buffer
-  void setMode( Mode m )
-  {
+  void setMode( Mode m ) {
     m_mode    = m;
     m_pointer = 0;
     m_containedLinks.erase( m_containedLinks.begin(), m_containedLinks.end() );
@@ -278,8 +264,7 @@ public:
   void swapFromBuffer( void* target, int siz );
 
   /// Write string to output stream
-  StreamBuffer& writeBytes( const char* str, long len )
-  {
+  StreamBuffer& writeBytes( const char* str, long len ) {
     extend( m_pointer + len + 4 );
     *this << len;
     std::copy_n( str, len, data() + buffPointer() );
@@ -287,50 +272,44 @@ public:
     return *this;
   }
 
-  void getIdentifiedLink( DataObject*& pObject, long& hint )
-  {
+  void getIdentifiedLink( DataObject*& pObject, long& hint ) {
     IdentifiedLink& l = m_identifiedLinks.back();
     pObject           = l.first;
     hint              = l.second;
     m_identifiedLinks.pop_back();
   }
-  void addIdentifiedLink( const DataObject* pObject, long hint )
-  {
+  void addIdentifiedLink( const DataObject* pObject, long hint ) {
     m_identifiedLinks.push_back( IdentifiedLink( (DataObject*)pObject, hint ) );
   }
 
-  void getContainedLink( ContainedObject*& pObject, long& hint, long& link )
-  {
+  void getContainedLink( ContainedObject*& pObject, long& hint, long& link ) {
     ContainedLink& l = m_containedLinks.back();
     pObject          = l.first;
     hint             = l.second;
     link             = l.third;
     m_containedLinks.pop_back();
   }
-  void addContainedLink( const ContainedObject* pObject, long hint, long link )
-  {
+  void addContainedLink( const ContainedObject* pObject, long hint, long link ) {
     m_containedLinks.push_back( ContainedLink( (ContainedObject*)pObject, hint, link ) );
   }
 
 #ifdef USE_STREAM_ANALYSER
-#define STREAM_ANALYSE( data, len )                                                                                    \
-  if ( 0 != m_analyzer ) m_analyzer( &data, len, typeid( data ) )
+#  define STREAM_ANALYSE( data, len )                                                                                  \
+    if ( 0 != m_analyzer ) m_analyzer( &data, len, typeid( data ) )
 #else
-#define STREAM_ANALYSE( data, len )
+#  define STREAM_ANALYSE( data, len )
 #endif
 
 // Implement streamer macros for primivive data types.
 #define IMPLEMENT_STREAMER( TYPE )                                                                                     \
   /*  Output Streamer                                   */                                                             \
-  StreamBuffer& operator<<( TYPE data )                                                                                \
-  {                                                                                                                    \
+  StreamBuffer& operator<<( TYPE data ) {                                                                              \
     swapToBuffer( &data, sizeof( data ) );                                                                             \
     STREAM_ANALYSE( data, sizeof( data ) );                                                                            \
     return *this;                                                                                                      \
   }                                                                                                                    \
   /*  Input Streamer                                    */                                                             \
-  StreamBuffer& operator>>( TYPE& data )                                                                               \
-  {                                                                                                                    \
+  StreamBuffer& operator>>( TYPE& data ) {                                                                             \
     swapFromBuffer( &data, sizeof( data ) );                                                                           \
     return *this;                                                                                                      \
   }
@@ -339,161 +318,135 @@ public:
 #undef IMPLEMENT_STREAMER
 
   ///  Output Streamer
-  StreamBuffer& operator<<( long long data )
-  {
+  StreamBuffer& operator<<( long long data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( long long& data )
-  {
+  StreamBuffer& operator>>( long long& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( int data )
-  {
+  StreamBuffer& operator<<( int data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( int& data )
-  {
+  StreamBuffer& operator>>( int& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( unsigned int data )
-  {
+  StreamBuffer& operator<<( unsigned int data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( unsigned int& data )
-  {
+  StreamBuffer& operator>>( unsigned int& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( long data )
-  {
+  StreamBuffer& operator<<( long data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( long& data )
-  {
+  StreamBuffer& operator>>( long& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( unsigned long data )
-  {
+  StreamBuffer& operator<<( unsigned long data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( unsigned long& data )
-  {
+  StreamBuffer& operator>>( unsigned long& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( short data )
-  {
+  StreamBuffer& operator<<( short data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( short& data )
-  {
+  StreamBuffer& operator>>( short& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( unsigned short data )
-  {
+  StreamBuffer& operator<<( unsigned short data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( unsigned short& data )
-  {
+  StreamBuffer& operator>>( unsigned short& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( char data )
-  {
+  StreamBuffer& operator<<( char data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( char& data )
-  {
+  StreamBuffer& operator>>( char& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( unsigned char data )
-  {
+  StreamBuffer& operator<<( unsigned char data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( unsigned char& data )
-  {
+  StreamBuffer& operator>>( unsigned char& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( float data )
-  {
+  StreamBuffer& operator<<( float data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( float& data )
-  {
+  StreamBuffer& operator>>( float& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   ///  Output Streamer
-  StreamBuffer& operator<<( double data )
-  {
+  StreamBuffer& operator<<( double data ) {
     swapToBuffer( &data, sizeof( data ) );
     STREAM_ANALYSE( data, sizeof( data ) );
     return *this;
   }
   ///  Input Streamer
-  StreamBuffer& operator>>( double& data )
-  {
+  StreamBuffer& operator>>( double& data ) {
     swapFromBuffer( &data, sizeof( data ) );
     return *this;
   }
   /// Streamer to read strings in (char*) format
-  StreamBuffer& operator>>( char* data )
-  {
+  StreamBuffer& operator>>( char* data ) {
     long i, len;
     *this >> len;
-    for ( i = 0, data[0] = 0; i < len; i++ ) {
-      data[i] = m_buffer[m_pointer++];
-    }
+    for ( i = 0, data[0] = 0; i < len; i++ ) { data[i] = m_buffer[m_pointer++]; }
     return *this;
   }
   /// Streamer to write strings in (char*) format
-  StreamBuffer& operator<<( const char* data )
-  {
+  StreamBuffer& operator<<( const char* data ) {
     const char* ptr = 0 == data ? "" : data;
     int         len = strlen( ptr ) + 1;
     if ( 0 == m_analyzer )
@@ -504,18 +457,14 @@ public:
     return *this;
   }
   /// Streamer to read strings in (std::string) format
-  StreamBuffer& operator>>( std::string& data )
-  {
+  StreamBuffer& operator>>( std::string& data ) {
     long i, len;
     *this >> len;
-    for ( i = 0, data = ""; i < len; i++ ) {
-      data.append( 1, m_buffer[m_pointer++] );
-    }
+    for ( i = 0, data = ""; i < len; i++ ) { data.append( 1, m_buffer[m_pointer++] ); }
     return *this;
   }
   /// Streamer to write strings in (std::string) format
-  StreamBuffer& operator<<( const std::string& data )
-  {
+  StreamBuffer& operator<<( const std::string& data ) {
     if ( 0 == m_analyzer ) {
       const char* ptr = data.c_str();
       long        len = data.length();
@@ -532,8 +481,7 @@ public:
       @return              Reference to StreamBuffer object
   */
   template <class TYPE>
-  StreamBuffer& operator>>( TYPE*& refpObject )
-  {
+  StreamBuffer& operator>>( TYPE*& refpObject ) {
     return getObjectPointer( refpObject, refpObject );
   }
 
@@ -543,8 +491,7 @@ public:
       @param       pObject Pointer to object to be loaded.
       @return              Reference to StreamBuffer object
   */
-  StreamBuffer& operator<<( const ContainedObject* pObject )
-  {
+  StreamBuffer& operator<<( const ContainedObject* pObject ) {
     STREAM_ANALYSE( pObject, sizeof( pObject ) );
     addContainedLink( pObject, INVALID, INVALID );
     return *this;
@@ -556,8 +503,7 @@ public:
       @param       pObject Pointer to object to be loaded.
       @return              Reference to StreamBuffer object
   */
-  StreamBuffer& operator<<( const DataObject* pObject )
-  {
+  StreamBuffer& operator<<( const DataObject* pObject ) {
     STREAM_ANALYSE( pObject, sizeof( pObject ) );
     addIdentifiedLink( pObject, INVALID );
     return *this;
@@ -569,8 +515,7 @@ public:
       e.g. disk files, Root files, Objectivity etc.
       @param       ioObject Reference to data IO object.
   */
-  void serialize( DataIO& ioObject )
-  {
+  void serialize( DataIO& ioObject ) {
     ioObject.serialize( *this );
     m_pointer = 0;
   }
@@ -579,8 +524,7 @@ public:
 #undef STREAM_ANALYSE
 
 /// Check for byte swapping
-inline StreamBuffer::SwapAction StreamBuffer::swapBuffer( int siz ) const
-{
+inline StreamBuffer::SwapAction StreamBuffer::swapBuffer( int siz ) const {
   switch ( siz ) {
   case 1:
     return SINGLE_BYTE;
@@ -608,9 +552,8 @@ inline StreamBuffer::SwapAction StreamBuffer::swapBuffer( int siz ) const
 }
 
 /// Swap bytes from a source buffer to the stream buffer with arbitray size
-inline void StreamBuffer::swapToBuffer( const void* source, int siz )
-{
-  char buff[8], *tar, *src = (char *)source;
+inline void StreamBuffer::swapToBuffer( const void* source, int siz ) {
+  char buff[8], *tar, *src = (char*)source;
   extend( m_pointer + siz );
   tar = m_buffer + m_pointer;
   switch ( swapBuffer( siz ) ) {
@@ -628,13 +571,14 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz )
   case NOSWAP:
     std::copy_n( src, siz, tar );
     break;
+  default:
+    break;
   }
   m_pointer += siz;
 }
 
 /// Swap bytes from the stream buffer to target buffer with arbitray size
-inline void StreamBuffer::swapFromBuffer( void* target, int siz )
-{
+inline void StreamBuffer::swapFromBuffer( void* target, int siz ) {
   char* tar = (char*)target;
   char* src = m_buffer + m_pointer;
   switch ( swapBuffer( siz ) ) {
@@ -651,14 +595,15 @@ inline void StreamBuffer::swapFromBuffer( void* target, int siz )
   case NOSWAP:
     std::copy_n( src, siz, tar );
     break;
+  default:
+    break;
   }
   m_pointer += siz;
 }
 
 // Output serialize a vector of items
 template <class T>
-inline StreamBuffer& operator<<( StreamBuffer& s, const std::vector<T>& v )
-{
+inline StreamBuffer& operator<<( StreamBuffer& s, const std::vector<T>& v ) {
   s << v.size();
   for ( const auto& i : v ) s << i;
   return s;
@@ -666,8 +611,7 @@ inline StreamBuffer& operator<<( StreamBuffer& s, const std::vector<T>& v )
 
 // Input serialize a vector of items
 template <class T>
-inline StreamBuffer& operator>>( StreamBuffer& s, std::vector<T>& v )
-{
+inline StreamBuffer& operator>>( StreamBuffer& s, std::vector<T>& v ) {
   long i, len;
   s >> len;
   v.clear();
@@ -681,8 +625,7 @@ inline StreamBuffer& operator>>( StreamBuffer& s, std::vector<T>& v )
 
 // Output serialize a list of items
 template <class T>
-inline StreamBuffer& operator<<( StreamBuffer& s, const std::list<T>& l )
-{
+inline StreamBuffer& operator<<( StreamBuffer& s, const std::list<T>& l ) {
   s << l.size();
   for ( const auto& i : l ) s << i;
   return s;
@@ -690,8 +633,7 @@ inline StreamBuffer& operator<<( StreamBuffer& s, const std::list<T>& l )
 
 // Input serialize a list of items
 template <class T>
-inline StreamBuffer& operator>>( StreamBuffer& s, std::list<T>& l )
-{
+inline StreamBuffer& operator>>( StreamBuffer& s, std::list<T>& l ) {
   long len;
   s >> len;
   l.clear();

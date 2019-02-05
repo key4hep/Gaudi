@@ -22,10 +22,8 @@
 #include "GaudiExamples/Event.h"
 #include "GaudiExamples/MyTrack.h"
 // =============================================================================
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     /** @class ExtendedEvtCol
      *  Simple class to illustrate the usage of extended event
      *  tag collections: storing "Arbitrary" objects in N-tuples.
@@ -33,8 +31,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-04-08
      */
-    class ExtendedEvtCol : public GaudiTupleAlg
-    {
+    class ExtendedEvtCol : public GaudiTupleAlg {
     public:
       /// the only one essential method: execute the algorithm
       StatusCode execute() override;
@@ -44,8 +41,7 @@ namespace Gaudi
        *  @param name algorithm instance name
        *  @param pSvc pointer to Servcoe Locator
        */
-      ExtendedEvtCol( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc )
-      {
+      ExtendedEvtCol( const std::string& name, ISvcLocator* pSvc ) : GaudiTupleAlg( name, pSvc ) {
         /// redefine the default values for various properties
         setProperty( "NTupleProduce", "false" ).ignore();
         setProperty( "NTuplePrint", "false" ).ignore();
@@ -71,22 +67,17 @@ DECLARE_COMPONENT( ExtendedEvtCol )
 // ============================================================================
 /// local anonymous namespace to hide some technicalities
 // ============================================================================
-namespace
-{
+namespace {
   /// local function for evaluation of Tracks's momentum
-  inline double trkMomentum( const Gaudi::Examples::MyTrack* track )
-  {
-    if ( !track ) {
-      return 0;
-    }
+  inline double trkMomentum( const Gaudi::Examples::MyTrack* track ) {
+    if ( !track ) { return 0; }
     return ::sqrt( track->px() * track->px() + track->py() * track->py() + track->pz() * track->pz() );
   }
-}
+} // namespace
 // ============================================================================
 /// the only one essential method: execute the algorithm
 // ============================================================================
-StatusCode Gaudi::Examples::ExtendedEvtCol::execute()
-{
+StatusCode Gaudi::Examples::ExtendedEvtCol::execute() {
   // get the event
   auto event = get<DataObject>( "/Event" );
   // get the tracks

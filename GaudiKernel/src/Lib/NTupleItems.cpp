@@ -24,16 +24,14 @@ typedef const std::type_info& CTYPE;
 /// Create instance
 template <class TYP>
 NTuple::_Item<TYP>* NTuple::_Item<TYP>::create( INTuple* tup, const std::string& name, const std::type_info& info,
-                                                TYP min, TYP max, TYP def )
-{
+                                                TYP min, TYP max, TYP def ) {
   return new _ItemImp<TYP>( tup, name, info, min, max, def );
 }
 
 /// Create instance
 template <class TYP>
 NTuple::_Array<TYP>* NTuple::_Array<TYP>::create( INTuple* tup, const std::string& name, const std::type_info& info,
-                                                  const std::string& idx, long len, TYP min, TYP max, TYP def )
-{
+                                                  const std::string& idx, long len, TYP min, TYP max, TYP def ) {
   return new _ArrayImp<TYP>( tup, name, info, idx, len, min, max, def );
 }
 
@@ -41,8 +39,7 @@ NTuple::_Array<TYP>* NTuple::_Array<TYP>::create( INTuple* tup, const std::strin
 template <class TYP>
 NTuple::_Matrix<TYP>* NTuple::_Matrix<TYP>::create( INTuple* tup, const std::string& name, const std::type_info& info,
                                                     const std::string& idx, long ncol, long nrow, TYP min, TYP max,
-                                                    TYP def )
-{
+                                                    TYP def ) {
   return new _MatrixImp<TYP>( tup, name, info, idx, ncol, nrow, min, max, def );
 }
 

@@ -20,8 +20,7 @@
  *  @date   30/04/2002
  */
 
-class GslErrorCount : public extends<AlgTool, IGslErrorHandler>
-{
+class GslErrorCount : public extends<AlgTool, IGslErrorHandler> {
 public:
   /** handle the GSL error
    *  @see IGslErrorHandler
@@ -45,11 +44,10 @@ public:
 private:
   /// container of error counters
   typedef std::map<GslError, unsigned int> Counters;
-  mutable Counters m_counters;
+  mutable Counters                         m_counters;
 };
 
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDIGSL_GSLERRORCOUNT_H
-// ============================================================================

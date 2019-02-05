@@ -4,9 +4,11 @@ from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
 
 
 class MyAlg(ConfigurableAlgorithm):
-    __slots__ = {'Text': 'some text',
-                 'Int': 23,
-                 'DataHandle': DataObjectHandleBase('Location')}
+    __slots__ = {
+        'Text': 'some text',
+        'Int': 23,
+        'DataHandle': DataObjectHandleBase('Location')
+    }
 
     def getDlls(self):
         return 'Dummy'
@@ -30,8 +32,10 @@ def test_correct():
     a.Text = 'value'
     a.DataHandle = '/Event/X'
     assert a.getValuedProperties() == {
-        'Int': 42, 'Text': 'value',
-        'DataHandle': DataObjectHandleBase('/Event/X')}
+        'Int': 42,
+        'Text': 'value',
+        'DataHandle': DataObjectHandleBase('/Event/X')
+    }
 
 
 def test_str_from_datahandle():

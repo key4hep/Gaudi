@@ -22,11 +22,9 @@
 #include <memory>
 #include <vector>
 
-namespace GaudiKernelTest
-{
+namespace GaudiKernelTest {
 
-  class AnyDataObject : public CppUnit::TestFixture
-  {
+  class AnyDataObject : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE( AnyDataObject );
 
     CPPUNIT_TEST( test_wrapper );
@@ -41,8 +39,7 @@ namespace GaudiKernelTest
     /**
      * Simple wrapper test
      */
-    void test_wrapper()
-    {
+    void test_wrapper() {
       auto adw = AnyDataWrapper<int>( 42 );
       CPPUNIT_ASSERT_EQUAL( 42, adw.getData() );
 
@@ -56,8 +53,7 @@ namespace GaudiKernelTest
     /**
      * wrapping std::vectors
      */
-    void test_wrapperVector()
-    {
+    void test_wrapperVector() {
 
       using V     = std::vector<int>;
       using VSize = V::size_type;
@@ -103,8 +99,7 @@ namespace GaudiKernelTest
    *  @author Marco Clemencic
    *  @date   2006-11-13
    */
-  class ProgressListener : public CppUnit::TestListener
-  {
+  class ProgressListener : public CppUnit::TestListener {
 
   public:
     /// Default constructor.
@@ -113,21 +108,18 @@ namespace GaudiKernelTest
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test* test ) override
-    {
+    void startTest( CppUnit::Test* test ) override {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure& failure ) override
-    {
+    void addFailure( const CppUnit::TestFailure& failure ) override {
       std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
       m_lastTestFailed = true;
     }
 
-    void endTest( CppUnit::Test* /*test*/ ) override
-    {
+    void endTest( CppUnit::Test* /*test*/ ) override {
       if ( !m_lastTestFailed ) std::cout << " : OK";
       std::cout << std::endl;
     }
@@ -135,12 +127,11 @@ namespace GaudiKernelTest
   private:
     bool m_lastTestFailed;
   };
-}
+} // namespace GaudiKernelTest
 
 // Copied from the COOL implementation
 #include <stdexcept>
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   // Retrieve test path from command line first argument.
   // Default to "" which resolve to the top level suite.
   std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );

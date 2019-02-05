@@ -23,8 +23,8 @@ def qmt_filename_to_name(path):
     >>> qmt_filename_to_name('some_suite.qms/sub.qms/mytest.qmt')
     'some_suite.sub.mytest'
     '''
-    return '.'.join(re.sub(r'\.qm[st]$', '', p)
-                    for p in path.split(os.path.sep))
+    return '.'.join(
+        re.sub(r'\.qm[st]$', '', p) for p in path.split(os.path.sep))
 
 
 def fix_test_name(name, pkg):
@@ -78,11 +78,12 @@ def analyze_deps(pkg, rootdir):
 
         tree = parse_xml(path)
 
-        prereqs = [fix_test_name(el.text, pkg)
-                   for el in tree.findall(prereq_xpath)]
+        prereqs = [
+            fix_test_name(el.text, pkg) for el in tree.findall(prereq_xpath)
+        ]
         if prereqs:
-            print ('set_property(TEST {0} APPEND PROPERTY DEPENDS {1})'
-                   .format(name, ' '.join(prereqs)))
+            print('set_property(TEST {0} APPEND PROPERTY DEPENDS {1})'.format(
+                name, ' '.join(prereqs)))
 
 
 def analyze_suites(pkg, rootdir):
@@ -100,8 +101,8 @@ def analyze_suites(pkg, rootdir):
 
         tree = parse_xml(path)
 
-        labels[name].extend(fix_test_name(el.text, pkg)
-                            for el in tree.findall(tests_xpath))
+        labels[name].extend(
+            fix_test_name(el.text, pkg) for el in tree.findall(tests_xpath))
 
         if tree.findall(suites_xpath):
             sys.stderr.write(('WARNING: %s: suites of suites are '
@@ -115,17 +116,16 @@ def analyze_suites(pkg, rootdir):
             test_labels[test].add(label)
 
     for test, labels in test_labels.iteritems():
-        print ('set_property(TEST {0} APPEND PROPERTY LABELS {1})'
-               .format(test, ' '.join(labels)))
+        print('set_property(TEST {0} APPEND PROPERTY LABELS {1})'.format(
+            test, ' '.join(labels)))
 
 
 def analyze_disabling(pkg, rootdir):
     '''
     Set the label 'disabled' for tests that are not supported on a platform.
     '''
-    platform_id = (os.environ.get('BINARY_TAG') or
-                   os.environ.get('CMTCONFIG') or
-                   platform.platform())
+    platform_id = (os.environ.get('BINARY_TAG') or os.environ.get('CMTCONFIG')
+                   or platform.platform())
 
     unsupp_xpath = 'argument[@name="unsupported_platforms"]/set/text'
     for path in find_files(rootdir, '.qmt'):
@@ -134,12 +134,13 @@ def analyze_disabling(pkg, rootdir):
 
         tree = parse_xml(path)
         # If at least one regex matches the test is disabled.
-        skip_test = [None
-                     for el in tree.findall(unsupp_xpath)
-                     if re.search(el.text, platform_id)]
+        skip_test = [
+            None for el in tree.findall(unsupp_xpath)
+            if re.search(el.text, platform_id)
+        ]
         if skip_test:
-            print ('set_property(TEST {0} APPEND PROPERTY LABELS disabled)'
-                   .format(name))
+            print('set_property(TEST {0} APPEND PROPERTY LABELS disabled)'.
+                  format(name))
 
 
 if __name__ == '__main__':

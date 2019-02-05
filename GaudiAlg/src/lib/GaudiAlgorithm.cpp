@@ -33,20 +33,16 @@ template class GaudiCommon<Algorithm>;
 // Standard algorithm like constructor
 // ============================================================================
 GaudiAlgorithm::GaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiCommon<Algorithm>( name, pSvcLocator )
-{
+    : GaudiCommon<Algorithm>( name, pSvcLocator ) {
   setProperty( "RegisterForContextService", true ).ignore();
 }
 // ============================================================================
 // standard initialization method
 // ============================================================================
-StatusCode GaudiAlgorithm::initialize()
-{
+StatusCode GaudiAlgorithm::initialize() {
   // initialize the base class
   const StatusCode sc = GaudiCommon<Algorithm>::initialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  if ( sc.isFailure() ) { return sc; }
 
   // Add any customisations here, that cannot go in GaudiCommon
 
@@ -56,8 +52,7 @@ StatusCode GaudiAlgorithm::initialize()
 // ============================================================================
 // standard finalization method
 // ============================================================================
-StatusCode GaudiAlgorithm::finalize()
-{
+StatusCode GaudiAlgorithm::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "Finalize base class GaudiAlgorithm" << endmsg;
 
   // reset pointers
@@ -73,11 +68,8 @@ StatusCode GaudiAlgorithm::execute() { return Error( "Default GaudiAlgorithm exe
 // ============================================================================
 // The standard event collection service
 // ============================================================================
-SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
-{
-  if ( !m_evtColSvc ) {
-    m_evtColSvc = svc<INTupleSvc>( "EvtTupleSvc", true );
-  }
+SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const {
+  if ( !m_evtColSvc ) { m_evtColSvc = svc<INTupleSvc>( "EvtTupleSvc", true ); }
   //
   return m_evtColSvc;
 }
@@ -89,14 +81,11 @@ SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
  *  @return status code
  */
 // ============================================================================
-StatusCode GaudiAlgorithm::sysExecute( const EventContext& ctx )
-{
+StatusCode GaudiAlgorithm::sysExecute( const EventContext& ctx ) {
   StatusCode sc{StatusCode::SUCCESS};
 
   IAlgContextSvc* algCtx = nullptr;
-  if ( registerContext() ) {
-    algCtx = contextSvc();
-  }
+  if ( registerContext() ) { algCtx = contextSvc(); }
   // Lock the context
   Gaudi::Utils::AlgContext cnt( this, algCtx, ctx ); ///< guard/sentry
 

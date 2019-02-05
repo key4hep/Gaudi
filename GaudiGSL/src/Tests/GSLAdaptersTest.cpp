@@ -21,8 +21,7 @@
  *  @authro Vanya BELYAEV Ivan.Belyaev@itep.ru
  */
 
-int main()
-{
+int main() {
 
   /// regular bessel function I0 with simplest adaptor
   const GaudiMath::Function& I0 = GaudiMath::adapter( gsl_sf_bessel_I0 );

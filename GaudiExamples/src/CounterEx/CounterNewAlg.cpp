@@ -42,22 +42,15 @@
  *  @date 2018-02-13
  */
 // ============================================================================
-class CounterNewAlg : public Gaudi::Functional::Producer<int()>
-{
+
+class CounterNewAlg : public Gaudi::Functional::Producer<int()> {
 public:
   int operator()() const override;
 
   CounterNewAlg( const std::string& name, ISvcLocator* pSvc )
-      : Producer( name, pSvc, KeyValue( "OutputLocation", "dummy" ) )
-  {
+      : Producer( name, pSvc, KeyValue( "OutputLocation", "dummy" ) ) {
     setProperty( "StatPrint", "true" ).ignore();
   }
-
-  // copy constructor is disabled
-  CounterNewAlg( const CounterNewAlg& ) = delete;
-
-  // assignement operator is disabled
-  CounterNewAlg& operator=( const CounterNewAlg& ) = delete;
 
 private:
   // counters
@@ -78,8 +71,7 @@ DECLARE_COMPONENT( CounterNewAlg )
 // ============================================================================
 
 // ============================================================================
-int CounterNewAlg::operator()() const
-{
+int CounterNewAlg::operator()() const {
 
   // count overall number of executions:
   ++m_executed_counter;
@@ -115,7 +107,10 @@ int CounterNewAlg::operator()() const
   const int   print    = (int)executed.flag();
   if ( 0 == print % 1000 ) {
     info() << " Event number " << print << endmsg;
-    printStat();
+    always() << "Number of counters : " << nCounters();
+    this->forEachCounter(
+        [&]( const std::string& label, const auto& counter ) { counter.print( this->always() << '\n', label ); } );
+    always() << endmsg;
     info() << " Efficiency (binomial counter: \"eff\"): (" << m_eff_counter.eff() * 100.0 << " +- "
            << m_eff_counter.effErr() * 100.0 << ")%" << endmsg;
   }

@@ -13,14 +13,12 @@
 
 //---------------------------------------------------------------------------
 //
-namespace details
-{
+namespace details {
   template <typename T>
   using Converter_t = T ( * )( const DataObject* );
 
   template <typename Range, typename StorageType>
-  Range make_range( const DataObject* obj )
-  {
+  Range make_range( const DataObject* obj ) {
     auto c = static_cast<const StorageType*>( obj );
     if ( UNLIKELY( !c ) ) return Range();
     using std::begin;
@@ -34,8 +32,7 @@ namespace details
   }
 
   template <typename ValueType, typename Range = Gaudi::Range_<typename ValueType::ConstVector>>
-  Converter_t<Range> select_range_converter( const DataObject* obj )
-  {
+  Converter_t<Range> select_range_converter( const DataObject* obj ) {
     using Selection = typename ValueType::Selection;
     auto sel        = dynamic_cast<const Selection*>( obj );
     if ( sel ) return &make_range<Range, typename ValueType::Selection>;
@@ -45,8 +42,7 @@ namespace details
   }
 
   template <typename T>
-  bool verifyType( const DataObject* dataObj )
-  {
+  bool verifyType( const DataObject* dataObj ) {
     using Type = std::add_const_t<T>;
     assert( dataObj != nullptr );
     auto obj = dynamic_cast<Type*>( dataObj );
@@ -74,7 +70,7 @@ namespace details
 
   template <typename T>
   using Payload_t = typename Payload_helper<T>::type;
-}
+} // namespace details
 
 //---------------------------------------------------------------------------
 
@@ -91,8 +87,7 @@ namespace details
 //---------------------------------------------------------------------------
 
 template <typename T>
-class DataObjectHandle : public DataObjectHandleBase
-{
+class DataObjectHandle : public DataObjectHandleBase {
 public:
   using DataObjectHandleBase::DataObjectHandleBase;
 
@@ -126,7 +121,7 @@ public:
   T* put( T* object ) const { return put( std::unique_ptr<T>( object ) ); }
 
 private:
-  T* get( bool mustExist ) const;
+  T*           get( bool mustExist ) const;
   mutable bool m_goodType = false;
 };
 
@@ -140,8 +135,7 @@ private:
  * static cast: we do not need the checks of the dynamic cast for every access!
  */
 template <typename T>
-T* DataObjectHandle<T>::get( bool mustExist ) const
-{
+T* DataObjectHandle<T>::get( bool mustExist ) const {
   auto dataObj = fetch();
   if ( UNLIKELY( !dataObj ) ) {
     if ( mustExist ) { // Problems in getting from the store
@@ -156,8 +150,7 @@ T* DataObjectHandle<T>::get( bool mustExist ) const
 
 //---------------------------------------------------------------------------
 template <typename T>
-T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp ) const
-{
+T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp ) const {
   assert( m_init );
   StatusCode rc = m_EDS->registerObject( objKey(), objectp.get() );
   if ( !rc.isSuccess() ) {
@@ -168,8 +161,7 @@ T* DataObjectHandle<T>::put( std::unique_ptr<T> objectp ) const
 
 //---------------------------------------------------------------------------
 template <typename T>
-T* DataObjectHandle<T>::getOrCreate() const
-{
+T* DataObjectHandle<T>::getOrCreate() const {
   T* obj = get( false );
   return obj ? obj : put( std::make_unique<T>() );
 }
@@ -178,8 +170,7 @@ T* DataObjectHandle<T>::getOrCreate() const
 /// specialization for Range_
 
 template <typename T>
-class DataObjectHandle<Gaudi::Range_<T>> : public DataObjectHandleBase
-{
+class DataObjectHandle<Gaudi::Range_<T>> : public DataObjectHandleBase {
 public:
   using ValueType = std::remove_cv_t<std::remove_pointer_t<typename T::value_type>>;
   using Range     = Gaudi::Range_<typename ValueType::ConstVector>;
@@ -196,8 +187,7 @@ private:
 };
 
 template <typename ValueType>
-auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range
-{
+auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range {
   auto dataObj = fetch();
   if ( UNLIKELY( !dataObj ) ) {
     throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
@@ -218,8 +208,7 @@ auto DataObjectHandle<Gaudi::Range_<ValueType>>::get() const -> Range
 //---------------------------------------------------------------------------
 /// specialization for AnyDataWrapper
 template <typename T>
-class DataObjectHandle<AnyDataWrapper<T>> : public DataObjectHandleBase
-{
+class DataObjectHandle<AnyDataWrapper<T>> : public DataObjectHandleBase {
 public:
   using DataObjectHandleBase::DataObjectHandleBase;
 
@@ -246,8 +235,7 @@ private:
 //---------------------------------------------------------------------------
 
 template <typename T>
-const AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get() const
-{
+const AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get() const {
   auto obj = fetch();
   if ( UNLIKELY( !obj ) ) {
     throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
@@ -260,8 +248,7 @@ const AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get() const
 //---------------------------------------------------------------------------
 
 template <typename T>
-const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj ) const
-{
+const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj ) const {
   assert( m_init );
   auto       objectp = std::make_unique<AnyDataWrapper<T>>( std::move( obj ) );
   StatusCode rc      = m_EDS->registerObject( objKey(), objectp.get() );
@@ -274,65 +261,47 @@ const T* DataObjectHandle<AnyDataWrapper<T>>::put( T&& obj ) const
 //---------------------------- user-facing interface ----------
 
 template <typename T>
-class DataObjectReadHandle : public DataObjectHandle<::details::Payload_t<T>>
-{
+class DataObjectReadHandle : public DataObjectHandle<::details::Payload_t<T>> {
   template <typename... Args, std::size_t... Is>
   DataObjectReadHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> )
-      : DataObjectReadHandle( std::get<Is>( args )... )
-  {
-  }
+      : DataObjectReadHandle( std::get<Is>( args )... ) {}
 
 public:
   DataObjectReadHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Reader, owner}
-  {
-  }
+      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Reader, owner} {}
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key,
-                                                   std::move( doc ) )
-  {
-  }
+                                                   std::move( doc ) ) {}
 
   template <typename... Args>
   DataObjectReadHandle( const std::tuple<Args...>& args )
-      : DataObjectReadHandle( args, std::index_sequence_for<Args...>{} )
-  {
-  }
+      : DataObjectReadHandle( args, std::index_sequence_for<Args...>{} ) {}
 };
 
 template <typename T>
-class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<T>>
-{
+class DataObjectWriteHandle : public DataObjectHandle<::details::Payload_t<T>> {
   template <typename... Args, std::size_t... Is>
   DataObjectWriteHandle( const std::tuple<Args...>& args, std::index_sequence<Is...> )
-      : DataObjectWriteHandle( std::get<Is>( args )... )
-  {
-  }
+      : DataObjectWriteHandle( std::get<Is>( args )... ) {}
 
 public:
   DataObjectWriteHandle( const DataObjID& k, IDataHandleHolder* owner )
-      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Writer, owner}
-  {
-  }
+      : DataObjectHandle<::details::Payload_t<T>>{k, Gaudi::DataHandle::Writer, owner} {}
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
-                                                   std::move( doc ) )
-  {
-  }
+                                                   std::move( doc ) ) {}
 
   template <typename... Args>
   DataObjectWriteHandle( const std::tuple<Args...>& args )
-      : DataObjectWriteHandle( args, std::index_sequence_for<Args...>{} )
-  {
-  }
+      : DataObjectWriteHandle( args, std::index_sequence_for<Args...>{} ) {}
 };
 
 #endif

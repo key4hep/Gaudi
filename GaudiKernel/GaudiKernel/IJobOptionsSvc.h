@@ -17,8 +17,7 @@ class IProperty;
 
     @author Pere Mato
 */
-class GAUDI_API IJobOptionsSvc : virtual public IInterface
-{
+class GAUDI_API IJobOptionsSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IJobOptionsSvc, 4, 1 );

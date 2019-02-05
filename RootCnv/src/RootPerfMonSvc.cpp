@@ -30,8 +30,7 @@ typedef const string& CSTR;
 #define S_FAIL StatusCode::FAILURE
 
 // Small routine to issue exceptions
-StatusCode RootPerfMonSvc::error( CSTR msg )
-{
+StatusCode RootPerfMonSvc::error( CSTR msg ) {
   if ( m_log ) {
     log() << MSG::ERROR << "Error: " << msg << endmsg;
     return S_FAIL;
@@ -42,8 +41,7 @@ StatusCode RootPerfMonSvc::error( CSTR msg )
 }
 
 // Initialize the Db data persistency service
-StatusCode RootPerfMonSvc::initialize()
-{
+StatusCode RootPerfMonSvc::initialize() {
   string     cname;
   StatusCode status = Service::initialize();
   if ( !status.isSuccess() ) return error( "Failed to initialize Service base class." );
@@ -86,8 +84,7 @@ StatusCode RootPerfMonSvc::initialize()
   return S_OK;
 }
 
-void RootPerfMonSvc::record( EventType eventType )
-{
+void RootPerfMonSvc::record( EventType eventType ) {
   SysProcStat data;
   m_eventType = eventType;
   m_utime     = data.utime;
@@ -98,22 +95,18 @@ void RootPerfMonSvc::record( EventType eventType )
   m_perfTree->Fill();
 }
 
-void RootPerfMonSvc::handle( const Incident& incident )
-{
+void RootPerfMonSvc::handle( const Incident& incident ) {
   std::string t = incident.type();
   if ( !t.compare( IncidentType::BeginEvent ) ) {
     m_eventNumber++;
     record( EVENT );
     return;
   }
-  if ( !t.compare( "CONNECTED_OUTPUT" ) ) {
-    m_outputs.insert( incident.source() );
-  }
+  if ( !t.compare( "CONNECTED_OUTPUT" ) ) { m_outputs.insert( incident.source() ); }
 }
 
 // Stop the performance monitoring service
-StatusCode RootPerfMonSvc::stop()
-{
+StatusCode RootPerfMonSvc::stop() {
   char text[64];
   record( FSR );
   auto map = new TMap();
@@ -131,8 +124,7 @@ StatusCode RootPerfMonSvc::stop()
 }
 
 // Finalize the performance monitoring service
-StatusCode RootPerfMonSvc::finalize()
-{
+StatusCode RootPerfMonSvc::finalize() {
   record( FSR );
   log() << MSG::INFO;
   m_log.reset();

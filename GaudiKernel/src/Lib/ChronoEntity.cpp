@@ -26,8 +26,7 @@
  *  @date:   December 1, 1999
  */
 // ============================================================================
-namespace
-{
+namespace {
   /// the unit used by ChronoEntity is microsecond
   constexpr double microsecond = 1; // unit here is microsecond
   constexpr double millisecond = 1000 * microsecond;
@@ -40,15 +39,12 @@ namespace
   constexpr double year        = 365 * day;
 
   constexpr double nanosecond = 0.001 * microsecond;
-}
+} // namespace
 // ============================================================================
 // start the chrono
 // ============================================================================
-IChronoSvc::ChronoStatus ChronoEntity::start()
-{
-  if ( IChronoSvc::RUNNING == m_status ) {
-    return m_status;
-  }
+IChronoSvc::ChronoStatus ChronoEntity::start() {
+  if ( IChronoSvc::RUNNING == m_status ) { return m_status; }
   //
   // following lines could be platform dependent!
   //
@@ -62,11 +58,8 @@ IChronoSvc::ChronoStatus ChronoEntity::start()
 // ============================================================================
 // stop the chrono
 // ============================================================================
-IChronoSvc::ChronoStatus ChronoEntity::stop()
-{
-  if ( IChronoSvc::RUNNING != m_status ) {
-    return m_status;
-  }
+IChronoSvc::ChronoStatus ChronoEntity::stop() {
+  if ( IChronoSvc::RUNNING != m_status ) { return m_status; }
 
   // following lines could be platform dependent!
   m_delta = System::getProcessTime() - m_start;
@@ -86,23 +79,20 @@ IChronoSvc::ChronoStatus ChronoEntity::stop()
 // ============================================================================
 // print user time
 // ============================================================================
-std::string ChronoEntity::outputUserTime() const
-{
+std::string ChronoEntity::outputUserTime() const {
   return "Time User   : " +
          format( uTotalTime(), uMinimalTime(), uMeanTime(), uRMSTime(), uMaximalTime(), nOfMeasurements() );
 }
 // ============================================================================
 // print system time
 // ============================================================================
-std::string ChronoEntity::outputSystemTime() const
-{
+std::string ChronoEntity::outputSystemTime() const {
   return "Time System : " +
          format( kTotalTime(), kMinimalTime(), kMeanTime(), kRMSTime(), kMaximalTime(), nOfMeasurements() );
 }
 // ============================================================================
 // print time
-std::string ChronoEntity::outputElapsedTime() const
-{
+std::string ChronoEntity::outputElapsedTime() const {
   return "TimeElapsed: " +
          format( eTotalTime(), eMinimalTime(), eMeanTime(), eRMSTime(), eMaximalTime(), nOfMeasurements() );
 }
@@ -110,8 +100,7 @@ std::string ChronoEntity::outputElapsedTime() const
 // print the chrono
 // ============================================================================
 std::string ChronoEntity::format( const double total, const double minimal, const double mean, const double rms,
-                                  const double maximal, const unsigned long number ) const
-{
+                                  const double maximal, const unsigned long number ) const {
 
   /// @todo: cache the format
   boost::format fmt( "Tot=%2$5.3g%1$s %4$43s #=%3$3lu" );
@@ -147,8 +136,7 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
 // ============================================================================
 // comparison operator
 // ============================================================================
-bool ChronoEntity::operator<( const ChronoEntity& e ) const
-{
+bool ChronoEntity::operator<( const ChronoEntity& e ) const {
   return ( &e == this )
              ? false
              : ( totalTime() < e.totalTime() )
@@ -157,20 +145,17 @@ bool ChronoEntity::operator<( const ChronoEntity& e ) const
                          ? false
                          : ( m_user < e.m_user )
                                ? true
-                               : ( e.m_user < m_user ) ? false
-                                                       : ( m_kernel < e.m_kernel )
-                                                             ? true
-                                                             : ( e.m_kernel < m_kernel )
-                                                                   ? false
-                                                                   : ( m_elapsed < e.m_elapsed )
-                                                                         ? true
-                                                                         : ( e.m_elapsed < m_elapsed ) ? false : false;
+                               : ( e.m_user < m_user )
+                                     ? false
+                                     : ( m_kernel < e.m_kernel )
+                                           ? true
+                                           : ( e.m_kernel < m_kernel ) ? false
+                                                                       : ( m_elapsed < e.m_elapsed ) ? true : false;
 }
 // ============================================================================
 // compound assignment operator
 // ============================================================================
-ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e )
-{
+ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e ) {
   // System::ProcessTime type
   m_delta += e.m_delta;
 
@@ -196,8 +181,8 @@ ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e )
  *  @see boost::format
  */
 // ============================================================================
-std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, const std::string& fmt, System::TimeType unit ) const
-{
+std::string ChronoEntity::outputTime( IChronoSvc::ChronoType typ, const std::string& fmt,
+                                      System::TimeType unit ) const {
   boost::format _fmt( fmt );
   // allow various number of arguments
   using namespace boost::io;

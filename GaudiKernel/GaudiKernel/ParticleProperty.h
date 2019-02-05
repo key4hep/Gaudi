@@ -15,8 +15,7 @@
  *
  *  @author  Iain Last,G.Corti
  */
-class ParticleProperty final
-{
+class ParticleProperty final {
 public:
   /// Constructors
   ParticleProperty() = default;
@@ -31,9 +30,7 @@ public:
       , m_tlife( tlife )
       , m_evtgenName( std::move( evtgenName ) )
       , m_pythiaId( pythiaId )
-      , m_maxWidth( maxWidth )
-  {
-  }
+      , m_maxWidth( maxWidth ) {}
 
   /// Destructor.
   ~ParticleProperty() = default;
@@ -103,8 +100,7 @@ public:
   /// set the pointer to the antiparticle
   void setAntiParticle( const ParticleProperty* p ) { m_anti = p; }
 
-  friend std::ostream& operator<<( std::ostream& stream, const ParticleProperty& pp )
-  {
+  friend std::ostream& operator<<( std::ostream& stream, const ParticleProperty& pp ) {
     stream << "Name : " << pp.m_name << ", Geant ID : " << pp.m_idgeant << ", JetSet ID : " << pp.m_idjetset
            << ", Charge (/e): " << pp.m_charge << ", Mass (MeV): " << pp.m_mass << ", Lifetime (ns): " << pp.m_tlife
            << ", EvtGen Name: " << pp.m_evtgenName << ", Pythia ID: " << pp.m_pythiaId

@@ -28,7 +28,7 @@
 // ============================================================================
 #include "GaudiCommon.icpp"
 // ============================================================================
-template class GaudiCommon<AlgTool>;
+template class GaudiCommon<CounterHolder<AlgTool>>;
 // ============================================================================
 /** @namespace GaudiToolServices
  *  Collection of default services names to be used
@@ -37,8 +37,7 @@ template class GaudiCommon<AlgTool>;
  *  @date   2004-01-19
  */
 // ============================================================================
-namespace GaudiToolServices
-{
+namespace GaudiToolServices {
   /// the default name for Event Data Service
   const std::string s_EventDataSvc = "EventDataSvc";
   /// the default name for Detector Data Service
@@ -49,16 +48,14 @@ namespace GaudiToolServices
   const std::string s_IncidentSvc = "IncidentSvc";
   /// the default name for Histogram Service
   const std::string s_HistoSvc = "HistogramDataSvc";
-}
+} // namespace GaudiToolServices
 // ============================================================================
-namespace GaudiToolLocal
-{
+namespace GaudiToolLocal {
   // ==========================================================================
   /** @class Counter
    *  simple local counter
    */
-  class Counter final
-  {
+  class Counter final {
   public:
     // ========================================================================
     // constructor
@@ -75,12 +72,9 @@ namespace GaudiToolLocal
     /// current count
     long counts( const std::string& object ) { return m_map[object]; }
     /// make a report
-    void report() const
-    {
+    void report() const {
       /// keep the silence?
-      if ( !GaudiTool::summaryEnabled() ) {
-        return;
-      } // RETURN
+      if ( !GaudiTool::summaryEnabled() ) { return; } // RETURN
       //
       for ( const auto& entry : m_map ) {
         if ( entry.second ) {
@@ -93,8 +87,8 @@ namespace GaudiToolLocal
   private:
     // ========================================================================
     typedef std::map<std::string, long> Map;
-    Map         m_map;
-    std::string m_message;
+    Map                                 m_map;
+    std::string                         m_message;
     // ========================================================================
   };
   // ==========================================================================
@@ -112,7 +106,7 @@ namespace GaudiToolLocal
    */
   static Counter s_FinalizeCounter( " Initialize/Finalize (mis)balance " );
   // ==========================================================================
-}
+} // namespace GaudiToolLocal
 // ============================================================================
 /// summary is enabled
 // ============================================================================
@@ -136,8 +130,7 @@ bool GaudiTool::summaryEnabled() // is summary enabled?
 // Standard constructor
 // ============================================================================
 GaudiTool::GaudiTool( const std::string& this_type, const std::string& this_name, const IInterface* parent )
-    : GaudiCommon<AlgTool>( this_type, this_name, parent ), m_local( this_type + "/" + this_name )
-{
+    : GaudiCommon<CounterHolder<AlgTool>>( this_type, this_name, parent ), m_local( this_type + "/" + this_name ) {
   // make instance counts
   GaudiToolLocal::s_InstanceCounter.increment( m_local );
 }
@@ -148,13 +141,10 @@ GaudiTool::~GaudiTool() { GaudiToolLocal::s_InstanceCounter.decrement( m_local )
 // ============================================================================
 // standard initialization method
 // ============================================================================
-StatusCode GaudiTool::initialize()
-{
+StatusCode GaudiTool::initialize() {
   // initialize the base class
-  const StatusCode sc = GaudiCommon<AlgTool>::initialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  const StatusCode sc = GaudiCommon<CounterHolder<AlgTool>>::initialize();
+  if ( sc.isFailure() ) { return sc; }
 
   // increment the counter
   GaudiToolLocal::s_FinalizeCounter.increment( m_local );
@@ -168,8 +158,7 @@ StatusCode GaudiTool::initialize()
 // ============================================================================
 // standard finalization method
 // ============================================================================
-StatusCode GaudiTool::finalize()
-{
+StatusCode GaudiTool::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << " ==> Finalize the base class GaudiTool " << endmsg;
 
   // clear "explicit services"
@@ -179,10 +168,8 @@ StatusCode GaudiTool::finalize()
   m_histoSvc.reset();
 
   // finalize the base class
-  const StatusCode sc = GaudiCommon<AlgTool>::finalize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  const StatusCode sc = GaudiCommon<CounterHolder<AlgTool>>::finalize();
+  if ( sc.isFailure() ) { return sc; }
 
   // Decrement the counter
   GaudiToolLocal::s_FinalizeCounter.decrement( m_local );
@@ -193,17 +180,14 @@ StatusCode GaudiTool::finalize()
 // ============================================================================
 // Determines if this tool is public or not (i.e. owned by the ToolSvc).
 // ============================================================================
-bool GaudiTool::isPublic() const
-{
+bool GaudiTool::isPublic() const {
   const IAlgTool* tool = this;
   // Recurse down the ownership tree, to see with we ever end up at the ToolSvc
   bool         ownedByToolSvc = false;
   unsigned int sanityCheck( 0 );
   while ( tool && ++sanityCheck < 99999 ) {
     ownedByToolSvc = ( nullptr != dynamic_cast<const IToolSvc*>( tool->parent() ) );
-    if ( ownedByToolSvc ) {
-      break;
-    }
+    if ( ownedByToolSvc ) { break; }
     // if parent is also a tool, try again
     tool = dynamic_cast<const IAlgTool*>( tool->parent() );
   }
@@ -212,56 +196,49 @@ bool GaudiTool::isPublic() const
 // ============================================================================
 // accessor to detector service
 // ============================================================================
-IDataProviderSvc* GaudiTool::detSvc() const
-{
+IDataProviderSvc* GaudiTool::detSvc() const {
   if ( UNLIKELY( !m_detSvc ) ) m_detSvc = service( GaudiToolServices::s_DetectorDataSvc, true );
   return m_detSvc;
 }
 // ============================================================================
 // The standard N-Tuple
 // ============================================================================
-INTupleSvc* GaudiTool::ntupleSvc() const
-{
+INTupleSvc* GaudiTool::ntupleSvc() const {
   if ( UNLIKELY( !m_ntupleSvc ) ) m_ntupleSvc = service( "NTupleSvc", true );
   return m_ntupleSvc;
 }
 // ============================================================================
 // The standard event collection service
 // ============================================================================
-INTupleSvc* GaudiTool::evtColSvc() const
-{
+INTupleSvc* GaudiTool::evtColSvc() const {
   if ( UNLIKELY( !m_evtColSvc ) ) m_evtColSvc = service( "EvtTupleSvc", true );
   return m_evtColSvc;
 }
 // ============================================================================
 // accessor to Incident Service
 // ============================================================================
-IIncidentSvc* GaudiTool::incSvc() const
-{
+IIncidentSvc* GaudiTool::incSvc() const {
   if ( UNLIKELY( !m_incSvc ) ) m_incSvc = service( GaudiToolServices::s_IncidentSvc, true );
   return m_incSvc;
 }
 // ============================================================================
 // accessor to Chrono & Stat Service
 // ============================================================================
-IChronoStatSvc* GaudiTool::chronoSvc() const
-{
+IChronoStatSvc* GaudiTool::chronoSvc() const {
   if ( UNLIKELY( !m_chronoSvc ) ) m_chronoSvc = service( GaudiToolServices::s_ChronoStatSvc, true );
   return m_chronoSvc;
 }
 // ============================================================================
 // accessor to histogram Service
 // ============================================================================
-IHistogramSvc* GaudiTool::histoSvc() const
-{
+IHistogramSvc* GaudiTool::histoSvc() const {
   if ( UNLIKELY( !m_histoSvc ) ) m_histoSvc = service( GaudiToolServices::s_HistoSvc, true );
   return m_histoSvc;
 }
 // ============================================================================
 // accessor to Algorithm Context Service
 // ============================================================================
-IAlgContextSvc* GaudiTool::contextSvc() const
-{
+IAlgContextSvc* GaudiTool::contextSvc() const {
   if ( UNLIKELY( !m_contextSvc ) ) m_contextSvc = service( m_contextSvcName, true );
   return m_contextSvc;
 }

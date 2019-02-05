@@ -10,11 +10,9 @@
  *
  *
  */
-namespace Test
-{
+namespace Test {
 
-  class ViewTester : public GaudiAlgorithm
-  {
+  class ViewTester : public GaudiAlgorithm {
 
   public:
     bool isClonable() const override { return true; }
@@ -26,8 +24,8 @@ namespace Test
     /// the finalization of the algorithm
     StatusCode finalize() override;
 
-    ViewTester( const std::string& name,   // the algorithm instance name
-                ISvcLocator*       pSvc ); // the Service Locator
+    ViewTester( const std::string& name, // the algorithm instance name
+                ISvcLocator*       pSvc );     // the Service Locator
 
   private:
     /// the default constructor is disabled
@@ -43,9 +41,9 @@ namespace Test
     std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputHandles;
 
     // View config
-    Gaudi::Property<std::string> m_baseViewName{this, "baseViewName", "view",
+    Gaudi::Property<std::string>  m_baseViewName{this, "baseViewName", "view",
                                                 "Views to be named this, plus a numerical index"};
     Gaudi::Property<unsigned int> m_viewNumber{this, "viewNumber", 0, "How many views to make"};
     Gaudi::Property<std::string>  m_viewNodeName{this, "viewNodeName", "viewNode", "Name of node to attach views to"};
   };
-}
+} // namespace Test

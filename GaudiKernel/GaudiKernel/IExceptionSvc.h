@@ -21,8 +21,7 @@ class INamedInterface;
  *  @date 2007-03-08
  */
 // ============================================================================
-class GAUDI_API IExceptionSvc : virtual public IInterface
-{
+class GAUDI_API IExceptionSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IExceptionSvc, 3, 0 );
@@ -41,6 +40,3 @@ public:
 
 // ============================================================================
 #endif // GAUDIKERNEL_IEXCEPTIONSVC_H
-// ============================================================================
-// The END
-// ============================================================================

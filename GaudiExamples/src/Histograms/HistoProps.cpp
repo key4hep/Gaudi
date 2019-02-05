@@ -16,17 +16,14 @@
  *  @date 2007-09-18
  */
 // ============================================================================
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     /** @class HistoProps
      *  simple example, which illustrates the usage of "histogram properties"
      *  @author Vanay BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-09-18
      */
-    class HistoProps : public GaudiHistoAlg
-    {
+    class HistoProps : public GaudiHistoAlg {
     public:
       // ======================================================================
       /// Execute the algorithm
@@ -38,8 +35,7 @@ namespace Gaudi
        *  @param name algorithm instance name
        *  @param pSvc  Service Locator
        */
-      HistoProps( const std::string& name, ISvcLocator* pSvc ) : GaudiHistoAlg( name, pSvc )
-      {
+      HistoProps( const std::string& name, ISvcLocator* pSvc ) : GaudiHistoAlg( name, pSvc ) {
         setProperty( "PropertiesPrint", true ).ignore();
         setProperty( "HistoPrint", true ).ignore();
       }
@@ -50,7 +46,7 @@ namespace Gaudi
       Gaudi::Property<Gaudi::Histo1DDef> m_hist2{
           this, "Histo2", {"Histogram2", -5, 5, 200}, "The parameters for the second histogram"};
     };
-  } // end of namespace Gaudi::Examples
+  } // namespace Examples
 } // end of namespace Gaudi
 // ============================================================================
 /// the factory (necessary for instantiation)
@@ -59,8 +55,7 @@ DECLARE_COMPONENT( HistoProps )
 // ============================================================================
 // Execute the algorithm
 // ============================================================================
-StatusCode Gaudi::Examples::HistoProps::execute()
-{
+StatusCode Gaudi::Examples::HistoProps::execute() {
 
   Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
 

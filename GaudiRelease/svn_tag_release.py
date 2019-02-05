@@ -18,7 +18,7 @@ from ConfigParser import ConfigParser
 
 def svn(*args, **kwargs):
     print "> svn", " ".join(args)
-    return apply(Popen, (["svn"] + list(args),), kwargs)
+    return apply(Popen, (["svn"] + list(args), ), kwargs)
 
 
 def svn_ls(url):
@@ -61,10 +61,16 @@ def checkout_structure(url, proj, branch):
 def main():
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("--pre", action="store_true",
-                      help="Create -pre tags instead of final tags.")
-    parser.add_option("-b", "--branch",
-                      help="Use the given (global) branch as source for the tags instead of the trunk")
+    parser.add_option(
+        "--pre",
+        action="store_true",
+        help="Create -pre tags instead of final tags.")
+    parser.add_option(
+        "-b",
+        "--branch",
+        help=
+        "Use the given (global) branch as source for the tags instead of the trunk"
+    )
     opts, args = parser.parse_args()
     if opts.branch:
         opts.branch = "/".join(["branches", "GAUDI", opts.branch])
@@ -100,8 +106,8 @@ def main():
             # I have to make the tag if it doesn't exist and (if we use -pre tags)
             # neither the -pre tag exists.
             no_tag = not svn_exists(pktagdir)
-            make_tag = no_tag or (
-                opts.pre and no_tag and not svn_exists(pktagdir + "-pre"))
+            make_tag = no_tag or (opts.pre and no_tag
+                                  and not svn_exists(pktagdir + "-pre"))
             if make_tag:
                 if opts.pre:
                     pktagdir += "-pre"
@@ -109,8 +115,9 @@ def main():
                 # Atlas type of tag
                 tagElements = tag_re.match(tag)
                 if tagElements:
-                    tagElements = "-".join(["%02d" % int(el or "0")
-                                            for el in tagElements.groups()])
+                    tagElements = "-".join([
+                        "%02d" % int(el or "0") for el in tagElements.groups()
+                    ])
                     pktagdir = "%s/tags/%s/%s-%s" % (proj, p, p, tagElements)
                     svn("cp", "/".join([proj, opts.branch, p]),
                         pktagdir).wait()

@@ -16,8 +16,7 @@ class ContainedObject;
     @author Pavel Binko
     @author Pere Mato
 */
-class GAUDI_API ObjectContainerBase : public DataObject
-{
+class GAUDI_API ObjectContainerBase : public DataObject {
 
 protected:
   /// Constructor

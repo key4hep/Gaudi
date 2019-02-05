@@ -14,13 +14,10 @@
 // Local include(s):
 #include "SystemLinux.h"
 
-namespace System
-{
-  namespace Linux
-  {
+namespace System {
+  namespace Linux {
 
-    std::vector<std::string> cmdLineArgs()
-    {
+    std::vector<std::string> cmdLineArgs() {
 
       // Open the file that we can get this information from:
       char fname[1024];
@@ -36,9 +33,7 @@ namespace System
         long len = ::fread( cmd, sizeof( char ), sizeof( cmd ), cmdLine );
         if ( len > 0 ) {
           cmd[len] = 0;
-          for ( char* token = cmd; token - cmd < len; token += ::strlen( token ) + 1 ) {
-            result.push_back( token );
-          }
+          for ( char* token = cmd; token - cmd < len; token += ::strlen( token ) + 1 ) { result.push_back( token ); }
         }
         ::fclose( cmdLine );
       }
@@ -46,8 +41,7 @@ namespace System
       return result;
     }
 
-    std::string typeinfoName( const char* class_name )
-    {
+    std::string typeinfoName( const char* class_name ) {
 
       // Demangle the name:
       int  status;
@@ -67,14 +61,11 @@ namespace System
       return result;
     }
 
-    std::string hostName()
-    {
+    std::string hostName() {
 
-      static const size_t STRING_SIZE = 512;
+      static const size_t           STRING_SIZE = 512;
       std::array<char, STRING_SIZE> hname;
-      if (::gethostname( hname.data(), STRING_SIZE ) ) {
-        return "";
-      }
+      if ( ::gethostname( hname.data(), STRING_SIZE ) ) { return ""; }
 
       // According to the gethostname documentation, if a host name is too long
       // to fit into the array provided by the user, the call will truncate the
@@ -89,40 +80,30 @@ namespace System
       return std::string( hname.data() );
     }
 
-    std::string osName()
-    {
+    std::string osName() {
 
       struct utsname ut;
-      if (::uname( &ut ) ) {
-        return "UNKNOWN Linux";
-      }
+      if ( ::uname( &ut ) ) { return "UNKNOWN Linux"; }
       return std::string( ut.sysname );
     }
 
-    std::string osVersion()
-    {
+    std::string osVersion() {
 
       struct utsname ut;
-      if (::uname( &ut ) ) {
-        return "UNKNOWN version";
-      }
+      if ( ::uname( &ut ) ) { return "UNKNOWN version"; }
       return std::string( ut.release );
     }
 
-    std::string machineType()
-    {
+    std::string machineType() {
 
       struct utsname ut;
-      if (::uname( &ut ) ) {
-        return "UNKNOWN";
-      }
+      if ( ::uname( &ut ) ) { return "UNKNOWN"; }
       return std::string( ut.machine );
     }
 
-    std::string accountName()
-    {
+    std::string accountName() {
 
-      const char* acct  = ::getlogin();
+      const char* acct = ::getlogin();
       if ( !acct ) acct = ::getenv( "LOGNAME" );
       if ( !acct ) acct = ::getenv( "USER" );
 

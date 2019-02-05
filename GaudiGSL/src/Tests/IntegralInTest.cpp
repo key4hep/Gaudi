@@ -17,9 +17,7 @@
 #include "CLHEP/GenericFunctions/Sin.hh"
 // ============================================================================
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 // ============================================================================
@@ -32,8 +30,7 @@ using namespace CLHEP;
  */
 // ============================================================================
 
-int main()
-{
+int main() {
 
   std::cout << " Test for numerical differentiation of Genfun::Cos(x) " << std::endl;
 

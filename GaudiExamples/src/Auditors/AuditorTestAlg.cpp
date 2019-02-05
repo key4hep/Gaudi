@@ -8,8 +8,7 @@
  *  @author Marco Clemencic
  *  @date   Apr 2, 2008
  */
-class AuditorTestAlg : public GaudiAlgorithm
-{
+class AuditorTestAlg : public GaudiAlgorithm {
 public:
   /// Standard constructor
   AuditorTestAlg( const std::string& name, ISvcLocator* pSvcLocator );
@@ -37,9 +36,7 @@ DECLARE_COMPONENT( AuditorTestAlg )
 // Standard constructor, initializes variables
 //=============================================================================
 AuditorTestAlg::AuditorTestAlg( const std::string& name, ISvcLocator* pSvcLocator )
-    : GaudiAlgorithm( name, pSvcLocator )
-{
-}
+    : GaudiAlgorithm( name, pSvcLocator ) {}
 //=============================================================================
 // Destructor
 //=============================================================================
@@ -48,8 +45,7 @@ AuditorTestAlg::~AuditorTestAlg() {}
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode AuditorTestAlg::initialize()
-{
+StatusCode AuditorTestAlg::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -61,15 +57,13 @@ StatusCode AuditorTestAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode AuditorTestAlg::execute()
-{
+StatusCode AuditorTestAlg::execute() {
 
   debug() << "==> Execute" << endmsg;
 
   const IAuditor::CustomEventType evt( "loop" );
   auditorSvc()->before( evt, name() );
-  for ( long i = 0; i < 1000000; ++i ) {
-  }
+  for ( long i = 0; i < 1000000; ++i ) {}
   auditorSvc()->after( evt, name() );
 
   return StatusCode::SUCCESS;
@@ -78,8 +72,7 @@ StatusCode AuditorTestAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode AuditorTestAlg::finalize()
-{
+StatusCode AuditorTestAlg::finalize() {
 
   debug() << "==> Finalize" << endmsg;
 

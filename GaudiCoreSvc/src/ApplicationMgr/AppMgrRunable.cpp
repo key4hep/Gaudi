@@ -11,8 +11,7 @@
 DECLARE_COMPONENT( AppMgrRunable )
 
 // IService implementation: initialize the service
-StatusCode AppMgrRunable::initialize()
-{
+StatusCode AppMgrRunable::initialize() {
   StatusCode sc = Service::initialize();
   if ( sc.isSuccess() ) {
     sc = serviceLocator()->queryInterface( IAppMgrUI::interfaceID(), pp_cast<void>( &m_appMgrUI ) );
@@ -26,22 +25,19 @@ StatusCode AppMgrRunable::initialize()
 }
 
 // IService implementation: initialize the service
-StatusCode AppMgrRunable::start()
-{
+StatusCode AppMgrRunable::start() {
   StatusCode sc = Service::start();
   return sc;
 }
 
 // IService implementation: initialize the service
-StatusCode AppMgrRunable::stop()
-{
+StatusCode AppMgrRunable::stop() {
   StatusCode sc = Service::stop();
   return sc;
 }
 
 // IService implementation: finalize the service
-StatusCode AppMgrRunable::finalize()
-{
+StatusCode AppMgrRunable::finalize() {
   StatusCode sc = Service::finalize();
   if ( m_appMgrUI ) m_appMgrUI->release();
   m_appMgrUI = nullptr;
@@ -49,8 +45,7 @@ StatusCode AppMgrRunable::finalize()
 }
 
 // IRunable implementation : Run the class implementation
-StatusCode AppMgrRunable::run()
-{
+StatusCode AppMgrRunable::run() {
   if ( m_appMgrUI ) {
     // loop over the events
     return m_appMgrUI->nextEvent( m_evtMax );

@@ -35,8 +35,7 @@ DECLARE_COMPONENT( ReadAlg )
 //--------------------------------------------------------------------
 // Initialize
 //--------------------------------------------------------------------
-StatusCode ReadAlg::initialize()
-{
+StatusCode ReadAlg::initialize() {
   m_recordSvc = service( "FileRecordDataSvc", true );
   if ( !m_recordSvc ) {
     error() << "Unable to retrieve run records service" << endmsg;
@@ -58,8 +57,7 @@ StatusCode ReadAlg::initialize()
 //--------------------------------------------------------------------
 // Finalize
 //--------------------------------------------------------------------
-StatusCode ReadAlg::finalize()
-{
+StatusCode ReadAlg::finalize() {
   if ( m_incidentSvc ) m_incidentSvc->removeListener( this );
   m_incidentSvc.reset();
   m_recordSvc.reset();
@@ -69,8 +67,7 @@ StatusCode ReadAlg::finalize()
 //--------------------------------------------------------------------
 // IIncidentListener override: Inform that a new incident has occured
 //--------------------------------------------------------------------
-void ReadAlg::handle( const Incident& incident )
-{
+void ReadAlg::handle( const Incident& incident ) {
   always() << "Got incident: " << incident.type() << " Source:" << incident.source() << endmsg;
   if ( incident.type() == m_incidentName ) {
     std::string n = incident.source();
@@ -92,8 +89,7 @@ void ReadAlg::handle( const Incident& incident )
 //--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
-StatusCode ReadAlg::execute()
-{
+StatusCode ReadAlg::execute() {
   // This just makes the code below a bit easier to read (and type)
   SmartDataPtr<Event> evt( eventSvc(), "/Event/Header" );
 
@@ -196,9 +192,7 @@ StatusCode ReadAlg::execute()
               log << endmsg;
             }
           }
-        } catch ( ... ) {
-          error() << "Exception occurred!" << endmsg;
-        }
+        } catch ( ... ) { error() << "Exception occurred!" << endmsg; }
       }
     } else
       warning() << "No tracks found, Event " << evt->event() << endmsg;

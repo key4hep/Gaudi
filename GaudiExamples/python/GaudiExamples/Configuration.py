@@ -11,8 +11,7 @@ from Gaudi.Configuration import INFO
 class GaudiExamplesCommonConf(ConfigurableUser):
     """Enable common configuration for GaudiExamples tests.
     """
-    __slots__ = {"OutputLevel": INFO,
-                 "DummyEvents": -1}
+    __slots__ = {"OutputLevel": INFO, "DummyEvents": -1}
 
     def __apply_configuration__(self):
         from Configurables import (AuditorSvc, ChronoAuditor, ApplicationMgr,

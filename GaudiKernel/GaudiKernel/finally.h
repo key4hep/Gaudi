@@ -15,7 +15,6 @@ struct final_action {
 };
 
 template <typename F>
-final_action<F> finally( F&& act )
-{
+final_action<F> finally( F&& act ) {
   return {std::forward<F>( act )};
 }

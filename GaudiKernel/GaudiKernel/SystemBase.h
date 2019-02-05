@@ -13,9 +13,8 @@
 #ifndef GAUDI_SYSTEM_SYSTEMBASE_H
 #define GAUDI_SYSTEM_SYSTEMBASE_H
 
-namespace System
-{
+namespace System {
   /// Enumeration for fetching information
   enum InfoType { NoFetch, RemainTime, Times, ProcessBasics, PriorityBoost, Memory, Quota, System, Modules, IO };
-}
+} // namespace System
 #endif // GAUDI_SYSTEM_SYSTEMBASE_H

@@ -13,8 +13,7 @@
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/StatusCode.h"
 
-class GAUDI_API IIoComponent : virtual public INamedInterface
-{
+class GAUDI_API IIoComponent : virtual public INamedInterface {
 
 public:
   DeclareInterfaceID( IIoComponent, 1, 0 );

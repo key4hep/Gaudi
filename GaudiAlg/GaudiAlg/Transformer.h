@@ -14,10 +14,8 @@
 //   b) are encouraged not to have state which depends on the events
 //      (eg. histograms, counters will have to be mutable)
 
-namespace Gaudi
-{
-  namespace Functional
-  {
+namespace Gaudi {
+  namespace Functional {
 
     template <typename Signature, typename Traits_ = Traits::useDefaults>
     class Transformer;
@@ -25,14 +23,12 @@ namespace Gaudi
     // general N -> 1 algorithms
     template <typename Out, typename... In, typename Traits_>
     class Transformer<Out( const In&... ), Traits_>
-        : public details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_>
-    {
+        : public details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_> {
     public:
       using details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final
-      {
+      StatusCode execute() override final {
         try {
           details::put( std::get<0>( this->m_outputs ),
                         details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
@@ -55,24 +51,21 @@ namespace Gaudi
 
     template <typename... Out, typename... In, typename Traits_>
     class MultiTransformer<std::tuple<Out...>( const In&... ), Traits_>
-        : public details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_>
-    {
+        : public details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_> {
     public:
       using details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final
-      {
+      StatusCode execute() override final {
         try {
           Gaudi::apply(
               [this]( auto&... ohandle ) {
 
 #if defined( __clang__ ) && ( __clang_major__ < 6 )
 // clang-5 gives a spurious warning about not using the captured `ohandle`
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-lambda-capture"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wunused-lambda-capture"
 #endif
-
                 Gaudi::apply(
                     [&ohandle...]( auto&&... data ) {
 #if __cplusplus < 201703L
@@ -85,9 +78,8 @@ namespace Gaudi
                     details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
 
 #if defined( __clang__ ) && ( __clang_major__ < 6 )
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
-
               },
               this->m_outputs );
           return StatusCode::SUCCESS;
@@ -109,14 +101,12 @@ namespace Gaudi
 
     template <typename... Out, typename... In, typename Traits_>
     class MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_>
-        : public details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>
-    {
+        : public details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> {
     public:
       using details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final
-      {
+      StatusCode execute() override final {
         try {
           Gaudi::apply(
               [&]( auto&... ohandle ) {
@@ -143,7 +133,7 @@ namespace Gaudi
       // instead they MUST implement this operator
       virtual std::tuple<bool, Out...> operator()( const In&... ) const = 0;
     };
-  }
-}
+  } // namespace Functional
+} // namespace Gaudi
 
 #endif

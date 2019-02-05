@@ -42,31 +42,24 @@
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API ConversionSvc : public extends<Service, IConversionSvc, IAddressCreator>
-{
-  class WorkerEntry final
-  {
+class GAUDI_API ConversionSvc : public extends<Service, IConversionSvc, IAddressCreator> {
+  class WorkerEntry final {
     CLID        m_class;
     IConverter* m_converter;
 
   public:
-    WorkerEntry( const CLID& cl, IConverter* cnv ) : m_class( cl ), m_converter( cnv )
-    {
+    WorkerEntry( const CLID& cl, IConverter* cnv ) : m_class( cl ), m_converter( cnv ) {
       if ( m_converter ) m_converter->addRef();
     }
 
-    ~WorkerEntry()
-    {
+    ~WorkerEntry() {
       if ( m_converter ) m_converter->release();
     }
 
     WorkerEntry( WorkerEntry&& orig ) noexcept
-        : m_class{orig.m_class}, m_converter{std::exchange( orig.m_converter, nullptr )}
-    {
-    }
+        : m_class{orig.m_class}, m_converter{std::exchange( orig.m_converter, nullptr )} {}
 
-    WorkerEntry& operator=( WorkerEntry&& orig ) noexcept
-    {
+    WorkerEntry& operator=( WorkerEntry&& orig ) noexcept {
       m_class = orig.m_class;
       std::swap( m_converter, orig.m_converter );
       return *this;

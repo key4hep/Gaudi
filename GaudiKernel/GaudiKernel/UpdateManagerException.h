@@ -13,21 +13,16 @@
  *  @author Marco Clemencic
  *  @date   2005-12-14
  */
-class GAUDI_API UpdateManagerException : public GaudiException
-{
+class GAUDI_API UpdateManagerException : public GaudiException {
 public:
   /// Standard constructor
   UpdateManagerException( const std::string& Message = "unspecified exception",
                           const std::string& Tag = "*UpdateManagerSvc*", const StatusCode& Code = StatusCode::FAILURE )
-      : GaudiException( Message, Tag, Code )
-  {
-  }
+      : GaudiException( Message, Tag, Code ) {}
 
   UpdateManagerException( const std::string& Message, const std::string& Tag, const StatusCode& Code,
                           const GaudiException& Ex )
-      : GaudiException( Message, Tag, Code, Ex )
-  {
-  }
+      : GaudiException( Message, Tag, Code, Ex ) {}
 
   /// Destructor.
   ~UpdateManagerException() throw() override = default;

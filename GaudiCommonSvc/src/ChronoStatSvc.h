@@ -34,8 +34,7 @@ class IMessageSvc;
  *   @author:  Vanya BELYAEV Ivan.Belyaev@itep.ru
  *   @daate:   December 1, 1999
  */
-class ChronoStatSvc : public extends<Service, IChronoStatSvc, IIncidentListener>
-{
+class ChronoStatSvc : public extends<Service, IChronoStatSvc, IIncidentListener> {
 public:
   // ============================================================================
   /// some useful typedefs
@@ -134,15 +133,13 @@ private:
 private:
   bool isMT() const;
 
-  ChronoEntity& getEntity( const ChronoTag& chronoTag )
-  {
+  ChronoEntity& getEntity( const ChronoTag& chronoTag ) {
     lock_t lock( m_mutex );
     return m_chronoEntities[chronoTag];
   }
 
   // basically limit the integer to MSG::Level range
-  static MSG::Level int2level( int l )
-  {
+  static MSG::Level int2level( int l ) {
     return static_cast<MSG::Level>(
         std::max( std::min( l, static_cast<int>( MSG::FATAL ) ), static_cast<int>( MSG::NIL ) ) );
   };
@@ -165,7 +162,7 @@ private:
                                           "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_chronoCoutFlag{this, "ChronoDestinationCout", false,
                                          "define the destination of the table to be printed"};
-  Gaudi::Property<int> m_intChronoPrintLevel{
+  Gaudi::Property<int>  m_intChronoPrintLevel{
       this, "ChronoPrintLevel", MSG::INFO, [this]( auto& ) { m_chronoPrintLevel = int2level( m_intChronoPrintLevel ); },
       "print level"};
   Gaudi::Property<bool> m_chronoOrderFlag{this, "ChronoTableToBeOrdered", true, "should the printout be ordered"};
@@ -176,7 +173,7 @@ private:
                                         "decide if the final printout should be performed"};
   Gaudi::Property<bool> m_statCoutFlag{this, "StatDestinationCout", false,
                                        "define the destination of the table to be printed"};
-  Gaudi::Property<int> m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO,
+  Gaudi::Property<int>  m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO,
                                            [this]( auto& ) { m_statPrintLevel = int2level( m_intStatPrintLevel ); },
                                            "print level"};
   Gaudi::Property<bool> m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
@@ -197,8 +194,8 @@ private:
   ServiceHandle<IInterface> m_hiveWhiteBoardSvc{this, "HiveWhiteBoardSvc", "EventDataSvc"};
 
   typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>> TimeMap;
-  TimeMap       m_perEvtTime;
-  std::ofstream m_ofd;
+  TimeMap                                                          m_perEvtTime;
+  std::ofstream                                                    m_ofd;
 
   // ============================================================================
 };
@@ -206,4 +203,3 @@ private:
 // The END
 // ============================================================================
 #endif //  GAUDISVC_CHRONOSTATSVC_H
-// ============================================================================

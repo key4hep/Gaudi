@@ -26,8 +26,7 @@
 
 class IIncidentSvc;
 
-class THistSvc : public extends<Service, ITHistSvc, IIncidentListener, IIoComponent>
-{
+class THistSvc : public extends<Service, ITHistSvc, IIncidentListener, IIoComponent> {
 public:
   using extends::extends;
 
@@ -166,8 +165,7 @@ private:
   typedef std::mutex           histMut_t;
 
   /// Helper class that manages ROOts global directory and file
-  class GlobalDirectoryRestore
-  {
+  class GlobalDirectoryRestore {
   public:
     GlobalDirectoryRestore( THistSvcMutex_t& mut );
     ~GlobalDirectoryRestore();
@@ -183,8 +181,7 @@ private:
   enum Mode { READ, WRITE, UPDATE, APPEND, SHARE, INVALID };
 
   /// Convert a char to a Mode enum
-  static Mode charToMode( const char typ )
-  {
+  static Mode charToMode( const char typ ) {
     switch ( typ ) {
     case 'O':
       return READ;
@@ -213,12 +210,9 @@ private:
     THistID( const THistID& rhs ) = default;
     THistID( std::string& i, bool& t, TObject* o, TFile* f ) : id( i ), temp( t ), obj( o ), file( f ) {}
     THistID( std::string& i, bool& t, TObject* o, TFile* f, Mode m )
-        : id( i ), temp( t ), obj( o ), file( f ), mode( m )
-    {
-    }
+        : id( i ), temp( t ), obj( o ), file( f ), mode( m ) {}
 
-    void reset()
-    {
+    void reset() {
       id     = "";
       temp   = true;
       obj    = nullptr;
@@ -230,8 +224,7 @@ private:
 
     bool operator<( THistID const& rhs ) const { return ( obj < rhs.obj ); }
 
-    friend std::ostream& operator<<( std::ostream& ost, const THistID& hid )
-    {
+    friend std::ostream& operator<<( std::ostream& ost, const THistID& hid ) {
       ost << "id: " << hid.id << " t: " << hid.temp << " s: " << hid.shared << " M: " << hid.mode << " m: " << hid.mutex
           << " o: " << hid.obj << " " << hid.obj->IsA()->GetName();
       return ost;
@@ -259,7 +252,7 @@ private:
   // uid: /stream/name -> vhid
   typedef std::unordered_map<std::string, vhid_t*> uidMap_t;
   // name -> vhid
-  typedef std::unordered_multimap<std::string, vhid_t*> idMap_t;
+  typedef std::unordered_multimap<std::string, vhid_t*>            idMap_t;
   typedef std::unordered_map<TObject*, std::pair<vhid_t*, size_t>> objMap_t;
 
   hlist_t  m_hlist;
@@ -269,9 +262,9 @@ private:
   // Container holding all TObjects and vhid*s
   objMap_t m_tobjs;
 
-  std::map<std::string, std::pair<TFile*, Mode>> m_files; // stream->file
+  std::map<std::string, std::pair<TFile*, Mode>>  m_files; // stream->file
   typedef std::multimap<std::string, std::string> streamMap;
-  streamMap m_fileStreams; // fileName->streams
+  streamMap                                       m_fileStreams; // fileName->streams
 
   // stream->filename of shared files
   std::map<std::string, std::string> m_sharedFiles;
@@ -301,7 +294,7 @@ private:
   /// @{
 
   template <typename T>
-  T* readHist( const std::string& name ) const;
+  T*     readHist( const std::string& name ) const;
   TTree* readTree( const std::string& name ) const;
 
   /// Handle case where TTree grows beyond TTree::fgMaxTreeSize
@@ -310,7 +303,7 @@ private:
   StatusCode  connect( const std::string& );
   TDirectory* changeDir( const THistSvc::THistID& hid ) const;
   std::string stripDirectoryName( std::string& dir ) const;
-  void removeDoubleSlash( std::string& ) const;
+  void        removeDoubleSlash( std::string& ) const;
 
   void MergeRootFile( TDirectory*, TDirectory* );
 
@@ -343,12 +336,13 @@ private:
   /// @name Gaudi properties
   /// @{
 
-  Gaudi::Property<int>  m_autoSave{this, "AutoSave", 0};
-  Gaudi::Property<int>  m_autoFlush{this, "AutoFlush", 0};
-  Gaudi::Property<bool> m_print{this, "PrintAll", false};
-  Gaudi::Property<int>  m_maxFileSize{this, "MaxFileSize", 10240, "maximum file size in MB. if exceeded,"
-                                                                 " will cause an abort. -1 to never check."};
-  Gaudi::Property<int> m_compressionLevel{this, "CompressionLevel", 1, [this]( auto& ) {
+  Gaudi::Property<int>                      m_autoSave{this, "AutoSave", 0};
+  Gaudi::Property<int>                      m_autoFlush{this, "AutoFlush", 0};
+  Gaudi::Property<bool>                     m_print{this, "PrintAll", false};
+  Gaudi::Property<int>                      m_maxFileSize{this, "MaxFileSize", 10240,
+                                     "maximum file size in MB. if exceeded,"
+                                     " will cause an abort. -1 to never check."};
+  Gaudi::Property<int>                      m_compressionLevel{this, "CompressionLevel", 1, [this]( auto& ) {
                                             this->warning()
                                                 << "\"CompressionLevel\" Property has been deprecated. "
                                                 << "Set it via the \"CL=\" parameter in the \"Output\" Property"

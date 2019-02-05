@@ -12,8 +12,7 @@
 */
 #include "MemoryAuditor.h"
 
-class MemStatAuditor : public MemoryAuditor
-{
+class MemStatAuditor : public MemoryAuditor {
 public:
   using MemoryAuditor::MemoryAuditor;
 

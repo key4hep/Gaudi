@@ -12,8 +12,7 @@
 Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator ) : m_name( name ), m_pSvcLocator( pSvcLocator ) {}
 
 // IAuditor implementation
-StatusCode Auditor::sysInitialize()
-{
+StatusCode Auditor::sysInitialize() {
   StatusCode sc;
 
   // Bypass the initialization if the auditor is disabled or
@@ -65,8 +64,7 @@ StatusCode Auditor::sysInitialize()
 StatusCode Auditor::initialize() { return StatusCode::SUCCESS; }
 
 // Implemented for backward compatibility
-void Auditor::before( StandardEventType evt, INamedInterface* obj )
-{
+void Auditor::before( StandardEventType evt, INamedInterface* obj ) {
   switch ( evt ) {
   case Initialize:
     beforeInitialize( obj );
@@ -102,8 +100,7 @@ void Auditor::before( CustomEventTypeRef, INamedInterface* ) {}
 void Auditor::before( CustomEventTypeRef, const std::string& ) {}
 
 // Implemented for backward compatibility
-void Auditor::after( StandardEventType evt, INamedInterface* obj, const StatusCode& sc )
-{
+void Auditor::after( StandardEventType evt, INamedInterface* obj, const StatusCode& sc ) {
   switch ( evt ) {
   case Initialize:
     afterInitialize( obj );
@@ -151,8 +148,7 @@ void Auditor::afterEndRun( INamedInterface* ) {}
 void Auditor::beforeFinalize( INamedInterface* ) {}
 void Auditor::afterFinalize( INamedInterface* ) {}
 
-StatusCode Auditor::sysFinalize()
-{
+StatusCode Auditor::sysFinalize() {
   StatusCode sc = StatusCode::SUCCESS;
   try {
     //
@@ -201,8 +197,7 @@ bool Auditor::isEnabled() const { return m_isEnabled; }
 SmartIF<ISvcLocator>& Auditor::serviceLocator() const { return m_pSvcLocator; }
 
 // Use the job options service to set declared properties
-StatusCode Auditor::setProperties()
-{
+StatusCode Auditor::setProperties() {
   if ( !m_pSvcLocator ) return StatusCode::FAILURE;
   auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
   if ( !jos ) return StatusCode::FAILURE;

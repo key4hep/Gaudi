@@ -15,8 +15,7 @@ class IMyTool;
 
     @author nobody
 */
-class MyGaudiAlgorithm : public GaudiAlgorithm
-{
+class MyGaudiAlgorithm : public GaudiAlgorithm {
 public:
   /// Constructor of this form must be provided
   MyGaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );

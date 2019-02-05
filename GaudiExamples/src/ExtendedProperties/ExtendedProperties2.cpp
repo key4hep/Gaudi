@@ -31,19 +31,16 @@
  *  @date  2009-09-05
  */
 // ============================================================================
-namespace Gaudi
-{
+namespace Gaudi {
   // ==========================================================================
-  namespace Examples
-  {
+  namespace Examples {
     // ========================================================================
     /** @class ExtendedProperties2
      *  simple DEMO-file for "extended vector properties",
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date  2009-09-05
      */
-    class ExtendedProperties2 : public GaudiAlgorithm
-    {
+    class ExtendedProperties2 : public GaudiAlgorithm {
     public:
       // ======================================================================
       StatusCode execute() override;
@@ -54,8 +51,7 @@ namespace Gaudi
        *  @param name algorithm instance name
        *  @param pSvc pointer to Service Locator
        */
-      ExtendedProperties2( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc )
-      {
+      ExtendedProperties2( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {
         setProperty( "PropertiesPrint", true ).ignore();
       }
       // ======================================================================
@@ -71,12 +67,11 @@ namespace Gaudi
       // ======================================================================
     };
     // ========================================================================
-  } //                                         end of namespace Gaudi::Examples
+  } // namespace Examples
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-StatusCode Gaudi::Examples::ExtendedProperties2::execute()
-{
+StatusCode Gaudi::Examples::ExtendedProperties2::execute() {
   always() << "3D-Point : " << Gaudi::Utils::toString( m_point3D.value() ) << endmsg;
   always() << "3D-Vector: " << Gaudi::Utils::toString( m_vector3D.value() ) << endmsg;
   always() << "4D-Vector: " << Gaudi::Utils::toString( m_vector4D.value() ) << endmsg;

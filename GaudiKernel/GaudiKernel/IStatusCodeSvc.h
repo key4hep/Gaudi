@@ -4,8 +4,7 @@
 #include "GaudiKernel/IService.h"
 #include <string>
 
-class GAUDI_API IStatusCodeSvc : virtual public IService
-{
+class GAUDI_API IStatusCodeSvc : virtual public IService {
 
 public:
   /// InterfaceID

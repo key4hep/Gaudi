@@ -11,8 +11,7 @@ DECLARE_COMPONENT( ContextEventCounterData )
 // ============================================================================
 // Main execution
 // ============================================================================
-StatusCode ContextEventCounterPtr::execute()
-{
+StatusCode ContextEventCounterPtr::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   if ( !m_ctxtSpecCounter ) {
@@ -29,8 +28,7 @@ StatusCode ContextEventCounterPtr::execute()
 // ============================================================================
 // Finalize
 // ============================================================================
-StatusCode ContextEventCounterPtr::finalize()
-{
+StatusCode ContextEventCounterPtr::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
   debug() << "Partial counts:" << endmsg;
@@ -54,8 +52,7 @@ StatusCode ContextEventCounterPtr::finalize()
 // ============================================================================
 // Main execution
 // ============================================================================
-StatusCode ContextEventCounterData::execute()
-{
+StatusCode ContextEventCounterData::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   ++m_ctxtSpecCounter;
@@ -67,8 +64,7 @@ StatusCode ContextEventCounterData::execute()
 // ============================================================================
 // Finalize
 // ============================================================================
-StatusCode ContextEventCounterData::finalize()
-{
+StatusCode ContextEventCounterData::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
   if ( msgLevel( MSG::DEBUG ) ) {

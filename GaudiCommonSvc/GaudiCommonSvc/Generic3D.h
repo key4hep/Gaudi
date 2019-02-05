@@ -12,29 +12,27 @@
 // Hide warning message:
 // warning: 'XYZ' overrides a member function but is not marked 'override'
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class Generic3D Generic3D.h GaudiPI/Generic3D.h
-    *
-    * Common AIDA implementation stuff for histograms and profiles
-    * using ROOT implementations
-    *
-    * Credits: This code is the result of some stripdown implementation
-    * of LCG/PI. Credits to them!
-    *
-    *  @author M.Frank
-    */
+   *
+   * Common AIDA implementation stuff for histograms and profiles
+   * using ROOT implementations
+   *
+   * Credits: This code is the result of some stripdown implementation
+   * of LCG/PI. Credits to them!
+   *
+   *  @author M.Frank
+   */
   template <typename INTERFACE, typename IMPLEMENTATION>
-  class GAUDI_API Generic3D : virtual public INTERFACE, virtual public HistogramBase
-  {
+  class GAUDI_API Generic3D : virtual public INTERFACE, virtual public HistogramBase {
   public:
     typedef Generic3D<INTERFACE, IMPLEMENTATION> Base;
     /// Default constructor
@@ -85,38 +83,32 @@ namespace Gaudi
     int rIndexZ( int index ) const { return m_zAxis.rIndex( index ); }
 
     /// The weighted mean along the x axis of a given bin.
-    double binMeanX( int indexX, int, int ) const override
-    {
+    double binMeanX( int indexX, int, int ) const override {
       return m_rep->GetXaxis()->GetBinCenter( rIndexX( indexX ) );
     }
     /// The weighted mean along the y axis of a given bin.
-    double binMeanY( int, int indexY, int ) const override
-    {
+    double binMeanY( int, int indexY, int ) const override {
       return m_rep->GetYaxis()->GetBinCenter( rIndexY( indexY ) );
     }
     /// The weighted mean along the z axis of a given bin.
-    double binMeanZ( int, int, int indexZ ) const override
-    {
+    double binMeanZ( int, int, int indexZ ) const override {
       return m_rep->GetYaxis()->GetBinCenter( rIndexY( indexZ ) );
     }
     /// Number of entries in the corresponding bin (ie the number of times fill was calle d for this bin).
-    int binEntries( int indexX, int indexY, int indexZ ) const override
-    {
+    int binEntries( int indexX, int indexY, int indexZ ) const override {
       if ( binHeight( indexX, indexY, indexZ ) <= 0 ) return 0;
       double xx = binHeight( indexX, indexY, indexZ ) / binError( indexX, indexY, indexZ );
       return int( xx * xx + 0.5 );
     }
     /// Sum of all the entries of the bins along a given x bin.
-    int binEntriesX( int index ) const override
-    {
+    int binEntriesX( int index ) const override {
       int n = 0;
       for ( int i = -2; i < yAxis().bins(); ++i )
         for ( int j = -2; j < zAxis().bins(); ++j ) n += binEntries( index, i, j );
       return n;
     }
     /// Sum of all the entries of the bins along a given y bin.
-    int binEntriesY( int index ) const override
-    {
+    int binEntriesY( int index ) const override {
       int n = 0;
       for ( int i = -2; i < xAxis().bins(); ++i )
         for ( int j = -2; j < zAxis().bins(); ++j ) n += binEntries( i, index, j );
@@ -124,8 +116,7 @@ namespace Gaudi
     }
 
     /// Sum of all the entries of the bins along a given z bin.
-    int binEntriesZ( int index ) const override
-    {
+    int binEntriesZ( int index ) const override {
       int n = 0;
       for ( int i = -2; i < xAxis().bins(); ++i )
         for ( int j = -2; j < yAxis().bins(); ++j ) n += binEntries( i, j, index );
@@ -133,38 +124,33 @@ namespace Gaudi
     }
 
     /// Total height of the corresponding bin (ie the sum of the weights in this bin).
-    double binHeight( int indexX, int indexY, int indexZ ) const
-    {
+    double binHeight( int indexX, int indexY, int indexZ ) const {
       return m_rep->GetBinContent( rIndexX( indexX ), rIndexY( indexY ), rIndexZ( indexZ ) );
     }
 
     /// Sum of all the heights of the bins along a given x bin.
-    double binHeightX( int index ) const override
-    {
+    double binHeightX( int index ) const override {
       double s = 0;
       for ( int i = -2; i < yAxis().bins(); ++i )
         for ( int j = -2; j < zAxis().bins(); ++j ) s += binHeight( index, i, j );
       return s;
     }
     /// Sum of all the heights of the bins along a given y bin.
-    double binHeightY( int index ) const override
-    {
+    double binHeightY( int index ) const override {
       double s = 0;
       for ( int i = -2; i < xAxis().bins(); ++i )
         for ( int j = -2; j < zAxis().bins(); ++j ) s += binHeight( i, index, j );
       return s;
     }
     /// Sum of all the heights of the bins along a given z bin.
-    double binHeightZ( int index ) const override
-    {
+    double binHeightZ( int index ) const override {
       double s = 0;
       for ( int i = -2; i < xAxis().bins(); ++i )
         for ( int j = -2; j < yAxis().bins(); ++j ) s += binHeight( i, j, index );
       return s;
     }
     /// The error of a given bin.
-    double binError( int indexX, int indexY, int indexZ ) const override
-    {
+    double binError( int indexX, int indexY, int indexZ ) const override {
       return m_rep->GetBinError( rIndexX( indexX ), rIndexY( indexY ), rIndexZ( indexZ ) );
     }
     /// The mean of the IHistogram3D along the x axis.
@@ -199,8 +185,7 @@ namespace Gaudi
     /// factor.
     bool scale( double scaleFactor ) override;
     /// Add to this Histogram3D the contents of another IHistogram3D.
-    bool add( const INTERFACE& hist ) override
-    {
+    bool add( const INTERFACE& hist ) override {
       const Base* p = dynamic_cast<const Base*>( &hist );
       if ( !p ) throw std::runtime_error( "Cannot add profile histograms of different implementations." );
       m_rep->Add( p->m_rep.get() );
@@ -208,8 +193,7 @@ namespace Gaudi
     }
 
     // overwrite extraentries
-    int extraEntries() const override
-    {
+    int extraEntries() const override {
       return binEntries( AIDA::IAxis::UNDERFLOW_BIN, AIDA::IAxis::UNDERFLOW_BIN, AIDA::IAxis::UNDERFLOW_BIN ) +
              binEntries( AIDA::IAxis::UNDERFLOW_BIN, AIDA::IAxis::UNDERFLOW_BIN, AIDA::IAxis::OVERFLOW_BIN ) +
              binEntries( AIDA::IAxis::UNDERFLOW_BIN, AIDA::IAxis::OVERFLOW_BIN, AIDA::IAxis::UNDERFLOW_BIN ) +
@@ -240,8 +224,7 @@ namespace Gaudi
   }; // end class IHistogram3D
 
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic3D<INTERFACE, IMPLEMENTATION>::setTitle( const std::string& title )
-  {
+  bool Generic3D<INTERFACE, IMPLEMENTATION>::setTitle( const std::string& title ) {
     m_rep->SetTitle( title.c_str() );
     if ( !annotation().addItem( "Title", title ) ) m_annotation.setValue( "Title", title );
     if ( !annotation().addItem( "title", title ) ) annotation().setValue( "title", title );
@@ -249,51 +232,43 @@ namespace Gaudi
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic3D<INTERFACE, IMPLEMENTATION>::setName( const std::string& newName )
-  {
+  bool Generic3D<INTERFACE, IMPLEMENTATION>::setName( const std::string& newName ) {
     m_rep->SetName( newName.c_str() );
     m_annotation.setValue( "Name", newName );
     return true;
   }
   template <class INTERFACE, class IMPLEMENTATION>
-  int Generic3D<INTERFACE, IMPLEMENTATION>::entries() const
-  {
+  int Generic3D<INTERFACE, IMPLEMENTATION>::entries() const {
     return m_rep->GetEntries();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  int Generic3D<INTERFACE, IMPLEMENTATION>::allEntries() const
-  {
+  int Generic3D<INTERFACE, IMPLEMENTATION>::allEntries() const {
     return int( m_rep->GetEntries() );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic3D<INTERFACE, IMPLEMENTATION>::minBinHeight() const
-  {
+  double Generic3D<INTERFACE, IMPLEMENTATION>::minBinHeight() const {
     return m_rep->GetMinimum();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic3D<INTERFACE, IMPLEMENTATION>::maxBinHeight() const
-  {
+  double Generic3D<INTERFACE, IMPLEMENTATION>::maxBinHeight() const {
     return m_rep->GetMaximum();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic3D<INTERFACE, IMPLEMENTATION>::sumBinHeights() const
-  {
+  double Generic3D<INTERFACE, IMPLEMENTATION>::sumBinHeights() const {
     return m_rep->GetSumOfWeights();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic3D<INTERFACE, IMPLEMENTATION>::sumAllBinHeights() const
-  {
+  double Generic3D<INTERFACE, IMPLEMENTATION>::sumAllBinHeights() const {
     return m_rep->GetSum();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  double Generic3D<INTERFACE, IMPLEMENTATION>::equivalentBinEntries() const
-  {
+  double Generic3D<INTERFACE, IMPLEMENTATION>::equivalentBinEntries() const {
     if ( sumBinHeights() <= 0 ) return 0;
     Stat_t stats[11]; // cover up to 3D...
     m_rep->GetStats( stats );
@@ -301,15 +276,13 @@ namespace Gaudi
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  bool Generic3D<INTERFACE, IMPLEMENTATION>::scale( double scaleFactor )
-  {
+  bool Generic3D<INTERFACE, IMPLEMENTATION>::scale( double scaleFactor ) {
     m_rep->Scale( scaleFactor );
     return true;
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
-  std::ostream& Generic3D<INTERFACE, IMPLEMENTATION>::print( std::ostream& s ) const
-  {
+  std::ostream& Generic3D<INTERFACE, IMPLEMENTATION>::print( std::ostream& s ) const {
     /// bin contents and errors are printed for all bins including under and overflows
     m_rep->Print( "all" );
     return s;
@@ -317,8 +290,7 @@ namespace Gaudi
 
   /// Write (ASCII) the histogram table into the output stream
   template <class INTERFACE, class IMPLEMENTATION>
-  std::ostream& Generic3D<INTERFACE, IMPLEMENTATION>::write( std::ostream& s ) const
-  {
+  std::ostream& Generic3D<INTERFACE, IMPLEMENTATION>::write( std::ostream& s ) const {
     s << "\n3D Histogram Table: " << std::endl;
     s << "BinX, BinY, BinZ, Height, Error " << std::endl;
     for ( int i = 0; i < xAxis().bins(); ++i )
@@ -332,19 +304,18 @@ namespace Gaudi
 
   /// Write (ASCII) the histogram table into a file
   template <class INTERFACE, class IMPLEMENTATION>
-  int Generic3D<INTERFACE, IMPLEMENTATION>::write( const char* file_name ) const
-  {
+  int Generic3D<INTERFACE, IMPLEMENTATION>::write( const char* file_name ) const {
     TFile* f      = TFile::Open( file_name, "RECREATE" );
     Int_t  nbytes = m_rep->Write();
     f->Close();
     return nbytes;
   }
-}
+} // namespace Gaudi
 
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 #endif // GAUDIPI_GENERIC3D_H

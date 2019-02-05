@@ -9,7 +9,6 @@
 : ${LCG_release_area:=/cvmfs/sft.cern.ch/lcg/releases}
 : ${LCG_contrib:=/cvmfs/sft.cern.ch/lcg/contrib}
 
-: ${CLANG_FORMAT_VERSION:=3.9}
 : ${CCACHE_VERSION:=3.3.4-e92e5}
 
 # initial required environment

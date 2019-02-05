@@ -19,10 +19,8 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  */
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     /** constructor from vectors and type
      *  @param x    vector of x
      *  @param y    vector of y(x)
@@ -30,9 +28,7 @@ namespace Genfun
      */
     SplineBase::SplineBase( const SplineBase::Data1D& x, const SplineBase::Data1D& y,
                             const GaudiMath::Interpolation::Type type )
-        : m_x( x ), m_y( y ), m_type( type )
-    {
-    }
+        : m_x( x ), m_y( y ), m_type( type ) {}
     // ========================================================================
 
     // ========================================================================
@@ -41,8 +37,8 @@ namespace Genfun
      *  @param type interpolaiton type
      */
     // ========================================================================
-    SplineBase::SplineBase( const SplineBase::Data2D& data, const GaudiMath::Interpolation::Type type ) : m_type( type )
-    {
+    SplineBase::SplineBase( const SplineBase::Data2D& data, const GaudiMath::Interpolation::Type type )
+        : m_type( type ) {
       m_x.reserve( data.size() );
       m_y.reserve( data.size() );
       for ( const auto& i : data ) {
@@ -53,11 +49,8 @@ namespace Genfun
     // ========================================================================
 
     // ========================================================================
-    void SplineBase::initialize() const
-    {
-      if ( m_spline ) {
-        return;
-      } // RETURN
+    void SplineBase::initialize() const {
+      if ( m_spline ) { return; } // RETURN
 
       const gsl_interp_type* T = nullptr;
 
@@ -94,41 +87,29 @@ namespace Genfun
     // ========================================================================
 
     // ========================================================================
-    double SplineBase::eval( const double x ) const
-    {
-      if ( !m_spline ) {
-        initialize();
-      }
+    double SplineBase::eval( const double x ) const {
+      if ( !m_spline ) { initialize(); }
       return gsl_spline_eval( m_spline.get(), x, m_accel.get() );
     }
     // ========================================================================
 
     // ========================================================================
-    double SplineBase::deriv( const double x ) const
-    {
-      if ( !m_spline ) {
-        initialize();
-      }
+    double SplineBase::deriv( const double x ) const {
+      if ( !m_spline ) { initialize(); }
       return gsl_spline_eval_deriv( m_spline.get(), x, m_accel.get() );
     }
     // ========================================================================
 
     // ========================================================================
-    double SplineBase::deriv2( const double x ) const
-    {
-      if ( !m_spline ) {
-        initialize();
-      }
+    double SplineBase::deriv2( const double x ) const {
+      if ( !m_spline ) { initialize(); }
       return gsl_spline_eval_deriv2( m_spline.get(), x, m_accel.get() );
     }
     // ========================================================================
 
     // ========================================================================
-    double SplineBase::integ( const double a, const double b ) const
-    {
-      if ( !m_spline ) {
-        initialize();
-      }
+    double SplineBase::integ( const double a, const double b ) const {
+      if ( !m_spline ) { initialize(); }
       return gsl_spline_eval_integ( m_spline.get(), a, b, m_accel.get() );
     }
     // ========================================================================
@@ -157,9 +138,7 @@ namespace Genfun
     // ========================================================================
     GSLSpline::GSLSpline( const GSLSpline::Data1D& x, const GSLSpline::Data1D& y,
                           const GaudiMath::Interpolation::Type type )
-        : AbsFunction(), m_spline( x, y, type )
-    {
-    }
+        : AbsFunction(), m_spline( x, y, type ) {}
     // ========================================================================
 
     // ========================================================================
@@ -183,9 +162,7 @@ namespace Genfun
      */
     // ========================================================================
     GSLSpline::GSLSpline( const GSLSpline::Data2D& data, const GaudiMath::Interpolation::Type type )
-        : AbsFunction(), m_spline( data, type )
-    {
-    }
+        : AbsFunction(), m_spline( data, type ) {}
     // ========================================================================
 
     // ========================================================================
@@ -203,8 +180,7 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Genfun::Derivative GSLSpline::partial( unsigned int i ) const
-    {
+    Genfun::Derivative GSLSpline::partial( unsigned int i ) const {
       if ( i >= 1 ) {
         const AbsFunction& aux = GaudiMath::Constant( 0.0, 1 );
         return Genfun::FunctionNoop( &aux );
@@ -238,9 +214,7 @@ namespace Genfun
     // ========================================================================
     GSLSplineDeriv::GSLSplineDeriv( const GSLSplineDeriv::Data1D& x, const GSLSplineDeriv::Data1D& y,
                                     const GaudiMath::Interpolation::Type type )
-        : AbsFunction(), m_spline( x, y, type )
-    {
-    }
+        : AbsFunction(), m_spline( x, y, type ) {}
     // ========================================================================
 
     // ========================================================================
@@ -264,9 +238,7 @@ namespace Genfun
      */
     // ========================================================================
     GSLSplineDeriv::GSLSplineDeriv( const GSLSplineDeriv::Data2D& data, const GaudiMath::Interpolation::Type type )
-        : AbsFunction(), m_spline( data, type )
-    {
-    }
+        : AbsFunction(), m_spline( data, type ) {}
     // ========================================================================
 
     // ========================================================================
@@ -290,8 +262,7 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Genfun::Derivative GSLSplineDeriv::partial( unsigned int i ) const
-    {
+    Genfun::Derivative GSLSplineDeriv::partial( unsigned int i ) const {
       if ( i >= 1 ) {
         const AbsFunction& aux = GaudiMath::Constant( 0.0, 1 );
         return Genfun::FunctionNoop( &aux );
@@ -325,9 +296,7 @@ namespace Genfun
     // ========================================================================
     GSLSplineDeriv2::GSLSplineDeriv2( const GSLSplineDeriv2::Data1D& x, const GSLSplineDeriv2::Data1D& y,
                                       const GaudiMath::Interpolation::Type type )
-        : AbsFunction(), m_spline( x, y, type )
-    {
-    }
+        : AbsFunction(), m_spline( x, y, type ) {}
     // ========================================================================
 
     // ========================================================================
@@ -351,9 +320,7 @@ namespace Genfun
      */
     // ========================================================================
     GSLSplineDeriv2::GSLSplineDeriv2( const GSLSplineDeriv2::Data2D& data, const GaudiMath::Interpolation::Type type )
-        : AbsFunction(), m_spline( data, type )
-    {
-    }
+        : AbsFunction(), m_spline( data, type ) {}
     // ========================================================================
 
     // ========================================================================
@@ -371,8 +338,7 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Genfun::Derivative GSLSplineDeriv2::partial( unsigned int i ) const
-    {
+    Genfun::Derivative GSLSplineDeriv2::partial( unsigned int i ) const {
       if ( i >= 1 ) {
         const AbsFunction& aux = GaudiMath::Constant( 0.0, 1 );
         return Genfun::FunctionNoop( &aux );
@@ -406,9 +372,7 @@ namespace Genfun
     // ========================================================================
     GSLSplineInteg::GSLSplineInteg( const GSLSplineInteg::Data1D& x, const GSLSplineInteg::Data1D& y,
                                     const GaudiMath::Interpolation::Type type, const double low )
-        : AbsFunction(), m_spline( x, y, type ), m_low( low )
-    {
-    }
+        : AbsFunction(), m_spline( x, y, type ), m_low( low ) {}
     // ========================================================================
 
     // ========================================================================
@@ -433,18 +397,14 @@ namespace Genfun
     // ========================================================================
     GSLSplineInteg::GSLSplineInteg( const GSLSplineInteg::Data2D& data, const GaudiMath::Interpolation::Type type,
                                     const double low )
-        : AbsFunction(), m_spline( data, type ), m_low( low )
-    {
-    }
+        : AbsFunction(), m_spline( data, type ), m_low( low ) {}
     // ========================================================================
 
     // ========================================================================
     /// constructor from SplineBase
     // ========================================================================
     GSLSplineInteg::GSLSplineInteg( const SplineBase& right, const double low )
-        : AbsFunction(), m_spline( right ), m_low( low )
-    {
-    }
+        : AbsFunction(), m_spline( right ), m_low( low ) {}
     // ========================================================================
 
     // ========================================================================
@@ -456,8 +416,7 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Genfun::Derivative GSLSplineInteg::partial( unsigned int i ) const
-    {
+    Genfun::Derivative GSLSplineInteg::partial( unsigned int i ) const {
       if ( i >= 1 ) {
         const AbsFunction& aux = GaudiMath::Constant( 0.0, 1 );
         return Genfun::FunctionNoop( &aux );
@@ -466,5 +425,5 @@ namespace Genfun
       return Genfun::FunctionNoop( &aux );
     }
     // ========================================================================
-  }
-}
+  } // namespace GaudiMathImplementation
+} // namespace Genfun

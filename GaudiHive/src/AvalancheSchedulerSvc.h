@@ -97,8 +97,7 @@ class IAlgorithm;
  *  @author  Illya Shapoval
  *  @version 1.0
  */
-class AvalancheSchedulerSvc : public extends<Service, IScheduler>
-{
+class AvalancheSchedulerSvc : public extends<Service, IScheduler> {
 public:
   /// Constructor
   using extends::extends;
@@ -144,14 +143,14 @@ private:
   Gaudi::Property<std::string>  m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
                                                           "Maximum number of simultaneous I/O-bound algorithms"};
-  Gaudi::Property<bool> m_simulateExecution{
+  Gaudi::Property<bool>         m_simulateExecution{
       this, "SimulateExecution", false,
       "Flag to perform single-pass simulation of execution flow before the actual execution"};
   Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
                                                   "The following modes are currently available: PCE, COD, DRE,  E"};
-  Gaudi::Property<bool> m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
+  Gaudi::Property<bool>        m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
                                                  "Dump intra-event concurrency dynamics to csv file"};
-  Gaudi::Property<bool> m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
+  Gaudi::Property<bool>        m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
                                                  "Turn on preemptive way of scheduling of I/O-bound algorithms"};
 
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "Runtime check of Algorithm Data Dependencies"};

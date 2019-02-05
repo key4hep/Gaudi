@@ -29,8 +29,10 @@ try:
     outname = 'out-{0}'.format(sha1(str(optfiles)).hexdigest()[:8])
 
     # parse the option file and cache the configuration (python only)
-    cmd = ["python", which("gaudirun.py"),
-           "-n", "-v", "--output", outname + ".1.py"] + optfiles
+    cmd = [
+        "python",
+        which("gaudirun.py"), "-n", "-v", "--output", outname + ".1.py"
+    ] + optfiles
     proc = Popen(cmd, stdout=PIPE)
     print "=========================================="
     print "======== First pass (python only) ========"
@@ -44,8 +46,11 @@ try:
     expected = eval(open(outname + ".1.py").read())
 
     # parse the option file, export old options, parse again
-    cmd = ["python", which("gaudirun.py"),
-           "-n", "-v", "--old-opts", "--output", outname + '.opts'] + optfiles
+    cmd = [
+        "python",
+        which("gaudirun.py"), "-n", "-v", "--old-opts", "--output",
+        outname + '.opts'
+    ] + optfiles
     proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
     print ""
     print "=========================================="
@@ -58,8 +63,11 @@ try:
         print "=== stderr: ==="
         print err
 
-    cmd = ["python", which("gaudirun.py"),
-           "-n", "-v", "--output", outname + ".2.py", outname + '.opts']
+    cmd = [
+        "python",
+        which("gaudirun.py"), "-n", "-v", "--output", outname + ".2.py",
+        outname + '.opts'
+    ]
     proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
     print ""
     print "=========================================="

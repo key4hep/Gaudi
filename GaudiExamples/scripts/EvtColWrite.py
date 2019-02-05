@@ -44,12 +44,12 @@ class EvtColEx(TupleAlgo):
 
         rSvc = self.randSvc()
 
-        gauss = Numbers(rSvc, Rndm.Gauss(0.0,   1.0))
-        flat = Numbers(rSvc, Rndm.Flat(-10,  10))
+        gauss = Numbers(rSvc, Rndm.Gauss(0.0, 1.0))
+        flat = Numbers(rSvc, Rndm.Flat(-10, 10))
         expo = Numbers(rSvc, Rndm.Exponential(1.0))
-        breit = Numbers(rSvc, Rndm.BreitWigner(0.0,   1.0))
+        breit = Numbers(rSvc, Rndm.BreitWigner(0.0, 1.0))
         poisson = Numbers(rSvc, Rndm.Poisson(2.0))
-        binom = Numbers(rSvc, Rndm.Binomial(8,   0.25))
+        binom = Numbers(rSvc, Rndm.Binomial(8, 0.25))
 
         address = self.get('/Event')
         address = address.registry().address()
@@ -62,12 +62,12 @@ class EvtColEx(TupleAlgo):
         tup.column('evtNum', self.s_nEvt)
         tup.column('runNum', self.s_nRun)
 
-        tup.column('gauss',       gauss())
-        tup.column('flat',       flat())
-        tup.column('expo',       expo())
+        tup.column('gauss', gauss())
+        tup.column('flat', flat())
+        tup.column('expo', expo())
         tup.column('poisson', int(poisson()))
         tup.column('binom', int(binom()))
-        tup.column('flag',   0 > gauss())
+        tup.column('flag', 0 > gauss())
 
         return SUCCESS
 
@@ -92,9 +92,7 @@ def configure(gaudi=None):
 
     gaudi.HistogramPersistency = "ROOT"
     gaudi.DLLs += ['GaudiAlg', 'RootHistCnv']
-    gaudi.ExtSvc += ['RndmGenSvc',
-                     'NTupleSvc',
-                     'TagCollectionSvc/EvtTupleSvc']
+    gaudi.ExtSvc += ['RndmGenSvc', 'NTupleSvc', 'TagCollectionSvc/EvtTupleSvc']
 
     alg = EvtColEx('Fill')
     gaudi.setAlgorithms([alg])
@@ -111,8 +109,10 @@ def configure(gaudi=None):
     tagsWriter.EvtDataSvc = "EvtTupleSvc"
 
     evtColSvc = gaudi.evtcolsvc()
-    evtColSvc.defineOutput(
-        {'EVTTAGS': 'PFN:EvtTags1.root'}, typ='Gaudi::RootCnvSvc')
+    evtColSvc.defineOutput({
+        'EVTTAGS': 'PFN:EvtTags1.root'
+    },
+                           typ='Gaudi::RootCnvSvc')
     evtColSvc.OutputLevel = 2
 
     evtSel = gaudi.evtSel()
@@ -130,8 +130,8 @@ if '__main__' == __name__:
     # configuration (options)
     from Configurables import GaudiPersistency, FileCatalog, ApplicationMgr
     GaudiPersistency()
-    ApplicationMgr().ExtSvc.append(FileCatalog(
-        Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
+    ApplicationMgr().ExtSvc.append(
+        FileCatalog(Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
     # execution
     gaudi = GaudiPython.AppMgr()
     configure(gaudi)

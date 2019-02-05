@@ -9,10 +9,8 @@
 #include "GaudiAlg/FunctionalUtilities.h"
 #include "GaudiKernel/apply.h"
 
-namespace Gaudi
-{
-  namespace Functional
-  {
+namespace Gaudi {
+  namespace Functional {
 
     template <typename Signature, typename Traits_ = Traits::useDefaults>
     class SplittingTransformer;
@@ -25,8 +23,7 @@ namespace Gaudi
     ////// N -> Many of the same one (value of Many not known at compile time, but known at configuration time)
     template <typename Out, typename... In, typename Traits_>
     class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_>
-        : public details::DataHandleMixin<void, std::tuple<In...>, Traits_>
-    {
+        : public details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
       using base_class = details::DataHandleMixin<void, std::tuple<In...>, Traits_>;
 
     public:
@@ -39,18 +36,16 @@ namespace Gaudi
 
       SplittingTransformer( const std::string& name, ISvcLocator* locator, const KeyValue& input,
                             const KeyValues& output )
-          : SplittingTransformer( name, locator, std::array<KeyValue, 1>{input}, output )
-      {
+          : SplittingTransformer( name, locator, std::array<KeyValue, 1>{input}, output ) {
         static_assert( N == 1, "single input argument requires single input signature" );
       }
 
       // accessor to output Locations
       const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n]; }
-      unsigned int outputLocationSize() const { return m_outputLocations.value().size(); }
+      unsigned int       outputLocationSize() const { return m_outputLocations.value().size(); }
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final
-      {
+      StatusCode execute() override final {
         try {
           // TODO:FIXME: how does operator() know the number and order of expected outputs?
           using details::as_const;
@@ -97,10 +92,8 @@ namespace Gaudi
                                                 []( auto& h ) { h.setOptional( true ); } );
                                }
                              },
-                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true} )
-    {
-    }
-  }
-}
+                             Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
+  } // namespace Functional
+} // namespace Gaudi
 
 #endif

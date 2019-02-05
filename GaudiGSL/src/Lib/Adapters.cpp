@@ -19,8 +19,7 @@
  *  @date 2004-03-06
  */
 
-namespace GaudiMath
-{
+namespace GaudiMath {
 
   AIDAFunction adapter( const AIDA::IFunction& function ) { return AIDAFunction( function ); }
 
@@ -30,25 +29,21 @@ namespace GaudiMath
 
   SimpleFunction adapter( SimpleFunction::Function1 function ) { return SimpleFunction( function ); }
 
-  SimpleFunction adapter( const size_t dim, SimpleFunction::Function2 function )
-  {
+  SimpleFunction adapter( const size_t dim, SimpleFunction::Function2 function ) {
     return SimpleFunction( function, dim );
   }
 
-  SimpleFunction adapter( const size_t dim, SimpleFunction::Function3 function )
-  {
+  SimpleFunction adapter( const size_t dim, SimpleFunction::Function3 function ) {
     return SimpleFunction( function, dim );
   }
 
-  GSLFunctionWithMode adapter( GSLFunctionWithMode::Function function, const gsl_mode_t& mode )
-  {
+  GSLFunctionWithMode adapter( GSLFunctionWithMode::Function function, const gsl_mode_t& mode ) {
     return GSLFunctionWithMode( function, mode );
   }
 
   GSLFunctionWithError adapter( GSLFunctionWithError::Function function ) { return GSLFunctionWithError( function ); }
 
-  GSLFunctionWithModeAndError adapter( GSLFunctionWithModeAndError::Function function, const gsl_mode_t& mode )
-  {
+  GSLFunctionWithModeAndError adapter( GSLFunctionWithModeAndError::Function function, const gsl_mode_t& mode ) {
     return GSLFunctionWithModeAndError( function, mode );
   }
 

@@ -16,8 +16,7 @@ class KeyedContainer;
 /*
   Namespace for Key classes used by the Keyed Container
 */
-namespace Containers
-{
+namespace Containers {
 
   // Status enumeration
   enum {
@@ -84,16 +83,14 @@ namespace Containers
     /// Hash function for this key
     static long hash( const key_type& key_value ) { return key_value; }
     /// Set object key when inserted into the container
-    static void setKey( obj_type* v, const key_type& k )
-    {
+    static void setKey( obj_type* v, const key_type& k ) {
       if ( v ) v->setKey( k );
     }
     /** Check the validity of the object's key.
       Select if key-checks should be performed by
       switching on/off the macro CHECK_KEYED_CONTAINER.
     */
-    static bool checkKey( obj_type* v, const key_type& k )
-    {
+    static bool checkKey( obj_type* v, const key_type& k ) {
 #ifdef CHECK_KEYED_CONTAINER
       return ( v ) ? ( hash( v->key() ) == hash( k ) ) : false;
 #else
@@ -117,8 +114,7 @@ namespace Containers
   template <class CONTAINER, class DATATYPE>
   struct traits : public key_traits<typename DATATYPE::key_type> {
     /// Allow to check the access to container elements for consistency
-    static bool checkBounds( const std::vector<DATATYPE*>* cnt, const typename DATATYPE::key_type& k )
-    {
+    static bool checkBounds( const std::vector<DATATYPE*>* cnt, const typename DATATYPE::key_type& k ) {
 #ifdef CHECK_KEYED_CONTAINER
       return size_t( cnt->size() ) > size_t( traits::hash( k ) );
 #else
@@ -126,5 +122,5 @@ namespace Containers
 #endif
     }
   };
-}
+} // namespace Containers
 #endif // GAUDIKERNEL_KEYEDTRAITS_H

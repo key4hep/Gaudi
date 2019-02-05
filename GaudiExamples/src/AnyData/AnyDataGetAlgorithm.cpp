@@ -17,8 +17,7 @@
 DECLARE_COMPONENT_WITH_ID( AnyDataGetAlgorithm<int>, "AnyDataGetAlgorithm_Int" )
 DECLARE_COMPONENT_WITH_ID( AnyDataGetAlgorithm<std::vector<int>>, "AnyDataGetAlgorithm_VectorInt" )
 
-namespace
-{
+namespace {
   using std::vector;
 }
 
@@ -26,15 +25,12 @@ namespace
 // Main execution
 //=============================================================================
 template <class T>
-StatusCode AnyDataGetAlgorithm<T>::execute()
-{
+StatusCode AnyDataGetAlgorithm<T>::execute() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   auto base = getIfExists<AnyDataWrapperBase>( m_location );
-  if ( base ) {
-    info() << "Got base from " << m_location.value() << endmsg;
-  }
+  if ( base ) { info() << "Got base from " << m_location.value() << endmsg; }
   const auto i = dynamic_cast<const AnyDataWrapper<T>*>( base );
   if ( i ) {
     info() << "Got " << System::typeinfoName( typeid( T ) ) << " from " << m_location.value() << ": " << i->getData()

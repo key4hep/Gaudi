@@ -87,8 +87,7 @@ class IToolSvc;
  * @author  M.Frank
  * @version 1.0
  */
-class DataOnDemandSvc : public extends<Service, IIncidentListener>
-{
+class DataOnDemandSvc : public extends<Service, IIncidentListener> {
 public:
   // ==========================================================================
   // Typedefs
@@ -123,14 +122,10 @@ public:
     Node() = default;
     // ========================================================================
     Node( ClassH c, bool e, std::string n )
-        : clazz( c ), name( std::move( n ) ), executing( e ), dataObject( "DataObject" == name )
-    {
-    }
+        : clazz( c ), name( std::move( n ) ), executing( e ), dataObject( "DataObject" == name ) {}
     //
     Node( const Node& c )
-        : clazz( c.clazz ), name( c.name ), num( c.num ), executing( c.executing ), dataObject( c.dataObject )
-    {
-    }
+        : clazz( c.clazz ), name( c.name ), num( c.num ), executing( c.executing ), dataObject( c.dataObject ) {}
     // ========================================================================
   };
   // ==========================================================================
@@ -208,13 +203,11 @@ protected:
   // ==========================================================================
 private:
   // ==========================================================================
-  void force_update( Gaudi::Details::PropertyBase& p )
-  {
+  void force_update( Gaudi::Details::PropertyBase& p ) {
     verbose() << "updated property " << p.name() << ", forcing update" << endmsg;
     m_updateRequired = true;
   };
-  void deprecated_property( Gaudi::Details::PropertyBase& p )
-  {
+  void deprecated_property( Gaudi::Details::PropertyBase& p ) {
     warning() << p.name() << " " << p.documentation() << endmsg;
     force_update( p );
   };
@@ -258,9 +251,7 @@ private:
   Gaudi::Property<bool> m_dump{
       this, "Dump", false,
       [this]( auto& ) {
-        if ( m_dump && FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
-          dump( MSG::ALWAYS );
-        }
+        if ( m_dump && FSMState() >= Gaudi::StateMachine::INITIALIZED ) { dump( MSG::ALWAYS ); }
       },
       "dump configuration and stastics, if set to True after initialize it triggers a dump immediately"};
   Gaudi::Property<bool> m_init{this, "PreInitialize", false, "(pre)initialize all algorithms"};
@@ -290,4 +281,3 @@ private:
 // The END
 // ============================================================================
 #endif // GAUDISVC_DATAONDEMANDSVC_H
-// ============================================================================

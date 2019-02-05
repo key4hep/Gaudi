@@ -13,8 +13,7 @@ DECLARE_COMPONENT( ReadHandleAlg )
 //--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
-StatusCode ReadHandleAlg::execute()
-{
+StatusCode ReadHandleAlg::execute() {
 
   Collision* c = m_inputHandle.get();
 

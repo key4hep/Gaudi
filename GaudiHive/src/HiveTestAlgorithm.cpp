@@ -8,8 +8,7 @@ DECLARE_COMPONENT( HiveTestAlgorithm )
 
 using namespace std;
 
-class MyObject : public DataObject
-{
+class MyObject : public DataObject {
   int                m_data;
   static atomic<int> c_instances;
   static atomic<int> d_instances;
@@ -25,8 +24,7 @@ public:
 atomic<int> MyObject::c_instances;
 atomic<int> MyObject::d_instances;
 
-StatusCode HiveTestAlgorithm::initialize()
-{
+StatusCode HiveTestAlgorithm::initialize() {
   info() << ":HiveTestAlgorithm::initialize " << endmsg;
 
   int i = 0;
@@ -48,8 +46,7 @@ StatusCode HiveTestAlgorithm::initialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode HiveTestAlgorithm::execute()
-{
+StatusCode HiveTestAlgorithm::execute() {
   ++m_total;
   int evt = Gaudi::Hive::currentContext().evt();
 
@@ -66,15 +63,12 @@ StatusCode HiveTestAlgorithm::execute()
 
   info() << ":HiveTestAlgorithm::registering outputs... " << evt << endmsg;
 
-  for ( auto& outputHandle : m_outputHandles ) {
-    outputHandle->put( new MyObject( 1000 + evt ) );
-  }
+  for ( auto& outputHandle : m_outputHandles ) { outputHandle->put( new MyObject( 1000 + evt ) ); }
 
   return StatusCode::SUCCESS;
 }
 
-StatusCode HiveTestAlgorithm::finalize()
-{
+StatusCode HiveTestAlgorithm::finalize() {
   info() << name() << ":HiveTestAlgorithm::finalize - total events: " << m_total << endmsg;
   MyObject::dump();
   return StatusCode::SUCCESS;

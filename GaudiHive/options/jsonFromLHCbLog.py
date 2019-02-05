@@ -54,11 +54,18 @@ def load_brunel_scenario(filename):
             continue
         if deps[1] or deps[2]:
             inputs = []
-            inputs = [item for item in deps[1] if item not in (
-                "DAQ_ODIN", "DAQ_RawEvent") and item not in deps[2]]
+            inputs = [
+                item for item in deps[1]
+                if item not in ("DAQ_ODIN",
+                                "DAQ_RawEvent") and item not in deps[2]
+            ]
             outputs = [item for item in deps[2]]
-            new_algo = {"name": alg, "inputs": inputs,
-                        "outputs": outputs, "runtimes_wall": [float(timing[alg])]}
+            new_algo = {
+                "name": alg,
+                "inputs": inputs,
+                "outputs": outputs,
+                "runtimes_wall": [float(timing[alg])]
+            }
             all_algos.append(new_algo)
     return all_algos
 

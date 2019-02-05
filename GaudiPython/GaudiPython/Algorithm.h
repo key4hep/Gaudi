@@ -17,20 +17,17 @@
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================
 
-namespace GaudiPython
-{
+namespace GaudiPython {
   /// call the python method
   GAUDI_API StatusCode call_python_method( PyObject* self, const char* method );
-}
+} // namespace GaudiPython
 
-namespace GaudiPython
-{
+namespace GaudiPython {
 
   /** @class PyAlgorithm
    *  Python Algorithm base class
    */
-  class GAUDI_API PyAlgorithm : public Algorithm
-  {
+  class GAUDI_API PyAlgorithm : public Algorithm {
   public:
     /** constructor
      *  @param self python objects
@@ -59,8 +56,7 @@ namespace GaudiPython
    *  @date 2005-08-03
    */
   template <class ALGORITHM>
-  class GAUDI_API PyAlg : public ALGORITHM
-  {
+  class GAUDI_API PyAlg : public ALGORITHM {
     // ========================================================================
   public:
     // ========================================================================
@@ -68,8 +64,7 @@ namespace GaudiPython
      *  @param self python object
      *  @param name name of algorithm instance
      */
-    PyAlg( PyObject* self, const std::string& name ) : ALGORITHM( name, Gaudi::svcLocator() ), m_self( self )
-    {
+    PyAlg( PyObject* self, const std::string& name ) : ALGORITHM( name, Gaudi::svcLocator() ), m_self( self ) {
       // the printout of actual type for embedded algorithm has no sense
       this->setProperty( "TypePrint", "false" );
       this->setProperty( "StatPrint", "true" );
@@ -122,4 +117,3 @@ namespace GaudiPython
 // The END
 // ============================================================================
 #endif // GAUDIPYTHON_ALGORITHM_H
-// ============================================================================

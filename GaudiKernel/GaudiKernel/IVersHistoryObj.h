@@ -15,8 +15,7 @@
 
 */
 
-class GAUDI_API IVersHistoryObj
-{
+class GAUDI_API IVersHistoryObj {
 public:
   typedef std::vector<Gaudi::Details::PropertyBase*> PropertyList;
 

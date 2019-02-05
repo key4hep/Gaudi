@@ -6,16 +6,12 @@
 
 /// Helper class to set the application return code in case of early exit
 /// (e.g. exception).
-class RetCodeGuard
-{
+class RetCodeGuard {
 public:
   inline RetCodeGuard( const SmartIF<IProperty>& appmgr, int retcode ) : m_appmgr( appmgr ), m_retcode( retcode ) {}
   inline void ignore() { m_retcode = Gaudi::ReturnCode::Success; }
-  inline ~RetCodeGuard()
-  {
-    if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) {
-      Gaudi::setAppReturnCode( m_appmgr, m_retcode );
-    }
+  inline ~RetCodeGuard() {
+    if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) { Gaudi::setAppReturnCode( m_appmgr, m_retcode ); }
   }
 
 private:

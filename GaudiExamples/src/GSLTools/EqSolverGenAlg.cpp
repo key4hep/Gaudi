@@ -23,76 +23,68 @@ DECLARE_COMPONENT( EqSolverGenAlg )
 typedef Genfun::AbsFunction GenFunc;
 
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #endif
 
 // Class for the function "GenFunc"
 // @see GaudiGSL/IEqSolver.h
-class Func1 : public AbsFunction
-{
+class Func1 : public AbsFunction {
 public:
   FUNCTION_OBJECT_DEF( Func1 )
 public:
   Func1() {}
   Func1( const Func1& ) : AbsFunction() {}
 
-  double operator()( double /* argument */ ) const override { return 0; }
-  double operator()( const Argument& x ) const override { return x[0] - 1; };
-  unsigned int                       dimensionality() const override { return 3; }
+  double       operator()( double /* argument */ ) const override { return 0; }
+  double       operator()( const Argument& x ) const override { return x[0] - 1; };
+  unsigned int dimensionality() const override { return 3; }
 };
 FUNCTION_OBJECT_IMP( Func1 )
 
 // Class for the function "GenFunc" @see IEqSolver.h
-class Func2 : public AbsFunction
-{
+class Func2 : public AbsFunction {
 public:
   FUNCTION_OBJECT_DEF( Func2 )
 public:
   Func2() {}
   Func2( const Func2& ) : AbsFunction() {}
 
-  double operator()( double /* argument */ ) const override { return 0; }
-  double operator()( const Argument& x ) const override { return x[1] - 1; };
-  unsigned int                       dimensionality() const override { return 3; }
+  double       operator()( double /* argument */ ) const override { return 0; }
+  double       operator()( const Argument& x ) const override { return x[1] - 1; };
+  unsigned int dimensionality() const override { return 3; }
 };
 FUNCTION_OBJECT_IMP( Func2 )
 
 // Class for the function "GenFunc" @see IEqSolver.h
-class Func3 : public AbsFunction
-{
+class Func3 : public AbsFunction {
 public:
   FUNCTION_OBJECT_DEF( Func3 )
 public:
   Func3() {}
   Func3( const Func3& ) : AbsFunction() {}
 
-  double operator()( double /* argument */ ) const override { return 0; }
-  double operator()( const Argument& x ) const override { return x[2] - 1; };
-  unsigned int                       dimensionality() const override { return 3; }
+  double       operator()( double /* argument */ ) const override { return 0; }
+  double       operator()( const Argument& x ) const override { return x[2] - 1; };
+  unsigned int dimensionality() const override { return 3; }
 };
 FUNCTION_OBJECT_IMP( Func3 )
 
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
 
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode EqSolverGenAlg::initialize()
-{
+StatusCode EqSolverGenAlg::initialize() {
   info() << "==> Initialise" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "EqSolver", m_publicTool );
-  if ( sc.isFailure() ) {
-    error() << "Error retrieving the public tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { error() << "Error retrieving the public tool" << endmsg; }
   sc = toolSvc()->retrieveTool( "EqSolver", m_privateTool, this );
-  if ( sc.isFailure() ) {
-    error() << "Error retrieving the private tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { error() << "Error retrieving the private tool" << endmsg; }
   info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -101,8 +93,7 @@ StatusCode EqSolverGenAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode EqSolverGenAlg::execute()
-{
+StatusCode EqSolverGenAlg::execute() {
 
   info() << "==> Execute" << endmsg;
 
@@ -138,8 +129,7 @@ StatusCode EqSolverGenAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode EqSolverGenAlg::finalize()
-{
+StatusCode EqSolverGenAlg::finalize() {
 
   info() << "==> Finalize" << endmsg;
 

@@ -7,8 +7,7 @@
 #include <iostream>
 
 //--- Example main program
-int main( int argc, char** argv )
-{
+int main( int argc, char** argv ) {
   // Create an instance of an application manager
   auto appMgr  = SmartIF<IAppMgrUI>( Gaudi::createApplicationMgr() );
   auto propMgr = appMgr.as<IProperty>();

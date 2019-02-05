@@ -11,8 +11,7 @@
  * @author  M.Frank
  * @version 1.0
  */
-class SequentialOutputStream : public OutputStream
-{
+class SequentialOutputStream : public OutputStream {
 
 protected:
   /// OutputStream override: Select the different objects and write them to file

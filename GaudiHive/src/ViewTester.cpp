@@ -15,12 +15,9 @@ using namespace Test;
 
 ViewTester::ViewTester( const std::string& name, // the algorithm instance name
                         ISvcLocator*       pSvc )
-    : GaudiAlgorithm( name, pSvc )
-{
-}
+    : GaudiAlgorithm( name, pSvc ) {}
 
-StatusCode ViewTester::initialize()
-{
+StatusCode ViewTester::initialize() {
   auto sc = GaudiAlgorithm::initialize();
   if ( !sc ) return sc;
 

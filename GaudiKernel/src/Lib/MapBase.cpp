@@ -25,8 +25,7 @@ Gaudi::Utils::MapBase::~MapBase() {}
  *  @see std::out_of_range
  */
 // ============================================================================
-void Gaudi::Utils::MapBase::throw_out_of_range_exception() const
-{
+void Gaudi::Utils::MapBase::throw_out_of_range_exception() const {
   std::string _nam = System::typeinfoName( typeid( *this ) );
   throw std::out_of_range( _nam.c_str() );
 }

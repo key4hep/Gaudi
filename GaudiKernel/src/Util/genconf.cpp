@@ -1,17 +1,17 @@
 #ifdef _WIN32
 // Disable a warning in Boost program_options headers:
 // inconsistent linkage in program_options/variables_map.hpp
-#pragma warning( disable : 4273 )
+#  pragma warning( disable : 4273 )
 
 // Avoid conflicts between windows and the message service.
-#define NOMSG
-#define NOGDI
+#  define NOMSG
+#  define NOGDI
 #endif
 
 #ifdef __ICC
 // disable icc warning #279: controlling expression is constant
 // ... a lot of noise produced by the boost/filesystem/operations.hpp
-#pragma warning( disable : 279 )
+#  pragma warning( disable : 279 )
 #endif
 
 #include "boost/program_options.hpp"
@@ -84,8 +84,7 @@ class IConverter;
 typedef std::vector<std::string> Strings_t;
 typedef std::vector<fs::path>    LibPathNames_t;
 
-namespace
-{
+namespace {
   const std::string py_tab = "    ";
 
   /// Regular expression to validate the property names.
@@ -114,8 +113,7 @@ namespace
       {typeid( Auditor::Factory::FactoryType ).name(), component_t::Auditor},
   };
 
-  const std::string& toString( component_t type )
-  {
+  const std::string& toString( component_t type ) {
     static const std::array<std::string, 11> names = {"Module",    "DefaultName", "Algorithm",      "AlgTool",
                                                       "Auditor",   "Service",     "ApplicationMgr", "IInterface",
                                                       "Converter", "DataObject",  "Unknown"};
@@ -125,26 +123,23 @@ namespace
 
   //-----------------------------------------------------------------------------
   /// Translate a valid C++ typename into a valid python one
-  std::string pythonizeName( const std::string& name )
-  {
+  std::string pythonizeName( const std::string& name ) {
     static const string in( "<>&*,: ()." );
     static const string out( "__rp__s___" );
     auto                r = boost::algorithm::replace_all_copy( name, ", ", "," );
     for ( auto& c : r ) {
-      auto rep                     = in.find( c );
+      auto rep = in.find( c );
       if ( rep != string::npos ) c = out[rep];
     }
     return r;
   }
   //-----------------------------------------------------------------------------
   template <typename T>
-  std::type_index typeIndex()
-  {
+  std::type_index typeIndex() {
     return std::type_index{typeid( T )};
   }
   //-----------------------------------------------------------------------------
-  inline std::string libNativeName( const std::string& libName )
-  {
+  inline std::string libNativeName( const std::string& libName ) {
 #if defined( _WIN32 )
     return libName + ".dll";
 #elif defined( __linux ) || defined( __APPLE__ )
@@ -154,10 +149,9 @@ namespace
     return libName;
 #endif
   }
-}
+} // namespace
 
-class configGenerator
-{
+class configGenerator {
   /// name of the package we are processing
   string m_pkgName;
 
@@ -188,9 +182,7 @@ class configGenerator
 
 public:
   configGenerator( const string& pkgName, const string& outputDirName )
-      : m_pkgName( pkgName ), m_outputDirName( outputDirName )
-  {
-  }
+      : m_pkgName( pkgName ), m_outputDirName( outputDirName ) {}
 
   /// main entry point of this class:
   ///  - iterate over all the modules (ie: library names)
@@ -202,14 +194,12 @@ public:
   void setConfigurableModule( const std::string& moduleName ) { m_configurable[component_t::Module] = moduleName; }
 
   /// customize the default name for configurable instances
-  void setConfigurableDefaultName( const std::string& defaultName )
-  {
+  void setConfigurableDefaultName( const std::string& defaultName ) {
     m_configurable[component_t::DefaultName] = defaultName;
   }
 
   /// customize the configurable base class for Algorithm component
-  void setConfigurableAlgorithm( const std::string& cfgAlgorithm )
-  {
+  void setConfigurableAlgorithm( const std::string& cfgAlgorithm ) {
     m_configurable[component_t::Algorithm] = cfgAlgorithm;
   }
 
@@ -220,8 +210,7 @@ public:
   void setConfigurableAuditor( const std::string& cfgAuditor ) { m_configurable[component_t::Auditor] = cfgAuditor; }
 
   /// customize the configurable base class for Service component
-  void setConfigurableService( const std::string& cfgService )
-  {
+  void setConfigurableService( const std::string& cfgService ) {
     m_configurable[component_t::Service]        = cfgService;
     m_configurable[component_t::ApplicationMgr] = cfgService;
   }
@@ -231,8 +220,7 @@ private:
                      const vector<PropertyBase*>& properties );
   void genImport( std::ostream& s, const boost::format& frmt, std::string indent );
   void genHeader( std::ostream& pyOut, std::ostream& dbOut );
-  void genBody( std::ostream& pyOut, std::ostream& dbOut )
-  {
+  void genBody( std::ostream& pyOut, std::ostream& dbOut ) {
     pyOut << m_pyBuf.str() << flush;
     dbOut << m_dbBuf.str() << flush;
   }
@@ -244,8 +232,7 @@ private:
 
 int createAppMgr();
 
-void init_logging( boost::log::trivial::severity_level level )
-{
+void init_logging( boost::log::trivial::severity_level level ) {
   namespace logging  = boost::log;
   namespace keywords = boost::log::keywords;
   namespace expr     = boost::log::expressions;
@@ -276,8 +263,9 @@ int main( int argc, char** argv )
   generic.add_options()( "help,h", "produce this help message" )(
       "package-name,p", po::value<string>(), "name of the package for which we create the configurables file" )(
       "input-libraries,i", po::value<string>(), "libraries to extract the component configurables from" )(
-      "input-cfg,c", po::value<string>(), "path to the cfg file holding the description of the Configurable base "
-                                          "classes, the python module holding the Configurable definitions, etc..." )(
+      "input-cfg,c", po::value<string>(),
+      "path to the cfg file holding the description of the Configurable base "
+      "classes, the python module holding the Configurable definitions, etc..." )(
       "output-dir,o", po::value<string>()->default_value( "../genConf" ),
       "output directory for genconf files." )( "debug-level,d", po::value<int>()->default_value( 0 ), "debug level" )(
       "load-library,l", po::value<Strings_t>()->composing(), "preloading library" )(
@@ -368,9 +356,7 @@ int main( int argc, char** argv )
         lib = lib.substr( 3 ); // For *NIX remove "lib"
       }
       // remove duplicates
-      if ( !lib.empty() && std::find( libs.begin(), libs.end(), lib ) == libs.end() ) {
-        libs.push_back( lib );
-      }
+      if ( !lib.empty() && std::find( libs.begin(), libs.end(), lib ) == libs.end() ) { libs.push_back( lib ); }
     } //> end loop over input-libraries
     if ( libs.empty() ) {
       LOG_ERROR << "input component library(ies) required !\n";
@@ -383,13 +369,9 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  if ( vm.count( "output-dir" ) ) {
-    out = fs::system_complete( fs::path( vm["output-dir"].as<string>() ) );
-  }
+  if ( vm.count( "output-dir" ) ) { out = fs::system_complete( fs::path( vm["output-dir"].as<string>() ) ); }
 
-  if ( vm.count( "debug-level" ) ) {
-    Gaudi::PluginService::SetDebug( vm["debug-level"].as<int>() );
-  }
+  if ( vm.count( "debug-level" ) ) { Gaudi::PluginService::SetDebug( vm["debug-level"].as<int>() ); }
 
   if ( vm.count( "load-library" ) ) {
     for ( const auto& lLib : vm["load-library"].as<Strings_t>() ) {
@@ -583,9 +565,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
       if ( prop ) {
-        if ( !genComponent( iLib, name, type, prop->getProperties() ) ) {
-          allGood = false;
-        }
+        if ( !genComponent( iLib, name, type, prop->getProperties() ) ) { allGood = false; }
         prop.reset();
       } else {
         LOG_ERROR << "could not cast IInterface* object to an IProperty* !";
@@ -616,8 +596,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
   return allGood ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-void configGenerator::genImport( std::ostream& s, const boost::format& frmt, std::string indent = "" )
-{
+void configGenerator::genImport( std::ostream& s, const boost::format& frmt, std::string indent = "" ) {
 
   std::string::size_type pos = 0, nxtpos = 0;
   std::string            mod;
@@ -655,13 +634,9 @@ void configGenerator::genHeader( std::ostream& py, std::ostream& db )
   std::string now = Gaudi::Time::current().format( true );
   py << "#" << now //<< "\n"
      << "\"\"\"Automatically generated. DO NOT EDIT please\"\"\"\n";
-  if ( m_importGaudiHandles ) {
-    py << "from GaudiKernel.GaudiHandles import *\n";
-  }
+  if ( m_importGaudiHandles ) { py << "from GaudiKernel.GaudiHandles import *\n"; }
 
-  if ( m_importDataObjectHandles ) {
-    py << "from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase\n";
-  }
+  if ( m_importDataObjectHandles ) { py << "from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase\n"; }
 
   genImport( py, boost::format( "from %1%.Configurable import *" ) );
 

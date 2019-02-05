@@ -40,12 +40,12 @@ class IRegistry;
  *  @author Markus Frank
  *  @author Sebastien Ponce
  */
-class GAUDI_API IDataProviderSvc : virtual public IInterface
-{
+class GAUDI_API IDataProviderSvc : virtual public IInterface {
 
   /// Helper function to convert item numbers to path strings
   //  /// i.e. int -> "/" + int
   static inline std::string itemToPath( int item ) { return '/' + std::to_string( item ); }
+
 public:
   /// InterfaceID
   DeclareInterfaceID( IDataProviderSvc, 4, 0 );
@@ -59,8 +59,7 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode registerObject( boost::string_ref fullPath, DataObject* pObject )
-  {
+  StatusCode registerObject( boost::string_ref fullPath, DataObject* pObject ) {
     return registerObject( nullptr, fullPath, pObject );
   }
 
@@ -83,8 +82,7 @@ public:
    *  @param      pObject     Pointer to the object to be registered.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode registerObject( boost::string_ref parentPath, int item, DataObject* pObject )
-  {
+  StatusCode registerObject( boost::string_ref parentPath, int item, DataObject* pObject ) {
     return registerObject( parentPath, itemToPath( item ), pObject );
   }
 
@@ -106,8 +104,7 @@ public:
    *  @param      pObject     Pointer to the object to be connected.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject )
-  {
+  StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject ) {
     return registerObject( parentObj, itemToPath( item ), pObject );
   }
 
@@ -140,8 +137,7 @@ public:
    *  @param      objPath     Path name of the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode unregisterObject( boost::string_ref parentPath, boost::string_ref objPath )
-  {
+  StatusCode unregisterObject( boost::string_ref parentPath, boost::string_ref objPath ) {
     DataObject* pO     = nullptr;
     StatusCode  status = findObject( parentPath, pO );
     return status.isSuccess() ? unregisterObject( pO, objPath ) : status;
@@ -161,8 +157,7 @@ public:
    *  @param      item        Integer identifier of the object item.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode unregisterObject( boost::string_ref parentPath, int item )
-  {
+  StatusCode unregisterObject( boost::string_ref parentPath, int item ) {
     return unregisterObject( parentPath, itemToPath( item ) );
   }
 
@@ -211,8 +206,7 @@ public:
    *  @param      item        Integer identifier of the object item.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode unregisterObject( DataObject* pParent, int item )
-  {
+  StatusCode unregisterObject( DataObject* pParent, int item ) {
     return unregisterObject( pParent, itemToPath( item ) );
   }
 
@@ -236,8 +230,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode retrieveObject( boost::string_ref fullPath, DataObject*& pObject )
-  {
+  StatusCode retrieveObject( boost::string_ref fullPath, DataObject*& pObject ) {
     return retrieveObject( static_cast<IRegistry*>( nullptr ), fullPath, pObject );
   }
 
@@ -251,8 +244,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode retrieveObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject )
-  {
+  StatusCode retrieveObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject ) {
     DataObject* parent = nullptr;
     StatusCode  status = retrieveObject( parentPath, parent );
     return status.isSuccess() ? retrieveObject( parent, objectPath, pObject ) : status;
@@ -268,8 +260,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode retrieveObject( boost::string_ref parentPath, int item, DataObject*& pObject )
-  {
+  StatusCode retrieveObject( boost::string_ref parentPath, int item, DataObject*& pObject ) {
     return retrieveObject( parentPath, itemToPath( item ), pObject );
   }
 
@@ -283,8 +274,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode retrieveObject( DataObject* parentObj, boost::string_ref objectPath, DataObject*& pObject )
-  {
+  StatusCode retrieveObject( DataObject* parentObj, boost::string_ref objectPath, DataObject*& pObject ) {
     return retrieveObject( parentObj ? parentObj->registry() : nullptr, objectPath, pObject );
   }
 
@@ -298,8 +288,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject )
-  {
+  StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject ) {
     return retrieveObject( parentObj, itemToPath( item ), pObject );
   }
 
@@ -332,8 +321,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode findObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject )
-  {
+  StatusCode findObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject*& pObject ) {
     DataObject* parent = nullptr;
     StatusCode  status = findObject( parentPath, parent );
     return status.isSuccess() ? findObject( parent, objectPath, pObject ) : status;
@@ -347,8 +335,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode findObject( boost::string_ref parentPath, int item, DataObject*& pObject )
-  {
+  StatusCode findObject( boost::string_ref parentPath, int item, DataObject*& pObject ) {
     return findObject( parentPath, itemToPath( item ), pObject );
   }
 
@@ -361,8 +348,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode findObject( DataObject* parentObj, boost::string_ref objectPath, DataObject*& pObject )
-  {
+  StatusCode findObject( DataObject* parentObj, boost::string_ref objectPath, DataObject*& pObject ) {
     return findObject( parentObj ? parentObj->registry() : nullptr, objectPath, pObject );
   }
 
@@ -374,8 +360,7 @@ public:
    *  @param  pObject     Reference to the pointer of the object to be returned.
    *  @return             Status code indicating success or failure.
    */
-  StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject )
-  {
+  StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject ) {
     return findObject( parentObj, itemToPath( item ), pObject );
   }
 
@@ -392,8 +377,7 @@ public:
    *  @param      fullPath    Path name of the object.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode updateObject( boost::string_ref fullPath )
-  {
+  StatusCode updateObject( boost::string_ref fullPath ) {
     DataObject* pO     = nullptr;
     StatusCode  status = findObject( fullPath, pO );
     return status.isSuccess() ? updateObject( pO ) : retrieveObject( fullPath, pO );
@@ -415,8 +399,7 @@ public:
    *  @param      updatePath  Path to the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode updateObject( boost::string_ref parentPath, boost::string_ref updatePath )
-  {
+  StatusCode updateObject( boost::string_ref parentPath, boost::string_ref updatePath ) {
     DataObject* pParent = nullptr;
     StatusCode  status  = findObject( parentPath, pParent );
     return status.isSuccess() ? updateObject( pParent, updatePath ) : status;
@@ -430,8 +413,7 @@ public:
    *  @param      updatePath  Path to the object relative to the parent.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode updateObject( DataObject* pParent, boost::string_ref updatePath )
-  {
+  StatusCode updateObject( DataObject* pParent, boost::string_ref updatePath ) {
     DataObject* pObject = nullptr;
     StatusCode  status  = findObject( pParent, updatePath, pObject );
     return status.isSuccess() ? updateObject( pObject ) : status;
@@ -448,8 +430,7 @@ public:
    *  @param      itemPath    Path to the item to be preloaded.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode addPreLoadItem( std::string itemPath )
-  {
+  StatusCode addPreLoadItem( std::string itemPath ) {
     return addPreLoadItem( DataStoreItem( std::move( itemPath ), 1 ) );
   }
 
@@ -463,8 +444,7 @@ public:
    *  @param      itemPath    Path to the item to be preloaded.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode removePreLoadItem( std::string itemPath )
-  {
+  StatusCode removePreLoadItem( std::string itemPath ) {
     return removePreLoadItem( DataStoreItem( std::move( itemPath ), 1 ) );
   }
 
@@ -496,8 +476,7 @@ public:
    *  @param      toObj       Pointer to the object the link points to.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode linkObject( boost::string_ref fromPath, boost::string_ref objPath, DataObject* toObj )
-  {
+  StatusCode linkObject( boost::string_ref fromPath, boost::string_ref objPath, DataObject* toObj ) {
     DataObject* pO     = nullptr;
     StatusCode  status = retrieveObject( fromPath, pO );
     return status.isSuccess() ? linkObject( pO->registry(), objPath, toObj ) : status;
@@ -540,8 +519,7 @@ public:
    *  @param      objPath     Path of the entry to be linked relative to from.
    *  @return                 Status code indicating success or failure.
    */
-  StatusCode unlinkObject( boost::string_ref fromPath, boost::string_ref objPath )
-  {
+  StatusCode unlinkObject( boost::string_ref fromPath, boost::string_ref objPath ) {
     DataObject* pObject = nullptr;
     StatusCode  status  = findObject( fromPath, pObject );
     return status.isSuccess() ? unlinkObject( pObject->registry(), objPath ) : status;
@@ -599,8 +577,7 @@ public:
 
 STATUSCODE_ENUM_DECL( IDataProviderSvc::Status )
 
-inline StatusCode IDataProviderSvc::linkObject( DataObject* fromObj, boost::string_ref objPath, DataObject* toObj )
-{
+inline StatusCode IDataProviderSvc::linkObject( DataObject* fromObj, boost::string_ref objPath, DataObject* toObj ) {
   if ( fromObj ) {
     IRegistry* from_entry = fromObj->registry();
     if ( from_entry ) return linkObject( from_entry, objPath, toObj );

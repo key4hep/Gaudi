@@ -21,9 +21,7 @@ struct GAUDI_API TimeException : GaudiException {
   // Standard constructor
   TimeException( std::string Message = "unspecified exception", std::string Tag = "*Gaudi::Time*",
                  StatusCode Code = StatusCode::FAILURE )
-      : GaudiException( std::move( Message ), std::move( Tag ), std::move( Code ) )
-  {
-  }
+      : GaudiException( std::move( Message ), std::move( Tag ), std::move( Code ) ) {}
 };
 
 struct tm;
@@ -31,8 +29,7 @@ struct tm;
 typedef struct _FILETIME FILETIME;
 #endif
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   class Time;
   class TimeSpan;
@@ -52,8 +49,7 @@ namespace Gaudi
    *  @author Marco Clemencic
    *  @date   2005-12-15
    */
-  class GAUDI_API TimeSpan
-  {
+  class GAUDI_API TimeSpan {
     friend class Time;
 
   public:
@@ -97,13 +93,11 @@ namespace Gaudi
 
     friend bool operator>=( const Gaudi::TimeSpan& t1, const Gaudi::TimeSpan& t2 ) { return t1.ns() >= t2.ns(); }
 
-    friend Gaudi::TimeSpan operator+( const Gaudi::TimeSpan& ts1, const Gaudi::TimeSpan& ts2 )
-    {
+    friend Gaudi::TimeSpan operator+( const Gaudi::TimeSpan& ts1, const Gaudi::TimeSpan& ts2 ) {
       return Gaudi::TimeSpan( ts1.ns() + ts2.ns() );
     }
 
-    friend Gaudi::TimeSpan operator-( const Gaudi::TimeSpan& ts1, const Gaudi::TimeSpan& ts2 )
-    {
+    friend Gaudi::TimeSpan operator-( const Gaudi::TimeSpan& ts1, const Gaudi::TimeSpan& ts2 ) {
       return Gaudi::TimeSpan( ts1.ns() - ts2.ns() );
     }
 
@@ -234,8 +228,7 @@ namespace Gaudi
    *  @author Marco Clemencic
    *  @date   2005-12-15
    */
-  class GAUDI_API Time
-  {
+  class GAUDI_API Time {
     friend class TimeSpan;
 
   public:
@@ -292,17 +285,17 @@ namespace Gaudi
     tm utc( int* nsecpart = 0 ) const;
     tm local( int* nsecpart = 0 ) const;
 
-    int year( bool local ) const;
-    int month( bool local ) const;
-    int day( bool local ) const;
-    int hour( bool local ) const;
-    int minute( bool local ) const;
-    int second( bool local ) const;
-    int nsecond() const;
-    int weekday( bool local ) const;
+    int  year( bool local ) const;
+    int  month( bool local ) const;
+    int  day( bool local ) const;
+    int  hour( bool local ) const;
+    int  minute( bool local ) const;
+    int  second( bool local ) const;
+    int  nsecond() const;
+    int  weekday( bool local ) const;
     bool isdst( bool local ) const;
 
-    ValueType utcoffset( int* daylight = 0 ) const;
+    ValueType   utcoffset( int* daylight = 0 ) const;
     const char* timezone( int* daylight = 0 ) const;
 
     Time& operator+=( const TimeSpan& x );
@@ -317,7 +310,7 @@ namespace Gaudi
 
     // Conversion helpers
     static unsigned toDosDate( Time time );
-    static Time fromDosDate( unsigned dosDate );
+    static Time     fromDosDate( unsigned dosDate );
 
     friend bool operator==( const Gaudi::Time& t1, const Gaudi::Time& t2 ) { return t1.ns() == t2.ns(); }
 
@@ -334,12 +327,11 @@ namespace Gaudi
   private:
     ValueType m_nsecs = 0; //< Time value as nsecs from #epoch().
 
-    inline void TimeAssert( bool cond, const std::string& msg = "time assertion failed" ) const
-    {
+    inline void TimeAssert( bool cond, const std::string& msg = "time assertion failed" ) const {
       if ( !cond ) throw TimeException( msg );
     }
   };
-}
+} // namespace Gaudi
 
 #include "GaudiKernel/Time.icpp"
 

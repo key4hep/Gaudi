@@ -21,8 +21,7 @@
  *  @date   2002-09-14
  */
 
-class FuncMinimum : public extends<GaudiTool, IFuncMinimum>
-{
+class FuncMinimum : public extends<GaudiTool, IFuncMinimum> {
 public:
   typedef std::vector<const GenFunc*> Gradient;
 
@@ -42,8 +41,7 @@ public:
   /// Overriding initialize
   StatusCode initialize() override;
 
-  class FuncMinimumMisc final
-  {
+  class FuncMinimumMisc final {
   public:
     /** standard constructor
      *
@@ -84,11 +82,11 @@ private:
 private:
   Gaudi::Property<std::string> m_algType{this, "Algorithm", "conjugate_fr",
                                          "type of the algorithm for multidimensional minimization"};
-  Gaudi::Property<double> m_max_iter{this, "Iteration", 200, "maximum of iteration"};
-  Gaudi::Property<double> m_norm_gradient{this, "Gradient", 1.0e-10,
+  Gaudi::Property<double>      m_max_iter{this, "Iteration", 200, "maximum of iteration"};
+  Gaudi::Property<double>      m_norm_gradient{this, "Gradient", 1.0e-10,
                                           "absolute tolerance for the Euclidean norm of the gradient"};
-  Gaudi::Property<double> m_step_size{this, "Step_size", 0.01, "size of the first trial step"};
-  Gaudi::Property<double> m_tol{this, "Tol", 1e-10, "accuracy of the line minimization"};
+  Gaudi::Property<double>      m_step_size{this, "Step_size", 0.01, "size of the first trial step"};
+  Gaudi::Property<double>      m_tol{this, "Tol", 1e-10, "accuracy of the line minimization"};
 
   const gsl_multimin_fdfminimizer_type* m_type = nullptr;
 };
@@ -97,4 +95,3 @@ private:
 // The END
 // ============================================================================
 #endif // ALGTOOLS_FUNCMINIMUM_H
-// ============================================================================

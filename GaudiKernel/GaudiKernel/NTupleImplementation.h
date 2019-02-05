@@ -11,11 +11,9 @@
 class INTupleSvc;
 class IConversionSvc;
 
-namespace NTuple
-{
+namespace NTuple {
   // Concrete N tuple class definition
-  class GAUDI_API TupleImp : public Tuple
-  {
+  class GAUDI_API TupleImp : public Tuple {
   protected:
     /// Container with N tuple _Columns
     ItemContainer m_items;
@@ -73,7 +71,7 @@ namespace NTuple
     ISelectStatement* selector() override;
     /// Set N tuple data buffer
     virtual char* setBuffer( std::unique_ptr<char[]>&& buff );
-    char* setBuffer( char* buff ) override;
+    char*         setBuffer( char* buff ) override;
     /// Reset all entries to their default values
     void reset() override;
     /// Add an item row to the N tuple
@@ -96,8 +94,7 @@ namespace NTuple
   }; // end class definition: Tuple
 
   // Concrete column wise N tuple class definition
-  class ColumnWiseTuple : public TupleImp
-  {
+  class ColumnWiseTuple : public TupleImp {
   public:
     /// Standard Constructor
     ColumnWiseTuple( std::string title ) : TupleImp( std::move( title ) ) {}
@@ -108,8 +105,7 @@ namespace NTuple
   }; // end class definition: ColumnWiseTuple
 
   // Concrete column wise N tuple class definition
-  class RowWiseTuple : public TupleImp
-  {
+  class RowWiseTuple : public TupleImp {
   public:
     /// Standard Constructor
     RowWiseTuple( std::string title ) : TupleImp( std::move( title ) ) {}
@@ -118,6 +114,6 @@ namespace NTuple
     /// Static access to class defininition structure
     static const CLID& classID() { return CLID_RowWiseTuple; }
   }; // end class definition: RowWiseTuple
-} // end name space NTuple
+} // namespace NTuple
 
 #endif // GAUDIKERNEL_NTUPLEIMP_H

@@ -1,5 +1,4 @@
 #!/usr/bin/env gaudirun.py
-
 '''
 A test for scheduling multiple sub-event contexts.
 The main sequence has two steps of creating and running sub-events.
@@ -17,8 +16,8 @@ Seven instances of ViewTester are used as follows:
 '''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher, GaudiSequencer, Test__ViewTester)
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -92,29 +91,27 @@ for algo in [a1, a2, a3, a4, a5, a6, a7]:
     algo.Cardinality = cardinality
     algo.OutputLevel = DEBUG
 
-viewNodeOne = GaudiSequencer("viewNodeOne",
-                             Members=[a2, a3],
-                             Sequential=False,
-                             OutputLevel=VERBOSE)
+viewNodeOne = GaudiSequencer(
+    "viewNodeOne", Members=[a2, a3], Sequential=False, OutputLevel=VERBOSE)
 
-viewNodeTwo = GaudiSequencer("viewNodeTwo",
-                             Members=[a5, a6],
-                             Sequential=False,
-                             OutputLevel=VERBOSE)
+viewNodeTwo = GaudiSequencer(
+    "viewNodeTwo", Members=[a5, a6], Sequential=False, OutputLevel=VERBOSE)
 
-createViewSeq = GaudiSequencer("createViewSeq",
-                               Members=[a1, viewNodeOne, a4, viewNodeTwo, a7],
-                               Sequential=True,
-                               OutputLevel=VERBOSE)
+createViewSeq = GaudiSequencer(
+    "createViewSeq",
+    Members=[a1, viewNodeOne, a4, viewNodeTwo, a7],
+    Sequential=True,
+    OutputLevel=VERBOSE)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[createViewSeq],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[createViewSeq],
+    MessageSvcType="InertMessageSvc")
 
 # -------------------------------------------------------------------------------

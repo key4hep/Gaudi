@@ -31,14 +31,12 @@ struct EventSlot {
       , algsStates( original.algsStates )
       , controlFlowState( original.controlFlowState )
       , entryPoint( nodeName )
-      , parentSlot( &original )
-  {
+      , parentSlot( &original ) {
     algsStates.reset();
   };
 
   /// Reset all resources in order to reuse the slot (thread-unsafe)
-  void reset( EventContext* theeventContext )
-  {
+  void reset( EventContext* theeventContext ) {
     eventContext.reset( theeventContext );
     algsStates.reset();
     controlFlowState.assign( controlFlowState.size(), -1 );
@@ -50,8 +48,7 @@ struct EventSlot {
   };
 
   /// Add a subslot to the slot (this constructs a new slot and registers it with the parent one)
-  void addSubSlot( std::unique_ptr<EventContext> viewContext, const std::string& nodeName )
-  {
+  void addSubSlot( std::unique_ptr<EventContext> viewContext, const std::string& nodeName ) {
     unsigned int lastIndex = allSubSlots.size();
 
     auto search = subSlotsByNode.find( nodeName );
@@ -68,8 +65,7 @@ struct EventSlot {
 
   /// Disable event views for a given CF view node by registering an empty container
   /// Contact B. W. Wynne for more details on the reasoning about this design choice
-  void disableSubSlots( const std::string& nodeName )
-  {
+  void disableSubSlots( const std::string& nodeName ) {
     subSlotsByNode.emplace( std::piecewise_construct, std::forward_as_tuple( nodeName ), std::forward_as_tuple() );
   }
 

@@ -16,15 +16,14 @@
 #include "Gaudi/Details/PluginServiceCommon.h"
 
 #if __cplusplus >= 201703
-#include <any>
+#  include <any>
 #else
-#include <boost/any.hpp>
-namespace std
-{
+#  include <boost/any.hpp>
+namespace std {
   using boost::any;
   using boost::any_cast;
   using boost::bad_any_cast;
-}
+} // namespace std
 #endif
 
 #include <functional>
@@ -37,20 +36,16 @@ namespace std
 #include <typeinfo>
 #include <utility>
 
-namespace Gaudi
-{
-  namespace PluginService
-  {
-    GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2
-    {
+namespace Gaudi {
+  namespace PluginService {
+    GAUDI_PLUGIN_SERVICE_V2_INLINE namespace v2 {
       /// \cond FWD_DECL
       template <typename>
       struct Factory;
       /// \cond
 
       /// Implementation details of Gaudi::PluginService
-      namespace Details
-      {
+      namespace Details {
         template <typename>
         struct Traits;
 
@@ -67,23 +62,20 @@ namespace Gaudi
 
         /// Return a canonical name for the template argument.
         template <typename T>
-        inline std::string demangle()
-        {
+        inline std::string demangle() {
           return demangle( typeid( T ) );
         }
 
         /// Convert a generic `id` to `std::string` via `std::ostream::operator<<`.
         template <typename ID>
-        inline std::string stringify_id( const ID& id )
-        {
+        inline std::string stringify_id( const ID& id ) {
           std::ostringstream o;
           o << id;
           return o.str();
         }
         /// Specialized no-op conversion from `std::string` to `std::string`.
         template <>
-        inline std::string stringify_id<std::string>( const std::string& id )
-        {
+        inline std::string stringify_id<std::string>( const std::string& id ) {
           return id;
         }
 
@@ -91,22 +83,21 @@ namespace Gaudi
         void reportBadAnyCast( const std::type_info& factory_type, const std::string& id );
 
         /// Simple logging class, just to provide a default implementation.
-        class GAUDIPS_API Logger
-        {
+        class GAUDIPS_API Logger {
         public:
           enum Level { Debug = 0, Info = 1, Warning = 2, Error = 3 };
           Logger( Level level = Warning ) : m_level( level ) {}
           virtual ~Logger() {}
           inline Level level() const { return m_level; }
-          inline void setLevel( Level level ) { m_level = level; }
-          inline void info( const std::string& msg ) { report( Info, msg ); }
-          inline void debug( const std::string& msg ) { report( Debug, msg ); }
-          inline void warning( const std::string& msg ) { report( Warning, msg ); }
-          inline void error( const std::string& msg ) { report( Error, msg ); }
+          inline void  setLevel( Level level ) { m_level = level; }
+          inline void  info( const std::string& msg ) { report( Info, msg ); }
+          inline void  debug( const std::string& msg ) { report( Debug, msg ); }
+          inline void  warning( const std::string& msg ) { report( Warning, msg ); }
+          inline void  error( const std::string& msg ) { report( Error, msg ); }
 
         private:
           virtual void report( Level lvl, const std::string& msg );
-          Level m_level;
+          Level        m_level;
         };
 
         /// Return the current logger instance.
@@ -116,8 +107,7 @@ namespace Gaudi
         GAUDIPS_API void setLogger( Logger* logger );
 
         /// In-memory database of the loaded factories.
-        class GAUDIPS_API Registry
-        {
+        class GAUDIPS_API Registry {
         public:
           using KeyType = std::string;
 
@@ -129,8 +119,7 @@ namespace Gaudi
             std::any    factory{};
             Properties  properties{};
 
-            inline bool is_set() const
-            {
+            inline bool is_set() const {
 #if __cplusplus >= 201703
               return factory.has_value();
 #else
@@ -145,8 +134,7 @@ namespace Gaudi
 
           /// Get the factory function for a given `id` from the registry.
           template <typename F>
-          F get( const KeyType& id )
-          {
+          F get( const KeyType& id ) {
             const FactoryInfo& info = Registry::instance().getInfo( id, true );
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
             if ( !info.getprop( "ReflexName" ).empty() ) {
@@ -212,8 +200,7 @@ namespace Gaudi
         struct DefaultFactory;
         template <typename T, typename R, typename... Args>
         struct DefaultFactory<T, Factory<R( Args... )>> {
-          inline typename Factory<R( Args... )>::ReturnType operator()( Args... args )
-          {
+          inline typename Factory<R( Args... )>::ReturnType operator()( Args... args ) {
             return std::make_unique<T>( std::move( args )... );
           }
         };
@@ -222,15 +209,15 @@ namespace Gaudi
         ///
         /// Implementation borrowed from `DsoUtils.h` (genconf).
         std::string getDSONameFor( void* fptr );
-      }
+      } // namespace Details
 
       /// Backward compatibility with Reflex.
       GAUDIPS_API void SetDebug( int debugLevel );
       /// Backward compatibility with Reflex.
       GAUDIPS_API int Debug();
     }
-  }
-}
+  } // namespace PluginService
+} // namespace Gaudi
 
 #define _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME_TOKEN( serial ) _register_##serial
 #define _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME( serial )                                                          \

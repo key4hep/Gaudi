@@ -20,8 +20,7 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-03-07 (modified)
  */
-class GAUDI_API IAlgContextSvc : virtual public IInterface
-{
+class GAUDI_API IAlgContextSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAlgContextSvc, 4, 0 );
@@ -39,10 +38,8 @@ public:
   virtual const Algorithms& algorithms() const = 0;
 };
 // ============================================================================
-namespace Gaudi
-{
-  namespace Utils
-  {
+namespace Gaudi {
+  namespace Utils {
     /** @class AlgContext
      *  Helper "sentry" class to automatize the safe register/unregister
      *  the algorithm's context
@@ -74,8 +71,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@phys.syr.edu
      *  @date   2007-03-07
      */
-    class GAUDI_API AlgContext final
-    {
+    class GAUDI_API AlgContext final {
     public:
       /** constructor from the service and the algorithm
        *  Internally invokes IAlgContextSvc::setCurrentAlg
@@ -115,7 +111,7 @@ namespace Gaudi
       SmartIF<IAlgorithm>     m_alg;
       const EventContext      m_context;
     };
-  } // end of namespace Gaudi::Utils
+  } // namespace Utils
 } // end of namespace Gaudi
 
 #endif

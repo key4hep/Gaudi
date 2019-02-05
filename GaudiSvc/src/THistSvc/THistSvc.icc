@@ -8,29 +8,25 @@
 #include "TObject.h"
 
 #ifndef GAUDIKERNEL_MSGSTREAM_H
-#include "GaudiKernel/MsgStream.h"
+#  include "GaudiKernel/MsgStream.h"
 #endif
 
 #include "GaudiKernel/System.h"
 
 template <typename T>
-StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist, const std::string& id, bool shared )
-{
-  THistID* hid = nullptr ;
-  return regHist_i( std::move(hist), id, shared, hid );
+StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist, const std::string& id, bool shared ) {
+  THistID* hid = nullptr;
+  return regHist_i( std::move( hist ), id, shared, hid );
 }
 
 template <typename T>
-StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::string& id, bool shared, THistID*& phid )
-{
+StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::string& id, bool shared, THistID*& phid ) {
   GlobalDirectoryRestore restore( m_svcMut );
   phid = nullptr;
 
   // It is sad that we lose propper memory management here
   T* hist = nullptr;
-  if( hist_unique.get() != nullptr ) {
-    hist = hist_unique.release();
-  }
+  if ( hist_unique.get() != nullptr ) { hist = hist_unique.release(); }
   debug() << "regHist_i obj: " << hist << "  id: " << id << "  s: " << shared << endmsg;
 
   std::string idr( id );
@@ -43,7 +39,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     return StatusCode::FAILURE;
   }
 
-  TFile* f = nullptr;
+  TFile*      f = nullptr;
   std::string stream, name;
   if ( !findStream( idr, stream, name, f ) ) {
     error() << "Could not register id: \"" << idr << "\"" << endmsg;
@@ -54,7 +50,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   std::string uid = "/" + stream + "/" + name;
 
   uidMap_t::iterator uitr = m_uids.find( uid );
-  bool exists( false );
+  bool               exists( false );
   if ( uitr != m_uids.end() ) {
     exists      = true;
     TObject* t1 = uitr->second->at( 0 ).obj;
@@ -71,18 +67,14 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
   bool temp = false;
   if ( !f ) {
     temp = true;
-    if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "Historgram with id \"" << idr << "\" is temporary" << endmsg;
-    }
+    if ( msgLevel( MSG::DEBUG ) ) { debug() << "Historgram with id \"" << idr << "\" is temporary" << endmsg; }
   }
 
   TObject* to = nullptr;
-  THistID hid;
+  THistID  hid;
   // check to see if this hist is to be read in;
   if ( !temp && m_files.find( stream )->second.second == READ ) {
-    if ( hist != 0 ) {
-      warning() << "Registering id: \"" << idr << "\" with non zero pointer!" << endmsg;
-    }
+    if ( hist != 0 ) { warning() << "Registering id: \"" << idr << "\" with non zero pointer!" << endmsg; }
 
     hist = readHist_i<T>( idr );
     if ( hist == nullptr ) {
@@ -113,16 +105,14 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
     }
 
     const auto findF = m_files.find( stream );
-    hid              = ( findF != m_files.end() ?
-                         THistID( uid, temp, to, f, findF->second.second ) :
-                         THistID( uid, temp, to, f ) );
+    hid = ( findF != m_files.end() ? THistID( uid, temp, to, f, findF->second.second ) : THistID( uid, temp, to, f ) );
 
     hid.shared      = shared;
     TDirectory* dir = changeDir( hid );
 
     if ( dynamic_cast<TTree*>( hist ) ) {
       dynamic_cast<TTree*>( hist )->SetDirectory( dir );
-    } else if ( dynamic_cast<TH1*>( hist) ) {
+    } else if ( dynamic_cast<TH1*>( hist ) ) {
       dynamic_cast<TH1*>( hist )->SetDirectory( dir );
     } else if ( dynamic_cast<TGraph*>( hist ) ) {
       dir->Append( hist );
@@ -146,9 +136,7 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
           << changeDir( hid )->GetPath() << "  file: " << fname << endmsg;
 
   // create a mutex for all shared histograms
-  if ( shared ) {
-    hid.mutex = new histMut_t;
-  }
+  if ( shared ) { hid.mutex = new histMut_t; }
 
   if ( exists ) {
     vhid_t* vi = uitr->second;
@@ -173,20 +161,17 @@ StatusCode THistSvc::regHist_i( std::unique_ptr<T> hist_unique, const std::strin
 }
 
 template <typename T>
-T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) const
-{
+T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) const {
   // id starts with "/": unique
 
   GlobalDirectoryRestore restore( m_svcMut );
 
-  T* hist = nullptr;
-  const THistID* hid = nullptr;
-  size_t num = findHistID( id, hid, ind );
+  T*             hist = nullptr;
+  const THistID* hid  = nullptr;
+  size_t         num  = findHistID( id, hid, ind );
   if ( num == 0 ) {
     // no matches found
-    if ( !quiet ) {
-      error() << "could not locate Hist with id \"" << id << "\"" << endmsg;
-    }
+    if ( !quiet ) { error() << "could not locate Hist with id \"" << id << "\"" << endmsg; }
     return nullptr;
   } else if ( num > 1 ) {
     if ( !quiet ) {
@@ -216,19 +201,16 @@ T* THistSvc::getHist_i( const std::string& id, const size_t& ind, bool quiet ) c
 }
 
 template <typename T>
-T* THistSvc::readHist_i( const std::string& id ) const
-{
+T* THistSvc::readHist_i( const std::string& id ) const {
   GlobalDirectoryRestore restore( m_svcMut );
 
   std::string idr( id );
   removeDoubleSlash( idr );
 
   std::string stream, rem, dir, fdir, bdir, fdir2;
-  TFile* file = nullptr;
+  TFile*      file = nullptr;
 
-  if ( !findStream( idr, stream, rem, file ) ) {
-    return nullptr;
-  }
+  if ( !findStream( idr, stream, rem, file ) ) { return nullptr; }
 
   if ( !file ) {
     error() << "no associated file found" << endmsg;
@@ -273,14 +255,13 @@ T* THistSvc::readHist_i( const std::string& id ) const
 }
 
 template <typename T>
-LockedHandle<T> THistSvc::regShared_i( const std::string& id, std::unique_ptr<T> hist )
-{
+LockedHandle<T> THistSvc::regShared_i( const std::string& id, std::unique_ptr<T> hist ) {
   LockedHandle<T> lh( nullptr, nullptr );
-  const THistID* hid = nullptr;
+  const THistID*  hid = nullptr;
   if ( findHistID( id, hid ) == 0 ) {
-    T* phist = hist.get();
-    THistID* phid = nullptr;
-    if ( regHist_i( std::move(hist), id, true, phid ).isSuccess() ) {
+    T*       phist = hist.get();
+    THistID* phid  = nullptr;
+    if ( regHist_i( std::move( hist ), id, true, phid ).isSuccess() ) {
       lh.set( phist, phid->mutex );
 
     } else {
@@ -308,12 +289,11 @@ LockedHandle<T> THistSvc::regShared_i( const std::string& id, std::unique_ptr<T>
 }
 
 template <typename T>
-LockedHandle<T> THistSvc::getShared_i( const std::string& name ) const
-{
+LockedHandle<T> THistSvc::getShared_i( const std::string& name ) const {
   GlobalDirectoryRestore restore( m_svcMut );
 
   const THistID* hid = nullptr;
-  size_t i = findHistID( name, hid );
+  size_t         i   = findHistID( name, hid );
 
   LockedHandle<T> hist( nullptr, nullptr );
 
@@ -323,7 +303,7 @@ LockedHandle<T> THistSvc::getShared_i( const std::string& name ) const
       return hist;
     }
     T* h1 = dynamic_cast<T*>( hid->obj );
-    hist = LockedHandle<T>( h1, hid->mutex );
+    hist  = LockedHandle<T>( h1, hid->mutex );
 
     debug() << "getSharedHist: found THistID: " << *hid << endmsg;
   } else if ( i == 0 ) {

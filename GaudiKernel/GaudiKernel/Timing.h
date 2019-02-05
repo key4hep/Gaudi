@@ -17,9 +17,9 @@
 #include "GaudiKernel/SystemBase.h"
 
 #ifdef _WIN32
-#include <windows.h>
+#  include <windows.h>
 #else
-#include <sys/time.h>
+#  include <sys/time.h>
 #endif
 
 /** Note: OS specific details for process timing
@@ -52,8 +52,7 @@
     @author:  M.Frank
     @version: 1.0
 */
-namespace System
-{
+namespace System {
   /// Time type for conversion
   enum TimeType { Year, Month, Day, Hour, Min, Sec, milliSec, microSec, nanoSec, Native };
 
@@ -126,7 +125,7 @@ namespace System
   */
 
   /// Get current time in specificed units via template parameter (inlined)
-  template <TimeType  T>
+  template <TimeType T>
   GAUDI_API long long currentTime();
 
   /// Get current time in specificed units
@@ -144,8 +143,7 @@ namespace System
    *
    * \see {<a href="http://savannah.cern.ch/bugs/?87341">bug #87341</a>}
    */
-  class ProcessTime
-  {
+  class ProcessTime {
   public:
     typedef long long TimeValueType;
 
@@ -156,41 +154,35 @@ namespace System
     ProcessTime( TimeValueType k, TimeValueType u, TimeValueType e ) : i_kernel( k ), i_user( u ), i_elapsed( e ) {}
 
     /// Retrieve the kernel time in the requested unit.
-    template <TimeType   T>
-    inline TimeValueType kernelTime() const
-    {
+    template <TimeType T>
+    inline TimeValueType kernelTime() const {
       return adjustTime<T>( i_kernel );
     }
 
     /// Retrieve the user time in the requested unit.
-    template <TimeType   T>
-    inline TimeValueType userTime() const
-    {
+    template <TimeType T>
+    inline TimeValueType userTime() const {
       return adjustTime<T>( i_user );
     }
 
     /// Retrieve the elapsed time in the requested unit.
-    template <TimeType   T>
-    inline TimeValueType elapsedTime() const
-    {
+    template <TimeType T>
+    inline TimeValueType elapsedTime() const {
       return adjustTime<T>( i_elapsed );
     }
 
     /// Retrieve the CPU (user+kernel) time in the requested unit.
-    template <TimeType   T>
-    inline TimeValueType cpuTime() const
-    {
+    template <TimeType T>
+    inline TimeValueType cpuTime() const {
       return adjustTime<T>( i_user + i_kernel );
     }
 
     /// Return the delta between two \c ProcessTime objects.
-    inline ProcessTime operator-( const ProcessTime& rhs ) const
-    {
+    inline ProcessTime operator-( const ProcessTime& rhs ) const {
       return ProcessTime( i_kernel - rhs.i_kernel, i_user - rhs.i_user, i_elapsed - rhs.i_elapsed );
     }
     /// Add the timings to the current objects
-    inline ProcessTime& operator+=( const ProcessTime& rhs )
-    {
+    inline ProcessTime& operator+=( const ProcessTime& rhs ) {
       i_kernel += rhs.i_kernel;
       i_user += rhs.i_user;
       i_elapsed += rhs.i_elapsed;
@@ -208,66 +200,54 @@ namespace System
    * \c ProcessTime object.
    */
   GAUDI_API ProcessTime getProcessTime( long pid = -1 );
-}
+} // namespace System
 
 // implementation of the templated functions
-namespace System
-{
+namespace System {
   template <>
-  inline long long adjustTime<Year>( long long t )
-  {
+  inline long long adjustTime<Year>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 1LL * 365 * 24 * 60 * 60 * 1000 * 1000 * 10 );
   }
   template <>
-  inline long long adjustTime<Day>( long long t )
-  {
+  inline long long adjustTime<Day>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 1LL * 24 * 60 * 60 * 1000 * 1000 * 10 );
   }
   template <>
-  inline long long adjustTime<Hour>( long long t )
-  {
+  inline long long adjustTime<Hour>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 1LL * 60 * 60 * 1000 * 1000 * 10 );
   }
   template <>
-  inline long long adjustTime<Min>( long long t )
-  {
+  inline long long adjustTime<Min>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 60 * 1000 * 1000 * 10 );
   }
   template <>
-  inline long long adjustTime<Sec>( long long t )
-  {
+  inline long long adjustTime<Sec>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 1000 * 1000 * 10 );
   }
   template <>
-  inline long long adjustTime<milliSec>( long long t )
-  {
+  inline long long adjustTime<milliSec>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 1000 * 10 );
   }
   template <>
-  inline long long adjustTime<microSec>( long long t )
-  {
+  inline long long adjustTime<microSec>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 10LL );
   }
   template <>
-  inline long long adjustTime<nanoSec>( long long t )
-  {
+  inline long long adjustTime<nanoSec>( long long t ) {
     return ( t == -1 ) ? t : t *= 100LL;
   }
   template <>
-  inline long long adjustTime<Month>( long long t )
-  {
+  inline long long adjustTime<Month>( long long t ) {
     return ( t == -1 ) ? t : t /= ( 1LL * 30 * 24 * 60 * 60 * 1000 * 1000 * 10 );
   }
   template <>
-  inline long long adjustTime<Native>( long long t )
-  {
+  inline long long adjustTime<Native>( long long t ) {
     return t;
   }
 
   // This is frequently used and thus we inline it if possible
   template <TimeType T>
-  inline long long   currentTime()
-  {
+  inline long long currentTime() {
 #ifdef _WIN32
     long long current = 0;
     ::GetSystemTimeAsFileTime( (FILETIME*)&current );
@@ -290,6 +270,6 @@ namespace System
   template long long currentTime<microSec>();
   template long long currentTime<nanoSec>();
   template long long currentTime<Native>();
-}
+} // namespace System
 
 #endif // GAUDIKERNEL_TIMING_H

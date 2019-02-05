@@ -21,8 +21,7 @@ class IRegistry;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API Converter : public implements<IConverter>
-{
+class GAUDI_API Converter : public implements<IConverter> {
 public:
   using Factory = Gaudi::PluginService::Factory<IConverter*( ISvcLocator* )>;
 
@@ -86,15 +85,13 @@ public:
 
   /// Access a service by name, creating it if it doesn't already exist.
   template <class T>
-  StatusCode service( const std::string& name, T*& psvc, bool createIf = false ) const
-  {
+  StatusCode service( const std::string& name, T*& psvc, bool createIf = false ) const {
     return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
   }
 
   /// Access a service by name, type creating it if it doesn't already exist.
   template <class T>
-  StatusCode service( const std::string& type, const std::string& name, T*& psvc ) const
-  {
+  StatusCode service( const std::string& type, const std::string& name, T*& psvc ) const {
     return service_i( type, name, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
   }
 
@@ -134,8 +131,7 @@ private:
 };
 
 // Identified class for converters' factories
-class GAUDI_API ConverterID final
-{
+class GAUDI_API ConverterID final {
 public:
   ConverterID( long stype, CLID clid ) : m_stype( stype ), m_clid( clid ) {}
   inline bool operator==( const ConverterID& id ) const { return m_stype == id.m_stype && m_clid == id.m_clid; }
@@ -146,8 +142,7 @@ private:
   CLID                 m_clid;
 };
 
-inline std::ostream& operator<<( std::ostream& s, const ConverterID& id )
-{
+inline std::ostream& operator<<( std::ostream& s, const ConverterID& id ) {
   return s << "CNV_" << id.m_stype << "_" << id.m_clid;
 }
 

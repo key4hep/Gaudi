@@ -21,8 +21,7 @@
  *
  *  @author G. Corti, P. Mato
  */
-class ToolSvc : public extends<Service, IToolSvc>
-{
+class ToolSvc : public extends<Service, IToolSvc> {
 
 public:
   /// Standard Constructor.

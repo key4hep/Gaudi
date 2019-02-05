@@ -14,22 +14,19 @@
  *  @date   2001/01/19
  */
 
-class GAUDI_API Incident
-{
+class GAUDI_API Incident {
 
 public:
   /// Default Constructor
   Incident( const std::string& source, ///< Incident source (service or algorithm name)
             const std::string& type    ///< Incident type
-            );
+  );
 
   Incident( const std::string&  source, ///< Incident source (service or algorithm name)
             const std::string&  type,   ///< Incident type
             const EventContext& ctx     ///< EventContext
             )
-      : m_source( source ), m_type( type ), m_ctx( ctx )
-  {
-  }
+      : m_source( source ), m_type( type ), m_ctx( ctx ) {}
 
   /// Destructor
   virtual ~Incident() = default;
@@ -59,11 +56,11 @@ private:
 };
 
 #ifndef _inc_types_impl_
-#define _inc_type_( x ) extern const std::string x
+#  define _inc_type_( x ) extern const std::string x
 #else
-#define _inc_type_( x )                                                                                                \
-  extern const std::string x;                                                                                          \
-  const std::string        x { #x }
+#  define _inc_type_( x )                                                                                              \
+    extern const std::string x;                                                                                        \
+    const std::string        x { #x }
 #endif
 /** @namespace IncidentType
  *
@@ -74,8 +71,7 @@ private:
  *  @author R. Lambert
  *  @date   2009/09/03
  */
-namespace IncidentType
-{
+namespace IncidentType {
   _inc_type_( BeginEvent ); ///< Processing of a new event has started
   _inc_type_( EndEvent );   ///< Processing of the last event has finished
   _inc_type_( BeginRun );   ///< Processing of a new run has started
@@ -108,7 +104,7 @@ namespace IncidentType
   /// Caveat Emptor: Don't use unless you're a Service or know you'll exist
   ///                after all services have been finalized!!!
   _inc_type_( SvcPostFinalize );
-}
+} // namespace IncidentType
 #undef _inc_type_
 
 #endif // GAUDI_INCIDENT_H

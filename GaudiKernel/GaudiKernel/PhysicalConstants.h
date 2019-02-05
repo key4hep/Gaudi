@@ -39,10 +39,8 @@
 
 #include "GaudiKernel/SystemOfUnits.h"
 
-namespace Gaudi
-{
-  namespace Units
-  {
+namespace Gaudi {
+  namespace Units {
 
     constexpr double pi     = 3.14159265358979323846;
     constexpr double twopi  = 2 * pi;

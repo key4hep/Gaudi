@@ -3,8 +3,7 @@
 // Static Factory declaration
 DECLARE_COMPONENT( ServiceB )
 
-StatusCode ServiceB::initialize()
-{
+StatusCode ServiceB::initialize() {
   Service::initialize().ignore();
   IService*  pService = nullptr;
   const bool CREATENOW( true );

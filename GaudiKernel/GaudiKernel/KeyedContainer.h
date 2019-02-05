@@ -5,8 +5,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace GaudiDict
-{
+namespace GaudiDict {
   template <class T>
   struct KeyedContainerDict;
 }
@@ -20,9 +19,9 @@ namespace GaudiDict
 // template <class T, class M> class KeyedContainer;
 
 #ifdef WIN32
-#define FORCE_INLINE __forceinline
+#  define FORCE_INLINE __forceinline
 #else
-#define FORCE_INLINE inline
+#  define FORCE_INLINE inline
 #endif
 
 /** template class KeyedContainer, KeyedContainer.h
@@ -62,8 +61,7 @@ namespace GaudiDict
  *
  */
 template <class DATATYPE, class MAPPING = Containers::HashMap>
-class GAUDI_API KeyedContainer : public ObjectContainerBase
-{
+class GAUDI_API KeyedContainer : public ObjectContainerBase {
   friend struct GaudiDict::KeyedContainerDict<DATATYPE>;
 
 public:
@@ -106,7 +104,7 @@ private:
   typedef typename Containers::traits<container_type, contained_type> traits;
 
   /**@name Implementation helpers.
-  */
+   */
   //@{
   /// Map container to facilitate object access by key.
   container_type m_cont;
@@ -117,14 +115,11 @@ private:
 
 /// Internal function to access objects within the container
 #ifdef CHECK_KEYED_CONTAINER
-  value_type i_object( const key_type& k ) const
-  {
+  value_type i_object( const key_type& k ) const {
     if ( 0 == m_cont.isDirect() ) {
       if ( traits::checkBounds( m_random, k ) ) {
         value_type p = *( m_random->begin() + traits::hash( k ) );
-        if ( traits::checkKey( p, k ) ) {
-          return p;
-        }
+        if ( traits::checkKey( p, k ) ) { return p; }
       }
       return 0;
     }
@@ -132,20 +127,16 @@ private:
     return traits::checkKey( p, k ) ? p : 0;
   }
 #else
-  FORCE_INLINE value_type i_object( const key_type& k ) const
-  {
+  FORCE_INLINE value_type i_object( const key_type& k ) const {
     return 0 == m_cont.isDirect() ? value_type( *( m_random->begin() + traits::hash( k ) ) )
                                   : value_type( m_cont.object( traits::hash( k ) ) );
   }
 #endif
   /// Internal function to erase an object from the container
-  long i_erase( const_reference v, const key_type& k )
-  {
+  long i_erase( const_reference v, const key_type& k ) {
     value_type p = value_type( m_cont.erase( traits::hash( k ), v ) );
     if ( p ) {
-      if ( p->parent() == this ) {
-        p->setParent( 0 );
-      }
+      if ( p->parent() == this ) { p->setParent( 0 ); }
     }
     return traits::release( p ) <= 0 ? (long)Containers::OBJ_ERASED : (long)Containers::OBJ_DELETED;
   }
@@ -154,8 +145,7 @@ private:
   struct _InsertRelease {
     KeyedContainer<DATATYPE, MAPPING>* m_obj;
     _InsertRelease( KeyedContainer<DATATYPE, MAPPING>* p ) : m_obj( p ) {}
-    void operator()( value_type p )
-    {
+    void operator()( value_type p ) {
       m_obj->insert( p );
       traits::release( p );
     }
@@ -165,12 +155,9 @@ private:
   struct _RemoveRelease {
     ObjectContainerBase* m_obj;
     _RemoveRelease( ObjectContainerBase* p ) : m_obj( p ) {}
-    void operator()( value_type p )
-    {
+    void operator()( value_type p ) {
       const ObjectContainerBase* par = p->parent();
-      if ( par == m_obj ) {
-        p->setParent( 0 );
-      }
+      if ( par == m_obj ) { p->setParent( 0 ); }
       traits::release( p );
     }
   };
@@ -178,11 +165,10 @@ private:
 
 public:
   /**@name Constructors/Destructors
-  */
+   */
   //@{
   /// Standard Constructor
-  KeyedContainer( void )
-  {
+  KeyedContainer( void ) {
     // avoid problems with strict-aliasing rules
     seq_type** rptr = &m_random;
     seq_type*  sptr = &m_sequential;
@@ -191,8 +177,7 @@ public:
   KeyedContainer( KeyedContainer&& other )
       : ObjectContainerBase( std::move( other ) )
       , m_cont( std::move( other.m_cont ) )
-      , m_sequential( std::move( other.m_sequential ) )
-  {
+      , m_sequential( std::move( other.m_sequential ) ) {
     m_cont.setup( (void*)&m_sequential, (void**)&m_random );
     std::for_each( begin(), end(), [this]( ContainedObject* obj ) { obj->setParent( this ); } );
 
@@ -211,8 +196,7 @@ public:
   /// Retrieve class ID
   const CLID& clID() const override { return this->classID(); }
   /// Retrieve class ID
-  static const CLID& classID()
-  {
+  static const CLID& classID() {
     static CLID clid = contained_type::classID() + container_type::classID();
     return clid;
   }
@@ -491,24 +475,22 @@ public:
 };
 
 /**
-  *
-  *
-  *  Inline code for keyed container class
-  *
-  */
+ *
+ *
+ *  Inline code for keyed container class
+ *
+ */
 
 // Destructor
 template <class DATATYPE, class MAPPING>
-inline KeyedContainer<DATATYPE, MAPPING>::~KeyedContainer()
-{
+inline KeyedContainer<DATATYPE, MAPPING>::~KeyedContainer() {
   clear();
   m_cont.clear();
 }
 
 // Configure direct access
 template <class DATATYPE, class MAPPING>
-inline StatusCode KeyedContainer<DATATYPE, MAPPING>::update()
-{
+inline StatusCode KeyedContainer<DATATYPE, MAPPING>::update() {
   int count = 0;
   m_cont.clearDirect();
   typename seq_type::iterator i = m_sequential.begin();
@@ -521,29 +503,24 @@ inline StatusCode KeyedContainer<DATATYPE, MAPPING>::update()
         traits::addRef( v );
       }
       long k0 = traits::hash( v->key() );
-      if ( m_cont.insertDirect( this, v, v, k0 ) == Containers::OBJ_INSERTED ) {
-      }
+      if ( m_cont.insertDirect( this, v, v, k0 ) == Containers::OBJ_INSERTED ) {}
     } else {
       ++count;
     }
   }
-  if ( count > 0 ) {
-    Containers::cannotInsertToContainer();
-  }
+  if ( count > 0 ) { Containers::cannotInsertToContainer(); }
   return StatusCode::SUCCESS;
 }
 
 // Retrieve the full content of the object container by reference.
 template <class DATATYPE, class MAPPING>
-inline const std::vector<const ContainedObject*>* KeyedContainer<DATATYPE, MAPPING>::containedObjects() const
-{
+inline const std::vector<const ContainedObject*>* KeyedContainer<DATATYPE, MAPPING>::containedObjects() const {
   return (const std::vector<const ContainedObject*>*)( ( 0 == m_cont.isDirect() ) ? m_random : &m_sequential );
 }
 
 template <class DATATYPE, class MAPPING>
 inline const typename KeyedContainer<DATATYPE, MAPPING>::key_type&
-KeyedContainer<DATATYPE, MAPPING>::insert( const value_type val, const key_type& kval )
-{
+KeyedContainer<DATATYPE, MAPPING>::insert( const value_type val, const key_type& kval ) {
   if ( val ) {
     long k0 = traits::hash( kval );
     if ( !val->hasKey() || ( traits::hash( val->key() ) == k0 ) ) {
@@ -562,8 +539,7 @@ KeyedContainer<DATATYPE, MAPPING>::insert( const value_type val, const key_type&
 // Insert object
 template <class DATATYPE, class MAPPING> // inline
 const typename KeyedContainer<DATATYPE, MAPPING>::key_type&
-KeyedContainer<DATATYPE, MAPPING>::insert( const value_type val )
-{
+KeyedContainer<DATATYPE, MAPPING>::insert( const value_type val ) {
   if ( 0 != val ) {
     if ( val->hasKey() ) {
       if ( m_cont.insert( this, val, val, traits::hash( val->key() ) ) == Containers::OBJ_INSERTED ) {
@@ -584,8 +560,7 @@ KeyedContainer<DATATYPE, MAPPING>::insert( const value_type val )
 }
 
 template <class DATATYPE, class MAPPING>
-inline long KeyedContainer<DATATYPE, MAPPING>::index( const ContainedObject* p ) const
-{
+inline long KeyedContainer<DATATYPE, MAPPING>::index( const ContainedObject* p ) const {
   const contained_type* ptr = dynamic_cast<const contained_type*>( p );
   if ( ptr ) return traits::identifier( ptr->key() );
   return -1;
@@ -594,8 +569,7 @@ inline long KeyedContainer<DATATYPE, MAPPING>::index( const ContainedObject* p )
 // Retrieve the full content of the object container.
 template <class DATATYPE, class MAPPING>
 inline typename KeyedContainer<DATATYPE, MAPPING>::size_type
-KeyedContainer<DATATYPE, MAPPING>::containedObjects( std::vector<ContainedObject*>& vec ) const
-{
+KeyedContainer<DATATYPE, MAPPING>::containedObjects( std::vector<ContainedObject*>& vec ) const {
   typename seq_type::const_iterator i = m_sequential.begin();
   typename seq_type::const_iterator s = m_sequential.end();
   vec.clear();
@@ -609,15 +583,13 @@ KeyedContainer<DATATYPE, MAPPING>::containedObjects( std::vector<ContainedObject
 
 // ObjectContainerBase overload: Add an object to the container.
 template <class DATATYPE, class MAPPING>
-inline long KeyedContainer<DATATYPE, MAPPING>::add( ContainedObject* pObject )
-{
+inline long KeyedContainer<DATATYPE, MAPPING>::add( ContainedObject* pObject ) {
   return traits::identifier( insert( dynamic_cast<typename seq_type::value_type>( pObject ) ) );
 }
 
 // ObjectContainerBase overload: Remove an object from the container.
 template <class DATATYPE, class MAPPING>
-inline long KeyedContainer<DATATYPE, MAPPING>::remove( ContainedObject* p )
-{
+inline long KeyedContainer<DATATYPE, MAPPING>::remove( ContainedObject* p ) {
   contained_type* p1 = dynamic_cast<contained_type*>( p );
   if ( p1 ) { // Normal case; object still fully intact
     return this->erase( p1 );
@@ -629,17 +601,14 @@ inline long KeyedContainer<DATATYPE, MAPPING>::remove( ContainedObject* p )
     // - It cannot be a KeyedObject:  It would not have a parent
     // - Still the parent is present: We are not in the destructor
     //                                of KeyedObject
-    if ( par ) {
-      Containers::invalidContainerOperation();
-    }
+    if ( par ) { Containers::invalidContainerOperation(); }
     return m_cont.erase( 0, p ) == 0 ? (long)Containers::OBJ_ERASED : (long)Containers::OBJ_NOT_FOUND;
   }
   return (long)Containers::OBJ_NOT_FOUND;
 }
 
 template <class DATATYPE, class MAPPING>
-inline void KeyedContainer<DATATYPE, MAPPING>::erase( iterator start_pos, iterator stop_pos, bool use_tmp )
-{
+inline void KeyedContainer<DATATYPE, MAPPING>::erase( iterator start_pos, iterator stop_pos, bool use_tmp ) {
   bool is_start = start_pos == m_sequential.begin();
   bool is_stop  = stop_pos == m_sequential.end();
   if ( is_start && is_stop ) {

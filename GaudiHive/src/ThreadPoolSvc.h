@@ -14,17 +14,16 @@
 #include <vector>
 
 /** @class ThreadPoolSvc
-  * @brief A service which initializes a TBB thread pool.
-  *
-  * This service can be configured with an array of IThreadInitTools which
-  * will each be invoked concurrently on each worker thread. A ThreadInitTask
-  * is created for each thread and given the list of tools. A boost::barrier
-  * is used to synchronize the calling of each tool concurrently on all
-  * threads at the same time.
-  *
-  */
-class ThreadPoolSvc : public extends<Service, IThreadPoolSvc>
-{
+ * @brief A service which initializes a TBB thread pool.
+ *
+ * This service can be configured with an array of IThreadInitTools which
+ * will each be invoked concurrently on each worker thread. A ThreadInitTask
+ * is created for each thread and given the list of tools. A boost::barrier
+ * is used to synchronize the calling of each tool concurrently on all
+ * threads at the same time.
+ *
+ */
+class ThreadPoolSvc : public extends<Service, IThreadPoolSvc> {
 public:
   /// Constructor
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );

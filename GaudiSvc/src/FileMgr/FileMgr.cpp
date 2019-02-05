@@ -16,8 +16,7 @@ using namespace Io;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-namespace
-{
+namespace {
   static const std::string s_empty = "";
 
   constexpr struct to_name_t {
@@ -31,8 +30,7 @@ namespace
 
   template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
   OutputIterator transform_if( InputIterator first, InputIterator last, OutputIterator result, UnaryOperation op,
-                               UnaryPredicate pred )
-  {
+                               UnaryPredicate pred ) {
     while ( first != last ) {
       if ( pred( *first ) ) *result++ = op( *first );
       ++first;
@@ -42,20 +40,18 @@ namespace
 
   template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
   OutputIterator transform_copy_if( InputIterator first, InputIterator last, OutputIterator result, UnaryOperation op,
-                                    UnaryPredicate pred )
-  {
+                                    UnaryPredicate pred ) {
     while ( first != last ) {
-      auto t                     = op( *first );
+      auto t = op( *first );
       if ( pred( t ) ) *result++ = std::move( t );
       ++first;
     }
     return result;
   }
-}
+} // namespace
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-FileMgr::~FileMgr()
-{
+FileMgr::~FileMgr() {
   // Where do the new-ed FileAttr get deleted?
   // they get pushed into m_descriptors, but m_attr is presumably
   // where they _also_ should be pushed in order to track ownership...
@@ -63,8 +59,7 @@ FileMgr::~FileMgr()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::initialize()
-{
+StatusCode FileMgr::initialize() {
   StatusCode status = Service::initialize();
 
   if ( status.isFailure() ) {
@@ -86,14 +81,13 @@ StatusCode FileMgr::initialize()
 
     auto&        rfh = m_rfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlr(
-        Io::ROOT, [&rfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
-                          void*& ptr ) -> Io::open_t { return rfh.openRootFile( n, f, desc, fd, ptr ); },
+        Io::ROOT,
+        [&rfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
+                void*& ptr ) -> Io::open_t { return rfh.openRootFile( n, f, desc, fd, ptr ); },
         [&rfh]( void* ptr ) -> Io::close_t { return rfh.closeRootFile( ptr ); },
         [&rfh]( void* ptr, const Io::IoFlags& f ) -> Io::reopen_t { return rfh.reopenRootFile( ptr, f ); } );
 
-    if ( regHandler( hdlr ).isFailure() ) {
-      error() << "unable to register ROOT file handler with FileMgr" << endmsg;
-    }
+    if ( regHandler( hdlr ).isFailure() ) { error() << "unable to register ROOT file handler with FileMgr" << endmsg; }
   }
 
   if ( m_loadPosixHandler.value() ) {
@@ -105,14 +99,13 @@ StatusCode FileMgr::initialize()
 
     auto&        pfh = m_pfh.value(); // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlp(
-        Io::POSIX, [&pfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
-                           void*& ptr ) -> Io::open_t { return pfh.openPOSIXFile( n, f, desc, fd, ptr ); },
+        Io::POSIX,
+        [&pfh]( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
+                void*& ptr ) -> Io::open_t { return pfh.openPOSIXFile( n, f, desc, fd, ptr ); },
         [&pfh]( Io::Fd fd ) -> Io::close_t { return pfh.closePOSIXFile( fd ); },
         [&pfh]( Io::Fd fd, const Io::IoFlags& f ) -> Io::reopen_t { return pfh.reopenPOSIXFile( fd, f ); } );
 
-    if ( regHandler( hdlp ).isFailure() ) {
-      error() << "unable to register ROOT file handler with FileMgr" << endmsg;
-    }
+    if ( regHandler( hdlp ).isFailure() ) { error() << "unable to register ROOT file handler with FileMgr" << endmsg; }
   }
 
   return StatusCode::SUCCESS;
@@ -120,8 +113,7 @@ StatusCode FileMgr::initialize()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::finalize()
-{
+StatusCode FileMgr::finalize() {
   ON_VERBOSE
   verbose() << "FileMgr::finalize()" << endmsg;
 
@@ -182,8 +174,7 @@ void FileMgr::handle( const Incident& /*inc*/ ) {}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::regHandler( FileHdlr fh )
-{
+StatusCode FileMgr::regHandler( FileHdlr fh ) {
 
   IoTech tech = fh.tech;
 
@@ -217,8 +208,7 @@ StatusCode FileMgr::regHandler( FileHdlr fh )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::deregHandler( const IoTech& tech )
-{
+StatusCode FileMgr::deregHandler( const IoTech& tech ) {
   FileHdlr hdlr;
 
   auto itr = m_handlers.find( tech );
@@ -232,8 +222,7 @@ StatusCode FileMgr::deregHandler( const IoTech& tech )
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::hasHandler( const IoTech& tech ) const
-{
+StatusCode FileMgr::hasHandler( const IoTech& tech ) const {
 
   auto itr = m_handlers.find( tech );
   return ( itr != m_handlers.end() ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
@@ -242,16 +231,14 @@ StatusCode FileMgr::hasHandler( const IoTech& tech ) const
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::string& fname, const IoFlags& flags,
-                      Fd& fd, void*& ptr, const std::string& desc, bool sh )
-{
+                      Fd& fd, void*& ptr, const std::string& desc, bool sh ) {
 
   return open( tech, caller, fname, desc, flags, fd, ptr, sh );
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::string& fname, const IoFlags& flags,
-                      Fd& fd, const std::string& desc, bool sh )
-{
+                      Fd& fd, const std::string& desc, bool sh ) {
 
   void* dummy( 0 );
   return open( tech, caller, fname, desc, flags, fd, dummy, sh );
@@ -259,8 +246,7 @@ open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::string& fname, const IoFlags& flags,
-                      void*& ptr, const std::string& desc, bool sh )
-{
+                      void*& ptr, const std::string& desc, bool sh ) {
 
   Fd dummy( -1 );
   return open( tech, caller, fname, desc, flags, dummy, ptr, sh );
@@ -269,8 +255,7 @@ open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::string& fname, const std::string& desc,
-                      const IoFlags& flags, Fd& fd, void*& ptr, bool shared )
-{
+                      const IoFlags& flags, Fd& fd, void*& ptr, bool shared ) {
 
   // return codes: ok == 0, warning > 0, error < 0
   //   0: ok
@@ -405,8 +390,7 @@ open_t FileMgr::open( const IoTech& tech, const std::string& caller, const std::
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-close_t FileMgr::close( Fd fd, const std::string& caller )
-{
+close_t FileMgr::close( Fd fd, const std::string& caller ) {
 
   // return codes:
   //   < 0 : error condition
@@ -431,9 +415,7 @@ close_t FileMgr::close( Fd fd, const std::string& caller )
 
   FileHdlr fh;
 
-  if ( getHandler( tech, fh ).isFailure() ) {
-    return r;
-  }
+  if ( getHandler( tech, fh ).isFailure() ) { return r; }
 
   if ( !fh.b_close_fcn ) {
     error() << "no close(" << tech << ",Fd) function registered" << endmsg;
@@ -444,7 +426,7 @@ close_t FileMgr::close( Fd fd, const std::string& caller )
 
   // find how many times this file is open
   auto fitr = m_files.equal_range( fa->name() );
-  int i = std::count_if( fitr.first, fitr.second, [&]( fileMap::const_reference f ) { return f.second->fd() == fd; } );
+  int  i = std::count_if( fitr.first, fitr.second, [&]( fileMap::const_reference f ) { return f.second->fd() == fd; } );
 
   ON_VERBOSE
   verbose() << "   ref count: " << i << endmsg;
@@ -507,8 +489,7 @@ close_t FileMgr::close( Fd fd, const std::string& caller )
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-close_t FileMgr::close( void* vp, const std::string& caller )
-{
+close_t FileMgr::close( void* vp, const std::string& caller ) {
 
   // return codes:
   //   < 0 : error condition
@@ -533,9 +514,7 @@ close_t FileMgr::close( void* vp, const std::string& caller )
 
   FileHdlr fh;
 
-  if ( getHandler( tech, fh ).isFailure() ) {
-    return r;
-  }
+  if ( getHandler( tech, fh ).isFailure() ) { return r; }
   if ( !fh.b_closeP_fcn ) {
     error() << "no close(" << tech << ",void*) function registered" << endmsg;
     return -1;
@@ -609,8 +588,7 @@ close_t FileMgr::close( void* vp, const std::string& caller )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-reopen_t FileMgr::reopen( Fd fd, const IoFlags& flags, const std::string& caller )
-{
+reopen_t FileMgr::reopen( Fd fd, const IoFlags& flags, const std::string& caller ) {
 
   ON_VERBOSE
   verbose() << "reopen(" << fd << "," << flags << "," << caller << ")" << endmsg;
@@ -630,9 +608,7 @@ reopen_t FileMgr::reopen( Fd fd, const IoFlags& flags, const std::string& caller
 
   FileHdlr fh;
 
-  if ( getHandler( tech, fh ).isFailure() ) {
-    return r;
-  }
+  if ( getHandler( tech, fh ).isFailure() ) { return r; }
 
   fa->flags( flags );
 
@@ -677,8 +653,7 @@ reopen_t FileMgr::reopen( Fd fd, const IoFlags& flags, const std::string& caller
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-reopen_t FileMgr::reopen( void* vp, const IoFlags& flags, const std::string& caller )
-{
+reopen_t FileMgr::reopen( void* vp, const IoFlags& flags, const std::string& caller ) {
   ON_VERBOSE
   verbose() << "reopen(" << vp << "," << flags << "," << caller << ")" << endmsg;
 
@@ -695,9 +670,7 @@ reopen_t FileMgr::reopen( void* vp, const IoFlags& flags, const std::string& cal
   FileHdlr  fh;
   IoTech    tech = fa->tech();
 
-  if ( getHandler( tech, fh ).isFailure() ) {
-    return r;
-  }
+  if ( getHandler( tech, fh ).isFailure() ) { return r; }
 
   if ( !fh.b_reopenP_fcn ) {
     error() << "no reopen(" << tech << ",void*) function registered" << endmsg;
@@ -738,8 +711,7 @@ reopen_t FileMgr::reopen( void* vp, const IoFlags& flags, const std::string& cal
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getFileAttr( const std::string& fname, vector<const FileAttr*>& fa ) const
-{
+int FileMgr::getFileAttr( const std::string& fname, vector<const FileAttr*>& fa ) const {
 
   fa.clear();
 
@@ -754,8 +726,7 @@ int FileMgr::getFileAttr( const std::string& fname, vector<const FileAttr*>& fa 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::getFileAttr( const Fd fd, const FileAttr*& fa ) const
-{
+StatusCode FileMgr::getFileAttr( const Fd fd, const FileAttr*& fa ) const {
 
   auto i = std::find_if( std::begin( m_files ), std::end( m_files ),
                          [&]( fileMap::const_reference f ) { return f.second->fd() == fd; } );
@@ -776,8 +747,7 @@ StatusCode FileMgr::getFileAttr( const Fd fd, const FileAttr*& fa ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::getFileAttr( void* vp, const FileAttr*& fa ) const
-{
+StatusCode FileMgr::getFileAttr( void* vp, const FileAttr*& fa ) const {
 
   auto i = std::find_if( std::begin( m_files ), std::end( m_files ),
                          [&]( fileMap::const_reference f ) { return f.second->fptr() == vp; } );
@@ -798,8 +768,7 @@ StatusCode FileMgr::getFileAttr( void* vp, const FileAttr*& fa ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getFiles( std::vector<std::string>& files, bool op ) const
-{
+int FileMgr::getFiles( std::vector<std::string>& files, bool op ) const {
 
   files.clear();
   auto not_in_files = [&]( const std::string& i ) {
@@ -815,21 +784,17 @@ int FileMgr::getFiles( std::vector<std::string>& files, bool op ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getFiles( vector<const Io::FileAttr*>& files, bool op ) const
-{
+int FileMgr::getFiles( vector<const Io::FileAttr*>& files, bool op ) const {
 
   files.clear();
   std::transform( std::begin( m_files ), std::end( m_files ), std::back_inserter( files ), select2nd );
-  if ( !op ) {
-    std::copy( std::begin( m_oldFiles ), std::end( m_oldFiles ), std::back_inserter( files ) );
-  }
+  if ( !op ) { std::copy( std::begin( m_oldFiles ), std::end( m_oldFiles ), std::back_inserter( files ) ); }
   return files.size();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getFiles( const IoTech& tech, vector<string>& files, bool op ) const
-{
+int FileMgr::getFiles( const IoTech& tech, vector<string>& files, bool op ) const {
 
   if ( tech == UNKNOWN ) return getFiles( files, op );
 
@@ -853,8 +818,7 @@ int FileMgr::getFiles( const IoTech& tech, vector<string>& files, bool op ) cons
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getFiles( const IoTech& tech, vector<const Io::FileAttr*>& files, bool op ) const
-{
+int FileMgr::getFiles( const IoTech& tech, vector<const Io::FileAttr*>& files, bool op ) const {
 
   if ( tech == UNKNOWN ) return getFiles( files, op );
 
@@ -871,8 +835,7 @@ int FileMgr::getFiles( const IoTech& tech, vector<const Io::FileAttr*>& files, b
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getFiles( const IoTech& tech, const IoFlags& flags, vector<string>& files, bool op ) const
-{
+int FileMgr::getFiles( const IoTech& tech, const IoFlags& flags, vector<string>& files, bool op ) const {
 
   files.clear();
 
@@ -895,8 +858,7 @@ int FileMgr::getFiles( const IoTech& tech, const IoFlags& flags, vector<string>&
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getFiles( const IoTech& tech, const IoFlags& flags, vector<const Io::FileAttr*>& files, bool op ) const
-{
+int FileMgr::getFiles( const IoTech& tech, const IoFlags& flags, vector<const Io::FileAttr*>& files, bool op ) const {
 
   files.clear();
 
@@ -919,8 +881,7 @@ int FileMgr::getFiles( const IoTech& tech, const IoFlags& flags, vector<const Io
 // get all descriptors known
 // return number found
 
-int FileMgr::getFd( vector<Fd>& fd ) const
-{
+int FileMgr::getFd( vector<Fd>& fd ) const {
 
   std::transform( std::begin( m_descriptors ), std::end( m_descriptors ), std::back_inserter( fd ), select1st );
   return m_descriptors.size();
@@ -931,8 +892,7 @@ int FileMgr::getFd( vector<Fd>& fd ) const
 // get all descriptors given tech
 // return number found
 
-int FileMgr::getFd( const IoTech& tech, vector<Fd>& fd ) const
-{
+int FileMgr::getFd( const IoTech& tech, vector<Fd>& fd ) const {
 
   if ( tech == UNKNOWN ) return getFd( fd );
 
@@ -947,8 +907,7 @@ int FileMgr::getFd( const IoTech& tech, vector<Fd>& fd ) const
 // get all descriptors of given tech and flags
 // return number found
 
-int FileMgr::getFd( const IoTech& tech, const IoFlags& flags, vector<Fd>& fd ) const
-{
+int FileMgr::getFd( const IoTech& tech, const IoFlags& flags, vector<Fd>& fd ) const {
 
   fd.clear();
   transform_if( m_descriptors.begin(), m_descriptors.end(), std::back_inserter( fd ), select1st,
@@ -960,8 +919,7 @@ int FileMgr::getFd( const IoTech& tech, const IoFlags& flags, vector<Fd>& fd ) c
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const std::string& FileMgr::fname( const Io::Fd& fd ) const
-{
+const std::string& FileMgr::fname( const Io::Fd& fd ) const {
 
   auto itr = std::find_if( std::begin( m_files ), std::end( m_files ),
                            [&]( fileMap::const_reference f ) { return f.second->fd() == fd; } );
@@ -970,8 +928,7 @@ const std::string& FileMgr::fname( const Io::Fd& fd ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const std::string& FileMgr::fname( void* vp ) const
-{
+const std::string& FileMgr::fname( void* vp ) const {
 
   auto itr = std::find_if( m_files.begin(), m_files.end(),
                            [&]( fileMap::const_reference f ) { return f.second->fptr() == vp; } );
@@ -980,8 +937,7 @@ const std::string& FileMgr::fname( void* vp ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-Io::Fd FileMgr::fd( const std::string& fname ) const
-{
+Io::Fd FileMgr::fd( const std::string& fname ) const {
 
   auto fitr = m_files.equal_range( fname );
   auto itr = std::find_if( fitr.first, fitr.second, []( fileMap::const_reference f ) { return f.second->fd() != -1; } );
@@ -990,8 +946,7 @@ Io::Fd FileMgr::fd( const std::string& fname ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-Io::Fd FileMgr::fd( void* fptr ) const
-{
+Io::Fd FileMgr::fd( void* fptr ) const {
 
   auto itr = std::find_if( m_files.begin(), m_files.end(),
                            [&]( fileMap::const_reference f ) { return f.second->fptr() == fptr; } );
@@ -1000,8 +955,7 @@ Io::Fd FileMgr::fd( void* fptr ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void* FileMgr::fptr( const std::string& fname ) const
-{
+void* FileMgr::fptr( const std::string& fname ) const {
   auto fitr = m_files.equal_range( fname );
   auto itr =
       std::find_if( fitr.first, fitr.second, []( fileMap::const_reference f ) -> bool { return f.second->fptr(); } );
@@ -1010,8 +964,7 @@ void* FileMgr::fptr( const std::string& fname ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void* FileMgr::fptr( const Io::Fd& fd ) const
-{
+void* FileMgr::fptr( const Io::Fd& fd ) const {
 
   auto itr = std::find_if( m_files.begin(), m_files.end(),
                            [&]( fileMap::const_reference f ) { return f.second->fd() == fd; } );
@@ -1020,8 +973,7 @@ void* FileMgr::fptr( const Io::Fd& fd ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void FileMgr::listFiles() const
-{
+void FileMgr::listFiles() const {
 
   info() << "listing registered files [" << ( m_files.size() + m_oldFiles.size() ) << "]:\n";
 
@@ -1033,8 +985,7 @@ void FileMgr::listFiles() const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int FileMgr::getLastError( std::string& err ) const
-{
+int FileMgr::getLastError( std::string& err ) const {
 
   err = m_lastErrS;
   return m_lastErr;
@@ -1042,8 +993,7 @@ int FileMgr::getLastError( std::string& err ) const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::getHandler( const Io::IoTech& tech, Io::FileHdlr& hdlr ) const
-{
+StatusCode FileMgr::getHandler( const Io::IoTech& tech, Io::FileHdlr& hdlr ) const {
 
   auto itr = m_handlers.find( tech );
   if ( itr == m_handlers.end() ) {
@@ -1056,8 +1006,7 @@ StatusCode FileMgr::getHandler( const Io::IoTech& tech, Io::FileHdlr& hdlr ) con
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::getHandler( const std::string& fname, Io::FileHdlr& hdlr ) const
-{
+StatusCode FileMgr::getHandler( const std::string& fname, Io::FileHdlr& hdlr ) const {
 
   auto fitr = m_files.equal_range( fname );
   if ( fitr.first == fitr.second ) {
@@ -1082,8 +1031,7 @@ StatusCode FileMgr::getHandler( const std::string& fname, Io::FileHdlr& hdlr ) c
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void FileMgr::listHandlers() const
-{
+void FileMgr::listHandlers() const {
 
   info() << "Listing registered handlers:\n";
 
@@ -1093,16 +1041,14 @@ void FileMgr::listHandlers() const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::regAction( bfcn_action_t bf, const Io::Action& a, const std::string& d )
-{
+StatusCode FileMgr::regAction( bfcn_action_t bf, const Io::Action& a, const std::string& d ) {
 
   return regAction( bf, a, Io::UNKNOWN, d );
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::regAction( bfcn_action_t bf, const Io::Action& a, const Io::IoTech& t, const std::string& d )
-{
+StatusCode FileMgr::regAction( bfcn_action_t bf, const Io::Action& a, const Io::IoTech& t, const std::string& d ) {
 
   ON_DEBUG
   debug() << "registering " << a << " action " << System::typeinfoName( bf.target_type() ) << " for tech " << t
@@ -1114,8 +1060,7 @@ StatusCode FileMgr::regAction( bfcn_action_t bf, const Io::Action& a, const Io::
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void FileMgr::listActions() const
-{
+void FileMgr::listActions() const {
 
   info() << "listing registered actions\n";
 
@@ -1131,9 +1076,7 @@ void FileMgr::listActions() const
         info() << t << " ---\n";
       }
       for ( const auto& iia : m ) {
-        for ( const auto& it2 : iia.second ) {
-          info() << "   " << iia.first << "  " << it2.second << '\n';
-        }
+        for ( const auto& it2 : iia.second ) { info() << "   " << iia.first << "  " << it2.second << '\n'; }
       }
     }
   }
@@ -1142,8 +1085,7 @@ void FileMgr::listActions() const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode FileMgr::execAction( Io::FileAttr* fa, const std::string& caller, const Io::Action& a ) const
-{
+StatusCode FileMgr::execAction( Io::FileAttr* fa, const std::string& caller, const Io::Action& a ) const {
 
   Io::IoTech tech = fa->tech();
 
@@ -1151,14 +1093,10 @@ StatusCode FileMgr::execAction( Io::FileAttr* fa, const std::string& caller, con
 
   auto itr = m_actions.find( Io::UNKNOWN );
 
-  if ( itr != m_actions.end() && !itr->second.empty() ) {
-    s1 = execActs( fa, caller, a, itr->second );
-  }
+  if ( itr != m_actions.end() && !itr->second.empty() ) { s1 = execActs( fa, caller, a, itr->second ); }
 
   itr = m_actions.find( tech );
-  if ( itr != m_actions.end() && !itr->second.empty() ) {
-    s2 = execActs( fa, caller, a, itr->second );
-  }
+  if ( itr != m_actions.end() && !itr->second.empty() ) { s2 = execActs( fa, caller, a, itr->second ); }
 
   return ( s1.isFailure() || s2.isFailure() ) ? StatusCode::FAILURE : StatusCode::SUCCESS;
 }
@@ -1166,8 +1104,7 @@ StatusCode FileMgr::execAction( Io::FileAttr* fa, const std::string& caller, con
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const Io::Action& a,
-                              const actionMap& m ) const
-{
+                              const actionMap& m ) const {
 
   auto mitr = m.find( a );
   if ( mitr == m.end() || mitr->second.empty() ) return StatusCode::SUCCESS;
@@ -1202,8 +1139,7 @@ StatusCode FileMgr::execActs( Io::FileAttr* fa, const std::string& caller, const
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool FileMgr::accessMatch( const Io::IoFlags& fold, const Io::IoFlags& fnew, bool /*strict*/ ) const
-{
+bool FileMgr::accessMatch( const Io::IoFlags& fold, const Io::IoFlags& fnew, bool /*strict*/ ) const {
   ON_VERBOSE
   verbose() << "accessMatch  old: " << fold << "  new: " << fnew << endmsg;
 
@@ -1222,8 +1158,7 @@ void FileMgr::suppressAction( const std::string& f, const Io::Action& a ) { m_su
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void FileMgr::listSuppression() const
-{
+void FileMgr::listSuppression() const {
   if ( m_supMap.empty() ) return;
 
   info() << "listing suppressed file actions\n";

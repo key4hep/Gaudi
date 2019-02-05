@@ -19,8 +19,7 @@ class IInterface;
     @author Pere Mato
 */
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   GAUDI_API IAppMgrUI* createApplicationMgrEx( const std::string& dllname, const std::string& factname );
   GAUDI_API IAppMgrUI* createApplicationMgr( const std::string& dllname, const std::string& factname );
@@ -39,6 +38,6 @@ namespace Gaudi
       @return   Previous instance of service locator object.
   */
   GAUDI_API IAppMgrUI* setInstance( IAppMgrUI* newInstance );
-}
+} // namespace Gaudi
 
 #endif // GAUDIKERNEL_BOOTSTRAP_H

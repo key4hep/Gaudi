@@ -13,8 +13,7 @@ DECLARE_COMPONENT( PropertyProxy )
 
 // Constructor
 //------------------------------------------------------------------------------
-PropertyProxy::PropertyProxy( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc )
-{
+PropertyProxy::PropertyProxy( const std::string& name, ISvcLocator* ploc ) : Algorithm( name, ploc ) {
   //------------------------------------------------------------------------------
   // Declare remote properties at this moment
   auto               algMgr = serviceLocator()->as<IAlgManager>();
@@ -29,8 +28,7 @@ PropertyProxy::PropertyProxy( const std::string& name, ISvcLocator* ploc ) : Alg
 }
 
 //------------------------------------------------------------------------------
-StatusCode PropertyProxy::initialize()
-{
+StatusCode PropertyProxy::initialize() {
   //------------------------------------------------------------------------------
   std::string value( "empty" );
   std::string value1( "empty" );
@@ -58,8 +56,7 @@ StatusCode PropertyProxy::initialize()
 }
 
 //------------------------------------------------------------------------------
-StatusCode PropertyProxy::execute()
-{
+StatusCode PropertyProxy::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
 
@@ -67,8 +64,7 @@ StatusCode PropertyProxy::execute()
 }
 
 //------------------------------------------------------------------------------
-StatusCode PropertyProxy::finalize()
-{
+StatusCode PropertyProxy::finalize() {
   //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
 

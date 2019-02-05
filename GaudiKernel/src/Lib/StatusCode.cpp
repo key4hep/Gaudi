@@ -12,15 +12,13 @@
 // statics
 bool StatusCode::s_checking( false );
 
-namespace
-{
+namespace {
   /// Default StatusCode category
   struct DefaultCategory : public StatusCode::Category {
 
     const char* name() const override { return "Gaudi"; }
 
-    std::string message( StatusCode::code_t code ) const override
-    {
+    std::string message( StatusCode::code_t code ) const override {
       switch ( static_cast<StatusCode::ErrorCode>( code ) ) {
       case StatusCode::ErrorCode::SUCCESS:
         return "SUCCESS";
@@ -33,7 +31,7 @@ namespace
       }
     }
   };
-}
+} // namespace
 
 STATUSCODE_ENUM_IMPL( StatusCode::ErrorCode, DefaultCategory )
 
@@ -43,8 +41,7 @@ void StatusCode::disableChecking() { s_checking = false; }
 
 bool StatusCode::checkingEnabled() { return s_checking; }
 
-void StatusCode::check()
-{
+void StatusCode::check() {
 
   if ( !m_checked && !GaudiException::s_proc &&
 #if __cplusplus > 201402L // c++17
@@ -52,7 +49,7 @@ void StatusCode::check()
 #else
        !std::uncaught_exception()
 #endif
-           ) {
+  ) {
 
     auto msg = Gaudi::svcLocator()->as<IMessageSvc>();
     auto scs = Gaudi::svcLocator()->service<IStatusCodeSvc>( "StatusCodeSvc" );

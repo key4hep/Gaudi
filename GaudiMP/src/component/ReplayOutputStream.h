@@ -11,13 +11,12 @@ class IAlgManager;
 struct IDataManagerSvc;
 
 /** @class ReplayOutputStream ReplayOutputStream.h component/ReplayOutputStream.h
-  *
-  *
-  * @author Marco Clemencic
-  * @date 30/08/2013
-  */
-class ReplayOutputStream : public GaudiAlgorithm
-{
+ *
+ *
+ * @author Marco Clemencic
+ * @date 30/08/2013
+ */
+class ReplayOutputStream : public GaudiAlgorithm {
 public:
   /// Inherited constructor
   using GaudiAlgorithm::GaudiAlgorithm;
@@ -36,8 +35,7 @@ private:
   void i_addOutputStream( const Gaudi::Utils::TypeNameString& outStream );
 
   /// Helper class to fill the internal map of OutputStreams.
-  class OutStreamAdder
-  {
+  class OutStreamAdder {
   public:
     OutStreamAdder( ReplayOutputStream* ptr ) : m_ptr( ptr ) {}
     inline void operator()( const Gaudi::Utils::TypeNameString& outStream ) { m_ptr->i_addOutputStream( outStream ); }
@@ -49,7 +47,7 @@ private:
   /// Helper function to call the transition on the contained OutputStreams.
   /// Returns StatusCode::FAILURE if any of the OutputStreams returned a failure.
   template <Gaudi::StateMachine::Transition TR>
-  StatusCode                                i_outStreamTransition();
+  StatusCode i_outStreamTransition();
 
   Gaudi::Property<std::vector<std::string>> m_outputStreamNames{
       this, "OutputStreams", {}, "OutputStream instances that can be called."};

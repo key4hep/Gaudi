@@ -20,19 +20,11 @@ if "-b" in sys.argv:
 from GaudiPython.GaudiAlgs import HistoAlgo, aida2root, SUCCESS
 
 # list of booked histograms
-paths = ('HistoEx/ 1D histo ',
-         'HistoEx/ 2D histo ',
-         'HistoEx/ 3D histo ',
-         'HistoEx1/ 1D histo ',
-         'HistoEx1/ 2D histo ',
-         'HistoEx1/ 3D histo ',
-         'HistoEx2/ x vs y    ',
-         'HistoEx2/ x vs y+3x ',
-         'HistoEx2/ x vs y-3x ',
-         'HistoEx2/ x vs y    (profile)',
-         'HistoEx2/ x vs y+3x (profile)',
-         'HistoEx2/ x vs y-3x (profile)'
-         )
+paths = ('HistoEx/ 1D histo ', 'HistoEx/ 2D histo ', 'HistoEx/ 3D histo ',
+         'HistoEx1/ 1D histo ', 'HistoEx1/ 2D histo ', 'HistoEx1/ 3D histo ',
+         'HistoEx2/ x vs y    ', 'HistoEx2/ x vs y+3x ',
+         'HistoEx2/ x vs y-3x ', 'HistoEx2/ x vs y    (profile)',
+         'HistoEx2/ x vs y+3x (profile)', 'HistoEx2/ x vs y-3x (profile)')
 
 # =============================================================================
 # @class Aida2RootEx1
@@ -41,7 +33,7 @@ paths = ('HistoEx/ 1D histo ',
 #  @date 2007-01-24
 
 
-class Aida2RootEx1 (HistoAlgo):
+class Aida2RootEx1(HistoAlgo):
     # Standard Constructor
     def __init__(self, name="Aida2RootEx1"):
         """ Standard Constructor """
@@ -66,6 +58,8 @@ class Aida2RootEx1 (HistoAlgo):
             root.Print()
 
         return SUCCESS
+
+
 # =============================================================================
 
 # =============================================================================
@@ -75,7 +69,7 @@ class Aida2RootEx1 (HistoAlgo):
 #  @date 2007-01-24
 
 
-class Aida2RootEx2 (HistoAlgo):
+class Aida2RootEx2(HistoAlgo):
     # Standard Constructor
     def __init__(self, name="Aida2RootEx2"):
         """ Standard Constructor """
@@ -97,6 +91,8 @@ class Aida2RootEx2 (HistoAlgo):
             root.Print()
 
         return SUCCESS
+
+
 # =============================================================================
 
 
@@ -159,8 +155,8 @@ def useScript(histos):
         print "The file name is '%s'" % name
         i += 1
 
-# =============================================================================
 
+# =============================================================================
 
 # =============================================================================
 # The actual job execution

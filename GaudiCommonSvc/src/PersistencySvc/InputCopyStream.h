@@ -15,9 +15,8 @@ class IDataStoreLeaves;
  *  @author:  M. Frank
  *  @author:  P. Koppenburg
  *  @author:  M. Clemencic
-*/
-class InputCopyStream : public OutputStream
-{
+ */
+class InputCopyStream : public OutputStream {
 
 public:
   /// Standard algorithm Constructor

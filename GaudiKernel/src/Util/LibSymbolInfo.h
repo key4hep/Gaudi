@@ -3,37 +3,35 @@
 //////////////////////////////////////////////////////////////////////
 
 #if !defined( AFX_LIBSYMBOLINFO_H__1A7003B4_BA53_11D1_AE46_1CFB51000000__INCLUDED_ )
-#define AFX_LIBSYMBOLINFO_H__1A7003B4_BA53_11D1_AE46_1CFB51000000__INCLUDED_
+#  define AFX_LIBSYMBOLINFO_H__1A7003B4_BA53_11D1_AE46_1CFB51000000__INCLUDED_
 
-#include <iostream>
-#include <string>
+#  include <iostream>
+#  include <string>
 
-#include <assert.h>
-#include <stdio.h>
-#include <windows.h>
+#  include <assert.h>
+#  include <stdio.h>
+#  include <windows.h>
 
-class CLibSymbolInfo
-{
+class CLibSymbolInfo {
 public:
   CLibSymbolInfo();
   virtual ~CLibSymbolInfo();
-  BOOL DumpSymbols( LPTSTR lpszLibPathName, std::ostream& pFile );
+  BOOL        DumpSymbols( LPTSTR lpszLibPathName, std::ostream& pFile );
   std::string GetLastError() const;
 
 protected:
   std::string m_strResultsString;
   std::string m_strErrorMsg;
 
-  BOOL Dump( LPTSTR lpszLibPathName, std::ostream& pFile );
-  BOOL IsRegularLibSymbol( PSTR pszSymbolName );
-  BOOL IsFiltedSymbol( std::string& pszSymbolName );
+  BOOL  Dump( LPTSTR lpszLibPathName, std::ostream& pFile );
+  BOOL  IsRegularLibSymbol( PSTR pszSymbolName );
+  BOOL  IsFiltedSymbol( std::string& pszSymbolName );
   DWORD ConvertBigEndian( DWORD bigEndian );
 };
 
 enum errMMF { errMMF_NoError, errMMF_FileOpen, errMMF_FileMapping, errMMF_MapView };
 
-class MEMORY_MAPPED_FILE
-{
+class MEMORY_MAPPED_FILE {
 public:
   MEMORY_MAPPED_FILE( PSTR pszFileName );
   ~MEMORY_MAPPED_FILE( void );

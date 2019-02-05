@@ -15,6 +15,7 @@
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/CounterHolder.h"
 #include "GaudiKernel/DataObjID.h" // must be include before Property.h, which is included in PropertyHolder.h
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAuditorSvc.h"
@@ -45,12 +46,10 @@ class ToolHandleInfo;
 class AlgorithmManager;
 
 #ifndef PACKAGE_VERSION
-#define PACKAGE_VERSION "unknown"
+#  define PACKAGE_VERSION "unknown"
 #endif
-namespace Gaudi
-{
-  namespace Details
-  {
+namespace Gaudi {
+  namespace Details {
     bool getDefaultAuditorValue( ISvcLocator* loc );
   }
 
@@ -78,9 +77,8 @@ namespace Gaudi
    *  @date   1998
    */
   class GAUDI_API Algorithm
-      : public DataHandleHolderBase<
-            PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
-  {
+      : public DataHandleHolderBase<CounterHolder<
+            PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>> {
   public:
 #ifndef __REFLEX__
     typedef Gaudi::PluginService::Factory<IAlgorithm*( const std::string&, ISvcLocator* )> Factory;
@@ -167,7 +165,7 @@ namespace Gaudi
     /** The type of the algorithm object.
      */
     const std::string& type() const override { return m_type; }
-    void setType( const std::string& type ) override { m_type = type; } // BH, TODO: move to proper place
+    void               setType( const std::string& type ) override { m_type = type; } // BH, TODO: move to proper place
 
     const std::string& version() const override;
 
@@ -214,15 +212,13 @@ namespace Gaudi
 
     /// Access a service by name, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const
-    {
+    StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
       return service_i( name, createIf, T::interfaceID(), (void**)&psvc );
     }
 
     /// Access a service by name and type, creating it if it doesn't already exist.
     template <class T>
-    StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const
-    {
+    StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const {
       return service_i( svcType, svcName, T::interfaceID(), reinterpret_cast<void**>( &psvc ) );
     }
 
@@ -230,8 +226,7 @@ namespace Gaudi
     SmartIF<IService> service( const std::string& name, const bool createIf = true, const bool quiet = false ) const;
 
     template <class T>
-    SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const
-    {
+    SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const {
       return service( name, createIf, quiet ).as<T>();
     }
 
@@ -244,8 +239,7 @@ namespace Gaudi
      *  Return a pointer to the service if present
      */
     SmartIF<IChronoStatSvc>&                                             chronoSvc() const;
-    [[deprecated( "use chronoSvc() instead" )]] SmartIF<IChronoStatSvc>& chronoStatService() const
-    {
+    [[deprecated( "use chronoSvc() instead" )]] SmartIF<IChronoStatSvc>& chronoStatService() const {
       return chronoSvc();
     }
 
@@ -259,8 +253,7 @@ namespace Gaudi
      *  May not be invoked before sysInitialize() has been invoked.
      */
     SmartIF<IConversionSvc>&                                             detCnvSvc() const;
-    [[deprecated( "use detCnvSvc() instead" )]] SmartIF<IConversionSvc>& detDataCnvService() const
-    {
+    [[deprecated( "use detCnvSvc() instead" )]] SmartIF<IConversionSvc>& detDataCnvService() const {
       return detCnvSvc();
     }
 
@@ -270,8 +263,7 @@ namespace Gaudi
     SmartIF<IDataProviderSvc>& eventSvc() const;
     /// shortcut for  method eventSvc
     SmartIF<IDataProviderSvc>&                                            evtSvc() const { return eventSvc(); }
-    [[deprecated( "use eventSvc() instead" )]] SmartIF<IDataProviderSvc>& eventDataService() const
-    {
+    [[deprecated( "use eventSvc() instead" )]] SmartIF<IDataProviderSvc>& eventDataService() const {
       return eventSvc();
     }
 
@@ -279,8 +271,7 @@ namespace Gaudi
      *  May not be invoked before sysInitialize() has been invoked.
      */
     SmartIF<IConversionSvc>&                                               eventCnvSvc() const;
-    [[deprecated( "use eventCnvSvc() instead" )]] SmartIF<IConversionSvc>& eventDataCnvService() const
-    {
+    [[deprecated( "use eventCnvSvc() instead" )]] SmartIF<IConversionSvc>& eventDataCnvService() const {
       return eventCnvSvc();
     }
 
@@ -288,8 +279,7 @@ namespace Gaudi
      *  May not be invoked before sysInitialize() has been invoked.
      */
     SmartIF<IHistogramSvc>&                                            histoSvc() const;
-    [[deprecated( "use histoSvc() instead" )]] SmartIF<IHistogramSvc>& histogramDataService() const
-    {
+    [[deprecated( "use histoSvc() instead" )]] SmartIF<IHistogramSvc>& histogramDataService() const {
       return histoSvc();
     }
 
@@ -346,8 +336,7 @@ namespace Gaudi
     // declare Tools to the Algorithms
     template <class T>
     Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<T>& hndl,
-                                                   const std::string& doc = "none" )
-    {
+                                                   const std::string& doc = "none" ) {
       this->declareTool( hndl, hndl.typeAndName() ).ignore();
       return PropertyHolderImpl::declareProperty( name, hndl, doc );
     }
@@ -357,8 +346,7 @@ namespace Gaudi
 
     template <class T>
     Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr,
-                                                   const std::string& doc = "none" )
-    {
+                                                   const std::string& doc = "none" ) {
       addToolsArray( hndlArr );
       return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
     }
@@ -373,8 +361,7 @@ namespace Gaudi
      *   @retval NULL No monitor service is present
      *   @retval non-NULL A monitor service is present and available to be used
      */
-    inline SmartIF<IMonitorSvc>& monitorSvc() const
-    {
+    inline SmartIF<IMonitorSvc>& monitorSvc() const {
       // If not already located try to locate it without forcing a creation
       if ( !m_pMonitorSvc ) {
         m_pMonitorSvc = service( m_monitorSvcName, false, true ); // do not create and be quiet
@@ -388,8 +375,7 @@ namespace Gaudi
         @param desc Textual description of the information being monitored
     */
     template <class T>
-    void declareInfo( const std::string& name, const T& var, const std::string& desc ) const
-    {
+    void declareInfo( const std::string& name, const T& var, const std::string& desc ) const {
       IMonitorSvc* mS = monitorSvc().get();
       if ( mS ) mS->declareInfo( name, var, desc, this );
     }
@@ -402,8 +388,7 @@ namespace Gaudi
         @param desc Textual description of the information being monitored
     */
     void declareInfo( const std::string& name, const std::string& format, const void* var, int size,
-                      const std::string& desc ) const
-    {
+                      const std::string& desc ) const {
       IMonitorSvc* mS = monitorSvc().get();
       if ( mS ) mS->declareInfo( name, format, var, size, desc, this );
     }
@@ -416,14 +401,12 @@ namespace Gaudi
     void deregisterTool( IAlgTool* tool ) const;
 
     template <class T>
-    StatusCode declareTool( ToolHandle<T>& handle, bool createIf = true )
-    {
+    StatusCode declareTool( ToolHandle<T>& handle, bool createIf = true ) {
       return this->declareTool( handle, handle.typeAndName(), createIf );
     }
 
     template <class T>
-    StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true )
-    {
+    StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true ) {
 
       StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
       if ( UNLIKELY( !sc ) ) {
@@ -438,8 +421,7 @@ namespace Gaudi
     }
 
     template <class T>
-    void addToolsArray( ToolHandleArray<T>& hndlArr )
-    {
+    void addToolsArray( ToolHandleArray<T>& hndlArr ) {
       m_toolHandleArrays.push_back( &hndlArr );
     }
 
@@ -598,4 +580,4 @@ namespace Gaudi
     /// Private assignment operator: NO ASSIGNMENT ALLOWED
     Algorithm& operator=( const Algorithm& rhs ) = delete;
   };
-}
+} // namespace Gaudi

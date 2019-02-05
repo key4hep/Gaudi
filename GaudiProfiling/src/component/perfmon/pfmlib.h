@@ -61,15 +61,15 @@ typedef unsigned long pfmlib_regmask_bits_t;
  * how many elements do we need to represent all the PMCs and PMDs (rounded up)
  */
 #if PFMLIB_MAX_PMCS > PFMLIB_MAX_PMDS
-#define PFMLIB_REG_MAX PFMLIB_MAX_PMCS
+#  define PFMLIB_REG_MAX PFMLIB_MAX_PMCS
 #else
-#define PFMLIB_REG_MAX PFMLIB_MAX_PMDS
+#  define PFMLIB_REG_MAX PFMLIB_MAX_PMDS
 #endif
 
 #ifndef SWIG
-#define __PFMLIB_REG_BV_BITS ( sizeof( pfmlib_regmask_bits_t ) << 3 )
-#define PFMLIB_BVSIZE( x ) ( ( ( x ) + (__PFMLIB_REG_BV_BITS)-1 ) / __PFMLIB_REG_BV_BITS )
-#define PFMLIB_REG_BV PFMLIB_BVSIZE( PFMLIB_REG_MAX )
+#  define __PFMLIB_REG_BV_BITS ( sizeof( pfmlib_regmask_bits_t ) << 3 )
+#  define PFMLIB_BVSIZE( x ) ( ( ( x ) + (__PFMLIB_REG_BV_BITS)-1 ) / __PFMLIB_REG_BV_BITS )
+#  define PFMLIB_REG_BV PFMLIB_BVSIZE( PFMLIB_REG_MAX )
 #endif
 
 typedef struct {
@@ -195,7 +195,7 @@ extern pfm_err_t pfm_get_num_counters( unsigned int* num );
 
 extern pfm_err_t pfm_get_hw_counter_width( unsigned int* width );
 extern pfm_err_t pfm_get_version( unsigned int* version );
-extern char* pfm_strerror( int code );
+extern char*     pfm_strerror( int code );
 extern pfm_err_t pfm_get_cycle_event( pfmlib_event_t* e );
 extern pfm_err_t pfm_get_inst_retired_event( pfmlib_event_t* e );
 
@@ -293,14 +293,12 @@ extern pfm_err_t pfm_get_inst_retired_event( pfmlib_event_t* e );
 #define __PFMLIB_REGMASK_EL( g ) ( ( g ) / __PFMLIB_REG_BV_BITS )
 #define __PFMLIB_REGMASK_MASK( g ) ( ( (pfmlib_regmask_bits_t)1 ) << ( ( g ) % __PFMLIB_REG_BV_BITS ) )
 
-static inline int pfm_regmask_isset( pfmlib_regmask_t* h, unsigned int b )
-{
+static inline int pfm_regmask_isset( pfmlib_regmask_t* h, unsigned int b ) {
   if ( b >= PFMLIB_REG_MAX ) return 0;
   return ( h->bits[__PFMLIB_REGMASK_EL( b )] & __PFMLIB_REGMASK_MASK( b ) ) != 0;
 }
 
-static inline int pfm_regmask_set( pfmlib_regmask_t* h, unsigned int b )
-{
+static inline int pfm_regmask_set( pfmlib_regmask_t* h, unsigned int b ) {
   if ( b >= PFMLIB_REG_MAX ) return PFMLIB_ERR_INVAL;
 
   h->bits[__PFMLIB_REGMASK_EL( b )] |= __PFMLIB_REGMASK_MASK( b );
@@ -308,8 +306,7 @@ static inline int pfm_regmask_set( pfmlib_regmask_t* h, unsigned int b )
   return PFMLIB_SUCCESS;
 }
 
-static inline int pfm_regmask_clr( pfmlib_regmask_t* h, unsigned int b )
-{
+static inline int pfm_regmask_clr( pfmlib_regmask_t* h, unsigned int b ) {
   if ( h == NULL || b >= PFMLIB_REG_MAX ) return PFMLIB_ERR_INVAL;
 
   h->bits[__PFMLIB_REGMASK_EL( b )] &= ~__PFMLIB_REGMASK_MASK( b );
@@ -317,22 +314,18 @@ static inline int pfm_regmask_clr( pfmlib_regmask_t* h, unsigned int b )
   return PFMLIB_SUCCESS;
 }
 
-static inline int pfm_regmask_weight( pfmlib_regmask_t* h, unsigned int* w )
-{
+static inline int pfm_regmask_weight( pfmlib_regmask_t* h, unsigned int* w ) {
   unsigned int pos;
   unsigned int weight = 0;
 
   if ( h == NULL || w == NULL ) return PFMLIB_ERR_INVAL;
 
-  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) {
-    weight += (unsigned int)pfmlib_popcnt( h->bits[pos] );
-  }
+  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) { weight += (unsigned int)pfmlib_popcnt( h->bits[pos] ); }
   *w = weight;
   return PFMLIB_SUCCESS;
 }
 
-static inline int pfm_regmask_eq( pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 )
-{
+static inline int pfm_regmask_eq( pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 ) {
   unsigned int pos;
 
   if ( h1 == NULL || h2 == NULL ) return 0;
@@ -343,57 +336,42 @@ static inline int pfm_regmask_eq( pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 )
   return 1;
 }
 
-static inline int pfm_regmask_and( pfmlib_regmask_t* dst, pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 )
-{
+static inline int pfm_regmask_and( pfmlib_regmask_t* dst, pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 ) {
   unsigned int pos;
   if ( dst == NULL || h1 == NULL || h2 == NULL ) return PFMLIB_ERR_INVAL;
 
-  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) {
-    dst->bits[pos] = h1->bits[pos] & h2->bits[pos];
-  }
+  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) { dst->bits[pos] = h1->bits[pos] & h2->bits[pos]; }
   return PFMLIB_SUCCESS;
 }
 
-static inline int pfm_regmask_andnot( pfmlib_regmask_t* dst, pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 )
-{
+static inline int pfm_regmask_andnot( pfmlib_regmask_t* dst, pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 ) {
   unsigned int pos;
   if ( dst == NULL || h1 == NULL || h2 == NULL ) return PFMLIB_ERR_INVAL;
 
-  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) {
-    dst->bits[pos] = h1->bits[pos] & ~h2->bits[pos];
-  }
+  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) { dst->bits[pos] = h1->bits[pos] & ~h2->bits[pos]; }
   return PFMLIB_SUCCESS;
 }
 
-static inline int pfm_regmask_or( pfmlib_regmask_t* dst, pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 )
-{
+static inline int pfm_regmask_or( pfmlib_regmask_t* dst, pfmlib_regmask_t* h1, pfmlib_regmask_t* h2 ) {
   unsigned int pos;
   if ( dst == NULL || h1 == NULL || h2 == NULL ) return PFMLIB_ERR_INVAL;
 
-  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) {
-    dst->bits[pos] = h1->bits[pos] | h2->bits[pos];
-  }
+  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) { dst->bits[pos] = h1->bits[pos] | h2->bits[pos]; }
   return PFMLIB_SUCCESS;
 }
 
-static inline int pfm_regmask_copy( pfmlib_regmask_t* dst, pfmlib_regmask_t* src )
-{
+static inline int pfm_regmask_copy( pfmlib_regmask_t* dst, pfmlib_regmask_t* src ) {
   unsigned int pos;
   if ( dst == NULL || src == NULL ) return PFMLIB_ERR_INVAL;
 
-  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) {
-    dst->bits[pos] = src->bits[pos];
-  }
+  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) { dst->bits[pos] = src->bits[pos]; }
   return PFMLIB_SUCCESS;
 }
-static inline int pfm_regmask_not( pfmlib_regmask_t* dst )
-{
+static inline int pfm_regmask_not( pfmlib_regmask_t* dst ) {
   unsigned int pos;
   if ( dst == NULL ) return PFMLIB_ERR_INVAL;
 
-  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) {
-    dst->bits[pos] = ~dst->bits[pos];
-  }
+  for ( pos = 0; pos < PFMLIB_REG_BV; pos++ ) { dst->bits[pos] = ~dst->bits[pos]; }
   return PFMLIB_SUCCESS;
 }
 

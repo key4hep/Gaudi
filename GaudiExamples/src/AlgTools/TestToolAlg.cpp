@@ -18,8 +18,7 @@ DECLARE_COMPONENT( TestToolAlg )
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode TestToolAlg::initialize()
-{
+StatusCode TestToolAlg::initialize() {
 
   debug() << "Initialise" << endmsg;
 
@@ -45,8 +44,7 @@ StatusCode TestToolAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode TestToolAlg::execute()
-{
+StatusCode TestToolAlg::execute() {
 
   debug() << "Execute" << endmsg;
 
@@ -56,8 +54,7 @@ StatusCode TestToolAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode TestToolAlg::finalize()
-{
+StatusCode TestToolAlg::finalize() {
 
   debug() << "Finalize" << endmsg;
 

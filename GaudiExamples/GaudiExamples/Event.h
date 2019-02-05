@@ -9,10 +9,8 @@
 #include "GaudiKernel/Time.h"
 #include <iostream>
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
     class Collision;
 
@@ -28,8 +26,7 @@ namespace Gaudi
     @author Pavel Binko
     */
 
-    class GAUDI_API Event : public DataObject
-    {
+    class GAUDI_API Event : public DataObject {
 
     public:
       /// Constructors
@@ -82,35 +79,30 @@ namespace Gaudi
       /// Vector of collisions this object belongs to
       SmartRefVector<Collision> m_collisions;
     };
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 
 #include "Collision.h"
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
 
     //
     // Inline code must be outside the class definition
     //
 
     /// Serialize the object for writing
-    inline StreamBuffer& Event::serialize( StreamBuffer& s ) const
-    {
+    inline StreamBuffer& Event::serialize( StreamBuffer& s ) const {
       return s << m_event << m_run << m_time << m_collisions( this );
     }
 
     /// Serialize the object for reading
-    inline StreamBuffer& Event::serialize( StreamBuffer& s )
-    {
+    inline StreamBuffer& Event::serialize( StreamBuffer& s ) {
       return s >> m_event >> m_run >> m_time >> m_collisions( this );
     }
 
     /// Fill the output stream (ASCII)
-    inline std::ostream& Event::fillStream( std::ostream& s ) const
-    {
+    inline std::ostream& Event::fillStream( std::ostream& s ) const {
       return s << "class Event :"
                << "\n    Event number = " << std::setw( 12 ) << m_event << "\n    Run number   = " << std::setw( 12 )
                << m_run << "\n    Time         = " << m_time;
@@ -123,8 +115,7 @@ namespace Gaudi
     inline void Event::addCollision( Collision* c ) { m_collisions.push_back( SmartRef<Collision>( c ) ); }
 
     /// Remove decay vertex
-    inline void Event::removeCollision( Collision* c )
-    {
+    inline void Event::removeCollision( Collision* c ) {
       for ( auto i = m_collisions.begin(); i != m_collisions.end(); ++i ) {
         if ( i->target() == c ) {
           m_collisions.erase( i );
@@ -135,6 +126,6 @@ namespace Gaudi
 
     /// Output operator (ASCII)
     inline std::ostream& operator<<( std::ostream& s, const Event& obj ) { return obj.fillStream( s ); }
-  }
-}
+  } // namespace Examples
+} // namespace Gaudi
 #endif // GAUDIEXAMPLES_EVENT_H

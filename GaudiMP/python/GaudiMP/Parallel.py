@@ -1,6 +1,5 @@
 # File: GaudiMP/Parallel.py
 # Author: Pere Mato (pere.mato@cern.ch)
-
 """ GaudiMP.Parallel module.
     This module provides 'parallel' processing support for GaudiPyhton.
     It is adding some sugar on top of public domain packages such as
@@ -125,8 +124,8 @@ class Task(object):
                     raise TypeError('result cannot be added')
 
     def _resetOutput(self):
-        output = (type(self.output)
-                  is dict) and self.output.values() or self.output
+        output = (type(self.output) is
+                  dict) and self.output.values() or self.output
         for o in output:
             if hasattr(o, 'Reset'):
                 o.Reset()
@@ -164,8 +163,11 @@ class WorkManager(object):
         task.initializeLocal()
         # --- Schedule all the jobs ....
         if self.mode == 'cluster':
-            jobs = [self.server.submit(
-                _prefunction, (_ppfunction, task, item), (), ('GaudiMP.Parallel', 'time')) for item in items]
+            jobs = [
+                self.server.submit(_prefunction, (_ppfunction, task, item), (),
+                                   ('GaudiMP.Parallel', 'time'))
+                for item in items
+            ]
             for job in jobs:
                 result, stat = job()
                 task._mergeResults(result)
@@ -174,8 +176,8 @@ class WorkManager(object):
             self.server.print_stats()
         elif self.mode == 'multicore':
             start = time.time()
-            jobs = self.pool.map_async(
-                _ppfunction, zip([task for i in items], items))
+            jobs = self.pool.map_async(_ppfunction,
+                                       zip([task for i in items], items))
             for result, stat in jobs.get(timeout):
                 task._mergeResults(result)
                 self._mergeStatistics(stat)
@@ -193,7 +195,8 @@ class WorkManager(object):
         print 'job count | % of all jobs | job time sum | time per job | job server'
         for name, stat in self.stats.items():
             print '       %d |        %6.2f |     %8.3f |    %8.3f | %s' % (
-                stat.njob, 100. * stat.njob / njobs, stat.time, stat.time / stat.njob, name)
+                stat.njob, 100. * stat.njob / njobs, stat.time,
+                stat.time / stat.njob, name)
 
     def _mergeStatistics(self, stat):
         if stat.name not in self.stats:
@@ -216,8 +219,8 @@ class SshSession(object):
         self.session.read_lazy()
         self.session.write('setenv PYTHONPATH %s\n' % os.environ['PYTHONPATH'])
         self.session.read_lazy()
-        self.session.write('setenv LD_LIBRARY_PATH %s\n' %
-                           os.environ['LD_LIBRARY_PATH'])
+        self.session.write(
+            'setenv LD_LIBRARY_PATH %s\n' % os.environ['LD_LIBRARY_PATH'])
         self.session.read_lazy()
         self.session.write('setenv ROOTSYS %s\n' % os.environ['ROOTSYS'])
         self.session.read_lazy()

@@ -1,9 +1,7 @@
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher,
-                           ContextEventCounterPtr,
-                           ContextEventCounterData,
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           ContextEventCounterPtr, ContextEventCounterData,
                            GaudiSequencer)
 
 # metaconfig -------------------------------------------------------------------
@@ -18,8 +16,7 @@ algosInFlight = 10
 # It is useful to call it EventDataSvc to replace the usual data service with
 # the whiteboard transparently.
 
-whiteboard = HiveWhiteBoard("EventDataSvc",
-                            EventSlots=evtslots)
+whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 # -------------------------------------------------------------------------------
 
@@ -36,8 +33,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight,
-                                  OutputLevel=DEBUG)
+scheduler = AvalancheSchedulerSvc(
+    ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
 
 # -------------------------------------------------------------------------------
 
@@ -73,17 +70,19 @@ for algo in [a1, a2, a3, a4]:
 for algo in [a3]:
     algo.Cardinality = cardinality
 
-seq = GaudiSequencer("CriticalSection",
-                     Members=[a1, a2, a4],
-                     Sequential=True,
-                     OutputLevel=VERBOSE)
+seq = GaudiSequencer(
+    "CriticalSection",
+    Members=[a1, a2, a4],
+    Sequential=True,
+    OutputLevel=VERBOSE)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[seq, a3],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[seq, a3],
+    MessageSvcType="InertMessageSvc")

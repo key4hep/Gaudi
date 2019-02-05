@@ -39,12 +39,12 @@
 // ============================================================================
 /// @FIXME: AIDA interfaces visibility
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wkeyword-macro"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wkeyword-macro"
 #endif
 #define class class GAUDI_API
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
 #include "AIDA/IBaseHistogram.h"
 #undef class
@@ -55,8 +55,7 @@ DECLARE_COMPONENT( HistogramPersistencySvc )
 
 // ============================================================================
 // Finalize the service.
-StatusCode HistogramPersistencySvc::finalize()
-{
+StatusCode HistogramPersistencySvc::finalize() {
   //
   if ( !( m_convert.empty() && m_exclude.empty() ) ) { // print message if any of the two properties is used
     info() << "Histograms Converted/Excluded: " << m_converted.size() << "/" << m_excluded.size() << endmsg;
@@ -65,18 +64,14 @@ StatusCode HistogramPersistencySvc::finalize()
     if ( !m_excluded.empty() ) {
       auto& log = debug();
       log << "Excluded  Histos : #" << m_excluded.size();
-      for ( const auto& item : m_excluded ) {
-        log << std::endl << "  '" << item << "'";
-      }
+      for ( const auto& item : m_excluded ) { log << std::endl << "  '" << item << "'"; }
       log << endmsg;
     }
     //
     if ( !m_converted.empty() ) {
       auto& log = debug();
       log << "Converted Histos : #" << m_converted.size();
-      for ( const auto& item : m_converted ) {
-        log << std::endl << "  '" << item << "'";
-      }
+      for ( const auto& item : m_converted ) { log << std::endl << "  '" << item << "'"; }
       log << endmsg;
     }
   }
@@ -85,16 +80,14 @@ StatusCode HistogramPersistencySvc::finalize()
 // ============================================================================
 // Initialize the service.
 // ============================================================================
-StatusCode HistogramPersistencySvc::initialize()
-{
+StatusCode HistogramPersistencySvc::initialize() {
   StatusCode status = PersistencySvc::initialize();
   return status.isSuccess() ? reinitialize() : status;
 }
 // ============================================================================
 // Reinitialize the service.
 // ============================================================================
-StatusCode HistogramPersistencySvc::reinitialize()
-{
+StatusCode HistogramPersistencySvc::reinitialize() {
   // Obtain the IProperty of the ApplicationMgr
   auto prpMgr = serviceLocator()->as<IProperty>();
   if ( !prpMgr ) {
@@ -122,36 +115,25 @@ StatusCode HistogramPersistencySvc::reinitialize()
   setConversionSvc( nullptr ).ignore();
   if ( m_histPersName == "ROOT" ) {
     setConversionSvc( service( "RootHistSvc" ) ).ignore();
-    if ( !conversionSvc() ) {
-      return StatusCode::FAILURE;
-    }
+    if ( !conversionSvc() ) { return StatusCode::FAILURE; }
     enable( true );
   } else if ( m_histPersName == "HBOOK" ) {
     setConversionSvc( service( "HbookHistSvc" ) ).ignore();
-    if ( !conversionSvc() ) {
-      return StatusCode::FAILURE;
-    }
+    if ( !conversionSvc() ) { return StatusCode::FAILURE; }
     enable( true );
   } else if ( m_histPersName == "NONE" ) {
     enable( false );
-    if ( m_warnings ) {
-      warning() << "Histograms saving not required." << endmsg;
-    }
+    if ( m_warnings ) { warning() << "Histograms saving not required." << endmsg; }
   } else {
     setConversionSvc( service( m_histPersName ) ).ignore();
-    if ( !conversionSvc() ) {
-      return StatusCode::FAILURE;
-    }
+    if ( !conversionSvc() ) { return StatusCode::FAILURE; }
     enable( true );
-    if ( m_warnings ) {
-      warning() << "Unknown Histogram Persistency Mechanism " << m_histPersName << endmsg;
-    }
+    if ( m_warnings ) { warning() << "Unknown Histogram Persistency Mechanism " << m_histPersName << endmsg; }
   }
   return StatusCode::SUCCESS;
 }
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   /// invalid name
   const std::string s_NULL = "<NULL>";
@@ -162,8 +144,7 @@ namespace
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    */
   // ==========================================================================
-  inline bool match( const std::string& name, const std::string& pat )
-  {
+  inline bool match( const std::string& name, const std::string& pat ) {
     // the most primitive match
     return std::string::npos != name.find( pat );
   }
@@ -172,11 +153,8 @@ namespace
    *  @param obj the object
    *  @return the full name
    */
-  inline const std::string& oname( const DataObject* obj )
-  {
-    if ( !obj ) {
-      return s_NULL;
-    }
+  inline const std::string& oname( const DataObject* obj ) {
+    if ( !obj ) { return s_NULL; }
     auto reg = obj->registry();
     return reg ? reg->identifier() : obj->name();
   }
@@ -188,12 +166,11 @@ namespace
    */
   inline bool match( const DataObject* obj, const std::string& pat ) { return obj && match( oname( obj ), pat ); }
   // ==========================================================================
-}
+} // namespace
 // ============================================================================
 // Convert the transient object to the requested representation.
 // ============================================================================
-StatusCode HistogramPersistencySvc::createRep( DataObject* pObj, IOpaqueAddress*& refpAddr )
-{
+StatusCode HistogramPersistencySvc::createRep( DataObject* pObj, IOpaqueAddress*& refpAddr ) {
   // enable the conversion
   enable( true );
   // conversion is possible ?
@@ -226,8 +203,7 @@ StatusCode HistogramPersistencySvc::createRep( DataObject* pObj, IOpaqueAddress*
 // Standard Constructor
 // ============================================================================
 HistogramPersistencySvc::HistogramPersistencySvc( const std::string& name, ISvcLocator* svc )
-    : PersistencySvc( name, svc )
-{
+    : PersistencySvc( name, svc ) {
   // bypass update handler
   m_svcNames.value() = std::vector<std::string>{{"RootHistSvc"}};
 }

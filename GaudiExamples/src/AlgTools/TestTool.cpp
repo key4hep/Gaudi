@@ -17,8 +17,7 @@ DECLARE_COMPONENT( TestTool )
 
 //=============================================================================
 
-StatusCode TestTool::initialize()
-{
+StatusCode TestTool::initialize() {
   debug() << "Initialize" << endmsg;
 
   if ( !GaudiTool::initialize() ) return StatusCode::FAILURE;
@@ -40,8 +39,7 @@ StatusCode TestTool::initialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode TestTool::finalize()
-{
+StatusCode TestTool::finalize() {
   debug() << "Finalize" << endmsg;
   return GaudiTool::finalize();
 }

@@ -1,7 +1,6 @@
 from ROOT import *
 import sys
 import re
-
 """
 Prepare the clones plot.
 Parses the end of the output file, printed by the destructors of the CPUCruncher.
@@ -26,12 +25,18 @@ def parseLog(logfilename):
     vals = []
     for line in lines:
         if "Summary: name=" in line:
-            runtime_nclones = map(float,
-                                  re.match(".* avg_runtime= ([0-9]*.[0-9]*|[0-9]*.[0-9]*e-[0-9]*) n_clones= ([0-9]).*", line).groups())
+            runtime_nclones = map(
+                float,
+                re.match(
+                    ".* avg_runtime= ([0-9]*.[0-9]*|[0-9]*.[0-9]*e-[0-9]*) n_clones= ([0-9]).*",
+                    line).groups())
             vals.append(runtime_nclones)
         elif "Running with" in line:
-            NEventsInFlight, NThreads = map(int, re.match(
-                ".* Running with ([0-9]*) parallel events.*algorithms, ([0-9]*) threads", line).groups())
+            NEventsInFlight, NThreads = map(
+                int,
+                re.match(
+                    ".* Running with ([0-9]*) parallel events.*algorithms, ([0-9]*) threads",
+                    line).groups())
 
     return vals
 
@@ -47,13 +52,15 @@ def createGraph(vals):
     graph.SetMarkerSize(MarkerSize)
     graph.SetMarkerColor(Color)
     graph.SetTitle(
-        "GaudiHive Speedup (Brunel, 100 evts);Algorithm Runtime [s];Number of Clones")
+        "GaudiHive Speedup (Brunel, 100 evts);Algorithm Runtime [s];Number of Clones"
+    )
     return graph
 
 
 def getText(x, y, text, scale, angle, colour, font, NDC=False):
-    lat = TLatex(float(x), float(y),
-                 "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
+    lat = TLatex(
+        float(x), float(y),
+        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text))
 
     lat.SetNDC(NDC)
     if angle != 0.:
@@ -65,28 +72,16 @@ def getCountLatexes(vals, xmax):
     # print vals
     def getNclones(runtime_nclones):
         return runtime_nclones[1]
+
     max_nclones = int(max(vals, key=getNclones)[1])
 
     latexes = []
     for i in xrange(1, max_nclones + 1):
         n_algos = len(
             filter(lambda runtime_nclones: runtime_nclones[1] == i, vals))
-        latexes.append(getText(xmax * 1.01,
-                               i,
-                               n_algos,
-                               .7,
-                               0,
-                               600,
-                               12))
+        latexes.append(getText(xmax * 1.01, i, n_algos, .7, 0, 600, 12))
 
-    label = getText(.95,
-                    .55,
-                    "Total",
-                    .8,
-                    270,
-                    600,
-                    12,
-                    True)
+    label = getText(.95, .55, "Total", .8, 270, 600, 12, True)
 
     latexes.append(label)
 
@@ -109,10 +104,10 @@ def doPlot(logfilename):
 
     countLatexes = getCountLatexes(vals, graph.GetXaxis().GetXmax())
     map(lambda latex: latex.Draw(), countLatexes)
-    evtsIf = getText(.6, .365,
-                     "#splitline{#splitline{%s Simultaneous Events}{%s Threads}}{%s Algorithms}" % (
-                         NEventsInFlight, NThreads, nalgorithms),
-                     .8, 0, 2, 12, True)
+    evtsIf = getText(
+        .6, .365,
+        "#splitline{#splitline{%s Simultaneous Events}{%s Threads}}{%s Algorithms}"
+        % (NEventsInFlight, NThreads, nalgorithms), .8, 0, 2, 12, True)
     evtsIf.Draw()
 
     a = raw_input("press enter to continue")

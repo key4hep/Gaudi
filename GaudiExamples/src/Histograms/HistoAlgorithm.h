@@ -16,8 +16,7 @@ using namespace AIDA;
 // Forward declarations
 class HistogramSvc;
 
-class HistoAlgorithm : public Algorithm
-{
+class HistoAlgorithm : public Algorithm {
 
 public:
   // Constructor of this form must be provided

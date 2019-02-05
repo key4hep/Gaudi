@@ -27,8 +27,7 @@ class ISvcLocator;
 //
 // Author:      Iain Last
 //
-class MessageSvc : public extends<Service, IMessageSvc, IInactiveMessageCounter>
-{
+class MessageSvc : public extends<Service, IMessageSvc, IInactiveMessageCounter> {
 public:
   typedef std::pair<std::string, std::ostream*> NamedStream;
   typedef std::multimap<int, NamedStream>       StreamMap;
@@ -91,8 +90,7 @@ public:
   std::ostream* defaultStream() const override { return m_defaultStream; }
 
   // Implementation of IMessageSvc::setDefaultStream()
-  void setDefaultStream( std::ostream* stream ) override
-  {
+  void setDefaultStream( std::ostream* stream ) override {
     std::unique_lock<std::recursive_mutex> lock( m_reportMutex );
     m_defaultStream = stream;
   }

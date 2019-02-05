@@ -14,8 +14,7 @@ class StreamBuffer;
 
     @author M.Frank
 */
-class GAUDI_API ISerialize : virtual public IInterface
-{
+class GAUDI_API ISerialize : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( ISerialize, 2, 0 );

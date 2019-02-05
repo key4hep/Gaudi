@@ -3,10 +3,8 @@
 
 #include "GaudiKernel/GaudiException.h"
 
-namespace Gaudi
-{
-  namespace StateMachine
-  {
+namespace Gaudi {
+  namespace StateMachine {
     /**
      * Allowed states for classes implementing the state machine (ApplicationMgr,
      * Algorithm, Service, AlgTool).
@@ -38,8 +36,7 @@ namespace Gaudi
     State GAUDI_API ChangeState( const Transition transition, const State state );
 
     /// Pretty print of states.
-    inline std::ostream& operator<<( std::ostream& s, const Gaudi::StateMachine::State& st )
-    {
+    inline std::ostream& operator<<( std::ostream& s, const Gaudi::StateMachine::State& st ) {
       switch ( st ) {
       case Gaudi::StateMachine::OFFLINE:
         return s << "OFFLINE";
@@ -49,13 +46,13 @@ namespace Gaudi
         return s << "INITIALIZED";
       case Gaudi::StateMachine::RUNNING:
         return s << "RUNNING";
+      default:
+        return s;
       }
-      return s; // cannot be reached, but make the compiler happy
     }
 
     /// Pretty print of transitions.
-    inline std::ostream& operator<<( std::ostream& s, const Gaudi::StateMachine::Transition& t )
-    {
+    inline std::ostream& operator<<( std::ostream& s, const Gaudi::StateMachine::Transition& t ) {
       switch ( t ) {
       case Gaudi::StateMachine::CONFIGURE:
         return s << "CONFIGURE";
@@ -69,8 +66,9 @@ namespace Gaudi
         return s << "FINALIZE";
       case Gaudi::StateMachine::TERMINATE:
         return s << "TERMINATE";
+      default:
+        return s;
       }
-      return s; // cannot be reached, but make the compiler happy
     }
 
   } // namespace StateMachine

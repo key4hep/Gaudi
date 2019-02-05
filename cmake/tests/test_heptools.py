@@ -11,8 +11,8 @@ class Tests(CMakeTestScripts):
     scripts_dir = join(base_dir, 'cmake_scripts')
 
     def setup(self):
-        os.environ['CMAKE_PREFIX_PATH'] = join(
-            self.base_dir, 'data', 'heptools')
+        os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data',
+                                               'heptools')
         os.environ['BINARY_TAG'] = 'x86_64-slc0-gcc99-opt'
         if 'CMTPROJECTPATH' in os.environ:
             del os.environ['CMTPROJECTPATH']

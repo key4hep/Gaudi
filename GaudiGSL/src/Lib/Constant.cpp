@@ -10,10 +10,8 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  */
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     // ========================================================================
     /// from CLHGEP/GenericFunctions
     // ========================================================================
@@ -32,8 +30,7 @@ namespace Genfun
     // ========================================================================
     /// Derivatives
     // ========================================================================
-    Derivative Constant::partial( unsigned int /* index */ ) const
-    {
+    Derivative Constant::partial( unsigned int /* index */ ) const {
       const AbsFunction& aux = Constant( 0.0, m_DIM );
       return FunctionNoop( &aux );
     }
@@ -41,7 +38,7 @@ namespace Genfun
 
   } // end of namespace GaudiMathImplementation
 
-} // end of namespace Genfun (due to CLHEP)
+} // namespace Genfun
 
 // ============================================================================
 // The END

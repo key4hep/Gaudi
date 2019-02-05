@@ -5,9 +5,7 @@ from Gaudi.Configuration import *
 
 
 class ExampleIO(ConfigurableUser):
-    __slots__ = {"EvtMax": 1,
-                 "Read": "NONE",
-                 "Write": "NONE"}
+    __slots__ = {"EvtMax": 1, "Read": "NONE", "Write": "NONE"}
     __used_configurables__ = [ApplicationMgr]
 
     def __apply_configuration__(self):
@@ -31,8 +29,7 @@ class ExampleIO(ConfigurableUser):
 
 
 class ExampleCommon(ConfigurableUser):
-    __slots__ = {"OutputLevel": INFO,
-                 "StatusCodeCheck": False}
+    __slots__ = {"OutputLevel": INFO, "StatusCodeCheck": False}
     __used_configurables__ = []
 
     def __apply_configuration__(self):
@@ -41,18 +38,17 @@ class ExampleCommon(ConfigurableUser):
 
 
 class ExampleApplication(ConfigurableUser):
-    __slots__ = {"FullDebug": False,
-                 "TopAlg": [],
-                 }
+    __slots__ = {
+        "FullDebug": False,
+        "TopAlg": [],
+    }
     __used_configurables__ = [ExampleCommon, ApplicationMgr]
 
     def __apply_configuration__(self):
         if self.getProp("FullDebug"):
-            ExampleCommon(OutputLevel=VERBOSE,
-                          StatusCodeCheck=True)
+            ExampleCommon(OutputLevel=VERBOSE, StatusCodeCheck=True)
         else:
-            ExampleCommon(OutputLevel=INFO,
-                          StatusCodeCheck=False)
+            ExampleCommon(OutputLevel=INFO, StatusCodeCheck=False)
         # Propagate the properties to all used configurables
         # In this case the only effect is to set the ApplicationMgr TopAlg.
         self.propagateProperties()
@@ -68,7 +64,5 @@ def PostConfAction():
 
 appendPostConfigAction(PostConfAction)
 
-
-ExampleApplication(TopAlg=["GaudiExamples::TimingAlg/Timing"],
-                   FullDebug=True)
+ExampleApplication(TopAlg=["GaudiExamples::TimingAlg/Timing"], FullDebug=True)
 ExampleIO(EvtMax=10)

@@ -5,8 +5,7 @@
 
 /// Base class with common functionalities shared by few auditor implementations.
 /// @author Marco Clemencic
-class CommonAuditor : public Auditor
-{
+class CommonAuditor : public Auditor {
 public:
   /** Constructor
       @param name    The algorithm object's name
@@ -40,8 +39,7 @@ protected:
   virtual void i_after( CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc ) = 0;
 
   /// Check if we are requested to audit the passed event type.
-  inline bool i_auditEventType( const std::string& evt )
-  {
+  inline bool i_auditEventType( const std::string& evt ) {
     // Note: there is no way to extract from a Property type the type returned by
     // value().
     const std::vector<std::string>& v = m_types.value();
@@ -51,8 +49,7 @@ protected:
   }
 
 private:
-  void deprecated_property( Gaudi::Details::PropertyBase& p )
-  {
+  void deprecated_property( Gaudi::Details::PropertyBase& p ) {
     if ( m_customTypes.size() > 0 ) {
       if ( m_types.size() > 0 ) {
         error() << p.name() << " is deprecated, but both " << m_customTypes.name() << " and " << m_types.name()

@@ -13,8 +13,7 @@ DECLARE_COMPONENT( PartPropExa )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode PartPropExa::initialize()
-{
+StatusCode PartPropExa::initialize() {
 
   if ( service( "PartPropSvc", m_pps ).isFailure() ) {
     error() << "Could not get PartPropSvc" << endmsg;
@@ -44,11 +43,9 @@ StatusCode PartPropExa::execute() { return StatusCode::SUCCESS; }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-namespace HepPDT
-{
+namespace HepPDT {
 
-  CommonParticleData* TestUnknownID::processUnknownID( ParticleID key, const ParticleDataTable& pdt )
-  {
+  CommonParticleData* TestUnknownID::processUnknownID( ParticleID key, const ParticleDataTable& pdt ) {
 
     std::cout << "TestUnknownID: " << key.PDTname() << std::endl;
 
@@ -71,4 +68,4 @@ namespace HepPDT
     }
     return cpd;
   }
-}
+} // namespace HepPDT

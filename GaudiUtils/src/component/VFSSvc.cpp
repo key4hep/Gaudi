@@ -7,8 +7,7 @@
 DECLARE_COMPONENT( VFSSvc )
 
 //------------------------------------------------------------------------------
-StatusCode VFSSvc::initialize()
-{
+StatusCode VFSSvc::initialize() {
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
 
@@ -49,8 +48,7 @@ StatusCode VFSSvc::initialize()
   return sc;
 }
 //------------------------------------------------------------------------------
-StatusCode VFSSvc::finalize()
-{
+StatusCode VFSSvc::finalize() {
   m_urlHandlers.clear(); // clear the map
   m_protocols.clear();
 
@@ -65,8 +63,7 @@ StatusCode VFSSvc::finalize()
   return Service::finalize();
 }
 //------------------------------------------------------------------------------
-std::unique_ptr<std::istream> VFSSvc::open( const std::string& url )
-{
+std::unique_ptr<std::istream> VFSSvc::open( const std::string& url ) {
   // get the url prefix endpos
   auto pos = url.find( "://" );
 
@@ -92,21 +89,18 @@ std::unique_ptr<std::istream> VFSSvc::open( const std::string& url )
   return out;
 }
 //------------------------------------------------------------------------------
-namespace
-{
+namespace {
   /// small helper to select  the first element of a pair
   /// (e.g. the key of a map value type)
   constexpr struct select1st_t {
     template <typename S, typename T>
-    const S& operator()( const std::pair<S, T>& x ) const
-    {
+    const S& operator()( const std::pair<S, T>& x ) const {
       return x.first;
     }
   } select1st{};
-}
+} // namespace
 
-const std::vector<std::string>& VFSSvc::protocols() const
-{
+const std::vector<std::string>& VFSSvc::protocols() const {
   if ( m_protocols.empty() ) {
     // prepare the list of handled protocols
     std::transform( m_urlHandlers.begin(), m_urlHandlers.end(),

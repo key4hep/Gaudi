@@ -12,16 +12,14 @@
 class IRndmGen;
 class IRndmGenSvc;
 
-namespace Rndm
-{
+namespace Rndm {
 
   template <class TYPE>
   class Generator;
 
   /** Parameters for the Gauss random number generation
-  */
-  class GAUDI_API Gauss : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API Gauss : public IRndmGen::Param {
   protected:
     /// Generator is the friend
     friend class Generator<Gauss>;
@@ -44,9 +42,8 @@ namespace Rndm
   };
 
   /** Parameters for the Gauss random number generation
-  */
-  class GAUDI_API Exponential : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API Exponential : public IRndmGen::Param {
   protected:
     /// Mean value of the exponential distribution
     double m_mean;
@@ -63,9 +60,8 @@ namespace Rndm
   };
 
   /** Parameters for the Chi2 distributed random number generation
-  */
-  class GAUDI_API Chi2 : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API Chi2 : public IRndmGen::Param {
     friend class Generator<Chi2>;
 
   protected:
@@ -84,9 +80,8 @@ namespace Rndm
   };
 
   /** Parameters for the BreitWigner distributed random number generation
-  */
-  class GAUDI_API BreitWigner : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API BreitWigner : public IRndmGen::Param {
     friend class Generator<BreitWigner>;
 
   protected:
@@ -107,9 +102,8 @@ namespace Rndm
   };
 
   /** Parameters for the Landau distributed random number generation
-  */
-  class GAUDI_API Landau : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API Landau : public IRndmGen::Param {
     friend class Generator<Landau>;
 
   protected:
@@ -132,8 +126,7 @@ namespace Rndm
   /** Parameters for the BreitWigner distributed random number generation
       with cut off;
   */
-  class GAUDI_API BreitWignerCutOff : public IRndmGen::Param
-  {
+  class GAUDI_API BreitWignerCutOff : public IRndmGen::Param {
     friend class Generator<BreitWignerCutOff>;
 
   protected:
@@ -143,9 +136,7 @@ namespace Rndm
   public:
     /// Standard Constructor
     BreitWignerCutOff( double m, double g, double c )
-        : IRndmGen::Param( IID_IRndmBreitWignerCutOff ), m_mean( m ), m_gamma( g ), m_cut( c )
-    {
-    }
+        : IRndmGen::Param( IID_IRndmBreitWignerCutOff ), m_mean( m ), m_gamma( g ), m_cut( c ) {}
     /// Access mean value of the distribution
     double mean() const { return m_mean; }
     /// Access width of the distribution
@@ -159,9 +150,8 @@ namespace Rndm
   };
 
   /** Parameters for the StudentT distributed random number generation
-  */
-  class GAUDI_API StudentT : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API StudentT : public IRndmGen::Param {
     friend class Generator<StudentT>;
 
   protected:
@@ -180,9 +170,8 @@ namespace Rndm
   };
 
   /** Parameters for the Gamma distributed  random number generation
-  */
-  class GAUDI_API Gamma : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API Gamma : public IRndmGen::Param {
     friend class Generator<Gamma>;
 
   protected:
@@ -207,8 +196,7 @@ namespace Rndm
   /** Parameters for the Poisson distributed random number generation with
    *  a given mean.
    */
-  class GAUDI_API Poisson : public IRndmGen::Param
-  {
+  class GAUDI_API Poisson : public IRndmGen::Param {
     friend class Generator<Poisson>;
 
   protected:
@@ -229,8 +217,7 @@ namespace Rndm
   /** Parameters for the Binomial distributed random number generation.
       The returned values are in fact integers
   */
-  class GAUDI_API Binomial : public IRndmGen::Param
-  {
+  class GAUDI_API Binomial : public IRndmGen::Param {
   protected:
     /// Number of events the binomial destribution corresponds to
     long m_nEvent;
@@ -253,8 +240,7 @@ namespace Rndm
   /** Parameters for the flat random number generation within boundaries
    *  [minimum, maximum]
    */
-  class GAUDI_API Flat : public IRndmGen::Param
-  {
+  class GAUDI_API Flat : public IRndmGen::Param {
   protected:
     /// Lower boundary for random numbers
     double m_minimum;
@@ -275,9 +261,8 @@ namespace Rndm
   };
 
   /** Parameters for the bit value generation: returns values 0 and 1
-  */
-  class GAUDI_API Bit : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API Bit : public IRndmGen::Param {
   public:
     /// Standard Constructor
     Bit() : IRndmGen::Param( IID_IRndmBit ) {}
@@ -303,8 +288,7 @@ namespace Rndm
       if IntType = 1 no interpolation is performed and the result is a
       discrete distribution.
   */
-  class GAUDI_API DefinedPdf : public IRndmGen::Param
-  {
+  class GAUDI_API DefinedPdf : public IRndmGen::Param {
   protected:
     /// Vector containing probability distribution function
     std::vector<double> m_pdf;
@@ -314,9 +298,7 @@ namespace Rndm
   public:
     /// Standard Constructor
     DefinedPdf( const std::vector<double>& pdf, long intpol )
-        : IRndmGen::Param( IID_IRndmDefinedPdf ), m_pdf( pdf ), m_interpolation( intpol )
-    {
-    }
+        : IRndmGen::Param( IID_IRndmDefinedPdf ), m_pdf( pdf ), m_interpolation( intpol ) {}
     /// Access pdf
     std::vector<double>& pdf() { return m_pdf; }
     /// Access interpolation type
@@ -328,9 +310,8 @@ namespace Rndm
   };
 
   /** Parameters for the Gaussian tail number generation
-  */
-  class GAUDI_API GaussianTail : public IRndmGen::Param
-  {
+   */
+  class GAUDI_API GaussianTail : public IRndmGen::Param {
   protected:
     /// Cut on the Gaussian tail distribution
     double m_cut;
@@ -365,8 +346,7 @@ namespace Rndm
         }
       }
   */
-  class GAUDI_API Numbers
-  {
+  class GAUDI_API Numbers {
   protected:
     /// Pointer to random number generator
     SmartIF<IRndmGen> m_generator;
@@ -399,10 +379,9 @@ namespace Rndm
     /// Pop a new number from the buffer
     double shoot() { return m_generator ? m_generator->shoot() : -1; }
     /// Pop a new number from the buffer
-    StatusCode shootArray( std::vector<double>& array, long num, long start = 0 )
-    {
+    StatusCode shootArray( std::vector<double>& array, long num, long start = 0 ) {
       return m_generator ? m_generator->shootArray( array, num, start ) : StatusCode::FAILURE;
     }
   };
-}
+} // namespace Rndm
 #endif // GAUDIKERNEL_RNDMGENGENERATORS_H

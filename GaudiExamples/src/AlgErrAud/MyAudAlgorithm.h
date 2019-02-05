@@ -14,8 +14,7 @@ class IMyAudTool;
 
     @author nobody
 */
-class MyAudAlgorithm : public Algorithm
-{
+class MyAudAlgorithm : public Algorithm {
 public:
   /// Constructor of this form must be provided
   MyAudAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );

@@ -6,23 +6,19 @@
 #include "GaudiKernel/apply.h"
 #include <utility>
 
-namespace Gaudi
-{
-  namespace Functional
-  {
+namespace Gaudi {
+  namespace Functional {
 
     template <typename Signature, typename Traits_ = Traits::useDefaults>
     class Producer;
 
     template <typename... Out, typename Traits_>
-    class Producer<std::tuple<Out...>(), Traits_> : public details::DataHandleMixin<std::tuple<Out...>, void, Traits_>
-    {
+    class Producer<std::tuple<Out...>(), Traits_> : public details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
     public:
       using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final
-      {
+      StatusCode execute() override final {
         try {
           Gaudi::apply(
               [&]( auto&... ohandle ) {
@@ -50,13 +46,11 @@ namespace Gaudi
     };
 
     template <typename Out, typename Traits_>
-    class Producer<Out(), Traits_> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_>
-    {
+    class Producer<Out(), Traits_> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
     public:
       using details::DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final
-      {
+      StatusCode execute() override final {
         try {
           details::put( std::get<0>( this->m_outputs ), details::as_const( *this )() );
         } catch ( GaudiException& e ) {
@@ -69,7 +63,7 @@ namespace Gaudi
       // ... instead, they must implement the following operator
       virtual Out operator()() const = 0;
     };
-  }
-}
+  } // namespace Functional
+} // namespace Gaudi
 
 #endif

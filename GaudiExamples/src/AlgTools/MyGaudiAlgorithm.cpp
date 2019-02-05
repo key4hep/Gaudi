@@ -11,8 +11,7 @@ DECLARE_COMPONENT( MyGaudiAlgorithm )
 
 // Constructor
 //------------------------------------------------------------------------------
-MyGaudiAlgorithm::MyGaudiAlgorithm( const std::string& name, ISvcLocator* ploc ) : GaudiAlgorithm( name, ploc )
-{
+MyGaudiAlgorithm::MyGaudiAlgorithm( const std::string& name, ISvcLocator* ploc ) : GaudiAlgorithm( name, ploc ) {
   // Keep at least one old-style ToolHandle property to test compilation
   declareProperty( "LegacyToolHandle", m_legacyToolHandle );
   declareProperty( "UndefinedToolHandle", m_undefinedToolHandle );
@@ -24,8 +23,7 @@ MyGaudiAlgorithm::MyGaudiAlgorithm( const std::string& name, ISvcLocator* ploc )
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyGaudiAlgorithm::initialize()
-{
+StatusCode MyGaudiAlgorithm::initialize() {
   //------------------------------------------------------------------------------
 
   StatusCode sc = GaudiAlgorithm::initialize();
@@ -68,8 +66,7 @@ StatusCode MyGaudiAlgorithm::initialize()
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyGaudiAlgorithm::execute()
-{
+StatusCode MyGaudiAlgorithm::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
 
@@ -108,9 +105,9 @@ StatusCode MyGaudiAlgorithm::execute()
   // test nonConst enforcement
   const ToolHandle<IMyOtherTool> hc1( m_privateOtherInterface );
 // this should work without any warnings/errors
-#ifdef ALLOW_TOOLHANDLE_NONCONSTNESS
+#  ifdef ALLOW_TOOLHANDLE_NONCONSTNESS
   hc1->doItAgain();
-#endif
+#  endif
   // this should cause a compile time deprecation warning
   hc1.unConst()->doItAgain();
 #endif
@@ -119,8 +116,7 @@ StatusCode MyGaudiAlgorithm::execute()
 }
 
 //------------------------------------------------------------------------------
-StatusCode MyGaudiAlgorithm::finalize()
-{
+StatusCode MyGaudiAlgorithm::finalize() {
   //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
 

@@ -26,8 +26,7 @@
 #include <iterator>
 #include <utility>
 
-namespace details
-{
+namespace details {
 
   template <typename Iterable>
   struct reverse_wrapper {
@@ -35,22 +34,19 @@ namespace details
   };
 
   template <typename T>
-  auto begin( reverse_wrapper<T>& w )
-  {
+  auto begin( reverse_wrapper<T>& w ) {
     using std::rbegin;
     return rbegin( w.iterable );
   }
   template <typename T>
-  auto end( reverse_wrapper<T>& w )
-  {
+  auto end( reverse_wrapper<T>& w ) {
     using std::rend;
     return rend( w.iterable );
   }
-}
+} // namespace details
 
 template <typename T>
-::details::reverse_wrapper<T> reverse( T&& iterable )
-{
+::details::reverse_wrapper<T> reverse( T&& iterable ) {
   return {std::forward<T>( iterable )};
 }
 

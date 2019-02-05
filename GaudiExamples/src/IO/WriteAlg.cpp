@@ -29,20 +29,16 @@ DECLARE_COMPONENT( WriteAlg )
 //--------------------------------------------------------------------
 // Register data leaf
 //--------------------------------------------------------------------
-StatusCode WriteAlg::put( IDataProviderSvc* s, const std::string& path, DataObject* pObj )
-{
+StatusCode WriteAlg::put( IDataProviderSvc* s, const std::string& path, DataObject* pObj ) {
   StatusCode sc = s->registerObject( path, pObj );
-  if ( sc.isFailure() ) {
-    error() << "Unable to register object " << path << endmsg;
-  }
+  if ( sc.isFailure() ) { error() << "Unable to register object " << path << endmsg; }
   return sc;
 }
 
 //--------------------------------------------------------------------
 // Initialize
 //--------------------------------------------------------------------
-StatusCode WriteAlg::initialize()
-{
+StatusCode WriteAlg::initialize() {
   m_recordSvc = service( "FileRecordDataSvc", true );
   if ( !m_recordSvc ) {
     error() << "Unable to retrieve run records service" << endmsg;
@@ -54,8 +50,7 @@ StatusCode WriteAlg::initialize()
 //--------------------------------------------------------------------
 // Finalize
 //--------------------------------------------------------------------
-StatusCode WriteAlg::finalize()
-{
+StatusCode WriteAlg::finalize() {
   Counter* pObj = new Counter();
   pObj->set( 123456 );
   put( m_recordSvc.get(), "/FileRecords/SumCount", pObj );
@@ -67,8 +62,7 @@ StatusCode WriteAlg::finalize()
 //--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
-StatusCode WriteAlg::execute()
-{
+StatusCode WriteAlg::execute() {
   StatusCode sc;
 
   static int evtnum = 0;

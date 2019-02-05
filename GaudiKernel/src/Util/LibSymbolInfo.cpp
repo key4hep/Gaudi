@@ -34,8 +34,7 @@ CLibSymbolInfo::~CLibSymbolInfo() {}
 // Given a library file path name, the function dumps the symbol info into the file
 // pointed to by pFile.
 //=============================================================================
-BOOL CLibSymbolInfo::DumpSymbols( LPTSTR lpszLibPathName, ostream& pFile )
-{
+BOOL CLibSymbolInfo::DumpSymbols( LPTSTR lpszLibPathName, ostream& pFile ) {
   if ( lpszLibPathName == NULL || pFile.bad() ) {
     assert( lpszLibPathName != NULL );
     assert( pFile.good() );
@@ -58,8 +57,7 @@ BOOL CLibSymbolInfo::DumpSymbols( LPTSTR lpszLibPathName, ostream& pFile )
 // Depending on the value specified in <m_bDump>/<m_bGrep> the routine dumps/greps
 // the symbo info.
 //=============================================================================
-BOOL CLibSymbolInfo::Dump( LPTSTR lpszLibPathName, ostream& pFile )
-{
+BOOL CLibSymbolInfo::Dump( LPTSTR lpszLibPathName, ostream& pFile ) {
   string             sBuff;
   MEMORY_MAPPED_FILE libFile( lpszLibPathName );
 
@@ -114,9 +112,7 @@ BOOL CLibSymbolInfo::Dump( LPTSTR lpszLibPathName, ostream& pFile )
     // internal to the linking process
     if ( IsRegularLibSymbol( pszSymbolName ) ) {
       string symbol( pszSymbolName );
-      if ( IsFiltedSymbol( symbol ) ) {
-        pFile << symbol << endl;
-      }
+      if ( IsFiltedSymbol( symbol ) ) { pFile << symbol << endl; }
     }
     // Advanced to the next symbol offset and name.  The MemberOffsets
     // array has fixed length entries, while the symbol names are
@@ -131,8 +127,7 @@ BOOL CLibSymbolInfo::Dump( LPTSTR lpszLibPathName, ostream& pFile )
 // Filters out symbols that are internal to the linking process, and which
 // the programmer never explicitly sees.
 //=============================================================================
-BOOL CLibSymbolInfo::IsRegularLibSymbol( PSTR pszSymbolName )
-{
+BOOL CLibSymbolInfo::IsRegularLibSymbol( PSTR pszSymbolName ) {
   if ( 0 == strncmp( pszSymbolName, "__IMPORT_DESCRIPTOR_", 20 ) ) return FALSE;
 
   if ( 0 == strncmp( pszSymbolName, "__NULL_IMPORT_DESCRIPTOR", 24 ) ) return FALSE;
@@ -144,8 +139,7 @@ BOOL CLibSymbolInfo::IsRegularLibSymbol( PSTR pszSymbolName )
 //=============================================================================
 // Filters out symbols that are not needed....
 //=============================================================================
-BOOL CLibSymbolInfo::IsFiltedSymbol( string& symbolName )
-{
+BOOL CLibSymbolInfo::IsFiltedSymbol( string& symbolName ) {
   if ( symbolName.compare( 0, 2, "__" ) == 0 ) return FALSE;
   if ( symbolName.compare( 0, 3, "??_" ) == 0 && symbolName[3] != '0' ) // Keep 'operator/='  [??_0]
     return FALSE;
@@ -161,8 +155,7 @@ BOOL CLibSymbolInfo::IsFiltedSymbol( string& symbolName )
 //=============================================================================
 // Converts from big endian to little endian numbers.
 //=============================================================================
-DWORD CLibSymbolInfo::ConvertBigEndian( DWORD bigEndian )
-{
+DWORD CLibSymbolInfo::ConvertBigEndian( DWORD bigEndian ) {
   DWORD temp = 0;
 
   temp |= bigEndian >> 24;
@@ -175,8 +168,7 @@ DWORD CLibSymbolInfo::ConvertBigEndian( DWORD bigEndian )
 
 string CLibSymbolInfo::GetLastError() const { return m_strErrorMsg; }
 
-MEMORY_MAPPED_FILE::MEMORY_MAPPED_FILE( PSTR pszFileName )
-{
+MEMORY_MAPPED_FILE::MEMORY_MAPPED_FILE( PSTR pszFileName ) {
 
   //
   // Given a filename, the constructor opens a file handle, creates a file
@@ -218,8 +210,7 @@ MEMORY_MAPPED_FILE::MEMORY_MAPPED_FILE( PSTR pszFileName )
   m_errCode = errMMF_NoError;
 }
 
-MEMORY_MAPPED_FILE::~MEMORY_MAPPED_FILE( void )
-{
+MEMORY_MAPPED_FILE::~MEMORY_MAPPED_FILE( void ) {
   // Clean up everything that was created by the constructor
   if ( m_pMemoryMappedFileBase ) UnmapViewOfFile( m_pMemoryMappedFileBase );
 

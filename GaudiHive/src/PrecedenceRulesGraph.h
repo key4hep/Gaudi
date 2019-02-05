@@ -25,26 +25,22 @@
 #include "IGraphVisitor.h"
 #include <Gaudi/Algorithm.h>
 
-namespace concurrency
-{
+namespace concurrency {
   using Concurrent     = Gaudi::tagged_bool<class Concurrent_tag>;
   using PromptDecision = Gaudi::tagged_bool<class PromptDecision_tag>;
   using ModeOr         = Gaudi::tagged_bool<class ModeOr_tag>;
   using AllPass        = Gaudi::tagged_bool<class AllPass_tag>;
   using Inverted       = Gaudi::tagged_bool<class Inverted_tag>;
-}
+} // namespace concurrency
 
-namespace precedence
-{
+namespace precedence {
   using boost::static_visitor;
 
   // Precedence trace utilities ==============================================
   struct AlgoTraceProps {
     AlgoTraceProps() {}
     AlgoTraceProps( const std::string& name, int index, int rank, double runtime )
-        : m_name( name ), m_index( index ), m_rank( rank ), m_runtime( runtime )
-    {
-    }
+        : m_name( name ), m_index( index ), m_rank( rank ), m_runtime( runtime ) {}
     std::string m_name;
     int         m_index{-1};
     int         m_rank{-1};
@@ -65,9 +61,7 @@ namespace precedence
         , m_algorithm( algo )
         , m_inverted( inverted )
         , m_allPass( allPass )
-        , m_isIOBound( algo->isIOBound() )
-    {
-    }
+        , m_isIOBound( algo->isIOBound() ) {}
 
     std::string m_name{""};
     int         m_nodeIndex{-1};
@@ -94,9 +88,7 @@ namespace precedence
         , m_modePromptDecision( modePromptDecision )
         , m_inverted( isInverted )
         , m_modeOR( modeOR )
-        , m_allPass( allPass )
-    {
-    }
+        , m_allPass( allPass ) {}
 
     std::string m_name;
     uint        m_nodeIndex;
@@ -137,8 +129,7 @@ namespace precedence
   struct GroupMode : static_visitor<std::string> {
     std::string operator()( const AlgoProps& ) const { return ""; }
 
-    std::string operator()( const DecisionHubProps& props ) const
-    {
+    std::string operator()( const DecisionHubProps& props ) const {
       return props.m_modeConcurrent ? "Concurrent" : "Sequential";
     }
 
@@ -156,8 +147,7 @@ namespace precedence
   struct GroupExit : static_visitor<std::string> {
     std::string operator()( const AlgoProps& ) const { return ""; }
 
-    std::string operator()( const DecisionHubProps& props ) const
-    {
+    std::string operator()( const DecisionHubProps& props ) const {
       return props.m_modePromptDecision ? "Early" : "Late";
     }
 
@@ -183,13 +173,11 @@ namespace precedence
   struct CFDecision : static_visitor<std::string> {
     CFDecision( const EventSlot& slot ) : m_slot( slot ) {}
 
-    std::string operator()( const AlgoProps& props ) const
-    {
+    std::string operator()( const AlgoProps& props ) const {
       return std::to_string( m_slot.controlFlowState.at( props.m_nodeIndex ) );
     }
 
-    std::string operator()( const DecisionHubProps& props ) const
-    {
+    std::string operator()( const DecisionHubProps& props ) const {
       return std::to_string( m_slot.controlFlowState.at( props.m_nodeIndex ) );
     }
 
@@ -200,8 +188,7 @@ namespace precedence
 
   struct EntityState : static_visitor<std::string> {
     EntityState( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator, bool conditionsEnabled )
-        : m_slot( slot ), m_conditionsEnabled( conditionsEnabled )
-    {
+        : m_slot( slot ), m_conditionsEnabled( conditionsEnabled ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
       MsgStream            log{msgSvc, "EntityState.Getter"};
 
@@ -225,8 +212,8 @@ namespace precedence
             << " in the TTT dump" << endmsg;
     }
 
-    std::string operator()( const AlgoProps& props ) const
-    { // Returns algorithm's FSM state
+    // Returns algorithm's FSM state
+    std::string operator()( const AlgoProps& props ) const {
       std::ostringstream oss;
       oss << m_slot.algsStates[props.m_algoIndex];
       return oss.str();
@@ -234,8 +221,7 @@ namespace precedence
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
 
-    std::string operator()( const DataProps& props ) const
-    {
+    std::string operator()( const DataProps& props ) const {
       std::string state;
 
       if ( m_whiteboard.isValid() && m_slot.eventContext->valid() )
@@ -245,8 +231,7 @@ namespace precedence
       return state;
     }
 
-    std::string operator()( const CondDataProps& props ) const
-    {
+    std::string operator()( const CondDataProps& props ) const {
       std::string state;
 
       if ( m_condSvc.isValid() && m_slot.eventContext->valid() )
@@ -263,8 +248,7 @@ namespace precedence
   };
 
   struct StartTime : static_visitor<std::string> {
-    StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
-    {
+    StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
       MsgStream            log{msgSvc, "StartTime.Getter"};
 
@@ -276,8 +260,7 @@ namespace precedence
       }
     }
 
-    std::string operator()( const AlgoProps& props ) const
-    {
+    std::string operator()( const AlgoProps& props ) const {
 
       std::string startTime;
 
@@ -305,8 +288,7 @@ namespace precedence
   };
 
   struct EndTime : static_visitor<std::string> {
-    EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
-    {
+    EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
       MsgStream            log{msgSvc, "EndTime.Getter"};
 
@@ -317,8 +299,7 @@ namespace precedence
             << "algorithm completion time to the TTT dumps" << endmsg;
     }
 
-    std::string operator()( const AlgoProps& props ) const
-    {
+    std::string operator()( const AlgoProps& props ) const {
 
       std::string endTime;
 
@@ -346,8 +327,7 @@ namespace precedence
   };
 
   struct Duration : static_visitor<std::string> {
-    Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot )
-    {
+    Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
       MsgStream            log{msgSvc, "Duration.Getter"};
 
@@ -358,8 +338,7 @@ namespace precedence
             << "algorithm's runtimes to the TTT dumps" << endmsg;
     }
 
-    std::string operator()( const AlgoProps& props ) const
-    {
+    std::string operator()( const AlgoProps& props ) const {
 
       std::string time;
 
@@ -404,7 +383,7 @@ namespace precedence
   using PRGraph            = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VariantVertexProps>;
   using PRVertexDesc       = boost::graph_traits<PRGraph>::vertex_descriptor;
 
-} // namespace prules
+} // namespace precedence
 
 struct Cause final {
   enum class source { Root, Task };
@@ -413,26 +392,22 @@ struct Cause final {
   std::string m_sourceName;
 };
 
-namespace concurrency
-{
+namespace concurrency {
   class PrecedenceRulesGraph;
 
-  using precedence::PRVertexDesc;
   using precedence::AlgoProps;
-  using precedence::DecisionHubProps;
-  using precedence::DataProps;
   using precedence::CondDataProps;
+  using precedence::DataProps;
+  using precedence::DecisionHubProps;
+  using precedence::PRVertexDesc;
   using precedence::VariantVertexProps;
 
   // ==========================================================================
-  class ControlFlowNode
-  {
+  class ControlFlowNode {
   public:
     /// Constructor
     ControlFlowNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name )
-        : m_graph( &graph ), m_nodeIndex( nodeIndex ), m_nodeName( name )
-    {
-    }
+        : m_graph( &graph ), m_nodeIndex( nodeIndex ), m_nodeName( name ) {}
     /// Destructor
     virtual ~ControlFlowNode() = default;
 
@@ -454,8 +429,7 @@ namespace concurrency
     std::string  m_nodeName;
   };
 
-  class DecisionNode final : public ControlFlowNode
-  {
+  class DecisionNode final : public ControlFlowNode {
   public:
     /// Constructor
     DecisionNode( PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name,
@@ -466,9 +440,7 @@ namespace concurrency
         , m_modePromptDecision( modePromptDecision )
         , m_modeOR( modeOR )
         , m_allPass( allPass )
-        , m_inverted( isInverted )
-    {
-    }
+        , m_inverted( isInverted ) {}
 
     /// Visitor entry point
     bool accept( IGraphVisitor& visitor ) override;
@@ -503,8 +475,7 @@ namespace concurrency
   // ==========================================================================
   class DataNode;
 
-  class AlgorithmNode final : public ControlFlowNode
-  {
+  class AlgorithmNode final : public ControlFlowNode {
   public:
     /// Constructor
     AlgorithmNode( PrecedenceRulesGraph& graph, Gaudi::Algorithm* algoPtr, unsigned int nodeIndex,
@@ -585,8 +556,7 @@ namespace concurrency
   };
 
   // ==========================================================================
-  class DataNode
-  {
+  class DataNode {
   public:
     /// Constructor
     DataNode( PrecedenceRulesGraph& graph, const DataObjID& path ) : m_graph( &graph ), m_data_object_path( path ) {}
@@ -597,19 +567,16 @@ namespace concurrency
     const DataObjID& getPath() { return m_data_object_path; }
 
     /// Entry point for a visitor
-    virtual bool accept( IGraphVisitor& visitor )
-    {
+    virtual bool accept( IGraphVisitor& visitor ) {
       return visitor.visitEnter( *this ) ? visitor.visit( *this ) : true;
     }
     /// Add relationship to producer AlgorithmNode
-    void addProducerNode( AlgorithmNode* node )
-    {
+    void addProducerNode( AlgorithmNode* node ) {
       if ( std::find( m_producers.begin(), m_producers.end(), node ) == m_producers.end() )
         m_producers.push_back( node );
     }
     /// Add relationship to consumer AlgorithmNode
-    void addConsumerNode( AlgorithmNode* node )
-    {
+    void addConsumerNode( AlgorithmNode* node ) {
       if ( std::find( m_consumers.begin(), m_consumers.end(), node ) == m_consumers.end() )
         m_consumers.push_back( node );
     }
@@ -627,20 +594,16 @@ namespace concurrency
     std::vector<AlgorithmNode*> m_consumers;
   };
 
-  class ConditionNode final : public DataNode
-  {
+  class ConditionNode final : public DataNode {
   public:
     /// Constructor
     ConditionNode( PrecedenceRulesGraph& graph, const DataObjID& path, SmartIF<ICondSvc> condSvc )
-        : DataNode( graph, path ), m_condSvc( condSvc )
-    {
-    }
+        : DataNode( graph, path ), m_condSvc( condSvc ) {}
 
     /// Need to hide the (identical) base method with this one so that
     /// visitEnter(ConditionNode&) and visit(ConditionNode&) are called.
     /// using DataNode::accept; ?
-    bool accept( IGraphVisitor& visitor ) override
-    {
+    bool accept( IGraphVisitor& visitor ) override {
       return visitor.visitEnter( *this ) ? visitor.visit( *this ) : true;
     }
 
@@ -655,12 +618,10 @@ namespace concurrency
     virtual ~IPrecedenceRulesGraph() = default;
   };
 
-  class PrecedenceRulesGraph : public CommonMessaging<IPrecedenceRulesGraph>
-  {
+  class PrecedenceRulesGraph : public CommonMessaging<IPrecedenceRulesGraph> {
   public:
     /// Constructor
-    PrecedenceRulesGraph( const std::string& name, SmartIF<ISvcLocator> svc ) : m_svcLocator( svc ), m_name( name )
-    {
+    PrecedenceRulesGraph( const std::string& name, SmartIF<ISvcLocator> svc ) : m_svcLocator( svc ), m_name( name ) {
       // make sure that CommonMessaging is initialized
       setUpMessaging();
     }
@@ -689,8 +650,7 @@ namespace concurrency
     StatusCode addAlgorithmNode( Gaudi::Algorithm* daughterAlgo, const std::string& parentName, bool inverted,
                                  bool allPass );
     /// Get the AlgorithmNode from by algorithm name using graph index
-    AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const
-    {
+    AlgorithmNode* getAlgorithmNode( const std::string& algoName ) const {
       return m_algoNameToAlgoNodeMap.at( algoName ).get();
     }
     /// Add a node, which aggregates decisions of direct daughter nodes
@@ -710,8 +670,7 @@ namespace concurrency
     ///
     /// Print a string representing the control flow state
     void printState( std::stringstream& output, AlgsExecutionStates& states, const std::vector<int>& node_decisions,
-                     const unsigned int& recursionLevel ) const
-    {
+                     const unsigned int& recursionLevel ) const {
       m_headNode->printState( output, states, node_decisions, recursionLevel );
     }
 
@@ -755,9 +714,9 @@ namespace concurrency
     const std::string            m_name;
 
     /// facilities for algorithm precedence tracing
-    precedence::PrecTrace m_precTrace;
+    precedence::PrecTrace                              m_precTrace;
     std::map<std::string, precedence::AlgoTraceVertex> m_prec_trace_map;
-    bool m_enableAnalysis{false};
+    bool                                               m_enableAnalysis{false};
     /// BGL-based graph of precedence rules
     precedence::PRGraph m_PRGraph;
 

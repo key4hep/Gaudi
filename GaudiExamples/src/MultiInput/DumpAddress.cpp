@@ -11,21 +11,16 @@
 
 #include "MIHelpers.h"
 
-namespace Gaudi
-{
-  namespace Examples
-  {
-    namespace MultiInput
-    {
+namespace Gaudi {
+  namespace Examples {
+    namespace MultiInput {
 
       /// Write the content of the RootAddress of a data object
-      class DumpAddress : public ::Algorithm
-      {
+      class DumpAddress : public ::Algorithm {
       public:
         using Algorithm::Algorithm;
 
-        StatusCode initialize() override
-        {
+        StatusCode initialize() override {
           StatusCode sc = Algorithm::initialize();
           if ( sc.isFailure() ) return sc;
           m_outputFile.open( m_output.value().c_str() );
@@ -33,8 +28,7 @@ namespace Gaudi
           return sc;
         }
 
-        StatusCode execute() override
-        {
+        StatusCode execute() override {
           MsgStream                log( msgSvc() );
           SmartDataPtr<DataObject> obj( eventSvc(), m_path );
           if ( obj ) {
@@ -53,8 +47,7 @@ namespace Gaudi
           return StatusCode::SUCCESS;
         }
 
-        StatusCode finalize() override
-        {
+        StatusCode finalize() override {
           m_outputFile.close();
           return Algorithm::finalize();
         }
@@ -66,6 +59,6 @@ namespace Gaudi
         long                         m_count = 0;
       };
       DECLARE_COMPONENT( DumpAddress )
-    }
-  }
-}
+    } // namespace MultiInput
+  }   // namespace Examples
+} // namespace Gaudi

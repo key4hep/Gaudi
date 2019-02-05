@@ -14,8 +14,7 @@
 
 #include <string>
 
-class RootFileHandler
-{
+class RootFileHandler {
 
 public:
   RootFileHandler( IMessageSvc*, const std::string& userProxy, const std::string& certDir );
@@ -23,7 +22,7 @@ public:
   Io::open_t openRootFile( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
                            void*& ptr );
 
-  Io::close_t closeRootFile( void* ptr );
+  Io::close_t  closeRootFile( void* ptr );
   Io::reopen_t reopenRootFile( void*, const Io::IoFlags& );
 
   bool setupSSL();

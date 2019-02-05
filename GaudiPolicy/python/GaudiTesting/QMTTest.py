@@ -6,7 +6,6 @@ import sys
 
 
 class QMTTest(BaseTest):
-
     def __init__(self, path=None):
         BaseTest.__init__(self)
         self.validator = ''
@@ -22,9 +21,9 @@ class QMTTest(BaseTest):
         import xml.etree.ElementTree as ET
         log.debug('parsing %s', path)
 
-        self.name = '.'.join(os.path.relpath(path, self.basedir)
-                             .replace('.qmt', '').replace('.qms', '')
-                             .split(os.sep))
+        self.name = '.'.join(
+            os.path.relpath(path, self.basedir).replace('.qmt', '').replace(
+                '.qms', '').split(os.sep))
 
         tree = ET.parse(path)
         for child in tree.getroot():
@@ -33,11 +32,14 @@ class QMTTest(BaseTest):
                 log.debug('setting %s', name)
                 value = child[0]
                 if name in ('args', 'unsupported_platforms'):
-                    setattr(self, name, [el.text
-                                         for el in value.findall('text')])
+                    setattr(self, name,
+                            [el.text for el in value.findall('text')])
                 elif name == 'environment':
-                    setattr(self, name, dict(el.text.split('=', 1)
-                                             for el in value.findall('text')))
+                    setattr(
+                        self, name,
+                        dict(
+                            el.text.split('=', 1)
+                            for el in value.findall('text')))
                 else:
                     data = value.text
                     if data is not None:
@@ -47,6 +49,7 @@ class QMTTest(BaseTest):
 
     def ValidateOutput(self, stdout, stderr, result):
         if self.validator:
+
             class CallWrapper(object):
                 """
                     Small wrapper class to dynamically bind some default arguments
@@ -79,40 +82,54 @@ class QMTTest(BaseTest):
             # local names to be exposed in the script
             stdout_ref = self._expandReferenceFileName(self.reference)
             stderr_ref = self._expandReferenceFileName(self.error_reference)
-            exported_symbols = {"self": self,
-                                "stdout": stdout,
-                                "stderr": stderr,
-                                "result": result,
-                                "causes": self.causes,
-                                "reference": stdout_ref,
-                                "error_reference": stderr_ref,
-                                "findReferenceBlock":
-                                    CallWrapper(self.findReferenceBlock,
-                                                {"stdout": stdout,
-                                                 "result": result,
-                                                 "causes": self.causes}),
-                                "validateWithReference":
-                                    CallWrapper(self.validateWithReference,
-                                                {"stdout": stdout,
-                                                 "stderr": stderr,
-                                                 "result": result,
-                                                 "causes": self.causes}),
-                                "countErrorLines":
-                                    CallWrapper(self.countErrorLines,
-                                                {"stdout": stdout,
-                                                 "result": result,
-                                                 "causes": self.causes}),
-                                "checkTTreesSummaries":
-                                    CallWrapper(self.CheckTTreesSummaries,
-                                                {"stdout": stdout,
-                                                 "result": result,
-                                                 "causes": self.causes}),
-                                "checkHistosSummaries":
-                                    CallWrapper(self.CheckHistosSummaries,
-                                                {"stdout": stdout,
-                                                 "result": result,
-                                                 "causes": self.causes})
-                                }
+            exported_symbols = {
+                "self":
+                self,
+                "stdout":
+                stdout,
+                "stderr":
+                stderr,
+                "result":
+                result,
+                "causes":
+                self.causes,
+                "reference":
+                stdout_ref,
+                "error_reference":
+                stderr_ref,
+                "findReferenceBlock":
+                CallWrapper(self.findReferenceBlock, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": self.causes
+                }),
+                "validateWithReference":
+                CallWrapper(
+                    self.validateWithReference, {
+                        "stdout": stdout,
+                        "stderr": stderr,
+                        "result": result,
+                        "causes": self.causes
+                    }),
+                "countErrorLines":
+                CallWrapper(self.countErrorLines, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": self.causes
+                }),
+                "checkTTreesSummaries":
+                CallWrapper(self.CheckTTreesSummaries, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": self.causes
+                }),
+                "checkHistosSummaries":
+                CallWrapper(self.CheckHistosSummaries, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": self.causes
+                })
+            }
             # print self.validator
             exec self.validator in globals(), exported_symbols
             return result, self.causes

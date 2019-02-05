@@ -6,17 +6,15 @@
 #include <GaudiKernel/DataObject.h>
 #include <TH3D.h>
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /**@class Histogram3D
-    *
-    * AIDA implementation for 3 D histograms using ROOT THD2
-    *
-    * @author  M.Frank
-    */
-  class GAUDI_API Histogram3D : public DataObject, public Generic3D<AIDA::IHistogram3D, TH3D>
-  {
+   *
+   * AIDA implementation for 3 D histograms using ROOT THD2
+   *
+   * @author  M.Frank
+   */
+  class GAUDI_API Histogram3D : public DataObject, public Generic3D<AIDA::IHistogram3D, TH3D> {
   public:
     /// Standard Constructor
     Histogram3D();
@@ -49,6 +47,6 @@ namespace Gaudi
   private:
     std::mutex m_fillSerialization;
   };
-}
+} // namespace Gaudi
 
 #endif

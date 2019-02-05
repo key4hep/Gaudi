@@ -5,20 +5,19 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 /** @class RecordOutputStream
-  *
-  * Simple class that adds an entry to the Transient Event Store to record that
-  * the processing flow triggered its execution.
-  *
-  * The main use case is to replace OutputStream instances appearing in the
-  * normal processing flow of workers in GaudiMP jobs. The information is then
-  * passed to the writer process where an instance of @c ReplayOutputStream will
-  * trigger the actual writing.
-  *
-  * @author Marco Clemencic
-  * @date 30/08/2013
-  */
-class RecordOutputStream : public GaudiAlgorithm
-{
+ *
+ * Simple class that adds an entry to the Transient Event Store to record that
+ * the processing flow triggered its execution.
+ *
+ * The main use case is to replace OutputStream instances appearing in the
+ * normal processing flow of workers in GaudiMP jobs. The information is then
+ * passed to the writer process where an instance of @c ReplayOutputStream will
+ * trigger the actual writing.
+ *
+ * @author Marco Clemencic
+ * @date 30/08/2013
+ */
+class RecordOutputStream : public GaudiAlgorithm {
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
 

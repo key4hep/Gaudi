@@ -13,8 +13,7 @@ DECLARE_COMPONENT( RecordOutputStream )
 // ============================================================================
 // Initialization
 // ============================================================================
-StatusCode RecordOutputStream::initialize()
-{
+StatusCode RecordOutputStream::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;              // error printed already by GaudiAlgorithm
 
@@ -32,8 +31,7 @@ StatusCode RecordOutputStream::initialize()
 // ============================================================================
 // Main execution
 // ============================================================================
-StatusCode RecordOutputStream::execute()
-{
+StatusCode RecordOutputStream::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   getOrCreate<DataObject, DataObject>( m_flagLocation, false );
@@ -49,8 +47,7 @@ StatusCode RecordOutputStream::execute()
 // ============================================================================
 // Finalize
 // ============================================================================
-StatusCode RecordOutputStream::finalize()
-{
+StatusCode RecordOutputStream::finalize() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 
   return GaudiAlgorithm::finalize(); // must be called after all other actions

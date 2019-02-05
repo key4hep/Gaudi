@@ -8,8 +8,7 @@ applied_order = []
 
 
 class CommonConf(ConfigurableUser):
-    __slots__ = {"Property1": 10,
-                 "Property2": 10}
+    __slots__ = {"Property1": 10, "Property2": 10}
 
     def __apply_configuration__(self):
         global applied_order
@@ -39,6 +38,5 @@ if applied_order != expected_order:
     import sys
     sys.stderr.write(("Error: wrong order of apply!\n"
                       "\texpected %r\n"
-                      "\tfound %r\n")
-                     % (expected_order, applied_order))
+                      "\tfound %r\n") % (expected_order, applied_order))
     sys.exit(1)

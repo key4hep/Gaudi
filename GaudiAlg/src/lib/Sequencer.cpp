@@ -14,8 +14,7 @@
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-StatusCode Sequencer::initialize()
-{
+StatusCode Sequencer::initialize() {
   auto is_good = decodeMemberNames();
   if ( !is_good ) {
     error() << "Unable to configure one or more sequencer members " << endmsg;
@@ -45,24 +44,20 @@ StatusCode Sequencer::initialize()
   return is_good;
 }
 
-StatusCode Sequencer::reinitialize()
-{
+StatusCode Sequencer::reinitialize() {
   // Bypass the loop if this sequencer is disabled
   if ( isEnabled() ) {
     // Loop over all branch members calling their reinitialize functions
     // if they are not disabled.
     for ( auto& alg : branchAlgorithms() ) {
-      if ( alg->isEnabled() ) {
-        alg->reinitialize().ignore();
-      }
+      if ( alg->isEnabled() ) { alg->reinitialize().ignore(); }
     }
     return Sequence::reinitialize();
   }
   return StatusCode::SUCCESS;
 }
 
-StatusCode Sequencer::execute( const EventContext& ctx ) const
-{
+StatusCode Sequencer::execute( const EventContext& ctx ) const {
   StatusCode result = StatusCode::SUCCESS;
   ON_DEBUG   debug() << name() << " Sequencer::execute()" << endmsg;
 
@@ -107,21 +102,17 @@ StatusCode Sequencer::execute( const EventContext& ctx ) const
   return result;
 }
 
-StatusCode Sequencer::finalize()
-{
+StatusCode Sequencer::finalize() {
   // Loop over all branch members calling their finalize functions
   // if they are not disabled. Note that the Sequence::finalize
   // function already does this for the main members.
   for ( auto& alg : branchAlgorithms() ) {
-    if ( alg->sysFinalize().isFailure() ) {
-      error() << "Unable to finalize Algorithm " << alg->name() << endmsg;
-    }
+    if ( alg->sysFinalize().isFailure() ) { error() << "Unable to finalize Algorithm " << alg->name() << endmsg; }
   }
   return Sequence::finalize();
 }
 
-StatusCode Sequencer::start()
-{
+StatusCode Sequencer::start() {
   auto is_good = Sequence::start();
   if ( !is_good ) return is_good;
 
@@ -137,26 +128,21 @@ StatusCode Sequencer::start()
   return is_good;
 }
 
-StatusCode Sequencer::stop()
-{
+StatusCode Sequencer::stop() {
   // Loop over all branch members calling their finalize functions
   // if they are not disabled.
   for ( auto& alg : branchAlgorithms() ) {
-    if ( alg->sysStop().isFailure() ) {
-      error() << "Unable to stop Algorithm " << alg->name() << endmsg;
-    }
+    if ( alg->sysStop().isFailure() ) { error() << "Unable to stop Algorithm " << alg->name() << endmsg; }
   }
   return Sequence::stop();
 }
 
-bool Sequencer::branchFilterPassed( const EventContext& ctx ) const
-{
+bool Sequencer::branchFilterPassed( const EventContext& ctx ) const {
   std::lock_guard<std::mutex> _{m_branchFilterMutex};
   return m_branchFilterPassed[ctx.slot()];
 }
 
-void Sequencer::setBranchFilterPassed( const EventContext& ctx, bool state ) const
-{
+void Sequencer::setBranchFilterPassed( const EventContext& ctx, bool state ) const {
   std::lock_guard<std::mutex> _{m_branchFilterMutex};
   m_branchFilterPassed[ctx.slot()] = state;
 }
@@ -165,19 +151,17 @@ bool Sequencer::isStopOverride() const { return m_stopOverride.value(); }
 
 StatusCode Sequencer::append( Gaudi::Algorithm* pAlgorithm ) { return append( pAlgorithm, *subAlgorithms() ); }
 
-StatusCode Sequencer::appendToBranch( Gaudi::Algorithm* pAlgorithm )
-{
+StatusCode Sequencer::appendToBranch( Gaudi::Algorithm* pAlgorithm ) {
   return append( pAlgorithm, branchAlgorithms() );
 }
 
-StatusCode Sequencer::createAndAppend( const std::string& type, const std::string& name, Gaudi::Algorithm*& pAlgorithm )
-{
+StatusCode Sequencer::createAndAppend( const std::string& type, const std::string& name,
+                                       Gaudi::Algorithm*& pAlgorithm ) {
   return createAndAppend( type, name, pAlgorithm, *subAlgorithms() );
 }
 
 StatusCode Sequencer::createAndAppendToBranch( const std::string& type, const std::string& name,
-                                               Gaudi::Algorithm*& pAlgorithm )
-{
+                                               Gaudi::Algorithm*& pAlgorithm ) {
   return createAndAppend( type, name, pAlgorithm, branchAlgorithms() );
 }
 
@@ -185,8 +169,7 @@ StatusCode Sequencer::remove( Gaudi::Algorithm* pAlgorithm ) { return remove( pA
 
 StatusCode Sequencer::remove( const std::string& algname ) { return remove( algname, *subAlgorithms() ); }
 
-StatusCode Sequencer::removeFromBranch( Gaudi::Algorithm* pAlgorithm )
-{
+StatusCode Sequencer::removeFromBranch( Gaudi::Algorithm* pAlgorithm ) {
   return removeFromBranch( pAlgorithm->name() );
 }
 
@@ -196,14 +179,12 @@ const std::vector<Gaudi::Algorithm*>& Sequencer::branchAlgorithms() const { retu
 
 std::vector<Gaudi::Algorithm*>& Sequencer::branchAlgorithms() { return m_branchAlgs; }
 
-StatusCode Sequencer::decodeMemberNames()
-{
+StatusCode Sequencer::decodeMemberNames() {
   // Decode the membership list
   return decodeNames( m_names, *subAlgorithms(), m_isInverted );
 }
 
-StatusCode Sequencer::decodeBranchMemberNames()
-{
+StatusCode Sequencer::decodeBranchMemberNames() {
   // Decode the branch membership list
   return decodeNames( m_branchNames, branchAlgorithms(), m_isBranchInverted );
 }
@@ -212,8 +193,7 @@ StatusCode Sequencer::decodeBranchMemberNames()
  ** Protected Member Functions
  **/
 
-StatusCode Sequencer::append( Gaudi::Algorithm* pAlgorithm, std::vector<Gaudi::Algorithm*>& theAlgs )
-{
+StatusCode Sequencer::append( Gaudi::Algorithm* pAlgorithm, std::vector<Gaudi::Algorithm*>& theAlgs ) {
   // Check that the specified algorithm doesn't already exist in the membership list
   if ( std::find( std::begin( theAlgs ), std::end( theAlgs ), pAlgorithm ) != std::end( theAlgs ) ) {
     return StatusCode::FAILURE;
@@ -224,8 +204,7 @@ StatusCode Sequencer::append( Gaudi::Algorithm* pAlgorithm, std::vector<Gaudi::A
 }
 
 StatusCode Sequencer::createAndAppend( const std::string& type, const std::string& algName,
-                                       Gaudi::Algorithm*& pAlgorithm, std::vector<Gaudi::Algorithm*>& theAlgs )
-{
+                                       Gaudi::Algorithm*& pAlgorithm, std::vector<Gaudi::Algorithm*>& theAlgs ) {
   auto theAlgMgr = serviceLocator()->service<IAlgManager>( "ApplicationMgr" );
   if ( !theAlgMgr ) return StatusCode::FAILURE;
 
@@ -245,8 +224,7 @@ StatusCode Sequencer::createAndAppend( const std::string& type, const std::strin
 }
 
 StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& theNames,
-                                   std::vector<Gaudi::Algorithm*>& theAlgs, std::vector<bool>& theLogic )
-{
+                                   std::vector<Gaudi::Algorithm*>& theAlgs, std::vector<bool>& theLogic ) {
   StatusCode result;
   auto       theAlgMgr = serviceLocator()->service<IAlgManager>( "ApplicationMgr" );
   if ( theAlgMgr ) {
@@ -348,8 +326,7 @@ StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& th
 
 StatusCode Sequencer::execute( const EventContext& ctx, const std::vector<Gaudi::Algorithm*>& theAlgs,
                                const std::vector<bool>& theLogic, Gaudi::Algorithm*& lastAlgorithm,
-                               std::size_t first ) const
-{
+                               std::size_t first ) const {
   StatusCode result = StatusCode::SUCCESS;
 
   auto& state = execState( ctx );
@@ -369,8 +346,8 @@ StatusCode Sequencer::execute( const EventContext& ctx, const std::vector<Gaudi:
 
       // Take the filter passed status of this algorithm as my own status.
       // Note that we take into account inverted logic.
-      bool passed              = lastAlgorithm->execState( ctx ).filterPassed();
-      bool isInverted          = theLogic[i];
+      bool passed     = lastAlgorithm->execState( ctx ).filterPassed();
+      bool isInverted = theLogic[i];
       if ( isInverted ) passed = !passed;
       state.setFilterPassed( passed );
 
@@ -387,8 +364,7 @@ StatusCode Sequencer::execute( const EventContext& ctx, const std::vector<Gaudi:
   return result;
 }
 
-StatusCode Sequencer::executeMember( Gaudi::Algorithm* theAlgorithm, const EventContext& context ) const
-{
+StatusCode Sequencer::executeMember( Gaudi::Algorithm* theAlgorithm, const EventContext& context ) const {
   StatusCode result = StatusCode::SUCCESS;
   if ( theAlgorithm->isEnabled() ) {
     if ( theAlgorithm->execState( context ).state() != AlgExecState::State::Done ) {
@@ -398,8 +374,7 @@ StatusCode Sequencer::executeMember( Gaudi::Algorithm* theAlgorithm, const Event
   return result;
 }
 
-StatusCode Sequencer::remove( const std::string& algname, std::vector<Gaudi::Algorithm*>& theAlgs )
-{
+StatusCode Sequencer::remove( const std::string& algname, std::vector<Gaudi::Algorithm*>& theAlgs ) {
   StatusCode result = StatusCode::FAILURE;
 
   // Test that the algorithm exists in the member list
@@ -416,8 +391,7 @@ StatusCode Sequencer::remove( const std::string& algname, std::vector<Gaudi::Alg
   return result;
 }
 
-std::ostream& Sequencer::toControlFlowExpression( std::ostream& os ) const
-{
+std::ostream& Sequencer::toControlFlowExpression( std::ostream& os ) const {
   auto& theAlgs = *subAlgorithms();
   if ( theAlgs.empty() ) return os << "CFTrue";
 

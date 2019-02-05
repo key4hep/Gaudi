@@ -17,8 +17,7 @@ DECLARE_COMPONENT( CallgrindProfile )
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode CallgrindProfile::execute()
-{
+StatusCode CallgrindProfile::execute() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
@@ -59,8 +58,7 @@ StatusCode CallgrindProfile::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode CallgrindProfile::finalize()
-{
+StatusCode CallgrindProfile::finalize() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Finalize" << endmsg;
 

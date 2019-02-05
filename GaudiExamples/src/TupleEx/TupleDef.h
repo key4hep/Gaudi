@@ -31,8 +31,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date   2005-11-29
  */
-namespace TupleExample
-{
+namespace TupleExample {
   typedef std::pair<double, double> Dublet;
   typedef std::pair<Dublet, double> Triplet;
 
@@ -61,14 +60,12 @@ namespace TupleExample
 // define corresponding partial specializations:
 // ============================================================================
 template <>
-inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColumn<TupleExample::Dublet>& item )
-{
+inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColumn<TupleExample::Dublet>& item ) {
   return TupleExample::fillNTuple( tuple, item.name(), item.value() );
 }
 // ============================================================================
 template <>
-inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColumn<TupleExample::Triplet>& item )
-{
+inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColumn<TupleExample::Triplet>& item ) {
   return TupleExample::fillNTuple( tuple, item.name(), item.value() );
 }
 // ============================================================================
@@ -77,4 +74,3 @@ inline Tuples::Tuple& operator<<( Tuples::Tuple& tuple, const Tuples::TupleColum
 // The END
 // ============================================================================
 #endif // TUPLEEX_TUPLEDEF_H
-// ============================================================================

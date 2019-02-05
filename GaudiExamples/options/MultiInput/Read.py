@@ -10,12 +10,13 @@ from Configurables import Gaudi__Examples__MultiInput__ReadAlg as ReadAlg
 GaudiPersistency()
 esel = EventSelector()
 esel.Input = [
-    "DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
+    "DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"
+]
 FileCatalog(Catalogs=["xmlcatalog_file:MultiInput.xml"])
 # Algorithms
-evtAlgs = GaudiSequencer("EventAlgs",
-                         Members=[ReadAlg(AddressesFile='addresses.txt',
-                                          OutputLevel=DEBUG)])
+evtAlgs = GaudiSequencer(
+    "EventAlgs",
+    Members=[ReadAlg(AddressesFile='addresses.txt', OutputLevel=DEBUG)])
 
 # Application setup
 app = ApplicationMgr()

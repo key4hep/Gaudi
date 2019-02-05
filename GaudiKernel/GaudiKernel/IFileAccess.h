@@ -15,8 +15,7 @@
  * @author Marco Clemencic
  * @date   2008-01-18
  */
-class GAUDI_API IFileAccess : virtual public IInterface
-{
+class GAUDI_API IFileAccess : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IFileAccess, 3, 0 );

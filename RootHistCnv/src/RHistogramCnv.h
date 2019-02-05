@@ -13,38 +13,30 @@
 #include "TArray.h"
 #include <memory>
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   /** @class RHistogramCnv RHistogramCnv.h RHistogramCnv.h
-    *
-    * Generic converter to save/read AIDA_ROOT histograms using ROOT.
-    * This converter shortcuts the AIDA binding and takes advantage
-    * of the underlying implementation of transient histograms using
-    * ROOT.
-    *
-    * Note:
-    * THxY::Copy cannot be used - only THxY::Add !
-    *
-    * @author Markus Frank
-    */
+   *
+   * Generic converter to save/read AIDA_ROOT histograms using ROOT.
+   * This converter shortcuts the AIDA binding and takes advantage
+   * of the underlying implementation of transient histograms using
+   * ROOT.
+   *
+   * Note:
+   * THxY::Copy cannot be used - only THxY::Add !
+   *
+   * @author Markus Frank
+   */
   template <typename T, typename S, typename Q>
-  class RHistogramCnv : public RConverter
-  {
+  class RHistogramCnv : public RConverter {
     template <typename CLASS>
-    class TTH
-    {
+    class TTH {
     public:
       template <typename INPUT>
-      TTH( INPUT* i ) : m_c( dynamic_cast<CLASS*>( i ) )
-      {
-      }
+      TTH( INPUT* i ) : m_c( dynamic_cast<CLASS*>( i ) ) {}
       template <typename INPUT>
-      bool CopyH( INPUT& i )
-      {
-        if ( m_c ) {
-          m_c->Copy( i );
-        }
+      bool CopyH( INPUT& i ) {
+        if ( m_c ) { m_c->Copy( i ); }
         return m_c != nullptr;
       }
 
@@ -54,8 +46,7 @@ namespace RootHistCnv
 
   public:
     /// Create the transient representation of an object.
-    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override
-    {
+    StatusCode createObj( IOpaqueAddress* pAddr, DataObject*& refpObj ) override {
       refpObj           = DataObjFactory::create( objType() ).release();
       RootObjAddress* r = dynamic_cast<RootObjAddress*>( pAddr );
       Q*              h = dynamic_cast<Q*>( refpObj );
@@ -83,8 +74,7 @@ namespace RootHistCnv
     /// Update the transient object from the other representation.
     StatusCode updateObj( IOpaqueAddress* /* pAddr */, DataObject* /* pObj */ ) override { return StatusCode::SUCCESS; }
     /// Create the persistent representation of the histogram object.
-    TObject* createPersistent( DataObject* pObj ) override
-    {
+    TObject* createPersistent( DataObject* pObj ) override {
       auto h = dynamic_cast<Q*>( pObj );
       if ( h ) {
         auto r = dynamic_cast<T*>( h->representation() );

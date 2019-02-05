@@ -12,8 +12,7 @@
  *
  * @author Charles Leggett
  */
-class GAUDI_API INamedInterface : virtual public IInterface
-{
+class GAUDI_API INamedInterface : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( INamedInterface, 1, 0 );

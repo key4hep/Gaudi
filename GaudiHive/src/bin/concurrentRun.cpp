@@ -13,8 +13,7 @@
 using namespace boost::program_options;
 
 //-----------------------------------------------------------------------------
-int main( int argc, char** argv )
-{
+int main( int argc, char** argv ) {
   // Declare the command line options and read them in
   options_description desc( "Allowed options" );
   desc.add_options()( "help,h", "produce help message" )( "config", value<std::string>(),
@@ -57,9 +56,7 @@ int main( int argc, char** argv )
   }
 
   std::string postAction;
-  if ( 0 != vm.count( "post-option" ) ) {
-    postAction = vm["post-option"].as<std::string>();
-  }
+  if ( 0 != vm.count( "post-option" ) ) { postAction = vm["post-option"].as<std::string>(); }
   // end of options handling
 
   IInterface*        iface = Gaudi::createApplicationMgr();

@@ -20,9 +20,8 @@ DECLARE_COMPONENT( IOBoundAlgSchedulerSvc )
 /**
  * Here, among some "bureaucracy" operations, the scheduler is activated,
  * executing the activate() function in a new thread.
-**/
-StatusCode IOBoundAlgSchedulerSvc::initialize()
-{
+ **/
+StatusCode IOBoundAlgSchedulerSvc::initialize() {
 
   // Initialise mother class (read properties, ...)
   StatusCode sc( Service::initialize() );
@@ -38,9 +37,8 @@ StatusCode IOBoundAlgSchedulerSvc::initialize()
 
 /**
  * Here the scheduler is deactivated and the thread joined.
-**/
-StatusCode IOBoundAlgSchedulerSvc::finalize()
-{
+ **/
+StatusCode IOBoundAlgSchedulerSvc::finalize() {
 
   StatusCode sc( Service::finalize() );
   if ( !sc.isSuccess() ) warning() << "Base class could not be finalized" << endmsg;
@@ -60,8 +58,7 @@ StatusCode IOBoundAlgSchedulerSvc::finalize()
  * queue is not empty. This will guarantee that all actions are executed and
  * a stall is not created.
  **/
-void IOBoundAlgSchedulerSvc::activate()
-{
+void IOBoundAlgSchedulerSvc::activate() {
 
   // Now it's running
   m_isActive = true;
@@ -87,8 +84,7 @@ void IOBoundAlgSchedulerSvc::activate()
  *  2) Flip the status flag m_isActive to false
  * This second action is the last one to be executed by the scheduler.
  */
-StatusCode IOBoundAlgSchedulerSvc::deactivate()
-{
+StatusCode IOBoundAlgSchedulerSvc::deactivate() {
 
   if ( m_isActive ) {
     // Drain the scheduler
@@ -105,8 +101,7 @@ StatusCode IOBoundAlgSchedulerSvc::deactivate()
   return StatusCode::SUCCESS;
 }
 
-StatusCode IOBoundAlgSchedulerSvc::push( IAlgTask& task )
-{
+StatusCode IOBoundAlgSchedulerSvc::push( IAlgTask& task ) {
 
   // the temporary lambda should be moved into the queue in here
   auto actionn = [&]() {

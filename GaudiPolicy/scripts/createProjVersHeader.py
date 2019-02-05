@@ -13,8 +13,8 @@ plain_ver_style = "(?P<maj_ver>[0-9]+)\.(?P<min_ver>[0-9]+)(?:\.(?P<pat_ver>[0-9
 def main():
     parser = OptionParser(
         usage="ERROR: Usage %prog <project> <version> <outputfile>")
-    parser.add_option("-q", "--quiet", action="store_true",
-                      help="Do not print messages.")
+    parser.add_option(
+        "-q", "--quiet", action="store_true", help="Do not print messages.")
     opts, args = parser.parse_args()
     if len(args) != 3:
         parser.error("wrong number of arguments")
@@ -52,7 +52,12 @@ def main():
 #define %(proj)s_PATCH_VERSION %(pat)d
 #define %(proj)s_VERSION CALC_GAUDI_VERSION(%(proj)s_MAJOR_VERSION,%(proj)s_MINOR_VERSION)
 #endif
-""" % {'proj': project.upper(), 'min': minver, 'maj': majver, 'pat': patver}
+""" % {
+        'proj': project.upper(),
+        'min': minver,
+        'maj': majver,
+        'pat': patver
+    }
 
     # Get the current content of the destination file (if any)
     try:

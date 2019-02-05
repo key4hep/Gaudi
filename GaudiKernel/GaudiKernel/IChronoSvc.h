@@ -28,8 +28,7 @@ class ChronoEntity;
  *  @date December 1, 1999
  *  @date 2007-07-08
  */
-class GAUDI_API IChronoSvc : virtual public IInterface
-{
+class GAUDI_API IChronoSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IChronoSvc, 3, 0 );
@@ -90,4 +89,3 @@ public:
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_ICHRONOSVC_H
-// ============================================================================

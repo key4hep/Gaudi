@@ -20,8 +20,7 @@ DECLARE_COMPONENT( HistoTimingAlg )
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode HistoTimingAlg::initialize()
-{
+StatusCode HistoTimingAlg::initialize() {
   // must be called first
   const StatusCode sc = GaudiHistoAlg::initialize();
   if ( sc.isFailure() ) return sc;
@@ -45,8 +44,7 @@ StatusCode HistoTimingAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode HistoTimingAlg::execute()
-{
+StatusCode HistoTimingAlg::execute() {
 
   for ( unsigned int iT = 0; iT < m_nTracks; ++iT ) {
 

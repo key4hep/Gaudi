@@ -22,8 +22,7 @@
     Author:  M.Frank
     Version: 1.0
 */
-class EvtCollectionStream : public Algorithm
-{
+class EvtCollectionStream : public Algorithm {
 protected:
   Gaudi::Property<std::vector<std::string>> m_itemNames{this, "ItemList", {}, "vector of item names"};
   Gaudi::Property<std::string>              m_storeName{this, "EvtDataSvc", "TagCollectionSvc",

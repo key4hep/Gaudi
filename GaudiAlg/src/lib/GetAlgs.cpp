@@ -28,23 +28,17 @@
  *  @date 2007-09-07
  */
 // ============================================================================
-namespace
-{
+namespace {
   template <class TYPE>
-  TYPE* getAlg( const IAlgContextSvc* svc )
-  {
-    if ( !svc ) {
-      return nullptr;
-    } // RETURN
+  TYPE* getAlg( const IAlgContextSvc* svc ) {
+    if ( !svc ) { return nullptr; } // RETURN
     const auto& algs = svc->algorithms();
     auto        it   = std::find_if( algs.rbegin(), algs.rend(), Gaudi::Utils::AlgTypeSelector<TYPE>{} );
-    if ( algs.rend() == it ) {
-      return nullptr;
-    } // RETURN
+    if ( algs.rend() == it ) { return nullptr; } // RETURN
     IAlgorithm* alg = *it;
     return dynamic_cast<TYPE*>( alg ); // RETURN
   }
-}
+} // namespace
 // ============================================================================
 /*  simple function to extract the last active
  *   GaudiAlgorithm from the context
@@ -152,11 +146,8 @@ Sequencer* Gaudi::Utils::getSequencerAlg( const IAlgContextSvc* svc ) { return g
  *  @date 2007-09-07
  */
 // ========================================================================
-IAlgorithm* Gaudi::Utils::getSequencer( const IAlgContextSvc* svc )
-{
-  if ( !svc ) {
-    return nullptr;
-  } // RETURN
+IAlgorithm* Gaudi::Utils::getSequencer( const IAlgContextSvc* svc ) {
+  if ( !svc ) { return nullptr; } // RETURN
   //
   AlgTypeSelector<GaudiSequencer> sel1;
   AlgTypeSelector<Sequencer>      sel2;

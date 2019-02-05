@@ -12,7 +12,7 @@
 
 // Special for Unixes
 #if defined( __linux )
-#include "dlfcn.h"
+#  include "dlfcn.h"
 #endif
 
 // Instantiation of a static factory class used by clients to create
@@ -22,8 +22,7 @@ DECLARE_COMPONENT( PythonScriptingSvc )
 //----------------------------------------------------------------------------------
 PythonScriptingSvc::PythonScriptingSvc( const std::string& name, ISvcLocator* svc )
     //----------------------------------------------------------------------------------
-    : base_class( name, svc )
-{
+    : base_class( name, svc ) {
   // Declare the startup script Property
   declareProperty( "StartupScript", m_startupScript = "" );
 }

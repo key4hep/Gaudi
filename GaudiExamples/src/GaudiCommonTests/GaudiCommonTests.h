@@ -17,8 +17,7 @@
  *  @date   2005-08-12
  */
 
-class GaudiCommonTests : public GaudiAlgorithm
-{
+class GaudiCommonTests : public GaudiAlgorithm {
 
 public:
   /// Standard constructor

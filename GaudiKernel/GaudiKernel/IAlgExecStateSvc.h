@@ -24,8 +24,7 @@ class EventContext;
 
 //-----------------------------------------------------------------------------
 
-class AlgExecState
-{
+class AlgExecState {
 public:
   enum State { None = 0, Executing = 1, Done = 2 };
 
@@ -35,13 +34,12 @@ public:
 
   void setFilterPassed( bool f = true ) { m_filterPassed = f; }
   void setState( State s ) { m_state = s; }
-  void setState( State s, const StatusCode& sc )
-  {
+  void setState( State s, const StatusCode& sc ) {
     m_state      = s;
     m_execStatus = sc;
   }
   void setExecStatus( const StatusCode& sc = StatusCode::SUCCESS ) { m_execStatus = sc; }
-  void                                  reset() { *this = AlgExecState{}; }
+  void reset() { *this = AlgExecState{}; }
 
 private:
   bool       m_filterPassed{true};
@@ -49,8 +47,7 @@ private:
   StatusCode m_execStatus{StatusCode( StatusCode::FAILURE, true )};
 };
 
-inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s )
-{
+inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s ) {
   ost << "e: ";
   switch ( s.state() ) {
   case AlgExecState::State::None:
@@ -62,18 +59,15 @@ inline std::ostream& operator<<( std::ostream& ost, const AlgExecState& s )
   }
 }
 
-namespace EventStatus
-{
+namespace EventStatus {
   enum Status { Invalid = 0, Success = 1, AlgFail = 2, AlgStall = 3, Other = 4 };
-  inline std::ostream& operator<<( std::ostream& os, Status s )
-  {
+  inline std::ostream& operator<<( std::ostream& os, Status s ) {
     static constexpr std::array<const char*, 5> label{"Invalid", "Success", "AlgFail", "AlgStall", "Other"};
     return os << label.at( s );
   }
-}
+} // namespace EventStatus
 
-class GAUDI_API IAlgExecStateSvc : virtual public IInterface
-{
+class GAUDI_API IAlgExecStateSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAlgExecStateSvc, 1, 0 );
@@ -82,8 +76,7 @@ public:
 
   // get the Algorithm Execution State for a give Algorithm and EventContext
   virtual const AlgExecState& algExecState( const Gaudi::StringKey& algName, const EventContext& ctx ) const = 0;
-  const AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) const
-  {
+  const AlgExecState&         algExecState( IAlgorithm* iAlg, const EventContext& ctx ) const {
     return algExecState( iAlg->nameKey(), ctx );
   }
   virtual AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) = 0;
@@ -94,7 +87,7 @@ public:
   virtual void reset( const EventContext& ctx ) = 0;
 
   virtual void addAlg( const Gaudi::StringKey& algName ) = 0;
-  void addAlg( IAlgorithm* iAlg ) { addAlg( iAlg->nameKey() ); }
+  void         addAlg( IAlgorithm* iAlg ) { addAlg( iAlg->nameKey() ); }
 
   virtual const EventStatus::Status& eventStatus( const EventContext& ctx ) const = 0;
 
@@ -103,7 +96,7 @@ public:
   virtual void updateEventStatus( const bool& b, const EventContext& ctx ) = 0;
 
   virtual unsigned int algErrorCount( const IAlgorithm* iAlg ) const = 0;
-  virtual void resetErrorCount( const IAlgorithm* iAlg )             = 0;
+  virtual void         resetErrorCount( const IAlgorithm* iAlg )     = 0;
   virtual unsigned int incrementErrorCount( const IAlgorithm* iAlg ) = 0;
 
   virtual void dump( std::ostringstream& ost, const EventContext& ctx ) const = 0;

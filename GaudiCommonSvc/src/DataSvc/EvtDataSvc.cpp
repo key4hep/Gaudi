@@ -27,8 +27,7 @@
 DECLARE_COMPONENT( EvtDataSvc )
 
 /// Service initialisation
-StatusCode EvtDataSvc::initialize()
-{
+StatusCode EvtDataSvc::initialize() {
   // Nothing to do: just call base class initialisation
   StatusCode status = DataSvc::initialize();
 
@@ -38,14 +37,12 @@ StatusCode EvtDataSvc::initialize()
   return status;
 }
 /// Service reinitialisation
-StatusCode EvtDataSvc::reinitialize()
-{
+StatusCode EvtDataSvc::reinitialize() {
   // Do nothing for this service
   return StatusCode::SUCCESS;
 }
 /// Service finalization
-StatusCode EvtDataSvc::finalize()
-{
+StatusCode EvtDataSvc::finalize() {
   m_cnvSvc = nullptr; // release
   DataSvc::finalize().ignore();
   return StatusCode::SUCCESS;

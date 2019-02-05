@@ -7,31 +7,29 @@
 //	Author     : M.Frank
 //====================================================================
 #ifndef GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
-#define GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
+#  define GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
 
 // Include files
-#include "RootCnv/RootEvtSelector.h"
-#include <vector>
+#  include "RootCnv/RootEvtSelector.h"
+#  include <vector>
 
 // Forward declarations
 class TBranch;
 
 /*
-*  Gaudi namespace declaration
-*/
-namespace Gaudi
-{
+ *  Gaudi namespace declaration
+ */
+namespace Gaudi {
 
   /** @class RootEvtSelectorContext
-  *
-  *  ROOT specific event selector context.
-  *  See the base class for a detailed description.
-  *
-  *  @author  M.Frank
-  *  @version 1.0
-  */
-  class RootEvtSelectorContext : public IEvtSelector::Context
-  {
+   *
+   *  ROOT specific event selector context.
+   *  See the base class for a detailed description.
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   */
+  class RootEvtSelectorContext : public IEvtSelector::Context {
   public:
     /// Definition of the file container
     typedef std::vector<std::string> Files;
@@ -56,8 +54,7 @@ namespace Gaudi
     /// Access to the file container
     const Files& files() const { return m_files; }
     /// Set the file container
-    void setFiles( const Files& f )
-    {
+    void setFiles( const Files& f ) {
       m_files = f;
       m_fiter = m_files.begin();
     }
@@ -80,7 +77,7 @@ namespace Gaudi
     /// Set the top level branch (typically /Event) used to iterate
     void setBranch( TBranch* b ) { m_branch = b; }
   };
-}
+} // namespace Gaudi
 #endif // GAUDIROOTCNV_ROOTEVTSELECTORCONTEXT_H
 
 // Include files
@@ -99,26 +96,20 @@ using namespace Gaudi;
 using namespace std;
 
 // Helper method to issue error messages
-StatusCode RootEvtSelector::error( const string& msg ) const
-{
+StatusCode RootEvtSelector::error( const string& msg ) const {
   MsgStream log( msgSvc(), name() );
   log << MSG::ERROR << msg << endmsg;
   return StatusCode::FAILURE;
 }
 
 // IService implementation: Db event selector override
-StatusCode RootEvtSelector::initialize()
-{
+StatusCode RootEvtSelector::initialize() {
   // Initialize base class
   StatusCode status = Service::initialize();
-  if ( !status.isSuccess() ) {
-    return error( "Error initializing base class Service!" );
-  }
+  if ( !status.isSuccess() ) { return error( "Error initializing base class Service!" ); }
 
   auto ipers = serviceLocator()->service<IPersistencySvc>( m_persName );
-  if ( !ipers ) {
-    return error( "Unable to locate IPersistencySvc interface of " + m_persName );
-  }
+  if ( !ipers ) { return error( "Unable to locate IPersistencySvc interface of " + m_persName ); }
   IConversionSvc*              cnvSvc = nullptr;
   Gaudi::Utils::TypeNameString itm( m_cnvSvcName );
   status = ipers->getService( itm.name(), cnvSvc );
@@ -137,9 +128,7 @@ StatusCode RootEvtSelector::initialize()
 
   // Get DataSvc
   auto eds = serviceLocator()->service<IDataManagerSvc>( "EventDataSvc" );
-  if ( !eds ) {
-    return error( "Unable to localize service EventDataSvc" );
-  }
+  if ( !eds ) { return error( "Unable to localize service EventDataSvc" ); }
   m_rootCLID = eds->rootCLID();
   m_rootName = eds->rootName();
   MsgStream log( msgSvc(), name() );
@@ -148,8 +137,7 @@ StatusCode RootEvtSelector::initialize()
 }
 
 // IService implementation: Service finalization
-StatusCode RootEvtSelector::finalize()
-{
+StatusCode RootEvtSelector::finalize() {
   // Initialize base class
   if ( m_dbMgr ) m_dbMgr->release();
   m_dbMgr = nullptr; // release
@@ -157,8 +145,7 @@ StatusCode RootEvtSelector::finalize()
 }
 
 // Create a new event loop context
-StatusCode RootEvtSelector::createContext( Context*& refpCtxt ) const
-{
+StatusCode RootEvtSelector::createContext( Context*& refpCtxt ) const {
   refpCtxt = new RootEvtSelectorContext( this );
   return StatusCode::SUCCESS;
 }
@@ -167,8 +154,7 @@ StatusCode RootEvtSelector::createContext( Context*& refpCtxt ) const
 StatusCode RootEvtSelector::last( Context& /*refContext*/ ) const { return StatusCode::FAILURE; }
 
 // Get next iteration item from the event loop context
-StatusCode RootEvtSelector::next( Context& ctxt ) const
-{
+StatusCode RootEvtSelector::next( Context& ctxt ) const {
   RootEvtSelectorContext* pCtxt = dynamic_cast<RootEvtSelectorContext*>( &ctxt );
   if ( pCtxt ) {
     TBranch* b = pCtxt->branch();
@@ -212,14 +198,11 @@ StatusCode RootEvtSelector::next( Context& ctxt ) const
 }
 
 // Get next iteration item from the event loop context
-StatusCode RootEvtSelector::next( Context& ctxt, int jump ) const
-{
+StatusCode RootEvtSelector::next( Context& ctxt, int jump ) const {
   if ( jump > 0 ) {
     for ( int i = 0; i < jump; ++i ) {
       StatusCode status = next( ctxt );
-      if ( !status.isSuccess() ) {
-        return status;
-      }
+      if ( !status.isSuccess() ) { return status; }
     }
     return StatusCode::SUCCESS;
   }
@@ -227,20 +210,16 @@ StatusCode RootEvtSelector::next( Context& ctxt, int jump ) const
 }
 
 // Get previous iteration item from the event loop context
-StatusCode RootEvtSelector::previous( Context& /* ctxt */ ) const
-{
+StatusCode RootEvtSelector::previous( Context& /* ctxt */ ) const {
   return error( "EventSelector Iterator, operator -- not supported " );
 }
 
 // Get previous iteration item from the event loop context
-StatusCode RootEvtSelector::previous( Context& ctxt, int jump ) const
-{
+StatusCode RootEvtSelector::previous( Context& ctxt, int jump ) const {
   if ( jump > 0 ) {
     for ( int i = 0; i < jump; ++i ) {
       StatusCode status = previous( ctxt );
-      if ( !status.isSuccess() ) {
-        return status;
-      }
+      if ( !status.isSuccess() ) { return status; }
     }
     return StatusCode::SUCCESS;
   }
@@ -248,8 +227,7 @@ StatusCode RootEvtSelector::previous( Context& ctxt, int jump ) const
 }
 
 // Rewind the dataset
-StatusCode RootEvtSelector::rewind( Context& ctxt ) const
-{
+StatusCode RootEvtSelector::rewind( Context& ctxt ) const {
   RootEvtSelectorContext* pCtxt = dynamic_cast<RootEvtSelectorContext*>( &ctxt );
   if ( pCtxt ) {
     auto fileit = pCtxt->fileIterator();
@@ -267,8 +245,7 @@ StatusCode RootEvtSelector::rewind( Context& ctxt ) const
 }
 
 // Create new Opaque address corresponding to the current record
-StatusCode RootEvtSelector::createAddress( const Context& ctxt, IOpaqueAddress*& pAddr ) const
-{
+StatusCode RootEvtSelector::createAddress( const Context& ctxt, IOpaqueAddress*& pAddr ) const {
   const RootEvtSelectorContext* pctxt = dynamic_cast<const RootEvtSelectorContext*>( &ctxt );
   if ( pctxt ) {
     long ent = pctxt->entry();
@@ -286,8 +263,7 @@ StatusCode RootEvtSelector::createAddress( const Context& ctxt, IOpaqueAddress*&
 }
 
 // Release existing event iteration context
-StatusCode RootEvtSelector::releaseContext( Context*& ctxt ) const
-{
+StatusCode RootEvtSelector::releaseContext( Context*& ctxt ) const {
   RootEvtSelectorContext* pCtxt = dynamic_cast<RootEvtSelectorContext*>( ctxt );
   if ( pCtxt ) {
     delete pCtxt;
@@ -298,8 +274,7 @@ StatusCode RootEvtSelector::releaseContext( Context*& ctxt ) const
 
 // Will set a new criteria for the selection of the next list of events and will change
 // the state of the context in a way to point to the new list.
-StatusCode RootEvtSelector::resetCriteria( const string& criteria, Context& context ) const
-{
+StatusCode RootEvtSelector::resetCriteria( const string& criteria, Context& context ) const {
   MsgStream               log( msgSvc(), name() );
   RootEvtSelectorContext* ctxt = dynamic_cast<RootEvtSelectorContext*>( &context );
   string                  db, typ, item, sel, stmt, aut, addr;

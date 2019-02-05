@@ -16,8 +16,7 @@ StatusCode ColorMsgAlg::initialize() { return StatusCode::SUCCESS; }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode ColorMsgAlg::execute()
-{
+StatusCode ColorMsgAlg::execute() {
 
   auto& log = msgStream();
 

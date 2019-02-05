@@ -56,6 +56,7 @@ def vct(sequence):
         result.push_back(item)
     return result
 
+
 # =============================================================================
 # @class TupleEx1
 #  Simple algorithm which book&fill 3 histograms
@@ -67,6 +68,7 @@ class TupleEx1(TupleAlgo):
     """
     Simple algorithm which implicitely book&fill N-Tuples
     """
+
     # the main executiomethod
 
     def execute(self):
@@ -75,12 +77,12 @@ class TupleEx1(TupleAlgo):
         """
 
         rSvc = self.randSvc()
-        gauss = Numbers(rSvc, Rndm.Gauss(0.0,   1.0))
-        flat = Numbers(rSvc, Rndm.Flat(-10,  10))
+        gauss = Numbers(rSvc, Rndm.Gauss(0.0, 1.0))
+        flat = Numbers(rSvc, Rndm.Flat(-10, 10))
         expo = Numbers(rSvc, Rndm.Exponential(1.0))
-        breit = Numbers(rSvc, Rndm.BreitWigner(0.0,   1.0))
+        breit = Numbers(rSvc, Rndm.BreitWigner(0.0, 1.0))
         poisson = Numbers(rSvc, Rndm.Poisson(2.0))
-        binom = Numbers(rSvc, Rndm.Binomial(8,   0.25))
+        binom = Numbers(rSvc, Rndm.Binomial(8, 0.25))
 
         # =====================================================================
         # primitive row-wise n-tuple
@@ -88,32 +90,32 @@ class TupleEx1(TupleAlgo):
         tuple1 = self.nTuple(1, "Trivial Row-Wise Tuple", 42)
 
         # fill N-Tuple with double/float numbers:
-        tuple1 . column('gauss', gauss())
-        tuple1 . column('flat', flat())
-        tuple1 . column('expo', expo())
-        tuple1 . column('breit', breit())
+        tuple1.column('gauss', gauss())
+        tuple1.column('flat', flat())
+        tuple1.column('expo', expo())
+        tuple1.column('breit', breit())
 
         # fill N-Tuple with integer numbers:
-        tuple1 . column('poiss1', int(poisson()))
-        tuple1 . column('binom1', int(binom()))
+        tuple1.column('poiss1', int(poisson()))
+        tuple1.column('binom1', int(binom()))
 
         # fill N-Tuple with long long numbers:
-        tuple1 . column_ll('poiss2', int(poisson()))
-        tuple1 . column_ll('binom2', int(binom()))
+        tuple1.column_ll('poiss2', int(poisson()))
+        tuple1.column_ll('binom2', int(binom()))
 
         # fill N-Tuple with unsigned long long numbers:
-        tuple1 . column_ull('poiss3', int(poisson()))
-        tuple1 . column_ull('binom3', int(binom()))
+        tuple1.column_ull('poiss3', int(poisson()))
+        tuple1.column_ull('binom3', int(binom()))
 
         # fill N-Tuple with "reduced" integer numbers:
-        tuple1 . column('poiss4', int(poisson()), 0, 14)
-        tuple1 . column('binom4', int(binom()), 0, 14)
+        tuple1.column('poiss4', int(poisson()), 0, 14)
+        tuple1.column('binom4', int(binom()), 0, 14)
 
         # fill N-Tuple with "boolean" numbers:
-        tuple1 . column("poisb",  poisson() > 1.0)
+        tuple1.column("poisb", poisson() > 1.0)
 
         # commit the row
-        tuple1 . write()
+        tuple1.write()
 
         # =====================================================================
         # the same n-tuple but column-wise
@@ -121,23 +123,23 @@ class TupleEx1(TupleAlgo):
         tuple2 = self.nTuple(2, "Trivial Column-Wise Tuple")
 
         # fill N-Tuple with double/float numbers:
-        tuple2 . column('gauss', gauss())
-        tuple2 . column('flat', flat())
-        tuple2 . column('expo', expo())
-        tuple2 . column('breit', breit())
+        tuple2.column('gauss', gauss())
+        tuple2.column('flat', flat())
+        tuple2.column('expo', expo())
+        tuple2.column('breit', breit())
 
         # fill N-Tuple with integer numbers:
-        tuple2 . column('poiss', int(poisson()))
-        tuple2 . column('binom', int(binom()))
+        tuple2.column('poiss', int(poisson()))
+        tuple2.column('binom', int(binom()))
         # fill N-Tuple with "reduced" integer numbers:
-        tuple2 . column('poiss', int(poisson()), 0, 14)
-        tuple2 . column('binom', int(binom()), 0, 14)
+        tuple2.column('poiss', int(poisson()), 0, 14)
+        tuple2.column('binom', int(binom()), 0, 14)
 
         # fill N-Tuple with "boolean" numbers:
-        tuple2 . column("poisb",  poisson() > 1.0)
+        tuple2.column("poisb", poisson() > 1.0)
 
         # commit the row
-        tuple2 . write()
+        tuple2.write()
 
         # =====================================================================
         # book and fill Column-wise NTuple with "fixed"-size arrays/vectors
@@ -176,7 +178,10 @@ def configure(gaudi=None):
 
     gaudi.config()
 
-    gaudi.DLLs = ['GaudiAlg', 'RootHistCnv', ]
+    gaudi.DLLs = [
+        'GaudiAlg',
+        'RootHistCnv',
+    ]
 
     alg = TupleEx1('TupleEx1')
     gaudi.setAlgorithms([alg])

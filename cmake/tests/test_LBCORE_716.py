@@ -5,9 +5,8 @@ import os
 import re
 from subprocess import Popen, PIPE
 
-base_dir = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                                         'data',
-                                         'LBCORE-716'))
+base_dir = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), 'data', 'LBCORE-716'))
 
 xenv_cmd = 'xenv'
 
@@ -17,8 +16,8 @@ build_err = None
 
 
 def clean():
-    Popen(['make', 'clean'], cwd=base_dir,
-          stdout=PIPE, stderr=PIPE).communicate()
+    Popen(['make', 'clean'], cwd=base_dir, stdout=PIPE,
+          stderr=PIPE).communicate()
 
 
 def build():
@@ -26,8 +25,10 @@ def build():
     for v in ('BINARY_TAG', 'CMTCONFIG'):
         if v in os.environ:
             del os.environ[v]
-    build_proc = Popen(['make', 'VERBOSE=1'], cwd=base_dir,
-                       stdout=PIPE, stderr=PIPE)
+    build_proc = Popen(['make', 'VERBOSE=1'],
+                       cwd=base_dir,
+                       stdout=PIPE,
+                       stderr=PIPE)
     build_log, build_err = build_proc.communicate()
     build_returncode = build_proc.returncode
 
@@ -46,9 +47,10 @@ def test_build():
     assert len(compile_cmd) == 1
     compile_cmd = compile_cmd[0]
 
-    include_order = [os.path.relpath(l[2:], base_dir)[0]
-                     for l in compile_cmd.split()
-                     if l.startswith('-I') and 'InstallArea' in l]
+    include_order = [
+        os.path.relpath(l[2:], base_dir)[0] for l in compile_cmd.split()
+        if l.startswith('-I') and 'InstallArea' in l
+    ]
     assert include_order == ['B', 'C', 'A'], include_order
 
 
@@ -58,15 +60,17 @@ def test_env():
     envfile = os.path.join(base_dir, 'D', 'InstallArea', 'D.xenv')
     assert os.path.exists(envfile)
 
-    getenv = Popen([xenv_cmd, '--xml', envfile,
-                    'printenv', 'ROOT_INCLUDE_PATH'],
-                   stdout=PIPE, stderr=PIPE)
+    getenv = Popen(
+        [xenv_cmd, '--xml', envfile, 'printenv', 'ROOT_INCLUDE_PATH'],
+        stdout=PIPE,
+        stderr=PIPE)
     out, _err = getenv.communicate()
     assert getenv.returncode == 0, getenv.returncode
 
-    root_inc_path = [os.path.relpath(l, base_dir)[0]
-                     for l in out.strip().split(os.pathsep)
-                     if 'InstallArea' in l]
+    root_inc_path = [
+        os.path.relpath(l, base_dir)[0] for l in out.strip().split(os.pathsep)
+        if 'InstallArea' in l
+    ]
     # if we run the test after "make install" is called, we get one extra '.'
     # in the list (because of the InstallArea of Gaudi itself)
     root_inc_path = [l for l in root_inc_path if l != '.']

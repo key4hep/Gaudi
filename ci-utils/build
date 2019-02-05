@@ -12,7 +12,6 @@ fi
 ${LCG_release_area}/ccache/${CCACHE_VERSION}/${BINARY_TAG}/bin/ccache -z -M 1G
 
 echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
-echo 'set(clang_format_cmd "'$(which lcg-clang-format-${CLANG_FORMAT_VERSION})'" CACHE FILEPATH "")' >> cache_preload.cmake
 
 /usr/bin/time -v bash -x -e -c "
   make BUILDDIR=${BUILDDIR} configure

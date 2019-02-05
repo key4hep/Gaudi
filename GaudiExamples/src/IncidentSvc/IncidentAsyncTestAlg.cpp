@@ -11,8 +11,7 @@
 DECLARE_COMPONENT( IncidentAsyncTestAlg )
 
 //=============================================================================
-StatusCode IncidentAsyncTestAlg::initialize()
-{
+StatusCode IncidentAsyncTestAlg::initialize() {
   StatusCode sc = Algorithm::initialize();
   if ( sc.isFailure() ) return sc;
   // get service containing event data
@@ -34,8 +33,7 @@ StatusCode IncidentAsyncTestAlg::initialize()
 }
 
 //=============================================================================
-StatusCode IncidentAsyncTestAlg::execute()
-{
+StatusCode IncidentAsyncTestAlg::execute() {
   uint64_t  data = 0;
   MsgStream logstream( msgSvc(), name() );
   for ( auto& inputHandle : m_inputObjHandles ) {
@@ -56,8 +54,7 @@ StatusCode IncidentAsyncTestAlg::execute()
 }
 
 //=============================================================================
-StatusCode IncidentAsyncTestAlg::finalize()
-{
+StatusCode IncidentAsyncTestAlg::finalize() {
   info() << "Finalizing " << endmsg;
   return Algorithm::finalize();
 }

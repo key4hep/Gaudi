@@ -19,20 +19,15 @@
 #include <Gaudi/PluginService.h>
 
 // standard use, 0 arguments
-class Base
-{
+class Base {
 public:
   typedef Gaudi::PluginService::Factory<Base*> Factory;
   virtual ~Base() {}
 };
-class Component0 : public Base
-{
-};
+class Component0 : public Base {};
 DECLARE_COMPONENT( Component0 )
 
-class Component1 : public Base
-{
-};
+class Component1 : public Base {};
 #define DECLARE_COMPONENT_WITH_PROPS( type ) DECLARE_FACTORY_WITH_PROPS( type, type::Factory )
 #define DECLARE_FACTORY_WITH_PROPS( type, factory )                                                                    \
   DECLARE_FACTORY_WITH_ID_AND_PROPS( type, ::Gaudi::PluginService::Details::demangle<type>(), factory )
@@ -42,16 +37,13 @@ class Component1 : public Base
   _INTERNAL_DECLARE_FACTORY_WITH_CREATOR_AND_PROPS( type, ::Gaudi::PluginService::Details::Factory<type>, id, factory, \
                                                     serial )
 #define _INTERNAL_DECLARE_FACTORY_WITH_CREATOR_AND_PROPS( type, typecreator, id, factory, serial )                     \
-  namespace                                                                                                            \
-  {                                                                                                                    \
-    class _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial )                                                       \
-    {                                                                                                                  \
+  namespace {                                                                                                          \
+    class _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial ) {                                                     \
     public:                                                                                                            \
       typedef factory      s_t;                                                                                        \
       typedef typecreator  f_t;                                                                                        \
       static s_t::FuncType creator() { return &f_t::create<s_t>; }                                                     \
-      _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial )()                                                         \
-      {                                                                                                                \
+      _PS_V1_INTERNAL_FACTORY_REGISTER_CNAME( type, serial )() {                                                       \
         using ::Gaudi::PluginService::Details::Registry;                                                               \
         Registry::instance().add<s_t, type>( id, creator() ).addProperty( "name", #type );                             \
       }                                                                                                                \
@@ -61,14 +53,12 @@ class Component1 : public Base
 DECLARE_COMPONENT_WITH_PROPS( Component1 )
 
 // standard use, 2 arguments
-class Base2
-{
+class Base2 {
 public:
   typedef Gaudi::PluginService::Factory<Base2*, const std::string&, int> Factory;
   virtual ~Base2() {}
 };
-class Component2 : public Base2
-{
+class Component2 : public Base2 {
 public:
   Component2( std::string _s, int _i ) : i( _i ), s( std::move( _s ) ) {}
   int         i;
@@ -77,29 +67,20 @@ public:
 DECLARE_COMPONENT( Component2 )
 
 // namespaces
-namespace Test
-{
-  class ComponentA : public Base
-  {
-  };
-  class ComponentB : public Base
-  {
-  };
-  class ComponentC : public Base
-  {
-  };
-}
+namespace Test {
+  class ComponentA : public Base {};
+  class ComponentB : public Base {};
+  class ComponentC : public Base {};
+} // namespace Test
 
-namespace
-{
+namespace {
   using Test::ComponentA;
   DECLARE_COMPONENT( ComponentA )
-}
+} // namespace
 
 DECLARE_COMPONENT( Test::ComponentB )
 
-namespace Test
-{
+namespace Test {
   DECLARE_COMPONENT( ComponentC )
 }
 
@@ -111,35 +92,29 @@ DECLARE_COMPONENT_WITH_ID( Test::ComponentB, "B" )
 DECLARE_FACTORY_WITH_ID( Test::ComponentA, "A", Base::Factory )
 
 // custom factory example
-namespace
-{
+namespace {
   bool _custom_factory_called = false;
 
-  struct CompWithCustomFactory : Base {
-  };
+  struct CompWithCustomFactory : Base {};
 
-  class _register__CompWithCustomFactory
-  {
+  class _register__CompWithCustomFactory {
   public:
     typedef Base::Factory s_t;
-    static Base*          creator()
-    {
+    static Base*          creator() {
       _custom_factory_called = true;
       return new CompWithCustomFactory{};
     }
-    _register__CompWithCustomFactory()
-    {
+    _register__CompWithCustomFactory() {
       using ::Gaudi::PluginService::Details::Registry;
       Registry::instance().add<s_t, CompWithCustomFactory>( "CompWithCustomFactory", creator );
     }
   } _register__CompWithCustomFactory;
-}
+} // namespace
 
 // ATLAS Custom factories
 // see http://acode-browser1.usatlas.bnl.gov/lxr/source/athena/Control/AthenaKernel/AthenaKernel/TPCnvFactory.h
 // see http://acode-browser1.usatlas.bnl.gov/lxr/source/athena/Control/AthenaServices/src/test/testConverters.cxx
-namespace Athena
-{
+namespace Athena {
   struct TPCnvVers {
     enum Value { Old = 0, Current = 1 };
   };
@@ -147,7 +122,7 @@ namespace Athena
   struct TPCnvType {
     enum Value { Athena = 0, ARA = 1, Trigger = 2 };
   };
-}
+} // namespace Athena
 struct ITPCnvBase {
   typedef Gaudi::PluginService::Factory<ITPCnvBase*> Factory;
 };
@@ -156,16 +131,13 @@ struct ITPCnvBase {
 
 #define DO_ATHTPCNV_PLUGINSVC_FACTORY_WITH_ID( type, id, trans_type, pers_type, is_last_version, cnv_type, signature,  \
                                                serial )                                                                \
-  namespace                                                                                                            \
-  {                                                                                                                    \
-    class DO_ATHTPCNV_FACTORY_REGISTER_CNAME( type, serial )                                                           \
-    {                                                                                                                  \
+  namespace {                                                                                                          \
+    class DO_ATHTPCNV_FACTORY_REGISTER_CNAME( type, serial ) {                                                         \
     public:                                                                                                            \
       typedef type::Factory                                  s_t;                                                      \
       typedef ::Gaudi::PluginService::Details::Factory<type> f_t;                                                      \
       static s_t::FuncType                                   creator() { return &f_t::create<s_t>; }                   \
-      DO_ATHTPCNV_FACTORY_REGISTER_CNAME( type, serial )()                                                             \
-      {                                                                                                                \
+      DO_ATHTPCNV_FACTORY_REGISTER_CNAME( type, serial )() {                                                           \
         using ::Gaudi::PluginService::Details::Registry;                                                               \
         std::string prefix;                                                                                            \
         if ( cnv_type == Athena::TPCnvType::ARA )                                                                      \
@@ -226,28 +198,15 @@ struct ITPCnvBase {
 #define DECLARE_NAMED_TRIGTPCNV_FACTORY( x, n, trans_type, pers_type, is_last_version )                                \
   TRIGTPCNV_PLUGINSVC_FACTORY_WITH_ID( x, std::string( #n ), trans_type, pers_type, is_last_version, ITPCnvBase*() )
 
-namespace AthenaServicesTestConverters
-{
-  class TestConverterBase : public ITPCnvBase
-  {
-  };
+namespace AthenaServicesTestConverters {
+  class TestConverterBase : public ITPCnvBase {};
 
-  class TestConverter_TA_PA1 : public TestConverterBase
-  {
-  };
-  class TestConverter_TA_PA2 : public TestConverterBase
-  {
-  };
+  class TestConverter_TA_PA1 : public TestConverterBase {};
+  class TestConverter_TA_PA2 : public TestConverterBase {};
 
-  class TestConverter_TB_PB1 : public TestConverterBase
-  {
-  };
-  class TestConverter_TB_PB1_ARA : public TestConverterBase
-  {
-  };
-  class TestConverter_TBTRIG_PB1 : public TestConverterBase
-  {
-  };
+  class TestConverter_TB_PB1 : public TestConverterBase {};
+  class TestConverter_TB_PB1_ARA : public TestConverterBase {};
+  class TestConverter_TBTRIG_PB1 : public TestConverterBase {};
 
 } // namespace AthenaServicesTestConverters
 

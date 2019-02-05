@@ -22,37 +22,36 @@
 #include "GaudiKernel/System.h"
 
 #ifdef _WIN32
-#define NOMSG
-#define NOGDI
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#include "Win32PsApi.h"
-#include "process.h"
-#include "windows.h"
+#  define NOMSG
+#  define NOGDI
+#  define strcasecmp _stricmp
+#  define strncasecmp _strnicmp
+#  include "Win32PsApi.h"
+#  include "process.h"
+#  include "windows.h"
 static PsApiFunctions _psApi;
-#define getpid _getpid
-#undef NOMSG
-#undef NOGDI
-#ifndef PATH_MAX
-#define PATH_MAX 1024
-#endif
+#  define getpid _getpid
+#  undef NOMSG
+#  undef NOGDI
+#  ifndef PATH_MAX
+#    define PATH_MAX 1024
+#  endif
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
-#include "libgen.h"
-#include "sys/param.h"
-#include "sys/times.h"
-#include "unistd.h"
-#include <cstdio>
-#include <dlfcn.h>
-#include <errno.h>
-#include <string.h>
+#  include "libgen.h"
+#  include "sys/param.h"
+#  include "sys/times.h"
+#  include "unistd.h"
+#  include <cstdio>
+#  include <dlfcn.h>
+#  include <errno.h>
+#  include <string.h>
 #endif
 
 static System::ImageHandle      ModuleHandle = nullptr;
 static std::vector<std::string> s_linkedModules;
 
 /// Retrieve base name of module
-const std::string& System::moduleName()
-{
+const std::string& System::moduleName() {
   static std::string module( "" );
   if ( module == "" ) {
     if ( processHandle() && moduleHandle() ) {
@@ -75,8 +74,7 @@ const std::string& System::moduleName()
 }
 
 /// Retrieve full name of module
-const std::string& System::moduleNameFull()
-{
+const std::string& System::moduleNameFull() {
   static std::string module( "" );
   if ( module == "" ) {
     if ( processHandle() && moduleHandle() ) {
@@ -89,12 +87,12 @@ const std::string& System::moduleNameFull()
       }
 #else
       const char* path =
-#if defined( __linux ) || defined( __APPLE__ )
+#  if defined( __linux ) || defined( __APPLE__ )
           ( (Dl_info*)moduleHandle() )->dli_fname;
-#elif __hpux
+#  elif __hpux
           ( (HMODULE*)moduleHandle() )->dsc.filename;
-#endif
-      if (::realpath( path, name ) ) module = name;
+#  endif
+      if ( ::realpath( path, name ) ) module = name;
 #endif
     }
   }
@@ -102,8 +100,7 @@ const std::string& System::moduleNameFull()
 }
 
 /// Get type of the module
-System::ModuleType System::moduleType()
-{
+System::ModuleType System::moduleType() {
   static ModuleType type = UNKNOWN;
   if ( type == UNKNOWN ) {
     const std::string& module = moduleNameFull();
@@ -125,34 +122,31 @@ System::ModuleType System::moduleType()
 }
 
 /// Retrieve processhandle
-void* System::processHandle()
-{
+void* System::processHandle() {
   static long pid = ::getpid();
 #ifdef _WIN32
   static HANDLE hP = ::OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid );
 #else
-  static void*       hP = (void*)pid;
+  static void* hP = (void*)pid;
 #endif
   return hP;
 }
 
 void System::setModuleHandle( System::ImageHandle handle ) { ModuleHandle = handle; }
 
-System::ImageHandle System::moduleHandle()
-{
+System::ImageHandle System::moduleHandle() {
   if ( !ModuleHandle ) {
     if ( processHandle() ) {
 #ifdef _WIN32
       static HINSTANCE handle = 0;
       DWORD            cbNeeded;
       if ( 0 == handle && _psApi ) {
-        if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {
-        }
+        if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {}
       }
       return handle;
 #elif defined( __linux ) || defined( __APPLE__ )
       static Dl_info info;
-      if (::dladdr( reinterpret_cast<void*>( System::moduleHandle ), &info ) ) return &info;
+      if ( ::dladdr( reinterpret_cast<void*>( System::moduleHandle ), &info ) ) return &info;
 #elif __hpux
       return 0; // Don't know how to solve this .....
 #endif
@@ -161,15 +155,13 @@ System::ImageHandle System::moduleHandle()
   return ModuleHandle;
 }
 
-System::ImageHandle System::exeHandle()
-{
+System::ImageHandle System::exeHandle() {
 #ifdef _WIN32
   if ( processHandle() ) {
     static HINSTANCE handle = 0;
     DWORD            cbNeeded;
     if ( 0 == handle && _psApi ) {
-      if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {
-      }
+      if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof( ModuleHandle ), &cbNeeded ) ) {}
     }
     return handle;
   }
@@ -198,8 +190,7 @@ System::ImageHandle System::exeHandle()
 #endif
 }
 
-const std::string& System::exeName()
-{
+const std::string& System::exeName() {
   static std::string module( "" );
   if ( module.length() == 0 ) {
     char name[PATH_MAX] = {"Unknown.module"};
@@ -213,16 +204,15 @@ const std::string& System::exeName()
     char cmd[512];
     ::sprintf( cmd, "/proc/%d/exe", ::getpid() );
     module = "Unknown";
-    if (::readlink( cmd, name, sizeof( name ) ) >= 0 ) module = name;
+    if ( ::readlink( cmd, name, sizeof( name ) ) >= 0 ) module = name;
 #elif __hpux
-    if (::realpath( ( (HMODULE*)exeHandle() )->dsc.filename, name ) ) module = name;
+    if ( ::realpath( ( (HMODULE*)exeHandle() )->dsc.filename, name ) ) module = name;
 #endif
   }
   return module;
 }
 
-const std::vector<std::string> System::linkedModules()
-{
+const std::vector<std::string> System::linkedModules() {
   if ( s_linkedModules.size() == 0 ) {
 #ifdef _WIN32
     char      name[255]; // Maximum file name length on NT 4.0
@@ -241,12 +231,10 @@ const std::vector<std::string> System::linkedModules()
     char ff[512], cmd[1024], fname[1024], buf1[64], buf2[64], buf3[64], buf4[64];
     ::sprintf( ff, "/proc/%d/maps", ::getpid() );
     FILE* maps = ::fopen( ff, "r" );
-    while (::fgets( cmd, sizeof( cmd ), maps ) ) {
+    while ( ::fgets( cmd, sizeof( cmd ), maps ) ) {
       int len;
       sscanf( cmd, "%s %s %s %s %d %s", buf1, buf2, buf3, buf4, &len, fname );
-      if ( len > 0 && strncmp( buf2, "r-xp", strlen( "r-xp" ) ) == 0 ) {
-        s_linkedModules.push_back( fname );
-      }
+      if ( len > 0 && strncmp( buf2, "r-xp", strlen( "r-xp" ) ) == 0 ) { s_linkedModules.push_back( fname ); }
     }
     ::fclose( maps );
 #endif

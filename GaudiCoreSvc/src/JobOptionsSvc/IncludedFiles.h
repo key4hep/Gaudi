@@ -8,15 +8,12 @@
 #include <map>
 #include <string>
 // ============================================================================
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     // ============================================================================
     class Position;
     // ============================================================================
-    class IncludedFiles
-    {
+    class IncludedFiles {
     public:
       typedef std::map<std::string, Position> Container;
 
@@ -29,7 +26,7 @@ namespace Gaudi
       Container container_;
     };
     // ============================================================================
-  } /* Gaudi */
-} /* Parsers */
+  } // namespace Parsers
+} // namespace Gaudi
 // ============================================================================
 #endif //  JOBOPTIONSVC_INCLUDED_FILES_H_

@@ -9,8 +9,7 @@ History::History( const std::string& name, ISvcLocator* pSvcLocator ) : Algorith
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode History::initialize()
-{
+StatusCode History::initialize() {
 
   m_histSvc = service( "HistorySvc" );
   if ( !m_histSvc ) {

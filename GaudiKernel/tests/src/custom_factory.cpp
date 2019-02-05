@@ -12,7 +12,6 @@ struct IMyInterface {
   using Factory = Gaudi::PluginService::Factory<IMyInterface*()>;
 };
 
-struct MyImplementation : virtual public IMyInterface {
-};
+struct MyImplementation : virtual public IMyInterface {};
 
 DECLARE_COMPONENT( MyImplementation )

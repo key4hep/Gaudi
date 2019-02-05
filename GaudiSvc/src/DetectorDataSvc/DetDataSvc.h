@@ -26,8 +26,7 @@ class IAddressCreator;
 
 */ //--------------------------------------------------------------------------
 
-class DetDataSvc : public extends<TsDataSvc, IDetDataSvc, IIncidentListener>
-{
+class DetDataSvc : public extends<TsDataSvc, IDetDataSvc, IIncidentListener> {
 
   // unhides DataSvc updateObject methods
   using TsDataSvc::updateObject;
@@ -61,8 +60,7 @@ private:
   StatusCode setupDetectorDescription();
 
   using TsDataSvc::loadObject;
-  StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode ) override final
-  {
+  StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode ) override final {
     if ( LIKELY( m_allowLoadInRunning ||
                  serviceLocator().as<IStateful>()->FSMState() != Gaudi::StateMachine::RUNNING ) ) {
       return TsDataSvc::loadObject( pLoader, pNode );
@@ -91,11 +89,13 @@ public:
   void handle( const Incident& ) override;
 
 private:
-  Gaudi::Property<int> m_detStorageType{this, "DetStorageType", XML_StorageType,
+  Gaudi::Property<int>         m_detStorageType{this, "DetStorageType", XML_StorageType,
                                         "Detector Data Persistency Storage type"};
   Gaudi::Property<std::string> m_detDbLocation{this, "DetDbLocation", "empty",
                                                "location of detector Db (filename,URL)"};
-  Gaudi::Property<std::string> m_detDbRootName{this, "DetDbRootName", "dd",
+  Gaudi::Property<std::string> m_detDbRootName{this,
+                                               "DetDbRootName",
+                                               "dd",
                                                [this]( Gaudi::Details::PropertyBase& ) {
                                                  this->setProperty( "RootName", "/" + this->m_detDbRootName ).ignore();
                                                },

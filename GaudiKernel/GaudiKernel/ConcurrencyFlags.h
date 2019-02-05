@@ -20,19 +20,15 @@ class AthMpEvtLoopMgr;
  *
  */
 
-namespace SG
-{
+namespace SG {
   class HiveMgrSvc;
 }
 
-namespace Gaudi
-{
+namespace Gaudi {
 
-  namespace Concurrency
-  {
+  namespace Concurrency {
 
-    class ConcurrencyFlags
-    {
+    class ConcurrencyFlags {
 
       friend class ::ThreadPoolSvc;
       friend class ::HiveWhiteBoard;
@@ -66,7 +62,7 @@ namespace Gaudi
       static std::size_t n_concEvts; // concurrent events for MT
       static std::size_t n_procs;    // child processes for MP
     };
-  }
-}
+  } // namespace Concurrency
+} // namespace Gaudi
 
 #endif

@@ -11,8 +11,7 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyGaudiTool : public extends<GaudiTool, IMyTool, IMyOtherTool>
-{
+class MyGaudiTool : public extends<GaudiTool, IMyTool, IMyOtherTool> {
 public:
   /// Standard Constructor
   using extends::extends;

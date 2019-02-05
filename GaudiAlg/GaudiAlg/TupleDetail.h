@@ -16,16 +16,14 @@
  */
 // ============================================================================
 
-namespace Tuples
-{
+namespace Tuples {
   /** @namespace detail TupleObj.h GaudiAlg/TupleObj.h
    *  namespace with few technical implementations
    *
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    *  @date   2004-01-23
    */
-  namespace detail
-  {
+  namespace detail {
     /** @class TupleObjImp
      *
      *  The simplest concrete implementation of class TupleObj
@@ -75,8 +73,7 @@ namespace Tuples
      * @date   2004-1-24
      */
     template <class HANDLER1, class HANDLER2>
-    class TupleObjImp : public TupleObj
-    {
+    class TupleObjImp : public TupleObj {
     public:
       /** constructor
        *  @param  handler1 error   handler
@@ -88,19 +85,15 @@ namespace Tuples
        */
       TupleObjImp( HANDLER1 handler1, HANDLER2 handler2, const std::string& name, NTuple::Tuple* tuple,
                    const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
-          : TupleObj( name, tuple, clid, type ), m_handler1( handler1 ), m_handler2( handler2 )
-      {
-      }
+          : TupleObj( name, tuple, clid, type ), m_handler1( handler1 ), m_handler2( handler2 ) {}
 
     public:
-      StatusCode Error( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override
-      {
+      StatusCode Error( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override {
         m_handler1( name() + " " + msg, sc );
         return sc;
       }
 
-      StatusCode Warning( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override
-      {
+      StatusCode Warning( const std::string& msg, const StatusCode sc = StatusCode::FAILURE ) const override {
         m_handler2( name() + " " + msg, sc );
         return sc;
       }
@@ -140,8 +133,7 @@ namespace Tuples
      */
     template <class HANDLER1, class HANDLER2>
     auto createTupleObj( HANDLER1 handler1, HANDLER2 handler2, const std::string& name, NTuple::Tuple* tuple,
-                         const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
-    {
+                         const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE ) {
       return std::make_unique<TupleObjImp<HANDLER1, HANDLER2>>( handler1, handler2, name, tuple, clid, type );
     }
 
@@ -156,16 +148,14 @@ namespace Tuples
      * @date   2004-1-24
      */
     template <class OBJECT, class FUNCTION>
-    class ErrorHandler
-    {
+    class ErrorHandler {
     public:
       /// constructor
       ErrorHandler( const OBJECT* obj, FUNCTION fun ) : m_obj( obj ), m_fun( fun ) {}
 
     public:
       /// the only one 'useful' method
-      StatusCode operator()( const std::string& msg, const StatusCode sc, const size_t mp = 10 ) const
-      {
+      StatusCode operator()( const std::string& msg, const StatusCode sc, const size_t mp = 10 ) const {
         return ( m_obj->*m_fun )( msg, sc, mp );
       }
 
@@ -198,11 +188,10 @@ namespace Tuples
      * @date   2004-1-24
      */
     template <class OBJECT, class FUNCTION>
-    inline ErrorHandler<OBJECT, FUNCTION> make_handler( const OBJECT* object, FUNCTION function )
-    {
+    inline ErrorHandler<OBJECT, FUNCTION> make_handler( const OBJECT* object, FUNCTION function ) {
       return ErrorHandler<OBJECT, FUNCTION>( object, function );
     }
-  }
+  } // namespace detail
 
   /** Templated helper functions allow to avoid heavy semantics of
    *  dealing with explicit type of class TupleObjImp
@@ -224,8 +213,7 @@ namespace Tuples
    */
   template <class OWNER>
   auto createTupleObj( const OWNER* owner, const std::string& name, NTuple::Tuple* tuple,
-                       const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE )
-  {
+                       const CLID& clid = CLID_ColumnWiseTuple, const Tuples::Type type = Tuples::NTUPLE ) {
     return detail::createTupleObj( detail::make_handler( owner, &OWNER::Error ),
                                    detail::make_handler( owner, &OWNER::Warning ), name, tuple, clid, type );
   }
@@ -236,4 +224,3 @@ namespace Tuples
 // The END
 // ============================================================================
 #endif // GAUDIALG_TUPLEDETAIL_H
-// ============================================================================

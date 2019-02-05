@@ -28,15 +28,14 @@ class IMessageSvc;
 
     @author  Pere Mato
 */
-class AlgorithmManager : public extends<ComponentManager, IAlgManager>
-{
+class AlgorithmManager : public extends<ComponentManager, IAlgManager> {
 public:
   struct AlgorithmItem final {
     AlgorithmItem( IAlgorithm* s, bool managed = false ) : algorithm( s ), managed( managed ) {}
     SmartIF<IAlgorithm> algorithm;
     bool                managed;
-    inline bool operator==( const std::string& name ) const { return algorithm->name() == name; }
-    inline bool operator==( const IAlgorithm* ptr ) const { return algorithm.get() == ptr; }
+    inline bool         operator==( const std::string& name ) const { return algorithm->name() == name; }
+    inline bool         operator==( const IAlgorithm* ptr ) const { return algorithm.get() == ptr; }
   };
 
   /// typedefs and classes
@@ -73,8 +72,7 @@ public:
   StatusCode restart() override;
 
   /// Return the name of the manager (implementation of INamedInterface)
-  const std::string& name() const override
-  {
+  const std::string& name() const override {
     static const std::string _name = "AlgorithmManager";
     return _name;
   }

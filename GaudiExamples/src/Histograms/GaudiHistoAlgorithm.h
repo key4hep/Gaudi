@@ -14,8 +14,7 @@
  *  @date   2005-08-12
  */
 
-class GaudiHistoAlgorithm : public GaudiHistoAlg
-{
+class GaudiHistoAlgorithm : public GaudiHistoAlg {
 
 public:
   /// Standard constructor

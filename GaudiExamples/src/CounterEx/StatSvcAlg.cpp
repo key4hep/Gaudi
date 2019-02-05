@@ -26,8 +26,7 @@
  *  @date 2008-07-08
  */
 // ============================================================================
-namespace GaudiExamples
-{
+namespace GaudiExamples {
   /** @class StatSvcAlg
    *  Simple algorithm to illustrate the statistical abilities of
    *  "Stat"-part of Chrono&Stat Service
@@ -38,15 +37,13 @@ namespace GaudiExamples
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date 2008-07-08
    */
-  class StatSvcAlg : public GaudiAlgorithm
-  {
+  class StatSvcAlg : public GaudiAlgorithm {
   public:
     /// standard constructor from name and Service Locator
     using GaudiAlgorithm::GaudiAlgorithm;
 
     /// initialize the algorithm
-    StatusCode initialize() override
-    {
+    StatusCode initialize() override {
       StatusCode sc = GaudiAlgorithm::initialize();
       if ( sc.isFailure() ) return sc; // RETURN
       m_stat = service( "ChronoStatSvc", true );
@@ -63,8 +60,7 @@ namespace GaudiExamples
 // ============================================================================
 // the main execution method
 // ============================================================================
-StatusCode GaudiExamples::StatSvcAlg::execute()
-{
+StatusCode GaudiExamples::StatSvcAlg::execute() {
   Stat st1( m_stat, "counter1" );
   Stat st2( m_stat, "counter2" );
   Stat st3( m_stat, "counter3", 0.3 );

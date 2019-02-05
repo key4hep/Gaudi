@@ -19,12 +19,10 @@
 #include "HepRndmBaseEngine.h"
 #include <vector>
 
-namespace HepRndm
-{
+namespace HepRndm {
 
   template <class TYPE>
-  class Engine : public BaseEngine
-  {
+  class Engine : public BaseEngine {
   protected:
     mutable Gaudi::Property<std::vector<long>> m_seeds{this, "Seeds", {}, "seed table"};
 
@@ -50,6 +48,6 @@ namespace HepRndm
     /// Create new HepEngine....
     std::unique_ptr<CLHEP::HepRandomEngine> createEngine() override;
   };
-}
+} // namespace HepRndm
 
 #endif // HEPRNDM_HEPRNDMENGINE_H

@@ -21,9 +21,7 @@ varname = 'LD_LIBRARY_PATH'
 searchpath.extend(os.environ.get(varname, "").split(os.pathsep))
 
 try:
-    lib = (p
-           for p in (os.path.join(n, libname)
-                     for n in searchpath)
+    lib = (p for p in (os.path.join(n, libname) for n in searchpath)
            if os.path.exists(p)).next()
 except StopIteration:
     print >> sys.stderr, 'FAILURE: Cannot find', repr(

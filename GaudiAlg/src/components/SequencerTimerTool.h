@@ -22,13 +22,12 @@ TimingAuditor().TIMER.NameSize = 50 \endverbatim
  *  @date   2004-05-19
  */
 
-class SequencerTimerTool : public GaudiHistoTool, virtual public ISequencerTimerTool
-{
+class SequencerTimerTool : public GaudiHistoTool, virtual public ISequencerTimerTool {
 
 public:
+  using ISequencerTimerTool::name;
   using ISequencerTimerTool::start;
   using ISequencerTimerTool::stop;
-  using ISequencerTimerTool::name;
 
 public:
   /// Standard constructor

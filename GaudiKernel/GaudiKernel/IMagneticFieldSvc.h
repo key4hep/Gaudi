@@ -6,10 +6,8 @@
 #include "GaudiKernel/StatusCode.h"
 
 // Forward declarations
-namespace ROOT
-{
-  namespace Math
-  {
+namespace ROOT {
+  namespace Math {
     class DefaultCoordinateSystemTag;
 
     // from Math/Point3Dfwd.h
@@ -25,8 +23,8 @@ namespace ROOT
     typedef PositionVector3D<Cartesian3D<double>, DefaultCoordinateSystemTag> XYZPoint;
     // from Math/Vector3Dfwd.h
     typedef DisplacementVector3D<Cartesian3D<double>, DefaultCoordinateSystemTag> XYZVector;
-  }
-}
+  } // namespace Math
+} // namespace ROOT
 
 /** @class IMagneticFieldSvc IMagneticFieldSvc.h GaudiKernel/IMagneticFieldSvc.h
 
@@ -34,8 +32,7 @@ namespace ROOT
 
     @author Iain Last
 */
-class GAUDI_API IMagneticFieldSvc : virtual public IService
-{
+class GAUDI_API IMagneticFieldSvc : virtual public IService {
 
 public:
   /// InterfaceID

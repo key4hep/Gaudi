@@ -14,8 +14,7 @@
  *  @author  Danilo Piparo
  *  @version 1.0
  */
-class GAUDI_API IHiveWhiteBoard : public extend_interfaces<IInterface>
-{
+class GAUDI_API IHiveWhiteBoard : public extend_interfaces<IInterface> {
 public:
   /// InterfaceID
   DeclareInterfaceID( IHiveWhiteBoard, 2, 0 );

@@ -8,18 +8,21 @@ def _fillCfgDb():
 
     # get a handle on the repository of Configurables
     cfgDb = CfgDb()
-    cfgDb.add(configurable='MyTestTool',
-              package='GaudiTests',
-              module='TestConf',
-              lib='None')
-    cfgDb.add(configurable='APublicTool',
-              package='GaudiTests',
-              module='TestConf',
-              lib='None')
-    cfgDb.add(configurable='APrivateTool',
-              package='GaudiTests',
-              module='TestConf',
-              lib='None')
+    cfgDb.add(
+        configurable='MyTestTool',
+        package='GaudiTests',
+        module='TestConf',
+        lib='None')
+    cfgDb.add(
+        configurable='APublicTool',
+        package='GaudiTests',
+        module='TestConf',
+        lib='None')
+    cfgDb.add(
+        configurable='APrivateTool',
+        package='GaudiTests',
+        module='TestConf',
+        lib='None')
 
     return  # _fillCfgDb
 

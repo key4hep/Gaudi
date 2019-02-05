@@ -17,8 +17,8 @@ class UnknownPersistency(PersistencyError):
     """
 
     def __init__(self, type_):
-        super(UnknownPersistency, self).__init__(
-            "Unknown persistency type %r" % type_)
+        super(UnknownPersistency,
+              self).__init__("Unknown persistency type %r" % type_)
         self.type = type_
 
 
@@ -46,7 +46,8 @@ def add(instance):
 
 
 class FileDescription(object):
-    def __init__(self, filename, opt, svc, sel=None, collection=None, fun=None):
+    def __init__(self, filename, opt, svc, sel=None, collection=None,
+                 fun=None):
         '''
         Class to hold/manipulate the file description.
 
@@ -68,12 +69,9 @@ class FileDescription(object):
         '''
         Return a list of pairs describing the instance.
         '''
-        return [("DATAFILE", self.filename),
-                ("OPT", self.opt),
-                ("SVC", self.svc),
-                ("SEL", self.sel),
-                ("COLLECTION", self.collection),
-                ("FUN", self.fun)]
+        return [("DATAFILE", self.filename), ("OPT", self.opt),
+                ("SVC", self.svc), ("SEL", self.sel),
+                ("COLLECTION", self.collection), ("FUN", self.fun)]
 
     def __str__(self):
         """
@@ -113,8 +111,8 @@ class RootPersistency(PersistencyHelper):
 
         Declare the type of supported persistencies to the base class.
         """
-        super(RootPersistency, self).__init__(["ROOT", "POOL_ROOT",
-                                               "RootCnvSvc", "Gaudi::RootCnvSvc"])
+        super(RootPersistency, self).__init__(
+            ["ROOT", "POOL_ROOT", "RootCnvSvc", "Gaudi::RootCnvSvc"])
         self.configured = False
 
     def configure(self, appMgr):
@@ -143,17 +141,16 @@ class RootPersistency(PersistencyHelper):
             filenames = [filenames]
         fileargs = {}
         # check if we are accessing a collection
-        fileargs = dict([(k, kwargs[k])
-                         for k in ["collection", "sel", "fun"]
+        fileargs = dict([(k, kwargs[k]) for k in ["collection", "sel", "fun"]
                          if k in kwargs])
         if fileargs:
             # is a collection
             svc = 'Gaudi::RootCnvSvc'
         else:
             svc = 'Gaudi::RootEvtSelector'
-        return map(str,
-                   [FileDescription(f, 'READ', svc, **fileargs)
-                    for f in filenames])
+        return map(
+            str,
+            [FileDescription(f, 'READ', svc, **fileargs) for f in filenames])
 
     def formatOutput(self, filename, **kwargs):
         '''
@@ -164,8 +161,8 @@ class RootPersistency(PersistencyHelper):
         '''
         if not self.configured:
             raise PersistencyError("Persistency not configured")
-        retval = str(FileDescription(
-            filename, 'RECREATE', 'Gaudi::RootCnvSvc'))
+        retval = str(
+            FileDescription(filename, 'RECREATE', 'Gaudi::RootCnvSvc'))
         if 'lun' in kwargs:
             retval = "%s %s" % (kwargs['lun'], retval)
         return retval

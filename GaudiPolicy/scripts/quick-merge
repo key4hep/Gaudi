@@ -6,9 +6,11 @@ from optparse import OptionParser
 
 parser = OptionParser(  # desc='simple script to merge files',
     usage="%prog [options] input1 input2 ... output")
-parser.add_option('--ignore-missing', action='store_true',
-                  help='do not fail if an input file is missing, '
-                       'just ignore it')
+parser.add_option(
+    '--ignore-missing',
+    action='store_true',
+    help='do not fail if an input file is missing, '
+    'just ignore it')
 
 if __name__ == '__main__':
     opts, args = parser.parse_args()

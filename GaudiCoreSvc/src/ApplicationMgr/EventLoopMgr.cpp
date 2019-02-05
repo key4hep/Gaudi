@@ -21,7 +21,7 @@ DECLARE_COMPONENT( EventLoopMgr )
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
@@ -32,8 +32,7 @@ EventLoopMgr::~EventLoopMgr() { delete m_evtContext; }
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::initialize
 //--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::initialize()
-{
+StatusCode EventLoopMgr::initialize() {
   // Initialize the base class
   StatusCode sc = MinimalEventLoopMgr::initialize();
   if ( !sc.isSuccess() ) {
@@ -103,8 +102,7 @@ StatusCode EventLoopMgr::initialize()
 //--------------------------------------------------------------------------------------------
 // implementation of IService::reinitialize
 //--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::reinitialize()
-{
+StatusCode EventLoopMgr::reinitialize() {
 
   // Initialize the base class
   StatusCode sc = MinimalEventLoopMgr::reinitialize();
@@ -167,8 +165,7 @@ StatusCode EventLoopMgr::reinitialize()
 //--------------------------------------------------------------------------------------------
 // implementation of IService::stop
 //--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::stop()
-{
+StatusCode EventLoopMgr::stop() {
   if ( !m_endEventFired ) {
     // Fire pending EndEvent incident
     m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndEvent ) );
@@ -180,8 +177,7 @@ StatusCode EventLoopMgr::stop()
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::finalize
 //--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::finalize()
-{
+StatusCode EventLoopMgr::finalize() {
   // Finalize base class
   StatusCode sc = MinimalEventLoopMgr::finalize();
   if ( !sc.isSuccess() ) {
@@ -242,8 +238,7 @@ StatusCode EventLoopMgr::finalize()
 //--------------------------------------------------------------------------------------------
 // executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::executeEvent( void* par )
-{
+StatusCode EventLoopMgr::executeEvent( void* par ) {
 
   // DP Monitoring
 
@@ -261,9 +256,7 @@ StatusCode EventLoopMgr::executeEvent( void* par )
   m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndProcessing ) );
 
   // Check if there was an error processing current event
-  if ( UNLIKELY( !sc.isSuccess() ) ) {
-    error() << "Terminating event processing loop due to errors" << endmsg;
-  }
+  if ( UNLIKELY( !sc.isSuccess() ) ) { error() << "Terminating event processing loop due to errors" << endmsg; }
   return sc;
 }
 
@@ -272,8 +265,7 @@ StatusCode EventLoopMgr::executeEvent( void* par )
 //--------------------------------------------------------------------------------------------
 // External libraries
 #include "GaudiKernel/Memory.h"
-StatusCode EventLoopMgr::nextEvent( int maxevt )
-{
+StatusCode EventLoopMgr::nextEvent( int maxevt ) {
 
   // DP Monitoring
   // Calculate runtime
@@ -313,9 +305,7 @@ StatusCode EventLoopMgr::nextEvent( int maxevt )
         m_endEventFired = true;
       }
       sc = m_evtDataMgrSvc->clearStore();
-      if ( !sc.isSuccess() ) {
-        DEBMSG << "Clear of Event data store failed" << endmsg;
-      }
+      if ( !sc.isSuccess() ) { DEBMSG << "Clear of Event data store failed" << endmsg; }
     }
 
     // Setup event in the event store
@@ -340,9 +330,7 @@ StatusCode EventLoopMgr::nextEvent( int maxevt )
       }
     } else {
       sc = m_evtDataMgrSvc->setRoot( "/Event", new DataObject() );
-      if ( !sc.isSuccess() ) {
-        warning() << "Error declaring event root DataObject" << endmsg;
-      }
+      if ( !sc.isSuccess() ) { warning() << "Error declaring event root DataObject" << endmsg; }
     }
     // Execute event for all required algorithms
     sc              = executeEvent( nullptr );
@@ -365,8 +353,7 @@ StatusCode EventLoopMgr::nextEvent( int maxevt )
 }
 
 /// Create event address using event selector
-StatusCode EventLoopMgr::getEventRoot( IOpaqueAddress*& refpAddr )
-{
+StatusCode EventLoopMgr::getEventRoot( IOpaqueAddress*& refpAddr ) {
   refpAddr      = nullptr;
   StatusCode sc = m_evtSelector->next( *m_evtContext );
   if ( !sc.isSuccess() ) return sc;

@@ -17,8 +17,7 @@
 // Standard constructor, initializes variables
 //=============================================================================
 RootHistCnv::RootCompressionSettings::RootCompressionSettings( const std::string& settings )
-    : m_level( ROOT::CompressionSettings( ROOT::kZLIB, 1 ) )
-{
+    : m_level( ROOT::CompressionSettings( ROOT::kZLIB, 1 ) ) {
   const std::string::size_type idx = settings.find( ':' );
   if ( idx != std::string::npos ) {
     // Get compression algorithm type

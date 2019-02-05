@@ -50,8 +50,7 @@ class IDataStreamTool;
    @author R. Lambert
    @version 1.0
 */
-class EventSelector : public extends<Service, IEvtSelector>
-{
+class EventSelector : public extends<Service, IEvtSelector> {
 public:
   typedef std::vector<EventSelectorDataStream*>     Streams;
   typedef std::vector<std::string>                  StreamSpecs;
@@ -98,78 +97,78 @@ public:
 
   /// Create a new event loop context
   /** @param refpCtxt   [IN/OUT]  Reference to pointer to store the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode createContext( Context*& refpCtxt ) const override;
 
   /// Get next iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode next( Context& refCtxt ) const override;
 
   /// Get next iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode next( Context& refCtxt, int jump ) const override;
 
   /// Get previous iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    * @param jump      [IN]      Number of events to be skipped
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param jump      [IN]      Number of events to be skipped
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode previous( Context& refCtxt ) const override;
 
   /// Get previous iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    * @param jump      [IN]      Number of events to be skipped
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param jump      [IN]      Number of events to be skipped
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode previous( Context& refCtxt, int jump ) const override;
 
   /// Rewind the dataset
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode rewind( Context& refCtxt ) const override;
 
   /// Create new Opaque address corresponding to the current record
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    * @param refpAddr  [OUT]     Reference to address pointer
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param refpAddr  [OUT]     Reference to address pointer
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const override;
 
   /// Release existing event iteration context
   /** @param refCtxt   [IN/OUT]  Reference to the context
-    *
-    * @return StatusCode indicating success or failure
-    */
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode releaseContext( Context*& refCtxt ) const override;
 
   /** Will set a new criteria for the selection of the next list of events and will change
-    * the state of the context in a way to point to the new list.
-    *
-    * @param cr The new criteria string.
-    * @param c Reference pointer to the Context object.
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * the state of the context in a way to point to the new list.
+   *
+   * @param cr The new criteria string.
+   * @param c Reference pointer to the Context object.
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode resetCriteria( const std::string& cr, Context& c ) const override;
 
   /** Access last item in the iteration
-    * @param c Reference to the Context object.
-    *
-    * @return StatusCode indicating success or failure
-    */
+   * @param c Reference to the Context object.
+   *
+   * @return StatusCode indicating success or failure
+   */
   StatusCode last( Context& c ) const override;
 
   /// Retrieve first entry of the next data stream

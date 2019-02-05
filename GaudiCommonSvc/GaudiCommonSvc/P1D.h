@@ -9,17 +9,15 @@
 /*
  *    Gaudi namespace
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /**@class Profile1D
-    *
-    * AIDA implementation for 1 D profiles using ROOT TProfile
-    *
-    * @author  M.Frank
-    */
-  class GAUDI_API Profile1D : public DataObject, public Generic1D<AIDA::IProfile1D, TProfile>
-  {
+   *
+   * AIDA implementation for 1 D profiles using ROOT TProfile
+   *
+   * @author  M.Frank
+   */
+  class GAUDI_API Profile1D : public DataObject, public Generic1D<AIDA::IProfile1D, TProfile> {
     typedef AIDA::IAnnotation IAnnotation;
 
   private:
@@ -32,7 +30,7 @@ namespace Gaudi
     Profile1D( TProfile* rep );
 
     /// Fill the Profile1D with a value and the corresponding weight.
-    bool fill( double x, double y, double weight = 1. ) override;
+    bool         fill( double x, double y, double weight = 1. ) override;
     virtual bool setBinContents( int i, int entries, double height, double error, double spread, double centre );
     /// Retrieve reference to class defininition identifier
     const CLID&        clID() const override { return classID(); }

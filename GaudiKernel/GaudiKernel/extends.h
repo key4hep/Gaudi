@@ -7,8 +7,7 @@
 /// Version for one interface.
 /// @author Marco Clemencic
 template <typename BASE, typename... Interfaces>
-class GAUDI_API extends : public BASE, virtual public extend_interfaces<Interfaces...>
-{
+class GAUDI_API extends : public BASE, virtual public extend_interfaces<Interfaces...> {
 
 public:
   /// Typedef to this class.
@@ -19,16 +18,14 @@ public:
   using BASE::BASE;
 
   /// Implementation of IInterface::i_cast.
-  void* i_cast( const InterfaceID& tid ) const override
-  {
+  void* i_cast( const InterfaceID& tid ) const override {
     using iids = typename extend_interfaces_base::ext_iids;
     void* ptr  = Gaudi::iid_cast( tid, iids{}, this );
     return ptr ? ptr : BASE::i_cast( tid );
   }
 
   /// Implementation of IInterface::queryInterface.
-  StatusCode queryInterface( const InterfaceID& ti, void** pp ) override
-  {
+  StatusCode queryInterface( const InterfaceID& ti, void** pp ) override {
     if ( !pp ) return StatusCode::FAILURE;
     using iids = typename extend_interfaces_base::ext_iids;
     *pp        = Gaudi::iid_cast( ti, iids{}, this );
@@ -39,8 +36,7 @@ public:
   }
 
   /// Implementation of IInterface::getInterfaceNames.
-  std::vector<std::string> getInterfaceNames() const override
-  {
+  std::vector<std::string> getInterfaceNames() const override {
     using iids = typename extend_interfaces_base::ext_iids;
     auto vb    = BASE::getInterfaceNames();
     auto vi    = Gaudi::getInterfaceNames( iids{} );

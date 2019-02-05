@@ -1,6 +1,5 @@
 # File: AthenaCommon/python/ConfigurableDb.py
 # Author: Sebastien Binet (binet@cern.ch)
-
 """A singleton holding informations on the whereabouts of all the automatically
 generated Configurables.
 This repository of (informations on) Configurables is used by the PropertyProxy
@@ -43,21 +42,19 @@ class _CfgDb(dict):
         @param lib: the name of the library holding the component(s) (ie: the
                     C++ Gaudi component which is mapped by the Configurable)
         """
-        cfg = {'package': package,
-               'module': module,
-               'lib': lib}
+        cfg = {'package': package, 'module': module, 'lib': lib}
         if self.has_key(configurable):
             # check if it comes from the same library...
             if cfg['lib'] != self[configurable]['lib']:
-                log.debug("dup!! [%s] p=%s m=%s lib=%s",
-                          configurable, package, module, lib)
+                log.debug("dup!! [%s] p=%s m=%s lib=%s", configurable, package,
+                          module, lib)
                 if self._duplicates.has_key(configurable):
                     self._duplicates[configurable] += [cfg]
                 else:
                     self._duplicates[configurable] = [cfg]
         else:
-            log.debug("added [%s] p=%s m=%s lib=%s",
-                      configurable, package, module, lib)
+            log.debug("added [%s] p=%s m=%s lib=%s", configurable, package,
+                      module, lib)
             self[configurable] = cfg
 
     def duplicates(self):
@@ -79,9 +76,7 @@ class _CfgDb(dict):
             except Exception:
                 f.close()
                 raise Exception(
-                    "invalid line format: %s:%d: %r" %
-                    (fname, i + 1, ll)
-                )
+                    "invalid line format: %s:%d: %r" % (fname, i + 1, ll))
         f.close()
 
 
@@ -125,12 +120,16 @@ def loadConfigurableDb():
         if not os.path.isdir(path):
             continue
         log.debug("walking in [%s]...", path)
-        confDbFiles = [f for f in [path_join(path, f) for f in os.listdir(path)
-                                   if f.endswith('.confdb')]
-                       if os.path.isfile(f)]
+        confDbFiles = [
+            f for f in [
+                path_join(path, f) for f in os.listdir(path)
+                if f.endswith('.confdb')
+            ] if os.path.isfile(f)
+        ]
         # check if we use "*_merged.confdb"
-        mergedConfDbFiles = [f for f in confDbFiles
-                             if f.endswith('_merged.confdb')]
+        mergedConfDbFiles = [
+            f for f in confDbFiles if f.endswith('_merged.confdb')
+        ]
         if mergedConfDbFiles:
             # use only the merged ones
             confDbFiles = mergedConfDbFiles
@@ -174,11 +173,11 @@ def getConfigurable(className, requester='', assumeCxxClass=True):
     try:
         confClass = getattr(mod, confClass)
     except AttributeError:
-        log.warning("%s: Configurable %s not found in module %s",
-                    requester, confClass, confMod)
+        log.warning("%s: Configurable %s not found in module %s", requester,
+                    confClass, confMod)
         return None
     # Got it!
-    log.debug("%s: Found configurable %s in module %s",
-              requester, confClass, confMod)
+    log.debug("%s: Found configurable %s in module %s", requester, confClass,
+              confMod)
 
     return confClass

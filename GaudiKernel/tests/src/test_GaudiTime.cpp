@@ -29,10 +29,8 @@
 
 #include <memory>
 
-namespace GaudiKernelTest
-{
-  class TimeTest : public CppUnit::TestFixture
-  {
+namespace GaudiKernelTest {
+  class TimeTest : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE( TimeTest );
 
@@ -45,8 +43,7 @@ namespace GaudiKernelTest
     TimeTest() {}
     virtual ~TimeTest() {}
 
-    void test_nanoformat()
-    {
+    void test_nanoformat() {
       Gaudi::Time t( 2011, 0, 13, 14, 22, 45, 123000, true );
 
       CPPUNIT_ASSERT_EQUAL( std::string( "000123" ), t.nanoformat() );
@@ -57,8 +54,7 @@ namespace GaudiKernelTest
       CPPUNIT_ASSERT_EQUAL( std::string( "000" ), t.nanoformat( 3, 3 ) );
     }
 
-    void test_format()
-    {
+    void test_format() {
       Gaudi::Time t( 2011, 0, 13, 14, 22, 45, 1230000, true );
 
       CPPUNIT_ASSERT_EQUAL( std::string( "2011-01-13 14:22:45" ), t.format( true, "%Y-%m-%d %H:%M:%S" ) );
@@ -84,8 +80,7 @@ namespace GaudiKernelTest
    *  @author Marco Clemencic
    *  @date   2006-11-13
    */
-  class ProgressListener : public CppUnit::TestListener
-  {
+  class ProgressListener : public CppUnit::TestListener {
 
   public:
     /// Default constructor.
@@ -94,21 +89,18 @@ namespace GaudiKernelTest
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test* test ) override
-    {
+    void startTest( CppUnit::Test* test ) override {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure& failure ) override
-    {
+    void addFailure( const CppUnit::TestFailure& failure ) override {
       std::cout << " : " << ( failure.isError() ? "error" : "assertion" );
       m_lastTestFailed = true;
     }
 
-    void endTest( CppUnit::Test* /*test*/ ) override
-    {
+    void endTest( CppUnit::Test* /*test*/ ) override {
       if ( !m_lastTestFailed ) std::cout << " : OK";
       std::cout << std::endl;
     }
@@ -116,12 +108,11 @@ namespace GaudiKernelTest
   private:
     bool m_lastTestFailed;
   };
-}
+} // namespace GaudiKernelTest
 
 // Copied from the COOL implementation
 #include <stdexcept>
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
   // Retrieve test path from command line first argument.
   // Default to "" which resolve to the top level suite.
   std::string testPath = ( argc > 1 ) ? std::string( argv[1] ) : std::string( "" );

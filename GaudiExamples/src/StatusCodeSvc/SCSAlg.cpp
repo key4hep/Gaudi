@@ -4,8 +4,7 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode SCSAlg::execute()
-{
+StatusCode SCSAlg::execute() {
 
   fncChecked();
   fncUnchecked();
@@ -23,8 +22,7 @@ void __attribute__( ( noinline ) ) SCSAlg::fncChecked() { test().isSuccess(); }
 
 void __attribute__( ( noinline ) ) SCSAlg::fncUnchecked() { test(); }
 
-void SCSAlg::fncIgnored()
-{
+void SCSAlg::fncIgnored() {
   // Ignore all unchecked StatusCode instances in the current scope.
   StatusCode::ScopedDisableChecking _sc_ignore;
 

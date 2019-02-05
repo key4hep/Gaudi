@@ -5,11 +5,10 @@
 #include "GaudiKernel/IService.h"
 #include <map>
 
-namespace HepPDT
-{
+namespace HepPDT {
   class ParticleDataTable;
   class ProcessUnknownID;
-}
+} // namespace HepPDT
 
 /* @class IPartPropSvc IPartPropSvc.h GaudiKernel/IPartPropSvc.h
 
@@ -18,14 +17,13 @@ namespace HepPDT
     @author Charles Leggett
 
 */
-class GAUDI_API IPartPropSvc : virtual public IService
-{
+class GAUDI_API IPartPropSvc : virtual public IService {
 
 public:
   /// InterfaceID
   DeclareInterfaceID( IPartPropSvc, 2, 0 );
 
-  virtual HepPDT::ParticleDataTable* PDT() = 0;
+  virtual HepPDT::ParticleDataTable* PDT()                                                                      = 0;
   virtual void                       setUnknownParticleHandler( HepPDT::ProcessUnknownID*, const std::string& ) = 0;
 };
 

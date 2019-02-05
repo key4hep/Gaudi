@@ -40,18 +40,14 @@ StatusCode Converter::updateRep( IOpaqueAddress*, DataObject* ) { return StatusC
 StatusCode Converter::updateRepRefs( IOpaqueAddress*, DataObject* ) { return StatusCode::SUCCESS; }
 
 /// Initialize the converter
-StatusCode Converter::initialize()
-{
+StatusCode Converter::initialize() {
   // Get a reference to the Message Service
-  if ( !msgSvc() ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !msgSvc() ) { return StatusCode::FAILURE; }
   return StatusCode::SUCCESS;
 }
 
 /// Finalize the converter
-StatusCode Converter::finalize()
-{
+StatusCode Converter::finalize() {
   // release services
   m_messageSvc     = nullptr;
   m_dataManager    = nullptr;
@@ -62,8 +58,7 @@ StatusCode Converter::finalize()
 }
 
 /// Set data provider service
-StatusCode Converter::setDataProvider( IDataProviderSvc* svc )
-{
+StatusCode Converter::setDataProvider( IDataProviderSvc* svc ) {
   m_dataProvider = svc;
   m_dataManager  = svc;
   return StatusCode::SUCCESS;
@@ -76,8 +71,7 @@ SmartIF<IDataProviderSvc>& Converter::dataProvider() const { return m_dataProvid
 SmartIF<IDataManagerSvc>& Converter::dataManager() const { return m_dataManager; }
 
 /// Set conversion service the converter is connected to
-StatusCode Converter::setConversionSvc( IConversionSvc* svc )
-{
+StatusCode Converter::setConversionSvc( IConversionSvc* svc ) {
   m_conversionSvc = svc;
   return StatusCode::SUCCESS;
 }
@@ -86,8 +80,7 @@ StatusCode Converter::setConversionSvc( IConversionSvc* svc )
 SmartIF<IConversionSvc>& Converter::conversionSvc() const { return m_conversionSvc; }
 
 /// Set address creator facility
-StatusCode Converter::setAddressCreator( IAddressCreator* creator )
-{
+StatusCode Converter::setAddressCreator( IAddressCreator* creator ) {
   m_addressCreator = creator;
   return StatusCode::SUCCESS;
 }
@@ -99,25 +92,20 @@ SmartIF<IAddressCreator>& Converter::addressCreator() const { return m_addressCr
 SmartIF<ISvcLocator>& Converter::serviceLocator() const { return m_svcLocator; }
 
 ///--- Retrieve pointer to message service
-SmartIF<IMessageSvc>& Converter::msgSvc() const
-{
+SmartIF<IMessageSvc>& Converter::msgSvc() const {
   if ( !m_messageSvc ) {
     m_messageSvc = serviceLocator();
-    if ( !m_messageSvc ) {
-      throw GaudiException( "Service [MessageSvc] not found", "Converter", StatusCode::FAILURE );
-    }
+    if ( !m_messageSvc ) { throw GaudiException( "Service [MessageSvc] not found", "Converter", StatusCode::FAILURE ); }
   }
   return m_messageSvc;
 }
 
 /// Standard Constructor
 Converter::Converter( long storage_type, const CLID& class_type, ISvcLocator* svc )
-    : m_storageType( storage_type ), m_classType( class_type ), m_svcLocator( svc )
-{
-}
+    : m_storageType( storage_type ), m_classType( class_type ), m_svcLocator( svc ) {}
 
-StatusCode Converter::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const
-{
+StatusCode Converter::service_i( const std::string& svcName, bool createIf, const InterfaceID& iid,
+                                 void** ppSvc ) const {
   // Check for name of conversion service
   SmartIF<INamedInterface> cnvsvc( conversionSvc() );
   if ( cnvsvc ) {
@@ -128,8 +116,7 @@ StatusCode Converter::service_i( const std::string& svcName, bool createIf, cons
 }
 
 StatusCode Converter::service_i( const std::string& svcType, const std::string& svcName, const InterfaceID& iid,
-                                 void** ppSvc ) const
-{
+                                 void** ppSvc ) const {
   // Check for name of conversion service
   SmartIF<INamedInterface> cnvsvc( conversionSvc() );
   if ( cnvsvc ) {
@@ -139,8 +126,7 @@ StatusCode Converter::service_i( const std::string& svcType, const std::string& 
   return StatusCode::FAILURE;
 }
 
-SmartIF<IService> Converter::service( const std::string& name, const bool createIf ) const
-{
+SmartIF<IService> Converter::service( const std::string& name, const bool createIf ) const {
   SmartIF<INamedInterface> cnvsvc( conversionSvc() );
   SmartIF<IService>        svc;
   if ( cnvsvc ) {

@@ -20,8 +20,7 @@ class IRegistry;
     @author M.Frank
     @version 1.0
 */
-class GAUDI_API IOpaqueAddress
-{
+class GAUDI_API IOpaqueAddress {
 public:
   /// destructor
   virtual ~IOpaqueAddress() = default;

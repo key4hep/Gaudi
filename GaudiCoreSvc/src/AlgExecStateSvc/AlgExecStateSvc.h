@@ -10,19 +10,18 @@
 #include <vector>
 
 /** @class AlgExecStateSvc
-  * @brief A service that keeps track of the execution state of Algorithm
-  *
-  */
-class AlgExecStateSvc : public extends<Service, IAlgExecStateSvc>
-{
+ * @brief A service that keeps track of the execution state of Algorithm
+ *
+ */
+class AlgExecStateSvc : public extends<Service, IAlgExecStateSvc> {
 public:
   using extends::extends;
 
   typedef IAlgExecStateSvc::AlgStateMap_t AlgStateMap_t;
 
   using IAlgExecStateSvc::algExecState;
-  const AlgExecState& algExecState( const Gaudi::StringKey& algName, const EventContext& ctx ) const override;
-  AlgExecState& algExecState( IAlgorithm* iAlg, const EventContext& ctx ) override;
+  const AlgExecState&  algExecState( const Gaudi::StringKey& algName, const EventContext& ctx ) const override;
+  AlgExecState&        algExecState( IAlgorithm* iAlg, const EventContext& ctx ) override;
   const AlgStateMap_t& algExecStates( const EventContext& ctx ) const override;
 
   void reset( const EventContext& ctx ) override;
@@ -37,7 +36,7 @@ public:
   void updateEventStatus( const bool& b, const EventContext& ctx ) override;
 
   unsigned int algErrorCount( const IAlgorithm* iAlg ) const override;
-  void resetErrorCount( const IAlgorithm* iAlg ) override;
+  void         resetErrorCount( const IAlgorithm* iAlg ) override;
   unsigned int incrementErrorCount( const IAlgorithm* iAlg ) override;
 
   void dump( std::ostringstream& ost, const EventContext& ctx ) const override;

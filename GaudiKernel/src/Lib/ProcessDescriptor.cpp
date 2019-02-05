@@ -18,8 +18,7 @@
 static const long TICK_TO_100NSEC = 100000;
 #endif // not __APPLE__
 
-namespace System
-{
+namespace System {
   enum ProcessInfoCommand {
     ProcessBasicInformation,
     ProcessQuotaLimits,
@@ -49,15 +48,14 @@ namespace System
   };
 }
 #ifdef _WIN32
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define NOMSG
-#define NOGDI
-#include "process.h"
-#include "windows.h"
-#define getpid _getpid
-namespace NtApi
-{
+#  define strcasecmp _stricmp
+#  define strncasecmp _strnicmp
+#  define NOMSG
+#  define NOGDI
+#  include "process.h"
+#  include "windows.h"
+#  define getpid _getpid
+namespace NtApi {
   //__declspec(dllimport) long __stdcall NtQueryInformationProcess(
   //  typedef __declspec(dllimport) long __stdcall (*__NtQueryInformationProcess)(
   //  extern "C" long __cdecl NtQueryInformationProcess(
@@ -67,28 +65,28 @@ namespace NtApi
       void* ProcessHandle, long ProcessInformationClass, void* ProcessInformation,
       unsigned long ProcessInformationLength, unsigned long* ReturnLength );
   __NtQueryInformationProcess NtQueryInformationProcess;
-};
+};    // namespace NtApi
 #else // UNIX...: first the EGCS stuff, then the OS dependent includes
-#define WINVER 0
-#include "libgen.h"
-#include "sys/times.h"
-#include "unistd.h"
-#include <cstdio>
-#include <errno.h>
-#include <fcntl.h>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <sys/signal.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
-#ifndef __APPLE__
-#include <sys/procfs.h>
-#endif
-#include <cstdio>
-#include <sys/resource.h>
-#include <sys/time.h>
+#  define WINVER 0
+#  include "libgen.h"
+#  include "sys/times.h"
+#  include "unistd.h"
+#  include <cstdio>
+#  include <errno.h>
+#  include <fcntl.h>
+#  include <iostream>
+#  include <sstream>
+#  include <string>
+#  include <sys/signal.h>
+#  include <sys/syscall.h>
+#  include <sys/types.h>
+#  include <unistd.h>
+#  ifndef __APPLE__
+#    include <sys/procfs.h>
+#  endif
+#  include <cstdio>
+#  include <sys/resource.h>
+#  include <sys/time.h>
 
 /* Format of the Linux proc/stat (man 5 proc, kernel 2.6.35):
  pid %d      The process ID.
@@ -295,13 +293,12 @@ struct linux_proc {
   unsigned long      wchan;
 };
 
-#ifdef __APPLE__
+#  ifdef __APPLE__
 // static long  pg_size = 0;
-#else
+#  else
 static long pg_size = sysconf( _SC_PAGESIZE ); // getpagesize();
-#endif
-void readProcStat( long pid, linux_proc& pinfo )
-{
+#  endif
+void readProcStat( long pid, linux_proc& pinfo ) {
 
   int  cnt, fd;
   char buf[512];
@@ -341,11 +338,11 @@ void readProcStat( long pid, linux_proc& pinfo )
 }
 #endif
 
-// static long s_myPid  = ::getpid();
-// In order to properly support e.g. fork() calls, we cannot keep a copy of the pid!
+  // static long s_myPid  = ::getpid();
+  // In order to properly support e.g. fork() calls, we cannot keep a copy of the pid!
 
 #ifndef __APPLE__
-static inline long processID( long pid ) { return ( pid > 0 ) ? pid : (::getpid() ); }
+static inline long processID( long pid ) { return ( pid > 0 ) ? pid : ( ::getpid() ); }
 #endif // not __APPLE__
 
 // Framework include files
@@ -353,15 +350,14 @@ static inline long processID( long pid ) { return ( pid > 0 ) ? pid : (::getpid(
 #include "GaudiKernel/System.h"
 #include "ProcessDescriptor.h"
 
-System::ProcessDescriptor::ProcessHandle::ProcessHandle( long pid )
-{
+System::ProcessDescriptor::ProcessHandle::ProcessHandle( long pid ) {
   if ( pid > 0 ) {
     if ( pid != ::getpid() ) {
 #ifdef _WIN32
       m_handle = ::OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid );
 #else
       // Note: the return type of getpid is pid_t, which is int on 64bit machines too
-      m_handle = reinterpret_cast<void*>( static_cast<long>(::getpid() ) );
+      m_handle = reinterpret_cast<void*>( static_cast<long>( ::getpid() ) );
 #endif
       m_needRelease = true;
       return;
@@ -371,19 +367,17 @@ System::ProcessDescriptor::ProcessHandle::ProcessHandle( long pid )
   m_needRelease = false;
 }
 
-System::ProcessDescriptor::ProcessHandle::~ProcessHandle()
-{
+System::ProcessDescriptor::ProcessHandle::~ProcessHandle() {
   if ( m_needRelease ) {
 #ifdef _WIN32
     ::CloseHandle( m_handle );
 #else
-    m_handle   = nullptr;
+    m_handle = nullptr;
 #endif
   }
 }
 
-System::ProcessDescriptor::ProcessDescriptor()
-{
+System::ProcessDescriptor::ProcessDescriptor() {
 #ifdef _WIN32
   static bool first = true;
   if ( first ) {
@@ -399,8 +393,7 @@ System::ProcessDescriptor::ProcessDescriptor()
 
 System::ProcessDescriptor::~ProcessDescriptor() {}
 
-long System::ProcessDescriptor::query( long pid, InfoType fetch, IO_COUNTERS* info )
-{
+long System::ProcessDescriptor::query( long pid, InfoType fetch, IO_COUNTERS* info ) {
   if ( info == 0 ) return 0;
   long status = 1;
 
@@ -427,8 +420,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, IO_COUNTERS* in
   return status;
 }
 
-long System::ProcessDescriptor::query( long pid, InfoType fetch, POOLED_USAGE_AND_LIMITS* info )
-{
+long System::ProcessDescriptor::query( long pid, InfoType fetch, POOLED_USAGE_AND_LIMITS* info ) {
   if ( info == 0 ) return 0;
   long status = 1;
 
@@ -446,15 +438,15 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, POOLED_USAGE_AN
 
     getrlimit( RLIMIT_DATA, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PeakPagedPoolUsage                          = lim.rlim_cur;
-    info->PagedPoolUsage                              = lim.rlim_cur;
-    info->PagedPoolLimit                              = lim.rlim_max;
+    info->PeakPagedPoolUsage = lim.rlim_cur;
+    info->PagedPoolUsage     = lim.rlim_cur;
+    info->PagedPoolLimit     = lim.rlim_max;
 
     getrlimit( RLIMIT_STACK, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PeakNonPagedPoolUsage                       = lim.rlim_cur;
-    info->NonPagedPoolUsage                           = lim.rlim_cur;
-    info->NonPagedPoolLimit                           = lim.rlim_max;
+    info->PeakNonPagedPoolUsage = lim.rlim_cur;
+    info->NonPagedPoolUsage     = lim.rlim_cur;
+    info->NonPagedPoolLimit     = lim.rlim_max;
 
     linux_proc prc;
     readProcStat( processID( pid ), prc );
@@ -469,8 +461,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, POOLED_USAGE_AN
   return status;
 }
 
-long System::ProcessDescriptor::query( long pid, InfoType fetch, long* info )
-{
+long System::ProcessDescriptor::query( long pid, InfoType fetch, long* info ) {
 
   if ( info == 0 ) return 0;
   long status = 1;
@@ -497,8 +488,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, long* info )
   return status;
 }
 
-long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* info )
-{
+long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* info ) {
   if ( info == 0 ) return 0;
   long status = 1;
 
@@ -539,8 +529,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* in
   return status;
 }
 
-long System::ProcessDescriptor::query( long pid, InfoType fetch, QUOTA_LIMITS* info )
-{
+long System::ProcessDescriptor::query( long pid, InfoType fetch, QUOTA_LIMITS* info ) {
   if ( info == 0 ) return 0;
   long status = 1;
 
@@ -559,24 +548,24 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, QUOTA_LIMITS* i
     rlimit lim;
     getrlimit( RLIMIT_DATA, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PagedPoolLimit                              = lim.rlim_max;
+    info->PagedPoolLimit = lim.rlim_max;
 
     getrlimit( RLIMIT_STACK, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->NonPagedPoolLimit                           = lim.rlim_max;
-    info->MinimumWorkingSetSize                       = 0;
+    info->NonPagedPoolLimit     = lim.rlim_max;
+    info->MinimumWorkingSetSize = 0;
 
     getrlimit( RLIMIT_RSS, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->MaximumWorkingSetSize                       = lim.rlim_max;
+    info->MaximumWorkingSetSize = lim.rlim_max;
 
     getrlimit( RLIMIT_AS, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->PagefileLimit                               = lim.rlim_max;
+    info->PagefileLimit = lim.rlim_max;
 
     getrlimit( RLIMIT_CPU, &lim );
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
-    info->TimeLimit                                   = lim.rlim_max;
+    info->TimeLimit = lim.rlim_max;
 #elif defined( __APPLE__ )
 #else  // All Other
 #endif // End ALL OS
@@ -584,8 +573,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, QUOTA_LIMITS* i
   return status;
 }
 
-long System::ProcessDescriptor::query( long pid, InfoType fetch, PROCESS_BASIC_INFORMATION* info )
-{
+long System::ProcessDescriptor::query( long pid, InfoType fetch, PROCESS_BASIC_INFORMATION* info ) {
   if ( info == 0 ) return 0;
   long status = 1;
 
@@ -616,8 +604,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, PROCESS_BASIC_I
   return status;
 }
 
-long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIMES* info )
-{
+long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIMES* info ) {
   if ( info == 0 ) return 0;
   long status = 1;
 

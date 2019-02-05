@@ -13,8 +13,7 @@ class IIncidentSvc;
  *  @author Marco Clemencic
  *  @date   Nov 16, 2007
  */
-class AbortEventAlg : public GaudiAlgorithm
-{
+class AbortEventAlg : public GaudiAlgorithm {
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;

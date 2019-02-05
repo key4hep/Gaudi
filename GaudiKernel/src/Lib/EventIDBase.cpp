@@ -21,8 +21,7 @@ EventIDBase::EventIDBase( number_type run_number, event_number_t event_number, n
     , m_time_stamp( time_stamp )
     , m_time_stamp_ns_offset( time_stamp_ns_offset )
     , m_lumi_block( lumi_block )
-    , m_bunch_crossing_id( bunch_crossing_id )
-{
+    , m_bunch_crossing_id( bunch_crossing_id ) {
   if ( m_run_number != UNDEFNUM && m_event_number != UNDEFEVT ) setRE();
 
   if ( m_time_stamp != UNDEFNUM ) {
@@ -42,6 +41,4 @@ EventIDBase::EventIDBase( std::tuple<number_type, number_type, event_number_t> r
                    std::get<0>( time_stamp ),  // timestamp in seconds
                    std::get<1>( time_stamp ),  // nanoseconds offst
                    std::get<1>( run_lumi_ev ), // lumi block
-                   bunch_crossing_id )
-{
-}
+                   bunch_crossing_id ) {}

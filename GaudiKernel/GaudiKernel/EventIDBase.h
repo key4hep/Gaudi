@@ -19,11 +19,9 @@
 #include <tuple>
 
 #include "GaudiKernel/compose.h"
-namespace details
-{
+namespace details {
   template <typename lambda>
-  struct arg_helper : public arg_helper<decltype( &lambda::operator() )> {
-  };
+  struct arg_helper : public arg_helper<decltype( &lambda::operator() )> {};
   template <typename T, typename Ret, typename Arg>
   struct arg_helper<Ret ( T::* )( Arg ) const> {
     using type = Arg;
@@ -35,19 +33,17 @@ namespace details
   using argument_t = typename arg_helper<lambda>::type;
 
   template <typename Fun>
-  auto add_deref( Fun f )
-  {
+  auto add_deref( Fun f ) {
     return compose( f, [=]( auto*... p ) { return f( *p... ); } );
   }
 
   template <typename Proj, typename Cmp = std::greater<>>
-  auto make_cmp( Proj p, Cmp cmp = {} )
-  {
+  auto make_cmp( Proj p, Cmp cmp = {} ) {
     static_assert( std::is_reference<argument_t<Proj>>::value, "must be a reference" );
     static_assert( std::is_const<std::remove_reference_t<argument_t<Proj>>>::value, "must be const" );
     return [=]( argument_t<Proj> lhs, argument_t<Proj> rhs ) { return cmp( p( lhs ), p( rhs ) ); };
   }
-}
+} // namespace details
 
 /**
  * @class EventIDBase
@@ -57,8 +53,7 @@ namespace details
  *
  */
 
-class EventIDBase
-{
+class EventIDBase {
 public:
   typedef unsigned int number_type;
   typedef uint64_t     event_number_t;
@@ -102,24 +97,21 @@ public:
   number_type bunch_crossing_id() const { return m_bunch_crossing_id; }
 
   /// set run number
-  void set_run_number( number_type runNumber )
-  {
+  void set_run_number( number_type runNumber ) {
     m_run_number = runNumber;
     if ( m_event_number != UNDEFEVT ) setRE();
     if ( m_lumi_block != UNDEFNUM ) setRL();
   }
 
   /// set event number
-  void set_event_number( event_number_t eventNumber )
-  {
+  void set_event_number( event_number_t eventNumber ) {
     m_event_number = eventNumber;
     if ( m_run_number != UNDEFNUM ) setRE();
     if ( m_lumi_block != UNDEFNUM ) setLE();
   }
 
   /// set time stamp
-  void set_time_stamp( number_type timeStamp )
-  {
+  void set_time_stamp( number_type timeStamp ) {
     m_time_stamp = timeStamp;
     setTS();
   }
@@ -128,8 +120,7 @@ public:
   void set_time_stamp_ns_offset( number_type timeStampNs ) { m_time_stamp_ns_offset = timeStampNs; }
 
   /// set luminosity block identifier
-  void set_lumi_block( number_type lumiBlock )
-  {
+  void set_lumi_block( number_type lumiBlock ) {
     m_lumi_block = lumiBlock;
     if ( m_run_number != UNDEFNUM ) setRL();
     if ( m_event_number != UNDEFEVT ) setLE();
@@ -158,26 +149,22 @@ public:
   /// Extraction operators
   friend std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs );
 
-  static auto SortByTimeStamp()
-  {
-    return ::details::add_deref(::details::make_cmp(
+  static auto SortByTimeStamp() {
+    return ::details::add_deref( ::details::make_cmp(
         []( const EventIDBase& e ) { return std::tie( e.m_time_stamp, e.m_time_stamp_ns_offset ); } ) );
   };
 
-  static auto SortByRunEvent()
-  {
+  static auto SortByRunEvent() {
     return ::details::add_deref(
         ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_event_number ); } ) );
   };
 
-  static auto SortByLumiEvent()
-  {
+  static auto SortByLumiEvent() {
     return ::details::add_deref(
         ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_lumi_block, e.m_event_number ); } ) );
   };
 
-  static auto SortByRunLumi()
-  {
+  static auto SortByRunLumi() {
     return ::details::add_deref(
         ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_lumi_block ); } ) );
   };
@@ -212,8 +199,7 @@ private:
   number_type m_bunch_crossing_id{UNDEFNUM};
 };
 
-inline EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs )
-{
+inline EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs ) {
 
   //"min" is easy b/c the numbers denoting invalidty for TS or Run/Event/LB are the
   // largest possible numbers, so naturally larger than any valid number
@@ -223,17 +209,16 @@ inline EventIDBase min( const EventIDBase& lhs, const EventIDBase& rhs )
                       std::min( std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset ),
                                 std::tie( rhs.m_time_stamp, rhs.m_time_stamp_ns_offset ) ),
                       lhs.bunch_crossing_id() // bcid doesn't really matter here
-                      );
+  );
 }
 
-inline EventIDBase max( const EventIDBase& lhs, const EventIDBase& rhs )
-{
+inline EventIDBase max( const EventIDBase& lhs, const EventIDBase& rhs ) {
 
   //"max" is much trickier because we need to handle invalid number explicilty by
   // checking if a EventIDBase is TS or Run/Lumi
 
   std::tuple<EventIDBase::number_type, EventIDBase::number_type, EventIDBase::event_number_t> run_lumi_ev;
-  std::tuple<EventIDBase::number_type, EventIDBase::number_type> time_stamp;
+  std::tuple<EventIDBase::number_type, EventIDBase::number_type>                              time_stamp;
 
   if ( lhs.isTimeStamp() && rhs.isTimeStamp() ) { // both time-stamp, compare them
     time_stamp = std::max( std::tie( lhs.m_time_stamp, lhs.m_time_stamp_ns_offset ),
@@ -257,8 +242,7 @@ inline EventIDBase max( const EventIDBase& lhs, const EventIDBase& rhs )
   return EventIDBase( run_lumi_ev, time_stamp, lhs.bunch_crossing_id() );
 }
 
-inline bool operator<( const EventIDBase& lhs, const EventIDBase& rhs )
-{
+inline bool operator<( const EventIDBase& lhs, const EventIDBase& rhs ) {
   // first try ordering by timestamp if both are non-zero
   // then try ordering by run/lumi/event
   // this assumes that both EventIDBase have the same set of values defined.
@@ -271,15 +255,13 @@ inline bool operator<( const EventIDBase& lhs, const EventIDBase& rhs )
   }
 }
 
-inline bool operator==( const EventIDBase& lhs, const EventIDBase& rhs )
-{
+inline bool operator==( const EventIDBase& lhs, const EventIDBase& rhs ) {
   // We assume that equality via run/event/lumi numbers is sufficient
   return ( lhs.m_run_number == rhs.m_run_number && lhs.m_event_number == rhs.m_event_number &&
            lhs.m_lumi_block == rhs.m_lumi_block );
 }
 
-inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs )
-{
+inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs ) {
   if ( rhs.m_type == EventIDBase::Invalid ) return os << "[INVALID]";
 
   const char* separator = "";
@@ -307,9 +289,7 @@ inline std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs )
     separator = ",";
   }
 
-  if ( rhs.m_bunch_crossing_id != 0 ) {
-    os << separator << "b:" << rhs.m_bunch_crossing_id;
-  }
+  if ( rhs.m_bunch_crossing_id != 0 ) { os << separator << "b:" << rhs.m_bunch_crossing_id; }
   os << "]";
   return os;
 }

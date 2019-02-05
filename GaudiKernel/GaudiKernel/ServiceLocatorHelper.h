@@ -14,41 +14,31 @@ class MsgStream;
  *  @brief an helper to share the implementation of service() among the
  *         various kernel base classes
  */
-class GAUDI_API ServiceLocatorHelper
-{
+class GAUDI_API ServiceLocatorHelper {
 public:
   ServiceLocatorHelper( ISvcLocator& svcLoc, const INamedInterface& requester )
       : m_svcLoc( svcLoc )
       , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), requester.name() )
       , // use requester msg level
-      m_requesterName( requester.name() )
-  {
-  }
+      m_requesterName( requester.name() ) {}
   ServiceLocatorHelper( ISvcLocator& svcLoc, const std::string& loggedName, const std::string& requesterName )
       : m_svcLoc( svcLoc )
       , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), loggedName )
       , // use requester msg level
-      m_requesterName( requesterName )
-  {
-  }
+      m_requesterName( requesterName ) {}
   ServiceLocatorHelper( ISvcLocator& svcLoc, const std::string& requesterName )
       : m_svcLoc( svcLoc )
       , m_msgLog( SmartIF<IMessageSvc>( &svcLoc ), requesterName )
       , // use requester msg level
-      m_requesterName( requesterName )
-  {
-  }
+      m_requesterName( requesterName ) {}
 #if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   ServiceLocatorHelper( ISvcLocator&       svcLoc,
                         const MsgStream&   log, // use requester msg level
                         const std::string& requesterName )
-      : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( requesterName )
-  {
-  }
+      : m_svcLoc( svcLoc ), m_msgLog( log ), m_requesterName( requesterName ) {}
 #endif
 
-  StatusCode getService( const std::string& name, bool createIf, const InterfaceID& iid, void** ppSvc ) const
-  {
+  StatusCode getService( const std::string& name, bool createIf, const InterfaceID& iid, void** ppSvc ) const {
     return createIf ? createService( name, iid, ppSvc ) : locateService( name, iid, ppSvc, true );
   }
 
@@ -62,8 +52,7 @@ public:
   SmartIF<IService> service( const std::string& name, const bool quiet = false, const bool createIf = true ) const;
 
   template <typename T>
-  SmartIF<T> service( const std::string& name, const bool quiet = false, const bool createIf = true ) const
-  {
+  SmartIF<T> service( const std::string& name, const bool quiet = false, const bool createIf = true ) const {
     return service( name, quiet, createIf ).as<T>();
   }
 

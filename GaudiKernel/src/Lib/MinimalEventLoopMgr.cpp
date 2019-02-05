@@ -19,22 +19,19 @@
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
 // Standard Constructor
 //--------------------------------------------------------------------------------------------
 MinimalEventLoopMgr::MinimalEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc )
-    : base_class( nam, svcLoc ), m_appMgrUI( svcLoc )
-{
-}
+    : base_class( nam, svcLoc ), m_appMgrUI( svcLoc ) {}
 
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::initialize
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::initialize()
-{
+StatusCode MinimalEventLoopMgr::initialize() {
 
   if ( !m_appMgrUI ) return StatusCode::FAILURE;
 
@@ -49,12 +46,8 @@ StatusCode MinimalEventLoopMgr::initialize()
     error() << "Error retrieving AppMgr interface IProperty." << endmsg;
     return StatusCode::FAILURE;
   }
-  if ( m_topAlgNames.value().empty() ) {
-    setProperty( prpMgr->getProperty( "TopAlg" ) ).ignore();
-  }
-  if ( m_outStreamNames.value().empty() ) {
-    setProperty( prpMgr->getProperty( "OutStream" ) ).ignore();
-  }
+  if ( m_topAlgNames.value().empty() ) { setProperty( prpMgr->getProperty( "TopAlg" ) ).ignore(); }
+  if ( m_outStreamNames.value().empty() ) { setProperty( prpMgr->getProperty( "OutStream" ) ).ignore(); }
 
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service( "IncidentSvc" );
@@ -136,8 +129,7 @@ StatusCode MinimalEventLoopMgr::initialize()
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::start
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::start()
-{
+StatusCode MinimalEventLoopMgr::start() {
 
   StatusCode sc = Service::start();
   if ( !sc.isSuccess() ) return sc;
@@ -163,8 +155,7 @@ StatusCode MinimalEventLoopMgr::start()
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::stop
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::stop()
-{
+StatusCode MinimalEventLoopMgr::stop() {
 
   StatusCode sc( StatusCode::SUCCESS, true );
 
@@ -191,8 +182,7 @@ StatusCode MinimalEventLoopMgr::stop()
 //--------------------------------------------------------------------------------------------
 // implementation of IService::reinitialize
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::reinitialize()
-{
+StatusCode MinimalEventLoopMgr::reinitialize() {
   StatusCode sc = StatusCode::SUCCESS;
 
   // Reinitialize all the TopAlgs.
@@ -216,8 +206,7 @@ StatusCode MinimalEventLoopMgr::reinitialize()
 //--------------------------------------------------------------------------------------------
 // implementation of IService::restart
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::restart()
-{
+StatusCode MinimalEventLoopMgr::restart() {
   StatusCode sc = StatusCode::SUCCESS;
 
   // Restart all the TopAlgs.
@@ -244,8 +233,7 @@ StatusCode MinimalEventLoopMgr::restart()
 //--------------------------------------------------------------------------------------------
 // implementation of IService::finalize
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::finalize()
-{
+StatusCode MinimalEventLoopMgr::finalize() {
   StatusCode sc    = StatusCode::SUCCESS;
   StatusCode scRet = StatusCode::SUCCESS;
   // Call the finalize() method of all top algorithms
@@ -294,8 +282,7 @@ StatusCode MinimalEventLoopMgr::finalize()
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::nextEvent( int /* maxevt */ )
-{
+StatusCode MinimalEventLoopMgr::nextEvent( int /* maxevt */ ) {
   error() << "This method cannot be called on an object of type " << System::typeinfoName( typeid( *this ) ) << endmsg;
   return StatusCode::FAILURE;
 }
@@ -303,42 +290,33 @@ StatusCode MinimalEventLoopMgr::nextEvent( int /* maxevt */ )
 //--------------------------------------------------------------------------------------------
 // IEventProcessing::executeRun
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::executeRun( int maxevt )
-{
+StatusCode MinimalEventLoopMgr::executeRun( int maxevt ) {
 
   // Call now the nextEvent(...)
   return nextEvent( maxevt );
 }
 
-namespace
-{
+namespace {
   /// Helper class to set the application return code in case of early exit
   /// (e.g. exception).
-  class RetCodeGuard
-  {
+  class RetCodeGuard {
   public:
     inline RetCodeGuard( SmartIF<IProperty> appmgr, int retcode )
-        : m_appmgr( std::move( appmgr ) ), m_retcode( retcode )
-    {
-    }
+        : m_appmgr( std::move( appmgr ) ), m_retcode( retcode ) {}
     inline void ignore() { m_retcode = Gaudi::ReturnCode::Success; }
-    inline ~RetCodeGuard()
-    {
-      if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) {
-        Gaudi::setAppReturnCode( m_appmgr, m_retcode );
-      }
+    inline ~RetCodeGuard() {
+      if ( UNLIKELY( Gaudi::ReturnCode::Success != m_retcode ) ) { Gaudi::setAppReturnCode( m_appmgr, m_retcode ); }
     }
 
   private:
     SmartIF<IProperty> m_appmgr;
     int                m_retcode;
   };
-}
+} // namespace
 //--------------------------------------------------------------------------------------------
 // Implementation of IEventProcessor::executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
-{
+StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ ) {
   bool eventfailed = false;
 
   // reset state of ALL "known" algorithms
@@ -373,9 +351,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
     } catch ( const std::exception& Exception ) {
       fatal() << ".executeEvent(): Standard std::exception thrown by " << ita->name() << endmsg;
       error() << Exception.what() << endmsg;
-    } catch ( ... ) {
-      fatal() << ".executeEvent(): UNKNOWN Exception thrown by " << ita->name() << endmsg;
-    }
+    } catch ( ... ) { fatal() << ".executeEvent(): UNKNOWN Exception thrown by " << ita->name() << endmsg; }
 
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of algorithm " << ita->name() << " failed" << endmsg;
@@ -418,8 +394,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
 //--------------------------------------------------------------------------------------------
 // Implementation of IEventProcessor::stopRun()
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::stopRun()
-{
+StatusCode MinimalEventLoopMgr::stopRun() {
   // Set the application return code
   auto appmgr = serviceLocator()->as<IProperty>();
   if ( Gaudi::setAppReturnCode( appmgr, Gaudi::ReturnCode::ScheduledStop ).isFailure() ) {
@@ -432,8 +407,7 @@ StatusCode MinimalEventLoopMgr::stopRun()
 //--------------------------------------------------------------------------------------------
 // Top algorithm List handler
 //--------------------------------------------------------------------------------------------
-void MinimalEventLoopMgr::topAlgHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
+void MinimalEventLoopMgr::topAlgHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeTopAlgs() ).isSuccess() ) {
     throw GaudiException( "Failed to initialize Top Algorithms streams.", "MinimalEventLoopMgr::topAlgHandler",
                           StatusCode::FAILURE );
@@ -443,8 +417,7 @@ void MinimalEventLoopMgr::topAlgHandler( Gaudi::Details::PropertyBase& /* thePro
 //--------------------------------------------------------------------------------------------
 // decodeTopAlgNameList & topAlgNameListHandler
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::decodeTopAlgs()
-{
+StatusCode MinimalEventLoopMgr::decodeTopAlgs() {
   StatusCode sc = StatusCode::SUCCESS;
   if ( CONFIGURED == m_state || INITIALIZED == m_state ) {
     auto algMan = serviceLocator()->as<IAlgManager>();
@@ -482,8 +455,7 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()
 //--------------------------------------------------------------------------------------------
 // Output stream List handler
 //--------------------------------------------------------------------------------------------
-void MinimalEventLoopMgr::outStreamHandler( Gaudi::Details::PropertyBase& /* theProp */ )
-{
+void MinimalEventLoopMgr::outStreamHandler( Gaudi::Details::PropertyBase& /* theProp */ ) {
   if ( !( decodeOutStreams() ).isSuccess() ) {
     throw GaudiException( "Failed to initialize output streams.", "MinimalEventLoopMgr::outStreamHandler",
                           StatusCode::FAILURE );
@@ -493,8 +465,7 @@ void MinimalEventLoopMgr::outStreamHandler( Gaudi::Details::PropertyBase& /* the
 //--------------------------------------------------------------------------------------------
 // decodeOutStreamNameList & outStreamNameListHandler
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::decodeOutStreams()
-{
+StatusCode MinimalEventLoopMgr::decodeOutStreams() {
   StatusCode sc = StatusCode::SUCCESS;
   if ( CONFIGURED == m_state || INITIALIZED == m_state ) {
     auto algMan = serviceLocator()->as<IAlgManager>();

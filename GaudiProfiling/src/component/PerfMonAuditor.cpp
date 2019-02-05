@@ -80,8 +80,9 @@ static pfm_dfl_smpl_hdr_t* hdr;
 static uint64_t            ovfl_count;
 static size_t              entry_size;
 static unsigned int        num_smpl_pmds;
-static std::vector<std::map<std::string, std::map<unsigned long, unsigned int>>> samples(
-    MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules each containing numbers of samples of their addresses
+static std::vector<std::map<std::string, std::map<unsigned long, unsigned int>>>
+    samples( MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules each containing numbers of samples of their
+                                                    // addresses
 static std::vector<std::map<std::string, std::vector<unsigned long int>>>
                 results( MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS ); // a map of modules and their result values across multiple events
 static uint64_t last_overflow;
@@ -91,12 +92,10 @@ static int      sp[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
 static std::stack<std::pair<INamedInterface*, std::vector<unsigned long int>>> alg_stack;
 /*END: perfmon*/
 
-namespace
-{
+namespace {
   /// Hack to avoid the warning about casting between pointer to object and function [-pedantic]
   template <typename T>
-  inline T function_cast( void* p )
-  {
+  inline T function_cast( void* p ) {
     union {
       void* object;
       T     function;
@@ -104,8 +103,7 @@ namespace
     caster.object = p;
     return caster.function;
   }
-  class PFMon
-  {
+  class PFMon {
   public:
     bool loaded;
     typedef void ( *pfm_stop_t )( int );
@@ -145,8 +143,7 @@ namespace
 
     void* handle;
 
-    PFMon()
-    {
+    PFMon() {
       handle = dlopen( "libpfm.so", RTLD_NOW );
       if ( handle ) {
         loaded = true;
@@ -175,8 +172,7 @@ namespace
         // = pfm_set_options = pfm_get_num_counters = failure;
       }
     }
-    ~PFMon()
-    {
+    ~PFMon() {
       if ( handle ) dlclose( handle );
     }
 
@@ -184,7 +180,7 @@ namespace
   };
 
   PFMon PFMon::s_instance;
-}
+} // namespace
 
 // ============================================================================
 // GaudiAlg
@@ -199,13 +195,12 @@ namespace
  *  @date 2009-10-28
  */
 
-class PerfMonAuditor : virtual public Auditor
-{
+class PerfMonAuditor : virtual public Auditor {
 public:
   void before( StandardEventType evt, INamedInterface* alg ) override;
   void after( StandardEventType evt, INamedInterface* alg, const StatusCode& sc ) override;
-  using Auditor::before;
   using Auditor::after;
+  using Auditor::before;
 
 private:
   void i_beforeInitialize( INamedInterface* alg );
@@ -216,12 +211,11 @@ private:
 public:
   StatusCode initialize() override;
   StatusCode finalize() override;
-  int        is_nehalem()
-  {
+  int        is_nehalem() {
 #ifdef __ICC
 // Disable ICC remark #593: variable "x" was set but never used
-#pragma warning( push )
-#pragma warning( disable : 593 )
+#  pragma warning( push )
+#  pragma warning( disable : 593 )
 #endif
     int a, b, c, d;
     cpuid( 1, a, b, c, d );
@@ -231,7 +225,7 @@ public:
     else
       return 0;
 #ifdef __ICC
-#pragma warning( pop )
+#  pragma warning( pop )
 #endif
   }
 
@@ -280,8 +274,7 @@ public:
       , m_pfm( PFMon::instance() )
       , m_map()
       , m_indent( 0 )
-      , m_inEvent( false )
-  {
+      , m_inEvent( false ) {
     is_nehalem_ret = is_nehalem();
     declareProperty( "EVENT0", event_str[0] );
     declareProperty( "EVENT1", event_str[1] );
@@ -355,9 +348,9 @@ private:
 
 private:
   typedef GaudiUtils::VectorMap<const INamedInterface*, int> Map;
-  Map  m_map;
-  int  m_indent;  // indentation level
-  bool m_inEvent; // "In event" flag
+  Map                                                        m_map;
+  int                                                        m_indent;  // indentation level
+  bool                                                       m_inEvent; // "In event" flag
 
 private:
   int is_nehalem_ret;
@@ -392,15 +385,13 @@ private:
   bool                      core;
 
   bool sampling;
-  int detect_unavail_pmu_regs( int fd, pfmlib_regmask_t* r_pmcs, pfmlib_regmask_t* r_pmds );
-  int detect_unavail_pmcs( int fd, pfmlib_regmask_t* r_pmcs ) { return detect_unavail_pmu_regs( fd, r_pmcs, NULL ); }
+  int  detect_unavail_pmu_regs( int fd, pfmlib_regmask_t* r_pmcs, pfmlib_regmask_t* r_pmds );
+  int  detect_unavail_pmcs( int fd, pfmlib_regmask_t* r_pmcs ) { return detect_unavail_pmu_regs( fd, r_pmcs, NULL ); }
   void pfm_bv_set( uint64_t* bv, uint16_t rnum ) { bv[rnum >> LBPL] |= 1UL << ( rnum & ( BPL - 1 ) ); }
-  int pfm_bv_isset( uint64_t* bv, uint16_t rnum )
-  {
+  int  pfm_bv_isset( uint64_t* bv, uint16_t rnum ) {
     return bv[rnum >> LBPL] & ( 1UL << ( rnum & ( BPL - 1 ) ) ) ? 1 : 0;
   }
-  void pfm_bv_copy( uint64_t* d, uint64_t* j, uint16_t n )
-  {
+  void pfm_bv_copy( uint64_t* d, uint64_t* j, uint16_t n ) {
     if ( n <= BPL )
       *d = *j;
     else {
@@ -427,8 +418,7 @@ private:
   bool        event_count_reached;
 };
 
-void PerfMonAuditor::startpm()
-{
+void PerfMonAuditor::startpm() {
   memset( &ctx, 0, sizeof( ctx ) );
   memset( &inp, 0, sizeof( inp ) );
   memset( &outp, 0, sizeof( outp ) );
@@ -473,9 +463,7 @@ void PerfMonAuditor::startpm()
     pd[i].reg_value = 0;
   }
   fd = m_pfm.pfm_create_context( &ctx, NULL, 0, 0 );
-  if ( fd == -1 ) {
-    error() << "ERROR: Context not created. Aborting..." << endmsg;
-  }
+  if ( fd == -1 ) { error() << "ERROR: Context not created. Aborting..." << endmsg; }
   if ( m_pfm.pfm_write_pmcs( fd, pc, outp.pfp_pmc_count ) == -1 ) {
     error() << "ERROR: Could not write pmcs. Aborting..." << endmsg;
   }
@@ -495,12 +483,9 @@ void PerfMonAuditor::startpm()
 // const ModuleDescription& desc : description of the module that just finished its execution (we are only interested in
 // its name)
 // stops the counting calling pfm_stop() and stores the counting results into the "results" map
-void PerfMonAuditor::stoppm()
-{
+void PerfMonAuditor::stoppm() {
   m_pfm.pfm_stop( fd );
-  if ( m_pfm.pfm_read_pmds( fd, pd, inp.pfp_event_count ) == -1 ) {
-    error() << "Could not read pmds" << endmsg;
-  }
+  if ( m_pfm.pfm_read_pmds( fd, pd, inp.pfp_event_count ) == -1 ) { error() << "Could not read pmds" << endmsg; }
   for ( int i = 0; i < used_counters_number; i++ ) {
     results[i][( alg_stack.top().first )->name()].push_back( alg_stack.top().second[i] + pd[i].reg_value );
   }
@@ -508,16 +493,11 @@ void PerfMonAuditor::stoppm()
   close( fd );
 }
 
-void PerfMonAuditor::pausepm()
-{
+void PerfMonAuditor::pausepm() {
   m_pfm.pfm_stop( fd );
-  if ( m_pfm.pfm_read_pmds( fd, pd, inp.pfp_event_count ) == -1 ) {
-    error() << "Could not read pmds" << endmsg;
-  }
+  if ( m_pfm.pfm_read_pmds( fd, pd, inp.pfp_event_count ) == -1 ) { error() << "Could not read pmds" << endmsg; }
 
-  for ( int i = 0; i < used_counters_number; i++ ) {
-    alg_stack.top().second[i] += pd[i].reg_value;
-  }
+  for ( int i = 0; i < used_counters_number; i++ ) { alg_stack.top().second[i] += pd[i].reg_value; }
 
   close( fd );
 }
@@ -525,8 +505,7 @@ void PerfMonAuditor::pausepm()
 // finalizepm()
 // called when all the countings of the current event are finished, it dumps the results
 // into the output file corresponding to the event being counted
-void PerfMonAuditor::finalizepm()
-{
+void PerfMonAuditor::finalizepm() {
   info() << "start of finalizepm ucn:" << used_counters_number << endmsg;
   for ( int i = 0; i < used_counters_number; i++ ) {
     std::string filename = prefix_cstr;
@@ -561,8 +540,7 @@ void PerfMonAuditor::finalizepm()
   }
 }
 
-StatusCode PerfMonAuditor::initialize()
-{
+StatusCode PerfMonAuditor::initialize() {
   if ( !m_pfm.loaded ) {
     error() << "pfm library could not be loaded" << endmsg;
     return StatusCode::FAILURE;
@@ -570,21 +548,15 @@ StatusCode PerfMonAuditor::initialize()
 
   info() << "Initializing..." << endmsg;
   StatusCode sc = Auditor::initialize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
+  if ( sc.isFailure() ) { return sc; }
   used_counters_number = 0;
   for ( int i = 0; i < MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS; i++ ) {
     if ( event_str[i].length() > 0 ) used_counters_number++;
   }
-  for ( int i = 0; i < MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS; i++ ) {
-    strcpy( event_cstr[i], event_str[i].c_str() );
-  }
+  for ( int i = 0; i < MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS; i++ ) { strcpy( event_cstr[i], event_str[i].c_str() ); }
   strcpy( prefix_cstr, prefix.c_str() );
 
-  if ( m_pfm.pfm_initialize() != PFMLIB_SUCCESS ) {
-    error() << "Cannot initialize perfmon!!" << endmsg;
-  }
+  if ( m_pfm.pfm_initialize() != PFMLIB_SUCCESS ) { error() << "Cannot initialize perfmon!!" << endmsg; }
   ph_ev_count         = 0;
   first_alg           = true;
   event_count_reached = false;
@@ -609,8 +581,7 @@ StatusCode PerfMonAuditor::initialize()
 // pfm_dfl_smpl_hdr_t *hdr : pointer to header of the buffer containing addresses sampled during the sampling process
 // size_t entry_size       : size of each entry, used to navigate through the various entries
 // called when the sampling buffer is full, saves the samples into memory ("samples" map)
-void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_size )
-{
+void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_size ) {
   ////////
   pfm_dfl_smpl_entry_t* ent;
   size_t                pos, count;
@@ -634,9 +605,7 @@ void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_siz
   }
   collected_samples = entry;
   last_overflow     = hdr->hdr_overflows;
-  if ( last_count != hdr->hdr_count && ( last_count || last_overflow == 0 ) ) {
-    collected_partial += hdr->hdr_count;
-  }
+  if ( last_count != hdr->hdr_count && ( last_count || last_overflow == 0 ) ) { collected_partial += hdr->hdr_count; }
   last_count = hdr->hdr_count;
   return;
 }
@@ -645,8 +614,7 @@ void PerfMonAuditor::process_smpl_buf( pfm_dfl_smpl_hdr_t* hdr, size_t entry_siz
 // int n                 : signal number of the signal being delivered
 // siginfo_t *info       : pointer to a siginfo_t structure containing info about the signal
 // signal handler used to catch sampling buffer overflows. When they occur it calls the process_smpl_buf() function
-void PerfMonAuditor::sigio_handler( int /*n*/, siginfo_t* /*info*/, void* )
-{
+void PerfMonAuditor::sigio_handler( int /*n*/, siginfo_t* /*info*/, void* ) {
   PFMon&      pfm = PFMon::instance();
   pfarg_msg_t msg;
   int         fd = ctx_fd;
@@ -690,8 +658,7 @@ void PerfMonAuditor::sigio_handler( int /*n*/, siginfo_t* /*info*/, void* )
 // const ModuleDescription& desc : description of the module that is just starting its execution (we are only interested
 // in its name)
 // initializes all the necessary structures to start the sampling, calling pfm_self_start()
-void PerfMonAuditor::start_smpl()
-{
+void PerfMonAuditor::start_smpl() {
   ovfl_count    = 0;
   num_smpl_pmds = 0;
   last_overflow = ~0;
@@ -754,9 +721,7 @@ void PerfMonAuditor::start_smpl()
     pd_smpl[i].reg_num = outp.pfp_pmds[i].reg_num;
     if ( i ) {
       pfm_bv_set( pd_smpl[0].reg_smpl_pmds, pd_smpl[i].reg_num );
-      if ( pd_smpl[i].reg_num > max_pmd ) {
-        max_pmd = pd_smpl[i].reg_num;
-      }
+      if ( pd_smpl[i].reg_num > max_pmd ) { max_pmd = pd_smpl[i].reg_num; }
       num_smpl_pmds++;
     }
   }
@@ -798,13 +763,9 @@ void PerfMonAuditor::start_smpl()
     error() << "ERROR: pfm_load_context error errno " << strerror( errno ) << ". Aborting..." << endmsg;
   }
   ret = fcntl( ctx_fd, F_SETFL, fcntl( ctx_fd, F_GETFL, 0 ) | O_ASYNC );
-  if ( ret == -1 ) {
-    error() << "ERROR: cannot set ASYNC: " << strerror( errno ) << ". Aborting..." << endmsg;
-  }
+  if ( ret == -1 ) { error() << "ERROR: cannot set ASYNC: " << strerror( errno ) << ". Aborting..." << endmsg; }
   ret = fcntl( ctx_fd, F_SETOWN, getpid() );
-  if ( ret == -1 ) {
-    error() << "ERROR: cannot setown: " << strerror( errno ) << ". Aborting..." << endmsg;
-  }
+  if ( ret == -1 ) { error() << "ERROR: cannot setown: " << strerror( errno ) << ". Aborting..." << endmsg; }
   // pfm_self_start(ctx_fd); ==>
   m_pfm.pfm_start( ctx_fd, NULL );
 }
@@ -813,15 +774,12 @@ void PerfMonAuditor::start_smpl()
 // const ModuleDescription& desc : description of the module that just finished its execution (we are only interested in
 // its name)
 // stops the sampling and calls process_smpl_buf() one last time to process all the remaining samples
-void PerfMonAuditor::stop_smpl()
-{
+void PerfMonAuditor::stop_smpl() {
   m_pfm.pfm_self_stop( ctx_fd );
   process_smpl_buf( hdr, entry_size );
   close( ctx_fd );
   ret = munmap( hdr, buf_arg.buf_size );
-  if ( ret ) {
-    error() << "Cannot unmap buffer: %s" << strerror( errno ) << endmsg;
-  }
+  if ( ret ) { error() << "Cannot unmap buffer: %s" << strerror( errno ) << endmsg; }
   return;
 }
 
@@ -829,8 +787,7 @@ void PerfMonAuditor::stop_smpl()
 // processes the sampling results in order to find library and offset of each sampled address, using the symbol() and
 // tosymbol() functions,
 // and then dumps the new found information into gzipped output files, to be processed later
-void PerfMonAuditor::finalize_smpl()
-{
+void PerfMonAuditor::finalize_smpl() {
   int err;
   for ( int i = 0; i < used_counters_number; i++ ) {
     std::string filename = prefix_cstr;
@@ -892,9 +849,7 @@ void PerfMonAuditor::finalize_smpl()
                 strcat( sym_name, "??? " );
               }
               sprintf( sym_name + strlen( sym_name ), "%d ", libOffset );
-              if ( strlen( sym_name ) <= 0 ) {
-                error() << "ERROR: Symbol name length is zero. Aborting..." << endmsg;
-              }
+              if ( strlen( sym_name ) <= 0 ) { error() << "ERROR: Symbol name length is zero. Aborting..." << endmsg; }
             } else {
               strcpy( sym_name, "??? ??? 0 " );
             }
@@ -913,8 +868,7 @@ void PerfMonAuditor::finalize_smpl()
   }
 }
 
-StatusCode PerfMonAuditor::finalize()
-{
+StatusCode PerfMonAuditor::finalize() {
   if ( sampling == 0 )
     finalizepm();
   else
@@ -922,8 +876,7 @@ StatusCode PerfMonAuditor::finalize()
   return Auditor::finalize();
 }
 
-void PerfMonAuditor::before( StandardEventType evt, INamedInterface* alg )
-{
+void PerfMonAuditor::before( StandardEventType evt, INamedInterface* alg ) {
   switch ( evt ) {
   case IAuditor::Initialize:
     i_beforeInitialize( alg );
@@ -937,8 +890,7 @@ void PerfMonAuditor::before( StandardEventType evt, INamedInterface* alg )
   return;
 }
 
-void PerfMonAuditor::after( StandardEventType evt, INamedInterface* alg, const StatusCode& )
-{
+void PerfMonAuditor::after( StandardEventType evt, INamedInterface* alg, const StatusCode& ) {
   switch ( evt ) {
   case IAuditor::Initialize:
     i_afterInitialize( alg );
@@ -952,20 +904,17 @@ void PerfMonAuditor::after( StandardEventType evt, INamedInterface* alg, const S
   return;
 }
 
-void PerfMonAuditor::i_beforeInitialize( INamedInterface* alg )
-{
+void PerfMonAuditor::i_beforeInitialize( INamedInterface* alg ) {
   if ( !alg ) return;
   return;
 }
 
-void PerfMonAuditor::i_afterInitialize( INamedInterface* alg )
-{
+void PerfMonAuditor::i_afterInitialize( INamedInterface* alg ) {
   if ( !alg ) return;
   return;
 }
 
-void PerfMonAuditor::i_beforeExecute( INamedInterface* alg )
-{
+void PerfMonAuditor::i_beforeExecute( INamedInterface* alg ) {
   if ( !alg ) return;
   // info() << "before:inside! " << alg->name() << endmsg;
   if ( first_alg ) {
@@ -1002,11 +951,8 @@ void PerfMonAuditor::i_beforeExecute( INamedInterface* alg )
   }
 }
 
-void PerfMonAuditor::i_afterExecute( INamedInterface* alg )
-{
-  if ( !alg ) {
-    return;
-  } // info() << "after:inside! " << alg->name() << endmsg;
+void PerfMonAuditor::i_afterExecute( INamedInterface* alg ) {
+  if ( !alg ) { return; } // info() << "after:inside! " << alg->name() << endmsg;
 
   if ( event_count_reached ) {
     // info() << "after:inside! " << alg->name() << endmsg;

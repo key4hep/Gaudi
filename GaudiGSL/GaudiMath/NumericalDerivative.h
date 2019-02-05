@@ -15,17 +15,15 @@
 #include <memory>
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     /** @class  NumericalDerivative GaudiMath/NumericalDerivative.h
      *
      *  Numerical derivative  (using GSL adaptive numerical differentiation)
@@ -41,8 +39,7 @@ namespace Genfun
      *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
      *  @date   2003-08-27
      */
-    class GAUDI_API NumericalDerivative : public AbsFunction
-    {
+    class GAUDI_API NumericalDerivative : public AbsFunction {
     public:
       /// the type of numerical differentiation
       enum Type { Central, Forward, Backward };
@@ -145,16 +142,15 @@ namespace Genfun
     FUNCTION_OBJECT_IMP( NumericalDerivative )
 
   } // end of namespace GaudiMathImplementation
-} // end of namespace GenFun
+} // namespace Genfun
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDIMATH_NUMERICALDERIVATIVE_H
-// ============================================================================

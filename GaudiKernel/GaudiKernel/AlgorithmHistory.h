@@ -12,8 +12,7 @@
 #include <typeinfo>
 #include <vector>
 
-namespace Gaudi
-{
+namespace Gaudi {
   class Algorithm;
 }
 class JobHistory;
@@ -26,8 +25,7 @@ class JobHistory;
  *
  */
 
-class GAUDI_API AlgorithmHistory : public HistoryObj, public IVersHistoryObj
-{
+class GAUDI_API AlgorithmHistory : public HistoryObj, public IVersHistoryObj {
 
 public: // typedefs
   // List of subalgorithm histories. This may change.

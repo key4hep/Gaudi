@@ -1,22 +1,20 @@
 #include "RootCnv/PoolClasses.h"
 #include <algorithm>
 /*
-*  Gaudi namespace declaration
-*/
-namespace Gaudi
-{
+ *  Gaudi namespace declaration
+ */
+namespace Gaudi {
 
   /** @class RootTool RootTool.h src/RootTool.h
-  *
-  * Description:
-  *
-  * Concrete implementation to read objects from POOL files.
-  *
-  * @author  M.Frank
-  * @version 1.0
-  */
-  class PoolTool : virtual public RootDataConnection::Tool
-  {
+   *
+   * Description:
+   *
+   * Concrete implementation to read objects from POOL files.
+   *
+   * @author  M.Frank
+   * @version 1.0
+   */
+  class PoolTool : virtual public RootDataConnection::Tool {
     /// Image of the POOL ##Links table
     std::vector<Gaudi::RootRef> m_poolLinks;
 
@@ -25,8 +23,7 @@ namespace Gaudi
     PoolTool( RootDataConnection* con ) { c = con; }
 
     /// Convert TES object identifier to ROOT tree name
-    string _treeName( boost::string_ref sr )
-    {
+    string _treeName( boost::string_ref sr ) {
       auto t = sr.to_string();
       std::replace( begin( t ), end( t ), '/', '_' );
       return t;
@@ -36,13 +33,10 @@ namespace Gaudi
 
     /// Load references object from file
     int loadRefs( boost::string_ref /* section */, boost::string_ref cnt, unsigned long entry,
-                  RootObjectRefs& refs ) override
-    {
+                  RootObjectRefs& refs ) override {
       auto   ti = sections().find( cnt );
       TTree* t  = ( ti != sections().end() ? ti->second : nullptr );
-      if ( !t ) {
-        t = (TTree*)c->file()->Get( _treeName( cnt ).c_str() );
-      }
+      if ( !t ) { t = (TTree*)c->file()->Get( _treeName( cnt ).c_str() ); }
       if ( t ) {
         TBranch*   b1  = t->GetBranch( "Links" );
         TBranch*   b2  = t->GetBranch( "Refs" );
@@ -62,8 +56,8 @@ namespace Gaudi
             msg << MSG::VERBOSE;
             for ( size_t j = 0; j < ref_size; ++j ) {
               const pair<int, int>& oid = mgr.references()[j]->m_oid;
-              string   loc = mgr.links()[j].substr( 1 );
-              RootRef& r   = refs.refs[j];
+              string                loc = mgr.links()[j].substr( 1 );
+              RootRef&              r   = refs.refs[j];
               if ( oid.first >= 0 ) {
                 r       = m_poolLinks[oid.first];
                 r.entry = oid.second;
@@ -90,13 +84,10 @@ namespace Gaudi
     }
 
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch( boost::string_ref /* section */, boost::string_ref branch_name ) override
-    {
+    TBranch* getBranch( boost::string_ref /* section */, boost::string_ref branch_name ) override {
       auto   ti = sections().find( branch_name );
       TTree* t  = ( ti != sections().end() ? ti->second : nullptr );
-      if ( t ) {
-        return (TBranch*)t->GetListOfBranches()->At( 0 );
-      }
+      if ( t ) { return (TBranch*)t->GetListOfBranches()->At( 0 ); }
       string tname = _treeName( branch_name );
       t            = (TTree*)c->file()->Get( tname.c_str() ); // c->getSection(tname);
       if ( t ) {
@@ -115,8 +106,7 @@ namespace Gaudi
     StatusCode saveRefs() override { return StatusCode::FAILURE; }
 
     /// Internal helper to read reference tables ##Params and ##Links
-    StatusCode readRefs() override
-    {
+    StatusCode readRefs() override {
       int  i;
       char text[2048];
       msgSvc() << MSG::VERBOSE;
@@ -158,19 +148,19 @@ namespace Gaudi
           char* p2 = ::strchr( p1, '=' );
           char* p3 = ::strchr( p1, ']' );
           if ( p2 && p3 ) {
-            if (::strncmp( "[DB=", p1, 4 ) == 0 ) {
+            if ( ::strncmp( "[DB=", p1, 4 ) == 0 ) {
               *p3 = 0;
               db  = p1 + 4;
-            } else if (::strncmp( "[CNT=", p1, 5 ) == 0 ) {
+            } else if ( ::strncmp( "[CNT=", p1, 5 ) == 0 ) {
               *p3       = 0;
               container = p1 + 5;
-            } else if (::strncmp( "[OID=", p1, 5 ) == 0 ) {
+            } else if ( ::strncmp( "[OID=", p1, 5 ) == 0 ) {
               *p3 = 0;
               ::sscanf( p1 + 5, "%08X,%08X", (unsigned int*)&ipar[0], (unsigned int*)&ipar[1] );
-            } else if (::strncmp( "[CLID=", p1, 6 ) == 0 ) {
+            } else if ( ::strncmp( "[CLID=", p1, 6 ) == 0 ) {
               *p3 = 0;
               ::sscanf( p1 + 6, "%08X", (unsigned int*)&clid );
-            } else if (::strncmp( "[TECH=", p1, 6 ) == 0 ) {
+            } else if ( ::strncmp( "[TECH=", p1, 6 ) == 0 ) {
               *p3 = 0;
               ::sscanf( p1 + 6, "%08X", (unsigned int*)&technology );
             } else {
@@ -188,4 +178,4 @@ namespace Gaudi
       return StatusCode::SUCCESS;
     }
   };
-}
+} // namespace Gaudi

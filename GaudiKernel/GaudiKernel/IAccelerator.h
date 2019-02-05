@@ -15,8 +15,7 @@
  *  @author  Illya Shapoval
  *  @version 1.0
  */
-class GAUDI_API IAccelerator : virtual public IInterface
-{
+class GAUDI_API IAccelerator : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IAccelerator, 1, 0 );

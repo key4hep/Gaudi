@@ -23,8 +23,7 @@ class IAlgTool;
  *  @date   2008-01-18
  */
 
-class VFSSvc : public extends<Service, IFileAccess>
-{
+class VFSSvc : public extends<Service, IFileAccess> {
 public:
   /// Inherited constructor
   using extends::extends;

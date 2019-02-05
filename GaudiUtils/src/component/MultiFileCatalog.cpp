@@ -10,20 +10,17 @@
 using namespace Gaudi;
 using namespace std;
 
-namespace
-{
+namespace {
   template <typename C, typename F>
-  F for_each( C& c, F&& f )
-  {
+  F for_each( C& c, F&& f ) {
     return std::for_each( std::begin( c ), std::end( c ), std::forward<F>( f ) );
   }
-}
+} // namespace
 
 DECLARE_COMPONENT( MultiFileCatalog )
 
 // ----------------------------------------------------------------------------
-StatusCode MultiFileCatalog::initialize()
-{
+StatusCode MultiFileCatalog::initialize() {
   if ( !Service::initialize().isSuccess() ) {
     printError( "Failed to initialize service base class.", false );
     return StatusCode::SUCCESS;
@@ -36,14 +33,11 @@ StatusCode MultiFileCatalog::initialize()
     }
     init();
     return StatusCode::SUCCESS;
-  } catch ( const std::exception& /* e */ ) {
-    printError( "Cannot add file catalog:" + current, false );
-  }
+  } catch ( const std::exception& /* e */ ) { printError( "Cannot add file catalog:" + current, false ); }
   return StatusCode::FAILURE;
 }
 // ----------------------------------------------------------------------------
-StatusCode MultiFileCatalog::finalize()
-{
+StatusCode MultiFileCatalog::finalize() {
   commit();
   for_each( m_catalogs, []( IFileCatalog* i ) { i->release(); } );
   m_catalogs.clear();
@@ -54,14 +48,12 @@ StatusCode MultiFileCatalog::finalize()
 /// Create file identifier using UUID mechanism
 std::string MultiFileCatalog::createFID() const { return createGuidAsString(); }
 // ----------------------------------------------------------------------------
-MultiFileCatalog::CSTR MultiFileCatalog::connectInfo() const
-{
+MultiFileCatalog::CSTR MultiFileCatalog::connectInfo() const {
   static const string s( "MultiCatalog" );
   return s;
 }
 // ----------------------------------------------------------------------------
-IFileCatalog* MultiFileCatalog::getCatalog( CSTR fid, bool throw_if_not, bool writable, bool prt ) const
-{
+IFileCatalog* MultiFileCatalog::getCatalog( CSTR fid, bool throw_if_not, bool writable, bool prt ) const {
   for ( const auto& c : m_catalogs ) {
     if ( !c || ( writable && c->readOnly() ) ) continue;
     if ( fid.empty() || ( !fid.empty() && c->existsFID( fid ) ) ) return c;
@@ -74,25 +66,20 @@ IFileCatalog* MultiFileCatalog::getCatalog( CSTR fid, bool throw_if_not, bool wr
   return nullptr;
 }
 // ----------------------------------------------------------------------------
-IFileCatalog* MultiFileCatalog::findCatalog( CSTR connect, bool must_be_writable ) const
-{
+IFileCatalog* MultiFileCatalog::findCatalog( CSTR connect, bool must_be_writable ) const {
   auto i = std::find_if( m_catalogs.begin(), m_catalogs.end(),
                          [&]( const IFileCatalog* f ) { return connect == f->connectInfo(); } );
   return ( i != m_catalogs.end() && ( !must_be_writable || !( *i )->readOnly() ) ) ? *i : nullptr;
 }
 // ----------------------------------------------------------------------------
-MultiFileCatalog::Catalogs::iterator MultiFileCatalog::i_findCatalog( CSTR connect, bool must_be_writable )
-{
+MultiFileCatalog::Catalogs::iterator MultiFileCatalog::i_findCatalog( CSTR connect, bool must_be_writable ) {
   auto i = std::find_if( m_catalogs.begin(), m_catalogs.end(),
                          [&]( const IFileCatalog* f ) { return connect == f->connectInfo(); } );
-  if ( i != m_catalogs.end() && must_be_writable && ( *i )->readOnly() ) {
-    i = m_catalogs.end();
-  }
+  if ( i != m_catalogs.end() && must_be_writable && ( *i )->readOnly() ) { i = m_catalogs.end(); }
   return i;
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::printError( CSTR msg, bool rethrow ) const
-{
+void MultiFileCatalog::printError( CSTR msg, bool rethrow ) const {
   if ( rethrow ) {
     fatal() << msg << endmsg;
     throw runtime_error( "Catalog> " + msg );
@@ -100,8 +87,7 @@ void MultiFileCatalog::printError( CSTR msg, bool rethrow ) const
   error() << msg << endmsg;
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::addCatalog( CSTR con )
-{
+void MultiFileCatalog::addCatalog( CSTR con ) {
   if ( !con.empty() ) {
     if ( !findCatalog( con, false ) ) {
       static const string xml_typ = "Gaudi::XMLFileCatalog";
@@ -135,8 +121,7 @@ void MultiFileCatalog::addCatalog( CSTR con )
   printError( "Got invalid (empty) catalog connection string.", true );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::addCatalog( IFileCatalog* cat )
-{
+void MultiFileCatalog::addCatalog( IFileCatalog* cat ) {
   if ( cat ) {
     cat->addRef();
     m_catalogs.push_back( cat );
@@ -145,8 +130,7 @@ void MultiFileCatalog::addCatalog( IFileCatalog* cat )
   printError( "Got invalid catalog to be added to multi catalog.", true );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::removeCatalog( CSTR con )
-{
+void MultiFileCatalog::removeCatalog( CSTR con ) {
   if ( con.empty() || con == "*" ) {
     for_each( m_catalogs, []( IFileCatalog* i ) { i->release(); } );
     m_catalogs.clear();
@@ -155,8 +139,7 @@ void MultiFileCatalog::removeCatalog( CSTR con )
   removeCatalog( findCatalog( con, false ) );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::removeCatalog( const IFileCatalog* cat )
-{
+void MultiFileCatalog::removeCatalog( const IFileCatalog* cat ) {
   if ( cat ) {
     auto i = find( m_catalogs.begin(), m_catalogs.end(), cat );
     if ( i != m_catalogs.end() ) {
@@ -169,8 +152,7 @@ void MultiFileCatalog::removeCatalog( const IFileCatalog* cat )
   printError( "Invalid file catalog.", true );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::setWriteCatalog( IFileCatalog* cat )
-{
+void MultiFileCatalog::setWriteCatalog( IFileCatalog* cat ) {
   if ( cat ) {
     if ( !cat->readOnly() ) {
       auto i = find( m_catalogs.begin(), m_catalogs.end(), cat );
@@ -186,8 +168,7 @@ void MultiFileCatalog::setWriteCatalog( IFileCatalog* cat )
   printError( "Invalid file catalog.", true );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::setWriteCatalog( CSTR connect )
-{
+void MultiFileCatalog::setWriteCatalog( CSTR connect ) {
   auto i = i_findCatalog( connect, true );
   if ( i == m_catalogs.end() ) {
     addCatalog( connect );
@@ -197,8 +178,7 @@ void MultiFileCatalog::setWriteCatalog( CSTR connect )
   setWriteCatalog( *i );
 }
 // ----------------------------------------------------------------------------
-string MultiFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const
-{
+string MultiFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const {
   std::string result;
   for ( const auto& i : m_catalogs ) {
     result = i->getMetaDataItem( fid, attr );
@@ -207,59 +187,49 @@ string MultiFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const
   return result;
 }
 /// Create a FileID and DOM Node of the PFN with all the attributes
-void MultiFileCatalog::registerPFN( CSTR fid, CSTR pfn, CSTR ftype ) const
-{
+void MultiFileCatalog::registerPFN( CSTR fid, CSTR pfn, CSTR ftype ) const {
   IFileCatalog* c = getCatalog( fid, false, true, false );
-  if ( !c ) c     = getCatalog( "", true, true, true );
+  if ( !c ) c = getCatalog( "", true, true, true );
   c->registerPFN( fid, pfn, ftype );
 }
 /// Create a FileID and DOM Node of the LFN with all the attributes
-void MultiFileCatalog::registerLFN( CSTR fid, CSTR lfn ) const
-{
+void MultiFileCatalog::registerLFN( CSTR fid, CSTR lfn ) const {
   IFileCatalog* c = getCatalog( fid, false, true, false );
-  if ( !c ) c     = getCatalog( "", true, true, true );
+  if ( !c ) c = getCatalog( "", true, true, true );
   c->registerLFN( fid, lfn );
 }
 // ----------------------------------------------------------------------------
-bool MultiFileCatalog::readOnly() const
-{
+bool MultiFileCatalog::readOnly() const {
   return std::all_of( std::begin( m_catalogs ), std::end( m_catalogs ),
                       []( const IFileCatalog* i ) { return i->readOnly(); } );
 }
 // ----------------------------------------------------------------------------
-bool MultiFileCatalog::dirty() const
-{
+bool MultiFileCatalog::dirty() const {
   return std::any_of( std::begin( m_catalogs ), std::end( m_catalogs ),
                       []( const IFileCatalog* i ) { return i->dirty(); } );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::init()
-{
+void MultiFileCatalog::init() {
   for_each( m_catalogs, []( IFileCatalog* i ) { i->init(); } );
   m_started = true;
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::commit()
-{
+void MultiFileCatalog::commit() {
   for_each( m_catalogs, []( IFileCatalog* i ) { i->commit(); } );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::rollback()
-{
+void MultiFileCatalog::rollback() {
   for_each( m_catalogs, []( IFileCatalog* i ) { i->rollback(); } );
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::propHandler()
-{
+void MultiFileCatalog::propHandler() {
   // not yet initialized
   if ( !m_started ) {
     m_oldNames = m_catalogNames;
     return;
   } // RETURN
   // no real change - no action
-  if ( m_catalogNames == m_oldNames ) {
-    return;
-  }
+  if ( m_catalogNames == m_oldNames ) { return; }
   m_oldNames = m_catalogNames;
   // remove ALL catalogs
   removeCatalog( "" );

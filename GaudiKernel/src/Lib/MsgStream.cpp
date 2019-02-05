@@ -28,8 +28,7 @@
 
 bool MsgStream::m_countInactive = false;
 
-bool MsgStream::enableCountInactive( bool value )
-{
+bool MsgStream::enableCountInactive( bool value ) {
   bool old        = m_countInactive;
   m_countInactive = value;
   return old;
@@ -37,8 +36,7 @@ bool MsgStream::enableCountInactive( bool value )
 
 bool MsgStream::countInactive() { return m_countInactive; }
 
-MsgStream::MsgStream( IMessageSvc* svc, int ) : m_service( svc )
-{
+MsgStream::MsgStream( IMessageSvc* svc, int ) : m_service( svc ) {
   setLevel( svc ? svc->outputLevel() : MSG::INFO );
   m_currLevel = m_level;
   m_useColors = ( svc ? svc->useColor() : false );
@@ -47,8 +45,7 @@ MsgStream::MsgStream( IMessageSvc* svc, int ) : m_service( svc )
 #endif
 }
 
-MsgStream::MsgStream( IMessageSvc* svc, std::string source, int ) : m_service( svc ), m_source( std::move( source ) )
-{
+MsgStream::MsgStream( IMessageSvc* svc, std::string source, int ) : m_service( svc ), m_source( std::move( source ) ) {
   setLevel( svc ? svc->outputLevel( m_source ) : MSG::INFO );
   m_currLevel = m_level;
   m_useColors = ( svc && svc->useColor() );
@@ -57,8 +54,7 @@ MsgStream::MsgStream( IMessageSvc* svc, std::string source, int ) : m_service( s
 #endif
 }
 
-MsgStream& MsgStream::doOutput()
-{
+MsgStream& MsgStream::doOutput() {
   try {
     // This piece of code may throw and we cannot afford it when we print a message
     // in the middle of a catch block.
@@ -71,26 +67,22 @@ MsgStream& MsgStream::doOutput()
       }
     }
     m_stream.str( "" );
-  } catch ( ... ) {
-  }
+  } catch ( ... ) {}
   return *this;
 }
 
-void MsgStream::setColor( MSG::Color col )
-{
+void MsgStream::setColor( MSG::Color col ) {
 #ifndef _WIN32
   if ( m_useColors ) {
     int fc = 90 + col;
     try { // this may throw and we must not do it
       m_stream << "\x1b[" << fc << ";1m";
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
   }
 #endif
 }
 
-void MsgStream::setColor( MSG::Color fg, MSG::Color bg )
-{
+void MsgStream::setColor( MSG::Color fg, MSG::Color bg ) {
 #ifndef _WIN32
   if ( m_useColors ) {
     try { // this may throw and we must not do it
@@ -99,26 +91,22 @@ void MsgStream::setColor( MSG::Color fg, MSG::Color bg )
       int bc = 100 + bg;
       m_stream << ";" << bc;
       m_stream << ";1m";
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
   }
 #endif
 }
 
-void MsgStream::resetColor()
-{
+void MsgStream::resetColor() {
 #ifndef _WIN32
   if ( m_useColors ) {
     try { // this may throw and we must not do it
       m_stream << "\x1b[m" << m_service->getLogColor( m_currLevel );
-    } catch ( ... ) {
-    }
+    } catch ( ... ) {}
   }
 #endif
 }
 
-std::string format( const char* fmt, ... )
-{
+std::string format( const char* fmt, ... ) {
   const int   buffsize = 2048;
   static char buffer[buffsize];
   va_list     arguments;

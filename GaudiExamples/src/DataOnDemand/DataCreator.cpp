@@ -5,16 +5,14 @@
 DECLARE_COMPONENT( DataCreator )
 
 //------------------------------------------------------------------------------
-StatusCode DataCreator::initialize()
-{
+StatusCode DataCreator::initialize() {
   //------------------------------------------------------------------------------
   info() << "initializing...." << endmsg;
   return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
-StatusCode DataCreator::execute()
-{
+StatusCode DataCreator::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
   put( new DataObject(), m_data );
@@ -22,8 +20,7 @@ StatusCode DataCreator::execute()
 }
 
 //------------------------------------------------------------------------------
-StatusCode DataCreator::finalize()
-{
+StatusCode DataCreator::finalize() {
   //------------------------------------------------------------------------------
   info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;

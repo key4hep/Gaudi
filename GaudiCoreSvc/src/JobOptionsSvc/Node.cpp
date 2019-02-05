@@ -8,8 +8,7 @@
 namespace gp = Gaudi::Parsers;
 // ============================================================================
 
-std::vector<std::string> init_names()
-{
+std::vector<std::string> init_names() {
   std::vector<std::string> n( gp::Node::NodeType::number_of_node_types );
   n[gp::Node::NodeType::kRoot]         = "root";
   n[gp::Node::NodeType::kInclude]      = "include";
@@ -45,15 +44,13 @@ std::vector<std::string> init_names()
 }
 
 // ============================================================================
-std::string gp::Node::name() const
-{
+std::string gp::Node::name() const {
   static const auto names = init_names();
   return names[type];
 }
 
 // ============================================================================
-std::string gp::Node::ToString( int indent ) const
-{
+std::string gp::Node::ToString( int indent ) const {
 
   std::string result( indent, ' ' );
   result += "<" + name();

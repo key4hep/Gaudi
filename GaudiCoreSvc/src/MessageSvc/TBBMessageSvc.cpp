@@ -7,15 +7,13 @@
 // ----------------------------------------------------------------------------
 DECLARE_COMPONENT( TBBMessageSvc )
 
-void TBBMessageSvc::reportMessage( const Message& msg, int outputLevel )
-{
+void TBBMessageSvc::reportMessage( const Message& msg, int outputLevel ) {
   m_messageQueue.add( new MessageWithLevel( *this, msg, outputLevel ) );
 }
 
 void TBBMessageSvc::reportMessage( const Message& msg ) { m_messageQueue.add( new MessageWithoutLevel( *this, msg ) ); }
 
-void TBBMessageSvc::reportMessage( const StatusCode& code, const std::string& source )
-{
+void TBBMessageSvc::reportMessage( const StatusCode& code, const std::string& source ) {
   m_messageQueue.add( new StatusCodeMessage( *this, code, source ) );
 }
 

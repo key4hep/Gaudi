@@ -18,12 +18,9 @@ bool gp::PropertyValue::IsVector() const { return boost::get<std::vector<std::st
 // ============================================================================
 bool gp::PropertyValue::IsMap() const { return boost::get<std::map<std::string, std::string>>( &value_ ) != NULL; }
 // ============================================================================
-gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right )
-{
+gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right ) {
 
-  if ( IsSimple() || IsReference() ) {
-    throw PropertyValueException::WrongLValue();
-  }
+  if ( IsSimple() || IsReference() ) { throw PropertyValueException::WrongLValue(); }
 
   if ( IsVector() ) {
     if ( right.IsSimple() ) {
@@ -32,38 +29,28 @@ gp::PropertyValue& gp::PropertyValue::operator+=( const PropertyValue& right )
     }
     if ( right.IsVector() ) {
       VectorOfStrings& vec = boost::get<VectorOfStrings>( value_ );
-      for ( const auto& item : boost::get<VectorOfStrings>( right.value_ ) ) {
-        vec.push_back( item );
-      }
+      for ( const auto& item : boost::get<VectorOfStrings>( right.value_ ) ) { vec.push_back( item ); }
       return *this;
     }
     throw PropertyValueException::WrongRValue();
   }
 
   if ( IsMap() ) {
-    if ( !right.IsMap() ) {
-      throw PropertyValueException::WrongRValue();
-    }
+    if ( !right.IsMap() ) { throw PropertyValueException::WrongRValue(); }
     MapOfStrings&       map  = boost::get<MapOfStrings>( value_ );
     const MapOfStrings& rmap = boost::get<MapOfStrings>( right.value_ );
-    for ( const auto& item : rmap ) {
-      map.insert( item );
-    }
+    for ( const auto& item : rmap ) { map.insert( item ); }
     return *this;
   }
   return *this;
 }
 
-const gp::PropertyValue gp::PropertyValue::operator+( const PropertyValue& right )
-{
+const gp::PropertyValue gp::PropertyValue::operator+( const PropertyValue& right ) {
   return PropertyValue{*this} += right;
 }
 
-gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right )
-{
-  if ( IsSimple() || IsReference() ) {
-    throw PropertyValueException::WrongLValue();
-  }
+gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right ) {
+  if ( IsSimple() || IsReference() ) { throw PropertyValueException::WrongLValue(); }
 
   if ( IsVector() ) {
     VectorOfStrings& vec = Vector();
@@ -74,9 +61,7 @@ gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right )
 
     if ( right.IsVector() ) {
       const VectorOfStrings& rvec = right.Vector();
-      for ( const auto& item : rvec ) {
-        vec.erase( std::find( vec.begin(), vec.end(), item ) );
-      }
+      for ( const auto& item : rvec ) { vec.erase( std::find( vec.begin(), vec.end(), item ) ); }
       return *this;
     }
     throw PropertyValueException::WrongRValue();
@@ -91,9 +76,7 @@ gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right )
 
     if ( right.IsVector() ) {
       const VectorOfStrings& rvec = right.Vector();
-      for ( const auto& item : rvec ) {
-        map.erase( item );
-      }
+      for ( const auto& item : rvec ) { map.erase( item ); }
       return *this;
     }
     throw PropertyValueException::WrongRValue();
@@ -101,13 +84,11 @@ gp::PropertyValue& gp::PropertyValue::operator-=( const PropertyValue& right )
   throw PropertyValueException::WrongLValue();
 }
 
-const gp::PropertyValue gp::PropertyValue::operator-( const PropertyValue& right )
-{
+const gp::PropertyValue gp::PropertyValue::operator-( const PropertyValue& right ) {
   return PropertyValue{*this} -= right;
 }
 // ============================================================================
-std::string gp::PropertyValue::ToString() const
-{
+std::string gp::PropertyValue::ToString() const {
   if ( IsReference() ) {
     const std::vector<std::string>* value = boost::get<std::vector<std::string>>( &value_ );
     assert( value != NULL );

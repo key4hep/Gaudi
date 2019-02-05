@@ -19,8 +19,7 @@
  *  @author: Charles Leggett
  *
  */
-class GAUDI_API JobHistory : public HistoryObj, virtual public IVersHistoryObj
-{
+class GAUDI_API JobHistory : public HistoryObj, virtual public IVersHistoryObj {
 
 public:
   typedef std::vector<std::pair<std::string, const Gaudi::Details::PropertyBase*>> PropertyPairList;

@@ -8,10 +8,8 @@
 
 class StatusCode;
 
-namespace GaudiMath
-{
-  namespace Interpolation
-  {
+namespace GaudiMath {
+  namespace Interpolation {
     enum Type {
       Linear = 0,       // linear interpolation
       Polynomial,       // polinomial interpolation
@@ -30,4 +28,3 @@ namespace GaudiMath
 } // end of namespace GaudiMath
 
 #endif // GAUDIMATH_INTERPOLATION_H
-// ============================================================================

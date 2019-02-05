@@ -5,8 +5,7 @@
 #include <iostream>
 #include <vector>
 
-int main()
-{
+int main() {
   const size_t N          = 1000000;
   const size_t NPropNames = 50;
   const auto   page_sz    = sysconf( _SC_PAGESIZE );
@@ -17,9 +16,7 @@ int main()
   unsigned long vsize_pages, rss_pages;
 
   std::array<std::string, NPropNames> names;
-  for ( size_t i = 0; i != NPropNames; ++i ) {
-    names[i] = "PropertyName_" + std::to_string( i );
-  }
+  for ( size_t i = 0; i != NPropNames; ++i ) { names[i] = "PropertyName_" + std::to_string( i ); }
 
   {
 

@@ -17,14 +17,12 @@
 
 DECLARE_COMPONENT( EventSelector )
 
-StatusCode EventSelector::resetCriteria( const std::string& /* criteria */, Context& /* context  */ ) const
-{
+StatusCode EventSelector::resetCriteria( const std::string& /* criteria */, Context& /* context  */ ) const {
   return StatusCode::FAILURE;
 }
 
 // Progress report
-void EventSelector::printEvtInfo( const EvtSelectorContext* iter ) const
-{
+void EventSelector::printEvtInfo( const EvtSelectorContext* iter ) const {
   if ( iter ) {
     long count = iter->numEvent();
     // Print an message every m_evtPrintFrequency events
@@ -42,10 +40,9 @@ void EventSelector::printEvtInfo( const EvtSelectorContext* iter ) const
 }
 
 // IEvtSelector::first()
-StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& iter ) const
-{
-  StatusCode                 status                                      = StatusCode::SUCCESS;
-  IDataStreamTool::size_type iter_id                                     = ( m_reconfigure ) ? 0 : iter.ID() + 1;
+StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& iter ) const {
+  StatusCode                 status  = StatusCode::SUCCESS;
+  IDataStreamTool::size_type iter_id = ( m_reconfigure ) ? 0 : iter.ID() + 1;
   if ( m_reconfigure ) const_cast<EventSelector*>( this )->m_reconfigure = false;
   if ( shutDown ) {
     if ( iter.ID() >= 0 && iter.ID() < (long)m_streamtool->size() ) {
@@ -101,8 +98,7 @@ StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& 
 }
 
 // IEvtSelector::first()
-StatusCode EventSelector::lastOfPreviousStream( bool shutDown, EvtSelectorContext& iter ) const
-{
+StatusCode EventSelector::lastOfPreviousStream( bool shutDown, EvtSelectorContext& iter ) const {
   StatusCode status = StatusCode::SUCCESS;
   if ( shutDown ) {
     if ( iter.ID() >= 0 && iter.ID() < (long)m_streamtool->size() ) {
@@ -152,8 +148,7 @@ StatusCode EventSelector::lastOfPreviousStream( bool shutDown, EvtSelectorContex
 }
 
 /// Create a new event loop context
-StatusCode EventSelector::createContext( Context*& refpCtxt ) const
-{
+StatusCode EventSelector::createContext( Context*& refpCtxt ) const {
   // Max event is zero. Return begin = end
   refpCtxt = nullptr;
   if ( m_firstEvent < 0 ) {
@@ -182,8 +177,7 @@ StatusCode EventSelector::createContext( Context*& refpCtxt ) const
 StatusCode EventSelector::next( Context& refCtxt ) const { return next( refCtxt, 1 ); }
 
 /// Get next iteration item from the event loop context, but skip jump elements
-StatusCode EventSelector::next( Context& refCtxt, int /* jump */ ) const
-{
+StatusCode EventSelector::next( Context& refCtxt, int /* jump */ ) const {
   EvtSelectorContext* pIt = dynamic_cast<EvtSelectorContext*>( &refCtxt );
   if ( pIt ) {
     if ( pIt->ID() != -1 ) {
@@ -194,7 +188,7 @@ StatusCode EventSelector::next( Context& refCtxt, int /* jump */ ) const
         StatusCode sc = sel->next( *it ); // This stream is empty: advance to the next stream
         if ( !sc.isSuccess() ) {
           m_incidentSvc->fireIncident( Incident( s->dbName(), IncidentType::EndInputFile ) );
-          sc                       = firstOfNextStream( true, *pIt );
+          sc = firstOfNextStream( true, *pIt );
           if ( sc.isSuccess() ) sc = next( *pIt );
         } else {
           pIt->increaseCounters( false );
@@ -222,8 +216,7 @@ StatusCode EventSelector::next( Context& refCtxt, int /* jump */ ) const
 StatusCode EventSelector::previous( Context& refCtxt ) const { return previous( refCtxt, 1 ); }
 
 /// Get previous iteration item from the event loop context, but skip jump elements
-StatusCode EventSelector::previous( Context& refCtxt, int jump ) const
-{
+StatusCode EventSelector::previous( Context& refCtxt, int jump ) const {
   EvtSelectorContext* pIt = dynamic_cast<EvtSelectorContext*>( &refCtxt );
   if ( pIt && jump > 0 ) {
     StatusCode sc = StatusCode::SUCCESS;
@@ -241,9 +234,7 @@ StatusCode EventSelector::previous( Context& refCtxt, int jump ) const
           pIt->set( it, 0 );
         }
         printEvtInfo( pIt );
-        if ( !sc.isSuccess() ) {
-          return sc;
-        }
+        if ( !sc.isSuccess() ) { return sc; }
       }
       pIt->increaseCounters( false );
     }
@@ -254,17 +245,14 @@ StatusCode EventSelector::previous( Context& refCtxt, int jump ) const
 }
 
 /// Access last item in the iteration
-StatusCode EventSelector::last( Context& refCtxt ) const
-{
+StatusCode EventSelector::last( Context& refCtxt ) const {
   EvtSelectorContext* pIt = dynamic_cast<EvtSelectorContext*>( &refCtxt );
-  if ( pIt ) {
-  }
+  if ( pIt ) {}
   return StatusCode::FAILURE;
 }
 
 /// Rewind the dataset
-StatusCode EventSelector::rewind( Context& refCtxt ) const
-{
+StatusCode EventSelector::rewind( Context& refCtxt ) const {
   EvtSelectorContext* ctxt = dynamic_cast<EvtSelectorContext*>( &refCtxt );
   if ( ctxt ) {
     ctxt->set( 0, -1, 0, 0 );
@@ -283,8 +271,7 @@ StatusCode EventSelector::rewind( Context& refCtxt ) const
 }
 
 /// Create new Opaque address corresponding to the current record
-StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const
-{
+StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const {
   const EvtSelectorContext* cpIt = dynamic_cast<const EvtSelectorContext*>( &refCtxt );
   EvtSelectorContext*       pIt  = const_cast<EvtSelectorContext*>( cpIt );
   refpAddr                       = nullptr;
@@ -293,8 +280,8 @@ StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*
     Context*                       it  = pIt->context();
     IEvtSelector*                  sel = s->selector();
     if ( it && sel ) {
-      IOpaqueAddress* pAddr          = nullptr;
-      StatusCode      sc             = sel->createAddress( *it, pAddr );
+      IOpaqueAddress* pAddr = nullptr;
+      StatusCode      sc    = sel->createAddress( *it, pAddr );
       if ( sc.isSuccess() ) refpAddr = pAddr;
       pIt->set( it, pAddr );
       return sc;
@@ -304,8 +291,7 @@ StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*
 }
 
 // Release existing event iteration context
-StatusCode EventSelector::releaseContext( Context*& refCtxt ) const
-{
+StatusCode EventSelector::releaseContext( Context*& refCtxt ) const {
   const EvtSelectorContext*           cpIt = dynamic_cast<const EvtSelectorContext*>( refCtxt );
   std::unique_ptr<EvtSelectorContext> pIt{const_cast<EvtSelectorContext*>( cpIt )};
   if ( pIt && pIt->ID() >= 0 && pIt->ID() < (long)m_streamtool->size() ) {
@@ -324,8 +310,7 @@ StatusCode EventSelector::releaseContext( Context*& refCtxt ) const
 }
 
 /// IService implementation: Db event selector override
-StatusCode EventSelector::initialize()
-{
+StatusCode EventSelector::initialize() {
   // Initialize base class
   StatusCode status = Service::initialize();
   if ( !status.isSuccess() ) {
@@ -380,8 +365,7 @@ StatusCode EventSelector::initialize()
 }
 
 // Re-initialize
-StatusCode EventSelector::reinitialize()
-{
+StatusCode EventSelector::reinitialize() {
   if ( FSMState() != Gaudi::StateMachine::INITIALIZED ) {
     error() << "Cannot reinitialize: service not in state initialized" << endmsg;
     return StatusCode::FAILURE;
@@ -399,12 +383,9 @@ StatusCode EventSelector::reinitialize()
 }
 
 //
-StatusCode EventSelector::finalize()
-{
+StatusCode EventSelector::finalize() {
 
-  if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "finalize()" << endmsg;
-  }
+  if ( msgLevel( MSG::DEBUG ) ) { debug() << "finalize()" << endmsg; }
 
   m_incidentSvc = nullptr;
 

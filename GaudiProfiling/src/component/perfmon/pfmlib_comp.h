@@ -23,35 +23,35 @@
 #define __PFMLIB_COMP_H__
 
 #ifdef __ia64__
-#include <perfmon/pfmlib_comp_ia64.h>
+#  include <perfmon/pfmlib_comp_ia64.h>
 #endif
 
 #ifdef __x86_64__
-#include <perfmon/pfmlib_comp_x86_64.h>
+#  include <perfmon/pfmlib_comp_x86_64.h>
 #endif
 
 #ifdef __i386__
-#include <perfmon/pfmlib_comp_i386.h>
+#  include <perfmon/pfmlib_comp_i386.h>
 #endif
 
 #ifdef __mips__
-#include <perfmon/pfmlib_comp_mips64.h>
+#  include <perfmon/pfmlib_comp_mips64.h>
 #endif
 
 #ifdef __powerpc__
-#include <perfmon/pfmlib_comp_powerpc.h>
+#  include <perfmon/pfmlib_comp_powerpc.h>
 #endif
 
 #ifdef __sparc__
-#include <perfmon/pfmlib_comp_sparc.h>
+#  include <perfmon/pfmlib_comp_sparc.h>
 #endif
 
 #ifdef __cell__
-#include <perfmon/pfmlib_comp_powerpc.h>
+#  include <perfmon/pfmlib_comp_powerpc.h>
 #endif
 
 #ifdef __crayx2
-#include <perfmon/pfmlib_comp_crayx2.h>
+#  include <perfmon/pfmlib_comp_crayx2.h>
 #endif
 
 #endif /* __PFMLIB_COMP_H__ */

@@ -44,8 +44,7 @@ class DataObject;
     Author:  M.Frank
     Version: 1.0
 */
-class GAUDI_API SmartRefBase
-{
+class GAUDI_API SmartRefBase {
 public:
   /// Object data: ID of the link hint to the identifiable object
   mutable long m_hintID;
@@ -70,32 +69,27 @@ public:
   /// Extended equality check
   bool isEqualEx( const ContainedObject* pObj, const SmartRefBase& c ) const;
   /// Equality operator for ContainedObject like references
-  bool isEqual( const ContainedObject* /* pObj */, const SmartRefBase& c ) const
-  {
+  bool isEqual( const ContainedObject* /* pObj */, const SmartRefBase& c ) const {
     return ( m_hintID == c.m_hintID && m_linkID == c.m_linkID && m_data == c.m_data && m_contd == c.m_contd );
   }
   /// Equality operator for DataObject like references
-  bool isEqual( const DataObject* /* pObj */, const SmartRefBase& c ) const
-  {
+  bool isEqual( const DataObject* /* pObj */, const SmartRefBase& c ) const {
     return m_linkID == c.m_linkID && m_data == c.m_data;
   }
   /// Output streamer for DataObject like references
   void writeObject( const DataObject* pObject, StreamBuffer& s ) const { s.addIdentifiedLink( pObject, m_hintID ); }
   /// Output streamer for ContainedObject like references
-  void writeObject( const ContainedObject* pObject, StreamBuffer& s ) const
-  {
+  void writeObject( const ContainedObject* pObject, StreamBuffer& s ) const {
     s.addContainedLink( pObject, m_hintID, m_linkID );
   }
   /// Input streamer for DataObject like references
-  DataObject* readObject( const DataObject* /* pObject */, StreamBuffer& s ) const
-  {
+  DataObject* readObject( const DataObject* /* pObject */, StreamBuffer& s ) const {
     DataObject* pObj = 0;
     s.getIdentifiedLink( pObj, m_hintID );
     return pObj;
   }
   /// Output streamer for ContainedObject like references
-  ContainedObject* readObject( const ContainedObject* /* pObject */, StreamBuffer& s ) const
-  {
+  ContainedObject* readObject( const ContainedObject* /* pObject */, StreamBuffer& s ) const {
     ContainedObject* pObj = 0;
     s.getContainedLink( pObj, m_hintID, m_linkID );
     return pObj;

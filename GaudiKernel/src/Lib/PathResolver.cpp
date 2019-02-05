@@ -5,7 +5,7 @@
 // Disable warning
 //   C4996: 'std::copy': Function call with parameters that may be unsafe
 // Probably coming from Boost classification.
-#pragma warning( disable : 4996 )
+#  pragma warning( disable : 4996 )
 #endif
 
 #include <iostream>
@@ -30,8 +30,7 @@ static const char* path_separator = ",:";
 ///////////////////////////////////////////////////////////////////////////
 //
 
-namespace System
-{
+namespace System {
 
   typedef enum { PR_regular_file, PR_directory } PR_file_type;
 
@@ -40,8 +39,7 @@ namespace System
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   static bool PR_find( const bf::path& file, const string& search_list, PR_file_type file_type,
-                       PathResolver::SearchType search_type, string& result )
-  {
+                       PathResolver::SearchType search_type, string& result ) {
 
     bool found( false );
 
@@ -53,8 +51,7 @@ namespace System
         result = bf::system_complete( file ).string();
         return true;
       }
-    } catch ( const bf::filesystem_error& /*err*/ ) {
-    }
+    } catch ( const bf::filesystem_error& /*err*/ ) {}
 
     // assume that "." is always part of the search path, so check locally first
 
@@ -65,8 +62,7 @@ namespace System
         result = bf::system_complete( file ).string();
         return true;
       }
-    } catch ( const bf::filesystem_error& /*err*/ ) {
-    }
+    } catch ( const bf::filesystem_error& /*err*/ ) {}
 
     // iterate through search list
     vector<string> spv;
@@ -81,8 +77,7 @@ namespace System
           result = bf::system_complete( fp ).string();
           return true;
         }
-      } catch ( const bf::filesystem_error& /*err*/ ) {
-      }
+      } catch ( const bf::filesystem_error& /*err*/ ) {}
 
       // if recursive searching requested, drill down
       if ( search_type == PathResolver::RecursiveSearch && is_directory( bf::path( itr ) ) ) {
@@ -92,9 +87,7 @@ namespace System
           for ( bf::recursive_directory_iterator ritr( itr ); ritr != end_itr; ++ritr ) {
 
             // skip if not a directory
-            if ( !is_directory( bf::path( *ritr ) ) ) {
-              continue;
-            }
+            if ( !is_directory( bf::path( *ritr ) ) ) { continue; }
 
             bf::path fp2 = bf::path( *ritr ) / file;
             if ( ( file_type == PR_regular_file && is_regular_file( fp2 ) ) ||
@@ -103,8 +96,7 @@ namespace System
               return true;
             }
           }
-        } catch ( const bf::filesystem_error& /*err*/ ) {
-        }
+        } catch ( const bf::filesystem_error& /*err*/ ) {}
       }
     }
 
@@ -114,8 +106,7 @@ namespace System
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   string PathResolver::find_file( const std::string& logical_file_name, const std::string& search_path,
-                                  SearchType search_type )
-  {
+                                  SearchType search_type ) {
 
     std::string path_list;
     System::getEnv( search_path, path_list );
@@ -126,8 +117,7 @@ namespace System
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   std::string PathResolver::find_file_from_list( const std::string& logical_file_name, const std::string& search_list,
-                                                 SearchType search_type )
-  {
+                                                 SearchType search_type ) {
     std::string result( "" );
 
     bf::path lfn( logical_file_name );
@@ -151,8 +141,7 @@ namespace System
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   string PathResolver::find_directory( const std::string& logical_file_name, const std::string& search_path,
-                                       SearchType search_type )
-  {
+                                       SearchType search_type ) {
     std::string path_list;
     System::getEnv( search_path, path_list );
 
@@ -162,21 +151,17 @@ namespace System
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   string PathResolver::find_directory_from_list( const std::string& logical_file_name, const std::string& search_list,
-                                                 SearchType search_type )
-  {
+                                                 SearchType search_type ) {
     std::string result;
 
-    if ( !PR_find( logical_file_name, search_list, PR_directory, search_type, result ) ) {
-      result = "";
-    }
+    if ( !PR_find( logical_file_name, search_list, PR_directory, search_type, result ) ) { result = ""; }
 
     return ( result );
   }
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-  PathResolver::SearchPathStatus PathResolver::check_search_path( const std::string& search_path )
-  {
+  PathResolver::SearchPathStatus PathResolver::check_search_path( const std::string& search_path ) {
     std::string path_list;
     if ( !System::getEnv( search_path, path_list ) ) return ( EnvironmentVariableUndefined );
 
@@ -186,27 +171,21 @@ namespace System
     try {
       for ( const auto& itr : spv ) {
         bf::path pp( itr );
-        if ( !is_directory( pp ) ) {
-          return ( UnknownDirectory );
-        }
+        if ( !is_directory( pp ) ) { return ( UnknownDirectory ); }
       }
-    } catch ( const bf::filesystem_error& /*err*/ ) {
-      return ( UnknownDirectory );
-    }
+    } catch ( const bf::filesystem_error& /*err*/ ) { return ( UnknownDirectory ); }
 
     return ( Ok );
   }
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-  std::string PathResolverFindXMLFile( const std::string& logical_file_name )
-  {
+  std::string PathResolverFindXMLFile( const std::string& logical_file_name ) {
     return PathResolver::find_file( logical_file_name, "XMLPATH" );
   }
 
-  std::string PathResolverFindDataFile( const std::string& logical_file_name )
-  {
+  std::string PathResolverFindDataFile( const std::string& logical_file_name ) {
     return PathResolver::find_file( logical_file_name, "DATAPATH" );
   }
 
-} // System namespace
+} // namespace System

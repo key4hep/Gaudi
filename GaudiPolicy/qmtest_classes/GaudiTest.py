@@ -22,9 +22,11 @@ from subprocess import Popen, PIPE, STDOUT
 try:
     from GaudiKernel import ROOT6WorkAroundEnabled
 except ImportError:
+
     def ROOT6WorkAroundEnabled(id=None):
         # dummy implementation
         return False
+
 
 # ensure the preferred locale
 os.environ['LC_ALL'] = 'C'
@@ -161,8 +163,8 @@ class TemporaryEnvironment:
         """
         shells = ['csh', 'sh', 'bat']
         if shell_type not in shells:
-            raise RuntimeError(
-                "Shell type '%s' unknown. Available: %s" % (shell_type, shells))
+            raise RuntimeError("Shell type '%s' unknown. Available: %s" %
+                               (shell_type, shells))
         out = ""
         for key, value in self.old_values.items():
             if key not in self.env:
@@ -221,7 +223,12 @@ class TempFile:
     the temporary directory (automatic clean-up).
     """
 
-    def __init__(self, suffix='', prefix='tmp', dir=None, text=False, keep=False):
+    def __init__(self,
+                 suffix='',
+                 prefix='tmp',
+                 dir=None,
+                 text=False,
+                 keep=False):
         self.file = None
         self.name = None
         self._keep = keep
@@ -366,6 +373,7 @@ def escape_xml_illegal_chars(val, replacement='?'):
     """
     return _illegal_xml_chars_RE.sub(replacement, val)
 
+
 ########################################################################
 # Output Validation Classes
 ########################################################################
@@ -419,10 +427,14 @@ class BasicOutputValidator:
         if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
             # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
             to_ignore = re.compile(
-                r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*')
+                r'Warning in <TInterpreter::ReadRootmapFile>: .* is already in .*'
+            )
 
-            def keep_line(l): return not to_ignore.match(l)
-            return filter(keep_line, s1.splitlines()) == filter(keep_line, s2.splitlines())
+            def keep_line(l):
+                return not to_ignore.match(l)
+
+            return filter(keep_line, s1.splitlines()) == filter(
+                keep_line, s2.splitlines())
         else:
             return s1.splitlines() == s2.splitlines()
 
@@ -524,8 +536,9 @@ class RegexpReplacer(FilePreprocessor):
 
 # Common preprocessors
 maskPointers = RegexpReplacer("0x[0-9a-fA-F]{4,16}", "0x########")
-normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *(CES?T)?",
-                               "00:00:00 1970-01-01")
+normalizeDate = RegexpReplacer(
+    "[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *(CES?T)?",
+    "00:00:00 1970-01-01")
 normalizeEOL = FilePreprocessor()
 normalizeEOL.__processLine__ = lambda line: str(line).rstrip() + '\n'
 
@@ -555,88 +568,94 @@ class LineSorter(FilePreprocessor):
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
 for w, o, r in [
-    # ("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
+        # ("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
     ("TIMER.TIMER", r"\s+[+-]?[0-9]+[0-9.]*", " 0"),  # Normalize time output
     ("release all pending", r"^.*/([^/]*:.*)", r"\1"),
     ("0x########", r"\[.*/([^/]*.*)\]", r"[\1]"),
     ("^#.*file", r"file '.*[/\\]([^/\\]*)$", r"file '\1"),
     ("^JobOptionsSvc.*options successfully read in from",
-     r"read in from .*[/\\]([^/\\]*)$", r"file \1"),  # normalize path to options
-    # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
-    (None, r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}(?!-0{12})-[0-9A-Fa-f]{12}",
+     r"read in from .*[/\\]([^/\\]*)$",
+     r"file \1"),  # normalize path to options
+        # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
+    (None,
+     r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}(?!-0{12})-[0-9A-Fa-f]{12}",
      "00000000-0000-0000-0000-000000000000"),
-    # Absorb a change in ServiceLocatorHelper
+        # Absorb a change in ServiceLocatorHelper
     ("ServiceLocatorHelper::", "ServiceLocatorHelper::(create|locate)Service",
      "ServiceLocatorHelper::service"),
-    # Remove the leading 0 in Windows' exponential format
+        # Remove the leading 0 in Windows' exponential format
     (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
-    # Output line changed in Gaudi v24
+        # Output line changed in Gaudi v24
     (None, r'Service reference count check:',
      r'Looping over all active services...'),
-    # Change of property name in Algorithm (GAUDI-1030)
+        # Change of property name in Algorithm (GAUDI-1030)
     (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
 ]:  # [ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o, r, w)
 
-lineSkipper = LineSkipper(["//GP:",
-                           "JobOptionsSvc        INFO # ",
-                           "JobOptionsSvc     WARNING # ",
-                           "Time User",
-                           "Welcome to",
-                           "This machine has a speed",
-                           "TIME:",
-                           "running on",
-                           "ToolSvc.Sequenc...   INFO",
-                           "DataListenerSvc      INFO XML written to file:",
-                           "[INFO]", "[WARNING]",
-                           "DEBUG No writable file catalog found which contains FID:",
-                           "0 local",  # hack for ErrorLogExample
-                           "DEBUG Service base class initialized successfully",  # changed between v20 and v21
-                           "DEBUG Incident  timing:",  # introduced with patch #3487
-                           # changed the level of the message from INFO to DEBUG
-                           "INFO  'CnvServices':[",
-                           # The signal handler complains about SIGXCPU not defined on some platforms
-                           'SIGXCPU',
-                           # FIXME: special lines printed in GaudiHive
-                           'EventLoopMgr      SUCCESS Event Number = ',
-                           'EventLoopMgr      SUCCESS ---> Loop Finished',
-                           ], regexps=[
-    r"^JobOptionsSvc        INFO *$",
-    r"^#",  # Ignore python comments
-    # skip the message reporting the version of the root file
-    r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:",
-    # hack for ErrorLogExample
-    r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[",
-    # hack for ErrorLogExample
-    r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\[",
-    r"File '.*.xml' does not exist",
-    r"INFO Refer to dataset .* by its file ID:",
-    r"INFO Referring to dataset .* by its file ID:",
-    r"INFO Disconnect from dataset",
-    r"INFO Disconnected from dataset",
-    r"INFO Disconnected data IO:",
-    r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
-    # I want to ignore the header of the unchecked StatusCode report
-    r"^StatusCodeSvc.*listing all unchecked return codes:",
-    r"^StatusCodeSvc\s*INFO\s*$",
-    r"Num\s*\|\s*Function\s*\|\s*Source Library",
-    r"^[-+]*\s*$",
-    # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
-    r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
-    # Hide unchecked StatusCodes from dictionaries
-    r"^ +[0-9]+ \|.*ROOT",
-    r"^ +[0-9]+ \|.*\|.*Dict",
-    # Hide success StatusCodeSvc message
-    r"StatusCodeSvc.*all StatusCode instances where checked",
-    # Hide EventLoopMgr total timing report
-    r"EventLoopMgr.*---> Loop Finished",
-    # Remove ROOT TTree summary table, which changes from one version to the other
-    r"^\*.*\*$",
-    # Remove Histos Summaries
-    r"SUCCESS\s*Booked \d+ Histogram\(s\)",
-    r"^ \|",
-    r"^ ID=",
-])
+lineSkipper = LineSkipper(
+    [
+        "//GP:",
+        "JobOptionsSvc        INFO # ",
+        "JobOptionsSvc     WARNING # ",
+        "Time User",
+        "Welcome to",
+        "This machine has a speed",
+        "TIME:",
+        "running on",
+        "ToolSvc.Sequenc...   INFO",
+        "DataListenerSvc      INFO XML written to file:",
+        "[INFO]",
+        "[WARNING]",
+        "DEBUG No writable file catalog found which contains FID:",
+        "0 local",  # hack for ErrorLogExample
+        "DEBUG Service base class initialized successfully",  # changed between v20 and v21
+        "DEBUG Incident  timing:",  # introduced with patch #3487
+        # changed the level of the message from INFO to DEBUG
+        "INFO  'CnvServices':[",
+        # The signal handler complains about SIGXCPU not defined on some platforms
+        'SIGXCPU',
+        # FIXME: special lines printed in GaudiHive
+        'EventLoopMgr      SUCCESS Event Number = ',
+        'EventLoopMgr      SUCCESS ---> Loop Finished',
+    ],
+    regexps=[
+        r"^JobOptionsSvc        INFO *$",
+        r"^#",  # Ignore python comments
+        # skip the message reporting the version of the root file
+        r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:",
+        # hack for ErrorLogExample
+        r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[",
+        # hack for ErrorLogExample
+        r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\[",
+        r"File '.*.xml' does not exist",
+        r"INFO Refer to dataset .* by its file ID:",
+        r"INFO Referring to dataset .* by its file ID:",
+        r"INFO Disconnect from dataset",
+        r"INFO Disconnected from dataset",
+        r"INFO Disconnected data IO:",
+        r"IncidentSvc\s*(DEBUG (Adding|Removing)|VERBOSE Calling)",
+        # I want to ignore the header of the unchecked StatusCode report
+        r"^StatusCodeSvc.*listing all unchecked return codes:",
+        r"^StatusCodeSvc\s*INFO\s*$",
+        r"Num\s*\|\s*Function\s*\|\s*Source Library",
+        r"^[-+]*\s*$",
+        # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
+        r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
+        # Hide unchecked StatusCodes from dictionaries
+        r"^ +[0-9]+ \|.*ROOT",
+        r"^ +[0-9]+ \|.*\|.*Dict",
+        # Hide success StatusCodeSvc message
+        r"StatusCodeSvc.*all StatusCode instances where checked",
+        # Hide EventLoopMgr total timing report
+        r"EventLoopMgr.*---> Loop Finished",
+        # Remove ROOT TTree summary table, which changes from one version to the other
+        r"^\*.*\*$",
+        # Remove Histos Summaries
+        r"SUCCESS\s*Booked \d+ Histogram\(s\)",
+        r"^ \|",
+        r"^ ID=",
+    ])
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
     # FIXME: (MCl) Hide warnings from new rootmap sanity check until we can fix them
     lineSkipper += LineSkipper(regexps=[
@@ -668,8 +687,8 @@ class ReferenceFileValidator:
             new = self.preproc(new)
         #open(self.reffile + ".test","w").writelines(new)
         diffs = difflib.ndiff(orig, new, charjunk=difflib.IS_CHARACTER_JUNK)
-        filterdiffs = map(lambda x: x.strip(), filter(
-            lambda x: x[0] != " ", diffs))
+        filterdiffs = map(lambda x: x.strip(),
+                          filter(lambda x: x[0] != " ", diffs))
         #filterdiffs = [x.strip() for x in diffs]
         if filterdiffs:
             result[self.result_key] = result.Quote("\n".join(filterdiffs))
@@ -681,12 +700,18 @@ Legend:
 
         return causes
 
+
 ########################################################################
 # Useful validation functions
 ########################################################################
 
 
-def findReferenceBlock(reference, stdout, result, causes, signature_offset=0, signature=None,
+def findReferenceBlock(reference,
+                       stdout,
+                       result,
+                       causes,
+                       signature_offset=0,
+                       signature=None,
                        id=None):
     """
     Given a block of text, tries to find it in the output.
@@ -718,8 +743,8 @@ def findReferenceBlock(reference, stdout, result, causes, signature_offset=0, si
     # find the reference block in the output file
     try:
         pos = outlines.index(signature)
-        outlines = outlines[pos - signature_offset:pos +
-                            len(reflines) - signature_offset]
+        outlines = outlines[pos - signature_offset:pos + len(reflines) -
+                            signature_offset]
         if reflines != outlines:
             msg = "standard output"
             # I do not want 2 messages in causes if teh function is called twice
@@ -765,10 +790,10 @@ def countErrorLines(expected={'ERROR': 0, 'FATAL': 0}, **kwargs):
     for e in errors:
         if len(errors[e]) != expected[e]:
             causes.append('%s(%d)' % (e, len(errors[e])))
-            result["GaudiTest.lines.%s" %
-                   e] = result.Quote('\n'.join(errors[e]))
-            result["GaudiTest.lines.%s.expected#" %
-                   e] = result.Quote(str(expected[e]))
+            result["GaudiTest.lines.%s" % e] = result.Quote('\n'.join(
+                errors[e]))
+            result["GaudiTest.lines.%s.expected#" % e] = result.Quote(
+                str(expected[e]))
 
     return causes
 
@@ -783,7 +808,8 @@ def _parseTTreeSummary(lines, pos):
     i = pos + 1  # first line is a sequence of '*'
     count = len(lines)
 
-    def splitcols(l): return [f.strip() for f in l.strip("*\n").split(':', 2)]
+    def splitcols(l):
+        return [f.strip() for f in l.strip("*\n").split(':', 2)]
 
     def parseblock(ll):
         r = {}
@@ -865,8 +891,8 @@ def cmpTreesDicts(reference, to_check, ignore=None):
         if k in to_check:  # the key must be in the dictionary to_check
             if (type(reference[k]) is dict) and (type(to_check[k]) is dict):
                 # if both reference and to_check values are dictionaries, recurse
-                failed = fail_keys = cmpTreesDicts(
-                    reference[k], to_check[k], ignore)
+                failed = fail_keys = cmpTreesDicts(reference[k], to_check[k],
+                                                   ignore)
             else:
                 # compare the two values
                 failed = to_check[k] != reference[k]
@@ -901,7 +927,8 @@ def parseHistosSummary(lines, pos):
     """
     global h_count_re
     h_table_head = re.compile(
-        r'SUCCESS\s+(1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"')
+        r'SUCCESS\s+(1D|2D|3D|1D profile|2D profile) histograms in directory\s+"(\w*)"'
+    )
     h_short_summ = re.compile(r"ID=([^\"]+)\s+\"([^\"]+)\"\s+(.*)")
 
     nlines = len(lines)
@@ -942,8 +969,10 @@ def parseHistosSummary(lines, pos):
                     pos += 1
             elif l.startswith(" ID="):
                 while pos < nlines and lines[pos].startswith(" ID="):
-                    values = [x.strip()
-                              for x in h_short_summ.search(lines[pos]).groups()]
+                    values = [
+                        x.strip()
+                        for x in h_short_summ.search(lines[pos]).groups()
+                    ]
                     cont[values[0]] = values
                     pos += 1
             else:  # not interpreted
@@ -1016,6 +1045,7 @@ class GaudiFilterExecutable(qm.executable.Filter):
             return 0
 
         return self.__timeout >= 0 or self.__timeout == -2
+
     ##
     # Needs to replace the ones from RedirectedExecutable and TimeoutExecutable
 
@@ -1097,12 +1127,14 @@ class GaudiFilterExecutable(qm.executable.Filter):
                         #######################################################
                         # This is the interesting part: dump the stack trace to a file
                         if sys.platform == "linux2":  # we should be have /proc and gdb
-                            cmd = ["gdb",
-                                   os.path.join(
-                                       "/proc", str(child_pid), "exe"),
-                                   str(child_pid),
-                                   "-batch", "-n", "-x",
-                                   "'%s'" % os.path.join(os.path.dirname(__file__), "stack-trace.gdb")]
+                            cmd = [
+                                "gdb",
+                                os.path.join("/proc", str(child_pid), "exe"),
+                                str(child_pid), "-batch", "-n", "-x",
+                                "'%s'" % os.path.join(
+                                    os.path.dirname(__file__),
+                                    "stack-trace.gdb")
+                            ]
                             # FIXME: I wanted to use subprocess.Popen, but it doesn't want to work
                             #        in this context.
                             o = os.popen(" ".join(cmd)).read()
@@ -1143,6 +1175,7 @@ class GaudiFilterExecutable(qm.executable.Filter):
             if result == win32con.WAIT_TIMEOUT:
                 self.Kill()
 
+
 ########################################################################
 # Test Classes
 ########################################################################
@@ -1162,12 +1195,12 @@ class GaudiExeTest(ExecTestBase):
             an absolute path, the value of the 'PATH' environment
             variable will be used to search for the program.
             If not specified, $GAUDIEXE or Gaudi.exe are used.
-            """
-        ),
-        qm.fields.SetField(qm.fields.TextField(
-            name="args",
-            title="Argument List",
-            description="""The command-line arguments.
+            """),
+        qm.fields.SetField(
+            qm.fields.TextField(
+                name="args",
+                title="Argument List",
+                description="""The command-line arguments.
 
             If this field is left blank, the program is run without any
             arguments.
@@ -1175,8 +1208,7 @@ class GaudiExeTest(ExecTestBase):
             Use this field to specify the option files.
 
             An implicit 0th argument (the path to the program) is added
-            automatically."""
-        )),
+            automatically.""")),
         qm.fields.TextField(
             name="options",
             title="Options",
@@ -1191,8 +1223,7 @@ class GaudiExeTest(ExecTestBase):
             """,
             verbatim="true",
             multiline="true",
-            default_value=""
-        ),
+            default_value=""),
         qm.fields.TextField(
             name="workdir",
             title="Working Directory",
@@ -1200,8 +1231,7 @@ class GaudiExeTest(ExecTestBase):
 
             If this field is left blank, the program will be run from the qmtest
             directory, otherwise from the directory specified.""",
-            default_value=""
-        ),
+            default_value=""),
         qm.fields.TextField(
             name="reference",
             title="Reference Output",
@@ -1211,28 +1241,26 @@ class GaudiExeTest(ExecTestBase):
             valid.
 
             If the reference file is specified, any output on standard error is
-            ignored."""
-        ),
+            ignored."""),
         qm.fields.TextField(
             name="error_reference",
             title="Reference for standard error",
-            description="""Path to the file containing the reference for the standard error.
+            description=
+            """Path to the file containing the reference for the standard error.
 
             If this field is left blank, any standard output will be considered
             valid.
 
             If the reference file is specified, any output on standard error is
-            ignored."""
-        ),
-        qm.fields.SetField(qm.fields.TextField(
-            name="unsupported_platforms",
-            title="Unsupported Platforms",
-            description="""Platform on which the test must not be run.
+            ignored."""),
+        qm.fields.SetField(
+            qm.fields.TextField(
+                name="unsupported_platforms",
+                title="Unsupported Platforms",
+                description="""Platform on which the test must not be run.
 
             List of regular expressions identifying the platforms on which the
-            test is not run and the result is set to UNTESTED."""
-        )),
-
+            test is not run and the result is set to UNTESTED.""")),
         qm.fields.TextField(
             name="validator",
             title="Validator",
@@ -1251,9 +1279,7 @@ class GaudiExeTest(ExecTestBase):
             """,
             verbatim="true",
             multiline="true",
-            default_value=""
-        ),
-
+            default_value=""),
         qm.fields.BooleanField(
             name="use_temp_dir",
             title="Use temporary directory",
@@ -1261,24 +1287,20 @@ class GaudiExeTest(ExecTestBase):
 
             If set to true, use a temporary directory as working directory.
             """,
-            default_value="false"
-        ),
-
+            default_value="false"),
         qm.fields.IntegerField(
             name="signal",
             title="Expected signal",
             description="""Expect termination by signal.""",
-            default_value=None
-        ),
+            default_value=None),
     ]
 
     def PlatformIsNotSupported(self, context, result):
         platform = self.GetPlatform()
-        unsupported = [re.compile(x)
-                       for x in [str(y).strip()
-                                 for y in self.unsupported_platforms]
-                       if x
-                       ]
+        unsupported = [
+            re.compile(x)
+            for x in [str(y).strip() for y in self.unsupported_platforms] if x
+        ]
         for p_re in unsupported:
             if p_re.search(platform):
                 result.SetOutcome(result.UNTESTED)
@@ -1314,7 +1336,8 @@ class GaudiExeTest(ExecTestBase):
             return ""
 
         # function to split an extension in constituents parts
-        def platformSplit(p): return set(p.split('-' in p and '-' or '_'))
+        def platformSplit(p):
+            return set(p.split('-' in p and '-' or '_'))
 
         reference = os.path.normpath(os.path.expandvars(reffile))
         # old-style platform-specific reference name
@@ -1344,7 +1367,10 @@ class GaudiExeTest(ExecTestBase):
                 reference = os.path.join(dirname, candidates[-1][1])
         return reference
 
-    def CheckTTreesSummaries(self, stdout, result, causes,
+    def CheckTTreesSummaries(self,
+                             stdout,
+                             result,
+                             causes,
                              trees_dict=None,
                              ignore=r"Basket|.*size|Compression"):
         """
@@ -1373,14 +1399,17 @@ class GaudiExeTest(ExecTestBase):
         failed = cmpTreesDicts(trees_dict, trees, ignore)
         if failed:
             causes.append("trees summaries")
-            msg = "%s: %s != %s" % getCmpFailingValues(
-                trees_dict, trees, failed)
+            msg = "%s: %s != %s" % getCmpFailingValues(trees_dict, trees,
+                                                       failed)
             result["GaudiTest.TTrees.failure_on"] = result.Quote(msg)
             result["GaudiTest.TTrees.found"] = result.Quote(pp.pformat(trees))
 
         return causes
 
-    def CheckHistosSummaries(self, stdout, result, causes,
+    def CheckHistosSummaries(self,
+                             stdout,
+                             result,
+                             causes,
                              dict=None,
                              ignore=None):
         """
@@ -1415,7 +1444,12 @@ class GaudiExeTest(ExecTestBase):
 
         return causes
 
-    def ValidateWithReference(self, stdout, stderr, result, causes, preproc=None):
+    def ValidateWithReference(self,
+                              stdout,
+                              stderr,
+                              result,
+                              causes,
+                              preproc=None):
         """
         Default validation action: compare standard output and error to the
         reference files.
@@ -1428,10 +1462,11 @@ class GaudiExeTest(ExecTestBase):
         # call the validator if the file exists
         if reference and os.path.isfile(reference):
             result["GaudiTest.output_reference"] = reference
-            causes += ReferenceFileValidator(reference,
-                                             "standard output",
-                                             "GaudiTest.output_diff",
-                                             preproc=preproc)(stdout, result)
+            causes += ReferenceFileValidator(
+                reference,
+                "standard output",
+                "GaudiTest.output_diff",
+                preproc=preproc)(stdout, result)
 
         # Compare TTree summaries
         causes = self.CheckTTreesSummaries(stdout, result, causes)
@@ -1454,10 +1489,11 @@ class GaudiExeTest(ExecTestBase):
         # call the validator if we have a file to use
         if reference and os.path.isfile(reference):
             result["GaudiTest.error_reference"] = reference
-            newcauses = ReferenceFileValidator(reference,
-                                               "standard error",
-                                               "GaudiTest.error_diff",
-                                               preproc=preproc)(stderr, result)
+            newcauses = ReferenceFileValidator(
+                reference,
+                "standard error",
+                "GaudiTest.error_diff",
+                preproc=preproc)(stderr, result)
             causes += newcauses
             if newcauses:  # Write a new reference file for stdedd
                 newref = open(reference + ".new", "w")
@@ -1466,9 +1502,9 @@ class GaudiExeTest(ExecTestBase):
                     newref.write(l.rstrip() + '\n')
                 del newref  # flush and close
         else:
-            causes += BasicOutputValidator(self.stderr,
-                                           "standard error",
-                                           "ExecTest.expected_stderr")(stderr, result)
+            causes += BasicOutputValidator(self.stderr, "standard error",
+                                           "ExecTest.expected_stderr")(stderr,
+                                                                       result)
 
         return causes
 
@@ -1476,6 +1512,7 @@ class GaudiExeTest(ExecTestBase):
         causes = []
         # if the test definition contains a custom validator, use it
         if self.validator.strip() != "":
+
             class CallWrapper(object):
                 """
                 Small wrapper class to dynamically bind some default arguments
@@ -1504,35 +1541,52 @@ class GaudiExeTest(ExecTestBase):
                         if a not in positional and a not in kwargs:
                             kwargs[a] = self.extra_args[a]
                     return apply(self.callable, args, kwargs)
-            # local names to be exposed in the script
-            exported_symbols = {"self": self,
-                                "stdout": stdout,
-                                "stderr": stderr,
-                                "result": result,
-                                "causes": causes,
-                                "findReferenceBlock":
-                                    CallWrapper(findReferenceBlock, {"stdout": stdout,
-                                                                     "result": result,
-                                                                     "causes": causes}),
-                                "validateWithReference":
-                                    CallWrapper(self.ValidateWithReference, {"stdout": stdout,
-                                                                             "stderr": stderr,
-                                                                             "result": result,
-                                                                             "causes": causes}),
-                                "countErrorLines":
-                                    CallWrapper(countErrorLines, {"stdout": stdout,
-                                                                  "result": result,
-                                                                  "causes": causes}),
-                                "checkTTreesSummaries":
-                                    CallWrapper(self.CheckTTreesSummaries, {"stdout": stdout,
-                                                                            "result": result,
-                                                                            "causes": causes}),
-                                "checkHistosSummaries":
-                                    CallWrapper(self.CheckHistosSummaries, {"stdout": stdout,
-                                                                            "result": result,
-                                                                            "causes": causes}),
 
-                                }
+            # local names to be exposed in the script
+            exported_symbols = {
+                "self":
+                self,
+                "stdout":
+                stdout,
+                "stderr":
+                stderr,
+                "result":
+                result,
+                "causes":
+                causes,
+                "findReferenceBlock":
+                CallWrapper(findReferenceBlock, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": causes
+                }),
+                "validateWithReference":
+                CallWrapper(
+                    self.ValidateWithReference, {
+                        "stdout": stdout,
+                        "stderr": stderr,
+                        "result": result,
+                        "causes": causes
+                    }),
+                "countErrorLines":
+                CallWrapper(countErrorLines, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": causes
+                }),
+                "checkTTreesSummaries":
+                CallWrapper(self.CheckTTreesSummaries, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": causes
+                }),
+                "checkHistosSummaries":
+                CallWrapper(self.CheckHistosSummaries, {
+                    "stdout": stdout,
+                    "result": result,
+                    "causes": causes
+                }),
+            }
             exec self.validator in globals(), exported_symbols
         else:
             self.ValidateWithReference(stdout, stderr, result, causes)
@@ -1591,7 +1645,9 @@ class GaudiExeTest(ExecTestBase):
         tmpfile = None
         if self.options.strip():
             ext = ".opts"
-            if re.search(r"from\s+Gaudi.Configuration\s+import\s+\*|from\s+Configurables\s+import", self.options):
+            if re.search(
+                    r"from\s+Gaudi.Configuration\s+import\s+\*|from\s+Configurables\s+import",
+                    self.options):
                 ext = ".py"
             tmpfile = TempFile(ext)
             tmpfile.writelines("\n".join(self.options.splitlines()))
@@ -1630,9 +1686,7 @@ class GaudiExeTest(ExecTestBase):
             self._CreateEclipseLaunch(
                 prog, args, destdir=os.path.join(origdir, '.eclipse'))
             # Run the test
-            self.RunProgram(prog,
-                            [prog] + args,
-                            context, result)
+            self.RunProgram(prog, [prog] + args, context, result)
             # Record the content of the enfironment for failing tests
             if result.GetOutcome() not in [result.PASS]:
                 self.DumpEnvironment(result)
@@ -1804,9 +1858,11 @@ class GaudiExeTest(ExecTestBase):
         data = {}
         # Note: the "quoteattr(k)" is not needed because special chars cannot be part of a variable name,
         # but it doesn't harm.
-        data["environment"] = "\n".join(['<mapEntry key=%s value=%s/>' % (quoteattr(k), quoteattr(v))
-                                         for k, v in os.environ.iteritems()
-                                         if k not in ('MAKEOVERRIDES', 'MAKEFLAGS', 'MAKELEVEL')])
+        data["environment"] = "\n".join([
+            '<mapEntry key=%s value=%s/>' % (quoteattr(k), quoteattr(v))
+            for k, v in os.environ.iteritems()
+            if k not in ('MAKEOVERRIDES', 'MAKEFLAGS', 'MAKELEVEL')
+        ])
 
         data["exec"] = which(prog) or prog
         if os.path.basename(data["exec"]).lower().startswith("python"):
@@ -1957,8 +2013,7 @@ class HTMLResultStream(ResultStream):
         ids = set([i["id"] for i in self._summary])
         newSummary = [i for i in oldSummary if i["id"] not in ids]
         newSummary.extend(self._summary)
-        json.dump(newSummary, open(self._summaryFile, "w"),
-                  sort_keys=True)
+        json.dump(newSummary, open(self._summaryFile, "w"), sort_keys=True)
 
     def WriteAnnotation(self, key, value):
         """Writes the annotation to the annotation file.
@@ -1994,8 +2049,8 @@ class HTMLResultStream(ResultStream):
             else:
                 annotations[key] = value
         # Write the new annotations file
-        json.dump(annotations, open(self._annotationsFile, "w"),
-                  sort_keys=True)
+        json.dump(
+            annotations, open(self._annotationsFile, "w"), sort_keys=True)
 
     def WriteResult(self, result):
         """Prepare the test result directory in the destination directory storing
@@ -2024,8 +2079,10 @@ class HTMLResultStream(ResultStream):
         testOutDir = os.path.join(self.dir, summary["id"])
         if not os.path.isdir(testOutDir):
             os.makedirs(testOutDir)
-        json.dump(summary, open(os.path.join(testOutDir, "summary.json"), "w"),
-                  sort_keys=True)
+        json.dump(
+            summary,
+            open(os.path.join(testOutDir, "summary.json"), "w"),
+            sort_keys=True)
         for f in summary["fields"]:
             open(os.path.join(testOutDir, f), "w").write(result[f])
 
@@ -2144,8 +2201,8 @@ class XMLResultStream(ResultStream):
 
             self._EndTestTime = ET.SubElement(self._Testing, "EndTestTime")
 
-            self._ElapsedMinutes = ET.SubElement(
-                self._Testing, "ElapsedMinutes")
+            self._ElapsedMinutes = ET.SubElement(self._Testing,
+                                                 "ElapsedMinutes")
 
         else:  # We get the elements
             self._Testing = self._site.find("Testing")
@@ -2155,7 +2212,6 @@ class XMLResultStream(ResultStream):
             self._EndDateTime = self._Testing.find("EndDateTime")
             self._EndTestTime = self._Testing.find("EndTestTime")
             self._ElapsedMinutes = self._Testing.find("ElapsedMinutes")
-
         """
         # Add some non-QMTest attributes
         if "CMTCONFIG" in os.environ:
@@ -2202,8 +2258,9 @@ class XMLResultStream(ResultStream):
 
         # writing the start date time
         if haveStartDate:
-            self._startTime = calendar.timegm(time.strptime(
-                result["qmtest.start_time"], "%Y-%m-%dT%H:%M:%SZ"))
+            self._startTime = calendar.timegm(
+                time.strptime(result["qmtest.start_time"],
+                              "%Y-%m-%dT%H:%M:%SZ"))
             if self._StartTestTime.text is None:
                 self._StartDateTime.text = time.strftime(
                     "%b %d %H:%M %Z", time.localtime(self._startTime))
@@ -2212,8 +2269,8 @@ class XMLResultStream(ResultStream):
 
         # Save the end date time in memory
         if haveEndDate:
-            self._endTime = calendar.timegm(time.strptime(
-                result["qmtest.end_time"], "%Y-%m-%dT%H:%M:%SZ"))
+            self._endTime = calendar.timegm(
+                time.strptime(result["qmtest.end_time"], "%Y-%m-%dT%H:%M:%SZ"))
 
         # add the current test to the test list
         tl = ET.Element("Test")
@@ -2226,11 +2283,15 @@ class XMLResultStream(ResultStream):
             Test.set("Status", "passed")
         elif summary["outcome"] == "FAIL":
             Test.set("Status", "failed")
-        elif summary["outcome"] == "SKIPPED" or summary["outcome"] == "UNTESTED":
+        elif summary["outcome"] == "SKIPPED" or summary[
+                "outcome"] == "UNTESTED":
             Test.set("Status", "skipped")
         elif summary["outcome"] == "ERROR":
             Test.set("Status", "failed")
-        Name = ET.SubElement(Test, "Name",)
+        Name = ET.SubElement(
+            Test,
+            "Name",
+        )
         Name.text = summary["id"]
         Results = ET.SubElement(Test, "Results")
 
@@ -2248,7 +2309,8 @@ class XMLResultStream(ResultStream):
             value.text = testduration
 
         # remove the fields that we store in a different way
-        for n in ("qmtest.end_time", "qmtest.start_time", "qmtest.cause", "ExecTest.stdout"):
+        for n in ("qmtest.end_time", "qmtest.start_time", "qmtest.cause",
+                  "ExecTest.stdout"):
             if n in summary["fields"]:
                 summary["fields"].remove(n)
 
@@ -2268,8 +2330,9 @@ class XMLResultStream(ResultStream):
         TestStartTime.set("type", "String")
         value = ET.SubElement(TestStartTime, "Value")
         if haveStartDate:
-            value.text = escape_xml_illegal_chars(time.strftime(
-                "%b %d %H:%M %Z %Y", time.localtime(self._startTime)))
+            value.text = escape_xml_illegal_chars(
+                time.strftime("%b %d %H:%M %Z %Y",
+                              time.localtime(self._startTime)))
         else:
             value.text = ""
 
@@ -2278,8 +2341,9 @@ class XMLResultStream(ResultStream):
         TestEndTime.set("type", "String")
         value = ET.SubElement(TestEndTime, "Value")
         if haveStartDate:
-            value.text = escape_xml_illegal_chars(time.strftime(
-                "%b %d %H:%M %Z %Y", time.localtime(self._endTime)))
+            value.text = escape_xml_illegal_chars(
+                time.strftime("%b %d %H:%M %Z %Y",
+                              time.localtime(self._endTime)))
         else:
             value.text = ""
 
@@ -2321,8 +2385,8 @@ class XMLResultStream(ResultStream):
 
         # Set the final end date time
         self._EndTestTime.text = str(self._endTime)
-        self._EndDateTime.text = time.strftime(
-            "%b %d %H:%M %Z", time.localtime(self._endTime))
+        self._EndDateTime.text = time.strftime("%b %d %H:%M %Z",
+                                               time.localtime(self._endTime))
 
         # Compute the total duration
         if self._endTime and self._startTime:

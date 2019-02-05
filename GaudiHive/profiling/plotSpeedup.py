@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-
 """
 Script that fetches all the logfiles from disk and reads the timings.
 Parameters can be changed according to the working points considered.
@@ -13,7 +12,6 @@ n_evts_in_flight_l = [1, 2, 4, 6, 7, 8, 9, 11, 13, 14, 15]
 colour_l = [kRed, kBlue, kOrange, kGreen, kMagenta, kCyan] * 2
 line_style_l = [1] * 6 + [2] * 6
 cloneFlag_l = [True, False]
-
 '''
 To be filled with files on disk of the form
 timing_measurement_BrunelScenario_n150_eif2_aif20_nthreads24_cFalse_dqFalse.log
@@ -21,9 +19,9 @@ timing_measurement_BrunelScenario_n150_eif2_aif20_nthreads24_cFalse_dqFalse.log
 filename_scheleton = "timing_measurement_BrunelScenario_n150_eif%s_aif%s_nthreads24_c%s_dqFalse.log"
 
 
-def getRuntime(n_algos_in_flight,  n_evts_in_flight, cloneFlag):
-    filename = filename_scheleton % (
-        n_evts_in_flight, n_algos_in_flight, cloneFlag)
+def getRuntime(n_algos_in_flight, n_evts_in_flight, cloneFlag):
+    filename = filename_scheleton % (n_evts_in_flight, n_algos_in_flight,
+                                     cloneFlag)
     print filename
     rt = 0.
     for line in open(filename, "r").readlines():
@@ -45,9 +43,8 @@ def getRuntimes():
     for n_algos_in_flight in n_algos_in_flight_l:
         for n_evts_in_flight in n_evts_in_flight_l:
             for cloneFlag in cloneFlag_l:
-                rt = getRuntime(n_algos_in_flight,
-                                n_evts_in_flight, cloneFlag)
-                runtimes[n_algos_in_flight,  n_evts_in_flight, cloneFlag] = rt
+                rt = getRuntime(n_algos_in_flight, n_evts_in_flight, cloneFlag)
+                runtimes[n_algos_in_flight, n_evts_in_flight, cloneFlag] = rt
     return runtimes
 
 
@@ -97,10 +94,11 @@ def make_plot(runtimes, cloneFlag):
 
     graphs = []
     first = True
-    for colour, n_evts_in_flight, line_style in zip(colour_l, n_evts_in_flight_l, line_style_l):
+    for colour, n_evts_in_flight, line_style in zip(
+            colour_l, n_evts_in_flight_l, line_style_l):
         print n_evts_in_flight
-        graph = getSingleGraph(n_evts_in_flight, cloneFlag,
-                               runtimes, colour, line_style)
+        graph = getSingleGraph(n_evts_in_flight, cloneFlag, runtimes, colour,
+                               line_style)
         opts = "LSame"
         if first:
             opts = "AL"

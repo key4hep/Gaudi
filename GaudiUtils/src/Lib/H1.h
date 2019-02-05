@@ -3,8 +3,7 @@
 // ============================================================================
 // Include files
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   /// the actual type to represent the bin content
   typedef std::pair<double, double> Bin;
@@ -23,23 +22,19 @@ namespace
     void setNBins( unsigned int value ) { nbins = value; }
     void setEdges( std::vector<double> value ) { edges = std::move( value ); }
     //
-    Edges& operator-=( double value )
-    {
+    Edges& operator-=( double value ) {
       setLowEdge( value );
       return *this;
     }
-    Edges& operator+=( double value )
-    {
+    Edges& operator+=( double value ) {
       setHighEdge( value );
       return *this;
     }
-    Edges& operator*=( std::vector<double> value )
-    {
+    Edges& operator*=( std::vector<double> value ) {
       setEdges( std::move( value ) );
       return *this;
     }
-    Edges& operator/=( unsigned int value )
-    {
+    Edges& operator/=( unsigned int value ) {
       setNBins( value );
       return *this;
     }
@@ -70,54 +65,40 @@ namespace
 
     void setBins( Bins value ) { m_bins = std::move( value ); }
     //
-    H1& operator*=( std::string value )
-    {
+    H1& operator*=( std::string value ) {
       setName( std::move( value ) );
       return *this;
     }
-    H1& operator/=( std::string value )
-    {
+    H1& operator/=( std::string value ) {
       setTitle( std::move( value ) );
       return *this;
     }
-    H1& operator^=( const double value )
-    {
+    H1& operator^=( const double value ) {
       setHighEdge( value );
       return *this;
     }
-    H1& operator-=( const double value )
-    {
+    H1& operator-=( const double value ) {
       setLowEdge( value );
       return *this;
     }
-    H1& operator|=( const unsigned int value )
-    {
+    H1& operator|=( const unsigned int value ) {
       setNBins( value );
       return *this;
     }
 
-    H1& operator&=( Edges value )
-    {
+    H1& operator&=( Edges value ) {
       setEdges( std::move( value ) );
       return *this;
     }
-    H1& operator+=( Bins value )
-    {
+    H1& operator+=( Bins value ) {
       setBins( std::move( value ) );
       return *this;
     }
     //
-    bool ok() const
-    {
-      if ( m_bins.empty() ) {
-        return false;
-      }
-      if ( !m_edges.ok() ) {
-        return false;
-      }
-      if ( m_bins.size() != m_edges.nBins() + 2 ) {
-        return false;
-      }
+    bool ok() const {
+      if ( m_bins.empty() ) { return false; }
+      if ( !m_edges.ok() ) { return false; }
+      if ( m_bins.size() != m_edges.nBins() + 2 ) { return false; }
       return true;
     }
     //
@@ -140,46 +121,32 @@ namespace
     void setYEdges( Edges value ) { m_yedges = std::move( value ); }
     void setBins( Bins value ) { m_bins = std::move( value ); }
     //
-    H2& operator*=( std::string value )
-    {
+    H2& operator*=( std::string value ) {
       setName( std::move( value ) );
       return *this;
     }
-    H2& operator/=( std::string value )
-    {
+    H2& operator/=( std::string value ) {
       setTitle( std::move( value ) );
       return *this;
     }
-    H2& operator&=( Edges value )
-    {
+    H2& operator&=( Edges value ) {
       setXEdges( std::move( value ) );
       return *this;
     }
-    H2& operator|=( Edges value )
-    {
+    H2& operator|=( Edges value ) {
       setYEdges( std::move( value ) );
       return *this;
     }
-    H2& operator+=( Bins value )
-    {
+    H2& operator+=( Bins value ) {
       setBins( std::move( value ) );
       return *this;
     }
     //
-    bool ok() const
-    {
-      if ( m_bins.empty() ) {
-        return false;
-      }
-      if ( !m_xedges.ok() ) {
-        return false;
-      }
-      if ( !m_yedges.ok() ) {
-        return false;
-      }
-      if ( m_bins.size() != ( m_xedges.nBins() + 2 ) * ( m_yedges.nBins() + 2 ) ) {
-        return false;
-      }
+    bool ok() const {
+      if ( m_bins.empty() ) { return false; }
+      if ( !m_xedges.ok() ) { return false; }
+      if ( !m_yedges.ok() ) { return false; }
+      if ( m_bins.size() != ( m_xedges.nBins() + 2 ) * ( m_yedges.nBins() + 2 ) ) { return false; }
       return true;
     }
     //
@@ -196,4 +163,3 @@ namespace
 // The END
 // ============================================================================
 #endif // GAUDIUTILS_H1_H
-// ============================================================================

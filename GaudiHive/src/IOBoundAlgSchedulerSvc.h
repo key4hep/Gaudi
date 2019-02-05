@@ -22,8 +22,7 @@
  *  @author  Illya Shapoval
  *  @version 1.0
  */
-class IOBoundAlgSchedulerSvc : public extends<Service, IAccelerator>
-{
+class IOBoundAlgSchedulerSvc : public extends<Service, IAccelerator> {
 public:
   using extends::extends;
 

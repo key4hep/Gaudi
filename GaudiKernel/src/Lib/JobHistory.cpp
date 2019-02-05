@@ -17,9 +17,9 @@
 #include <cstdlib>
 #include <iostream>
 
-using std::string;
-using std::ostream;
 using std::endl;
+using std::ostream;
+using std::string;
 using std::vector;
 
 using Gaudi::Details::PropertyBase;
@@ -30,8 +30,7 @@ using Gaudi::Details::PropertyBase;
 
 // Constructor.
 
-JobHistory::JobHistory() : m_start_time( 0 )
-{
+JobHistory::JobHistory() : m_start_time( 0 ) {
 
   time( &m_start_time );
 
@@ -65,9 +64,7 @@ JobHistory::JobHistory( const std::string& rel, const std::string& os, const std
     , m_hostname( host )
     , m_os_version( osver )
     , m_machine( mach )
-    , m_start_time( time )
-{
-}
+    , m_start_time( time ) {}
 
 //**********************************************************************
 
@@ -75,21 +72,18 @@ JobHistory::JobHistory( const std::string& rel, const std::string& os, const std
 
 JobHistory::~JobHistory() = default;
 
-const CLID& JobHistory::classID()
-{
+const CLID& JobHistory::classID() {
 
   static const CLID CLID_JobHistory = 247994533;
   return CLID_JobHistory;
 }
 
-void JobHistory::addProperty( const std::string& client, const PropertyBase* prop )
-{
+void JobHistory::addProperty( const std::string& client, const PropertyBase* prop ) {
   //  if (m_props.find(prop) == m_props.end())
   m_ppl.emplace_back( client, prop );
 }
 
-void JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const
-{
+void JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const {
 
   if ( !isXML ) {
     ost << "Release: " << release_version() << endl;
@@ -121,8 +115,7 @@ void JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const
 
 // Output stream.
 
-ostream& operator<<( ostream& lhs, const JobHistory& rhs )
-{
+ostream& operator<<( ostream& lhs, const JobHistory& rhs ) {
   rhs.dump( lhs, false );
   return lhs;
 }

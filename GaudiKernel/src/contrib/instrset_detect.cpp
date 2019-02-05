@@ -13,15 +13,13 @@
 #include "instrset.h"
 
 #ifdef VCL_NAMESPACE
-namespace VCL_NAMESPACE
-{
+namespace VCL_NAMESPACE {
 #endif
 
   // Define interface to cpuid instruction.
   // input:  eax = functionnumber, ecx = 0
   // output: eax = output[0], ebx = output[1], ecx = output[2], edx = output[3]
-  static inline void cpuid( int output[4], int functionnumber )
-  {
+  static inline void cpuid( int output[4], int functionnumber ) {
 #if defined( __GNUC__ ) || defined( __clang__ ) // use inline assembly, Gnu/AT&T syntax
 
     int a, b, c, d;
@@ -33,11 +31,11 @@ namespace VCL_NAMESPACE
 
 #elif defined( _MSC_VER ) || defined( __INTEL_COMPILER ) // Microsoft or Intel compiler, intrin.h included
 
-    __cpuidex( output, functionnumber, 0 ); // intrinsic function for CPUID
+  __cpuidex( output, functionnumber, 0 ); // intrinsic function for CPUID
 
 #else // unknown platform. try inline assembly with masm/intel syntax
 
-    __asm {
+  __asm {
         mov eax, functionnumber
         xor ecx, ecx
         cpuid;
@@ -46,39 +44,38 @@ namespace VCL_NAMESPACE
         mov [esi+4],  ebx
         mov [esi+8],  ecx
         mov [esi+12], edx
-    }
+  }
 
 #endif
   }
 
   // Define interface to xgetbv instruction
-  static inline int64_t xgetbv( int ctr )
-  {
+  static inline int64_t xgetbv( int ctr ) {
 #if ( defined( _MSC_FULL_VER ) && _MSC_FULL_VER >= 160040000 ) ||                                                      \
-    ( defined( __INTEL_COMPILER ) &&                                                                                   \
-      __INTEL_COMPILER >= 1200 ) // Microsoft or Intel compiler supporting _xgetbv intrinsic
+    ( defined( __INTEL_COMPILER ) && __INTEL_COMPILER >= 1200 ) // Microsoft or Intel compiler supporting _xgetbv
+                                                                // intrinsic
 
     return _xgetbv( ctr ); // intrinsic function for XGETBV
 
 #elif defined( __GNUC__ ) // use inline assembly, Gnu/AT&T syntax
 
-    uint32_t a, d;
-    __asm( "xgetbv" : "=a"( a ), "=d"( d ) : "c"( ctr ) : );
-    return a | ( uint64_t( d ) << 32 );
+  uint32_t a, d;
+  __asm( "xgetbv" : "=a"( a ), "=d"( d ) : "c"( ctr ) : );
+  return a | ( uint64_t( d ) << 32 );
 
 #else // #elif defined (_WIN32)                           // other compiler. try inline assembly with masm/intel/MS
-    // syntax
+  // syntax
 
-    uint32_t a, d;
-    __asm {
+  uint32_t a, d;
+  __asm {
         mov ecx, ctr
         _emit 0x0f
         _emit 0x01
         _emit 0xd0 ; // xgetbv
         mov a, eax
         mov d, edx
-    }
-    return a | ( uint64_t( d ) << 32 );
+  }
+  return a | ( uint64_t( d ) << 32 );
 
 #endif
   }
@@ -98,8 +95,7 @@ namespace VCL_NAMESPACE
       10 or above = AVX512VL
       11 or above = AVX512BW, AVX512DQ
   */
-  int instrset_detect( void )
-  {
+  int instrset_detect( void ) {
 
     static int iset = -1; // remember value for next call
     if ( iset >= 0 ) {
@@ -147,8 +143,7 @@ namespace VCL_NAMESPACE
   }
 
   // detect if CPU supports the FMA3 instruction set
-  bool hasFMA3( void )
-  {
+  bool hasFMA3( void ) {
     if ( instrset_detect() < 7 ) return false; // must have AVX
     int abcd[4];                               // cpuid results
     cpuid( abcd, 1 );                          // call cpuid function 1
@@ -156,8 +151,7 @@ namespace VCL_NAMESPACE
   }
 
   // detect if CPU supports the FMA4 instruction set
-  bool hasFMA4( void )
-  {
+  bool hasFMA4( void ) {
     if ( instrset_detect() < 7 ) return false; // must have AVX
     int abcd[4];                               // cpuid results
     cpuid( abcd, 0x80000001 );                 // call cpuid function 0x80000001
@@ -165,8 +159,7 @@ namespace VCL_NAMESPACE
   }
 
   // detect if CPU supports the XOP instruction set
-  bool hasXOP( void )
-  {
+  bool hasXOP( void ) {
     if ( instrset_detect() < 7 ) return false; // must have AVX
     int abcd[4];                               // cpuid results
     cpuid( abcd, 0x80000001 );                 // call cpuid function 0x80000001
@@ -174,8 +167,7 @@ namespace VCL_NAMESPACE
   }
 
   // detect if CPU supports the F16C instruction set
-  bool hasF16C( void )
-  {
+  bool hasF16C( void ) {
     if ( instrset_detect() < 7 ) return false; // must have AVX
     int abcd[4];                               // cpuid results
     cpuid( abcd, 1 );                          // call cpuid function 1
@@ -183,8 +175,7 @@ namespace VCL_NAMESPACE
   }
 
   // detect if CPU supports the AVX512ER instruction set
-  bool hasAVX512ER( void )
-  {
+  bool hasAVX512ER( void ) {
     if ( instrset_detect() < 9 ) return false; // must have AVX512F
     int abcd[4];                               // cpuid results
     cpuid( abcd, 7 );                          // call cpuid function 7

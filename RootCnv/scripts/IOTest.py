@@ -30,8 +30,8 @@ def storeExplorer(load=1, freq=0.0001, name='StoreExplorerAlg'):
     alg.PrintFreq = freq
     return alg
 
-# -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
 
 if len(sys.argv) > 1:
     input_file = sys.argv[1]
@@ -51,10 +51,7 @@ root.VetoBranches = ['*']
 #root.OutputLevel  = 2
 # Enable specialized branch caching:
 root.CacheBranches = [
-    '_Event.*',
-    '_Event_R.*',
-    '_Event_Rec.*',
-    '_Event_Rec_R.*',
+    '_Event.*', '_Event_R.*', '_Event_Rec.*', '_Event_Rec_R.*',
     '_Event_Rec_Header.*'
     '_Event_Rec_Header_R.*'
 ]
@@ -64,8 +61,9 @@ root.VetoBranches = [
 ]
 
 EventPersistencySvc().CnvServices.append(root)
-EventSelector().Input = ["DATA='PFN:" + input_file +
-                         "' SVC='Gaudi::RootEvtSelector'"]
+EventSelector().Input = [
+    "DATA='PFN:" + input_file + "' SVC='Gaudi::RootEvtSelector'"
+]
 EventSelector().PrintFreq = 1000
 MessageSvc().OutputLevel = 3
 

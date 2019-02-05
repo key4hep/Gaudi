@@ -32,8 +32,7 @@ class TClass;
 /*
  * Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   // Forward declarations
   class IDataConnection;
@@ -50,8 +49,7 @@ namespace Gaudi
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootCnvSvc : public ConversionSvc
-  {
+  class GAUDI_API RootCnvSvc : public ConversionSvc {
   protected:
     Gaudi::Property<std::string> m_ioPerfStats{this, "IOPerfStats", "",
                                                "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
@@ -190,8 +188,7 @@ namespace Gaudi
      *  @return     Status code indicating success or failure.
      */
     StatusCode createAddress( long svc_type, const CLID& clid, const std::string& refAddress,
-                              IOpaqueAddress*& refpAddress ) override
-    {
+                              IOpaqueAddress*& refpAddress ) override {
       return this->ConversionSvc::createAddress( svc_type, clid, refAddress, refpAddress );
     }
 
@@ -239,14 +236,14 @@ namespace Gaudi
     virtual StatusCode i__createObj( IOpaqueAddress* pAddr, DataObject*& refpObj );
 
     /** Resolve the references of the created transient object.
-      *
-      * @param    pAddr    [IN]   Pointer to object address.
-      * @param    pObj     [IN]   Pointer to data object
-      *
-      * @return Status code indicating success or failure.
-      */
+     *
+     * @param    pAddr    [IN]   Pointer to object address.
+     * @param    pObj     [IN]   Pointer to data object
+     *
+     * @return Status code indicating success or failure.
+     */
     virtual StatusCode i__fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj );
   };
-}
+} // namespace Gaudi
 
 #endif // GAUDIROOTCNV_GAUDIROOTCNVSVC_H

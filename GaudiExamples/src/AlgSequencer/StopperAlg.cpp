@@ -11,15 +11,13 @@
 DECLARE_COMPONENT( StopperAlg )
 
 //------------------------------------------------------------------------------
-StatusCode StopperAlg::initialize()
-{
+StatusCode StopperAlg::initialize() {
   //------------------------------------------------------------------------------
   return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
-StatusCode StopperAlg::execute()
-{
+StatusCode StopperAlg::execute() {
   //------------------------------------------------------------------------------
   static int count = 0;
 
@@ -36,8 +34,7 @@ StatusCode StopperAlg::execute()
 }
 
 //------------------------------------------------------------------------------
-StatusCode StopperAlg::finalize()
-{
+StatusCode StopperAlg::finalize() {
   //------------------------------------------------------------------------------
   return StatusCode::SUCCESS;
 }

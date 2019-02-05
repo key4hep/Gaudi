@@ -24,7 +24,7 @@
 #include "TROOT.h"
 #include "TTree.h"
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
-#include "Compression.h"
+#  include "Compression.h"
 static int s_compressionLevel = ROOT::CompressionSettings( ROOT::kLZMA, 4 );
 #else
 static int s_compressionLevel = 1;
@@ -42,14 +42,12 @@ static const string s_empty;
 static const string s_local = "<localDB>";
 
 #ifdef __POOL_COMPATIBILITY
-#include "PoolTool.h"
+#  include "PoolTool.h"
 #endif
 #include "RootTool.h"
 
-namespace
-{
-  std::array<char, 256> init_table()
-  {
+namespace {
+  std::array<char, 256> init_table() {
     std::array<char, 256> table;
     std::iota( std::begin( table ), std::end( table ), 0 );
     return table;
@@ -60,8 +58,7 @@ namespace
 
     bool isRecoverable( StatusCode::code_t ) const override { return false; }
 
-    std::string message( StatusCode::code_t code ) const override
-    {
+    std::string message( StatusCode::code_t code ) const override {
       switch ( static_cast<RootDataConnection::Status>( code ) ) {
       case RootDataConnection::Status::ROOT_READ_ERROR:
         return "ROOT_READ_ERROR";
@@ -73,8 +70,7 @@ namespace
     }
   };
 
-  static bool match_wild( const char* str, const char* pat )
-  {
+  static bool match_wild( const char* str, const char* pat ) {
     //
     // Credits: Code from Alessandro Felice Cantatore.
     //
@@ -90,9 +86,7 @@ namespace
       case '*':
         star = true;
         str = s, pat = p;
-        do {
-          ++pat;
-        } while ( *pat == '*' );
+        do { ++pat; } while ( *pat == '*' );
         if ( !*pat ) return true;
         goto loopStart;
       default:
@@ -108,13 +102,12 @@ namespace
     str++;
     goto loopStart;
   }
-}
+} // namespace
 
 STATUSCODE_ENUM_IMPL( Gaudi::RootDataConnection::Status, RootDataConnectionCategory )
 
 /// Set the global compression level
-StatusCode RootConnectionSetup::setCompression( boost::string_ref compression )
-{
+StatusCode RootConnectionSetup::setCompression( boost::string_ref compression ) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
   int  res = 0, level = ROOT::CompressionSettings( ROOT::kLZMA, 6 );
   auto idx = compression.find( ':' );
@@ -135,15 +128,14 @@ StatusCode RootConnectionSetup::setCompression( boost::string_ref compression )
     }
     throw runtime_error( "ERROR: request to set unknown ROOT compression level:" +
                          compression.substr( idx + 1 ).to_string() );
-  } else if ( 1 ==
-              ::sscanf( compression.to_string().c_str(), "%d", &level ) ) { // TODO: use C++17 std::from_chars instead
+  } else if ( 1 == ::sscanf( compression.to_string().c_str(), "%d", &level ) ) { // TODO: use C++17 std::from_chars
+                                                                                 // instead
     s_compressionLevel = level;
     return StatusCode::SUCCESS;
   }
   throw runtime_error( "ERROR: request to set unknown ROOT compression mechanism:" + compression.to_string() );
 #else
-  if ( !compression.empty() ) {
-  }
+  if ( !compression.empty() ) {}
   return StatusCode::SUCCESS;
 #endif
 }
@@ -160,8 +152,8 @@ void RootConnectionSetup::setIncidentSvc( IIncidentSvc* s ) { m_incidentSvc.rese
 /// Standard constructor
 RootDataConnection::RootDataConnection( const IInterface* owner, boost::string_ref fname,
                                         std::shared_ptr<RootConnectionSetup> setup )
-    : IDataConnection( owner, fname.to_string() ), m_setup( std::move( setup ) )
-{ //               01234567890123456789012345678901234567890
+    : IDataConnection( owner, fname.to_string() )
+    , m_setup( std::move( setup ) ) { //               01234567890123456789012345678901234567890
   // Check if FID: A82A3BD8-7ECB-DC11-8DC0-000423D950B0
   if ( fname.size() == 36 && fname[8] == '-' && fname[13] == '-' && fname[18] == '-' && fname[23] == '-' ) {
     m_name = "FID:";
@@ -176,29 +168,25 @@ RootDataConnection::RootDataConnection( const IInterface* owner, boost::string_r
 void RootDataConnection::addClient( const IInterface* client ) { m_clients.insert( client ); }
 
 /// Remove client from this data source
-size_t RootDataConnection::removeClient( const IInterface* client )
-{
+size_t RootDataConnection::removeClient( const IInterface* client ) {
   auto i = m_clients.find( client );
   if ( i != m_clients.end() ) m_clients.erase( i );
   return m_clients.size();
 }
 
 /// Lookup client for this data source
-bool RootDataConnection::lookupClient( const IInterface* client ) const
-{
+bool RootDataConnection::lookupClient( const IInterface* client ) const {
   auto i = m_clients.find( client );
   return i != m_clients.end();
 }
 
 /// Error handler when bad write statements occur
-void RootDataConnection::badWriteError( boost::string_ref msg ) const
-{
+void RootDataConnection::badWriteError( boost::string_ref msg ) const {
   msgSvc() << MSG::ERROR << "File:" << fid() << "Failed action:" << msg << endmsg;
 }
 
 /// Save TTree access statistics if required
-void RootDataConnection::saveStatistics( boost::string_ref statisticsFile )
-{
+void RootDataConnection::saveStatistics( boost::string_ref statisticsFile ) {
   if ( m_statistics ) {
     m_statistics->Print();
     if ( !statisticsFile.empty() ) m_statistics->SaveAs( statisticsFile.to_string().c_str() );
@@ -207,8 +195,7 @@ void RootDataConnection::saveStatistics( boost::string_ref statisticsFile )
 }
 
 /// Enable TTreePerStats
-void RootDataConnection::enableStatistics( boost::string_ref section )
-{
+void RootDataConnection::enableStatistics( boost::string_ref section ) {
   if ( m_statistics ) {
     TTree* t = getSection( section, false );
     if ( t ) {
@@ -222,8 +209,7 @@ void RootDataConnection::enableStatistics( boost::string_ref section )
 }
 
 /// Create file access tool to encapsulate POOL compatibiliy
-RootDataConnection::Tool* RootDataConnection::makeTool()
-{
+RootDataConnection::Tool* RootDataConnection::makeTool() {
   if ( !m_refs ) m_refs = (TTree*)m_file->Get( "Refs" );
   if ( m_refs ) m_tool.reset( new RootTool( this ) );
 #ifdef __POOL_COMPATIBILITY
@@ -236,8 +222,7 @@ RootDataConnection::Tool* RootDataConnection::makeTool()
 }
 
 /// Connect the file in READ mode
-StatusCode RootDataConnection::connectRead()
-{
+StatusCode RootDataConnection::connectRead() {
   m_file.reset( TFile::Open( m_pfn.c_str() ) );
   if ( !m_file || m_file->IsZombie() ) {
     m_file.reset();
@@ -254,9 +239,7 @@ StatusCode RootDataConnection::connectRead()
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
     if ( sc == Status::ROOT_READ_ERROR ) {
       IIncidentSvc* inc = m_setup->incidentSvc();
-      if ( inc ) {
-        inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
-      }
+      if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
     }
 #endif
   }
@@ -286,8 +269,7 @@ StatusCode RootDataConnection::connectRead()
 }
 
 /// Open data stream in write mode
-StatusCode RootDataConnection::connectWrite( IoType typ )
-{
+StatusCode RootDataConnection::connectWrite( IoType typ ) {
   int compress = RootConnectionSetup::compression();
   msgSvc() << MSG::DEBUG;
   switch ( typ ) {
@@ -297,9 +279,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ )
     m_refs = new TTree( "Refs", "Root reference data" );
     msgSvc() << "Opened file " << m_pfn << " in mode CREATE. [" << m_fid << "]" << endmsg;
     m_params.emplace_back( "PFN", m_pfn );
-    if ( m_fid != m_pfn ) {
-      m_params.emplace_back( "FID", m_fid );
-    }
+    if ( m_fid != m_pfn ) { m_params.emplace_back( "FID", m_fid ); }
     makeTool();
     break;
   case RECREATE:
@@ -308,9 +288,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ )
     msgSvc() << "Opened file " << m_pfn << " in mode RECREATE. [" << m_fid << "]" << endmsg;
     m_refs = new TTree( "Refs", "Root reference data" );
     m_params.emplace_back( "PFN", m_pfn );
-    if ( m_fid != m_pfn ) {
-      m_params.emplace_back( "FID", m_fid );
-    }
+    if ( m_fid != m_pfn ) { m_params.emplace_back( "FID", m_fid ); }
     makeTool();
     break;
   case UPDATE:
@@ -324,9 +302,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ )
         if ( sc == Status::ROOT_READ_ERROR ) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
           IIncidentSvc* inc = m_setup->incidentSvc();
-          if ( inc ) {
-            inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
-          }
+          if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
 #endif
         }
         return sc;
@@ -346,8 +322,7 @@ StatusCode RootDataConnection::connectWrite( IoType typ )
 }
 
 /// Release data stream and release implementation dependent resources
-StatusCode RootDataConnection::disconnect()
-{
+StatusCode RootDataConnection::disconnect() {
   if ( m_file ) {
     if ( !m_file->IsZombie() ) {
       if ( m_file->IsWritable() ) {
@@ -379,8 +354,7 @@ StatusCode RootDataConnection::disconnect()
 }
 
 /// Access TTree section from section name. The section is created if required.
-TTree* RootDataConnection::getSection( boost::string_ref section, bool create )
-{
+TTree* RootDataConnection::getSection( boost::string_ref section, bool create ) {
   auto   it = m_sections.find( section );
   TTree* t  = ( it != m_sections.end() ? it->second : nullptr );
   if ( !t ) {
@@ -447,8 +421,7 @@ TTree* RootDataConnection::getSection( boost::string_ref section, bool create )
 
 /// Access data branch by name: Get existing branch in write mode
 TBranch* RootDataConnection::getBranch( boost::string_ref section, boost::string_ref branch_name, TClass* cl, void* ptr,
-                                        int buff_siz, int split_lvl )
-{
+                                        int buff_siz, int split_lvl ) {
   string n = branch_name.to_string();
   std::replace_if( begin( n ), end( n ), []( const char c ) { return !isalnum( c ); }, '_' );
   n += ".";
@@ -463,8 +436,7 @@ TBranch* RootDataConnection::getBranch( boost::string_ref section, boost::string
 }
 
 /// Convert path string to path index
-int RootDataConnection::makeLink( boost::string_ref p )
-{
+int RootDataConnection::makeLink( boost::string_ref p ) {
   auto ip = std::find( std::begin( m_links ), std::end( m_links ), p );
   if ( ip != std::end( m_links ) ) return std::distance( std::begin( m_links ), ip );
   m_links.push_back( p.to_string() );
@@ -472,8 +444,7 @@ int RootDataConnection::makeLink( boost::string_ref p )
 }
 
 /// Access database/file name from saved index
-CSTR RootDataConnection::getDb( int which ) const
-{
+CSTR RootDataConnection::getDb( int which ) const {
   if ( ( which >= 0 ) && ( size_t( which ) < m_dbs.size() ) ) {
     if ( *( m_dbs.begin() + which ) == s_local ) return m_fid;
     return *( m_dbs.begin() + which );
@@ -486,16 +457,14 @@ CSTR RootDataConnection::empty() const { return s_empty; }
 
 /// Save object of a given class to section and container
 pair<int, unsigned long> RootDataConnection::saveObj( boost::string_ref section, boost::string_ref cnt, TClass* cl,
-                                                      DataObject* pObj, int buff_siz, int split_lvl, bool fill )
-{
+                                                      DataObject* pObj, int buff_siz, int split_lvl, bool fill ) {
   DataObjectPush push( pObj );
   return save( section, cnt, cl, pObj, buff_siz, split_lvl, fill );
 }
 
 /// Save object of a given class to section and container
 pair<int, unsigned long> RootDataConnection::save( boost::string_ref section, boost::string_ref cnt, TClass* cl,
-                                                   void* pObj, int buff_siz, int split_lvl, bool fill_missing )
-{
+                                                   void* pObj, int buff_siz, int split_lvl, bool fill_missing ) {
   split_lvl  = 0;
   TBranch* b = getBranch( section, cnt, cl, pObj ? &pObj : nullptr, buff_siz, split_lvl );
   if ( b ) {
@@ -519,16 +488,13 @@ pair<int, unsigned long> RootDataConnection::save( boost::string_ref section, bo
     b->SetAddress( &pObj );
     return {b->Fill(), evt};
   }
-  if ( pObj ) {
-    msgSvc() << MSG::ERROR << "Failed to access branch " << m_name << "/" << cnt << endmsg;
-  }
+  if ( pObj ) { msgSvc() << MSG::ERROR << "Failed to access branch " << m_name << "/" << cnt << endmsg; }
   return {-1, ~0};
 }
 
 /// Load object
 int RootDataConnection::loadObj( boost::string_ref section, boost::string_ref cnt, unsigned long entry,
-                                 DataObject*& pObj )
-{
+                                 DataObject*& pObj ) {
   TBranch* b = getBranch( section, cnt );
   if ( b ) {
     TClass* cl = gROOT->GetClass( b->GetClassName(), kTRUE );
@@ -540,9 +506,7 @@ int RootDataConnection::loadObj( boost::string_ref section, boost::string_ref cn
         b->SetAddress( &pObj );
         if ( section == m_setup->loadSection ) {
           TTree* t = b->GetTree();
-          if ( Long64_t( entry ) != t->GetReadEntry() ) {
-            t->LoadTree( Long64_t( entry ) );
-          }
+          if ( Long64_t( entry ) != t->GetReadEntry() ) { t->LoadTree( Long64_t( entry ) ); }
         }
         nb = b->GetEntry( entry );
         msgSvc() << MSG::VERBOSE;
@@ -552,9 +516,7 @@ int RootDataConnection::loadObj( boost::string_ref section, boost::string_ref cn
         if ( nb < 0 ) { // This is definitely an error...ROOT says if reads fail, -1 is issued.
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
           IIncidentSvc* inc = m_setup->incidentSvc();
-          if ( inc ) {
-            inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
-          }
+          if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
 #endif
         } else if ( nb == 0 && pObj->clID() == CLID_DataObject ) {
           TFile* f   = b->GetFile();
@@ -582,8 +544,7 @@ int RootDataConnection::loadObj( boost::string_ref section, boost::string_ref cn
 
 /// Load references object
 int RootDataConnection::loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry,
-                                  RootObjectRefs& refs )
-{
+                                  RootObjectRefs& refs ) {
   int nbytes = m_tool->loadRefs( section, cnt, entry, refs );
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
   if ( nbytes < 0 ) {
@@ -591,9 +552,7 @@ int RootDataConnection::loadRefs( boost::string_ref section, boost::string_ref c
     // -- Either branch not preesent at all or
     // -- ROOT I/O error, which issues -1
     IIncidentSvc* inc = m_setup->incidentSvc();
-    if ( inc ) {
-      inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) );
-    }
+    if ( inc ) { inc->fireIncident( Incident( pfn(), IncidentType::CorruptedInputFile ) ); }
   }
 #endif
   return nbytes;
@@ -601,8 +560,7 @@ int RootDataConnection::loadRefs( boost::string_ref section, boost::string_ref c
 
 /// Access link section for single container and entry
 pair<const RootRef*, const RootDataConnection::ContainerSection*>
-RootDataConnection::getMergeSection( boost::string_ref container, int entry ) const
-{
+RootDataConnection::getMergeSection( boost::string_ref container, int entry ) const {
   // size_t idx = cont.find('/',1);
   // string container = cont[0]=='/' ? cont.substr(1,idx==string::npos?idx:idx-1) : cont;
   auto i = m_mergeSects.find( container );
@@ -628,16 +586,14 @@ RootDataConnection::getMergeSection( boost::string_ref container, int entry ) co
 }
 
 /// Create reference object from registry entry
-void RootDataConnection::makeRef( const IRegistry& pR, RootRef& ref )
-{
+void RootDataConnection::makeRef( const IRegistry& pR, RootRef& ref ) {
   IOpaqueAddress* pA = pR.address();
   makeRef( pR.name(), pA->clID(), pA->svcType(), pA->par()[0], pA->par()[1], -1, ref );
 }
 
 /// Create reference object from values
 void RootDataConnection::makeRef( boost::string_ref name, long clid, int tech, boost::string_ref dbase,
-                                  boost::string_ref cnt, int entry, RootRef& ref )
-{
+                                  boost::string_ref cnt, int entry, RootRef& ref ) {
   auto db   = ( dbase == m_fid ? boost::string_ref{s_local} : dbase );
   ref.entry = entry;
 

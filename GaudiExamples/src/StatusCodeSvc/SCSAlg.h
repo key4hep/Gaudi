@@ -7,8 +7,7 @@
  * @brief  an algorithm to test the StatusCodeSvc
  * @author Charles Leggett, Marco Clemencic
  */
-class SCSAlg : public Algorithm
-{
+class SCSAlg : public Algorithm {
 
 public:
   using Algorithm::Algorithm;

@@ -12,16 +12,21 @@ FileCatalog(Catalogs=["xmlcatalog_file:EvtColsEx.xml"])
 # Input
 esel = EventSelector(PrintFreq=1000)
 esel.Input = [
-    "DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]
+    "DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"
+]
 
 # Output
 evtColl = TagCollectionSvc("EvtTupleSvc")
 evtColl.Output = [
-    "EVTCOLS DATAFILE='PFN:EvtColsEx.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]
+    "EVTCOLS DATAFILE='PFN:EvtColsEx.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"
+]
 
 app = ApplicationMgr()
-app.TopAlg = [EvtColAlg("Fill",
-                        # Logical unit for Event Tag Collection
-                        EvtColLUN="EVTCOLS")]
+app.TopAlg = [
+    EvtColAlg(
+        "Fill",
+        # Logical unit for Event Tag Collection
+        EvtColLUN="EVTCOLS")
+]
 app.EvtMax = -1
 app.ExtSvc += [RndmGenSvc(), evtColl]

@@ -8,13 +8,11 @@
 #include "GaudiKernel/reverse.h"
 
 template <typename R1, typename R2>
-void copy( R1&& r1, R2& r2 )
-{
+void copy( R1&& r1, R2& r2 ) {
   std::copy( begin( r1 ), end( r1 ), begin( r2 ) );
 }
 
-BOOST_AUTO_TEST_CASE( test_reverse )
-{
+BOOST_AUTO_TEST_CASE( test_reverse ) {
   {
 
     std::array<int, 3> a{0, 1, 2};

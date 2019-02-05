@@ -12,16 +12,13 @@
 
 #include <vector>
 
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     class Catalog;
   }
-}
+} // namespace Gaudi
 
-class JobOptionsSvc : public extends<Service, IJobOptionsSvc>
-{
+class JobOptionsSvc : public extends<Service, IJobOptionsSvc> {
 public:
   typedef std::vector<const Gaudi::Details::PropertyBase*> PropertiesT;
   // Constructor
@@ -48,8 +45,7 @@ public:
   using Service::getProperty;
   /// Get a property for a client
   const Gaudi::Details::PropertyBase* getClientProperty( const std::string& client,
-                                                         const std::string& name ) const override
-  {
+                                                         const std::string& name ) const override {
     return m_svc_catalog.getProperty( client, name );
   }
   /// Get the list of clients

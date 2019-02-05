@@ -24,16 +24,14 @@ struct TimelineEvent final {
   time_point end;
 };
 
-class GAUDI_API ITimelineSvc : virtual public IService
-{
+class GAUDI_API ITimelineSvc : virtual public IService {
 
 public:
   /// InterfaceID
   DeclareInterfaceID( ITimelineSvc, 2, 0 );
 
   /// RAII helper to record timeline events
-  class TimelineRecorder final
-  {
+  class TimelineRecorder final {
   public:
     using Clock = TimelineEvent::Clock;
 
@@ -43,14 +41,12 @@ public:
     TimelineRecorder( const TimelineRecorder& ) = delete;
     TimelineRecorder( TimelineRecorder&& other ) : m_record{other.m_record} { other.m_record = nullptr; }
 
-    TimelineRecorder& operator=( TimelineRecorder&& other )
-    {
+    TimelineRecorder& operator=( TimelineRecorder&& other ) {
       std::swap( m_record, other.m_record );
       return *this;
     }
 
-    ~TimelineRecorder()
-    {
+    ~TimelineRecorder() {
       if ( m_record ) m_record->end = Clock::now();
     }
 

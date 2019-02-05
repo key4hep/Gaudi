@@ -20,8 +20,7 @@ class IIncidentListener;
 
     @author Pere Mato
 */
-class GAUDI_API IIncidentSvc : virtual public IInterface
-{
+class GAUDI_API IIncidentSvc : virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID( IIncidentSvc, 2, 0 );
@@ -47,14 +46,12 @@ public:
   */
   virtual void fireIncident( const Incident& incident ) = 0;
 
-  class IncidentPack
-  {
+  class IncidentPack {
   public:
     std::vector<std::unique_ptr<Incident>>       incidents;
     std::vector<std::vector<IIncidentListener*>> listeners;
     IncidentPack( IncidentPack&& o ) : incidents( std::move( o.incidents ) ), listeners( std::move( o.listeners ) ){};
-    IncidentPack& operator=( IncidentPack&& o )
-    {
+    IncidentPack& operator=( IncidentPack&& o ) {
       incidents = std::move( o.incidents );
       listeners = std::move( o.listeners );
       return *this;

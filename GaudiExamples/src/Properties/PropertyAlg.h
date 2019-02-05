@@ -11,8 +11,7 @@
 
     @author nobody
 */
-class PropertyAlg : public Algorithm
-{
+class PropertyAlg : public Algorithm {
 public:
   /// Constructor of this form must be provided
   PropertyAlg( const std::string& name, ISvcLocator* pSvcLocator );

@@ -15,24 +15,20 @@ enum class MyErr : StatusCode::code_t {
 
 STATUSCODE_ENUM_DECL( MyErr )
 
-namespace
-{
+namespace {
   struct MyCategory : StatusCode::Category {
     const char* name() const override { return "My"; }
 
-    bool isSuccess( StatusCode::code_t code ) const override
-    {
+    bool isSuccess( StatusCode::code_t code ) const override {
       const MyErr e = static_cast<MyErr>( code );
       return e == MyErr::SUCCESS || ( e > MyErr::RECOVERABLE && e < MyErr::OTHER_RECOVERABLE );
     }
 
-    bool isRecoverable( StatusCode::code_t code ) const override
-    {
+    bool isRecoverable( StatusCode::code_t code ) const override {
       return static_cast<MyErr>( code ) == MyErr::RECOVERABLE || static_cast<MyErr>( code ) == MyErr::OTHER_RECOVERABLE;
     }
 
-    std::string message( StatusCode::code_t code ) const override
-    {
+    std::string message( StatusCode::code_t code ) const override {
       switch ( static_cast<MyErr>( code ) ) {
       case MyErr::WARNING:
         return "WARNING";
@@ -43,7 +39,7 @@ namespace
       }
     }
   };
-}
+} // namespace
 
 STATUSCODE_ENUM_IMPL( MyErr, MyCategory )
 
@@ -56,8 +52,7 @@ STATUSCODE_ENUM_IMPL( OtherErrors )
 // A test function
 StatusCode func() { return StatusCode::SUCCESS; }
 
-BOOST_AUTO_TEST_CASE( values )
-{
+BOOST_AUTO_TEST_CASE( values ) {
   // default should be SUCCESS
   {
     StatusCode sc;
@@ -95,8 +90,7 @@ BOOST_AUTO_TEST_CASE( values )
   }
 }
 
-BOOST_AUTO_TEST_CASE( comparison )
-{
+BOOST_AUTO_TEST_CASE( comparison ) {
   // Copy and comparison
   {
     StatusCode sc;
@@ -121,8 +115,7 @@ BOOST_AUTO_TEST_CASE( comparison )
   }
 }
 
-BOOST_AUTO_TEST_CASE( ternary_and )
-{
+BOOST_AUTO_TEST_CASE( ternary_and ) {
   StatusCode s = StatusCode::SUCCESS;
   StatusCode f = StatusCode::FAILURE;
   StatusCode r = StatusCode::RECOVERABLE;
@@ -142,8 +135,7 @@ BOOST_AUTO_TEST_CASE( ternary_and )
   BOOST_CHECK( ( ( sc = s ) &= f ).isFailure() );
 }
 
-BOOST_AUTO_TEST_CASE( ternary_or )
-{
+BOOST_AUTO_TEST_CASE( ternary_or ) {
   StatusCode s = StatusCode::SUCCESS;
   StatusCode f = StatusCode::FAILURE;
   StatusCode r = StatusCode::RECOVERABLE;
@@ -162,8 +154,7 @@ BOOST_AUTO_TEST_CASE( ternary_or )
   BOOST_CHECK( ( ( sc = s ) |= f ).isSuccess() );
 }
 
-BOOST_AUTO_TEST_CASE( boolean_logic )
-{
+BOOST_AUTO_TEST_CASE( boolean_logic ) {
   StatusCode s = StatusCode::SUCCESS;
   StatusCode f = StatusCode::FAILURE;
   bool       b = false;
@@ -175,11 +166,9 @@ BOOST_AUTO_TEST_CASE( boolean_logic )
   BOOST_CHECK( b == false );
 }
 
-BOOST_AUTO_TEST_CASE( short_circuiting )
-{
+BOOST_AUTO_TEST_CASE( short_circuiting ) {
   struct F {
-    StatusCode run( const StatusCode& sc )
-    {
+    StatusCode run( const StatusCode& sc ) {
       done = true;
       return sc;
     }
@@ -189,52 +178,45 @@ BOOST_AUTO_TEST_CASE( short_circuiting )
   // Check AND short-circuiting
   {
     F a, b;
-    if ( a.run( StatusCode::FAILURE ) && b.run( StatusCode::SUCCESS ) ) {
-    }
+    if ( a.run( StatusCode::FAILURE ) && b.run( StatusCode::SUCCESS ) ) {}
     BOOST_CHECK( a.done );
     BOOST_CHECK( b.done == false );
   }
   {
     F a, b;
-    if ( a.run( StatusCode::SUCCESS ) && b.run( StatusCode::SUCCESS ) ) {
-    }
+    if ( a.run( StatusCode::SUCCESS ) && b.run( StatusCode::SUCCESS ) ) {}
     BOOST_CHECK( a.done );
     BOOST_CHECK( b.done );
   }
   // Check OR short-circuiting
   {
     F a, b;
-    if ( a.run( StatusCode::FAILURE ) || b.run( StatusCode::SUCCESS ) ) {
-    }
+    if ( a.run( StatusCode::FAILURE ) || b.run( StatusCode::SUCCESS ) ) {}
     BOOST_CHECK( a.done );
     BOOST_CHECK( b.done );
   }
   {
     F a, b;
-    if ( a.run( StatusCode::SUCCESS ) || b.run( StatusCode::SUCCESS ) ) {
-    }
+    if ( a.run( StatusCode::SUCCESS ) || b.run( StatusCode::SUCCESS ) ) {}
     BOOST_CHECK( a.done );
     BOOST_CHECK( b.done == false );
   }
   // Bitwise operators do not short-circuit
   {
     F a, b;
-    if ( a.run( StatusCode::FAILURE ) & b.run( StatusCode::SUCCESS ) ) {
-    }
+    if ( a.run( StatusCode::FAILURE ) & b.run( StatusCode::SUCCESS ) ) {}
     BOOST_CHECK( a.done );
     BOOST_CHECK( b.done );
   }
   {
     F a, b;
-    if ( a.run( StatusCode::SUCCESS ) | b.run( StatusCode::SUCCESS ) ) {
-    }
+    if ( a.run( StatusCode::SUCCESS ) | b.run( StatusCode::SUCCESS ) ) {}
     BOOST_CHECK( a.done );
     BOOST_CHECK( b.done );
   }
 }
 
-BOOST_AUTO_TEST_CASE( checking )
-{
+BOOST_AUTO_TEST_CASE( checking ) {
   {
     StatusCode sc;
     BOOST_CHECK( sc.checked() == false );
@@ -249,8 +231,7 @@ BOOST_AUTO_TEST_CASE( checking )
   // Comparison checks
   {
     StatusCode sc( StatusCode::SUCCESS );
-    if ( sc == StatusCode::SUCCESS ) {
-    }
+    if ( sc == StatusCode::SUCCESS ) {}
     BOOST_CHECK( sc.checked() == true );
   }
   {
@@ -263,8 +244,7 @@ BOOST_AUTO_TEST_CASE( checking )
   // Cast to bool --> checked
   {
     StatusCode sc;
-    if ( sc ) {
-    }
+    if ( sc ) {}
     BOOST_CHECK( sc.checked() == true );
   }
   // Copy constructor checks source
@@ -354,8 +334,7 @@ BOOST_AUTO_TEST_CASE( checking )
   }
 }
 
-BOOST_AUTO_TEST_CASE( user_values )
-{
+BOOST_AUTO_TEST_CASE( user_values ) {
   {
     enum Status { ERR1 = 10, ERR2 = 12 };
 
@@ -382,8 +361,7 @@ BOOST_AUTO_TEST_CASE( user_values )
   }
 }
 
-BOOST_AUTO_TEST_CASE( user_categories )
-{
+BOOST_AUTO_TEST_CASE( user_categories ) {
   {
     StatusCode sc( MyErr::FAILURE );
     BOOST_CHECK( sc.isSuccess() == false );
@@ -416,8 +394,7 @@ BOOST_AUTO_TEST_CASE( user_categories )
   }
 }
 
-BOOST_AUTO_TEST_CASE( conversions )
-{
+BOOST_AUTO_TEST_CASE( conversions ) {
   StatusCode sc;
 
   // Default codes

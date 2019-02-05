@@ -8,18 +8,16 @@
 /*
  *   Gaudi namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class MultiFileCatalog
-    *
-    *  This class constitutes the core of the
-    *  XML based FileCatalog API for using POOL within Gaudi.
-    *  This class manages multiple file catalogs.
-    *
-    */
-  class MultiFileCatalog : public extends<Service, IFileCatalog, IFileCatalogMgr>
-  {
+   *
+   *  This class constitutes the core of the
+   *  XML based FileCatalog API for using POOL within Gaudi.
+   *  This class manages multiple file catalogs.
+   *
+   */
+  class MultiFileCatalog : public extends<Service, IFileCatalog, IFileCatalogMgr> {
   public:
     // disambiguate between Service::Factory and IFileCatalog::Factory
     typedef Service::Factory Factory;
@@ -30,8 +28,7 @@ namespace Gaudi
     typedef std::vector<std::string>   CatalogNames;
 
     template <class A1, class F>
-    std::string _find( A1& arg1, F pmf ) const
-    {
+    std::string _find( A1& arg1, F pmf ) const {
       std::string result;
       for ( const auto& i : m_catalogs ) {
         result = ( i->*pmf )( arg1 );
@@ -40,8 +37,7 @@ namespace Gaudi
       return result;
     }
     template <class A1, class F>
-    void _collect( A1& arg1, F f ) const
-    {
+    void _collect( A1& arg1, F f ) const {
       A1 tmp;
       for ( const auto& i : m_catalogs ) {
         f( i, tmp ); // tmp = f(i)
@@ -50,8 +46,7 @@ namespace Gaudi
       }
     }
     template <class A2, class A1, class F>
-    void _collect( const A2& arg2, A1& arg1, F f ) const
-    {
+    void _collect( const A2& arg2, A1& arg1, F f ) const {
       A1 tmp;
       for ( const auto& i : m_catalogs ) {
         f( i, arg2, tmp ); // tmp = f(i,arg2)
@@ -96,13 +91,11 @@ namespace Gaudi
     /// Return the status of a FileID
     bool existsFID( CSTR fid ) const override { return 0 != getCatalog( fid, false, false, false ); }
     /// Dump all physical file names of the catalog and their attributes associate to the FileID
-    void getPFN( CSTR fid, Files& files ) const override
-    {
+    void getPFN( CSTR fid, Files& files ) const override {
       _collect( fid, files, std::mem_fn( &IFileCatalog::getPFN ) );
     }
     /// Dump all logical file names of the catalog associate to the FileID
-    void getLFN( CSTR fid, Files& files ) const override
-    {
+    void getLFN( CSTR fid, Files& files ) const override {
       _collect( fid, files, std::mem_fn( &IFileCatalog::getLFN ) );
     }
 
@@ -121,15 +114,13 @@ namespace Gaudi
     /// remove a PFN
     void deletePFN( CSTR pfn ) const override { writeCatalog()->deletePFN( pfn ); }
     /// Dump all MetaData of the catalog for a given file ID
-    void getMetaData( CSTR fid, Attributes& attr ) const override
-    {
+    void getMetaData( CSTR fid, Attributes& attr ) const override {
       _collect( fid, attr, std::mem_fn( &IFileCatalog::getMetaData ) );
     }
     /// Access metadata item
     std::string getMetaDataItem( CSTR fid, CSTR name ) const override;
     /// Insert/update metadata item
-    void setMetaData( CSTR fid, CSTR attr, CSTR val ) const override
-    {
+    void setMetaData( CSTR fid, CSTR attr, CSTR val ) const override {
       writeCatalog( fid )->setMetaData( fid, attr, val );
     }
     /// Drop all metadata of one FID
@@ -169,7 +160,7 @@ namespace Gaudi
     /// list of the file catalogs
     void propHandler();
 
-    void printError( CSTR msg, bool throw_exc = true ) const;
+    void        printError( CSTR msg, bool throw_exc = true ) const;
     std::string lookupFID( CSTR lfn ) const;
 
     /// Container with references to known catalogs

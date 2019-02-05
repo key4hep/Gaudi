@@ -5,13 +5,12 @@
 #include "OutputStream.h"
 
 /** @class RecordStream RecordStream.h
-  * Extension of OutputStream to write run records after last event
-  *
-  * @author  M.Frank
-  * @version 1.0
-  */
-class RecordStream : public OutputStream
-{
+ * Extension of OutputStream to write run records after last event
+ *
+ * @author  M.Frank
+ * @version 1.0
+ */
+class RecordStream : public OutputStream {
 public:
   /// Standard algorithm Constructor
   RecordStream( const std::string&, ISvcLocator* );

@@ -17,6 +17,7 @@ try:
         place.
         """
         return []
+
     Configurable.getNeededConfigurables = _getNeededConfigurables
 except ImportError:
     # Otherwise use GaudiKernel

@@ -7,8 +7,7 @@
 
 class IPartPropSvc;
 
-class PartPropExa : public Algorithm
-{
+class PartPropExa : public Algorithm {
 
 public:
   using Algorithm::Algorithm;
@@ -19,15 +18,13 @@ private:
   IPartPropSvc* m_pps;
 };
 
-namespace HepPDT
-{
-  class TestUnknownID : public ProcessUnknownID
-  {
+namespace HepPDT {
+  class TestUnknownID : public ProcessUnknownID {
   public:
     TestUnknownID() = default;
 
     CommonParticleData* processUnknownID( ParticleID, const ParticleDataTable& pdt ) override;
   };
-}
+} // namespace HepPDT
 
 #endif // GAUDIEXAMPLES_PARTPROPEXA_H

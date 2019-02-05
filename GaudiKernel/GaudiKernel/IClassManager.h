@@ -15,8 +15,7 @@ class ISvcLocator;
 
     @author Pere Mato
 */
-class GAUDI_API IClassManager : virtual public IInterface
-{
+class GAUDI_API IClassManager : virtual public IInterface {
 public:
   DeclareInterfaceID( IClassManager, 2, 0 );
 

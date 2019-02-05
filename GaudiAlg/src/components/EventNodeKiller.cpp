@@ -14,8 +14,7 @@ DECLARE_COMPONENT( EventNodeKiller )
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode EventNodeKiller::execute()
-{
+StatusCode EventNodeKiller::execute() {
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 

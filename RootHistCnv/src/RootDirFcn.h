@@ -3,8 +3,7 @@
 
 #include <string>
 
-namespace RootHistCnv
-{
+namespace RootHistCnv {
 
   bool RootCd( const std::string& full );
 
@@ -13,6 +12,6 @@ namespace RootHistCnv
   std::string RootPwd();
 
   bool RootTrimLeadingDir( std::string& full, std::string dir );
-}
+} // namespace RootHistCnv
 
 #endif

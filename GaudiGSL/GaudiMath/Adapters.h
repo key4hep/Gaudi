@@ -10,8 +10,7 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
-namespace GaudiMath
-{
+namespace GaudiMath {
   typedef Genfun::GaudiMathImplementation::AdapterIFunction       AIDAFunction;
   typedef Genfun::GaudiMathImplementation::Adapter2DoubleFunction Function2D;
   typedef Genfun::GaudiMathImplementation::Adapter3DoubleFunction Function3D;
@@ -35,4 +34,3 @@ namespace GaudiMath
 } // end of namespace GaudiMath
 
 #endif // GAUDIMATH_ADAPTERS_H
-// ============================================================================

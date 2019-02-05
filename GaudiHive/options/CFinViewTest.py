@@ -1,5 +1,4 @@
 #!/usr/bin/env gaudirun.py
-
 '''
 A test for control flow scheduling within sub-event contexts.
 The sub-event control flow node has a child node attached.
@@ -17,8 +16,8 @@ Six instances of ViewTester are used as follows:
 '''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           AvalancheSchedulerSvc, AlgResourcePool,
-                           CPUCruncher, GaudiSequencer, Test__ViewTester)
+                           AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
+                           GaudiSequencer, Test__ViewTester)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -87,29 +86,30 @@ for algo in [a1, a2, a3, a4, b1, b2]:
     algo.Cardinality = cardinality
     algo.OutputLevel = DEBUG
 
-nodeInView = GaudiSequencer("nodeInView",
-                            Members=[b1, b2],
-                            Sequential=False,
-                            OutputLevel=VERBOSE)
+nodeInView = GaudiSequencer(
+    "nodeInView", Members=[b1, b2], Sequential=False, OutputLevel=VERBOSE)
 
-viewNode = GaudiSequencer("viewNode",
-                          Members=[a2, nodeInView, a3],
-                          Sequential=False,
-                          OutputLevel=VERBOSE)
+viewNode = GaudiSequencer(
+    "viewNode",
+    Members=[a2, nodeInView, a3],
+    Sequential=False,
+    OutputLevel=VERBOSE)
 
-createViewSeq = GaudiSequencer("createViewSeq",
-                               Members=[a1, viewNode, a4],
-                               Sequential=True,
-                               OutputLevel=VERBOSE)
+createViewSeq = GaudiSequencer(
+    "createViewSeq",
+    Members=[a1, viewNode, a4],
+    Sequential=True,
+    OutputLevel=VERBOSE)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
 
-ApplicationMgr(EvtMax=evtMax,
-               EvtSel='NONE',
-               ExtSvc=[whiteboard],
-               EventLoop=slimeventloopmgr,
-               TopAlg=[createViewSeq],
-               MessageSvcType="InertMessageSvc")
+ApplicationMgr(
+    EvtMax=evtMax,
+    EvtSel='NONE',
+    ExtSvc=[whiteboard],
+    EventLoop=slimeventloopmgr,
+    TopAlg=[createViewSeq],
+    MessageSvcType="InertMessageSvc")
 
 # -------------------------------------------------------------------------------

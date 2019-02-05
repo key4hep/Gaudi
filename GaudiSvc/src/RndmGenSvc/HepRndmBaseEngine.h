@@ -20,16 +20,13 @@
 #include "RndmEngine.h"
 
 // Forward declarations
-namespace CLHEP
-{
+namespace CLHEP {
   class HepRandomEngine;
 }
 
-namespace HepRndm
-{
+namespace HepRndm {
 
-  class BaseEngine : public RndmEngine
-  {
+  class BaseEngine : public RndmEngine {
   protected:
     std::unique_ptr<CLHEP::HepRandomEngine> m_hepEngine;
 
@@ -40,8 +37,7 @@ namespace HepRndm
     // Retrieve single random number
     double rndm() const override { return m_hepEngine->flat(); }
 
-    StatusCode finalize() override
-    {
+    StatusCode finalize() override {
       if ( m_hepEngine ) CLHEP::HepRandom::setTheEngine( nullptr );
       m_hepEngine.reset();
       return RndmEngine::finalize();
@@ -49,7 +45,7 @@ namespace HepRndm
 
   protected:
     void                                            initEngine() { m_hepEngine = createEngine(); }
-    virtual std::unique_ptr<CLHEP::HepRandomEngine> createEngine()             = 0;
+    virtual std::unique_ptr<CLHEP::HepRandomEngine> createEngine() = 0;
   };
-}
+} // namespace HepRndm
 #endif // HEPRNDM_HEPRNDMBASEENGINE_H

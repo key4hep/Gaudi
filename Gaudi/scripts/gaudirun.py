@@ -43,12 +43,13 @@ def setLibraryPreload(newpreload):
         preload = []
 
     for libname in set(preload).intersection(newpreload):
-        logging.warning("Ignoring preload of library %s because it is "
-                        "already in LD_PRELOAD.", libname)
+        logging.warning(
+            "Ignoring preload of library %s because it is "
+            "already in LD_PRELOAD.", libname)
 
-    to_load = [libname
-               for libname in newpreload
-               if libname not in set(preload)]
+    to_load = [
+        libname for libname in newpreload if libname not in set(preload)
+    ]
 
     if to_load:
         preload += to_load
@@ -90,8 +91,9 @@ def getArgsFromQmt(qmtfile):
     if options is not None:  # options need to be dumped in a temporary file
         from tempfile import NamedTemporaryFile
         import re
-        if re.search(r"from\s+Gaudi.Configuration\s+import\s+\*"
-                     r"|from\s+Configurables\s+import", options.text):
+        if re.search(
+                r"from\s+Gaudi.Configuration\s+import\s+\*"
+                r"|from\s+Configurables\s+import", options.text):
             tmp_opts = NamedTemporaryFile(suffix='.py')
         else:
             tmp_opts = NamedTemporaryFile(suffix='.opts')
@@ -128,108 +130,165 @@ if __name__ == "__main__":
 
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] <opts_file> ...")
-    parser.add_option("-n", "--dry-run", action="store_true",
-                      help="do not run the application, just parse option files")
-    parser.add_option("-p", "--pickle-output", action="store", type="string",
-                      metavar="FILE",
-                      help="DEPRECATED: use '--output file.pkl' instead. Write "
-                           "the parsed options as a pickle file (static option "
-                           "file)")
-    parser.add_option("-v", "--verbose", action="store_true",
-                      help="print the parsed options")
-    parser.add_option("--old-opts", action="store_true",
-                      help="format printed options in old option files style")
-    parser.add_option("--all-opts", action="store_true",
-                      help="print all the option (even if equal to default)")
+    parser.add_option(
+        "-n",
+        "--dry-run",
+        action="store_true",
+        help="do not run the application, just parse option files")
+    parser.add_option(
+        "-p",
+        "--pickle-output",
+        action="store",
+        type="string",
+        metavar="FILE",
+        help="DEPRECATED: use '--output file.pkl' instead. Write "
+        "the parsed options as a pickle file (static option "
+        "file)")
+    parser.add_option(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="print the parsed options")
+    parser.add_option(
+        "--old-opts",
+        action="store_true",
+        help="format printed options in old option files style")
+    parser.add_option(
+        "--all-opts",
+        action="store_true",
+        help="print all the option (even if equal to default)")
     # GaudiPython Parallel Mode Option
     #   Argument must be an integer in range [ -1, sys_cpus ]
     #   -1   : All available cpus
     #    0   : Serial Mode (traditional gaudirun)
     #    n>0 : parallel with n cpus (n <= sys_cpus)
-    parser.add_option("--ncpus", action="store", type="int", default=0,
-                      help="start the application in parallel mode using NCPUS processes. "
-                           "0 => serial mode (default), -1 => use all CPUs")
+    parser.add_option(
+        "--ncpus",
+        action="store",
+        type="int",
+        default=0,
+        help="start the application in parallel mode using NCPUS processes. "
+        "0 => serial mode (default), -1 => use all CPUs")
 
     def option_cb(option, opt, value, parser):
         """Add the option line to a list together with its position in the
         argument list.
         """
         parser.values.options.append((len(parser.largs), value))
-    parser.add_option("--option", action="callback", callback=option_cb,
-                      type="string", nargs=1,
-                      help="add a single line (Python) option to the configuration. "
-                           "All options lines are executed, one after the other, in "
-                           "the same context.")
-    parser.add_option("--no-conf-user-apply", action="store_true",
-                      help="disable the automatic application of configurable "
-                           "users (for backward compatibility)")
-    parser.add_option("--old-conf-user-apply", action="store_true",
-                      help="use the old logic when applying ConfigurableUsers "
-                           "(with bug #103803) [default]")
-    parser.add_option("--new-conf-user-apply", action="store_false",
-                      dest="old_conf_user_apply",
-                      help="use the new (correct) logic when applying "
-                           "ConfigurableUsers (fixed bug #103803), can be "
-                           "turned on also with the environment variable "
-                           "GAUDI_FIXED_APPLY_CONF")
-    parser.add_option("-o", "--output", action="store", type="string",
-                      help="dump the configuration to a file. The format of "
-                            "the options is determined by the extension of the "
-                            "file name: .pkl = pickle, .py = python, .opts = "
-                            "old style options. The python format cannot be "
-                            "used to run the application and it contains the "
-                            "same dictionary printed with -v")
-    parser.add_option("--post-option", action="append", type="string",
-                      dest="post_options",
-                      help="Python options to be executed after the ConfigurableUser "
-                           "are applied. "
-                           "All options lines are executed, one after the other, in "
-                           "the same context.")
-    parser.add_option("--debug", action="store_true",
-                      help="enable some debug print-out")
-    parser.add_option("--gdb", action="store_true",
-                      help="attach gdb")
-    parser.add_option("--printsequence", action="store_true",
-                      help="print the sequence")
+
+    parser.add_option(
+        "--option",
+        action="callback",
+        callback=option_cb,
+        type="string",
+        nargs=1,
+        help="add a single line (Python) option to the configuration. "
+        "All options lines are executed, one after the other, in "
+        "the same context.")
+    parser.add_option(
+        "--no-conf-user-apply",
+        action="store_true",
+        help="disable the automatic application of configurable "
+        "users (for backward compatibility)")
+    parser.add_option(
+        "--old-conf-user-apply",
+        action="store_true",
+        help="use the old logic when applying ConfigurableUsers "
+        "(with bug #103803) [default]")
+    parser.add_option(
+        "--new-conf-user-apply",
+        action="store_false",
+        dest="old_conf_user_apply",
+        help="use the new (correct) logic when applying "
+        "ConfigurableUsers (fixed bug #103803), can be "
+        "turned on also with the environment variable "
+        "GAUDI_FIXED_APPLY_CONF")
+    parser.add_option(
+        "-o",
+        "--output",
+        action="store",
+        type="string",
+        help="dump the configuration to a file. The format of "
+        "the options is determined by the extension of the "
+        "file name: .pkl = pickle, .py = python, .opts = "
+        "old style options. The python format cannot be "
+        "used to run the application and it contains the "
+        "same dictionary printed with -v")
+    parser.add_option(
+        "--post-option",
+        action="append",
+        type="string",
+        dest="post_options",
+        help="Python options to be executed after the ConfigurableUser "
+        "are applied. "
+        "All options lines are executed, one after the other, in "
+        "the same context.")
+    parser.add_option(
+        "--debug", action="store_true", help="enable some debug print-out")
+    parser.add_option("--gdb", action="store_true", help="attach gdb")
+    parser.add_option(
+        "--printsequence", action="store_true", help="print the sequence")
     if not sys.platform.startswith("win"):
         # These options can be used only on unix platforms
-        parser.add_option("-T", "--tcmalloc", action="store_true",
-                          help="Use the Google malloc replacement. The environment "
-                               "variable TCMALLOCLIB can be used to specify a different "
-                               "name for the library (the default is libtcmalloc.so)")
-        parser.add_option("--preload", action="append",
-                          help="Allow pre-loading of special libraries (e.g. Google "
-                               "profiling libraries).")
+        parser.add_option(
+            "-T",
+            "--tcmalloc",
+            action="store_true",
+            help="Use the Google malloc replacement. The environment "
+            "variable TCMALLOCLIB can be used to specify a different "
+            "name for the library (the default is libtcmalloc.so)")
+        parser.add_option(
+            "--preload",
+            action="append",
+            help="Allow pre-loading of special libraries (e.g. Google "
+            "profiling libraries).")
         # Option to use a profiler
-        parser.add_option("--profilerName", type="string",
-                          help="Select one profiler among: igprofPerf, igprofMem and valgrind<toolname>")
+        parser.add_option(
+            "--profilerName",
+            type="string",
+            help=
+            "Select one profiler among: igprofPerf, igprofMem and valgrind<toolname>"
+        )
 
         # Option to specify the filename where to collect the profiler's output
-        parser.add_option("--profilerOutput", type="string",
-                          help="Specify the name of the output file for the profiler output")
+        parser.add_option(
+            "--profilerOutput",
+            type="string",
+            help="Specify the name of the output file for the profiler output")
 
         # Option to specify the filename where to collect the profiler's output
-        parser.add_option("--profilerExtraOptions", type="string",
-                          help="Specify additional options for the profiler. The '--' string should be expressed as '__' (--my-opt becomes __my-opt)")
+        parser.add_option(
+            "--profilerExtraOptions",
+            type="string",
+            help=
+            "Specify additional options for the profiler. The '--' string should be expressed as '__' (--my-opt becomes __my-opt)"
+        )
 
-    parser.add_option('--use-temp-opts', action='store_true',
-                      help='when this option is enabled, the options are parsed'
-                           ' and stored in a temporary file, then the job is '
-                           'restarted using that file as input (to save '
-                           'memory)')
-    parser.add_option("--run-info-file", type="string",
-                      help="Save gaudi process information to the file specified (in JSON format)")
+    parser.add_option(
+        '--use-temp-opts',
+        action='store_true',
+        help='when this option is enabled, the options are parsed'
+        ' and stored in a temporary file, then the job is '
+        'restarted using that file as input (to save '
+        'memory)')
+    parser.add_option(
+        "--run-info-file",
+        type="string",
+        help=
+        "Save gaudi process information to the file specified (in JSON format)"
+    )
 
-    parser.set_defaults(options=[],
-                        tcmalloc=False,
-                        profilerName='',
-                        profilerOutput='',
-                        profilerExtraOptions='',
-                        preload=[],
-                        ncpus=None,
-                        # the old logic can be turned off with an env variable
-                        old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ,
-                        run_info_file=None)
+    parser.set_defaults(
+        options=[],
+        tcmalloc=False,
+        profilerName='',
+        profilerOutput='',
+        profilerExtraOptions='',
+        preload=[],
+        ncpus=None,
+        # the old logic can be turned off with an env variable
+        old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ,
+        run_info_file=None)
 
     # replace .qmt files in the command line with their contained args
     argv = []
@@ -287,8 +346,8 @@ if __name__ == "__main__":
         if sanitizer:
             logging.warning("tcmalloc preload disabled when using a sanitizer")
         else:
-            opts.preload.insert(0, os.environ.get(
-                "TCMALLOCLIB", "libtcmalloc.so"))
+            opts.preload.insert(
+                0, os.environ.get("TCMALLOCLIB", "libtcmalloc.so"))
 
     # allow preloading of libraries
     if opts.preload:
@@ -298,11 +357,12 @@ if __name__ == "__main__":
         else:
             preload = []
         for libname in set(preload).intersection(opts.preload):
-            logging.warning("Ignoring preload of library %s because it is "
-                            "already in LD_PRELOAD.", libname)
-        to_load = [libname
-                   for libname in opts.preload
-                   if libname not in set(preload)]
+            logging.warning(
+                "Ignoring preload of library %s because it is "
+                "already in LD_PRELOAD.", libname)
+        to_load = [
+            libname for libname in opts.preload if libname not in set(preload)
+        ]
         if to_load:
             preload += to_load
             preload = ":".join(preload)
@@ -310,8 +370,10 @@ if __name__ == "__main__":
             logging.info("Restarting with LD_PRELOAD='%s'", preload)
             # remove the --tcmalloc option from the arguments
             # FIXME: the --preload arguments will issue a warning but it's tricky to remove them
-            args = [a for a in sys.argv if a !=
-                    '-T' and not '--tcmalloc'.startswith(a)]
+            args = [
+                a for a in sys.argv
+                if a != '-T' and not '--tcmalloc'.startswith(a)
+            ]
             os.execv(sys.executable, [sys.executable] + args)
 
     # Profiler Support ------
@@ -352,13 +414,13 @@ if __name__ == "__main__":
             outoption = "--log-file"
             if toolname in ("massif", "callgrind", "cachegrind"):
                 outoption = "--%s-out-file" % toolname
-            profilerOptions = "--tool=%s %s=%s" % (
-                toolname, outoption, profilerOutput)
+            profilerOptions = "--tool=%s %s=%s" % (toolname, outoption,
+                                                   profilerOutput)
             profilerExecName = "valgrind"
 
         elif profilerName == "jemalloc":
-            opts.preload.insert(0, os.environ.get(
-                "JEMALLOCLIB", "libjemalloc.so"))
+            opts.preload.insert(
+                0, os.environ.get("JEMALLOCLIB", "libjemalloc.so"))
             os.environ['MALLOC_CONF'] = "prof:true,prof_leak:true"
         else:
             root_logger.warning("Profiler %s not recognized!" % profilerName)
@@ -374,14 +436,15 @@ if __name__ == "__main__":
             import distutils.spawn
             profilerPath = distutils.spawn.find_executable(profilerExecName)
             if not profilerPath:
-                root_logger.error("Cannot locate profiler %s" %
-                                  profilerExecName)
+                root_logger.error(
+                    "Cannot locate profiler %s" % profilerExecName)
                 sys.exit(1)
 
         root_logger.info("------ Profiling options are on ------ \n"
                          " o Profiler: %s\n"
                          " o Options: '%s'.\n"
-                         " o Output: %s" % (profilerExecName or profilerName, profilerOptions, profilerOutput))
+                         " o Output: %s" % (profilerExecName or profilerName,
+                                            profilerOptions, profilerOutput))
 
         # allow preloading of libraries
         # That code need to be acsracted from above
@@ -438,6 +501,7 @@ if __name__ == "__main__":
 
         def __getattr__(self, *args, **kwargs):
             raise self.exception
+
     sys.modules["GaudiPython"] = FakeModule(
         RuntimeError("GaudiPython cannot be used in option files"))
 

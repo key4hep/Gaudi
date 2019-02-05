@@ -30,9 +30,8 @@
  *
  *  \deprecated will be removed in v29r0, consider using PropertyHolder instead
  */
-class GAUDI_API[[deprecated( "will be removed in v29r0, consider using PropertyHolder instead" )]] PropertyMgr
-    : public implements<IProperty>
-{
+class GAUDI_API [[deprecated( "will be removed in v29r0, consider using PropertyHolder instead" )]] PropertyMgr
+    : public implements<IProperty> {
 public:
   /// constructor from the interface
   PropertyMgr( IInterface* iface = nullptr );
@@ -130,9 +129,9 @@ private:
   void assertUniqueName( const std::string& name ) const;
 
   // Some typedef to simply typing
-  typedef std::vector<Gaudi::Details::PropertyBase*> Properties;
+  typedef std::vector<Gaudi::Details::PropertyBase*>                 Properties;
   typedef std::pair<std::string, std::pair<IProperty*, std::string>> RemProperty;
-  typedef std::vector<RemProperty> RemoteProperties;
+  typedef std::vector<RemProperty>                                   RemoteProperties;
 
   /// Collection of all declared properties
   Properties m_properties; // local  properties
@@ -148,8 +147,7 @@ private:
 // ============================================================================
 template <class TYPE, typename>
 inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, TYPE& value,
-                                                                   const std::string& doc )
-{
+                                                                   const std::string& doc ) {
   assertUniqueName( name );
   m_todelete.emplace_back( new Gaudi::Property<TYPE&>( name, value ) );
   Gaudi::Details::PropertyBase* p = m_todelete.back().get();
@@ -164,8 +162,7 @@ inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::st
 // ============================================================================
 template <class TYPE>
 inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE>& prop,
-                                                                   const std::string& doc )
-{
+                                                                   const std::string& doc ) {
   assertUniqueName( name );
   Gaudi::Details::PropertyBase* p = &prop;
   //
@@ -180,8 +177,7 @@ inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::st
 // ============================================================================
 template <class TYPE>
 inline Gaudi::Details::PropertyBase*
-PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE&>& prop, const std::string& doc )
-{
+PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE&>& prop, const std::string& doc ) {
   assertUniqueName( name );
   Gaudi::Details::PropertyBase* p = &prop;
   //
@@ -196,4 +192,3 @@ PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE&>& p
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_PROPERTYMGR_H
-// ============================================================================

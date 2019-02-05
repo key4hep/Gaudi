@@ -1,6 +1,6 @@
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-private-field"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wunused-private-field"
 #endif
 // ============================================================================
 // Include files
@@ -26,8 +26,7 @@ MyClass1A::~MyClass1A() {}
 // ============================================================================
 // Anonymous namespace to hide the allocator
 // ============================================================================
-namespace
-{
+namespace {
   GaudiUtils::Allocator<MyClass1A> s_Allocator;
 }
 // ============================================================================
@@ -35,8 +34,7 @@ namespace
 // ============================================================================
 /// overloaded 'new' operator
 // ============================================================================
-void* MyClass1A::operator new( size_t )
-{
+void* MyClass1A::operator new( size_t ) {
   void* hit;
   hit = (void*)s_Allocator.MallocSingle();
   return hit;
@@ -53,5 +51,5 @@ void MyClass1A::operator delete( void* hit ) { s_Allocator.FreeSingle( (MyClass1
 // The END
 // ============================================================================
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif

@@ -1,8 +1,7 @@
 #ifndef GAUDIKERNEL_KEYEDOBJECT_H
 #define GAUDIKERNEL_KEYEDOBJECT_H
 
-namespace GaudiDict
-{
+namespace GaudiDict {
   template <class T>
   struct KeyedObjectDict;
 }
@@ -27,8 +26,7 @@ namespace GaudiDict
  *
  */
 template <class KEY>
-class GAUDI_API KeyedObject : public ContainedObject
-{
+class GAUDI_API KeyedObject : public ContainedObject {
   friend struct GaudiDict::KeyedObjectDict<KEY>;
 
 public:
@@ -94,8 +92,7 @@ private:
 
 // Standard destructor.
 template <class KEY>
-inline KeyedObject<KEY>::~KeyedObject()
-{
+inline KeyedObject<KEY>::~KeyedObject() {
   ObjectContainerBase* p = const_cast<ObjectContainerBase*>( parent() );
   if ( p ) {
     setParent( nullptr );
@@ -105,15 +102,13 @@ inline KeyedObject<KEY>::~KeyedObject()
 
 // Add reference to object (Increase reference counter).
 template <class KEY>
-inline unsigned long KeyedObject<KEY>::addRef()
-{
+inline unsigned long KeyedObject<KEY>::addRef() {
   return ++m_refCount;
 }
 
 // Release reference. If the reference count is ZERO, delete the object.
 template <class KEY>
-inline unsigned long KeyedObject<KEY>::release()
-{
+inline unsigned long KeyedObject<KEY>::release() {
   long cnt = --m_refCount;
   if ( cnt <= 0 ) delete this;
   return cnt;
@@ -124,8 +119,7 @@ inline unsigned long KeyedObject<KEY>::release()
     redefine the key results in an exception.
 */
 template <class KEY>
-inline void KeyedObject<KEY>::setKey( const key_type& key )
-{
+inline void KeyedObject<KEY>::setKey( const key_type& key ) {
   if ( !m_hasKey ) {
     m_key    = key;
     m_hasKey = true;
@@ -136,15 +130,13 @@ inline void KeyedObject<KEY>::setKey( const key_type& key )
 
 // Serialize the object for writing
 template <class KEY>
-inline StreamBuffer& KeyedObject<KEY>::serialize( StreamBuffer& s ) const
-{
+inline StreamBuffer& KeyedObject<KEY>::serialize( StreamBuffer& s ) const {
   return ContainedObject::serialize( s ) << traits::identifier( m_key );
 }
 
 // Serialize the object for reading
 template <class KEY>
-inline StreamBuffer& KeyedObject<KEY>::serialize( StreamBuffer& s )
-{
+inline StreamBuffer& KeyedObject<KEY>::serialize( StreamBuffer& s ) {
   long k;
   ContainedObject::serialize( s ) >> k;
   m_key    = traits::makeKey( k );

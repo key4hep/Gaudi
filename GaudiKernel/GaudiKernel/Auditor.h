@@ -31,8 +31,7 @@ class IMessageSvc;
     @author Marco Clemencic
     @date   2008-03
 */
-class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor, IProperty>>>
-{
+class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor, IProperty>>> {
 public:
   using Factory = Gaudi::PluginService::Factory<IAuditor*( const std::string&, ISvcLocator* )>;
 
@@ -101,10 +100,9 @@ public:
   SmartIF<ISvcLocator>& serviceLocator() const override;
 
   /** Access a service by name, creating it if it doesn't already exist.
-  */
+   */
   template <class T>
-  StatusCode service( const std::string& name, T*& svc, bool createIf = false ) const
-  {
+  StatusCode service( const std::string& name, T*& svc, bool createIf = false ) const {
     auto ptr = serviceLocator()->service<T>( name, createIf );
     if ( ptr ) {
       svc = ptr.get();
@@ -116,8 +114,7 @@ public:
   }
 
   template <class T = IService>
-  SmartIF<T> service( const std::string& name, bool createIf = false ) const
-  {
+  SmartIF<T> service( const std::string& name, bool createIf = false ) const {
     return serviceLocator()->service<T>( name, createIf );
   }
 

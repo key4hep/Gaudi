@@ -22,8 +22,7 @@
  */
 // ============================================================================
 
-int main()
-{
+int main() {
   const GaudiMath::Function& mypow = GaudiMath::adapter( pow );
   Genfun::Argument           arg( 2 );
   for ( double x = 0; x < 10; ++x ) {

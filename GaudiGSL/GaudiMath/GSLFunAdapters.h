@@ -23,22 +23,19 @@
 #include "GaudiKernel/Kernel.h"
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-namespace Genfun
-{
-  namespace GaudiMathImplementation
-  {
+namespace Genfun {
+  namespace GaudiMathImplementation {
     /// the actual type for primitive adaptor
     typedef Genfun::GaudiMathImplementation::SimpleFunction GSLFunction;
 
-    class GAUDI_API GSLFunctionWithError : public AbsFunction
-    {
+    class GAUDI_API GSLFunctionWithError : public AbsFunction {
     public:
       /// the actual type of the function
       typedef int ( *Function )( double, gsl_sf_result* );
@@ -52,8 +49,8 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithError( const GSLFunctionWithError& );
       /// the main method
-      double operator()( double x ) const override;
-      double operator()( const Argument& x ) const override;
+      double             operator()( double x ) const override;
+      double             operator()( const Argument& x ) const override;
       bool               hasAnalyticDerivative() const override { return true; }
       unsigned int       dimensionality() const override { return 1; }
       Genfun::Derivative partial( unsigned int i ) const override;
@@ -78,8 +75,7 @@ namespace Genfun
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLFunctionWithError )
 
-    class GAUDI_API GSLFunctionWithMode : public AbsFunction
-    {
+    class GAUDI_API GSLFunctionWithMode : public AbsFunction {
     public:
       /// the actual type of the function
       typedef double ( *Function )( double, gsl_mode_t );
@@ -93,8 +89,8 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithMode( const GSLFunctionWithMode& );
       /// the main method
-      double operator()( double x ) const override;
-      double operator()( const Argument& x ) const override;
+      double             operator()( double x ) const override;
+      double             operator()( const Argument& x ) const override;
       bool               hasAnalyticDerivative() const override { return true; }
       unsigned int       dimensionality() const override { return 1; }
       Genfun::Derivative partial( unsigned int i ) const override;
@@ -116,8 +112,7 @@ namespace Genfun
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLFunctionWithMode )
 
-    class GAUDI_API GSLFunctionWithModeAndError : public AbsFunction
-    {
+    class GAUDI_API GSLFunctionWithModeAndError : public AbsFunction {
     public:
       /// the actual type of the function
       typedef int ( *Function )( double, gsl_mode_t, gsl_sf_result* );
@@ -131,8 +126,8 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithModeAndError( const GSLFunctionWithModeAndError& );
       /// the main method
-      double operator()( double x ) const override;
-      double operator()( const Argument& x ) const override;
+      double             operator()( double x ) const override;
+      double             operator()( const Argument& x ) const override;
       bool               hasAnalyticDerivative() const override { return true; }
       unsigned int       dimensionality() const override { return 1; }
       Genfun::Derivative partial( unsigned int i ) const override;
@@ -159,14 +154,13 @@ namespace Genfun
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLFunctionWithModeAndError )
 
-  } // end of namespace GaudiMath Implemnentation
+  } // namespace GaudiMathImplementation
 } // end of namespace Genfun
 
 #if defined( __clang__ ) || defined( __CLING__ )
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #elif defined( __GNUC__ ) && __GNUC__ >= 5
-#pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 #endif // GAUDIMATH_GSLFUNADAPTERS_H
-// ============================================================================

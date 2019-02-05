@@ -19,8 +19,7 @@ class EventSelectorDataStream;
  *  @date   2006-09-21
  */
 
-class GAUDI_API IDataStreamTool : virtual public IAlgTool
-{
+class GAUDI_API IDataStreamTool : virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID( IDataStreamTool, 2, 0 );

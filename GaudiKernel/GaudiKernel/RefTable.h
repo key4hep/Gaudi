@@ -2,7 +2,7 @@
 #define GAUDIKERNEL_REFTABLE_H 1
 
 #ifndef GAUDI_TEST_PUBLIC_HEADERS_BUILD
-#warning Obsolete header file.
+#  warning Obsolete header file.
 #endif // GAUDI_TEST_PUBLIC_HEADERS_BUILD
 
 #endif // GAUDIKERNEL_REFTABLE_H

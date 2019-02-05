@@ -20,8 +20,7 @@ struct Cause;
 
 //-----------------------------------------------------------------------------
 
-class GAUDI_API IPrecedenceSvc : virtual public IInterface
-{
+class GAUDI_API IPrecedenceSvc : virtual public IInterface {
 
 public:
   /// InterfaceID

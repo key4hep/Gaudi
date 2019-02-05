@@ -16,8 +16,7 @@
  *  @author Ben Couturier
  *  @date   2015-06-09
  */
-class JemallocProfile : public GaudiAlgorithm
-{
+class JemallocProfile : public GaudiAlgorithm {
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;

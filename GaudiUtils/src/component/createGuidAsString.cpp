@@ -6,8 +6,7 @@
 // Local include(s):
 #include "createGuidAsString.h"
 
-std::string Gaudi::createGuidAsString()
-{
+std::string Gaudi::createGuidAsString() {
   uuid_t uuid;
   ::uuid_generate_time( uuid );
   struct Guid {

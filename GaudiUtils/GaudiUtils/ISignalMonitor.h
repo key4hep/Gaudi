@@ -3,8 +3,7 @@
 
 #include "GaudiKernel/IInterface.h"
 
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** Interface for the service that monitors the occurrences of system signals.
    *
@@ -17,8 +16,7 @@ namespace Gaudi
    *
    *  @author  Marco Clemencic
    */
-  class GAUDI_API ISignalMonitor : virtual public IInterface
-  {
+  class GAUDI_API ISignalMonitor : virtual public IInterface {
   public:
     /// InterfaceID
     DeclareInterfaceID( ISignalMonitor, 1, 0 );

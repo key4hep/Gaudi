@@ -26,13 +26,11 @@ MySuperAlg('s2', PercentPass=75, OutputLevel=DEBUG)
 sand = HelloWorld('AND') & EventCounter('ANDCounter')
 sor = HelloWorld('OR') | EventCounter('ORCounter')
 
-
 try:
     MySuperAlg('AND')
     raise RuntimeError('we should not be able to retype to SuperAlgorithm')
 except AssertionError:
     pass  # it's expected
-
 
 all = ParentAlg() >> StopperAlg(StopCount=20) >> top >> sand >> sor
 
@@ -42,10 +40,11 @@ print '# ---'
 EventLoopMgr(PrintControlFlowExpression=True)
 
 # -----------------------------------------------------------------
-ApplicationMgr(TopAlg=[all],
-               EvtMax=10,      # events to be processed (default is 10)
-               EvtSel='NONE',  # do not use any event input
-               ExtSvc=['ToolSvc', 'AuditorSvc'],
-               AuditAlgorithms=True)
+ApplicationMgr(
+    TopAlg=[all],
+    EvtMax=10,  # events to be processed (default is 10)
+    EvtSel='NONE',  # do not use any event input
+    ExtSvc=['ToolSvc', 'AuditorSvc'],
+    AuditAlgorithms=True)
 
 AuditorSvc().Auditors.append(TimingAuditor("TIMER"))

@@ -9,14 +9,14 @@ from GaudiKernel.RootMap import printKeys
 def _help(argv):
     print """
   %s [-h] [-s|-e|-c] [-r] [-p pattern] [listofpath]
-  
+
      -h: dump this Help
      -s: Short format print
      -e: print Entry names only
      -c: only Checks duplication of entries
      -r: print also $ROOTSYS/etc/system.rootmap
      -p: print only pattern matching (Python style) entries
-     
+
   dump rootmap dictionaries informations. If no path is given, the
   LD_LIBRARY_PATH is used. By default, prints the name of the entry,
   its corresponding library and its block definition inside the

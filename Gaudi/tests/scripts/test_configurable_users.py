@@ -40,8 +40,10 @@ class MultiInstance(ConfigurableUserTest):
 
 class Application(ConfigurableUserTest):
     __slots__ = {"Property1": 10}
-    __used_configurables__ = [SubModule1, SubModule2, SubModule3,
-                              (MultiInstance, None), (MultiInstance, "TestInstance")]
+    __used_configurables__ = [
+        SubModule1, SubModule2, SubModule3, (MultiInstance, None),
+        (MultiInstance, "TestInstance")
+    ]
 
     def __apply_configuration__(self):
         super(Application, self).__apply_configuration__()
@@ -87,14 +89,16 @@ from GaudiKernel.Configurable import applyConfigurableUsers
 applyConfigurableUsers()
 
 # check that everything has been applied
-expected = {'Application':               ('Property1', 10),
-            'TestInstance':              ('Property', 1),
-            'Application_MultiInstance': ('Property', 0),
-            'SubModule1':                ('Property1', 10),
-            'SubModule2':                ('Property1', 10),
-            'TestInstance_SubModule1':   ('Property1', 0),
-            'Application_MultiInstance_SubModule1': ('Property1', 0),
-            'NotActivelyUsed':           ('Property', -5)}
+expected = {
+    'Application': ('Property1', 10),
+    'TestInstance': ('Property', 1),
+    'Application_MultiInstance': ('Property', 0),
+    'SubModule1': ('Property1', 10),
+    'SubModule2': ('Property1', 10),
+    'TestInstance_SubModule1': ('Property1', 0),
+    'Application_MultiInstance_SubModule1': ('Property1', 0),
+    'NotActivelyUsed': ('Property', -5)
+}
 assert set(appliedConf) == set(expected)
 
 # check the order of application
@@ -118,7 +122,7 @@ assert calledActions == expectedActions
 # check property values
 allConfs = Configurable.allConfigurables
 for name, (prop, value) in expected.items():
-    assert allConfs[name].getProp(
-        prop) == value, "%s.%s != %s" % (name, prop, value)
+    assert allConfs[name].getProp(prop) == value, "%s.%s != %s" % (name, prop,
+                                                                   value)
 
 print "Success."

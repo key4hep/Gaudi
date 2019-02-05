@@ -11,8 +11,7 @@
 
     @author nobody
 */
-class SubAlg : public Algorithm
-{
+class SubAlg : public Algorithm {
 public:
   /// Constructor of this form must be provided
   SubAlg( const std::string& name, ISvcLocator* pSvcLocator );

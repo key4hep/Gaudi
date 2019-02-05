@@ -19,8 +19,7 @@
 // ============================================================================
 #include "boost/format.hpp"
 // ============================================================================
-namespace GaudiExamples
-{
+namespace GaudiExamples {
   // ==========================================================================
   /** @class TimingAlg
    *
@@ -32,8 +31,7 @@ namespace GaudiExamples
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2008-04-02
    */
-  class TimingAlg : public GaudiAlgorithm
-  {
+  class TimingAlg : public GaudiAlgorithm {
   public:
     // ========================================================================
     /// standard constructor
@@ -66,8 +64,7 @@ namespace GaudiExamples
 // ============================================================================
 // do something CPU-intensive
 // ============================================================================
-double GaudiExamples::TimingAlg::doSomething()
-{
+double GaudiExamples::TimingAlg::doSomething() {
   double        result = 0;
   Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
   for ( unsigned long i = 0; i < m_cycles; ++i ) result += sin( gauss() );

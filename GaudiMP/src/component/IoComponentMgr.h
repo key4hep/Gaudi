@@ -26,8 +26,7 @@
 // Forward declaration
 class ISvcLocator;
 
-class IoComponentMgr : public extends<Service, IIoComponentMgr, IIncidentListener>
-{
+class IoComponentMgr : public extends<Service, IIoComponentMgr, IIncidentListener> {
   ///////////////////////////////////////////////////////////////////
   // Public methods:
   ///////////////////////////////////////////////////////////////////
@@ -124,22 +123,15 @@ private:
     IIoComponentMgr::IoMode::Type m_iomode;
 
     IoComponentEntry()
-        : m_oldfname( "" ), m_oldabspath( "" ), m_newfname( "" ), m_iomode( IIoComponentMgr::IoMode::INVALID )
-    {
-    }
+        : m_oldfname( "" ), m_oldabspath( "" ), m_newfname( "" ), m_iomode( IIoComponentMgr::IoMode::INVALID ) {}
     IoComponentEntry( const std::string& f, const std::string& p, const IIoComponentMgr::IoMode::Type& t )
-        : m_oldfname( f ), m_oldabspath( p ), m_newfname( "" ), m_iomode( t )
-    {
-    }
+        : m_oldfname( f ), m_oldabspath( p ), m_newfname( "" ), m_iomode( t ) {}
     IoComponentEntry( const IoComponentEntry& rhs )
         : m_oldfname( rhs.m_oldfname )
         , m_oldabspath( rhs.m_oldabspath )
         , m_newfname( rhs.m_newfname )
-        , m_iomode( rhs.m_iomode )
-    {
-    }
-    bool operator<( IoComponentEntry const& rhs ) const
-    {
+        , m_iomode( rhs.m_iomode ) {}
+    bool operator<( IoComponentEntry const& rhs ) const {
       if ( m_oldfname == rhs.m_oldfname ) {
         return ( m_iomode < rhs.m_iomode );
       } else {
@@ -147,8 +139,7 @@ private:
       }
     }
 
-    friend std::ostream& operator<<( std::ostream& os, const IoComponentEntry& c )
-    {
+    friend std::ostream& operator<<( std::ostream& os, const IoComponentEntry& c ) {
       os << "old: \"" << c.m_oldfname << "\"  absolute path: \"" << c.m_oldabspath << "\"  new: \"" << c.m_newfname
          << "\"  m: " << ( ( c.m_iomode == IIoComponentMgr::IoMode::READ ) ? "R" : "W" );
       return os;
@@ -168,7 +159,7 @@ private:
 
   // This is the registry
   typedef std::multimap<IIoComponent*, IoComponentEntry> IoDict_t;
-  typedef IoDict_t::const_iterator iodITR;
+  typedef IoDict_t::const_iterator                       iodITR;
 
   IoDict_t m_cdict;
 

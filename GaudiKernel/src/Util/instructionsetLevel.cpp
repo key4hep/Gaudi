@@ -11,8 +11,7 @@
 #include <string>
 #include <vector>
 
-int main( int argc, char* argv[] )
-{
+int main( int argc, char* argv[] ) {
 
   // These names are those reported in flags field of /proc/cpuinfo on Linux
   // See arch/x86/include/asm/cpufeature.h
@@ -27,9 +26,7 @@ int main( int argc, char* argv[] )
   if ( argc == 1 ) {
     size_t level = System::instructionsetLevel() - 1;
     if ( level < sets.size() )
-      for ( int i = System::instructionsetLevel() - 1; i >= 0; --i ) {
-        std::cout << sets[i] << std::endl;
-      }
+      for ( int i = System::instructionsetLevel() - 1; i >= 0; --i ) { std::cout << sets[i] << std::endl; }
     else {
       std::cout << "unknown instruction set level: " << level << std::endl;
       return 2;

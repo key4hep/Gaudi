@@ -29,15 +29,11 @@
  *  @date 2009-10-21
  */
 // ============================================================================
-namespace
-{
+namespace {
   // ==========================================================================
   template <class HISTO>
-  std::ostream& _toStream_1D_( const HISTO& histo, std::ostream& stream, const bool asXML )
-  {
-    if ( asXML ) {
-      return Gaudi::Utils::Histos::toXml( histo, stream );
-    }
+  std::ostream& _toStream_1D_( const HISTO& histo, std::ostream& stream, const bool asXML ) {
+    if ( asXML ) { return Gaudi::Utils::Histos::toXml( histo, stream ); }
     //
     stream << "{ ";
     //
@@ -54,9 +50,7 @@ namespace
       const TArrayD*      xbins = axis->GetXbins();
       const unsigned int  xsize = xbins->GetSize();
       std::vector<double> edges;
-      for ( unsigned int iBin = 0; iBin < xsize; ++iBin ) {
-        edges.push_back( xbins->At( iBin ) );
-      }
+      for ( unsigned int iBin = 0; iBin < xsize; ++iBin ) { edges.push_back( xbins->At( iBin ) ); }
       stream << "'edges' : ";
       Gaudi::Utils::toStream( edges, stream ) << " }, " << std::endl;
     } else {
@@ -81,11 +75,8 @@ namespace
   }
   // ==========================================================================
   template <class HISTO>
-  std::ostream& _toStream_2D_( const HISTO& histo, std::ostream& stream, const bool asXML )
-  {
-    if ( asXML ) {
-      return Gaudi::Utils::Histos::toXml( histo, stream );
-    }
+  std::ostream& _toStream_2D_( const HISTO& histo, std::ostream& stream, const bool asXML ) {
+    if ( asXML ) { return Gaudi::Utils::Histos::toXml( histo, stream ); }
     //
     stream << "{ ";
     //
@@ -102,9 +93,7 @@ namespace
       const TArrayD*      xbins = xaxis->GetXbins();
       const unsigned int  xsize = xbins->GetSize();
       std::vector<double> edges;
-      for ( unsigned int iBin = 0; iBin < xsize; ++iBin ) {
-        edges.push_back( xbins->At( iBin ) );
-      }
+      for ( unsigned int iBin = 0; iBin < xsize; ++iBin ) { edges.push_back( xbins->At( iBin ) ); }
       // the edges
       stream << "'edges' : ";
       Gaudi::Utils::toStream( edges, stream ) << " }," << std::endl;
@@ -125,9 +114,7 @@ namespace
       const TArrayD*      ybins = yaxis->GetXbins();
       const unsigned int  ysize = ybins->GetSize();
       std::vector<double> edges;
-      for ( unsigned int iBin = 0; iBin < ysize; ++iBin ) {
-        edges.push_back( ybins->At( iBin ) );
-      }
+      for ( unsigned int iBin = 0; iBin < ysize; ++iBin ) { edges.push_back( ybins->At( iBin ) ); }
       // the edges
       stream << " 'edges' : ";
       Gaudi::Utils::toStream( edges, stream ) << " }," << std::endl;
@@ -143,17 +130,13 @@ namespace
     // finally: the content
     stream << "'bins' : " << std::endl << " [ ";
     for ( int jBin = yBins + 1; jBin >= 0; --jBin ) {
-      if ( yBins + 1 != jBin ) {
-        stream << std::endl;
-      }
+      if ( yBins + 1 != jBin ) { stream << std::endl; }
       for ( int iBin = 0; iBin <= xBins + 1; ++iBin ) {
         //
         Gaudi::Utils::toStream( std::make_pair( histo.GetBinContent( iBin, jBin ), histo.GetBinError( iBin, jBin ) ),
                                 stream );
         //
-        if ( xBins + 1 != iBin || 0 != jBin ) {
-          stream << " , ";
-        }
+        if ( xBins + 1 != iBin || 0 != jBin ) { stream << " , "; }
       }
     }
     stream << " ]";
@@ -171,8 +154,7 @@ namespace
  *  @param asXML  (INPUT)  use XML-format
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::toStream( const TH1D& histo, std::ostream& stream, const bool asXML )
-{
+std::ostream& Gaudi::Utils::toStream( const TH1D& histo, std::ostream& stream, const bool asXML ) {
   return _toStream_1D_( histo, stream, asXML );
 }
 // ============================================================================
@@ -182,8 +164,7 @@ std::ostream& Gaudi::Utils::toStream( const TH1D& histo, std::ostream& stream, c
  *  @param asXML  (INPUT)  use XML-format
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::toStream( const TH1F& histo, std::ostream& stream, const bool asXML )
-{
+std::ostream& Gaudi::Utils::toStream( const TH1F& histo, std::ostream& stream, const bool asXML ) {
   return _toStream_1D_( histo, stream, asXML );
 }
 // ============================================================================
@@ -193,8 +174,7 @@ std::ostream& Gaudi::Utils::toStream( const TH1F& histo, std::ostream& stream, c
  *  @param asXML  (INPUT)  use XML-format
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::toStream( const TH2D& histo, std::ostream& stream, const bool asXML )
-{
+std::ostream& Gaudi::Utils::toStream( const TH2D& histo, std::ostream& stream, const bool asXML ) {
   return _toStream_2D_( histo, stream, asXML );
 }
 // ============================================================================
@@ -204,8 +184,7 @@ std::ostream& Gaudi::Utils::toStream( const TH2D& histo, std::ostream& stream, c
  *  @param asXML  (INPUT)  use XML-format
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::toStream( const TH2F& histo, std::ostream& stream, const bool asXML )
-{
+std::ostream& Gaudi::Utils::toStream( const TH2F& histo, std::ostream& stream, const bool asXML ) {
   return _toStream_2D_( histo, stream, asXML );
 }
 // ============================================================================
@@ -215,8 +194,7 @@ std::ostream& Gaudi::Utils::toStream( const TH2F& histo, std::ostream& stream, c
  *  @param asXML  (INPUT)  use XML-format
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::toStream( const AIDA::IHistogram1D& histo, std::ostream& stream, const bool asXML )
-{
+std::ostream& Gaudi::Utils::toStream( const AIDA::IHistogram1D& histo, std::ostream& stream, const bool asXML ) {
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &histo );
   return root ? toStream( *root, stream, asXML ) : stream;
 }
@@ -227,8 +205,7 @@ std::ostream& Gaudi::Utils::toStream( const AIDA::IHistogram1D& histo, std::ostr
  *  @param asXML  (INPUT)  use XML-format
  */
 // ============================================================================
-std::ostream& Gaudi::Utils::toStream( const AIDA::IHistogram2D& histo, std::ostream& stream, const bool asXML )
-{
+std::ostream& Gaudi::Utils::toStream( const AIDA::IHistogram2D& histo, std::ostream& stream, const bool asXML ) {
   //
   auto root = Gaudi::Utils::Aida2ROOT::aida2root( &histo );
   return root ? toStream( *root, stream, asXML ) : stream;
@@ -242,8 +219,7 @@ std::ostream& Gaudi::Utils::toStream( const AIDA::IHistogram2D& histo, std::ostr
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::toString( const TH1D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::toString( const TH1D& histo, const bool asXML ) {
   std::ostringstream o;
   toStream( histo, o, asXML );
   return o.str();
@@ -257,8 +233,7 @@ std::string Gaudi::Utils::toString( const TH1D& histo, const bool asXML )
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::toString( const TH1F& histo, const bool asXML )
-{
+std::string Gaudi::Utils::toString( const TH1F& histo, const bool asXML ) {
   std::ostringstream o;
   toStream( histo, o, asXML );
   return o.str();
@@ -272,8 +247,7 @@ std::string Gaudi::Utils::toString( const TH1F& histo, const bool asXML )
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::toString( const TH2D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::toString( const TH2D& histo, const bool asXML ) {
   std::ostringstream o;
   toStream( histo, o, asXML );
   return o.str();
@@ -287,8 +261,7 @@ std::string Gaudi::Utils::toString( const TH2D& histo, const bool asXML )
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::toString( const TH2F& histo, const bool asXML )
-{
+std::string Gaudi::Utils::toString( const TH2F& histo, const bool asXML ) {
   std::ostringstream o;
   toStream( histo, o, asXML );
   return o.str();
@@ -302,8 +275,7 @@ std::string Gaudi::Utils::toString( const TH2F& histo, const bool asXML )
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::toString( const AIDA::IHistogram1D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::toString( const AIDA::IHistogram1D& histo, const bool asXML ) {
   std::ostringstream o;
   toStream( histo, o, asXML );
   return o.str();
@@ -317,8 +289,7 @@ std::string Gaudi::Utils::toString( const AIDA::IHistogram1D& histo, const bool 
  *  @date 2009-09-26
  */
 // ============================================================================
-std::string Gaudi::Utils::toString( const AIDA::IHistogram2D& histo, const bool asXML )
-{
+std::string Gaudi::Utils::toString( const AIDA::IHistogram2D& histo, const bool asXML ) {
   std::ostringstream o;
   toStream( histo, o, asXML );
   return o.str();

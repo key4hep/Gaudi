@@ -8,28 +8,24 @@ DECLARE_COMPONENT( IncidentProcAlg )
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-#define DEBMSG ON_DEBUG   debug()
+#define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
-namespace
-{
+namespace {
   // ==========================================================================
   static const std::string s_unknown = "<unknown>";
   // Helper to get the name of the listener
-  inline const std::string& getListenerName( IIncidentListener* lis )
-  {
+  inline const std::string& getListenerName( IIncidentListener* lis ) {
     SmartIF<INamedInterface> iNamed( lis );
     return iNamed ? iNamed->name() : s_unknown;
   }
   // ==========================================================================
-}
+} // namespace
 
-IncidentProcAlg::IncidentProcAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
-{
-}
+IncidentProcAlg::IncidentProcAlg( const std::string& name, ISvcLocator* pSvcLocator )
+    : Algorithm( name, pSvcLocator ) {}
 
-StatusCode IncidentProcAlg::initialize()
-{
+StatusCode IncidentProcAlg::initialize() {
   StatusCode sc = Algorithm::initialize();
   if ( sc.isFailure() ) return sc;
   m_incSvc = service( "IncidentSvc", true );
@@ -37,8 +33,7 @@ StatusCode IncidentProcAlg::initialize()
 }
 
 //=============================================================================
-StatusCode IncidentProcAlg::execute()
-{
+StatusCode IncidentProcAlg::execute() {
   const EventContext& context = Gaudi::Hive::currentContext();
   auto                incPack = m_incSvc->getIncidents( &context );
   MsgStream           log( msgSvc(), name() );
@@ -58,8 +53,9 @@ StatusCode IncidentProcAlg::execute()
         try {
           l->handle( *inc );
         } catch ( const GaudiException& exc ) {
-          error() << "Exception with tag=" << exc.tag() << " is caught"
-                                                           " handling incident"
+          error() << "Exception with tag=" << exc.tag()
+                  << " is caught"
+                     " handling incident"
                   << inc->type() << endmsg;
           error() << exc << endmsg;
         } catch ( const std::exception& exc ) {
@@ -67,9 +63,7 @@ StatusCode IncidentProcAlg::execute()
                      " handling incident"
                   << inc->type() << endmsg;
           error() << exc.what() << endmsg;
-        } catch ( ... ) {
-          error() << "UNKNOWN Exception is caught handling incident" << inc->type() << endmsg;
-        }
+        } catch ( ... ) { error() << "UNKNOWN Exception is caught handling incident" << inc->type() << endmsg; }
         // check wheter one of the listeners is singleShot
       }
     }
@@ -80,8 +74,7 @@ StatusCode IncidentProcAlg::execute()
 }
 
 //=============================================================================
-StatusCode IncidentProcAlg::finalize()
-{
+StatusCode IncidentProcAlg::finalize() {
   info() << "Finalize" << endmsg;
   return Algorithm::finalize();
 }

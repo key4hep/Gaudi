@@ -17,13 +17,11 @@
 // Forward declarations
 class INtupleSvc;
 
-namespace Gaudi
-{
-  namespace Examples
-  {
+namespace Gaudi {
+  namespace Examples {
     class MyTrack;
   }
-}
+} // namespace Gaudi
 /** User example objects: EvtCollectionWrite
 
     Description:
@@ -32,8 +30,7 @@ namespace Gaudi
     Author:  M.Frank
     Version: 1.0
 */
-class EvtCollectionWrite : public Algorithm
-{
+class EvtCollectionWrite : public Algorithm {
 
   Gaudi::Property<int> m_nMCcut{this, "NumMcTracks", 50, ""};
 

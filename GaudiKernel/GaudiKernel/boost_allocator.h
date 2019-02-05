@@ -5,15 +5,15 @@
 
 #ifdef _WIN32
 // Avoid conflicts between Windows' headers and MSG.
-#ifndef NOMSG
-#define NOMSG
-#ifndef NOGDI
-#define NOGDI
-#endif
-#endif
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
+#  ifndef NOMSG
+#    define NOMSG
+#    ifndef NOGDI
+#      define NOGDI
+#    endif
+#  endif
+#  ifndef NOMINMAX
+#    define NOMINMAX
+#  endif
 #endif
 
 #include <boost/pool/singleton_pool.hpp>

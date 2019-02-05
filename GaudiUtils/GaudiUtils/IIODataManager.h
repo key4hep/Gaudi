@@ -11,19 +11,17 @@
 /*
  *  LHCb namespace declaration
  */
-namespace Gaudi
-{
+namespace Gaudi {
 
   /** @class IDataConnection
-    *
-    *  ABC describing basic data connection
-    *
-    *  @author  M.Frank
-    *  @version 1.0
-    *  @date    20/10/2007
-    */
-  class GAUDI_API IDataConnection
-  {
+   *
+   *  ABC describing basic data connection
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    20/10/2007
+   */
+  class GAUDI_API IDataConnection {
   protected:
     /// Connection name/identifier
     std::string m_name;
@@ -82,13 +80,12 @@ namespace Gaudi
   };
 
   /** @class IIODataManager
-    *
-    *  @author  M.Frank
-    *  @version 1.0
-    *  @date    20/10/2007
-    */
-  class GAUDI_API IIODataManager : virtual public IInterface
-  {
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   *  @date    20/10/2007
+   */
+  class GAUDI_API IIODataManager : virtual public IInterface {
   public:
     /// InterfaceID
     DeclareInterfaceID( IIODataManager, 2, 0 );

@@ -35,8 +35,7 @@
  *  @date 2008-08-06
  */
 // ============================================================================
-class CounterAlg : public GaudiAlgorithm
-{
+class CounterAlg : public GaudiAlgorithm {
 public:
   /** the only one essential method
    *  @return status code
@@ -47,8 +46,7 @@ public:
    *  @param name algorithm istance name
    *  @param pSvc pointer to Service Locator
    */
-  CounterAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc )
-  {
+  CounterAlg( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc ) {
     setProperty( "StatPrint", "true" ).ignore();
   }
 
@@ -68,8 +66,7 @@ DECLARE_COMPONENT( CounterAlg )
  *  @return status code
  */
 // ============================================================================
-StatusCode CounterAlg::execute()
-{
+StatusCode CounterAlg::execute() {
 
   // count overall number of executions:
   ++counter( "executed" );

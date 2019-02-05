@@ -23,8 +23,7 @@
 
 //---------------------------------------------------------------------------
 
-class DataObjectHandleBase : public Gaudi::DataHandle
-{
+class DataObjectHandleBase : public Gaudi::DataHandle {
 
 public:
   DataObjectHandleBase( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner );
@@ -40,15 +39,14 @@ public:
   template <class OWNER, class K, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
   inline DataObjectHandleBase( OWNER* owner, Gaudi::DataHandle::Mode m, std::string name, const K& key = {},
                                std::string doc = "" )
-      : DataObjectHandleBase( key, m, owner )
-  {
+      : DataObjectHandleBase( key, m, owner ) {
     auto p = owner->declareProperty( std::move( name ), *this, std::move( doc ) );
     p->template setOwnerType<OWNER>();
   }
 
   std::string toString() const;
   std::string pythonRepr() const override;
-  void fromString( const std::string& s );
+  void        fromString( const std::string& s );
 
   friend std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d );
 
@@ -98,16 +96,13 @@ protected:
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
-namespace Gaudi
-{
-  namespace Parsers
-  {
+namespace Gaudi {
+  namespace Parsers {
     StatusCode parse( DataObjectHandleBase&, const std::string& );
   }
-  namespace Utils
-  {
+  namespace Utils {
     GAUDI_API std::ostream& toStream( const DataObjectHandleBase& v, std::ostream& o );
   }
-}
+} // namespace Gaudi
 
 #endif

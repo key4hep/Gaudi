@@ -7,8 +7,7 @@
 
 #include "GaudiKernel/apply.h"
 
-BOOST_AUTO_TEST_CASE( test_apply )
-{
+BOOST_AUTO_TEST_CASE( test_apply ) {
   {
 
     std::array<int, 3> a{1, 2, 3};

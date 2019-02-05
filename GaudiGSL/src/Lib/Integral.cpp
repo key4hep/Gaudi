@@ -15,18 +15,16 @@
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparison are meant
-#pragma warning( disable : 1572 )
+#  pragma warning( disable : 1572 )
 // disable icc remark #2259: non-pointer conversion from "double" to "float" may lose significant bits
-#pragma warning( disable : 2259 )
+#  pragma warning( disable : 2259 )
 #endif
 
-namespace GaudiMath
-{
+namespace GaudiMath {
 
   double Integral( const Genfun::AbsFunction& function, const double a, const double b,
                    const GaudiMath::Integration::Type type, const GaudiMath::Integration::KronrodRule rule,
-                   const double epsabs, const double epsrel, const size_t size )
-  {
+                   const double epsabs, const double epsrel, const size_t size ) {
     if ( 1 != function.dimensionality() ) {
       throw GaudiException( "GaudiMath::Integral: illegal function dimension", "*GaudiMath*", StatusCode::FAILURE );
     }
@@ -42,8 +40,7 @@ namespace GaudiMath
   }
 
   double Integral( const Genfun::AbsFunction& function, const double a, const double b,
-                   const std::vector<double>& points, const double epsabs, const double epsrel, const size_t size )
-  {
+                   const std::vector<double>& points, const double epsabs, const double epsrel, const size_t size ) {
 
     if ( 1 != function.dimensionality() ) {
       throw GaudiException( "GaudiMath::Integral: illegal function dimension", "*GaudiMath*", StatusCode::FAILURE );
@@ -60,8 +57,7 @@ namespace GaudiMath
   }
 
   double Integral( const Genfun::AbsFunction& function, const double a, const GaudiMath::Integration::Inf b,
-                   const double epsabs, const double epsrel, const size_t size )
-  {
+                   const double epsabs, const double epsrel, const size_t size ) {
     if ( 1 != function.dimensionality() ) {
       throw GaudiException( "GaudiMath::Integral: illegal function dimension", "*GaudiMath*", StatusCode::FAILURE );
     }
@@ -77,8 +73,7 @@ namespace GaudiMath
   }
 
   double Integral( const Genfun::AbsFunction& function, const GaudiMath::Integration::Inf a, const double b,
-                   const double epsabs, const double epsrel, const size_t size )
-  {
+                   const double epsabs, const double epsrel, const size_t size ) {
     if ( 1 != function.dimensionality() ) {
       throw GaudiException( "GaudiMath::Integral: illegal function dimension", "*GaudiMath*", StatusCode::FAILURE );
     }
@@ -95,8 +90,7 @@ namespace GaudiMath
 
   double Integral( const Genfun::AbsFunction& function, const GaudiMath::Integration::Inf /* a  */,
                    const GaudiMath::Integration::Inf /* b  */, const double epsabs, const double epsrel,
-                   const size_t size )
-  {
+                   const size_t size ) {
     if ( 1 != function.dimensionality() ) {
       throw GaudiException( "GaudiMath::Integral: illegal function dimension", "*GaudiMath*", StatusCode::FAILURE );
     }
@@ -112,7 +106,7 @@ namespace GaudiMath
 
     return result( Genfun::Argument( 1 ) );
   }
-}
+} // namespace GaudiMath
 
 // ============================================================================
 // The END

@@ -14,15 +14,13 @@ DECLARE_COMPONENT( InputCopyStream )
 
 // Standard Constructor
 InputCopyStream::InputCopyStream( const std::string& name, ISvcLocator* pSvcLocator )
-    : OutputStream( name, pSvcLocator )
-{
+    : OutputStream( name, pSvcLocator ) {
   m_doPreLoad    = false;
   m_doPreLoadOpt = false;
 }
 
 // Initialize the instance.
-StatusCode InputCopyStream::initialize()
-{
+StatusCode InputCopyStream::initialize() {
   StatusCode sc = OutputStream::initialize();
   if ( sc.isFailure() ) return sc;
 
@@ -31,16 +29,14 @@ StatusCode InputCopyStream::initialize()
 }
 
 // Finalize the instance.
-StatusCode InputCopyStream::finalize()
-{
+StatusCode InputCopyStream::finalize() {
   toolSvc()->releaseTool( m_leavesTool ).ignore();
   m_leavesTool = nullptr;
   return OutputStream::finalize();
 }
 
 /// Collect all objects to be written to the output stream
-StatusCode InputCopyStream::collectObjects()
-{
+StatusCode InputCopyStream::collectObjects() {
   // Get the objects in the same file as the root node
   try {
     // Get all the leaves on the input stream
@@ -56,7 +52,6 @@ StatusCode InputCopyStream::collectObjects()
                       return i && i->registry() &&
                              std::find( m_tesVetoList.begin(), m_tesVetoList.end(), i->registry()->identifier() ) ==
                                  m_tesVetoList.end();
-
                     } );
       // save the veto'ed list
       m_objects.assign( filteredLeaves.begin(), filteredLeaves.end() );

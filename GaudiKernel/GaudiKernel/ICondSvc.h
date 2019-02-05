@@ -25,8 +25,7 @@
 class ConditionSlotFuture;
 class IConditionIOSvc;
 
-class GAUDI_API ICondSvc : virtual public IService
-{
+class GAUDI_API ICondSvc : virtual public IService {
 public:
   DeclareInterfaceID( ICondSvc, 1, 0 );
 

@@ -11,9 +11,7 @@
 
 using namespace Genfun;
 // Handle CLHEP 2.0.x move to CLHEP namespace
-namespace CLHEP
-{
-}
+namespace CLHEP {}
 using namespace CLHEP;
 
 //-----------------------------------------------------------------------------
@@ -25,8 +23,8 @@ using namespace CLHEP;
 //-----------------------------------------------------------------------------
 
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #endif
 
 //=============================================================================
@@ -42,31 +40,26 @@ public:
   Func( const Func& ) : AbsFunction() {}
   double operator()( double /* argument */ ) const override { return 0; }
   double operator()( const Argument& x ) const override { return 10 + 4 * x[0] * x[0] + 27 * x[1] * x[1] + 25 * x[1]; }
-  unsigned int                       dimensionality() const override { return 2; }
+  unsigned int dimensionality() const override { return 2; }
 };
 FUNCTION_OBJECT_IMP( Func )
 
 #ifdef __clang__
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
 
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
-StatusCode FuncMinimumGenAlg::initialize()
-{
+StatusCode FuncMinimumGenAlg::initialize() {
 
   info() << "==> Initialise" << endmsg;
 
   StatusCode sc;
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_publicTool );
-  if ( sc.isFailure() ) {
-    error() << "Error retrieving the public tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { error() << "Error retrieving the public tool" << endmsg; }
   sc = toolSvc()->retrieveTool( "FuncMinimum", m_privateTool, this );
-  if ( sc.isFailure() ) {
-    error() << "Error retrieving the private tool" << endmsg;
-  }
+  if ( sc.isFailure() ) { error() << "Error retrieving the private tool" << endmsg; }
   info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
@@ -75,8 +68,7 @@ StatusCode FuncMinimumGenAlg::initialize()
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode FuncMinimumGenAlg::execute()
-{
+StatusCode FuncMinimumGenAlg::execute() {
 
   info() << "==> Execute" << endmsg;
 
@@ -128,9 +120,7 @@ StatusCode FuncMinimumGenAlg::execute()
   for ( unsigned int i = 0; i < arg.dimension(); i++ ) {
     info() << endmsg;
 
-    for ( unsigned int j = 0; j < arg.dimension(); j++ ) {
-      info() << matrix_error( i + 1, j + 1 ) << " ";
-    }
+    for ( unsigned int j = 0; j < arg.dimension(); j++ ) { info() << matrix_error( i + 1, j + 1 ) << " "; }
   }
   info() << endmsg;
 
@@ -140,8 +130,7 @@ StatusCode FuncMinimumGenAlg::execute()
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode FuncMinimumGenAlg::finalize()
-{
+StatusCode FuncMinimumGenAlg::finalize() {
 
   info() << "==> Finalize" << endmsg;
 

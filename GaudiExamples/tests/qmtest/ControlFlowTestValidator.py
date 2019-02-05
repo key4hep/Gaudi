@@ -37,6 +37,8 @@ class TakeUntil(FilePreprocessor):
             return None
 
 
-preprocessor = (normalizeExamples +
-                DropUntil('ApplicationMgr       INFO Application Manager Started successfully') +
-                TakeUntil('ToolSvc              INFO Removing all tools created by ToolSvc'))
+preprocessor = (
+    normalizeExamples + DropUntil(
+        'ApplicationMgr       INFO Application Manager Started successfully') +
+    TakeUntil(
+        'ToolSvc              INFO Removing all tools created by ToolSvc'))

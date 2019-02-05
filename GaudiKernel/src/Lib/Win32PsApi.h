@@ -38,8 +38,7 @@ typedef struct _PROCESS_MEMORY_COUNTERS {
 } PROCESS_MEMORY_COUNTERS;
 typedef PROCESS_MEMORY_COUNTERS* PPROCESS_MEMORY_COUNTERS;
 
-class PsApiFunctions
-{
+class PsApiFunctions {
 public:
   bool m_isValid;
   BOOL( WINAPI* EnumProcesses )( DWORD* lpidProcess, DWORD cb, DWORD* cbNeeded );
@@ -56,14 +55,12 @@ public:
   DWORD( WINAPI* GetDeviceDriverBaseNameA )( LPVOID ImageBase, LPSTR lpBaseName, DWORD nSize );
   DWORD( WINAPI* GetDeviceDriverFileNameA )( LPVOID ImageBase, LPSTR lpFilename, DWORD nSize );
   BOOL( WINAPI* GetProcessMemoryInfo )( HANDLE Process, PPROCESS_MEMORY_COUNTERS ppsmemCounters, DWORD cb );
-  void load( HINSTANCE handle, const char* name, void** pFunction )
-  {
-    *pFunction                       = (void*)::GetProcAddress( handle, name );
+  void load( HINSTANCE handle, const char* name, void** pFunction ) {
+    *pFunction = (void*)::GetProcAddress( handle, name );
     if ( 0 == *pFunction ) m_isValid = false;
   }
   bool isValid() const { return m_isValid; }
-  PsApiFunctions()
-  {
+  PsApiFunctions() {
     m_isValid    = true;
     HINSTANCE mh = ::LoadLibrary( "PSAPI.DLL" );
     if ( 0 == mh ) {

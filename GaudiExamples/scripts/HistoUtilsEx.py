@@ -18,11 +18,7 @@ from math import sin, cos
 from GaudiPython.Bindings import AppMgr
 from GaudiPython.Bindings import gbl as cpp
 
-from GaudiPython.HistoUtils import (
-    book,
-    fill,
-    aida2root
-)
+from GaudiPython.HistoUtils import (book, fill, aida2root)
 
 print __doc__
 
@@ -52,18 +48,13 @@ if not rndmSvc:
 rndmSvc = gaudi.service('RndmGenSvc', IRndmGenSvc)
 gauss = Rndm.Numbers(cpp.SmartIF("IRndmGenSvc")(rndmSvc), Rndm.Gauss(0.0, 1.0))
 
-
 # book some histograms
 
-histo1 = book('path/to/my/histos/MyHisto',
-              'the title',
-              100, -3, 3)  # nBins, low&high edges
+histo1 = book('path/to/my/histos/MyHisto', 'the title', 100, -3,
+              3)  # nBins, low&high edges
 
-histo2 = book('path/to/my/histos',
-              'ID of 2nd histo',
-              'the title of 2nd histo',
+histo2 = book('path/to/my/histos', 'ID of 2nd histo', 'the title of 2nd histo',
               100, -3, 3)  # nBins, low&high edges
-
 
 # fill the histos  (using native AIDA 'fill' method
 for i in xrange(0, 10000):
@@ -103,27 +94,25 @@ rhisto1.Print()
 rhisto2.Print()
 
 # get some "extra infomration"
-print ' Histo1 : mean    /err:  %10f +- %10f  ' % (
-    histo1.mean(), histo1.meanErr())
-print ' Histo1 : rms     /err:  %10f +- %10f  ' % (
-    histo1.rms(), histo1.rmsErr())
-print ' Histo1 : skewness/err:  %10f +- %10f  ' % (
-    histo1.skewness(), histo1.skewnessErr())
-print ' Histo1 : kurtosis/err:  %10f +- %10f  ' % (
-    histo1.kurtosis(), histo1.kurtosisErr())
+print ' Histo1 : mean    /err:  %10f +- %10f  ' % (histo1.mean(),
+                                                   histo1.meanErr())
+print ' Histo1 : rms     /err:  %10f +- %10f  ' % (histo1.rms(),
+                                                   histo1.rmsErr())
+print ' Histo1 : skewness/err:  %10f +- %10f  ' % (histo1.skewness(),
+                                                   histo1.skewnessErr())
+print ' Histo1 : kurtosis/err:  %10f +- %10f  ' % (histo1.kurtosis(),
+                                                   histo1.kurtosisErr())
 print ' Histo1 : path in THS : "%s"' % histo1.path()
 
-
-print ' Histo2 : mean    /err:  %10f +- %10f  ' % (
-    histo2.mean(), histo2.meanErr())
-print ' Histo2 : rms     /err:  %10f +- %10f  ' % (
-    histo2.rms(), histo2.rmsErr())
-print ' Histo2 : skewness/err:  %10f +- %10f  ' % (
-    histo2.skewness(), histo2.skewnessErr())
-print ' Histo2 : kurtosis/err:  %10f +- %10f  ' % (
-    histo2.kurtosis(), histo2.kurtosisErr())
+print ' Histo2 : mean    /err:  %10f +- %10f  ' % (histo2.mean(),
+                                                   histo2.meanErr())
+print ' Histo2 : rms     /err:  %10f +- %10f  ' % (histo2.rms(),
+                                                   histo2.rmsErr())
+print ' Histo2 : skewness/err:  %10f +- %10f  ' % (histo2.skewness(),
+                                                   histo2.skewnessErr())
+print ' Histo2 : kurtosis/err:  %10f +- %10f  ' % (histo2.kurtosis(),
+                                                   histo2.kurtosisErr())
 print ' Histo2 : path in THS : "%s"' % histo2.path()
-
 
 # =============================================================================
 # The END
