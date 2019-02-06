@@ -109,7 +109,21 @@ DataObject* DataObjectHandleBase::fetch() const {
 std::string DataObjectHandleBase::toString() const { return objKey(); }
 
 //---------------------------------------------------------------------------
-std::string DataObjectHandleBase::pythonRepr() const { return "DataObjectHandleBase(\"" + toString() + "\")"; }
+std::string DataObjectHandleBase::pythonRepr() const {
+  std::string m;
+  switch ( mode() ){
+    case Gaudi::DataHandle::Mode::Reader:
+      m = "R";
+      break;
+    case Gaudi::DataHandle::Mode::Writer:
+      m = "W";
+      break;
+    case Gaudi::DataHandle::Mode::Updater:
+      m = "RW";
+      break;
+  }
+  return "DataObjectHandleBase(\"" + toString() + "\", \"" + m + "\")";
+}
 
 //---------------------------------------------------------------------------
 void DataObjectHandleBase::fromString( const std::string& s ) { Gaudi::Parsers::parse( *this, s ).ignore(); }

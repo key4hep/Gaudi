@@ -5,13 +5,14 @@ __doc__ = """The python module holding python bindings to DataObjectHandle"""
 
 class DataObjectHandleBase(object):
 
-    __slots__ = ('Path', )
+    __slots__ = ('Path', 'Mode' )
 
     # define accessTypes
 
-    def __init__(self, path):
+    def __init__(self, path, mode):
         object.__init__(self)
         self.Path = path
+        self.Mode = mode
 
     def __eq__(self, other):
         """
@@ -52,3 +53,6 @@ class DataObjectHandleBase(object):
     def __iadd__(self, other):
         self.Path = ':'.join(i + other for i in self.Path.split(':'))
         return self
+
+    def mode(self):
+        return self.Mode
