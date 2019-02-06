@@ -9,7 +9,7 @@ on data outputs of the EVTREJECTED algorithm. The test emulates this scenario.
 
 from Gaudi.Configuration import *
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool
-from Configurables import GaudiSequencer, CPUCruncher
+from Configurables import GaudiSequencer, CPUCruncher, CPUCrunchSvc
 
 # metaconfig
 evtslots = 1
@@ -28,6 +28,8 @@ AvalancheSchedulerSvc(ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
 
+CPUCrunchSvc(shortCalib=True)
+
 # Assemble data flow graph
 # algorithm that triggers an early exit from "Branch2"
 a1 = CPUCruncher("AlgA", InvertDecision=True)
@@ -40,7 +42,6 @@ a3 = CPUCruncher("AlgC")
 a3.inpKeys = ['/Event/A']
 
 for a in [a1, a2, a3]:
-    a.shortCalib = True
     a.avgRuntime = .01
 
 # Assemble control flow graph

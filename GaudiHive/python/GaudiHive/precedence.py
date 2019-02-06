@@ -286,7 +286,6 @@ class CruncherSequence(object):
                 algo_daughter = CPUCruncher(
                     algo_name,
                     OutputLevel=self.outputLevel,
-                    shortCalib=True,
                     varRuntime=varRuntime,
                     avgRuntime=avgRuntime,
                     SleepFraction=self.sleepFraction
