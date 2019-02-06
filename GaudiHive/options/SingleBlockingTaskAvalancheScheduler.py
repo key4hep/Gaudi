@@ -4,13 +4,15 @@ The simplest possible configuration for asynchronous scheduling of single blocki
 """
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, CPUCrunchSvc
 
 # metaconfig
 evtMax = 7
 evtslots = 3
 algosInFlight = 0
 blockingAlgosInFlight = 3
+
+CPUCrunchSvc(shortCalib=True)
 
 whiteboard = HiveWhiteBoard(
     "EventDataSvc", EventSlots=evtslots, OutputLevel=INFO)
@@ -26,7 +28,6 @@ AvalancheSchedulerSvc(
 
 blockingAlg = CPUCruncher(
     name="BlockingAlg",
-    shortCalib=True,
     avgRuntime=2.,
     Cardinality=3,
     IsIOBound=True,  # tag algorithm as blocking

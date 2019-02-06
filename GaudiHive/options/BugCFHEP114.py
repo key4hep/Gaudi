@@ -6,7 +6,7 @@ and having more dependencies than algorithms.
 '''
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, AlgResourcePool
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, AlgResourcePool, CPUCrunchSvc
 
 InertMessageSvc(OutputLevel=INFO)
 
@@ -25,16 +25,18 @@ scheduler = AvalancheSchedulerSvc(
 
 AlgResourcePool(OutputLevel=DEBUG)
 
-a1 = CPUCruncher("A1", shortCalib=True, varRuntime=.01, avgRuntime=.1)
+CPUCrunchSvc(shortCalib=True)
+
+a1 = CPUCruncher("A1", varRuntime=.01, avgRuntime=.1)
 a1.outKeys = ['/Event/a1']
 
-a2 = CPUCruncher("A2", shortCalib=True)
+a2 = CPUCruncher("A2")
 a2.outKeys = ['/Event/a2']
 
-a3 = CPUCruncher("A3", shortCalib=True)
+a3 = CPUCruncher("A3")
 a3.outKeys = ['/Event/a3', '/Event/a4']
 
-a4 = CPUCruncher("A4", shortCalib=True)
+a4 = CPUCruncher("A4")
 a4.outKeys = ['/Event/a5']
 
 for algo in [a1, a2, a3, a4]:

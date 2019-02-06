@@ -60,8 +60,6 @@ RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 ToolSvc.Sequenc...   INFO This machine has a speed about   3.45 times the speed of a 2.8 GHz Xeon.
-filter_alg           INFO Starting calibration...
-filter_alg           INFO Calibration finished!
 view_make_node       INFO Member list: CPUCruncher/filter_alg, Test::ViewTester/view_make_alg, GaudiSequencer/view_test_node
 view_test_node       INFO Member list: CPUCruncher/view_test_alg
 AvalancheSchedu...   INFO Found 4 algorithms

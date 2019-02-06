@@ -25,6 +25,7 @@ set( GaudiSvc_srcs
    src/NTupleSvc/*.cpp
    src/THistSvc/*.cpp
    src/FileMgr/*.cpp
+   src/CPUCrunchSvc/*.cpp
    src/MetaDataSvc/*.cpp )
 if( CLHEP_FOUND )
    list( APPEND GaudiSvc_srcs
