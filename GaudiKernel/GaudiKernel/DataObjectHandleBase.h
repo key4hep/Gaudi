@@ -78,6 +78,7 @@ protected:
   bool m_optional   = false;
   bool m_wasRead    = false;
   bool m_wasWritten = false;
+  std::string m_typeID = "UNKNOWN";
 
   /**
    * Whether the search part of the fetch method (so dealing with alt names

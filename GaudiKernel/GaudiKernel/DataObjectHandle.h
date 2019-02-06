@@ -8,6 +8,7 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/NamedRange.h"
+#include "GaudiKernel/System.h"
 
 #include <type_traits>
 
@@ -90,6 +91,14 @@ template <typename T>
 class DataObjectHandle : public DataObjectHandleBase {
 public:
   using DataObjectHandleBase::DataObjectHandleBase;
+
+  DataObjectHandle( const DataObjID& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
+      : DataObjectHandleBase( k, a, owner ) {
+    m_typeID = System::typeinfoName( typeid( T ) );
+  }
+  DataObjectHandle( const std::string& k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
+      : DataObjectHandle( DataObjID( k ), a, owner ) {}
+
 
   /**
    * Retrieve object from transient data store

@@ -21,6 +21,7 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
     , m_optional( other.m_optional )
     , m_wasRead( other.m_wasRead )
     , m_wasWritten( other.m_wasWritten )
+    , m_typeID( other.m_typeID )
     , m_searchDone( other.m_searchDone ) {
   m_owner->declare( *this );
 }
@@ -37,6 +38,7 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
   m_optional                 = other.m_optional;
   m_wasRead                  = other.m_wasRead;
   m_wasWritten               = other.m_wasWritten;
+  m_typeID                   = other.m_typeID;
   m_searchDone               = other.m_searchDone;
   return *this;
 }
@@ -122,7 +124,7 @@ std::string DataObjectHandleBase::pythonRepr() const {
       m = "RW";
       break;
   }
-  return "DataObjectHandleBase(\"" + toString() + "\", \"" + m + "\")";
+  return "DataObjectHandleBase(\"" + toString() + "\", \"" + m + "\", \"" + m_typeID + "\" )";
 }
 
 //---------------------------------------------------------------------------
