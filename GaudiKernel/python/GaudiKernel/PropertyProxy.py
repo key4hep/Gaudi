@@ -407,10 +407,11 @@ class DataObjectHandleBasePropertyProxy(PropertyProxy):
         if value is None:
             value = ''
 
+        mode = obj.__class__.getDefaultProperty(self.descr.__name__).mode()
         if type(value) == str:
-            return DataObjectHandleBase(value)
+            return DataObjectHandleBase(value, mode)
         elif isinstance(value, DataObjectHandleBase):
-            return DataObjectHandleBase(value.__str__())
+            return DataObjectHandleBase(value.__str__(), mode)
         else:
             raise ValueError("received an instance of %s, but %s expected" %
                              (type(value), 'str or DataObjectHandleBase'))
