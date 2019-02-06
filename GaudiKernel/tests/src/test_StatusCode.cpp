@@ -407,3 +407,18 @@ BOOST_AUTO_TEST_CASE( conversions ) {
   // sc = 42;     // no implicit conversion from int
   // int i = sc;  // no implicit conversion to int
 }
+
+/// Function used for testing that the constants in @c StatusCode can be found
+/// by constant references.
+bool __attribute__( ( noinline ) )
+testReferencePassing( const StatusCode::ErrorCode& value, const StatusCode::ErrorCode& reference ) {
+  return ( value == reference );
+}
+
+BOOST_AUTO_TEST_CASE( const_definitions ) {
+  // Test whether the test can compile/link correctly when passing the
+  // constants in @c StatusCode into a function by constant reference.
+  BOOST_CHECK( testReferencePassing( StatusCode::SUCCESS, StatusCode::SUCCESS ) );
+  BOOST_CHECK( testReferencePassing( StatusCode::FAILURE, StatusCode::FAILURE ) );
+  BOOST_CHECK( testReferencePassing( StatusCode::RECOVERABLE, StatusCode::RECOVERABLE ) );
+}
