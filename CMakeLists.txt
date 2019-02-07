@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 # Configurable options for building Gaudi in the ATLAS software stack:
 option( GAUDI_ATLAS "Enable ATLAS-specific settings" OFF )
-set( GAUDI_ATLAS_BASE_PROJECT "AtlasExternals" CACHE STRING
+set( GAUDI_ATLAS_BASE_PROJECT "AthenaExternals" CACHE STRING
    "Name of the ATLAS base project to build Gaudi against" )
 
 # Ensure that we can find GaudiProjectConfig.cmake
