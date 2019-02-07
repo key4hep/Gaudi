@@ -224,15 +224,6 @@ include(CMakeParseArguments)
 include(CMakeFunctionalUtils)
 include(BinaryTagUtils)
 
-find_package(PythonInterp 2.7)
-
-find_package(Boost)
-if((Boost_VERSION GREATER 106700) OR (Boost_VERSION EQUAL 106700))
-  set(boost_python_version "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
-else()
-  set(boost_python_version "")
-endif()
-
 #-------------------------------------------------------------------------------
 # gaudi_project(project version
 #               [USE proj1 vers1 [proj2 vers2 ...]]
@@ -329,6 +320,15 @@ macro(gaudi_project project version)
 
   if(GAUDI_BUILD_TESTS)
     enable_testing()
+  endif()
+
+  #-- Set up the boost_python_version variable for the project
+  find_package(PythonInterp 2.7)
+  find_package(Boost)
+  if((Boost_VERSION GREATER 106700) OR (Boost_VERSION EQUAL 106700))
+     set(boost_python_version "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+  else()
+     set(boost_python_version "")
   endif()
 
   #--- Allow installation on failed builds
