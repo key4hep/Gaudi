@@ -2,7 +2,7 @@ from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
                            AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher,
                            ContextEventCounterPtr, ContextEventCounterData,
-                           GaudiSequencer)
+                           CPUCrunchSvc, GaudiSequencer)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -42,6 +42,8 @@ scheduler = AvalancheSchedulerSvc(
 # Nothing special here, we just set the debug level.
 AlgResourcePool(OutputLevel=DEBUG)
 
+CPUCrunchSvc(shortCalib=True)
+
 # -------------------------------------------------------------------------------
 
 # Set up of the crunchers, daily business --------------------------------------
@@ -62,7 +64,6 @@ a4.inpKeys = ['/Event/a2']
 a4.outKeys = ['/Event/a4']
 
 for algo in [a1, a2, a3, a4]:
-    algo.shortCalib = True
     algo.OutputLevel = DEBUG
     algo.varRuntime = .3
     algo.avgRuntime = .5

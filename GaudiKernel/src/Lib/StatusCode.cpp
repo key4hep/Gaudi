@@ -12,6 +12,10 @@
 // statics
 bool StatusCode::s_checking( false );
 
+constexpr const StatusCode::ErrorCode StatusCode::SUCCESS;
+constexpr const StatusCode::ErrorCode StatusCode::FAILURE;
+constexpr const StatusCode::ErrorCode StatusCode::RECOVERABLE;
+
 namespace {
   /// Default StatusCode category
   struct DefaultCategory : public StatusCode::Category {

@@ -1,7 +1,7 @@
 #!/usr/bin/env gaudirun.py
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool, CPUCrunchSvc
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
@@ -23,6 +23,8 @@ scheduler = AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight, OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
+
+CPUCrunchSvc(shortCalib=True)
 
 #timeValue = precedence.UniformTimeValue(avgRuntime=0.2)
 timeValue = precedence.RealTimeValue(

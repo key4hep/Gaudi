@@ -86,7 +86,10 @@ public:
 public:
   // ==========================================================================
   /// comparison operator
-  bool operator<( const ChronoEntity& entity ) const;
+  friend bool operator<( ChronoEntity const& lhs, ChronoEntity const& rhs ) {
+    return std::make_tuple( lhs.totalTime(), lhs.m_user, lhs.m_kernel, lhs.m_elapsed ) <
+           std::make_tuple( rhs.totalTime(), rhs.m_user, rhs.m_kernel, rhs.m_elapsed );
+  }
   // ==========================================================================
   /// Compound assignment operator
   ChronoEntity& operator+=( const ChronoEntity& entity );

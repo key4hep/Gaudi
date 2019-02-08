@@ -134,25 +134,6 @@ std::string ChronoEntity::format( const double total, const double minimal, cons
   return fmt.str();
 }
 // ============================================================================
-// comparison operator
-// ============================================================================
-bool ChronoEntity::operator<( const ChronoEntity& e ) const {
-  return ( &e == this )
-             ? false
-             : ( totalTime() < e.totalTime() )
-                   ? true
-                   : ( totalTime() > e.totalTime() )
-                         ? false
-                         : ( m_user < e.m_user )
-                               ? true
-                               : ( e.m_user < m_user )
-                                     ? false
-                                     : ( m_kernel < e.m_kernel )
-                                           ? true
-                                           : ( e.m_kernel < m_kernel ) ? false
-                                                                       : ( m_elapsed < e.m_elapsed ) ? true : false;
-}
-// ============================================================================
 // compound assignment operator
 // ============================================================================
 ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e ) {

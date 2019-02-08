@@ -6,7 +6,7 @@
 #
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, AlgResourcePool, IncidentProcAlg, IncidentSvc, IncidentAsyncTestSvc, IncidentAsyncTestAlg
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, AlgResourcePool, IncidentProcAlg, IncidentSvc, IncidentAsyncTestSvc, IncidentAsyncTestAlg, CPUCrunchSvc
 from Configurables import GaudiSequencer
 
 msgFmt = "% F%40W%S%4W%s%e%15W%X%7W%R%T %0W%M"
@@ -15,6 +15,7 @@ msgSvc.Format = msgFmt
 ApplicationMgr().SvcMapping.append(msgSvc)
 
 IncidentSvc(OutputLevel=DEBUG)
+CPUCrunchSvc(shortCalib=True)
 
 # metaconfig
 evtslots = 5
@@ -70,27 +71,23 @@ FakeInput = CPUCruncher(
     outKeys=[
         '/Event/DAQ/ODIN', '/Event/DAQ/RawEvent', '/Event/Hlt/LumiSummary'
     ],
-    shortCalib=True,
     varRuntime=.1,
     avgRuntime=.1)
 
 BrunelInit = CPUCruncher(
     "BrunelInit",
     inpKeys=['/Event/DAQ/ODIN', '/Event/DAQ/RawEvent'],
-    outKeys=['/Event/Rec/Status', '/Event/Rec/Header'],
-    shortCalib=True)
+    outKeys=['/Event/Rec/Status', '/Event/Rec/Header'])
 
-PhysFilter = CPUCruncher(
-    "PhysFilter", shortCalib=True, inpKeys=['/Event/Hlt/LumiSummary'])
+PhysFilter = CPUCruncher("PhysFilter", inpKeys=['/Event/Hlt/LumiSummary'])
 
 HltDecReportsDecoder = CPUCruncher(
     "HltDecReportsDecoder",
-    shortCalib=True,
     inpKeys=['/Event/DAQ/RawEvent'],
     outKeys=['/Event/Hlt/DecReports'])
 
 HltErrorFilter = CPUCruncher(
-    "HltErrorFilter", shortCalib=True, inpKeys=['/Event/Hlt/DecReports'])
+    "HltErrorFilter", inpKeys=['/Event/Hlt/DecReports'])
 
 sequence0 = GaudiSequencer("Sequence0")
 sequence0.ModeOR = False

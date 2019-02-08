@@ -4,7 +4,7 @@ Find and attribute unmet data inputs as outputs to a Data Loader algorithm.
 """
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, CPUCruncher, CPUCrunchSvc
 
 # metaconfig
 evtslots = 1
@@ -19,6 +19,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc")
 AvalancheSchedulerSvc(
     ThreadPoolSize=algosInFlight, CheckDependencies=True, DataLoaderAlg="AlgA")
 
+CPUCrunchSvc(shortCalib=True)
+
 # Assemble the data flow graph
 a1 = CPUCruncher("AlgA", Loader=True, OutputLevel=VERBOSE)
 
@@ -29,7 +31,6 @@ a3 = CPUCruncher("AlgC", OutputLevel=VERBOSE)
 a3.inpKeys = ['/Event/A2']
 
 for a in [a1, a2, a3]:
-    a.shortCalib = True
     a.avgRuntime = .01
 
 ApplicationMgr(

@@ -224,15 +224,6 @@ include(CMakeParseArguments)
 include(CMakeFunctionalUtils)
 include(BinaryTagUtils)
 
-find_package(PythonInterp 2.7)
-
-find_package(Boost)
-if((Boost_VERSION GREATER 106700) OR (Boost_VERSION EQUAL 106700))
-  set(boost_python_version "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
-else()
-  set(boost_python_version "")
-endif()
-
 #-------------------------------------------------------------------------------
 # gaudi_project(project version
 #               [USE proj1 vers1 [proj2 vers2 ...]]
@@ -329,6 +320,15 @@ macro(gaudi_project project version)
 
   if(GAUDI_BUILD_TESTS)
     enable_testing()
+  endif()
+
+  #-- Set up the boost_python_version variable for the project
+  find_package(PythonInterp 2.7)
+  find_package(Boost)
+  if((Boost_VERSION GREATER 106700) OR (Boost_VERSION EQUAL 106700))
+     set(boost_python_version "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+  else()
+     set(boost_python_version "")
   endif()
 
   #--- Allow installation on failed builds
@@ -2621,7 +2621,8 @@ endfunction()
 #
 # Declare a compilation test (typically to test for compilation failure):
 #  ERRORS - List of errors (regex allowed) that are all required in the output
-#           in order for the test to succeed(!)
+#           in order for the test to succeed(!). If not specified, test result is
+#           the same as compilation success/failure.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_compile_test executable)
   CMAKE_PARSE_ARGUMENTS(ARG ""
@@ -2636,17 +2637,18 @@ function(gaudi_add_compile_test executable)
   set_target_properties(${executable} PROPERTIES EXCLUDE_FROM_ALL TRUE
                                                  EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 
-  # Concatenate errors into multiline regex
   if(ARG_ERRORS)
+    # Concatenate errors into multiline regex
     string(REPLACE ";" ".*[\\n\\r]*.*" regex "${ARG_ERRORS}")
+    gaudi_add_test(${executable}
+       COMMAND ${CMAKE_COMMAND} --build . --target ${executable}
+       LABELS ${ARG_LABELS}
+       PASSREGEX ${regex})
   else()
-    set(regex ".*")
+    gaudi_add_test(${executable}
+       COMMAND ${CMAKE_COMMAND} --build . --target ${executable}
+       LABELS ${ARG_LABELS})
   endif()
-
-  gaudi_add_test(${executable}
-                 COMMAND ${CMAKE_COMMAND} --build . --target ${executable}
-                 LABELS ${ARG_LABELS}
-                 PASSREGEX ${regex})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------

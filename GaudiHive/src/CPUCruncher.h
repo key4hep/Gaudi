@@ -1,5 +1,6 @@
 
 #include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/ICPUCrunchSvc.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RegistryEntry.h"
 #include "GaudiKernel/RndmGenerators.h"
@@ -45,11 +46,6 @@ private:
   /// the assignement operator is disabled
   CPUCruncher& operator=( const CPUCruncher& ); // no assignement
   /// The CPU intensive function
-  void findPrimes( const unsigned long int );
-
-  /// Calibrate
-  void              calibrate();
-  long unsigned int getNCaliIters( double );
 
   /// Pick up late-attributed data outputs
   void                  declareRuntimeRequestedOutputs();
@@ -62,17 +58,12 @@ private:
   Gaudi::Property<double> m_avg_runtime{this, "avgRuntime", 1., "Average runtime of the module."};
   Gaudi::Property<double> m_var_runtime{this, "varRuntime", 0.01, "Variance of the runtime of the module."};
   Gaudi::Property<bool> m_local_rndm_gen{this, "localRndm", true, "Decide if the local random generator is to be used"};
-  Gaudi::Property<bool> m_shortCalib{this, "shortCalib", false, "Enable coarse grained calibration"};
   Gaudi::Property<unsigned int> m_rwRepetitions{this, "RwRepetitions", 1, "Increase access to the WB"};
   Gaudi::Property<float>        m_sleepFraction{
       this, "SleepFraction", 0.0f,
       "Fraction of time, between 0 and 1, when an algorithm is actually sleeping instead of crunching"};
   Gaudi::Property<bool>         m_invertCFD{this, "InvertDecision", false, "Invert control flow decision."};
   Gaudi::Property<unsigned int> m_failNEvents{this, "FailNEvents", 0, "Return FAILURE on every Nth event"};
-
-  // To calib only once
-  static std::vector<unsigned int> m_niters_vect;
-  static std::vector<double>       m_times_vect;
 
   // For the concurrency
   const uint MAX_INPUTS  = 40;
@@ -82,4 +73,7 @@ private:
   std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
 
   static CHM m_name_ncopies_map;
+
+  // CPUCrunchSvc
+  SmartIF<ICPUCrunchSvc> m_crunchSvc;
 };

@@ -7,7 +7,7 @@ for a downstream algorithm A3, leading to the stall.
 """
 
 from Gaudi.Configuration import *
-from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
+from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr, CPUCrunchSvc,
                            AvalancheSchedulerSvc, AlgResourcePool, CPUCruncher)
 
 evtslots = 1
@@ -23,6 +23,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(
 scheduler = AvalancheSchedulerSvc(ThreadPoolSize=threads, OutputLevel=VERBOSE)
 
 AlgResourcePool(OutputLevel=DEBUG)
+
+CPUCrunchSvc(shortCalib=True)
 
 # Set up of CPU crunchers -------------------------------------------------------
 
@@ -44,7 +46,6 @@ branch = GaudiSequencer(
 branch.Members = [a1, a2]
 
 for algo in [a1, a2, a3]:
-    algo.shortCalib = True
     algo.Cardinality = cardinality
     algo.avgRuntime = .1
 
