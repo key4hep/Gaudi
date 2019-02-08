@@ -1,6 +1,6 @@
 gaudi_subdir(GaudiKernel)
 
-gaudi_depends_on_subdirs(GaudiPluginService)
+gaudi_depends_on_subdirs(GaudiPluginService GaudiPolicy)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
 find_package(ROOT REQUIRED COMPONENTS Core)
