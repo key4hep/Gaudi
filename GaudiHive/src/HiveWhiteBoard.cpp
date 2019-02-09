@@ -496,8 +496,7 @@ public:
   }
 
   /// Service initialisation
-  StatusCode finalize() override
-  {
+  StatusCode finalize() override {
     setDataLoader( nullptr ).ignore();
     clearStore().ignore();
     return Service::finalize();

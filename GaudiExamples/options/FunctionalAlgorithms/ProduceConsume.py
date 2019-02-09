@@ -19,7 +19,7 @@ from Configurables import EvtStoreSvc
 # Application setup
 app = ApplicationMgr()
 #app.ExtSvc = [ EvtStoreSvc("EventDataSvc",OutputLevel=DEBUG ) ]
-app.ExtSvc = [ EvtStoreSvc("EventDataSvc" ) ]
+app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
 
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
