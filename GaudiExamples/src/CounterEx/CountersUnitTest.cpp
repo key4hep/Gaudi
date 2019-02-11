@@ -1,4 +1,7 @@
+#include "Gaudi/Chrono/ChronoArithmetic.h"
+#include "Gaudi/Chrono/ChronoIO.h"
 #include "GaudiKernel/Counters.h"
+#include <chrono>
 #include <iostream>
 
 using namespace Gaudi::Accumulators;
@@ -123,7 +126,21 @@ int main() {
     std::cout << sb << std::endl;
   }
 
-  // Set of strings
-
-  // vector of values (extended binomial ?)
+  // Testing Counters of std::chrono::duration
+  {
+    typedef std::chrono::milliseconds  Unit;
+    StatCounter<Unit, atomicity::full> c;
+    c += Unit( 5 );
+    c += Unit( 3 );
+    c += std::chrono::seconds( 1 ); // mixing with larger units is OK
+    std::cout << c << std::endl;
+    // Check compilation of all stat methods:
+    static_assert( std::is_same<decltype( c.mean() ), Unit>::value, "Return type should be Unit" );
+    static_assert( std::is_same<decltype( c.standard_deviation() ), Unit>::value, "Return type should be Unit" );
+    static_assert( std::is_same<decltype( c.unbiased_sample_variance() ), Unit>::value, "Return type should be Unit" );
+    static_assert( std::is_same<decltype( c.biased_sample_variance() ), Unit>::value, "Return type should be Unit" );
+    static_assert( std::is_same<decltype( c.meanErr() ), Unit>::value, "Return type should be Unit" );
+    static_assert( std::is_same<decltype( c.min() ), Unit>::value, "Return type should be Unit" );
+    static_assert( std::is_same<decltype( c.max() ), Unit>::value, "Return type should be Unit" );
+  }
 }

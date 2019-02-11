@@ -10,3 +10,4 @@
 #=3       Sum=14          Mean=     4.667 +- 1.2472     Min/Max=     3.000/6.000
 #=5       Sum=2           Mean=    0.4000 +- 0.48990    Min/Max=     0.000/1.000
 #=3       Sum=14          Mean=     4.667 +- 1.2472     Min/Max=     3.000/6.000
+#=3       Sum=1008ms      Mean=     336ms +- 470ms      Min/Max=       0ms/1000ms
