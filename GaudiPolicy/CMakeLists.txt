@@ -4,6 +4,12 @@ gaudi_subdir(GaudiPolicy)
 gaudi_install_scripts()
 gaudi_install_python_modules()
 
+find_program(nosetests_CMD NAMES nosetests)
+if (nosetests_CMD AND NOT nosetests_CMD MATCHES "^(/usr(/local)?)?/bin/")
+  get_filename_component(nosetests_DIR "${nosetests_CMD}" DIRECTORY)
+  gaudi_env(PREPEND PATH "${nosetests_DIR}")
+endif()
+
 # Set environment to access the custom QMTest classes (at build time).
 gaudi_build_env(PREPEND QMTEST_CLASS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/qmtest_classes)
 

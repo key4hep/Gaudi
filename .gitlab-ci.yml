@@ -62,7 +62,7 @@ build:gcc62:opt:
     expire_in: 1 week
 
 check-formatting:
-  stage: test
+  stage: build
   dependencies: []
   image: debian:testing
   script:
