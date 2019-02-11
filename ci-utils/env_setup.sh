@@ -15,7 +15,7 @@
 # - get Python, nosetests and xenv from LHCb installation
 source /cvmfs/lhcb.cern.ch/lib/var/lib/LbEnv/prod/${LCG_hostos}/bin/activate
 # - add CMake ann Ninja-build
-export PATH=${LCG_contrib}/CMake/3.11.1/Linux-x86_64/bin:${LCG_contrib}/ninja/1.7.2.gcc0ea.kitware.dyndep-1/x86_64-slc6:${PATH}
+export PATH=${LCG_contrib}/CMake/3.13.4/Linux-x86_64/bin:${LCG_contrib}/ninja/1.7.2.gcc0ea.kitware.dyndep-1/x86_64-slc6:${PATH}
 # - use LHCb compiler wrappers
 export PATH=/cvmfs/lhcb.cern.ch/lib/bin/${LCG_hostos}:${PATH}
 # - enable optional VTune based profiler
