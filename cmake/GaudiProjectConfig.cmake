@@ -63,6 +63,9 @@ find_program(clang_format_cmd
         clang-format-${CLANG_FORMAT_VERSION})
 if(clang_format_cmd)
   message(STATUS "found clang-format ${CLANG_FORMAT_VERSION}: ${clang_format_cmd}")
+else()
+  message(WARNING "could not find clang-format ${CLANG_FORMAT_VERSION}:
+  automatic formatting of C++ files will not be possible")
 endif()
 
 set(YAPF_VERSION "0.24.0" CACHE STRING "Version of yapf to use")
@@ -81,6 +84,9 @@ if(NOT yapf_cmd)
 endif()
 if(yapf_cmd)
   message(STATUS "found yapf ${YAPF_VERSION}: ${yapf_cmd}")
+else()
+  message(WARNING "could not find yapf ${YAPF_VERSION}:
+  automatic formatting of Python files will not be possible")
 endif()
 
 mark_as_advanced(ccache_cmd distcc_cmd icecc_cmd clang_format_cmd)

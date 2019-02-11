@@ -1,69 +1,47 @@
+# backup files
 *~
-*.pyc
 .*.swp
 
-build.*.log
-Makefile
-NMake
-install.*.history
-setup.*
-cleanup.*
-version.cmt
-genConf/
-QMTest/
+# build products
 InstallArea/
-patches/
-test_results/
 
-*-slc[56]-*/
-i686-winxp-vc9-dbg/
+# Centrally managed files and helpers
+cache_preload.cmake
 
-.*-slc[56]-*.d/
-.i686-winxp-vc9-dbg.d/
-
-DoxyWarnings.log
-.gdb_history
-*.new
-*.launch
-*.launch.py
-*.launch.opts
-
-.project
-.cproject
-.settings
-.pydevproject
-.vscode
-
+# CMake temporary files
+build*/
 .build/
-build-dir/
-build.*/
-.eclipse/
 CMakeFiles/
 CTestTestfile.cmake
 CPackSourceConfig.cmake
 CPackConfig.cmake
 cmake_install.cmake
-GaudiConfig.cmake
-GaudiConfigVersion.cmake
-Gaudi/ChangeLog
-GaudiAlg/ChangeLog
-GaudiAud/ChangeLog
-GaudiCommonSvc/ChangeLog
-GaudiCoreSvc/ChangeLog
-GaudiExamples/ChangeLog
-GaudiGSL/ChangeLog
-GaudiKernel/ChangeLog
-GaudiMonitor/ChangeLog
-GaudiMP/ChangeLog
-GaudiPartProp/ChangeLog
-GaudiPolicy/ChangeLog
-GaudiProfiling/ChangeLog
-GaudiPython/ChangeLog
-GaudiRelease/ChangeLog
-GaudiSvc/ChangeLog
-GaudiSys/ChangeLog
-GaudiUtils/ChangeLog
-PartPropSvc/ChangeLog
-RootCnv/ChangeLog
-RootHistCnv/ChangeLog
-ChangeLog
+
+# common byproducts
+*.pyc
+*.pyo
+DoxyWarnings.log
+.gdb_history
+*.new
+.coverage
+*.patch
+*.launch
+*.launch.py
+*.launch.opts
+
+# QMTest byproducts
+**/tests/qmtest/*
+!**/tests/qmtest/*.qms
+!**/tests/qmtest/*.qmt
+
+# Metadata used by IDEs
+# - Eclipse
+.project
+.cproject
+.settings
+.pydevproject
+.eclipse/
+# - QtCreator
+CMakeLists.txt.user
+# - VSCode
+.vscode/
