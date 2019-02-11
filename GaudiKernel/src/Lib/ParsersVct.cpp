@@ -29,17 +29,19 @@ namespace {
 namespace Gaudi {
   namespace Parsers {
     template <typename T1, typename T2>
-    inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, const std::string& input ) {
-      Skipper                                                                              skipper;
-      typename Grammar_<IteratorT, ROOT::Math::PositionVector3D<T1, T2>, Skipper>::Grammar g;
-      IteratorT iter = input.begin(), end = input.end();
-      if ( qi::phrase_parse( iter, end, g, skipper, result ) ) { return StatusCode::SUCCESS; }
-      //@attention always
-      return StatusCode::SUCCESS;
-    }
+    struct sparse {
+        inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, const std::string& input ) {
+          Skipper                                                                              skipper;
+          typename Grammar_<IteratorT, ROOT::Math::PositionVector3D<T1, T2>, Skipper>::Grammar g;
+          IteratorT iter = input.begin(), end = input.end();
+          if ( qi::phrase_parse( iter, end, g, skipper, result ) ) { return StatusCode::SUCCESS; }
+          //@attention always
+          return StatusCode::SUCCESS;
+        }
+    };
     // ==========================================================================
 
-    StatusCode parse( Gaudi::XYZPoint& result, const std::string& input ) { return parse_( result, input ); }
+    StatusCode parse( Gaudi::XYZPoint& result, const std::string& input ) { return sparse<>::parse_( result, input ); }
 
     // ==========================================================================
     /*  parse 3D-vector
@@ -58,7 +60,7 @@ namespace Gaudi {
       return StatusCode::SUCCESS; // RETURN
     }
 
-    StatusCode parse( Gaudi::LorentzVector& result, const std::string& input ) { return parse_( result, input ); }
+    StatusCode parse( Gaudi::LorentzVector& result, const std::string& input ) { return sparse<>::parse_( result, input ); }
 
     // ==========================================================================
     /*  parse the vector of points
@@ -70,7 +72,7 @@ namespace Gaudi {
     // ==========================================================================
     StatusCode parse( std::vector<Gaudi::XYZPoint>& result, const std::string& input ) {
       result.clear();
-      return parse_( result, input );
+      return sparse<>::parse_( result, input );
     }
     // ==========================================================================
     /*  parse the vector of vectors
@@ -82,7 +84,7 @@ namespace Gaudi {
     // ==========================================================================
     StatusCode parse( std::vector<Gaudi::XYZVector>& result, const std::string& input ) {
       result.clear();
-      return parse_( result, input );
+      return sparse<>::parse_( result, input );
     }
 
 #ifndef _WIN32
@@ -95,7 +97,7 @@ namespace Gaudi {
      */
     // ==========================================================================
     StatusCode parse( std::vector<Gaudi::LorentzVector>& result, const std::string& input ) {
-      return parse_( result, input );
+      return sparse<>::parse_( result, input );
     }
 #endif
   } // namespace Parsers

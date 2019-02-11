@@ -43,7 +43,7 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 
-StatusCode parse( DataObjID& dest, const std::string& src ) { return Gaudi::Parsers::parse_( dest, quote( src ) ); }
+StatusCode parse( DataObjID& dest, const std::string& src ) { return Gaudi::Parsers::sparse<>::parse_( dest, quote( src ) ); }
 
 IClassIDSvc*   DataObjID::p_clidSvc( nullptr );
 std::once_flag DataObjID::m_ip;
@@ -96,7 +96,7 @@ std::string Gaudi::Details::Property::StringConverter<DataObjIDColl>::toString( 
 DataObjIDColl Gaudi::Details::Property::StringConverter<DataObjIDColl>::fromString( const DataObjIDColl&,
                                                                                     const std::string& s ) {
   DataObjIDColl c;
-  if ( !Gaudi::Parsers::parse_( c, s ).isSuccess() ) {
+  if ( !Gaudi::Parsers::sparse<>::parse_( c, s ).isSuccess() ) {
     throw std::invalid_argument( "cannot parse '" + s + "' to DataObjIDColl" );
   }
   return c;
