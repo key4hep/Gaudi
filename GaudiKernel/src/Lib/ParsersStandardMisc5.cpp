@@ -1,7 +1,7 @@
 #include "ParsersStandardMiscCommon.h"
 
 StatusCode Gaudi::Parsers::parse( std::map<unsigned int, std::string>& result, const std::string& input ) {
-  return Gaudi::Parsers::sparse<>::parse( result, input );
+  return Gaudi::Parsers::sparse<std::map<unsigned int, std::string>>::parse_( result, input );
 }
 
 StatusCode Gaudi::Parsers::parse( std::string& name, std::string& value, const std::string& input ) {
@@ -19,5 +19,5 @@ StatusCode Gaudi::Parsers::parse( std::string& name, std::string& value, const s
 }
 
 StatusCode Gaudi::Parsers::parse( std::map<std::string, std::pair<double, double>>& result, const std::string& input ) {
-  return Gaudi::Parsers::sparse<>::parse( result, input );
+  return Gaudi::Parsers::sparse<std::map<std::string, std::pair<double, double>>>::parse_( result, input );
 }

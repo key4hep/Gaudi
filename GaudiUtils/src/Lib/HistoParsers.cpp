@@ -160,7 +160,7 @@ namespace {
   /// parse the histogram
   StatusCode _parse( H1& h1, const std::string& input ) {
     // check the parsing
-    StatusCode sc = Gaudi::Parsers::parse_( h1, input );
+    StatusCode sc = Gaudi::Parsers::sparse<H1>::parse_( h1, input );
     if ( sc.isFailure() ) { return sc; } // RETURN
     return h1.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
@@ -168,7 +168,7 @@ namespace {
   /// parse the histogram
   StatusCode _parse( H2& h2, const std::string& input ) {
     // check the parsing
-    StatusCode sc = Gaudi::Parsers::parse_( h2, input );
+    StatusCode sc = Gaudi::Parsers::sparse<H2>::parse_( h2, input );
     if ( sc.isFailure() ) { return sc; } // RETURN
     return h2.ok() ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }

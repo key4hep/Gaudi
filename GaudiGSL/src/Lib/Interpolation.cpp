@@ -32,7 +32,7 @@ namespace Gaudi {
 namespace GaudiMath {
   namespace Interpolation {
 
-    StatusCode  parse( Type& t, const std::string& in ) { return Gaudi::Parsers::parse_( t, in ); }
+    StatusCode  parse( Type& t, const std::string& in ) { return Gaudi::Parsers::sparse<Type>::parse_( t, in ); }
     std::string toString( const Type& t ) {
       assert( 0 <= t && t <= Type::Akima_Periodic );
       return table[t];

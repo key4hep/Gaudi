@@ -28,7 +28,7 @@ namespace Gaudi {
 
     template <typename ResultT>
     struct sparse {
-        inline StatusCode parse_( ResultT& result, const std::string& input ) {
+        static inline StatusCode parse_( ResultT& result, const std::string& input ) {
           Skipper                                                 skipper;
           typename Grammar_<IteratorT, ResultT, Skipper>::Grammar g;
           IteratorT                                               iter = input.begin(), end = input.end();
@@ -39,7 +39,7 @@ namespace Gaudi {
 
     template <>
     struct sparse<std::string> {
-        inline StatusCode parse_( std::string& result, const std::string& input ) {
+        static inline StatusCode parse_( std::string& result, const std::string& input ) {
           Skipper                                            skipper;
           Grammar_<IteratorT, std::string, Skipper>::Grammar g;
           IteratorT                                          iter = input.begin(), end = input.end();

@@ -7,10 +7,10 @@
 // ============================================================================
 
 StatusCode Gaudi::Parsers::parse( GaudiUtils::VectorMap<std::string, double>& result, const std::string& input ) {
-  return Gaudi::Parsers::sparse<>::parse_( result, input );
+  return Gaudi::Parsers::sparse<GaudiUtils::VectorMap<std::string, double>>::parse_( result, input );
 }
 
 StatusCode Gaudi::Parsers::parse( GaudiUtils::VectorMap<Gaudi::StringKey, double>& result, const std::string& input ) {
-  return Gaudi::Parsers::sparse<>::parse_( result, input );
+  return Gaudi::Parsers::sparse<GaudiUtils::VectorMap<Gaudi::StringKey, double>>::parse_( result, input );
 }
 // ============================================================================

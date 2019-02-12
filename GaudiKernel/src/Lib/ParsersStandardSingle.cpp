@@ -14,7 +14,7 @@
 // ============================================================================
 #define PARSERS_DEF_FOR_SINGLE( Type )                                                                                 \
   StatusCode Gaudi::Parsers::parse( Type& result, const std::string& input ) {                                         \
-    return Gaudi::Parsers::sparse<>::parse( result, input );                                                                    \
+    return Gaudi::Parsers::sparse<Type>::parse_( result, input );                                                                    \
   }
 // ============================================================================
 PARSERS_DEF_FOR_SINGLE( bool )
@@ -36,7 +36,7 @@ PARSERS_DEF_FOR_SINGLE( float )
 // See GAUDI-1121.
 StatusCode Gaudi::Parsers::parse( float& result, const std::string& input ) {
   double     tmp{0};
-  StatusCode sc = Gaudi::Parsers::sparse<>::parse( tmp, input );
+  StatusCode sc = Gaudi::Parsers::sparse<float>::parse_( tmp, input );
   result        = static_cast<float>( tmp );
   return sc;
 }

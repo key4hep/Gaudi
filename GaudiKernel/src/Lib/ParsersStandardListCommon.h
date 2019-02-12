@@ -14,7 +14,7 @@
 // ============================================================================
 #define PARSERS_DEF_FOR_LIST( InnerType )                                                                              \
   StatusCode Gaudi::Parsers::parse( std::vector<InnerType>& result, const std::string& input ) {                       \
-    return Gaudi::Parsers::sparse<>::parse_( result, input );                                                                    \
+    return Gaudi::Parsers::sparse<std::vector<InnerType>>::parse_( result, input );                                                                    \
   }
 // ============================================================================
 #endif /* PARSERS_STANDARD_LIST_COMMON_H */
