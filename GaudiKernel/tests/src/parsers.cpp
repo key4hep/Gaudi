@@ -210,7 +210,6 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     BOOST_CHECK( result.highEdge() == 2.0 );
     BOOST_CHECK( result.bins() == 100 );
   }
-
   //==============================================================================
   // Tuples
   //==============================================================================
@@ -219,15 +218,13 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     BOOST_REQUIRE( Gaudi::Parsers::sparse<std::tuple<int>>::parse_( result, "(2)" ) );
     BOOST_CHECK( std::get<0>( result ) == 2 );
   }
-  /* FIXME !!!
+  #define COMMA ,
   {
     std::tuple<int, std::string> result;
-    BOOST_REQUIRE( Gaudi::Parsers::sparse<std::tuple<int, std::string>>::parse_( result, "(2, 'hello')" ) );
+    BOOST_REQUIRE( Gaudi::Parsers::sparse<std::tuple<int COMMA std::string>>::parse_( result, "(2, 'hello')" ) );
     BOOST_CHECK( std::get<0>( result ) == 2 );
     BOOST_CHECK( std::get<1>( result ) == "hello" );
   }
-  */
-
   {
     std::tuple<int, std::string, bool> result;
     BOOST_REQUIRE( Gaudi::Parsers::parse( result, "(2, 'hello', True)" ) );

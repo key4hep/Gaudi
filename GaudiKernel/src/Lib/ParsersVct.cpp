@@ -28,9 +28,9 @@ namespace {
 // ============================================================================
 namespace Gaudi {
   namespace Parsers {
-    /* FIXME !!!
-    template <typename T1, typename T2>
-    struct sparse {
+    template <>
+    template<typename T1, typename T2>
+    struct sparse<ROOT::Math::PositionVector3D<T1, T2>> {
         static inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, const std::string& input ) {
           Skipper                                                                              skipper;
           typename Grammar_<IteratorT, ROOT::Math::PositionVector3D<T1, T2>, Skipper>::Grammar g;
@@ -40,7 +40,6 @@ namespace Gaudi {
           return StatusCode::SUCCESS;
         }
     };
-    */
     // ==========================================================================
 
     StatusCode parse( Gaudi::XYZPoint& result, const std::string& input ) { return sparse<Gaudi::XYZPoint>::parse_( result, input ); }
