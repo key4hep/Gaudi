@@ -33,6 +33,9 @@ PARSERS_DEF_FOR_SINGLE( double )
 #if BOOST_VERSION <= 105500
 PARSERS_DEF_FOR_SINGLE( float )
 #else
+PARSERS_DEF_FOR_SINGLE( float )   // ry if this works ...
+
+/* FIXME !!!
 // See GAUDI-1121.
 StatusCode Gaudi::Parsers::parse( float& result, const std::string& input ) {
   double     tmp{0};
@@ -40,6 +43,8 @@ StatusCode Gaudi::Parsers::parse( float& result, const std::string& input ) {
   result        = static_cast<float>( tmp );
   return sc;
 }
+*/
+
 #endif
 PARSERS_DEF_FOR_SINGLE( long double )
 PARSERS_DEF_FOR_SINGLE( std::string )

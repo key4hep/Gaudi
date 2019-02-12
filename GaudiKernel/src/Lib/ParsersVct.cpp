@@ -28,6 +28,7 @@ namespace {
 // ============================================================================
 namespace Gaudi {
   namespace Parsers {
+    /* FIXME !!!
     template <typename T1, typename T2>
     struct sparse {
         static inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, const std::string& input ) {
@@ -39,6 +40,7 @@ namespace Gaudi {
           return StatusCode::SUCCESS;
         }
     };
+    */
     // ==========================================================================
 
     StatusCode parse( Gaudi::XYZPoint& result, const std::string& input ) { return sparse<Gaudi::XYZPoint>::parse_( result, input ); }
