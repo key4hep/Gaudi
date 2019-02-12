@@ -43,7 +43,9 @@ namespace Gaudi {
   } // namespace Parsers
 } // namespace Gaudi
 
-StatusCode parse( DataObjID& dest, const std::string& src ) { return Gaudi::Parsers::sparse<DataObjID>::parse_( dest, quote( src ) ); }
+StatusCode parse( DataObjID& dest, const std::string& src ) {
+  return Gaudi::Parsers::sparse<DataObjID>::parse_( dest, quote( src ) );
+}
 
 IClassIDSvc*   DataObjID::p_clidSvc( nullptr );
 std::once_flag DataObjID::m_ip;

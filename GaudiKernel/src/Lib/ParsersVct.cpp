@@ -29,20 +29,22 @@ namespace {
 namespace Gaudi {
   namespace Parsers {
     template <>
-    template<typename T1, typename T2>
+    template <typename T1, typename T2>
     struct sparse<ROOT::Math::PositionVector3D<T1, T2>> {
-        static inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, const std::string& input ) {
-          Skipper                                                                              skipper;
-          typename Grammar_<IteratorT, ROOT::Math::PositionVector3D<T1, T2>, Skipper>::Grammar g;
-          IteratorT iter = input.begin(), end = input.end();
-          if ( qi::phrase_parse( iter, end, g, skipper, result ) ) { return StatusCode::SUCCESS; }
-          //@attention always
-          return StatusCode::SUCCESS;
-        }
+      static inline StatusCode parse_( ROOT::Math::PositionVector3D<T1, T2>& result, const std::string& input ) {
+        Skipper                                                                              skipper;
+        typename Grammar_<IteratorT, ROOT::Math::PositionVector3D<T1, T2>, Skipper>::Grammar g;
+        IteratorT iter = input.begin(), end = input.end();
+        if ( qi::phrase_parse( iter, end, g, skipper, result ) ) { return StatusCode::SUCCESS; }
+        //@attention always
+        return StatusCode::SUCCESS;
+      }
     };
     // ==========================================================================
 
-    StatusCode parse( Gaudi::XYZPoint& result, const std::string& input ) { return sparse<Gaudi::XYZPoint>::parse_( result, input ); }
+    StatusCode parse( Gaudi::XYZPoint& result, const std::string& input ) {
+      return sparse<Gaudi::XYZPoint>::parse_( result, input );
+    }
 
     // ==========================================================================
     /*  parse 3D-vector
@@ -61,7 +63,9 @@ namespace Gaudi {
       return StatusCode::SUCCESS; // RETURN
     }
 
-    StatusCode parse( Gaudi::LorentzVector& result, const std::string& input ) { return sparse<Gaudi::LorentzVector>::parse_( result, input ); }
+    StatusCode parse( Gaudi::LorentzVector& result, const std::string& input ) {
+      return sparse<Gaudi::LorentzVector>::parse_( result, input );
+    }
 
     // ==========================================================================
     /*  parse the vector of points

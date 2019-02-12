@@ -237,7 +237,7 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     BOOST_REQUIRE( Gaudi::Parsers::sparse<std::tuple<int>>::parse_( result, "(2)" ) );
     BOOST_CHECK( std::get<0>( result ) == 2 );
   }
-  #define COMMA ,
+#define COMMA ,
   {
     std::tuple<int, std::string> result;
     BOOST_REQUIRE( Gaudi::Parsers::sparse<std::tuple<int COMMA std::string>>::parse_( result, "(2, 'hello')" ) );
