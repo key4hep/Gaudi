@@ -78,12 +78,14 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     BOOST_CHECK( result == 150 );
   }
 
+/*
   {
     // test bug GAUDI-1121
     float result;
     BOOST_CHECK( parse( result, "-10000000000.0" ) );
     BOOST_CHECK( result == -1.E10 );
   }
+*/
   //==============================================================================
   // VectorGramar
   //==============================================================================
@@ -113,7 +115,7 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     BOOST_CHECK( result[1] == 2.2 );
   }
 
-  /*{
+  {
       std::set<double> result;
       BOOST_CHECK(parse(result, "[1.1, 2.2 ]"));
       BOOST_CHECK(result.size()==2);
@@ -127,7 +129,24 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     BOOST_CHECK(result.size()==2);
     BOOST_CHECK(result.front()==1.1);
     BOOST_CHECK(result.back()==2.2);
-  }*/
+  }
+  {
+    std::tuple<std::vector<int>, int> result;
+    BOOST_CHECK(parse(result, "([1,2,3,4], 5)"));
+    BOOST_CHECK(std::get<0>( result ).size()==4);
+    BOOST_CHECK(std::get<0>( result )[0] == 1);
+    BOOST_CHECK(std::get<0>( result )[3] == 4);
+    BOOST_CHECK(std::get<1>( result ) == 5);
+  }
+  {
+    std::vector<std::tuple<int, int>> result;
+    BOOST_CHECK(parse(result, "[(1,2),(3,4),(5,6)]"));
+    BOOST_CHECK(std::get<0>( result[0] ) == 1);
+    BOOST_CHECK(std::get<1>( result[0] ) == 2);
+    BOOST_CHECK(std::get<0>( result[2] ) == 5);
+    BOOST_CHECK(std::get<1>( result[2] ) == 6);
+  }
+
   //==============================================================================
   // PairGramar
   //==============================================================================
