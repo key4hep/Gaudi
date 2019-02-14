@@ -1541,6 +1541,7 @@ class GaudiExeTest(ExecTestBase):
                         if a not in positional and a not in kwargs:
                             kwargs[a] = self.extra_args[a]
                     return self.callable(*args, **kwargs)
+
             # local names to be exposed in the script
             exported_symbols = {
                 "self":

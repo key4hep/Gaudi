@@ -100,5 +100,6 @@ if __name__ == '__main__':
         if touched_count == active_count:
             print('   coverage 100%')
         else:
-            print('   coverage %3d%%, missed: %s' % (
-                float(touched_count) / active_count * 100, ', '.join(ranges)))
+            print(
+                '   coverage %3d%%, missed: %s' %
+                (float(touched_count) / active_count * 100, ', '.join(ranges)))
