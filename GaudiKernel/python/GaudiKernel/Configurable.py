@@ -288,8 +288,8 @@ class Configurable(object):
 
         # this is an abstract class
         if klass == Configurable:
-            raise TypeError("%s is an ABC and can not be instantiated" % str(
-                Configurable))
+            raise TypeError(
+                "%s is an ABC and can not be instantiated" % str(Configurable))
 
         # the following methods require overloading
         # NOT YET  meths = { 'getServices'   : 1,    # retrieve list of services to configure
@@ -304,15 +304,15 @@ class Configurable(object):
             try:
                 f = getattr(klass, meth).im_func
             except AttributeError:
-                raise NotImplementedError("%s is missing in class %s" % (
-                    meth, str(klass)))
+                raise NotImplementedError(
+                    "%s is missing in class %s" % (meth, str(klass)))
 
             # in addition, verify the number of arguments w/o defaults
             nargcount = f.func_code.co_argcount
             ndefaults = f.func_defaults and len(f.func_defaults) or 0
             if not nargcount - ndefaults <= nArgs <= nargcount:
-                raise TypeError( "%s.%s requires exactly %d arguments" % (
-                    klass, meth, nArgs))
+                raise TypeError("%s.%s requires exactly %d arguments" %
+                                (klass, meth, nArgs))
 
         # for using this Configurable as a (Gaudi) sequence
         self.__children = []
@@ -592,9 +592,8 @@ class Configurable(object):
         # make sure base class init has been called
         if not hasattr(self, '_initok') or not self._initok:
             # could check more, but this is the only explanation
-            raise TypeError(
-                "Configurable.__init__ not called in %s override" % self.__class__.__name__
-            )
+            raise TypeError("Configurable.__init__ not called in %s override" %
+                            self.__class__.__name__)
 
 #      log.debug("calling setup() on " + self.getFullJobOptName())
 
@@ -841,7 +840,9 @@ class Configurable(object):
                 classname = tool.__name__
             else:
                 classname = type(tool).__name__
-            raise TypeError("addTool requires AlgTool configurable. Got %s type" % classname)
+            raise TypeError(
+                "addTool requires AlgTool configurable. Got %s type" %
+                classname)
         self.__tools[name] = priv_tool
         if name in self.__slots__:
             # this is to avoid that the property hides the tool

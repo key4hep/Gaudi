@@ -1587,7 +1587,7 @@ class GaudiExeTest(ExecTestBase):
                     "causes": causes
                 }),
             }
-            exec(self.validator in globals(), exported_symbols)
+            exec (self.validator in globals(), exported_symbols)
         else:
             self.ValidateWithReference(stdout, stderr, result, causes)
 

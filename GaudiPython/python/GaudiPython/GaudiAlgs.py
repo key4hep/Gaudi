@@ -942,8 +942,8 @@ def _execute_(self):
     """
     The fictive 'execute' method, which MUST be overwitten by user
     """
-    raise RuntimeError('Execute method is not implemented for %s' % self.name(
-    ))
+    raise RuntimeError(
+        'Execute method is not implemented for %s' % self.name())
 
 
 GaudiAlgo.execute = _execute_

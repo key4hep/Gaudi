@@ -66,7 +66,7 @@ namespace GaudiPython { namespace Helpers {
 
 # toIntArray, toShortArray, etc.
 for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
-    exec("%s = Helper.%s" % (l, l))
+    exec ("%s = Helper.%s" % (l, l))
     __all__.append(l)
 
 # FIXME: (MCl) Hack to handle ROOT 5.18 and ROOT >= 5.20
@@ -282,8 +282,8 @@ class iProperty(object):
 
             if canSetValue:
                 if not prop.setValue(value):
-                    raise AttributeError('property %s could not be set from %s' % (
-                        name, value))
+                    raise AttributeError(
+                        'property %s could not be set from %s' % (name, value))
             else:
                 if tuple == type(value):
                     value = str(value)
@@ -299,8 +299,8 @@ class iProperty(object):
                 else:
                     sc = prop.fromString(value)
                 if sc.isFailure():
-                    raise AttributeError('property %s could not be set from %s' % (
-                        name, value))
+                    raise AttributeError(
+                        'property %s could not be set from %s' % (name, value))
         else:
             if type(value) == str:
                 value = '"%s"' % value  # need double quotes
@@ -1259,7 +1259,8 @@ class AppMgr(iService):
             tmpfile.close()
             sc = self.readOptions(tmpfilename)
             if sc.isFailure():
-                raise RuntimeError(' Unable to read file "' + tmpfilename + '" ')
+                raise RuntimeError(' Unable to read file "' + tmpfilename +
+                                   '" ')
             os.remove(tmpfilename)
         # We need to make sure that the options are taken by the ApplicationMgr
         # The state is already configured, so we need to do something....

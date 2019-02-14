@@ -515,10 +515,10 @@ if __name__ == "__main__":
     if options:
         g = {}
         l = {}
-        exec("from Gaudi.Configuration import *", g, l)
+        exec ("from Gaudi.Configuration import *", g, l)
         for o in options:
             logging.debug(o)
-            exec(o, g, l)
+            exec (o, g, l)
 
     import GaudiKernel.Proxy.Configurable
     if opts.no_conf_user_apply:
@@ -537,10 +537,10 @@ if __name__ == "__main__":
     if opts.post_options:
         g = {}
         l = {}
-        exec("from Gaudi.Configuration import *", g, l)
+        exec ("from Gaudi.Configuration import *", g, l)
         for o in opts.post_options:
             logging.debug(o)
-            exec(o, g, l)
+            exec (o, g, l)
 
     if 'GAUDI_TEMP_OPTS_FILE' in os.environ:
         os.remove(os.environ['GAUDI_TEMP_OPTS_FILE'])

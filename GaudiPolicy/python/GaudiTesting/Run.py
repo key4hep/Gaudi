@@ -181,7 +181,8 @@ def main():
         test_module = os.environ.get('GAUDI_QMTEST_MODULE',
                                      'GaudiTesting.QMTTest')
         test_class = os.environ.get('GAUDI_QMTEST_CLASS', 'QMTTest')
-        exec('from {} import {} as test_class'.format(test_module, test_class))
+        exec ('from {} import {} as test_class'.format(test_module,
+                                                       test_class))
         fileToTest = test_class(filename)
         results = fileToTest.run()
 

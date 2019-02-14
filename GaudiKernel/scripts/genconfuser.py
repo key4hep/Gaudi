@@ -111,7 +111,7 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
     g, l = {}, {}
     try:
         logging.verbose("importing %s", shortmodname)
-        exec("import %s as mod" % shortmodname, g, l)
+        exec ("import %s as mod" % shortmodname, g, l)
     finally:
         # restore old sys.path
         logging.verbose("restoring old sys.path")
