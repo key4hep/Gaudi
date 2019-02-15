@@ -515,7 +515,7 @@ namespace concurrency {
         TimelineEvent te{};
         te.algorithm = m_precTrace[*vp.first].m_name;
         timelineSvc->getTimelineEvent( te );
-        int runtime = std::chrono::duration_cast<std::chrono::nanoseconds>( te.end - te.start ).count();
+        int runtime = std::chrono::duration_cast<std::chrono::microseconds>( te.end - te.start ).count();
         m_precTrace[*vp.first].m_runtime = runtime;
       }
     }
