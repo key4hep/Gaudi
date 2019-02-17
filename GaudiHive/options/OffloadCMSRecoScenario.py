@@ -30,7 +30,7 @@ timeValue = precedence.RealTimeValue(
     path="cms/reco/algs-time.json", defaultTime=0.0)
 
 #ifIObound = precedence.UniformBooleanValue(False)
-# the CMS reco sceario has 707 algorithms in total
+# the CMS reco scenario has 707 algorithms in total
 ifIObound = precedence.RndBiasedBooleanValue(
     pattern={
         True: 70,
