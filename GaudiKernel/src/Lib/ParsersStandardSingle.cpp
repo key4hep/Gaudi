@@ -33,16 +33,16 @@ PARSERS_DEF_FOR_SINGLE( double )
 #if BOOST_VERSION <= 105500
 PARSERS_DEF_FOR_SINGLE( float )
 #else
-PARSERS_DEF_FOR_SINGLE( float ) // FIXME !!!
-                                /*
-                                // See GAUDI-1121.
-                                StatusCode Gaudi::Parsers::parse( float& result, const std::string& input ) {
-                                  double     tmp{0};
-                                  StatusCode sc = Gaudi::Parsers::sparse<float>::parse_( tmp, input );
-                                  result        = static_cast<float>( tmp );
-                                  return sc;
-                                }
-                                */
+/* SR_FIXME!!! */
+//PARSERS_DEF_FOR_SINGLE( float )
+// See GAUDI-1121.
+StatusCode Gaudi::Parsers::parse( float& result, const std::string& input ) {
+  float tmp{0};
+  StatusCode sc = Gaudi::Parsers::sparse<float>::parse_( tmp, input );
+  result        = static_cast<float>( tmp );
+  return sc;
+}
+/* */
 #endif
 PARSERS_DEF_FOR_SINGLE( long double )
 PARSERS_DEF_FOR_SINGLE( std::string )
