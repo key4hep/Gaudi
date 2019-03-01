@@ -78,14 +78,14 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     BOOST_CHECK( result == 150 );
   }
 
-  /* SR_FIXME!!! */
+  /* SR_FIXME!!!
     {
       // test bug GAUDI-1121
       float result;
       BOOST_CHECK( parse( result, "-10000000000.0" ) );
       BOOST_CHECK( result == -1.E10 );
     }
-  /* */
+  */
   //==============================================================================
   // VectorGramar
   //==============================================================================
