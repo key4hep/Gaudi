@@ -34,10 +34,10 @@ PARSERS_DEF_FOR_SINGLE( double )
 PARSERS_DEF_FOR_SINGLE( float )
 #else
 /* SR_FIXME!!! */
-//PARSERS_DEF_FOR_SINGLE( float )
+// PARSERS_DEF_FOR_SINGLE( float )
 // See GAUDI-1121.
 StatusCode Gaudi::Parsers::parse( float& result, const std::string& input ) {
-  float tmp{0};
+  float      tmp{0};
   StatusCode sc = Gaudi::Parsers::sparse<float>::parse_( tmp, input );
   result        = static_cast<float>( tmp );
   return sc;
