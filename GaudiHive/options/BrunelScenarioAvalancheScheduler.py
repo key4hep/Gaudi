@@ -38,18 +38,20 @@ AlgResourcePool(OutputLevel=DEBUG)
 CPUCrunchSvc(shortCalib=True)
 
 timeValue = precedence.UniformTimeValue(avgRuntime=algoAvgTime)
+#timeValue = precedence.RealTimeValue(
+#    path="lhcb/reco/timing.Brunel.1kE.json", defaultTime=0.0)
 ifIObound = precedence.UniformBooleanValue(False)
-# 278 values, biased approximately as 90% to 10% - corresponds to the .GRAPHML scenario used below
-# (276 precedence graph algorithms, plus two fake algorithms - DstWriter and Framework)
-#ifIObound = precedence.RndBiasedBoolenValue(pattern = {True: 29, False: 249}, seed=1)
+# 296 values, biased approximately as 90% to 10% - corresponds to the .GRAPHML scenario used below
+# (295 precedence graph algorithms, plus one fake algorithm - FetchFromFile)
+#ifIObound = precedence.RndBiasedBoolenValue(pattern = {True: 29, False: 267}, seed=1)
 
 sequencer = precedence.CruncherSequence(
     timeValue,
     ifIObound,
     sleepFraction=0.0,
-    cfgPath="lhcb/reco/cf_dependencies.graphml",
-    dfgPath="lhcb/reco/data_dependencies.graphml",
-    topSequencer='GaudiSequencer/BrunelSequencer').get()
+    cfgPath="lhcb/reco/cf.Brunel.graphml",
+    dfgPath="lhcb/reco/df.Brunel.graphml",
+    topSequencer='BrunelSequencer').get()
 
 ApplicationMgr(
     EvtMax=evtMax,

@@ -1,0 +1,2510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="Lazy" attr.type="string" for="node" id="d3" />
+  <key attr.name="ModeOR" attr.type="string" for="node" id="d2" />
+  <key attr.name="class" attr.type="string" for="node" id="d0" />
+  <key attr.name="type" attr.type="string" for="node" id="d1" />
+  <graph edgedefault="directed">
+    <node id="BrunelSequencer">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="Init">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="InitBrunelSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="BrunelInit">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecInit</data>
+    </node>
+    <edge source="InitBrunelSeq" target="BrunelInit" />
+    <node id="BrunelEventCount">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EventCountHisto</data>
+    </node>
+    <edge source="InitBrunelSeq" target="BrunelEventCount" />
+    <edge source="Init" target="InitBrunelSeq" />
+    <edge source="BrunelSequencer" target="Init" />
+    <node id="LumiSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">True</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="LumiCounters">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">True</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="LumiNoBeamSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="FilterNoBeam">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::ODINFilter</data>
+    </node>
+    <edge source="LumiNoBeamSeq" target="FilterNoBeam" />
+    <node id="HltLumiSummaryDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltLumiSummaryDecoder</data>
+    </node>
+    <edge source="LumiNoBeamSeq" target="HltLumiSummaryDecoder" />
+    <node id="LumiFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">FilterOnLumiSummary</data>
+    </node>
+    <edge source="LumiNoBeamSeq" target="LumiFilter" />
+    <node id="LumiCountNoBeam">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LumiAccounting</data>
+    </node>
+    <edge source="LumiNoBeamSeq" target="LumiCountNoBeam" />
+    <edge source="LumiCounters" target="LumiNoBeamSeq" />
+    <node id="LumiBeamCrossingSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="FilterBeamCrossing">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::ODINFilter</data>
+    </node>
+    <edge source="LumiBeamCrossingSeq" target="FilterBeamCrossing" />
+    <node id="HltLumiSummaryDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltLumiSummaryDecoder</data>
+    </node>
+    <edge source="LumiBeamCrossingSeq" target="HltLumiSummaryDecoder" />
+    <node id="LumiFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">FilterOnLumiSummary</data>
+    </node>
+    <edge source="LumiBeamCrossingSeq" target="LumiFilter" />
+    <node id="LumiCountBeamCrossing">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LumiAccounting</data>
+    </node>
+    <edge source="LumiBeamCrossingSeq" target="LumiCountBeamCrossing" />
+    <edge source="LumiCounters" target="LumiBeamCrossingSeq" />
+    <node id="LumiBeam1Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="FilterBeam1">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::ODINFilter</data>
+    </node>
+    <edge source="LumiBeam1Seq" target="FilterBeam1" />
+    <node id="HltLumiSummaryDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltLumiSummaryDecoder</data>
+    </node>
+    <edge source="LumiBeam1Seq" target="HltLumiSummaryDecoder" />
+    <node id="LumiFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">FilterOnLumiSummary</data>
+    </node>
+    <edge source="LumiBeam1Seq" target="LumiFilter" />
+    <node id="LumiCountBeam1">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LumiAccounting</data>
+    </node>
+    <edge source="LumiBeam1Seq" target="LumiCountBeam1" />
+    <edge source="LumiCounters" target="LumiBeam1Seq" />
+    <node id="LumiBeam2Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="FilterBeam2">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::ODINFilter</data>
+    </node>
+    <edge source="LumiBeam2Seq" target="FilterBeam2" />
+    <node id="HltLumiSummaryDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltLumiSummaryDecoder</data>
+    </node>
+    <edge source="LumiBeam2Seq" target="HltLumiSummaryDecoder" />
+    <node id="LumiFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">FilterOnLumiSummary</data>
+    </node>
+    <edge source="LumiBeam2Seq" target="LumiFilter" />
+    <node id="LumiCountBeam2">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LumiAccounting</data>
+    </node>
+    <edge source="LumiBeam2Seq" target="LumiCountBeam2" />
+    <edge source="LumiCounters" target="LumiBeam2Seq" />
+    <node id="TimeSpanSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TimeSpanFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::ODINFilter</data>
+    </node>
+    <edge source="TimeSpanSeq" target="TimeSpanFilter" />
+    <node id="TimeSpanAccounting">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TimeAccounting</data>
+    </node>
+    <edge source="TimeSpanSeq" target="TimeSpanAccounting" />
+    <edge source="LumiCounters" target="TimeSpanSeq" />
+    <node id="EventAccount">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EventAccounting</data>
+    </node>
+    <edge source="LumiCounters" target="EventAccount" />
+    <edge source="LumiSeq" target="LumiCounters" />
+    <node id="PhysFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltRoutingBitsFilter</data>
+    </node>
+    <edge source="LumiSeq" target="PhysFilter" />
+    <edge source="BrunelSequencer" target="LumiSeq" />
+    <node id="NotPhysicsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">True</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PhysFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltRoutingBitsFilter</data>
+    </node>
+    <edge source="NotPhysicsSeq" target="PhysFilter" />
+    <edge source="BrunelSequencer" target="NotPhysicsSeq" />
+    <node id="HltErrorSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">True</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="HltErrorFilterSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PhysFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltRoutingBitsFilter</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="PhysFilter" />
+    <node id="Hlt1DecReportsDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltDecReportsDecoder</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt1DecReportsDecoder" />
+    <node id="Hlt1ErrorFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::HDRFilter</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt1ErrorFilter" />
+    <node id="Hlt2DecReportsDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltDecReportsDecoder</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt2DecReportsDecoder" />
+    <node id="Hlt2ErrorFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::HDRFilter</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt2ErrorFilter" />
+    <edge source="HltErrorSeq" target="HltErrorFilterSeq" />
+    <node id="HltErrorProc">
+      <data key="d0">Algorithm</data>
+      <data key="d1">AddToProcStatus</data>
+    </node>
+    <edge source="HltErrorSeq" target="HltErrorProc" />
+    <edge source="BrunelSequencer" target="HltErrorSeq" />
+    <node id="PhysicsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PhysFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltRoutingBitsFilter</data>
+    </node>
+    <edge source="PhysicsSeq" target="PhysFilter" />
+    <node id="HltErrorFilterSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PhysFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltRoutingBitsFilter</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="PhysFilter" />
+    <node id="Hlt1DecReportsDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltDecReportsDecoder</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt1DecReportsDecoder" />
+    <node id="Hlt1ErrorFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::HDRFilter</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt1ErrorFilter" />
+    <node id="Hlt2DecReportsDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltDecReportsDecoder</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt2DecReportsDecoder" />
+    <node id="Hlt2ErrorFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LoKi::HDRFilter</data>
+    </node>
+    <edge source="HltErrorFilterSeq" target="Hlt2ErrorFilter" />
+    <edge source="PhysicsSeq" target="HltErrorFilterSeq" />
+    <node id="CaloBanksHandler">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloDigits">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="SpdFromRaw">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitsFromRaw</data>
+    </node>
+    <edge source="CaloDigits" target="SpdFromRaw" />
+    <node id="PrsDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PrsFromRaw">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitsFromRaw</data>
+    </node>
+    <edge source="PrsDigitsSeq" target="PrsFromRaw" />
+    <node id="PrsProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="PrsDigitsSeq" target="PrsProcStatus" />
+    <edge source="CaloDigits" target="PrsDigitsSeq" />
+    <node id="EcalDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalZSup">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloZSupAlg</data>
+    </node>
+    <edge source="EcalDigitsSeq" target="EcalZSup" />
+    <node id="EcalProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="EcalDigitsSeq" target="EcalProcStatus" />
+    <edge source="CaloDigits" target="EcalDigitsSeq" />
+    <node id="HcalDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="HcalZSup">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloZSupAlg</data>
+    </node>
+    <edge source="HcalDigitsSeq" target="HcalZSup" />
+    <node id="HcalProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="HcalDigitsSeq" target="HcalProcStatus" />
+    <edge source="CaloDigits" target="HcalDigitsSeq" />
+    <edge source="CaloBanksHandler" target="CaloDigits" />
+    <edge source="PhysicsSeq" target="CaloBanksHandler" />
+    <node id="Reco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RecoDecodingSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="createBothVeloClusters">
+      <data key="d0">Algorithm</data>
+      <data key="d1">DecodeVeloRawBuffer</data>
+    </node>
+    <edge source="RecoDecodingSeq" target="createBothVeloClusters" />
+    <node id="createTTClusters">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankToSTClusterAlg</data>
+    </node>
+    <edge source="RecoDecodingSeq" target="createTTClusters" />
+    <node id="createTTLiteClusters">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankToSTLiteClusterAlg</data>
+    </node>
+    <edge source="RecoDecodingSeq" target="createTTLiteClusters" />
+    <node id="createITLiteClusters">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankToSTLiteClusterAlg</data>
+    </node>
+    <edge source="RecoDecodingSeq" target="createITLiteClusters" />
+    <node id="createITClusters">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankToSTClusterAlg</data>
+    </node>
+    <edge source="RecoDecodingSeq" target="createITClusters" />
+    <edge source="Reco" target="RecoDecodingSeq" />
+    <node id="RecoVELOSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="FastVeloTracking">
+      <data key="d0">Algorithm</data>
+      <data key="d1">FastVeloTracking</data>
+    </node>
+    <edge source="RecoVELOSeq" target="FastVeloTracking" />
+    <edge source="Reco" target="RecoVELOSeq" />
+    <node id="RecoTTSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <edge source="Reco" target="RecoTTSeq" />
+    <node id="RecoITSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <edge source="Reco" target="RecoITSeq" />
+    <node id="RecoOTSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <edge source="Reco" target="RecoOTSeq" />
+    <node id="RecoTrHLT1Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackHLT1">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackHLT1VeloTTPatSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PatVeloTTHybrid">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PatVeloTTHybrid</data>
+    </node>
+    <edge source="TrackHLT1VeloTTPatSeq" target="PatVeloTTHybrid" />
+    <edge source="TrackHLT1" target="TrackHLT1VeloTTPatSeq" />
+    <node id="TrackHLT1ForwardPatHLT1Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PatForwardHLT1">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PatForward</data>
+    </node>
+    <edge source="TrackHLT1ForwardPatHLT1Seq" target="PatForwardHLT1" />
+    <edge source="TrackHLT1" target="TrackHLT1ForwardPatHLT1Seq" />
+    <node id="TrackHLT1FitHLT1Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CopyVeloTracks">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackContainerCopy</data>
+    </node>
+    <edge source="TrackHLT1FitHLT1Seq" target="CopyVeloTracks" />
+    <node id="VeloOnlyInitAlg">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackStateInitAlg</data>
+    </node>
+    <edge source="TrackHLT1FitHLT1Seq" target="VeloOnlyInitAlg" />
+    <node id="ForwardHLT1FitterAlg">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackEventFitter</data>
+    </node>
+    <edge source="TrackHLT1FitHLT1Seq" target="ForwardHLT1FitterAlg" />
+    <edge source="TrackHLT1" target="TrackHLT1FitHLT1Seq" />
+    <edge source="RecoTrHLT1Seq" target="TrackHLT1" />
+    <edge source="Reco" target="RecoTrHLT1Seq" />
+    <node id="RecoVertexSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="VeloTrackConverter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LHCb::Converters::Track::v1::fromLHCbTrackVector</data>
+    </node>
+    <edge source="RecoVertexSeq" target="VeloTrackConverter" />
+    <node id="PatPV3D">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PatPV3D</data>
+    </node>
+    <edge source="RecoVertexSeq" target="PatPV3D" />
+    <node id="VertexConverter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">LHCb::Converters::RecVertex::v1::fromVectorLHCbRecVertex</data>
+    </node>
+    <edge source="RecoVertexSeq" target="VertexConverter" />
+    <node id="PVVeloTracksCleaner">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackContainerCleaner</data>
+    </node>
+    <edge source="RecoVertexSeq" target="PVVeloTracksCleaner" />
+    <edge source="Reco" target="RecoVertexSeq" />
+    <node id="RecoTrHLT2Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackHLT2">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackHLT2ForwardPatHLT2Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PatForwardHLT2">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PatForward</data>
+    </node>
+    <edge source="TrackHLT2ForwardPatHLT2Seq" target="PatForwardHLT2" />
+    <node id="MergeForwardHLT1HLT2">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackContainerCopy</data>
+    </node>
+    <edge source="TrackHLT2ForwardPatHLT2Seq" target="MergeForwardHLT1HLT2" />
+    <edge source="TrackHLT2" target="TrackHLT2ForwardPatHLT2Seq" />
+    <node id="TrackHLT2SeedPatSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PatSeeding">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PatSeeding</data>
+    </node>
+    <edge source="TrackHLT2SeedPatSeq" target="PatSeeding" />
+    <edge source="TrackHLT2" target="TrackHLT2SeedPatSeq" />
+    <node id="TrackHLT2MatchPatSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PatMatch">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PatMatch</data>
+    </node>
+    <edge source="TrackHLT2MatchPatSeq" target="PatMatch" />
+    <edge source="TrackHLT2" target="TrackHLT2MatchPatSeq" />
+    <node id="TrackHLT2DownstreamPatSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PatLongLivedTracking">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PatLongLivedTracking</data>
+    </node>
+    <edge source="TrackHLT2DownstreamPatSeq" target="PatLongLivedTracking" />
+    <edge source="TrackHLT2" target="TrackHLT2DownstreamPatSeq" />
+    <edge source="RecoTrHLT2Seq" target="TrackHLT2" />
+    <node id="FitHLT2">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="FitHLT2BestSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackBestTrackCreator">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackBestTrackCreator</data>
+    </node>
+    <edge source="FitHLT2BestSeq" target="TrackBestTrackCreator" />
+    <edge source="FitHLT2" target="FitHLT2BestSeq" />
+    <edge source="RecoTrHLT2Seq" target="FitHLT2" />
+    <node id="RecV0">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RecV0MakeV0Seq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackV0Finder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackV0Finder</data>
+    </node>
+    <edge source="RecV0MakeV0Seq" target="TrackV0Finder" />
+    <edge source="RecV0" target="RecV0MakeV0Seq" />
+    <edge source="RecoTrHLT2Seq" target="RecV0" />
+    <node id="AddExtraInfo">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="AddExtraInfoClonesSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="FindTrackClones">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackBuildCloneTable</data>
+    </node>
+    <edge source="AddExtraInfoClonesSeq" target="FindTrackClones" />
+    <node id="FlagTrackClones">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackCloneCleaner</data>
+    </node>
+    <edge source="AddExtraInfoClonesSeq" target="FlagTrackClones" />
+    <edge source="AddExtraInfo" target="AddExtraInfoClonesSeq" />
+    <node id="AddExtraInfoTrackLikelihoodSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackAddLikelihood">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackAddLikelihood</data>
+    </node>
+    <edge source="AddExtraInfoTrackLikelihoodSeq" target="TrackAddLikelihood" />
+    <edge source="AddExtraInfo" target="AddExtraInfoTrackLikelihoodSeq" />
+    <node id="AddExtraInfoEraseExtraInfoSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackEraseExtraInfoBest">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackEraseExtraInfo</data>
+    </node>
+    <edge source="AddExtraInfoEraseExtraInfoSeq" target="TrackEraseExtraInfoBest" />
+    <node id="TrackEraseExtraInfoFittedVelo">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackEraseExtraInfo</data>
+    </node>
+    <edge source="AddExtraInfoEraseExtraInfoSeq" target="TrackEraseExtraInfoFittedVelo" />
+    <edge source="AddExtraInfo" target="AddExtraInfoEraseExtraInfoSeq" />
+    <edge source="RecoTrHLT2Seq" target="AddExtraInfo" />
+    <edge source="Reco" target="RecoTrHLT2Seq" />
+    <node id="RecoRICHSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichFutureDecode">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::RawBankDecoder</data>
+    </node>
+    <edge source="RecoRICHSeq" target="RichFutureDecode" />
+    <node id="RichTrackTypeFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackFilter</data>
+    </node>
+    <edge source="RecoRICHSeq" target="RichTrackTypeFilter" />
+    <node id="RichRecoSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichPixels">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichPixClustering">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::SmartIDClustering</data>
+    </node>
+    <edge source="RichPixels" target="RichPixClustering" />
+    <node id="RichSIMDPixels">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDSummaryPixels</data>
+    </node>
+    <edge source="RichPixels" target="RichSIMDPixels" />
+    <edge source="RichRecoSeq" target="RichPixels" />
+    <node id="RichDownReco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichTracksDown">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichTrackSegmentsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::DetailedTrSegMakerFromTracks</data>
+    </node>
+    <edge source="RichTracksDown" target="RichTrackSegmentsDown" />
+    <node id="RichTrackGloPointsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceTrackGlobalPoints</data>
+    </node>
+    <edge source="RichTracksDown" target="RichTrackGloPointsDown" />
+    <node id="RichTrackLocPointsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceTrackLocalPoints</data>
+    </node>
+    <edge source="RichTracksDown" target="RichTrackLocPointsDown" />
+    <node id="RichEmittedYieldsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::EmittedPhotonYields</data>
+    </node>
+    <edge source="RichTracksDown" target="RichEmittedYieldsDown" />
+    <node id="RichEmittedCKAnglesDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackEmittedCherenkovAngles</data>
+    </node>
+    <edge source="RichTracksDown" target="RichEmittedCKAnglesDown" />
+    <node id="RichMassConesDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceCherenkovCones</data>
+    </node>
+    <edge source="RichTracksDown" target="RichMassConesDown" />
+    <node id="RichDetectableYieldsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::DetectablePhotonYields</data>
+    </node>
+    <edge source="RichTracksDown" target="RichDetectableYieldsDown" />
+    <node id="RichGeomEffDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GeomEffCKMassRings</data>
+    </node>
+    <edge source="RichTracksDown" target="RichGeomEffDown" />
+    <node id="RichTkSegmentSelDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SelectTrackSegments</data>
+    </node>
+    <edge source="RichTracksDown" target="RichTkSegmentSelDown" />
+    <node id="RichSignalYieldsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SignalPhotonYields</data>
+    </node>
+    <edge source="RichTracksDown" target="RichSignalYieldsDown" />
+    <node id="RichSignalCKAnglesDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackSignalCherenkovAngles</data>
+    </node>
+    <edge source="RichTracksDown" target="RichSignalCKAnglesDown" />
+    <node id="RichCKResolutionsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackFunctionalCherenkovResolutions</data>
+    </node>
+    <edge source="RichTracksDown" target="RichCKResolutionsDown" />
+    <edge source="RichDownReco" target="RichTracksDown" />
+    <node id="RichPhotonsDown">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichPhotonRecoDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDQuarticPhotonReco</data>
+    </node>
+    <edge source="RichPhotonsDown" target="RichPhotonRecoDown" />
+    <node id="RichPredPixelSignalDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPhotonPredictedPixelSignal</data>
+    </node>
+    <edge source="RichPhotonsDown" target="RichPredPixelSignalDown" />
+    <edge source="RichDownReco" target="RichPhotonsDown" />
+    <node id="RichRecSummaryDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDRecoSummary</data>
+    </node>
+    <edge source="RichDownReco" target="RichRecSummaryDown" />
+    <node id="RichPIDDown">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichGPIDInitDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::InitialisePIDInfo</data>
+    </node>
+    <edge source="RichPIDDown" target="RichGPIDInitDown" />
+    <node id="RichPixBackgroundsIt0Down">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPixelBackgroundsEstiAvHPD</data>
+    </node>
+    <edge source="RichPIDDown" target="RichPixBackgroundsIt0Down" />
+    <node id="RichGPIDLikelihoodIt0Down">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::SIMDLikelihoodMinimiser</data>
+    </node>
+    <edge source="RichPIDDown" target="RichGPIDLikelihoodIt0Down" />
+    <node id="RichPixBackgroundsIt1Down">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPixelBackgroundsEstiAvHPD</data>
+    </node>
+    <edge source="RichPIDDown" target="RichPixBackgroundsIt1Down" />
+    <node id="RichGPIDLikelihoodIt1Down">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::SIMDLikelihoodMinimiser</data>
+    </node>
+    <edge source="RichPIDDown" target="RichGPIDLikelihoodIt1Down" />
+    <node id="RichGPIDWriteRichPIDsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::WriteRichPIDs</data>
+    </node>
+    <edge source="RichPIDDown" target="RichGPIDWriteRichPIDsDown" />
+    <edge source="RichDownReco" target="RichPIDDown" />
+    <edge source="RichRecoSeq" target="RichDownReco" />
+    <node id="RichUpReco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichTracksUp">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichTrackSegmentsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::DetailedTrSegMakerFromTracks</data>
+    </node>
+    <edge source="RichTracksUp" target="RichTrackSegmentsUp" />
+    <node id="RichTrackGloPointsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceTrackGlobalPoints</data>
+    </node>
+    <edge source="RichTracksUp" target="RichTrackGloPointsUp" />
+    <node id="RichTrackLocPointsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceTrackLocalPoints</data>
+    </node>
+    <edge source="RichTracksUp" target="RichTrackLocPointsUp" />
+    <node id="RichEmittedYieldsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::EmittedPhotonYields</data>
+    </node>
+    <edge source="RichTracksUp" target="RichEmittedYieldsUp" />
+    <node id="RichEmittedCKAnglesUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackEmittedCherenkovAngles</data>
+    </node>
+    <edge source="RichTracksUp" target="RichEmittedCKAnglesUp" />
+    <node id="RichMassConesUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceCherenkovCones</data>
+    </node>
+    <edge source="RichTracksUp" target="RichMassConesUp" />
+    <node id="RichDetectableYieldsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::DetectablePhotonYields</data>
+    </node>
+    <edge source="RichTracksUp" target="RichDetectableYieldsUp" />
+    <node id="RichGeomEffUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GeomEffCKMassRings</data>
+    </node>
+    <edge source="RichTracksUp" target="RichGeomEffUp" />
+    <node id="RichTkSegmentSelUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SelectTrackSegments</data>
+    </node>
+    <edge source="RichTracksUp" target="RichTkSegmentSelUp" />
+    <node id="RichSignalYieldsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SignalPhotonYields</data>
+    </node>
+    <edge source="RichTracksUp" target="RichSignalYieldsUp" />
+    <node id="RichSignalCKAnglesUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackSignalCherenkovAngles</data>
+    </node>
+    <edge source="RichTracksUp" target="RichSignalCKAnglesUp" />
+    <node id="RichCKResolutionsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackFunctionalCherenkovResolutions</data>
+    </node>
+    <edge source="RichTracksUp" target="RichCKResolutionsUp" />
+    <edge source="RichUpReco" target="RichTracksUp" />
+    <node id="RichPhotonsUp">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichPhotonRecoUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDQuarticPhotonReco</data>
+    </node>
+    <edge source="RichPhotonsUp" target="RichPhotonRecoUp" />
+    <node id="RichPredPixelSignalUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPhotonPredictedPixelSignal</data>
+    </node>
+    <edge source="RichPhotonsUp" target="RichPredPixelSignalUp" />
+    <edge source="RichUpReco" target="RichPhotonsUp" />
+    <node id="RichRecSummaryUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDRecoSummary</data>
+    </node>
+    <edge source="RichUpReco" target="RichRecSummaryUp" />
+    <node id="RichPIDUp">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichGPIDInitUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::InitialisePIDInfo</data>
+    </node>
+    <edge source="RichPIDUp" target="RichGPIDInitUp" />
+    <node id="RichPixBackgroundsIt0Up">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPixelBackgroundsEstiAvHPD</data>
+    </node>
+    <edge source="RichPIDUp" target="RichPixBackgroundsIt0Up" />
+    <node id="RichGPIDLikelihoodIt0Up">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::SIMDLikelihoodMinimiser</data>
+    </node>
+    <edge source="RichPIDUp" target="RichGPIDLikelihoodIt0Up" />
+    <node id="RichPixBackgroundsIt1Up">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPixelBackgroundsEstiAvHPD</data>
+    </node>
+    <edge source="RichPIDUp" target="RichPixBackgroundsIt1Up" />
+    <node id="RichGPIDLikelihoodIt1Up">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::SIMDLikelihoodMinimiser</data>
+    </node>
+    <edge source="RichPIDUp" target="RichGPIDLikelihoodIt1Up" />
+    <node id="RichGPIDWriteRichPIDsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::WriteRichPIDs</data>
+    </node>
+    <edge source="RichPIDUp" target="RichGPIDWriteRichPIDsUp" />
+    <edge source="RichUpReco" target="RichPIDUp" />
+    <edge source="RichRecoSeq" target="RichUpReco" />
+    <node id="RichLongReco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichTracksLong">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichTrackSegmentsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::DetailedTrSegMakerFromTracks</data>
+    </node>
+    <edge source="RichTracksLong" target="RichTrackSegmentsLong" />
+    <node id="RichTrackGloPointsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceTrackGlobalPoints</data>
+    </node>
+    <edge source="RichTracksLong" target="RichTrackGloPointsLong" />
+    <node id="RichTrackLocPointsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceTrackLocalPoints</data>
+    </node>
+    <edge source="RichTracksLong" target="RichTrackLocPointsLong" />
+    <node id="RichEmittedYieldsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::EmittedPhotonYields</data>
+    </node>
+    <edge source="RichTracksLong" target="RichEmittedYieldsLong" />
+    <node id="RichEmittedCKAnglesLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackEmittedCherenkovAngles</data>
+    </node>
+    <edge source="RichTracksLong" target="RichEmittedCKAnglesLong" />
+    <node id="RichMassConesLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::RayTraceCherenkovCones</data>
+    </node>
+    <edge source="RichTracksLong" target="RichMassConesLong" />
+    <node id="RichDetectableYieldsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::DetectablePhotonYields</data>
+    </node>
+    <edge source="RichTracksLong" target="RichDetectableYieldsLong" />
+    <node id="RichGeomEffLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GeomEffCKMassRings</data>
+    </node>
+    <edge source="RichTracksLong" target="RichGeomEffLong" />
+    <node id="RichTkSegmentSelLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SelectTrackSegments</data>
+    </node>
+    <edge source="RichTracksLong" target="RichTkSegmentSelLong" />
+    <node id="RichSignalYieldsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SignalPhotonYields</data>
+    </node>
+    <edge source="RichTracksLong" target="RichSignalYieldsLong" />
+    <node id="RichSignalCKAnglesLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackSignalCherenkovAngles</data>
+    </node>
+    <edge source="RichTracksLong" target="RichSignalCKAnglesLong" />
+    <node id="RichCKResolutionsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::TrackFunctionalCherenkovResolutions</data>
+    </node>
+    <edge source="RichTracksLong" target="RichCKResolutionsLong" />
+    <edge source="RichLongReco" target="RichTracksLong" />
+    <node id="RichPhotonsLong">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichPhotonRecoLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDQuarticPhotonReco</data>
+    </node>
+    <edge source="RichPhotonsLong" target="RichPhotonRecoLong" />
+    <node id="RichPredPixelSignalLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPhotonPredictedPixelSignal</data>
+    </node>
+    <edge source="RichPhotonsLong" target="RichPredPixelSignalLong" />
+    <edge source="RichLongReco" target="RichPhotonsLong" />
+    <node id="RichRecSummaryLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDRecoSummary</data>
+    </node>
+    <edge source="RichLongReco" target="RichRecSummaryLong" />
+    <node id="RichPIDLong">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichGPIDInitLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::InitialisePIDInfo</data>
+    </node>
+    <edge source="RichPIDLong" target="RichGPIDInitLong" />
+    <node id="RichPixBackgroundsIt0Long">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPixelBackgroundsEstiAvHPD</data>
+    </node>
+    <edge source="RichPIDLong" target="RichPixBackgroundsIt0Long" />
+    <node id="RichGPIDLikelihoodIt0Long">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::SIMDLikelihoodMinimiser</data>
+    </node>
+    <edge source="RichPIDLong" target="RichGPIDLikelihoodIt0Long" />
+    <node id="RichPixBackgroundsIt1Long">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::SIMDPixelBackgroundsEstiAvHPD</data>
+    </node>
+    <edge source="RichPIDLong" target="RichPixBackgroundsIt1Long" />
+    <node id="RichGPIDLikelihoodIt1Long">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::SIMDLikelihoodMinimiser</data>
+    </node>
+    <edge source="RichPIDLong" target="RichGPIDLikelihoodIt1Long" />
+    <node id="RichGPIDWriteRichPIDsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::GlobalPID::WriteRichPIDs</data>
+    </node>
+    <edge source="RichPIDLong" target="RichGPIDWriteRichPIDsLong" />
+    <edge source="RichLongReco" target="RichPIDLong" />
+    <edge source="RichRecoSeq" target="RichLongReco" />
+    <node id="MergeRichPIDs">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::MergeRichPIDs</data>
+    </node>
+    <edge source="RichRecoSeq" target="MergeRichPIDs" />
+    <edge source="RecoRICHSeq" target="RichRecoSeq" />
+    <edge source="Reco" target="RecoRICHSeq" />
+    <node id="RecoCALOSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloProcessorCaloSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloRecoForCaloProcessor">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloDigits">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="SpdFromRaw">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitsFromRaw</data>
+    </node>
+    <edge source="CaloDigits" target="SpdFromRaw" />
+    <node id="PrsDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PrsFromRaw">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitsFromRaw</data>
+    </node>
+    <edge source="PrsDigitsSeq" target="PrsFromRaw" />
+    <node id="PrsProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="PrsDigitsSeq" target="PrsProcStatus" />
+    <edge source="CaloDigits" target="PrsDigitsSeq" />
+    <node id="EcalDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalZSup">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloZSupAlg</data>
+    </node>
+    <edge source="EcalDigitsSeq" target="EcalZSup" />
+    <node id="EcalProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="EcalDigitsSeq" target="EcalProcStatus" />
+    <edge source="CaloDigits" target="EcalDigitsSeq" />
+    <node id="HcalDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="HcalZSup">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloZSupAlg</data>
+    </node>
+    <edge source="HcalDigitsSeq" target="HcalZSup" />
+    <node id="HcalProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="HcalDigitsSeq" target="HcalProcStatus" />
+    <edge source="CaloDigits" target="HcalDigitsSeq" />
+    <edge source="CaloRecoForCaloProcessor" target="CaloDigits" />
+    <node id="ClusterReco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloDigits">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="SpdFromRaw">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitsFromRaw</data>
+    </node>
+    <edge source="CaloDigits" target="SpdFromRaw" />
+    <node id="PrsDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PrsFromRaw">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitsFromRaw</data>
+    </node>
+    <edge source="PrsDigitsSeq" target="PrsFromRaw" />
+    <node id="PrsProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="PrsDigitsSeq" target="PrsProcStatus" />
+    <edge source="CaloDigits" target="PrsDigitsSeq" />
+    <node id="EcalDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalZSup">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloZSupAlg</data>
+    </node>
+    <edge source="EcalDigitsSeq" target="EcalZSup" />
+    <node id="EcalProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="EcalDigitsSeq" target="EcalProcStatus" />
+    <edge source="CaloDigits" target="EcalDigitsSeq" />
+    <node id="HcalDigitsSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="HcalZSup">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloZSupAlg</data>
+    </node>
+    <edge source="HcalDigitsSeq" target="HcalZSup" />
+    <node id="HcalProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="HcalDigitsSeq" target="HcalProcStatus" />
+    <edge source="CaloDigits" target="HcalDigitsSeq" />
+    <edge source="ClusterReco" target="CaloDigits" />
+    <node id="CaloDigitFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitFilterAlg</data>
+    </node>
+    <edge source="ClusterReco" target="CaloDigitFilter" />
+    <node id="EcalClust">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CellularAutomatonAlg</data>
+    </node>
+    <edge source="ClusterReco" target="EcalClust" />
+    <node id="EcalShare">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloShowerOverlap</data>
+    </node>
+    <edge source="ClusterReco" target="EcalShare" />
+    <node id="EcalCovar">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloClusterCovarianceAlg</data>
+    </node>
+    <edge source="ClusterReco" target="EcalCovar" />
+    <edge source="CaloRecoForCaloProcessor" target="ClusterReco" />
+    <node id="PhotonReco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloTrackMatch">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="InECAL">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InEcalAcceptanceAlg</data>
+    </node>
+    <edge source="CaloTrackMatch" target="InECAL" />
+    <node id="ClusterMatch">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PhotonMatchAlg</data>
+    </node>
+    <edge source="CaloTrackMatch" target="ClusterMatch" />
+    <edge source="PhotonReco" target="CaloTrackMatch" />
+    <node id="SinglePhotonRec">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloSinglePhotonAlg</data>
+    </node>
+    <edge source="PhotonReco" target="SinglePhotonRec" />
+    <edge source="CaloRecoForCaloProcessor" target="PhotonReco" />
+    <node id="MergedPi0Reco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="MergedPi0Rec">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloMergedPi0</data>
+    </node>
+    <edge source="MergedPi0Reco" target="MergedPi0Rec" />
+    <edge source="CaloRecoForCaloProcessor" target="MergedPi0Reco" />
+    <node id="ElectronReco">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloTrackMatch">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="InECAL">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InEcalAcceptanceAlg</data>
+    </node>
+    <edge source="CaloTrackMatch" target="InECAL" />
+    <node id="ClusterMatch">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PhotonMatchAlg</data>
+    </node>
+    <edge source="CaloTrackMatch" target="ClusterMatch" />
+    <edge source="ElectronReco" target="CaloTrackMatch" />
+    <node id="SingleElectronRec">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloElectronAlg</data>
+    </node>
+    <edge source="ElectronReco" target="SingleElectronRec" />
+    <edge source="CaloRecoForCaloProcessor" target="ElectronReco" />
+    <edge source="CaloProcessorCaloSeq" target="CaloRecoForCaloProcessor" />
+    <node id="CaloPIDsCaloPIDsForCaloProcessor">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="ChargedPIDsCaloPIDsForCaloProcessor">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="InCaloAcceptance">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="InECAL">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InEcalAcceptanceAlg</data>
+    </node>
+    <edge source="InCaloAcceptance" target="InECAL" />
+    <node id="InHCAL">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InHcalAcceptanceAlg</data>
+    </node>
+    <edge source="InCaloAcceptance" target="InHCAL" />
+    <node id="InBREM">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InBremAcceptanceAlg</data>
+    </node>
+    <edge source="InCaloAcceptance" target="InBREM" />
+    <node id="InSPD">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InSpdAcceptanceAlg</data>
+    </node>
+    <edge source="InCaloAcceptance" target="InSPD" />
+    <node id="InPRS">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InPrsAcceptanceAlg</data>
+    </node>
+    <edge source="InCaloAcceptance" target="InPRS" />
+    <edge source="ChargedPIDsCaloPIDsForCaloProcessor" target="InCaloAcceptance" />
+    <node id="CaloMatch">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloTrackMatch">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="InECAL">
+      <data key="d0">Algorithm</data>
+      <data key="d1">InEcalAcceptanceAlg</data>
+    </node>
+    <edge source="CaloTrackMatch" target="InECAL" />
+    <node id="ClusterMatch">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PhotonMatchAlg</data>
+    </node>
+    <edge source="CaloTrackMatch" target="ClusterMatch" />
+    <edge source="CaloMatch" target="CaloTrackMatch" />
+    <node id="ElectronMatch">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ElectronMatchAlg</data>
+    </node>
+    <edge source="CaloMatch" target="ElectronMatch" />
+    <node id="BremMatch">
+      <data key="d0">Algorithm</data>
+      <data key="d1">BremMatchAlg</data>
+    </node>
+    <edge source="CaloMatch" target="BremMatch" />
+    <edge source="ChargedPIDsCaloPIDsForCaloProcessor" target="CaloMatch" />
+    <node id="CaloEnergy">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalE">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Track2EcalEAlg</data>
+    </node>
+    <edge source="CaloEnergy" target="EcalE" />
+    <node id="HcalE">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Track2HcalEAlg</data>
+    </node>
+    <edge source="CaloEnergy" target="HcalE" />
+    <node id="SpdE">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Track2SpdEAlg</data>
+    </node>
+    <edge source="CaloEnergy" target="SpdE" />
+    <node id="PrsE">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Track2PrsEAlg</data>
+    </node>
+    <edge source="CaloEnergy" target="PrsE" />
+    <edge source="ChargedPIDsCaloPIDsForCaloProcessor" target="CaloEnergy" />
+    <node id="CaloChi2">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalChi22ID">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EcalChi22ID</data>
+    </node>
+    <edge source="CaloChi2" target="EcalChi22ID" />
+    <node id="BremChi22ID">
+      <data key="d0">Algorithm</data>
+      <data key="d1">BremChi22ID</data>
+    </node>
+    <edge source="CaloChi2" target="BremChi22ID" />
+    <node id="ClusChi22ID">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ClusChi22ID</data>
+    </node>
+    <edge source="CaloChi2" target="ClusChi22ID" />
+    <edge source="ChargedPIDsCaloPIDsForCaloProcessor" target="CaloChi2" />
+    <node id="CaloDLLe">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalPIDe">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EcalPIDeAlg</data>
+    </node>
+    <edge source="CaloDLLe" target="EcalPIDe" />
+    <node id="BremPIDe">
+      <data key="d0">Algorithm</data>
+      <data key="d1">BremPIDeAlg</data>
+    </node>
+    <edge source="CaloDLLe" target="BremPIDe" />
+    <node id="HcalPIDe">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HcalPIDeAlg</data>
+    </node>
+    <edge source="CaloDLLe" target="HcalPIDe" />
+    <node id="PrsPIDe">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PrsPIDeAlg</data>
+    </node>
+    <edge source="CaloDLLe" target="PrsPIDe" />
+    <edge source="ChargedPIDsCaloPIDsForCaloProcessor" target="CaloDLLe" />
+    <node id="CaloDLLmu">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalPIDmu">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EcalPIDmuAlg</data>
+    </node>
+    <edge source="CaloDLLmu" target="EcalPIDmu" />
+    <node id="HcalPIDmu">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HcalPIDmuAlg</data>
+    </node>
+    <edge source="CaloDLLmu" target="HcalPIDmu" />
+    <edge source="ChargedPIDsCaloPIDsForCaloProcessor" target="CaloDLLmu" />
+    <edge source="CaloPIDsCaloPIDsForCaloProcessor" target="ChargedPIDsCaloPIDsForCaloProcessor" />
+    <node id="NeutralPIDsCaloPIDsForCaloProcessor">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PhotonID">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloPhotonIdAlg</data>
+    </node>
+    <edge source="NeutralPIDsCaloPIDsForCaloProcessor" target="PhotonID" />
+    <node id="MergedID">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloPhotonIdAlg</data>
+    </node>
+    <edge source="NeutralPIDsCaloPIDsForCaloProcessor" target="MergedID" />
+    <node id="PhotonFromMergedID">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloPhotonIdAlg</data>
+    </node>
+    <edge source="NeutralPIDsCaloPIDsForCaloProcessor" target="PhotonFromMergedID" />
+    <edge source="CaloPIDsCaloPIDsForCaloProcessor" target="NeutralPIDsCaloPIDsForCaloProcessor" />
+    <edge source="CaloProcessorCaloSeq" target="CaloPIDsCaloPIDsForCaloProcessor" />
+    <edge source="RecoCALOSeq" target="CaloProcessorCaloSeq" />
+    <edge source="Reco" target="RecoCALOSeq" />
+    <node id="RecoMUONSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="MuonRec">
+      <data key="d0">Algorithm</data>
+      <data key="d1">MuonRec</data>
+    </node>
+    <edge source="RecoMUONSeq" target="MuonRec" />
+    <node id="MuonProcStatus">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusConverter</data>
+    </node>
+    <edge source="RecoMUONSeq" target="MuonProcStatus" />
+    <node id="MuonROFilter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawBankReadoutStatusFilter</data>
+    </node>
+    <edge source="RecoMUONSeq" target="MuonROFilter" />
+    <node id="MuonIDSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PrepareMuonHits">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PrepareMuonHits</data>
+    </node>
+    <edge source="MuonIDSeq" target="PrepareMuonHits" />
+    <node id="MuonIDAlgLite">
+      <data key="d0">Algorithm</data>
+      <data key="d1">MuonIDAlgLite</data>
+    </node>
+    <edge source="MuonIDSeq" target="MuonIDAlgLite" />
+    <edge source="RecoMUONSeq" target="MuonIDSeq" />
+    <edge source="Reco" target="RecoMUONSeq" />
+    <node id="RecoPROTOSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="ChargedProtoParticles">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="ChargedProtoPMaker">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleMaker</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPMaker" />
+    <node id="ChargedProtoPAddEcal">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddEcalInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddEcal" />
+    <node id="ChargedProtoPAddBrem">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddBremInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddBrem" />
+    <node id="ChargedProtoPAddHcal">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddHcalInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddHcal" />
+    <node id="ChargedProtoPAddPrs">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddPrsInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddPrs" />
+    <node id="ChargedProtoPAddSpd">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddSpdInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddSpd" />
+    <node id="ChargedProtoPAddVeloDEDX">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddVeloInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddVeloDEDX" />
+    <node id="ChargedProtoPAddRich">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddRichInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddRich" />
+    <node id="ChargedProtoPAddMuon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleAddMuonInfo</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPAddMuon" />
+    <node id="ChargedProtoPCombDLLs">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoCombineDLLsAlg</data>
+    </node>
+    <edge source="ChargedProtoParticles" target="ChargedProtoPCombDLLs" />
+    <node id="ANNGPIDSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="ANNGPIDLongElectron">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDLongElectron" />
+    <node id="ANNGPIDLongMuon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDLongMuon" />
+    <node id="ANNGPIDLongPion">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDLongPion" />
+    <node id="ANNGPIDLongKaon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDLongKaon" />
+    <node id="ANNGPIDLongProton">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDLongProton" />
+    <node id="ANNGPIDLongGhost">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDLongGhost" />
+    <node id="ANNGPIDDownstreamElectron">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDDownstreamElectron" />
+    <node id="ANNGPIDDownstreamMuon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDDownstreamMuon" />
+    <node id="ANNGPIDDownstreamPion">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDDownstreamPion" />
+    <node id="ANNGPIDDownstreamKaon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDDownstreamKaon" />
+    <node id="ANNGPIDDownstreamProton">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDDownstreamProton" />
+    <node id="ANNGPIDDownstreamGhost">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDDownstreamGhost" />
+    <node id="ANNGPIDUpstreamElectron">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDUpstreamElectron" />
+    <node id="ANNGPIDUpstreamMuon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDUpstreamMuon" />
+    <node id="ANNGPIDUpstreamPion">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDUpstreamPion" />
+    <node id="ANNGPIDUpstreamKaon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDUpstreamKaon" />
+    <node id="ANNGPIDUpstreamProton">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDUpstreamProton" />
+    <node id="ANNGPIDUpstreamGhost">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
+    </node>
+    <edge source="ANNGPIDSeq" target="ANNGPIDUpstreamGhost" />
+    <edge source="ChargedProtoParticles" target="ANNGPIDSeq" />
+    <edge source="RecoPROTOSeq" target="ChargedProtoParticles" />
+    <node id="NeutralProtoParticles">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="NeutralProtoPMaker">
+      <data key="d0">Algorithm</data>
+      <data key="d1">NeutralProtoPAlg</data>
+    </node>
+    <edge source="NeutralProtoParticles" target="NeutralProtoPMaker" />
+    <edge source="RecoPROTOSeq" target="NeutralProtoParticles" />
+    <edge source="Reco" target="RecoPROTOSeq" />
+    <node id="RecoSUMMARYSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RecSummary">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecSummaryAlg</data>
+    </node>
+    <edge source="RecoSUMMARYSeq" target="RecSummary" />
+    <edge source="Reco" target="RecoSUMMARYSeq" />
+    <edge source="PhysicsSeq" target="Reco" />
+    <node id="Moni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="MoniCALOSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="CaloDigitsMoni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalDigitMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitMonitor</data>
+    </node>
+    <edge source="CaloDigitsMoni" target="EcalDigitMon" />
+    <node id="HcalDigitMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitMonitor</data>
+    </node>
+    <edge source="CaloDigitsMoni" target="HcalDigitMon" />
+    <node id="PrsDigitMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitMonitor</data>
+    </node>
+    <edge source="CaloDigitsMoni" target="PrsDigitMon" />
+    <node id="SpdDigitMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloDigitMonitor</data>
+    </node>
+    <edge source="CaloDigitsMoni" target="SpdDigitMon" />
+    <node id="SpdMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">SpdMonitor</data>
+    </node>
+    <edge source="CaloDigitsMoni" target="SpdMon" />
+    <edge source="MoniCALOSeq" target="CaloDigitsMoni" />
+    <node id="CaloEFlowMoni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalEFlowMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloEFlowAlg</data>
+    </node>
+    <edge source="CaloEFlowMoni" target="EcalEFlowMon" />
+    <edge source="MoniCALOSeq" target="CaloEFlowMoni" />
+    <node id="CaloClustersMoni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="EcalClusterMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloClusterMonitor</data>
+    </node>
+    <edge source="CaloClustersMoni" target="EcalClusterMon" />
+    <edge source="MoniCALOSeq" target="CaloClustersMoni" />
+    <node id="CaloHyposMoni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="ElectronMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloHypoMonitor</data>
+    </node>
+    <edge source="CaloHyposMoni" target="ElectronMon" />
+    <node id="PhotonMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloHypoMonitor</data>
+    </node>
+    <edge source="CaloHyposMoni" target="PhotonMon" />
+    <node id="SplitPhotonMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloHypoMonitor</data>
+    </node>
+    <edge source="CaloHyposMoni" target="SplitPhotonMon" />
+    <node id="MergedPi0Mon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloHypoMonitor</data>
+    </node>
+    <edge source="CaloHyposMoni" target="MergedPi0Mon" />
+    <edge source="MoniCALOSeq" target="CaloHyposMoni" />
+    <node id="DiPhotonMoni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="ResolvedPi0Mon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloPi0Monitor</data>
+    </node>
+    <edge source="DiPhotonMoni" target="ResolvedPi0Mon" />
+    <node id="EtaMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloPi0Monitor</data>
+    </node>
+    <edge source="DiPhotonMoni" target="EtaMon" />
+    <edge source="MoniCALOSeq" target="DiPhotonMoni" />
+    <node id="ProtoElectronMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloProtoElectronMonitor</data>
+    </node>
+    <edge source="MoniCALOSeq" target="ProtoElectronMon" />
+    <node id="CaloPIDsMoni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PhotonMatchMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloClusterMatchMonitor</data>
+    </node>
+    <edge source="CaloPIDsMoni" target="PhotonMatchMon" />
+    <node id="ElectronMatchMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloHypoMatchMonitor</data>
+    </node>
+    <edge source="CaloPIDsMoni" target="ElectronMatchMon" />
+    <node id="BremMatchMon">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloHypoMatchMonitor</data>
+    </node>
+    <edge source="CaloPIDsMoni" target="BremMatchMon" />
+    <node id="CaloEMuPIDMonUncut">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloEMuPIDMon</data>
+    </node>
+    <edge source="CaloPIDsMoni" target="CaloEMuPIDMonUncut" />
+    <node id="CaloEMuPIDMonSoft">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloEMuPIDMon</data>
+    </node>
+    <edge source="CaloPIDsMoni" target="CaloEMuPIDMonSoft" />
+    <node id="CaloEMuPIDMonHard">
+      <data key="d0">Algorithm</data>
+      <data key="d1">CaloEMuPIDMon</data>
+    </node>
+    <edge source="CaloPIDsMoni" target="CaloEMuPIDMonHard" />
+    <edge source="MoniCALOSeq" target="CaloPIDsMoni" />
+    <edge source="Moni" target="MoniCALOSeq" />
+    <node id="MoniRICHSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichMoni">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichDecodingErrors">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::DecodingErrors</data>
+    </node>
+    <edge source="RichMoni" target="RichDecodingErrors" />
+    <node id="RichRecPixelQC">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::DetectorHits</data>
+    </node>
+    <edge source="RichMoni" target="RichRecPixelQC" />
+    <node id="RichFutureMoniClustering">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::SmartIDClustering</data>
+    </node>
+    <edge source="RichMoni" target="RichFutureMoniClustering" />
+    <node id="RichRecPixelClusters">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::PixelClusters</data>
+    </node>
+    <edge source="RichMoni" target="RichRecPixelClusters" />
+    <node id="RichMoniDown">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichRecoStatsDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDRecoStats</data>
+    </node>
+    <edge source="RichMoniDown" target="RichRecoStatsDown" />
+    <node id="RiDownTrkEff">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::TrackSelEff</data>
+    </node>
+    <edge source="RichMoniDown" target="RiDownTrkEff" />
+    <node id="RiCKResDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDPhotonCherenkovAngles</data>
+    </node>
+    <edge source="RichMoniDown" target="RiCKResDown" />
+    <node id="RiCKResDownTight">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDPhotonCherenkovAngles</data>
+    </node>
+    <edge source="RichMoniDown" target="RiCKResDownTight" />
+    <edge source="RichMoni" target="RichMoniDown" />
+    <node id="RichMoniUp">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichRecoStatsUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDRecoStats</data>
+    </node>
+    <edge source="RichMoniUp" target="RichRecoStatsUp" />
+    <node id="RiUpTrkEff">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::TrackSelEff</data>
+    </node>
+    <edge source="RichMoniUp" target="RiUpTrkEff" />
+    <node id="RiCKResUp">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDPhotonCherenkovAngles</data>
+    </node>
+    <edge source="RichMoniUp" target="RiCKResUp" />
+    <node id="RiCKResUpTight">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDPhotonCherenkovAngles</data>
+    </node>
+    <edge source="RichMoniUp" target="RiCKResUpTight" />
+    <edge source="RichMoni" target="RichMoniUp" />
+    <node id="RichMoniLong">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RichRecoStatsLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDRecoStats</data>
+    </node>
+    <edge source="RichMoniLong" target="RichRecoStatsLong" />
+    <node id="RiLongTrkEff">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::TrackSelEff</data>
+    </node>
+    <edge source="RichMoniLong" target="RiLongTrkEff" />
+    <node id="RiCKResLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDPhotonCherenkovAngles</data>
+    </node>
+    <edge source="RichMoniLong" target="RiCKResLong" />
+    <node id="RiCKResLongTight">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Rich::Future::Rec::Moni::SIMDPhotonCherenkovAngles</data>
+    </node>
+    <edge source="RichMoniLong" target="RiCKResLongTight" />
+    <edge source="RichMoni" target="RichMoniLong" />
+    <edge source="MoniRICHSeq" target="RichMoni" />
+    <edge source="Moni" target="MoniRICHSeq" />
+    <node id="MoniMUONSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="MuonPIDMonitorDown">
+      <data key="d0">Algorithm</data>
+      <data key="d1">MuonPIDChecker</data>
+    </node>
+    <edge source="MoniMUONSeq" target="MuonPIDMonitorDown" />
+    <node id="MuonPIDMonitorLong">
+      <data key="d0">Algorithm</data>
+      <data key="d1">MuonPIDChecker</data>
+    </node>
+    <edge source="MoniMUONSeq" target="MuonPIDMonitorLong" />
+    <node id="MuonTrackFitter">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackEventFitter</data>
+    </node>
+    <edge source="MoniMUONSeq" target="MuonTrackFitter" />
+    <node id="MuonTrackAligMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">MuonTrackAligMonitor</data>
+    </node>
+    <edge source="MoniMUONSeq" target="MuonTrackAligMonitor" />
+    <edge source="Moni" target="MoniMUONSeq" />
+    <node id="MoniVELOSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="VeloClusterMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Velo::VeloClusterMonitor</data>
+    </node>
+    <edge source="MoniVELOSeq" target="VeloClusterMonitor" />
+    <node id="VeloTrackMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Velo::VeloTrackMonitor</data>
+    </node>
+    <edge source="MoniVELOSeq" target="VeloTrackMonitor" />
+    <node id="VeloIPResolutionMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">Velo::VeloIPResolutionMonitor</data>
+    </node>
+    <edge source="MoniVELOSeq" target="VeloIPResolutionMonitor" />
+    <edge source="Moni" target="MoniVELOSeq" />
+    <node id="MoniOTSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="OTTimeMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">OTTimeMonitor</data>
+    </node>
+    <edge source="MoniOTSeq" target="OTTimeMonitor" />
+    <node id="OTTrackMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">OTTrackMonitor</data>
+    </node>
+    <edge source="MoniOTSeq" target="OTTrackMonitor" />
+    <node id="OTHitEfficiencyMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">OTHitEfficiencyMonitor</data>
+    </node>
+    <edge source="MoniOTSeq" target="OTHitEfficiencyMonitor" />
+    <edge source="Moni" target="MoniOTSeq" />
+    <node id="MoniSTSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TTClusterMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ST__STClusterMonitor</data>
+    </node>
+    <edge source="MoniSTSeq" target="TTClusterMonitor" />
+    <node id="ITClusterMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ST__STClusterMonitor</data>
+    </node>
+    <edge source="MoniSTSeq" target="ITClusterMonitor" />
+    <edge source="Moni" target="MoniSTSeq" />
+    <node id="MoniGENERALSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="OverallEventProcTime">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecProcessingTimeMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="OverallEventProcTime" />
+    <node id="TrackEventProcTime">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecProcessingTimeMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="TrackEventProcTime" />
+    <node id="VertexEventProcTime">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecProcessingTimeMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="VertexEventProcTime" />
+    <node id="RichEventProcTime">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecProcessingTimeMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="RichEventProcTime" />
+    <node id="CaloEventProcTime">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecProcessingTimeMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="CaloEventProcTime" />
+    <node id="MuonEventProcTime">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecProcessingTimeMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="MuonEventProcTime" />
+    <node id="ProtoEventProcTime">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RecProcessingTimeMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="ProtoEventProcTime" />
+    <node id="ProcStatAbortMoni">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ProcStatAbortMoni</data>
+    </node>
+    <edge source="MoniGENERALSeq" target="ProcStatAbortMoni" />
+    <edge source="Moni" target="MoniGENERALSeq" />
+    <node id="MoniTrSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="TrackMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackMonitor" />
+    <node id="TrackDiMuonMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackDiMuonMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackDiMuonMonitor" />
+    <node id="TrackVertexMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackVertexMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackVertexMonitor" />
+    <node id="AlignmentOnlineMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">AlignmentOnlineMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="AlignmentOnlineMonitor" />
+    <node id="TrackV0Monitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackV0Monitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackV0Monitor" />
+    <node id="TrackFitMatchMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackFitMatchMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackFitMatchMonitor" />
+    <node id="TrackAlignMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackAlignMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackAlignMonitor" />
+    <node id="TrackITOverlapMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackITOverlapMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackITOverlapMonitor" />
+    <node id="TrackVeloOverlapMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackVeloOverlapMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackVeloOverlapMonitor" />
+    <node id="TTTrackMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TTTrackMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TTTrackMonitor" />
+    <node id="ITTrackMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ITTrackMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="ITTrackMonitor" />
+    <node id="TrackPV2HalfAlignMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackPV2HalfAlignMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackPV2HalfAlignMonitor" />
+    <node id="TrackEcalMatchMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackCaloMatchMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackEcalMatchMonitor" />
+    <node id="TrackSpdMatchMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackCaloMatchMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackSpdMatchMonitor" />
+    <node id="TrackPrsMatchMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackCaloMatchMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackPrsMatchMonitor" />
+    <node id="TrackMuonMatchMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackMuonMatchMonitor</data>
+    </node>
+    <edge source="MoniTrSeq" target="TrackMuonMatchMonitor" />
+    <edge source="Moni" target="MoniTrSeq" />
+    <node id="MoniPROTOSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="ChargedProtoPMoni">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleMoni</data>
+    </node>
+    <edge source="MoniPROTOSeq" target="ChargedProtoPMoni" />
+    <node id="ChargedProtoANNPIDMoni">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ANNGlobalPID::ChargedProtoANNPIDMoni</data>
+    </node>
+    <edge source="MoniPROTOSeq" target="ChargedProtoANNPIDMoni" />
+    <edge source="Moni" target="MoniPROTOSeq" />
+    <node id="MoniHltSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="Hlt1DecReportsDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltDecReportsDecoder</data>
+    </node>
+    <edge source="MoniHltSeq" target="Hlt1DecReportsDecoder" />
+    <node id="Hlt2DecReportsDecoder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltDecReportsDecoder</data>
+    </node>
+    <edge source="MoniHltSeq" target="Hlt2DecReportsDecoder" />
+    <node id="HltRateMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltRateMonitor</data>
+    </node>
+    <edge source="MoniHltSeq" target="HltRateMonitor" />
+    <node id="HltRateMonitorMB">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltRateMonitor</data>
+    </node>
+    <edge source="MoniHltSeq" target="HltRateMonitorMB" />
+    <node id="HltCompositionMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltCompositionMonitor</data>
+    </node>
+    <edge source="MoniHltSeq" target="HltCompositionMonitor" />
+    <node id="MuMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">MuMonitor</data>
+    </node>
+    <edge source="MoniHltSeq" target="MuMonitor" />
+    <node id="EventTimeMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EventTimeMonitor</data>
+    </node>
+    <edge source="MoniHltSeq" target="EventTimeMonitor" />
+    <edge source="Moni" target="MoniHltSeq" />
+    <edge source="PhysicsSeq" target="Moni" />
+    <edge source="BrunelSequencer" target="PhysicsSeq" />
+    <node id="Output">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">ProcessPhase</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="OutputDSTSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="RawEventSplitSeq">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="create_Calo_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_Calo_RawEvent" />
+    <node id="create_Unstripped_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_Unstripped_RawEvent" />
+    <node id="create_HC_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_HC_RawEvent" />
+    <node id="create_Tracker_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_Tracker_RawEvent" />
+    <node id="create_PersistReco_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_PersistReco_RawEvent" />
+    <node id="create_Velo_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_Velo_RawEvent" />
+    <node id="create_Muon_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_Muon_RawEvent" />
+    <node id="create_Rich_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_Rich_RawEvent" />
+    <node id="create_Trigger_RawEvent">
+      <data key="d0">Algorithm</data>
+      <data key="d1">RawEventMapCombiner</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="create_Trigger_RawEvent" />
+    <node id="KillRawEventNodes">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EventNodeKiller</data>
+    </node>
+    <edge source="RawEventSplitSeq" target="KillRawEventNodes" />
+    <edge source="OutputDSTSeq" target="RawEventSplitSeq" />
+    <node id="FilterBestTrackStates">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackToDST</data>
+    </node>
+    <edge source="OutputDSTSeq" target="FilterBestTrackStates" />
+    <node id="FilterFittedVeloTrackStates">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackToDST</data>
+    </node>
+    <edge source="OutputDSTSeq" target="FilterFittedVeloTrackStates" />
+    <node id="FilterMuonTrackStates">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackToDST</data>
+    </node>
+    <edge source="OutputDSTSeq" target="FilterMuonTrackStates" />
+    <node id="PackDST">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PackTracks">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackTrack</data>
+    </node>
+    <edge source="PackDST" target="PackTracks" />
+    <node id="PackTracksFittedVelo">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackTrack</data>
+    </node>
+    <edge source="PackDST" target="PackTracksFittedVelo" />
+    <node id="PackRichPIDs">
+      <data key="d0">Algorithm</data>
+      <data key="d1">DataPacking::Pack&lt;LHCb::RichPIDPacker&gt;</data>
+    </node>
+    <edge source="PackDST" target="PackRichPIDs" />
+    <node id="PackMuonPIDs">
+      <data key="d0">Algorithm</data>
+      <data key="d1">DataPacking::Pack&lt;LHCb::MuonPIDPacker&gt;</data>
+    </node>
+    <edge source="PackDST" target="PackMuonPIDs" />
+    <node id="CaloPacking">
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+    </node>
+    <node id="PackPhotons">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackCaloHypo</data>
+    </node>
+    <edge source="CaloPacking" target="PackPhotons" />
+    <node id="PackElectrons">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackCaloHypo</data>
+    </node>
+    <edge source="CaloPacking" target="PackElectrons" />
+    <node id="PackMergedPi0s">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackCaloHypo</data>
+    </node>
+    <edge source="CaloPacking" target="PackMergedPi0s" />
+    <node id="PackSplitPhotons">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackCaloHypo</data>
+    </node>
+    <edge source="CaloPacking" target="PackSplitPhotons" />
+    <edge source="PackDST" target="CaloPacking" />
+    <node id="ProtoParticlePIDClean">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ChargedProtoParticleRemovePIDInfo</data>
+    </node>
+    <edge source="PackDST" target="ProtoParticlePIDClean" />
+    <node id="PackChargedProtos">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackProtoParticle</data>
+    </node>
+    <edge source="PackDST" target="PackChargedProtos" />
+    <node id="PackNeutralProtos">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackProtoParticle</data>
+    </node>
+    <edge source="PackDST" target="PackNeutralProtos" />
+    <node id="PackRecVertex">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackRecVertex</data>
+    </node>
+    <edge source="PackDST" target="PackRecVertex" />
+    <node id="PackTwoProngVertex">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackTwoProngVertex</data>
+    </node>
+    <edge source="PackDST" target="PackTwoProngVertex" />
+    <node id="PackMuonTracks">
+      <data key="d0">Algorithm</data>
+      <data key="d1">PackTrack</data>
+    </node>
+    <edge source="PackDST" target="PackMuonTracks" />
+    <edge source="OutputDSTSeq" target="PackDST" />
+    <edge source="Output" target="OutputDSTSeq" />
+    <edge source="BrunelSequencer" target="Output" />
+    <node id="FetchFromFile">
+      <data key="d0">Algorithm</data>
+      <data key="d1">FetchFromFile</data>
+    </node>
+    <edge source="BrunelSequencer" target="FetchFromFile" />
+  </graph>
+</graphml>
