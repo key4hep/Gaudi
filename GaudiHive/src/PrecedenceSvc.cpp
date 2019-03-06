@@ -1,6 +1,7 @@
 #include "PrecedenceSvc.h"
 #include "EventSlot.h"
-#include "PRGraph/Visitors/PRGraphVisitors.h"
+#include "PRGraph/Visitors/Promoters.h"
+#include "PRGraph/Visitors/Rankers.h"
 
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Sequence.h>
