@@ -1,5 +1,5 @@
 #include "PrecedenceRulesGraph.h"
-#include "PRGraphVisitors.h"
+#include "Visitors/PRGraphVisitors.h"
 
 #include <boost/property_map/transform_value_property_map.hpp>
 #include <fstream>

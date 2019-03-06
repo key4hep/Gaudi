@@ -2,7 +2,7 @@
 #define GAUDIHIVE_PRECEDENCESVC_H_
 
 #include "IPrecedenceSvc.h"
-#include "PrecedenceRulesGraph.h"
+#include "PRGraph/PrecedenceRulesGraph.h"
 
 // Framework include files
 #include "GaudiKernel/IAlgResourcePool.h"

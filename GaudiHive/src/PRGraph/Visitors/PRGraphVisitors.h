@@ -1,9 +1,9 @@
 #ifndef PRGRAPHVISITORS_H_
 #define PRGRAPHVISITORS_H_
 
-#include "EventSlot.h"
+#include "../../EventSlot.h"
+#include "../PrecedenceRulesGraph.h"
 #include "IGraphVisitor.h"
-#include "PrecedenceRulesGraph.h"
 
 namespace concurrency {
 

@@ -14,15 +14,15 @@
 #include <boost/variant.hpp>
 
 // fwk includes
-#include "AlgsExecutionStates.h"
-#include "EventSlot.h"
+#include "../AlgsExecutionStates.h"
+#include "../EventSlot.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ICondSvc.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/ITimelineSvc.h"
 #include "GaudiKernel/TaggedBool.h"
-#include "IGraphVisitor.h"
+#include "Visitors/IGraphVisitor.h"
 #include <Gaudi/Algorithm.h>
 
 namespace concurrency {

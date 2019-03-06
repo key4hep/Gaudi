@@ -17,8 +17,12 @@ endif (${APPLE})
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_module(GaudiHive
-                 *.cpp
+set(GaudiHive_srcs
+    src/*.cpp
+    PRGraph/*.cpp
+    PRGraph/Visitors/*.cpp)
+
+gaudi_add_module(GaudiHive ${GaudiHive_srcs}
                  LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib  ${LIBRT_NAME}
                  INCLUDE_DIRS Boost ROOT TBB)
 

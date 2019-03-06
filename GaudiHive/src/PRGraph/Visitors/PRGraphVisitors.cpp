@@ -1,5 +1,5 @@
 #include "PRGraphVisitors.h"
-#include "AlgsExecutionStates.h"
+#include "../../AlgsExecutionStates.h"
 
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/ICondSvc.h"
