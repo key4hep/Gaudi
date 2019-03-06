@@ -7,7 +7,7 @@ class MyAlg(ConfigurableAlgorithm):
     __slots__ = {
         'Text': 'some text',
         'Int': 23,
-        'DataHandle': DataObjectHandleBase('Location')
+        'DataHandle': DataObjectHandleBase('Location', 'R')
     }
 
     def getDlls(self):
@@ -34,13 +34,13 @@ def test_correct():
     assert a.getValuedProperties() == {
         'Int': 42,
         'Text': 'value',
-        'DataHandle': DataObjectHandleBase('/Event/X')
+        'DataHandle': DataObjectHandleBase('/Event/X', 'R')
     }
 
 
 def test_str_from_datahandle():
     a = MyAlg()
-    a.Text = DataObjectHandleBase('value')
+    a.Text = DataObjectHandleBase('value', 'R')
     assert a.getProp('Text') == 'value'
 
 
