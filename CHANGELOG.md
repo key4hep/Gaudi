@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+### Added
+- Add the possibility to ask for Mode in python data handle property (!845)
+
+
+## [v29r5][] - 2019-03-06
+This is a bugfix release only to fix a warning with the most recent version of
+CMake (3.13), see the changes on
+[Gitlab](https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r4...v29r5).
+
 ## [v31r0][] - 2019-02-11
 The main reason for this major release is to the change of the `Algorithm` base
 class with a re-entrant `execute` method (#47, !703). For backward compatibility the
@@ -247,5 +256,6 @@ Details about old versions of the project can be found in the
 [v30r5]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r4...v30r5
 [v30r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r3...v30r4
 [v30r3]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r2...v30r3
+[v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r4...v29r5
 [v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r3...v29r4
 [v28r2p1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v28r2...v28r2p1
