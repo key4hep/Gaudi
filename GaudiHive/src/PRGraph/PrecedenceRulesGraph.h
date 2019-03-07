@@ -458,7 +458,7 @@ namespace concurrency {
     /// Whether all daughters will be evaluated concurrently or sequentially
     bool m_modeConcurrent;
     /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
-    /// Applicable to both concurrent and sequential cases.
+    /// Applicable to "sequential" hub only.
     bool m_modePromptDecision;
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;
