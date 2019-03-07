@@ -90,10 +90,18 @@ extraNode = GaudiSequencer(
     "extraNode", Members=[a2, a3], Sequential=True, OutputLevel=INFO)
 
 viewNodeOne = GaudiSequencer(
-    "viewNodeOne", Members=[extraNode], Sequential=False, OutputLevel=INFO)
+    "viewNodeOne",
+    Members=[extraNode],
+    Sequential=False,
+    ShortCircuit=False,
+    OutputLevel=INFO)
 
 viewNodeTwo = GaudiSequencer(
-    "viewNodeTwo", Members=[extraNode], Sequential=False, OutputLevel=INFO)
+    "viewNodeTwo",
+    Members=[extraNode],
+    Sequential=False,
+    ShortCircuit=False,
+    OutputLevel=INFO)
 
 createViewSeq = GaudiSequencer(
     "createViewSeq",

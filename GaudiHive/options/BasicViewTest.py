@@ -79,7 +79,11 @@ for algo in [a1, a2, a3, a4]:
     algo.OutputLevel = INFO
 
 viewNode = GaudiSequencer(
-    "viewNode", Members=[a2, a3], Sequential=False, OutputLevel=INFO)
+    "viewNode",
+    Members=[a2, a3],
+    Sequential=False,
+    ShortCircuit=False,
+    OutputLevel=INFO)
 
 createViewSeq = GaudiSequencer(
     "createViewSeq",

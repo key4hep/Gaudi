@@ -1,6 +1,6 @@
 # setting LC_ALL to "C"
-# --> Including file '/workdir/Gaudi/GaudiHive/options/ViewIsolationTest.py'
-# <-- End of file '/workdir/Gaudi/GaudiHive/options/ViewIsolationTest.py'
+# --> Including file '/home/ishapova/workspace/eclipse.workspaces/GaudiMT/GaudiMC/GaudiHive/options/ViewIsolationTest.py'
+# <-- End of file '/home/ishapova/workspace/eclipse.workspaces/GaudiMT/GaudiMC/GaudiHive/options/ViewIsolationTest.py'
 # Dumping all configurables and properties (different from default)
 {'A1': {'Cardinality': 1,
         'OutputLevel': 3,
@@ -38,15 +38,17 @@
                'Sequential': True},
  'viewNodeOne': {'Members': ['GaudiSequencer/extraNode'],
                  'OutputLevel': 3,
-                 'Sequential': False},
+                 'Sequential': False,
+                 'ShortCircuit': False},
  'viewNodeTwo': {'Members': ['GaudiSequencer/extraNode'],
                  'OutputLevel': 3,
-                 'Sequential': False}}
+                 'Sequential': False,
+                 'ShortCircuit': False}}
 MessageSvc           INFO Activating in a separate thread
-ApplicationMgr    SUCCESS 
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v30r1)
-                                          running on bb169f195cdc on Fri Feb  9 14:48:04 2018
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v31r0)
+                                          running on horizon-76 on Thu Mar  7 15:35:40 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ThreadPoolSvc        INFO no thread init tools attached
@@ -56,7 +58,7 @@ createViewSeq        INFO Member list: Test::ViewTester/A1, GaudiSequencer/viewN
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   4.00 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   3.33 times the speed of a 2.8 GHz Xeon.
 viewNodeOne          INFO Member list: GaudiSequencer/extraNode
 extraNode            INFO Member list: Test::ViewTester/A2, Test::ViewTester/A3
 viewNodeTwo          INFO Member list: GaudiSequencer/extraNode
@@ -73,11 +75,12 @@ AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   A5
       none
 PrecedenceSvc        INFO Assembling CF and DF task precedence rules
+PrecedenceSvc        INFO Verifying task precedence rules
 PrecedenceSvc        INFO PrecedenceSvc initialized successfully
 AvalancheSchedu...   INFO Concurrency level information:
 AvalancheSchedu...   INFO  o Number of events in flight: 1
 AvalancheSchedu...   INFO  o TBB thread pool size:  'ThreadPoolSize':1
-HiveSlimEventLo...WARNING Unable to locate service "EventSelector" 
+HiveSlimEventLo...WARNING Unable to locate service "EventSelector"
 HiveSlimEventLo...WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 HiveSlimEventLo...   INFO Found 0 events in black list
@@ -234,14 +237,14 @@ A3                   INFO Running in view viewTwo0
 A2                   INFO Running in view viewTwo1
 A3                   INFO Running in view viewTwo1
 A5                   INFO Running in whole event context
-HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 49.5273 total time 3774649
+HiveSlimEventLo...   INFO ---> Loop Finished (skipping 1st evt) -  WSS 66.5469 total time 1624932
 HiveSlimEventLo...   INFO 0 events were SKIPed
 ApplicationMgr       INFO Application Manager Stopped successfully
 HiveSlimEventLo...   INFO Histograms converted successfully according to request.
 AvalancheSchedu...   INFO Joining Scheduler thread
 ToolSvc              INFO Removing all tools created by ToolSvc
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   2.27 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   3.33 times the speed of a 2.8 GHz Xeon.
 ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
