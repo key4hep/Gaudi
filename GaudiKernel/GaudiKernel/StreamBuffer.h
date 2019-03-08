@@ -567,7 +567,7 @@ inline void StreamBuffer::swapToBuffer( const void* source, int siz ) {
     ::_swab( src, buff, siz );
 #endif
     src = buff;
-  /* FALLTHROUGH */
+    [[fallthrough]];
   case NOSWAP:
     std::copy_n( src, siz, tar );
     break;
