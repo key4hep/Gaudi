@@ -1,7 +1,5 @@
 #include "Validators.h"
 
-#include "../PrecedenceRulesGraph.h"
-
 namespace concurrency {
   //---------------------------------------------------------------------------
   bool NodePropertiesValidator::visit( DecisionNode& node ) {
@@ -21,5 +19,32 @@ namespace concurrency {
     }
 
     return true;
+  }
+
+  //---------------------------------------------------------------------------
+  bool ActiveSubgraphScout::visit( DecisionNode& node ) {
+
+    if ( m_slot.controlFlowState[node.getNodeIndex()] != -1 ) {
+      m_active = false;
+      return m_active;
+    }
+
+    if ( !node.m_modeConcurrent ) {
+
+      for ( auto& child : node.getDaughters() ) {
+
+        if ( child->getNodeName() == m_previousNodeName ) break;
+
+        if ( m_slot.controlFlowState[child->getNodeIndex()] == -1 ) {
+          m_active = false;
+          return m_active;
+        }
+      }
+    }
+
+    m_previousNodeName = node.getNodeName();
+    if ( node.m_parents.size() > 0 ) node.m_parents[0]->accept( *this );
+
+    return m_active;
   }
 } // namespace concurrency

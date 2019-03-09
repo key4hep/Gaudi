@@ -1,5 +1,6 @@
 #include "Promoters.h"
 #include "../../AlgsExecutionStates.h"
+#include "Validators.h"
 
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/ICondSvc.h"
@@ -121,8 +122,19 @@ namespace concurrency {
       for ( const auto& output : node.getOutputDataNodes() )
         for ( auto& consumer : output->getConsumers() ) consumer->accept( promoter );
 
-      auto vis = concurrency::Supervisor( *m_slot, m_cause, m_trace );
-      for ( auto& p : node.getParentDecisionHubs() ) p->accept( vis );
+      // propagate decision upward to active regions of the graph
+      auto  vis     = concurrency::Supervisor( *m_slot, m_cause, m_trace );
+      auto& parents = node.getParentDecisionHubs();
+      if ( parents.size() == 1 ) {
+        parents[0]->accept( vis );
+      } else {
+        auto scout = ActiveSubgraphScout( *m_slot, m_cause );
+        for ( auto& p : parents ) {
+          p->accept( scout );
+          if ( scout.reply() ) p->accept( vis );
+          scout.reset();
+        }
+      }
 
       return true; // return true only if the algorithm produced a decision
     }
@@ -270,8 +282,17 @@ namespace concurrency {
     if ( decision != -1 ) {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
-      // if a decision was made for this node, propagate the result upwards
-      for ( auto parent : node.m_parents ) { parent->accept( *this ); }
+      // propagate aggregated decision upward to active regions of the graph
+      if ( node.m_parents.size() == 1 ) {
+        node.m_parents[0]->accept( *this );
+      } else {
+        auto scout = ActiveSubgraphScout( *m_slot, m_cause );
+        for ( auto& p : node.m_parents ) {
+          p->accept( scout );
+          if ( scout.reply() ) p->accept( *this );
+          scout.reset();
+        }
+      }
 
       if ( oldSlot ) m_slot = oldSlot;
       return true;
