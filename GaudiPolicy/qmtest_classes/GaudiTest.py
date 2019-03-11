@@ -64,7 +64,7 @@ if sys.platform == "win32":
     import win32pipe
     import win32process
 else:
-    import cPickle
+    from six.moves import cPickle
     import fcntl
     import select
     import qm.sigmask
@@ -1540,7 +1540,7 @@ class GaudiExeTest(ExecTestBase):
                         # positional or keyword
                         if a not in positional and a not in kwargs:
                             kwargs[a] = self.extra_args[a]
-                    return apply(self.callable, args, kwargs)
+                    return self.callable(*args, **kwargs)
 
             # local names to be exposed in the script
             exported_symbols = {

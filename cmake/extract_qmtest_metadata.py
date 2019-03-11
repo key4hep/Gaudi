@@ -11,6 +11,7 @@ import platform
 import xml.etree.ElementTree as ET
 import collections
 import re
+import six
 
 
 def qmt_filename_to_name(path):
@@ -111,11 +112,11 @@ def analyze_suites(pkg, rootdir):
 
     # transpose the dictionary of lists
     test_labels = collections.defaultdict(set)
-    for label, tests in labels.iteritems():
+    for label, tests in six.iteritems(labels):
         for test in tests:
             test_labels[test].add(label)
 
-    for test, labels in test_labels.iteritems():
+    for test, labels in six.iteritems(test_labels):
         print('set_property(TEST {0} APPEND PROPERTY LABELS {1})'.format(
             test, ' '.join(labels)))
 

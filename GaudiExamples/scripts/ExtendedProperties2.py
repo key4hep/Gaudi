@@ -67,18 +67,18 @@ if '__main__' == __name__:
 
     try:
         xp2.SVector5 = [1, 2, 3, 4, 5, 6]
-    except Exception, e:
+    except Exception as e:
         print ' Exception: ', e
 
     try:
         xp2.Point3D = (1, 2, 3, 4)
-    except Exception, e:
+    except Exception as e:
         print ' Exception: ', e
 
     if not isWin:
         try:
             xp2.Vector4D = (1, 2, 3)
-        except Exception, e:
+        except Exception as e:
             print ' Exception: ', e
 
     xp2.Vectors3D = [(1, 2, 3), (4, 5, 6), [7, 8, 9]]

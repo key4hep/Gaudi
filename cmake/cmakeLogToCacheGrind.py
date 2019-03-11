@@ -5,12 +5,14 @@ Gaudi cmake process (See Instrument.cmake) and create an other file
 understandable by kcachegrind for easy visualization of where we spend time in
 cmake.
 '''
+from __future__ import print_function
 import sys
 
 
 def usage():
-    print "Invalid arguments\nProper syntax is :\n  %s <log file> <callgrind file>" % sys.argv[
-        0]
+    print(
+        "Invalid arguments\nProper syntax is :\n  %s <log file> <callgrind file>"
+        % sys.argv[0])
 
 
 if len(sys.argv) != 3:
@@ -45,7 +47,7 @@ for line in open(sys.argv[1]).readlines():
     elif key == 'ENDTIME':
         sfunc, stime = callStack.pop()
         if sfunc != func:
-            print 'Mismatch START/END for %s/%s' % (sfunc, func)
+            print('Mismatch START/END for %s/%s' % (sfunc, func))
             sys.exit()
         deltatime = int(time) - stime
         # add time spent to this function

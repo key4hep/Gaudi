@@ -447,7 +447,7 @@ class gaudimain(object):
             # It may not be 100% correct, but usually it means a segfault in C++
             self.ip.setProperty('ReturnCode', str(128 + 11))
             statuscode = False
-        except Exception, x:
+        except Exception as x:
             print 'Exception:', x
             # for other exceptions, just set a generic error code
             self.ip.setProperty('ReturnCode', '1')

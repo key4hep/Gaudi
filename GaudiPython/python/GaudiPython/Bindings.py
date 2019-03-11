@@ -111,7 +111,7 @@ class InterfaceCast(object):
                     return ip
                 else:
                     print "ERROR: queryInterface failed for", obj, "interface:", self.type
-            except Exception, e:
+            except Exception as e:
                 print "ERROR: exception", e, "caught when retrieving interface", self.type, "for object", obj
                 import traceback
                 traceback.print_stack()
@@ -358,7 +358,7 @@ class iProperty(object):
             for p in props:
                 try:
                     dct[p.name()] = PropertyEntry(p)
-                except (ValueError, TypeError), e:
+                except (ValueError, TypeError) as e:
                     raise ValueError, "gaudimodule.iProperty.properties(): %s%s processing property %s.%s = %s" % \
                         (e.__class__.__name__, e.args,
                          propsFrom, p.name(), p.value())
@@ -720,7 +720,7 @@ class iHistogramSvc(iDataSvc):
         >>> svc = ...
         >>> histo = svc.book( .... )
         """
-        return apply(self._ihs.book, args)
+        return self._ihs.book(*args)
 
     def bookProf(self, *args):
         """
@@ -728,7 +728,7 @@ class iHistogramSvc(iDataSvc):
         >>> svc = ...
         >>> histo = svc.bookProf( .... )
         """
-        return apply(self._ihs.bookProf, args)
+        return self._ihs.bookProf(*args)
 
     def __getitem__(self, path):
         """
@@ -774,7 +774,7 @@ class iNTupleSvc(iDataSvc):
         iDataSvc.__init__(self, name, ints)
 
     def book(self, *args):
-        return apply(self._ints.book, args)
+        return self._ints.book(*args)
 
     def defineOutput(self, files, typ="Gaudi::RootCnvSvc"):
         """ Defines the mapping between logical names and the output file
@@ -1443,7 +1443,7 @@ def getComponentProperties(name):
                     obj = factory.instantiate(dummysvc)
                 else:
                     obj = factory.instantiate(svcloc)
-            except RuntimeError, text:
+            except RuntimeError as text:
                 print 'Error instantiating', cname, ' from ', name
                 print text
                 continue

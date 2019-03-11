@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import sys
 import re
@@ -21,7 +21,7 @@ def main():
 
     project, version, outputfile = args
     if not opts.quiet:
-        print "Creating %s for %s %s" % (outputfile, project, version)
+        print("Creating %s for %s %s" % (outputfile, project, version))
 
     for style in [lhcb_ver_style, atlas_ver_style, plain_ver_style]:
         m = re.match(style, version)
@@ -38,7 +38,7 @@ def main():
     outdir = os.path.dirname(outputfile)
     if not os.path.exists(outdir):
         if not opts.quiet:
-            print "Creating directory", outdir
+            print("Creating directory", outdir)
         os.makedirs(outdir)
 
     # Prepare data to be written

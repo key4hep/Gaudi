@@ -514,7 +514,7 @@ class Configurable(object):
         if hasattr(cc, 'setParent') and parent:
             try:
                 cc.setParent(parent)
-            except RuntimeError, e:
+            except RuntimeError as e:
                 # temporary backdoor resolution for compatibility
                 log.error(str(e) + '%s', error_explanation)
                 ccbd = cc.configurables[cc.getJobOptName()]

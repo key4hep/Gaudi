@@ -52,7 +52,7 @@ def test():
 if __name__ == '__main__':
     try:
         test()
-    except AssertionError, a:
+    except AssertionError as a:
         print "FAILURE:", a
         sys.exit(1)
     print "SUCCESS"

@@ -16,13 +16,13 @@ def command(cmd, *args, **kwargs):
     d.update(kwargs)
     cmd = [cmd] + list(args)
     logging.debug("Execute command: %r %r", " ".join(cmd), kwargs)
-    proc = apply(Popen, (cmd, ), d)
+    proc = Popen(cmd, **d)
     return proc.communicate()
 
 
-cmt = lambda *args, **kwargs: apply(command, ("cmt", ) + args, kwargs)
-cvs = lambda *args, **kwargs: apply(command, ("cvs", ) + args, kwargs)
-svn = lambda *args, **kwargs: apply(command, ("svn", ) + args, kwargs)
+cmt = lambda *args, **kwargs: command("cmt", *args, **kwargs)
+cvs = lambda *args, **kwargs: command("cvs", *args, **kwargs)
+svn = lambda *args, **kwargs: command("svn", *args, **kwargs)
 
 
 def broadcast_packages():

@@ -17,7 +17,7 @@ from GaudiKernel.ConfigurableDb import cfgDb
 logging.VERBOSE = (logging.INFO + logging.DEBUG) / 2
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
 logging.verbose = lambda msg, *args, **kwargs: \
-    apply(logging.log, (logging.VERBOSE, msg) + args, kwargs)
+    logging.log(logging.VERBOSE, msg, *args, **kwargs)
 
 
 def _inheritsfrom(derived, basenames):
@@ -68,7 +68,7 @@ def loadConfigurableDb():
         log.debug("\t-loading [%s]..." % confDb)
         try:
             cfgDb._loadModule(confDb)
-        except Exception, err:
+        except Exception as err:
             # It may happen that the file is found but not completely
             # written, usually during parallel builds, but we do not care.
             log.warning("Could not load file [%s] !", confDb)
@@ -278,7 +278,7 @@ def main():
     try:
         logging.info("Creating directory %r", output_dir)
         os.makedirs(output_dir, 0755)
-    except OSError, err:
+    except OSError as err:
         import errno
         if err.errno == errno.EEXIST:
             # somebody already - perhaps concurrently - created that dir.
