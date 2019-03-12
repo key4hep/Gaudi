@@ -1,6 +1,6 @@
-#include "Gaudi/Chrono/ChronoArithmetic.h"
-#include "Gaudi/Chrono/ChronoIO.h"
+#include "Gaudi/Chrono/Counters.h"
 #include "GaudiKernel/Counters.h"
+
 #include <chrono>
 #include <iostream>
 

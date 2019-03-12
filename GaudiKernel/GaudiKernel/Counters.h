@@ -148,6 +148,10 @@ namespace Gaudi {
     /// Defines atomicity of the accumulators
     enum class atomicity { none, full };
 
+    /// forward declaration of sqrt for custom types
+    template <class T>
+    auto sqrt( T d );
+
     /**
      * An functor always returning the value N
      */
@@ -514,6 +518,7 @@ namespace Gaudi {
       auto efficiencyErr() const {
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
+        using Gaudi::Accumulators::sqrt;
         using std::sqrt;
         auto nbEntries = nEntries();
         if ( 1 > nbEntries ) return Result{-1};
@@ -562,6 +567,7 @@ namespace Gaudi {
       auto standard_deviation() const {
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
+        using Gaudi::Accumulators::sqrt;
         using std::sqrt;
         Result v = biased_sample_variance();
         return ( Result{0} > v ) ? Result{} : static_cast<Result>( sqrt( v ) );
@@ -576,6 +582,7 @@ namespace Gaudi {
         if ( 0 == n ) return Result{};
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
+        using Gaudi::Accumulators::sqrt;
         using std::sqrt;
         Result v = biased_sample_variance();
         return ( Result{0} > v ) ? Result{} : static_cast<Result>( sqrt( v / n ) );

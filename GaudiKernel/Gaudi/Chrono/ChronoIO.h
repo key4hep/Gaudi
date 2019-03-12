@@ -3,6 +3,8 @@
 #include <chrono>
 #include <iostream>
 
+#if __cplusplus <= 201703L
+
 namespace std {
   namespace chrono {
 
@@ -59,3 +61,5 @@ namespace std {
     }
   } // namespace chrono
 } // namespace std
+
+#endif // C++17
