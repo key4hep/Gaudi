@@ -127,8 +127,15 @@ namespace concurrency {
       auto& parents = node.getParentDecisionHubs();
       if ( parents.size() == 1 ) {
         parents[0]->accept( vis );
+      } else if ( m_slot->parentSlot ) {
+        auto scout = SubSlotScout( m_slot, node );
+        for ( auto& p : parents ) {
+          p->accept( scout );
+          if ( scout.reply() ) p->accept( vis );
+          scout.reset();
+        }
       } else {
-        auto scout = ActiveSubgraphScout( *m_slot, m_cause );
+        auto scout = ActiveSubgraphScout( m_slot, node );
         for ( auto& p : parents ) {
           p->accept( scout );
           if ( scout.reply() ) p->accept( vis );
@@ -144,33 +151,6 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   bool Supervisor::visitEnter( DecisionNode& node ) const {
-    // Protect against graph traversal escaping from sub-slots
-    if ( m_slot->parentSlot ) {
-      // Examine the ancestry of this node, looking for sub-slot entry point
-      bool                      canFindExit = false;
-      std::queue<DecisionNode*> allAncestors;
-      allAncestors.push( &node );
-      while ( allAncestors.size() ) {
-
-        DecisionNode* thisAncestor = allAncestors.front();
-        allAncestors.pop();
-
-        if ( thisAncestor->getNodeName() == m_slot->entryPoint ) {
-
-          // This ancestor is the sub-slot exit
-          canFindExit = true;
-          break;
-
-        } else {
-
-          // Go further up the node ancestry
-          for ( auto& evenOlder : thisAncestor->m_parents ) { allAncestors.push( evenOlder ); }
-        }
-      }
-
-      // If the sub-slot entry point is not in this node's ancestry, don't visit the node
-      if ( !canFindExit ) return false;
-    }
 
     if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) return false;
     return true;
@@ -285,8 +265,15 @@ namespace concurrency {
       // propagate aggregated decision upward to active regions of the graph
       if ( node.m_parents.size() == 1 ) {
         node.m_parents[0]->accept( *this );
+      } else if ( m_slot->parentSlot ) {
+        auto scout = SubSlotScout( m_slot, node );
+        for ( auto& p : node.m_parents ) {
+          p->accept( scout );
+          if ( scout.reply() ) p->accept( *this );
+          scout.reset();
+        }
       } else {
-        auto scout = ActiveSubgraphScout( *m_slot, m_cause );
+        auto scout = ActiveSubgraphScout( m_slot, node );
         for ( auto& p : node.m_parents ) {
           p->accept( scout );
           if ( scout.reply() ) p->accept( *this );
