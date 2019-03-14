@@ -24,27 +24,66 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool ActiveSubgraphScout::visit( DecisionNode& node ) {
 
-    if ( m_slot.controlFlowState[node.getNodeIndex()] != -1 ) {
+    // Test if this node is already resolved
+    if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) {
       m_active = false;
       return m_active;
     }
 
+    // Test if the node that sent this scout is out-of-sequence in this node
     if ( !node.m_modeConcurrent ) {
 
       for ( auto& child : node.getDaughters() ) {
 
         if ( child->getNodeName() == m_previousNodeName ) break;
 
-        if ( m_slot.controlFlowState[child->getNodeIndex()] == -1 ) {
+        if ( m_slot->controlFlowState[child->getNodeIndex()] == -1 ) {
           m_active = false;
           return m_active;
         }
       }
     }
 
-    m_previousNodeName = node.getNodeName();
-    if ( node.m_parents.size() > 0 ) node.m_parents[0]->accept( *this );
+    this->visitParents( node );
 
-    return m_active;
+    return this->reply();
+  }
+
+  //---------------------------------------------------------------------------
+  void ActiveSubgraphScout::visitParents( DecisionNode& node ) {
+
+    for ( auto& parent : node.m_parents ) {
+      m_active           = true;
+      m_previousNodeName = node.getNodeName();
+      parent->accept( *this );
+
+      // Any active parent means that this node is active
+      if ( this->reply() ) break;
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  void SubSlotScout::visitParents( DecisionNode& node ) {
+
+    // Leave a sub-slot if this is the exit node
+    const EventSlot* oldSlot = nullptr;
+    if ( m_slot->parentSlot && m_slot->entryPoint == node.getNodeName() ) {
+      oldSlot           = m_slot;
+      m_slot            = m_slot->parentSlot;
+      m_foundEntryPoint = true;
+    }
+
+    // Examine all parents
+    for ( auto& parent : node.m_parents ) {
+      m_active           = true;
+      m_foundEntryPoint  = ( m_slot->parentSlot == nullptr );
+      m_previousNodeName = node.getNodeName();
+      parent->accept( *this );
+
+      // Any active parent means that this node is active
+      if ( this->reply() ) break;
+    }
+
+    if ( oldSlot ) m_slot = oldSlot;
   }
 } // namespace concurrency

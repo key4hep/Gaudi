@@ -33,8 +33,8 @@ namespace concurrency {
   class ActiveSubgraphScout : public IGraphVisitor {
   public:
     /// Constructor
-    ActiveSubgraphScout( const EventSlot& slot, const Cause& cause )
-        : m_slot( slot ), m_cause( cause ), m_previousNodeName( cause.m_sourceName ){};
+    ActiveSubgraphScout( const EventSlot* slot, const ControlFlowNode& node )
+        : m_slot( slot ), m_startNode( node ), m_previousNodeName( node.getNodeName() ){};
 
     using IGraphVisitor::visit;
     using IGraphVisitor::visitEnter;
@@ -45,20 +45,44 @@ namespace concurrency {
 
     bool visit( DecisionNode& ) override;
 
-    void reset() override {
-      m_active           = false;
-      m_previousNodeName = m_cause.m_sourceName;
+    virtual void reset() override {
+      m_active           = true;
+      m_previousNodeName = m_startNode.getNodeName();
     };
 
-    bool reply() const { return m_active; };
+    virtual bool reply() const { return m_active; };
 
-  private:
-    const EventSlot& m_slot;
-    const Cause&     m_cause;
-    bool             m_active{true};
-    std::string      m_previousNodeName;
+    virtual void visitParents( DecisionNode& );
+
+  protected:
+    const EventSlot*       m_slot;
+    const ControlFlowNode& m_startNode;
+    bool                   m_active{true};
+    std::string            m_previousNodeName;
   };
 
+  //--------------------------------------------------------------------------
+  class SubSlotScout : public ActiveSubgraphScout {
+  public:
+    /// Constructor
+    SubSlotScout( const EventSlot* slot, const ControlFlowNode& node )
+        : ActiveSubgraphScout( slot, node ), m_foundEntryPoint( slot->parentSlot == nullptr ){};
+
+    void reset() override {
+      m_active = true;
+
+      // Only look for an entry point if we're in a sub-slot
+      m_foundEntryPoint  = ( m_slot->parentSlot == nullptr );
+      m_previousNodeName = m_startNode.getNodeName();
+    };
+
+    bool reply() const override { return m_active && m_foundEntryPoint; };
+
+    void visitParents( DecisionNode& ) override;
+
+  private:
+    bool m_foundEntryPoint{true};
+  };
 } // namespace concurrency
 
 #endif /* VALIDATORS_H_ */
