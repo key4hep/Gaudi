@@ -135,7 +135,7 @@ namespace concurrency {
           scout.reset();
         }
       } else {
-        auto scout = ActiveSubgraphScout( m_slot, node );
+        auto scout = ActiveLineageScout( m_slot, node );
         for ( auto& p : parents ) {
           p->accept( scout );
           if ( scout.reply() ) p->accept( vis );
@@ -273,7 +273,7 @@ namespace concurrency {
           scout.reset();
         }
       } else {
-        auto scout = ActiveSubgraphScout( m_slot, node );
+        auto scout = ActiveLineageScout( m_slot, node );
         for ( auto& p : node.m_parents ) {
           p->accept( scout );
           if ( scout.reply() ) p->accept( *this );

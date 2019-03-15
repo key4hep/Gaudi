@@ -30,10 +30,10 @@ namespace concurrency {
   };
 
   //--------------------------------------------------------------------------
-  class ActiveSubgraphScout : public IGraphVisitor {
+  class ActiveLineageScout : public IGraphVisitor {
   public:
     /// Constructor
-    ActiveSubgraphScout( const EventSlot* slot, const ControlFlowNode& node )
+    ActiveLineageScout( const EventSlot* slot, const ControlFlowNode& node )
         : m_slot( slot ), m_startNode( node ), m_previousNodeName( node.getNodeName() ){};
 
     using IGraphVisitor::visit;
@@ -45,7 +45,7 @@ namespace concurrency {
 
     bool visit( DecisionNode& ) override;
 
-    virtual void reset() override {
+    void reset() override {
       m_active           = true;
       m_previousNodeName = m_startNode.getNodeName();
     };
@@ -62,11 +62,11 @@ namespace concurrency {
   };
 
   //--------------------------------------------------------------------------
-  class SubSlotScout : public ActiveSubgraphScout {
+  class SubSlotScout final : public ActiveLineageScout {
   public:
     /// Constructor
     SubSlotScout( const EventSlot* slot, const ControlFlowNode& node )
-        : ActiveSubgraphScout( slot, node ), m_foundEntryPoint( slot->parentSlot == nullptr ){};
+        : ActiveLineageScout( slot, node ), m_foundEntryPoint( slot->parentSlot == nullptr ){};
 
     void reset() override {
       m_active = true;

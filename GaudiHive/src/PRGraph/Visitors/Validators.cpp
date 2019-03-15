@@ -22,7 +22,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool ActiveSubgraphScout::visit( DecisionNode& node ) {
+  bool ActiveLineageScout::visit( DecisionNode& node ) {
 
     // Test if this node is already resolved
     if ( m_slot->controlFlowState[node.getNodeIndex()] != -1 ) {
@@ -50,7 +50,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ActiveSubgraphScout::visitParents( DecisionNode& node ) {
+  void ActiveLineageScout::visitParents( DecisionNode& node ) {
 
     for ( auto& parent : node.m_parents ) {
       m_active           = true;
