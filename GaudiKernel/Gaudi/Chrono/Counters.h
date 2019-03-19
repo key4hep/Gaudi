@@ -1,4 +1,9 @@
 #pragma once
+
+#ifdef GAUDIKERNEL_COUNTERS_H
+#  error "GaudiKernel/Counters.h cannot be included before Gaudi/Chrono/Counters.h"
+#endif
+
 /**
  * @brief Header file for std:chrono::duration-based Counters
  *
