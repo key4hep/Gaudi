@@ -174,8 +174,12 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
     debug() << "Data Dependencies for Algorithms:";
     for ( const auto& entry : m_algorithms ) {
       debug() << "\n " << entry.alg->name() << " :";
-      for ( const auto& id : entry.alg->inputDataObjs() ) { debug() << "\n    o INPUT  " << id.key(); }
-      for ( const auto& id : entry.alg->outputDataObjs() ) { debug() << "\n    o OUTPUT " << id.key(); }
+      for ( const auto* id : sortedDataObjIDColl( entry.alg->inputDataObjs() ) ) {
+        debug() << "\n    o INPUT  " << id->key();
+      }
+      for ( const auto* id : sortedDataObjIDColl( entry.alg->outputDataObjs() ) ) {
+        debug() << "\n    o OUTPUT " << id->key();
+      }
     }
     debug() << endmsg;
   }
