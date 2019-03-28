@@ -480,6 +480,12 @@ StatusCode ApplicationMgr::start() {
   //--------------------------------------------------------------------------
   // Initialize the list of top Services
   //--------------------------------------------------------------------------
+  sc = m_jobOptionsSvc.as<IService>()->sysStart();
+  if ( !sc.isSuccess() ) return sc;
+
+  sc = m_messageSvc.as<IService>()->sysStart();
+  if ( !sc.isSuccess() ) return sc;
+
   sc = svcManager()->start();
   if ( !sc.isSuccess() ) return sc;
 
@@ -538,6 +544,12 @@ StatusCode ApplicationMgr::stop() {
   // Stop the list of top Services
   //--------------------------------------------------------------------------
   sc = svcManager()->stop();
+  if ( !sc.isSuccess() ) return sc;
+
+  sc = m_messageSvc.as<IService>()->sysStop();
+  if ( !sc.isSuccess() ) return sc;
+
+  sc = m_jobOptionsSvc.as<IService>()->sysStop();
   if ( !sc.isSuccess() ) return sc;
 
   //--------------------------------------------------------------------------
@@ -826,6 +838,12 @@ StatusCode ApplicationMgr::reinitialize() {
   if ( sc.isFailure() ) retval = sc;
   sc = algManager()->reinitialize();
   if ( sc.isFailure() ) retval = sc;
+
+  sc = m_messageSvc.as<IService>()->sysReinitialize();
+  if ( sc.isFailure() ) retval = sc;
+  sc = m_jobOptionsSvc.as<IService>()->sysReinitialize();
+  if ( sc.isFailure() ) retval = sc;
+
   return retval;
 }
 
@@ -838,10 +856,17 @@ StatusCode ApplicationMgr::restart() {
   if ( m_state != Gaudi::StateMachine::RUNNING ) {
     throw GaudiException( "Cannot restart application if not RUNNING", "ApplicationMgr::restart", StatusCode::FAILURE );
   }
+
   sc = svcManager()->restart();
   if ( sc.isFailure() ) retval = sc;
   sc = algManager()->restart();
   if ( sc.isFailure() ) retval = sc;
+
+  sc = m_messageSvc.as<IService>()->sysRestart();
+  if ( sc.isFailure() ) retval = sc;
+  sc = m_jobOptionsSvc.as<IService>()->sysRestart();
+  if ( sc.isFailure() ) retval = sc;
+
   return retval;
 }
 
