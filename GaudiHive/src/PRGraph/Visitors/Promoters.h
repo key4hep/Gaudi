@@ -1,12 +1,13 @@
-#ifndef PRGRAPHVISITORS_H_
-#define PRGRAPHVISITORS_H_
+#ifndef PROMOTERS_H_
+#define PROMOTERS_H_
 
-#include "EventSlot.h"
+#include "../../EventSlot.h"
+#include "../PrecedenceRulesGraph.h"
 #include "IGraphVisitor.h"
-#include "PrecedenceRulesGraph.h"
 
 namespace concurrency {
 
+  //--------------------------------------------------------------------------
   class DataReadyPromoter : public IGraphVisitor {
   public:
     /// Constructor
@@ -33,6 +34,7 @@ namespace concurrency {
     bool       m_trace;
   };
 
+  //--------------------------------------------------------------------------
   class DecisionUpdater : public IGraphVisitor {
   public:
     /// Constructor
@@ -48,6 +50,7 @@ namespace concurrency {
     bool       m_trace;
   };
 
+  //--------------------------------------------------------------------------
   class Supervisor : public IGraphVisitor {
   public:
     /// Constructor
@@ -70,58 +73,7 @@ namespace concurrency {
     bool       m_trace;
   };
 
-  class RankerByProductConsumption : public IGraphVisitor {
-  public:
-    using IGraphVisitor::visit;
-
-    bool visit( AlgorithmNode& ) override;
-  };
-
-  class RankerByCummulativeOutDegree : public IGraphVisitor {
-  public:
-    using IGraphVisitor::visit;
-
-    bool visit( AlgorithmNode& ) override;
-    void reset() override { m_nodesSucceeded = 0; };
-
-    void runThroughAdjacents( boost::graph_traits<precedence::PrecTrace>::vertex_descriptor, precedence::PrecTrace );
-
-    int m_nodesSucceeded{0};
-  };
-
-  class RankerByTiming : public IGraphVisitor {
-  public:
-    using IGraphVisitor::visit;
-
-    bool visit( AlgorithmNode& ) override;
-  };
-
-  class RankerByEccentricity : public IGraphVisitor {
-  public:
-    using IGraphVisitor::visit;
-
-    bool visit( AlgorithmNode& ) override;
-  };
-
-  class RankerByDataRealmEccentricity : public IGraphVisitor {
-  public:
-    using IGraphVisitor::visit;
-
-    bool visit( AlgorithmNode& ) override;
-
-    void reset() override {
-      m_currentDepth  = 0;
-      m_maxKnownDepth = 0;
-    }
-
-    /// Depth-first node parser to calculate node eccentricity
-    /// (only within the data realm of the precedence rules graph)
-    void recursiveVisit( AlgorithmNode& );
-
-    uint m_currentDepth{0};
-    uint m_maxKnownDepth{0};
-  };
-
+  //--------------------------------------------------------------------------
   class RunSimulator : public IGraphVisitor {
   public:
     /// Constructor
@@ -146,4 +98,4 @@ namespace concurrency {
   };
 } // namespace concurrency
 
-#endif /* PRGRAPHVISITORS_H_ */
+#endif /* PROMOTERS_H_ */

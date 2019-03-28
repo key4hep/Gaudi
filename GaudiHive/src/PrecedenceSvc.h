@@ -2,7 +2,7 @@
 #define GAUDIHIVE_PRECEDENCESVC_H_
 
 #include "IPrecedenceSvc.h"
-#include "PrecedenceRulesGraph.h"
+#include "PRGraph/PrecedenceRulesGraph.h"
 
 // Framework include files
 #include "GaudiKernel/IAlgResourcePool.h"
@@ -87,6 +87,8 @@ private:
   Gaudi::Property<bool>        m_dumpPrecRules{this, "DumpPrecedenceRules", false, "Dump task precedence rules."};
   Gaudi::Property<std::string> m_dumpPrecRulesFile{this, "PrecedenceRulesFile", "",
                                                    "Override default name of the GRAPHML precedence rules file."};
+  Gaudi::Property<bool>        m_verifyRules{this, "VerifyTaskPrecedenceRules", true,
+                                      "Verify task precedence rules for common errors."};
 };
 
 #endif /* GAUDIHIVE_PRECEDENCESVC_H_ */

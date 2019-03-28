@@ -1,10 +1,10 @@
 #include "PrecedenceRulesGraph.h"
-#include "PRGraphVisitors.h"
+#include "Visitors/Promoters.h"
+
+#include "GaudiKernel/DataHandleHolderVisitor.h"
 
 #include <boost/property_map/transform_value_property_map.hpp>
 #include <fstream>
-
-#include "GaudiKernel/DataHandleHolderVisitor.h"
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )

@@ -1,6 +1,8 @@
 #include "PrecedenceSvc.h"
 #include "EventSlot.h"
-#include "PRGraphVisitors.h"
+#include "PRGraph/Visitors/Promoters.h"
+#include "PRGraph/Visitors/Rankers.h"
+#include "PRGraph/Visitors/Validators.h"
 
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Sequence.h>
@@ -93,6 +95,17 @@ StatusCode PrecedenceSvc::initialize() {
   }
 
   ON_DEBUG debug() << m_PRGraph.dumpDataFlow() << endmsg;
+
+  if ( m_verifyRules ) {
+    info() << "Verifying task precedence rules" << endmsg;
+
+    auto propValidator = concurrency::NodePropertiesValidator();
+    m_PRGraph.accept( propValidator );
+    if ( !propValidator.passed() )
+      warning() << propValidator.reply() << endmsg;
+    else
+      ON_DEBUG debug() << propValidator.reply() << endmsg;
+  }
 
   if ( sc.isSuccess() ) info() << "PrecedenceSvc initialized successfully" << endmsg;
 

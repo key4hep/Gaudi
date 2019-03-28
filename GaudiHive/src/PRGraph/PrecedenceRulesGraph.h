@@ -14,15 +14,15 @@
 #include <boost/variant.hpp>
 
 // fwk includes
-#include "AlgsExecutionStates.h"
-#include "EventSlot.h"
+#include "../AlgsExecutionStates.h"
+#include "../EventSlot.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ICondSvc.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/ITimelineSvc.h"
 #include "GaudiKernel/TaggedBool.h"
-#include "IGraphVisitor.h"
+#include "Visitors/IGraphVisitor.h"
 #include <Gaudi/Algorithm.h>
 
 namespace concurrency {
@@ -458,7 +458,7 @@ namespace concurrency {
     /// Whether all daughters will be evaluated concurrently or sequentially
     bool m_modeConcurrent;
     /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
-    /// Applicable to both concurrent and sequential cases.
+    /// Applicable to "sequential" hub only.
     bool m_modePromptDecision;
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;

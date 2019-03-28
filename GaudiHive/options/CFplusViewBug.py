@@ -86,6 +86,7 @@ view_test_node = GaudiSequencer(
     "view_test_node",
     Members=[view_test_alg],
     Sequential=False,
+    ShortCircuit=False,
     OutputLevel=INFO)
 
 view_make_node = GaudiSequencer(
