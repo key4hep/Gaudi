@@ -148,6 +148,10 @@ namespace Gaudi {
     /// Defines atomicity of the accumulators
     enum class atomicity { none, full };
 
+    /// forward declaration of sqrt for custom types
+    template <class T>
+    auto sqrt( T d );
+
     /**
      * An functor always returning the value N
      */
@@ -514,6 +518,7 @@ namespace Gaudi {
       auto efficiencyErr() const {
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
+        using Gaudi::Accumulators::sqrt;
         using std::sqrt;
         auto nbEntries = nEntries();
         if ( 1 > nbEntries ) return Result{-1};
@@ -531,8 +536,9 @@ namespace Gaudi {
 
       template <typename Result = fp_result_type<Arithmetic>>
       auto mean() const {
-        auto n = this->nEntries();
-        return ( n > 0 ) ? static_cast<Result>( this->sum() ) / n : Result{};
+        auto   n   = this->nEntries();
+        Result sum = this->sum();
+        return ( n > 0 ) ? static_cast<Result>( sum / n ) : Result{};
       }
     };
 
@@ -547,23 +553,24 @@ namespace Gaudi {
       auto biased_sample_variance() const {
         auto   n   = this->nEntries();
         Result sum = this->sum();
-        return ( n > 0 ) ? ( this->sum2() - sum * ( sum / n ) ) / n : Result{};
+        return ( n > 0 ) ? static_cast<Result>( ( this->sum2() - sum * ( sum / n ) ) / n ) : Result{};
       }
 
       template <typename Result = fp_result_type<Arithmetic>>
       auto unbiased_sample_variance() const {
         auto   n   = this->nEntries();
         Result sum = this->sum();
-        return ( n > 1 ) ? ( this->sum2() - sum * ( sum / n ) ) / ( n - 1 ) : Result{};
+        return ( n > 1 ) ? static_cast<Result>( ( this->sum2() - sum * ( sum / n ) ) / ( n - 1 ) ) : Result{};
       }
 
       template <typename Result = fp_result_type<Arithmetic>>
       auto standard_deviation() const {
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
+        using Gaudi::Accumulators::sqrt;
         using std::sqrt;
         Result v = biased_sample_variance();
-        return ( 0 > v ) ? Result{} : sqrt( v );
+        return ( Result{0} > v ) ? Result{} : static_cast<Result>( sqrt( v ) );
       }
       [[deprecated( "The name 'rms' has changed to standard_deviation" )]] Arithmetic rms() const {
         return standard_deviation();
@@ -575,9 +582,10 @@ namespace Gaudi {
         if ( 0 == n ) return Result{};
         // Note the usage of using, aiming at using the std version of sqrt by default, without preventing
         // more specialized versions to be used via ADL (see http://en.cppreference.com/w/cpp/language/adl)
+        using Gaudi::Accumulators::sqrt;
         using std::sqrt;
         Result v = biased_sample_variance();
-        return ( 0 > v ) ? Result{} : sqrt( v / n );
+        return ( Result{0} > v ) ? Result{} : static_cast<Result>( sqrt( v / n ) );
       }
     };
 
