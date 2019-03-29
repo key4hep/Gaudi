@@ -139,7 +139,7 @@ long DataSvcHelpers::RegistryEntry::remove( IRegistry* obj ) {
 }
 
 /// Remove entry from data store
-StatusCode DataSvcHelpers::RegistryEntry::remove( boost::string_ref nam ) {
+StatusCode DataSvcHelpers::RegistryEntry::remove( std::string_view nam ) {
   if ( nam.front() == SEPARATOR ) nam.remove_prefix( 1 );
   auto i = std::find_if( m_store.begin(), m_store.end(), [&]( const auto* entry ) {
     // skip leading SEPARATOR
@@ -222,7 +222,7 @@ IRegistry* DataSvcHelpers::RegistryEntry::i_find( const IRegistry* obj ) const {
 }
 
 /// Find identified leaf in this registry node
-DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( boost::string_ref path ) const {
+DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( std::string_view path ) const {
   if ( path.front() == SEPARATOR ) path.remove_prefix( 1 ); // strip leading '/', if present
   while ( !path.empty() ) {
     // check that the chars of path prior to / are the same as regEnt->name()
@@ -230,20 +230,20 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find( boost::str
     // but not     { nam:"/Abc" path:"/Ab/C"})
     auto loc1  = path.find( SEPARATOR );
     auto cpath = path.substr( 0, loc1 );
-    if ( loc1 != boost::string_ref::npos ) {
+    if ( loc1 != std::string_view::npos ) {
       path.remove_prefix( loc1 + 1 );
     } else {
-      path.clear();
+      path = std::string_view{};
     }
     auto i = std::find_if( std::begin( m_store ), std::end( m_store ),
-                           [&]( const auto& reg ) { return cpath == boost::string_ref{reg->name()}.substr( 1 ); } );
+                           [&]( const auto& reg ) { return cpath == std::string_view{reg->name()}.substr( 1 ); } );
     if ( i != std::end( m_store ) ) {
       RegistryEntry* regEnt = CAST_REGENTRY( RegistryEntry*, *i );
       return path.empty() ? regEnt : regEnt->i_find( path );
     }
     // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
     // our "/NodeB" child.
-    if ( cpath != boost::string_ref{m_path}.substr( 1 ) ) break;
+    if ( cpath != std::string_view{m_path}.substr( 1 ) ) break;
   }
   return nullptr;
 }

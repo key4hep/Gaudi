@@ -23,8 +23,8 @@ namespace Gaudi {
     PoolTool( RootDataConnection* con ) { c = con; }
 
     /// Convert TES object identifier to ROOT tree name
-    string _treeName( boost::string_ref sr ) {
-      auto t = sr.to_string();
+    string _treeName( std::string_view sr ) {
+      std::string t{sr};
       std::replace( begin( t ), end( t ), '/', '_' );
       return t;
     }
@@ -32,7 +32,7 @@ namespace Gaudi {
     RootRef poolRef( size_t i ) const override { return m_poolLinks[i]; }
 
     /// Load references object from file
-    int loadRefs( boost::string_ref /* section */, boost::string_ref cnt, unsigned long entry,
+    int loadRefs( std::string_view /* section */, std::string_view cnt, unsigned long entry,
                   RootObjectRefs& refs ) override {
       auto   ti = sections().find( cnt );
       TTree* t  = ( ti != sections().end() ? ti->second : nullptr );
@@ -84,7 +84,7 @@ namespace Gaudi {
     }
 
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch( boost::string_ref /* section */, boost::string_ref branch_name ) override {
+    TBranch* getBranch( std::string_view /* section */, std::string_view branch_name ) override {
       auto   ti = sections().find( branch_name );
       TTree* t  = ( ti != sections().end() ? ti->second : nullptr );
       if ( t ) { return (TBranch*)t->GetListOfBranches()->At( 0 ); }
@@ -93,7 +93,7 @@ namespace Gaudi {
       if ( t ) {
         TBranch* b = (TBranch*)t->GetListOfBranches()->At( 0 );
         if ( b ) {
-          sections()[branch_name.to_string()] = t;
+          sections()[std::string{branch_name}] = t;
           return b;
         }
         msgSvc() << MSG::ERROR << "Failed to access POOL branch:" << branch_name << " [" << tname << "]" << endmsg;

@@ -89,19 +89,19 @@ public:
   const std::string& rootName() const override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerAddress( std::string_view fullPath, IOpaqueAddress* pAddress ) override;
 
   using IDataManagerSvc::registerAddress;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerAddress( IRegistry* parentObj, std::string_view objectPath, IOpaqueAddress* pAddress ) override;
 
   using IDataManagerSvc::unregisterAddress;
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( boost::string_ref fullPath ) override;
+  StatusCode unregisterAddress( std::string_view fullPath ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( IRegistry* pParent, boost::string_ref objPath ) override;
+  StatusCode unregisterAddress( IRegistry* pParent, std::string_view objPath ) override;
 
   /** IDataManagerSvc: Explore the object store: retrieve all leaves attached
    *  to the object
@@ -120,7 +120,7 @@ public:
   /** IDataManagerSvc: Remove all data objects below the sub tree identified
    *  by its full path name.
    */
-  StatusCode clearSubTree( boost::string_ref sub_tree_path ) override;
+  StatusCode clearSubTree( std::string_view sub_tree_path ) override;
 
   /** IDataManagerSvc: Remove all data objects below the sub tree identified
    *  by the object.
@@ -133,7 +133,7 @@ public:
   /** IDataManagerSvc: Analyze by traversing all data objects below the sub
    *  tree identified by its full path name.
    */
-  StatusCode traverseSubTree( boost::string_ref sub_tree_path, IDataStoreAgent* pAgent ) override;
+  StatusCode traverseSubTree( std::string_view sub_tree_path, IDataStoreAgent* pAgent ) override;
 
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
   StatusCode traverseSubTree( DataObject* pObject, IDataStoreAgent* pAgent ) override;
@@ -191,51 +191,51 @@ public:
   using IDataProviderSvc::registerObject;
 
   /// Register object with the data store.
-  StatusCode registerObject( boost::string_ref parentPath, boost::string_ref objPath, DataObject* pObject ) override;
+  StatusCode registerObject( std::string_view parentPath, std::string_view objPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject( DataObject* parentObj, boost::string_ref objPath, DataObject* pObject ) override;
+  StatusCode registerObject( DataObject* parentObj, std::string_view objPath, DataObject* pObject ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject( boost::string_ref fullPath ) override;
+  StatusCode unregisterObject( std::string_view fullPath ) override;
 
   /// Unregister object from the data store.
   StatusCode unregisterObject( DataObject* pObject ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject( DataObject* pObject, boost::string_ref objectPath ) override;
+  StatusCode unregisterObject( DataObject* pObject, std::string_view objectPath ) override;
 
   using IDataProviderSvc::retrieveObject;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
+  StatusCode retrieveObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) override;
 
   using IDataProviderSvc::findObject;
 
   /// Find object identified by its full path in the data store.
-  StatusCode findObject( boost::string_ref fullPath, DataObject*& pObject ) override;
+  StatusCode findObject( std::string_view fullPath, DataObject*& pObject ) override;
 
   /// Find object identified by its full path in the data store.
-  StatusCode findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
+  StatusCode findObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) override;
 
   using IDataProviderSvc::linkObject;
 
   /// Add a link to another object.
-  StatusCode linkObject( IRegistry* from, boost::string_ref objPath, DataObject* to ) override;
+  StatusCode linkObject( IRegistry* from, std::string_view objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject( boost::string_ref fullPath, DataObject* to ) override;
+  StatusCode linkObject( std::string_view fullPath, DataObject* to ) override;
 
   using IDataProviderSvc::unlinkObject;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject( IRegistry* from, boost::string_ref objPath ) override;
+  StatusCode unlinkObject( IRegistry* from, std::string_view objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject( DataObject* fromObj, boost::string_ref objPath ) override;
+  StatusCode unlinkObject( DataObject* fromObj, std::string_view objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject( boost::string_ref fullPath ) override;
+  StatusCode unlinkObject( std::string_view fullPath ) override;
 
   /// Update object identified by its directory entry.
   StatusCode updateObject( IRegistry* pDirectory ) override;
@@ -283,7 +283,7 @@ protected:
   virtual StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode );
 
   /// Retrieve registry entry from store
-  StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode, boost::string_ref path,
+  StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode, std::string_view path,
                             DataSvcHelpers::RegistryEntry*& pEntry );
   /** Invoke data fault handling if enabled
    * @param pReg  [IN]   Pointer to missing registry entry
@@ -291,7 +291,7 @@ protected:
    *
    * @return Object corresponding to the specified leaf
    */
-  DataObject* handleDataFault( IRegistry* pReg, boost::string_ref path = {} );
+  DataObject* handleDataFault( IRegistry* pReg, std::string_view path = {} );
 
   /// Mutex to protect access to the store
   tsDataSvcMutex m_accessMutex;

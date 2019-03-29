@@ -6,10 +6,10 @@
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiUtils/IIODataManager.h"
-#include "boost/utility/string_ref.hpp"
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "RootCnv/RootRefs.h"
@@ -67,7 +67,7 @@ namespace Gaudi {
     RootConnectionSetup() = default;
 
     /// Set the global compression level
-    static StatusCode setCompression( boost::string_ref compression );
+    static StatusCode setCompression( std::string_view compression );
     /// Access to global compression level
     static int compression();
 
@@ -217,7 +217,7 @@ namespace Gaudi {
       /// Default destructor
       virtual ~Tool() = default;
       /// Access data branch by name: Get existing branch in read only mode
-      virtual TBranch* getBranch( boost::string_ref section, boost::string_ref n ) = 0;
+      virtual TBranch* getBranch( std::string_view section, std::string_view n ) = 0;
       /// Internal overload to facilitate the access to POOL files
       virtual RootRef poolRef( size_t /* which */ ) const { return RootRef(); }
 
@@ -226,7 +226,7 @@ namespace Gaudi {
       /// Save references section when closing data file
       virtual StatusCode saveRefs() = 0;
       /// Load references object
-      virtual int loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry,
+      virtual int loadRefs( std::string_view section, std::string_view cnt, unsigned long entry,
                             RootObjectRefs& refs ) = 0;
     };
     std::unique_ptr<Tool> m_tool;
@@ -237,7 +237,7 @@ namespace Gaudi {
 
   public:
     /// Standard constructor
-    RootDataConnection( const IInterface* own, boost::string_ref nam, std::shared_ptr<RootConnectionSetup> setup );
+    RootDataConnection( const IInterface* own, std::string_view nam, std::shared_ptr<RootConnectionSetup> setup );
 
     /// Direct access to TFile structure
     TFile* file() const { return m_file.get(); }
@@ -260,27 +260,27 @@ namespace Gaudi {
     bool lookupClient( const IInterface* client ) const;
 
     /// Error handler when bad write statements occur
-    void badWriteError( boost::string_ref msg ) const;
+    void badWriteError( std::string_view msg ) const;
 
     /// Access link section for single container and entry
-    std::pair<const RootRef*, const ContainerSection*> getMergeSection( boost::string_ref container, int entry ) const;
+    std::pair<const RootRef*, const ContainerSection*> getMergeSection( std::string_view container, int entry ) const;
 
     /// Enable TTreePerStats
-    void enableStatistics( boost::string_ref section );
+    void enableStatistics( std::string_view section );
     /// Save TTree access statistics if required
-    void saveStatistics( boost::string_ref statisticsFile );
+    void saveStatistics( std::string_view statisticsFile );
 
     /// Load object
-    int loadObj( boost::string_ref section, boost::string_ref cnt, unsigned long entry, DataObject*& pObj );
+    int loadObj( std::string_view section, std::string_view cnt, unsigned long entry, DataObject*& pObj );
 
     /// Load references object
-    int loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry, RootObjectRefs& refs );
+    int loadRefs( std::string_view section, std::string_view cnt, unsigned long entry, RootObjectRefs& refs );
 
     /// Save object of a given class to section and container
-    std::pair<int, unsigned long> saveObj( boost::string_ref section, boost::string_ref cnt, TClass* cl,
-                                           DataObject* pObj, int buff_siz, int split_lvl, bool fill_missing = false );
+    std::pair<int, unsigned long> saveObj( std::string_view section, std::string_view cnt, TClass* cl, DataObject* pObj,
+                                           int buff_siz, int split_lvl, bool fill_missing = false );
     /// Save object of a given class to section and container
-    std::pair<int, unsigned long> save( boost::string_ref section, boost::string_ref cnt, TClass* cl, void* pObj,
+    std::pair<int, unsigned long> save( std::string_view section, std::string_view cnt, TClass* cl, void* pObj,
                                         int buff_siz, int split_lvl, bool fill_missing = false );
 
     /// Open data stream in read mode
@@ -297,24 +297,24 @@ namespace Gaudi {
     long long int seek( long long int, int ) override { return -1; }
 
     /// Access TTree section from section name. The section is created if required.
-    TTree* getSection( boost::string_ref sect, bool create = false );
+    TTree* getSection( std::string_view sect, bool create = false );
 
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name ) {
+    TBranch* getBranch( std::string_view section, std::string_view branch_name ) {
       return m_tool->getBranch( section, branch_name );
     }
     /// Access data branch by name: Get existing branch in write mode
-    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name, TClass* cl, void* ptr, int buff_siz,
+    TBranch* getBranch( std::string_view section, std::string_view branch_name, TClass* cl, void* ptr, int buff_siz,
                         int split_lvl );
 
     /// Create reference object from registry entry
     void makeRef( const IRegistry& pA, RootRef& ref );
     /// Create reference object from values
-    void makeRef( boost::string_ref name, long clid, int tech, boost::string_ref db, boost::string_ref cnt, int entry,
+    void makeRef( std::string_view name, long clid, int tech, std::string_view db, std::string_view cnt, int entry,
                   RootRef& ref );
 
     /// Convert path string to path index
-    int makeLink( boost::string_ref p );
+    int makeLink( std::string_view p );
 
     /// Access database/file name from saved index
     const std::string& getDb( int which ) const;

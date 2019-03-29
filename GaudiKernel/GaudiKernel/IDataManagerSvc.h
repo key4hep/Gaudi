@@ -5,8 +5,8 @@
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/IDataStoreAgent.h"
 #include "GaudiKernel/IInterface.h"
-#include "boost/utility/string_ref.hpp"
 #include <string>
+#include <string_view>
 #include <vector>
 
 // Forward declarations
@@ -100,7 +100,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      sub_path   [IN] Path to sub-tree node.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode clearSubTree( boost::string_ref sub_path ) = 0;
+  virtual StatusCode clearSubTree( std::string_view sub_path ) = 0;
 
   /** Remove all data objects below the sub tree
       identified by the object. The object itself is removed as well.
@@ -118,7 +118,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      sub_path   [IN] Path to sub-tree node.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode traverseSubTree( boost::string_ref sub_tree_path, IDataStoreAgent* pAgent ) = 0;
+  virtual StatusCode traverseSubTree( std::string_view sub_tree_path, IDataStoreAgent* pAgent ) = 0;
 
   /** Analyse by traversing all data objects below the sub tree identified by its full path name.
       @param      sub_path   [IN] Path to sub-tree node.
@@ -127,7 +127,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @return                     Status code indicating success or failure.
   */
   template <typename F, typename = std::enable_if_t<!std::is_convertible<F, IDataStoreAgent*>::value>>
-  StatusCode traverseSubTree( boost::string_ref sub_path, F&& f ) {
+  StatusCode traverseSubTree( std::string_view sub_path, F&& f ) {
     auto agent = makeDataStoreAgent( std::forward<F>( f ) );
     return traverseSubTree( sub_path, &agent );
   }
@@ -192,7 +192,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
      @param      pAddress    [IN] Pointer to the object to be registered.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) = 0;
+  virtual StatusCode registerAddress( std::string_view fullPath, IOpaqueAddress* pAddress ) = 0;
 
   /** Register object address with the data store.
       Connect the object identified by its pointer to the parent object
@@ -202,7 +202,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      pAddress   [IN] Pointer to the object to be connected.
       @return                     Status code indicating success or failure.
   */
-  StatusCode registerAddress( DataObject* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) {
+  StatusCode registerAddress( DataObject* parentObj, std::string_view objectPath, IOpaqueAddress* pAddress ) {
     return registerAddress( parentObj ? parentObj->registry() : nullptr, objectPath, pAddress );
   }
 
@@ -214,15 +214,14 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      pAddress   [IN] Pointer to the object to be connected.
       @return                     Status code indicating success or failure.
   */
-  virtual StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath,
-                                      IOpaqueAddress* pAddress ) = 0;
+  virtual StatusCode registerAddress( IRegistry* parentObj, std::string_view objectPath, IOpaqueAddress* pAddress ) = 0;
 
   /** Unregister object address from the data store.
       The object is identified by full path name.
       @param      fullPath [IN] Path name of the object.
       @return                   Status code indicating success or failure.
   */
-  virtual StatusCode unregisterAddress( boost::string_ref fullPath ) = 0;
+  virtual StatusCode unregisterAddress( std::string_view fullPath ) = 0;
 
   /** Unregister object address from the data store.
       The object is identified by parent object and the path of the
@@ -231,7 +230,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      objPath  [IN] Path name of the object relative to the parent.
       @return                   Status code indicating success or failure.
   */
-  StatusCode unregisterAddress( DataObject* pParent, boost::string_ref objPath ) {
+  StatusCode unregisterAddress( DataObject* pParent, std::string_view objPath ) {
     return unregisterAddress( pParent ? pParent->registry() : nullptr, objPath );
   }
 
@@ -242,7 +241,7 @@ struct GAUDI_API IDataManagerSvc : extend_interfaces<IInterface> {
       @param      objPath  [IN] Path name of the object relative to the parent.
       @return                   Status code indicating success or failure.
   */
-  virtual StatusCode unregisterAddress( IRegistry* pParent, boost::string_ref objPath ) = 0;
+  virtual StatusCode unregisterAddress( IRegistry* pParent, std::string_view objPath ) = 0;
 };
 
 #endif // GAUDIKERNEL_IDATAMANAGERSVC_H
