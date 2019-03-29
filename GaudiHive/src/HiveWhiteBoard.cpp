@@ -160,19 +160,19 @@ public:
   const std::string& rootName() const override { return m_rootName; }
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( boost::string_ref path, IOpaqueAddress* pAddr ) override {
+  StatusCode registerAddress( std::string_view path, IOpaqueAddress* pAddr ) override {
     return fwd( [&]( IDataManagerSvc& p ) { return p.registerAddress( path, pAddr ); } );
   }
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( IRegistry* parent, boost::string_ref path, IOpaqueAddress* pAdd ) override {
+  StatusCode registerAddress( IRegistry* parent, std::string_view path, IOpaqueAddress* pAdd ) override {
     return fwd( [&]( IDataManagerSvc& p ) { return p.registerAddress( parent, path, pAdd ); } );
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( boost::string_ref path ) override {
+  StatusCode unregisterAddress( std::string_view path ) override {
     return fwd( [&]( IDataManagerSvc& p ) { return p.unregisterAddress( path ); } );
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( IRegistry* pParent, boost::string_ref path ) override {
+  StatusCode unregisterAddress( IRegistry* pParent, std::string_view path ) override {
     return fwd( [&]( IDataManagerSvc& p ) { return p.unregisterAddress( pParent, path ); } );
   }
   /// Explore the object store: retrieve all leaves attached to the object
@@ -192,7 +192,7 @@ public:
     return fwd( [&]( IDataManagerSvc& p ) { return p.objectParent( pObject, refpParent ); } );
   }
   /// Remove all data objects below the sub tree identified
-  StatusCode clearSubTree( boost::string_ref path ) override {
+  StatusCode clearSubTree( std::string_view path ) override {
     return fwd( [&]( IDataManagerSvc& p ) { return p.clearSubTree( path ); } );
   }
   /// Remove all data objects below the sub tree identified
@@ -206,7 +206,7 @@ public:
   }
 
   /// Analyze by traversing all data objects below the sub tree
-  StatusCode traverseSubTree( boost::string_ref path, IDataStoreAgent* pAgent ) override {
+  StatusCode traverseSubTree( std::string_view path, IDataStoreAgent* pAgent ) override {
     return fwd( [&]( IDataManagerSvc& p ) { return p.traverseSubTree( path, pAgent ); } );
   }
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
@@ -264,15 +264,15 @@ public:
     return fwd( [&]( IDataProviderSvc& p ) { return p.preLoad(); } );
   }
   /// Register object with the data store.
-  StatusCode registerObject( boost::string_ref parent, boost::string_ref obj, DataObject* pObj ) override {
+  StatusCode registerObject( std::string_view parent, std::string_view obj, DataObject* pObj ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.registerObject( parent, obj, pObj ); } );
   }
   /// Register object with the data store.
-  StatusCode registerObject( DataObject* parent, boost::string_ref obj, DataObject* pObj ) override {
+  StatusCode registerObject( DataObject* parent, std::string_view obj, DataObject* pObj ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.registerObject( parent, obj, pObj ); } );
   }
   /// Unregister object from the data store.
-  StatusCode unregisterObject( boost::string_ref path ) override {
+  StatusCode unregisterObject( std::string_view path ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( path ); } );
   }
   /// Unregister object from the data store.
@@ -280,39 +280,39 @@ public:
     return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( pObj ); } );
   }
   /// Unregister object from the data store.
-  StatusCode unregisterObject( DataObject* pObj, boost::string_ref path ) override {
+  StatusCode unregisterObject( DataObject* pObj, std::string_view path ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unregisterObject( pObj, path ); } );
   }
   /// Retrieve object from data store.
-  StatusCode retrieveObject( IRegistry* parent, boost::string_ref path, DataObject*& pObj ) override {
+  StatusCode retrieveObject( IRegistry* parent, std::string_view path, DataObject*& pObj ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, path, pObj ); } );
   }
   /// Find object identified by its full path in the data store.
-  StatusCode findObject( boost::string_ref path, DataObject*& pObj ) override {
+  StatusCode findObject( std::string_view path, DataObject*& pObj ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( path, pObj ); } );
   }
   /// Find object identified by its full path in the data store.
-  StatusCode findObject( IRegistry* parent, boost::string_ref path, DataObject*& pObj ) override {
+  StatusCode findObject( IRegistry* parent, std::string_view path, DataObject*& pObj ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.retrieveObject( parent, path, pObj ); } );
   }
   /// Add a link to another object.
-  StatusCode linkObject( IRegistry* from, boost::string_ref objPath, DataObject* to ) override {
+  StatusCode linkObject( IRegistry* from, std::string_view objPath, DataObject* to ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.linkObject( from, objPath, to ); } );
   }
   /// Add a link to another object.
-  StatusCode linkObject( boost::string_ref fullPath, DataObject* to ) override {
+  StatusCode linkObject( std::string_view fullPath, DataObject* to ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.linkObject( fullPath, to ); } );
   }
   /// Remove a link to another object.
-  StatusCode unlinkObject( IRegistry* from, boost::string_ref objPath ) override {
+  StatusCode unlinkObject( IRegistry* from, std::string_view objPath ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unlinkObject( from, objPath ); } );
   }
   /// Remove a link to another object.
-  StatusCode unlinkObject( DataObject* from, boost::string_ref objPath ) override {
+  StatusCode unlinkObject( DataObject* from, std::string_view objPath ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unlinkObject( from, objPath ); } );
   }
   /// Remove a link to another object.
-  StatusCode unlinkObject( boost::string_ref path ) override {
+  StatusCode unlinkObject( std::string_view path ) override {
     return fwd( [&]( IDataProviderSvc& p ) { return p.unlinkObject( path ); } );
   }
   /// Update object identified by its directory entry.

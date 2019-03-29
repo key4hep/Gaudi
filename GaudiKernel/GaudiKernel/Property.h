@@ -3,9 +3,9 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <boost/utility/string_ref.hpp>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <typeinfo>
 // ============================================================================
 // Application C++ Class Headers
@@ -33,9 +33,9 @@ namespace Gaudi {
 
     public:
       /// property name
-      const std::string name() const { return m_name.to_string(); }
+      const std::string name() const { return std::string{m_name}; }
       /// property documentation
-      std::string documentation() const { return m_documentation.to_string(); }
+      std::string documentation() const { return std::string{m_documentation}; }
       /// property type-info
       const std::type_info* type_info() const { return m_typeinfo; }
       /// property type
@@ -121,12 +121,12 @@ namespace Gaudi {
       PropertyBase& operator=( const PropertyBase& ) = default;
 
     private:
-      /// helper to map a string to a reliable boost::string_ref
-      static boost::string_ref to_view( std::string str );
+      /// helper to map a string to a reliable std::string_view
+      static std::string_view to_view( std::string str );
       /// property name
-      boost::string_ref m_name;
+      std::string_view m_name;
       /// property doc string
-      boost::string_ref m_documentation;
+      std::string_view m_documentation;
       /// property type
       const std::type_info* m_typeinfo;
       /// type of owner of the property (if defined)

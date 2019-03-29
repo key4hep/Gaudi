@@ -18,20 +18,20 @@ namespace Gaudi {
     /// Standard constructor
     RootTool( RootDataConnection* con ) { c = con; }
     /// Access data branch by name: Get existing branch in read only mode
-    TBranch* getBranch( boost::string_ref section, boost::string_ref branch_name ) override {
-      std::string n = branch_name.to_string() + ".";
+    TBranch* getBranch( std::string_view section, std::string_view branch_name ) override {
+      std::string n{branch_name};
+      n += '.';
       for ( int i = 0, m = n.length() - 1; i < m; ++i )
         if ( !isalnum( n[i] ) ) n[i] = '_';
       TTree*   t = c->getSection( section );
       TBranch* b = t ? t->GetBranch( n.c_str() ) : nullptr;
-      if ( !b ) b = t ? t->GetBranch( branch_name.to_string().c_str() ) : nullptr;
+      if ( !b ) b = t ? t->GetBranch( std::string{branch_name}.c_str() ) : nullptr;
       if ( b ) b->SetAutoDelete( kFALSE );
       return b;
     }
     /// Load references object from file
-    int loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry,
-                  RootObjectRefs& refs ) override {
-      TBranch*        b     = getBranch( section, cnt.to_string() + "#R" );
+    int loadRefs( std::string_view section, std::string_view cnt, unsigned long entry, RootObjectRefs& refs ) override {
+      TBranch*        b     = getBranch( section, std::string{cnt} + "#R" );
       RootObjectRefs* prefs = &refs;
       if ( b ) {
         b->SetAddress( &prefs );

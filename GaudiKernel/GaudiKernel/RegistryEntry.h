@@ -1,14 +1,14 @@
 #ifndef GAUDIKERNEL_REGISTRYENTRY_H
 #define GAUDIKERNEL_REGISTRYENTRY_H
 
-// STL include files
-#include <vector>
-
 // Framework include files
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
-#include <boost/utility/string_ref.hpp>
+
+// STL include files
+#include <string_view>
+#include <vector>
 
 // Forward declarations
 class DataSvc;
@@ -76,7 +76,7 @@ namespace DataSvcHelpers {
     /// Internal method to retrieve data directory
     IRegistry* i_find( const IRegistry* pDirectory ) const;
     /// Internal method to retrieve data directory
-    RegistryEntry* i_find( boost::string_ref path ) const;
+    RegistryEntry* i_find( std::string_view path ) const;
     /// Internal method to locate object entry
     RegistryEntry* i_find( const DataObject* pObject ) const;
     /// Internal method to create entries
@@ -90,7 +90,7 @@ namespace DataSvcHelpers {
     /// Pointer to parent registry entry
     RegistryEntry* parentEntry() { return m_pParent; }
     /// Find identified leaf in this registry node
-    RegistryEntry* findLeaf( boost::string_ref path ) const { return i_find( path ); }
+    RegistryEntry* findLeaf( std::string_view path ) const { return i_find( path ); }
     /// Find identified leaf in this registry node
     RegistryEntry* findLeaf( const DataObject* key ) const { return i_find( key ); }
     /// Initialize link as hard link
@@ -138,7 +138,7 @@ namespace DataSvcHelpers {
     /// Try to find an object identified by its pointer
     IRegistry* find( const IRegistry* obj ) const { return i_find( obj ); }
     /// Try to find an object identified by its relative name to the directory
-    IRegistry* find( boost::string_ref path ) const { return i_find( path ); }
+    IRegistry* find( std::string_view path ) const { return i_find( path ); }
     /// Set/Update Opaque address
     void setAddress( IOpaqueAddress* pAddress ) override;
     /// Set/Update object address
@@ -149,7 +149,7 @@ namespace DataSvcHelpers {
     /// Add entry to data store
     StatusCode add( std::string name, IOpaqueAddress* pAddress, bool is_soft = false );
     /// Remove an entry from the store
-    StatusCode remove( boost::string_ref name );
+    StatusCode remove( std::string_view name );
     /// Add object to the container
     long add( IRegistry* obj );
     /// Remove an object from the container

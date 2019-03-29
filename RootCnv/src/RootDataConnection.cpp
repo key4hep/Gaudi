@@ -107,7 +107,7 @@ namespace {
 STATUSCODE_ENUM_IMPL( Gaudi::RootDataConnection::Status, RootDataConnectionCategory )
 
 /// Set the global compression level
-StatusCode RootConnectionSetup::setCompression( boost::string_ref compression ) {
+StatusCode RootConnectionSetup::setCompression( std::string_view compression ) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
   int  res = 0, level = ROOT::CompressionSettings( ROOT::kLZMA, 6 );
   auto idx = compression.find( ':' );
@@ -119,21 +119,21 @@ StatusCode RootConnectionSetup::setCompression( boost::string_ref compression ) 
     else if ( alg.size() == 4 && strncasecmp( alg.data(), "LZMA", 4 ) == 0 )
       alg_code = ROOT::kLZMA;
     else
-      throw runtime_error( "ERROR: request to set unknown ROOT compression algorithm:" + alg.to_string() );
-    res = ::sscanf( compression.substr( idx + 1 ).to_string().c_str(), "%d",
+      throw runtime_error( "ERROR: request to set unknown ROOT compression algorithm:" + std::string{alg} );
+    res = ::sscanf( std::string{compression.substr( idx + 1 )}.c_str(), "%d",
                     &level ); // TODO: use C++17 std::from_chars instead...
     if ( res == 1 ) {
       s_compressionLevel = ROOT::CompressionSettings( alg_code, level );
       return StatusCode::SUCCESS;
     }
     throw runtime_error( "ERROR: request to set unknown ROOT compression level:" +
-                         compression.substr( idx + 1 ).to_string() );
-  } else if ( 1 == ::sscanf( compression.to_string().c_str(), "%d", &level ) ) { // TODO: use C++17 std::from_chars
-                                                                                 // instead
+                         std::string{compression.substr( idx + 1 )} );
+  } else if ( 1 == ::sscanf( std::string{compression}.c_str(), "%d", &level ) ) { // TODO: use C++17 std::from_chars
+                                                                                  // instead
     s_compressionLevel = level;
     return StatusCode::SUCCESS;
   }
-  throw runtime_error( "ERROR: request to set unknown ROOT compression mechanism:" + compression.to_string() );
+  throw runtime_error( "ERROR: request to set unknown ROOT compression mechanism:" + std::string{compression} );
 #else
   if ( !compression.empty() ) {}
   return StatusCode::SUCCESS;
@@ -150,9 +150,9 @@ void RootConnectionSetup::setMessageSvc( MsgStream* m ) { m_msgSvc.reset( m ); }
 void RootConnectionSetup::setIncidentSvc( IIncidentSvc* s ) { m_incidentSvc.reset( s ); }
 
 /// Standard constructor
-RootDataConnection::RootDataConnection( const IInterface* owner, boost::string_ref fname,
+RootDataConnection::RootDataConnection( const IInterface* owner, std::string_view fname,
                                         std::shared_ptr<RootConnectionSetup> setup )
-    : IDataConnection( owner, fname.to_string() )
+    : IDataConnection( owner, std::string{fname} )
     , m_setup( std::move( setup ) ) { //               01234567890123456789012345678901234567890
   // Check if FID: A82A3BD8-7ECB-DC11-8DC0-000423D950B0
   if ( fname.size() == 36 && fname[8] == '-' && fname[13] == '-' && fname[18] == '-' && fname[23] == '-' ) {
@@ -181,25 +181,25 @@ bool RootDataConnection::lookupClient( const IInterface* client ) const {
 }
 
 /// Error handler when bad write statements occur
-void RootDataConnection::badWriteError( boost::string_ref msg ) const {
+void RootDataConnection::badWriteError( std::string_view msg ) const {
   msgSvc() << MSG::ERROR << "File:" << fid() << "Failed action:" << msg << endmsg;
 }
 
 /// Save TTree access statistics if required
-void RootDataConnection::saveStatistics( boost::string_ref statisticsFile ) {
+void RootDataConnection::saveStatistics( std::string_view statisticsFile ) {
   if ( m_statistics ) {
     m_statistics->Print();
-    if ( !statisticsFile.empty() ) m_statistics->SaveAs( statisticsFile.to_string().c_str() );
+    if ( !statisticsFile.empty() ) m_statistics->SaveAs( std::string{statisticsFile}.c_str() );
     m_statistics.reset();
   }
 }
 
 /// Enable TTreePerStats
-void RootDataConnection::enableStatistics( boost::string_ref section ) {
+void RootDataConnection::enableStatistics( std::string_view section ) {
   if ( m_statistics ) {
     TTree* t = getSection( section, false );
     if ( t ) {
-      m_statistics.reset( new TTreePerfStats( ( section.to_string() + "_ioperf" ).c_str(), t ) );
+      m_statistics.reset( new TTreePerfStats( ( std::string{section} + "_ioperf" ).c_str(), t ) );
       return;
     }
     msgSvc() << MSG::WARNING << "Failed to enable perfstats for tree:" << section << endmsg;
@@ -354,14 +354,14 @@ StatusCode RootDataConnection::disconnect() {
 }
 
 /// Access TTree section from section name. The section is created if required.
-TTree* RootDataConnection::getSection( boost::string_ref section, bool create ) {
+TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
   auto   it = m_sections.find( section );
   TTree* t  = ( it != m_sections.end() ? it->second : nullptr );
   if ( !t ) {
-    t = (TTree*)m_file->Get( section.to_string().c_str() );
+    t = (TTree*)m_file->Get( std::string{section}.c_str() );
     if ( !t && create ) {
       TDirectory::TContext ctxt( m_file.get() );
-      t = new TTree( section.to_string().c_str(), "Root data for Gaudi" );
+      t = new TTree( std::string{section}.c_str(), "Root data for Gaudi" );
     }
     if ( t ) {
       int cacheSize = m_setup->cacheSize;
@@ -413,16 +413,16 @@ TTree* RootDataConnection::getSection( boost::string_ref section, bool create ) 
           }
         }
       }
-      m_sections[section.to_string()] = t;
+      m_sections[std::string{section}] = t;
     }
   }
   return t;
 }
 
 /// Access data branch by name: Get existing branch in write mode
-TBranch* RootDataConnection::getBranch( boost::string_ref section, boost::string_ref branch_name, TClass* cl, void* ptr,
+TBranch* RootDataConnection::getBranch( std::string_view section, std::string_view branch_name, TClass* cl, void* ptr,
                                         int buff_siz, int split_lvl ) {
-  string n = branch_name.to_string();
+  string n = std::string{branch_name};
   std::replace_if( begin( n ), end( n ), []( const char c ) { return !isalnum( c ); }, '_' );
   n += ".";
   TTree*   t = getSection( section, true );
@@ -430,16 +430,16 @@ TBranch* RootDataConnection::getBranch( boost::string_ref section, boost::string
   if ( !b && cl && m_file->IsWritable() ) {
     b = t->Branch( n.c_str(), cl->GetName(), (void*)( ptr ? &ptr : nullptr ), buff_siz, split_lvl );
   }
-  if ( !b ) b = t->GetBranch( branch_name.to_string().c_str() );
+  if ( !b ) b = t->GetBranch( std::string{branch_name}.c_str() );
   if ( b ) b->SetAutoDelete( kFALSE );
   return b;
 }
 
 /// Convert path string to path index
-int RootDataConnection::makeLink( boost::string_ref p ) {
+int RootDataConnection::makeLink( std::string_view p ) {
   auto ip = std::find( std::begin( m_links ), std::end( m_links ), p );
   if ( ip != std::end( m_links ) ) return std::distance( std::begin( m_links ), ip );
-  m_links.push_back( p.to_string() );
+  m_links.push_back( std::string{p} );
   return m_links.size() - 1;
 }
 
@@ -456,14 +456,14 @@ CSTR RootDataConnection::getDb( int which ) const {
 CSTR RootDataConnection::empty() const { return s_empty; }
 
 /// Save object of a given class to section and container
-pair<int, unsigned long> RootDataConnection::saveObj( boost::string_ref section, boost::string_ref cnt, TClass* cl,
+pair<int, unsigned long> RootDataConnection::saveObj( std::string_view section, std::string_view cnt, TClass* cl,
                                                       DataObject* pObj, int buff_siz, int split_lvl, bool fill ) {
   DataObjectPush push( pObj );
   return save( section, cnt, cl, pObj, buff_siz, split_lvl, fill );
 }
 
 /// Save object of a given class to section and container
-pair<int, unsigned long> RootDataConnection::save( boost::string_ref section, boost::string_ref cnt, TClass* cl,
+pair<int, unsigned long> RootDataConnection::save( std::string_view section, std::string_view cnt, TClass* cl,
                                                    void* pObj, int buff_siz, int split_lvl, bool fill_missing ) {
   split_lvl  = 0;
   TBranch* b = getBranch( section, cnt, cl, pObj ? &pObj : nullptr, buff_siz, split_lvl );
@@ -493,7 +493,7 @@ pair<int, unsigned long> RootDataConnection::save( boost::string_ref section, bo
 }
 
 /// Load object
-int RootDataConnection::loadObj( boost::string_ref section, boost::string_ref cnt, unsigned long entry,
+int RootDataConnection::loadObj( std::string_view section, std::string_view cnt, unsigned long entry,
                                  DataObject*& pObj ) {
   TBranch* b = getBranch( section, cnt );
   if ( b ) {
@@ -543,7 +543,7 @@ int RootDataConnection::loadObj( boost::string_ref section, boost::string_ref cn
 }
 
 /// Load references object
-int RootDataConnection::loadRefs( boost::string_ref section, boost::string_ref cnt, unsigned long entry,
+int RootDataConnection::loadRefs( std::string_view section, std::string_view cnt, unsigned long entry,
                                   RootObjectRefs& refs ) {
   int nbytes = m_tool->loadRefs( section, cnt, entry, refs );
 #if ROOT_VERSION_CODE >= ROOT_VERSION( 5, 33, 0 )
@@ -560,7 +560,7 @@ int RootDataConnection::loadRefs( boost::string_ref section, boost::string_ref c
 
 /// Access link section for single container and entry
 pair<const RootRef*, const RootDataConnection::ContainerSection*>
-RootDataConnection::getMergeSection( boost::string_ref container, int entry ) const {
+RootDataConnection::getMergeSection( std::string_view container, int entry ) const {
   // size_t idx = cont.find('/',1);
   // string container = cont[0]=='/' ? cont.substr(1,idx==string::npos?idx:idx-1) : cont;
   auto i = m_mergeSects.find( container );
@@ -592,30 +592,30 @@ void RootDataConnection::makeRef( const IRegistry& pR, RootRef& ref ) {
 }
 
 /// Create reference object from values
-void RootDataConnection::makeRef( boost::string_ref name, long clid, int tech, boost::string_ref dbase,
-                                  boost::string_ref cnt, int entry, RootRef& ref ) {
-  auto db   = ( dbase == m_fid ? boost::string_ref{s_local} : dbase );
+void RootDataConnection::makeRef( std::string_view name, long clid, int tech, std::string_view dbase,
+                                  std::string_view cnt, int entry, RootRef& ref ) {
+  auto db   = ( dbase == m_fid ? std::string_view{s_local} : dbase );
   ref.entry = entry;
 
   int cdb = -1;
   if ( !db.empty() ) {
     auto idb = std::find_if( m_dbs.begin(), m_dbs.end(), [&]( const std::string& i ) { return i == db; } );
     cdb      = std::distance( m_dbs.begin(), idb );
-    if ( idb == m_dbs.end() ) m_dbs.push_back( db.to_string() );
+    if ( idb == m_dbs.end() ) m_dbs.push_back( std::string{db} );
   }
 
   int ccnt = -1;
   if ( !cnt.empty() ) {
     auto icnt = std::find_if( m_conts.begin(), m_conts.end(), [&]( const std::string& i ) { return i == cnt; } );
     ccnt      = std::distance( m_conts.begin(), icnt );
-    if ( icnt == m_conts.end() ) m_conts.push_back( cnt.to_string() );
+    if ( icnt == m_conts.end() ) m_conts.push_back( std::string{cnt} );
   }
 
   int clnk = -1;
   if ( !name.empty() ) {
     auto ilnk = std::find_if( m_links.begin(), m_links.end(), [&]( const std::string& i ) { return i == name; } );
     clnk      = std::distance( m_links.begin(), ilnk );
-    if ( ilnk == m_links.end() ) m_links.push_back( name.to_string() );
+    if ( ilnk == m_links.end() ) m_links.push_back( std::string{name} );
   }
 
   ref.dbase     = cdb;

@@ -2,7 +2,7 @@
 #define ROOTHISTCNV_ROOTOBJADDRESS_H 1
 
 #include "GaudiKernel/IOpaqueAddress.h"
-#include "boost/utility/string_ref.hpp"
+#include <string_view>
 
 class TObject;
 
@@ -43,11 +43,11 @@ namespace RootHistCnv {
     }
 
     /// Standard Constructor
-    RootObjAddress( long svc, const CLID& clid, boost::string_ref p1 = {}, boost::string_ref p2 = {},
+    RootObjAddress( long svc, const CLID& clid, std::string_view p1 = {}, std::string_view p2 = {},
                     unsigned long ip1 = 0, unsigned long ip2 = 0, TObject* tObj = nullptr )
         : m_svcType( svc ), m_clID( clid ), m_tObj( tObj ) {
-      m_par[0]  = p1.to_string();
-      m_par[1]  = p2.to_string();
+      m_par[0]  = std::string{p1};
+      m_par[1]  = std::string{p2};
       m_ipar[0] = ip1;
       m_ipar[1] = ip2;
     }

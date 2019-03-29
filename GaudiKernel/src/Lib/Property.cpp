@@ -39,7 +39,7 @@ namespace {
 
 using Gaudi::Details::PropertyBase;
 
-boost::string_ref PropertyBase::to_view( std::string str ) {
+std::string_view PropertyBase::to_view( std::string str ) {
   return **( all_strings.insert( std::make_unique<std::string>( std::move( str ) ) ).first );
 }
 
