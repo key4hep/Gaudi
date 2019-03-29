@@ -121,8 +121,11 @@ StatusCode MessageSvc::initialize() {
 
 /// Reinitialize Service
 StatusCode MessageSvc::reinitialize() {
-  m_state = Gaudi::StateMachine::OFFLINE;
-  return initialize();
+  m_state       = Gaudi::StateMachine::OFFLINE;
+  StatusCode sc = initialize();
+  if ( sc.isSuccess() ) m_state = Gaudi::StateMachine::INITIALIZED;
+
+  return sc;
 }
 
 //#############################################################################
