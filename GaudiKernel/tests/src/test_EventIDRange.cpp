@@ -39,9 +39,6 @@ BOOST_AUTO_TEST_CASE( comparison ) {
     std::cout << "intersect_RLB" << intersect_RLB << std::endl;
 
     // Check resulting range
-    BOOST_CHECK( intersect_RLB.start().isRunLumi() );
-    BOOST_CHECK( !intersect_RLB.start().isTimeStamp() );
-
     BOOST_CHECK( intersect_RLB.start().run_number() == 100 );
     BOOST_CHECK( intersect_RLB.start().lumi_block() == 30 );
 
@@ -54,9 +51,6 @@ BOOST_AUTO_TEST_CASE( comparison ) {
     std::cout << "intersect TS:" << intersect_TS << std::endl;
 
     // Check resulting range
-    BOOST_CHECK( !intersect_TS.start().isRunLumi() );
-    BOOST_CHECK( intersect_TS.start().isTimeStamp() );
-
     BOOST_CHECK( intersect_TS.start().time_stamp() == 1200 );
     BOOST_CHECK( intersect_TS.start().time_stamp_ns_offset() == 500 );
 
