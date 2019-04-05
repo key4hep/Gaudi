@@ -1,19 +1,16 @@
 #ifndef GAUDIKERNEL_MINIMALEVENTLOOPMGR_H
 #define GAUDIKERNEL_MINIMALEVENTLOOPMGR_H 1
 
-// Framework include files
-#include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/IAlgExecStateSvc.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IEventProcessor.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/IIncidentListener.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/Service.h"
-
-// STL include files
-#include <list>
+#include <Gaudi/Interfaces/IAsyncEventProcessor.h>
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/IAlgExecStateSvc.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IAppMgrUI.h>
+#include <GaudiKernel/IEventProcessor.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/Service.h>
 #include <vector>
 
 /** @class MinimalEventLoopMgr
@@ -80,6 +77,10 @@ protected:
 public:
   /// Standard Constructor
   MinimalEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc );
+  /// No copy allowed.
+  MinimalEventLoopMgr( const MinimalEventLoopMgr& ) = delete;
+  /// No copy allowed.
+  MinimalEventLoopMgr& operator=( const MinimalEventLoopMgr& ) = delete;
 
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NO_DEPRECATED )
 protected:
@@ -125,12 +126,7 @@ public:
   /// decodeOutStreamNameList & outStreamNameListHandler
   StatusCode decodeOutStreams();
 
-private:
-  /// Fake copy constructor (never implemented).
-  MinimalEventLoopMgr( const MinimalEventLoopMgr& );
-  /// Fake assignment operator (never implemented).
-  MinimalEventLoopMgr& operator=( const MinimalEventLoopMgr& );
-
+protected:
   ///< Event data service (whiteboard)
   SmartIF<IHiveWhiteBoard> m_WB;
 

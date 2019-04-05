@@ -381,6 +381,8 @@ StatusCode ApplicationMgr::configure() {
         << "\n Check option ApplicationMgr." << m_eventLoopMgr.name() << "\n No events will be processed." << endmsg;
     return sc;
   }
+  // The IEventProcessor might also be an IAsyncEventProcessor
+  m_asyncProcessor = m_processingMgr;
 
   // Establish Update Handlers for ExtSvc and DLLs Properties
   m_extSvcNameList.declareUpdateHandler( &ApplicationMgr::extSvcNameListHandler, this );
@@ -787,6 +789,20 @@ StatusCode ApplicationMgr::executeEvent( EventContext&& ctx ) {
   MsgStream log( m_messageSvc, name() );
   log << MSG::FATAL << "executeEvent: Invalid state \"" << FSMState() << "\"" << endmsg;
   return StatusCode::FAILURE;
+}
+
+std::future<std::tuple<StatusCode, EventContext>> ApplicationMgr::asyncExecuteEvent( EventContext&& ctx ) {
+  if ( m_state == Gaudi::StateMachine::RUNNING ) {
+    if ( LIKELY( bool( m_asyncProcessor ) ) ) {
+      return m_asyncProcessor->asyncExecuteEvent( std::move( ctx ) );
+    } else {
+      throw GaudiException{"asyncExecuteEvent: event processor is not an IAsyncEventProcessor", name(),
+                           StatusCode::FAILURE};
+    }
+  }
+  std::stringstream s;
+  s << "asyncExecuteEvent: Invalid state \"" << FSMState() << '"';
+  throw GaudiException{s.str(), name(), StatusCode::FAILURE};
 }
 
 EventContext ApplicationMgr::createEventContext() {
