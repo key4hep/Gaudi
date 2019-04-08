@@ -22,30 +22,14 @@ DECLARE_COMPONENT( HiveSlimEventLoopMgr )
 #define VERBOSE_MSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
-// Standard Constructor
-//--------------------------------------------------------------------------------------------
-HiveSlimEventLoopMgr::HiveSlimEventLoopMgr( const std::string& name, ISvcLocator* svcLoc )
-    : base_class( name, svcLoc ), m_appMgrUI( svcLoc ) {}
-
-//--------------------------------------------------------------------------------------------
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
-HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr() {
-  m_histoDataMgrSvc.reset();
-  m_histoPersSvc.reset();
-  m_evtDataMgrSvc.reset();
-  m_whiteboard.reset();
-  m_evtSelector.reset();
-  delete m_evtContext;
-}
+HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr() { delete m_evtContext; }
 
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::initialize
 //--------------------------------------------------------------------------------------------
 StatusCode HiveSlimEventLoopMgr::initialize() {
-
-  if ( !m_appMgrUI ) return StatusCode::FAILURE;
-
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() ) {
     error() << "Failed to initialize Service Base class." << endmsg;
@@ -259,7 +243,6 @@ StatusCode HiveSlimEventLoopMgr::finalize() {
   }
 
   m_incidentSvc.reset();
-  m_appMgrUI.reset();
 
   // Release all interfaces...
   m_histoDataMgrSvc.reset();

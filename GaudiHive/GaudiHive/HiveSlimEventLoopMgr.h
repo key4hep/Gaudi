@@ -65,8 +65,6 @@ protected:
   SmartIF<IIncidentListener> m_abortEventListener;
   /// Scheduled stop of event processing
   bool m_scheduledStop = false;
-  /// Reference to the IAppMgrUI interface of the application manager
-  SmartIF<IAppMgrUI> m_appMgrUI;
   /// Reference to the incident service
   SmartIF<IIncidentSvc> m_incidentSvc;
 
@@ -74,11 +72,11 @@ protected:
   std::unique_ptr<boost::dynamic_bitset<>> m_blackListBS;
 
 public:
-  /// Standard Constructor
-  HiveSlimEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc );
+  // inherit base class constructor
+  using extends::extends;
 
-  /// Standard Destructor
   ~HiveSlimEventLoopMgr() override;
+
   /// Create event address using event selector
   StatusCode getEventRoot( IOpaqueAddress*& refpAddr );
   /// implementation of IService::initialize
