@@ -72,8 +72,10 @@ public:
   StatusCode nextEvent( int maxevt ) override;
   // implementation of IAppMgrUI::name
   const std::string& name() const override;
+  /// implementation of IEventProcessor::createEventContext()
+  EventContext createEventContext() override;
   /// implementation of IEventProcessor::executeEvent(void*)
-  StatusCode executeEvent( void* par ) override;
+  StatusCode executeEvent( EventContext&& ctx ) override;
   /// implementation of IEventProcessor::executeRun(int)
   StatusCode executeRun( int evtmax ) override;
   /// implementation of IEventProcessor::stopRun()

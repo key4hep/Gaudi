@@ -105,11 +105,12 @@ public:
   StatusCode reinitialize() override;
   /// implementation of IService::restart
   StatusCode restart() override;
-
+  /// implementation of IEventProcessor::createEventContext()
+  EventContext createEventContext() override;
   /// implementation of IEventProcessor::nextEvent
   StatusCode nextEvent( int maxevt ) override;
-  /// implementation of IEventProcessor::executeEvent(void* par)
-  StatusCode executeEvent( void* par ) override;
+  /// implementation of IEventProcessor::executeEvent(EventContext&&)
+  StatusCode executeEvent( EventContext&& ctx ) override;
   /// implementation of IEventProcessor::executeRun( )
   StatusCode executeRun( int maxevt ) override;
   /// implementation of IEventProcessor::stopRun( )

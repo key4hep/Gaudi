@@ -57,8 +57,6 @@ protected:
   StatusCode clearWBSlot( int evtSlot );
   /// Declare the root address of the event
   StatusCode declareEventRootAddress();
-  /// Create event context
-  StatusCode createEventContext( std::unique_ptr<EventContext>& eventContext, int createdEvents );
   /// Drain the scheduler from all actions that may be queued
   StatusCode drainScheduler( int& finishedEvents );
   /// Instance of the incident listener waiting for AbortEvent.
@@ -70,6 +68,8 @@ protected:
 
   // if finite number of evts is processed use bitset
   std::unique_ptr<boost::dynamic_bitset<>> m_blackListBS;
+
+  EventContext::ContextEvt_t m_nevt{0};
 
 public:
   // inherit base class constructor
@@ -89,8 +89,10 @@ public:
   StatusCode finalize() override;
   /// implementation of IService::nextEvent
   StatusCode nextEvent( int maxevt ) override;
-  /// implementation of IEventProcessor::executeEvent(void* par)
-  StatusCode executeEvent( void* par ) override;
+  /// implementation of IEventProcessor::createEventContext()
+  EventContext createEventContext() override;
+  /// implementation of IEventProcessor::executeEvent(EventContext&&)
+  StatusCode executeEvent( EventContext&& ctx ) override;
   /// implementation of IEventProcessor::executeRun()
   StatusCode executeRun( int maxevt ) override;
   /// implementation of IEventProcessor::stopRun()

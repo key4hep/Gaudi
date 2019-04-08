@@ -2,10 +2,8 @@
 #define GAUDIKERNEL_IEVENTPROCESSOR_H 1
 
 // Include files
-#include "GaudiKernel/IInterface.h"
-
-// Forward declarations
-class IEventProcessor;
+#include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/IInterface.h>
 
 /** @class IEventProcessor IEventProcessor.h GaudiKernel/IEventProcessor.h
  *  The IEventProcessor is the interface to process events.
@@ -16,9 +14,11 @@ class IEventProcessor;
 class GAUDI_API IEventProcessor : virtual public IInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID( IEventProcessor, 3, 0 );
+  DeclareInterfaceID( IEventProcessor, 4, 0 );
+
+  virtual EventContext createEventContext() = 0;
   /// Process single event
-  virtual StatusCode executeEvent( void* par = 0 ) = 0;
+  virtual StatusCode executeEvent( EventContext&& ctx ) = 0;
   /// Process the maxevt events as a Run
   virtual StatusCode executeRun( int maxevt ) = 0;
   /// Process the next maxevt events
