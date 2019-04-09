@@ -1,19 +1,10 @@
-#define GAUDISVC_EVENTLOOPMGR_CPP
-
-#include "GaudiKernel/AppReturnCode.h"
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/IConversionSvc.h"
-#include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/IDataProviderSvc.h"
-#include "GaudiKernel/IEvtSelector.h"
-#include "GaudiKernel/IIncidentSvc.h"
-#include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/Incident.h"
-#include "GaudiKernel/MsgStream.h"
-
-#include <chrono>
-
 #include "EventLoopMgr.h"
+#include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/IRegistry.h>
+#include <GaudiKernel/Incident.h>
+#include <GaudiKernel/MsgStream.h>
+#include <chrono>
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( EventLoopMgr )
