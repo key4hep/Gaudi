@@ -1,13 +1,12 @@
 gaudi_subdir(GaudiExamples)
 
-gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
+gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiAlg RootCnv)
 
 find_package(AIDA)
 find_package(HepPDT)
 find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
 find_package(Boost COMPONENTS python${boost_python_version} REQUIRED)
 find_package(CLHEP)
-find_package(GSL)
 find_package(PythonLibs REQUIRED)
 find_package(RELAX)
 find_package(TBB REQUIRED)
@@ -66,9 +65,6 @@ set(GaudiExamples_srcs
 )
 
 # Add the sources requiring non-standard externals:
-if( AIDA_FOUND AND GSL_FOUND AND CLHEP_FOUND )
-   list( APPEND GaudiExamples_srcs src/GSLTools/*.cpp )
-endif()
 if( AIDA_FOUND )
    list( APPEND GaudiExamples_srcs src/Histograms/*.cpp
       src/RandomNumber/*.cpp
@@ -105,9 +101,6 @@ endif()
 if( HEPPDT_FOUND )
    list( APPEND extra_includes ${HEPPDT_INCLUDE_DIRS} )
    list( APPEND extra_libs     ${HEPPDT_LIBRARIES} )
-endif()
-if( TARGET GaudiGSLLib )
-   list( APPEND extra_libs GaudiGSLLib )
 endif()
 if( TARGET RootCnvLib )
    list( APPEND extra_libs RootCnvLib )
@@ -151,11 +144,11 @@ gaudi_add_python_module(PyExample src/PythonModule/*.cpp
 gaudi_install_python_modules()
 
 #---Executables-------------------------------------------------------------
-if( CLHEP_FOUND AND GSL_FOUND AND TARGET GaudiExamplesLib AND
+if( CLHEP_FOUND AND TARGET GaudiExamplesLib AND
       TARGET GaudiAlgLib )
    gaudi_add_executable(Allocator src/Allocator/*.cpp
-      LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ROOT CLHEP GSL
-      INCLUDE_DIRS CLHEP GSL)
+      LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ROOT CLHEP
+      INCLUDE_DIRS CLHEP)
 endif()
 
 #---Dictionaries------------------------------------------------------------
