@@ -215,7 +215,15 @@ public:
   /**
    * Retrieve object from transient data store
    */
-  const T* get() const { return &_get()->getData(); }
+  T* get() const { return &_get( true )->getData(); }
+  T* getIfExists() const {
+    auto data = _get( false );
+    if ( data ) {
+      return &data->getData();
+    } else {
+      return nullptr;
+    }
+  }
 
   /**
    * Register object in transient store
@@ -228,21 +236,26 @@ public:
   boost::optional<std::size_t> size() const { return _get()->size(); }
 
 private:
-  const AnyDataWrapper<T>* _get() const;
-  mutable bool             m_goodType = false;
+  AnyDataWrapper<T>* _get( bool mustExist ) const;
+  mutable bool       m_goodType = false;
 };
 
 //---------------------------------------------------------------------------
 
 template <typename T>
-const AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get() const {
+AnyDataWrapper<T>* DataObjectHandle<AnyDataWrapper<T>>::_get( bool mustExist ) const {
   auto obj = fetch();
   if ( UNLIKELY( !obj ) ) {
-    throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
-                          m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
+    if ( mustExist ) {
+      throw GaudiException( "Cannot retrieve " + objKey() + " from transient store.",
+                            m_owner ? owner()->name() : "no owner", StatusCode::FAILURE );
+
+    } else {
+      return nullptr;
+    }
   }
   if ( UNLIKELY( !m_goodType ) ) m_goodType = ::details::verifyType<AnyDataWrapper<T>>( obj );
-  return static_cast<const AnyDataWrapper<T>*>( obj );
+  return static_cast<AnyDataWrapper<T>*>( obj );
 }
 
 //---------------------------------------------------------------------------
