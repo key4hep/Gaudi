@@ -17,7 +17,6 @@ AvalancheSchedu...   INFO Data Dependencies for Algorithms:
   ReEntAlg
       none
 PrecedenceSvc        INFO Assembling CF and DF task precedence rules
-PrecedenceSvc        INFO Verifying task precedence rules
 PrecedenceSvc        INFO PrecedenceSvc initialized successfully
 AvalancheSchedu...   INFO Concurrency level information:
 AvalancheSchedu...   INFO  o Number of events in flight: 3
