@@ -97,7 +97,7 @@ StatusCode PrecedenceSvc::initialize() {
   ON_DEBUG debug() << m_PRGraph.dumpDataFlow() << endmsg;
 
   if ( m_verifyRules ) {
-    info() << "Verifying task precedence rules" << endmsg;
+    ON_DEBUG debug() << "Verifying task precedence rules" << endmsg;
 
     auto propValidator = concurrency::NodePropertiesValidator();
     m_PRGraph.accept( propValidator );
