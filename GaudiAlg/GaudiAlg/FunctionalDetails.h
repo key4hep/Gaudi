@@ -266,13 +266,22 @@ namespace Gaudi {
         using value_type = std::conditional_t<is_pointer, ptr_t, val_t>;
         using size_type  = typename ContainerVector::size_type;
         class iterator {
-          typename ContainerVector::const_iterator m_i;
+          using it_t = typename ContainerVector::const_iterator;
+          it_t m_i;
           friend class vector_of_const_;
-          iterator( typename ContainerVector::const_iterator iter ) : m_i( iter ) {}
+          iterator( it_t iter ) : m_i( iter ) {}
           using ret_t = std::conditional_t<is_pointer, ptr_t, ref_t>;
 
         public:
+          using iterator_category = typename it_t::iterator_category;
+          using value_type        = typename it_t::iterator_category;
+          using reference         = typename it_t::reference;
+          using pointer           = typename it_t::pointer;
+          using difference_type   = typename it_t::difference_type;
+
           friend bool operator!=( const iterator& lhs, const iterator& rhs ) { return lhs.m_i != rhs.m_i; }
+          friend bool operator==( const iterator& lhs, const iterator& rhs ) { return lhs.m_i == rhs.m_i; }
+          friend auto operator-( const iterator& lhs, const iterator& rhs ) { return lhs.m_i - rhs.m_i; }
           ret_t operator*() const { return details2::deref_if( *m_i, std::integral_constant<bool, !is_pointer>{} ); }
           iterator& operator++() {
             ++m_i;
