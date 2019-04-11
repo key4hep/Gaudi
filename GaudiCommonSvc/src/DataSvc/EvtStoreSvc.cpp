@@ -325,9 +325,6 @@ namespace {
     return path;
   }
 
-  std::string_view to_view( boost::string_ref sr ) { return {sr.data(), sr.size()}; }
-
-  boost::string_ref to_ref( std::string_view sv ) { return {sv.data(), sv.size()}; }
 } // namespace
 
 /**
@@ -362,43 +359,43 @@ public:
   StatusCode objectLeaves( const DataObject*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
   StatusCode objectLeaves( const IRegistry*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
 
-  StatusCode clearSubTree( boost::string_ref ) override;
+  StatusCode clearSubTree( std::string_view ) override;
   StatusCode clearSubTree( DataObject* obj ) override {
     return obj && obj->registry() ? clearSubTree( obj->registry()->identifier() ) : StatusCode::FAILURE;
   }
   StatusCode clearStore() override;
 
-  StatusCode traverseSubTree( boost::string_ref, IDataStoreAgent* ) override;
+  StatusCode traverseSubTree( std::string_view, IDataStoreAgent* ) override;
   StatusCode traverseSubTree( DataObject* obj, IDataStoreAgent* pAgent ) override {
     return ( obj && obj->registry() ) ? traverseSubTree( obj->registry()->identifier(), pAgent ) : StatusCode::FAILURE;
   }
-  StatusCode traverseTree( IDataStoreAgent* pAgent ) override { return traverseSubTree( boost::string_ref{}, pAgent ); }
+  StatusCode traverseTree( IDataStoreAgent* pAgent ) override { return traverseSubTree( std::string_view{}, pAgent ); }
 
   StatusCode setRoot( std::string root_name, DataObject* pObject ) override;
   StatusCode setRoot( std::string root_path, IOpaqueAddress* pRootAddr ) override;
 
-  StatusCode unregisterAddress( boost::string_ref ) override { return dummy( __FUNCTION__ ); };
-  StatusCode unregisterAddress( IRegistry*, boost::string_ref ) override { return dummy( __FUNCTION__ ); };
+  StatusCode unregisterAddress( std::string_view ) override { return dummy( __FUNCTION__ ); };
+  StatusCode unregisterAddress( IRegistry*, std::string_view ) override { return dummy( __FUNCTION__ ); };
 
-  StatusCode registerAddress( boost::string_ref fullPath, IOpaqueAddress* pAddress ) override;
-  StatusCode registerAddress( IRegistry* parentObj, boost::string_ref objectPath, IOpaqueAddress* pAddress ) override;
-  StatusCode registerObject( boost::string_ref parentPath, boost::string_ref objectPath, DataObject* pObject ) override;
-  StatusCode registerObject( DataObject* parentObj, boost::string_ref objectPath, DataObject* pObject ) override;
+  StatusCode registerAddress( std::string_view fullPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerAddress( IRegistry* parentObj, std::string_view objectPath, IOpaqueAddress* pAddress ) override;
+  StatusCode registerObject( std::string_view parentPath, std::string_view objectPath, DataObject* pObject ) override;
+  StatusCode registerObject( DataObject* parentObj, std::string_view objectPath, DataObject* pObject ) override;
 
-  StatusCode unregisterObject( boost::string_ref ) override;
+  StatusCode unregisterObject( std::string_view ) override;
   StatusCode unregisterObject( DataObject* obj ) override {
     return ( obj && obj->registry() ) ? unregisterObject( obj->registry()->identifier() ) : StatusCode::FAILURE;
   }
-  StatusCode unregisterObject( DataObject* obj, boost::string_ref sr ) override {
+  StatusCode unregisterObject( DataObject* obj, std::string_view sr ) override {
     return !obj ? unregisterObject( sr )
-                : obj->registry() ? unregisterObject( ( obj->registry()->identifier() + '/' ).append( to_view( sr ) ) )
+                : obj->registry() ? unregisterObject( ( obj->registry()->identifier() + '/' ).append( sr ) )
                                   : StatusCode::FAILURE;
   };
 
-  StatusCode retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
+  StatusCode retrieveObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) override;
 
-  StatusCode findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) override;
-  StatusCode findObject( boost::string_ref fullPath, DataObject*& pObject ) override;
+  StatusCode findObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) override;
+  StatusCode findObject( std::string_view fullPath, DataObject*& pObject ) override;
 
   StatusCode updateObject( IRegistry* ) override { return dummy( __FUNCTION__ ); }
   StatusCode updateObject( DataObject* ) override { return dummy( __FUNCTION__ ); }
@@ -411,11 +408,11 @@ public:
   }
   StatusCode preLoad() override;
 
-  StatusCode linkObject( IRegistry*, boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
-  StatusCode linkObject( boost::string_ref, DataObject* ) override { return dummy( __FUNCTION__ ); }
-  StatusCode unlinkObject( IRegistry*, boost::string_ref ) override { return dummy( __FUNCTION__ ); }
-  StatusCode unlinkObject( DataObject*, boost::string_ref ) override { return dummy( __FUNCTION__ ); }
-  StatusCode unlinkObject( boost::string_ref ) override;
+  StatusCode linkObject( IRegistry*, std::string_view, DataObject* ) override { return dummy( __FUNCTION__ ); }
+  StatusCode linkObject( std::string_view, DataObject* ) override { return dummy( __FUNCTION__ ); }
+  StatusCode unlinkObject( IRegistry*, std::string_view ) override { return dummy( __FUNCTION__ ); }
+  StatusCode unlinkObject( DataObject*, std::string_view ) override { return dummy( __FUNCTION__ ); }
+  StatusCode unlinkObject( std::string_view ) override;
 
   StatusCode initialize() override {
     Entry::setDataProviderSvc( this );
@@ -439,7 +436,7 @@ StatusCode         EvtStoreSvc::setDataLoader( IConversionSvc* pDataLoader, IDat
   if ( m_dataLoader ) m_dataLoader->setDataProvider( dpsvc ? dpsvc : this ).ignore();
   return StatusCode::SUCCESS;
 }
-StatusCode EvtStoreSvc::clearSubTree( boost::string_ref sr ) {
+StatusCode EvtStoreSvc::clearSubTree( std::string_view sr ) {
   erase_if( [sr]( const auto& value ) { return boost::algorithm::starts_with( value.first, sr ); } );
   return StatusCode::SUCCESS;
 }
@@ -447,8 +444,8 @@ StatusCode EvtStoreSvc::clearStore() {
   clear();
   return StatusCode::SUCCESS;
 }
-StatusCode EvtStoreSvc::traverseSubTree( boost::string_ref top, IDataStoreAgent* pAgent ) {
-  top      = to_ref( normalize_path( to_view( top ), rootName() ) );
+StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* pAgent ) {
+  top      = normalize_path( top, rootName() );
   auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
   std::set<const Entry*, decltype( cmp )> keys{std::move( cmp )};
   for ( const auto& v : *this ) {
@@ -503,10 +500,10 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
   }
   return sc;
 }
-StatusCode EvtStoreSvc::registerAddress( boost::string_ref path, IOpaqueAddress* pAddr ) {
+StatusCode EvtStoreSvc::registerAddress( std::string_view path, IOpaqueAddress* pAddr ) {
   return registerAddress( nullptr, path, pAddr );
 }
-StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path, IOpaqueAddress* pAddr ) {
+StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path, IOpaqueAddress* pAddr ) {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "registerAddress( (IRegistry*)" << (void*)pReg << ", " << path << ", (IOpaqueAddress*)" << pAddr << ")"
             << endmsg;
@@ -516,7 +513,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
   DataObject* pObject = nullptr;
   auto        status  = m_dataLoader->createObj( pAddr, pObject );
   if ( !status.isSuccess() ) return status;
-  auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + path.to_string();
+  auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + std::string{path};
   // the data loader expects the path _including_ the root
   auto dummy = Entry{fullpath, std::unique_ptr<DataObject>{}, std::unique_ptr<IOpaqueAddress>( pAddr )};
   pObject->setRegistry( &dummy );
@@ -531,24 +528,24 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, boost::string_ref path
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
   }
   put( normalize_path( fullpath, rootName() ), std::unique_ptr<DataObject>( pObject ) );
-  IRegistry* reg = pObject->registry();
+  [[maybe_unused]] IRegistry* reg = pObject->registry();
   assert( reg != &dummy && reg != nullptr );
   // reg->setAddress( pAddr ); has been deleted! have to retrieve from dummy prior to put
   return status;
 }
-StatusCode EvtStoreSvc::registerObject( boost::string_ref parentPath, boost::string_ref objectPath,
+StatusCode EvtStoreSvc::registerObject( std::string_view parentPath, std::string_view objectPath,
                                         DataObject* pObject ) {
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "registerObject( " << parentPath << ", " << objectPath << ", " << (void*)pObject << " )" << endmsg;
   }
   return parentPath.empty()
              ? registerObject( nullptr, objectPath, pObject )
-             : registerObject( nullptr, parentPath.to_string().append( "/" ).append( objectPath.to_string() ),
+             : registerObject( nullptr, std::string{parentPath}.append( "/" ).append( objectPath ),
                                pObject );
 }
-StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, boost::string_ref path, DataObject* pObject ) {
+StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view path, DataObject* pObject ) {
   if ( parentObj ) return StatusCode::FAILURE;
-  auto path_v = normalize_path( to_view( path ), rootName() );
+  auto path_v = normalize_path(  path, rootName() );
   if ( m_forceLeaves ) {
     auto dir = path_v;
     for ( auto i = dir.rfind( '/' ); i != std::string_view::npos; i = dir.rfind( '/' ) ) {
@@ -568,9 +565,9 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, boost::string_ref
   put( path_v, std::unique_ptr<DataObject>( pObject ) );
   return StatusCode::SUCCESS;
 }
-StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) {
+StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) {
   if ( pDirectory ) return StatusCode::FAILURE;
-  auto path_v = normalize_path( to_view( path ), rootName() );
+  auto path_v = normalize_path( path, rootName() );
   pObject     = const_cast<DataObject*>( get_ptr<DataObject>( path_v ) );
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "retrieveObject: " << std::quoted( std::string{path_v} ) << " (DataObject*)" << (void*)pObject
@@ -578,15 +575,15 @@ StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, boost::string_ref
   }
   return pObject ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
-StatusCode EvtStoreSvc::findObject( IRegistry* pDirectory, boost::string_ref path, DataObject*& pObject ) {
+StatusCode EvtStoreSvc::findObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) {
   return retrieveObject( pDirectory, path, pObject );
 }
-StatusCode EvtStoreSvc::findObject( boost::string_ref fullPath, DataObject*& pObject ) {
+StatusCode EvtStoreSvc::findObject( std::string_view fullPath, DataObject*& pObject ) {
   return retrieveObject( nullptr, fullPath, pObject );
 }
-StatusCode EvtStoreSvc::unlinkObject( boost::string_ref sr ) { return unregisterObject( sr ); }
-StatusCode EvtStoreSvc::unregisterObject( boost::string_ref sr ) {
-  return erase( to_view( sr ) ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
+StatusCode EvtStoreSvc::unlinkObject( std::string_view sr ) { return unregisterObject( sr ); }
+StatusCode EvtStoreSvc::unregisterObject( std::string_view sr ) {
+  return erase(  sr ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item ) {
   auto i = std::find( m_preLoads.begin(), m_preLoads.begin(), item );
