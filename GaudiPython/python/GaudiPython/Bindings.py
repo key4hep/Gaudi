@@ -66,7 +66,7 @@ namespace GaudiPython { namespace Helpers {
 
 # toIntArray, toShortArray, etc.
 for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
-    exec "%s = Helper.%s" % (l, l)
+    exec ("%s = Helper.%s" % (l, l))
     __all__.append(l)
 
 # FIXME: (MCl) Hack to handle ROOT 5.18 and ROOT >= 5.20
@@ -143,7 +143,7 @@ def loaddict(dict):
         try:
             cppyy.loadDict(dict)
         except:
-            raise ImportError, 'Error loading dictionary library'
+            raise ImportError('Error loading dictionary library')
 
 
 # ---get a class (by loading modules if needed)--------------------------------
@@ -269,7 +269,7 @@ class iProperty(object):
         ip = self.getInterface()
         if ip:
             if not gbl.Gaudi.Utils.hasProperty(ip, name):
-                raise AttributeError, 'property %s does not exist' % name
+                raise AttributeError('property %s does not exist' % name)
             prop = ip.getProperty(name)
 
             if ROOT6WorkAroundEnabled('ROOT-7201'):
@@ -282,8 +282,8 @@ class iProperty(object):
 
             if canSetValue:
                 if not prop.setValue(value):
-                    raise AttributeError, 'property %s could not be set from %s' % (
-                        name, value)
+                    raise AttributeError(
+                        'property %s could not be set from %s' % (name, value))
             else:
                 if tuple == type(value):
                     value = str(value)
@@ -299,8 +299,8 @@ class iProperty(object):
                 else:
                     sc = prop.fromString(value)
                 if sc.isFailure():
-                    raise AttributeError, 'property %s could not be set from %s' % (
-                        name, value)
+                    raise AttributeError(
+                        'property %s could not be set from %s' % (name, value))
         else:
             if type(value) == str:
                 value = '"%s"' % value  # need double quotes
@@ -322,7 +322,7 @@ class iProperty(object):
         ip = self.getInterface()
         if ip:
             if not gbl.Gaudi.Utils.hasProperty(ip, name):
-                raise AttributeError, 'property %s does not exist' % name
+                raise AttributeError('property %s does not exist' % name)
             prop = ip.getProperty(name)
             if StringProperty == type(prop):
                 return prop.value()
@@ -342,7 +342,7 @@ class iProperty(object):
                     return eval(p.value(), {}, {})
                 except:
                     return p.value()
-            raise AttributeError, 'property %s does not exist' % name
+            raise AttributeError('property %s does not exist' % name)
 
     def properties(self):
         dct = {}
@@ -359,9 +359,9 @@ class iProperty(object):
                 try:
                     dct[p.name()] = PropertyEntry(p)
                 except (ValueError, TypeError) as e:
-                    raise ValueError, "gaudimodule.iProperty.properties(): %s%s processing property %s.%s = %s" % \
+                    raise ValueError("gaudimodule.iProperty.properties(): %s%s processing property %s.%s = %s" % \
                         (e.__class__.__name__, e.args,
-                         propsFrom, p.name(), p.value())
+                         propsFrom, p.name(), p.value()))
         return dct
 
     def name(self):
@@ -1238,7 +1238,7 @@ class AppMgr(iService):
         for file in files:
             sc = self.readOptions(file)
             if sc.isFailure():
-                raise RuntimeError, ' Unable to read file "' + file + '" '
+                raise RuntimeError(' Unable to read file "' + file + '" ')
         options = args.get('options', None)
         if options:
             import tempfile
@@ -1259,7 +1259,8 @@ class AppMgr(iService):
             tmpfile.close()
             sc = self.readOptions(tmpfilename)
             if sc.isFailure():
-                raise RuntimeError, ' Unable to read file "' + tmpfilename + '" '
+                raise RuntimeError(' Unable to read file "' + tmpfilename +
+                                   '" ')
             os.remove(tmpfilename)
         # We need to make sure that the options are taken by the ApplicationMgr
         # The state is already configured, so we need to do something....
@@ -1392,7 +1393,7 @@ class AppMgr(iService):
 def _getFIDandEvents(pfn):
     tfile = gbl.TFile.Open(pfn)
     if not tfile:
-        raise 'Cannot open ROOT file ', pfn
+        raise IOError('Cannot open ROOT file {0}'.format(pfn))
     tree = tfile.Get('##Params')
     tree.GetEvent(0)
     text = tree.db_string
@@ -1413,14 +1414,14 @@ def getComponentProperties(name):
     properties = {}
     if name == 'GaudiCoreSvc':
         if Helper.loadDynamicLib(name) != 1:
-            raise ImportError, 'Error loading component library ' + name
+            raise ImportError('Error loading component library ' + name)
         factorylist = gbl.FactoryTable.instance().getEntries()
         factories = _copyFactoriesFromList(factorylist)
         g = AppMgr(outputlevel=7)
     else:
         g = AppMgr(outputlevel=7)
         if Helper.loadDynamicLib(name) != 1:
-            raise ImportError, 'Error loading component library ' + name
+            raise ImportError('Error loading component library ' + name)
         factorylist = gbl.FactoryTable.instance().getEntries()
         factories = _copyFactoriesFromList(factorylist)
     svcloc = gbl.Gaudi.svcLocator()
@@ -1498,7 +1499,7 @@ class PyAlgorithm(_PyAlgorithm):
         self._algmgr = InterfaceCast(gbl.IAlgManager)(self._svcloc)
         sc = self._algmgr.addAlgorithm(self)
         if sc.isFailure():
-            raise RuntimeError, 'Unable to add Algorithm'
+            raise RuntimeError('Unable to add Algorithm')
 
     def __del__(self):
         sc = self._algmgr.removeAlgorithm(self)

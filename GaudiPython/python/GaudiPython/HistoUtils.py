@@ -61,7 +61,7 @@ def _getAppMgr(**kwargs):
     if not gaudi:
         gaudi = AppMgr()
     if not gaudi:
-        raise RuntimeError, 'Unable to get valid ApplicationMgr'
+        raise RuntimeError('Unable to get valid ApplicationMgr')
 
     state = gaudi._isvc.FSMState()
     if state < cpp.Gaudi.StateMachine.CONFIGURED:
@@ -239,7 +239,7 @@ def book(*args, **kwargs):
 
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError, 'Unable to get valid HistogramService '
+        raise RuntimeError('Unable to get valid HistogramService ')
     # book the histogram using the service
     return svc.book(*args)  # RETURN
 
@@ -319,7 +319,7 @@ def bookProf(*args, **kwargs):
     """
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError, 'Unable to get valid HistogramService '
+        raise RuntimeError('Unable to get valid HistogramService ')
     # book the histogram using the service
     return svc.bookProf(*args)  # RETURN
 
@@ -344,7 +344,7 @@ def getAsAIDA(path, **kwargs):
     """
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError, 'Unable to get valid HistogramService '
+        raise RuntimeError('Unable to get valid HistogramService ')
     # return the histogram
     return svc.getAsAIDA(path)  # RETURN
 
@@ -369,7 +369,7 @@ def getAsROOT(path, **kwargs):
     """
     svc = _getHistoSvc(**kwargs)
     if not svc:
-        raise RuntimeError, 'Unable to get valid HistogramService '
+        raise RuntimeError('Unable to get valid HistogramService ')
     # return the histogram
     return svc.getAsROOT(path)  # RETURN
 

@@ -3,7 +3,7 @@
 """
 Generate _confDb.py files for ConfigurableUser classes.
 """
-
+from __future__ import division
 import os
 import sys
 import time
@@ -14,7 +14,7 @@ from pprint import pformat
 from glob import glob
 from GaudiKernel.ConfigurableDb import cfgDb
 
-logging.VERBOSE = (logging.INFO + logging.DEBUG) / 2
+logging.VERBOSE = (logging.INFO + logging.DEBUG) // 2
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
 logging.verbose = lambda msg, *args, **kwargs: \
     logging.log(logging.VERBOSE, msg, *args, **kwargs)
@@ -111,7 +111,7 @@ def getConfigurableUsers(modulename, root, mayNotExist=False):
     g, l = {}, {}
     try:
         logging.verbose("importing %s", shortmodname)
-        exec "import %s as mod" % shortmodname in g, l
+        exec ("import %s as mod" % shortmodname, g, l)
     finally:
         # restore old sys.path
         logging.verbose("restoring old sys.path")
@@ -277,7 +277,7 @@ def main():
     output_dir = os.path.dirname(outputfile)
     try:
         logging.info("Creating directory %r", output_dir)
-        os.makedirs(output_dir, 0755)
+        os.makedirs(output_dir, 0o755)
     except OSError as err:
         import errno
         if err.errno == errno.EEXIST:

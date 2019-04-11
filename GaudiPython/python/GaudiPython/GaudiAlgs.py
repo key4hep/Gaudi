@@ -203,7 +203,7 @@ def _init_(self, name, **args):
     algMgr = appMgr._algmgr
     status = algMgr.addAlgorithm(self)
     if status.isFailure():
-        raise RuntimeError, 'Unable to add Algorithm "' + name + '"'
+        raise RuntimeError('Unable to add Algorithm "' + name + '"')
     iAlgorithm.__init__(self, name, self)
     for key in args:
         setattr(self, key, args[key])
@@ -503,7 +503,7 @@ def _getProperty_(self, pname):
     Get the property by name
     """
     if not self.hasProperty(pname):
-        raise AttributeError, 'property %s does not exist' % pname
+        raise AttributeError('property %s does not exist' % pname)
     return iAlgorithm.__getattr__(self, pname)
 
 
@@ -516,7 +516,7 @@ def _setProperty_(self, pname, pvalue):
     Set the property from the value
     """
     if not self.hasProperty(pname):
-        raise AttributeError, 'property %s does not exist' % pname
+        raise AttributeError('property %s does not exist' % pname)
     return iAlgorithm.__setattr__(self, pname, pvalue)
 
 
@@ -531,7 +531,7 @@ def _get_attr_(self, pname):
     """
     if self.hasProperty(pname):
         return iAlgorithm.__getattr__(self, pname)
-    raise AttributeError, 'attribute/property %s does not exist' % pname
+    raise AttributeError('attribute/property %s does not exist' % pname)
 
 
 # =============================================================================
@@ -942,8 +942,8 @@ def _execute_(self):
     """
     The fictive 'execute' method, which MUST be overwitten by user
     """
-    raise RuntimeError, 'Execute method is not implemented for %s' % self.name(
-    )
+    raise RuntimeError(
+        'Execute method is not implemented for %s' % self.name())
 
 
 GaudiAlgo.execute = _execute_
@@ -1369,7 +1369,7 @@ def _get_all_tools_(self, method):
     _func = getattr(AlgDecorator, method)
     _num = _func(self, _tools)
     if _tools.size() != _num:
-        raise RuntimeError, 'Unable to extract Tools'
+        raise RuntimeError('Unable to extract Tools')
     _res = []
     for _tool in _tools:
         _res += [iAlgTool(_tool.name(), _tool)]
@@ -1431,7 +1431,7 @@ def _get_all_counters_(self, method, name=None):
     _func = getattr(AlgDecorator, method)
     _num = _func(self, _nams, _cnts)
     if _nams.size() != _num or _cnts.size() != _num:
-        raise RuntimeError, 'Unable to extract Counters'
+        raise RuntimeError('Unable to extract Counters')
     _res = {}
     for _i in range(0, _num):
         _nam = _nams[_i]
@@ -1574,7 +1574,7 @@ def _get_all_histos_(component, method, name):
         _fun = getattr(HistoDecorator, method)
         _num = _fun(component, _ids, _his)
         if _ids.size() != _num or _his.size() != _num:
-            raise RuntimeError, 'Unable to extract Histos!'
+            raise RuntimeError('Unable to extract Histos!')
         for _i in range(0, _num):
             _id = _ids[_i]
             if _id.numeric():
