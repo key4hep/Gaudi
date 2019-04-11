@@ -827,6 +827,7 @@ Gaudi::StateMachine::State ApplicationMgr::targetFSMState() const { return m_tar
 // implementation of IService::reinitilaize
 //============================================================================
 StatusCode ApplicationMgr::reinitialize() {
+  MsgStream  log( m_messageSvc, name() );
   StatusCode retval = StatusCode::SUCCESS;
   StatusCode sc;
   if ( m_state < Gaudi::StateMachine::INITIALIZED ) {
@@ -843,6 +844,8 @@ StatusCode ApplicationMgr::reinitialize() {
   if ( sc.isFailure() ) retval = sc;
   sc = m_jobOptionsSvc.as<IService>()->sysReinitialize();
   if ( sc.isFailure() ) retval = sc;
+
+  log << MSG::INFO << "Application Manager Reinitialized successfully" << endmsg;
 
   return retval;
 }

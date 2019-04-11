@@ -57,7 +57,9 @@ set(GaudiExamples_srcs
     src/StatusCodeSvc/SCSAlg.cpp
     src/StatusCodeSvc/special/SCSAlg_no_inline.cpp
     src/FileMgr/*.cpp
-    src/testing/*.cpp
+    src/testing/GAUDI-1185.cpp
+    src/testing/TestingAlgs.cpp
+    src/testing/TestingSvcs.cpp
     src/IntelProfiler/*.cpp
     src/PluginService/*.cpp
     src/ToolHandles/*.cpp
@@ -193,3 +195,6 @@ gaudi_add_test(nose
                ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
 
 gaudi_add_executable(countersUnitTest src/CounterEx/CountersUnitTest.cpp)
+
+gaudi_add_executable(testAppMgrStateMachine src/testing/TestAppMgrStateMachine.cpp
+    LINK_LIBRARIES GaudiKernel )
