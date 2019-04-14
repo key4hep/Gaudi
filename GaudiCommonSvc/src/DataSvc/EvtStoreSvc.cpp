@@ -13,159 +13,55 @@
 #include <iomanip>
 #include <iterator>
 #include <map>
-#include <optional>
 #include <stdexcept>
 #include <type_traits>
-#include <typeindex>
-#include <typeinfo>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 namespace {
-  static std::string const no_entry_at = "no entry at";
-
-  // void* magic_cast( std::type_index /*targetType*/, std::type_index /*sourceType*/, void* ) { return nullptr; }
-
-  struct VTable {
-    void ( *delete_ )( void* );
-    void* ( *cast_ )( std::type_index, void* );
-    std::optional<size_t> ( *size_ )( const void* );
-    std::type_index ( *type_ )();
-  };
-
-  template <typename T>
-  void delete_( void* self ) {
-    delete static_cast<T*>( self );
-  }
-
-  template <>
-  void delete_<void>( void* ) {}
-
-  template <typename T>
-  std::type_index type_() {
-    return std::type_index( typeid( T ) );
-  }
-
-  template <typename T>
-  void* cast_( std::type_index type, void* self ) {
-    return type == std::type_index( typeid( T ) )
-               ? static_cast<T*>( self ) // : magic_cast( type, std::type_index( typeid( T ) ), self );
-               : nullptr;
-  }
-
-  template <>
-  void* cast_<void>( std::type_index, void* ) {
-    return nullptr;
-  }
-
-  namespace details {
-    using std::size;
-
-    template <typename T, typename... Args>
-    constexpr auto size( const T&, Args&&... ) noexcept {
-      static_assert( sizeof...( Args ) == 0, "No extra args please" );
-      return std::nullopt;
-    }
-  } // namespace details
-
-  template <typename T>
-  std::optional<size_t> size_( const void* self ) {
-    return details::size( *static_cast<const T*>( self ) );
-  }
-
-  template <>
-  std::optional<size_t> size_<void>( const void* ) {
-    return std::nullopt;
-  }
-
-  template <typename T>
-  inline constexpr VTable const vtable_for = {&delete_<T>, &cast_<T>, &size_<T>, &type_<T>};
 
   class Entry final : public IRegistry {
-    // for now, optimize for size. Could put selected functions also 'in-situ' to
-    // improve optimization (eg. inlining)
-    const VTable* m_vtable = &vtable_for<void>;
-    void*         m_ptr    = nullptr;
-    // TODO: add SBO here, so that eg. int, double, vector<T> payloads fit in-situ
-    // WARNING: SBO will invalidate pointers to payload when resizing the store
-    //          so _only_ do this _after_ we have a store which can be completely
-    //          reserved during initialize, _prior_ to it being populated with content!
-    // (note: the above actually depends on the container implementation which is
-    //        used to contain 'Entry'...  if the Entry instances inside the container are
-    //        stable then obviously SBO doesn't affect the payload stability ;-)
-    static IDataProviderSvc*        s_svc;
-    std::string                     m_identifier;
+    std::unique_ptr<DataObject>     m_data;
     std::unique_ptr<IOpaqueAddress> m_addr;
+    std::string                     m_identifier;
+    static IDataProviderSvc*        s_svc;
 
   public:
     static void setDataProviderSvc( IDataProviderSvc* p ) { s_svc = p; }
 
-    template <typename T, // TODO: require T to be move constructible
-              typename = std::enable_if_t<!std::is_same_v<Entry, std::decay_t<T>>>>
-    Entry( std::string identifier, T&& t )
-        : m_vtable{&vtable_for<T>}, m_ptr{new T{std::move( t )}}, m_identifier{std::move( identifier )} {
-      if constexpr ( std::is_base_of_v<DataObject, T> ) { static_cast<T*>( m_ptr )->setRegistry( this ); }
-    }
-
-    // 'adopt' a unique pointer... (provided it has a default deleter!)
-    template <typename T>
-    Entry( std::string identifier, std::unique_ptr<T, std::default_delete<T>> t ) noexcept
-        : m_vtable{&vtable_for<T>}, m_ptr{t.release()}, m_identifier{std::move( identifier )} {}
-
-    Entry( std::string identifier, std::unique_ptr<DataObject> d, std::unique_ptr<IOpaqueAddress> addr = {} ) noexcept
-        : m_vtable{&vtable_for<DataObject>}
-        , m_ptr{d.release()}
-        , m_identifier{std::move( identifier )}
-        , m_addr{std::move( addr )} {
-      if ( auto* pd = static_cast<DataObject*>( m_ptr ); pd ) pd->setRegistry( this );
+    Entry( std::string id, std::unique_ptr<DataObject> data, std::unique_ptr<IOpaqueAddress> addr = {} ) noexcept
+        : m_data{std::move( data )}, m_addr{std::move( addr )}, m_identifier{std::move( id )} {
+      if ( m_data ) m_data->setRegistry( this );
       if ( m_addr ) m_addr->setRegistry( this );
     }
-
-    ~Entry() noexcept { m_vtable->delete_( m_ptr ); }
-
     Entry( const Entry& ) = delete;
     Entry& operator=( const Entry& rhs ) = delete;
-
     Entry( Entry&& rhs ) noexcept
-        : m_vtable{std::exchange( rhs.m_vtable, &vtable_for<void> )}
-        , m_ptr{std::exchange( rhs.m_ptr, nullptr )}
-        , m_identifier{std::move( rhs.m_identifier )}
-        , m_addr{std::move( rhs.m_addr )} {
-      if ( auto* d = object(); d ) d->setRegistry( this );
+        : m_data{std::move( rhs.m_data )}
+        , m_addr{std::move( rhs.m_addr )}
+        , m_identifier{std::move( rhs.m_identifier )} {
+      if ( m_data ) m_data->setRegistry( this );
       if ( m_addr ) m_addr->setRegistry( this );
     }
     Entry& operator=( Entry&& rhs ) noexcept {
-      m_vtable->delete_( m_ptr );
-      m_vtable = std::exchange( rhs.m_vtable, &vtable_for<void> );
-      m_ptr    = std::exchange( rhs.m_ptr, nullptr );
-      if ( auto* d = object(); d ) d->setRegistry( this );
+      m_data = std::move( rhs.m_data );
+      if ( m_data ) m_data->setRegistry( this );
       m_identifier = std::move( rhs.m_identifier );
       m_addr       = std::move( rhs.m_addr );
       if ( m_addr ) m_addr->setRegistry( this );
       return *this;
     }
-
     friend void swap( Entry& lhs, Entry& rhs ) noexcept {
       using std::swap;
-      swap( lhs.m_vtable, rhs.m_vtable );
-      swap( lhs.m_ptr, rhs.m_ptr );
-      if ( auto* d = lhs.object(); d ) d->setRegistry( &lhs );
-      if ( auto* d = rhs.object(); d ) d->setRegistry( &rhs );
+      swap( lhs.m_data, rhs.m_data );
+      if ( lhs.m_data ) lhs.m_data->setRegistry( &lhs );
+      if ( rhs.m_data ) rhs.m_data->setRegistry( &rhs );
       swap( lhs.m_identifier, rhs.m_identifier );
       swap( lhs.m_addr, rhs.m_addr );
       if ( lhs.m_addr ) lhs.m_addr->setRegistry( &lhs );
       if ( rhs.m_addr ) rhs.m_addr->setRegistry( &rhs );
     }
-
-    template <typename T>
-    const T* get_ptr() const {
-      return static_cast<T*>( m_vtable->cast_( std::type_index( typeid( T ) ), m_ptr ) );
-    }
-
-    std::optional<size_t> size() const { return m_vtable->size_( m_ptr ); }
-
-    std::type_index type() const { return m_vtable->type_(); }
 
     // required by IRegistry...
     unsigned long     addRef() override { return -1; }
@@ -173,33 +69,11 @@ namespace {
     const name_type&  name() const override { return m_identifier; } // should really be from last '/' onward...
     const id_type&    identifier() const override { return m_identifier; }
     IDataProviderSvc* dataSvc() const override { return s_svc; }
-    DataObject*       object() const override { return const_cast<DataObject*>( get_ptr<DataObject>() ); }
+    DataObject*       object() const override { return const_cast<DataObject*>( m_data.get() ); }
     IOpaqueAddress*   address() const override { return m_addr.get(); }
     void              setAddress( IOpaqueAddress* iAddr ) override { m_addr.reset( iAddr ); }
   };
   IDataProviderSvc* Entry::s_svc = nullptr;
-
-  class VectorStore {
-    std::vector<Entry> m_store;
-
-  public:
-    VectorStore() = default;
-
-    template <typename K>
-    const Entry* find( K&& k ) const noexcept {
-      auto i = std::find_if( m_store.begin(), m_store.end(),
-                             [key = std::forward<K>( k )]( const auto& d ) { return d.identifier() == key; } );
-      return i != m_store.end() ? &( *i ) : nullptr;
-    }
-
-    template <typename K, typename T>
-    const auto& emplace( K&& k, T&& t ) {
-      if ( find( k ) != nullptr ) throw std::runtime_error( "entry " + k + " already exists" );
-      return m_store.emplace_back( std::forward<K>( k ), std::forward<T>( t ) );
-    }
-
-    void clear() noexcept { m_store.clear(); }
-  };
 
   namespace details {
     template <typename Map>
@@ -212,11 +86,10 @@ namespace {
         auto i = m_store.find( k );
         return i != m_store.end() ? &( i->second ) : nullptr;
       }
-      template <typename T>
-      const auto& emplace( std::string_view k, T&& t ) {
+      const auto& emplace( std::string_view k, std::unique_ptr<DataObject> d ) {
         // tricky way to insert a string_view key which points to the
         // string contained in the mapped type...
-        auto [i, b] = m_store.try_emplace( k, std::string{k}, std::forward<T>( t ) );
+        auto [i, b] = m_store.try_emplace( k, std::string{k}, std::move( d ) );
         if ( !b ) throw std::runtime_error( "failed to insert " + std::string{k} );
         auto nh  = m_store.extract( i );
         nh.key() = nh.mapped().identifier(); // "re-point" key to the string contained in the Entry
@@ -237,8 +110,8 @@ namespace {
             ++i;
         }
       }
-      auto begin() const { return m_store.begin(); }
-      auto end() const { return m_store.end(); }
+      auto begin() const noexcept { return m_store.begin(); }
+      auto end() const noexcept { return m_store.end(); }
     };
   } // namespace details
   using UnorderedStore = details::MapStore<std::unordered_map<std::string_view, Entry>>;
@@ -248,58 +121,22 @@ namespace {
   struct Store : private StoreImpl {
 
     template <typename K>
-    const Entry* find( K&& k ) const {
+    const Entry* find( K&& k ) const noexcept {
       return static_cast<const StoreImpl&>( *this ).find( std::forward<K>( k ) );
     }
 
-    template <typename T, typename K>
-    const std::decay_t<T>& put( K&& k, T&& t ) {
-      auto& d = this->emplace( std::forward<K>( k ), std::forward<T>( t ) );
-      auto* p = d.template get_ptr<std::decay_t<T>>();
-      return *p;
-    }
-
-    template <typename T, typename K>
-    const std::decay_t<T>& put( K&& k, std::unique_ptr<T> t ) noexcept {
-      auto& d = this->emplace( std::forward<K>( k ), std::move( t ) );
-      auto* p = d.template get_ptr<std::decay_t<T>>();
-      return *p;
-    }
-
-    template <typename T, typename K>
-    const T& get( K&& k ) const {
-      const Entry* d = find( std::forward<K>( k ) );
-      if ( !d ) throw std::out_of_range{no_entry_at + k};
-      const auto* p = d->get_ptr<T>();
-      if ( !p ) throw std::bad_cast{};
-      return *p;
-    }
-
-    template <typename T, typename K>
-    const T* get_ptr( K&& k ) const {
-      const Entry* d = find( std::forward<K>( k ) );
-      if ( !d ) return nullptr;
-      const auto* p = d->get_ptr<T>();
-      if ( !p ) throw std::bad_cast{};
-      return p;
+    template <typename K>
+    const DataObject* put( K&& k, std::unique_ptr<DataObject> data ) {
+      return this->emplace( std::forward<K>( k ), std::move( data ) ).object();
     }
 
     template <typename K>
-    std::optional<size_t> size( K&& k ) const {
+    const DataObject* get( K&& k ) const noexcept {
       const Entry* d = find( std::forward<K>( k ) );
-      if ( !d ) throw std::out_of_range{no_entry_at + k};
-      return d->size();
-    }
-
-    template <typename K>
-    const char* type_name( K&& k ) const {
-      const Entry* d = find( std::forward<K>( k ) );
-      if ( !d ) throw std::out_of_range{no_entry_at + k};
-      return d->type().name();
+      return d ? d->object() : nullptr;
     }
 
     void clear() noexcept { static_cast<StoreImpl&>( *this ).clear(); }
-
     auto erase( std::string_view k ) { return static_cast<StoreImpl&>( *this ).erase( k ); }
 
     template <typename Predicate>
@@ -307,8 +144,8 @@ namespace {
       static_cast<StoreImpl&>( *this ).erase_if( std::forward<Predicate>( p ) );
     }
 
-    auto begin() const { return static_cast<const StoreImpl&>( *this ).begin(); }
-    auto end() const { return static_cast<const StoreImpl&>( *this ).begin(); }
+    auto begin() const noexcept { return static_cast<const StoreImpl&>( *this ).begin(); }
+    auto end() const noexcept { return static_cast<const StoreImpl&>( *this ).begin(); }
   };
 
   StatusCode dummy( std::string s ) {
@@ -330,14 +167,14 @@ namespace {
 /**
  * @class EvtStoreSvc
  *
- * Use a minimal, non-intrusive event store implementation, and adds
+ * Use a minimal event store implementation, and adds
  * everything required to satisfy the IDataProviderSvc and IDataManagerSvc
  * interfaces by throwing exceptions except when the functionality is really needed...
  *
  * @author Gerhard Raven
  * @version 1.0
  */
-class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc>, Store<> {
+class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc> {
   Gaudi::Property<CLID>        m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
   Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
   Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
@@ -346,6 +183,11 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
 
   /// Items to be pre-loaded
   std::vector<DataStoreItem> m_preLoads;
+
+  /// The actual store
+  /// (TODO: implement IHiveWhiteBoard, and keep a vector of stores, including
+  ///        a thread-local index to the 'current' store
+  Store<> m_store;
 
 public:
   using extends::extends;
@@ -401,7 +243,7 @@ public:
   StatusCode updateObject( DataObject* ) override { return dummy( __FUNCTION__ ); }
 
   StatusCode addPreLoadItem( const DataStoreItem& ) override;
-  StatusCode removePreLoadItem( const DataStoreItem& ) override { return dummy( __FUNCTION__ ); }
+  StatusCode removePreLoadItem( const DataStoreItem& ) override;
   StatusCode resetPreLoad() override {
     m_preLoads.clear();
     return StatusCode::SUCCESS;
@@ -437,18 +279,18 @@ StatusCode         EvtStoreSvc::setDataLoader( IConversionSvc* pDataLoader, IDat
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::clearSubTree( std::string_view sr ) {
-  erase_if( [sr]( const auto& value ) { return boost::algorithm::starts_with( value.first, sr ); } );
+  m_store.erase_if( [sr]( const auto& value ) { return boost::algorithm::starts_with( value.first, sr ); } );
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::clearStore() {
-  clear();
+  m_store.clear();
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* pAgent ) {
   top      = normalize_path( top, rootName() );
   auto cmp = []( const Entry* lhs, const Entry* rhs ) { return lhs->identifier() < rhs->identifier(); };
   std::set<const Entry*, decltype( cmp )> keys{std::move( cmp )};
-  for ( const auto& v : *this ) {
+  for ( const auto& v : m_store ) {
     if ( boost::algorithm::starts_with( v.second.identifier(), top ) ) keys.insert( &v.second );
   }
   auto k = keys.begin();
@@ -527,7 +369,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
             << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
   }
-  put( normalize_path( fullpath, rootName() ), std::unique_ptr<DataObject>( pObject ) );
+  m_store.put( normalize_path( fullpath, rootName() ), std::unique_ptr<DataObject>( pObject ) );
   [[maybe_unused]] IRegistry* reg = pObject->registry();
   assert( reg != &dummy && reg != nullptr );
   // reg->setAddress( pAddr ); has been deleted! have to retrieve from dummy prior to put
@@ -540,21 +382,20 @@ StatusCode EvtStoreSvc::registerObject( std::string_view parentPath, std::string
   }
   return parentPath.empty()
              ? registerObject( nullptr, objectPath, pObject )
-             : registerObject( nullptr, std::string{parentPath}.append( "/" ).append( objectPath ),
-                               pObject );
+             : registerObject( nullptr, std::string{parentPath}.append( "/" ).append( objectPath ), pObject );
 }
 StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view path, DataObject* pObject ) {
   if ( parentObj ) return StatusCode::FAILURE;
-  auto path_v = normalize_path(  path, rootName() );
+  auto path_v = normalize_path( path, rootName() );
   if ( m_forceLeaves ) {
     auto dir = path_v;
     for ( auto i = dir.rfind( '/' ); i != std::string_view::npos; i = dir.rfind( '/' ) ) {
       dir = dir.substr( 0, i );
-      if ( !find( dir ) ) {
+      if ( !m_store.find( dir ) ) {
         if ( msgLevel( MSG::DEBUG ) ) {
           debug() << "registerObject: adding directory " << std::quoted( std::string{dir} ) << endmsg;
         }
-        put( dir, DataObject{} );
+        m_store.put( dir, std::make_unique<DataObject>() );
       }
     }
   }
@@ -562,13 +403,13 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view 
     debug() << "registerObject: " << std::quoted( std::string{path_v} ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
   }
-  put( path_v, std::unique_ptr<DataObject>( pObject ) );
+  m_store.put( path_v, std::unique_ptr<DataObject>( pObject ) );
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::retrieveObject( IRegistry* pDirectory, std::string_view path, DataObject*& pObject ) {
   if ( pDirectory ) return StatusCode::FAILURE;
   auto path_v = normalize_path( path, rootName() );
-  pObject     = const_cast<DataObject*>( get_ptr<DataObject>( path_v ) );
+  pObject     = const_cast<DataObject*>( m_store.get( path_v ) );
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << "retrieveObject: " << std::quoted( std::string{path_v} ) << " (DataObject*)" << (void*)pObject
             << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
@@ -583,11 +424,16 @@ StatusCode EvtStoreSvc::findObject( std::string_view fullPath, DataObject*& pObj
 }
 StatusCode EvtStoreSvc::unlinkObject( std::string_view sr ) { return unregisterObject( sr ); }
 StatusCode EvtStoreSvc::unregisterObject( std::string_view sr ) {
-  return erase(  sr ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
+  return m_store.erase( sr ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item ) {
   auto i = std::find( m_preLoads.begin(), m_preLoads.begin(), item );
   if ( i == m_preLoads.end() ) m_preLoads.push_back( item );
+  return StatusCode::SUCCESS;
+}
+StatusCode EvtStoreSvc::removePreLoadItem( const DataStoreItem& item ) {
+  auto i = std::remove( m_preLoads.begin(), m_preLoads.begin(), item );
+  m_preLoads.erase( i, m_preLoads.end() );
   return StatusCode::SUCCESS;
 }
 StatusCode EvtStoreSvc::preLoad() {
