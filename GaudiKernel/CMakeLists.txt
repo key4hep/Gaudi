@@ -160,9 +160,6 @@ gaudi_add_unit_test(test_SystemTypeinfoName tests/src/test_SystemTypeinfoName.cp
 gaudi_add_unit_test(test_SystemCmdLineArgs tests/src/test_SystemCmdLineArgs.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
-gaudi_add_unit_test(test_apply  tests/src/test_apply.cpp
-                    LINK_LIBRARIES GaudiKernel
-                    TYPE Boost)
 gaudi_add_unit_test(test_compose  tests/src/test_compose.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)

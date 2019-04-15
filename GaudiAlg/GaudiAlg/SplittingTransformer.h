@@ -7,7 +7,6 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
-#include "GaudiKernel/apply.h"
 
 namespace Gaudi {
   namespace Functional {

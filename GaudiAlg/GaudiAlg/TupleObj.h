@@ -20,7 +20,6 @@
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/SerializeSTL.h"
 #include "GaudiKernel/VectorMap.h"
-#include "GaudiKernel/invoke.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -788,7 +787,7 @@ namespace Tuples {
     StatusCode columns( Value&& value, Args&&... args ) {
       if ( sizeof...( Args ) == 0 ) return StatusCode::SUCCESS;
       std::initializer_list<StatusCode> scs{
-          this->column( std::get<0>( args ), Gaudi::invoke( std::get<1>( args ), value ) )...};
+          this->column( std::get<0>( args ), std::invoke( std::get<1>( args ), value ) )...};
       return std::accumulate( std::next( begin( scs ) ), end( scs ), *begin( scs ),
                               []( StatusCode sc, const StatusCode& i ) {
                                 i.ignore();                     // make sure there are no unchecked StatusCodes...
@@ -1014,7 +1013,7 @@ namespace Tuples {
 
       // fill the array
       std::transform( first, last, std::begin( *var ),
-                      [&]( auto&& i ) { return Gaudi::invoke( function, std::forward<decltype( i )>( i ) ); } );
+                      [&]( auto&& i ) { return std::invoke( function, std::forward<decltype( i )>( i ) ); } );
 
       return StatusCode::SUCCESS;
     }
@@ -1081,7 +1080,7 @@ namespace Tuples {
       // fill the array
       for ( size_t index = 0; first != last; ++first, ++index ) {
         auto item = first_item;
-        for ( auto& var : vars ) { ( *var )[index] = Gaudi::invoke( ( item++ )->second, *first ); }
+        for ( auto& var : vars ) { ( *var )[index] = std::invoke( ( item++ )->second, *first ); }
       }
 
       return StatusCode::SUCCESS;
@@ -1498,7 +1497,7 @@ namespace Tuples {
       size_t iRow = 0;
       for ( ; first != last; ++first ) {
         //
-        for ( FUN fun = funF; fun < funL; ++fun ) { ( *var )[iRow][fun - funF] = Gaudi::invoke( *fun, *first ); }
+        for ( FUN fun = funF; fun < funL; ++fun ) { ( *var )[iRow][fun - funF] = std::invoke( *fun, *first ); }
         //
         ++iRow;
       }

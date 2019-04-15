@@ -3,7 +3,6 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
-#include "GaudiKernel/apply.h"
 #include <utility>
 
 namespace Gaudi {

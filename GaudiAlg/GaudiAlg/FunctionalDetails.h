@@ -12,9 +12,7 @@
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/ThreadLocalContext.h"
-#include "GaudiKernel/apply.h"
 #include "GaudiKernel/detected.h"
-#include "GaudiKernel/invoke.h"
 
 // Boost
 #include "boost/optional.hpp"
@@ -92,27 +90,8 @@ namespace Gaudi {
         }
       } // namespace zip
 
-#if __cplusplus < 201703L
-      // implementation of C++17 std::as_const, see http://en.cppreference.com/w/cpp/utility/as_const
-      template <typename T>
-      constexpr std::add_const_t<T>& as_const( T& t ) noexcept {
-        return t;
-      }
-
-      template <typename T>
-      void as_const( T&& t ) = delete;
-
-      template <class...>
-      struct disjunction : std::false_type {};
-      template <class B1>
-      struct disjunction<B1> : B1 {};
-      template <class B1, class... Bn>
-      struct disjunction<B1, Bn...> : std::conditional_t<bool( B1::value ), B1, disjunction<Bn...>> {};
-
-#else
       using std::as_const;
       using std::disjunction;
-#endif
       /////////////////////////////////////////
       namespace details2 {
         // note: boost::optional in boost 1.66 does not have 'has_value()'...
@@ -147,11 +126,11 @@ namespace Gaudi {
       constexpr struct invoke_optionally_t {
         template <typename F, typename Arg, typename = require_is_not_optional<Arg>>
         decltype( auto ) operator()( F&& f, Arg&& arg ) const {
-          return Gaudi::invoke( std::forward<F>( f ), std::forward<Arg>( arg ) );
+          return std::invoke( std::forward<F>( f ), std::forward<Arg>( arg ) );
         }
         template <typename F, typename Arg, typename = require_is_optional<Arg>>
         void operator()( F&& f, Arg&& arg ) const {
-          if ( arg ) Gaudi::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
+          if ( arg ) std::invoke( std::forward<F>( f ), *std::forward<Arg>( arg ) );
         }
       } invoke_optionally{};
       /////////////////////////////////////////
@@ -375,8 +354,8 @@ namespace Gaudi {
 
         template <typename Algorithm, typename Handles>
         static auto apply( const Algorithm& algo, Handles& handles ) {
-          return Gaudi::apply( [&]( const auto&... handle ) { return algo( details::deref( handle.get() )... ); },
-                               handles );
+          return std::apply( [&]( const auto&... handle ) { return algo( details::deref( handle.get() )... ); },
+                             handles );
         }
       };
 
@@ -390,7 +369,7 @@ namespace Gaudi {
 
         template <typename Algorithm, typename Handles>
         static auto apply( const Algorithm& algo, Handles& handles ) {
-          return Gaudi::apply(
+          return std::apply(
               [&]( const auto&... handle ) {
                 return algo( Gaudi::Hive::currentContext(), details::deref( handle.get() )... );
               },

@@ -47,13 +47,7 @@ bool StatusCode::checkingEnabled() { return s_checking; }
 
 void StatusCode::check() {
 
-  if ( !m_checked && !GaudiException::s_proc &&
-#if __cplusplus > 201402L // c++17
-       !std::uncaught_exceptions()
-#else
-       !std::uncaught_exception()
-#endif
-  ) {
+  if ( !m_checked && !GaudiException::s_proc && !std::uncaught_exceptions() ) {
 
     auto msg = Gaudi::svcLocator()->as<IMessageSvc>();
     auto scs = Gaudi::svcLocator()->service<IStatusCodeSvc>( "StatusCodeSvc" );

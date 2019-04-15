@@ -28,7 +28,7 @@ namespace Gaudi {
           /// Call the scalar operator with the objects obtained from the given tuple as arguments
           details::invoke_optionally(
               [&out]( auto&& arg ) { details::insert( out, std::forward<decltype( arg )>( arg ) ); },
-              Gaudi::apply( [&]( const auto&... i ) { return scalar( details::deref( i )... ); }, tuple ) );
+              std::apply( [&]( const auto&... i ) { return scalar( details::deref( i )... ); }, tuple ) );
         }
         details::applyPostProcessing( scalar, out );
         return out;
@@ -52,37 +52,24 @@ namespace Gaudi {
       std::tuple<Out...> operator()( const In&... in ) const override final {
         const auto         inrange = details::zip::const_range( in... );
         std::tuple<Out...> out;
-        Gaudi::apply(
-            [sz = inrange.size()]( auto&&... o ) {
-#if __cplusplus < 201703L
-              (void)std::initializer_list<int>{( o.reserve( sz ), 0 )...};
-#else
-              ( o.reserve( sz ), ... );
-#endif
-            },
-            out );
+        std::apply( [sz = inrange.size()]( auto&&... o ) { ( o.reserve( sz ), ... ); }, out );
         auto& scalar = scalarOp();
         for ( const auto&& indata : inrange ) {
-          Gaudi::apply(
+          std::apply(
               [&scalar, &indata]( auto&... out ) {
                 /// Call the scalar operator with the objects obtained from the given indata,
                 /// and invoke insert with it (unless the resulting type is an  optional,
                 /// and the optional is not engaged)
                 details::invoke_optionally(
                     [&out...]( auto&& outdata ) {
-                      Gaudi::apply(
+                      std::apply(
                           [&out...]( auto&&... outdata1 ) {
-#if __cplusplus < 201703L
-                            (void)std::initializer_list<int>{
-                                ( details::insert( out, std::forward<decltype( outdata1 )>( outdata1 ) ), 0 )...};
-#else
                             ( details::insert( out, std::forward<decltype( outdata1 )>( outdata1 ) ), ... );
-#endif
                           },
                           std::forward<decltype( outdata )>( outdata ) );
                     },
-                    Gaudi::apply( [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); },
-                                  indata ) );
+                    std::apply( [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); },
+                                indata ) );
               },
               out );
         }
