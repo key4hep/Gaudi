@@ -22,7 +22,7 @@
 // Disable warnings on gcc
 // ============================================================================
 #if defined( __GNUC__ )
-#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#  pragma GCC diagnostic push ignored "-Wdeprecated-declarations"
 #endif
 // ============================================================================
 /** @file
