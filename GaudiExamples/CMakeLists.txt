@@ -9,10 +9,10 @@ find_package(Boost COMPONENTS python${boost_python_version} REQUIRED)
 find_package(CLHEP)
 find_package(GSL)
 find_package(PythonLibs REQUIRED)
-find_package(RELAX REQUIRED)
+find_package(RELAX)
 find_package(TBB REQUIRED)
 # ROOT runtime
-find_package(PNG REQUIRED)
+find_package(PNG)
 
 # Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
