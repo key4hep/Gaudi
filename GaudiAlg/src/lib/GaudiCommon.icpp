@@ -550,13 +550,14 @@ DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<Data
   const StatusCode status = '/' == fullLocation[0] ? svc->registerObject( fullLocation, object.get() )
                                                    : svc->registerObject( "/Event/" + fullLocation, object.get() );
   // check the result!
+  DataObject& obj = *object;
   if ( status.isFailure() ) {
-    Exception( "put():: could not register '" + System::typeinfoName( typeid( *object ) ) + "' at address '" +
+    Exception( "put():: could not register '" + System::typeinfoName( typeid( obj ) ) + "' at address '" +
                    fullLocation + "'",
                status );
   }
   if ( this->msgLevel( MSG::DEBUG ) ) {
-    Print( "The object of type '" + System::typeinfoName( typeid( *object ) ) + "' is registered in TS at address '" +
+    Print( "The object of type '" + System::typeinfoName( typeid( obj ) ) + "' is registered in TS at address '" +
                fullLocation + "'",
            status, MSG::DEBUG )
         .ignore();
