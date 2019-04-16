@@ -6,12 +6,16 @@ properties.
 '''
 __author__ = 'Marco Clemencic <marco.clemencic@cern.ch>'
 
-import os
-import platform
-import xml.etree.ElementTree as ET
-import collections
-import re
-import six
+try:
+    import os
+    import platform
+    import xml.etree.ElementTree as ET
+    import collections
+    import re
+    import six
+except ImportError:
+    import sys
+    sys.exit(1)
 
 
 def qmt_filename_to_name(path):
