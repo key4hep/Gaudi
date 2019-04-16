@@ -317,7 +317,6 @@ void HistorySvc::dumpProperties( const Gaudi::Algorithm& alg, std::ofstream& ofs
 
   if ( !hist ) { return; }
 
-  PropertyList::const_iterator itr;
   for ( auto prop : hist->properties() ) { ofs << alg.name() << "  " << dumpProp( prop ) << std::endl; }
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
