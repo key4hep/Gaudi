@@ -300,12 +300,16 @@ macro(gaudi_project project version)
   endif()
 
   if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE STRING
-        "Single build output directory for all executables" FORCE)
+    foreach( _config "" "_DEBUG" "_RELEASE" "_MINSIZEREL" "_RELWITHDEBINFO" )
+      set(CMAKE_RUNTIME_OUTPUT_DIRECTORY${_config} ${CMAKE_BINARY_DIR}/bin CACHE STRING
+          "Single build output directory for all executables" FORCE)
+    endforeach()
   endif()
   if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE STRING
-        "Single build output directory for all libraries" FORCE)
+    foreach( _config "" "_DEBUG" "_RELEASE" "_MINSIZEREL" "_RELWITHDEBINFO" )
+      set(CMAKE_LIBRARY_OUTPUT_DIRECTORY${_config} ${CMAKE_BINARY_DIR}/lib CACHE STRING
+          "Single build output directory for all libraries" FORCE)
+    endforeach()
   endif()
 
   if(NOT CMAKE_CONFIG_OUTPUT_DIRECTORY)
