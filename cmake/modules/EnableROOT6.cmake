@@ -8,7 +8,7 @@ set(ROOT_ALL_COMPONENTS Core Cling RIO Hist Tree TreePlayer Matrix
 set(ROOT_ALL_TOOLS root rootcling genreflex)
 
 # checks for computation of dependencies of dictionaries
-if (NOT CMAKE_GENERATOR MATCHES "Makefile" AND NOT CMAKE_GENERATOR MATCHES "Xcode")
+if (CMAKE_GENERATOR MATCHES "Ninja")
   if(CMAKE_VERSION VERSION_LESS 3.12)
     find_package(PythonInterp QUIET)
     if (PYTHON_EXECUTABLE)
