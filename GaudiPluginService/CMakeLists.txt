@@ -11,17 +11,32 @@ if(GAUDI_REFLEX_COMPONENT_ALIASES)
   add_definitions(-DGAUDI_REFLEX_COMPONENT_ALIASES)
 endif()
 
-if(GAUDI_CXX_STANDARD STRLESS "c++17")
-  find_package(Boost REQUIRED)
-  set(includes INCLUDE_DIRS Boost)
-  set(libs Boost)
+# Decide whether to use std::filesystem or boost::filesystem.
+set(includes)
+set(libs)
+set(defines)
+if((("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND
+     "${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER_EQUAL 8) OR
+    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND
+     "${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER_EQUAL 7 AND
+     NOT APPLE)) AND
+   "${GAUDI_CXX_STANDARD}" STRGREATER_EQUAL "c++17")
+  list(APPEND libs -lstdc++fs)
+else()
+  find_package(Boost COMPONENTS filesystem REQUIRED)
+  list(APPEND includes INCLUDE_DIRS Boost)
+  list(APPEND libs Boost)
+  list(APPEND defines -DUSE_BOOST_FILESYSTEM)
 endif()
 
 # Library
 gaudi_add_library(GaudiPluginService src/PluginServiceV2.cpp src/PluginServiceV1.cpp src/capi_pluginservice.cpp
                   ${includes}
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} -lstdc++fs ${libs}
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} ${libs}
                   PUBLIC_HEADERS Gaudi)
+if(defines)
+  target_compile_definitions(GaudiPluginService PRIVATE ${defines})
+endif()
 
 # Disable generation of ConfUserDB (must be done before gaudi_install_python_modules)
 set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)

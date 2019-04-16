@@ -31,13 +31,13 @@
 #  include <dlfcn.h>
 #endif
 
-#if __GNUC__ >= 8 && __cplusplus >= 201703
+#ifdef USE_BOOST_FILESYSTEM
+#  include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#else
 #  include <filesystem>
 namespace fs = std::filesystem;
-#else
-#  include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#endif
+#endif // USE_BOOST_FILESYSTEM
 
 #if __cplusplus >= 201703
 #  include <string_view>
