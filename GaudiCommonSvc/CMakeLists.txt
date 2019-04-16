@@ -5,6 +5,10 @@ gaudi_depends_on_subdirs(GaudiKernel)
 find_package(AIDA)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 find_package(ROOT COMPONENTS Hist RIO REQUIRED)
+find_package(TBB REQUIRED)
+
+# Hide some Boost/ROOT/TBB compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
 
 # Decide whether to link against AIDA:
 set( aida_lib )
@@ -37,12 +41,12 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 if( AIDA_FOUND )
   gaudi_add_library(GaudiCommonSvcLib
                     ${histo_svc_sources}
-                    LINK_LIBRARIES GaudiKernel Boost ROOT
+                    LINK_LIBRARIES GaudiKernel Boost ROOT TBB
                     PUBLIC_HEADERS GaudiCommonSvc
-                    INCLUDE_DIRS Boost ROOT ${aida_lib})
+                    INCLUDE_DIRS Boost ROOT TBB ${aida_lib})
 endif()
 
 gaudi_add_module(GaudiCommonSvc
                  ${module_sources}
-                 LINK_LIBRARIES GaudiKernel Boost ROOT ${histo_lib}
-                 INCLUDE_DIRS Boost ROOT ${aida_lib})
+                 LINK_LIBRARIES GaudiKernel Boost ROOT TBB ${histo_lib}
+                 INCLUDE_DIRS Boost ROOT TBB ${aida_lib})
