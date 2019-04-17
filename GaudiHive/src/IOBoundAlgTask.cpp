@@ -57,7 +57,10 @@ StatusCode IOBoundAlgTask::execute() {
   m_aess->updateEventStatus( eventfailed, m_evtCtx );
 
   // update scheduler state
-  m_promote2ExecutedClosure();
+  sc = m_promote2ExecutedClosure();
+  if ( UNLIKELY( sc.isFailure() ) ) {
+    log << MSG::WARNING << "Cannot schedule update of algorithm state for " << m_algorithm->name() << endmsg;
+  }
 
   Gaudi::Hive::setCurrentContextEvt( -1 );
 

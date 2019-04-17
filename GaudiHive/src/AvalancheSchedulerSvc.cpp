@@ -381,11 +381,12 @@ void AvalancheSchedulerSvc::activate() {
     m_actionsQueue.pop( thisAction );
     sc = thisAction();
     ON_VERBOSE {
-      if ( sc != StatusCode::SUCCESS )
+      if ( sc.isFailure() )
         verbose() << "Action did not succeed (which is not bad per se)." << endmsg;
       else
         verbose() << "Action succeeded." << endmsg;
     }
+    else sc.ignore();
   }
 
   ON_DEBUG debug() << "Terminating thread-pool resources" << endmsg;
@@ -681,6 +682,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const int algo_index, co
       m_algExecStateSvc->setEventStatus( EventStatus::AlgStall, *thisSlot.eventContext );
       eventFailed( thisSlot.eventContext.get() ); // can't release yet
     }
+    partial_sc.ignore();
   } // end loop on slots
 
   ON_VERBOSE verbose() << "States Updated." << endmsg;
