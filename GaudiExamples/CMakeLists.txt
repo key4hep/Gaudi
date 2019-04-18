@@ -64,6 +64,7 @@ set(GaudiExamples_srcs
     src/ReEntAlg/*.cpp
     src/ConditionAccessor/*.cpp
     src/AsyncEventProcessor/AsyncEventLoopMgr.cpp
+    src/AsyncEventProcessor/AsyncApplication.cpp
 )
 
 # Add the sources requiring non-standard externals:
