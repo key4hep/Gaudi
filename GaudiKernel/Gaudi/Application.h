@@ -8,8 +8,12 @@
 #include <string_view>
 
 namespace Gaudi {
-  /// Standard Gaudi application main logic.
-  /// It can be specialized to override the steering of the event loop (via the method `run`).
+  /// Gaudi application entry point.
+  ///
+  /// Gaudi::Application can be used to bootstrap a standard Gaudi application or to implement
+  /// custom applications, either via a specialization that overrides the method run (which can
+  /// be instantiated either directly or via the GaudiPluginService, with the helper `create`) or
+  /// by passing a callable object to the dedicated `run` method.
   class Application {
   public:
     using Options = std::map<std::string, std::string>;
@@ -27,6 +31,9 @@ namespace Gaudi {
     /// - loop over events
     /// - terminate (stop + finalize)
     virtual int run();
+
+    /// Run a user provided implementation of the application main logic.
+    int run( std::function<int( SmartIF<IStateful>& )> action ) { return action( app ); }
 
   protected:
     /// Handle to the ApplicationMgr instance.
