@@ -3,47 +3,69 @@
 //  Description: Main Program for Gaudi applications
 //
 //------------------------------------------------------------------------------
-#include "GaudiKernel/Bootstrap.h"
-#include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/Property.h"
-#include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/StatusCode.h"
+#include <Gaudi/Application.h>
+#include <gsl/span>
 #include <iostream>
+#include <string_view>
 
 extern "C" GAUDI_API int GaudiMain( int argc, char** argv ) {
-  IInterface*        iface = Gaudi::createApplicationMgr();
-  SmartIF<IAppMgrUI> appMgr( iface );
-  auto               propMgr = appMgr.as<IProperty>();
+  Gaudi::Application::Options opts;
 
-  if ( !appMgr || !propMgr ) {
-    std::cout << "Fatal error while creating the ApplicationMgr " << std::endl;
-    return 1;
+  std::string_view appType{"Gaudi::Application"};
+  std::string_view optsFile;
+
+  gsl::span args{argv, argc};
+
+  auto usage = [name = args[0]]( std::ostream& out ) -> std::ostream& {
+    return out << "usage: " << name << " [options] option_file\n";
+  };
+
+  auto arg = args.begin();
+  ++arg; // ignore application name
+  while ( arg != args.end() ) {
+    std::string_view opt{*arg};
+    if ( opt == "--application" )
+      appType = *++arg;
+    else if ( opt == "-h" || opt == "--help" ) {
+      usage( std::cout );
+      std::cout << R"(
+Options:
+  -h, --help            show this help message and exit
+  --application APPLICATION
+                        name of the application class to use [default: Gaudi::Application]
+)";
+      return EXIT_SUCCESS;
+    } else if ( opt[0] == '-' ) {
+      std::cerr << "error: unknown option " << opt << '\n';
+      usage( std::cerr );
+      return EXIT_FAILURE;
+    } else {
+      optsFile = *arg++;
+      break; // we stop after the first positional argument
+    }
+    ++arg;
+  }
+  if ( arg != args.end() ) { std::cerr << "warning: ignoring extra positional arguments\n"; }
+  if ( optsFile.empty() ) {
+    std::cerr << "error: missing option file argument\n";
+    usage( std::cerr );
+    return EXIT_FAILURE;
   }
 
-  // Get the input configuration file from arguments
-  std::string opts = ( argc > 1 ) ? argv[1] : "jobOptions.txt";
-
-  propMgr->setProperty( "JobOptionsPath", opts ).ignore();
-
-  if ( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
-    propMgr->setProperty( "EvtSel", "NONE" ).ignore();
-    propMgr->setProperty( "JobOptionsType", "NONE" ).ignore();
-    propMgr->setProperty( "DLLs", "['GaudiPython']" ).ignore();
-    propMgr->setProperty( "Runable", "PythonScriptingSvc" ).ignore();
+  if ( optsFile.size() > 3 && optsFile.substr( optsFile.size() - 3 ) == ".py" ) {
+    opts["ApplicationMgr.EvtSel"]         = "NONE";
+    opts["ApplicationMgr.JobOptionsType"] = "NONE";
+    opts["ApplicationMgr.DLLs"]           = "['GaudiPython']";
+    opts["ApplicationMgr.Runable"]        = "PythonScriptingSvc";
+  } else {
+    opts["ApplicationMgr.JobOptionsPath"] = optsFile;
   }
 
-  // Run the application manager and process events
-  StatusCode           sc = appMgr->run();
-  Gaudi::Property<int> returnCode( "ReturnCode", 0 );
-  propMgr->getProperty( &returnCode ).ignore();
-  // Release Application Manager
-  propMgr.reset();
-  appMgr.reset();
-  // All done - exit
-  if ( sc.isFailure() && returnCode == 0 ) {
-    // propagate a valid error code in case of failure
-    returnCode.setValue( 1 );
+  auto app = Gaudi::Application::create( appType, std::move( opts ) );
+  if ( !app ) {
+    std::cerr << "error: failure creating " << appType << '\n';
+    return EXIT_FAILURE;
   }
-  return returnCode.value();
+
+  return app->run();
 }
