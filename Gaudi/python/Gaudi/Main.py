@@ -188,6 +188,7 @@ class gaudimain(object):
             appMgr.AppVersion = str(os.environ["GAUDIAPPVERSION"])
         self.log = logging.getLogger(__name__)
         self.printsequence = False
+        self.application = 'Gaudi::Application'
 
     def setupParallelLogging(self):
         # ---------------------------------------------------
@@ -283,8 +284,12 @@ class gaudimain(object):
     #  Depending on the number of CPUs (ncpus) specified, it start
     def run(self, attach_debugger, ncpus=None):
         if not ncpus:
-            # Standard sequential mode
-            result = self.runSerial(attach_debugger)
+            if self.mainLoop or self.printsequence or os.environ.get(
+                    'GAUDIRUN_USE_OLDINIT'):
+                result = self.runSerialOld(attach_debugger)
+            else:
+                # Standard sequential mode
+                result = self.runSerial(attach_debugger)
         else:
             # Otherwise, run with the specified number of cpus
             result = self.runParallel(ncpus)
@@ -397,6 +402,63 @@ class gaudimain(object):
         self.log.debug('gaudiPythonInit: done')
 
     def runSerial(self, attach_debugger):
+        try:
+            from GaudiKernel.Proxy.Configurable import expandvars
+        except ImportError:
+            # pass-through implementation if expandvars is not defined (AthenaCommon)
+            def expandvars(data):
+                return data
+
+        from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
+
+        self.log.debug('runSerial: apply options')
+        conf_dict = {'ApplicationMgr.JobOptionsType': '"NONE"'}
+
+        # FIXME: this is to make sure special properties are correctly
+        # expanded before we fill conf_dict
+        for c in Configurable.allConfigurables.values():
+            if hasattr(c, 'getValuedProperties'):
+                c.getValuedProperties()
+
+        for n in getNeededConfigurables():
+            c = Configurable.allConfigurables[n]
+            for p, v in c.getValuedProperties().items():
+                v = expandvars(v)
+                # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
+                if hasattr(Configurable, "PropertyReference") and type(
+                        v) == Configurable.PropertyReference:
+                    # this is done in "getFullName", but the exception is ignored,
+                    # so we do it again to get it
+                    v = v.__resolve__()
+                if type(v) == str:
+                    v = '"%s"' % v  # need double quotes
+                elif type(v) == long:
+                    v = '%d' % v  # prevent pending 'L'
+                conf_dict['{}.{}'.format(n, p)] = str(v)
+        if hasattr(Configurable, "_configurationLocked"):
+            Configurable._configurationLocked = True
+
+        if attach_debugger:
+            self.hookDebugger()
+
+        self.log.debug('-' * 80)
+        self.log.debug('%s: running in serial mode', __name__)
+        self.log.debug('-' * 80)
+        sysStart = time()
+
+        import Gaudi
+        app = Gaudi.Application.create(self.application, conf_dict)
+        retcode = app.run()
+
+        sysTime = time() - sysStart
+        self.log.debug('-' * 80)
+        self.log.debug('%s: serial system finished, time taken: %5.4fs',
+                       __name__, sysTime)
+        self.log.debug('-' * 80)
+
+        return retcode
+
+    def runSerialOld(self, attach_debugger):
         # --- Instantiate the ApplicationMgr------------------------------
         if (self.mainLoop or os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
             self.gaudiPythonInit()

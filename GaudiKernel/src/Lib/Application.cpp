@@ -9,6 +9,7 @@
 #include <GaudiKernel/IProperty.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/Property.h>
+#include <gsl/span>
 
 #define GAUDI_ASSERT_THROW_NAME( cond, msg, name )                                                                     \
   if ( !cond ) throw GaudiException{msg, name, StatusCode::FAILURE};
@@ -87,3 +88,30 @@ int Gaudi::Application::run() {
     setAppReturnCode( prop, Gaudi::ReturnCode::GenericFailure );
   return getAppReturnCode( prop );
 }
+
+namespace {
+  struct c_opt_t {
+    char* key;
+    char* value;
+  };
+} // namespace
+
+#ifdef GAUDI_HASCLASSVISIBILITY
+#  pragma GCC visibility push( default )
+#endif
+
+extern "C" {
+// helper to invoke the factory from Python
+Gaudi::Application* _py_Gaudi__Application__create( const char* name, const c_opt_t* options, long n ) {
+  Gaudi::Application::Options opts;
+  gsl::span                   py_opts{options, n};
+  for ( auto& opt : py_opts ) { opts[opt.key] = opt.value; }
+  return Gaudi::Application::create( name, std::move( opts ) ).release();
+}
+int  _py_Gaudi__Application__run( Gaudi::Application* self ) { return self->run(); }
+void _py_Gaudi__Application__delete( Gaudi::Application* self ) { delete self; }
+}
+
+#ifdef GAUDI_HASCLASSVISIBILITY
+#  pragma GCC visibility pop
+#endif
