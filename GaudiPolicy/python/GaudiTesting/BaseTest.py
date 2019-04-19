@@ -1005,6 +1005,8 @@ lineSkipper = LineSkipper(
         r"Property(.*)'FilterCircularDependencies':",
         # removed with gaudi/Gaudi!316
         r"Property(.*)'IsClonable':",
+        # introduced with gaudi/Gaudi!878
+        r"Property(.*)'PrintAlgsSequence':",
         # ignore uninteresting/obsolete messages
         r"Property update for OutputLevel : new value =",
         r"EventLoopMgr\s*DEBUG Creating OutputStream",

@@ -137,6 +137,9 @@ public:
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
   void outputLevelUpdate() override;
 
+  /// Print the sequence of algorithms that have been loaded.
+  void printAlgsSequences();
+
 protected:
   // implementation of IService::setServiceManager
   void setServiceManager( ISvcManager* ) override {}
@@ -276,6 +279,9 @@ protected:
   /// Property to record the error conditions occurring during the running.
   Gaudi::Property<int> m_returnCode{this, "ReturnCode", Gaudi::ReturnCode::Success,
                                     "Return code of the application. Set internally in case of error conditions."};
+
+  Gaudi::Property<bool> m_printAlgsSequence{this, "PrintAlgsSequence", false,
+                                            "Print the sequence of algorithms that have been loaded."};
 
   // For concurrency
   bool m_useHiveAlgorithmManager;

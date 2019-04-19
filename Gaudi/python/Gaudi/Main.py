@@ -80,9 +80,6 @@ class BootstrapHelper(object):
             return BootstrapHelper.Property(
                 self.lib.py_bootstrap_getProperty(self.ptr, name))
 
-        def printAlgsSequences(self):
-            return self.lib.py_helper_printAlgsSequences(self.ptr)
-
     def __init__(self):
         from ctypes import (PyDLL, util, c_void_p, c_bool, c_char_p, c_int,
                             RTLD_GLOBAL)
@@ -127,9 +124,6 @@ class BootstrapHelper(object):
             f.restype, f.argtypes = c_bool, [IInterface_p]
         gkl.py_bootstrap_app_run.restype = c_bool
         gkl.py_bootstrap_app_run.argtypes = [IInterface_p, c_int]
-
-        gkl.py_helper_printAlgsSequences.restype = None
-        gkl.py_helper_printAlgsSequences.argtypes = [IInterface_p]
 
     def createApplicationMgr(self):
         ptr = self.lib.py_bootstrap_createApplicationMgr()
@@ -284,8 +278,7 @@ class gaudimain(object):
     #  Depending on the number of CPUs (ncpus) specified, it start
     def run(self, attach_debugger, ncpus=None):
         if not ncpus:
-            if self.mainLoop or self.printsequence or os.environ.get(
-                    'GAUDIRUN_USE_OLDINIT'):
+            if self.mainLoop or os.environ.get('GAUDIRUN_USE_OLDINIT'):
                 result = self.runSerialOld(attach_debugger)
             else:
                 # Standard sequential mode
@@ -342,6 +335,10 @@ class gaudimain(object):
             if not self.g.setProperty(p, str(v)):
                 self.log.error('Cannot set property %s.%s to %s', comp, p, v)
                 sys.exit(10)
+
+        if self.printsequence:
+            self.g.setProperty('PrintAlgsSequence', 'true')
+
         # issue with missing dictionary with ROOT < 6.2.7
         if _bootstrap.ROOT_VERSION < (6, 2, 7):
             # we need to load GaudiPython
@@ -388,12 +385,16 @@ class gaudimain(object):
                 _bootstrap.addPropertyToCatalogue(jos, n, p, str(v))
         if hasattr(Configurable, "_configurationLocked"):
             Configurable._configurationLocked = True
+
         self.log.debug('basicInit: done')
 
     def gaudiPythonInit(self):
         '''
         Initialize the application with full Python bindings.
         '''
+        if self.printsequence:
+            from Gaudi.Configuration import ApplicationMgr
+            ApplicationMgr(PrintAlgsSequence=true)
         self.log.debug('gaudiPythonInit: import GaudiPython')
         import GaudiPython
         self.log.debug('gaudiPythonInit: instantiate ApplicationMgr')
@@ -435,6 +436,10 @@ class gaudimain(object):
                 elif type(v) == long:
                     v = '%d' % v  # prevent pending 'L'
                 conf_dict['{}.{}'.format(n, p)] = str(v)
+
+        if self.printsequence:
+            conf_dict['ApplicationMgr.PrintAlgsSequence'] = 'true'
+
         if hasattr(Configurable, "_configurationLocked"):
             Configurable._configurationLocked = True
 
@@ -478,8 +483,6 @@ class gaudimain(object):
                 self.log.debug('initialize')
                 sc = app.initialize()
                 if sc.isSuccess():
-                    if self.printsequence:
-                        app.printAlgsSequences()
                     self.log.debug('start')
                     sc = app.start()
                     if sc.isSuccess():
