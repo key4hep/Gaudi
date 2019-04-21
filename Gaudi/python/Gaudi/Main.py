@@ -170,9 +170,6 @@ def toOpt(value):
 
 
 class gaudimain(object):
-    # main loop implementation, None stands for the default
-    mainLoop = None
-
     def __init__(self):
         from Configurables import ApplicationMgr
         appMgr = ApplicationMgr()
@@ -278,7 +275,7 @@ class gaudimain(object):
     #  Depending on the number of CPUs (ncpus) specified, it start
     def run(self, attach_debugger, ncpus=None):
         if not ncpus:
-            if self.mainLoop or os.environ.get('GAUDIRUN_USE_OLDINIT'):
+            if os.environ.get('GAUDIRUN_USE_OLDINIT'):
                 result = self.runSerialOld(attach_debugger)
             else:
                 # Standard sequential mode
@@ -465,7 +462,7 @@ class gaudimain(object):
 
     def runSerialOld(self, attach_debugger):
         # --- Instantiate the ApplicationMgr------------------------------
-        if (self.mainLoop or os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
+        if os.environ.get('GAUDIRUN_USE_GAUDIPYTHON'):
             self.gaudiPythonInit()
         else:
             self.basicInit()
@@ -475,32 +472,28 @@ class gaudimain(object):
         self.log.debug('-' * 80)
         sysStart = time()
 
-        if self.mainLoop:
-            runner = self.mainLoop
-        else:
-
-            def runner(app, nevt):
-                self.log.debug('initialize')
-                sc = app.initialize()
+        def runner(app, nevt):
+            self.log.debug('initialize')
+            sc = app.initialize()
+            if sc.isSuccess():
+                self.log.debug('start')
+                sc = app.start()
                 if sc.isSuccess():
-                    self.log.debug('start')
-                    sc = app.start()
-                    if sc.isSuccess():
-                        self.log.debug('run(%d)', nevt)
-                        sc = app.run(nevt)
-                        self.log.debug('stop')
-                        app.stop().ignore()
-                    self.log.debug('finalize')
-                    app.finalize().ignore()
-                self.log.debug('terminate')
-                sc1 = app.terminate()
-                if sc.isSuccess():
-                    sc = sc1
-                else:
-                    sc1.ignore()
-                self.log.debug('status code: %s',
-                               'SUCCESS' if sc.isSuccess() else 'FAILURE')
-                return sc
+                    self.log.debug('run(%d)', nevt)
+                    sc = app.run(nevt)
+                    self.log.debug('stop')
+                    app.stop().ignore()
+                self.log.debug('finalize')
+                app.finalize().ignore()
+            self.log.debug('terminate')
+            sc1 = app.terminate()
+            if sc.isSuccess():
+                sc = sc1
+            else:
+                sc1.ignore()
+            self.log.debug('status code: %s',
+                           'SUCCESS' if sc.isSuccess() else 'FAILURE')
+            return sc
 
         if (attach_debugger == True):
             self.hookDebugger()
@@ -533,11 +526,6 @@ class gaudimain(object):
         return int(self.ip.getProperty('ReturnCode').toString())
 
     def runParallel(self, ncpus):
-        if self.mainLoop:
-            self.log.fatal(
-                "Cannot use custom main loop in multi-process mode, check your options"
-            )
-            return 1
         self.setupParallelLogging()
         from Gaudi.Configuration import Configurable
         import GaudiMP.GMPBase as gpp
