@@ -385,20 +385,6 @@ class gaudimain(object):
 
         self.log.debug('basicInit: done')
 
-    def gaudiPythonInit(self):
-        '''
-        Initialize the application with full Python bindings.
-        '''
-        if self.printsequence:
-            from Gaudi.Configuration import ApplicationMgr
-            ApplicationMgr(PrintAlgsSequence=true)
-        self.log.debug('gaudiPythonInit: import GaudiPython')
-        import GaudiPython
-        self.log.debug('gaudiPythonInit: instantiate ApplicationMgr')
-        self.g = GaudiPython.AppMgr()
-        self.ip = self.g._ip
-        self.log.debug('gaudiPythonInit: done')
-
     def runSerial(self, attach_debugger):
         try:
             from GaudiKernel.Proxy.Configurable import expandvars
@@ -462,10 +448,7 @@ class gaudimain(object):
 
     def runSerialOld(self, attach_debugger):
         # --- Instantiate the ApplicationMgr------------------------------
-        if os.environ.get('GAUDIRUN_USE_GAUDIPYTHON'):
-            self.gaudiPythonInit()
-        else:
-            self.basicInit()
+        self.basicInit()
 
         self.log.debug('-' * 80)
         self.log.debug('%s: running in serial mode', __name__)
