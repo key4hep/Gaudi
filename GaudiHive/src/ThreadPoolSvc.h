@@ -29,7 +29,6 @@ class ThreadPoolSvc : public extends<Service, IThreadPoolSvc> {
 public:
   /// Constructor
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );
-  ~ThreadPoolSvc();
 
   /// Initialise
   StatusCode initialize() override final;
@@ -72,7 +71,7 @@ private:
   std::unique_ptr<boost::barrier> m_barrier;
 
   /// TBB global control parameter
-  tbb::global_control* m_tbbgc{nullptr};
+  std::unique_ptr<tbb::global_control> m_tbbgc;
 };
 
 #endif
