@@ -5,7 +5,7 @@
 
 #include <string>
 
-class EventSlot;
+struct EventSlot;
 struct Cause;
 
 //-----------------------------------------------------------------------------

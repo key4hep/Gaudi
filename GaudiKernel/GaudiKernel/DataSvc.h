@@ -70,10 +70,6 @@ protected:
   /// Pointer to root entry
   std::unique_ptr<DataSvcHelpers::RegistryEntry> m_root;
 
-private:
-  /// Map with object paths to be inhibited from loading
-  DataSvcHelpers::InhibitMap* m_inhibitMap = nullptr;
-
 public:
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override;

@@ -821,7 +821,7 @@ namespace Gaudi {
         return printImpl( o, tag );
       }
       virtual MsgStream& print( MsgStream& o, const std::string& tag ) const override { return printImpl( o, tag ); }
-      virtual bool toBePrinted() const override { return this->nEntries() > 0; }
+      virtual bool       toBePrinted() const override { return this->nEntries() > 0; }
     };
 
     /**

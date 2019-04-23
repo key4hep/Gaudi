@@ -78,8 +78,6 @@ class GAUDI_API TsDataSvc : public extends<Service, IDataProviderSvc, IDataManag
   std::vector<DataStoreItem> m_preLoads;
   /// Pointer to root entry
   std::unique_ptr<DataSvcHelpers::RegistryEntry> m_root;
-  /// Map with object paths to be inhibited from loading
-  DataSvcHelpers::InhibitMap* m_inhibitMap = nullptr;
 
 public:
   /// IDataManagerSvc: Accessor for root event CLID

@@ -415,6 +415,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, IO_COUNTERS* in
     info->WriteTransferCount  = usage.ru_oublock;
     info->OtherTransferCount  = 0;
 #else  // All Other
+    if ( pid ) {}
 #endif // End ALL OS
   }
   return status;
@@ -454,7 +455,9 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, POOLED_USAGE_AN
     info->PagefileUsage     = prc.rss * pg_size;
     info->PagefileLimit     = 0xFFFFFFFF;
 #elif defined( __APPLE__ )
+    if ( pid ) {}
 #else  // All Other
+    if ( pid ) {}
 #endif // End ALL OS
   }
 
@@ -472,6 +475,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, long* info ) {
     ProcessHandle h( pid );
     status = NtApi::NtQueryInformationProcess( h.handle(), ProcessPriorityBoost, info, sizeof( long ), 0 );
 #elif defined( _WIN32 ) // Windows 95,98...
+    if ( pid ) {}
 #else
     // Not applicable
     if ( pid > 0 ) status = 0; // to avoid compiler warning
@@ -523,7 +527,9 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, VM_COUNTERS* in
     info->PagefileUsage              = prc.vsize - resident * pg_size;
     info->PeakPagefileUsage          = prc.vsize - resident * pg_size;
 #elif defined( __APPLE__ )
+    if ( pid ) {}
 #else  // All Other
+    if ( pid ) {}
 #endif // End ALL OS
   }
   return status;
@@ -567,7 +573,9 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, QUOTA_LIMITS* i
     if ( lim.rlim_max == RLIM_INFINITY ) lim.rlim_max = 0xFFFFFFFF;
     info->TimeLimit = lim.rlim_max;
 #elif defined( __APPLE__ )
+    if ( pid ) {}
 #else  // All Other
+    if ( pid ) {}
 #endif // End ALL OS
   }
   return status;
@@ -599,6 +607,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, PROCESS_BASIC_I
     info->UniqueProcessId              = pid;
     info->InheritedFromUniqueProcessId = prc.ppid;
 #else                    // All Other
+    if ( pid ) {}
 #endif                   // End ALL OS
   }
   return status;
@@ -651,6 +660,7 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     status = 1;
 
 #elif defined( __APPLE__ )
+    if ( pid ) {}
 // FIXME (MCl): Make an alternative function get timing on OSX
 // times() seems to cause a segmentation fault
 #else // no /proc file system: assume sys_start for the first call

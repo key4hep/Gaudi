@@ -93,7 +93,7 @@ StatusCode ViewTester::execute() // the execution of the algorithm
     if ( !outputHandle->isValid() ) continue;
 
     VERBOSE_MSG << "put to TS: " << outputHandle->objKey() << endmsg;
-    outputHandle->put( std::move( std::make_unique<DataObject>() ) );
+    outputHandle->put( std::make_unique<DataObject>() );
   }
 
   setFilterPassed( true );
