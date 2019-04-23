@@ -42,31 +42,37 @@ tbb::task* ThreadInitTask::execute() {
     } else {
       if ( debug ) log << MSG::DEBUG << "executing in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
 
-      for ( auto& t : m_tools ) {
+      // only call terminate for threads that have been initialized
+      if ( m_terminate && !Gaudi::Concurrency::ThreadInitDone ) {
+        log << MSG::INFO << "Not calling terminateThread for thread 0x" << std::hex << pthread_self()
+            << " as it has not been initialized" << endmsg;
+      } else {
 
-        try {
+        for ( auto& t : m_tools ) {
+          try {
 
-          if ( debug ) log << MSG::DEBUG << "calling IThreadInitTool " << t << endmsg;
+            if ( debug ) log << MSG::DEBUG << "calling IThreadInitTool " << t << endmsg;
 
-          if ( !m_terminate ) {
-            t->initThread();
-            Gaudi::Concurrency::ThreadInitDone = true;
-          } else {
-            t->terminateThread();
+            if ( !m_terminate ) {
+              t->initThread();
+              Gaudi::Concurrency::ThreadInitDone = true;
+            } else {
+              t->terminateThread();
+            }
+
+          } catch ( const GaudiException& exc ) {
+            log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
+                << " threw GaudiException: " << exc << endmsg;
+            m_execFailed = true;
+          } catch ( const std::exception& exc ) {
+            log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
+                << " threw std::exception: " << exc.what() << endmsg;
+            m_execFailed = true;
+          } catch ( ... ) {
+            log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
+                << " threw unknown exception" << endmsg;
+            m_execFailed = true;
           }
-
-        } catch ( const GaudiException& exc ) {
-          log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
-              << " threw GaudiException: " << exc << endmsg;
-          m_execFailed = true;
-        } catch ( const std::exception& exc ) {
-          log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
-              << " threw std::exception: " << exc.what() << endmsg;
-          m_execFailed = true;
-        } catch ( ... ) {
-          log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
-              << " threw unknown exception" << endmsg;
-          m_execFailed = true;
         }
       }
 

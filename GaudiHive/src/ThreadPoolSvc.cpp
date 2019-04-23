@@ -25,6 +25,9 @@ ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ) : e
   declareProperty( "ThreadInitTools", m_threadInitTools, "ToolHandleArray of IThreadInitTools" );
 }
 
+ThreadPoolSvc::~ThreadPoolSvc() {
+  if ( m_tbbgc ) { delete m_tbbgc; }
+}
 //-----------------------------------------------------------------------------
 
 StatusCode ThreadPoolSvc::initialize() {
@@ -92,25 +95,24 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
     // Create the TBB task scheduler
     m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
-    // Create the barrier for task synchronization
     if ( m_threadPoolSize <= -1 ) {
       thePoolSize      = m_tbbSchedInit->default_num_threads();
       m_threadPoolSize = thePoolSize;
     }
-    if ( msgLevel( MSG::DEBUG ) ) { debug() << "creating barrier of size " << thePoolSize << endmsg; }
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( thePoolSize );
 
+    // Create the barrier for task synchronization at termination
     m_barrier = std::make_unique<boost::barrier>( thePoolSize );
+    m_tbbgc   = new tbb::global_control( global_control::max_allowed_parallelism, thePoolSize );
 
   } else {
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );
+    m_tbbgc = new tbb::global_control( global_control::max_allowed_parallelism, 0 );
   }
 
-  // Launch the init tool tasks
-  const bool terminate = false;
-  if ( launchTasks( terminate ).isFailure() ) return StatusCode::FAILURE;
-
-  if ( msgLevel( MSG::DEBUG ) ) debug() << "Thread Pool initialization complete!" << endmsg;
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Thread Pool initialization complete. Max task concurrency: "
+            << tbb::global_control::active_value( global_control::max_allowed_parallelism ) << endmsg;
 
   m_init = true;
 

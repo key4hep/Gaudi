@@ -9,6 +9,8 @@
 #include "boost/thread.hpp"
 #include "tbb/spin_mutex.h"
 #include "tbb/task_scheduler_init.h"
+#define TBB_PREVIEW_GLOBAL_CONTROL 1
+#include "tbb/global_control.h"
 
 #include <memory>
 #include <vector>
@@ -27,6 +29,7 @@ class ThreadPoolSvc : public extends<Service, IThreadPoolSvc> {
 public:
   /// Constructor
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );
+  ~ThreadPoolSvc();
 
   /// Initialise
   StatusCode initialize() override final;
@@ -67,6 +70,9 @@ private:
 
   /// Barrier used to synchronization thread init tasks
   std::unique_ptr<boost::barrier> m_barrier;
+
+  /// TBB global control parameter
+  tbb::global_control* m_tbbgc{nullptr};
 };
 
 #endif
