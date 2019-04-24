@@ -25,9 +25,6 @@ ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ) : e
   declareProperty( "ThreadInitTools", m_threadInitTools, "ToolHandleArray of IThreadInitTools" );
 }
 
-ThreadPoolSvc::~ThreadPoolSvc() {
-  if ( m_tbbgc ) { delete m_tbbgc; }
-}
 //-----------------------------------------------------------------------------
 
 StatusCode ThreadPoolSvc::initialize() {
@@ -103,11 +100,11 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
     // Create the barrier for task synchronization at termination
     m_barrier = std::make_unique<boost::barrier>( thePoolSize );
-    m_tbbgc   = new tbb::global_control( global_control::max_allowed_parallelism, thePoolSize );
+    m_tbbgc   = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, thePoolSize );
 
   } else {
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );
-    m_tbbgc = new tbb::global_control( global_control::max_allowed_parallelism, 0 );
+    m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, 0 );
   }
 
   if ( msgLevel( MSG::DEBUG ) )
