@@ -13,6 +13,68 @@ import os
 import re
 import platform
 from subprocess import check_output, STDOUT
+from collections import OrderedDict
+
+# available flags per architecture
+# source: https://gitlab.cern.ch/lhcb-core/LbPlatformUtils/blob/master/LbPlatformUtils/architectures.py
+ARCH_DEFS = OrderedDict(
+    [('cannonlake',
+      set([
+          'pclmulqdq', 'avx', 'pku', 'umip', 'avx512dq', 'bmi1', 'fsgsbase',
+          'avx512ifma', 'avx512bw', 'xsaves', 'clflushopt', 'sse4_2', 'sse4_1',
+          'lm', 'adx', '3dnowprefetch', 'sha_ni', 'fma', 'mmx', 'avx512cd',
+          'avx512f', 'pni', 'rdseed', 'popcnt', 'sse', 'f16c', 'xsavec', 'aes',
+          'avx2', 'sse2', 'avx512vbmi', 'bmi2', 'ssse3', 'movbe', 'rdrand',
+          'avx512vl'
+      ])),
+     ('skylake_avx512',
+      set([
+          'pclmulqdq', 'avx', 'pku', 'avx512dq', 'fsgsbase', 'avx512bw',
+          'xsaves', 'clflushopt', 'sse4_2', 'sse4_1', 'lm', 'adx',
+          '3dnowprefetch', 'fma', 'mmx', 'avx512cd', 'avx512f', 'clwb', 'pni',
+          'rdseed', 'popcnt', 'sse', 'f16c', 'xsavec', 'aes', 'avx2', 'sse2',
+          'bmi1', 'bmi2', 'ssse3', 'movbe', 'rdrand', 'avx512vl'
+      ])),
+     ('skylake',
+      set([
+          'avx', 'fsgsbase', 'xsaves', 'clflushopt', 'sse4_2', 'sse4_1', 'lm',
+          'adx', '3dnowprefetch', 'fma', 'mmx', 'pclmulqdq', 'pni', 'rdseed',
+          'popcnt', 'sse', 'f16c', 'xsavec', 'aes', 'avx2', 'sse2', 'bmi1',
+          'bmi2', 'ssse3', 'movbe', 'rdrand'
+      ])),
+     ('broadwell',
+      set([
+          'avx', 'fsgsbase', 'sse4_2', 'sse4_1', 'lm', 'adx', '3dnowprefetch',
+          'fma', 'mmx', 'pclmulqdq', 'pni', 'rdseed', 'popcnt', 'sse', 'f16c',
+          'aes', 'avx2', 'sse2', 'bmi1', 'bmi2', 'ssse3', 'movbe', 'rdrand'
+      ])),
+     ('haswell',
+      set([
+          'avx', 'fsgsbase', 'sse4_2', 'sse4_1', 'lm', 'fma', 'mmx', 'aes',
+          'pni', 'popcnt', 'sse', 'f16c', 'pclmulqdq', 'avx2', 'sse2', 'bmi1',
+          'bmi2', 'ssse3', 'movbe', 'rdrand'
+      ])),
+     ('ivybridge',
+      set([
+          'pni', 'aes', 'sse4_2', 'mmx', 'sse2', 'sse4_1', 'lm', 'pclmulqdq',
+          'ssse3', 'fsgsbase', 'popcnt', 'rdrand', 'sse', 'avx', 'f16c'
+      ])),
+     ('sandybridge',
+      set([
+          'pni', 'aes', 'sse4_2', 'mmx', 'sse2', 'sse4_1', 'lm', 'pclmulqdq',
+          'ssse3', 'popcnt', 'sse', 'avx'
+      ])),
+     ('westmere',
+      set([
+          'pni', 'aes', 'sse4_2', 'mmx', 'sse2', 'sse4_1', 'lm', 'pclmulqdq',
+          'ssse3', 'popcnt', 'sse'
+      ])),
+     ('nehalem',
+      set([
+          'pni', 'sse4_2', 'mmx', 'sse2', 'sse4_1', 'lm', 'ssse3', 'popcnt',
+          'sse'
+      ])), ('core2', set(['pni', 'mmx', 'sse2', 'lm', 'ssse3', 'sse'])),
+     ('x86_64', set(['lm'])), ('i686', set([]))])
 
 
 def _Linux_os():
@@ -77,8 +139,18 @@ def compiler_id():
     return _compiler_version()
 
 
-arch = platform.machine()
-if arch == 'AMD64':  # this is what we get on Windows
-    arch = 'x86_64'
+def arch():
+    # Get host flags from /proc/cpuinfo
+    host_flags = set()
+    for l in open('/proc/cpuinfo'):
+        if l.startswith('flags'):
+            host_flags.update(l.split()[2:])
+            break
+    # compare with known arhitectures
+    for arch, flags in ARCH_DEFS.items():
+        if host_flags.issuperset(flags):
+            return arch
+    return 'x86_64'  # if nothing is found, assume x86_64
 
-print('-'.join([arch, os_id(), compiler_id(), 'opt']))
+
+print('-'.join([arch(), os_id(), compiler_id(), 'opt']))

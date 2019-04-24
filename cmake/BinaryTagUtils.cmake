@@ -49,6 +49,26 @@
 #     it from the environment variables ``BINARY_TAG`` and ``CMTCONFIG``, or from
 #     system inspection.
 #
+
+# list of valid x86 architecture names from smallest to more inclusive
+# instruction set (e.g. westmere == nehalem + xyz)
+set(BTU_KNOWN_x86_ARCHS
+  x86_64
+  core2
+  nehalem
+  westmere
+  sandybridge
+  ivybridge
+  haswell
+  broadwell
+  skylake
+  skylake_avx512
+  canonlake
+
+  CACHE LIST "known architectures in order such that any entry can run something compiled for the preceding entries"
+)
+mark_as_advanced(BTU_KNOWN_x86_ARCHS)
+
 macro(parse_binary_tag)
   # parse arguments
   if(${ARGC} GREATER 0)
@@ -211,13 +231,27 @@ function(compatible_binary_tags variable)
 
   # prepare the list of archs as 'main_arch' followed by microach flags
   # e.g: arch+ma1+ma2+ma3 -> arch+ma1+ma2+ma3 arch+ma1+ma2 arch+ma1 arch
+  # - first add all supported main architectures, up to the requested one
   set(archs)
+  list(FIND BTU_KNOWN_x86_ARCHS ${BINARY_TAG_ARCH} arch_idx)
+  if (arch_idx GREATER -1)
+    set(archs)
+    foreach(_arch IN LISTS BTU_KNOWN_x86_ARCHS)
+      list(APPEND archs ${_arch})
+      list(LENGTH archs _archs_len)
+      if(NOT _archs_len LESS arch_idx)
+        break()
+      endif()
+    endforeach()
+  endif()
+  # - then add the optional extra flags one by one
   set(subarch)
   foreach(ma ${BINARY_TAG_MICROARCH})
     list(APPEND archs "${BINARY_TAG_ARCH}${subarch}")
     set(subarch "${subarch}+${ma}")
   endforeach()
   list(APPEND archs "${BINARY_TAG_ARCH}${subarch}")
+  # - finally reverse the list
   list(REVERSE archs)
 
   # prepare the list of build sub-types (if needed)
