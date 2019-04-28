@@ -34,8 +34,6 @@ if( AIDA_FOUND )
                                    src/HistogramSvc/P2D.cpp )
 endif()
 
-# Hide some Boost/ROOT compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 if( AIDA_FOUND )

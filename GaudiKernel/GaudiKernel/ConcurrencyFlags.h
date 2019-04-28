@@ -9,6 +9,7 @@ class ThreadPoolSvc;
 class HiveWhiteBoard;
 class SGHiveMgrSvc;
 class AthMpEvtLoopMgr;
+class EvtStoreSvc;
 
 /** @class ConcurrencyFlags ConcurrencyFlags.h GaudiKernel/ConcurrencyFlags.h
  *
@@ -32,6 +33,7 @@ namespace Gaudi {
 
       friend class ::ThreadPoolSvc;
       friend class ::HiveWhiteBoard;
+      friend class ::EvtStoreSvc;
       friend class SG::HiveMgrSvc;    // ATLAS
       friend class ::AthMpEvtLoopMgr; // ATLAS
 

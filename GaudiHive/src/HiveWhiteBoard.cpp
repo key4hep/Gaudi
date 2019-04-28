@@ -126,7 +126,6 @@ protected:
   Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
                                           "enable incidents on data creation requests"};
 
-  Gaudi::Property<bool> m_useEvtStoreSvc{this, "useEvtStoreSvc", false};
   /// Pointer to data loader service
   IConversionSvc* m_dataLoader = nullptr;
   /// Reference to address creator
@@ -445,33 +444,23 @@ public:
 
     m_partitions = std::vector<Synced<Partition>>( m_slots );
     for ( size_t i = 0; i < m_slots; i++ ) {
-      SmartIF<IService> isvc;
-      if ( m_useEvtStoreSvc.value() ) {
-        IService* svc = nullptr;
-        serviceLocator()->service( Gaudi::Utils::TypeNameString( name() + "_" + std::to_string( i ), "EvtStoreSvc" ),
-                                   svc );
-        isvc = svc;
-      } else {
-        DataSvc* svc = new DataSvc( name() + "_" + std::to_string( i ), serviceLocator() );
-        svc->setProperty( m_enableFaultHdlr ).ignore();
-        isvc = svc;
-      }
+      DataSvc* svc = new DataSvc( name() + "_" + std::to_string( i ), serviceLocator() );
       // Percolate properties
-      auto iprp = isvc.as<IProperty>();
-      iprp->setProperty( m_forceLeaves ).ignore();
-      iprp->setProperty( m_rootCLID ).ignore();
-      iprp->setProperty( m_rootName ).ignore();
+      svc->setProperty( m_rootCLID ).ignore();
+      svc->setProperty( m_rootName ).ignore();
+      svc->setProperty( m_forceLeaves ).ignore();
+      svc->setProperty( m_enableFaultHdlr ).ignore();
       // make sure that CommonMessaging is initialized
-      iprp->setProperty( m_outputLevel ).ignore();
+      svc->setProperty( m_outputLevel ).ignore();
 
-      if ( !m_useEvtStoreSvc.value() ) sc = isvc->initialize();
+      sc = svc->initialize();
       if ( !sc.isSuccess() ) {
         error() << "Failed to instantiate DataSvc as store partition" << endmsg;
         return sc;
       }
       m_partitions[i].with_lock( [&]( Partition& p ) {
-        p.dataProvider = isvc;
-        p.dataManager  = isvc;
+        p.dataProvider = svc;
+        p.dataManager  = svc;
       } );
       m_freeSlots.push( i );
     }
@@ -497,7 +486,7 @@ public:
 
   /// Service initialisation
   StatusCode finalize() override {
-    setDataLoader( nullptr ).ignore();
+    setDataLoader( 0 ).ignore();
     clearStore().ignore();
     return Service::finalize();
   }
