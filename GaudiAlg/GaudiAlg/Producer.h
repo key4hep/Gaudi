@@ -5,14 +5,16 @@
 #include "GaudiAlg/FunctionalUtilities.h"
 #include <utility>
 
-namespace Gaudi {
-  namespace Functional {
+namespace Gaudi::Functional {
 
-    template <typename Signature, typename Traits_ = Traits::useDefaults>
+  namespace details {
+
+    template <typename Signature, typename Traits_, bool isLegacy>
     class Producer;
 
     template <typename... Out, typename Traits_>
-    class Producer<std::tuple<Out...>(), Traits_> : public details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
+    class Producer<std::tuple<Out...>(), Traits_, true>
+        : public details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
     public:
       using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
 
@@ -25,14 +27,43 @@ namespace Gaudi {
                     [&ohandle...]( auto&&... data ) {
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                     },
-                    details::as_const( *this )() );
+                    std::as_const( *this )() );
               },
               this->m_outputs );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
+      }
+
+      // ... instead, they must implement the following operator
+      virtual std::tuple<Out...> operator()() const = 0;
+    };
+
+    template <typename... Out, typename Traits_>
+    class Producer<std::tuple<Out...>(), Traits_, false>
+        : public details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
+    public:
+      using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
+
+      // derived classes are NOT allowed to implement execute ...
+      StatusCode execute( const EventContext& ) const override final {
+        try {
+          std::apply(
+              [&]( auto&... ohandle ) {
+                std::apply(
+                    [&ohandle...]( auto&&... data ) {
+                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+                    },
+                    std::as_const( *this )() );
+              },
+              this->m_outputs );
+          return StatusCode::SUCCESS;
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
       }
 
       // ... instead, they must implement the following operator
@@ -40,24 +71,47 @@ namespace Gaudi {
     };
 
     template <typename Out, typename Traits_>
-    class Producer<Out(), Traits_> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
+    class Producer<Out(), Traits_, true> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
     public:
       using details::DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
-          details::put( std::get<0>( this->m_outputs ), details::as_const( *this )() );
+          details::put( std::get<0>( this->m_outputs ), std::as_const( *this )() );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
       }
 
       // ... instead, they must implement the following operator
       virtual Out operator()() const = 0;
     };
-  } // namespace Functional
-} // namespace Gaudi
+
+    template <typename Out, typename Traits_>
+    class Producer<Out(), Traits_, false> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
+    public:
+      using details::DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
+      // derived classes are NOT allowed to implement execute ...
+      StatusCode execute( const EventContext& ) const override final {
+        try {
+          details::put( std::get<0>( this->m_outputs ), std::as_const( *this )() );
+          return StatusCode::SUCCESS;
+        } catch ( GaudiException& e ) {
+          ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
+          return e.code();
+        }
+      }
+
+      // ... instead, they must implement the following operator
+      virtual Out operator()() const = 0;
+    };
+  } // namespace details
+
+  template <typename Signature, typename Traits_ = Traits::useDefaults>
+  using Producer = details::Producer<Signature, Traits_, details::isLegacy<Traits_>>;
+
+} // namespace Gaudi::Functional
 
 #endif
