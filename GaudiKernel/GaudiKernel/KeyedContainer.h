@@ -250,7 +250,10 @@ public:
   /** ObjectContainerBase overload: Retrieve the object by reference
    *  given the long integer representation of the object's key.
    */
-  ContainedObject* containedObject( long key_value ) const override { return i_object( traits::makeKey( key_value ) ); }
+  ContainedObject*       containedObject( long key_value ) override { return i_object( traits::makeKey( key_value ) ); }
+  ContainedObject const* containedObject( long key_value ) const override {
+    return i_object( traits::makeKey( key_value ) );
+  }
   /** ObjectContainerBase overload: Retrieve the full long integer
    *  representation of the object's key from the object base class pointer.
    */

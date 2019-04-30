@@ -300,10 +300,13 @@ public:
    *  @param index th eindex to be checked
    *  @return the object
    */
-  ContainedObject* containedObject( long index ) const override {
+  const ContainedObject* containedObject( long index ) const override {
     if ( 0 > index || !( index < (long)size() ) ) { return nullptr; } // RETURN
-    const ContainedObject* co = m_data[index];
-    return const_cast<ContainedObject*>( co );
+    return m_data[index];
+  }
+  ContainedObject* containedObject( long index ) override {
+    if ( 0 > index || !( index < (long)size() ) ) { return nullptr; } // RETURN
+    return &const_cast<TYPE&>( *m_data[index] );
   }
   /// Number of objects in the container
   size_type numberOfObjects() const override { return m_data.size(); }
