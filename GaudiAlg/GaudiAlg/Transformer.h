@@ -4,7 +4,6 @@
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 #include "GaudiKernel/GaudiException.h"
-#include "GaudiKernel/apply.h"
 #include <type_traits>
 #include <utility>
 
@@ -58,7 +57,7 @@ namespace Gaudi {
       // derived classes can NOT implement execute
       StatusCode execute() override final {
         try {
-          Gaudi::apply(
+          std::apply(
               [this]( auto&... ohandle ) {
 
 #if defined( __clang__ ) && ( __clang_major__ < 6 )
@@ -66,14 +65,9 @@ namespace Gaudi {
 #  pragma clang diagnostic push
 #  pragma clang diagnostic ignored "-Wunused-lambda-capture"
 #endif
-                Gaudi::apply(
+                std::apply(
                     [&ohandle...]( auto&&... data ) {
-#if __cplusplus < 201703L
-                      (void)std::initializer_list<int>{
-                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
-#else
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-#endif
                     },
                     details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
 
@@ -108,17 +102,12 @@ namespace Gaudi {
       // derived classes can NOT implement execute
       StatusCode execute() override final {
         try {
-          Gaudi::apply(
+          std::apply(
               [&]( auto&... ohandle ) {
-                Gaudi::apply(
+                std::apply(
                     [&ohandle..., this]( bool passed, auto&&... data ) {
                       this->setFilterPassed( passed );
-#if __cplusplus < 201703L
-                      (void)std::initializer_list<int>{
-                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
-#else
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-#endif
                     },
                     details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
               },

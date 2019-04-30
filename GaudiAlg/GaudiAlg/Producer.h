@@ -3,7 +3,6 @@
 
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
-#include "GaudiKernel/apply.h"
 #include <utility>
 
 namespace Gaudi {
@@ -20,16 +19,11 @@ namespace Gaudi {
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
-          Gaudi::apply(
+          std::apply(
               [&]( auto&... ohandle ) {
-                Gaudi::apply(
+                std::apply(
                     [&ohandle...]( auto&&... data ) {
-#if __cplusplus < 201703L
-                      (void)std::initializer_list<int>{
-                          ( details::put( ohandle, std::forward<decltype( data )>( data ) ), 0 )...};
-#else
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-#endif
                     },
                     details::as_const( *this )() );
               },

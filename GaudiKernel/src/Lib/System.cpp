@@ -78,17 +78,6 @@ static const std::array<const char*, 1> SHLIB_SUFFIXES = {".so"};
 
 #endif // Windows or Unix...
 
-// Note: __attribute__ is a GCC keyword available since GCC 3.4
-#ifdef __GNUC__
-#  if __GNUC__ < 3 || ( __GNUC__ == 3 && ( __GNUC_MINOR__ < 4 ) )
-// GCC < 3.4
-#    define __attribute__( x )
-#  endif
-#else
-// non-GCC
-#  define __attribute__( x )
-#endif
-
 static unsigned long doLoad( const std::string& name, System::ImageHandle* handle ) {
 #ifdef _WIN32
   void* mh = ::LoadLibrary( name.length() == 0 ? System::exeName().c_str() : name.c_str() );
@@ -422,7 +411,7 @@ std::vector<std::string> System::getEnv() {
 #  include <execinfo.h>
 #endif
 
-int System::backTrace( void** addresses __attribute__( ( unused ) ), const int depth __attribute__( ( unused ) ) ) {
+int System::backTrace( [[maybe_unused]] void** addresses, [[maybe_unused]] const int depth ) {
 
 #ifdef __linux
 
@@ -458,9 +447,8 @@ bool System::backTrace( std::string& btrace, const int depth, const int offset )
   } catch ( const std::bad_alloc& e ) { return false; }
 }
 
-bool System::getStackLevel( void* addresses __attribute__( ( unused ) ), void*& addr __attribute__( ( unused ) ),
-                            std::string& fnc __attribute__( ( unused ) ),
-                            std::string& lib __attribute__( ( unused ) ) ) {
+bool System::getStackLevel( [[maybe_unused]] void* addresses, [[maybe_unused]] void*& addr,
+                            [[maybe_unused]] std::string& fnc, [[maybe_unused]] std::string& lib ) {
 
 #ifdef __linux
 

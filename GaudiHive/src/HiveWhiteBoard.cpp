@@ -235,8 +235,7 @@ public:
    * The optional data provider is not considered. On the other hand, the data
    * provider is specified to be the whiteboard.
    */
-  StatusCode setDataLoader( IConversionSvc*   pDataLoader,
-                            IDataProviderSvc* dpsvc __attribute__( ( unused ) ) = nullptr ) override {
+  StatusCode setDataLoader( IConversionSvc* pDataLoader, IDataProviderSvc* = nullptr ) override {
     if ( pDataLoader ) pDataLoader->addRef();
     if ( m_dataLoader ) m_dataLoader->release();
     if ( pDataLoader ) pDataLoader->setDataProvider( this );

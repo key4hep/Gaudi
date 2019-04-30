@@ -34,10 +34,8 @@
 
 #ifdef __CLING__
 #  define WARN_UNUSED
-#elif __cplusplus > 201402L
-#  define WARN_UNUSED [[nodiscard]]
 #else
-#  define WARN_UNUSED [[gnu::warn_unused_result]]
+#  define WARN_UNUSED [[nodiscard]]
 #endif
 
 // ============================================================================

@@ -139,7 +139,6 @@
 #include <utility>
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/apply.h"
 #include "GaudiKernel/detected.h"
 
 namespace Gaudi {
@@ -253,8 +252,7 @@ namespace Gaudi {
       using typename BaseValueHandler<Arithmetic, atomicity::full>::OutputType;
       using typename BaseValueHandler<Arithmetic, atomicity::full>::InternalType;
       static constexpr OutputType DefaultValue() { return Arithmetic{}; }
-#if __cplusplus > 201402L
-      static void merge( InternalType& a, Arithmetic b ) noexcept {
+      static void                 merge( InternalType& a, Arithmetic b ) noexcept {
         if ( DefaultValue() == b ) return; // avoid atomic operation if b is "0"
         // C++ 17 version
         if constexpr ( has_fetch_add<InternalType>::value ) {
@@ -265,26 +263,6 @@ namespace Gaudi {
             ;
         }
       };
-#else
-      // C++11 version
-    private:
-      template <typename T>
-      static void add( InternalType& a, T b, std::false_type ) {
-        auto current = a.load( std::memory_order_relaxed );
-        while ( !a.compare_exchange_weak( current, current + b ) )
-          ;
-      }
-      template <typename T>
-      static void add( InternalType& a, T b, std::true_type ) {
-        a.fetch_add( b, std::memory_order_relaxed );
-      }
-
-    public:
-      static void merge( InternalType& a, Arithmetic b ) noexcept {
-        if ( DefaultValue() == b ) return; // avoid atomic operation if b is "0"
-        add( a, b, has_fetch_add<InternalType>{} );
-      }
-#endif
     };
 
     /**
@@ -412,7 +390,7 @@ namespace Gaudi {
 
     protected:
       void reset( const std::tuple<typename Bases<Arithmetic, Atomicity>::OutputType...>& t ) {
-        Gaudi::apply(
+        std::apply(
             [this]( const auto&... i ) {
               (void)std::initializer_list<int>{( this->Bases<Arithmetic, Atomicity>::reset( i ), 0 )...};
             },

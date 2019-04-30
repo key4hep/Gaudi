@@ -8,19 +8,7 @@
 #include <iterator>
 
 namespace details {
-#if __cplusplus < 201703L
-  template <typename C>
-  constexpr auto size( const C& c ) noexcept( noexcept( c.size() ) ) -> decltype( c.size() ) {
-    return c.size();
-  }
-
-  template <typename T, std::size_t N>
-  constexpr auto size( const T ( &array )[N] ) noexcept {
-    return N;
-  }
-#else
   using std::size;
-#endif
 
   template <typename T, typename... Args>
   constexpr auto size( const T&, Args&&... ) noexcept {

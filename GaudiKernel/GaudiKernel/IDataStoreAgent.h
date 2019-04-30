@@ -3,7 +3,7 @@
 
 // Framework include files
 #include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/invoke.h"
+#include <functional>
 
 // Forward declarations:
 class IRegistry;
@@ -34,7 +34,7 @@ namespace details {
     template <typename G>
     GenericDataStoreAgent( G&& g ) : f{std::forward<G>( g )} {}
 
-    bool analyse( IRegistry* pObj, int level ) override { return Gaudi::invoke( f, pObj, level ); }
+    bool analyse( IRegistry* pObj, int level ) override { return std::invoke( f, pObj, level ); }
   };
 } // namespace details
 

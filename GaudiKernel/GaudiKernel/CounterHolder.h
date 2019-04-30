@@ -2,13 +2,13 @@
 #define GAUDIKERNEL_COUNTERHOLDER_H
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <mutex>
 #include <string>
 #include <type_traits>
 
 #include "GaudiKernel/Counters.h"
-#include "GaudiKernel/invoke.h"
 
 template <class BASE>
 class GaudiCommon;
@@ -41,9 +41,8 @@ public:
   template <typename Callable>
   void forEachCounter( Callable&& f ) const {
     std::lock_guard<std::mutex> lock( m_countersMutex );
-    std::for_each( m_counters.begin(), m_counters.end(), [f = std::forward<Callable>( f )]( const auto& p ) {
-      Gaudi::invoke( f, p.first, p.second.get() );
-    } );
+    std::for_each( m_counters.begin(), m_counters.end(),
+                   [f = std::forward<Callable>( f )]( const auto& p ) { std::invoke( f, p.first, p.second.get() ); } );
   }
 
   int nCounters() const {

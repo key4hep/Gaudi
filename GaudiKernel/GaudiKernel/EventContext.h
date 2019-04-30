@@ -1,15 +1,8 @@
 #ifndef GAUDIKERNEL_EVENTCONTEXT_H
 #define GAUDIKERNEL_EVENTCONTEXT_H 1
 
-#if __cplusplus >= 201703
-#  include <any>
-namespace evt_context_detail = std;
-#else
-#  include <boost/any.hpp>
-namespace evt_context_detail = boost;
-#endif
-
 #include "GaudiKernel/EventIDBase.h"
+#include <any>
 #include <cstddef>
 #include <iostream>
 #include <limits>
@@ -83,11 +76,7 @@ public:
 
   template <typename ValueType, typename... Args>
   auto& emplaceExtension( Args&&... args ) {
-#if __cplusplus >= 201703
     return m_extension.emplace<ValueType>( std::forward<Args>( args )... );
-#else
-    return setExtension( ValueType( std::forward<Args>( args )... ) );
-#endif
   }
 
   template <typename T>
@@ -98,21 +87,15 @@ public:
 
   template <typename T>
   auto& getExtension() {
-    return ::evt_context_detail::any_cast<std::decay_t<T>&>( m_extension );
+    return std::any_cast<std::decay_t<T>&>( m_extension );
   }
 
   template <typename T>
   const auto& getExtension() const {
-    return ::evt_context_detail::any_cast<std::decay_t<T> const&>( m_extension );
+    return std::any_cast<std::decay_t<T> const&>( m_extension );
   }
 
-  bool hasExtension() const {
-#if __cplusplus >= 201703
-    return m_extension.has_value();
-#else
-    return !m_extension.empty();
-#endif
-  }
+  bool hasExtension() const { return m_extension.has_value(); }
 
   template <typename T>
   bool hasExtension() const {
@@ -128,7 +111,7 @@ private:
   ContextID_t  m_sub_slot{INVALID_CONTEXT_ID};
   bool         m_valid{false};
 
-  ::evt_context_detail::any m_extension;
+  std::any m_extension;
 };
 
 inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx ) {
