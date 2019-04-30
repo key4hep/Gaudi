@@ -7,6 +7,7 @@
 #include <cmath>
 #include <functional>
 #include <iostream>
+#include <random>
 #include <string>
 #include <vector>
 // ============================================================================
@@ -77,6 +78,8 @@ namespace {
    */
   template <class TYPE>
   void makeTest( const size_t number, const size_t repeat, ChronoEntity& chrono ) {
+    std::random_device rd;
+    std::mt19937       g( rd() );
 
     // create an vector of pointers (FIXED length!)
     typedef std::vector<TYPE*> Vct;
@@ -96,7 +99,7 @@ namespace {
 
       { // B) reshuffle the vector to ensure the
         //    random order of destruction
-        std::random_shuffle( vct.begin(), vct.end() );
+        std::shuffle( vct.begin(), vct.end(), g );
       }
 
       { // C) delete objects
