@@ -11,6 +11,7 @@ Inspired by
 
 import os
 import re
+import sys
 import platform
 from subprocess import check_output, STDOUT
 from collections import OrderedDict
@@ -74,7 +75,7 @@ ARCH_DEFS = OrderedDict(
           'pni', 'sse4_2', 'mmx', 'sse2', 'sse4_1', 'lm', 'ssse3', 'popcnt',
           'sse'
       ])), ('core2', set(['pni', 'mmx', 'sse2', 'lm', 'ssse3', 'sse'])),
-     ('x86_64', set(['lm'])), ('i686', set([]))])
+     ('x86_64', set([]))])
 
 
 def _Linux_os():
@@ -142,10 +143,17 @@ def compiler_id():
 def arch():
     # Get host flags from /proc/cpuinfo
     host_flags = set()
-    for l in open('/proc/cpuinfo'):
-        if l.startswith('flags'):
-            host_flags.update(l.split()[2:])
-            break
+    if sys.platform == 'darwin':
+        for l in check_output(['sysctl', '-a']).split('\n'):
+            if l.startswith('machdep.cpu.features') or l.startswith(
+                    'machdep.cpu.extfeatures') or l.startswith(
+                        'machdep.cpu.leaf7_features'):
+                host_flags.update([f.lower() for f in l.split()[1:]])
+    else:
+        for l in open('/proc/cpuinfo'):
+            if l.startswith('flags'):
+                host_flags.update(l.split()[2:])
+                break
     # compare with known arhitectures
     for arch, flags in ARCH_DEFS.items():
         if host_flags.issuperset(flags):

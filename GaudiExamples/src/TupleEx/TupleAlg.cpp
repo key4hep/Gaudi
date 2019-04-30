@@ -261,7 +261,7 @@ StatusCode TupleAlg::execute() {
     std::vector<double> array;
     std::generate_n( std::back_inserter( array ), num, gauss );
     // fill with functions of vector
-    tuple5->farray( {{"sinar", sin}, {"cosar", cos}, {"tanar", tan}}, array.begin(), array.end(), "Len2", 100 );
+    tuple5->farray( {{"sinar", sinf}, {"cosar", cosf}, {"tanar", tanf}}, array.begin(), array.end(), "Len2", 100 );
   }
 
   tuple5->write();
