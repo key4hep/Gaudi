@@ -164,10 +164,10 @@ namespace Gaudi {
 
               end_pos = search_path.find( sep, start_pos );
               fs::path dirName =
-#if __GNUC__ >= 7
-                  search_path.substr( start_pos, end_pos - start_pos );
-#else
+#ifdef USE_BOOST_FILESYSTEM
                   std::string{search_path.substr( start_pos, end_pos - start_pos )};
+#else
+                  search_path.substr( start_pos, end_pos - start_pos );
 #endif
               start_pos = end_pos;
 
