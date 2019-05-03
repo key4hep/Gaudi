@@ -1,9 +1,6 @@
 #include "StatusCodeSvc.h"
 #include "GaudiKernel/StatusCode.h"
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-using namespace std;
 //
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -19,20 +16,10 @@ StatusCode StatusCodeSvc::initialize() {
   info() << "initialize" << endmsg;
 
   for ( const auto& itr : m_pFilter.value() ) {
-    // we need to do this if someone has gotten to regFnc before initialize
-
-    string fnc, lib;
+    std::string fnc, lib;
     parseFilter( itr, fnc, lib );
-
-    if ( !fnc.empty() ) {
-      filterFnc( fnc );
-      m_filterfnc.insert( fnc );
-    }
-
-    if ( !lib.empty() ) {
-      filterLib( lib );
-      m_filterlib.insert( lib );
-    }
+    if ( !fnc.empty() ) m_filterfnc.insert( fnc );
+    if ( !lib.empty() ) m_filterlib.insert( lib );
   }
 
   return StatusCode::SUCCESS;
@@ -50,21 +37,10 @@ StatusCode StatusCodeSvc::reinitialize() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 StatusCode StatusCodeSvc::finalize() {
 
-  if ( !m_dat.empty() ) {
-
-    info() << "listing all unchecked return codes:" << endmsg;
-
-    list();
-
-  } else {
-
-    if ( msgLevel( MSG::DEBUG ) ) debug() << "all StatusCode instances where checked" << endmsg;
-  }
-
+  list();
   return StatusCode::SUCCESS;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib ) {
@@ -93,34 +69,29 @@ void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib ) {
   if ( fnc == "PyThread_get_thread_ident" ) return;
   if ( fnc == "local" ) return;
 
-  {
-    const string rlib = lib.substr( lib.rfind( "/" ) + 1 );
-
-    if ( m_filterfnc.find( fnc ) != m_filterfnc.end() || m_filterlib.find( rlib ) != m_filterlib.end() ) { return; }
-  }
+  const std::string rlib = lib.substr( lib.rfind( "/" ) + 1 );
+  if ( failsFilter( fnc, rlib ) ) return;
 
   if ( m_abort ) {
     fatal() << "Unchecked StatusCode in " << fnc << " from lib " << lib << endmsg;
+    msgStream().flush();
     abort();
   }
 
-  string key = fnc + lib;
+  const std::string key = fnc + lib;
 
-  auto itr = m_dat.find( key );
-
+  decltype( m_dat )::const_iterator itr = m_dat.find( key );
   if ( itr != m_dat.end() ) {
-    itr->second.count += 1;
+    ++( itr->second.count );
   } else {
-
-    const string rlib = lib.substr( lib.rfind( "/" ) + 1 );
-
-    StatCodeDat dat;
-    dat.fnc   = fnc;
-    dat.lib   = rlib;
-    dat.count = 1;
-
-    m_dat[key] = dat;
+    m_dat.emplace( key, StatCodeDat{fnc, rlib} );
   }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool StatusCodeSvc::failsFilter( const std::string& fnc, const std::string& lib ) const {
+  return m_filterfnc.find( fnc ) != m_filterfnc.end() || m_filterlib.find( lib ) != m_filterlib.end();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -128,59 +99,54 @@ void StatusCodeSvc::regFnc( const std::string& fnc, const std::string& lib ) {
 void StatusCodeSvc::list() const {
 
   std::ostringstream os;
-  os << "Num | Function                       | Source Library" << endl;
-  os << "----+--------------------------------+-------------------"
-     << "-----------------------" << endl;
+  unsigned int       N = 0;
 
-  for ( const auto& itr : m_dat ) {
+  // Created a sorted map of the results
+  std::map<std::string, StatCodeDat> dat_sorted( m_dat.begin(), m_dat.end() );
+  for ( const auto& itr : dat_sorted ) {
     const auto& dat = itr.second;
 
+    // we need to do this in case someone has gotten to regFnc before filters were setup in initialize
+    if ( failsFilter( dat.fnc, dat.lib ) ) continue;
+
+    N++;
     os.width( 3 );
-    os.setf( ios_base::right, ios_base::adjustfield );
+    os.setf( std::ios_base::right, std::ios_base::adjustfield );
     os << dat.count;
 
     os << " | ";
     os.width( 30 );
-    os.setf( ios_base::left, ios_base::adjustfield );
+    os.setf( std::ios_base::left, std::ios_base::adjustfield );
     os << dat.fnc;
 
     os << " | ";
-    os.setf( ios_base::left, ios_base::adjustfield );
+    os.setf( std::ios_base::left, std::ios_base::adjustfield );
     os << dat.lib;
 
-    os << endl;
+    os << std::endl;
   }
-
-  info() << endl << os.str() << endmsg;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void StatusCodeSvc::filterFnc( const std::string& str ) {
-
-  auto itr = std::find_if( m_dat.begin(), m_dat.end(),
-                           [&]( const std::pair<std::string, StatCodeDat>& d ) { return d.second.fnc == str; } );
-  if ( itr != std::end( m_dat ) ) m_dat.erase( itr );
-}
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void StatusCodeSvc::filterLib( const std::string& str ) {
-
-  auto itr = std::find_if( m_dat.begin(), m_dat.end(),
-                           [&]( const std::pair<std::string, StatCodeDat>& d ) { return d.second.lib == str; } );
-  if ( itr != std::end( m_dat ) ) m_dat.erase( itr );
+  if ( N > 0 ) {
+    info() << "listing all unchecked return codes:" << endmsg;
+    info() << std::endl
+           << "Num | Function                       | Source Library" << std::endl
+           << "----+--------------------------------+------------------------------------------" << std::endl
+           << os.str() << endmsg;
+  } else {
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "all StatusCode instances where checked" << endmsg;
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void StatusCodeSvc::parseFilter( const string& str, string& fnc, string& lib ) {
+void StatusCodeSvc::parseFilter( const std::string& str, std::string& fnc, std::string& lib ) const {
 
   auto loc = str.find( "=" );
   if ( loc == std::string::npos ) {
     fnc = str;
     lib = "";
   } else {
-    string key = str.substr( 0, loc );
-    string val = str.substr( loc + 1 );
+    std::string key = str.substr( 0, loc );
+    std::string val = str.substr( loc + 1 );
 
     toupper( key );
 
