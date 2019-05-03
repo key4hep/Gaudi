@@ -2,12 +2,7 @@
 
 . $(dirname $0)/env_setup.sh
 
-if [ -n "${CI}" ] ; then
-  url="${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_REF_NAME}/download?job=${CI_JOB_NAME}"
-  echo "downloading '${url}'"
-  curl -o artifacts.zip --location "${url}"
-  unzip -q artifacts.zip '.ccache/*' || true
-fi
+${LCG_release_area}/ccache/${CCACHE_VERSION}/${BINARY_TAG}/bin/ccache -z -F 2000
 
 # make sure we do not re-run cmake
 find ${BUILDDIR} -type f -exec touch -d $(date +@%s) \{} \;
