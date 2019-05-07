@@ -19,12 +19,14 @@
 
 // C++ include files
 #include <functional>
+#include <queue>
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <vector>
 
 // External libs
+#include "tbb/concurrent_priority_queue.h"
 #include "tbb/concurrent_queue.h"
 #include "tbb/task.h"
 
@@ -98,6 +100,8 @@ class IAlgorithm;
  *  @version 1.0
  */
 class AvalancheSchedulerSvc : public extends<Service, IScheduler> {
+  friend class AlgoExecutionTask;
+
 public:
   /// Constructor
   using extends::extends;
@@ -186,13 +190,13 @@ private:
   std::thread m_thread;
 
   /// Convert a name to an integer
-  inline unsigned int algname2index( const std::string& algoname );
+  inline unsigned int algname2index( const std::string& algoname ) { return m_algname_index_map[algoname]; };
 
   /// Map to bookkeep the information necessary to the name2index conversion
   std::unordered_map<std::string, unsigned int> m_algname_index_map;
 
   /// Convert an integer to a name
-  inline const std::string& index2algname( unsigned int index );
+  inline const std::string& index2algname( unsigned int index ) { return m_algname_vect[index]; };
 
   /// Vector to bookkeep the information necessary to the index2name conversion
   std::vector<std::string> m_algname_vect;
@@ -233,10 +237,13 @@ private:
   /// (-1 for algo_index means skipping an update of the Control Flow state)
   StatusCode updateStates( int si = -1, int algo_index = -1, int sub_slot = -1, int source_slot = -1 );
 
+  // Update algorithm state in the appropriate event slot
+  StatusCode setAlgState( unsigned int iAlgo, EventContext* contextPtr, AState state );
+
   /// Algorithm promotion
-  StatusCode promoteToScheduled( unsigned int iAlgo, int si, EventContext* );
+  StatusCode enqueue( unsigned int iAlgo, int si, EventContext* );
   StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si, EventContext* ); // tests of an asynchronous scheduler
-  StatusCode promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo, EventContext* );
+  StatusCode promoteToExecuted( unsigned int iAlgo, int si, EventContext* );
   StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
                                      EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToFinished( unsigned int iAlgo, int si );
@@ -261,6 +268,24 @@ private:
   /// Bookkeeping of the number of actions in flight per slot
   // (accessed/modified from the control thread only)
   std::vector<unsigned int> m_actionsCounts;
+
+  /// Struct to hold entries in the alg queues
+  struct algQueueEntry {
+    unsigned int  algIndex;
+    int           slotIndex;
+    EventContext* contextPtr;
+    unsigned int  rank;
+    IAlgorithm*   algPtr;
+  };
+
+  /// Comparison operator to sort the queues
+  struct algQueueSort {
+    bool operator()( const algQueueEntry& i, const algQueueEntry& j ) const { return ( i.rank < j.rank ); }
+  };
+
+  /// Queues for scheduled algorithms
+  tbb::concurrent_priority_queue<algQueueEntry, algQueueSort> m_scheduledQueue;
+  std::queue<algQueueEntry>                                   m_retryQueue;
 
   // ------------------------------------------------------------------------
 
