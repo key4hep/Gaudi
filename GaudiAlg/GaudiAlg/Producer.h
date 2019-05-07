@@ -10,12 +10,10 @@ namespace Gaudi::Functional {
   namespace details {
 
     template <typename Signature, typename Traits_, bool isLegacy>
-    class Producer;
+    struct Producer;
 
     template <typename... Out, typename Traits_>
-    class Producer<std::tuple<Out...>(), Traits_, true>
-        : public details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
-    public:
+    struct Producer<std::tuple<Out...>(), Traits_, true> : details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
       using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
@@ -42,9 +40,8 @@ namespace Gaudi::Functional {
     };
 
     template <typename... Out, typename Traits_>
-    class Producer<std::tuple<Out...>(), Traits_, false>
-        : public details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
-    public:
+    struct Producer<std::tuple<Out...>(), Traits_, false>
+        : details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
       using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
@@ -56,7 +53,7 @@ namespace Gaudi::Functional {
                     [&ohandle...]( auto&&... data ) {
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                     },
-                    std::as_const( *this )() );
+                    ( *this )() );
               },
               this->m_outputs );
           return StatusCode::SUCCESS;
@@ -71,8 +68,7 @@ namespace Gaudi::Functional {
     };
 
     template <typename Out, typename Traits_>
-    class Producer<Out(), Traits_, true> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
-    public:
+    struct Producer<Out(), Traits_, true> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
       using details::DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
@@ -90,13 +86,12 @@ namespace Gaudi::Functional {
     };
 
     template <typename Out, typename Traits_>
-    class Producer<Out(), Traits_, false> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
-    public:
+    struct Producer<Out(), Traits_, false> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
       using details::DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ) const override final {
         try {
-          details::put( std::get<0>( this->m_outputs ), std::as_const( *this )() );
+          details::put( std::get<0>( this->m_outputs ), ( *this )() );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -107,6 +102,7 @@ namespace Gaudi::Functional {
       // ... instead, they must implement the following operator
       virtual Out operator()() const = 0;
     };
+
   } // namespace details
 
   template <typename Signature, typename Traits_ = Traits::useDefaults>

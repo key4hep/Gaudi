@@ -81,6 +81,13 @@ namespace Gaudi::Functional {
     // this example uses GaudiHistoAlg as baseclass, and the default handle types for
     // input and output
     using useGaudiHistoAlg = use_<BaseClass_t<GaudiHistoAlg>>;
+
+    // use Gaudi::Algorithm as base class -- this should be the base class!
+    using useAlgorithm = use_<BaseClass_t<Gaudi::Algorithm>>;
+
+    // use the legacy GaudiAlgorithm as base class -- this is (annoyingly) the current default
+    using useLegacyGaudiAlgorithm = use_<BaseClass_t<GaudiAlgorithm>>;
+
   } // namespace Traits
 } // namespace Gaudi::Functional
 

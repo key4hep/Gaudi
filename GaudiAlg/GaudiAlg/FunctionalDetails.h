@@ -90,31 +90,19 @@ namespace Gaudi::Functional::details {
     // note: boost::optional in boost 1.66 does not have 'has_value()'...
     // that requires boost 1.68 or later... so for now, use operator bool() instead ;-(
     template <typename T>
-    using is_optional_ = decltype( bool( std::declval<T>() ), std::declval<T>().value() );
+    using is_optional_ = decltype( bool{std::declval<T>()}, std::declval<T>().value() );
   } // namespace details2
   template <typename Arg>
-  using is_optional = typename Gaudi::cpp17::is_detected<details2::is_optional_, Arg>;
+  constexpr bool is_optional_v = Gaudi::cpp17::is_detected_v<details2::is_optional_, Arg>;
 
   template <typename Arg>
-  using require_is_optional = std::enable_if_t<is_optional<Arg>::value>;
+  using require_is_optional = std::enable_if_t<is_optional_v<Arg>>;
 
   template <typename Arg>
-  using require_is_not_optional = std::enable_if_t<!is_optional<Arg>::value>;
-
-  namespace details2 {
-    template <typename T, typename = void>
-    struct remove_optional {
-      using type = T;
-    };
-
-    template <typename T>
-    struct remove_optional<T, std::enable_if_t<is_optional<T>::value>> {
-      using type = typename T::value_type;
-    };
-  } // namespace details2
+  using require_is_not_optional = std::enable_if_t<!is_optional_v<Arg>>;
 
   template <typename T>
-  using remove_optional_t = typename details2::remove_optional<T>::type;
+  using remove_optional_t = std::conditional_t<is_optional_v<T>, typename T::value_type, T>;
 
   constexpr struct invoke_optionally_t {
     template <typename F, typename Arg, typename = require_is_not_optional<Arg>>
@@ -128,14 +116,13 @@ namespace Gaudi::Functional::details {
   } invoke_optionally{};
   /////////////////////////////////////////
 
-  template <
-      typename Out1, typename Out2,
-      typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value && std::is_base_of<DataObject, Out1>::value>>
+  template <typename Out1, typename Out2,
+            typename = std::enable_if_t<std::is_constructible_v<Out1, Out2> && std::is_base_of_v<DataObject, Out1>>>
   Out1* put( const DataObjectHandle<Out1>& out_handle, Out2&& out ) {
     return out_handle.put( std::make_unique<Out1>( std::forward<Out2>( out ) ) );
   }
 
-  template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible<Out1, Out2>::value>>
+  template <typename Out1, typename Out2, typename = std::enable_if_t<std::is_constructible_v<Out1, Out2>>>
   void put( const DataObjectHandle<AnyDataWrapper<Out1>>& out_handle, Out2&& out ) {
     out_handle.put( std::forward<Out2>( out ) );
   }
@@ -166,9 +153,11 @@ namespace Gaudi::Functional::details {
     }
 
     // Container<T*> with T&& as argument
-    template <typename Container, typename = std::enable_if_t<std::is_pointer<typename Container::value_type>::value>>
-    auto operator()( Container& c, c_remove_ptr_t<Container>&& v ) const {
-      return operator()( c, new c_remove_ptr_t<Container>{std::move( v )} );
+    template <typename Container, typename Value,
+              typename = std::enable_if_t<std::is_pointer_v<typename Container::value_type>>,
+              typename = std::enable_if_t<std::is_convertible_v<Value, c_remove_ptr_t<Container>>>>
+    auto operator()( Container& c, Value&& v ) const {
+      return operator()( c, new c_remove_ptr_t<Container>{std::forward<Value>( v )} );
     }
 
   } insert{};
@@ -176,7 +165,7 @@ namespace Gaudi::Functional::details {
   /////////////////////////////////////////
 
   constexpr struct deref_t {
-    template <typename In, typename = std::enable_if_t<!std::is_pointer<In>::value>>
+    template <typename In, typename = std::enable_if_t<!std::is_pointer_v<In>>>
     const In& operator()( const In& in ) const {
       return in;
     }
@@ -202,13 +191,12 @@ namespace Gaudi::Functional::details {
 
     template <typename In>
     struct get_from_handle {
-      template <template <typename> class Handle, typename I,
-                typename = std::enable_if_t<std::is_convertible<I, In>::value>>
+      template <template <typename> class Handle, typename I, typename = std::enable_if_t<std::is_convertible_v<I, In>>>
       auto operator()( const Handle<I>& h ) -> const In& {
         return *h.get();
       }
       template <template <typename> class Handle, typename I,
-                typename = std::enable_if_t<std::is_convertible<I*, In>::value>>
+                typename = std::enable_if_t<std::is_convertible_v<I*, In>>>
       auto operator()( const Handle<I>& h ) -> const In {
         return h.getIfExists();
       } // In is-a pointer
@@ -226,7 +214,7 @@ namespace Gaudi::Functional::details {
 
   template <typename Container>
   class vector_of_const_ {
-    static constexpr bool is_pointer = std::is_pointer<Container>::value;
+    static constexpr bool is_pointer = std::is_pointer_v<Container>;
     using val_t                      = std::add_const_t<std::remove_pointer_t<Container>>;
     using ptr_t                      = std::add_pointer_t<val_t>;
     using ref_t                      = std::add_lvalue_reference_t<val_t>;
@@ -253,7 +241,7 @@ namespace Gaudi::Functional::details {
       friend bool operator!=( const iterator& lhs, const iterator& rhs ) { return lhs.m_i != rhs.m_i; }
       friend bool operator==( const iterator& lhs, const iterator& rhs ) { return lhs.m_i == rhs.m_i; }
       friend auto operator-( const iterator& lhs, const iterator& rhs ) { return lhs.m_i - rhs.m_i; }
-      ret_t       operator*() const { return details2::deref_if( *m_i, std::integral_constant<bool, !is_pointer>{} ); }
+      ret_t       operator*() const { return details2::deref_if( *m_i, std::bool_constant<!is_pointer>{} ); }
       iterator&   operator++() {
         ++m_i;
         return *this;
@@ -269,29 +257,29 @@ namespace Gaudi::Functional::details {
     void reserve( size_type size ) { m_containers.reserve( size ); }
     template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_pointer,ptr_t,val_t>>
     void push_back( T&& container ) {
-      details2::push_back( m_containers, std::forward<T>( container ), std::integral_constant<bool, is_pointer>{} );
+      details2::push_back( m_containers, std::forward<T>( container ), std::bool_constant<is_pointer>{} );
     } // note: does not copy its argument, so we're not really a container...
     iterator  begin() const { return m_containers.begin(); }
     iterator  end() const { return m_containers.end(); }
     size_type size() const { return m_containers.size(); }
 
     template <typename X = Container>
-    std::enable_if_t<!std::is_pointer<X>::value, ref_t> operator[]( size_type i ) const {
+    std::enable_if_t<!std::is_pointer_v<X>, ref_t> operator[]( size_type i ) const {
       return *m_containers[i];
     }
 
     template <typename X = Container>
-    std::enable_if_t<std::is_pointer<X>::value, ptr_t> operator[]( size_type i ) const {
+    std::enable_if_t<std::is_pointer_v<X>, ptr_t> operator[]( size_type i ) const {
       return m_containers[i];
     }
 
     template <typename X = Container>
-    std::enable_if_t<!std::is_pointer<X>::value, ref_t> at( size_type i ) const {
+    std::enable_if_t<!std::is_pointer_v<X>, ref_t> at( size_type i ) const {
       return *m_containers[i];
     }
 
     template <typename X = Container>
-    std::enable_if_t<std::is_pointer<X>::value, ptr_t> at( size_type i ) const {
+    std::enable_if_t<std::is_pointer_v<X>, ptr_t> at( size_type i ) const {
       return m_containers[i];
     }
 
@@ -357,7 +345,7 @@ namespace Gaudi::Functional::details {
   struct filter_evtcontext_t {
     using type = std::tuple<In...>;
 
-    static_assert( !std::disjunction<std::is_same<EventContext, In>...>::value,
+    static_assert( !std::disjunction_v<std::is_same<EventContext, In>...>,
                    "EventContext can only appear as first argument" );
 
     template <typename Algorithm, typename Handles>
@@ -375,7 +363,7 @@ namespace Gaudi::Functional::details {
   struct filter_evtcontext_t<EventContext, In...> {
     using type = std::tuple<In...>;
 
-    static_assert( !std::disjunction<std::is_same<EventContext, In>...>::value,
+    static_assert( !std::disjunction_v<std::is_same<EventContext, In>...>,
                    "EventContext can only appear as first argument" );
 
     template <typename Algorithm, typename Handles>
@@ -420,7 +408,7 @@ namespace Gaudi::Functional::details {
 
   template <typename... Out, typename... In, typename Traits_>
   class DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_> {
-    static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value, "BaseClass must inherit from Algorithm" );
+    static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
     template <typename IArgs, typename OArgs, std::size_t... I, std::size_t... J>
     DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const IArgs& inputs, std::index_sequence<I...>,
@@ -428,8 +416,7 @@ namespace Gaudi::Functional::details {
         : BaseClass_t<Traits_>( name, pSvcLocator )
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
-      // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 );
+      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
     }
 
   public:
@@ -479,12 +466,11 @@ namespace Gaudi::Functional::details {
 
   template <typename Traits_>
   class DataHandleMixin<void, std::tuple<>, Traits_> : public BaseClass_t<Traits_> {
-    static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value, "BaseClass must inherit from Algorithm" );
+    static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
   public:
     DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator ) : BaseClass_t<Traits_>( name, pSvcLocator ) {
-      // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 );
+      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
     }
 
   protected:
@@ -495,14 +481,13 @@ namespace Gaudi::Functional::details {
 
   template <typename... In, typename Traits_>
   class DataHandleMixin<void, std::tuple<In...>, Traits_> : public BaseClass_t<Traits_> {
-    static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value, "BaseClass must inherit from Algorithm" );
+    static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
     template <typename IArgs, std::size_t... I>
     DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const IArgs& inputs, std::index_sequence<I...> )
         : BaseClass_t<Traits_>( name, pSvcLocator )
         , m_inputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( inputs ) )... ) {
-      // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 );
+      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
     }
 
   public:
@@ -534,15 +519,14 @@ namespace Gaudi::Functional::details {
 
   template <typename... Out, typename Traits_>
   class DataHandleMixin<std::tuple<Out...>, void, Traits_> : public BaseClass_t<Traits_> {
-    static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value, "BaseClass must inherit from Algorithm" );
+    static_assert( std::is_base_of_v<Algorithm, BaseClass_t<Traits_>>, "BaseClass must inherit from Algorithm" );
 
     template <typename OArgs, std::size_t... J>
     DataHandleMixin( const std::string& name, ISvcLocator* pSvcLocator, const OArgs& outputs,
                      std::index_sequence<J...> )
         : BaseClass_t<Traits_>( name, pSvcLocator )
         , m_outputs( std::tuple_cat( std::forward_as_tuple( this ), std::get<J>( outputs ) )... ) {
-      // make sure this algorithm is seen as reentrant by Gaudi
-      this->setProperty( "Cardinality", 0 );
+      this->setProperty( "Cardinality", 0 ); // make sure this algorithm is seen as reentrant by Gaudi
     }
 
   public:

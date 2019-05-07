@@ -6,43 +6,39 @@
 
 #include <type_traits>
 
-namespace Gaudi {
-  namespace cpp17 {
-    namespace details {
-      template <typename...>
-      struct void_t_ {
-        using type = void;
-      };
-      template <typename... T>
-      using void_t = typename void_t_<T...>::type;
+namespace Gaudi::cpp17 {
+  namespace details {
 
-      /// Implementation of the detection idiom (negative case).
-      template <typename Default, typename AlwaysVoid, template <typename...> class Op, typename... Args>
-      struct detector {
-        constexpr static bool value = false;
-        using type                  = Default;
-        using value_t               = std::false_type;
-      };
+    /// Implementation of the detection idiom (negative case).
+    template <typename Default, typename AlwaysVoid, template <typename...> class Op, typename... Args>
+    struct detector {
+      constexpr static bool value = false;
+      using type                  = Default;
+      using value_t               = std::false_type;
+    };
 
-      /// Implementation of the detection idiom (positive case).
-      template <typename Default, template <typename...> class Op, typename... Args>
-      struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
-        constexpr static bool value = true;
-        using type                  = Op<Args...>;
-        using value_t               = std::true_type;
-      };
-    } // namespace details
-
-    template <template <class...> class Op, class... Args>
-    using is_detected = details::detector<void, void, Op, Args...>;
-
-    template <template <class...> class Op, class... Args>
-    using detected_t = typename is_detected<Op, Args...>::type;
-
-    // Op<Args...> if that is a valid type, otherwise Default.
+    /// Implementation of the detection idiom (positive case).
     template <typename Default, template <typename...> class Op, typename... Args>
-    using detected_or_t = typename details::detector<Default, void, Op, Args...>::type;
-  } // namespace cpp17
-} // namespace Gaudi
+    struct detector<Default, std::void_t<Op<Args...>>, Op, Args...> {
+      constexpr static bool value = true;
+      using type                  = Op<Args...>;
+      using value_t               = std::true_type;
+    };
+  } // namespace details
+
+  template <template <class...> class Op, class... Args>
+  using is_detected = details::detector<void, void, Op, Args...>;
+
+  template <template <class...> class Op, class... Args>
+  constexpr bool is_detected_v = is_detected<Op, Args...>::value;
+
+  template <template <class...> class Op, class... Args>
+  using detected_t = typename is_detected<Op, Args...>::type;
+
+  // Op<Args...> if that is a valid type, otherwise Default.
+  template <typename Default, template <typename...> class Op, typename... Args>
+  using detected_or_t = typename details::detector<Default, void, Op, Args...>::type;
+
+} // namespace Gaudi::cpp17
 
 #endif
