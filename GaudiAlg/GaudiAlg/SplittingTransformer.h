@@ -2,6 +2,7 @@
 #define SPLITTING_TRANSFORMER_H
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,7 @@ namespace Gaudi::Functional {
   template <typename Container>
   using vector_of_ = std::vector<Container>;
   template <typename Container>
-  using vector_of_optional_ = std::vector<boost::optional<Container>>;
+  using vector_of_optional_ = std::vector<std::optional<Container>>;
 
   namespace details {
 
@@ -34,18 +35,19 @@ namespace Gaudi::Functional {
       SplittingTransformer( const std::string& name, ISvcLocator* locator, const std::array<KeyValue, N>& inputs,
                             const KeyValues& outputs )
           : base_class( name, locator, inputs )
-          , m_outputLocations( this, outputs.first, outputs.second,
-                               [=]( Gaudi::Details::PropertyBase& ) {
-                                 this->m_outputs = details::make_vector_of_handles<decltype( this->m_outputs )>(
-                                     this, m_outputLocations );
-                                 if ( details::is_optional<Out>::value ) { // handle constructor does not (yet) allow to
-                                                                           // set optional flag... so
-                                                                           // do it explicitly here...
-                                   std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
-                                                  []( auto& h ) { h.setOptional( true ); } );
-                                 }
-                               },
-                               Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
+          , m_outputLocations(
+                this, outputs.first, outputs.second,
+                [=]( Gaudi::Details::PropertyBase& ) {
+                  this->m_outputs =
+                      details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
+                  if constexpr ( details::is_optional_v<Out> ) { // handle constructor does not (yet) allow to
+                                                                 // set optional flag... so
+                                                                 // do it explicitly here...
+                    std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
+                                   []( auto& h ) { h.setOptional( true ); } );
+                  }
+                },
+                Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
 
       SplittingTransformer( const std::string& name, ISvcLocator* locator, const KeyValue& input,
                             const KeyValues& output )
@@ -87,6 +89,7 @@ namespace Gaudi::Functional {
       Gaudi::Property<std::vector<std::string>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
                                                                    // actual handles!
     };
+
     template <typename Out, typename... In, typename Traits_>
     class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_, false>
         : public details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
@@ -100,18 +103,19 @@ namespace Gaudi::Functional {
       SplittingTransformer( const std::string& name, ISvcLocator* locator, const std::array<KeyValue, N>& inputs,
                             const KeyValues& outputs )
           : base_class( name, locator, inputs )
-          , m_outputLocations( this, outputs.first, outputs.second,
-                               [=]( Gaudi::Details::PropertyBase& ) {
-                                 this->m_outputs = details::make_vector_of_handles<decltype( this->m_outputs )>(
-                                     this, m_outputLocations );
-                                 if ( details::is_optional<Out>::value ) { // handle constructor does not (yet) allow to
-                                                                           // set optional flag... so
-                                                                           // do it explicitly here...
-                                   std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
-                                                  []( auto& h ) { h.setOptional( true ); } );
-                                 }
-                               },
-                               Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
+          , m_outputLocations(
+                this, outputs.first, outputs.second,
+                [=]( Gaudi::Details::PropertyBase& ) {
+                  this->m_outputs =
+                      details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
+                  if constexpr ( details::is_optional_v<Out> ) { // handle constructor does not (yet) allow to
+                                                                 // set optional flag... so
+                                                                 // do it explicitly here...
+                    std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
+                                   []( auto& h ) { h.setOptional( true ); } );
+                  }
+                },
+                Gaudi::Details::Property::ImmediatelyInvokeHandler{true} ) {}
 
       SplittingTransformer( const std::string& name, ISvcLocator* locator, const KeyValue& input,
                             const KeyValues& output )

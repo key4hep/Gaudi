@@ -18,13 +18,12 @@ namespace Gaudi ::Functional {
   namespace details {
 
     template <typename Signature, typename Traits_, bool isLegacy>
-    class Transformer;
+    struct Transformer;
 
     // general N -> 1 algorithms
     template <typename Out, typename... In, typename Traits_>
-    class Transformer<Out( const In&... ), Traits_, true>
-        : public details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_> {
-    public:
+    struct Transformer<Out( const In&... ), Traits_, true>
+        : details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_> {
       using details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
@@ -44,9 +43,8 @@ namespace Gaudi ::Functional {
     };
 
     template <typename Out, typename... In, typename Traits_>
-    class Transformer<Out( const In&... ), Traits_, false>
-        : public details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_> {
-    public:
+    struct Transformer<Out( const In&... ), Traits_, false>
+        : details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_> {
       using details::DataHandleMixin<std::tuple<Out>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
@@ -69,12 +67,11 @@ namespace Gaudi ::Functional {
     // general N -> M algorithms
     //
     template <typename Signature, typename Traits_, bool isLegacy>
-    class MultiTransformer;
+    struct MultiTransformer;
 
     template <typename... Out, typename... In, typename Traits_>
-    class MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, true>
-        : public details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_> {
-    public:
+    struct MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, true>
+        : details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_> {
       using details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
@@ -111,9 +108,8 @@ namespace Gaudi ::Functional {
     };
 
     template <typename... Out, typename... In, typename Traits_>
-    class MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, false>
-        : public details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_> {
-    public:
+    struct MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, false>
+        : details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_> {
       using details::DataHandleMixin<std::tuple<Out...>, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
@@ -153,12 +149,11 @@ namespace Gaudi ::Functional {
     // general N -> M algorithms with filter functionality
     //
     template <typename Signature, typename Traits_, bool isLegacy>
-    class MultiTransformerFilter;
+    struct MultiTransformerFilter;
 
     template <typename... Out, typename... In, typename Traits_>
-    class MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, true>
-        : public details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> {
-    public:
+    struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, true>
+        : details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> {
       using details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
@@ -186,9 +181,8 @@ namespace Gaudi ::Functional {
     };
 
     template <typename... Out, typename... In, typename Traits_>
-    class MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, false>
-        : public details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> {
-    public:
+    struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, false>
+        : details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_> {
       using details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
@@ -197,8 +191,8 @@ namespace Gaudi ::Functional {
           std::apply(
               [&]( auto&... ohandle ) {
                 std::apply(
-                    [&ohandle..., this]( bool passed, auto&&... data ) {
-                      this->setFilterPassed( passed );
+                    [&ohandle..., &ctx, this]( bool passed, auto&&... data ) {
+                      this->execState( ctx ).setFilterPassed( passed );
                       ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
                     },
                     details::filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );

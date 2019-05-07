@@ -34,9 +34,9 @@ namespace Gaudi::Functional {
                              [=]( Gaudi::Details::PropertyBase& ) {
                                this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>(
                                    this, m_inputLocations );
-                               if ( std::is_pointer<In>::value ) { // handle constructor does not (yet) allow to set
-                                                                   // optional flag... so do it
-                                                                   // explicitly here...
+                               if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
+                                                              // optional flag... so do it
+                                                              // explicitly here...
                                  std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
                                                 []( auto& h ) { h.setOptional( true ); } );
                                }
@@ -90,9 +90,9 @@ namespace Gaudi::Functional {
                              [=]( Gaudi::Details::PropertyBase& ) {
                                this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>(
                                    this, m_inputLocations );
-                               if ( std::is_pointer<In>::value ) { // handle constructor does not (yet) allow to set
-                                                                   // optional flag... so do it
-                                                                   // explicitly here...
+                               if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
+                                                              // optional flag... so do it
+                                                              // explicitly here...
                                  std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
                                                 []( auto& h ) { h.setOptional( true ); } );
                                }
@@ -110,7 +110,7 @@ namespace Gaudi::Functional {
         std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ),
                         details::details2::get_from_handle<In>{} );
         try {
-          details::put( std::get<0>( this->m_outputs ), std::as_const( *this )( std::as_const( ins ) ) );
+          details::put( std::get<0>( this->m_outputs ), ( *this )( std::as_const( ins ) ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;

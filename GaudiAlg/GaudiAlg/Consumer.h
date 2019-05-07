@@ -10,23 +10,22 @@ namespace Gaudi::Functional {
   namespace details {
 
     template <typename Signature, typename Traits_, bool isLegacy>
-    class Consumer;
+    struct Consumer;
 
     template <typename... In, typename Traits_>
-    class Consumer<void( const In&... ), Traits_, true>
-        : public details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_> {
-    public:
+    struct Consumer<void( const In&... ), Traits_, true>
+        : details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_> {
       using details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
           details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
       }
 
       // ... instead, they must implement the following operator
@@ -34,20 +33,19 @@ namespace Gaudi::Functional {
     };
 
     template <typename... In, typename Traits_>
-    class Consumer<void( const In&... ), Traits_, false>
-        : public details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_> {
-    public:
+    struct Consumer<void( const In&... ), Traits_, false>
+        : details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_> {
       using details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
           details::filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs );
+          return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
           return e.code();
         }
-        return StatusCode::SUCCESS;
       }
 
       // ... instead, they must implement the following operator
