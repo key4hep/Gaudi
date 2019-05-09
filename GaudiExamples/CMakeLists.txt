@@ -142,6 +142,8 @@ gaudi_add_python_module(PyExample src/PythonModule/*.cpp
                         INCLUDE_DIRS Boost PythonLibs)
 
 gaudi_install_python_modules()
+configure_file(scripts/TupleEx3.py.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TupleEx3.py @ONLY)
+configure_file(scripts/TupleEx4.py.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TupleEx4.py @ONLY)
 
 #---Executables-------------------------------------------------------------
 if( CLHEP_FOUND AND TARGET GaudiExamplesLib AND

@@ -31,9 +31,6 @@ Numbers = Rndm.Numbers
 
 from GaudiPython.GaudiAlgs import TupleAlgo, mapvct
 
-# ensure that we have the dictionary for CLHEP::HepVector to avoid a warning
-GaudiPython.loaddict('CLHEPRflx')
-
 # =============================================================================
 # Primitive function which transform arbitrary sequence  into
 #  GaudiPython.Vector ( std::vector<double> )
