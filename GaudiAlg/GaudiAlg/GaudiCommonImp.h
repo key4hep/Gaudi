@@ -18,30 +18,6 @@
  *  @date   2004-01-19
  */
 // ============================================================================
-// Returns the full correct event location given the rootInTes settings
-// ============================================================================
-template <class PBASE>
-inline const std::string GaudiCommon<PBASE>::fullTESLocation( const std::string& location,
-                                                              const bool         useRootInTES ) const {
-  // The logic is:
-  // if no R.I.T., give back location
-  // if R.I.T., this is the mapping:
-  // (note that R.I.T. contains a trailing '/')
-  //  location       -> result
-  //  -------------------------------------------------
-  //  ""             -> R.I.T.[:-1]      ("rit")
-  //  "/Event"       -> R.I.T.[:-1]      ("rit")
-  //  "/Event/MyObj" -> R.I.T. + "MyObj" ("rit/MyObj")
-  //  "MyObj"        -> R.I.T. + "MyObj" ("rit/MyObj")
-  return ( !useRootInTES || rootInTES().empty()
-               ? location
-               : location.empty() || ( location == "/Event" )
-                     ? rootInTES().substr( 0, rootInTES().size() - 1 )
-                     : 0 == location.find( "/Event/" )
-                           ? rootInTES() + location.substr( 7 )
-                           : location[0] == '/' ? rootInTES() + location.substr( 1 ) : rootInTES() + location );
-}
-// ============================================================================
 // Templated access to the data in Gaudi Transient Store
 // ============================================================================
 template <class PBASE>
@@ -52,7 +28,7 @@ GaudiCommon<PBASE>::get( IDataProviderSvc* service, const std::string& location,
   Assert( service, "get():: IDataProvider* points to NULL!" );
   // get the helper object:
   Gaudi::Utils::GetData<TYPE> getter;
-  return getter( *this, service, fullTESLocation( location, useRootInTES ) );
+  return getter( *this, service, this->fullTESLocation( location, useRootInTES ) );
 }
 // ============================================================================
 // Templated access to the data in Gaudi Transient Store, no check on the content
@@ -66,7 +42,7 @@ GaudiCommon<PBASE>::getIfExists( IDataProviderSvc* service, const std::string& l
   Assert( service, "get():: IDataProvider* points to NULL!" );
   // get the helper object:
   Gaudi::Utils::GetData<TYPE> getter;
-  return getter( *this, service, fullTESLocation( location, useRootInTES ), false );
+  return getter( *this, service, this->fullTESLocation( location, useRootInTES ), false );
 }
 // ============================================================================
 // check the existence of objects in Gaudi Transient Store
@@ -79,7 +55,7 @@ inline bool GaudiCommon<PBASE>::exist( IDataProviderSvc* service, const std::str
   Assert( service, "exist():: IDataProvider* points to NULL!" );
   // check the data object
   Gaudi::Utils::CheckData<TYPE> checker;
-  return checker( service, fullTESLocation( location, useRootInTES ) );
+  return checker( service, this->fullTESLocation( location, useRootInTES ) );
 }
 // ============================================================================
 // get the existing object from Gaudi Event Transient store
@@ -95,7 +71,7 @@ GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc* service, const std::string& l
   Assert( service, "getOrCreate():: svc points to NULL!" );
   // get the helper object
   Gaudi::Utils::GetOrCreateData<TYPE, TYPE2> getter;
-  return getter( *this, service, fullTESLocation( location, useRootInTES ), location );
+  return getter( *this, service, this->fullTESLocation( location, useRootInTES ), location );
 }
 // ============================================================================
 // the useful method for location of tools.
