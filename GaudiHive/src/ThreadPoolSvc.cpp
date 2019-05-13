@@ -82,27 +82,38 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize ) {
 
   // -100 prevents the creation of the pool and the scheduler directly
   // executes the tasks.
+  // -1 means use all available cores
+
   if ( -100 != m_threadPoolSize ) {
     if ( msgLevel( MSG::DEBUG ) ) debug() << "Initialising a thread pool of size " << m_threadPoolSize << endmsg;
 
     // Leave -1 in case selected, increment otherwise
     // - What?
     int thePoolSize = m_threadPoolSize;
-    if ( thePoolSize != -1 ) thePoolSize += 1;
+    if ( thePoolSize >= 0 ) thePoolSize += 1;
 
-    // Create the TBB task scheduler
-    m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
-    if ( m_threadPoolSize <= -1 ) {
+    if ( m_threadPoolSize == -1 ) {
+      // if requested pool size == -1, use number of available cores
+      m_tbbSchedInit   = std::make_unique<tbb::task_scheduler_init>();
       thePoolSize      = m_tbbSchedInit->default_num_threads();
       m_threadPoolSize = thePoolSize;
+    } else if ( m_threadPoolSize >= 0 ) {
+      // Limit the number of threads to requested pool size plus 1
+      m_tbbgc        = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, thePoolSize );
+      m_tbbSchedInit = std::make_unique<tbb::task_scheduler_init>( thePoolSize );
+    } else {
+      fatal() << "Unexpected ThreadPoolSize \"" << m_threadPoolSize << "\". Allowed negative values are "
+              << "-1 (use all available cores) and -100 (don't use a thread pool)" << endmsg;
+      return StatusCode::FAILURE;
     }
+
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( thePoolSize );
 
     // Create the barrier for task synchronization at termination
     m_barrier = std::make_unique<boost::barrier>( thePoolSize );
-    m_tbbgc   = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, thePoolSize );
 
   } else {
+    // don't use a thread pool
     Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );
     m_tbbgc = std::make_unique<tbb::global_control>( global_control::max_allowed_parallelism, 0 );
   }
