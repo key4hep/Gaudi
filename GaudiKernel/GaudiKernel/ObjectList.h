@@ -217,7 +217,11 @@ public:
   }
 
   /// Return const pointer to an object of a given distance
-  ContainedObject* containedObject( long dist ) const override {
+  const ContainedObject* containedObject( long dist ) const override {
+    return dist < size() ? *std::next( begin(), dist ) : nullptr;
+  }
+  /// Return const pointer to an object of a given distance
+  ContainedObject* containedObject( long dist ) override {
     return dist < size() ? *std::next( begin(), dist ) : nullptr;
   }
 

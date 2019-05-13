@@ -32,7 +32,8 @@ public:
   virtual long index( const ContainedObject* obj ) const = 0;
 
   /// Pointer to an object of a given distance
-  virtual ContainedObject* containedObject( long dist ) const = 0;
+  virtual const ContainedObject* containedObject( long dist ) const = 0;
+  virtual ContainedObject*       containedObject( long dist )       = 0;
 
   /// Number of objects in the container
   virtual size_type numberOfObjects() const = 0;

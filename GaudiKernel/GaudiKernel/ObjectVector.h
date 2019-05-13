@@ -247,7 +247,8 @@ public:
   }
 
   /// Return const pointer to an object of a given distance (index)
-  ContainedObject* containedObject( long dist ) const override { return m_vector[dist]; }
+  ContainedObject const* containedObject( long dist ) const override { return m_vector[dist]; }
+  ContainedObject*       containedObject( long dist ) override { return m_vector[dist]; }
 
   /// Fill the output stream (ASCII)
   std::ostream& fillStream( std::ostream& s ) const override {
