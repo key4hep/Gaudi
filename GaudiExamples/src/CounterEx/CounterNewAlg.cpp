@@ -3,6 +3,8 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "Gaudi/Timers.h"
+
 #include "GaudiKernel/RndmGenerators.h"
 // ============================================================================
 // GaudiAlg
@@ -54,15 +56,16 @@ public:
 
 private:
   // counters
-  mutable StatEntity m_assign_counter{this, "assign"};
-  mutable StatEntity m_eff_counter{this, "eff"};
-  mutable StatEntity m_executed_counter{this, "executed"};
-  mutable StatEntity m_G_counter{this, "G"};
-  mutable StatEntity m_g2_counter{this, "g2"};
-  mutable StatEntity m_gauss_counter{this, "gauss"};
-  mutable StatEntity m_Gneg_counter{this, "Gneg"};
-  mutable StatEntity m_Gpos_counter{this, "Gpos"};
-  mutable StatEntity m_NG_counter{this, "NG"};
+  mutable StatEntity   m_assign_counter{this, "assign"};
+  mutable StatEntity   m_eff_counter{this, "eff"};
+  mutable StatEntity   m_executed_counter{this, "executed"};
+  mutable StatEntity   m_G_counter{this, "G"};
+  mutable StatEntity   m_g2_counter{this, "g2"};
+  mutable StatEntity   m_gauss_counter{this, "gauss"};
+  mutable StatEntity   m_Gneg_counter{this, "Gneg"};
+  mutable StatEntity   m_Gpos_counter{this, "Gpos"};
+  mutable StatEntity   m_NG_counter{this, "NG"};
+  mutable Gaudi::Timer m_timer{this, "time"};
 };
 // ============================================================================
 
@@ -73,6 +76,7 @@ DECLARE_COMPONENT( CounterNewAlg )
 // ============================================================================
 int CounterNewAlg::operator()() const {
 
+  auto timeit = m_timer();
   // count overall number of executions:
   ++m_executed_counter;
 
