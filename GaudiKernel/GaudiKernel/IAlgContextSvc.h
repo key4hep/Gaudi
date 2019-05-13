@@ -109,7 +109,7 @@ namespace Gaudi {
     private:
       SmartIF<IAlgContextSvc> m_svc;
       SmartIF<IAlgorithm>     m_alg;
-      const EventContext      m_context;
+      const EventContext&     m_context;
     };
   } // namespace Utils
 } // end of namespace Gaudi
