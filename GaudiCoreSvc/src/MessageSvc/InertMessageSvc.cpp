@@ -44,12 +44,8 @@ void InertMessageSvc::m_activate() {
 
 void InertMessageSvc::m_deactivate() {
   if ( m_isActive ) {
-// This would be the last action
-#if defined( __clang__ ) || defined( __CLING__ )
-    m_messageActionsQueue.push( [this]() { m_isActive = false; } );
-#else
+    // This would be the last action
     m_messageActionsQueue.emplace( [this]() { m_isActive = false; } );
-#endif
   }
 }
 
@@ -61,37 +57,24 @@ void InertMessageSvc::m_deactivate() {
  * go out of scope before the differed print.
  */
 void InertMessageSvc::reportMessage( const Message& msg, int outputLevel ) {
-// msg has to be copied as the reference may become invalid by the time it is used
-#if defined( __clang__ ) || defined( __CLING__ )
-  m_messageActionsQueue.push( [this, m = Message( msg ), outputLevel]() { this->i_reportMessage( m, outputLevel ); } );
-#else
+  // msg has to be copied as the reference may become invalid by the time it is used
   m_messageActionsQueue.emplace(
       [this, m = Message( msg ), outputLevel]() { this->i_reportMessage( m, outputLevel ); } );
-#endif
 }
 
 //---------------------------------------------------------------------------
 
 void InertMessageSvc::reportMessage( const Message& msg ) {
-// msg has to be copied as the reference may become invalid by the time it's used
-#if defined( __clang__ ) || defined( __CLING__ )
-  m_messageActionsQueue.push(
-      [this, m = Message( msg )]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
-#else
+  // msg has to be copied as the reference may become invalid by the time it's used
   m_messageActionsQueue.emplace(
       [this, m = Message( msg )]() { this->i_reportMessage( m, this->outputLevel( m.getSource() ) ); } );
-#endif
 }
 
 //---------------------------------------------------------------------------
 
 void InertMessageSvc::reportMessage( const StatusCode& code, const std::string& source ) {
-// msg has to be copied as the source may become invalid by the time it's used
-#if defined( __clang__ ) || defined( __CLING__ )
-  m_messageActionsQueue.push( [this, code, s = std::string( source )]() { this->i_reportMessage( code, s ); } );
-#else
+  // msg has to be copied as the source may become invalid by the time it's used
   m_messageActionsQueue.emplace( [this, code, s = std::string( source )]() { this->i_reportMessage( code, s ); } );
-#endif
 }
 
 //---------------------------------------------------------------------------
