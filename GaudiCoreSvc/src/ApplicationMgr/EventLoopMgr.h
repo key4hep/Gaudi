@@ -75,9 +75,9 @@ public:
   StatusCode stop() override;
   /// implementation of IService::finalize
   StatusCode finalize() override;
-  /// implementation of IService::nextEvent
+  /// implementation of IEventProcessor::nextEvent
   StatusCode nextEvent( int maxevt ) override;
-  /// implementation of IEventProcessor::executeEvent(void* par)
-  StatusCode executeEvent( void* par ) override;
+  /// implementation of IEventProcessor::executeEvent(EventContext&&)
+  StatusCode executeEvent( EventContext&& ctx ) override;
 };
 #endif // GAUDISVC_EVENTLOOPMGR_H

@@ -30,6 +30,7 @@ using System::isEnvSet;
 #include <cassert>
 #include <ctime>
 #include <limits>
+#include <sstream>
 
 #define ON_DEBUG if ( UNLIKELY( m_outputLevel <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( m_outputLevel <= MSG::VERBOSE ) )
@@ -777,17 +778,25 @@ StatusCode ApplicationMgr::run() {
 }
 
 //============================================================================
-// IEventProcessor implementation: executeEvent(void* par)
+// IEventProcessor implementation: executeEvent(EventContext&&)
 //============================================================================
-StatusCode ApplicationMgr::executeEvent( void* par ) {
-  MsgStream log( m_messageSvc, name() );
+StatusCode ApplicationMgr::executeEvent( EventContext&& ctx ) {
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr ) { return m_processingMgr->executeEvent( par ); }
+    if ( m_processingMgr ) { return m_processingMgr->executeEvent( std::move( ctx ) ); }
   }
+  MsgStream log( m_messageSvc, name() );
   log << MSG::FATAL << "executeEvent: Invalid state \"" << FSMState() << "\"" << endmsg;
   return StatusCode::FAILURE;
 }
 
+EventContext ApplicationMgr::createEventContext() {
+  if ( m_state == Gaudi::StateMachine::RUNNING ) {
+    if ( m_processingMgr ) { return m_processingMgr->createEventContext(); }
+  }
+  std::stringstream ss;
+  ss << "createEventContext: Invalid state \"" << FSMState() << '"';
+  throw GaudiException( ss.str(), name(), StatusCode::FAILURE );
+}
 //============================================================================
 // IEventProcessor implementation: executeRun(int)
 //============================================================================

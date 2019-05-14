@@ -258,31 +258,24 @@ StatusCode HiveSlimEventLoopMgr::finalize() {
 //--------------------------------------------------------------------------------------------
 // implementation of executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
-StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr ) {
+StatusCode HiveSlimEventLoopMgr::executeEvent( EventContext&& ctx ) {
 
-  // Leave the interface intact and swallow this C trick.
-  int& createdEvts = *( (int*)createdEvts_IntPtr );
-
-  std::unique_ptr<EventContext> evtContext;
+  m_algExecStateSvc->reset( ctx );
 
   // Check if event number is in blacklist
   if ( LIKELY( m_blackListBS != nullptr ) ) { // we are processing a finite number of events, use bitset blacklist
-    if ( m_blackListBS->test( createdEvts ) ) {
-      VERBOSE_MSG << "Event " << createdEvts << " on black list" << endmsg;
+    if ( m_blackListBS->test( ctx.evt() ) ) {
+      VERBOSE_MSG << "Event " << ctx.evt() << " on black list" << endmsg;
+      m_whiteboard->freeStore( ctx.slot() );
       return StatusCode::RECOVERABLE;
     }
-  } else if ( std::binary_search( m_eventNumberBlacklist.begin(), m_eventNumberBlacklist.end(), createdEvts ) ) {
-
-    VERBOSE_MSG << "Event " << createdEvts << " on black list" << endmsg;
+  } else if ( std::binary_search( m_eventNumberBlacklist.begin(), m_eventNumberBlacklist.end(), ctx.evt() ) ) {
+    VERBOSE_MSG << "Event " << ctx.evt() << " on black list" << endmsg;
+    m_whiteboard->freeStore( ctx.slot() );
     return StatusCode::RECOVERABLE;
   }
 
-  if ( createEventContext( evtContext, createdEvts ).isFailure() ) {
-    fatal() << "Impossible to create event context" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
-  VERBOSE_MSG << "Beginning to process event " << createdEvts << endmsg;
+  VERBOSE_MSG << "Beginning to process event " << ctx.evt() << endmsg;
 
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
   // DP have to find out who shoots this
@@ -291,22 +284,15 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr ) {
       return StatusCode::SUCCESS;
       }*/
 
-  StatusCode declEvtRootSc = declareEventRootAddress();
-  if ( declEvtRootSc.isFailure() ) { // We ran out of events!
-    createdEvts = -1;                // Set created event to a negative value: we finished!
-    return StatusCode::SUCCESS;
-  }
-
   // Fire BeginEvent "Incident"
-  m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginEvent, *evtContext ) );
+  m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginEvent, ctx ) );
 
   // Now add event to the scheduler
-  VERBOSE_MSG << "Adding event " << evtContext->evt() << ", slot " << evtContext->slot() << " to the scheduler"
-              << endmsg;
+  VERBOSE_MSG << "Adding event " << ctx.evt() << ", slot " << ctx.slot() << " to the scheduler" << endmsg;
 
-  m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginProcessing, *evtContext ) );
+  m_incidentSvc->fireIncident( std::make_unique<Incident>( name(), IncidentType::BeginProcessing, ctx ) );
 
-  StatusCode addEventStatus = m_schedulerSvc->pushNewEvent( evtContext.release() );
+  StatusCode addEventStatus = m_schedulerSvc->pushNewEvent( new EventContext{std::move( ctx )} );
 
   // If this fails, we need to wait for something to complete
   if ( !addEventStatus.isSuccess() ) {
@@ -314,7 +300,6 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( void* createdEvts_IntPtr ) {
             << endmsg;
   }
 
-  ++createdEvts;
   return StatusCode::SUCCESS;
 }
 
@@ -408,22 +393,20 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
       StatusCode sc = StatusCode::RECOVERABLE;
       while ( !sc.isSuccess()                               // we haven't created an event yet
               && ( createdEvts < maxevt || maxevt < 0 ) ) { // redunant check for maxEvts, can we do better?
-        sc = executeEvent( &createdEvts );
-
+        {
+          auto ctx = createEventContext();
+          if ( !ctx.valid() ) {
+            createdEvts = -1;
+            break; // invalid context means end of loop
+          }
+          sc = executeEvent( std::move( ctx ) );
+        }
         if ( sc.isRecoverable() ) { // we skipped an event
-
-          // this is all to skip the event
-          size_t slot =
-              m_whiteboard->allocateStore( createdEvts ); // we need a new store, not to change the previous event
-          m_whiteboard->selectStore( slot );
-          declareEventRootAddress();       // actually skip over the event
-          m_whiteboard->freeStore( slot ); // delete the store
-
-          ++createdEvts;
           ++skippedEvts;
-        } else if ( sc.isRecoverable() ) { // exit immediatly
-          return StatusCode::FAILURE;
+        } else if ( sc.isFailure() ) { // exit immediatly
+          return sc;
         } // else we have an success --> exit loop
+        ++createdEvts;
       }
 
     } // end if condition createdEvts < maxevt
@@ -489,15 +472,20 @@ StatusCode HiveSlimEventLoopMgr::declareEventRootAddress() {
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::createEventContext( std::unique_ptr<EventContext>& evtContext, int createdEvts ) {
-  evtContext = std::make_unique<EventContext>( createdEvts, m_whiteboard->allocateStore( createdEvts ) );
-  m_algExecStateSvc->reset( *evtContext );
+EventContext HiveSlimEventLoopMgr::createEventContext() {
+  EventContext ctx{m_nevt, m_whiteboard->allocateStore( m_nevt )};
+  ++m_nevt;
 
-  StatusCode sc = m_whiteboard->selectStore( evtContext->slot() );
+  StatusCode sc = m_whiteboard->selectStore( ctx.slot() );
   if ( sc.isFailure() ) {
-    warning() << "Slot " << evtContext->slot() << " could not be selected for the WhiteBoard" << endmsg;
+    throw GaudiException( "Slot " + std::to_string( ctx.slot() ) + " could not be selected for the WhiteBoard", name(),
+                          sc );
   }
-  return sc;
+  if ( declareEventRootAddress().isFailure() ) { // We ran out of events!
+    // invalid context terminates the loop
+    return EventContext{};
+  }
+  return ctx;
 }
 
 //---------------------------------------------------------------------------

@@ -279,6 +279,7 @@ StatusCode MinimalEventLoopMgr::finalize() {
   return scRet;
 }
 
+EventContext MinimalEventLoopMgr::createEventContext() { return EventContext{m_nevt++, 0}; }
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
@@ -291,7 +292,6 @@ StatusCode MinimalEventLoopMgr::nextEvent( int /* maxevt */ ) {
 // IEventProcessing::executeRun
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::executeRun( int maxevt ) {
-
   // Call now the nextEvent(...)
   return nextEvent( maxevt );
 }
@@ -316,16 +316,10 @@ namespace {
 //--------------------------------------------------------------------------------------------
 // Implementation of IEventProcessor::executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
-StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ ) {
+StatusCode MinimalEventLoopMgr::executeEvent( EventContext&& context ) {
   bool eventfailed = false;
 
-  // reset state of ALL "known" algorithms
-  // (before we were reseting only the topalgs)
-  const EventContext& context = Gaudi::Hive::currentContext();
   m_aess->reset( context );
-
-  // Set event number in the context
-  Gaudi::Hive::setCurrentContextEvt( m_nevt );
 
   // select the appropriate store
   if ( m_WB.isValid() ) m_WB->selectStore( context.slot() ).ignore();
@@ -377,8 +371,6 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ ) {
       eventfailed = true;
     }
   }
-
-  m_nevt++;
 
   // Check if there was an error processing current event
   if ( UNLIKELY( eventfailed ) ) {

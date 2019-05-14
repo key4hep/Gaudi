@@ -229,7 +229,7 @@ StatusCode EventLoopMgr::finalize() {
 //--------------------------------------------------------------------------------------------
 // executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::executeEvent( void* par ) {
+StatusCode EventLoopMgr::executeEvent( EventContext&& ctx ) {
 
   // DP Monitoring
 
@@ -243,7 +243,7 @@ StatusCode EventLoopMgr::executeEvent( void* par ) {
 
   // Execute Algorithms
   m_incidentSvc->fireIncident( Incident( name(), IncidentType::BeginProcessing ) );
-  StatusCode sc = MinimalEventLoopMgr::executeEvent( par );
+  StatusCode sc = MinimalEventLoopMgr::executeEvent( std::move( ctx ) );
   m_incidentSvc->fireIncident( Incident( name(), IncidentType::EndProcessing ) );
 
   // Check if there was an error processing current event
@@ -265,17 +265,18 @@ StatusCode EventLoopMgr::nextEvent( int maxevt ) {
 
   const float oneOver1024 = 1.f / 1024.f;
 
-  static int  total_nevt = 0;
-  DataObject* pObject    = nullptr;
+  DataObject* pObject = nullptr;
   StatusCode  sc( StatusCode::SUCCESS, true );
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   time_point start_time = Clock::now();
-  for ( int nevt = 0; maxevt == -1 || nevt < maxevt; ++nevt, ++total_nevt ) {
+  for ( int nevt = 0; maxevt == -1 || nevt < maxevt; ++nevt ) {
 
     if ( 1 == nevt ) // reset after first evt
       start_time = Clock::now();
+
+    auto ctx = createEventContext();
 
     // always() << "Event Number = " << total_nevt
     //         << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1024
@@ -288,7 +289,7 @@ StatusCode EventLoopMgr::nextEvent( int maxevt ) {
       break;
     }
     // Clear the event store, if used in the event loop
-    if ( 0 != total_nevt ) {
+    if ( 0 != ctx.evt() ) {
 
       if ( !m_endEventFired ) {
         // Fire EndEvent "Incident" (it is considered part of the clearing of the TS)
@@ -324,7 +325,7 @@ StatusCode EventLoopMgr::nextEvent( int maxevt ) {
       if ( !sc.isSuccess() ) { warning() << "Error declaring event root DataObject" << endmsg; }
     }
     // Execute event for all required algorithms
-    sc              = executeEvent( nullptr );
+    sc              = executeEvent( std::move( ctx ) );
     m_endEventFired = false;
     if ( !sc.isSuccess() ) {
       error() << "Terminating event processing loop due to errors" << endmsg;
