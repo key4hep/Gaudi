@@ -339,6 +339,18 @@ namespace Gaudi::Functional::details {
     return handles;
   }
 
+  template <typename Handle, typename Algo>
+  auto get( const Handle& handle, const Algo&, const EventContext& )
+      -> decltype( details::deref( handle.get() ) ) // make it SFINAE friendly...
+  {
+    return details::deref( handle.get() );
+  }
+
+  template <typename Handle>
+  auto getKey( const Handle& h ) -> decltype( h.objKey() ) {
+    return h.objKey();
+  }
+
   ///////////////////////
   // given a pack, return a corresponding tuple
   template <typename... In>
@@ -353,8 +365,8 @@ namespace Gaudi::Functional::details {
       return std::apply( [&]( const auto&... handle ) { return algo( details::deref( handle.get() )... ); }, handles );
     }
     template <typename Algorithm, typename Handles>
-    static auto apply( const Algorithm& algo, const EventContext&, Handles& handles ) {
-      return std::apply( [&]( const auto&... handle ) { return algo( details::deref( handle.get() )... ); }, handles );
+    static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
+      return std::apply( [&]( const auto&... handle ) { return algo( get( handle, algo, ctx )... ); }, handles );
     }
   };
 
@@ -370,15 +382,15 @@ namespace Gaudi::Functional::details {
     static auto apply( const Algorithm& algo, Handles& handles ) {
       return std::apply(
           [&]( const auto&... handle ) {
-            return algo( Gaudi::Hive::currentContext(), details::deref( handle.get() )... );
+            const auto& ctx = Gaudi::Hive::currentContext();
+            return algo( ctx, get( handle, algo, ctx )... );
           },
           handles );
     }
 
     template <typename Algorithm, typename Handles>
     static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
-      return std::apply( [&]( const auto&... handle ) { return algo( ctx, details::deref( handle.get() )... ); },
-                         handles );
+      return std::apply( [&]( const auto&... handle ) { return algo( ctx, get( handle, algo, ctx )... ); }, handles );
     }
   };
 
@@ -447,14 +459,14 @@ namespace Gaudi::Functional::details {
         : DataHandleMixin( name, locator, inputs, std::array<KeyValue, 1>{output} ) {}
 
     template <std::size_t N = 0>
-    const std::string& inputLocation() const {
-      return std::get<N>( m_inputs ).objKey();
+    decltype( auto ) inputLocation() const {
+      return getKey( std::get<N>( m_inputs ) );
     }
     constexpr unsigned int inputLocationSize() const { return N_in; }
 
     template <std::size_t N = 0>
-    const std::string& outputLocation() const {
-      return std::get<N>( m_outputs ).objKey();
+    decltype( auto ) outputLocation() const {
+      return getKey( std::get<N>( m_outputs ) );
     }
     constexpr unsigned int outputLocationSize() const { return N_out; }
 
@@ -508,9 +520,10 @@ namespace Gaudi::Functional::details {
         : DataHandleMixin( name, locator, std::array<KeyValue, 1>{input} ) {}
 
     template <std::size_t N = 0>
-    const std::string& inputLocation() const {
-      return std::get<N>( m_inputs ).objKey();
+    decltype( auto ) inputLocation() const {
+      return getKey( std::get<N>( m_inputs ) );
     }
+
     constexpr unsigned int inputLocationSize() const { return N_in; }
 
   protected:
@@ -546,8 +559,8 @@ namespace Gaudi::Functional::details {
         : DataHandleMixin( name, locator, std::array<KeyValue, 1>{output} ) {}
 
     template <std::size_t N = 0>
-    const std::string& outputLocation() const {
-      return std::get<N>( m_outputs ).objKey();
+    decltype( auto ) outputLocation() const {
+      return getKey( std::get<N>( m_outputs ) );
     }
     constexpr unsigned int outputLocationSize() const { return N_out; }
 
