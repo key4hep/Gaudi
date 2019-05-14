@@ -1,17 +1,13 @@
 #ifndef GAUDISVC_EVENTLOOPMGR_H
 #define GAUDISVC_EVENTLOOPMGR_H 1
 
-// Framework include files
-#include "GaudiKernel/IEvtSelector.h"
-#include "GaudiKernel/MinimalEventLoopMgr.h"
-
-// std includes
+#include <GaudiKernel/IConversionSvc.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IDataProviderSvc.h>
+#include <GaudiKernel/IEvtSelector.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/MinimalEventLoopMgr.h>
 #include <memory>
-
-// Forward declarations
-class IIncidentSvc;
-struct IDataManagerSvc;
-class IDataProviderSvc;
 
 /** Class definition of EventLoopMgr.
     This is the default processing manager of the application manager.
