@@ -20,8 +20,8 @@ IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
 IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
 FloatDataConsumer    INFO executing FloatDataConsumer: 7
-ContextConsumer      INFO executing ContextConsumer, got INVALID
-ContextIntConsumer   INFO executing ContextIntConsumer, got context = INVALID, int = 7
+ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 0
+ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 7
 VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
 FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
 FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
@@ -51,8 +51,8 @@ IntIntToFloatFl...   INFO Number of inputs : 2, number of outputs : 2
 IntIntToFloatFl...   INFO Converting 7 from /Event/MyInt and 7 from /Event/MyOtherInt
 IntIntToFloatFl...   INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
 FloatDataConsumer    INFO executing FloatDataConsumer: 7
-ContextConsumer      INFO executing ContextConsumer, got INVALID
-ContextIntConsumer   INFO executing ContextIntConsumer, got context = INVALID, int = 7
+ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 1
+ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 7
 VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
 FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
 FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
