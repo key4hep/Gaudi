@@ -15,9 +15,12 @@ from Configurables import Gaudi__Examples__FrExpTransformer as FrExpTransformer
 from Configurables import Gaudi__Examples__LdExpTransformer as LdExpTransformer
 from Configurables import Gaudi__Examples__OptFrExpTransformer as OptFrExpTransformer
 from Configurables import Gaudi__Examples__OptLdExpTransformer as OptLdExpTransformer
-
+from Configurables import EvtStoreSvc
 # Application setup
 app = ApplicationMgr()
+#app.ExtSvc = [ EvtStoreSvc("EventDataSvc",OutputLevel=DEBUG ) ]
+app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
+
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
 OtherIntDataProducer.OutputLocation = "/Event/MyOtherInt"
