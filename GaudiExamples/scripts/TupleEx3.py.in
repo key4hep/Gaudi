@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 # =============================================================================
 # @file
 #
@@ -39,7 +39,8 @@ if not (ROOT6WorkAroundEnabled('SPI-385') and is_root6):
 
 vct1 = GaudiPython.gbl.vector('double')
 
-GaudiPython.loaddict('CLHEPRflx')
+GaudiPython.gbl.gSystem.Load('libCLHEP-Matrix-@CLHEP_VERSION@.so')
+GaudiPython.gbl.gInterpreter.Declare('#include <CLHEP/Matrix/Vector.h>')
 vct2 = GaudiPython.gbl.CLHEP.HepVector
 
 from GaudiPython.GaudiAlgs import TupleAlgo

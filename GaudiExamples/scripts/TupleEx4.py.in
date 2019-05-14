@@ -137,9 +137,9 @@ tup5 = TupleUtils.nTuple(
 std = cpp.std
 vct1 = std.vector('double')
 
-loaddict('CLHEPRflx')
-CLHEP = cpp.CLHEP
-vct2 = CLHEP.HepVector
+cpp.gSystem.Load('libCLHEP-Matrix-@CLHEP_VERSION@.so')
+cpp.gInterpreter.Declare('#include <CLHEP/Matrix/Vector.h>')
+vct2 = cpp.CLHEP.HepVector
 
 # fill it!
 for i in xrange(0, 100):
