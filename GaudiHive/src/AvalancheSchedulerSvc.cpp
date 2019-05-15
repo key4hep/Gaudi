@@ -59,6 +59,7 @@ namespace {
  * executing the activate() function in a new thread.
  * In addition the algorithms list is acquired from the algResourcePool.
  **/
+
 StatusCode AvalancheSchedulerSvc::initialize() {
 
   // Initialise mother class (read properties, ...)
@@ -132,7 +133,12 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   // Get the list of algorithms
   const std::list<IAlgorithm*>& algos      = m_algResourcePool->getFlatAlgList();
   const unsigned int            algsNumber = algos.size();
-  info() << "Found " << algsNumber << " algorithms" << endmsg;
+  if ( algsNumber != 0 ) {
+    info() << "Found " << algsNumber << " algorithms" << endmsg;
+  } else {
+    error() << "No algorithms found" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   /* Dependencies
    1) Look for handles in algo, if none
@@ -511,6 +517,7 @@ unsigned int AvalancheSchedulerSvc::freeSlots() { return std::max( m_freeSlots.l
  * Get a finished event or block until one becomes available.
  */
 StatusCode AvalancheSchedulerSvc::popFinishedEvent( EventContext*& eventContext ) {
+
   // ON_DEBUG debug() << "popFinishedEvent: queue size: " << m_finishedEvents.size() << endmsg;
   if ( m_freeSlots.load() == (int)m_maxEventsInFlight || m_isActive == INACTIVE ) {
     // ON_DEBUG debug() << "freeslots: " << m_freeSlots << "/" << m_maxEventsInFlight
@@ -531,6 +538,7 @@ StatusCode AvalancheSchedulerSvc::popFinishedEvent( EventContext*& eventContext 
  * Try to get a finished event, if not available just return a failure
  */
 StatusCode AvalancheSchedulerSvc::tryPopFinishedEvent( EventContext*& eventContext ) {
+
   if ( m_finishedEvents.try_pop( eventContext ) ) {
     ON_DEBUG debug() << "Try Pop successful slot " << eventContext->slot() << "(event " << eventContext->evt() << ")"
                      << endmsg;

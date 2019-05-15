@@ -242,11 +242,16 @@ class CruncherSequence(object):
             seq = GaudiSequencer(name, ShortCircuit=False)
 
         for n in self.cfg[name]:
-            if '/' in n:
-                algo_type, algo_name = n.split('/')
+            # extract entity name and type
+            algo_name = n.split('/')[1] if '/' in n else n
+
+            if self.cfg.node[n].has_key('type'):
+                # first rely on explicit type, if given
+                algo_type = self.cfg.node[n].get('type')
             else:
-                algo_type = 'GaudiAlgorithm'
-                algo_name = n
+                # if the type is not given explicitly, try to extract it from entity name,
+                # and, if unsuccessful, assume it is an algorithm
+                algo_type = n.split('/')[0] if '/' in n else 'Algorithm'
 
             if algo_type in ['GaudiSequencer', 'AthSequencer', 'ProcessPhase']:
                 if algo_name in ['RecoITSeq', 'RecoOTSeq', 'RecoTTSeq']:
@@ -283,6 +288,7 @@ class CruncherSequence(object):
                         self.dupl_algos[n] += 1
 
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
+
                 algo_daughter = CPUCruncher(
                     algo_name,
                     OutputLevel=self.outputLevel,
