@@ -320,10 +320,11 @@ namespace Gaudi::Functional::details {
   Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<std::string>& init ) {
     Handles handles;
     handles.reserve( init.size() );
-    std::transform( init.begin(), init.end(),
-                    std::back_inserter( handles ), [&]( const std::string& loc ) -> typename Handles::value_type {
-                      return {loc, owner};
-                    } );
+    std::transform(
+        init.begin(), init.end(),
+        std::back_inserter( handles ), [&]( const std::string& loc ) -> typename Handles::value_type {
+          return {loc, owner};
+        } );
     return handles;
   }
 
@@ -399,9 +400,9 @@ namespace Gaudi::Functional::details {
   void updateHandleLocations( DataHandleMixin<Out, In, Tr>& parent, const std::string& prop,
                               const std::vector<std::string>& newLocs ) {
     std::ostringstream ss;
-    GaudiUtils::details::ostream_joiner( ss << '[', newLocs, ", ", []( std::ostream & os, const auto& i ) -> auto& {
-      return os << "'" << i << "'";
-    } ) << ']';
+    GaudiUtils::details::ostream_joiner(
+        ss << '[', newLocs, ", ", []( std::ostream & os, const auto& i ) -> auto& { return os << "'" << i << "'"; } )
+        << ']';
     auto sc = parent.setProperty( prop, ss.str() );
     if ( sc.isFailure() ) throw GaudiException( "Could not set Property", prop + " -> " + ss.str(), sc );
   }

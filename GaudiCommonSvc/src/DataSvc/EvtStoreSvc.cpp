@@ -462,8 +462,7 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
   fwd( [&]( Partition& p ) {
     p.store.put( normalize_path( fullpath, rootName() ), std::move( object ) );
     return StatusCode::SUCCESS;
-  } )
-      .ignore();
+  } ).ignore();
   return status;
 }
 StatusCode EvtStoreSvc::registerObject( std::string_view parentPath, std::string_view objectPath,
