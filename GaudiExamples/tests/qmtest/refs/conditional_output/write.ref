@@ -1,5 +1,6 @@
-# --> Including file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/ConditionalOutput/Write.py'
-# <-- End of file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/ConditionalOutput/Write.py'
+# setting LC_ALL to "C"
+# --> Including file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/ConditionalOutput/Write.py'
+# <-- End of file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/ConditionalOutput/Write.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -30,8 +31,8 @@
  'RootCnvSvc': {'OutputLevel': 3}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
-                                          running on p05614910w96644.cern.ch on Fri Jan 27 19:43:31 2017
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v31r0)
+                                          running on stbc-i5.nikhef.nl on Wed May 15 16:52:38 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service FileRecordDataSvc
@@ -70,9 +71,10 @@ DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventData
 TimelineSvc         DEBUG Service base class initialized successfully
 TimelineSvc         DEBUG initialize
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 DataCreator         DEBUG Initialize base class GaudiCommon<Algorithm>
 DataCreator         DEBUG could not locate CounterSummarySvc, no counter summary will be made
-DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 37
+DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 39
 DataCreator         DEBUG Property ['Name': Value] =  'DataSvc':EventDataSvc
 DataCreator         DEBUG Property ['Name': Value] =  'Paths':[ 'A' , 'B' , 'C' , 'D' ]
 DataCreator         DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
@@ -83,13 +85,14 @@ DataCreator         DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 DataCreator         DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 DataCreator         DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 DataCreator         DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-DataCreator         DEBUG Property ['Name': Value] =  'RootInTES':
 DataCreator         DEBUG Property ['Name': Value] =  'Context':
 DataCreator         DEBUG Property ['Name': Value] =  'TypePrint':True
 DataCreator         DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 DataCreator         DEBUG Property ['Name': Value] =  'StatPrint':True
 DataCreator         DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+DataCreator         DEBUG Property ['Name': Value] =  'RootInTES':
+DataCreator         DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 DataCreator         DEBUG Property ['Name': Value] =  'IsIOBound':False
 DataCreator         DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 DataCreator         DEBUG Property ['Name': Value] =  'Cardinality':1
@@ -112,7 +115,6 @@ DataCreator         DEBUG Property ['Name': Value] =  'OutputLevel':1
 DataCreator         DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 DataCreator         DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 AlgExecStateSvc     DEBUG Service base class initialized successfully
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgExecStateSvc     DEBUG preInit: will add Alg DataCreator later
@@ -122,9 +124,10 @@ DataCreator         DEBUG Data Deps for DataCreator
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 OddEvents           DEBUG Initialize base class GaudiCommon<Algorithm>
 OddEvents           DEBUG could not locate CounterSummarySvc, no counter summary will be made
-OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 35
+OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 37
 OddEvents           DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -133,13 +136,14 @@ OddEvents           DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 OddEvents           DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 OddEvents           DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 OddEvents           DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-OddEvents           DEBUG Property ['Name': Value] =  'RootInTES':
 OddEvents           DEBUG Property ['Name': Value] =  'Context':
 OddEvents           DEBUG Property ['Name': Value] =  'TypePrint':True
 OddEvents           DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 OddEvents           DEBUG Property ['Name': Value] =  'StatPrint':True
 OddEvents           DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+OddEvents           DEBUG Property ['Name': Value] =  'RootInTES':
+OddEvents           DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 OddEvents           DEBUG Property ['Name': Value] =  'IsIOBound':False
 OddEvents           DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'Cardinality':1
@@ -161,7 +165,6 @@ OddEvents           DEBUG Property ['Name': Value] =  'Enable':True
 OddEvents           DEBUG Property ['Name': Value] =  'OutputLevel':1
 OddEvents           DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 OddEvents           DEBUG Property ['Name': Value] =  'ExtraInputs':[]
-OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgExecStateSvc     DEBUG preInit: will add Alg OddEvents later
 OddEvents           DEBUG input handles: 0
@@ -170,9 +173,10 @@ OddEvents           DEBUG Data Deps for OddEvents
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
+EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EvenEvents          DEBUG Initialize base class GaudiCommon<Algorithm>
 EvenEvents          DEBUG could not locate CounterSummarySvc, no counter summary will be made
-EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 35
+EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 37
 EvenEvents          DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -181,13 +185,14 @@ EvenEvents          DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 EvenEvents          DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 EvenEvents          DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 EvenEvents          DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-EvenEvents          DEBUG Property ['Name': Value] =  'RootInTES':
 EvenEvents          DEBUG Property ['Name': Value] =  'Context':
 EvenEvents          DEBUG Property ['Name': Value] =  'TypePrint':True
 EvenEvents          DEBUG Property ['Name': Value] =  'PrintEmptyCounters':False
 EvenEvents          DEBUG Property ['Name': Value] =  'StatPrint':True
 EvenEvents          DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+EvenEvents          DEBUG Property ['Name': Value] =  'RootInTES':
+EvenEvents          DEBUG Property ['Name': Value] =  'FilterCircularDependencies':True
 EvenEvents          DEBUG Property ['Name': Value] =  'IsIOBound':False
 EvenEvents          DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'Cardinality':1
@@ -209,7 +214,6 @@ EvenEvents          DEBUG Property ['Name': Value] =  'Enable':True
 EvenEvents          DEBUG Property ['Name': Value] =  'OutputLevel':1
 EvenEvents          DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 EvenEvents          DEBUG Property ['Name': Value] =  'ExtraInputs':[]
-EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc
 AlgExecStateSvc     DEBUG preInit: will add Alg EvenEvents later
 EvenEvents          DEBUG input handles: 0
@@ -281,73 +285,71 @@ DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2feaf00, 0x1fa0e20, 0x2e3e630, 0x2870cf0]
-FileCatalog         DEBUG No writable file catalog found which contains FID:0EF99480-C0E4-E611-A603-001E67ABF0AC
-IODataManager        INFO Referring to dataset ConditionalOutput.dst by its file ID:0EF99480-C0E4-E611-A603-001E67ABF0AC
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x35c5e20, 0x35248e0, 0x1cc22b0, 0x36232a0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3abd610, 0x2c9a800, 0x26d7ab0, 0x2fd9510]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x384ce10, 0x3623c70, 0x35c5a20, 0x3965ad0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2feaf00, 0x1fa0e20, 0x2e3e630, 0x2870cf0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x35c5e20, 0x35248e0, 0x1cc22b0, 0x36232a0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3abd610, 0x2c9a800, 0x26d7ab0, 0x2fd9510]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x384ce10, 0x3623c70, 0x35c5a20, 0x3965ad0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2feaf00, 0x1fa0e20, 0x2e3e630, 0x2870cf0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x35c5e20, 0x35248e0, 0x1cc22b0, 0x36232a0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3abd610, 0x2c9a800, 0x26d7ab0, 0x2fd9510]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x384ce10, 0x3623c70, 0x35c5a20, 0x3965ad0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2feaf00, 0x1fa0e20, 0x2e3e630, 0x2870cf0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x35c5e20, 0x35248e0, 0x1cc22b0, 0x36232a0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3abd610, 0x2c9a800, 0x26d7ab0, 0x2fd9510]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x384ce10, 0x3623c70, 0x35c5a20, 0x3965ad0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2feaf00, 0x1fa0e20, 0x2e3e630, 0x2870cf0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x35c5e20, 0x35248e0, 0x1cc22b0, 0x36232a0]
 AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3abd610, 0x2c9a800, 0x26d7ab0, 0x2fd9510]
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 199.648 | total time (skipping 1st evt) 2328029 ns
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x384ce10, 0x3623c70, 0x35c5a20, 0x3965ad0]
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 134.102 | total time (skipping 1st evt) 2752870 ns
 ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service HistogramDataSvc
 ServiceManager      DEBUG Stopping service HistogramPersistencySvc
@@ -380,15 +382,14 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Finalizing service RootCnvSvc
-RootCnvSvc           INFO Disconnected data IO:0EF99480-C0E4-E611-A603-001E67ABF0AC [ConditionalOutput.dst]
+RootCnvSvc           INFO Disconnected data IO:9227AEE9-2E76-E911-AA27-EC0D9A8B2DAC [ConditionalOutput.dst]
 ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
-XMLCatalog           INFO File 'ConditionalOutput.xml' does not exist. New file created.
 ServiceManager      DEBUG Finalizing service AlgExecStateSvc
 ServiceManager      DEBUG Finalizing service TimelineSvc
 ServiceManager      DEBUG Finalizing service AlgContextSvc
-IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
@@ -396,8 +397,8 @@ ServiceManager      DEBUG Finalizing service IncidentSvc
 IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service FileRecordDataSvc
-IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
+IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
 ServiceManager      DEBUG ---- MessageSvc (refCount = 24)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)

@@ -66,11 +66,9 @@ void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent ) 
   // setup context from parent if available
   if ( parent ) {
     if ( const GaudiAlgorithm* gAlg = dynamic_cast<const GaudiAlgorithm*>( parent ) ) {
-      m_context   = gAlg->context();
-      m_rootInTES = gAlg->rootInTES();
+      m_context = gAlg->context();
     } else if ( const GaudiTool* gTool = dynamic_cast<const GaudiTool*>( parent ) ) {
-      m_context   = gTool->context();
-      m_rootInTES = gTool->rootInTES();
+      m_context = gTool->context();
     }
   }
 
@@ -84,13 +82,7 @@ void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent ) 
     // Iterate over the list to set the options
     for ( const auto& iter : *myList ) {
       const Gaudi::Property<std::string>* sp = dynamic_cast<const Gaudi::Property<std::string>*>( iter );
-      if ( sp ) {
-        if ( iter->name().compare( "Context" ) == 0 ) {
-          m_context = sp->value();
-        } else if ( iter->name().compare( "RootInTES" ) == 0 ) {
-          m_rootInTES = sp->value();
-        }
-      }
+      if ( sp && iter->name().compare( "Context" ) == 0 ) { m_context = sp->value(); }
     }
   }
 }
@@ -103,7 +95,7 @@ template <class PBASE>
 StatusCode GaudiCommon<PBASE>::initialize() {
 
   // initialize base class
-  const StatusCode sc = PBASE::initialize();
+  const StatusCode sc = base_class::initialize();
   if ( sc.isFailure() ) { return Error( "Failed to initialise base class PBASE", sc ); }
 
   // some debug printout
@@ -111,9 +103,6 @@ StatusCode GaudiCommon<PBASE>::initialize() {
     this->debug() << "Initialize base class GaudiCommon<" << System::typeinfoName( typeid( PBASE ) ) << ">" << endmsg;
     if ( !context().empty() ) this->debug() << "Created with context = '" << context() << "'" << endmsg;
   }
-
-  // Check rootInTES ends with a /
-  if ( !m_rootInTES.empty() && m_rootInTES[m_rootInTES.size() - 1] != '/' ) m_rootInTES = m_rootInTES + "/";
 
   // Set up the CounterSummarySvc May need to be changed
   m_counterSummarySvc = this->svcLoc()->service( "CounterSummarySvc", false );
@@ -130,50 +119,6 @@ StatusCode GaudiCommon<PBASE>::initialize() {
   } else if ( this->msgLevel( MSG::DEBUG ) ) {
     printProps( MSG::DEBUG );
   }
-
-  // update DataHandles to point to full TES location
-
-  // get root of DataManager
-  SmartIF<IDataManagerSvc> dataMgrSvc( PBASE::evtSvc() );
-  auto                     rootName = dataMgrSvc->rootName();
-  if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
-
-  auto fixLocation = [this, rootName]( const std::string& location ) -> std::string {
-    auto tokens = boost::tokenizer<boost::char_separator<char>>{location, boost::char_separator<char>{":"}};
-    auto result =
-        std::accumulate( tokens.begin(), tokens.end(), std::string{}, [&]( std::string s, const std::string& tok ) {
-          std::string r = fullTESLocation( tok, UseRootInTES );
-          // check whether we have an absolute path if yes use it - else prepend DataManager Root
-          if ( r[0] != '/' ) r = rootName + r;
-          return s.empty() ? r : s + ':' + r;
-        } );
-    if ( result != location && this->msgLevel( MSG::DEBUG ) )
-      this->debug() << "Changing " << location << " to " << result << endmsg;
-    return result;
-  };
-
-  class DHHFixer : public IDataHandleVisitor {
-  public:
-    DHHFixer( std::function<std::string( const std::string& )> f ) : m_f( std::move( f ) ) {}
-    void visit( const IDataHandleHolder* idhh ) override {
-      if ( !idhh ) return;
-
-      std::string r;
-      for ( auto h : idhh->inputHandles() ) {
-        r = m_f( h->objKey() );
-        if ( r != h->objKey() ) h->updateKey( r );
-      }
-      for ( auto h : idhh->outputHandles() ) {
-        r = m_f( h->objKey() );
-        if ( r != h->objKey() ) h->updateKey( r );
-      }
-    }
-
-  private:
-    std::function<std::string( const std::string& )> m_f;
-  };
-
-  this->m_updateDataHandles = std::make_unique<DHHFixer>( fixLocation );
 
   return sc;
 }
@@ -246,7 +191,7 @@ StatusCode GaudiCommon<PBASE>::finalize() {
   m_statEntityList.clear();
 
   // finalize base class
-  return ( sc && PBASE::finalize() ? StatusCode::SUCCESS : StatusCode::FAILURE );
+  return ( sc && base_class::finalize() ? StatusCode::SUCCESS : StatusCode::FAILURE );
 }
 //=============================================================================
 
@@ -283,7 +228,7 @@ StatusCode GaudiCommon<PBASE>::releaseTool( const IAlgTool* algTool ) const {
   const std::string name = t->name();
   if ( this->msgLevel( MSG::DEBUG ) ) { this->debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
-  PBASE::deregisterTool( t );
+  base_class::deregisterTool( t );
   m_managedTools.erase( it );
   // release tool
   if ( this->msgLevel( MSG::DEBUG ) ) {
@@ -545,7 +490,7 @@ DataObject* GaudiCommon<PBASE>::put( IDataProviderSvc* svc, std::unique_ptr<Data
   Assert( static_cast<bool>( object ), "put():: Invalid 'Object'!" );
   Assert( !location.empty(), "put():: Invalid 'address' = '' " );
   // final data location
-  const std::string& fullLocation = fullTESLocation( location, useRootInTES );
+  const std::string& fullLocation = this->fullTESLocation( location, useRootInTES );
   // register the object!
   const StatusCode status = '/' == fullLocation[0] ? svc->registerObject( fullLocation, object.get() )
                                                    : svc->registerObject( "/Event/" + fullLocation, object.get() );

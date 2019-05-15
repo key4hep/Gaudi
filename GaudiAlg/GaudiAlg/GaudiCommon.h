@@ -15,6 +15,7 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "GaudiAlg/FixTESPath.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/HashMap.h"
@@ -87,9 +88,9 @@ namespace GaudiCommon_details {
  */
 // ============================================================================
 template <class PBASE>
-class GAUDI_API GaudiCommon : public PBASE {
+class GAUDI_API GaudiCommon : public FixTESPath<PBASE> {
 protected: // definitions
-  using base_class = PBASE;
+  using base_class = FixTESPath<PBASE>;
 
   /** Simple definition to be used with the new useRootInTES argument get<TYPE>
    *  and put methods. If used with cause the RootInTES option to be IGNORED.
@@ -704,16 +705,7 @@ public:
   // ==========================================================================
   /// Returns the "context" string. Used to identify different processing states.
   inline const std::string& context() const { return m_context; }
-  /** @brief Returns the "rootInTES" string.
-   *  Used as the directory root in the TES for which all data access refers to (both saving and retrieving).
-   */
-  inline const std::string& rootInTES() const { return m_rootInTES; }
-  // ==========================================================================
-public:
-  // ==========================================================================
-  /// Returns the full correct event location given the rootInTes settings
-  const std::string fullTESLocation( const std::string& location, const bool useRootInTES ) const;
-  // ==========================================================================
+
 private:
   // ==========================================================================
   /// Add the given service to the list of acquired services
@@ -775,7 +767,6 @@ private:
   Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
 
   Gaudi::Property<std::string> m_context{this, "Context", {}, "note: overridden by parent settings"};
-  Gaudi::Property<std::string> m_rootInTES{this, "RootInTES", {}, "note: overridden by parent settings"};
   Gaudi::Property<std::string> m_header{this, "StatTableHeader",
                                         " |    Counter                                      |     #     |   "
                                         " sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
