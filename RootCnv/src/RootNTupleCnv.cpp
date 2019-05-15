@@ -105,7 +105,8 @@ static inline string _tr( string s ) {
   string local = std::move( s );
   auto   p     = std::begin( local );
   if ( local.compare( 0, 7, "<local>" ) == 0 ) p += 7;
-  std::replace_if( p, std::end( local ), []( const char& c ) { return !isalnum( c ); }, '_' );
+  std::replace_if(
+      p, std::end( local ), []( const char& c ) { return !isalnum( c ); }, '_' );
   return local;
 }
 

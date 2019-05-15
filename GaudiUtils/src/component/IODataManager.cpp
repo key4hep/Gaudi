@@ -78,9 +78,10 @@ StatusCode IODataManager::error( CSTR msg, bool rethrow ) {
 /// Get connection by owner instance (0=ALL)
 IODataManager::Connections IODataManager::connections( const IInterface* owner ) const {
   Connections conns;
-  transform_copy_if( std::begin( m_connectionMap ), std::end( m_connectionMap ), std::back_inserter( conns ),
-                     []( ConnectionMap::const_reference i ) { return i.second->connection; },
-                     [&]( const IDataConnection* c ) { return !owner || c->owner() == owner; } );
+  transform_copy_if(
+      std::begin( m_connectionMap ), std::end( m_connectionMap ), std::back_inserter( conns ),
+      []( ConnectionMap::const_reference i ) { return i.second->connection; },
+      [&]( const IDataConnection* c ) { return !owner || c->owner() == owner; } );
   return conns;
 }
 

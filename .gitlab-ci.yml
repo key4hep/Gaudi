@@ -56,9 +56,9 @@ build:gcc8:dbg:
 check-formatting:
   stage: build
   dependencies: []
-  image: debian:testing
+  image: debian:unstable
   script:
-    - apt update && apt install -y clang-format-7 python-pip git
+    - apt update && apt install -y clang-format-8 python-pip git
     - pip install yapf==0.24.0
     - ci-utils/check-formatting
   artifacts:

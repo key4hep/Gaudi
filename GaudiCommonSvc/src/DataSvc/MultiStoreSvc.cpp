@@ -174,11 +174,12 @@ public:
   /// IDataManagerSvc: Remove all data objects in the data store.
   StatusCode clearStore() override {
     for ( auto& i : m_partitions ) { i.second.dataManager->clearStore().ignore(); }
-    visit( m_root.root,
-           []( auto* p ) {
-             if ( p ) p->release();
-           },
-           []( boost::blank ) {} );
+    visit(
+        m_root.root,
+        []( auto* p ) {
+          if ( p ) p->release();
+        },
+        []( boost::blank ) {} );
     m_root.root = {};
     m_root.path.clear();
     return StatusCode::SUCCESS;
@@ -198,11 +199,12 @@ public:
   /** Initialize data store for new event by giving new event path and root
       object. Takes care to clear the store before reinitializing it  */
   StatusCode setRoot( std::string path, OBJECT* pObj ) override {
-    visit( m_root.root,
-           []( auto* p ) {
-             if ( p ) p->release();
-           },
-           []( boost::blank ) {} );
+    visit(
+        m_root.root,
+        []( auto* p ) {
+          if ( p ) p->release();
+        },
+        []( boost::blank ) {} );
     m_root.path = std::move( path );
     m_root.root = pObj;
     preparePartitions();
@@ -212,11 +214,12 @@ public:
   /** Initialize data store for new event by giving new event path and address
       of root object. Takes care to clear the store before reinitializing it */
   StatusCode setRoot( std::string path, ADDRESS* pAddr ) override {
-    visit( m_root.root,
-           []( auto* p ) {
-             if ( p ) p->release();
-           },
-           []( boost::blank ) {} );
+    visit(
+        m_root.root,
+        []( auto* p ) {
+          if ( p ) p->release();
+        },
+        []( boost::blank ) {} );
     m_root.path = std::move( path );
     m_root.root = pAddr;
     if ( !pAddr ) return StatusCode::FAILURE;
@@ -484,22 +487,22 @@ public:
   StatusCode preparePartitions() {
     StatusCode iret = StatusCode::SUCCESS;
     for ( auto& i : m_partitions ) {
-      StatusCode sc = visit( m_root.root,
-                             [&]( ADDRESS* address ) -> StatusCode {
-                               if ( !address ) return StatusCode::FAILURE;
-                               ADDRESS* pAdd = nullptr;
-                               ADDRESS* p    = address;
-                               auto     sc =
-                                   m_addrCreator->createAddress( p->svcType(), p->clID(), p->par(), p->ipar(), pAdd );
-                               return sc.isSuccess() ? i.second.dataManager->setRoot( m_root.path, pAdd ) : sc;
-                             },
-                             [&]( OBJECT* object ) -> StatusCode {
-                               if ( object && object->clID() == CLID_DataObject ) {
-                                 return i.second.dataManager->setRoot( m_root.path, new DataObject() );
-                               }
-                               return StatusCode::FAILURE;
-                             },
-                             []( boost::blank ) -> StatusCode { return StatusCode::FAILURE; } );
+      StatusCode sc = visit(
+          m_root.root,
+          [&]( ADDRESS* address ) -> StatusCode {
+            if ( !address ) return StatusCode::FAILURE;
+            ADDRESS* pAdd = nullptr;
+            ADDRESS* p    = address;
+            auto     sc   = m_addrCreator->createAddress( p->svcType(), p->clID(), p->par(), p->ipar(), pAdd );
+            return sc.isSuccess() ? i.second.dataManager->setRoot( m_root.path, pAdd ) : sc;
+          },
+          [&]( OBJECT* object ) -> StatusCode {
+            if ( object && object->clID() == CLID_DataObject ) {
+              return i.second.dataManager->setRoot( m_root.path, new DataObject() );
+            }
+            return StatusCode::FAILURE;
+          },
+          []( boost::blank ) -> StatusCode { return StatusCode::FAILURE; } );
       if ( !sc.isSuccess() ) iret = sc;
     }
     return iret;

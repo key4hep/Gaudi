@@ -116,13 +116,11 @@ StatusCode NTupleSvc::updateDirectories() {
         if ( !svc ) continue;
 
         IDataSelector sel;
-        IDataManagerSvc::traverseSubTree( ( *d )->object(),
-                                          [&sel]( IRegistry* r, int ) {
-                                            DataObject* obj = r->object();
-                                            if ( obj ) sel.push_back( obj );
-                                            return true;
-                                          } )
-            .ignore();
+        IDataManagerSvc::traverseSubTree( ( *d )->object(), [&sel]( IRegistry* r, int ) {
+          DataObject* obj = r->object();
+          if ( obj ) sel.push_back( obj );
+          return true;
+        } ).ignore();
         for ( DataObject* o : reverse( sel ) ) {
           IRegistry* r      = o->registry();
           auto       status = svc->updateRep( r->address(), o );

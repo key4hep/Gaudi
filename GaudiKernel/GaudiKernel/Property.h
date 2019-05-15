@@ -413,14 +413,16 @@ namespace Gaudi {
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )( PropertyBase& ),
               std::string doc = "" )
-        : Property( owner, std::move( name ), std::forward<T>( value ),
-                    [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) ) {}
+        : Property(
+              owner, std::move( name ), std::forward<T>( value ),
+              [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) ) {}
     /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "" )
-        : Property( owner, std::move( name ), std::forward<T>( value ),
-                    [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ) ) {}
+        : Property(
+              owner, std::move( name ), std::forward<T>( value ),
+              [owner, handler]( PropertyBase& ) { ( owner->*handler )(); }, std::move( doc ) ) {}
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities

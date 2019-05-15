@@ -79,17 +79,18 @@ namespace Gaudi {
               auto                      i = 1;
               while ( i ) {
                 i              = 0;
-                m_attrib.value = boost::regex_replace( m_attrib.value, varexp,
-                                                       [&i]( const boost::smatch& m ) -> std::string {
-                                                         const std::string name  = m[1];
-                                                         const char*       cname = name.c_str();
-                                                         if ( System::isEnvSet( cname ) ) {
-                                                           ++i;
-                                                           return System::getEnv( cname );
-                                                         }
-                                                         return m[0]; // do not expand unknown vars
-                                                       },
-                                                       boost::match_default | boost::format_all );
+                m_attrib.value = boost::regex_replace(
+                    m_attrib.value, varexp,
+                    [&i]( const boost::smatch& m ) -> std::string {
+                      const std::string name  = m[1];
+                      const char*       cname = name.c_str();
+                      if ( System::isEnvSet( cname ) ) {
+                        ++i;
+                        return System::getEnv( cname );
+                      }
+                      return m[0]; // do not expand unknown vars
+                    },
+                    boost::match_default | boost::format_all );
               }
             }
           } else {

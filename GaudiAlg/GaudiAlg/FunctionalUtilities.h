@@ -33,9 +33,9 @@ namespace Gaudi::Functional {
       "please use `updateHandleLocations` instead of `Gaudi::Functional::updateHandleLocations`" )]] inline void
   updateHandleLocations( IProperty& parent, const std::string& prop, const std::vector<std::string>& newLocs ) {
     std::ostringstream ss;
-    GaudiUtils::details::ostream_joiner( ss << '[', newLocs, ", ", []( std::ostream & os, const auto& i ) -> auto& {
-      return os << "'" << i << "'";
-    } ) << ']';
+    GaudiUtils::details::ostream_joiner(
+        ss << '[', newLocs, ", ", []( std::ostream & os, const auto& i ) -> auto& { return os << "'" << i << "'"; } )
+        << ']';
     auto sc = parent.setProperty( prop, ss.str() );
     if ( sc.isFailure() ) throw GaudiException( "Could not set Property", prop + " -> " + ss.str(), sc );
   }

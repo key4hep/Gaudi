@@ -423,7 +423,8 @@ TTree* RootDataConnection::getSection( std::string_view section, bool create ) {
 TBranch* RootDataConnection::getBranch( std::string_view section, std::string_view branch_name, TClass* cl, void* ptr,
                                         int buff_siz, int split_lvl ) {
   string n = std::string{branch_name};
-  std::replace_if( begin( n ), end( n ), []( const char c ) { return !isalnum( c ); }, '_' );
+  std::replace_if(
+      begin( n ), end( n ), []( const char c ) { return !isalnum( c ); }, '_' );
   n += ".";
   TTree*   t = getSection( section, true );
   TBranch* b = t->GetBranch( n.c_str() );

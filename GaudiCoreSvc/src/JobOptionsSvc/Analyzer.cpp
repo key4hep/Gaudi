@@ -337,7 +337,9 @@ static bool Analyze( gp::Node* node, const std::string& search_path, gp::Include
     break;
   }
   // ----------------------------------------------------------------------
-  default: { break; }
+  default: {
+    break;
+  }
   }
   if ( result ) result = local_result;
 
