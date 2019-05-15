@@ -11,12 +11,11 @@ namespace Gaudi ::Functional {
   namespace details {
 
     template <typename T, typename Traits_, bool isLegacy>
-    class FilterPredicate;
+    struct FilterPredicate;
 
     template <typename... In, typename Traits_>
-    class FilterPredicate<bool( const In&... ), Traits_, true>
-        : public details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
-    public:
+    struct FilterPredicate<bool( const In&... ), Traits_, true>
+        : details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
       using details::DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
@@ -35,9 +34,8 @@ namespace Gaudi ::Functional {
     };
 
     template <typename... In, typename Traits_>
-    class FilterPredicate<bool( const In&... ), Traits_, false>
-        : public details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
-    public:
+    struct FilterPredicate<bool( const In&... ), Traits_, false>
+        : details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
       using details::DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...

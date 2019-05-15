@@ -7,8 +7,8 @@
 
 namespace Gaudi::Examples {
 
-  using LegacyBaseClass_t = Gaudi::Functional::Traits::BaseClass_t<::Algorithm>;
-  using BaseClass_t       = Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>;
+  // using LegacyBaseClass_t = Gaudi::Functional::Traits::BaseClass_t<::Algorithm>;
+  using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>;
 
   struct IntDataProducer final : Gaudi::Functional::Producer<int(), BaseClass_t> {
 
@@ -67,7 +67,7 @@ namespace Gaudi::Examples {
 
   DECLARE_COMPONENT( IntDataConsumer )
 
-  struct IntToFloatData final : Gaudi::Functional::Transformer<float( const int& ), LegacyBaseClass_t> {
+  struct IntToFloatData final : Gaudi::Functional::Transformer<float( const int& ), BaseClass_t> {
 
     IntToFloatData( const std::string& name, ISvcLocator* svcLoc )
         : Transformer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ),
@@ -83,7 +83,7 @@ namespace Gaudi::Examples {
   DECLARE_COMPONENT( IntToFloatData )
 
   struct IntIntToFloatFloatData final
-      : Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), LegacyBaseClass_t> {
+      : Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), BaseClass_t> {
     IntIntToFloatFloatData( const std::string& name, ISvcLocator* svcLoc )
         : MultiTransformer(
               name, svcLoc,
@@ -154,7 +154,7 @@ namespace Gaudi::Examples {
   struct FrExpTransformer final
       : Gaudi::Functional::MultiScalarTransformer<
             FrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>( const std::vector<double>& ),
-            LegacyBaseClass_t> {
+            BaseClass_t> {
     FrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
         : MultiScalarTransformer( name, svcLoc, KeyValue{"InputDoubles", {"/Event/MyVectorOfDoubles"}},
                                   {KeyValue{"OutputFractions", {"/Event/MyVectorOfFractions"}},
@@ -174,7 +174,7 @@ namespace Gaudi::Examples {
   struct OptFrExpTransformer final
       : Gaudi::Functional::MultiScalarTransformer<
             OptFrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>( const std::vector<double>& ),
-            LegacyBaseClass_t> {
+            BaseClass_t> {
     OptFrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
         : MultiScalarTransformer( name, svcLoc, KeyValue{"InputDoubles", {"/Event/MyVectorOfDoubles"}},
                                   {KeyValue{"OutputFractions", {"/Event/OptMyVectorOfFractions"}},
@@ -196,9 +196,8 @@ namespace Gaudi::Examples {
   DECLARE_COMPONENT( OptFrExpTransformer )
 
   struct LdExpTransformer final
-      : Gaudi::Functional::ScalarTransformer<LdExpTransformer,
-                                             std::vector<double>( const std::vector<double>&, const std::vector<int>& ),
-                                             LegacyBaseClass_t> {
+      : Gaudi::Functional::ScalarTransformer<
+            LdExpTransformer, std::vector<double>( const std::vector<double>&, const std::vector<int>& ), BaseClass_t> {
     LdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
         : ScalarTransformer( name, svcLoc,
                              {KeyValue{"InputFractions", {"/Event/MyVectorOfFractions"}},
@@ -218,7 +217,7 @@ namespace Gaudi::Examples {
   struct OptLdExpTransformer final
       : Gaudi::Functional::ScalarTransformer<OptLdExpTransformer,
                                              std::vector<double>( const std::vector<double>&, const std::vector<int>& ),
-                                             LegacyBaseClass_t> {
+                                             BaseClass_t> {
     OptLdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
         : ScalarTransformer( name, svcLoc,
                              {KeyValue{"InputFractions", {"/Event/MyVectorOfFractions"}},
