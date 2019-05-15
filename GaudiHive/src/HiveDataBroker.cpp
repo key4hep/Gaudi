@@ -228,7 +228,12 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
       if ( iproducer != producers.end() ) {
         algEntry.dependsOn.insert( iproducer->second );
       } else {
-        throw GaudiException( "unknown requested input: " + id.key(), __func__, StatusCode::FAILURE );
+        std::ostringstream error_message;
+        error_message << "\nUnknown requested input by " << AlgorithmRepr{*( algEntry.alg )} << " : " << id.key()
+                      << " .\n";
+        error_message << "You can set the OutputLevel of HiveDataBrokerSvc to DEBUG to get a list of inputs and "
+                         "outputs of every algorithm.\n";
+        throw GaudiException( error_message.str(), __func__, StatusCode::FAILURE );
         // TODO: assign to dataloader!
         // algEntry.dependsOn.insert(dataloader.alg);
         // dataloader.data.emplace( id ); // TODO: we may ask to much of the
