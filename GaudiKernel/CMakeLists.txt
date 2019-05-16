@@ -5,6 +5,7 @@ gaudi_depends_on_subdirs(GaudiPluginService GaudiPolicy)
 find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
 find_package(ROOT REQUIRED COMPONENTS Core)
 find_package(TBB REQUIRED)
+find_package(cppgsl REQUIRED)
 find_package(CppUnit)
 # Runtime dependency for ROOT (required for SLC6 as of LCG 96)
 find_package(LibLZMA REQUIRED)
@@ -63,7 +64,7 @@ endif()
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
                   LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT LibLZMA TBB GaudiPluginService ${extra_libraries}
-                  INCLUDE_DIRS Boost ROOT TBB
+                  INCLUDE_DIRS Boost ROOT TBB cppgsl
                   PUBLIC_HEADERS Gaudi GaudiKernel)
 
 #---Tests-------------------------------------------------------------------

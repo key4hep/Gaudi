@@ -3,20 +3,11 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set>
   <text>-v</text>
-  <text>--ncpus</text>
-  <text>1</text>
+  <text>--application=Test::CustomApp</text>
+  <text>../../options/CustomAppFromOptions.py</text>
 </set></argument>
-<argument name="options"><text>
-# Options of the test job
-from Gaudi.Configuration import *
-
-def myMainLoop(app, nevt):
-    print "=== Custom Main Loop ==="
-    from GaudiPython import gbl
-    return True
-
-setCustomMainLoop(myMainLoop)
+<argument name="validator"><text>
+findReferenceBlock("=== Custom Application ===")
 </text></argument>
-<argument name="exit_code"><integer>1</integer></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 </extension>

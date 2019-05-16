@@ -1,22 +1,20 @@
 #ifndef GAUDI_APPLICATIONMGR_H
 #define GAUDI_APPLICATIONMGR_H
 
-#include "GaudiKernel/AppReturnCode.h"
-#include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IComponentManager.h"
-#include "GaudiKernel/IEventProcessor.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/IStateful.h"
-#include "GaudiKernel/ISvcManager.h"
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/PropertyHolder.h"
-#include "GaudiKernel/Service.h"
-
-// STL include files
-#include <list>
+#include <Gaudi/Interfaces/IAsyncEventProcessor.h>
+#include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/CommonMessaging.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IAppMgrUI.h>
+#include <GaudiKernel/IComponentManager.h>
+#include <GaudiKernel/IEventProcessor.h>
+#include <GaudiKernel/IProperty.h>
+#include <GaudiKernel/IStateful.h>
+#include <GaudiKernel/ISvcManager.h>
+#include <GaudiKernel/Kernel.h>
+#include <GaudiKernel/PropertyHolder.h>
+#include <GaudiKernel/Service.h>
 #include <vector>
 
 // Forward declarations
@@ -45,8 +43,8 @@ class IJobOptionsSvc;
     @author Pere Mato
 */
 class ApplicationMgr
-    : public PropertyHolder<
-          CommonMessaging<implements<IAppMgrUI, IEventProcessor, IService, IStateful, INamedInterface, IProperty>>> {
+    : public PropertyHolder<CommonMessaging<implements<IAppMgrUI, Gaudi::Interfaces::IAsyncEventProcessor, IService,
+                                                       IStateful, INamedInterface, IProperty>>> {
 public:
   // default creator
   ApplicationMgr( IInterface* = nullptr );
@@ -102,6 +100,8 @@ public:
   // implementation of IService::sysRestart
   StatusCode sysRestart() override { return StatusCode::SUCCESS; }
 
+  std::future<std::tuple<StatusCode, EventContext>> asyncExecuteEvent( EventContext&& ctx ) override;
+
   /// @name Gaudi::Details::PropertyBase handlers
   //@{
   void       evtLoopPropertyHandler( Gaudi::Details::PropertyBase& theProp );
@@ -136,6 +136,9 @@ public:
 
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
   void outputLevelUpdate() override;
+
+  /// Print the sequence of algorithms that have been loaded.
+  void printAlgsSequences();
 
 protected:
   // implementation of IService::setServiceManager
@@ -209,6 +212,7 @@ protected:
   SmartIF<IEventProcessor> m_processingMgr; ///< Reference to processing manager object
   SmartIF<IJobOptionsSvc>  m_jobOptionsSvc; ///< Reference to JobOption service
 
+  SmartIF<IAsyncEventProcessor> m_asyncProcessor; ///< Reference to an asynchronous processing manager object
   //
   // The public ApplicationMgr properties
   //
@@ -275,6 +279,9 @@ protected:
   /// Property to record the error conditions occurring during the running.
   Gaudi::Property<int> m_returnCode{this, "ReturnCode", Gaudi::ReturnCode::Success,
                                     "Return code of the application. Set internally in case of error conditions."};
+
+  Gaudi::Property<bool> m_printAlgsSequence{this, "PrintAlgsSequence", false,
+                                            "Print the sequence of algorithms that have been loaded."};
 
   // For concurrency
   bool m_useHiveAlgorithmManager;

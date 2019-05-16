@@ -381,6 +381,8 @@ StatusCode ApplicationMgr::configure() {
         << "\n Check option ApplicationMgr." << m_eventLoopMgr.name() << "\n No events will be processed." << endmsg;
     return sc;
   }
+  // The IEventProcessor might also be an IAsyncEventProcessor
+  m_asyncProcessor = m_processingMgr;
 
   // Establish Update Handlers for ExtSvc and DLLs Properties
   m_extSvcNameList.declareUpdateHandler( &ApplicationMgr::extSvcNameListHandler, this );
@@ -456,6 +458,8 @@ StatusCode ApplicationMgr::initialize() {
   //--------------------------------------------------------------------------
   log << MSG::INFO << "Application Manager Initialized successfully" << endmsg;
   m_state = m_targetState;
+
+  if ( m_printAlgsSequence ) printAlgsSequences();
 
   return sc;
 }
@@ -789,6 +793,20 @@ StatusCode ApplicationMgr::executeEvent( EventContext&& ctx ) {
   return StatusCode::FAILURE;
 }
 
+std::future<std::tuple<StatusCode, EventContext>> ApplicationMgr::asyncExecuteEvent( EventContext&& ctx ) {
+  if ( m_state == Gaudi::StateMachine::RUNNING ) {
+    if ( LIKELY( bool( m_asyncProcessor ) ) ) {
+      return m_asyncProcessor->asyncExecuteEvent( std::move( ctx ) );
+    } else {
+      throw GaudiException{"asyncExecuteEvent: event processor is not an IAsyncEventProcessor", name(),
+                           StatusCode::FAILURE};
+    }
+  }
+  std::stringstream s;
+  s << "asyncExecuteEvent: Invalid state \"" << FSMState() << '"';
+  throw GaudiException{s.str(), name(), StatusCode::FAILURE};
+}
+
 EventContext ApplicationMgr::createEventContext() {
   if ( m_state == Gaudi::StateMachine::RUNNING ) {
     if ( m_processingMgr ) { return m_processingMgr->createEventContext(); }
@@ -1053,4 +1071,32 @@ StatusCode ApplicationMgr::decodeDllNameList() {
 void ApplicationMgr::outputLevelUpdate() {
   resetMessaging();
   for ( auto& mgrItem : m_managers ) { mgrItem.second->outputLevelUpdate(); }
+}
+
+namespace {
+  /// Recursive function to print the algorithm name and its sub algorithms
+  void printAlgsSequencesHelper( SmartIF<IAlgManager>& algmgr, const std::string& algname, MsgStream& log,
+                                 int indent ) {
+    using Gaudi::Utils::TypeNameString;
+    log << MSG::ALWAYS;
+    for ( int i = 0; i < indent; ++i ) log << "     ";
+    log << algname << endmsg;
+    auto prop = algmgr->algorithm<IProperty>( algname, false );
+    if ( prop ) {
+      // Try to get the property Members
+      Gaudi::Property<std::vector<std::string>> p( "Members", {} );
+      if ( prop->getProperty( &p ).isSuccess() ) {
+        for ( auto& subalgname : p.value() ) { printAlgsSequencesHelper( algmgr, subalgname, log, indent + 1 ); }
+      }
+    } else {
+      log << MSG::WARNING << "Cannot get properties of " << algname << endmsg;
+    }
+  }
+} // namespace
+
+void ApplicationMgr::printAlgsSequences() {
+  MsgStream log( m_messageSvc, m_name );
+  log << MSG::ALWAYS << "****************************** Algorithm Sequence ****************************" << endmsg;
+  for ( auto& algname : m_topAlgNameList ) { printAlgsSequencesHelper( algManager(), algname, log, 0 ); }
+  log << MSG::ALWAYS << "******************************************************************************" << endmsg;
 }

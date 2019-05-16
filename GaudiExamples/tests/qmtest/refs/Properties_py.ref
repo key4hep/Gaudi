@@ -112,7 +112,7 @@ PropertyAlg          INFO Dump of the property catalogue....
 PropertyAlg          INFO  Properties of AuditorSvc: Auditors
 PropertyAlg          INFO  Properties of Dummy1: Property
 PropertyAlg          INFO  Properties of Dummy2: Property
-PropertyAlg          INFO  Properties of PropertyAlg: DoubleArray, Int64Array, Bool, UInt64Array, StringArray, PBool, DoublePairArray, PDoubleArray, PDouble, PInt, BoolArray, Double, PStringArray, OutputLevel, Int64, PBoolArray, IntArray, String, UInt64, IntPairArray, PIntArray, Int, DoubleArrayWithUnits, PString, DoubleArrayWithoutUnits
+PropertyAlg          INFO  Properties of PropertyAlg: Bool, BoolArray, Double, DoubleArray, DoubleArrayWithUnits, DoubleArrayWithoutUnits, DoublePairArray, Int, Int64, Int64Array, IntArray, IntPairArray, OutputLevel, PBool, PBoolArray, PDouble, PDoubleArray, PInt, PIntArray, PString, PStringArray, String, StringArray, UInt64, UInt64Array
 PropertyAlg          INFO =================================================
 PropertyAlg          INFO Changed property DoubleArray in catalogue
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
