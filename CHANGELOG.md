@@ -6,13 +6,25 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Stefa
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
+
+## [v32r0][] - 2019-05-16
 This release features many fixes and improvements, but also a few backward incompatible changes:
 - removed  `GaudiGSL` package (in preparation for the licensing under Apache 2) (!879)
 - change of `IEventProcessor` interface (!877)
 - change (const correctness) of custom containers interfaces (!896)
 - removed a few unused components: `HLTEventLoopMgr` (!876), `AlgErrorAuditor` (!874)
+- drop support for Python *custom event loop* in `gaudirun.py` (!878)
+
+Among the various additions you can find:
+- `Counter`-based timers (!787)
+- example of an interface for accessing conditions, which require experiment specific implementation (!838)
+- a new interface (`Gaudi::Interfaces::IAsyncEventProcessor`) to allow decoupling of
+  the main thread from the event processing thread(s) (!878)
+- a simplified application steering class (`Gaudi::Application`) (!878)
 
 ### Changed
+- Update `clang-format` to 8 (!872)
+- Factor TES path related code out of `GaudiCommon` (!904)
 - More explicit management of `EventContext` in `IEventProcessor` (!877)
 - Small clean up in `EventLoopMgr` implementations (!876)
 - Remove `GaudiGSL` (!879)
@@ -24,6 +36,9 @@ This release features many fixes and improvements, but also a few backward incom
 - Replace `boost::string_ref` with `std::string_view` (!859)
 
 ### Added
+- Add optional extension of `EventProcessor` for asynchronous processing (!878)
+- Add example of `ConditionAccessorHolder` implementation for integration in Functional (!838)
+- Bits for the cross-experiment study on heterogeneous workflows (!828)
 - Generalize `Gaudi::Functional` to support LHCb-style conditions handles (!899)
 - Add a synthetic performance stress test for the scheduler (!865)
 - New Minimal Event Store: `EvtStoreSvc` (!882)
@@ -36,8 +51,10 @@ This release features many fixes and improvements, but also a few backward incom
 - Add the possibility to ask for Mode in python data handle property (!845)
 
 ### Fixed
-- Avoid copy of EventContext in Gaudi::Utils::AlgContext (!902)
-- Reverse order of tbb task_scheduler_init and global_control (!895)
+- Tweaks to `Gaudi::Functional` (!903)
+- `HiveDataBroker`: Improve error message when unknown requested input (!906)
+- Avoid copy of `EventContext` in `Gaudi::Utils::AlgContext` (!902)
+- Reverse order of tbb `task_scheduler_init` and `global_control` (!895)
 - Make `StatusCodeSvc` thread-safe (!885)
 - `ThreadPoolSvc`: prefer `std::unique_ptr` (!889)
 - Ensure thread termination tools only run in initialized threads (!887)
@@ -293,7 +310,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...master
+[v32r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...v32r0
 [v31r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r5...v31r0
 [v30r5]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r4...v30r5
 [v30r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r3...v30r4
