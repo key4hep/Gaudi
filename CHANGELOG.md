@@ -1,15 +1,74 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett
+Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Stefan Roiser @roiser
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+## [v32r0][] - 2019-05-16
+This release features many fixes and improvements, but also a few backward incompatible changes:
+- removed  `GaudiGSL` package (in preparation for the licensing under Apache 2) (!879)
+- change of `IEventProcessor` interface (!877)
+- change (const correctness) of custom containers interfaces (!896)
+- removed a few unused components: `HLTEventLoopMgr` (!876), `AlgErrorAuditor` (!874)
+- drop support for Python *custom event loop* in `gaudirun.py` (!878)
+
+Among the various additions you can find:
+- `Counter`-based timers (!787)
+- example of an interface for accessing conditions, which require experiment specific implementation (!838)
+- a new interface (`Gaudi::Interfaces::IAsyncEventProcessor`) to allow decoupling of
+  the main thread from the event processing thread(s) (!878)
+- a simplified application steering class (`Gaudi::Application`) (!878)
+
+### Changed
+- Update `clang-format` to 8 (!872)
+- Factor TES path related code out of `GaudiCommon` (!904)
+- More explicit management of `EventContext` in `IEventProcessor` (!877)
+- Small clean up in `EventLoopMgr` implementations (!876)
+- Remove `GaudiGSL` (!879)
+- Do not return non-const pointers to elements of const containers (!896)
+- Drop backwards compatibility code (!883, !900)
+- `HiveDataBroker`: throw exception in case of same output locations in two different algorithms (!858)
+- Delete `AlgErrorAuditor` (!874)
+- `PrecedenceSvc`: demote 'Verifying rules' message to debug (!873)
+- Replace `boost::string_ref` with `std::string_view` (!859)
+
 ### Added
+- Add optional extension of `EventProcessor` for asynchronous processing (!878)
+- Add example of `ConditionAccessorHolder` implementation for integration in Functional (!838)
+- Bits for the cross-experiment study on heterogeneous workflows (!828)
+- Generalize `Gaudi::Functional` to support LHCb-style conditions handles (!899)
+- Add a synthetic performance stress test for the scheduler (!865)
+- New Minimal Event Store: `EvtStoreSvc` (!882)
+- Add Counter-based timers (!787)
+- Add support for `Gaudi::Algorithm` as base class of `Functional` algorithms (!897)
+- Create a queue for all schedule-able algorithms (!869)
+- Add support for specific architectures in BINARY_TAG (!853)
+- Add `getIfExits` for `DataHandle`s with `AnyDataWrapper` (!854)
+- Add support for `std::chrono::duration` in counters (!849)
 - Add the possibility to ask for Mode in python data handle property (!845)
 
+### Fixed
+- Tweaks to `Gaudi::Functional` (!903)
+- `HiveDataBroker`: Improve error message when unknown requested input (!906)
+- Avoid copy of `EventContext` in `Gaudi::Utils::AlgContext` (!902)
+- Reverse order of tbb `task_scheduler_init` and `global_control` (!895)
+- Make `StatusCodeSvc` thread-safe (!885)
+- `ThreadPoolSvc`: prefer `std::unique_ptr` (!889)
+- Ensure thread termination tools only run in initialized threads (!887)
+- Updates for MacOS and clang (!888, !894, !893)
+- Enable `std::iterator_traits<vector_of_const_<T>::iterator>` (!855)
+- Fix `MessageSvc::reinitialize` (!871)
+- Fixes to `EventIDRange` (!860)
+- `ApplicationMgr`: Call all state transition for `MessageSvc` and `JobOptionsSvc` (!866)
+- Fix tunneling of CF decisions to inactive graph regions in multi-parent configurations (!863)
+- Use `[[fallthrough]]` attribute instead of the _fallthrough_ comment (!862)
+- Restructure PRG sources and add visitor for Concurrent/Prompt CF inconsistency detection (!861)
+- Sort data dependencies in `HiveDataBroker` debug printout (!868)
+- Avoid displaying unused Binomial counters (!830)
+- Python 2 & 3 compatibility (!832, !852)
 
 ## [v29r5][] - 2019-03-06
 This is a bugfix release only to fix a warning with the most recent version of
@@ -251,11 +310,12 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...master
+[v32r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...v32r0
 [v31r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r5...v31r0
 [v30r5]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r4...v30r5
 [v30r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r3...v30r4
 [v30r3]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r2...v30r3
-[v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r4...v29r5
+[v29r5]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r4...v29r5
 [v29r4]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v29r3...v29r4
 [v28r2p1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v28r2...v28r2p1
