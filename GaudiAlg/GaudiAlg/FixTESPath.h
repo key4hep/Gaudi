@@ -29,11 +29,10 @@ public:
   template <typename U = BASE, typename = std::enable_if_t<std::is_base_of<AlgTool, BASE>::value, U>>
   FixTESPath( const std::string& type, const std::string& name, const IInterface* ancestor )
       : BASE( type, name, ancestor ) {
-    // setup context from parent if available
-    if ( const auto* gAlg = dynamic_cast<const FixTESPath<Algorithm>*>( ancestor ); gAlg ) {
-      this->setProperty( "RootInTES", gAlg->rootInTES() ).ignore();
-    } else if ( const auto* gTool = dynamic_cast<const FixTESPath<AlgTool>*>( ancestor ); gTool ) {
-      this->setProperty( "RootInTES", gTool->rootInTES() ).ignore();
+    // setup RootInTES from parent if available
+    if ( const IProperty* ancestorProp = dynamic_cast<const IProperty*>( ancestor );
+         ancestorProp && ancestorProp->hasProperty( "RootInTES" ) ) {
+      this->setProperty( ancestorProp->getProperty( "RootInTES" ) ).ignore();
     }
   }
 
