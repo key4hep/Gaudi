@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
-## [v32r0][] - 2019-05-16
+## [v32r0][] - 2019-05-18
 This release features many fixes and improvements, but also a few backward incompatible changes:
 - removed  `GaudiGSL` package (in preparation for the licensing under Apache 2) (!879)
 - change of `IEventProcessor` interface (!877)
