@@ -110,6 +110,19 @@ def getConfigurable(name, defaultType=None):
         return defaultType(name)
 
 
+def setCustomMainLoop(runner):
+    '''
+    Replace the default main execution loop with the specified callable object.
+
+    @param runner: a callable that accepts an initialized instance of GaudiPython.AppMgr
+                   and the number of events to process and returns a StatusCode or a boolean
+                   (True means success)
+    '''
+    # change the mainLoop function
+    from Gaudi.Main import gaudimain
+    gaudimain.mainLoop = lambda _self, app, nevt: runner(app, nevt)
+
+
 class GaudiPersistency(ConfigurableUser):
     """Configurable to enable ROOT-based persistency.
 

@@ -277,9 +277,6 @@ if __name__ == "__main__":
         help=
         "Save gaudi process information to the file specified (in JSON format)"
     )
-    parser.add_option(
-        '--application',
-        help='name of the Gaudi::Application to use [default: %default]')
 
     parser.set_defaults(
         options=[],
@@ -291,8 +288,7 @@ if __name__ == "__main__":
         ncpus=None,
         # the old logic can be turned off with an env variable
         old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ,
-        run_info_file=None,
-        application='Gaudi::Application')
+        run_info_file=None)
 
     # replace .qmt files in the command line with their contained args
     argv = []
@@ -571,8 +567,6 @@ if __name__ == "__main__":
         elif opts.dry_run:
             logging.warning(
                 "--printsequence not supported with --dry-run: ignored")
-
-    c.application = opts.application
 
     # re-enable the GaudiPython module
     del sys.modules["GaudiPython"]

@@ -7,6 +7,150 @@ import logging
 log = logging.getLogger(__name__)
 
 
+class BootstrapHelper(object):
+    class StatusCode(object):
+        def __init__(self, value):
+            self.value = value
+
+        def __bool__(self):
+            return self.value
+
+        __nonzero__ = __bool__
+
+        def isSuccess(self):
+            return self.value
+
+        def isFailure(self):
+            return not self.value
+
+        def ignore(self):
+            pass
+
+    class Property(object):
+        def __init__(self, value):
+            self.value = value
+
+        def __str__(self):
+            return str(self.value)
+
+        toString = __str__
+
+    class AppMgr(object):
+        def __init__(self, ptr, lib):
+            self.ptr = ptr
+            self.lib = lib
+            self._as_parameter_ = ptr
+
+        def configure(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_configure(self.ptr))
+
+        def initialize(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_initialize(self.ptr))
+
+        def start(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_start(self.ptr))
+
+        def run(self, nevt):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_app_run(self.ptr, nevt))
+
+        def stop(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_stop(self.ptr))
+
+        def finalize(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_finalize(self.ptr))
+
+        def terminate(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_terminate(self.ptr))
+
+        def getService(self, name):
+            return self.lib.py_bootstrap_getService(self.ptr, name)
+
+        def setProperty(self, name, value):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_setProperty(self.ptr, name, value))
+
+        def getProperty(self, name):
+            return BootstrapHelper.Property(
+                self.lib.py_bootstrap_getProperty(self.ptr, name))
+
+        def printAlgsSequences(self):
+            return self.lib.py_helper_printAlgsSequences(self.ptr)
+
+    def __init__(self):
+        from ctypes import (PyDLL, util, c_void_p, c_bool, c_char_p, c_int,
+                            RTLD_GLOBAL)
+
+        # Helper class to avoid void* to int conversion
+        # (see http://stackoverflow.com/questions/17840144)
+
+        class IInterface_p(c_void_p):
+            def __repr__(self):
+                return "IInterface_p(0x%x)" % (0 if self.value is None else
+                                               self.value)
+
+        self.log = logging.getLogger('BootstrapHelper')
+        libname = util.find_library('GaudiKernel') or 'libGaudiKernel.so'
+        self.log.debug('loading GaudiKernel (%s)', libname)
+
+        # FIXME: note that we need PyDLL instead of CDLL if the calls to
+        #        Python functions are not protected with the GIL.
+        self.lib = gkl = PyDLL(libname, mode=RTLD_GLOBAL)
+
+        functions = [
+            ('createApplicationMgr', IInterface_p, []),
+            ('getService', IInterface_p, [IInterface_p, c_char_p]),
+            ('setProperty', c_bool, [IInterface_p, c_char_p, c_char_p]),
+            ('getProperty', c_char_p, [IInterface_p, c_char_p]),
+            ('addPropertyToCatalogue', c_bool,
+             [IInterface_p, c_char_p, c_char_p, c_char_p]),
+            ('ROOT_VERSION_CODE', c_int, []),
+        ]
+
+        for name, restype, argtypes in functions:
+            f = getattr(gkl, 'py_bootstrap_%s' % name)
+            f.restype, f.argtypes = restype, argtypes
+            # create a delegate method if not already present
+            # (we do not want to use hasattr because it calls "properties")
+            if name not in self.__class__.__dict__:
+                setattr(self, name, f)
+
+        for name in ('configure', 'initialize', 'start', 'stop', 'finalize',
+                     'terminate'):
+            f = getattr(gkl, 'py_bootstrap_fsm_%s' % name)
+            f.restype, f.argtypes = c_bool, [IInterface_p]
+        gkl.py_bootstrap_app_run.restype = c_bool
+        gkl.py_bootstrap_app_run.argtypes = [IInterface_p, c_int]
+
+        gkl.py_helper_printAlgsSequences.restype = None
+        gkl.py_helper_printAlgsSequences.argtypes = [IInterface_p]
+
+    def createApplicationMgr(self):
+        ptr = self.lib.py_bootstrap_createApplicationMgr()
+        return self.AppMgr(ptr, self.lib)
+
+    @property
+    def ROOT_VERSION_CODE(self):
+        return self.lib.py_bootstrap_ROOT_VERSION_CODE()
+
+    @property
+    def ROOT_VERSION(self):
+        root_version_code = self.ROOT_VERSION_CODE
+        a = root_version_code >> 16 & 0xff
+        b = root_version_code >> 8 & 0xff
+        c = root_version_code & 0xff
+        return (a, b, c)
+
+
+_bootstrap = None
+
+
 def toOpt(value):
     '''
     Helper to convert values to old .opts format.
@@ -32,6 +176,9 @@ def toOpt(value):
 
 
 class gaudimain(object):
+    # main loop implementation, None stands for the default
+    mainLoop = None
+
     def __init__(self):
         from Configurables import ApplicationMgr
         appMgr = ApplicationMgr()
@@ -41,7 +188,6 @@ class gaudimain(object):
             appMgr.AppVersion = str(os.environ["GAUDIAPPVERSION"])
         self.log = logging.getLogger(__name__)
         self.printsequence = False
-        self.application = 'Gaudi::Application'
 
     def setupParallelLogging(self):
         # ---------------------------------------------------
@@ -137,11 +283,8 @@ class gaudimain(object):
     #  Depending on the number of CPUs (ncpus) specified, it start
     def run(self, attach_debugger, ncpus=None):
         if not ncpus:
-            if os.environ.get('GAUDIRUN_USE_OLDINIT'):
-                result = self.runSerialOld(attach_debugger)
-            else:
-                # Standard sequential mode
-                result = self.runSerial(attach_debugger)
+            # Standard sequential mode
+            result = self.runSerial(attach_debugger)
         else:
             # Otherwise, run with the specified number of cpus
             result = self.runParallel(ncpus)
@@ -163,7 +306,10 @@ class gaudimain(object):
         os.kill(pid, 0)
         return
 
-    def runSerial(self, attach_debugger):
+    def basicInit(self):
+        '''
+        Bootstrap the application with minimal use of Python bindings.
+        '''
         try:
             from GaudiKernel.Proxy.Configurable import expandvars
         except ImportError:
@@ -173,17 +319,55 @@ class gaudimain(object):
 
         from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
-        self.log.debug('runSerial: apply options')
-        conf_dict = {'ApplicationMgr.JobOptionsType': '"NONE"'}
+        global _bootstrap
+        if _bootstrap is None:
+            _bootstrap = BootstrapHelper()
 
-        # FIXME: this is to make sure special properties are correctly
-        # expanded before we fill conf_dict
-        for c in Configurable.allConfigurables.values():
-            if hasattr(c, 'getValuedProperties'):
-                c.getValuedProperties()
+        self.log.debug('basicInit: instantiate ApplicationMgr')
+        self.ip = self.g = _bootstrap.createApplicationMgr()
 
+        self.log.debug('basicInit: apply options')
+
+        # set ApplicationMgr properties
+        comp = 'ApplicationMgr'
+        props = Configurable.allConfigurables.get(comp, {})
+        if props:
+            props = expandvars(props.getValuedProperties())
+        for p, v in props.items() + [('JobOptionsType', 'NONE')]:
+            if not self.g.setProperty(p, str(v)):
+                self.log.error('Cannot set property %s.%s to %s', comp, p, v)
+                sys.exit(10)
+        # issue with missing dictionary with ROOT < 6.2.7
+        if _bootstrap.ROOT_VERSION < (6, 2, 7):
+            # we need to load GaudiPython
+            import GaudiPython
+
+        self.g.configure()
+
+        # set MessageSvc properties
+        comp = 'MessageSvc'
+        msp = self.g.getService(comp)
+        if not msp:
+            self.log.error('Cannot get service %s', comp)
+            sys.exit(10)
+        props = Configurable.allConfigurables.get(comp, {})
+        if props:
+            props = expandvars(props.getValuedProperties())
+        for p, v in props.items():
+            if not _bootstrap.setProperty(msp, p, str(v)):
+                self.log.error('Cannot set property %s.%s to %s', comp, p, v)
+                sys.exit(10)
+
+        # feed JobOptionsSvc
+        comp = 'JobOptionsSvc'
+        jos = self.g.getService(comp)
+        if not jos:
+            self.log.error('Cannot get service %s', comp)
+            sys.exit(10)
         for n in getNeededConfigurables():
             c = Configurable.allConfigurables[n]
+            if n in ['ApplicationMgr', 'MessageSvc']:
+                continue  # These are already done
             for p, v in c.getValuedProperties().items():
                 v = expandvars(v)
                 # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
@@ -196,35 +380,99 @@ class gaudimain(object):
                     v = '"%s"' % v  # need double quotes
                 elif type(v) == long:
                     v = '%d' % v  # prevent pending 'L'
-                conf_dict['{}.{}'.format(n, p)] = str(v)
-
-        if self.printsequence:
-            conf_dict['ApplicationMgr.PrintAlgsSequence'] = 'true'
-
+                _bootstrap.addPropertyToCatalogue(jos, n, p, str(v))
         if hasattr(Configurable, "_configurationLocked"):
             Configurable._configurationLocked = True
+        self.log.debug('basicInit: done')
 
-        if attach_debugger:
-            self.hookDebugger()
+    def gaudiPythonInit(self):
+        '''
+        Initialize the application with full Python bindings.
+        '''
+        self.log.debug('gaudiPythonInit: import GaudiPython')
+        import GaudiPython
+        self.log.debug('gaudiPythonInit: instantiate ApplicationMgr')
+        self.g = GaudiPython.AppMgr()
+        self.ip = self.g._ip
+        self.log.debug('gaudiPythonInit: done')
+
+    def runSerial(self, attach_debugger):
+        # --- Instantiate the ApplicationMgr------------------------------
+        if (self.mainLoop or os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
+            self.gaudiPythonInit()
+        else:
+            self.basicInit()
 
         self.log.debug('-' * 80)
         self.log.debug('%s: running in serial mode', __name__)
         self.log.debug('-' * 80)
         sysStart = time()
 
-        import Gaudi
-        app = Gaudi.Application.create(self.application, conf_dict)
-        retcode = app.run()
+        if self.mainLoop:
+            runner = self.mainLoop
+        else:
 
+            def runner(app, nevt):
+                self.log.debug('initialize')
+                sc = app.initialize()
+                if sc.isSuccess():
+                    if self.printsequence:
+                        app.printAlgsSequences()
+                    self.log.debug('start')
+                    sc = app.start()
+                    if sc.isSuccess():
+                        self.log.debug('run(%d)', nevt)
+                        sc = app.run(nevt)
+                        self.log.debug('stop')
+                        app.stop().ignore()
+                    self.log.debug('finalize')
+                    app.finalize().ignore()
+                self.log.debug('terminate')
+                sc1 = app.terminate()
+                if sc.isSuccess():
+                    sc = sc1
+                else:
+                    sc1.ignore()
+                self.log.debug('status code: %s',
+                               'SUCCESS' if sc.isSuccess() else 'FAILURE')
+                return sc
+
+        if (attach_debugger == True):
+            self.hookDebugger()
+
+        try:
+            statuscode = runner(self.g,
+                                int(self.ip.getProperty('EvtMax').toString()))
+        except SystemError:
+            # It may not be 100% correct, but usually it means a segfault in C++
+            self.ip.setProperty('ReturnCode', str(128 + 11))
+            statuscode = False
+        except Exception as x:
+            print 'Exception:', x
+            # for other exceptions, just set a generic error code
+            self.ip.setProperty('ReturnCode', '1')
+            statuscode = False
+        if hasattr(statuscode, "isSuccess"):
+            success = statuscode.isSuccess()
+        else:
+            success = statuscode
+        #success = self.g.exit().isSuccess() and success
+        if not success and self.ip.getProperty('ReturnCode').toString() == '0':
+            # ensure that the return code is correctly set
+            self.ip.setProperty('ReturnCode', '1')
         sysTime = time() - sysStart
         self.log.debug('-' * 80)
         self.log.debug('%s: serial system finished, time taken: %5.4fs',
                        __name__, sysTime)
         self.log.debug('-' * 80)
-
-        return retcode
+        return int(self.ip.getProperty('ReturnCode').toString())
 
     def runParallel(self, ncpus):
+        if self.mainLoop:
+            self.log.fatal(
+                "Cannot use custom main loop in multi-process mode, check your options"
+            )
+            return 1
         self.setupParallelLogging()
         from Gaudi.Configuration import Configurable
         import GaudiMP.GMPBase as gpp

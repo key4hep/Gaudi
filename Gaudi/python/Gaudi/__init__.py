@@ -1,6 +1,5 @@
 import os
 import sys
-import ctypes
 
 __configurables_module_fullname__ = __name__ + '.Configurables'
 __ignore_missing_configurables__ = False
@@ -51,40 +50,3 @@ class _ConfigurablesModule(object):
 # install the facade module instance as a module
 Configurables = _ConfigurablesModule()
 sys.modules[__configurables_module_fullname__] = Configurables
-
-_GaudiKernelLib = None
-
-
-class c_opt_t(ctypes.Structure):
-    _fields_ = [('key', ctypes.c_char_p), ('value', ctypes.c_char_p)]
-
-
-class Application(object):
-    def __init__(self, opts, appType="Gaudi::Application"):
-        global _GaudiKernelLib
-        if _GaudiKernelLib is None:
-            # FIXME: note that we need PyDLL instead of CDLL if the calls to
-            #        Python functions are not protected with the GIL.
-            gkl = _GaudiKernelLib = ctypes.PyDLL(
-                'libGaudiKernel.so', mode=ctypes.RTLD_GLOBAL)
-            gkl._py_Gaudi__Application__create.restype = ctypes.c_void_p
-            gkl._py_Gaudi__Application__run.argtypes = [ctypes.c_void_p]
-            gkl._py_Gaudi__Application__run.restype = ctypes.c_int
-            gkl._py_Gaudi__Application__delete.argtypes = [ctypes.c_void_p]
-
-        c_opts = (c_opt_t * len(opts))()
-        for idx, item in enumerate(opts.items()):
-            c_opts[idx].key, c_opts[idx].value = item
-
-        self._impl = _GaudiKernelLib._py_Gaudi__Application__create(
-            appType, c_opts, ctypes.c_long(len(c_opts)))
-
-    @classmethod
-    def create(cls, appType, opts):
-        return cls(opts, appType=appType)
-
-    def run(self):
-        return _GaudiKernelLib._py_Gaudi__Application__run(self._impl)
-
-    def __del__(self):
-        _GaudiKernelLib._py_Gaudi__Application__delete(self._impl)
