@@ -81,7 +81,14 @@ typedef unsigned long long int ulonglong;
 
 // -------------- LIKELY/UNLIKELY macros (begin)
 // Use compiler hinting to improve branch prediction for linux
-#ifdef __GNUC__
+// if somebody defined these macros before us, clean up first
+#if defined( LIKELY )
+#  undef LIKELY
+#endif
+#if defined( UNLIKELY )
+#  undef UNLIKELY
+#endif
+#if defined( __GNUC__ ) || defined( __clang__ )
 #  define LIKELY( x ) __builtin_expect( ( x ), 1 )
 #  define UNLIKELY( x ) __builtin_expect( ( x ), 0 )
 #else
