@@ -55,7 +55,10 @@ namespace {
     IDataProviderSvc* dataSvc() const override { return s_svc; }
     DataObject*       object() const override { return const_cast<DataObject*>( m_data.get() ); }
     IOpaqueAddress*   address() const override { return m_addr.get(); }
-    void              setAddress( IOpaqueAddress* iAddr ) override { m_addr.reset( iAddr ); }
+    void              setAddress( IOpaqueAddress* iAddr ) override {
+      m_addr.reset( iAddr );
+      if ( m_addr ) m_addr->setRegistry( this );
+    }
   };
   IDataProviderSvc* Entry::s_svc = nullptr;
 
@@ -67,10 +70,10 @@ namespace {
     Map m_store;
     static_assert( std::is_same_v<typename Map::key_type, std::string_view> );
 
-    const auto& emplace( std::string_view k, std::unique_ptr<DataObject> d ) {
+    const auto& emplace( std::string_view k, std::unique_ptr<DataObject> d, std::unique_ptr<IOpaqueAddress> a = {} ) {
       // tricky way to insert a string_view key which points to the
       // string contained in the mapped type...
-      auto [i, b] = m_store.try_emplace( k, std::string{k}, std::move( d ) );
+      auto [i, b] = m_store.try_emplace( k, std::string{k}, std::move( d ), std::move( a ) );
       if ( !b ) throw std::runtime_error( "failed to insert " + std::string{k} );
       auto nh  = m_store.extract( i );
       nh.key() = nh.mapped().identifier(); // "re-point" key to the string contained in the Entry
@@ -80,10 +83,10 @@ namespace {
     }
 
   public:
-    const DataObject* put( std::string_view k, std::unique_ptr<DataObject> data ) {
-      return emplace( k, std::move( data ) ).object();
+    const DataObject* put( std::string_view k, std::unique_ptr<DataObject> data,
+                           std::unique_ptr<IOpaqueAddress> addr = {} ) {
+      return emplace( k, std::move( data ), std::move( addr ) ).object();
     }
-
     const DataObject* get( std::string_view k ) const noexcept {
       const Entry* d = find( k );
       return d ? d->object() : nullptr;
@@ -390,15 +393,12 @@ StatusCode EvtStoreSvc::traverseSubTree( std::string_view top, IDataStoreAgent* 
     }
     auto k = keys.begin();
     while ( k != keys.end() ) {
-      const auto& id = ( *k )->identifier();
-      always() << "analyzing " << id << endmsg;
-      int  level  = std::count( id.begin(), id.end(), '/' );
-      bool accept = pAgent->analyse( const_cast<Entry*>( *( k++ ) ), level );
+      const auto& id     = ( *k )->identifier();
+      int         level  = std::count( id.begin(), id.end(), '/' );
+      bool        accept = pAgent->analyse( const_cast<Entry*>( *( k++ ) ), level );
       if ( !accept ) {
-        while ( k != keys.end() && boost::algorithm::starts_with( ( *k )->identifier(), id ) ) {
-          always() << "skipping " << ( *k )->identifier() << endmsg;
-          ++k;
-        }
+        k = std::find_if_not( k, keys.end(),
+                              [&id]( const auto& e ) { return boost::algorithm::starts_with( e->identifier(), id ); } );
       }
     }
     return StatusCode::SUCCESS;
@@ -426,10 +426,16 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
   auto object = createObj( *m_dataLoader, *rootAddr ); // Call data loader
   if ( !object ) return Status::INVALID_OBJECT;
   if ( msgLevel( MSG::DEBUG ) ) { debug() << "Root Object " << root_path << " created " << endmsg; }
-  auto dummy = Entry{root_path, {}, std::move( rootAddr )};
+  auto dummy = Entry{root_path, {}, {}};
   object->setRegistry( &dummy );
-  auto status = m_dataLoader->fillObjRefs( dummy.address(), object.get() );
-  return status.isSuccess() ? registerObject( nullptr, root_path, object.release() ) : status;
+  rootAddr->setRegistry( &dummy );
+  auto status = m_dataLoader->fillObjRefs( rootAddr.get(), object.get() );
+  if ( status.isSuccess() ) {
+    auto pObject = object.get();
+    status       = registerObject( nullptr, root_path, object.release() );
+    if ( status.isSuccess() ) pObject->registry()->setAddress( rootAddr.release() );
+  }
+  return status;
 }
 StatusCode EvtStoreSvc::registerAddress( std::string_view path, IOpaqueAddress* pAddr ) {
   return registerAddress( nullptr, path, pAddr );
@@ -447,9 +453,10 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
   if ( !object ) return Status::INVALID_OBJECT;
   auto fullpath = ( pReg ? pReg->identifier() : m_rootName.value() ) + std::string{path};
   // the data loader expects the path _including_ the root
-  auto dummy = Entry{fullpath, {}, std::move( addr )};
+  auto dummy = Entry{fullpath, {}, {}};
   object->setRegistry( &dummy );
-  auto status = m_dataLoader->fillObjRefs( dummy.address(), object.get() );
+  addr->setRegistry( &dummy );
+  auto status = m_dataLoader->fillObjRefs( addr.get(), object.get() );
   if ( !status.isSuccess() ) return status;
   // note: put will overwrite the registry in pObject to point at the
   //       one actually used -- so we do not dangle, pointing at dummy beyond its
@@ -460,24 +467,21 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
             << endmsg;
   }
   fwd( [&]( Partition& p ) {
-    p.store.put( normalize_path( fullpath, rootName() ), std::move( object ) );
+    p.store.put( normalize_path( fullpath, rootName() ), std::move( object ), std::move( addr ) );
     return StatusCode::SUCCESS;
   } ).ignore();
   return status;
 }
 StatusCode EvtStoreSvc::registerObject( std::string_view parentPath, std::string_view objectPath,
                                         DataObject* pObject ) {
-  if ( msgLevel( MSG::DEBUG ) ) {
-    debug() << "registerObject( " << parentPath << ", " << objectPath << ", " << (void*)pObject << " )" << endmsg;
-  }
   return parentPath.empty()
              ? registerObject( nullptr, objectPath, pObject )
              : registerObject( nullptr, std::string{parentPath}.append( "/" ).append( objectPath ), pObject );
 }
 StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view path, DataObject* pObject ) {
   if ( parentObj ) return StatusCode::FAILURE;
-  return fwd( [&]( Partition& p ) {
-    path = normalize_path( path, rootName() );
+  return fwd( [&, object = std::unique_ptr<DataObject>( pObject ),
+               path = normalize_path( path, rootName() )]( Partition& p ) mutable {
     if ( m_forceLeaves ) {
       auto dir = path;
       for ( auto i = dir.rfind( '/' ); i != std::string_view::npos; i = dir.rfind( '/' ) ) {
@@ -486,15 +490,15 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view 
           if ( msgLevel( MSG::DEBUG ) ) {
             debug() << "registerObject: adding directory " << std::quoted( dir ) << endmsg;
           }
-          p.store.put( dir, std::make_unique<DataObject>() );
+          p.store.put( dir, std::unique_ptr<DataObject>{} );
         }
       }
     }
     if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "registerObject: " << std::quoted( path ) << " (DataObject*)" << (void*)pObject
-              << ( pObject ? " -> " + System::typeinfoName( typeid( *pObject ) ) : std::string{} ) << endmsg;
+      debug() << "registerObject: " << std::quoted( path ) << " (DataObject*)" << (void*)object.get()
+              << ( object ? " -> " + System::typeinfoName( typeid( *object ) ) : std::string{} ) << endmsg;
     }
-    p.store.put( path, std::unique_ptr<DataObject>( pObject ) );
+    p.store.put( path, std::move( object ) );
     return StatusCode::SUCCESS;
   } );
 }
