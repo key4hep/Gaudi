@@ -193,7 +193,7 @@ class gaudimain(object):
                     # so we do it again to get it
                     v = v.__resolve__()
                 if type(v) == str:
-                    v = '"%s"' % v  # need double quotes
+                    v = repr(v)  # properly quote the string
                 elif type(v) == long:
                     v = '%d' % v  # prevent pending 'L'
                 conf_dict['{}.{}'.format(n, p)] = str(v)

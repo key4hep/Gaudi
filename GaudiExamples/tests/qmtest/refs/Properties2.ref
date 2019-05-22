@@ -26,7 +26,7 @@
 # PropertyAlg.Int64  = 4294967296;
 # PropertyAlg.UInt64 = 4294967296;
 # PropertyAlg.Double = 101.1e+10;
-# PropertyAlg.String = "hundred one";
+# PropertyAlg.String = "hundred \"one\"";
 # PropertyAlg.Bool   = false;
 # PropertyAlg.IntArray    = { 1, 2, 3, 5};
 # PropertyAlg.Int64Array  = {4294967296};
@@ -39,7 +39,7 @@
 # PropertyAlg.DoubleArrayWithoutUnits = { 1100000.0 , -20., 33.0, 0.4 };
 # PropertyAlg.PInt    = 101;
 # PropertyAlg.PDouble = 101.E5;
-# PropertyAlg.PString = "hundred one";
+# PropertyAlg.PString = "hundred 'one'";
 # PropertyAlg.PBool   = true;
 # PropertyAlg.PIntArray    = { 1, 2, 3, 5};
 # PropertyAlg.PDoubleArray = {1.1 , 2., 3.3 };
@@ -94,7 +94,7 @@ PropertyAlg          INFO Int    = 101
 PropertyAlg          INFO Int64  = 4294967296
 PropertyAlg          INFO UInt64 = 4294967296
 PropertyAlg          INFO Double = 1.011e+12
-PropertyAlg          INFO String = hundred one
+PropertyAlg          INFO String = hundred "one"
 PropertyAlg          INFO Bool   = 0
 PropertyAlg          INFO IntArray    = [1, 2, 3, 5]
 PropertyAlg          INFO Int64Array  = [4294967296]
@@ -108,7 +108,7 @@ PropertyAlg          INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)
 PropertyAlg          INFO PInt    =  'PInt':101
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
 PropertyAlg          INFO PDouble =  'PDouble':10100000.
-PropertyAlg          INFO PString =  'PString':hundred one
+PropertyAlg          INFO PString =  'PString':hundred 'one'
 PropertyAlg          INFO PBool   =  'PBool':True
 PropertyAlg          INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
 PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[ 1.1000000 , 2.0000000 , 3.3000000 ]

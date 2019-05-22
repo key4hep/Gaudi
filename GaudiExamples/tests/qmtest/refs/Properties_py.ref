@@ -54,7 +54,7 @@ PropertyAlg          INFO Int    = 101
 PropertyAlg          INFO Int64  = 4294967296
 PropertyAlg          INFO UInt64 = 4294967296
 PropertyAlg          INFO Double = 1.011e+12
-PropertyAlg          INFO String = hundred one
+PropertyAlg          INFO String = hundred "one"
 PropertyAlg          INFO Bool   = 0
 PropertyAlg          INFO IntArray    = [1, 2, 3, 5]
 PropertyAlg          INFO Int64Array  = [4294967296]
@@ -68,7 +68,7 @@ PropertyAlg          INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)
 PropertyAlg          INFO PInt    =  'PInt':101
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
 PropertyAlg          INFO PDouble =  'PDouble':10100000.
-PropertyAlg          INFO PString =  'PString':hundred one
+PropertyAlg          INFO PString =  'PString':hundred 'one'
 PropertyAlg          INFO PBool   =  'PBool':True
 PropertyAlg          INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
 PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[ 1.1000000 , 2.0000000 , 3.3000000 , 1.0000000e-20 , 1.0000000e+20 ]
@@ -123,7 +123,7 @@ PropertyAlg          INFO =================================================
 PropertyProxy        INFO  Got property this.RInt = 101;
 PropertyProxy        INFO  Set property this.RInt = 1001;
 PropertyProxy        INFO  Got property this.RInt = 101;
-PropertyProxy        INFO  Got property this.String = hundred one;
+PropertyProxy        INFO  Got property this.String = hundred "one";
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
