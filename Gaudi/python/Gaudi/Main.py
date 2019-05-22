@@ -80,6 +80,9 @@ class BootstrapHelper(object):
             return BootstrapHelper.Property(
                 self.lib.py_bootstrap_getProperty(self.ptr, name))
 
+        def printAlgsSequences(self):
+            return self.lib.py_helper_printAlgsSequences(self.ptr)
+
     def __init__(self):
         from ctypes import (PyDLL, util, c_void_p, c_bool, c_char_p, c_int,
                             RTLD_GLOBAL)
@@ -124,6 +127,9 @@ class BootstrapHelper(object):
             f.restype, f.argtypes = c_bool, [IInterface_p]
         gkl.py_bootstrap_app_run.restype = c_bool
         gkl.py_bootstrap_app_run.argtypes = [IInterface_p, c_int]
+
+        gkl.py_helper_printAlgsSequences.restype = None
+        gkl.py_helper_printAlgsSequences.argtypes = [IInterface_p]
 
     def createApplicationMgr(self):
         ptr = self.lib.py_bootstrap_createApplicationMgr()
