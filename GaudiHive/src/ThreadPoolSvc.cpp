@@ -216,12 +216,21 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
 //-----------------------------------------------------------------------------
 
-//
 // tbb will actually create more threads than requested, and will sometimes
 // activate them late. This method is used to initialize one of these threads
 // when it is detected
 
-void ThreadPoolSvc::initThisThread() {
+// note TBB generates address sanitizer errors here, e.g.
+//
+// ==51081==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7fe7decf5195 at pc 0x7fe7e5da48bf bp
+// 0x7fe7decf4f70 sp 0x7fe7decf4f68 WRITE of size 1 at 0x7fe7decf5195 thread T4
+//    #0 0x7fe7e5da48be in tbb::task::task()
+//    /cvmfs/lhcb.cern.ch/lib/lcg/releases/tbb/2019_U1-5939b/x86_64-centos7-gcc8-dbg/include/tbb/task.h:586
+//
+// Use GAUDI_NO_SANITIZE_ADDRESS to suppress these.
+// To be looked at again when TBB is updated.
+
+void GAUDI_NO_SANITIZE_ADDRESS ThreadPoolSvc::initThisThread() {
 
   if ( Gaudi::Concurrency::ThreadInitDone ) {
     // this should never happen
