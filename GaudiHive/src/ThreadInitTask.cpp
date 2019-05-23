@@ -36,7 +36,7 @@ tbb::task* ThreadInitTask::execute() {
     m_execFailed = true;
   } else {
 
-    if ( m_tools.size() == 0 ) {
+    if ( m_tools.empty() ) {
       log << MSG::DEBUG << "no entries in Tool Array" << endmsg;
       if ( !m_terminate ) { Gaudi::Concurrency::ThreadInitDone = true; }
     } else {
@@ -80,7 +80,7 @@ tbb::task* ThreadInitTask::execute() {
     }
   }
 
-  if ( m_barrier != 0 ) {
+  if ( m_barrier ) {
     log << MSG::DEBUG << "waiting at barrier in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
     m_barrier->wait();
   }
