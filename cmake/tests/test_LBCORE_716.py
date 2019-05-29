@@ -25,6 +25,11 @@ def build():
     for v in ('BINARY_TAG', 'CMTCONFIG'):
         if v in os.environ:
             del os.environ[v]
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    from get_host_binary_tag import os_id, compiler_id
+    os.environ['BINARY_TAG'] = '-'.join(
+        ['x86_64', os_id(), compiler_id(), 'opt'])
     build_proc = Popen(['make', 'VERBOSE=1'],
                        cwd=base_dir,
                        stdout=PIPE,
