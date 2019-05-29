@@ -125,7 +125,7 @@ namespace {
   typename C::mapped_type::pointer find_or_create( Tuples::TupleObj* parent, const std::string& name, C& map,
                                                    ExtraArgs&&... ea ) {
     using pointer   = typename C::mapped_type::pointer;
-    using reference = std::add_lvalue_reference_t<typename std::remove_pointer<pointer>::type>;
+    using reference = std::add_lvalue_reference_t<std::remove_pointer_t<pointer>>;
     auto found      = map.find( name );
     return found != map.end() ? found->second.get()
                               : create_( parent, map, name, [&]( const std::string& n, reference i ) {

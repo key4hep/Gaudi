@@ -104,8 +104,8 @@ namespace Gaudi {
       // types to inherit from
       template <typename... Is, typename I>
       struct append1<interface_list<Is...>, I>
-          : id_<typename std::conditional<std::is_base_of<id_<I>, inherit_from<id_<Is>...>>::value,
-                                          interface_list<Is...>, interface_list<Is..., I>>::type> {};
+          : id_<std::conditional_t<std::is_base_of_v<id_<I>, inherit_from<id_<Is>...>>, interface_list<Is...>,
+                                   interface_list<Is..., I>>> {};
 
       template <typename, typename>
       struct appendN {};

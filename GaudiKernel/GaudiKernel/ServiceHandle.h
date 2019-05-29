@@ -44,14 +44,13 @@ public:
       : GaudiHandle<T>( serviceName, "Service", theParentName ) {}
 
   /** Copy constructor from a non const T to const T service handle */
-  template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
-  ServiceHandle( const ServiceHandle<NCT>& other,
-                 typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
-      : GaudiHandle<CT>( other ) {}
+  template <typename CT = T, typename NCT = std::remove_const_t<T>,
+            typename = std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>>
+  ServiceHandle( const ServiceHandle<NCT>& other ) : GaudiHandle<CT>( other ) {}
 
   /// Autodeclaring constructor with property name, service type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline ServiceHandle( OWNER* owner, std::string PropName, std::string svcName, std::string doc = "" )
       : ServiceHandle( svcName, owner->name() ) {
     auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move( PropName ), *this, std::move( doc ) );

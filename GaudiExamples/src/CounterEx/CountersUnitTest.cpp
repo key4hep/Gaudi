@@ -52,8 +52,8 @@ int main() {
     avg += 6;
     std::cout << avg << std::endl;
 
-    static_assert( std::is_integral<decltype( avg.mean<int>() )>::value, "Integral return type expected" );
-    static_assert( std::is_floating_point<decltype( avg.mean() )>::value, "Floating point return type expected" );
+    static_assert( std::is_integral_v<decltype( avg.mean<int>() )>, "Integral return type expected" );
+    static_assert( std::is_floating_point_v<decltype( avg.mean() )>, "Floating point return type expected" );
   }
 
   // Testing SigmaCounter
@@ -135,12 +135,12 @@ int main() {
     c += std::chrono::seconds( 1 ); // mixing with larger units is OK
     std::cout << c << std::endl;
     // Check compilation of all stat methods:
-    static_assert( std::is_same<decltype( c.mean() ), Unit>::value, "Return type should be Unit" );
-    static_assert( std::is_same<decltype( c.standard_deviation() ), Unit>::value, "Return type should be Unit" );
-    static_assert( std::is_same<decltype( c.unbiased_sample_variance() ), Unit>::value, "Return type should be Unit" );
-    static_assert( std::is_same<decltype( c.biased_sample_variance() ), Unit>::value, "Return type should be Unit" );
-    static_assert( std::is_same<decltype( c.meanErr() ), Unit>::value, "Return type should be Unit" );
-    static_assert( std::is_same<decltype( c.min() ), Unit>::value, "Return type should be Unit" );
-    static_assert( std::is_same<decltype( c.max() ), Unit>::value, "Return type should be Unit" );
+    static_assert( std::is_same_v<decltype( c.mean() ), Unit>, "Return type should be Unit" );
+    static_assert( std::is_same_v<decltype( c.standard_deviation() ), Unit>, "Return type should be Unit" );
+    static_assert( std::is_same_v<decltype( c.unbiased_sample_variance() ), Unit>, "Return type should be Unit" );
+    static_assert( std::is_same_v<decltype( c.biased_sample_variance() ), Unit>, "Return type should be Unit" );
+    static_assert( std::is_same_v<decltype( c.meanErr() ), Unit>, "Return type should be Unit" );
+    static_assert( std::is_same_v<decltype( c.min() ), Unit>, "Return type should be Unit" );
+    static_assert( std::is_same_v<decltype( c.max() ), Unit>, "Return type should be Unit" );
   }
 }

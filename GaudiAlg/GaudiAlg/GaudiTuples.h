@@ -273,11 +273,11 @@ public:
   // ==========================================================================
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if PBASE derives from GaudiHistoAlg
-  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiHistoAlg, PBASE>::value, U>>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of_v<GaudiHistoAlg, PBASE>, U>>
   GaudiTuples( const std::string& name, ISvcLocator* pSvcLocator ) : PBASE( name, pSvcLocator ) {}
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if PBASE derives from AlgTool.
-  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of<GaudiHistoTool, PBASE>::value, U>>
+  template <typename U = PBASE, typename = std::enable_if_t<std::is_base_of_v<GaudiHistoTool, PBASE>, U>>
   GaudiTuples( const std::string& type, const std::string& name, const IInterface* parent )
       : PBASE( type, name, parent ) {}
   // ==========================================================================

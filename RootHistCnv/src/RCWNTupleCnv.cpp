@@ -22,14 +22,14 @@
 namespace {
   template <typename T>
   size_t saveItem( char* target, const NTuple::_Data<T>& src ) {
-    static_assert( std::is_trivially_copyable<T>::value, "T must be trivally copyable" );
+    static_assert( std::is_trivially_copyable_v<T>, "T must be trivally copyable" );
     std::memcpy( target, src.buffer(), sizeof( T ) * src.length() );
     return sizeof( T ) * src.length();
   }
 
   template <typename T>
   size_t loadItem( const char* src, NTuple::_Data<T>& target ) {
-    static_assert( std::is_trivially_copyable<T>::value, "T must be trivally copyable" );
+    static_assert( std::is_trivially_copyable_v<T>, "T must be trivally copyable" );
     std::memcpy( const_cast<void*>( target.buffer() ), src, sizeof( T ) * target.length() );
     return sizeof( T ) * target.length();
   }

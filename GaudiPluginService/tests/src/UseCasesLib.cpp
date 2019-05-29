@@ -154,7 +154,7 @@ namespace CustomFactoryWrapper {
 
   // helper to use the default constructor of T, followed by initialization with initBase
   template <typename T>
-  std::enable_if_t<std::is_default_constructible<T>::value, std::unique_ptr<Base>>
+  std::enable_if_t<std::is_default_constructible_v<T>, std::unique_ptr<Base>>
   baseConstructorHelper( const std::string& name ) {
     auto p = std::make_unique<T>();
     initBase( p.get(), name );
@@ -163,7 +163,7 @@ namespace CustomFactoryWrapper {
 
   // helper to use the special constructor of T (backward compatibility)
   template <typename T>
-  std::enable_if_t<!std::is_default_constructible<T>::value, std::unique_ptr<Base>>
+  std::enable_if_t<!std::is_default_constructible_v<T>, std::unique_ptr<Base>>
   baseConstructorHelper( const std::string& name ) {
     return std::make_unique<T>( name );
   }

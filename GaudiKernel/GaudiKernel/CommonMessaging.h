@@ -46,11 +46,11 @@ namespace implementation_detail {
 #undef generate_
 
 template <typename Base>
-using add_name = typename std::conditional<implementation_detail::has_name<Base>::value, Base,
-                                           implementation_detail::add_name<Base>>::type;
+using add_name =
+    std::conditional_t<implementation_detail::has_name<Base>::value, Base, implementation_detail::add_name<Base>>;
 template <typename Base>
-using add_serviceLocator = typename std::conditional<implementation_detail::has_serviceLocator<Base>::value, Base,
-                                                     implementation_detail::add_serviceLocator<Base>>::type;
+using add_serviceLocator = std::conditional_t<implementation_detail::has_serviceLocator<Base>::value, Base,
+                                              implementation_detail::add_serviceLocator<Base>>;
 
 template <typename Base>
 class CommonMessaging;

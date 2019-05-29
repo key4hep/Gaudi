@@ -39,8 +39,8 @@ namespace details {
 
   template <typename Proj, typename Cmp = std::greater<>>
   auto make_cmp( Proj p, Cmp cmp = {} ) {
-    static_assert( std::is_reference<argument_t<Proj>>::value, "must be a reference" );
-    static_assert( std::is_const<std::remove_reference_t<argument_t<Proj>>>::value, "must be const" );
+    static_assert( std::is_reference_v<argument_t<Proj>>, "must be a reference" );
+    static_assert( std::is_const_v<std::remove_reference_t<argument_t<Proj>>>, "must be const" );
     return [=]( argument_t<Proj> lhs, argument_t<Proj> rhs ) { return cmp( p( lhs ), p( rhs ) ); };
   }
 } // namespace details

@@ -138,9 +138,9 @@ public:
       , m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() ) {}
 
   /** Copy constructor from a non const T to const T tool handle */
-  template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
-  ToolHandle( const ToolHandle<NCT>& other,
-              typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
+  template <typename CT = T, typename NCT = std::remove_const_t<T>,
+            typename = std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>>
+  ToolHandle( const ToolHandle<NCT>& other )
       : BaseToolHandle( other.parent(), other.createIf() )
       , GaudiHandle<CT>( other )
       , m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() ) {}
@@ -184,7 +184,7 @@ public:
 
   /// Autodeclaring constructor with property propName, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline ToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
       : ToolHandle( owner ) {
     // convert name and type to a valid type/name string
@@ -259,7 +259,7 @@ public:
 
   std::string typeAndName() const override { return GaudiHandleBase::typeAndName(); }
 
-  typename std::add_const<T>::type* get() const { return GaudiHandle<T>::get(); }
+  std::add_const_t<T>* get() const { return GaudiHandle<T>::get(); }
 
   T* get() { return GaudiHandle<T>::get(); }
 
@@ -314,14 +314,14 @@ public:
       : ToolHandle<T>( toolTypeAndName, nullptr, createIf ) {}
 
   /// Copy constructor from a non const T to const T tool handle
-  template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
+  template <typename CT = T, typename NCT = std::remove_const_t<T>>
   PublicToolHandle( const PublicToolHandle<NCT>& other,
-                    std::enable_if_t<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>* = nullptr )
+                    std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>* = nullptr )
       : ToolHandle<T>( static_cast<const ToolHandle<NCT>&>( other ) ) {}
 
   /// Autodeclaring constructor with property propName, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline PublicToolHandle( OWNER* owner, std::string propName, std::string toolType, std::string doc = "" )
       : PublicToolHandle() {
     // convert name and type to a valid type/name string
@@ -388,7 +388,7 @@ public:
 
   /// Autodeclaring constructor with property name, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline ToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
                           std::string doc = "" )
       : ToolHandleArray( typesAndNames, owner ) {
@@ -410,7 +410,7 @@ public:
 
   /// Autodeclaring constructor with property name, tool type/name and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline PublicToolHandleArray( OWNER* owner, std::string name, const std::vector<std::string>& typesAndNames = {},
                                 std::string doc = "" )
       : PublicToolHandleArray( typesAndNames ) {

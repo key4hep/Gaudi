@@ -170,9 +170,9 @@ protected:
 
 public:
   /** Copy constructor needed for correct ref-counting */
-  template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
+  template <typename CT = T, typename NCT = std::remove_const_t<T>>
   GaudiHandle( const GaudiHandle<NCT>& other,
-               typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value>::type* = nullptr )
+               std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>>* = nullptr )
       : GaudiHandleBase( other ) {
     m_pObject = other.get();
     if ( m_pObject ) ::details::nonConst( m_pObject )->addRef();
@@ -185,8 +185,8 @@ public:
   }
 
   /** Assignment operator for correct ref-counting */
-  template <typename CT = T, typename NCT = typename std::remove_const<T>::type>
-  typename std::enable_if<std::is_const<CT>::value && !std::is_same<CT, NCT>::value, GaudiHandle&>::type
+  template <typename CT = T, typename NCT = std::remove_const_t<T>>
+  std::enable_if_t<std::is_const_v<CT> && !std::is_same_v<CT, NCT>, GaudiHandle&>
   operator=( const GaudiHandle<NCT>& other ) {
     GaudiHandleBase::operator=( other );
     // release any current tool
@@ -248,7 +248,7 @@ public:
   T* get() { return m_pObject; }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
-  typename std::add_const<T>::type* get() const { return m_pObject; }
+  std::add_const_t<T>* get() const { return m_pObject; }
 
   /// True if the wrapped pointer is not null.
   bool isSet() const { return get(); }
@@ -263,13 +263,13 @@ public:
     return m_pObject;
   }
 
-  typename std::add_const<T>::type& operator*() const {
+  std::add_const_t<T>& operator*() const {
     // not really const, because it may update m_pObject
     assertObject();
     return *m_pObject;
   }
 
-  typename std::add_const<T>::type* operator->() const {
+  std::add_const_t<T>* operator->() const {
     // not really const, because it may update m_pObject
     assertObject();
     return m_pObject;

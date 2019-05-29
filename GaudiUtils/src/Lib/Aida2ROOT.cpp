@@ -59,9 +59,8 @@
 namespace {
   template <typename Out, typename In>
   Out* a2r_cast( In* aida ) {
-    using Base =
-        typename std::conditional<std::is_const<Out>::value, const Gaudi::HistogramBase, Gaudi::HistogramBase>::type;
-    auto base = dynamic_cast<Base*>( aida );
+    using Base = std::conditional_t<std::is_const_v<Out>, const Gaudi::HistogramBase, Gaudi::HistogramBase>;
+    auto base  = dynamic_cast<Base*>( aida );
     return base ? dynamic_cast<Out*>( base->representation() ) : nullptr;
   }
 } // namespace
