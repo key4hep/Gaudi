@@ -8,7 +8,7 @@ find_package(TBB REQUIRED)
 find_package(cppgsl REQUIRED)
 find_package(CppUnit)
 # Runtime dependency for ROOT (required for SLC6 as of LCG 96)
-find_package(LibLZMA REQUIRED)
+find_package(LibLZMA)
 
 # Hide some Boost/TBB/CppUnit/ROOT compile time warnings
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS}
@@ -61,9 +61,15 @@ elseif( UNIX )
    set( extra_libraries rt )
 endif()
 
+# Only use LibLZMA if it was found. As in a standalone build, or when using
+# an older LCG version, it may not have been.
+if( LIBLZMA_FOUND )
+  list( APPEND extra_libraries LibLZMA )
+endif()
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp ${extra_sources}
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT LibLZMA TBB GaudiPluginService ${extra_libraries}
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService ${extra_libraries}
                   INCLUDE_DIRS Boost ROOT TBB cppgsl
                   PUBLIC_HEADERS Gaudi GaudiKernel)
 
