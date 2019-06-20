@@ -91,8 +91,9 @@ tbb::task* AlgoExecutionTask::execute() {
   }
 
   // Create a lambda to update scheduler state
-  m_scheduler->m_actionsQueue.push( [this, queuePop]() -> StatusCode {
-    return this->m_scheduler->promoteToExecuted( queuePop.algIndex, queuePop.slotIndex, queuePop.contextPtr );
+  auto schedulerPtr = m_scheduler; // can't capture m_scheduler directly for some reason (implied this* ?)
+  m_scheduler->m_actionsQueue.push( [schedulerPtr, queuePop]() -> StatusCode {
+    return schedulerPtr->promoteToExecuted( queuePop.algIndex, queuePop.slotIndex, queuePop.contextPtr );
   } );
 
   Gaudi::Hive::setCurrentContextEvt( -1 );
