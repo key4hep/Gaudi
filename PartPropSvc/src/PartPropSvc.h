@@ -6,9 +6,8 @@
 #include "HepPDT/ParticleDataTable.hh"
 #include "HepPDT/TableBuilder.hh"
 
-#include "boost/optional.hpp"
-
 #include <iostream>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -49,7 +48,7 @@ private:
   HepPDT::ProcessUnknownID* m_upid = nullptr;
   std::string               m_upid_name;
 
-  boost::optional<HepPDT::ParticleDataTable> m_pdt;
+  std::optional<HepPDT::ParticleDataTable> m_pdt;
 
   inputFunPtr parseTableType( const std::string& );
 

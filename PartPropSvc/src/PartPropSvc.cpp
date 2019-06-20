@@ -163,7 +163,7 @@ HepPDT::ParticleDataTable* PartPropSvc::PDT() {
     }
   }
 
-  return m_pdt.get_ptr();
+  return m_pdt ? &m_pdt.value() : nullptr;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//

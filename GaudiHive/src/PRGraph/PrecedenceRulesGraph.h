@@ -6,12 +6,12 @@
 #include <memory>
 #include <sstream>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include <boost/filesystem.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphml.hpp>
-#include <boost/variant.hpp>
 
 // fwk includes
 #include "../AlgsExecutionStates.h"
@@ -34,7 +34,6 @@ namespace concurrency {
 } // namespace concurrency
 
 namespace precedence {
-  using boost::static_visitor;
 
   // Precedence trace utilities ==============================================
   struct AlgoTraceProps {
@@ -118,7 +117,7 @@ namespace precedence {
 
   // Vertex unpacking ========================================================
 
-  struct VertexName : static_visitor<std::string> {
+  struct VertexName {
     std::string operator()( const AlgoProps& props ) const { return props.m_name; }
 
     std::string operator()( const DecisionHubProps& props ) const { return props.m_name; }
@@ -126,7 +125,7 @@ namespace precedence {
     std::string operator()( const DataProps& props ) const { return props.m_id.fullKey(); }
   };
 
-  struct GroupMode : static_visitor<std::string> {
+  struct GroupMode {
     std::string operator()( const AlgoProps& ) const { return ""; }
 
     std::string operator()( const DecisionHubProps& props ) const {
@@ -136,7 +135,7 @@ namespace precedence {
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
-  struct GroupLogic : static_visitor<std::string> {
+  struct GroupLogic {
     std::string operator()( const AlgoProps& ) const { return ""; }
 
     std::string operator()( const DecisionHubProps& props ) const { return props.m_modeOR ? "OR" : "AND"; }
@@ -144,7 +143,7 @@ namespace precedence {
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
-  struct GroupExit : static_visitor<std::string> {
+  struct GroupExit {
     std::string operator()( const AlgoProps& ) const { return ""; }
 
     std::string operator()( const DecisionHubProps& props ) const {
@@ -154,7 +153,7 @@ namespace precedence {
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
-  struct DecisionNegation : static_visitor<std::string> {
+  struct DecisionNegation {
     std::string operator()( const AlgoProps& props ) const { return props.m_inverted ? "Inverted" : "Non-inverted"; }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
@@ -162,7 +161,7 @@ namespace precedence {
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
-  struct AllPass : static_visitor<std::string> {
+  struct AllPass {
     std::string operator()( const AlgoProps& props ) const { return props.m_allPass ? "Optimist" : "Realist"; }
 
     std::string operator()( const DecisionHubProps& props ) const { return props.m_allPass ? "Optimist" : "Realist"; }
@@ -170,7 +169,7 @@ namespace precedence {
     std::string operator()( const DataProps& ) const { return ""; }
   };
 
-  struct CFDecision : static_visitor<std::string> {
+  struct CFDecision {
     CFDecision( const EventSlot& slot ) : m_slot( slot ) {}
 
     std::string operator()( const AlgoProps& props ) const {
@@ -186,7 +185,7 @@ namespace precedence {
     const EventSlot& m_slot;
   };
 
-  struct EntityState : static_visitor<std::string> {
+  struct EntityState {
     EntityState( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator, bool conditionsEnabled )
         : m_slot( slot ), m_conditionsEnabled( conditionsEnabled ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
@@ -247,7 +246,7 @@ namespace precedence {
     bool                     m_conditionsEnabled{false};
   };
 
-  struct StartTime : static_visitor<std::string> {
+  struct StartTime {
     StartTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
       MsgStream            log{msgSvc, "StartTime.Getter"};
@@ -287,7 +286,7 @@ namespace precedence {
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
-  struct EndTime : static_visitor<std::string> {
+  struct EndTime {
     EndTime( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
       MsgStream            log{msgSvc, "EndTime.Getter"};
@@ -326,7 +325,7 @@ namespace precedence {
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
-  struct Duration : static_visitor<std::string> {
+  struct Duration {
     Duration( const EventSlot& slot, SmartIF<ISvcLocator>& svcLocator ) : m_slot( slot ) {
       SmartIF<IMessageSvc> msgSvc{svcLocator};
       MsgStream            log{msgSvc, "Duration.Getter"};
@@ -364,7 +363,7 @@ namespace precedence {
     SmartIF<ITimelineSvc> m_timelineSvc;
   };
 
-  struct Operations : static_visitor<std::string> {
+  struct Operations {
     std::string operator()( const AlgoProps& props ) const { return props.m_isIOBound ? "IO-bound" : "CPU-bound"; }
 
     std::string operator()( const DecisionHubProps& ) const { return ""; }
@@ -379,7 +378,7 @@ namespace precedence {
 
   //=========================================================================
 
-  using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps, CondDataProps>;
+  using VariantVertexProps = std::variant<AlgoProps, DecisionHubProps, DataProps, CondDataProps>;
   using PRGraph            = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VariantVertexProps>;
   using PRVertexDesc       = boost::graph_traits<PRGraph>::vertex_descriptor;
 

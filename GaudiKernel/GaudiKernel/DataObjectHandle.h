@@ -233,7 +233,7 @@ public:
   /**
    * Size of boxed item, if boxed item has a 'size' method
    */
-  boost::optional<std::size_t> size() const { return _get()->size(); }
+  std::optional<std::size_t> size() const { return _get()->size(); }
 
 private:
   AnyDataWrapper<T>* _get( bool mustExist ) const;

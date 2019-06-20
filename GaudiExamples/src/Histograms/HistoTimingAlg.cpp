@@ -1,7 +1,5 @@
 // Include files
 
-#include "boost/assign/list_of.hpp"
-
 // local
 #include "HistoTimingAlg.h"
 

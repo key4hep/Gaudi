@@ -15,8 +15,6 @@
 #include "GaudiAlg/GaudiSequencer.h"
 #include "GaudiAlg/Sequencer.h"
 
-#include "boost/assign/list_of.hpp"
-
 #ifdef TCMALLOC_OLD_GOOGLE_HEADERS
 #  include "google/heap-checker.h"
 #  include "google/heap-profiler.h"

@@ -3,9 +3,9 @@
 
 // Include files
 #include "GaudiKernel/DataObject.h"
-#include "boost/optional.hpp"
 #include <cstddef>
 #include <iterator>
+#include <optional>
 
 namespace details {
   using std::size;
@@ -13,14 +13,13 @@ namespace details {
   template <typename T, typename... Args>
   constexpr auto size( const T&, Args&&... ) noexcept {
     static_assert( sizeof...( Args ) == 0, "No extra args please" );
-    return boost::none;
+    return std::nullopt;
   }
 } // namespace details
 
-// ugly hack to circumvent the usage of boost::any
+// ugly hack to circumvent the usage of std::any
 struct GAUDI_API AnyDataWrapperBase : DataObject {
-  // TODO:  C++17: replace with 'std::optional<std::size_t>'
-  virtual boost::optional<std::size_t> size() const = 0;
+  virtual std::optional<std::size_t> size() const = 0;
 };
 
 template <class T>
@@ -34,9 +33,8 @@ public:
   const T& getData() const { return m_data; }
   T&       getData() { return m_data; }
 
-  boost::optional<std::size_t> size() const override {
-    // TODO: C++17:  add 'using std::size' and remove the first two implementations in details...
-    using ::details::size;
+  std::optional<std::size_t> size() const override {
+    using details::size;
     return size( m_data );
   }
 
