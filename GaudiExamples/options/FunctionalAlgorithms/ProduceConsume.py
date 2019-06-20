@@ -15,6 +15,7 @@ from Configurables import Gaudi__Examples__FrExpTransformer as FrExpTransformer
 from Configurables import Gaudi__Examples__LdExpTransformer as LdExpTransformer
 from Configurables import Gaudi__Examples__OptFrExpTransformer as OptFrExpTransformer
 from Configurables import Gaudi__Examples__OptLdExpTransformer as OptLdExpTransformer
+from Configurables import Gaudi__Examples__CountingConsumer as CountingConsumer
 from Configurables import EvtStoreSvc
 # Application setup
 app = ApplicationMgr()
@@ -36,7 +37,8 @@ app.TopAlg = [
     FrExpTransformer("FrExpTransformer"),
     LdExpTransformer("LdExpTransfomer"),
     OptFrExpTransformer("OptFrExpTransformer"),
-    OptLdExpTransformer("OptLdExpTransformer")
+    OptLdExpTransformer("OptLdExpTransformer"),
+    CountingConsumer("CountingConsumer")
 ]
 # - Events
 app.EvtMax = 2

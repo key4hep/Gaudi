@@ -10,6 +10,35 @@ namespace Gaudi::Examples {
   // using LegacyBaseClass_t = Gaudi::Functional::Traits::BaseClass_t<::Algorithm>;
   using BaseClass_t = Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>;
 
+  struct CountingConsumer final : Gaudi::Functional::Consumer<void(), BaseClass_t> {
+    using Gaudi::Functional::Consumer<void(), BaseClass_t>::Consumer;
+    mutable Gaudi::Accumulators::MsgCounter<MSG::ERROR>   m_err{this, "This is not an error...", 3};
+    mutable Gaudi::Accumulators::MsgCounter<MSG::WARNING> m_warn{this, "This is not a warning...", 2};
+    mutable Gaudi::Accumulators::MsgCounter<MSG::INFO>    m_info{this, "This is not info...", 1};
+
+    void operator()() const override {
+      always() << "CountingConsumer: incrementing \"This is not an error\" twice" << endmsg;
+      ++m_err;
+      m_err += true;
+      m_err += false; // should do nothing...
+      always() << "CountingConsumer: incrementing \"This is not a warning\" twice" << endmsg;
+      ++m_warn;
+      m_warn += true;
+      m_warn += false; // should do nothing...
+      always() << "CountingConsumer: incrementing \"This is not info\" twice" << endmsg;
+      ++m_info;
+      m_info += true;
+      m_info += false; // should do nothing...
+    }
+
+    StatusCode finalize() override {
+      forEachCounter(
+          [&]( const std::string& label, const auto& counter ) { counter.print( info(), label ) << endmsg; } );
+      return StatusCode::SUCCESS;
+    }
+  };
+  DECLARE_COMPONENT( CountingConsumer )
+
   struct IntDataProducer final : Gaudi::Functional::Producer<int(), BaseClass_t> {
 
     IntDataProducer( const std::string& name, ISvcLocator* svcLoc )

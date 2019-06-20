@@ -30,7 +30,7 @@ namespace Gaudi::cpp17 {
   using is_detected = details::detector<void, void, Op, Args...>;
 
   template <template <class...> class Op, class... Args>
-  constexpr bool is_detected_v = is_detected<Op, Args...>::value;
+  inline constexpr bool is_detected_v = is_detected<Op, Args...>::value;
 
   template <template <class...> class Op, class... Args>
   using detected_t = typename is_detected<Op, Args...>::type;
