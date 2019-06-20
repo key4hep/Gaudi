@@ -29,6 +29,7 @@ vptr:GaudiUtils/src/component/XMLFileCatalog.cpp
 # apply these to newer releases.
 vptr:include/c++/7.3.0/bits/shared_ptr_base.h
 vptr:include/c++/8.1.0/bits/shared_ptr_base.h
+vptr:include/c++/8.2.0/bits/shared_ptr_base.h
 
 # TBB
 # /cvmfs/lhcb.cern.ch/lib/lcg/releases/tbb/2018_U1-d3621/x86_64-centos7-gcc7-dbg/include/tbb/task.h:780:34: runtime error: member call on address 0x7fccb4ac8e00 which does not point to an object of type 'scheduler'

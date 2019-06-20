@@ -97,4 +97,46 @@ typedef unsigned long long int ulonglong;
 #endif
 // -------------- LIKELY/UNLIKELY macros (end)
 
+// Sanitizer suppressions
+// Gcc
+#if defined( __GNUC__ )
+#  if defined( __SANITIZE_ADDRESS__ )
+#    define GAUDI_NO_SANITIZE_ADDRESS __attribute__( ( no_sanitize_address ) )
+#  endif
+// Note there is no __SANITIZE_MEMORY__ to test for
+#  define GAUDI_NO_SANITIZE_MEMORY __attribute__( ( no_sanitize_memory ) )
+// Note there is no __SANITIZE_UNDEFINED__ to test for
+#  define GAUDI_NO_SANITIZE_UNDEFINED __attribute__( ( no_sanitize_undefined ) )
+// Note there is no __SANITIZE_THREAD__ to test for
+#  define GAUDI_NO_SANITIZE_THREAD __attribute__( ( no_sanitize_thread ) )
+#endif
+// clang
+#if defined( __clang__ )
+#  if __has_feature( address_sanitizer )
+#    define GAUDI_NO_SANITIZE_ADDRESS __attribute__( ( no_sanitize( "address" ) ) )
+#  endif
+#  if __has_feature( memory_sanitizer )
+#    define GAUDI_NO_SANITIZE_MEMORY __attribute__( ( no_sanitize( "memory" ) ) )
+#  endif
+#  if __has_feature( undefined_sanitizer )
+#    define GAUDI_NO_SANITIZE_UNDEFINED __attribute__( ( no_sanitize( "undefined" ) ) )
+#  endif
+#  if __has_feature( thread_sanitizer )
+#    define GAUDI_NO_SANITIZE_THREAD __attribute__( ( no_sanitize( "thread" ) ) )
+#  endif
+#endif
+// defaults
+#ifndef GAUDI_NO_SANITIZE_ADDRESS
+#  define GAUDI_NO_SANITIZE_ADDRESS
+#endif
+#ifndef GAUDI_NO_SANITIZE_MEMORY
+#  define GAUDI_NO_SANITIZE_MEMORY
+#endif
+#ifndef GAUDI_NO_SANITIZE_UNDEFINED
+#  define GAUDI_NO_SANITIZE_UNDEFINED
+#endif
+#ifndef GAUDI_NO_SANITIZE_THREAD
+#  define GAUDI_NO_SANITIZE_THREAD
+#endif
+
 #endif // GAUDIKERNEL_KERNEL_H
