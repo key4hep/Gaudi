@@ -374,7 +374,7 @@ namespace concurrency {
   PRVertexDesc PrecedenceRulesGraph::node( const std::string& name ) const {
     auto vp = vertices( m_PRGraph );
     auto i  = std::find_if( vp.first, vp.second, [&]( const PRVertexDesc& v ) {
-      return boost::apply_visitor( precedence::VertexName(), m_PRGraph[v] ) == name;
+      return std::visit( precedence::VertexName(), m_PRGraph[v] ) == name;
     } );
     return i != vp.second ? *i : PRVertexDesc{};
   }
@@ -469,14 +469,17 @@ namespace concurrency {
     // Declare properties to dump
     boost::dynamic_properties dp;
 
-    dp.property( "Entity", boost::make_transform_value_property_map(
-                               []( const VariantVertexProps& v ) { return boost::lexical_cast<std::string>( v ); },
-                               boost::get( boost::vertex_bundle, m_PRGraph ) ) );
+    dp.property( "Entity",
+                 boost::make_transform_value_property_map(
+                     []( const VariantVertexProps& v ) {
+                       return std::visit( []( const auto& w ) { return boost::lexical_cast<std::string>( w ); }, v );
+                     },
+                     boost::get( boost::vertex_bundle, m_PRGraph ) ) );
 
     auto add_prop = [&]( auto name, auto&& vis ) {
       dp.property( name, boost::make_transform_value_property_map(
                              [vis = std::forward<decltype( vis )>( vis )]( const VariantVertexProps& v ) {
-                               return boost::apply_visitor( vis, v );
+                               return std::visit( vis, v );
                              },
                              boost::get( boost::vertex_bundle, m_PRGraph ) ) );
     };

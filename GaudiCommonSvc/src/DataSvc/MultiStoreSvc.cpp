@@ -33,8 +33,8 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/compose.h"
-#include "boost/variant.hpp"
 #include <map>
+#include <variant>
 
 // Forward declarations
 // This class
@@ -77,8 +77,8 @@ namespace {
     using argument_t = typename arg_helper<lambda>::type;
   } // namespace detail
   auto visit = []( auto&& variant, auto&&... lambdas ) -> decltype( auto ) {
-    return boost::apply_visitor( Gaudi::overload( std::forward<decltype( lambdas )>( lambdas )... ),
-                                 std::forward<decltype( variant )>( variant ) );
+    return std::visit( Gaudi::overload( std::forward<decltype( lambdas )>( lambdas )... ),
+                       std::forward<decltype( variant )>( variant ) );
   };
 } // namespace
 
@@ -111,7 +111,7 @@ protected:
   /// Root type (address or object)
   struct tagROOT {
     std::string                                     path;
-    boost::variant<boost::blank, ADDRESS*, OBJECT*> root;
+    std::variant<std::monostate, ADDRESS*, OBJECT*> root;
   } m_root;
   /// Current partition
   Partition m_current;
@@ -179,7 +179,7 @@ public:
         []( auto* p ) {
           if ( p ) p->release();
         },
-        []( boost::blank ) {} );
+        []( std::monostate ) {} );
     m_root.root = {};
     m_root.path.clear();
     return StatusCode::SUCCESS;
@@ -204,7 +204,7 @@ public:
         []( auto* p ) {
           if ( p ) p->release();
         },
-        []( boost::blank ) {} );
+        []( std::monostate ) {} );
     m_root.path = std::move( path );
     m_root.root = pObj;
     preparePartitions();
@@ -219,7 +219,7 @@ public:
         []( auto* p ) {
           if ( p ) p->release();
         },
-        []( boost::blank ) {} );
+        []( std::monostate ) {} );
     m_root.path = std::move( path );
     m_root.root = pAddr;
     if ( !pAddr ) return StatusCode::FAILURE;
@@ -502,7 +502,7 @@ public:
             }
             return StatusCode::FAILURE;
           },
-          []( boost::blank ) -> StatusCode { return StatusCode::FAILURE; } );
+          []( std::monostate ) -> StatusCode { return StatusCode::FAILURE; } );
       if ( !sc.isSuccess() ) iret = sc;
     }
     return iret;

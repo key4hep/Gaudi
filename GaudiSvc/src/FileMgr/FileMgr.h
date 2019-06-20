@@ -17,10 +17,9 @@
 #include "POSIXFileHandler.h"
 #include "RootFileHandler.h"
 
-#include "boost/optional.hpp"
-
 #include <list>
 #include <map>
+#include <optional>
 #include <string>
 
 using Io::Fd;
@@ -147,8 +146,8 @@ private:
   std::string m_lastErrS;
   int         m_lastErr;
 
-  boost::optional<RootFileHandler>  m_rfh;
-  boost::optional<POSIXFileHandler> m_pfh;
+  std::optional<RootFileHandler>  m_rfh;
+  std::optional<POSIXFileHandler> m_pfh;
 };
 
 #endif

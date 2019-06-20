@@ -6,7 +6,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/NTuple.h"
 
-#include "boost/optional.hpp"
+#include <optional>
 
 #include "RDirectoryCnv.h"
 
@@ -23,13 +23,11 @@
 #include "TTree.h"
 
 namespace {
-  constexpr struct maybe_stol_t {
-    boost::optional<int> operator()( const std::string& s ) const {
-      auto pos = s.find_first_of( "0123456789+-" );
-      if ( pos == std::string::npos ) return boost::none;
-      return std::stol( s.substr( pos ) );
-    }
-  } maybe_stol{};
+  auto maybe_stol = []( const std::string& s ) -> std::optional<int> {
+    auto pos = s.find_first_of( "0123456789+-" );
+    if ( pos == std::string::npos ) return std::nullopt;
+    return std::stol( s.substr( pos ) );
+  };
 } // namespace
 
 DECLARE_CONVERTER( RootHistCnv::RDirectoryCnv )
@@ -88,7 +86,7 @@ StatusCode RootHistCnv::RDirectoryCnv::fillObjRefs( IOpaqueAddress* pAddr, DataO
     std::string     title = obj->GetTitle();
     std::string     sid   = obj->GetName();
     std::string     f2    = full + "/" + sid;
-    int             idh   = maybe_stol( sid ).get_value_or( 0 );
+    int             idh   = maybe_stol( sid ).value_or( 0 );
     // introduced by Grigori Rybkine
     std::string clname = key->GetClassName();
     std::string clnm   = clname.substr( 0, 3 );

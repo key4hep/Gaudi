@@ -8,9 +8,8 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <variant>
 #include <vector>
-// ============================================================================
-#include <boost/variant.hpp>
 // ============================================================================
 #include "Position.h"
 // ============================================================================
@@ -20,9 +19,9 @@ namespace Gaudi {
     class PropertyValue final {
       // ----------------------------------------------------------------------------
     public:
-      typedef boost::variant<std::string, std::vector<std::string>, std::map<std::string, std::string>> Value;
-      typedef std::vector<std::string>                                                                  VectorOfStrings;
-      typedef std::map<std::string, std::string>                                                        MapOfStrings;
+      typedef std::variant<std::string, std::vector<std::string>, std::map<std::string, std::string>> Value;
+      typedef std::vector<std::string>                                                                VectorOfStrings;
+      typedef std::map<std::string, std::string>                                                      MapOfStrings;
 
       // ----------------------------------------------------------------------------
       explicit PropertyValue( Value value, bool is_reference = false )
@@ -32,14 +31,14 @@ namespace Gaudi {
       // ----------------------------------------------------------------------------
       const Position& position() const { return position_; }
       // ----------------------------------------------------------------------------
-      std::string&       String() { return boost::get<std::string>( value_ ); }
-      const std::string& String() const { return boost::get<std::string>( value_ ); }
+      std::string&       String() { return std::get<std::string>( value_ ); }
+      const std::string& String() const { return std::get<std::string>( value_ ); }
 
-      VectorOfStrings&       Vector() { return boost::get<VectorOfStrings>( value_ ); }
-      const VectorOfStrings& Vector() const { return boost::get<VectorOfStrings>( value_ ); }
+      VectorOfStrings&       Vector() { return std::get<VectorOfStrings>( value_ ); }
+      const VectorOfStrings& Vector() const { return std::get<VectorOfStrings>( value_ ); }
 
-      MapOfStrings&       Map() { return boost::get<MapOfStrings>( value_ ); }
-      const MapOfStrings& Map() const { return boost::get<MapOfStrings>( value_ ); }
+      MapOfStrings&       Map() { return std::get<MapOfStrings>( value_ ); }
+      const MapOfStrings& Map() const { return std::get<MapOfStrings>( value_ ); }
       // ----------------------------------------------------------------------------
       std::string ToString() const;
       bool        HasPosition() const { return position_.Exists(); }
