@@ -97,6 +97,7 @@ typedef unsigned long long int ulonglong;
 #endif
 // -------------- LIKELY/UNLIKELY macros (end)
 
+// -----------------------------------------------------------------------------
 // Sanitizer suppressions
 // Gcc
 #if defined( __GNUC__ )
@@ -138,5 +139,28 @@ typedef unsigned long long int ulonglong;
 #ifndef GAUDI_NO_SANITIZE_THREAD
 #  define GAUDI_NO_SANITIZE_THREAD
 #endif
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// Adds compiler specific hints for loop unrolling.
+// To use place the macro directly before the loop you wish to unroll. e.g.
+//
+// GAUDI_LOOP_UNROLL(N)
+// for ( std::size_t i = 0; i < N; ++i ) {
+// // do stuff
+// }
+//
+// Constraints on N are it needs to be something known at compile time.
+// Gains are most obvious with small fixed size (compile time) loops,
+// but in principle can be used with any loop.
+#define GAUDI_DO_PRAGMA( x ) _Pragma( #x )
+#if defined( __clang__ )
+#  define GAUDI_LOOP_UNROLL( x ) GAUDI_DO_PRAGMA( clang loop unroll_count( x ) )
+#elif defined( __GNUC__ )
+#  define GAUDI_LOOP_UNROLL( x ) GAUDI_DO_PRAGMA( GCC unroll x )
+#else
+#  define GAUDI_LOOP_UNROLL( x )
+#endif
+// -----------------------------------------------------------------------------
 
 #endif // GAUDIKERNEL_KERNEL_H
