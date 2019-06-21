@@ -23,6 +23,11 @@ FloatDataConsumer    INFO executing FloatDataConsumer: 7
 ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 0
 ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 7
 VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector1
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector2
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
 FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
 FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
 FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7
@@ -62,6 +67,11 @@ FloatDataConsumer    INFO executing FloatDataConsumer: 7
 ContextConsumer      INFO executing ContextConsumer, got s: 0  e: 1
 ContextIntConsumer   INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 7
 VectorDoublePro...   INFO storing vector<double> into /Event/MyVectorOfDoubles
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector1
+VectorDataProdu...   INFO executing VectorDataProducer, storing [3,3,3,3] into /Event/IntVector2
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Concatening vector [3, 3, 3, 3]
+IntVectorsToInt...   INFO Storing output vector [3, 3, 3, 3, 3, 3, 3, 3] to /Event/MyConcatenatedIntVector
 FrExpTransformer     INFO Converting 12.34 -> 0.77125, 4
 FrExpTransformer     INFO Converting 56.78 -> 0.887188, 6
 FrExpTransformer     INFO Converting 90.12 -> 0.704063, 7

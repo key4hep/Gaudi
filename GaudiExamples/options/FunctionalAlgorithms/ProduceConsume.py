@@ -4,10 +4,12 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__Examples__IntDataProducer as IntDataProducer
+from Configurables import Gaudi__Examples__VectorDataProducer as VectorDataProducer
 from Configurables import Gaudi__Examples__FloatDataConsumer as FloatDataConsumer
 from Configurables import Gaudi__Examples__IntDataConsumer as IntDataConsumer
 from Configurables import Gaudi__Examples__IntToFloatData as IntToFloatData
 from Configurables import Gaudi__Examples__IntIntToFloatFloatData as IntIntToFloatFloatData
+from Configurables import Gaudi__Examples__IntVectorsToIntVector as IntVectorsToIntVector
 from Configurables import Gaudi__Examples__ContextConsumer as ContextConsumer
 from Configurables import Gaudi__Examples__ContextIntConsumer as ContextIntConsumer
 from Configurables import Gaudi__Examples__VectorDoubleProducer as VectorDoubleProducer
@@ -25,6 +27,10 @@ app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
 OtherIntDataProducer.OutputLocation = "/Event/MyOtherInt"
+VectorDataProducer1 = VectorDataProducer(
+    "VectorDataProducer1", OutputLocation="/Event/IntVector1")
+VectorDataProducer2 = VectorDataProducer(
+    "VectorDataProducer2", OutputLocation="/Event/IntVector2")
 app.TopAlg = [
     IntDataProducer("IntDataProducer"), OtherIntDataProducer,
     IntDataConsumer("IntDataConsumer"),
@@ -33,7 +39,14 @@ app.TopAlg = [
     FloatDataConsumer("FloatDataConsumer"),
     ContextConsumer("ContextConsumer"),
     ContextIntConsumer("ContextIntConsumer"),
-    VectorDoubleProducer("VectorDoubleProducer"),
+    VectorDoubleProducer("VectorDoubleProducer"), VectorDataProducer1,
+    VectorDataProducer2,
+    IntVectorsToIntVector(
+        "IntVectorsToIntVector",
+        InputLocations=[
+            str(VectorDataProducer1.OutputLocation),
+            str(VectorDataProducer2.OutputLocation)
+        ]),
     FrExpTransformer("FrExpTransformer"),
     LdExpTransformer("LdExpTransfomer"),
     OptFrExpTransformer("OptFrExpTransformer"),
