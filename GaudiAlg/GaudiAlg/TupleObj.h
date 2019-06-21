@@ -1089,7 +1089,7 @@ namespace Tuples {
     template <
         typename DataIterator, template <typename, typename...> class Container = std::initializer_list,
         typename NamedFunction = std::pair<std::string, std::function<float( detail::const_ref_t<DataIterator> )>>,
-        typename               = std::enable_if_t<!std::is_convertible<Container<NamedFunction>, std::string>::value>>
+        typename               = std::enable_if_t<!std::is_convertible_v<Container<NamedFunction>, std::string>>>
     StatusCode farray( const Container<NamedFunction>& funs, DataIterator first, DataIterator last,
                        const std::string& length, size_t maxv ) {
       return farray_impl( funs.begin(), funs.end(), std::forward<DataIterator>( first ),
@@ -1097,7 +1097,7 @@ namespace Tuples {
     }
 
     template <typename NamedFunctions, typename DataIterator,
-              typename = std::enable_if_t<!std::is_convertible<NamedFunctions, std::string>::value>>
+              typename = std::enable_if_t<!std::is_convertible_v<NamedFunctions, std::string>>>
     StatusCode farray( const NamedFunctions& funs, DataIterator first, DataIterator last, const std::string& length,
                        size_t maxv ) {
       return farray_impl( funs.begin(), funs.end(), std::forward<DataIterator>( first ),

@@ -69,7 +69,7 @@ namespace Gaudi::Functional {
     private:
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
-      using InputHandle_t = details::InputHandle_t<Traits_, typename std::remove_pointer<T>::type>;
+      using InputHandle_t = details::InputHandle_t<Traits_, std::remove_pointer_t<T>>;
       std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
       Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
       // TODO/FIXME: replace vector of string property + call-back with a
@@ -126,7 +126,7 @@ namespace Gaudi::Functional {
     private:
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
-      using InputHandle_t = details::InputHandle_t<Traits_, typename std::remove_pointer<T>::type>;
+      using InputHandle_t = details::InputHandle_t<Traits_, std::remove_pointer_t<T>>;
       std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
       Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
       // TODO/FIXME: replace vector of string property + call-back with a

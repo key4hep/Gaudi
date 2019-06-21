@@ -36,7 +36,7 @@ public:
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, class K, typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  template <class OWNER, class K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   inline DataObjectHandleBase( OWNER* owner, Gaudi::DataHandle::Mode m, std::string name, const K& key = {},
                                std::string doc = "" )
       : DataObjectHandleBase( key, m, owner ) {

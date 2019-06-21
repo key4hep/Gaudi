@@ -65,7 +65,7 @@ namespace Gaudi {
      *  of SmartDataPtr used in the helper classes.
      *  This version is dealing with the general case, where AnyDataWrapper cannot be used
      */
-    template <class TYPE, std::enable_if_t<!std::is_constructible<TYPE>::value, void*> = nullptr>
+    template <class TYPE, std::enable_if_t<!std::is_constructible_v<TYPE>, void*> = nullptr>
     inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location ) {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
@@ -83,7 +83,7 @@ namespace Gaudi {
      *  This version allows the use of AnyDataWrapper but restricts to the case
      *  where TYPE is constructible
      */
-    template <class TYPE, std::enable_if_t<std::is_constructible<TYPE>::value, void*> = nullptr>
+    template <class TYPE, std::enable_if_t<std::is_constructible_v<TYPE>, void*> = nullptr>
     inline typename _GetType<TYPE>::return_type getFromTS( IDataProviderSvc* service, const std::string& location ) {
       DataObject* obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.

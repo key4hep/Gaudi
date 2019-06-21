@@ -14,7 +14,7 @@ class INamedInterface;
 
 template <class BASE>
 class GAUDI_API CounterHolder : public BASE {
-  static_assert( std::is_base_of<INamedInterface, BASE>::value,
+  static_assert( std::is_base_of_v<INamedInterface, BASE>,
                  "CounterHolder template argument must inherit from INamedInterface" );
 
 public:

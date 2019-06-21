@@ -21,12 +21,12 @@ class FixTESPath : public BASE {
 public:
   /// Algorithm constructor - the SFINAE constraint below ensures that this is
   /// constructor is only defined if BASE derives from Algorithm
-  template <typename U = BASE, typename = std::enable_if_t<std::is_base_of<Gaudi::Algorithm, BASE>::value, U>>
+  template <typename U = BASE, typename = std::enable_if_t<std::is_base_of_v<Gaudi::Algorithm, BASE>, U>>
   FixTESPath( const std::string& name, ISvcLocator* pSvcLocator ) : BASE( name, pSvcLocator ) {}
 
   /// Tool constructor - SFINAE-ed to insure this constructor is only defined
   /// if BASE derives from AlgTool.
-  template <typename U = BASE, typename = std::enable_if_t<std::is_base_of<AlgTool, BASE>::value, U>>
+  template <typename U = BASE, typename = std::enable_if_t<std::is_base_of_v<AlgTool, BASE>, U>>
   FixTESPath( const std::string& type, const std::string& name, const IInterface* ancestor )
       : BASE( type, name, ancestor ) {
     // setup RootInTES from parent if available

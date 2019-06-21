@@ -61,7 +61,7 @@ namespace details {
 
   template <typename T>
   struct Payload_helper {
-    using type = std::conditional_t<std::is_base_of<DataObject, T>::value, T, AnyDataWrapper<T>>;
+    using type = std::conditional_t<std::is_base_of_v<DataObject, T>, T, AnyDataWrapper<T>>;
   };
   template <typename T>
   struct Payload_helper<Gaudi::Range_<T>> {
@@ -285,7 +285,7 @@ public:
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   DataObjectReadHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Reader, std::move( propertyName ), key,
                                                    std::move( doc ) ) {}
@@ -307,7 +307,7 @@ public:
 
   /// Autodeclaring constructor with property name, mode, key and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
-  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+  template <typename OWNER, typename K, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
   DataObjectWriteHandle( OWNER* owner, std::string propertyName, const K& key = {}, std::string doc = "" )
       : DataObjectHandle<::details::Payload_t<T>>( owner, Gaudi::DataHandle::Writer, std::move( propertyName ), key,
                                                    std::move( doc ) ) {}

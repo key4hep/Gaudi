@@ -24,9 +24,9 @@ namespace Gaudi {
     /// helper typedefs for SFINAE
     /// @{
     template <class T>
-    using is_this_type = std::is_same<Property, typename std::remove_reference<T>::type>;
+    static inline constexpr bool is_this_type_v = std::is_same_v<Property, typename std::remove_reference_t<T>>;
     template <class T>
-    using not_copying = std::enable_if<!is_this_type<T>::value>;
+    using not_copying = std::enable_if<!is_this_type_v<T>>;
     /// @}
   public:
     // ==========================================================================

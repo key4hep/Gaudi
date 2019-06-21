@@ -13,6 +13,7 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -25,9 +26,6 @@
 
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
-
-#include <boost/type_traits.hpp>
-#include <boost/utility/enable_if.hpp>
 
 #include <boost/spirit/repository/include/qi_confix.hpp>
 //==============================================================================
@@ -137,7 +135,7 @@ namespace Gaudi {
     // Register IntGrammar:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename T, typename Skipper>
-    struct Grammar_<Iterator, T, Skipper, typename boost::enable_if<boost::is_integral<T>>::type> {
+    struct Grammar_<Iterator, T, Skipper, std::enable_if_t<std::is_integral_v<T>>> {
       typedef IntGrammar<Iterator, T, Skipper> Grammar;
     };
     //==============================================================================
@@ -151,7 +149,7 @@ namespace Gaudi {
     // Register RealGrammar:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename T, typename Skipper>
-    struct Grammar_<Iterator, T, Skipper, typename boost::enable_if<boost::is_floating_point<T>>::type> {
+    struct Grammar_<Iterator, T, Skipper, std::enable_if_t<std::is_floating_point_v<T>>> {
       typedef RealGrammar<Iterator, T, Skipper> Grammar;
     };
     //==============================================================================
@@ -211,7 +209,7 @@ namespace Gaudi {
       //---------------------------------------------------------------------------
       struct Operations {
         //---------------------------------------------------------------------
-        void operator()( ResultT& res, const typename std::tuple_element<0, ResultT>::type& val ) const {
+        void operator()( ResultT& res, const std::tuple_element_t<0, ResultT>& val ) const {
           res                = ResultT();
           std::get<0>( res ) = val;
         }
@@ -220,7 +218,7 @@ namespace Gaudi {
       //---------------------------------------------------------------------------
       TupleInnerGrammar() : TupleInnerGrammar::base_type( tup ) { tup = grFirst[op( qi::_val, qi::_1 )]; }
 
-      typename Grammar_<Iterator, typename std::tuple_element<0, ResultT>::type, Skipper>::Grammar grFirst;
+      typename Grammar_<Iterator, std::tuple_element_t<0, ResultT>, Skipper>::Grammar grFirst;
 
       qi::rule<Iterator, ResultT(), Skipper> tup;
       ph::function<Operations>               op;

@@ -90,7 +90,7 @@ public:
   StatusCode() = default;
 
   /// Constructor from enum type (allowing implicit conversion)
-  template <typename T, typename = typename std::enable_if<is_StatusCode_enum<T>::value>::type>
+  template <typename T, typename = std::enable_if_t<is_StatusCode_enum<T>::value>>
   StatusCode( T sc, bool checked = false ) noexcept {
     *this     = StatusCode( static_cast<StatusCode::code_t>( sc ), is_StatusCode_enum<T>::instance );
     m_checked = checked;

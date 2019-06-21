@@ -207,7 +207,7 @@ namespace Gaudi {
       };
       // ...and here is the preferred impl for default-constructible types:
       template <class TYPE>
-      struct DefaultStringConverter<TYPE, std::enable_if_t<std::is_default_constructible<TYPE>::value>>
+      struct DefaultStringConverter<TYPE, std::enable_if_t<std::is_default_constructible_v<TYPE>>>
           : DefaultStringConverterImpl<TYPE> {
         TYPE fromString( const TYPE& /* ref_value */, const std::string& s ) final override {
           TYPE buffer{};
@@ -367,9 +367,9 @@ namespace Gaudi {
     /// helper typedefs for SFINAE
     /// @{
     template <class T>
-    using is_this_type = std::is_same<Property, std::remove_reference_t<T>>;
+    static inline constexpr bool is_this_type_v = std::is_same_v<Property, std::remove_reference_t<T>>;
     template <class T>
-    using not_copying = std::enable_if_t<!is_this_type<T>::value>;
+    using not_copying = std::enable_if_t<!is_this_type_v<T>>;
     /// @}
   public:
     // ==========================================================================
@@ -382,9 +382,8 @@ namespace Gaudi {
     }
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <typename OWNER, typename T = ValueType,
-              typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>,
-              typename = std::enable_if_t<std::is_default_constructible<T>::value>>
+    template <typename OWNER, typename T = ValueType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>,
+              typename = std::enable_if_t<std::is_default_constructible_v<T>>>
     Property( OWNER* owner, std::string name ) : Property( std::move( name ), ValueType{}, "" ) {
       owner->declareProperty( *this );
       setOwnerType<OWNER>();
@@ -392,7 +391,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) ) {
       owner->declareProperty( *this );
@@ -401,7 +400,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
               std::string doc = "" )
         : Property( owner, std::move( name ), std::forward<T>( value ), std::move( doc ) ) {
@@ -410,7 +409,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )( PropertyBase& ),
               std::string doc = "" )
         : Property(
@@ -418,7 +417,7 @@ namespace Gaudi {
               [owner, handler]( PropertyBase& p ) { ( owner->*handler )( p ); }, std::move( doc ) ) {}
     /// Autodeclaring constructor with property name, value, pointer to member function updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, void ( OWNER::*handler )(), std::string doc = "" )
         : Property(
               owner, std::move( name ), std::forward<T>( value ),
@@ -426,7 +425,7 @@ namespace Gaudi {
 
     /// Autodeclaring constructor with property name, value, updateHandler and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of<IProperty, OWNER>::value>>
+    template <class OWNER, class T = StorageType, typename = std::enable_if_t<std::is_base_of_v<IProperty, OWNER>>>
     Property( OWNER* owner, std::string name, T&& value, std::function<void( PropertyBase& )> handler,
               Details::Property::ImmediatelyInvokeHandler invoke, std::string doc = "" )
         : Property( owner, std::move( name ), std::forward<T>( value ), std::move( handler ), std::move( doc ) ) {
@@ -441,7 +440,7 @@ namespace Gaudi {
 
     /// Construct an anonymous property with default constructed value.
     /// Can be used only if StorageType is default constructible.
-    template <typename T = StorageType, typename = std::enable_if_t<!std::is_reference<T>::value>>
+    template <typename T = StorageType, typename = std::enable_if_t<!std::is_reference_v<T>>>
     Property() : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value() {}
 
     using Details::PropertyBase::declareReadHandler;
@@ -660,7 +659,7 @@ namespace Gaudi {
     bool assign( const Details::PropertyBase& source ) override {
       // Check if the property of is of "the same" type, except for strings
       const Property* p =
-          ( std::is_same<ValueType, std::string>::value ) ? nullptr : dynamic_cast<const Property*>( &source );
+          ( std::is_same_v<ValueType, std::string> ) ? nullptr : dynamic_cast<const Property*>( &source );
       if ( p ) {
         *this = p->value();
       } else {

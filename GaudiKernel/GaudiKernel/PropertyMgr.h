@@ -42,9 +42,9 @@ public:
 
 public:
   /// Declare a property (templated)
-  template <class TYPE, typename = std::enable_if_t<!std::is_base_of<GaudiHandleBase, TYPE>::value &&
-                                                    !std::is_base_of<GaudiHandleArrayBase, TYPE>::value &&
-                                                    !std::is_base_of<DataObjectHandleBase, TYPE>::value>>
+  template <class TYPE, typename = std::enable_if_t<!std::is_base_of_v<GaudiHandleBase, TYPE> &&
+                                                    !std::is_base_of_v<GaudiHandleArrayBase, TYPE> &&
+                                                    !std::is_base_of_v<DataObjectHandleBase, TYPE>>>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value,
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
