@@ -1028,7 +1028,8 @@ class ConfigurableGeneric(Configurable):
     def __deepcopy__(self, memo):
         return self  # algorithms are always shared
 
-    def getGaudiType(self):
+    @classmethod
+    def getGaudiType(cls):
         return 'GenericComponent'
 
     def getDlls(self):
@@ -1085,7 +1086,8 @@ class ConfigurableAlgorithm(Configurable):
     def getHandle(self):
         return iAlgorithm(self.getJobOptName())
 
-    def getGaudiType(self):
+    @classmethod
+    def getGaudiType(cls):
         return 'Algorithm'
 
     def getJobOptName(self):
@@ -1141,7 +1143,8 @@ class ConfigurableService(Configurable):
     def getHandle(self):
         return iService(self._name)
 
-    def getGaudiType(self):
+    @classmethod
+    def getGaudiType(cls):
         return 'Service'
 
     def getGaudiHandle(self):
@@ -1174,7 +1177,8 @@ class ConfigurableAlgTool(Configurable):
         # iAlgTool isn't useful, unless one knows for sure that the tool exists
         return iProperty(self.getJobOptName())
 
-    def getGaudiType(self):
+    @classmethod
+    def getGaudiType(cls):
         return 'AlgTool'
 
     def getGaudiHandle(self):
@@ -1253,7 +1257,8 @@ class ConfigurableAuditor(Configurable):
         # iAlgTool isn't useful, unless one knows for sure that the tool exists
         return iProperty(self.getJobOptName())
 
-    def getGaudiType(self):
+    @classmethod
+    def getGaudiType(cls):
         return 'Auditor'
 
     def getJobOptName(self):
@@ -1351,7 +1356,8 @@ class ConfigurableUser(Configurable):
                 % (self.name(), other.name()))
         other.__addActiveUseOf(self)
 
-    def getGaudiType(self):
+    @classmethod
+    def getGaudiType(cls):
         return 'User'
 
     def getDlls(self):
@@ -1788,7 +1794,8 @@ class SuperAlgorithm(ControlFlowNode):
         return False
 
     # required to be registered in allConfigurables
-    def getGaudiType(self):
+    @classmethod
+    def getGaudiType(cls):
         return 'User'
 
     def _makeAlg(self, typ, **kwargs):
