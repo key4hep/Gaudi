@@ -1,9 +1,11 @@
 #include "GaudiAlg/Consumer.h"
+#include "GaudiAlg/MergingTransformer.h"
 #include "GaudiAlg/Producer.h"
 #include "GaudiAlg/ScalarTransformer.h"
 #include "GaudiAlg/Transformer.h"
 #include "GaudiKernel/KeyedContainer.h"
 #include <cmath>
+#include <numeric>
 
 namespace Gaudi::Examples {
 
@@ -131,6 +133,35 @@ namespace Gaudi::Examples {
   };
 
   DECLARE_COMPONENT( IntIntToFloatFloatData )
+
+  /** @brief Concatenates a list of input vectors into a single output vector.
+   */
+  struct IntVectorsToIntVector final
+      : public Gaudi::Functional::MergingTransformer<
+            std::vector<int>( const Gaudi::Functional::vector_of_const_<std::vector<int>>& ), BaseClass_t> {
+
+    IntVectorsToIntVector( const std::string& name, ISvcLocator* svcLoc )
+        : MergingTransformer( name, svcLoc, {"InputLocations", {}},
+                              {"OutputLocation", "/Event/MyConcatenatedIntVector"} ) {}
+
+    std::vector<int>
+    operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors ) const override {
+      // Create a vector and pre-allocate enough space for the number of integers we have
+      auto             nelements = std::accumulate( intVectors.begin(), intVectors.end(), 0,
+                                        []( const auto a, const auto b ) { return a + b.size(); } );
+      std::vector<int> out;
+      out.reserve( nelements );
+      // Concatenate the input vectors to form the output
+      for ( const auto& intVector : intVectors ) {
+        info() << "Concatening vector " << intVector << endmsg;
+        out.insert( out.end(), intVector.begin(), intVector.end() );
+      }
+      info() << "Storing output vector " << out << " to " << outputLocation() << endmsg;
+      return out;
+    }
+  };
+
+  DECLARE_COMPONENT( IntVectorsToIntVector )
 
   struct FloatDataConsumer final : Gaudi::Functional::Consumer<void( const float& ), BaseClass_t> {
 
