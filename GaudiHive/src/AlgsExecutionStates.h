@@ -30,11 +30,10 @@ public:
     INITIAL      = 0,
     CONTROLREADY = 1,
     DATAREADY    = 2,
-    RESOURCELESS = 3,
-    SCHEDULED    = 4,
-    EVTACCEPTED  = 5,
-    EVTREJECTED  = 6,
-    ERROR        = 7
+    SCHEDULED    = 3,
+    EVTACCEPTED  = 4,
+    EVTREJECTED  = 5,
+    ERROR        = 6
   };
 
   AlgsExecutionStates( unsigned int algsNumber, SmartIF<IMessageSvc> MS )
@@ -117,9 +116,6 @@ inline std::ostream& operator<<( std::ostream& s, AlgsExecutionStates::State x )
     break;
   case State::DATAREADY:
     s << "DATAREADY";
-    break;
-  case State::RESOURCELESS:
-    s << "RESOURCELESS";
     break;
   case State::SCHEDULED:
     s << "SCHEDULED";
