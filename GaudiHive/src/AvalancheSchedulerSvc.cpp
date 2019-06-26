@@ -855,7 +855,9 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
         outputMS << "\nNumber of sub-slots: " << slot.allSubSlots.size() << "\n\n";
         auto slotID = slot.eventContext->valid() ? std::to_string( slot.eventContext->slot() ) : "[ctx invalid]";
         for ( auto& ss : slot.allSubSlots ) {
-          outputMS << "[ slot: " << slotID << " sub-slot entry: " << ss.entryPoint << "  event: "
+          outputMS << "[ slot: " << slotID << ", sub-slot: "
+                   << ( ss.eventContext->valid() ? std::to_string( ss.eventContext->subSlot() ) : "[ctx invalid]" )
+                   << ", entry: " << ss.entryPoint << ", event: "
                    << ( ss.eventContext->valid() ? std::to_string( ss.eventContext->evt() ) : "[ctx invalid]" )
                    << " ]:\n\n";
           outputMS << m_precSvc->printState( ss ) << "\n";

@@ -1,7 +1,7 @@
 #include "PrecedenceRulesGraph.h"
 #include "Visitors/Promoters.h"
 
-#include "GaudiKernel/DataHandleHolderVisitor.h"
+#include "GaudiKernel/DataHandleFinder.h"
 
 #include <boost/property_map/transform_value_property_map.hpp>
 #include <fstream>
@@ -39,14 +39,15 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::printState( std::stringstream& output, AlgsExecutionStates& states,
-                                 const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const {
+  void DecisionNode::printState( std::stringstream& output, EventSlot& slot,
+                                 const unsigned int& recursionLevel ) const {
 
+    auto& node_decisions = slot.controlFlowState;
     output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
            << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
            << ")" << std::endl;
 
-    for ( auto daughter : m_children ) daughter->printState( output, states, node_decisions, recursionLevel + 2 );
+    for ( auto daughter : m_children ) daughter->printState( output, slot, recursionLevel + 2 );
   }
 
   //---------------------------------------------------------------------------
@@ -62,12 +63,107 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
-                                  const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const {
-    output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
+  void AlgorithmNode::printState( std::stringstream& output, EventSlot& slot,
+                                  const unsigned int& recursionLevel ) const {
+
+    auto&       node_decisions = slot.controlFlowState;
+    auto&       states         = slot.algsStates;
+    std::string indent( recursionLevel, ' ' );
+    output << indent << m_nodeName << " (" << m_nodeIndex << ")"
            << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
            << ")"
            << ", in state: " << states[m_algoIndex] << std::endl;
+
+    // In a stall, CONTROLREADY nodes are interesting
+    if ( states[m_algoIndex] == AlgsExecutionStates::State::CONTROLREADY ) {
+
+      // Check all data dependencies
+      output << indent << "========" << std::endl;
+      for ( auto dataNode : this->getInputDataNodes() ) {
+
+        // Was the data produced?
+        ConditionNode*    castNode = dynamic_cast<ConditionNode*>( dataNode );
+        DataReadyPromoter visitor( slot, {} );
+        bool              wasProduced = false;
+        if ( castNode ) {
+          // ConditionNodes always request data on visit()
+          // Instead take the opposite of visitEnter(), since you may not enter if it already exists
+          wasProduced = !visitor.visitEnter( *castNode );
+        } else {
+          // For DataNodes, the check is done in visit()
+          wasProduced = visitor.visit( *dataNode );
+        }
+
+        // Print out states of producer algs if data is missing
+        if ( !wasProduced ) {
+
+          // Say if it's conditions data or not
+          if ( castNode )
+            output << indent << "missing conditions data: " << dataNode->getPath() << std::endl;
+          else
+            output << indent << "missing data: " << dataNode->getPath() << std::endl;
+
+          // Find out if the algorithm needs it because of a tool
+          DataHandleFinder finder( dataNode->getPath() );
+          this->getAlgorithm()->acceptDHVisitor( &finder );
+          if ( finder.holderNames().size() > 1 ) {
+            output << indent << "required by tool:";
+            for ( auto const& holderName : finder.holderNames() ) {
+              if ( holderName != this->getNodeName() ) output << " " << holderName;
+            }
+            output << std::endl;
+          }
+
+          // State which algs produce this data
+          output << indent << "can be produced by alg(s): ";
+          for ( auto algoNode : dataNode->getProducers() ) {
+            output << "( " << algoNode->getNodeName() << " in state: " << states[algoNode->getAlgoIndex()] << " ) ";
+          }
+          output << std::endl;
+
+          // See where data is available (ignore conditions, since these are top-level)
+          if ( !castNode ) {
+            std::vector<EventSlot>* testSubSlots = &slot.allSubSlots;
+            auto*                   subSlotMap   = &slot.subSlotsByNode;
+
+            // Examine the top-level slot if you did not start there
+            if ( slot.parentSlot ) {
+              visitor.m_slot = slot.parentSlot;
+              testSubSlots   = &slot.parentSlot->allSubSlots;
+              subSlotMap     = &slot.parentSlot->subSlotsByNode;
+              if ( visitor.visit( *dataNode ) ) {
+                output << indent << "data is available at whole-event level" << std::endl;
+              }
+            }
+
+            // Examine all sub slots, grouped by entry point
+            for ( auto& pair : *subSlotMap ) {
+              if ( pair.second.size() > 0 ) {
+                bool madeLine = false;
+
+                // Loop over the slots for this entry point
+                for ( int slotIndex : pair.second ) {
+
+                  EventSlot* subSlot = &testSubSlots->at( slotIndex );
+                  visitor.m_slot     = subSlot;
+                  if ( visitor.visit( *dataNode ) ) {
+
+                    if ( !madeLine ) {
+                      // Only mention this set of sub-slots at all if one has the data
+                      output << indent << "data is available in sub-slot(s) ";
+                      madeLine = true;
+                    }
+                    output << slotIndex << ", ";
+                  }
+                }
+                if ( madeLine ) { output << "entered from " << pair.first << std::endl; }
+              }
+            }
+          }
+        }
+      }
+      output << indent << "========" << std::endl;
+    }
   }
 
   //---------------------------------------------------------------------------

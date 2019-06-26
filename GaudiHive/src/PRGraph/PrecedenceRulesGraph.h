@@ -413,8 +413,7 @@ namespace concurrency {
     /// Visitor entry point
     virtual bool accept( IGraphVisitor& visitor ) = 0;
     /// Print a string representing the control flow state
-    virtual void printState( std::stringstream& output, AlgsExecutionStates& states,
-                             const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const = 0;
+    virtual void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const = 0;
     /// Get node index
     const unsigned int& getNodeIndex() const { return m_nodeIndex; }
     /// Get node name
@@ -450,8 +449,7 @@ namespace concurrency {
     /// Get children nodes
     const std::vector<ControlFlowNode*>& getDaughters() const { return m_children; }
     /// Print a string representing the control flow state
-    void printState( std::stringstream& output, AlgsExecutionStates& states, const std::vector<int>& node_decisions,
-                     const unsigned int& recursionLevel ) const override;
+    void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const override;
 
   public:
     /// Whether all daughters will be evaluated concurrently or sequentially
@@ -525,8 +523,7 @@ namespace concurrency {
     bool isLiar() const { return m_inverted; };
 
     /// Print a string representing the control flow state
-    void printState( std::stringstream& output, AlgsExecutionStates& states, const std::vector<int>& node_decisions,
-                     const unsigned int& recursionLevel ) const override;
+    void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const override;
 
   public:
     /// Control flow parents of an AlgorithmNode (DecisionNodes)
@@ -668,9 +665,14 @@ namespace concurrency {
     SmartIF<ISvcLocator>& serviceLocator() const override { return m_svcLocator; }
     ///
     /// Print a string representing the control flow state
-    void printState( std::stringstream& output, AlgsExecutionStates& states, const std::vector<int>& node_decisions,
-                     const unsigned int& recursionLevel ) const {
-      m_headNode->printState( output, states, node_decisions, recursionLevel );
+    void printState( std::stringstream& output, EventSlot& slot, const unsigned int& recursionLevel ) const {
+      if ( slot.parentSlot ) {
+        // Start at sub-slot entry point
+        m_decisionNameToDecisionHubMap.at( slot.entryPoint )->printState( output, slot, recursionLevel );
+      } else {
+        // Start at the head node for whole-event slots
+        m_headNode->printState( output, slot, recursionLevel );
+      }
     }
 
     /// BGL-based facilities

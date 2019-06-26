@@ -272,7 +272,7 @@ void PrecedenceSvc::dumpDataFlow() const {
 const std::string PrecedenceSvc::printState( EventSlot& slot ) const {
 
   std::stringstream ss;
-  m_PRGraph.printState( ss, slot.algsStates, slot.controlFlowState, 0 );
+  m_PRGraph.printState( ss, slot, 0 );
   return ss.str();
 }
 
