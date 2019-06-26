@@ -83,15 +83,14 @@ namespace Gaudi {
        */
       AlgContext( IAlgorithm* alg, IAlgContextSvc* svc, const EventContext& context );
 
-      /** constructor from the service and the algorithm
+      /** constructor from the service and the algorithm (single thread case)
        *  Internally invokes IAlgContextSvc::setCurrentAlg
        *  @see IAlgorithm
        *  @see IAlgContextSvc
        *  @param alg pointer to the current algorithm
        *  @param svc pointer to algorithm context service
        */
-      [[deprecated( "use the signature with explicit EventContext" )]] AlgContext( IAlgorithm*     alg,
-                                                                                   IAlgContextSvc* svc );
+      AlgContext( IAlgorithm* alg, IAlgContextSvc* svc );
 
       /** destructor
        *  Internally invokes IAlgContextSvc::unSetCurrentAlg
