@@ -36,7 +36,7 @@ PropertyAlg.Int    = 101 ;
 PropertyAlg.Int64  = 4294967296; // 1 << 32
 PropertyAlg.UInt64 = 4294967296; // 1 << 32
 PropertyAlg.Double = 101.1e+10;
-PropertyAlg.String = "hundred one";
+PropertyAlg.String = "hundred \"one\"";
 PropertyAlg.Bool   = false;
 
 
@@ -54,7 +54,7 @@ PropertyAlg.DoubleArrayWithoutUnits = { 1100000.0 , -20., 33.0, 0.4 };
 
 PropertyAlg.PInt    = 101 ;
 PropertyAlg.PDouble = 101.E5;
-PropertyAlg.PString = "hundred one";
+PropertyAlg.PString = "hundred 'one'";
 PropertyAlg.PBool   = true;
 
 
@@ -79,4 +79,3 @@ MessageSvc.setVerbose  += {"MsgTest"};
 MessageSvc.setWarning  += {"MsgTest"};
 //MessageSvc.setFatal  += {"MsgTest"};
 //MessageSvc.setAlways  += {"MsgTest"};
-

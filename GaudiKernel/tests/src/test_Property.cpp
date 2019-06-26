@@ -82,6 +82,20 @@ BOOST_AUTO_TEST_CASE( string_conversion ) {
     BOOST_CHECK( p1.fromString( "xyz" ) );
     BOOST_CHECK( p1.value() == "xyz" );
     BOOST_CHECK( p1.toString() == "xyz" );
+
+    p1 = "with \"quotes\" inside";
+    BOOST_CHECK( p1.value() == "with \"quotes\" inside" );
+    BOOST_CHECK( p1.toString() == "with \"quotes\" inside" );
+
+    Gaudi::Property<std::string> tgt{"p1", ""};
+
+    auto sc = tgt.assign( p1 );
+    BOOST_CHECK( sc );
+    BOOST_CHECK( tgt.value() == "with \"quotes\" inside" );
+
+    sc = p1.load( tgt );
+    BOOST_CHECK( sc );
+    BOOST_CHECK( tgt.value() == "with \"quotes\" inside" );
   }
   {
     Gaudi::Property<int> p2{"p2", 10};

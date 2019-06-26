@@ -89,8 +89,9 @@ static std::unique_ptr<gp::PropertyValue> GetPropertyValue( const gp::Node* node
   }
   // ------------------------------------------------------------------------
   case gp::Node::kString: {
-    // TODO,C++14: use std::quoted
-    value = std::make_unique<gp::PropertyValue>( '"' + node->value + '"' );
+    std::stringstream ss;
+    ss << std::quoted( node->value );
+    value = std::make_unique<gp::PropertyValue>( ss.str() );
     break;
   }
   // ------------------------------------------------------------------------

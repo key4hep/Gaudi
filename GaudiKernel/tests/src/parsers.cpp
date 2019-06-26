@@ -18,6 +18,8 @@ int test_main( int /*argc*/, char** /*argv*/ ) // note the name!
     std::string result;
     BOOST_CHECK( parse( result, "'Hello \\ \\' world'" ) );
     BOOST_CHECK( result == "Hello \\ ' world" );
+    BOOST_CHECK( parse( result, "string \"with\" quotes" ) );
+    BOOST_CHECK( result == "string \"with\" quotes" );
   }
   //==============================================================================
   // IntGrammar
