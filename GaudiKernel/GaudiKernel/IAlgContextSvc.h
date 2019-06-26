@@ -92,6 +92,10 @@ namespace Gaudi {
        */
       AlgContext( IAlgorithm* alg, IAlgContextSvc* svc );
 
+      /// Prevent use of temporary EventContext as current context.
+      /// @see [gaudi/Gaudi#73](https://gitlab.cern.ch/gaudi/Gaudi/issues/73)
+      AlgContext( IAlgorithm* alg, IAlgContextSvc* svc, EventContext&& context ) = delete;
+
       /** destructor
        *  Internally invokes IAlgContextSvc::unSetCurrentAlg
        *  @see IAlgorithm
