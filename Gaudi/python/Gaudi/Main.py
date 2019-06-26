@@ -7,6 +7,150 @@ import logging
 log = logging.getLogger(__name__)
 
 
+class BootstrapHelper(object):
+    class StatusCode(object):
+        def __init__(self, value):
+            self.value = value
+
+        def __bool__(self):
+            return self.value
+
+        __nonzero__ = __bool__
+
+        def isSuccess(self):
+            return self.value
+
+        def isFailure(self):
+            return not self.value
+
+        def ignore(self):
+            pass
+
+    class Property(object):
+        def __init__(self, value):
+            self.value = value
+
+        def __str__(self):
+            return str(self.value)
+
+        toString = __str__
+
+    class AppMgr(object):
+        def __init__(self, ptr, lib):
+            self.ptr = ptr
+            self.lib = lib
+            self._as_parameter_ = ptr
+
+        def configure(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_configure(self.ptr))
+
+        def initialize(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_initialize(self.ptr))
+
+        def start(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_start(self.ptr))
+
+        def run(self, nevt):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_app_run(self.ptr, nevt))
+
+        def stop(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_stop(self.ptr))
+
+        def finalize(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_finalize(self.ptr))
+
+        def terminate(self):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_fsm_terminate(self.ptr))
+
+        def getService(self, name):
+            return self.lib.py_bootstrap_getService(self.ptr, name)
+
+        def setProperty(self, name, value):
+            return BootstrapHelper.StatusCode(
+                self.lib.py_bootstrap_setProperty(self.ptr, name, value))
+
+        def getProperty(self, name):
+            return BootstrapHelper.Property(
+                self.lib.py_bootstrap_getProperty(self.ptr, name))
+
+        def printAlgsSequences(self):
+            return self.lib.py_helper_printAlgsSequences(self.ptr)
+
+    def __init__(self):
+        from ctypes import (PyDLL, util, c_void_p, c_bool, c_char_p, c_int,
+                            RTLD_GLOBAL)
+
+        # Helper class to avoid void* to int conversion
+        # (see http://stackoverflow.com/questions/17840144)
+
+        class IInterface_p(c_void_p):
+            def __repr__(self):
+                return "IInterface_p(0x%x)" % (0 if self.value is None else
+                                               self.value)
+
+        self.log = logging.getLogger('BootstrapHelper')
+        libname = util.find_library('GaudiKernel') or 'libGaudiKernel.so'
+        self.log.debug('loading GaudiKernel (%s)', libname)
+
+        # FIXME: note that we need PyDLL instead of CDLL if the calls to
+        #        Python functions are not protected with the GIL.
+        self.lib = gkl = PyDLL(libname, mode=RTLD_GLOBAL)
+
+        functions = [
+            ('createApplicationMgr', IInterface_p, []),
+            ('getService', IInterface_p, [IInterface_p, c_char_p]),
+            ('setProperty', c_bool, [IInterface_p, c_char_p, c_char_p]),
+            ('getProperty', c_char_p, [IInterface_p, c_char_p]),
+            ('addPropertyToCatalogue', c_bool,
+             [IInterface_p, c_char_p, c_char_p, c_char_p]),
+            ('ROOT_VERSION_CODE', c_int, []),
+        ]
+
+        for name, restype, argtypes in functions:
+            f = getattr(gkl, 'py_bootstrap_%s' % name)
+            f.restype, f.argtypes = restype, argtypes
+            # create a delegate method if not already present
+            # (we do not want to use hasattr because it calls "properties")
+            if name not in self.__class__.__dict__:
+                setattr(self, name, f)
+
+        for name in ('configure', 'initialize', 'start', 'stop', 'finalize',
+                     'terminate'):
+            f = getattr(gkl, 'py_bootstrap_fsm_%s' % name)
+            f.restype, f.argtypes = c_bool, [IInterface_p]
+        gkl.py_bootstrap_app_run.restype = c_bool
+        gkl.py_bootstrap_app_run.argtypes = [IInterface_p, c_int]
+
+        gkl.py_helper_printAlgsSequences.restype = None
+        gkl.py_helper_printAlgsSequences.argtypes = [IInterface_p]
+
+    def createApplicationMgr(self):
+        ptr = self.lib.py_bootstrap_createApplicationMgr()
+        return self.AppMgr(ptr, self.lib)
+
+    @property
+    def ROOT_VERSION_CODE(self):
+        return self.lib.py_bootstrap_ROOT_VERSION_CODE()
+
+    @property
+    def ROOT_VERSION(self):
+        root_version_code = self.ROOT_VERSION_CODE
+        a = root_version_code >> 16 & 0xff
+        b = root_version_code >> 8 & 0xff
+        c = root_version_code & 0xff
+        return (a, b, c)
+
+
+_bootstrap = None
+
+
 def toOpt(value):
     '''
     Helper to convert values to old .opts format.
