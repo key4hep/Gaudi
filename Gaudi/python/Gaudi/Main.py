@@ -281,11 +281,8 @@ class gaudimain(object):
     #  Depending on the number of CPUs (ncpus) specified, it start
     def run(self, attach_debugger, ncpus=None):
         if not ncpus:
-            if os.environ.get('GAUDIRUN_USE_OLDINIT'):
-                result = self.runSerialOld(attach_debugger)
-            else:
-                # Standard sequential mode
-                result = self.runSerial(attach_debugger)
+            # Standard sequential mode
+            result = self.runSerial(attach_debugger)
         else:
             # Otherwise, run with the specified number of cpus
             result = self.runParallel(ncpus)
