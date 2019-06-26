@@ -63,7 +63,17 @@ find_program(clang_format_cmd
         clang-format-${CLANG_FORMAT_VERSION}
         gaudi-clang-format-${CLANG_FORMAT_VERSION})
 if(clang_format_cmd)
-  message(STATUS "found clang-format ${CLANG_FORMAT_VERSION}: ${clang_format_cmd}")
+  execute_process(COMMAND ${clang_format_cmd} -version
+                  RESULT_VARIABLE _clang_format_working
+                  OUTPUT_VARIABLE _clang_format_reported_version
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if (_clang_format_working EQUAL 0)
+    message(STATUS "found ${_clang_format_reported_version}: ${clang_format_cmd}")
+  else()
+    message(WARNING "could not run ${clang_format_cmd}:
+    automatic formatting of C++ files will not be possible")
+  endif()
 else()
   message(WARNING "could not find clang-format ${CLANG_FORMAT_VERSION}:
   automatic formatting of C++ files will not be possible")
