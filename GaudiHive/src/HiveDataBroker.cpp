@@ -209,7 +209,7 @@ HiveDataBrokerSvc::mapProducers( std::vector<AlgEntry>& algorithms ) const {
     for ( const DataObjID* idp : input ) {
       DataObjID id = *idp;
       if ( id.key().find( ":" ) != std::string::npos ) {
-        warning() << " contains alternatives which require resolution...\n";
+        warning() << AlgorithmRepr{*( algEntry.alg )} << " contains alternatives which require resolution...\n";
         auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(), boost::char_separator<char>{":"}};
         auto itok   = std::find_if( tokens.begin(), tokens.end(),
                                   [&]( DataObjID t ) { return producers.find( t ) != producers.end(); } );
