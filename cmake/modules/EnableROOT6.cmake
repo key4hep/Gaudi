@@ -237,6 +237,10 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     set(_root_dicts_deps_warning 1 CACHE INTERNAL "")
   endif()
 
+  if (GENREFLEX_JOB_POOL)
+    set(job_pool JOB_POOL ${GENREFLEX_JOB_POOL})
+  endif()
+
   add_custom_command(
     OUTPUT ${gensrcdict} ${rootmapname} ${gensrcclassdef} ${pcmname}
     COMMAND ${ROOT_genreflex_CMD}
@@ -244,7 +248,8 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
          ${ARG_OPTIONS} ${include_dirs} ${definitions}
     ${deps_scan_cmd}
     DEPENDS ${headerfiles} ${selectionfile}
-    ${impl_deps})
+    ${impl_deps}
+    ${job_pool})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
   # well before the dependent libraries of the dictionary are build
