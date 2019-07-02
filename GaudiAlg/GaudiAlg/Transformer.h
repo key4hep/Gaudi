@@ -80,8 +80,8 @@ namespace Gaudi ::Functional {
           std::apply(
               [this]( auto&... ohandle ) {
 
-#if defined( __clang__ ) && ( __clang_major__ < 6 )
-// clang-5 gives a spurious warning about not using the captured `ohandle`
+#if defined( __clang__ ) && ( __clang_major__ < 9 )
+// clang-8 gives a spurious warning about not using the captured `ohandle`
 #  pragma clang diagnostic push
 #  pragma clang diagnostic ignored "-Wunused-lambda-capture"
 #endif
@@ -91,7 +91,7 @@ namespace Gaudi ::Functional {
                     },
                     details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
 
-#if defined( __clang__ ) && ( __clang_major__ < 6 )
+#if defined( __clang__ ) && ( __clang_major__ < 9 )
 #  pragma clang diagnostic pop
 #endif
               },
