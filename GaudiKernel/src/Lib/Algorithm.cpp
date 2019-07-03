@@ -72,8 +72,7 @@ namespace Gaudi {
     // m_errorCount = 0;
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     // Get WhiteBoard interface if implemented by EventDataSvc
     m_WB = service( "EventDataSvc" );
@@ -208,8 +207,7 @@ namespace Gaudi {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     StatusCode sc( StatusCode::FAILURE );
     // Invoke start() method of the derived class inside a try/catch clause
@@ -260,8 +258,7 @@ namespace Gaudi {
     // m_errorCount = 0; // done during start
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     StatusCode sc( StatusCode::SUCCESS );
     // Invoke reinitialize() method of the derived class inside a try/catch clause
@@ -304,8 +301,7 @@ namespace Gaudi {
     }
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     StatusCode sc( StatusCode::FAILURE );
     // Invoke reinitialize() method of the derived class inside a try/catch clause
@@ -343,8 +339,7 @@ namespace Gaudi {
     m_beginRunCalled = true;
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     StatusCode sc( StatusCode::FAILURE );
     // Invoke beginRun() method of the derived class inside a try/catch clause
@@ -396,8 +391,7 @@ namespace Gaudi {
     m_endRunCalled = true;
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     // Invoke endRun() method of the derived class inside a try/catch clause
     StatusCode sc( StatusCode::FAILURE );
@@ -525,8 +519,7 @@ namespace Gaudi {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::STOP, m_state );
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     StatusCode sc( StatusCode::FAILURE );
     // Invoke stop() method of the derived class inside a try/catch clause
@@ -570,8 +563,7 @@ namespace Gaudi {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::FINALIZE, m_state );
 
     // lock the context service
-    EventContext dummyCtx; // this is needed because AlgContext keeps a reference so we cannot use a temporary
-    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr, dummyCtx );
+    Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
     StatusCode sc( StatusCode::FAILURE );
     // Invoke finalize() method of the derived class inside a try/catch clause

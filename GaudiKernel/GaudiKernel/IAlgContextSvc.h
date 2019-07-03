@@ -83,15 +83,18 @@ namespace Gaudi {
        */
       AlgContext( IAlgorithm* alg, IAlgContextSvc* svc, const EventContext& context );
 
-      /** constructor from the service and the algorithm
+      /** constructor from the service and the algorithm (single thread case)
        *  Internally invokes IAlgContextSvc::setCurrentAlg
        *  @see IAlgorithm
        *  @see IAlgContextSvc
        *  @param alg pointer to the current algorithm
        *  @param svc pointer to algorithm context service
        */
-      [[deprecated( "use the signature with explicit EventContext" )]] AlgContext( IAlgorithm*     alg,
-                                                                                   IAlgContextSvc* svc );
+      AlgContext( IAlgorithm* alg, IAlgContextSvc* svc );
+
+      /// Prevent use of temporary EventContext as current context.
+      /// @see [gaudi/Gaudi#73](https://gitlab.cern.ch/gaudi/Gaudi/issues/73)
+      AlgContext( IAlgorithm* alg, IAlgContextSvc* svc, EventContext&& context ) = delete;
 
       /** destructor
        *  Internally invokes IAlgContextSvc::unSetCurrentAlg
