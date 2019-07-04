@@ -2,7 +2,7 @@
 set(heptools_version 95)
 
 cmake_minimum_required(VERSION 3.6)
-if($ENV{HEPTOOLS_VERSION})
+if(NOT "$ENV{HEPTOOLS_VERSION}" STREQUAL "")
   set(heptools_version $ENV{HEPTOOLS_VERSION})
 endif()
 
