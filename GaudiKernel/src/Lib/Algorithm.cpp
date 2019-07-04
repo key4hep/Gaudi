@@ -576,6 +576,15 @@ namespace Gaudi {
         sc = finalize();
       }
       if ( sc.isSuccess() ) {
+
+        if ( hasCountersToBePrinted() ) {
+          auto& os = info() << "Counters:";
+          forEachCounter( [&]( const std::string& label, const auto& counter ) {
+            if ( counter.toBePrinted() ) counter.print( os << '\n', label );
+          } );
+          os << endmsg;
+        }
+
         // Indicate that this Algorithm has been finalized to prevent duplicate attempts
         m_state = m_targetState;
       }

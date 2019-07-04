@@ -4,7 +4,7 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v32r0)
-                                          running on stbc-i5.nikhef.nl on Sat May 25 13:46:02 2019
+                                          running on stbc-i1.nikhef.nl on Fri Jul  5 15:24:29 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -97,9 +97,10 @@ CountingConsumer    ERROR Suppressing message: 'This is not an error...'
 CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not a warning" twice
 CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not info" twice
 ApplicationMgr       INFO Application Manager Stopped successfully
-CountingConsumer     INFO  | "This is not a warning..."                      |         4 |
-CountingConsumer     INFO  | "This is not an error..."                       |         4 |
-CountingConsumer     INFO  | "This is not info..."                           |         4 |
+CountingConsumer     INFO Counters:
+ | "This is not a warning..."                      |         4 |
+ | "This is not an error..."                       |         4 |
+ | "This is not info..."                           |         4 |
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
