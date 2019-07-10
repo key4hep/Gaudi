@@ -97,7 +97,7 @@ CountingConsumer    ERROR Suppressing message: 'This is not an error...'
 CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not a warning" twice
 CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not info" twice
 ApplicationMgr       INFO Application Manager Stopped successfully
-CountingConsumer     INFO Counters:
+CountingConsumer     INFO Number of counters : 3
  | "This is not a warning..."                      |         4 |
  | "This is not an error..."                       |         4 |
  | "This is not info..."                           |         4 |

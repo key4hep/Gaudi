@@ -577,8 +577,9 @@ namespace Gaudi {
       }
       if ( sc.isSuccess() ) {
 
-        if ( hasCountersToBePrinted() ) {
-          auto& os = info() << "Counters:";
+        if ( auto nCnt = nOfCountersToBePrinted(); nCnt ) {
+          auto& os = info() << "Number of counters : " << nCnt
+                            << "\n |    Counter                                      |";
           forEachCounter( [&]( const std::string& label, const auto& counter ) {
             if ( counter.toBePrinted() ) counter.print( os << '\n', label );
           } );
