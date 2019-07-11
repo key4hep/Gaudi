@@ -2,7 +2,7 @@
 set(heptools_version 95)
 
 cmake_minimum_required(VERSION 3.6)
-if($ENV{HEPTOOLS_VERSION})
+if(NOT "$ENV{HEPTOOLS_VERSION}" STREQUAL "")
   set(heptools_version $ENV{HEPTOOLS_VERSION})
 endif()
 
@@ -14,8 +14,10 @@ if(NOT CMAKE_SOURCE_DIR MATCHES "CMakeTmp")
   # it is not needed
   include(${CMAKE_SOURCE_DIR}/cmake/GaudiDefaultToolchain.cmake)
 
-  # FIXME: make sure we do not pick up ninja from LCG (it requires LD_LIBRARY_PATH set)
+  # FIXME: make sure we do not pick up unwanted/problematic projects from LCG
   if(CMAKE_PREFIX_PATH)
-    list(FILTER CMAKE_PREFIX_PATH EXCLUDE REGEX "(LCG_|lcg/nightlies).*ninja")
+    # - ninja (it requires LD_LIBRARY_PATH set to run)
+    # - Gaudi (we do not want to use it from LCG)
+    list(FILTER CMAKE_PREFIX_PATH EXCLUDE REGEX "(LCG_|lcg/nightlies).*(ninja|Gaudi)")
   endif()
 endif()
