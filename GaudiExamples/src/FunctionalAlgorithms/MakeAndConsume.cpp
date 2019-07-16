@@ -32,12 +32,6 @@ namespace Gaudi::Examples {
       m_info += true;
       m_info += false; // should do nothing...
     }
-
-    StatusCode finalize() override {
-      forEachCounter(
-          [&]( const std::string& label, const auto& counter ) { counter.print( info(), label ) << endmsg; } );
-      return StatusCode::SUCCESS;
-    }
   };
   DECLARE_COMPONENT( CountingConsumer )
 
