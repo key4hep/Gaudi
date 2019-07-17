@@ -45,10 +45,8 @@ public:
 
   std::size_t nOfCountersToBePrinted() {
     std::lock_guard lock{m_mutex};
-    return std::accumulate( begin( m_counters ), end( m_counters ), std::size_t{0},
-                            []( std::size_t cnt, const auto& c ) -> std::size_t {
-                              return cnt + ( c.second.get().toBePrinted() ? 1 : 0 );
-                            } );
+    return count_if( begin( m_counters ), end( m_counters ),
+                     []( const auto& c ) { return c.second.get().toBePrinted(); } );
   }
 
   void clearCounters() {
