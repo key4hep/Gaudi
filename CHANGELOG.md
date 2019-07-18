@@ -7,6 +7,47 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased][]
 
+
+## [v32r1][] - 2019-07-18
+Bugfix release, with some backward compatible changes, mostly meant to pick up
+[LCG 96](http://lcginfo.cern.ch/release/96/) and [ROOT 6.18/00](https://root.cern.ch/content/release-61800).
+
+**Note**: Because of the updated version of Boost in LCG 96, you should use a recent version of CMake (>= 3.14).
+
+### Changed
+- Add algorithm name to warning in `HiveDataBroker` (!923)
+- Make `Configurable.getGaudiType` a `classmethod` (!929)
+- Prefer `xyz_v<T>` over `xyz<T>::value`, and `xyz_t<T>` over `typename xyz<T>::type` (!925)
+- Prefer `std::{variant,optional}` over `boost::{variant,optional}` (!926)
+
+### Added
+- Specify `JOB_POOL` for `genreflex` custom commands (!933)
+- Add an example `MergingTransformer` algorithm (!934)
+- Add loop unroll hint macros to `GaudiKernel/Kernel.h` (!931)
+- Add `MsgCounter` (!921)
+- Introduce a `MergingMultiTransformer` (!901)
+
+### Fixed
+- Removed a few unused `.cpp` files (!945)
+- Print counters in Gaudi::Algorithm::finalize (!943, !946, !947)
+- Make asynceventprocessor tests more stable (!940)
+- Small fixes to toolchain (!938)
+- Use the `AlgContext` guard constructor without `EventContext` for single thread (!973, #72, #73)
+- Hide spurious warning from `clang-8` (!941)
+- Check that the `clang-format` command found can be executed (!935)
+- Improve scheduler stall debug output (!930)
+- Fix `CMake` modules test on special architectures (!927)
+- Fix handling of strings with quotes in properties (!919)
+- Remove reference to removed `gaudimain.runSerialOld` (!918)
+- Restore backward compatibility after !878 (!917)
+- Revert !869: *Create a queue for all schedule-able algorithms* (!924)
+- Add `GaudiKernel` linkage to Counters unit test (!920)
+- Misc. sanitizer fixes (!916)
+- Fix `distcc`/`icecc` support (!911)
+- Made the `LibLZMA` dependency in `GaudiKernel` optional (!909)
+- `GaudiKernel`: check *likely* macros before defining them (!912)
+- Fix `IOpaqueAddress` lifetime in `EvtStoreSvc` (!914)
+
 ## [v32r0][] - 2019-05-18
 This release features many fixes and improvements, but also a few backward incompatible changes:
 - removed  `GaudiGSL` package (in preparation for the licensing under Apache 2) (!879)
@@ -310,7 +351,8 @@ Details about old versions of the project can be found in the
 [GaudiRelease/doc](GaudiRelease/doc).
 
 
-[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...master
+[Unreleased]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r1...master
+[v32r1]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v32r0...v32r1
 [v32r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v31r0...v32r0
 [v31r0]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r5...v31r0
 [v30r5]: https://gitlab.cern.ch/gaudi/Gaudi/compare/v30r4...v30r5
