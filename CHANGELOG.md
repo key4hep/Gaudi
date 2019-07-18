@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased][]
 
 
-## [v32r1][] - 2019-07-08
+## [v32r1][] - 2019-07-18
 Bugfix release, with some backward compatible changes, mostly meant to pick up
 [LCG 96](http://lcginfo.cern.ch/release/96/) and [ROOT 6.18/00](https://root.cern.ch/content/release-61800).
 
@@ -29,7 +29,7 @@ Bugfix release, with some backward compatible changes, mostly meant to pick up
 
 ### Fixed
 - Removed a few unused `.cpp` files (!945)
-- Print counters in Gaudi::Algorithm::finalize (!943)
+- Print counters in Gaudi::Algorithm::finalize (!943, !946, !947)
 - Make asynceventprocessor tests more stable (!940)
 - Small fixes to toolchain (!938)
 - Use the `AlgContext` guard constructor without `EventContext` for single thread (!973, #72, #73)
