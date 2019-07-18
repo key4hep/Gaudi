@@ -43,6 +43,12 @@ public:
     return m_counters.size();
   }
 
+  std::size_t nOfCountersToBePrinted() {
+    std::lock_guard lock{m_mutex};
+    return count_if( begin( m_counters ), end( m_counters ),
+                     []( const auto& c ) { return c.second.get().toBePrinted(); } );
+  }
+
   void clearCounters() {
     std::lock_guard lock{m_mutex};
     m_counters.clear();
