@@ -24,6 +24,7 @@
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
+#include <Gaudi/MonitoringHub.h>
 #include <Gaudi/Property.h>
 
 // Forward declarations
@@ -37,7 +38,7 @@ class ISvcLocator;
 //
 // Author:      Iain Last
 //
-class MessageSvc : public extends<Service, IMessageSvc, IInactiveMessageCounter> {
+class MessageSvc : public extends<Service, IMessageSvc, IInactiveMessageCounter>, public Gaudi::MonitoringHub::Sink {
 public:
   typedef std::pair<std::string, std::ostream*>   NamedStream;
   typedef std::multimap<int, NamedStream>         StreamMap;
@@ -51,6 +52,8 @@ public:
   StatusCode reinitialize() override;
   // Implementation of IService::initialize()
   StatusCode initialize() override;
+  // Implementation of IService::stop()
+  StatusCode stop() override;
   // Implementation of IService::finalize()
   StatusCode finalize() override;
 
@@ -224,6 +227,12 @@ private:
   /// Mutex to synchronize multiple access to m_thresholdMap
   /// (@see MsgStream::doOutput).
   mutable std::recursive_mutex m_thresholdMapMutex;
+
+  // Gaudi::MonitoringHub::Sink implementation
+  void registerEntity( Gaudi::MonitoringHub::Entity ent ) override {
+    m_monitoringEntities.emplace_back( std::move( ent ) );
+  }
+  std::list<Gaudi::MonitoringHub::Entity> m_monitoringEntities;
 };
 
 #endif

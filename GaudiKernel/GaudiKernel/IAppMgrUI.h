@@ -18,6 +18,10 @@
 
 #include <string>
 
+namespace Gaudi {
+  struct MonitoringHub;
+}
+
 /** @class IAppMgrUI IAppMgrUI.h GaudiKernel/IAppMgrUI.h
 
     Application Manager User Interface. This is the interface
@@ -30,7 +34,7 @@
 class GAUDI_API IAppMgrUI : virtual public INamedInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID( IAppMgrUI, 4, 0 );
+  DeclareInterfaceID( IAppMgrUI, 4, 1 );
   /// Run the complete job (from initialize to terminate)
   virtual StatusCode run() = 0;
   /// Configure the job
@@ -61,5 +65,9 @@ public:
 
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
   virtual void outputLevelUpdate() = 0;
+
+  virtual Gaudi::MonitoringHub& monitoringHub() {
+    throw GaudiException( "IAppMgrUI", "montorHub access not implemented", StatusCode::FAILURE );
+  }
 };
 #endif // KERNEL_IAPPMGRUI_H

@@ -12,6 +12,7 @@
 #define GAUDI_APPLICATIONMGR_H
 
 #include <Gaudi/Interfaces/IQueueingEventProcessor.h>
+#include <Gaudi/MonitoringHub.h>
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/CommonMessaging.h>
 #include <GaudiKernel/IAlgManager.h>
@@ -151,6 +152,8 @@ public:
   /// Function to call to update the outputLevel of the components (after a change in MessageSvc).
   void outputLevelUpdate() override;
 
+  Gaudi::MonitoringHub& monitoringHub() override { return m_monitoringHub; }
+
   /// Print the sequence of algorithms that have been loaded.
   void printAlgsSequences();
 
@@ -233,6 +236,9 @@ protected:
   SmartIF<IJobOptionsSvc>  m_jobOptionsSvc; ///< Reference to JobOption service
 
   SmartIF<IQueueingEventProcessor> m_queueingProcessor; ///< Reference to a queueing processing manager object
+
+  Gaudi::MonitoringHub m_monitoringHub;
+
   //
   // The public ApplicationMgr properties
   //

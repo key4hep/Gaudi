@@ -153,6 +153,7 @@ namespace Gaudi::Accumulators {
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <tuple>
 #include <type_traits>
@@ -661,6 +662,9 @@ namespace Gaudi::Accumulators {
       return ost.str();
     }
   };
+
+  /// Basic JSON export for Gaudi::MonitoringHub support.
+  nlohmann::json toJSON( const PrintableCounter& c );
 
   /**
    * external printout operator to a stream type
