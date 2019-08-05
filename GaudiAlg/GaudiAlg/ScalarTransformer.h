@@ -19,7 +19,7 @@ namespace Gaudi::Functional {
 
     /// The main operator
     Out operator()( const In&... in ) const override final {
-      const auto inrange = details::zip::const_range( in... );
+      const auto inrange = details::zip::range( in... );
       Out        out;
       out.reserve( inrange.size() );
       auto& scalar = scalarOp();
@@ -49,7 +49,7 @@ namespace Gaudi::Functional {
 
     /// The main operator
     std::tuple<Out...> operator()( const In&... in ) const override final {
-      const auto         inrange = details::zip::const_range( in... );
+      const auto         inrange = details::zip::range( in... );
       std::tuple<Out...> out;
       std::apply( [sz = inrange.size()]( auto&&... o ) { ( o.reserve( sz ), ... ); }, out );
       auto& scalar = scalarOp();
@@ -61,11 +61,13 @@ namespace Gaudi::Functional {
               /// and the optional is not engaged)
               details::invoke_optionally(
                   [&out...]( auto&& outdata ) {
+                    GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
                     std::apply(
                         [&out...]( auto&&... outdata1 ) {
                           ( details::insert( out, std::forward<decltype( outdata1 )>( outdata1 ) ), ... );
                         },
                         std::forward<decltype( outdata )>( outdata ) );
+                    GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
                   },
                   std::apply( [&scalar]( const auto&... args ) { return scalar( details::deref( args )... ); },
                               indata ) );

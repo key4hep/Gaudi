@@ -13,14 +13,13 @@ namespace Gaudi::Functional {
     struct Consumer;
 
     template <typename... In, typename Traits_>
-    struct Consumer<void( const In&... ), Traits_, true>
-        : details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_> {
-      using details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+    struct Consumer<void( const In&... ), Traits_, true> : DataHandleMixin<void, filter_evtcontext<In...>, Traits_> {
+      using DataHandleMixin<void, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
-          details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
+          filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -33,14 +32,13 @@ namespace Gaudi::Functional {
     };
 
     template <typename... In, typename Traits_>
-    struct Consumer<void( const In&... ), Traits_, false>
-        : details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_> {
-      using details::DataHandleMixin<void, details::filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+    struct Consumer<void( const In&... ), Traits_, false> : DataHandleMixin<void, filter_evtcontext<In...>, Traits_> {
+      using DataHandleMixin<void, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
-          details::filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs );
+          filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
