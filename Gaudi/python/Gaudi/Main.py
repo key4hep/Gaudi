@@ -461,7 +461,7 @@ class gaudimain(object):
         self.log.info('-' * 80)
         self.log.info('%s: Parallel Mode : %i ', __name__, ncpus)
         for name, value in [
-            ('platrofm', ' '.join(os.uname())),
+            ('platform', ' '.join(os.uname())),
             ('config', os.environ.get('BINARY_TAG')
              or os.environ.get('CMTCONFIG')),
             ('app. name', os.environ.get('GAUDIAPPNAME')),
