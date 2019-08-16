@@ -12,6 +12,19 @@
 // instances of this service
 DECLARE_CONVERTER( RootHistCnv::RRWNTupleCnv )
 
+// FIXME - leak sanitizers generate a number of warnings here
+//
+// clang-format off
+// Indirect leak of 160 byte(s) in 2 object(s) allocated from:
+//    #0 0x7ff846fbbec8 in operator new[](unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:231
+//    #1 0x7ff8336e7653 in TBranch::Init(char const*, char const*, int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranch.cxx:309
+//    #2 0x7ff8336e7039 in TBranch::TBranch(TTree*, char const*, void*, char const*, int, int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranch.cxx:239
+//    #3 0x7ff833773ceb in TTree::Branch(char const*, void*, char const*, int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TTree.cxx:1893
+//    #4 0x7ff831763748 in RootHistCnv::RRWNTupleCnv::book(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, INTuple*, TTree*&) ../RootHistCnv/src/RRWNTupleCnv.cpp:27
+// clang-format on
+//
+// These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
+
 //------------------------------------------------------------------------------
 StatusCode RootHistCnv::RRWNTupleCnv::book( const std::string& desc, INTuple* nt, TTree*& rtree )
 //------------------------------------------------------------------------------

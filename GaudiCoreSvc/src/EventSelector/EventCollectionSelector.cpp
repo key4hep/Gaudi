@@ -202,6 +202,18 @@ StatusCode EventCollectionSelector::finalize() {
   return Service::finalize();
 }
 
+// FIXME - method below generates leak errors with sanitizer
+//
+// clang-format off
+// Direct leak of 48 byte(s) in 2 object(s) allocated from:
+//    #0 0x7f36dab12da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+//    #1 0x7f36cca8cf7e in EventCollectionSelector::connectTuple(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, NTuple::Tuple*&, NTuple::Item<IOpaqueAddress*>*&) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:104
+//    #2 0x7f36cca8c27f in EventCollectionSelector::connectCollection(EventCollectionSelector::MyContextType*) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:183
+//    #3 0x7f36cca8c808 in EventCollectionSelector::createContext(IEvtSelector::Context*&) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:209
+// clang-format on
+//
+// These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
+
 /// Create a new event loop context
 StatusCode EventCollectionSelector::createContext( Context*& refpCtxt ) const {
   refpCtxt          = nullptr;

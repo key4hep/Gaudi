@@ -4,6 +4,110 @@
 # http://clang.llvm.org/docs/LeakSanitizer.html
 # --------------------------------------------------
 
+# Gaudi leaks -- Should really be looked into, but proving difficult to 
+# isolate and these errors cause a lot of noise downstream so mask 
+# until properly fixed.
+
+#Indirect leak of 1528 byte(s) in 1 object(s) allocated from:
+#    #0 0x7f700694bda8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+#    #1 0x7f6fd24faa20 in std::_MakeUniq<LHCb::RawDataCnvSvc>::__single_object std::make_unique<LHCb::RawDataCnvSvc, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, ISvcLocator*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&&, ISvcLocator*&&) /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0-3fa06/x86_64-centos7/include/c++/8.2.0/bits/unique_ptr.h:831
+#    #2 0x7f6fd24faa20 in Gaudi::PluginService::v2::Details::DefaultFactory<LHCb::RawDataCnvSvc, Gaudi::PluginService::v2::Factory<IService* (std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*)> >::operator()(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*) /usera/jonesc/LHCbCMake/Feature/Gaudi/InstallArea/x86_64-centos7-gcc8-dbg+lsan/include/Gaudi/Details/PluginServiceDetailsV2.h:204
+#    #3 0x7f6fd24faa20 in std::_Function_handler<std::unique_ptr<IService, std::default_delete<IService> > (std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*), Gaudi::PluginService::v2::Details::DefaultFactory<LHCb::RawDataCnvSvc, Gaudi::PluginService::v2::Factory<IService* (std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*)> > >::_M_invoke(std::_Any_data const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*&&) /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0-3fa06/x86_64-centos7/include/c++/8.2.0/bits/std_function.h:283
+#    #4 0x7f6fe86121e1 in std::function<std::unique_ptr<IService, std::default_delete<IService> > (std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*)>::operator()(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*) const /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0-3fa06/x86_64-centos7/include/c++/8.2.0/bits/std_function.h:687
+#    #5 0x7f6fe788282b in std::unique_ptr<IService, std::default_delete<IService> > Gaudi::PluginService::v2::Factory<IService* (std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*)>::create<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, ISvcLocator*) ../GaudiPluginService/Gaudi/PluginServiceV2.h:47
+#    #6 0x7f6fe788282b in ServiceManager::createService(Gaudi::Utils::TypeNameString const&) ../GaudiCoreSvc/src/ApplicationMgr/ServiceManager.cpp:81
+#    #7 0x7f6fe7880ed3 in ServiceManager::addService(Gaudi::Utils::TypeNameString const&, int) ../GaudiCoreSvc/src/ApplicationMgr/ServiceManager.cpp:123
+#    #8 0x7f6fe7882306 in ServiceManager::service(Gaudi::Utils::TypeNameString const&, bool) ../GaudiCoreSvc/src/ApplicationMgr/ServiceManager.cpp:197
+leak:Gaudi::PluginService::v2::Details::DefaultFactory*
+
+# Direct leak of 48 byte(s) in 1 object(s) allocated from:
+#    #0 0x7fe26d832da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+#    #1 0x41082b in Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>::ReturnType Gaudi::PluginService::v1::Details::Factory<Component2>::create<Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int&&) ../GaudiPluginService/Gaudi/Details/PluginServiceDetailsV1.h:40
+#    #2 0x40505a in Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>::create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) ../GaudiPluginService/Gaudi/PluginServiceV1.h:62
+#    #3 0x40505a in Base2* Gaudi::PluginService::v1::Factory<Base2*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int>::create<char [11]>(char const (&) [11], std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) ../GaudiPluginService/Gaudi/PluginServiceV1.h:69   
+leak:Gaudi::PluginService::v1::Factory*
+
+# Direct leak of 48 byte(s) in 2 object(s) allocated from:
+#    #0 0x7f36dab12da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+#    #1 0x7f36cca8cf7e in EventCollectionSelector::connectTuple(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, NTuple::Tuple*&, NTuple::Item<IOpaqueAddress*>*&) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:104
+#    #2 0x7f36cca8c27f in EventCollectionSelector::connectCollection(EventCollectionSelector::MyContextType*) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:183
+#    #3 0x7f36cca8c808 in EventCollectionSelector::createContext(IEvtSelector::Context*&) const ../GaudiCoreSvc/src/EventSelector/EventCollectionSelector.cpp:209
+leak:EventCollectionSelector::connectTuple
+
+# Suppress a number of leaks from ntuple booking... not clear if these are ROOT or Gaudi issues...
+# Indirect leak of 160 byte(s) in 2 object(s) allocated from:
+#    #0 0x7ff846fbbec8 in operator new[](unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:231
+#    #1 0x7ff8336e7653 in TBranch::Init(char const*, char const*, int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranch.cxx:309
+#    #2 0x7ff8336e7039 in TBranch::TBranch(TTree*, char const*, void*, char const*, int, int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranch.cxx:239
+#    #3 0x7ff833773ceb in TTree::Branch(char const*, void*, char const*, int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TTree.cxx:1893
+#    #4 0x7ff831763748 in RootHistCnv::RRWNTupleCnv::book(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, INTuple*, TTree*&) ../RootHistCnv/src/RRWNTupleCnv.cpp:27
+leak:RootHistCnv::RRWNTupleCnv::book
+
+# Appears to be an issue with the mutex ownsership with LockedHandle
+# Direct leak of 40 byte(s) in 1 object(s) allocated from:
+#    #0 0x7f09944fcda8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+#    #1 0x7f0987aa2e6d in StatusCode THistSvc::regHist_i<TH1>(std::unique_ptr<TH1, std::default_delete<TH1> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, THistSvc::THistID*&) ../GaudiSvc/src/THistSvc/THistSvc.icc:139
+#    #2 0x7f0987aa3375 in LockedHandle<TH1, std::mutex> THistSvc::regShared_i<TH1>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::unique_ptr<TH1, std::default_delete<TH1> >) ../GaudiSvc/src/THistSvc/THistSvc.icc:264
+#    #3 0x7f0987a8f8ef in THistSvc::regShared(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::unique_ptr<TH1, std::default_delete<TH1> >, LockedHandle<TH1, std::mutex>&) ../GaudiSvc/src/THistSvc/THistSvc.cpp:430
+leak:THistSvc::regHist_i
+
+# THistWrite GaudiExamples test generates a lot of leaks during histogram creation :((
+# Indirect leak of 816 byte(s) in 1 object(s) allocated from:
+#    #0 0x7f817fd0aec8 in operator new[](unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:231
+#    #1 0x7f817bedf4b6 in TArrayD::Set(int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/cont/src/TArrayD.cxx:112
+#    #2 0x7f81796c52bf in TH1D::TH1D(char const*, char const*, int, double, double) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/hist/hist/src/TH1.cxx:9627
+#    #3 0x7f817782ab5d in THistWrite::initialize() ../GaudiExamples/src/THist/THistWrite.cpp:94
+leak:THistWrite::initialize
+
+# Note wure where in this lot the leak is ...
+#Indirect leak of 160 byte(s) in 1 object(s) allocated from:
+#    #0 0x7fde515afec8 in operator new[](unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:231
+#    #1 0x7fde41c7610f in TString::Clobber(int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/base/src/TString.cxx:1198
+#    #2 0x7fde3f8b675b in TBufferFile::ReadTString(TString&) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TBufferFile.cxx:200
+#    #3 0x7fde41c76609 in TString::Streamer(TBuffer&) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/base/src/TString.cxx:1348
+#    #4 0x7fde3f9b15d8 in TStreamerInfoActions::ReadTString(TBuffer&, void*, TStreamerInfoActions::TConfiguration const*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TStreamerInfoActions.cxx:924
+#    #5 0x7fde3f8c1204 in TStreamerInfoActions::TConfiguredAction::operator()(TBuffer&, void*) const /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT-6.18.00-build/include/TStreamerInfoActions.h:124
+#    #6 0x7fde3f8bf0e0 in TBufferFile::ApplySequence(TStreamerInfoActions::TActionSequence const&, void*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TBufferFile.cxx:3564
+#    #7 0x7fde3f8beb59 in TBufferFile::ReadClassBuffer(TClass const*, void*, TClass const*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TBufferFile.cxx:3485
+#    #8 0x7fde41bbc5aa in TObjString::Streamer(TBuffer&) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT-6.18.00-build/core/G__Core.cxx:21610
+#    #9 0x7fde41d294c7 in TClass::StreamerTObjectInitialized(TClass const*, void*, TBuffer&, TClass const*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/meta/src/TClass.cxx:6537
+#    #10 0x7fde3f8bf920 in TClass::Streamer(void*, TBuffer&, TClass const*) const /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT-6.18.00-build/include/TClass.h:570
+#    #11 0x7fde3f8bbdb3 in TBufferFile::ReadObjectAny(TClass const*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TBufferFile.cxx:2471
+#    #12 0x7fde41c3e813 in TBuffer& operator>><TObject>(TBuffer&, TObject*&) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT-6.18.00-build/include/TBuffer.h:394
+#    #13 0x7fde41cdaaea in TList::Streamer(TBuffer&) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/cont/src/TList.cxx:1209
+#    #14 0x7fde41d294c7 in TClass::StreamerTObjectInitialized(TClass const*, void*, TBuffer&, TClass const*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/meta/src/TClass.cxx:6537
+#    #15 0x7fde3f8bf920 in TClass::Streamer(void*, TBuffer&, TClass const*) const /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT-6.18.00-build/include/TClass.h:570
+#    #16 0x7fde3f8bbdb3 in TBufferFile::ReadObjectAny(TClass const*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TBufferFile.cxx:2471
+#    #17 0x7fde41c3e813 in TBuffer& operator>><TObject>(TBuffer&, TObject*&) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT-6.18.00-build/include/TBuffer.h:394
+#    #18 0x7fde41cdaaea in TList::Streamer(TBuffer&) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/cont/src/TList.cxx:1209
+#    #19 0x7fde3f965a72 in TKey::ReadObjWithBuffer(char*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TKey.cxx:936
+#    #20 0x7fde3f92ba2e in TFile::GetStreamerInfoListImpl(bool) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TFile.cxx:1355
+#    #21 0x7fde3f92bc79 in TFile::GetStreamerInfoList() /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TFile.cxx:1392
+#    #22 0x7fde3f92b64a in TFile::GetStreamerInfoCache() /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/io/io/src/TFile.cxx:1315
+#    #23 0x7fde3f3f4a78 in TBranchElement::FindOnfileInfo(TClass*, TObjArray const&) const /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranchElement.cxx:1929
+#    #24 0x7fde3f3f6b7d in TBranchElement::InitInfo() /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranchElement.cxx:2354
+#    #25 0x7fde3f4073ed in TBranchElement::GetInfoImp() const /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranchElement.cxx:1002
+#    #26 0x7fde3f3f9113 in TBranchElement::InitializeOffsets() /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranchElement.cxx:3123
+#    #27 0x7fde3f401e15 in TBranchElement::SetAddress(void*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranchElement.cxx:5323
+#    #28 0x7fde3f401edf in TBranchElement::SetAddress(void*) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/tree/tree/src/TBranchElement.cxx:5334
+#    #29 0x7fde3ae1fc5a in Gaudi::RootDataConnection::loadObj(std::basic_string_view<char, std::char_traits<char> >, std::basic_string_view<char, std::char_traits<char> >, unsigned long, DataObject*&) ../RootCnv/src/RootDataConnection.cpp:507
+leak:Gaudi::RootDataConnection::loadObj
+
+# AvalancheSchedulerSvc leaks TBB tasks ...
+# Direct leak of 224 byte(s) in 7 object(s) allocated from:
+#    #0 0x7fc0cb524da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+#    #1 0x7fc0ba979f7b in function<AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*)::<lambda()> > /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0-3fa06/x86_64-centos7/include/c++/8.2.0/bits/std_function.h:249
+#    #2 0x7fc0ba97d181 in AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:969
+#    #3 0x7fc0ba98354d in AvalancheSchedulerSvc::updateStates(int, int, int, int) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:660
+leak:AvalancheSchedulerSvc::promoteToAsyncScheduled
+
+#Direct leak of 176 byte(s) in 1 object(s) allocated from:
+#    #0 0x7f56e2dc2da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+#    #1 0x7f56cb992ae4 in Gaudi::RootCnvSvc::createAddress(long, unsigned int const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const*, unsigned long const*, IOpaqueAddress*&) ../RootCnv/src/RootCnvSvc.cpp:349
+#    #2 0x7f56cb993530 in Gaudi::RootCnvSvc::connectDatabase(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int, Gaudi::RootDataConnection**) ../RootCnv/src/RootCnvSvc.cpp:242
+#    #3 0x7f56cb9b5230 in Gaudi::RootEvtSelector::next(IEvtSelector::Context&) const ../RootCnv/src/RootEvtSelector.cpp:168
+leak:Gaudi::RootCnvSvc::connectDatabase
+
 # PyROOT
 leak:PyROOT::MethodProxy_New
 leak:PyROOT::CreateConverter
@@ -24,6 +128,16 @@ leak:^mp_new$
 leak:^pp_new$
 leak:^mp_setthreaded$
 leak:TFormula::HandleParamRanges
+leak:TDirectoryFile::GetDirectory
+leak:TBuffer::TBuffer
+leak:TObject::operator
+leak:TStorage::Alloc
+#leak:TBranch::Init
+leak:TGenCollectionProxy::Allocate
+leak:TStreamerInfoActions::TActionSequence::CreateReadMemberWiseActions
+leak:TClass::New
+leak:TTree::CreateBasket
+leak:TNetXNGFile::TNetXNGFile
 
 # XrootD
 leak:XrdSys

@@ -30,6 +30,18 @@ StatusCode THistWrite::initialize()
 //------------------------------------------------------------------------------
 {
 
+  // FIXME - Code here generates a lot of memory leak errors with the leak sanitizers, e.g.
+  //
+  // clang-format off
+  // Indirect leak of 816 byte(s) in 1 object(s) allocated from:
+  //  #0 0x7f817fd0aec8 in operator new[](unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:231
+  //  #1 0x7f817bedf4b6 in TArrayD::Set(int) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/core/cont/src/TArrayD.cxx:112
+  //  #2 0x7f81796c52bf in TH1D::TH1D(char const*, char const*, int, double, double) /mnt/build/jenkins/workspace/lcg_release_tar/BUILDTYPE/Debug/COMPILER/gcc8binutils/LABEL/centos7/build/projects/ROOT-6.18.00/src/ROOT/6.18.00/hist/hist/src/TH1.cxx:9627
+  //  #3 0x7f817782ab5d in THistWrite::initialize() ../GaudiExamples/src/THist/THistWrite.cpp:94
+  // clang-format on
+  //
+  // These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
+
   if ( service( "THistSvc", m_ths ).isFailure() ) {
     error() << "Couldn't get THistSvc" << endmsg;
     return StatusCode::FAILURE;
