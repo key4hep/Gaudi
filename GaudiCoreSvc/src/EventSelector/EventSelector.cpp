@@ -60,7 +60,7 @@ StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& 
     }
   }
 
-  const EventSelectorDataStream* s;
+  const EventSelectorDataStream* s = nullptr;
   status = m_streamtool->getNextStream( s, iter_id );
 
   if ( status.isSuccess() ) {
@@ -85,6 +85,7 @@ StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& 
               return StatusCode::SUCCESS;
             }
           }
+          delete ctxt;
         }
       }
       m_incidentSvc->fireIncident( Incident( s->dbName(), IncidentType::FailInputFile ) );
