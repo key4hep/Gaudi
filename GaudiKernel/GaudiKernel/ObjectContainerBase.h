@@ -23,6 +23,7 @@ protected:
   ObjectContainerBase()                        = default;
   ObjectContainerBase( ObjectContainerBase&& ) = default;
   ObjectContainerBase& operator=( ObjectContainerBase&& ) = default;
+  ~ObjectContainerBase() override                         = default;
 
 public:
   /// size_type, to conform the STL container interface
