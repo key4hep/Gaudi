@@ -61,7 +61,7 @@ StatusCode EventSelector::firstOfNextStream( bool shutDown, EvtSelectorContext& 
   }
 
   const EventSelectorDataStream* s = nullptr;
-  status = m_streamtool->getNextStream( s, iter_id );
+  status                           = m_streamtool->getNextStream( s, iter_id );
 
   if ( status.isSuccess() ) {
 
