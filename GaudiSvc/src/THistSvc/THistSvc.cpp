@@ -1089,6 +1089,9 @@ StatusCode THistSvc::io_reinit() {
       error() << "could not retrieve new name for [" << fname << "] !!" << endmsg;
       all_good = false;
       continue;
+    } else if ( fname.empty() ) {
+      if ( msgLevel( MSG::DEBUG ) ) { debug() << "empty new name for [" << fname << "], skipping..." << endmsg; }
+      continue;
     } else {
       if ( msgLevel( MSG::DEBUG ) ) { debug() << "got a new name [" << fname << "]..." << endmsg; }
     }
