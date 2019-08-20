@@ -265,6 +265,11 @@ StatusCode ChronoStatSvc::finalize() {
 
   if ( !m_statsOutFileName.value().empty() ) { saveStats(); }
 
+  // clear the maps.
+  m_chronoEntities.clear();
+  m_perEvtTime.clear();
+  m_statEntities.clear();
+
   main_log << MSG::INFO << " Service finalized successfully " << endmsg;
 
   return Service::finalize(); ///< finalize the base class
