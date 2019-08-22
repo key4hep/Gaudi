@@ -157,10 +157,10 @@ StatusCode EventSelector::createContext( Context*& refpCtxt ) const {
     error() << "It should be > 0 " << endmsg;
     return StatusCode::FAILURE; // if failure => iterators = end();
   }
-  EvtSelectorContext* ctxt = new EvtSelectorContext( this );
+  auto ctxt = new EvtSelectorContext( this );
+  refpCtxt  = ctxt;
   ctxt->set( 0, -1, 0, 0 );
   firstOfNextStream( true, *ctxt ).ignore();
-  refpCtxt   = ctxt;
   long nskip = m_firstEvent;
   while ( --nskip > 0 ) {
     StatusCode sc = next( *refpCtxt );
@@ -273,41 +273,37 @@ StatusCode EventSelector::rewind( Context& refCtxt ) const {
 
 /// Create new Opaque address corresponding to the current record
 StatusCode EventSelector::createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const {
-  const EvtSelectorContext* cpIt = dynamic_cast<const EvtSelectorContext*>( &refCtxt );
-  EvtSelectorContext*       pIt  = const_cast<EvtSelectorContext*>( cpIt );
-  refpAddr                       = nullptr;
+  auto cpIt     = dynamic_cast<const EvtSelectorContext*>( &refCtxt );
+  auto pIt      = const_cast<EvtSelectorContext*>( cpIt );
+  refpAddr      = nullptr;
+  StatusCode sc = StatusCode::FAILURE;
   if ( pIt ) {
-    const EventSelectorDataStream* s   = m_streamtool->getStream( pIt->ID() );
-    Context*                       it  = pIt->context();
-    IEvtSelector*                  sel = s->selector();
+    auto s   = m_streamtool->getStream( pIt->ID() );
+    auto it  = pIt->context();
+    auto sel = s->selector();
     if ( it && sel ) {
       IOpaqueAddress* pAddr = nullptr;
-      StatusCode      sc    = sel->createAddress( *it, pAddr );
-      if ( sc.isSuccess() ) refpAddr = pAddr;
+      sc                    = sel->createAddress( *it, pAddr );
+      if ( sc.isSuccess() ) { refpAddr = pAddr; }
       pIt->set( it, pAddr );
-      return sc;
     }
   }
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 // Release existing event iteration context
 StatusCode EventSelector::releaseContext( Context*& refCtxt ) const {
-  const EvtSelectorContext*           cpIt = dynamic_cast<const EvtSelectorContext*>( refCtxt );
+  StatusCode                          sc   = StatusCode::SUCCESS;
+  auto                                cpIt = dynamic_cast<const EvtSelectorContext*>( refCtxt );
   std::unique_ptr<EvtSelectorContext> pIt{const_cast<EvtSelectorContext*>( cpIt )};
   if ( pIt && pIt->ID() >= 0 && pIt->ID() < (long)m_streamtool->size() ) {
-    const EventSelectorDataStream* s   = m_streamtool->getStream( pIt->ID() );
-    Context*                       it  = pIt->context();
-    IEvtSelector*                  sel = s->selector();
-    if ( it && sel ) {
-      StatusCode sc = sel->releaseContext( it );
-      if ( sc.isSuccess() ) {
-        refCtxt = nullptr;
-        return sc;
-      }
-    }
+    const auto s   = m_streamtool->getStream( pIt->ID() );
+    auto       it  = pIt->context();
+    auto       sel = s->selector();
+    if ( it && sel ) { sc = sel->releaseContext( it ); }
   }
-  return StatusCode::SUCCESS;
+  refCtxt = nullptr; // std::unique_ptr always deletes object, so always set to NULL
+  return sc;
 }
 
 /// IService implementation: Db event selector override
