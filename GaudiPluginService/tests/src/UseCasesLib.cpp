@@ -119,7 +119,7 @@ namespace {
   std::unique_ptr<MyInterface> creator( const std::string& name ) {
     auto p = std::make_unique<MyComponent>();
     BaseSetupHelper::setName( p.get(), name );
-    return std::move( p );
+    return p;
   }
   Gaudi::PluginService::DeclareFactory<MyComponent> _{creator};
 } // namespace
@@ -158,7 +158,7 @@ namespace CustomFactoryWrapper {
   baseConstructorHelper( const std::string& name ) {
     auto p = std::make_unique<T>();
     initBase( p.get(), name );
-    return std::move( p );
+    return p;
   }
 
   // helper to use the special constructor of T (backward compatibility)

@@ -26,8 +26,7 @@ namespace {
     if ( cmd.find( "genconf" ) == std::string::npos ) {
       std::cout << "created CustomFactoryAlgorithm at " << p.get() << std::endl;
     }
-
-    return std::move( p );
+    return p;
   }
 
   Gaudi::PluginService::DeclareFactory<CustomFactoryAlgorithm> _{creator};
