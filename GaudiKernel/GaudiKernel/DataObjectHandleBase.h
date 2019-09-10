@@ -91,6 +91,8 @@ protected:
    * so that we are sure that we only call it once
    */
   mutable std::mutex m_searchMutex;
+
+  static const std::string default_type;
 };
 
 //---------------------------------------------------------------------------

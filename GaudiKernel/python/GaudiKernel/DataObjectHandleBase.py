@@ -5,14 +5,15 @@ __doc__ = """The python module holding python bindings to DataObjectHandle"""
 
 class DataObjectHandleBase(object):
 
-    __slots__ = ('Path', 'Mode')
+    __slots__ = ('Path', 'Mode', 'Type')
 
     # define accessTypes
 
-    def __init__(self, path, mode='R'):
+    def __init__(self, path, mode='R', _type="unknown_t"):
         object.__init__(self)
         self.Path = path
         self.Mode = mode
+        self.Type = _type
 
     def __eq__(self, other):
         """
@@ -44,11 +45,11 @@ class DataObjectHandleBase(object):
 
     def __add__(self, other):
         path = ':'.join(i + other for i in self.Path.split(':'))
-        return DataObjectHandleBase(path, self.Mode)
+        return DataObjectHandleBase(path, self.Mode, self.Type)
 
     def __radd__(self, other):
         path = ':'.join(other + i for i in self.Path.split(':'))
-        return DataObjectHandleBase(path, self.Mode)
+        return DataObjectHandleBase(path, self.Mode, self.Type)
 
     def __iadd__(self, other):
         self.Path = ':'.join(i + other for i in self.Path.split(':'))
@@ -56,3 +57,6 @@ class DataObjectHandleBase(object):
 
     def mode(self):
         return self.Mode
+
+    def type(self):
+        return self.Type

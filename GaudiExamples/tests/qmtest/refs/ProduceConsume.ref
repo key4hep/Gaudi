@@ -1,10 +1,11 @@
 # setting LC_ALL to "C"
-# --> Including file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
-# <-- End of file '/project/bfys/graven/master/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+# --> Including file '/home/nnolte/software/stack/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
+['int', 'std::vector<int,std::allocator<int> >', 'float', 'int', 'int', 'float', 'float', 'float', 'int', 'int', 'std::vector<int,std::allocator<int> >', 'int', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<int,std::allocator<int> >', 'std::vector<double,std::allocator<double> >', 'std::vector<double,std::allocator<double> >']
+# <-- End of file '/home/nnolte/software/stack/Gaudi/GaudiExamples/options/FunctionalAlgorithms/ProduceConsume.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r0)
-                                          running on stbc-i1.nikhef.nl on Fri Jul  5 15:24:29 2019
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v32r1)
+                                          running on lbquantaperf01 on Thu Aug  1 12:30:32 2019
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -98,6 +99,7 @@ CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not a warning"
 CountingConsumer  SUCCESS CountingConsumer: incrementing "This is not info" twice
 ApplicationMgr       INFO Application Manager Stopped successfully
 CountingConsumer     INFO Number of counters : 3
+ |    Counter                                      |
  | "This is not a warning..."                      |         4 |
  | "This is not an error..."                       |         4 |
  | "This is not info..."                           |         4 |

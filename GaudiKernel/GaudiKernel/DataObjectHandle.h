@@ -9,6 +9,7 @@
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/NamedRange.h"
 
+#include "boost/algorithm/string.hpp"
 #include <type_traits>
 
 //---------------------------------------------------------------------------
@@ -120,6 +121,12 @@ public:
   // [[deprecated("please pass a std::unique_ptr instead of a raw pointer")]]
   T* put( T* object ) const { return put( std::unique_ptr<T>( object ) ); }
 
+  std::string pythonRepr() const override {
+    auto repr = DataObjectHandleBase::pythonRepr();
+    boost::replace_all( repr, default_type, System::typeinfoName( typeid( T ) ) );
+    return repr;
+  }
+
 private:
   T*           get( bool mustExist ) const;
   mutable bool m_goodType = false;
@@ -182,6 +189,12 @@ public:
    */
   Range get() const;
 
+  std::string pythonRepr() const override {
+    auto repr = DataObjectHandleBase::pythonRepr();
+    boost::replace_all( repr, default_type, System::typeinfoName( typeid( Gaudi::Range_<T> ) ) );
+    return repr;
+  }
+
 private:
   mutable ::details::Converter_t<Range> m_converter = nullptr;
 };
@@ -234,6 +247,12 @@ public:
    * Size of boxed item, if boxed item has a 'size' method
    */
   std::optional<std::size_t> size() const { return _get()->size(); }
+
+  std::string pythonRepr() const override {
+    auto repr = DataObjectHandleBase::pythonRepr();
+    boost::replace_all( repr, default_type, System::typeinfoName( typeid( T ) ) );
+    return repr;
+  }
 
 private:
   AnyDataWrapper<T>* _get( bool mustExist ) const;
