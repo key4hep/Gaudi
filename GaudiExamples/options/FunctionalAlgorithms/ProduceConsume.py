@@ -1,7 +1,7 @@
 ####################################################################
 # Write a DST and a miniDST, including File Summary Records
 ####################################################################
-
+from GaudiKernel.DataObjectHandleBase import DataObjectHandleBase
 from Gaudi.Configuration import *
 from Configurables import Gaudi__Examples__IntDataProducer as IntDataProducer
 from Configurables import Gaudi__Examples__VectorDataProducer as VectorDataProducer
@@ -23,6 +23,21 @@ from Configurables import EvtStoreSvc
 app = ApplicationMgr()
 #app.ExtSvc = [ EvtStoreSvc("EventDataSvc",OutputLevel=DEBUG ) ]
 app.ExtSvc = [EvtStoreSvc("EventDataSvc")]
+
+types = []
+
+for configurable in [
+        IntDataProducer, VectorDataProducer, FloatDataConsumer,
+        IntDataConsumer, IntToFloatData, IntIntToFloatFloatData,
+        IntVectorsToIntVector, ContextConsumer, ContextIntConsumer,
+        VectorDoubleProducer, FrExpTransformer, LdExpTransformer,
+        OptFrExpTransformer, OptLdExpTransformer, CountingConsumer
+]:
+    for prop in configurable.getDefaultProperties().values():
+        if isinstance(prop, DataObjectHandleBase): types.append(prop.type())
+
+# check that the type information is passed to python correctly
+print(types)
 
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')

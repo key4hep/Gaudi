@@ -12,6 +12,8 @@
 
 const DataObjID INVALID_DATAOBJID = DataObjID();
 
+std::string const DataObjectHandleBase::default_type = "unknown_t";
+
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
     : Gaudi::DataHandle( other )
@@ -122,7 +124,7 @@ std::string DataObjectHandleBase::pythonRepr() const {
     m = "UNKNOWN";
     break;
   }
-  return "DataObjectHandleBase('" + toString() + "', '" + m + "')";
+  return "DataObjectHandleBase('" + toString() + "', '" + m + "', '" + default_type + "')";
 }
 
 //---------------------------------------------------------------------------
