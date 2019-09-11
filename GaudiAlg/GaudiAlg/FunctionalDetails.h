@@ -15,6 +15,7 @@
 #include "GaudiKernel/detected.h"
 
 // Range V3
+#include <range/v3/version.hpp>
 #include <range/v3/view/const.hpp>
 #include <range/v3/view/zip.hpp>
 
@@ -72,7 +73,11 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
+#if RANGE_V3_VERSION < 900
       return ranges::view::zip( std::forward<Args>( args )... );
+#else
+      return ranges::views::zip( std::forward<Args>( args )... );
+#endif
     }
 
     /// Zips multiple containers together to form a single const range
@@ -81,7 +86,11 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
+#if RANGE_V3_VERSION < 900
       return ranges::view::const_( ranges::view::zip( std::forward<Args>( args )... ) );
+#else
+      return ranges::views::const_( ranges::views::zip( std::forward<Args>( args )... ) );
+#endif
     }
   } // namespace zip
 
