@@ -1656,7 +1656,9 @@ void THistSvc::copyFileLayout( TDirectory* destination, TDirectory* source ) {
     if ( o && o->IsA()->InheritsFrom( "TDirectory" ) ) {
       if ( msgLevel( MSG::VERBOSE ) ) { verbose() << " subdir [" << o->GetName() << "]..." << endmsg; }
       destination->cd();
+      // Create directory if it does not exist yet
       TDirectory* destination_dir = destination->mkdir( o->GetName(), o->GetTitle() );
+      if ( destination_dir == nullptr ) destination_dir = destination->GetDirectory( o->GetName() );
       copyFileLayout( destination_dir, source );
     }
   } // loop over keys
