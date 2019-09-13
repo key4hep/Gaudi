@@ -18,6 +18,15 @@
 #include <range/v3/view/const.hpp>
 #include <range/v3/view/zip.hpp>
 
+#if defined( __clang__ ) && ( __clang_major__ < 9 )
+#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN                                                                     \
+    _Pragma( "clang diagnostic push" ) _Pragma( "clang diagnostic ignored \"-Wunused-lambda-capture\"" )
+#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END _Pragma( "clang diagnostic pop" )
+#else
+#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
+#  define GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
+#endif
+
 namespace Gaudi::Functional::details {
 
   // CRJ : Stuff for zipping

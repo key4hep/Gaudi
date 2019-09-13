@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace Gaudi ::Functional {
+namespace Gaudi::Functional {
 
   namespace details {
 
@@ -14,14 +14,13 @@ namespace Gaudi ::Functional {
     struct FilterPredicate;
 
     template <typename... In, typename Traits_>
-    struct FilterPredicate<bool( const In&... ), Traits_, true>
-        : details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
-      using details::DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
+    struct FilterPredicate<bool( const In&... ), Traits_, true> : DataHandleMixin<void, std::tuple<In...>, Traits_> {
+      using DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
-          this->setFilterPassed( details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
+          this->setFilterPassed( filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -34,15 +33,13 @@ namespace Gaudi ::Functional {
     };
 
     template <typename... In, typename Traits_>
-    struct FilterPredicate<bool( const In&... ), Traits_, false>
-        : details::DataHandleMixin<void, std::tuple<In...>, Traits_> {
-      using details::DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
+    struct FilterPredicate<bool( const In&... ), Traits_, false> : DataHandleMixin<void, std::tuple<In...>, Traits_> {
+      using DataHandleMixin<void, std::tuple<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ctx ) const override final {
         try {
-          this->execState( ctx ).setFilterPassed(
-              details::filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
+          this->execState( ctx ).setFilterPassed( filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;

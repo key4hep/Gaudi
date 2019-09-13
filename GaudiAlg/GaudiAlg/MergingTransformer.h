@@ -21,9 +21,9 @@ namespace Gaudi::Functional {
     ////// Many of the same -> 1
     template <typename Out, typename In, typename Traits_>
     struct MergingTransformer<Out( const vector_of_const_<In>& ), Traits_, true>
-        : details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
+        : DataHandleMixin<std::tuple<Out>, void, Traits_> {
     private:
-      using base_class = details::DataHandleMixin<std::tuple<Out>, void, Traits_>;
+      using base_class = DataHandleMixin<std::tuple<Out>, void, Traits_>;
 
     public:
       using KeyValue  = typename base_class::KeyValue;
@@ -34,8 +34,8 @@ namespace Gaudi::Functional {
           : base_class( name, locator, output )
           , m_inputLocations{this, inputs.first, inputs.second,
                              [=]( Gaudi::Details::PropertyBase& ) {
-                               this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>(
-                                   this, m_inputLocations );
+                               this->m_inputs =
+                                   make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
                                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
                                                               // optional flag... so do it
                                                               // explicitly here...
@@ -53,10 +53,9 @@ namespace Gaudi::Functional {
       StatusCode execute() override final {
         vector_of_const_<In> ins;
         ins.reserve( m_inputs.size() );
-        std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ),
-                        details::details2::get_from_handle<In>{} );
+        std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
         try {
-          details::put( std::get<0>( this->m_outputs ), std::as_const( *this )( std::as_const( ins ) ) );
+          put( std::get<0>( this->m_outputs ), std::as_const( *this )( std::as_const( ins ) ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -69,7 +68,7 @@ namespace Gaudi::Functional {
     private:
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
-      using InputHandle_t = details::InputHandle_t<Traits_, std::remove_pointer_t<T>>;
+      using InputHandle_t = InputHandle_t<Traits_, std::remove_pointer_t<T>>;
       std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
       Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
       // TODO/FIXME: replace vector of string property + call-back with a
@@ -78,9 +77,9 @@ namespace Gaudi::Functional {
 
     template <typename Out, typename In, typename Traits_>
     struct MergingTransformer<Out( const vector_of_const_<In>& ), Traits_, false>
-        : details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
+        : DataHandleMixin<std::tuple<Out>, void, Traits_> {
     private:
-      using base_class = details::DataHandleMixin<std::tuple<Out>, void, Traits_>;
+      using base_class = DataHandleMixin<std::tuple<Out>, void, Traits_>;
 
     public:
       using KeyValue  = typename base_class::KeyValue;
@@ -91,8 +90,8 @@ namespace Gaudi::Functional {
           : base_class( name, locator, output )
           , m_inputLocations{this, inputs.first, inputs.second,
                              [=]( Gaudi::Details::PropertyBase& ) {
-                               this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>(
-                                   this, m_inputLocations );
+                               this->m_inputs =
+                                   make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
                                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
                                                               // optional flag... so do it
                                                               // explicitly here...
@@ -110,10 +109,9 @@ namespace Gaudi::Functional {
       StatusCode execute( const EventContext& ) const override final {
         vector_of_const_<In> ins;
         ins.reserve( m_inputs.size() );
-        std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ),
-                        details::details2::get_from_handle<In>{} );
+        std::transform( m_inputs.begin(), m_inputs.end(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
         try {
-          details::put( std::get<0>( this->m_outputs ), ( *this )( std::as_const( ins ) ) );
+          put( std::get<0>( this->m_outputs ), ( *this )( std::as_const( ins ) ) );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -126,7 +124,7 @@ namespace Gaudi::Functional {
     private:
       // if In is a pointer, it signals optional (as opposed to mandatory) input
       template <typename T>
-      using InputHandle_t = details::InputHandle_t<Traits_, std::remove_pointer_t<T>>;
+      using InputHandle_t = InputHandle_t<Traits_, std::remove_pointer_t<T>>;
       std::vector<InputHandle_t<In>>            m_inputs;         //   and make the handles properties instead...
       Gaudi::Property<std::vector<std::string>> m_inputLocations; // TODO/FIXME: remove this duplication...
       // TODO/FIXME: replace vector of string property + call-back with a
@@ -170,11 +168,13 @@ namespace Gaudi::Functional {
       try {
         std::apply(
             [&]( auto&... outhandle ) {
+              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
               std::apply(
                   [&outhandle...]( auto&&... data ) {
                     ( details::put( outhandle, std::forward<decltype( data )>( data ) ), ... );
                   },
                   std::as_const( *this )( std::as_const( ins ) ) );
+              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
             },
             this->m_outputs );
       } catch ( GaudiException& e ) {

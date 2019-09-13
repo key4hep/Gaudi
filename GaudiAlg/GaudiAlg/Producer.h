@@ -13,19 +13,19 @@ namespace Gaudi::Functional {
     struct Producer;
 
     template <typename... Out, typename Traits_>
-    struct Producer<std::tuple<Out...>(), Traits_, true> : details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
-      using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
+    struct Producer<std::tuple<Out...>(), Traits_, true> : DataHandleMixin<std::tuple<Out...>, void, Traits_> {
+      using DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
           std::apply(
               [&]( auto&... ohandle ) {
-                std::apply(
-                    [&ohandle...]( auto&&... data ) {
-                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-                    },
-                    std::as_const( *this )() );
+                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
+                std::apply( [&ohandle...](
+                                auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
+                            std::as_const( *this )() );
+                GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
               },
               this->m_outputs );
           return StatusCode::SUCCESS;
@@ -40,21 +40,24 @@ namespace Gaudi::Functional {
     };
 
     template <typename... Out, typename Traits_>
-    struct Producer<std::tuple<Out...>(), Traits_, false>
-        : details::DataHandleMixin<std::tuple<Out...>, void, Traits_> {
-      using details::DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
+    struct Producer<std::tuple<Out...>(), Traits_, false> : DataHandleMixin<std::tuple<Out...>, void, Traits_> {
+      using DataHandleMixin<std::tuple<Out...>, void, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ) const override final {
         try {
           std::apply(
-              [&]( auto&... ohandle ) {
-                std::apply(
-                    [&ohandle...]( auto&&... data ) {
-                      ( details::put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-                    },
-                    ( *this )() );
-              },
+              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_BEGIN
+
+                  [&]( auto&... ohandle ) {
+                    std::apply(
+                        [&ohandle...]( auto&&... data ) {
+                          ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
+                        },
+                        ( *this )() );
+                  },
+              GF_SUPPRESS_SPURIOUS_CLANG_WARNING_END
+
               this->m_outputs );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
@@ -68,12 +71,12 @@ namespace Gaudi::Functional {
     };
 
     template <typename Out, typename Traits_>
-    struct Producer<Out(), Traits_, true> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
-      using details::DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
+    struct Producer<Out(), Traits_, true> : public DataHandleMixin<std::tuple<Out>, void, Traits_> {
+      using DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
         try {
-          details::put( std::get<0>( this->m_outputs ), std::as_const( *this )() );
+          put( std::get<0>( this->m_outputs ), std::as_const( *this )() );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
@@ -86,12 +89,12 @@ namespace Gaudi::Functional {
     };
 
     template <typename Out, typename Traits_>
-    struct Producer<Out(), Traits_, false> : public details::DataHandleMixin<std::tuple<Out>, void, Traits_> {
-      using details::DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
+    struct Producer<Out(), Traits_, false> : public DataHandleMixin<std::tuple<Out>, void, Traits_> {
+      using DataHandleMixin<std::tuple<Out>, void, Traits_>::DataHandleMixin;
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ) const override final {
         try {
-          details::put( std::get<0>( this->m_outputs ), ( *this )() );
+          put( std::get<0>( this->m_outputs ), ( *this )() );
           return StatusCode::SUCCESS;
         } catch ( GaudiException& e ) {
           ( e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
