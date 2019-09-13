@@ -109,7 +109,7 @@ public:
    *  @author  M.Frank
    *  @version 1.0
    */
-  struct Node {
+  struct Node final {
     // ========================================================================
     /// the actual class
     ClassH        clazz; // the actual class
@@ -123,9 +123,6 @@ public:
     // ========================================================================
     Node( ClassH c, bool e, std::string n )
         : clazz( c ), name( std::move( n ) ), executing( e ), dataObject( "DataObject" == name ) {}
-    //
-    Node( const Node& c )
-        : clazz( c.clazz ), name( c.name ), num( c.num ), executing( c.executing ), dataObject( c.dataObject ) {}
     // ========================================================================
   };
   // ==========================================================================
