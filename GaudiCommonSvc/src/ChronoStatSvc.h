@@ -1,5 +1,4 @@
-#ifndef GAUDISVC_CHRONOSTATSVC_H__
-#define GAUDISVC_CHRONOSTATSVC_H__
+#pragma once
 // ============================================================================
 // include files
 // ============================================================================
@@ -38,8 +37,8 @@ class ChronoStatSvc : public extends<Service, IChronoStatSvc, IIncidentListener>
 public:
   // ============================================================================
   /// some useful typedefs
-  typedef std::map<IChronoStatSvc::ChronoTag, ChronoEntity> ChronoMap;
-  typedef std::map<IChronoStatSvc::StatTag, StatEntity>     StatMap;
+  using ChronoMap = std::map<IChronoStatSvc::ChronoTag, ChronoEntity>;
+  using StatMap   = std::map<IChronoStatSvc::StatTag, StatEntity>;
   // ============================================================================
 public:
   // ============================================================================
@@ -130,6 +129,11 @@ private:
   /// dump the statistics into an ASCII file for offline processing
   void saveStats();
   // ============================================================================
+public:
+  // ============================================================================
+  // Standard Destructor
+  ~ChronoStatSvc() override = default;
+  // ============================================================================
 private:
   bool isMT() const;
 
@@ -193,13 +197,12 @@ private:
 
   ServiceHandle<IInterface> m_hiveWhiteBoardSvc{this, "HiveWhiteBoardSvc", "EventDataSvc"};
 
-  typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>> TimeMap;
-  TimeMap                                                          m_perEvtTime;
-  std::ofstream                                                    m_ofd;
+  using TimeMap = std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>>;
+  TimeMap       m_perEvtTime;
+  std::ofstream m_ofd;
 
   // ============================================================================
 };
 // ============================================================================
 // The END
 // ============================================================================
-#endif //  GAUDISVC_CHRONOSTATSVC_H
