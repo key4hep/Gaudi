@@ -965,9 +965,24 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
     };
     // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from
     // tbb::task)? it seems it works..
+
+    // FIXME - The memory allocation here is causing memory leaks as detected by the gcc leak sanitizer
+    //
+    // clang-format off
+    // Direct leak of 224 byte(s) in 7 object(s) allocated from:
+    //   #0 0x7fc0cb524da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+    //   #1 0x7fc0ba979f7b in function<AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*)::<lambda()> > /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0-3fa06/x86_64-centos7/include/c++/8.2.0/bits/std_function.h:249
+    //   #2 0x7fc0ba97d181 in AvalancheSchedulerSvc::promoteToAsyncScheduled(unsigned int, int, EventContext*) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:969
+    //   #3 0x7fc0ba98354d in AvalancheSchedulerSvc::updateStates(int, int, int, int) ../GaudiHive/src/AvalancheSchedulerSvc.cpp:660
+    // clang-format on
+    //
+    // These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
+    //
     IOBoundAlgTask* theTask = new ( tbb::task::allocate_root() )
         IOBoundAlgTask( ialgoPtr, *eventContext, serviceLocator(), m_algExecStateSvc, promote2ExecutedClosure );
     m_IOBoundAlgScheduler->push( *theTask );
+    //
+    // FIXME
 
     ON_DEBUG debug() << "[Asynchronous] Algorithm " << algName << " was submitted on event " << eventContext->evt()
                      << " in slot " << si << ". algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;

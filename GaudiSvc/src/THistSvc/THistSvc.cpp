@@ -29,6 +29,19 @@
 // local headers
 #include "THistSvc.h"
 
+// FIXME - leak sanitizers generate a number of warnings here
+//
+// Appears to be an issue with the mutex ownsership with LockedHandle ?
+// clang-format off
+// Direct leak of 40 byte(s) in 1 object(s) allocated from:
+//    #0 0x7f09944fcda8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+//    #1 0x7f0987aa2e6d in StatusCode THistSvc::regHist_i<TH1>(std::unique_ptr<TH1, std::default_delete<TH1> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, THistSvc::THistID*&) ../GaudiSvc/src/THistSvc/THistSvc.icc:139
+//    #2 0x7f0987aa3375 in LockedHandle<TH1, std::mutex> THistSvc::regShared_i<TH1>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::unique_ptr<TH1, std::default_delete<TH1> >) ../GaudiSvc/src/THistSvc/THistSvc.icc:264
+//    #3 0x7f0987a8f8ef in THistSvc::regShared(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::unique_ptr<TH1, std::default_delete<TH1> >, LockedHandle<TH1, std::mutex>&) ../GaudiSvc/src/THistSvc/THistSvc.cpp:430
+// clang-format on
+//
+// These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
+
 DECLARE_COMPONENT( THistSvc )
 
 namespace {

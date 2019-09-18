@@ -16,6 +16,25 @@
 // Forward declarations
 class TBranch;
 
+// FIXME - method below generates leak errors with sanitizer
+//
+// clang-format off
+// Direct leak of 176 byte(s) in 1 object(s) allocated from:
+//    #0 0x7f56e2dc2da8 in operator new(unsigned long) /afs/cern.ch/cms/CAF/CMSCOMM/COMM_ECAL/dkonst/GCC/build/contrib/gcc-8.2.0/src/gcc/8.2.0/libsanitizer/lsan/lsan_interceptors.cc:229
+//    #1 0x7f56cb992ae4 in Gaudi::RootCnvSvc::createAddress(long, unsigned int const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const*, unsigned long const*, IOpaqueAddress*&) ../RootCnv/src/RootCnvSvc.cpp:349
+//    #2 0x7f56cb993530 in Gaudi::RootCnvSvc::connectDatabase(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int, Gaudi::RootDataConnection**) ../RootCnv/src/RootCnvSvc.cpp:242
+//    #3 0x7f56cb9b5230 in Gaudi::RootEvtSelector::next(IEvtSelector::Context&) const ../RootCnv/src/RootEvtSelector.cpp:168
+//    #4 0x7f56d2e748b3 in EventSelector::next(IEvtSelector::Context&, int) const ../GaudiCoreSvc/src/EventSelector/EventSelector.cpp:188
+//    #5 0x7f56d2e737bf in EventSelector::next(IEvtSelector::Context&) const ../GaudiCoreSvc/src/EventSelector/EventSelector.cpp:177
+//    #6 0x7f56d2e4c68f in EventLoopMgr::getEventRoot(IOpaqueAddress*&) ../GaudiCoreSvc/src/ApplicationMgr/EventLoopMgr.cpp:350
+//    #7 0x7f56d2e4dab5 in EventLoopMgr::nextEvent(int) ../GaudiCoreSvc/src/ApplicationMgr/EventLoopMgr.cpp:307
+//    #8 0x7f56d3fd5a5a in MinimalEventLoopMgr::executeRun(int) ../GaudiKernel/src/Lib/MinimalEventLoopMgr.cpp:296
+//    #9 0x7f56d2e289ac in ApplicationMgr::executeRun(int) ../GaudiCoreSvc/src/ApplicationMgr/ApplicationMgr.cpp:824
+//    #10 0x7f56d3f5a21c in Gaudi::Application::run() ../GaudiKernel/src/Lib/Application.cpp:81
+// clang-format on
+//
+// These leaks are currently suppressed in Gaudi/job/Gaudi-LSan.supp - remove entry there to reactivate
+
 /*
  *  Gaudi namespace declaration
  */

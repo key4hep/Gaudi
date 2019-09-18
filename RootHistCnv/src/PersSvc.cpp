@@ -62,7 +62,7 @@ StatusCode RootHistCnv::PersSvc::finalize()
   // Close ROOT only if the output file name is defined
   debug() << "RootHistCnv::PersSvc::finalize()" << endmsg;
   if ( m_outputEnabled ) {
-    if ( undefFileName != m_defFileName ) {
+    if ( m_hfile.get() && undefFileName != m_defFileName ) {
       m_hfile->Write( "", TObject::kOverwrite );
       m_hfile->Close();
     }
