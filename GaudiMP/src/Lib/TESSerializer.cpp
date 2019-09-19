@@ -72,7 +72,7 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer ) {
   DataObject* obj;
 
   // Clear current selection
-  m_objects.erase( m_objects.begin(), m_objects.end() );
+  m_objects.clear();
 
   // Traverse the tree and collect the requested objects
   for ( Items::iterator i = m_itemList.begin(); i != m_itemList.end(); i++ ) {
@@ -100,42 +100,19 @@ void GaudiMP::TESSerializer::dumpBuffer( TBufferFile& buffer ) {
     if ( status.isSuccess() ) { m_TESMgr->traverseSubTree( obj, this ); }
   }
 
+  // Prepare for serialization:
+  //  - find all TClass pointers needed and ignore objects without dictionaries
+  std::vector<std::tuple<DataObject*, TClass*>> objects;
+  objects.reserve( m_objects.size() );
+  for_each( begin( m_objects ), end( m_objects ), [this, &objects]( auto obj ) {
+    if ( auto cl = getClass( obj ) ) objects.emplace_back( obj, cl );
+  } );
+
   // cout << "TESSerializer : Beginning loop to write to TBufferFile for nObjects : " << m_objects.size() << endl;
-  buffer.WriteInt( m_objects.size() );
+  buffer.WriteInt( objects.size() );
 
-  for ( Objects::iterator i = m_objects.begin(); i != m_objects.end(); ++i ) {
-    DataObject*    pObj = ( *i ); /* define pointer !pObj! to a data object */
-    DataObjectPush p( pObj );     /* add the data object to the list... */
-
-    // We build a map so gROOT has to access the whole class database as little as possible
-    TClass*          cl;                         /* announce a TClass */
-    const type_info& objClass = typeid( *pObj ); /* get the type of the data object */
-    // cout << "TES Object : " << pObj->registry()->identifier() << endl;
-    string objClassName = System::typeinfoName( objClass ); /* and then get the descriptive string from System */
-
-    /* First go   : populate the class map
-       Subsequent : refer to class map     */
-    if ( m_classMap[objClassName] ) {
-      cl = m_classMap[objClassName];
-    } else {
-      /* Map new object : pull the class name from the objects c_str() method */
-      const char* clName = objClassName.c_str();
-      /* Find the relevant Tclass (cl) in gROOT, and fill the map entry */
-      cl                       = gROOT->GetClass( clName );
-      m_classMap[objClassName] = cl;
-    }
-
-    /* Now, check if clname was valid... */
-    if ( cl == 0 ) {
-      if ( m_strict ) {
-        throw GaudiException( "gROOT->GetClass cannot find clName", objClassName, StatusCode::FAILURE );
-      } else {
-        cout << "WARNING: gROOT->GetClass fails for clname : " << objClassName.c_str() << endl;
-        cout << "WARNING: Disregarding " << objClassName.c_str() << "erasing from object list" << endl;
-        m_objects.erase( i );
-        continue;
-      }
-    }
+  for ( auto& [pObj, cl] : objects ) {
+    DataObjectPush p( pObj ); /* add the data object to the list... */
 
     // write object to buffer in order location-name-object
     std::string loc = pObj->registry()->identifier();

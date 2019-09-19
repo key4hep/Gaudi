@@ -1,6 +1,7 @@
 #ifndef GAUDIMP_TESSERIALIZER_H
 #define GAUDIMP_TESSERIALIZER_H
 
+#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IAddressCreator.h"
 #include "GaudiKernel/IDataStoreAgent.h"
 
@@ -10,6 +11,7 @@
 // vector and string
 #include <map>
 #include <string>
+#include <typeindex>
 #include <vector>
 
 // forward declarations
@@ -17,7 +19,6 @@ class IDataProviderSvc;
 struct IDataManagerSvc;
 class TBufferFile;
 class DataStoreItem;
-class DataObject;
 class IAddressCreator;
 
 /** A class to serialize/deserialize
@@ -65,6 +66,14 @@ namespace GaudiMP {
     DataStoreItem* findItem( const std::string& path );
 
   private:
+    /// caching wrapper to TClass::GetClass
+    TClass* getClass( DataObject* obj ) {
+      auto& id  = typeid( *obj );
+      auto  pos = m_classMap.find( id );
+      if ( pos == end( m_classMap ) ) { return m_classMap[id] = TClass::GetClass( id ); }
+      return pos->second;
+    }
+
     /// TES pointer
     IDataProviderSvc* m_TES;
     /// TES pointer
@@ -83,7 +92,7 @@ namespace GaudiMP {
     Objects m_objects;
 
     /// Map of gROOT class information
-    std::map<std::string, TClass*> m_classMap;
+    std::map<std::type_index, TClass*> m_classMap;
     /// Boolean Flag as used by GaudiSvc/PersistencySvc/OutputStreamer
     bool m_verifyItems;
     /// Boolean Flag used to determine error tolerance
