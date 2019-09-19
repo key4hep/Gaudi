@@ -1,7 +1,7 @@
 #ifndef GAUDI_APPLICATIONMGR_H
 #define GAUDI_APPLICATIONMGR_H
 
-#include <Gaudi/Interfaces/IAsyncEventProcessor.h>
+#include <Gaudi/Interfaces/IQueueingEventProcessor.h>
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/CommonMessaging.h>
 #include <GaudiKernel/IAlgManager.h>
@@ -43,7 +43,7 @@ class IJobOptionsSvc;
     @author Pere Mato
 */
 class ApplicationMgr
-    : public PropertyHolder<CommonMessaging<implements<IAppMgrUI, Gaudi::Interfaces::IAsyncEventProcessor, IService,
+    : public PropertyHolder<CommonMessaging<implements<IAppMgrUI, Gaudi::Interfaces::IQueueingEventProcessor, IService,
                                                        IStateful, INamedInterface, IProperty>>> {
 public:
   // default creator
@@ -100,7 +100,11 @@ public:
   // implementation of IService::sysRestart
   StatusCode sysRestart() override { return StatusCode::SUCCESS; }
 
-  std::future<std::tuple<StatusCode, EventContext>> asyncExecuteEvent( EventContext&& ctx ) override;
+  ///@{
+  void                                                                  push( EventContext&& ctx ) override;
+  bool                                                                  empty() const override;
+  std::optional<Gaudi::Interfaces::IQueueingEventProcessor::ResultType> pop() override;
+  ///@}
 
   /// @name Gaudi::Details::PropertyBase handlers
   //@{
@@ -212,7 +216,7 @@ protected:
   SmartIF<IEventProcessor> m_processingMgr; ///< Reference to processing manager object
   SmartIF<IJobOptionsSvc>  m_jobOptionsSvc; ///< Reference to JobOption service
 
-  SmartIF<IAsyncEventProcessor> m_asyncProcessor; ///< Reference to an asynchronous processing manager object
+  SmartIF<IQueueingEventProcessor> m_queueingProcessor; ///< Reference to a queueing processing manager object
   //
   // The public ApplicationMgr properties
   //
@@ -288,5 +292,24 @@ protected:
 
 private:
   std::vector<std::string> m_okDlls; ///< names of successfully loaded dlls
+
+  /// Helper to delegate calls to event processor implementation
+  template <typename SELF, typename PIMPL, typename METHOD, typename... ARGS>
+  static auto i_delegateToEvtProc( SELF* self, PIMPL& member, std::string_view method_name, METHOD&& method,
+                                   ARGS&&... args ) {
+    if ( LIKELY( self->m_state == Gaudi::StateMachine::RUNNING ) ) {
+      if ( LIKELY( bool( member ) ) ) {
+        return std::invoke( method, *member.get(), std::forward<ARGS>( args )... );
+      } else {
+        std::stringstream s;
+        s << method_name << ": event processor is not a \""
+          << System::typeinfoName( typeid( decltype( *member.get() ) ) ) << '"';
+        throw GaudiException{s.str(), self->name(), StatusCode::FAILURE};
+      }
+    }
+    std::stringstream s;
+    s << method_name << ": Invalid state \"" << self->FSMState() << '"';
+    throw GaudiException{s.str(), self->name(), StatusCode::FAILURE};
+  }
 };
 #endif // GAUDI_APPLICATIONMGR_H

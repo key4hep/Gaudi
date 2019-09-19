@@ -63,8 +63,8 @@ set(GaudiExamples_srcs
     src/ToolHandles/*.cpp
     src/ReEntAlg/*.cpp
     src/ConditionAccessor/*.cpp
-    src/AsyncEventProcessor/AsyncEventLoopMgr.cpp
-    src/AsyncEventProcessor/AsyncApplication.cpp
+    src/QueueingEventProcessor/QueueingEventLoopMgr.cpp
+    src/QueueingEventProcessor/QueueingApplication.cpp
 )
 
 # Add the sources requiring non-standard externals:
@@ -197,5 +197,5 @@ gaudi_add_executable(countersUnitTest src/CounterEx/CountersUnitTest.cpp
 gaudi_add_executable(testAppMgrStateMachine src/testing/TestAppMgrStateMachine.cpp
                      LINK_LIBRARIES GaudiKernel)
 
-gaudi_add_executable(AsyncEventProcessorExample src/AsyncEventProcessor/main.cpp
+gaudi_add_executable(QueueingEventProcessorExample src/QueueingEventProcessor/main.cpp
                      LINK_LIBRARIES GaudiKernel)

@@ -1,9 +1,8 @@
-#include <Gaudi/Interfaces/IAsyncEventProcessor.h>
+#include <Gaudi/Interfaces/IQueueingEventProcessor.h>
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/MinimalEventLoopMgr.h>
 #include <GaudiKernel/ThreadLocalContext.h> // for Gaudi::Hive::setCurrentContext
-#include <mutex>
-#include <queue>
+#include <tbb/concurrent_queue.h>
 #include <thread>
 
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
@@ -13,33 +12,60 @@
 #define VERMSG ON_VERBOSE verbose()
 
 namespace Gaudi::Examples {
-  class GAUDI_API AsyncEventLoopMgr : public extends<MinimalEventLoopMgr, Gaudi::Interfaces::IAsyncEventProcessor> {
+  class GAUDI_API QueueingEventLoopMgr
+      : public extends<MinimalEventLoopMgr, Gaudi::Interfaces::IQueueingEventProcessor> {
   public:
     using extends::extends;
 
     StatusCode start() override;
     StatusCode stop() override;
 
+    // backward compatible EventProcessor implementation.
     StatusCode executeEvent( EventContext&& ctx ) override {
-      return std::get<0>( asyncExecuteEvent( std::move( ctx ) ).get() );
+      using namespace std::chrono_literals;
+      push( std::move( ctx ) );
+      std::optional<ResultType> result;
+      while ( !( result = pop() ) ) std::this_thread::sleep_for( 1ms );
+      return std::get<0>( std::move( *result ) );
     }
 
-    std::future<std::tuple<StatusCode, EventContext>> asyncExecuteEvent( EventContext&& ctx ) override;
+    void push( EventContext&& ctx ) override { m_incoming.push( std::move( ctx ) ); }
+
+    /// Tell if the processor has events in the queues.
+    bool empty() const override {
+      // because of the way we count "in flight" (+1 while waiting that we get something from the queue)
+      // and the way tbb:concurrent_bounded_queue reports the size while waiting for pop to return (-1)
+      // this is a correct definition of "empty" (nothing pending, nothing being processed and no results
+      // to be popped)
+      return !( m_inFlight + m_done.size() + m_incoming.size() );
+    }
+
+    /// Get the next available result, if any.
+    std::optional<ResultType> pop() override {
+      ResultType out;
+      if ( m_done.try_pop( out ) )
+        return out;
+      else
+        return std::nullopt;
+    }
 
   private:
-    using ActionHandle = std::tuple<EventContext, std::promise<std::tuple<StatusCode, EventContext>>>;
+    tbb::concurrent_bounded_queue<EventContext> m_incoming;
+    tbb::concurrent_bounded_queue<ResultType>   m_done;
+    std::atomic<std::size_t>                    m_inFlight{0};
 
-    void processEvent( ActionHandle&& action );
+    // our capacity is the input queue capacity + 1 (N events pending + 1 being processed)
+    Gaudi::Property<std::size_t> m_queueCapacity{
+        this, "Capacity", m_incoming.capacity() + 1,
+        [this]( Gaudi::Details::PropertyBase& ) { m_incoming.set_capacity( m_queueCapacity - 1 ); }};
 
-    std::queue<ActionHandle> m_eventsQueue;
+    std::tuple<StatusCode, EventContext> processEvent( EventContext&& context );
 
-    std::thread             m_evtLoopThread;
-    std::mutex              m_eventsQueueMtx;
-    std::condition_variable m_eventsInQueue;
+    std::thread m_evtLoopThread;
   };
 } // namespace Gaudi::Examples
 
-DECLARE_COMPONENT( Gaudi::Examples::AsyncEventLoopMgr )
+DECLARE_COMPONENT( Gaudi::Examples::QueueingEventLoopMgr )
 
 using namespace Gaudi::Examples;
 
@@ -61,25 +87,26 @@ namespace {
   };
 } // namespace
 
-StatusCode AsyncEventLoopMgr::start() {
+StatusCode QueueingEventLoopMgr::start() {
   auto ok = base_class::start();
   if ( !ok ) return ok;
 
+  info() << m_queueCapacity << endmsg;
+
   m_evtLoopThread = std::thread( [this]() {
-    ActionHandle action;
     while ( true ) {
-      {
-        std::unique_lock lk{m_eventsQueueMtx};
-        m_eventsInQueue.wait( lk, [this]() { return !m_eventsQueue.empty(); } );
-        action = std::move( m_eventsQueue.front() );
-        m_eventsQueue.pop();
-      }
-      const auto& ctx = std::get<0>( action );
+      EventContext ctx;
+      ++m_inFlight; // yes, this is not accurate.
+      m_incoming.pop( ctx );
       if ( LIKELY( ctx.valid() ) ) {
-        processEvent( std::move( action ) );
+        // the sleep is not strictly needed, but it should make the output more stable for the test
+        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+        m_done.push( processEvent( std::move( ctx ) ) );
+        --m_inFlight; // yes, this is not accurate.
       } else {
         DEBMSG << "exiting event loop thread" << endmsg;
-        std::get<1>( action ).set_value( {StatusCode{StatusCode::SUCCESS, true}, std::move( std::get<0>( action ) )} );
+        m_done.emplace( StatusCode{StatusCode::SUCCESS, true}, std::move( ctx ) );
+        --m_inFlight; // yes, this is not accurate.
         break;
       }
     }
@@ -88,25 +115,7 @@ StatusCode AsyncEventLoopMgr::start() {
   return ok;
 }
 
-std::future<std::tuple<StatusCode, EventContext>> AsyncEventLoopMgr::asyncExecuteEvent( EventContext&& ctx ) {
-  ON_DEBUG {
-    if ( ctx.valid() )
-      debug() << "scheduling " << ctx << endmsg;
-    else
-      debug() << "scheduling STOP of event loop" << endmsg;
-  }
-  std::promise<std::tuple<StatusCode, EventContext>> promise;
-  auto                                               future = promise.get_future();
-  {
-    std::lock_guard lk{m_eventsQueueMtx};
-    m_eventsQueue.emplace( ActionHandle{std::move( ctx ), std::move( promise )} );
-  }
-  m_eventsInQueue.notify_one();
-  return future;
-}
-
-void AsyncEventLoopMgr::processEvent( ActionHandle&& action ) {
-  auto [context, promise] = std::move( action );
+std::tuple<StatusCode, EventContext> QueueingEventLoopMgr::processEvent( EventContext&& context ) {
   DEBMSG << "processing " << context << endmsg;
 
   bool eventfailed = false;
@@ -171,16 +180,16 @@ void AsyncEventLoopMgr::processEvent( ActionHandle&& action ) {
     error() << "Error processing event loop." << endmsg;
     std::ostringstream ost;
     m_aess->dump( ost, context );
-    debug() << "Dumping AlgExecStateSvc status:\n" << ost.str() << endmsg;
+    DEBMSG << "Dumping AlgExecStateSvc status:\n" << ost.str() << endmsg;
     outcome = StatusCode{StatusCode::FAILURE, true};
   }
 
-  promise.set_value( {std::move( outcome ), std::move( context )} );
+  return {std::move( outcome ), std::move( context )};
 }
 
-StatusCode AsyncEventLoopMgr::stop() {
+StatusCode QueueingEventLoopMgr::stop() {
   // Send an invalid context to stop the processing thread
-  asyncExecuteEvent( EventContext{} ).get();
+  push( EventContext{} );
   m_evtLoopThread.join();
 
   return base_class::stop();
