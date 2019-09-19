@@ -462,8 +462,9 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
   //       one actually used -- so we do not dangle, pointing at dummy beyond its
   //       lifetime
   if ( msgLevel( MSG::DEBUG ) ) {
+    auto ptr = object.get();
     debug() << "registerAddress: " << std::quoted( normalize_path( fullpath, rootName() ) ) << " (DataObject*)"
-            << (void*)object.get() << ( object ? " -> " + System::typeinfoName( typeid( *object ) ) : std::string{} )
+            << static_cast<void*>( ptr ) << ( ptr ? " -> " + System::typeinfoName( typeid( *ptr ) ) : std::string{} )
             << endmsg;
   }
   fwd( [&]( Partition& p ) {
@@ -495,8 +496,9 @@ StatusCode EvtStoreSvc::registerObject( DataObject* parentObj, std::string_view 
       }
     }
     if ( msgLevel( MSG::DEBUG ) ) {
-      debug() << "registerObject: " << std::quoted( path ) << " (DataObject*)" << (void*)object.get()
-              << ( object ? " -> " + System::typeinfoName( typeid( *object ) ) : std::string{} ) << endmsg;
+      auto ptr = object.get();
+      debug() << "registerObject: " << std::quoted( path ) << " (DataObject*)" << static_cast<void*>( ptr )
+              << ( ptr ? " -> " + System::typeinfoName( typeid( *ptr ) ) : std::string{} ) << endmsg;
     }
     p.store.put( path, std::move( object ) );
     return StatusCode::SUCCESS;
