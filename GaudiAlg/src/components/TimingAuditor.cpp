@@ -91,7 +91,7 @@ StatusCode TimingAuditor::initialize() {
 
   // get tool service
   if ( !m_toolSvc ) {
-    m_toolSvc = Auditor::service( "ToolSvc", true );
+    m_toolSvc = Auditor::service( "ToolSvc" );
     if ( !m_toolSvc ) {
       error() << "Could not retrieve 'ToolSvc' " << endmsg;
       return StatusCode::FAILURE; // RETURN
@@ -106,7 +106,7 @@ StatusCode TimingAuditor::initialize() {
   }
   // get incident service
   if ( !m_incSvc ) {
-    m_incSvc = Auditor::service( "IncidentSvc", true );
+    m_incSvc = Auditor::service( "IncidentSvc" );
     if ( !m_incSvc ) {
       error() << "Could not retrieve 'IncidentSvc'" << endmsg;
       return StatusCode::FAILURE;
