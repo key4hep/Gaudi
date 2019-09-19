@@ -116,10 +116,7 @@ def loadConfigurableDb():
     from os.path import join as path_join
     log.debug("loading confDb files...")
     nFiles = 0  # counter of imported files
-    if sys.platform == 'darwin':
-        pathlist = os.getenv("DYLD_LIBRARY_PATH", "").split(os.pathsep)
-    else:
-        pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
+    pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
     for path in pathlist:
         if not os.path.isdir(path):
             continue
