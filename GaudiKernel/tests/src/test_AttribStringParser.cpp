@@ -5,9 +5,11 @@
 #include <vector>
 
 #include <boost/regex.hpp>
-#include <boost/test/minimal.hpp>
 
-int test_main( int /*argc*/, char** /*argv*/ ) {
+#define BOOST_TEST_MODULE AttribStringParser_test
+#include <boost/test/included/unit_test.hpp>
+
+BOOST_AUTO_TEST_CASE( test_case ) {
   using Gaudi::Utils::AttribStringParser;
   using Attrib = Gaudi::Utils::AttribStringParser::Attrib;
   using std::cout;
@@ -45,6 +47,4 @@ int test_main( int /*argc*/, char** /*argv*/ ) {
     Attrib expected{"var", "${HOME}"};
     BOOST_CHECK( result.tag == expected.tag && result.value == expected.value );
   }
-
-  return 0;
 }
