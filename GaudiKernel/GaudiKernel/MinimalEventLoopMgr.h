@@ -1,7 +1,6 @@
 #ifndef GAUDIKERNEL_MINIMALEVENTLOOPMGR_H
 #define GAUDIKERNEL_MINIMALEVENTLOOPMGR_H 1
 
-#include <Gaudi/Interfaces/IAsyncEventProcessor.h>
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IAlgExecStateSvc.h>
 #include <GaudiKernel/IAlgorithm.h>

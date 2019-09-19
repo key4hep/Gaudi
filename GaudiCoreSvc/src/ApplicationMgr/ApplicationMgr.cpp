@@ -381,8 +381,8 @@ StatusCode ApplicationMgr::configure() {
         << "\n Check option ApplicationMgr." << m_eventLoopMgr.name() << "\n No events will be processed." << endmsg;
     return sc;
   }
-  // The IEventProcessor might also be an IAsyncEventProcessor
-  m_asyncProcessor = m_processingMgr;
+  // The IEventProcessor might also be an IQueueingEventProcessor
+  m_queueingProcessor = m_processingMgr;
 
   // Establish Update Handlers for ExtSvc and DLLs Properties
   m_extSvcNameList.declareUpdateHandler( &ApplicationMgr::extSvcNameListHandler, this );
@@ -793,18 +793,17 @@ StatusCode ApplicationMgr::executeEvent( EventContext&& ctx ) {
   return StatusCode::FAILURE;
 }
 
-std::future<std::tuple<StatusCode, EventContext>> ApplicationMgr::asyncExecuteEvent( EventContext&& ctx ) {
-  if ( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( LIKELY( bool( m_asyncProcessor ) ) ) {
-      return m_asyncProcessor->asyncExecuteEvent( std::move( ctx ) );
-    } else {
-      throw GaudiException{"asyncExecuteEvent: event processor is not an IAsyncEventProcessor", name(),
-                           StatusCode::FAILURE};
-    }
-  }
-  std::stringstream s;
-  s << "asyncExecuteEvent: Invalid state \"" << FSMState() << '"';
-  throw GaudiException{s.str(), name(), StatusCode::FAILURE};
+void ApplicationMgr::push( EventContext&& ctx ) {
+  return i_delegateToEvtProc( this, m_queueingProcessor, "push", &Gaudi::Interfaces::IQueueingEventProcessor::push,
+                              std::move( ctx ) );
+}
+
+bool ApplicationMgr::empty() const {
+  return i_delegateToEvtProc( this, m_queueingProcessor, "empty", &Gaudi::Interfaces::IQueueingEventProcessor::empty );
+}
+
+std::optional<Gaudi::Interfaces::IQueueingEventProcessor::ResultType> ApplicationMgr::pop() {
+  return i_delegateToEvtProc( this, m_queueingProcessor, "pop", &Gaudi::Interfaces::IQueueingEventProcessor::pop );
 }
 
 EventContext ApplicationMgr::createEventContext() {
