@@ -66,7 +66,9 @@ class Application(object):
             # FIXME: note that we need PyDLL instead of CDLL if the calls to
             #        Python functions are not protected with the GIL.
             gkl = _GaudiKernelLib = ctypes.PyDLL(
-                'libGaudiKernel.so', mode=ctypes.RTLD_GLOBAL)
+                'libGaudiKernel' +
+                ('.dylib' if sys.platform == 'darwin' else '.so'),
+                mode=ctypes.RTLD_GLOBAL)
             gkl._py_Gaudi__Application__create.restype = ctypes.c_void_p
             gkl._py_Gaudi__Application__run.argtypes = [ctypes.c_void_p]
             gkl._py_Gaudi__Application__run.restype = ctypes.c_int

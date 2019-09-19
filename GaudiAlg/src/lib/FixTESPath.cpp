@@ -9,11 +9,12 @@
 namespace {
   // update DataHandles to point to full TES location
   //
+  template <typename F>
   class DHHFixer : public IDataHandleVisitor {
-    std::function<std::string( std::string_view )> m_f;
+    F m_f;
 
   public:
-    DHHFixer( std::function<std::string( std::string_view )> f ) : m_f( std::move( f ) ) {}
+    DHHFixer( F f ) : m_f( std::move( f ) ) {}
 
     void visit( const IDataHandleHolder* idhh ) override {
       if ( !idhh ) return;
@@ -29,6 +30,11 @@ namespace {
       }
     }
   };
+
+  template <typename F>
+  auto make_unique_DHHFixer( F f ) {
+    return std::make_unique<DHHFixer<F>>( std::move( f ) );
+  }
 
 } // namespace
 
@@ -60,8 +66,8 @@ namespace FixTESPathDetails {
 
   std::unique_ptr<IDataHandleVisitor> fixDataHandlePath( std::string_view rit, std::string rootName, MsgStream* dbg ) {
     if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
-    return std::make_unique<DHHFixer>( [rit, rootName = std::move( rootName ), dbg]( std::string_view location ) {
-      auto tokens = boost::tokenizer<boost::char_separator<char>>{location, boost::char_separator<char>{":"}};
+    return make_unique_DHHFixer( [rit, rootName = std::move( rootName ), dbg]( std::string const& location ) {
+      auto tokens = boost::tokenizer{location, boost::char_separator{":"}};
       auto result =
           std::accumulate( tokens.begin(), tokens.end(), std::string{}, [&]( std::string s, std::string_view tok ) {
             std::string r = fullTESLocation( tok, rit );
