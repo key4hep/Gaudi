@@ -37,8 +37,9 @@ class GAUDI_API ContainedObject {
 protected:
   /// Constructors
   ContainedObject() = default;
-  /// Copy constructor -- do NOT copy the parent reference...
+  /// Copy constructor and assignement: do NOT copy the parent reference...
   ContainedObject( const ContainedObject& ) : ContainedObject() {}
+  ContainedObject& operator=( const ContainedObject& ) { return *this; }
   /// Destructor
   virtual ~ContainedObject();
 
